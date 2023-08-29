@@ -18,5 +18,10 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "typescript": "5.2.2"
+  },
+  "devDependencies": {
+    "@rjsf/core": "^5.12.1",
+    "@rjsf/utils": "^5.12.1",
+    "@rjsf/validator-ajv8": "^5.12.1"
   }
 }
