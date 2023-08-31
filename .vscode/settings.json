@@ -3,5 +3,10 @@
     "editor.formatOnSave": true,
     "editor.defaultFormatter": "ms-python.black-formatter"
   },
-  "black-formatter.importStrategy": "fromEnvironment"
+"black-formatter.importStrategy": "fromEnvironment",
+"python.testing.pytestArgs": [
+    "bc_obps"
+],
+"python.testing.unittestEnabled": false,
+"python.testing.pytestEnabled": true
 }
