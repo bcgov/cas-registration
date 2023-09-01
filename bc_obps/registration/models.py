@@ -1,18 +1,33 @@
 from django.db import models, uuid
 from phonenumber_field.modelfields import PhoneNumberField
 
-class User(models.Model):
+class UserAndContactCommonInfo(models.Model):
     first_name = models.CharField(max_length=1000, db_comment="", db_comment="")
     last_name = models.CharField(max_length=1000, db_comment="")
-    user_guid = models.CharField(max_length=1000, db_comment="")
-    business_guid uuid = models.CharField(max_length=1000, db_comment="")
-    position_title = models.CharField(max_length=1000, db_comment="")
     mailing_address = models.CharField(max_length=1000, db_comment="")
     email = models.EmailField(max_length=254, db_comment="")
     phone_number = PhoneNumberField(blank=True, db_comment="")
+    class Meta:
+        abstract = True
+        db_table_comment = "An abstract base class (used for putting common information into a number of other models) containing fields for users and contacts"
+
+class User(UserAndContactCommonInfo):
+    user_guid = models.CharField(max_length=1000, db_comment="")
+    business_guid uuid = models.CharField(max_length=1000, db_comment="")
+    position_title = models.CharField(max_length=1000, db_comment="")
     documents  = models.ManyToManyField(Document)
     class Meta:
         db_table_comment = "App users"
+
+class Contact(UserAndContactCommonInfo):
+    is_operational_representative = models.BooleanField(db_comment="")
+    verified_at = models.DateTimeField(db_comment="")(db_comment="")
+    verified_by = models.ForeignKey(User, on_delete=models.DO_NOTHING, db_comment="")
+    class Meta:
+        db_table_comment = "Contacts (people who don't use the app, e.g. authorized signing officers)"
+        indexes = [
+            models.Index(fields=["verified_by"], name="verified_by_idx"),
+            ]
 
 class Operator (models.Model):
     class Statuses(models.TextChoices, db_comment=""):
@@ -98,19 +113,6 @@ class Operation(models.Model):
             models.Index(fields=["verified_by"], name="verified_by_idx"),
             ]
 
-class Contact(models.Model):
-    first_name = models.CharField(max_length=1000, db_comment="")
-    last_name = models.CharField(max_length=1000, db_comment="")
-    email = models.EmailField(max_length=254, db_comment="")
-    phone_number = PhoneNumberField(blank=True, db_comment="")
-    is_operational_representative = models.BooleanField(db_comment="")
-    verified_at = models.DateTimeField(db_comment="")(db_comment="")
-    verified_by = models.ForeignKey(User, on_delete=models.DO_NOTHING, db_comment="")
-    class Meta:
-        db_table_comment = "Contacts (people who don't use the app, e.g. authorized signing officers)"
-        indexes = [
-            models.Index(fields=["verified_by"], name="verified_by_idx"),
-            ]
 
 class NacisCode(models.Model):
         naics_code = models.CharField(max_length=1000, db_comment="")
