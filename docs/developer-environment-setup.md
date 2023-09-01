@@ -15,16 +15,21 @@ Ensure the following are installed:
   - You can verify it's working when you commit to a branch and the signature is indicated by `git log --show-signature`. Once pushed, a "Verified" badge appears next to your commits on GitHub.
 - Clone a local copy of [bcgov/cas-registration](https://github.com/bcgov/cas-registration).
 
+## App Environment Variables
+
+In both the `client` and `bc_obps` directories, create a `.env` file and copy the contents of `.env.example` file of the respective directory into it. See the 1Password vault for the values.
+
 ## Backend Environment Setup
 
 1. From the `bc_obps` directory, run `make install_dev_tools`. This will install asdf plugins, poetry and activate the poetry virtual environment.
 2. Run `make install_poetry_deps` to install all python dependencies.
-3. Run `make create_db` to create the database.
-4. Run `make migrate` to run all database migrations.
-5. Run `make run`, which will start running the development server locally (default port is :8000; terminal output will indicate what localhost address to use to access the backend server).
+3. Run `make start_pg` to start the postgres server if it is not already running.
+4. Run `make create_db` to create the database.
+5. Run `make migrate` to run all database migrations.
+6. Run `make run`, which will start running the development server locally (default port is :8000; terminal output will indicate what localhost address to use to access the backend server).
    - to test it out, navigate to the `/api/docs` endpoint in your browser, you should see documentation for the /add endpoint
    - navigate to the `api/add?a=4&b=2` endpoint in your browser, which should return as a result the sum of the specified values for a and b.
-6. Optional: to test the Django server's connection to your database, run `python3 manage.py check --database default`
+7. Optional: to test the Django server's connection to your database, run `python3 manage.py check --database default`
 
 ### Troubleshooting
 
@@ -50,10 +55,6 @@ In the `client` directory:
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
-
-## App Environment Variables
-
-In both the `client` and `bc_obps` directories, create a `.env` file and copy the contents of `.env.example` file of the respective directory into it. See the 1Password vault for the values.
 
 ## Pre-Commit
 
