@@ -21,7 +21,7 @@ In both the `client` and `bc_obps` directories, create a `.env` file and copy th
 
 ## Backend Environment Setup
 
-1. From the `bc_obps` directory, run `make install_dev_tools`. This will install asdf plugins, poetry and activate the poetry virtual environment.
+1. From the `cas-registration/bc_obps` directory, run `make install_dev_tools`. This will install asdf plugins, poetry and activate the poetry virtual environment (to get into the environment again after setup, run `poetry shell`).
 2. Run `make install_poetry_deps` to install all python dependencies.
 3. Run `make start_pg` to start the postgres server if it is not already running.
 4. Run `make create_db` to create the database.
