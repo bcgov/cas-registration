@@ -4,7 +4,7 @@ module.exports = {
   // plugins: ["jest", "relay"],
   parser: "@typescript-eslint/parser",
   parserOptions: {
-    project: "tsconfig.json",
+    // project: "tsconfig.json",  NOTE: do we need this? Removing it fixed a lot of eslint module import errors
     tsconfigRootDir: __dirname,
   },
   rules: {
@@ -19,6 +19,7 @@ module.exports = {
     //   "error",
     //   { devDependencies: ["tests/**/*", "cypress/**/*"] },
     // ],
+    "import/no-extraneous-dependencies": ["error", {"devDependencies": false, "optionalDependencies": false, "peerDependencies": false}],
     "import/extensions": [
       "error",
       "never",
