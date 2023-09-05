@@ -16,16 +16,22 @@ Considerations/questions
 
 ```mermaid
 erDiagram
+    USERANDCONTACTCOMMONINFO {
+        first_name varchar
+        last_name varchar
+        email email
+        phone phone
+}
     USER {
         id int PK
         business_guid uuid
         user_guid uuid
-        first_name varchar
-        last_name varchar
         position_title varchar
         mailing_address varchar
-        email varchar
-        phone int
+        first_name varchar
+        last_name varchar
+        email email
+        phone phone
     }
     OPERATOR {
         id int PK
@@ -52,13 +58,13 @@ erDiagram
     }
     CONTACT {
         id int PK
-        first_name varchar
-        last_name varchar
-        email varchar
-        phone int
         is_operational_representative boolean
         verified_at timestamptz
         verified_by user_id FK
+        first_name varchar
+        last_name varchar
+        email email
+        phone phone
     }
     OPERATOR_CONTACT {
         id int PK
@@ -85,7 +91,6 @@ erDiagram
         coordinates point
         legal_land_description varchar
         nearest_municipality varchar
-        boundary_map document_id FK
         operator_percent_of_ownership numeric
         registered_for_obps boolean
         verified_at timestamptz
@@ -101,6 +106,7 @@ erDiagram
     DOCUMENT {
         id int PK
         file uuid
+        document_type varchar
         description varchar
         file_name varchar
         file_type varchar
