@@ -4,7 +4,7 @@
 
 Ensure the following are installed:
 
-- [Postgres](https://www.postgresql.org/)
+- [Postgres](https://www.postgresql.org/) and [PostGIS extension](https://postgis.net/documentation/getting_started/)
 - [asdf](https://asdf-vm.com/)
 
 ## Repository and Version Control
