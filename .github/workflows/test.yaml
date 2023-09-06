@@ -59,8 +59,8 @@ jobs:
 #      OPENSHIFT_SERVER: ${{ secrets.OPENSHIFT_SERVER }}
 #      OPENSHIFT_TOKEN: ${{ secrets.OPENSHIFT_TOKEN }}
 #      TAILSCALE_API_KEY: ${{ secrets.TAILSCALE_API_KEY }}
-  owasp-scan:
-    uses: bcgov/pipeline-templates/.github/workflows/owasp-scan.yaml@owasp-gcp-fix
+  owasp-zap-scan:
+    uses: bcgov/pipeline-templates/.github/workflows/owasp-zap-scan.yaml@owasp-gcp-fix
     with:
       ZAP_SCAN_TYPE: 'base' # Accepted values are base and full.
       ZAP_TARGET_URL: http://www.itsecgames.com
@@ -80,7 +80,7 @@ jobs:
       - trivy-image-scan
       - sonar-repo-scan
       - sonar-maven-scan
-      - owasp-scan
+      - owasp-zap-scan
     runs-on: ubuntu-latest
     steps:
       - name: Slack Workflow Notification
