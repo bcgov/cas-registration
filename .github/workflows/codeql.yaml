@@ -11,14 +11,18 @@
 #
 name: "CodeQL"
 
+# on:
+#   push:
+#     branches: [main]
+#   pull_request:
+#     # The branches below must be a subset of the branches above
+#     branches: [main]
+#   schedule:
+#     - cron: "19 23 * * 5"
+
 on:
-  push:
-    branches: [main]
-  pull_request:
-    # The branches below must be a subset of the branches above
-    branches: [main]
-  schedule:
-    - cron: "19 23 * * 5"
+  workflow_dispatch:
+  workflow_call:
 
 jobs:
   analyze:
