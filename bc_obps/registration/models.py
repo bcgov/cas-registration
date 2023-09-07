@@ -3,15 +3,10 @@ from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
 from django.contrib.gis.db import models
 
-
-# this may be helpful: https://docs.djangoproject.com/en/4.2/ref/models/fields/#django.db.models.FileField.upload_to
 class Document(models.Model):
-    file = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, db_comment="")
+    file = models.FileField(upload_to='documents', db_comment="")
     document_type = models.CharField(max_length=1000, db_comment="Type of document, e.g., boundary map")
     description = models.CharField(max_length=1000, db_comment="")
-    file_name = models.CharField(max_length=1000, db_comment="")
-    file_type = models.CharField(max_length=1000, db_comment="")
-    file_size = models.CharField(max_length=1000, db_comment="")
     class Meta:
         db_table_comment = "Documents"
 
@@ -33,7 +28,7 @@ class UserAndContactCommonInfo(models.Model):
         db_table_comment = "An abstract base class (used for putting common information into a number of other models) containing fields for users and contacts"
 
 class User(UserAndContactCommonInfo):
-    user_guid = models.UUIDField(default=uuid.uuid4, db_comment="")
+    user_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, db_comment="")
     business_guid  = models.UUIDField(default=uuid.uuid4, db_comment="")
     position_title = models.CharField(max_length=1000, db_comment="")
     documents  = models.ManyToManyField(Document,blank=True, null=True)
