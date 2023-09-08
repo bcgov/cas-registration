@@ -82,7 +82,7 @@ WSGI_APPLICATION = 'bc_obps.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': os.environ.get('DB_NAME'),
         'USER': os.environ.get('DB_USER', 'postgres'),
         'PASSWORD': os.environ.get('DB_PASSWORD'),
@@ -139,4 +139,6 @@ GS_BUCKET_NAME = os.environ.get('GS_BUCKET_NAME')
 
 GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
     os.environ.get('GOOGLE_APPLICATION_CREDENTIALS')
-)
+)# https://gis.stackexchange.com/questions/412950/gdal-configuration-for-django-in-mac-gdal-library-path-exception
+GDAL_LIBRARY_PATH = os.environ.get('GDAL_LIBRARY_PATH')
+GEOS_LIBRARY_PATH = os.environ.get('GEOS_LIBRARY_PATH')
