@@ -50,6 +50,7 @@ create_db:
 	@$(PSQL) -d postgres -tc "SELECT count(*) FROM pg_database WHERE datname = '$(DB_NAME)'" | \
 		grep -q 1 || \
 		$(PSQL) -d postgres -c "CREATE DATABASE $(DB_NAME)";
+		$(PSQL) -d postgres -c "CREATE EXTENSION postgis";
 
 .PHONY: drop_db
 drop_db: ## Drop the $(DB_NAME) database if it exists
