@@ -1,7 +1,6 @@
 import uuid
 from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
-from django.contrib.gis.db import models
 
 
 class Document(models.Model):
@@ -51,7 +50,10 @@ class User(UserAndContactCommonInfo):
     class Meta:
         db_table_comment = "App users"
         constraints = [
-            models.UniqueConstraint(fields=['user_guid', 'business_guid'], name='uuid_user_and_business_constraint')
+            models.UniqueConstraint(
+                fields=["user_guid", "business_guid"],
+                name="uuid_user_and_business_constraint",
+            )
         ]
 
 
@@ -144,7 +146,7 @@ class Operation(models.Model):
     operator_id = models.ForeignKey(Operator, on_delete=models.CASCADE, db_comment="", related_name='operations')
     name = models.CharField(max_length=1000, db_comment="")
     operation_type = models.CharField(max_length=1000, db_comment="")
-    naics_code = models.ForeignKey(NaicsCode, on_delete=models.CASCADE, db_comment="", related_name='operations')
+    naics_code = models.ForeignKey(NaicsCode, on_delete=models.DO_NOTHING, db_comment="", related_name="operations")
     eligible_commercial_product_name = models.CharField(max_length=1000, db_comment="")
     permit_id = models.CharField(max_length=1000, db_comment="")
     npr_id = models.CharField(max_length=1000, db_comment="", blank=True, null=True)
