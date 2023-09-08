@@ -4,6 +4,7 @@ from phonenumber_field.modelfields import PhoneNumberField
 from django.contrib.gis.db import models
 
 class Document(models.Model):
+    """Document model"""
     file = models.FileField(upload_to='documents', db_comment="")
     document_type = models.CharField(max_length=1000, db_comment="Type of document, e.g., boundary map")
     description = models.CharField(max_length=1000, db_comment="")
@@ -11,6 +12,7 @@ class Document(models.Model):
         db_table_comment = "Documents"
 
 class NaicsCode(models.Model):
+    """NAICS code model"""
     naics_code = models.CharField(max_length=1000, db_comment="")
     ciip_sector = models.CharField(max_length=1000, db_comment="")
     naics_description = models.CharField(max_length=1000, db_comment="")
@@ -18,6 +20,7 @@ class NaicsCode(models.Model):
         db_table_comment = "Naics codes"
 
 class UserAndContactCommonInfo(models.Model):
+    """User and contact common information abstract base class"""
     first_name = models.CharField(max_length=1000, db_comment="")
     last_name = models.CharField(max_length=1000, db_comment="")
     mailing_address = models.CharField(max_length=1000, db_comment="")
@@ -28,6 +31,7 @@ class UserAndContactCommonInfo(models.Model):
         db_table_comment = "An abstract base class (used for putting common information into a number of other models) containing fields for users and contacts"
 
 class User(UserAndContactCommonInfo):
+    """User model"""
     user_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, db_comment="")
     business_guid  = models.UUIDField(default=uuid.uuid4, db_comment="")
     position_title = models.CharField(max_length=1000, db_comment="")
@@ -39,6 +43,7 @@ class User(UserAndContactCommonInfo):
         ]
 
 class Contact(UserAndContactCommonInfo):
+    """Contact model"""
     is_operational_representative = models.BooleanField(db_comment="")
     verified_at = models.DateTimeField(db_comment="",blank=True, null=True)
     verified_by = models.ForeignKey(User, on_delete=models.DO_NOTHING, db_comment="",blank=True, null=True, related_name='contacts')
@@ -52,6 +57,7 @@ class Contact(UserAndContactCommonInfo):
             ]
 
 class Operator (models.Model):
+    """Operator model"""
     # class Statuses(models.TextChoices):
     #     PENDING = 'pending', 'Pending'
     #     APPROVED = 'approved', 'Approved'
@@ -79,6 +85,7 @@ class Operator (models.Model):
             models.Index(fields=["compliance_obligee"], name="compliance_obligee_idx")]
 
 class UserOperator(models.Model):
+    """User operator model"""
     
     # class Roles(models.TextChoices):
     #     ADMIN = 'admin', 'Admin'
@@ -105,6 +112,7 @@ class UserOperator(models.Model):
             models.Index(fields=["operators"], name="user_operator_operator_id_idx")]
     
 class Operation(models.Model):
+    """Operation model"""
     operator_id = models.ForeignKey(Operator, on_delete=models.CASCADE, db_comment="", related_name='operations')
     name = models.CharField(max_length=1000, db_comment="")
     operation_type = models.CharField(max_length=1000, db_comment="")
