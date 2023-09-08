@@ -15,6 +15,7 @@ psycopg-binary = "^3.1.10"
 django-phonenumber-field = "^7.1.0"
 django-phonenumbers = "^1.0.1"
 django-storages = {extras = ["google"], version = "^1.14"}
+whitenoise = "^6.5.0"
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.7.0"

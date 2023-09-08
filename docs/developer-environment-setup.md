@@ -45,6 +45,8 @@ $> sudo -u postgres createdb <<your_local_user>>
 
 - if you encounter an issue installing `psycopg2` relating to `Error: pg_config --libdir failed: No version is set for command pg_config`, try setting your Postgres version for asdf globally rather than locally. (E.g., `asdf global postgres 14.0`)
 
+- if your admin panel looks ugly, run `python3 manage.py collectstatic` to collect static files and then try again.
+
 ## Frontend Environment Setup
 
 In the `client` directory:

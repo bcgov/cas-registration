@@ -48,6 +48,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -126,19 +127,23 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = os.environ.get('STATIC_URL', '/static/')
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-STORAGES = {"default": {"BACKEND": "storages.backends.gcloud.GoogleCloudStorage"}, "staticfiles": {"BACKEND": "storages.backends.gcloud.GoogleCloudStorage"}}
-
+# Google Cloud Storage Settings
+STORAGES = {
+    "default": {"BACKEND": "storages.backends.gcloud.GoogleCloudStorage"},
+    "staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"},
+}
 GS_BUCKET_NAME = os.environ.get('GS_BUCKET_NAME')
+GS_CREDENTIALS = service_account.Credentials.from_service_account_file(os.environ.get('GOOGLE_APPLICATION_CREDENTIALS'))
 
-GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
-    os.environ.get('GOOGLE_APPLICATION_CREDENTIALS')
-)# https://gis.stackexchange.com/questions/412950/gdal-configuration-for-django-in-mac-gdal-library-path-exception
+# Postgis Settings (MacOS)
+# https://gis.stackexchange.com/questions/412950/gdal-configuration-for-django-in-mac-gdal-library-path-exception
 GDAL_LIBRARY_PATH = os.environ.get('GDAL_LIBRARY_PATH')
 GEOS_LIBRARY_PATH = os.environ.get('GEOS_LIBRARY_PATH')
