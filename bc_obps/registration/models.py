@@ -58,10 +58,6 @@ class Contact(UserAndContactCommonInfo):
 
 class Operator (models.Model):
     """Operator model"""
-    # class Statuses(models.TextChoices):
-    #     PENDING = 'pending', 'Pending'
-    #     APPROVED = 'approved', 'Approved'
-    #     REJECTED = 'rejected', 'Rejected'
     legal_name = models.CharField(max_length=1000, db_comment="")  
     trade_name = models.CharField(max_length=1000, db_comment="")
     cra_business_number = models.CharField(max_length=1000, db_comment="")
@@ -73,7 +69,6 @@ class Operator (models.Model):
     relationship_with_parent_operator = models.CharField(max_length=1000, db_comment="",blank=True, null=True) 
     compliance_obligee = models.ForeignKey('self', on_delete=models.CASCADE, related_name='obligee', db_comment="")
     date_aso_became_responsible_for_operator = models.DateTimeField(db_comment="")
-    # status = models.CharField(max_length=50, choices=Statuses.choices, default=Statuses.PENDING, db_comment="")
     documents  = models.ManyToManyField(Document,blank=True, null=True, related_name='operator_documents')
     contacts  = models.ManyToManyField(Contact, related_name='operator_contacts')
     operators = models.ManyToManyField(User, through="UserOperator", related_name='operator_users')
@@ -86,11 +81,9 @@ class Operator (models.Model):
 
 class UserOperator(models.Model):
     """User operator model"""
-    
-    # class Roles(models.TextChoices):
-    #     ADMIN = 'admin', 'Admin'
-    #     SUPERADMIN = 'superadmin', 'SuperAdmin'
-    
+    class Roles(models.TextChoices):
+        ADMIN = 'admin', 'Admin'
+        REPORTER = 'reporter', 'Reporter'
     class Statuses(models.TextChoices):
         PENDING = 'pending', 'Pending'
         APPROVED = 'approved', 'Approved'
@@ -98,7 +91,7 @@ class UserOperator(models.Model):
 
     users = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_operators')
     operators = models.ForeignKey(Operator, on_delete=models.CASCADE, db_comment='',related_name='user_operators')
-    role = models.CharField(max_length=1000, db_comment="")
+    status = models.CharField(max_length=1000, choices=Roles.choices, db_comment="")
     status = models.CharField(max_length=1000, choices=Statuses.choices, default=Statuses.PENDING, db_comment="")
     user_is_aso = models.BooleanField(db_comment="")
     aso_is_owner_or_operator = models.BooleanField(db_comment="")
