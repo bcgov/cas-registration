@@ -14,6 +14,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 import os
 from django.core.files.storage import default_storage
+from google.oauth2 import service_account
 
 load_dotenv()
 
@@ -132,8 +133,10 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-STORAGES = {"default": {"BACKEND": "storages.backends.gcloud.GoogleCloudStorage"}}
+STORAGES = {"default": {"BACKEND": "storages.backends.gcloud.GoogleCloudStorage"}, "staticfiles": {"BACKEND": "storages.backends.gcloud.GoogleCloudStorage"}}
 
-GS_BUCKET_NAME = 'YOUR_BUCKET_NAME_GOES_HERE'
+GS_BUCKET_NAME = os.environ.get('GS_BUCKET_NAME')
 
-STORAGES = {"staticfiles": {"BACKEND": "storages.backends.gcloud.GoogleCloudStorage"}}
+GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
+    os.environ.get('GOOGLE_APPLICATION_CREDENTIALS')
+)
