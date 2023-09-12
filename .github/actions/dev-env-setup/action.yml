@@ -11,13 +11,13 @@ runs:
         path: |
           ~/.asdf
         key: ${{ runner.os }}-asdf-cache-${{ hashFiles('.tool-versions') }}
-    - uses: actions/cache@v3
-      id: yarn-cache
-      with:
-        path: |
-          ~/.cache/yarn
-          ./app/node_modules
-        key: ${{ runner.os }}-yarn-cache-${{ hashFiles('app/yarn.lock') }}-v2
-    - name: update submodules
-      run: git submodule update --init
-      shell: bash
+    # - uses: actions/cache@v3
+    #   id: yarn-cache
+    #   with:
+    #     path: |
+    #       ~/.cache/yarn
+    #       ./app/node_modules
+    #     key: ${{ runner.os }}-yarn-cache-${{ hashFiles('app/yarn.lock') }}-v2
+    # - name: update submodules
+    #   run: git submodule update --init
+    #   shell: bash
