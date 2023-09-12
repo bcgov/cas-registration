@@ -10,8 +10,6 @@ RUN apt-get update && \
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    DJANGO_ENV=dev \
-    POETRY_VERSION=1.6.1 \
     USER_ID=1001 \
     HOME=/root
 
@@ -55,3 +53,4 @@ EXPOSE 8000
 # Install project dependencies using Poetry
 RUN poetry install
 USER ${USER_ID}
+CMD ["/usr/bin/env", "bash", "-c", "poetry run python manage.py migrate && poetry run python manage.py runserver 0.0.0.0:8000"]
