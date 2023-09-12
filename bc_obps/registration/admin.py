@@ -8,4 +8,3 @@ admin.site.register(Contact)
 admin.site.register(Operator)
 admin.site.register(UserOperator)
 admin.site.register(Operation)
-

@@ -115,8 +115,8 @@ class UserOperator(models.Model):
         APPROVED = 'approved', 'Approved'
         REJECTED = 'rejected', 'Rejected'
 
-    users = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_operators')
-    operators = models.ForeignKey(Operator, on_delete=models.CASCADE, db_comment='', related_name='user_operators')
+    users = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name="user_operators")
+    operators = models.ForeignKey(Operator, on_delete=models.DO_NOTHING, db_comment="", related_name="user_operators")
     status = models.CharField(max_length=1000, choices=Roles.choices, db_comment="")
     status = models.CharField(max_length=1000, choices=Statuses.choices, default=Statuses.PENDING, db_comment="")
     user_is_aso = models.BooleanField(db_comment="")
