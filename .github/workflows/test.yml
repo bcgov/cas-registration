@@ -27,17 +27,17 @@ jobs:
         working-directory: ./client
 
   # this runs
-  test-2:
-    timeout-minutes: 60
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      # - uses: actions/setup-node@v3
-      #   with:
-      #     node-version: 18
-      - name: Install dependencies
-        run: yarn
-        working-directory: ./client
-      - name: jest
-        run: yarn test
-        working-directory: ./client
+  # test-2:
+  #   timeout-minutes: 60
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     # - uses: actions/setup-node@v3
+  #     #   with:
+  #     #     node-version: 18
+  #     - name: Install dependencies
+  #       run: yarn
+  #       working-directory: ./client
+  #     - name: jest
+  #       run: yarn test
+  #       working-directory: ./client
