@@ -85,7 +85,7 @@ class Operator(models.Model):
     mailing_address = models.CharField(max_length=1000, db_comment="")
     bceid = models.CharField(max_length=1000, db_comment="")
     parent_operator = models.ForeignKey(
-        'self', on_delete=models.CASCADE, related_name='parent', db_comment="", blank=True, null=True
+        'self', on_delete=models.DO_NOTHING, related_name='parent', db_comment="", blank=True, null=True
     )
     relationship_with_parent_operator = models.CharField(max_length=1000, db_comment="", blank=True)
     compliance_obligee = models.ForeignKey("self", on_delete=models.DO_NOTHING, related_name="obligee", db_comment="")
@@ -143,7 +143,7 @@ class UserOperator(models.Model):
 class Operation(models.Model):
     """Operation model"""
 
-    operator_id = models.ForeignKey(Operator, on_delete=models.CASCADE, db_comment="", related_name='operations')
+    operator_id = models.ForeignKey(Operator, on_delete=models.DO_NOTHING, db_comment="", related_name='operations')
     name = models.CharField(max_length=1000, db_comment="")
     operation_type = models.CharField(max_length=1000, db_comment="")
     naics_code = models.ForeignKey(NaicsCode, on_delete=models.DO_NOTHING, db_comment="", related_name="operations")
