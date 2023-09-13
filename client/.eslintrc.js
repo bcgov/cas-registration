@@ -26,6 +26,7 @@ module.exports = {
         json: "always",
       },
     ],
+    "no-console": 1,
     // "global-require": 0,
     // "no-underscore-dangle": 0,
     // "no-undef": 0, // This is covered by Typescript, no need for eslint to check that
