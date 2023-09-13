@@ -33,7 +33,6 @@ install_poetry_deps: ## install poetry dependencies
 install_poetry_deps:
 	@echo "Installing poetry dependencies"
 	@poetry install
-	@playwright install
 
 .PHONY: start_pg
 start_pg: ## start the database server if it is not running
