@@ -7,4 +7,4 @@ files=("$@")
 files=("${files[@]/#/../}") # add ../ to each element
 
 #yarn run eslint "${files[@]}"
-yarn eslint -c ./.eslintrc.js "${files[@]}"
+yarn run unicorn "${files[@]}"
