@@ -13,24 +13,29 @@ jobs:
         uses: ./.github/actions/dev-env-setup
       - run: yarn install --frozen-lockfile
         working-directory: ./client
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
   install-server-dev-tools:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - name: dev env setup
         uses: ./.github/actions/dev-env-setup
-      - name: Set up python
-        id: setup-python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.9.16"
-      - name: Install Poetry
-        uses: snok/install-poetry@v1
-      - name: Install Poetry dependencies
-        run: poetry install
+      - name: devtools
+        run: make install_dev_tools
         working-directory: ./bc_obps
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
+      # - name: Set up python
+      #   id: setup-python
+      #   uses: actions/setup-python@v4
+      #   with:
+      #     python-version: "3.9.16"
+      # - name: Install Poetry
+      #   uses: snok/install-poetry@v1
+      # - name: Install Poetry dependencies
+      #   run: poetry install
+      #   working-directory: ./bc_obps
+      # - name: Setup tmate session
+      #   uses: mxschmitt/action-tmate@v3
   yarn-test:
     needs: install-client-dev-tools
     runs-on: ubuntu-latest
