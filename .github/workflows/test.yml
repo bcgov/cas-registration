@@ -29,6 +29,8 @@ jobs:
           python-version: "3.9.16"
       - name: Install Poetry
         uses: snok/install-poetry@v1
+      - name: Install Poetry dependencies
+        uses: poetry install
 
   yarn-test:
     needs: install-client-dev-tools
@@ -40,7 +42,7 @@ jobs:
       - run: yarn test
         working-directory: ./client
   e2e:
-    needs: install-client-dev-tools
+    needs: ["install-client-dev-tools", "install-server-dev-tools"]
     timeout-minutes: 60
     runs-on: ubuntu-latest
     steps:
