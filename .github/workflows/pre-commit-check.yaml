@@ -52,8 +52,6 @@ jobs:
       - uses: terraform-linters/setup-tflint@v1
         with:
           tflint_version: latest
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
       - uses: pre-commit/action@v3.0.0
       - name: Analyze Kustomize Manifests
         run: |
