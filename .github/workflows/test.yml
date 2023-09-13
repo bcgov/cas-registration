@@ -8,7 +8,7 @@ jobs:
   # client:
   #   runs-on: ubuntu-latest
   #   steps:
-  install-dev-tools:
+  install-client-dev-tools:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -16,9 +16,22 @@ jobs:
         uses: ./.github/actions/dev-env-setup
       - run: yarn install --frozen-lockfile
         working-directory: ./client
+  install-server-dev-tools:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: dev env setup
+        uses: ./.github/actions/dev-env-setup
+      - name: Set up python
+        id: setup-python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.9.16"
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
 
   yarn-test:
-    needs: install-dev-tools
+    needs: install-client-dev-tools
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -27,7 +40,7 @@ jobs:
       - run: yarn test
         working-directory: ./client
   e2e:
-    needs: install-dev-tools
+    needs: install-client-dev-tools
     timeout-minutes: 60
     runs-on: ubuntu-latest
     steps:
