@@ -13,27 +13,24 @@ jobs:
         uses: ./.github/actions/dev-env-setup
       - run: yarn install --frozen-lockfile
         working-directory: ./client
-      # - name: Setup tmate session
-      #   uses: mxschmitt/action-tmate@v3
+
   install-server-dev-tools:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - name: dev env setup
         uses: ./.github/actions/dev-env-setup
-      - name: devtools
-        run: make install_dev_tools
+      - name: Set up python
+        id: setup-python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.9.16"
         working-directory: ./bc_obps
-      # - name: Set up python
-      #   id: setup-python
-      #   uses: actions/setup-python@v4
-      #   with:
-      #     python-version: "3.9.16"
-      # - name: Install Poetry
-      #   uses: snok/install-poetry@v1
-      # - name: Install Poetry dependencies
-      #   run: poetry install
-      #   working-directory: ./bc_obps
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+      - name: Install Poetry dependencies
+        run: poetry install
+        working-directory: ./bc_obps
       # - name: Setup tmate session
       #   uses: mxschmitt/action-tmate@v3
   yarn-test:
@@ -54,6 +51,8 @@ jobs:
       - uses: terraform-linters/setup-tflint@v1
         with:
           tflint_version: latest
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
       - uses: pre-commit/action@v3.0.0
       - name: Analyze Kustomize Manifests
         run: |
