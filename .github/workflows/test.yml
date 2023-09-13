@@ -33,6 +33,27 @@ jobs:
         run: poetry install
         working-directory: ./bc_obps
 
+  pre-commit:
+    needs: ["install-client-dev-tools", "install-server-dev-tools"]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+      - uses: terraform-linters/setup-tflint@v1
+        with:
+          tflint_version: latest
+      - uses: pre-commit/action@v3.0.0
+      - name: Analyze Kustomize Manifests
+        run: |
+          pwd
+          ls -al
+          curl https://get.datree.io | /bin/bash
+          datree test tekton/base/pipelines/* --ignore-missing-schemas --no-record
+          echo "scanning tasks..."
+          datree test tekton/base/tasks/*     --ignore-missing-schemas --no-record
+          echo "scan triggers..."
+          datree test tekton/base/triggers/*  --ignore-missing-schemas --no-record
+
   yarn-test:
     needs: install-client-dev-tools
     runs-on: ubuntu-latest
