@@ -13,8 +13,6 @@ jobs:
         uses: ./.github/actions/dev-env-setup
       - run: yarn install --frozen-lockfile
         working-directory: ./client
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
   install-server-dev-tools:
     runs-on: ubuntu-latest
     steps:
