@@ -30,6 +30,7 @@ jobs:
         uses: snok/install-poetry@v1
       - name: Install Poetry dependencies
         run: poetry install
+        working-directory: ./bc_obps
       # - name: Cache poetry installer
       #   uses: actions/cache@v3
       #   id: cache-poetry-installer
