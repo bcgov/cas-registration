@@ -31,20 +31,6 @@
 #         exclude: current_version\.txt
 #       - id: trailing-whitespace
 #         exclude: .*/__snapshots__/.*|app/schema/.*
-#   - repo: https://github.com/zricethezav/gitleaks
-#     rev: v8.2.5
-#     hooks:
-#       - id: gitleaks
-#   - repo: https://github.com/jorisroovers/gitlint
-#     rev: v0.17.0
-#     hooks:
-#       - id: gitlint
-#   - repo: https://github.com/alessandrojcm/commitlint-pre-commit-hook
-#     rev: v8.0.0
-#     hooks:
-#       - id: commitlint
-#         stages: [commit-msg]
-#         additional_dependencies: ["@commitlint/config-conventional"]
 
 repos:
   - repo: https://github.com/pre-commit/mirrors-prettier
@@ -91,37 +77,30 @@ repos:
     hooks:
       - id: pylint
         name: pylint
-        entry: pylint
-        language: system
+        entry: ./.bin/pre-commit-pylint.sh
+        language: script
         types: [python]
         args: [
             "-rn", # Only display messages
             "-sn", # Don't display the score
           ]
+
   - repo: https://github.com/pycqa/isort
     rev: 5.12.0
     hooks:
       - id: isort
         name: isort (python)
 
-  - repo: https://github.com/ecugol/pre-commit-hooks-django
-    rev: v0.4.0 # Use the ref you want to point at
+  - repo: https://github.com/python-poetry/poetry
+    rev: 1.6.1
     hooks:
-      - id: check-untracked-migrations
-        # Optional, if specified, hook will work only on these branches
-        # otherwise it will work on all branches
-        # args: ["--branches", "main", "other_branch"]
-        # brianna add back in
-      # - id: check-unapplied-migrations
-      # - id: check-absent-migrations
-      - id: po-location-format
-        # Mandatory, select one of the following options:
-        # file: show only the file path as location
-        # never: remove all locations
-        args: ["--add-location", "file"]
+      - id: poetry-check
+        args: ["-C", "./bc_obps"]
+      - id: poetry-lock
+        args: ["-C", "./bc_obps"]
 
   - repo: https://github.com/PyCQA/bandit
-    rev: "1.7.5" # you must change this to newest version
+    rev: "1.7.5"
     hooks:
       - id: bandit
         args: ["-r", "."]
