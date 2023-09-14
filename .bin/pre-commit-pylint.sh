@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-cd ../bc_obps
+set -euxo pipefail
+
+pushd bc_obps || exit 1
 
 # Install and activate the Poetry virtual environment
 make install_poetry
