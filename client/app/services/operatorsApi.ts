@@ -1,15 +1,15 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import { Operator } from './types'
 
-export const operatorApi = createApi({
-    reducerPath: 'operatorApi',
-    baseQuery: fetchBaseQuery({ baseUrl: '/api/'}),
+export const operatorsApi = createApi({
+    reducerPath: 'operatorsApi',
+    baseQuery: fetchBaseQuery({ baseUrl: `${process.env.API_URL}/api/`}),
     endpoints: (builder) => ({
         operators: builder.query<Operator[], void>({
             query: () => "/operators"
         }),
         getOperatorByName: builder.query<Operator, string>({
-            query: (name) => `operator/${name}`
+            query: (name) => `operators/${name}`
         }),
         addOperator: builder.mutation({
             query: (operator) => ({
@@ -28,4 +28,4 @@ export const operatorApi = createApi({
     })
 })
 
-export const { useOperatorsQuery, useGetOperatorByNameQuery, useAddOperatorMutation, useUpdateOperatorMutation } = operatorApi
+export const { useOperatorsQuery, useGetOperatorByNameQuery, useAddOperatorMutation, useUpdateOperatorMutation } = operatorsApi

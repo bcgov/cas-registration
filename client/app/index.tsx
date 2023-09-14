@@ -1,15 +1,25 @@
-import * as React from 'react'
-import ReactDOM from 'react-dom'
-import { Provider } from 'react-redux'
+import type { NextPage } from 'next'
+import React from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { Operator } from './services/types'
+import selectOperator from '../features/operator/operatorsSlice'
+import List from '@/common_components/List'
 
-import App from './App'
-import { store } from './store'
+const renderOperator = (operator: Operator) => {
+    return (
+        <div>
+            <h3>{operator.name}</h3>
+        </div>
+    )
+}
 
-ReactDOM.render(
-    <Provider store={store}>
-        <React.StrictMode>
-            <App />
-        </React.StrictMode>
-    </Provider>,
-    document.getElementById("root")
-)
+const OperatorsHome: NextPage = () => {
+    const operators = useSelector(selectOperator)
+    const dispatch = useDispatch()
+
+    return (
+        <div>
+            <List items={operators.operators} renderItem={renderOperator} />
+        </div>
+    )
+}

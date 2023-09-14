@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useAppSelector, useAppDispatch } from '../../app/hooks'
+import { useAppSelector } from '../../app/hooks'
 import { create } from './operatorsSlice'
 import { Operator } from '../../app/services/types'
 

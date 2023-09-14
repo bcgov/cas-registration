@@ -1,12 +1,21 @@
-import { configureStore } from '@reduxjs/toolkit'
-import { operatorApi } from './services/operatorApi'
+import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit'
+import { operatorsApi } from './services/operatorsApi'
+import { createWrapper } from 'next-redux-wrapper'
 
-export const store = configureStore({
+const makeStore = () => configureStore({
     reducer: {
-        [operatorApi.reducerPath]: operatorApi.reducer
+        [operatorsApi.reducerPath]: operatorsApi.reducer
     },
-    middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(operatorApi.middleware)
+    devTools: true,
+    middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(operatorsApi.middleware)
 })
 
-export type RootState = ReturnType<typeof store.getState>
-export type AppDispatch = typeof store.dispatch
+export type AppStore = ReturnType<typeof makeStore>
+export type AppState = ReturnType<AppStore["getState"]>
+export type AppThunk<ReturnType = void> = ThunkAction<
+    ReturnType,
+    AppState,
+    unknown,
+    Action
+>
+export const wrapper = createWrapper<AppStore>(makeStore)

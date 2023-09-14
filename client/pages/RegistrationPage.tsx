@@ -1,4 +1,4 @@
-import { useOperatorsQuery } from '../app/services/operatorApi'
+import { useOperatorsQuery } from '../app/services/operatorsApi'
 import React from 'react'
 
 const RegistrationPage = () => {
