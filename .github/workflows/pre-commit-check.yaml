@@ -51,6 +51,15 @@ jobs:
           python install-poetry.py --version 1.3.1
           poetry config virtualenvs.create true
           poetry config virtualenvs.in-project false
+      - name: Cache poetry
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-poetry
+        with:
+          path: ~/.cache/pypoetry
+          key: ${{ runner.os }}-poetry-1.3.1-cache-${{ hashFiles('**/poetry.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-poetry-1.3.1-cache-
       # - name: Setup tmate session
       #   uses: mxschmitt/action-tmate@v3
   yarn-test:
