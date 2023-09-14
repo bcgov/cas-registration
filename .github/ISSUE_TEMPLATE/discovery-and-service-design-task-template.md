@@ -1,14 +1,12 @@
 ---
 name: Discovery and Service Design Task Template
 about: Discovery and Service Design Task Template
-title: ''
+title: ""
 labels: "Moose \U0001F98C"
-assignees: ''
-
+assignees: ""
 ---
 
 ####Goal of Ticket
-
 
 #### Describe the task
 
