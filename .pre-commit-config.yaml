@@ -79,7 +79,7 @@ repos:
         name: pylint
         entry: pylint
         # entry: ./.bin/pre-commit-pylint.sh
-        language: script
+        language: system
         types: [python]
         args: [
             "-rn", # Only display messages
