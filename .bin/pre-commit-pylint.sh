@@ -9,7 +9,7 @@ echo $PATH
 
 # # Get the Poetry virtual environment path and save it in a variable
 # VENV_PATH=$(poetry env info --path)
-
+curl -sSL https://install.python-poetry.org | python3 -
 which poetry
 
 poetry --version
