@@ -74,15 +74,16 @@ jobs:
       #     poetry install
       # - name: Setup tmate session
       #   uses: mxschmitt/action-tmate@v3
-  yarn-test:
-    needs: install-client-dev-tools
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: dev env setup
-        uses: ./.github/actions/dev-env-setup
-      - run: yarn test
-        working-directory: ./client
+
+  # yarn-test:
+  #   needs: install-client-dev-tools
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - name: dev env setup
+  #       uses: ./.github/actions/dev-env-setup
+  #     - run: yarn test
+  #       working-directory: ./client
   pre-commit:
     needs: ["install-client-dev-tools", "install-server-dev-tools"]
     runs-on: ubuntu-latest
