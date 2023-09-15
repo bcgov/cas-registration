@@ -77,7 +77,7 @@ repos:
     hooks:
       - id: pylint
         name: pylint
-        entry: bash -c "cd bc_obps poetry run pylint"
+        entry: bash -c "cd bc_obps poetry run pylint --rcfile=.pylintrc *.py"
         # entry: ./.bin/pre-commit-pylint.sh
         language: system
         types: [python]
