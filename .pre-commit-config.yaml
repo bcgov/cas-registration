@@ -77,7 +77,8 @@ repos:
     hooks:
       - id: pylint
         name: pylint
-        entry: ./.bin/pre-commit-pylint.sh
+        entry: pylint
+        # entry: ./.bin/pre-commit-pylint.sh
         language: script
         types: [python]
         args: [
