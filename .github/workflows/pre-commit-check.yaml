@@ -39,9 +39,7 @@ jobs:
       #----------------------------------------------
       - name: Install dependencies
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-        run: |
-          poetry install --no-interaction --no-root
-          source .venv/bin/activate
+        run: poetry install --no-interaction --no-root
         working-directory: ./bc_obps
       # - name: pylint
       #   run: poetry run pylint --rcfile=.pylintrc *.py
