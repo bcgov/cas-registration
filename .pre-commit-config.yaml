@@ -78,11 +78,9 @@ repos:
       - id: pylint
         name: pylint
         entry: bash -c "cd bc_obps && poetry run pylint --rcfile=.pylintrc *.py"
-        # entry: ./.bin/pre-commit-pylint.sh
         language: system
         types: [python]
         require_serial: true
-        # args: ["--source-roots=./bc_obps", "--recursive=y"]
 
   - repo: https://github.com/pycqa/isort
     rev: 5.12.0
