@@ -42,7 +42,10 @@ jobs:
         run: poetry install --no-interaction --no-root
         working-directory: ./bc_obps
       - name: is pylint installed?
-        run: poetry run pylint --help
+        run: |
+          poetry run pylint --help
+          cwd
+          $PATH
         working-directory: ./bc_obps
       # - name: Setup tmate session
       #   uses: mxschmitt/action-tmate@v3
