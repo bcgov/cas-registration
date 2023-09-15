@@ -5,8 +5,12 @@ pushd bc_obps || exit 1
 
 # Install poetry
 curl -sSL https://install.python-poetry.org | python3 -
+
+# Get the Poetry virtual environment path and save it in a variable
+VENV_PATH=$(poetry env info --path)
+
 # Activate the virtual environment
-source $(poetry env info --path)/bin/activate
+source "$VENV_PATH/bin/activate"
 
 # Run pylint on the bc_obps folder
 poetry run pylint --rcfile=.pylintrc *.py
