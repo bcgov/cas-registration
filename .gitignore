@@ -103,3 +103,5 @@ env.bak/
 venv.bak/
 
 .scratch
+staticfiles
+.DS_Store
