@@ -45,7 +45,7 @@ jobs:
       #    run test suite and output coverage file
       #----------------------------------------------
       - name: pylint
-        run: poetry run pylint
+        run: poetry run pylint --rcfile=.pylintrc *.py
         working-directory: ./bc_obps
       - name: Setup tmate session
         uses: mxschmitt/action-tmate@v3
