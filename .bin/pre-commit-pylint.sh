@@ -9,6 +9,9 @@ echo $PATH
 
 # # Get the Poetry virtual environment path and save it in a variable
 # VENV_PATH=$(poetry env info --path)
+
+which poetry
+
 poetry --version
 
 # # Activate the virtual environment
