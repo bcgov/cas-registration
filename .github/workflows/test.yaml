@@ -3,11 +3,11 @@ name: Test Registration App
 on:
   push:
   workflow_dispatch:
-  schedule:
-    - cron: "0 0 * * 0"
+#   schedule:
+# - cron: "0 0 * * 0"
 jobs:
-  codeql-scan:
-    uses: bcgov/pipeline-templates/.github/workflows/codeql.yaml@main
+  #   codeql-scan:
+  #     uses: bcgov/pipeline-templates/.github/workflows/codeql.yaml@main
   docker-build:
     runs-on: ubuntu-latest
     strategy:
@@ -62,68 +62,130 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new
-      # Temp fix
-      # https://github.com/docker/build-push-action/issues/252
-      # https://github.com/moby/buildkit/issues/1896
+        # Temp fix
+        # https://github.com/docker/build-push-action/issues/252
+        # https://github.com/moby/buildkit/issues/1896
       - name: Move cache
         run: |
           rm -rf /tmp/.buildx-cache
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
-  trivy-image-scan:
-    needs: docker-build
-    uses: bcgov/pipeline-templates/.github/workflows/trivy-container.yaml@main
-    with:
-      IMAGE: gregnrobinson/bcgov-nginx-demo
-      TAG: latest
-  sonar-repo-scan:
-    uses: bcgov/pipeline-templates/.github/workflows/sonar-scanner.yaml@main
-    with:
-      ORG: ci-testing
-      PROJECT_KEY: bcgov-pipeline-templates
-      URL: https://sonarcloud.io
-    secrets:
-      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-  #   sonar-maven-scan:
-  #     uses: bcgov/pipeline-templates/.github/workflows/sonar-scanner-mvn.yaml@main
-  #     with:
-  #       WORKDIR: ./tekton/demo/maven-test
-  #       PROJECT_KEY: bcgov_pipeline-templates
-  #     secrets:
-  #       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-  #  helm-deploy:
-  #    needs: [build-push, trivy-image-scan]
-  #    uses: bcgov/pipeline-templates/.github/workflows/helm-deploy.yaml@main
-  #    with:
-  #      ## DOCKER BUILD PARAMS
-  #      NAME: flask-web
-  #
-  #      ## HELM VARIABLES
-  #      HELM_DIR: ./demo/flask-web/helm
-  #      VALUES_FILE: ./demo/flask-web/helm/values.yaml
-  #
-  #      OPENSHIFT_NAMESPACE: "default"
-  #      APP_PORT: "80"
-  #
-  #      # Used to access Redhat Openshift on an internal IP address from a Github Runner.
-  #      TAILSCALE: true
-  #    secrets:
-  #      IMAGE_REGISTRY_USER: ${{ secrets.IMAGE_REGISTRY_USER }}
-  #      IMAGE_REGISTRY_PASSWORD: ${{ secrets.IMAGE_REGISTRY_PASSWORD }}
-  #      OPENSHIFT_SERVER: ${{ secrets.OPENSHIFT_SERVER }}
-  #      OPENSHIFT_TOKEN: ${{ secrets.OPENSHIFT_TOKEN }}
-  #      TAILSCALE_API_KEY: ${{ secrets.TAILSCALE_API_KEY }}
-  owasp-zap-scan:
-    uses: bcgov/pipeline-templates/.github/workflows/owasp-zap-scan.yaml@owasp-gcp-fix
-    with:
-      ZAP_SCAN_TYPE: "base" # Accepted values are base and full.
-      ZAP_TARGET_URL: http://www.itsecgames.com
-      ZAP_DURATION: "2"
-      ZAP_MAX_DURATION: "5"
-      ZAP_GCP_PUBLISH: false
-      ZAP_GCP_PROJECT: phronesis-310405 # Only required if ZAP_GCP_PUBLISH is TRUE
-      ZAP_GCP_BUCKET: "zap-scan-results" # Only required if ZAP_GCP_PUBLISH is TRUE
-    secrets:
-      GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }} # Only required if ZAP_GCP_PUBLISH is TRUE
+
+#   docker-build:
+#     runs-on: ubuntu-latest
+#     strategy:
+#       matrix:
+#         include:
+#           - image: ghcr.io/bcgov/cas-reg-backend
+#             context: .
+#             dockerfile: bc_obps/Dockerfile
+#             name: bc_obps
+#           - image: ghcr.io/bcgov/cas-reg-frontend
+#             context: .
+#             dockerfile: client/Dockerfile
+#             name: client
+#     name: Build ${{ matrix.name }} docker image
+#     steps:
+#       - uses: actions/checkout@v3
+#       - name: Set up Docker Buildx
+#         id: buildx
+#         uses: docker/setup-buildx-action@v2
+#         with:
+#           install: true
+#       - name: Docker meta
+#         id: meta
+#         uses: docker/metadata-action@v3
+#         with:
+#           images: ${{ matrix.image }}
+#           tags: |
+#             type=sha,format=long,prefix=
+#             latest
+#             type=ref,event=pr
+#       - name: Login to GitHub Container Registry
+#         uses: docker/login-action@v2
+#         with:
+#           registry: ghcr.io
+#           username: ${{ github.repository_owner }}
+#           password: ${{ secrets.GITHUB_TOKEN }}
+#       - name: Cache Docker layers
+#         uses: actions/cache@v3
+#         with:
+#           path: /tmp/.buildx-cache
+#           key: ${{ runner.os }}-buildx-${{ matrix.name }}-${{ github.sha }}
+#           restore-keys: |
+#             ${{ runner.os }}-buildx-${{ matrix.name }}
+#       - name: Build image
+#         uses: docker/build-push-action@v3
+#         with:
+#           context: ${{ matrix.context }}
+#           builder: ${{ steps.buildx.outputs.name }}
+#           push: true
+#           file: ${{ matrix.dockerfile }}
+#           tags: ${{ steps.meta.outputs.tags }}
+#           labels: ${{ steps.meta.outputs.labels }}
+#           cache-from: type=local,src=/tmp/.buildx-cache
+#           cache-to: type=local,dest=/tmp/.buildx-cache-new
+#       # Temp fix
+#       # https://github.com/docker/build-push-action/issues/252
+#       # https://github.com/moby/buildkit/issues/1896
+#       - name: Move cache
+#         run: |
+#           rm -rf /tmp/.buildx-cache
+#           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+#   trivy-image-scan:
+#     needs: docker-build
+#     uses: bcgov/pipeline-templates/.github/workflows/trivy-container.yaml@main
+#     with:
+#       IMAGE: gregnrobinson/bcgov-nginx-demo
+#       TAG: latest
+#   sonar-repo-scan:
+#     uses: bcgov/pipeline-templates/.github/workflows/sonar-scanner.yaml@main
+#     with:
+#       ORG: ci-testing
+#       PROJECT_KEY: bcgov-pipeline-templates
+#       URL: https://sonarcloud.io
+#     secrets:
+#       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+#   sonar-maven-scan:
+#     uses: bcgov/pipeline-templates/.github/workflows/sonar-scanner-mvn.yaml@main
+#     with:
+#       WORKDIR: ./tekton/demo/maven-test
+#       PROJECT_KEY: bcgov_pipeline-templates
+#     secrets:
+#       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+#  helm-deploy:
+#    needs: [build-push, trivy-image-scan]
+#    uses: bcgov/pipeline-templates/.github/workflows/helm-deploy.yaml@main
+#    with:
+#      ## DOCKER BUILD PARAMS
+#      NAME: flask-web
+#
+#      ## HELM VARIABLES
+#      HELM_DIR: ./demo/flask-web/helm
+#      VALUES_FILE: ./demo/flask-web/helm/values.yaml
+#
+#      OPENSHIFT_NAMESPACE: "default"
+#      APP_PORT: "80"
+#
+#      # Used to access Redhat Openshift on an internal IP address from a Github Runner.
+#      TAILSCALE: true
+#    secrets:
+#      IMAGE_REGISTRY_USER: ${{ secrets.IMAGE_REGISTRY_USER }}
+#      IMAGE_REGISTRY_PASSWORD: ${{ secrets.IMAGE_REGISTRY_PASSWORD }}
+#      OPENSHIFT_SERVER: ${{ secrets.OPENSHIFT_SERVER }}
+#      OPENSHIFT_TOKEN: ${{ secrets.OPENSHIFT_TOKEN }}
+#      TAILSCALE_API_KEY: ${{ secrets.TAILSCALE_API_KEY }}
+#   owasp-zap-scan:
+#     uses: bcgov/pipeline-templates/.github/workflows/owasp-zap-scan.yaml@owasp-gcp-fix
+#     with:
+#       ZAP_SCAN_TYPE: "base" # Accepted values are base and full.
+#       ZAP_TARGET_URL: http://www.itsecgames.com
+#       ZAP_DURATION: "2"
+#       ZAP_MAX_DURATION: "5"
+#       ZAP_GCP_PUBLISH: false
+#       ZAP_GCP_PROJECT: phronesis-310405 # Only required if ZAP_GCP_PUBLISH is TRUE
+#       ZAP_GCP_BUCKET: "zap-scan-results" # Only required if ZAP_GCP_PUBLISH is TRUE
+#     secrets:
+#       GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }} # Only required if ZAP_GCP_PUBLISH is TRUE
 #   slack-workflow-status:
 #     if: always()
 #     name: Post Workflow Status To Slack
