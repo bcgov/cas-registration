@@ -82,7 +82,7 @@ repos:
         language: system
         types: [python]
         require_serial: true
-        args: ["--source-roots=./bc_obps", "--recursive=y"]
+        # args: ["--source-roots=./bc_obps", "--recursive=y"]
 
   - repo: https://github.com/pycqa/isort
     rev: 5.12.0
