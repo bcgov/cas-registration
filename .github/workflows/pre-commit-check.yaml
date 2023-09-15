@@ -31,8 +31,8 @@ jobs:
       - name: Install Poetry dependencies
         run: poetry install
         working-directory: ./bc_obps
-      # - name: Setup tmate session
-      #   uses: mxschmitt/action-tmate@v3
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
 
   # yarn-test:
   #   needs: install-client-dev-tools
