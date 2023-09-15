@@ -66,6 +66,11 @@ jobs:
       - name: dev env setup
         uses: ./.github/actions/dev-env-setup
       - run: pip install -r requirements.txt
+      - name: Add poetry!!!!!!?
+        run: |
+          poetry run pylint --version
+          echo $PATH
+        working-directory: ./bc_obps
       - uses: pre-commit/action@v3.0.0
       # - uses: actions/setup-python@v2
       - uses: terraform-linters/setup-tflint@v1
