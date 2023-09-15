@@ -3,7 +3,7 @@ set -euxo pipefail
 
 pushd bc_obps || exit 1
 
-
+pwd
 # export VIRTUAL_ENV_DISABLE_PROMPT=1
 # poetry shell
 
