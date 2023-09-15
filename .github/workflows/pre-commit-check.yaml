@@ -32,6 +32,8 @@ jobs:
           virtualenvs-create: true
           virtualenvs-in-project: true
           installer-parallel: true
+      - name: Install Poetry dependencies
+        run: poetry install
         working-directory: ./bc_obps
       - name: Setup tmate session
         uses: mxschmitt/action-tmate@v3
