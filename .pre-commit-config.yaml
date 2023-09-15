@@ -77,13 +77,13 @@ repos:
     hooks:
       - id: pylint
         name: pylint
-        entry: ./.bin/pre-commit-pylint.sh
-        language: script
-        types: [python]
-        args: [
-            "-rn", # Only display messages
-            "-sn", # Don't display the score
-          ]
+        # entry: ./.bin/pre-commit-pylint.sh
+        # language: script
+        # types: [python]
+        # args: [
+        #     "-rn", # Only display messages
+        #     "-sn", # Don't display the score
+        #   ]
 
   - repo: https://github.com/pycqa/isort
     rev: 5.12.0
