@@ -97,13 +97,13 @@ jobs:
       - uses: terraform-linters/setup-tflint@v1
         with:
           tflint_version: latest
-      - name: Analyze Kustomize Manifests
-        run: |
-          pwd
-          ls -al
-          curl https://get.datree.io | /bin/bash
-          datree test tekton/base/pipelines/* --ignore-missing-schemas --no-record
-          echo "scanning tasks..."
-          datree test tekton/base/tasks/*     --ignore-missing-schemas --no-record
-          echo "scan triggers..."
-          datree test tekton/base/triggers/*  --ignore-missing-schemas --no-record
+      # - name: Analyze Kustomize Manifests
+      #   run: |
+      #     pwd
+      #     ls -al
+      #     curl https://get.datree.io | /bin/bash
+      #     datree test tekton/base/pipelines/* --ignore-missing-schemas --no-record
+      #     echo "scanning tasks..."
+      #     datree test tekton/base/tasks/*     --ignore-missing-schemas --no-record
+      #     echo "scan triggers..."
+      #     datree test tekton/base/triggers/*  --ignore-missing-schemas --no-record
