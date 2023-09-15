@@ -82,6 +82,7 @@ repos:
         language: system
         types: [python]
         require_serial: true
+        # args: ["-C", "./bc_obps"]
 
   - repo: https://github.com/pycqa/isort
     rev: 5.12.0
