@@ -3,9 +3,6 @@ set -euxo pipefail
 
 pushd bc_obps || exit 1
 
-# Install poetry
-curl -sSL https://install.python-poetry.org | python3 -
-
 # Get the Poetry virtual environment path and save it in a variable
 VENV_PATH=$(poetry env info --path)
 
