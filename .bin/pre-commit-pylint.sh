@@ -8,12 +8,13 @@ pushd bc_obps || exit 1
 curl -sSL https://install.python-poetry.org | python3 -
 which poetry
 
+poetry run pylint --version
 # Activate the virtual environment
 # Creating virtualenv registration-ucQVSwfn-py3.10 in /home/runner/.cache/pypoetry/virtualenvs
 # source /home/runner/.cache/pypoetry/virtualenvs/bc-obps-3Z4QX3ZS-py3.8/bin/activate
 poetry install
 
-poetry run pylint --version
+echo "Install poetry Done"
 
 # Run pylint on the bc_obps folder
 poetry run pylint --rcfile=.pylintrc *.py
