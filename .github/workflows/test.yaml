@@ -14,11 +14,11 @@ jobs:
       matrix:
         include:
           - image: ghcr.io/bcgov/cas-reg-backend
-            context: .
+            context: bc_obps
             dockerfile: bc_obps/Dockerfile
             name: bc_obps
           - image: ghcr.io/bcgov/cas-reg-frontend
-            context: .
+            context: client
             dockerfile: client/Dockerfile
             name: client
     name: Build ${{ matrix.name }} docker image
