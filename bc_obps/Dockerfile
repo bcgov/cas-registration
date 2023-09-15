@@ -20,6 +20,8 @@ RUN useradd -ms /bin/bash -d ${HOME} --uid ${USER_ID} -g root bc_obps
 
 COPY ./ ${HOME}/
 
+RUN ls
+
 # Copy the pyproject.toml and poetry.lock files into the container
 COPY pyproject.toml poetry.lock ${HOME}/
 
