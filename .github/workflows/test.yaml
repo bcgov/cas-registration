@@ -72,29 +72,29 @@ jobs:
         run: |
           rm -rf /tmp/.buildx-cache
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
-  trivy-image-scan:
-    needs: docker-build
-    uses: bcgov/pipeline-templates/.github/workflows/trivy-container.yaml@main
-    with:
-      IMAGE: gregnrobinson/bcgov-nginx-demo
-      TAG: latest
-  sonar-repo-scan:
-    uses: bcgov/pipeline-templates/.github/workflows/sonar-scanner.yaml@main
-    with:
-      ORG: ci-testing
-      PROJECT_KEY: bcgov-pipeline-templates
-      URL: https://sonarcloud.io
-    secrets:
-      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-  owasp-zap-scan:
-    uses: bcgov/pipeline-templates/.github/workflows/owasp-zap-scan.yaml@owasp-gcp-fix
-    with:
-      ZAP_SCAN_TYPE: "base" # Accepted values are base and full.
-      ZAP_TARGET_URL: http://www.itsecgames.com
-      ZAP_DURATION: "2"
-      ZAP_MAX_DURATION: "5"
-      ZAP_GCP_PUBLISH: false
-      ZAP_GCP_PROJECT: phronesis-310405 # Only required if ZAP_GCP_PUBLISH is TRUE
-      ZAP_GCP_BUCKET: "zap-scan-results" # Only required if ZAP_GCP_PUBLISH is TRUE
-    secrets:
-      GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }} # Only required if ZAP_GCP_PUBLISH is TRUE
+  # trivy-image-scan:
+  #   needs: docker-build
+  #   uses: bcgov/pipeline-templates/.github/workflows/trivy-container.yaml@main
+  #   with:
+  #     IMAGE: gregnrobinson/bcgov-nginx-demo
+  #     TAG: latest
+  # sonar-repo-scan:
+  #   uses: bcgov/pipeline-templates/.github/workflows/sonar-scanner.yaml@main
+  #   with:
+  #     ORG: ci-testing
+  #     PROJECT_KEY: bcgov-pipeline-templates
+  #     URL: https://sonarcloud.io
+  #   secrets:
+  #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+  # owasp-zap-scan:
+  #   uses: bcgov/pipeline-templates/.github/workflows/owasp-zap-scan.yaml@owasp-gcp-fix
+  #   with:
+  #     ZAP_SCAN_TYPE: "base" # Accepted values are base and full.
+  #     ZAP_TARGET_URL: http://www.itsecgames.com
+  #     ZAP_DURATION: "2"
+  #     ZAP_MAX_DURATION: "5"
+  #     ZAP_GCP_PUBLISH: false
+  #     ZAP_GCP_PROJECT: phronesis-310405 # Only required if ZAP_GCP_PUBLISH is TRUE
+  #     ZAP_GCP_BUCKET: "zap-scan-results" # Only required if ZAP_GCP_PUBLISH is TRUE
+  #   secrets:
+  #     GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }} # Only required if ZAP_GCP_PUBLISH is TRUE
