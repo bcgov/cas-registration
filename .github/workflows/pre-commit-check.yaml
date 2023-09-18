@@ -107,3 +107,85 @@ jobs:
       #     datree test tekton/base/tasks/*     --ignore-missing-schemas --no-record
       #     echo "scan triggers..."
       #     datree test tekton/base/triggers/*  --ignore-missing-schemas --no-record
+  docker-build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - image: ghcr.io/bcgov/cas-reg-backend
+            context: bc_obps
+            dockerfile: bc_obps/Dockerfile
+            name: bc_obps
+          - image: ghcr.io/bcgov/cas-reg-frontend
+            context: client
+            dockerfile: client/Dockerfile
+            name: client
+    name: Build ${{ matrix.name }} docker image
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v2
+        with:
+          install: true
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v3
+        with:
+          images: ${{ matrix.image }}
+          tags: |
+            type=sha,format=long,prefix=
+            latest
+            type=ref,event=pr
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Cache Docker layers
+        uses: actions/cache@v3
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ matrix.name }}-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-${{ matrix.name }}
+      - name: Build image
+        uses: docker/build-push-action@v3
+        with:
+          context: ${{ matrix.context }}
+          builder: ${{ steps.buildx.outputs.name }}
+          push: true
+          file: ${{ matrix.dockerfile }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache-new
+        # Temp fix
+        # https://github.com/docker/build-push-action/issues/252
+        # https://github.com/moby/buildkit/issues/1896
+      - name: Move cache
+        run: |
+          rm -rf /tmp/.buildx-cache
+          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+  e2e:
+    needs:
+      ["install-client-dev-tools", "install-server-dev-tools", "docker-build"]
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: dev env setup
+        uses: ./.github/actions/dev-env-setup
+      - name: Install Playwright Browsers
+        run: yarn playwright install --with-deps
+        working-directory: ./client
+      - name: Run Playwright tests
+        run: yarn playwright test
+        working-directory: ./client
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30
