@@ -146,7 +146,7 @@ jobs:
     secrets:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
   owasp-zap-scan:
-    uses: bcgov/pipeline-templates/.github/workflows/owasp-zap-scan.yaml@owasp-gcp-fix
+    uses: bcgov/pipeline-templates/.github/workflows/owasp-scan.yaml@owasp-gcp-fix
     with:
       ZAP_SCAN_TYPE: "base" # Accepted values are base and full.
       ZAP_TARGET_URL: http://www.itsecgames.com
