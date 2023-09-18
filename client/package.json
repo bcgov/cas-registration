@@ -8,7 +8,8 @@
     "start": "next start",
     "test": "jest",
     "format": "prettier --write .",
-    "lint": "eslint --ext .js,.jsx,.ts,.tsx . && next lint"
+    "lint": "eslint --ext .js,.jsx,.ts,.tsx . && next lint",
+    "e2e": "yarn playwright test"
   },
   "dependencies": {
     "@types/node": "20.5.7",
