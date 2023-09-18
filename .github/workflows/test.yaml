@@ -252,7 +252,7 @@ jobs:
       ["docker-build", "install-client-dev-tools", "install-server-dev-tools"]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v2
       - name: dev env setup
         uses: ./.github/actions/dev-env-setup
       - name: run app locally
