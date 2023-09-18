@@ -4,7 +4,7 @@ FROM python:3.9.16 AS main
 # Install system dependencies and clean up
 RUN apt-get update && \
     apt-get upgrade -y && \
-    apt-get install -y postgresql-client postgresql && \
+    # apt-get install -y postgresql-client postgresql && \
     apt-get install -y git gnupg curl build-essential && \
     apt-get clean
 
@@ -33,9 +33,12 @@ ENV BASH_ENV="${HOME}/asdf/asdf.sh"
 # Because asdf is loaded via BASH_ENV, all commands using adsf need to be executed using /usr/bin/env bash -c
 SHELL ["/usr/bin/env", "bash", "-c"]
 
+RUN chmod 777 ${HOME}
+RUN useradd postgres
+USER postgres
+
 COPY .tool-versions ${HOME}/.tool-versions
-RUN sed -i -nr '/python|poetry|postgres|/p' ${HOME}/.tool-versions && \
-    cat ${HOME}/.tool-versions | cut -f 1 -d ' ' | xargs -n 1 asdf plugin-add && \
+RUN cat ${HOME}/.tool-versions | cut -f 1 -d ' ' | xargs -n 1 asdf plugin-add && \
     asdf plugin-update --all && \
     asdf install && \
     asdf reshim
@@ -46,7 +49,9 @@ ENV PATH="${HOME}/.asdf/installs/poetry/1.6.1/bin:${PATH}"
 # Configuring poetry to behave properly with asdf
 RUN poetry config virtualenvs.prefer-active-python true
 
+
 # Change ownership and permissions
+USER root
 RUN chown -R bc_obps:0 ${HOME} && \
     chmod -R g+rwX ${HOME}
 
