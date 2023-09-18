@@ -170,6 +170,10 @@ jobs:
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
       - name: Setup tmate session
         uses: mxschmitt/action-tmate@v3
+      - name: print some stuff
+        run: |
+          echo docker image ls
+          echo docker ps
   e2e:
     needs:
       ["docker-build", "install-client-dev-tools", "install-server-dev-tools"]
