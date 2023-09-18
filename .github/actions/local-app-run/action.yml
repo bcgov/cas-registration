@@ -18,3 +18,5 @@ runs:
     - name: start frontend
       shell: bash
       run: docker run -d --network=host ghcr.io/bcgov/cas-reg-frontend:${{ github.sha }} "/usr/bin/env" "bash" "-c" "yarn start"
+    - name: Setup tmate session
+      uses: mxschmitt/action-tmate@v3

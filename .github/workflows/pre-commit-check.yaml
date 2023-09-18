@@ -46,8 +46,6 @@ jobs:
           poetry run pylint --version
           echo $PATH
         working-directory: ./bc_obps
-      # - name: Setup tmate session
-      #   uses: mxschmitt/action-tmate@v3
 
   # yarn-test:
   #   needs: install-client-dev-tools
@@ -168,12 +166,7 @@ jobs:
         run: |
           rm -rf /tmp/.buildx-cache
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
-      - name: print some stuff
-        run: |
-          echo docker image ls
-          echo docker ps
+
   e2e:
     needs:
       ["docker-build", "install-client-dev-tools", "install-server-dev-tools"]
