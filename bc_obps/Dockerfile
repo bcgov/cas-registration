@@ -34,7 +34,7 @@ ENV BASH_ENV="${HOME}/asdf/asdf.sh"
 SHELL ["/usr/bin/env", "bash", "-c"]
 
 COPY .tool-versions ${HOME}/.tool-versions
-RUN sed -i -nr '/python|poetry/p' ${HOME}/.tool-versions && \
+RUN sed -i -nr '/python|poetry|postgres/p' ${HOME}/.tool-versions && \
     cat ${HOME}/.tool-versions | cut -f 1 -d ' ' | xargs -n 1 asdf plugin-add && \
     asdf plugin-update --all && \
     asdf install && \
