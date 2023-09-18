@@ -170,7 +170,7 @@ jobs:
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
   e2e:
     needs:
-      ["install-client-dev-tools", "install-server-dev-tools", "docker-build"]
+      ["docker-build", "install-client-dev-tools", "install-server-dev-tools"]
     timeout-minutes: 60
     runs-on: ubuntu-latest
     steps:
