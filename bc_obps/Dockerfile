@@ -4,6 +4,7 @@ FROM python:3.9.16 AS main
 # Install system dependencies and clean up
 RUN apt-get update && \
     apt-get upgrade -y && \
+    apt-get install -y postgresql-client postgresql && \
     apt-get install -y git gnupg curl build-essential && \
     apt-get clean
 
