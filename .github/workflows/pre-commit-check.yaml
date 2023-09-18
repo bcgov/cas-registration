@@ -168,6 +168,8 @@ jobs:
         run: |
           rm -rf /tmp/.buildx-cache
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
   e2e:
     needs:
       ["docker-build", "install-client-dev-tools", "install-server-dev-tools"]
