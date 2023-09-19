@@ -2,7 +2,14 @@ name: Test Registration App
 
 on:
   push:
+    branches: [develop, main]
+  pull_request:
+    branches: [develop, main]
   workflow_dispatch:
+
+env:
+  PGUSER: postgres
+
 jobs:
   install-client-dev-tools:
     runs-on: ubuntu-latest
