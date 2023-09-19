@@ -146,12 +146,12 @@ jobs:
         run: |
           rm -rf /tmp/.buildx-cache
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
-  trivy-image-scan:
-    needs: docker-build
-    uses: bcgov/pipeline-templates/.github/workflows/trivy-container.yaml@main
-    with:
-      IMAGE: gregnrobinson/bcgov-nginx-demo
-      TAG: latest
+  # trivy-image-scan:
+  #   needs: docker-build
+  #   uses: bcgov/pipeline-templates/.github/workflows/trivy-container.yaml@main
+  #   with:
+  #     IMAGE: gregnrobinson/bcgov-nginx-demo
+  #     TAG: latest
   #   sonar-repo-scan:
   #     uses: bcgov/pipeline-templates/.github/workflows/sonar-scanner.yaml@main
   #     with:
