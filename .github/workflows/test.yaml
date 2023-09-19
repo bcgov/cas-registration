@@ -57,7 +57,7 @@ jobs:
     needs: ["install-client-dev-tools", "install-server-dev-tools"]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: dev env setup
         uses: ./.github/actions/dev-env-setup
       - run: pip install -r requirements.txt
@@ -151,7 +151,7 @@ jobs:
       ["docker-build", "install-client-dev-tools", "install-server-dev-tools"]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: dev env setup
         uses: ./.github/actions/dev-env-setup
       - name: run app locally
