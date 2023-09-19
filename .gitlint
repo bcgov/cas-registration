@@ -67,7 +67,7 @@ contrib=contrib-title-conventional-commits
 # This is useful for when developers often erroneously edit certain files or git submodules.
 # By specifying this rule, developers can only change the file when they explicitly reference
 # it in the commit message.
-files=.pipeline,schema/.cas-ggircs
+# files=.pipeline,schema/.cas-ggircs
 
 # [author-valid-email]
 # python like regex (https://docs.python.org/2/library/re.html) that the
