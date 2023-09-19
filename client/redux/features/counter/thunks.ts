@@ -9,5 +9,5 @@ export const incrementAsync = createAppAsyncThunk(
     // 2. Thunk function
     const response = await fetchCount(amount); // 3. Asynchronous logic
     return response.data; // 4. Data returned by the asynchronous logic- the `fulfilled` action payload
-  }
+  },
 );
