@@ -146,20 +146,6 @@ jobs:
         run: |
           rm -rf /tmp/.buildx-cache
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
-  # trivy-image-scan:
-  #   needs: docker-build
-  #   uses: bcgov/pipeline-templates/.github/workflows/trivy-container.yaml@main
-  #   with:
-  #     IMAGE: gregnrobinson/bcgov-nginx-demo
-  #     TAG: latest
-  #   sonar-repo-scan:
-  #     uses: bcgov/pipeline-templates/.github/workflows/sonar-scanner.yaml@main
-  #     with:
-  #       ORG: ci-testing
-  #       PROJECT_KEY: bcgov-pipeline-templates
-  #       URL: https://sonarcloud.io
-  #     secrets:
-  #       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
   zap-owasp:
     needs:
       ["docker-build", "install-client-dev-tools", "install-server-dev-tools"]
