@@ -44,7 +44,7 @@ repos:
       - id: poetry-check
         args: ["-C", "./bc_obps"]
       - id: poetry-lock
-        args: ["-C", "./bc_obps"]
+        args: ["-C", "./bc_obps", "--check"] # --check to ensure lock file is up to date without updating it
 
   - repo: https://github.com/PyCQA/bandit
     rev: "1.7.5"
