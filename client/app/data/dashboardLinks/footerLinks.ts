@@ -1,5 +1,3 @@
-import { getSupportEmailMailTo } from "@/app/routes/externalRoutes";
-
 const footerLinks = [
   {
     name: "Disclaimer",
@@ -19,7 +17,7 @@ const footerLinks = [
   },
   {
     name: "Contact Us",
-    href: getSupportEmailMailTo("CIF App: Report a problem!").pathname,
+    href: "email@email.com", //TODO
   },
 ];
 
