@@ -1,34 +1,26 @@
-name: sonar-repo-scan
+name: Sonarcloud Scan Code
 
 on:
   workflow_call:
-    inputs:
-      ORG:
-        required: true
-        type: string
-      PROJECT_KEY:
-        required: true
-        type: string
-      URL:
-        required: true
-        type: string
     secrets:
-      SONAR_TOKEN:
+      github-token:
         required: true
+      sonar-token:
+        required: true
+
+concurrency:
+  group: callee-sonarcloud-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  sonar-repo-scan:
-    name: sonar-repo-scan
+  sonarcloud:
     runs-on: ubuntu-latest
     steps:
-      - name: Setup
-        uses: warchant/setup-sonar-scanner@v3
-      - name: Run Sonar Scanner
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: SonarCloud Scan
+        uses: sonarsource/sonarcloud-github-action@master
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: sonar-scanner
-          -Dsonar.login=${{ secrets.SONAR_TOKEN }}
-          -Dsonar.organization=${{ inputs.ORG }}
-          -Dsonar.host.url=${{ inputs.URL }}
-          -Dsonar.projectKey=${{ inputs.PROJECT_KEY }}
-          -Dsonar.exclusions=**/*.java
-          -Dsonar.sourceEncoding=UTF-8
+          GITHUB_TOKEN: ${{ secrets.github-token }}
+          SONAR_TOKEN: ${{ secrets.sonar-token }}
