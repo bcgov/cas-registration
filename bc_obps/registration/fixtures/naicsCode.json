@@ -1,0 +1,22 @@
+[
+  {
+    "model": "registration.naicsCode",
+    "pk": 1,
+    "fields": {
+      "id": 1,
+      "naics_code": "string",
+      "ciip_sector": "string",
+      "naics_description": "string"
+    }
+  },
+  {
+    "model": "registration.naicsCode",
+    "pk": 2,
+    "fields": {
+      "id": 2,
+      "naics_code": "string",
+      "ciip_sector": "string",
+      "naics_description": "string"
+    }
+  }
+]
