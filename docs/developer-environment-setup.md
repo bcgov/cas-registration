@@ -30,6 +30,7 @@ In both the `client` and `bc_obps` directories, create a `.env` file and copy th
    - to test it out, navigate to the `/api/docs` endpoint in your browser, you should see documentation for the /add endpoint
    - navigate to the `api/add?a=4&b=2` endpoint in your browser, which should return as a result the sum of the specified values for a and b.
 7. Optional: to test the Django server's connection to your database, run `python3 manage.py check --database default`
+8. Optional: to load mock data via fixtures, run `make loadfixtures`
 
 ### Troubleshooting
 
