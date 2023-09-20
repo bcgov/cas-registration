@@ -77,3 +77,7 @@ migrations:
 superuser: ## create a superuser
 superuser:
 	@poetry run python $(MANAGE_PY) createsuperuser
+
+loadfixtures: ## add all registration fixture files to the db
+loadfixtures:
+	python $(MANAGE_PY) loaddata ./registration/fixtures/*.json
