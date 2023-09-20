@@ -61,8 +61,24 @@ You can start editing the page by modifying `pages/index.tsx`. The page auto-upd
 
 ## Pre-Commit
 
-TODO: Add pre-commit instructions
+[pre-commit](https://pre-commit.com/) runs a variety of formatting and lint checks configured in [`.pre-commit-config.yaml`](../.pre-commit-config.yaml) which are required for a pull request to pass CI.
+
+`pre-commit install` will [configure a pre-commit hook to run before every commit](https://pre-commit.com/#usage); alternatively, you can run it manually with:
+
+```bash
+pre-commit run --all-files
+```
+
+If you are impatient and your work is isolated to Javascript, it may be faster to run only the linter and formatter (`eslint` and `prettier`), but it may not catch everything (such as the end-of-file fixer and trailing whitespace):
+
+```bash
+yarn lint && yarn format
+```
 
 ## Commit Message Conventions
 
-TODO: Add commit message conventions
+We use [gitlint](https://jorisroovers.com/gitlint/) to check commit message formatting. You can enable it by using `pre-commit install --hook-type commit-msg`.
+
+This project follows the commit message conventions outlined by [Convential Commits](https://www.conventionalcommits.org/). Besides the standard commit types (message prefixes) **feat** and **fix**, we use some other types described there based on the Angular convention; some common ones among those are **test**, **docs**, **chore** and **refactor**. You can find the configuration details in the [.gitlint](../.gitlint) file
+
+We also extend this prefix convention to the naming of **branches**, eg: `docs/add-readme` or `feat/some-feature`.
