@@ -1,0 +1,38 @@
+[
+  {
+    "model": "registration.operator",
+    "pk": 1,
+    "fields": {
+      "id": 1,
+      "legal_name": "ladedah",
+      "trade_name": "ladedah",
+      "cra_business_number": "ladedah",
+      "bc_corporate_registry_number": "ladedah",
+      "business_structure": "ladedah",
+      "mailing_address": "ladedah",
+      "bceid": "ladedah",
+      "parent_operator": 2,
+      "relationship_with_parent_operator": "ladedah",
+      "compliance_obligee": 2,
+      "date_aso_became_responsible_for_operator": "2023-09-20T15:26:43.284Z"
+    }
+  },
+  {
+    "model": "registration.operator",
+    "pk": 1,
+    "fields": {
+      "id": 2,
+      "legal_name": "zipadeedoodah",
+      "trade_name": "zipadeedoodah",
+      "cra_business_number": "zipadeedoodah",
+      "bc_corporate_registry_number": "zipadeedoodah",
+      "business_structure": "zipadeedoodah",
+      "mailing_address": "zipadeedoodah",
+      "bceid": "zipadeedoodah",
+      "parent_operator": 1,
+      "relationship_with_parent_operator": "zipadeedoodah",
+      "compliance_obligee": 1,
+      "date_aso_became_responsible_for_operator": "2023-09-20T15:26:43.284Z"
+    }
+  }
+]
