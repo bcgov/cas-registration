@@ -5,7 +5,12 @@
     "fields": {
       "user_guid": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
       "business_guid": "6B29FC40-CA47-1067-B31D-00DD010662DA",
-      "position_title": "doobedoobop"
+      "position_title": "doobedoobop",
+      "first_name": "doobedoobop",
+      "last_name": "doobedoobop",
+      "mailing_address": "doobedoobop",
+      "email": "doobedoobop@email.com",
+      "phone_number": "000000000"
     }
   }
 ]
