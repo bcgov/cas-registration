@@ -1,8 +1,20 @@
 "use client";
 
-import { Button } from "@button-inc/bcgov-theme";
 import { GridRowsProp, GridColProp, GridColDef } from "@mui/x-data-grid";
 import DataGrid from "../components/DataGrid/DataGrid";
+import Link from "next/link";
+import { Button } from "@mui/material";
+/* Core */
+import { useState } from "react";
+
+/* Instruments */
+import {
+  operationsSlice,
+  useSelector,
+  useDispatch,
+  selectOperations,
+  retrieveAsync,
+} from "@/redux";
 
 export const rows: GridRowsProp = [
   { id: 1, col1: "Hello", col2: "World" },
@@ -30,24 +42,36 @@ export const columns: GridColDef[] = [
     renderCell: (params) => {
       const onClick = (e) => {
         console.log("params", params.row.status);
+
         return alert("this will eventually take you somewhere");
       };
 
       return (
-        <Button onClick={onClick}>
-          {params.row.status === "Not Registered"
-            ? "Start Registration"
-            : "View Details"}
-        </Button>
+        // <Button onClick={onClick}>
+        //   {}
+        // </Button>
+        <Link href={`operations/${params.row.id}`}>
+          <Button>
+            {params.row.status === "Not Registered"
+              ? "Start Registration"
+              : "View Details"}
+          </Button>
+        </Link>
       );
     },
   },
 ];
 
 export default function Page() {
+  const dispatch = useDispatch();
+  const operations1 = useSelector(selectOperations);
+
+  const [operations, setOperations] = useState([]);
   return (
     <>
       <h1>Operations</h1>
+      operations1: {JSON.stringify(operations1)}
+      operations: {JSON.stringify(operations)}
       <DataGrid columns={columns} rows={rows} />
     </>
   );
