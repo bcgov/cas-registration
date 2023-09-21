@@ -1,4 +1,5 @@
 import { apiSlice, authSlice } from "@/redux/index";
+import { operatorsSlice } from "./features/operators/operatorsSlice";
 
 // 🧱 Reducer object
 // Each reducer key represents a slice of the application's state, and the corresponding value is the reducer function that manages that slice
@@ -10,4 +11,5 @@ export const reducer = {
   // it represents the slice of the Redux store where RTK-Query will manage its state, including caching and data fetching logic
   [apiSlice.reducerPath]: apiSlice.reducer, // RTK-Query API reduer
   auth: authSlice.reducer, // regular slice reducer
+  operators: operatorsSlice.reducer
 };
