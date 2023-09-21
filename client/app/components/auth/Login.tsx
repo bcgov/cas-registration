@@ -54,9 +54,9 @@ export default function Login() {
           }
         }
       }
-    } catch (error) {
+    } catch (err) {
       // Handle network or other unexpected errors
-      console.error("Network Error 🌐:", error);
+      console.error("Network Error 🌐:", err);
     }
   };
 

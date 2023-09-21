@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { parseEmail } from "@/utils/helpers";
 
-export async function POST(req: Request, res: Response) {
+export async function POST(req: Request) {
   try {
     // Parsing payload
     const body = await req.json();

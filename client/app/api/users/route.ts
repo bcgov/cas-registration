@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-export async function GET(req: Request, res: Response) {
+export async function GET() {
   // mock user data
   const users = [
     {
