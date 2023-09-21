@@ -184,3 +184,26 @@ jobs:
       #     cmd_options: "-a -d -T 5 -m 2"
       #     issue_title: OWASP Baseline - Backend
       #     fail_action: false
+  e2e:
+    needs:
+      ["docker-build", "install-client-dev-tools", "install-server-dev-tools"]
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: dev env setup
+        uses: ./.github/actions/dev-env-setup
+      - name: run app locally
+        uses: ./.github/actions/local-app-run
+      - name: Install Playwright Browsers
+        run: yarn playwright install --with-deps
+        working-directory: ./client
+      - name: Run Playwright tests
+        run: yarn playwright test
+        working-directory: ./client
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30
