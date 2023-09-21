@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 export async function GET(req: Request, res: Response) {
-  // mock user data for SRC demo
+  // mock user data
   const users = [
     {
       firstName: "Felix",
@@ -9,31 +9,15 @@ export async function GET(req: Request, res: Response) {
     },
     {
       firstName: "Garfield",
-      lastName: "",
+      lastName: "Spagetti",
     },
     {
       firstName: "Tom",
       lastName: "Cat",
     },
     {
-      firstName: "Simba",
-      lastName: "",
-    },
-    {
       firstName: "Whiskers",
-      lastName: "",
-    },
-    {
-      firstName: "Nala",
-      lastName: "",
-    },
-    {
-      firstName: "Bagheera",
-      lastName: "",
-    },
-    {
-      firstName: "Cheshire",
-      lastName: "Cat",
+      lastName: "Temptations",
     },
     {
       firstName: "Puss",
@@ -41,11 +25,7 @@ export async function GET(req: Request, res: Response) {
     },
     {
       firstName: "Mittens",
-      lastName: "",
-    },
-    {
-      firstName: "Salem",
-      lastName: "",
+      lastName: "Paws",
     },
   ];
 
