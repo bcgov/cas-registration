@@ -1,4 +1,3 @@
-// NOSONAR
 /**
  * Generates a random authentication token.
  * This function is used in a mock authentication demo to create a random token.
@@ -11,6 +10,7 @@ export function generateRandomToken() {
   let token = "";
 
   for (let i = 0; i < 11; i++) {
+    // NOSONAR
     const randomIndex = Math.floor(Math.random() * characters.length);
     token += characters.charAt(randomIndex);
   }
