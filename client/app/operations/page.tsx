@@ -71,13 +71,13 @@ export default function Page() {
   // Check if data is currently loading
   if (isLoading) {
     // If data is loading, update content to display a loading message
-    content = <div>🚀 Loading data... </div>;
+    return <div>🚀 Loading data... </div>;
   }
 
   // Check if an error occurred
   if (error) {
     // If an error occurred, update content to display an error message
-    content = <div>Something went wrong, Please retry after some time</div>;
+    return <div>Something went wrong, Please retry after some time</div>;
   }
 
   if (data) {
