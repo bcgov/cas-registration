@@ -1,5 +1,4 @@
-import { store } from "@/redux/index";
-import { useGetUsersQuery } from "@/redux/index";
+import { store, useGetUsersQuery } from "@/redux/index";
 export default function Profile() {
   // 🌐 Get the user data directly from the Redux store when server side
   const userData = store.getState().auth;
