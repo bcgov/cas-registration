@@ -1,12 +1,6 @@
 // import { createSlice } from "@reduxjs/toolkit";
 // import { retrieveAsync } from "./thunks";
 
-// // 📐 Type: define structure for type- OperationsSliceState
-// export type OperationsSliceState = {
-//   value: [];
-//   status: "idle" | "loading" | "failed";
-// };
-
 // const initialState: OperationsSliceState = {
 //   value: [],
 //   status: "idle",
@@ -44,6 +38,7 @@
 // export default reducer;
 
 import { createSlice } from "@reduxjs/toolkit";
+import { OperationsState } from "./types";
 
 const initialState = [
   { id: "1", title: "First Operation!", content: "Hello!" },
@@ -73,7 +68,9 @@ export const { operationAdded, operationUpdated } = operationsSlice.actions;
 
 export default operationsSlice.reducer;
 
-export const selectAllOperations = (state) => state.operations;
+export const selectAllOperations = (state: OperationsState) => state.value;
 
-export const selectOperationById = (state, operationId) =>
-  state.operations.find((operation) => operation.id === operationId);
+export const selectOperationById = (
+  state: OperationsState,
+  operationId: number
+) => state.value.find((operation) => operation.id === operationId);
