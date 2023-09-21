@@ -179,7 +179,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           docker_name: "owasp/zap2docker-stable"
-          target: "http://0.0.0.0:8000/"
+          target: "http://127.0.0.1:8000/"
           rules_file_name: ".zap/rules-backend.tsv"
           cmd_options: "-a -d -T 5 -m 2"
           issue_title: OWASP Baseline - Backend
