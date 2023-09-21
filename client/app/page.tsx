@@ -1,11 +1,9 @@
-/* Components */
-import { Counter } from "./components/Counter/Counter";
+import Login from "@/components/auth/Login";
 
-export default function Page() {
+export default async function Page() {
   return (
     <>
-      <h1>👉 Demo SSR Page with a...</h1>
-      <Counter />
+      <Login />
     </>
   );
 }

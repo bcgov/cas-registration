@@ -20,7 +20,10 @@
       }
     ],
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      "@/components/*": ["./app/components/*"],
+      "@/redux/*": ["./redux/*"],
+      "@/utils/*": ["./app/utils/*"]
     }
   },
   "include": ["../**/*", "./.eslintrc.js", ".next/types/**/*.ts"],
