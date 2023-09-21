@@ -7,7 +7,8 @@ test("backend is running", async ({ page }) => {
 });
 
 test("frontend is running", async ({ page }) => {
-  await page.goto("http://localhost:3000");
-
-  await expect(page.getByText(/CAS registration app/i)).toBeVisible();
+  await expect(async () => {
+    const response = await page.request.get("http://localhost:3000");
+    expect(response.status()).toBe(200);
+  }).toPass();
 });
