@@ -67,10 +67,3 @@ export const operationsSlice = createSlice({
 export const { operationAdded, operationUpdated } = operationsSlice.actions;
 
 // export default operationsSlice.reducer;
-
-export const selectAllOperations = (state: OperationsData) => state.operations;
-
-export const selectOperationById = (
-  state: OperationsData,
-  operationId: number
-) => state.operations?.find((operation) => operation.id === operationId);

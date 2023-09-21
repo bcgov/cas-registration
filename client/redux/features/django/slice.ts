@@ -5,7 +5,9 @@ import { Operation } from "..";
 // Define a service using a base URL and expected endpoints
 export const djangoApiSlice = createApi({
   reducerPath: "djangoApi",
-  baseQuery: fetchBaseQuery({ baseUrl: "https://localhost:8000/api" }),
+  baseQuery: fetchBaseQuery({
+    baseUrl: "http://localhost:8000/api/registration",
+  }),
   endpoints: (builder) => ({
     getOperations: builder.query<Operation[], null>({
       query: () => "operations",
