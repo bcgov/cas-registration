@@ -2,7 +2,7 @@
 "use client";
 
 import { Provider } from "react-redux";
-import { reduxStore } from "@/redux";
+import { store } from "@/redux/index";
 
 // ❗️ Use the ReduxProvider component at the top level of the app component hierarchy (app\layout.tsx)
 
@@ -10,5 +10,5 @@ import { reduxStore } from "@/redux";
 // renders any child components that are passed to ReduxProvider
 // and make the Redux store available to all components within the component tree of ReduxProvider
 export const ReduxProvider = (props: React.PropsWithChildren) => {
-  return <Provider store={reduxStore}>{props.children}</Provider>;
+  return <Provider store={store}>{props.children}</Provider>;
 };
