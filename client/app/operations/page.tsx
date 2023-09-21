@@ -6,15 +6,8 @@ import Link from "next/link";
 import { Button } from "@mui/material";
 /* Core */
 import { useState } from "react";
-
-/* Instruments */
-import {
-  operationsSlice,
-  useSelector,
-  useDispatch,
-  selectOperations,
-  retrieveAsync,
-} from "@/redux";
+import { useSelector } from "react-redux";
+import { selectAllOperations } from "@/redux";
 
 export const rows: GridRowsProp = [
   { id: 1, col1: "Hello", col2: "World" },
@@ -63,15 +56,15 @@ export const columns: GridColDef[] = [
 ];
 
 export default function Page() {
-  const dispatch = useDispatch();
-  const operations1 = useSelector(selectOperations);
+  // const dispatch = useDispatch();
+  // const operations1 = useSelector(selectOperations);
 
-  const [operations, setOperations] = useState([]);
+  // const [operations, setOperations] = useState([]);
+  const operations = useSelector(selectAllOperations);
   return (
     <>
       <h1>Operations</h1>
-      operations1: {JSON.stringify(operations1)}
-      operations: {JSON.stringify(operations)}
+      operations1: {JSON.stringify(operations)}
       <DataGrid columns={columns} rows={rows} />
     </>
   );

@@ -1,5 +1,6 @@
 import { apiSlice, authSlice } from "@/redux/index";
 import { operationsSlice } from "./features";
+import operationsSlice from "./features/operations/operationsSlice";
 
 // 🧱 Reducer object
 // Each reducer key represents a slice of the application's state, and the corresponding value is the reducer function that manages that slice
