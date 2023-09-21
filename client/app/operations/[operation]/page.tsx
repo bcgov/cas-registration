@@ -4,6 +4,10 @@ import { selectOperationById } from "@/redux";
 import { useSelector } from "react-redux";
 
 export default function Page({ match }) {
+  if (!match) {
+    // If data is loading, update content to display a loading message
+    return <div>🚀 Loading data... </div>;
+  }
   const { operationId } = match.params;
 
   const operation = useSelector((state) =>
