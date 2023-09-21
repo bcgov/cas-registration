@@ -1,3 +1,10 @@
+// NOSONAR
+/**
+ * Generates a random authentication token.
+ * This function is used in a mock authentication demo to create a random token.
+ * The generated token consists of a random combination of letters, numbers, and symbols.
+ * @returns {string} A randomly generated authentication token.
+ */
 export function generateRandomToken() {
   const characters =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_=+[]{}|;:,.<>?";
@@ -10,7 +17,14 @@ export function generateRandomToken() {
 
   return token;
 }
-
+/**
+ * Parses an email address to extract user information.
+ * This function is used in a mock authentication demo to extract the user's first name,
+ * last name, and domain from an email address.
+ * @param {string} email - The user's email address.
+ * @returns {{ firstName: string; lastName: string; domain: string; }} An object containing
+ * user information: first name, last name, and domain.
+ */
 export function parseEmail(email: string): {
   firstName: string;
   lastName: string;
