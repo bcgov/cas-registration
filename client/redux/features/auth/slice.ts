@@ -20,8 +20,11 @@ export const authSlice = createSlice({
       state.user = user;
       state.token = token;
     },
+    resetAuth: () => {
+      return initialState;
+    },
   },
 });
 
 // 🚀 dispatches a setCredentials action to store the user and token information.
-export const { setCredentials } = authSlice.actions;
+export const { setCredentials, resetAuth } = authSlice.actions;
