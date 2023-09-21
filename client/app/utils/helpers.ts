@@ -1,23 +1,4 @@
 /**
- * Generates a random authentication token.
- * This function is used in a mock authentication demo to create a random token.
- * The generated token consists of a random combination of letters, numbers, and symbols.
- * @returns {string} A randomly generated authentication token.
- */
-export function generateRandomToken() {
-  const characters =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_=+[]{}|;:,.<>?";
-  let token = "";
-
-  for (let i = 0; i < 11; i++) {
-    // NOSONAR
-    const randomIndex = Math.floor(Math.random() * characters.length);
-    token += characters.charAt(randomIndex);
-  }
-
-  return token;
-}
-/**
  * Parses an email address to extract user information.
  * This function is used in a mock authentication demo to extract the user's first name,
  * last name, and domain from an email address.

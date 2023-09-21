@@ -50,5 +50,5 @@ export const apiSlice = createApi({
   }),
 });
 
-// 📤 Export mutation hooks for endpoints
+// 📤 Export hooks for endpoints
 export const { useLoginMutation, useGetUsersQuery } = apiSlice;

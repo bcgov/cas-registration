@@ -23,7 +23,7 @@ export async function POST(req: Request, res: Response) {
     };
 
     // Create the mock token
-    const token = generateRandomToken();
+    const token = "/_/ ( o.o ) > ^ <";
 
     // Create LoginResponse
     const response = {
