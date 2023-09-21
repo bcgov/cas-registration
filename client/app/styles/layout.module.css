@@ -1,15 +1,3 @@
-.container {
-  display: grid;
-  grid-template-areas:
-    "nav"
-    "header"
-    "main"
-    "footer";
-  grid-template-rows: auto auto 1fr 36px;
-  align-items: center;
-  min-height: 100vh;
-}
-
 .main {
   grid-area: main;
 }
@@ -19,16 +7,4 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-}
-
-.link:hover {
-  text-decoration: underline;
-}
-
-.link {
-  color: #704cb6;
-}
-
-.link.active {
-  text-decoration: underline;
 }
