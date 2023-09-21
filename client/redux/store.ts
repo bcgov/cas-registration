@@ -1,5 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { apiSlice, reducer } from "@/redux/index";
+import { apiSlice, djangoApiSlice, reducer } from "@/redux/index";
 import {
   useSelector as useReduxSelector,
   useDispatch as useReduxDispatch,
@@ -14,7 +14,10 @@ export const store = configureStore({
   devTools: process.env.NODE_ENV !== "production",
   // 🔄 Middleware configuration to intercept and process actions
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(apiSlice.middleware), // 🚀 Enable RTK Query middleware
+    getDefaultMiddleware().concat([
+      apiSlice.middleware,
+      djangoApiSlice.middleware,
+    ]), // 🚀 Enable RTK Query middleware
 });
 
 // 📦 Define the type for the root state of your Redux store
