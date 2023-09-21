@@ -27,11 +27,5 @@
     }
   },
   "include": ["../**/*", "./.eslintrc.js", ".next/types/**/*.ts"],
-  "exclude": [
-    ".next",
-    "node_modules",
-    "public",
-    "cypress",
-    "./cypress.config.ts"
-  ]
+  "exclude": [".next", "node_modules", "public"]
 }

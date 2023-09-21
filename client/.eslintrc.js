@@ -8,6 +8,18 @@ module.exports = {
     tsconfigRootDir: __dirname,
   },
   rules: {
+    "import/no-extraneous-dependencies": [
+      "error",
+      {
+        devDependencies: [
+          "test.{ts,tsx,js,jsx}",
+          "test-*.{ts,tsx,js,jsx}",
+          "**/*{.,_}{test,spec}.{ts,tsx,js,jsx}",
+          "**/jest.config.{ts,js}",
+          "**/playwright.config.{ts,js}",
+        ],
+      },
+    ],
     // "react/prop-types": 0, // don't need react/prop-types when components are typed with typescript
     // "react/state-in-constructor": [1, "never"],
     // "@typescript-eslint/no-unused-expressions": [1, { allowTernary: true }],
