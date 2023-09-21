@@ -1,8 +1,8 @@
 // Access Redux states within client-side components
 "use client";
-
-import { Provider } from "react-redux";
-import { store } from "@/redux/index";
+import React, { useEffect } from "react";
+import { Provider, useDispatch } from "react-redux";
+import { store, resetAuth } from "@/redux/index";
 
 // ❗️ Use the ReduxProvider component at the top level of the app component hierarchy (app\layout.tsx)
 
