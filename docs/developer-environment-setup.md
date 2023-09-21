@@ -79,6 +79,6 @@ yarn lint && yarn format
 
 We use [gitlint](https://jorisroovers.com/gitlint/) to check commit message formatting. You can enable it by using `pre-commit install --hook-type commit-msg`.
 
-This project follows the commit message conventions outlined by [Convential Commits](https://www.conventionalcommits.org/). Besides the standard commit types (message prefixes) **feat** and **fix**, we use some other types described there based on the Angular convention; some common ones among those are **test**, **docs**, **chore** and **refactor**. You can find the configuration details in the [.gitlint](../.gitlint) file
+This project follows the commit message conventions outlined by [Conventional Commits](https://www.conventionalcommits.org/). Besides the standard commit types (message prefixes) **feat** and **fix**, we use some other types described there based on the Angular convention; some common ones among those are **test**, **docs**, **chore** and **refactor**. You can find the configuration details in the [.gitlint](../.gitlint) file
 
 We also extend this prefix convention to the naming of **branches**, eg: `docs/add-readme` or `feat/some-feature`.
