@@ -1,0 +1,23 @@
+name: "Set up registration dev environment"
+description: "Sets up asdf and configures the cache"
+runs:
+  using: composite
+  steps:
+    - name: asdf setup
+      uses: asdf-vm/actions/setup@v1
+    - uses: actions/cache@v3
+      id: asdf-cache
+      with:
+        path: |
+          ~/.asdf
+        key: ${{ runner.os }}-asdf-cache-${{ hashFiles('.tool-versions') }}
+    - uses: actions/cache@v3
+      id: yarn-cache
+      with:
+        path: |
+          ~/.cache/yarn
+          ./client/node_modules
+        key: ${{ runner.os }}-yarn-cache-${{ hashFiles('client/yarn.lock') }}-v2
+    # - name: update submodules
+    #   run: git submodule update --init
+    #   shell: bash
