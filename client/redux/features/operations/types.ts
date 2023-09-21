@@ -1,7 +1,7 @@
 export type Operation = any;
 
 export type OperationsData = {
-  data: Operation[] | null | undefined;
+  operations: Operation[] | null | undefined;
 };
 
 export type OperationsState = {

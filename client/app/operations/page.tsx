@@ -64,7 +64,7 @@ export default function Page() {
   return (
     <>
       <h1>Operations</h1>
-      operations1: {JSON.stringify(operations)}
+      operations: {JSON.stringify(operations)}
       <DataGrid columns={columns} rows={rows} />
     </>
   );

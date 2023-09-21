@@ -38,14 +38,14 @@
 // export default reducer;
 
 import { createSlice } from "@reduxjs/toolkit";
-import { OperationsState } from "./types";
+import { OperationsData, OperationsState } from "./types";
 
 const initialState = [
   { id: "1", title: "First Operation!", content: "Hello!" },
   { id: "2", title: "Second Operation", content: "More text" },
 ];
 
-const operationsSlice = createSlice({
+export const operationsSlice = createSlice({
   name: "operations",
   initialState,
   reducers: {
@@ -66,11 +66,11 @@ const operationsSlice = createSlice({
 
 export const { operationAdded, operationUpdated } = operationsSlice.actions;
 
-export default operationsSlice.reducer;
+// export default operationsSlice.reducer;
 
-export const selectAllOperations = (state: OperationsState) => state.value;
+export const selectAllOperations = (state: OperationsData) => state.operations;
 
 export const selectOperationById = (
-  state: OperationsState,
+  state: OperationsData,
   operationId: number
-) => state.value.find((operation) => operation.id === operationId);
+) => state.operations?.find((operation) => operation.id === operationId);
