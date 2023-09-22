@@ -30,7 +30,6 @@ runs:
       id: setup-python
       uses: actions/setup-python@v4
       with:
-        # do this dynamically with tool-versions version
         python-version: "3.9.16"
     - name: Install Poetry
       uses: snok/install-poetry@v1
