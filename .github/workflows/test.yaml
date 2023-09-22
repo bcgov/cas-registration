@@ -23,6 +23,7 @@ jobs:
       # - name: dev env setup
       #   uses: ./.github/actions/dev-env-setup
       - run: make install_dev_tools
+        working-directory: ./bc_obps
   yarn-test:
     needs: install-client-dev-tools
     runs-on: ubuntu-latest
