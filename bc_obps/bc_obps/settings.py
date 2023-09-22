@@ -85,7 +85,7 @@ WSGI_APPLICATION = "bc_obps.wsgi.application"
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('DB_NAME'),
+        'NAME': os.environ.get('DB_NAME', 'registration'),
         'USER': os.environ.get('DB_USER', 'postgres'),
         'PASSWORD': os.environ.get('DB_PASSWORD'),
         'HOST': os.environ.get('DB_HOST', '127.0.0.1'),
