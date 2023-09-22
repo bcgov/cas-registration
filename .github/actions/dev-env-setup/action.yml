@@ -5,6 +5,14 @@ runs:
   steps:
     - name: asdf setup
       uses: asdf-vm/actions/setup@v1
+    - name: Install server dev tools
+      working-directory: ./bc_obps
+      shell: bash
+      run: |
+        make stop_pg
+        make install_backend_asdf_tools
+        make start_pg
+        make create_db
     - uses: actions/cache@v3
       id: asdf-cache
       with:
