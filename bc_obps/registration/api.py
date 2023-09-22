@@ -10,6 +10,17 @@ from ninja.orm import create_schema
 router = Router()
 
 
+# Naics code schemas and endpoints
+
+OperationSchema = create_schema(NaicsCode)
+
+
+@router.get("/naics_codes", response=List[NaicsCode])
+def list_naics_codes(request):
+    qs = NaicsCode.objects.all()
+    return qs
+
+
 # Operation schemas and endpoints
 
 # brianna-this is inadvisable, put desired fields on it later

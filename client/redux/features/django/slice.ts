@@ -9,6 +9,9 @@ export const djangoApiSlice = createApi({
     baseUrl: "http://localhost:8000/api/registration",
   }),
   endpoints: (builder) => ({
+    getNaicsCodes: builder.query({
+      query: () => "naics_codes",
+    }),
     getOperations: builder.query<Operation[], null>({
       query: () => "operations",
     }),
@@ -41,4 +44,5 @@ export const {
   useGetOperationQuery,
   useAddNewOperationMutation,
   useEditOperationMutation,
+  useGetNaicsCodesQuery,
 } = djangoApiSlice;
