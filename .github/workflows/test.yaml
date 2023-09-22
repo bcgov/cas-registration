@@ -20,8 +20,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      # - name: dev env setup
-      #   uses: ./.github/actions/dev-env-setup
+      - name: dev env setup
+        uses: ./.github/actions/dev-env-setup
       - run: make install_dev_tools
         working-directory: ./bc_obps
   yarn-test:
