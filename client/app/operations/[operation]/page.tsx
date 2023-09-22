@@ -1,6 +1,9 @@
 "use client";
 
+import { operationSchema, operationUiSchema } from "@/jsonSchema/operations";
 import { useGetOperationQuery } from "@/redux";
+import Form from "@rjsf/core";
+import validator from "@rjsf/validator-ajv8";
 
 export default function Page({ params }: { params: { operation: number } }) {
   console.log("params.operation", params.operation);
@@ -15,12 +18,12 @@ export default function Page({ params }: { params: { operation: number } }) {
   }
 
   return (
-    <section>
-      <article className="operation">
-        made it past if
-        <h2>{data.name}</h2>
-        operation: {JSON.stringify(data)}
-      </article>
-    </section>
+    <Form
+      schema={operationSchema}
+      validator={validator}
+      onSubmit={operationUpdateHandler}
+      disabled={isLoading}
+      uiSchema={operationUiSchema}
+    ></Form>
   );
 }
