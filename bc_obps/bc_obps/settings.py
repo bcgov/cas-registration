@@ -142,4 +142,7 @@ STORAGES = {
     "staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"},
 }
 GS_BUCKET_NAME = os.environ.get('GS_BUCKET_NAME')
-GS_CREDENTIALS = service_account.Credentials.from_service_account_file(os.environ.get('GOOGLE_APPLICATION_CREDENTIALS'))
+if os.environ.get('GOOGLE_APPLICATION_CREDENTIALS'):
+    GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
+        os.environ.get('GOOGLE_APPLICATION_CREDENTIALS')
+    )
