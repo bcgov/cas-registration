@@ -73,13 +73,13 @@ export default defineConfig({
     {
       command: "yarn start",
       url: "http://localhost:3000",
-      reuseExistingServer: !process.env.CI,
+      reuseExistingServer: true,
     },
     {
       command: "make run",
       cwd: "../bc_obps",
       url: "http://127.0.0.1:8000/api/docs",
-      reuseExistingServer: !process.env.CI,
+      reuseExistingServer: true,
     },
   ],
 });
