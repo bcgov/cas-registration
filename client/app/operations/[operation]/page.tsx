@@ -1,7 +1,11 @@
 "use client";
 
 import { operationSchema, operationUiSchema } from "@/jsonSchema/operations";
-import { useGetOperationQuery, useEditOperationMutation } from "@/redux";
+import {
+  useGetOperationQuery,
+  useEditOperationMutation,
+  useGetNaicsCodesQuery,
+} from "@/redux";
 import { Form } from "@rjsf/mui";
 
 import validator from "@rjsf/validator-ajv8";
@@ -15,6 +19,21 @@ export default function Page({ params }: { params: { operation: number } }) {
   const [updateOperation, { isLoading: isLoadingUpdate }] =
     useEditOperationMutation();
 
+  const { data: naics_codes, isLoading: isLoadingNaicsCodes } =
+    useGetNaicsCodesQuery(null);
+
+  const localSchema = JSON.parse(JSON.stringify(operationSchema));
+  if (!isLoadingOperation && !isLoadingNaicsCodes) {
+    localSchema.properties.naics_code.anyOf = naics_codes?.map((code) => {
+      return {
+        type: "number",
+        title: code.name,
+        enum: [code.id],
+        value: code.id,
+      };
+    });
+  }
+
   const operationUpdateHandler = async (data) => {
     const {
       naics_code,
@@ -24,6 +43,7 @@ export default function Page({ params }: { params: { operation: number } }) {
       estimated_emissions,
       operator,
     } = data.formData;
+
     const transformedFormData = {
       ...data.formData,
       operator_id: operator,
@@ -37,6 +57,7 @@ export default function Page({ params }: { params: { operation: number } }) {
 
     await updateOperation(transformedFormData);
   };
+
   if (!operation) {
     return (
       <section>
