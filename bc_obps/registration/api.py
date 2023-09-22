@@ -39,7 +39,6 @@ def create_operation(request, payload: OperationSchema):
 @router.put("/operations/{operation_id}")
 def update_operation(request, operation_id: int, payload: OperationSchema):
     operation = get_object_or_404(Operation, id=operation_id)
-    breakpoint()
     if "operator" in payload.dict():
         operator = payload.dict()["operator"]
         op = get_object_or_404(Operator, id=operator)
