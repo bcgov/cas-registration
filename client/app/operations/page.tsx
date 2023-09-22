@@ -116,12 +116,8 @@ export default function Page() {
 
     return (
       <>
-        {/* this is what's in the db */}
-        data:<div>{JSON.stringify(data, null, 2)}</div>
-        <br />
-        {/* this seems to be from the store, intial state */}
-        ops:<div>{JSON.stringify(ops, null, 2)}</div>
-        <br />
+        <h1>Operations List</h1>
+        <Button>Add Operation</Button>
         <DataGrid columns={columns} rows={brianna} />
       </>
     );
