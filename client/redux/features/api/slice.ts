@@ -1,6 +1,8 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { RootState } from "@/redux/index";
-import type { LoginRequest, LoginResponse, User } from "@/redux/index";
+import type { LoginRequest, LoginResponse } from "@/redux/features/auth";
+import { Operator } from "../operators";
+import { User } from "../user/types";
+import type { RootState } from "@/redux";
 
 /*To interact with API endpoints, we need to create an API slice.
  Application should have one createApi call, to the same base URL, that should contain all endpoint definitions
@@ -47,8 +49,13 @@ export const apiSlice = createApi({
     getUsers: builder.query<User[], null>({
       query: () => "users",
     }),
+    // TODO later: separate this out into a separate slice file for each URL
+    // Define an Operators query
+    getOperators: builder.query<Operator[], null>({
+      query: () => "operators"
+    })
   }),
 });
 
 // 📤 Export mutation hooks for endpoints
-export const { useLoginMutation, useGetUsersQuery } = apiSlice;
+export const { useLoginMutation, useGetUsersQuery, useGetOperatorsQuery } = apiSlice;

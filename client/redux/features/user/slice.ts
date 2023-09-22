@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import type { UserData } from "@/redux/index";
+import { UserData } from "./types";
 
 // 🔴 State: set initial state of slice
 const initialState = {
