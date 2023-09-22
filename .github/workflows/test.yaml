@@ -28,7 +28,9 @@ jobs:
           make stop_pg
           make install_backend_asdf_tools
           make start_pg
-          make create_db
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
+      - run: make create_db
   yarn-test:
     needs: install-client-dev-tools
     runs-on: ubuntu-latest
