@@ -15,9 +15,21 @@ export const djangoApiSlice = createApi({
     getOperation: builder.query({
       query: (operationId) => `/operations/${operationId}`,
     }),
+    addNewOperation: builder.mutation({
+      query: (initialOperation) => ({
+        url: "/operations",
+        method: "POST",
+        // Include the entire post object as the body of the request
+        body: initialOperation,
+      }),
+    }),
   }),
 });
 
 // Export hooks for usage in function components, which are
 // auto-generated based on the defined endpoints
-export const { useGetOperationsQuery, useGetOperationQuery } = djangoApiSlice;
+export const {
+  useGetOperationsQuery,
+  useGetOperationQuery,
+  useAddNewOperationMutation,
+} = djangoApiSlice;
