@@ -7,9 +7,6 @@ on:
     branches: [develop, main]
   workflow_dispatch:
 
-env:
-  PGUSER: postgres
-
 jobs:
   install-client-dev-tools:
     runs-on: ubuntu-latest
@@ -169,11 +166,6 @@ jobs:
         uses: ./.github/actions/dev-env-setup
       - name: run app locally
         uses: ./.github/actions/local-app-run
-      - name: is poetry installed?
-        run: |
-          poetry --version
-          echo $PATH
-        working-directory: ./bc_obps
       - name: Install Playwright Browsers
         run: yarn playwright install --with-deps
         working-directory: ./client
