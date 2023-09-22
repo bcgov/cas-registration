@@ -24,7 +24,7 @@ def list_operations(request):
 
 @router.get("/operations/{operation_id}", response=OperationSchema)
 def get_operation(request, operation_id: int):
-    operation = get_object_or_404(operation, id=operation_id)
+    operation = get_object_or_404(Operation, id=operation_id)
     return operation
 
 
@@ -36,7 +36,7 @@ def create_operation(request, payload: OperationSchema):
 
 @router.put("/operations/{operation_id}")
 def update_operation(request, operation_id: int, payload: OperationSchema):
-    operation = get_object_or_404(operation, id=operation_id)
+    operation = get_object_or_404(Operation, id=operation_id)
     for attr, value in payload.dict().items():
         setattr(operation, attr, value)
     operation.save()
