@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from .models import User
+from .models import User, NaicsCode
 
 
 class UserModelTest(TestCase):
@@ -67,3 +67,44 @@ class UserModelTest(TestCase):
         testUser = User.objects.get(user_guid="00000000-0000-0000-0000-000000000000")
         field_label = testUser._meta.get_field("position_title").verbose_name
         self.assertEqual(field_label, "position title")
+
+
+class NaicsCodeModelTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        # Set up non-modified objects used by all test methods
+        NaicsCode.objects.create(
+            naics_code="1",
+            ciip_sector="2",
+            naics_description="test",
+        )
+
+    def test_naics_code_label(self):
+        testNaicsCode = NaicsCode.objects.get(id=1)
+        field_label = testNaicsCode._meta.get_field("naics_code").verbose_name
+        self.assertEqual(field_label, "naics code")
+
+    def test_naics_code_max_length(self):
+        testNaicsCode = NaicsCode.objects.get(id=1)
+        max_length = testNaicsCode._meta.get_field("naics_code").max_length
+        self.assertEqual(max_length, 1000)
+
+    def test_ciip_sector_label(self):
+        testNaicsCode = NaicsCode.objects.get(id=1)
+        field_label = testNaicsCode._meta.get_field("ciip_sector").verbose_name
+        self.assertEqual(field_label, "ciip sector")
+
+    def test_ciip_sector_max_length(self):
+        testNaicsCode = NaicsCode.objects.get(id=1)
+        max_length = testNaicsCode._meta.get_field("ciip_sector").max_length
+        self.assertEqual(max_length, 1000)
+
+    def test_naics_description_label(self):
+        testNaicsCode = NaicsCode.objects.get(id=1)
+        field_label = testNaicsCode._meta.get_field("naics_description").verbose_name
+        self.assertEqual(field_label, "naics description")
+
+    def test_naics_description_max_length(self):
+        testNaicsCode = NaicsCode.objects.get(id=1)
+        max_length = testNaicsCode._meta.get_field("naics_description").max_length
+        self.assertEqual(max_length, 1000)
