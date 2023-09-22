@@ -23,7 +23,9 @@ jobs:
       - name: dev env setup
         uses: ./.github/actions/dev-env-setup
       - run: make stop_pg
+        working-directory: ./bc_obps
       - run: make install_backend_asdf_tools
+        working-directory: ./bc_obps
       - run: make start_pg
         working-directory: ./bc_obps
   yarn-test:
