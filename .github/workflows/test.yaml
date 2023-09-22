@@ -46,11 +46,6 @@ jobs:
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
         run: poetry install --no-interaction --no-root
         working-directory: ./bc_obps
-      - name: is pylint installed?
-        run: |
-          poetry run pylint --version
-          echo $PATH
-        working-directory: ./bc_obps
   yarn-test:
     needs: install-client-dev-tools
     runs-on: ubuntu-latest
@@ -195,6 +190,11 @@ jobs:
         uses: ./.github/actions/dev-env-setup
       - name: run app locally
         uses: ./.github/actions/local-app-run
+      - name: is poetry installed?
+        run: |
+          poetry --version
+          echo $PATH
+        working-directory: ./bc_obps
       - name: Install Playwright Browsers
         run: yarn playwright install --with-deps
         working-directory: ./client
