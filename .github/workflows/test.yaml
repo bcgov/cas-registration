@@ -7,16 +7,6 @@ on:
     branches: [develop, main]
   workflow_dispatch:
 
-env:
-  PGUSER: postgres
-  PGDATABASE: registration
-  PGPORT: 5432
-  PGHOST: localhost
-  DB_USER: postgres
-  DB_NAME: registration
-  DB_PORT: 5432
-  DB_HOST: localhost
-
 jobs:
   install-client-dev-tools:
     runs-on: ubuntu-latest
@@ -30,8 +20,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: dev env setup
-        uses: ./.github/actions/dev-env-setup
+      # - name: dev env setup
+      #   uses: ./.github/actions/dev-env-setup
+      - run: make install_dev_tools
   yarn-test:
     needs: install-client-dev-tools
     runs-on: ubuntu-latest
@@ -176,8 +167,8 @@ jobs:
         uses: ./.github/actions/dev-env-setup
       - name: run app locally
         uses: ./.github/actions/local-app-run
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
+      # - name: Setup tmate session
+      #   uses: mxschmitt/action-tmate@v3
       - name: Install Playwright Browsers
         run: yarn playwright install --with-deps
         working-directory: ./client
