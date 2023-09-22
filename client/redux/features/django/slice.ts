@@ -19,8 +19,16 @@ export const djangoApiSlice = createApi({
       query: (initialOperation) => ({
         url: "/operations",
         method: "POST",
-        // Include the entire post object as the body of the request
+        // brianna is this the validation problem?
+        // Include the entire operation object as the body of the request
         body: initialOperation,
+      }),
+    }),
+    editOperation: builder.mutation({
+      query: (operation) => ({
+        url: `/operations/${operation.id}`,
+        method: "PUT",
+        body: operation,
       }),
     }),
   }),
@@ -32,4 +40,5 @@ export const {
   useGetOperationsQuery,
   useGetOperationQuery,
   useAddNewOperationMutation,
+  useEditOperationMutation,
 } = djangoApiSlice;
