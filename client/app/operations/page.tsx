@@ -4,9 +4,7 @@ import { GridRowsProp, GridColDef } from "@mui/x-data-grid";
 import DataGrid from "../components/DataGrid/DataGrid";
 import Link from "next/link";
 import { Button } from "@mui/material";
-import { selectAllOperations, store } from "@/redux/index";
 import { useGetOperationsQuery } from "@/redux/index";
-import { useSelector } from "react-redux";
 
 export const columns: GridColDef[] = [
   { field: "operation_id", headerName: "Operation ID", width: 150 },
@@ -62,11 +60,8 @@ export default function Page() {
   // selectOperations -- this is when you need to access something you already got, maybe it goes and gets it if you have't done the call somewhere else
 
   // 🧰 Destructure the query function and states using useGetUsersQuery
+  // "You should normally use the query hooks to access cached data in components - you shouldn't write your own useSelector calls to access fetched data or useEffect calls to trigger fetching!""
   const { data, isLoading, error } = useGetOperationsQuery(null);
-  const ops = useSelector(selectAllOperations);
-
-  // Initialize the content variable with an empty div
-  let content = <div></div>;
 
   // Check if data is currently loading
   if (isLoading) {
