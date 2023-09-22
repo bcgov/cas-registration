@@ -1,18 +1,33 @@
 "use client";
 import { useAddNewOperationMutation } from "@/redux";
 
+import validator from "@rjsf/validator-ajv8";
+import Form from "@rjsf/mui";
+import { operationSchema, operationUiSchema } from "@/jsonSchema/operations";
+
 export default function Page() {
   const [addNewOperation, { isLoading }] = useAddNewOperationMutation();
 
-  const onSaveOperationClicked = async () => {
+  const operationSubmitHandler = async (data) => {
     if (!isLoading) {
       try {
-        await addNewOperation(formData).unwrap();
+        const updatedFormData = {
+          ...data.formData,
+        };
+        await addNewOperation(updatedFormData).unwrap();
       } catch (err) {
-        console.error("Failed to save the post: ", err);
+        console.error("Failed to save the operation: ", err);
       }
     }
   };
 
-  return <div>imma on create page</div>;
+  return (
+    <Form
+      schema={operationSchema}
+      validator={validator}
+      onSubmit={operationSubmitHandler}
+      disabled={isLoading}
+      uiSchema={operationUiSchema}
+    ></Form>
+  );
 }
