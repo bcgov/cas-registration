@@ -11,7 +11,7 @@ env:
   PGUSER: postgres
 
 jobs:
-  install-client-dev-tools:
+  install-dev-tools:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -19,53 +19,20 @@ jobs:
         uses: ./.github/actions/dev-env-setup
       - run: yarn install --frozen-lockfile
         working-directory: ./client
-  install-server-dev-tools:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: dev env setup
-        uses: ./.github/actions/dev-env-setup
   yarn-test:
-    needs: install-client-dev-tools
+    needs: install-dev-tools
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: dev env setup
-        uses: ./.github/actions/dev-env-setup
       - run: yarn test
         working-directory: ./client
   pre-commit:
-    needs: ["install-client-dev-tools", "install-server-dev-tools"]
+    needs: install-dev-tools
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: dev env setup
-        uses: ./.github/actions/dev-env-setup
       - run: pip install -r requirements.txt
-      - name: Set up python
-        id: setup-python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.9.16"
-      - name: Install Poetry
-        uses: snok/install-poetry@v1
-      - name: Load cached venv
-        id: cached-poetry-dependencies
-        uses: actions/cache@v3
-        with:
-          path: .venv
-          key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
-      #----------------------------------------------
-      # install dependencies if cache does not exist
-      #----------------------------------------------
-      - name: Install dependencies
-        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-        run: poetry install --no-interaction --no-root
-        working-directory: ./bc_obps
       - uses: pre-commit/action@v3.0.0
-      - uses: terraform-linters/setup-tflint@v1
-        with:
-          tflint_version: latest
   docker-build:
     runs-on: ubuntu-latest
     strategy:
@@ -128,13 +95,10 @@ jobs:
           rm -rf /tmp/.buildx-cache
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
   zap-owasp:
-    needs:
-      ["docker-build", "install-client-dev-tools", "install-server-dev-tools"]
+    needs: ["docker-build", "install-dev-tools"]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: dev env setup
-        uses: ./.github/actions/dev-env-setup
       - name: run app locally
         uses: ./.github/actions/local-app-run
       - name: ZAP Frontend Scan
@@ -159,21 +123,18 @@ jobs:
       #     issue_title: OWASP Baseline - Backend
       #     fail_action: false
   e2e:
-    needs:
-      ["docker-build", "install-client-dev-tools", "install-server-dev-tools"]
+    needs: ["docker-build", "install-dev-tools"]
     timeout-minutes: 60
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: dev env setup
-        uses: ./.github/actions/dev-env-setup
       - name: run app locally
         uses: ./.github/actions/local-app-run
-      # - name: Setup tmate session
-      #   uses: mxschmitt/action-tmate@v3
       - name: Install Playwright Browsers
         run: yarn playwright install --with-deps
         working-directory: ./client
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
       - name: Run Playwright tests
         run: yarn playwright test
         working-directory: ./client
