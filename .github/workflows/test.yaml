@@ -7,6 +7,16 @@ on:
     branches: [develop, main]
   workflow_dispatch:
 
+env:
+  PGUSER: postgres
+  PGDATABASE: registration
+  PGPORT: 5432
+  PGHOST: localhost
+  DB_USER: postgres
+  DB_NAME: registration
+  DB_PORT: 5432
+  DB_HOST: localhost
+
 jobs:
   install-client-dev-tools:
     runs-on: ubuntu-latest
