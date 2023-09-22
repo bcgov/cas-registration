@@ -143,7 +143,9 @@ class UserOperator(models.Model):
 class Operation(models.Model):
     """Operation model"""
 
-    operator_id = models.ForeignKey(Operator, on_delete=models.DO_NOTHING, db_comment="", related_name='operations')
+    operator = models.ForeignKey(
+        Operator, on_delete=models.DO_NOTHING, db_comment="", related_name="operations"
+    )
     name = models.CharField(max_length=1000, db_comment="")
     operation_type = models.CharField(max_length=1000, db_comment="")
     naics_code = models.ForeignKey(NaicsCode, on_delete=models.DO_NOTHING, db_comment="", related_name="operations")
