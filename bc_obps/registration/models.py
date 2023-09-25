@@ -88,7 +88,7 @@ class Operator(models.Model):
         'self', on_delete=models.DO_NOTHING, related_name='parent', db_comment="", blank=True, null=True
     )
     relationship_with_parent_operator = models.CharField(max_length=1000, db_comment="", blank=True)
-    compliance_obligee = models.ForeignKey("self", on_delete=models.DO_NOTHING, related_name="obligee", db_comment="")
+    compliance_obligee = models.ForeignKey("self", on_delete=models.DO_NOTHING, related_name="obligee", db_comment="", blank=True, null=True)
     date_aso_became_responsible_for_operator = models.DateTimeField(db_comment="")
     documents = models.ManyToManyField(Document, blank=True, related_name='operator_documents')
     contacts = models.ManyToManyField(Contact, related_name='operator_contacts')
@@ -99,7 +99,6 @@ class Operator(models.Model):
         # don't need indexes if we end up using `unique`
         indexes = [
             models.Index(fields=["parent_operator"], name="parent_operator_idx"),
-            models.Index(fields=["compliance_obligee"], name="compliance_obligee_idx"),
         ]
 
 
