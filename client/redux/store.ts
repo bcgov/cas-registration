@@ -1,19 +1,21 @@
+import { configureStore } from "@reduxjs/toolkit";
 import {
-  configureStore,
-  type ThunkAction,
-  type Action,
-} from "@reduxjs/toolkit";
-import {
-  useSelector as useReduxSelector,
-  useDispatch as useReduxDispatch,
+  useSelector as useReduxSelector, //hook provided by the "react-redux" library. It's used in React components to select and extract data from the Redux store.
+  useDispatch as useReduxDispatch, // hook provided by the "react-redux" library. It's used to get access to the Redux store's dispatch function, allowing you to dispatch actions
   type TypedUseSelectorHook,
 } from "react-redux";
-
+import { apiSlice } from "@/redux/features/api/slice";
 import { reducer } from "./rootReducer";
 
-// 🏭 Store: create the Redux store using the provided reducer
+// 🛠️ Create the Redux store using configureStore from Redux Toolkit
 export const reduxStore = configureStore({
+  // 📚 Reducer object that contains all the reducers for your Redux store
   reducer,
+  // ⚙️ Enable Redux DevTools extension in development mode
+  devTools: process.env.NODE_ENV !== "production",
+  // 🔄 Middleware configuration to intercept and process actions
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().concat(apiSlice.middleware), // 🚀 Enable RTK Query middleware
 });
 
 // 🚀 Disptach: create a custom useDispatch hook for accessing the Redux dispatch function
@@ -32,11 +34,3 @@ export type ReduxState = ReturnType<typeof reduxStore.getState>;
 
 // The type representing the Redux dispatch function
 export type ReduxDispatch = typeof reduxStore.dispatch;
-
-// The type for Redux thunk actions (asynchronous actions)
-export type ReduxThunkAction<ReturnType = void> = ThunkAction<
-  ReturnType,
-  ReduxState,
-  unknown,
-  Action
->;
