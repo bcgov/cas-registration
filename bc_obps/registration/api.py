@@ -12,10 +12,10 @@ router = Router()
 
 # Naics code schemas and endpoints
 
-OperationSchema = create_schema(NaicsCode)
+NaicsCodeSchema = create_schema(NaicsCode)
 
 
-@router.get("/naics_codes", response=List[NaicsCode])
+@router.get("/naics_codes", response=List[NaicsCodeSchema])
 def list_naics_codes(request):
     qs = NaicsCode.objects.all()
     return qs
@@ -43,6 +43,20 @@ def get_operation(request, operation_id: int):
 
 @router.post("/operations")
 def create_operation(request, payload: OperationSchema):
+    if "operator" in payload.dict():
+        operator = payload.dict()["operator"]
+        op = get_object_or_404(Operator, id=operator)
+        # Assign the Operator instance to the operation
+        payload.operator = op
+    if "naics_code" in payload.dict():
+        naics_code = payload.dict()["naics_code"]
+        nc = get_object_or_404(NaicsCode, id=naics_code)
+        # Assign the naics_code instance to the operation
+        payload.naics_code = nc
+    if "documents" in payload.dict():
+        del payload.documents
+    if "contacts" in payload.dict():
+        del payload.contacts
     operation = Operation.objects.create(**payload.dict())
     return {"id": operation.id}
 

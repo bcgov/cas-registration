@@ -3,25 +3,21 @@ import { RJSFSchema } from "@rjsf/utils";
 export const operationSchema: RJSFSchema = {
   type: "object",
   required: [
-    "id",
     "operator",
     "name",
     "operation_type",
     "naics_code",
     "eligible_commercial_product_name",
-    "permit_id",
-
     "latitude",
     "longitude",
     "legal_land_description",
     "nearest_municipality",
     "operator_percent_of_ownership",
-    "registered_for_obps",
     "estimated_emissions",
   ],
   properties: {
     // id: { type: "number", title: "id" },
-    // operator: { type: "number", title: "operator_id" },
+    operator: { type: "number", title: "operator_id" },
     name: { type: "string", title: "name" },
     operation_type: { type: "string", title: "operation_type" },
     naics_code: { type: "number", title: "naics_code" },
@@ -34,7 +30,6 @@ export const operationSchema: RJSFSchema = {
     ghfrp_id: { type: "string", title: "ghfrp_id" },
     bcghrp_id: { type: "string", title: "bcghrp_id" },
     petrinex_id: { type: "string", title: "petrinex_id" },
-    // these come out of django as string, will need some transformation probably
     latitude: { type: "number", title: "latitude" },
     longitude: { type: "number", title: "longitude" },
     legal_land_description: { type: "string", title: "legal_land_description" },
@@ -54,9 +49,9 @@ export const operationUiSchema = {
   id: {
     "ui:widget": "hidden",
   },
-  operator: {
-    "ui:widget": "hidden",
-  },
+  // operator: {
+  //   "ui:widget": "hidden",
+  // },
   registered_for_obps: {
     "ui:widget": "hidden",
   },
