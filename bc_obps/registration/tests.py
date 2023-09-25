@@ -6,14 +6,13 @@ from .models import User, NaicsCode
 class UserModelTest(TestCase):
     @classmethod
     def setUpTestData(cls):
-        # Set up non-modified objects used by all test methods
+        # Set up minimum required non-modified objects used by all test methods
         User.objects.create(
-            user_guid="00000000-0000-0000-0000-000000000000",
             first_name="fname-test",
             last_name="lname-test",
             mailing_address="12 34 Street, Test",
             email="test@example.com",
-            phone_number="12345678900",
+            user_guid="00000000-0000-0000-0000-000000000000",
             business_guid="11111111-1111-1111-1111-111111111111",
             position_title="test",
         )
@@ -63,10 +62,30 @@ class UserModelTest(TestCase):
         field_label = testUser._meta.get_field("phone_number").verbose_name
         self.assertEqual(field_label, "phone number")
 
+    def test_user_guid_label(self):
+        testUser = User.objects.get(user_guid="00000000-0000-0000-0000-000000000000")
+        field_label = testUser._meta.get_field("user_guid").verbose_name
+        self.assertEqual(field_label, "user guid")
+
+    def test_business_guid_label(self):
+        testUser = User.objects.get(user_guid="00000000-0000-0000-0000-000000000000")
+        field_label = testUser._meta.get_field("business_guid").verbose_name
+        self.assertEqual(field_label, "business guid")
+
     def test_position_title_label(self):
         testUser = User.objects.get(user_guid="00000000-0000-0000-0000-000000000000")
         field_label = testUser._meta.get_field("position_title").verbose_name
         self.assertEqual(field_label, "position title")
+
+    def test_position_title_max_length(self):
+        testUser = User.objects.get(user_guid="00000000-0000-0000-0000-000000000000")
+        max_length = testUser._meta.get_field("position_title").max_length
+        self.assertEqual(max_length, 1000)
+
+    def test_documents_label(self):
+        testUser = User.objects.get(user_guid="00000000-0000-0000-0000-000000000000")
+        field_label = testUser._meta.get_field("documents").verbose_name
+        self.assertEqual(field_label, "documents")
 
 
 class NaicsCodeModelTest(TestCase):
