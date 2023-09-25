@@ -9,6 +9,8 @@ import {
 import { Form } from "@rjsf/mui";
 
 import validator from "@rjsf/validator-ajv8";
+import Link from "next/link";
+import { useState } from "react";
 
 export default function Page({ params }: { params: { operation: number } }) {
   const {
@@ -18,6 +20,8 @@ export default function Page({ params }: { params: { operation: number } }) {
   } = useGetOperationQuery(params.operation);
   const [updateOperation, { isLoading: isLoadingUpdate }] =
     useEditOperationMutation();
+
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
   const { data: naics_codes, isLoading: isLoadingNaicsCodes } =
     useGetNaicsCodesQuery(null);
@@ -55,7 +59,9 @@ export default function Page({ params }: { params: { operation: number } }) {
       estimated_emissions: estimated_emissions.toString(),
     };
 
-    await updateOperation(transformedFormData);
+    await updateOperation(transformedFormData).then(() =>
+      setShowSuccessMessage(true)
+    );
   };
 
   if (!operation) {
@@ -67,7 +73,12 @@ export default function Page({ params }: { params: { operation: number } }) {
   }
   console.log("operation", operation);
 
-  return (
+  return showSuccessMessage ? (
+    <>
+      <div>You have successfully submitted the operation form</div>
+      <Link href="/operations">Return to operations list</Link>
+    </>
+  ) : (
     <Form
       schema={operationSchema}
       validator={validator}
