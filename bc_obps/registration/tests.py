@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from .models import User, NaicsCode
+from .models import User, NaicsCode, Contact
 
 
 class UserModelTest(TestCase):
@@ -127,3 +127,78 @@ class NaicsCodeModelTest(TestCase):
         testNaicsCode = NaicsCode.objects.get(id=1)
         max_length = testNaicsCode._meta.get_field("naics_description").max_length
         self.assertEqual(max_length, 1000)
+
+
+class ContactModelTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        # Set up non-modified objects used by all test methods
+        Contact.objects.create(
+            first_name="fname-test",
+            last_name="lname-test",
+            mailing_address="12 34 Street, Test",
+            email="test@example.com",
+            phone_number="12345678900",
+            is_operational_representative=False,
+        )
+
+    # TODO: DRY up code. Combine Contact & User model common fields
+    def test_first_name_label(self):
+        testContact = Contact.objects.get(id=1)
+        field_label = testContact._meta.get_field("first_name").verbose_name
+        self.assertEqual(field_label, "first name")
+
+    def test_first_name_max_length(self):
+        testContact = Contact.objects.get(id=1)
+        max_length = testContact._meta.get_field("first_name").max_length
+        self.assertEqual(max_length, 1000)
+
+    def test_last_name_label(self):
+        testContact = Contact.objects.get(id=1)
+        field_label = testContact._meta.get_field("last_name").verbose_name
+        self.assertEqual(field_label, "last name")
+
+    def test_last_name_max_length(self):
+        testContact = Contact.objects.get(id=1)
+        max_length = testContact._meta.get_field("last_name").max_length
+        self.assertEqual(max_length, 1000)
+
+    def test_mailing_address_label(self):
+        testContact = Contact.objects.get(id=1)
+        field_label = testContact._meta.get_field("mailing_address").verbose_name
+        self.assertEqual(field_label, "mailing address")
+
+    def test_mailing_address_max_length(self):
+        testContact = Contact.objects.get(id=1)
+        max_length = testContact._meta.get_field("mailing_address").max_length
+        self.assertEqual(max_length, 1000)
+
+    def test_email_label(self):
+        testContact = Contact.objects.get(id=1)
+        field_label = testContact._meta.get_field("email").verbose_name
+        self.assertEqual(field_label, "email")
+
+    def test_email_max_length(self):
+        testContact = Contact.objects.get(id=1)
+        max_length = testContact._meta.get_field("email").max_length
+        self.assertEqual(max_length, 254)
+
+    def test_phone_number_label(self):
+        testContact = Contact.objects.get(id=1)
+        field_label = testContact._meta.get_field("phone_number").verbose_name
+        self.assertEqual(field_label, "phone number")
+
+    def test_is_operational_representative_label(self):
+        testContact = Contact.objects.get(id=1)
+        field_label = testContact._meta.get_field("is_operational_representative").verbose_name
+        self.assertEqual(field_label, "is operational representative")
+
+    def test_verified_at_label(self):
+        testContact = Contact.objects.get(id=1)
+        field_label = testContact._meta.get_field("verified_at").verbose_name
+        self.assertEqual(field_label, "verified at")
+
+    def test_verified_by_label(self):
+        testContact = Contact.objects.get(id=1)
+        field_label = testContact._meta.get_field("verified_by").verbose_name
+        self.assertEqual(field_label, "verified by")
