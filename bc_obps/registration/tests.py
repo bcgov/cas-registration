@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from .models import User, NaicsCode, Contact
+from .models import Document, User, NaicsCode, Contact
 
 
 class UserModelTest(TestCase):
@@ -86,6 +86,42 @@ class UserModelTest(TestCase):
         testUser = User.objects.get(user_guid="00000000-0000-0000-0000-000000000000")
         field_label = testUser._meta.get_field("documents").verbose_name
         self.assertEqual(field_label, "documents")
+
+
+class DocumentModelTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        # Set up non-modified objects used by all test methods
+        Document.objects.create(
+            file="test.tst",
+            document_type="test",
+            description="test",
+        )
+
+    def test_file_label(self):
+        testDocument = Document.objects.get(id=1)
+        field_label = testDocument._meta.get_field("file").verbose_name
+        self.assertEqual(field_label, "file")
+
+    def test_document_type_label(self):
+        testDocument = Document.objects.get(id=1)
+        field_label = testDocument._meta.get_field("document_type").verbose_name
+        self.assertEqual(field_label, "document type")
+
+    def test_document_type_max_length(self):
+        testDocument = Document.objects.get(id=1)
+        max_length = testDocument._meta.get_field("document_type").max_length
+        self.assertEqual(max_length, 1000)
+
+    def test_description_label(self):
+        testDocument = Document.objects.get(id=1)
+        field_label = testDocument._meta.get_field("description").verbose_name
+        self.assertEqual(field_label, "description")
+
+    def test_description_max_length(self):
+        testDocument = Document.objects.get(id=1)
+        max_length = testDocument._meta.get_field("description").max_length
+        self.assertEqual(max_length, 1000)
 
 
 class NaicsCodeModelTest(TestCase):
