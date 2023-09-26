@@ -3,7 +3,8 @@ on:
   workflow_run:
     workflows: ["Test Registration App"]
     types: [completed]
-    branches: [develop, main, "chore/add-update-manifest-gh-action"]
+    # branches: [develop, main, "chore/add-update-manifest-gh-action"]
+    branches: ["**"]
 
 jobs:
   on-success:
