@@ -34,27 +34,17 @@ export default function Page({ params }: { params: { operation: number } }) {
 
   const localSchema = createOperationSchema(operationSchema, naics_codes);
 
-  console.log("localSchema", localSchema);
-
   const operationUpdateHandler = async (data) => {
-    const {
-      naics_code,
-      latitude,
-      longitude,
-      operator_percent_of_ownership,
-      estimated_emissions,
-      operator,
-    } = data.formData;
+    const { naics_code, operator } = data.formData;
 
     const transformedFormData = {
       ...data.formData,
+      // foreign keys need _id appended to them
       operator_id: operator,
-      naics_code_id: naics_code.toString(),
-      naics_code: naics_code,
-      latitude: latitude.toString(),
-      longitude: longitude.toString(),
-      operator_percent_of_ownership: operator_percent_of_ownership.toString(),
-      estimated_emissions: estimated_emissions.toString(),
+      naics_code_id: naics_code,
+      // documents and contacts to be handled in card #138
+      documents: [],
+      contacts: [],
     };
 
     await updateOperation(transformedFormData).then(() =>
@@ -84,13 +74,9 @@ export default function Page({ params }: { params: { operation: number } }) {
       uiSchema={operationUiSchema}
       formData={{
         ...operation,
-        // naics_code: Number(operation.naics_code),
-        // latitude: Number(operation.latitude),
-        // longitude: Number(operation.longitude),
-        // operator_percent_of_ownership: Number(
-        //   operation.operator_percent_of_ownership
-        // ),
-        // estimated_emissions: Number(operation.estimated_emissions),
+        // foreign keys are an object rather than a single value
+        naics_code: operation.naics_code.id,
+        operator: operation.operator.id,
       }}
     ></Form>
   );

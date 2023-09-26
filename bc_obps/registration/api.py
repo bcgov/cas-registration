@@ -12,9 +12,19 @@ from ninja import Schema
 router = Router()
 
 
+# Operator code schemas and endpoints
+class OperatorSchema(Schema):
+    id: int
+
+
 # Naics code schemas and endpoints
 
-NaicsCodeSchema = create_schema(NaicsCode)
+
+class NaicsCodeSchema(Schema):
+    id: int
+    naics_code: str
+    ciip_sector: str
+    naics_description: str
 
 
 @router.get("/naics_codes", response=List[NaicsCodeSchema])
@@ -24,9 +34,6 @@ def list_naics_codes(request):
 
 
 # Operation schemas and endpoints
-
-# brianna-this is inadvisable, put desired fields on it later
-OperationSchema = create_schema(Operation)
 
 
 class OperationIn(Schema):
@@ -47,14 +54,16 @@ class OperationIn(Schema):
     operator_percent_of_ownership: int
     registered_for_obps: bool
     estimated_emissions: int
-    # contacts: str
+    # contacts:
+    # documents:
 
 
 class OperationOut(Schema):
-    operator: str
+    id: int
+    operator: OperatorSchema
     name: str
     operation_type: str
-    naics_code: str
+    naics_code: NaicsCodeSchema
     eligible_commercial_product_name: str
     permit_id: str
     npr_id: str
@@ -68,13 +77,11 @@ class OperationOut(Schema):
     operator_percent_of_ownership: int
     registered_for_obps: bool
     estimated_emissions: int
-    # contacts: str
+    # contacts:
+    # documents:
 
 
-# brianna this is how to add contacts: https://django-ninja.rest-framework.com/guides/response/
-
-
-@router.get("/operations", response=List[OperationSchema])
+@router.get("/operations", response=List[OperationOut])
 def list_operations(request):
     qs = Operation.objects.all()
     return qs
@@ -88,6 +95,7 @@ def get_operation(request, operation_id: int):
 
 @router.post("/operations")
 def create_operation(request, payload: OperationIn):
+    # brianna do you still need now that we're doing in and out?
     if "operator" in payload.dict():
         operator = payload.dict()["operator"]
         op = get_object_or_404(Operator, id=operator)
@@ -107,7 +115,7 @@ def create_operation(request, payload: OperationIn):
 
 
 @router.put("/operations/{operation_id}")
-def update_operation(request, operation_id: int, payload: OperationSchema):
+def update_operation(request, operation_id: int, payload: OperationIn):
     operation = get_object_or_404(Operation, id=operation_id)
     if "operator" in payload.dict():
         operator = payload.dict()["operator"]
