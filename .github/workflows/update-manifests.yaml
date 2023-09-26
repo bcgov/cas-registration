@@ -3,7 +3,7 @@ on:
   workflow_run:
     workflows: ["Test Registration App"]
     types: [completed]
-    branches: [develop, main]
+    branches: [develop, main, "chore/fix-update-manifest-action"]
 
 jobs:
   on-success:
