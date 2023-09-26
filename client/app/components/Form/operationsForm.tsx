@@ -1,7 +1,6 @@
 "use client";
 
 import { operationUiSchema } from "@/jsonSchema/operations";
-import { useAddNewOperationMutation, useEditOperationMutation } from "@/redux";
 import Link from "next/link";
 import { useState } from "react";
 import validator from "@rjsf/validator-ajv8";
@@ -14,9 +13,6 @@ interface Props {
 }
 
 export default function OperationsForm(props: Props) {
-  const [addNewOperation, { isLoading }] = useAddNewOperationMutation();
-
-  // brianna this doesn't work yet
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
   // create stuff
@@ -29,7 +25,7 @@ export default function OperationsForm(props: Props) {
       estimated_emissions,
       operator,
     } = data.formData;
-    if (!isLoading) {
+    if (true) {
       try {
         const tranformedFormData = {
           ...data.formData,
@@ -44,9 +40,18 @@ export default function OperationsForm(props: Props) {
           documents: [],
           contacts: [],
         };
-        await addNewOperation(tranformedFormData).then(() =>
-          setShowSuccessMessage(true)
-        );
+        const response = await fetch(
+          "http://localhost:8000/api/registration/operations",
+          {
+            method: "POST",
+            body: JSON.stringify(tranformedFormData),
+          }
+        ).then((res) => {
+          return res; // JSON data parsed by `data.json()` call
+        });
+        if (response.ok) {
+          setShowSuccessMessage(true);
+        }
       } catch (err) {
         console.error("Failed to save the operation: ", err);
       }
@@ -54,8 +59,6 @@ export default function OperationsForm(props: Props) {
   };
 
   // edit stuff
-  const [updateOperation, { isLoading: isLoadingUpdate }] =
-    useEditOperationMutation();
 
   const operationUpdateHandler = async (data) => {
     const {
@@ -65,6 +68,7 @@ export default function OperationsForm(props: Props) {
       operator_percent_of_ownership,
       estimated_emissions,
       operator,
+      id,
     } = data.formData;
 
     const transformedFormData = {
@@ -78,9 +82,18 @@ export default function OperationsForm(props: Props) {
       estimated_emissions: estimated_emissions.toString(),
     };
 
-    await updateOperation(transformedFormData).then(() =>
-      setShowSuccessMessage(true)
-    );
+    const response = await fetch(
+      `http://localhost:8000/api/registration/operations/${id}`,
+      {
+        method: "PUT",
+        body: JSON.stringify(transformedFormData),
+      }
+    ).then((res) => {
+      return res; // JSON data parsed by `data.json()` call
+    });
+    if (response.ok) {
+      setShowSuccessMessage(true);
+    }
   };
 
   return showSuccessMessage ? (
@@ -95,7 +108,7 @@ export default function OperationsForm(props: Props) {
       onSubmit={
         props.formData ? operationUpdateHandler : operationSubmitHandler
       }
-      disabled={isLoading}
+      // disabled={isLoading}
       uiSchema={operationUiSchema}
       formData={props.formData ?? {}}
     ></Form>
