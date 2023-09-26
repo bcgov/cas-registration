@@ -5,12 +5,6 @@ runs:
   steps:
     - name: asdf setup
       uses: asdf-vm/actions/setup@v1
-    # - uses: actions/cache@v3
-    #   id: asdf-cache
-    #   with:
-    #     path: |
-    #       ~/.asdf
-    #     key: ${{ runner.os }}-asdf-cache-${{ hashFiles('.tool-versions') }}
     - uses: actions/cache@v3
       id: asdf-cache-client
       with:
