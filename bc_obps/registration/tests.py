@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from .models import Document, User, NaicsCode, Contact
+from .models import Document, Operator, User, NaicsCode, Contact
 
 
 class UserModelTest(TestCase):
@@ -238,3 +238,117 @@ class ContactModelTest(TestCase):
         testContact = Contact.objects.get(id=1)
         field_label = testContact._meta.get_field("verified_by").verbose_name
         self.assertEqual(field_label, "verified by")
+
+
+class OperatorModelTest(TestCase):
+    fixtures = ["operator.json"]
+
+    def test_legal_name_label(self):
+        testOperator = Operator.objects.get(id=1)
+        field_label = testOperator._meta.get_field("legal_name").verbose_name
+        self.assertEqual(field_label, "legal name")
+
+    def test_legal_name_max_length(self):
+        testOperator = Operator.objects.get(id=1)
+        max_length = testOperator._meta.get_field("legal_name").max_length
+        self.assertEqual(max_length, 1000)
+
+    def test_trade_name_label(self):
+        testOperator = Operator.objects.get(id=1)
+        field_label = testOperator._meta.get_field("trade_name").verbose_name
+        self.assertEqual(field_label, "trade name")
+
+    def test_trade_name_max_length(self):
+        testOperator = Operator.objects.get(id=1)
+        max_length = testOperator._meta.get_field("trade_name").max_length
+        self.assertEqual(max_length, 1000)
+
+    def test_cra_business_number_label(self):
+        testOperator = Operator.objects.get(id=1)
+        field_label = testOperator._meta.get_field("cra_business_number").verbose_name
+        self.assertEqual(field_label, "cra business number")
+
+    def test_cra_business_number_max_length(self):
+        testOperator = Operator.objects.get(id=1)
+        max_length = testOperator._meta.get_field("cra_business_number").max_length
+        self.assertEqual(max_length, 1000)
+
+    def test_bc_corporate_registry_number_label(self):
+        testOperator = Operator.objects.get(id=1)
+        field_label = testOperator._meta.get_field("bc_corporate_registry_number").verbose_name
+        self.assertEqual(field_label, "bc corporate registry number")
+
+    def test_bc_corporate_registry_number_max_length(self):
+        testOperator = Operator.objects.get(id=1)
+        max_length = testOperator._meta.get_field("bc_corporate_registry_number").max_length
+        self.assertEqual(max_length, 1000)
+
+    def test_business_structure_label(self):
+        testOperator = Operator.objects.get(id=1)
+        field_label = testOperator._meta.get_field("business_structure").verbose_name
+        self.assertEqual(field_label, "business structure")
+
+    def test_business_structure_max_length(self):
+        testOperator = Operator.objects.get(id=1)
+        max_length = testOperator._meta.get_field("business_structure").max_length
+        self.assertEqual(max_length, 1000)
+
+    def test_mailing_address_label(self):
+        testOperator = Operator.objects.get(id=1)
+        field_label = testOperator._meta.get_field("mailing_address").verbose_name
+        self.assertEqual(field_label, "mailing address")
+
+    def test_mailing_address_max_length(self):
+        testOperator = Operator.objects.get(id=1)
+        max_length = testOperator._meta.get_field("mailing_address").max_length
+        self.assertEqual(max_length, 1000)
+
+    def test_bceid_label(self):
+        testOperator = Operator.objects.get(id=1)
+        field_label = testOperator._meta.get_field("bceid").verbose_name
+        self.assertEqual(field_label, "bceid")
+
+    def test_bceid_max_length(self):
+        testOperator = Operator.objects.get(id=1)
+        max_length = testOperator._meta.get_field("bceid").max_length
+        self.assertEqual(max_length, 1000)
+
+    def test_parent_operator_label(self):
+        testOperator = Operator.objects.get(id=1)
+        field_label = testOperator._meta.get_field("parent_operator").verbose_name
+        self.assertEqual(field_label, "parent operator")
+
+    def test_relationship_with_parent_operator_label(self):
+        testOperator = Operator.objects.get(id=1)
+        field_label = testOperator._meta.get_field("relationship_with_parent_operator").verbose_name
+        self.assertEqual(field_label, "relationship with parent operator")
+
+    def test_relationship_with_parent_operator_max_length(self):
+        testOperator = Operator.objects.get(id=1)
+        max_length = testOperator._meta.get_field("relationship_with_parent_operator").max_length
+        self.assertEqual(max_length, 1000)
+
+    def test_compliance_obligee_label(self):
+        testOperator = Operator.objects.get(id=1)
+        field_label = testOperator._meta.get_field("compliance_obligee").verbose_name
+        self.assertEqual(field_label, "compliance obligee")
+
+    def test_date_aso_became_responsible_for_operator_label(self):
+        testOperator = Operator.objects.get(id=1)
+        field_label = testOperator._meta.get_field("date_aso_became_responsible_for_operator").verbose_name
+        self.assertEqual(field_label, "date aso became responsible for operator")
+
+    def test_documents_label(self):
+        testOperator = Operator.objects.get(id=1)
+        field_label = testOperator._meta.get_field("documents").verbose_name
+        self.assertEqual(field_label, "documents")
+
+    def test_contacts_label(self):
+        testOperator = Operator.objects.get(id=1)
+        field_label = testOperator._meta.get_field("contacts").verbose_name
+        self.assertEqual(field_label, "contacts")
+
+    def test_operators_label(self):
+        testOperator = Operator.objects.get(id=1)
+        field_label = testOperator._meta.get_field("operators").verbose_name
+        self.assertEqual(field_label, "operators")
