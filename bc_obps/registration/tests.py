@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from .models import Document, Operator, User, NaicsCode, Contact
+from .models import Document, Operator, User, NaicsCode, Contact, UserOperator
 
 
 class UserModelTest(TestCase):
@@ -352,3 +352,80 @@ class OperatorModelTest(TestCase):
         testOperator = Operator.objects.get(id=1)
         field_label = testOperator._meta.get_field("operators").verbose_name
         self.assertEqual(field_label, "operators")
+
+
+class UserOperatorModelTest(TestCase):
+    fixtures = ["user.json", "operator.json"]
+
+    @classmethod
+    def setUpTestData(cls):
+        proof_doc = Document.objects.create(file="test.tst", document_type="test", description="test")
+        signed_doc = Document.objects.create(file="test.tst", document_type="test", description="test")
+
+        # Set up non-modified objects used by all test methods
+        UserOperator.objects.create(
+            users=User.objects.get(user_guid="3fa85f64-5717-4562-b3fc-2c963f66afa6"),
+            operators=Operator.objects.get(id=1),
+            role=UserOperator.Roles.ADMIN,
+            status=UserOperator.Statuses.PENDING,
+            user_is_aso=True,
+            aso_is_owner_or_operator=True,
+            user_is_third_party=True,
+            proof_of_authority=proof_doc,
+            signed_statuatory_declaration=signed_doc,
+        )
+
+    def test_users_label(self):
+        testUserOperator = UserOperator.objects.get(id=1)
+        field_label = testUserOperator._meta.get_field("users").verbose_name
+        self.assertEqual(field_label, "users")
+
+    def test_operators_label(self):
+        testUserOperator = UserOperator.objects.get(id=1)
+        field_label = testUserOperator._meta.get_field("operators").verbose_name
+        self.assertEqual(field_label, "operators")
+
+    def test_role_label(self):
+        testUserOperator = UserOperator.objects.get(id=1)
+        field_label = testUserOperator._meta.get_field("role").verbose_name
+        self.assertEqual(field_label, "role")
+
+    def test_role_max_length(self):
+        testUserOperator = UserOperator.objects.get(id=1)
+        max_length = testUserOperator._meta.get_field("role").max_length
+        self.assertEqual(max_length, 1000)
+
+    def test_status_label(self):
+        testUserOperator = UserOperator.objects.get(id=1)
+        field_label = testUserOperator._meta.get_field("status").verbose_name
+        self.assertEqual(field_label, "status")
+
+    def test_status_max_length(self):
+        testUserOperator = UserOperator.objects.get(id=1)
+        max_length = testUserOperator._meta.get_field("status").max_length
+        self.assertEqual(max_length, 1000)
+
+    def test_user_is_aso_label(self):
+        testUserOperator = UserOperator.objects.get(id=1)
+        field_label = testUserOperator._meta.get_field("user_is_aso").verbose_name
+        self.assertEqual(field_label, "user is aso")
+
+    def test_aso_is_owner_or_operator_label(self):
+        testUserOperator = UserOperator.objects.get(id=1)
+        field_label = testUserOperator._meta.get_field("aso_is_owner_or_operator").verbose_name
+        self.assertEqual(field_label, "aso is owner or operator")
+
+    def test_user_is_third_party_label(self):
+        testUserOperator = UserOperator.objects.get(id=1)
+        field_label = testUserOperator._meta.get_field("user_is_third_party").verbose_name
+        self.assertEqual(field_label, "user is third party")
+
+    def test_proof_of_authority_label(self):
+        testUserOperator = UserOperator.objects.get(id=1)
+        field_label = testUserOperator._meta.get_field("proof_of_authority").verbose_name
+        self.assertEqual(field_label, "proof of authority")
+
+    def test_signed_statuatory_declaration_label(self):
+        testUserOperator = UserOperator.objects.get(id=1)
+        field_label = testUserOperator._meta.get_field("signed_statuatory_declaration").verbose_name
+        self.assertEqual(field_label, "signed statuatory declaration")
