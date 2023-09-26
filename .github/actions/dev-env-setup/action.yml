@@ -5,12 +5,26 @@ runs:
   steps:
     - name: asdf setup
       uses: asdf-vm/actions/setup@v1
+    # - uses: actions/cache@v3
+    #   id: asdf-cache
+    #   with:
+    #     path: |
+    #       ~/.asdf
+    #     key: ${{ runner.os }}-asdf-cache-${{ hashFiles('.tool-versions') }}
     - uses: actions/cache@v3
-      id: asdf-cache
+      id: asdf-cache-client
       with:
         path: |
           ~/.asdf
-        key: ${{ runner.os }}-asdf-cache-${{ hashFiles('.tool-versions') }}
+          ./client/.tool-versions
+        key: ${{ runner.os }}-asdf-cache-client-${{ hashFiles('client/.tool-versions') }}
+    - uses: actions/cache@v3
+      id: asdf-cache-backend
+      with:
+        path: |
+          ~/.asdf
+          ./backend/.tool-versions
+        key: ${{ runner.os }}-asdf-cache-backend-${{ hashFiles('backend/.tool-versions') }}
     - uses: actions/cache@v3
       id: yarn-cache
       with:
@@ -43,7 +57,6 @@ runs:
       working-directory: ./bc_obps
       shell: bash
       run: |
-        make stop_pg
         make install_backend_asdf_tools
         make start_pg
         make create_db
