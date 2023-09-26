@@ -20,7 +20,7 @@ export const operationSchema: RJSFSchema = {
     operator: { type: "number", title: "operator_id" },
     name: { type: "string", title: "name" },
     operation_type: { type: "string", title: "operation_type" },
-    naics_code: { type: "number", title: "naics_code" },
+    naics_code: { type: "string", title: "naics_code", enum: [] },
     eligible_commercial_product_name: {
       type: "string",
       title: "eligible_commercial_product_name",
@@ -54,5 +54,8 @@ export const operationUiSchema = {
   // },
   registered_for_obps: {
     "ui:widget": "hidden",
+  },
+  naics_code: {
+    "ui:widget": "select",
   },
 };
