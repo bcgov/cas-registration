@@ -10,7 +10,15 @@ import { Form } from "@rjsf/mui";
 
 import validator from "@rjsf/validator-ajv8";
 import Link from "next/link";
-import { useState } from "react";
+import { useMemo, useState } from "react";
+
+export const createOperationSchema = (schema, naics_codes) => {
+  const localSchema = JSON.parse(JSON.stringify(operationSchema));
+  localSchema.properties.naics_code.enum = naics_codes?.map(
+    (code) => code.naics_code
+  );
+  return localSchema;
+};
 
 export default function Page({ params }: { params: { operation: number } }) {
   const {
@@ -26,17 +34,9 @@ export default function Page({ params }: { params: { operation: number } }) {
   const { data: naics_codes, isLoading: isLoadingNaicsCodes } =
     useGetNaicsCodesQuery(null);
 
-  const localSchema = JSON.parse(JSON.stringify(operationSchema));
-  if (!isLoadingOperation && !isLoadingNaicsCodes) {
-    localSchema.properties.naics_code.anyOf = naics_codes?.map((code) => {
-      return {
-        type: "number",
-        title: code.name,
-        enum: [code.id],
-        value: code.id,
-      };
-    });
-  }
+  const localSchema = createOperationSchema(operationSchema, naics_codes);
+
+  console.log("localSchema", localSchema);
 
   const operationUpdateHandler = async (data) => {
     const {
@@ -71,7 +71,6 @@ export default function Page({ params }: { params: { operation: number } }) {
       </section>
     );
   }
-  console.log("operation", operation);
 
   return showSuccessMessage ? (
     <>
@@ -80,7 +79,7 @@ export default function Page({ params }: { params: { operation: number } }) {
     </>
   ) : (
     <Form
-      schema={operationSchema}
+      schema={localSchema}
       validator={validator}
       onSubmit={operationUpdateHandler}
       disabled={isLoadingOperation}
