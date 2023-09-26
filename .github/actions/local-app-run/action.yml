@@ -5,7 +5,7 @@ runs:
   steps:
     - name: start backend
       shell: bash
-      run: docker run -d --network=host -e "DB_USER=postgres" -e "DB_NAME=registration" -e "DB_PORT=5432" -e "DB_HOST=localhost" ghcr.io/bcgov/cas-reg-backend:${{ github.sha }} "/usr/bin/env bash -c 'poetry run python manage.py collectstatic --noinput && poetry run python manage.py migrate && poetry run python manage.py runserver --nostatic'"
+      run: docker run -d --network=host -e "DB_USER=postgres" -e "DB_NAME=registration" -e "DB_PORT=5432" -e "DB_HOST=localhost" ghcr.io/bcgov/cas-reg-backend:${{ github.sha }} "/usr/bin/env" "bash" "-c" "poetry run python manage.py collectstatic --noinput && poetry run python manage.py migrate && poetry run python manage.py runserver --nostatic"
     - name: start frontend
       shell: bash
       run: docker run -d --network=host ghcr.io/bcgov/cas-reg-frontend:${{ github.sha }}
