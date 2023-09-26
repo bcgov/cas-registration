@@ -17,6 +17,9 @@ class UserModelTest(TestCase):
             position_title="test",
         )
 
+        cls.doc_one = Document.objects.create(file="test1.tst", document_type="test", description="test")
+        cls.doc_two = Document.objects.create(file="test2.tst", document_type="test", description="test")
+
     def test_first_name_label(self):
         testUser = User.objects.get(user_guid="00000000-0000-0000-0000-000000000000")
         field_label = testUser._meta.get_field("first_name").verbose_name
@@ -86,6 +89,11 @@ class UserModelTest(TestCase):
         testUser = User.objects.get(user_guid="00000000-0000-0000-0000-000000000000")
         field_label = testUser._meta.get_field("documents").verbose_name
         self.assertEqual(field_label, "documents")
+
+    def test_user_has_multiple_documents(self):
+        testUser = User.objects.get(user_guid="00000000-0000-0000-0000-000000000000")
+        testUser.documents.set([self.doc_one.pk, self.doc_two.pk])
+        self.assertEqual(testUser.documents.count(), 2)
 
 
 class DocumentModelTest(TestCase):
@@ -241,7 +249,55 @@ class ContactModelTest(TestCase):
 
 
 class OperatorModelTest(TestCase):
-    fixtures = ["operator.json"]
+    fixtures = ["operator.json", "user.json"]
+
+    @classmethod
+    def setUpTestData(cls):
+        testOperator = Operator.objects.get(id=1)
+
+        testOperator.documents.set(
+            [
+                Document.objects.create(file="test1.tst", document_type="test", description="test"),
+                Document.objects.create(file="test2.tst", document_type="test", description="test"),
+            ]
+        )
+
+        testOperator.contacts.set(
+            [
+                Contact.objects.create(
+                    first_name="fname-test",
+                    last_name="lname-test",
+                    mailing_address="12 34 Street, Test",
+                    email=f"test1@example.com",
+                    phone_number="12345678900",
+                    is_operational_representative=False,
+                ),
+                Contact.objects.create(
+                    first_name="fname-test",
+                    last_name="lname-test",
+                    mailing_address="12 34 Street, Test",
+                    email=f"test2@example.com",
+                    phone_number="12345678900",
+                    is_operational_representative=False,
+                ),
+            ]
+        )
+
+        # Create multiple UserOperators connected with the test Operator
+        for x in range(2):
+            UserOperator.objects.create(
+                users=User.objects.get(user_guid="3fa85f64-5717-4562-b3fc-2c963f66afa6"),
+                operators=Operator.objects.get(id=1),
+                role=UserOperator.Roles.ADMIN,
+                status=UserOperator.Statuses.PENDING,
+                user_is_aso=True,
+                aso_is_owner_or_operator=True,
+                user_is_third_party=True,
+                proof_of_authority=Document.objects.create(file="test.tst", document_type="test", description="test"),
+                signed_statuatory_declaration=Document.objects.create(
+                    file="test.tst", document_type="test", description="test"
+                ),
+            )
 
     def test_legal_name_label(self):
         testOperator = Operator.objects.get(id=1)
@@ -353,6 +409,18 @@ class OperatorModelTest(TestCase):
         field_label = testOperator._meta.get_field("operators").verbose_name
         self.assertEqual(field_label, "operators")
 
+    def test_operator_has_multiple_documents(self):
+        testOperator = Operator.objects.get(id=1)
+        self.assertEqual(testOperator.documents.count(), 2)
+
+    def test_operator_has_multiple_contacts(self):
+        testOperator = Operator.objects.get(id=1)
+        self.assertEqual(testOperator.contacts.count(), 2)
+
+    def test_operator_has_multiple_user_operators(self):
+        testOperator = Operator.objects.get(id=1)
+        self.assertEqual(testOperator.operators.count(), 2)
+
 
 class UserOperatorModelTest(TestCase):
     fixtures = ["user.json", "operator.json"]
@@ -363,7 +431,7 @@ class UserOperatorModelTest(TestCase):
         signed_doc = Document.objects.create(file="test.tst", document_type="test", description="test")
 
         # Set up non-modified objects used by all test methods
-        UserOperator.objects.create(
+        cls.testUserOperator = UserOperator.objects.create(
             users=User.objects.get(user_guid="3fa85f64-5717-4562-b3fc-2c963f66afa6"),
             operators=Operator.objects.get(id=1),
             role=UserOperator.Roles.ADMIN,
@@ -376,56 +444,56 @@ class UserOperatorModelTest(TestCase):
         )
 
     def test_users_label(self):
-        testUserOperator = UserOperator.objects.get(id=1)
+        testUserOperator = self.testUserOperator
         field_label = testUserOperator._meta.get_field("users").verbose_name
         self.assertEqual(field_label, "users")
 
     def test_operators_label(self):
-        testUserOperator = UserOperator.objects.get(id=1)
+        testUserOperator = self.testUserOperator
         field_label = testUserOperator._meta.get_field("operators").verbose_name
         self.assertEqual(field_label, "operators")
 
     def test_role_label(self):
-        testUserOperator = UserOperator.objects.get(id=1)
+        testUserOperator = self.testUserOperator
         field_label = testUserOperator._meta.get_field("role").verbose_name
         self.assertEqual(field_label, "role")
 
     def test_role_max_length(self):
-        testUserOperator = UserOperator.objects.get(id=1)
+        testUserOperator = self.testUserOperator
         max_length = testUserOperator._meta.get_field("role").max_length
         self.assertEqual(max_length, 1000)
 
     def test_status_label(self):
-        testUserOperator = UserOperator.objects.get(id=1)
+        testUserOperator = self.testUserOperator
         field_label = testUserOperator._meta.get_field("status").verbose_name
         self.assertEqual(field_label, "status")
 
     def test_status_max_length(self):
-        testUserOperator = UserOperator.objects.get(id=1)
+        testUserOperator = self.testUserOperator
         max_length = testUserOperator._meta.get_field("status").max_length
         self.assertEqual(max_length, 1000)
 
     def test_user_is_aso_label(self):
-        testUserOperator = UserOperator.objects.get(id=1)
+        testUserOperator = self.testUserOperator
         field_label = testUserOperator._meta.get_field("user_is_aso").verbose_name
         self.assertEqual(field_label, "user is aso")
 
     def test_aso_is_owner_or_operator_label(self):
-        testUserOperator = UserOperator.objects.get(id=1)
+        testUserOperator = self.testUserOperator
         field_label = testUserOperator._meta.get_field("aso_is_owner_or_operator").verbose_name
         self.assertEqual(field_label, "aso is owner or operator")
 
     def test_user_is_third_party_label(self):
-        testUserOperator = UserOperator.objects.get(id=1)
+        testUserOperator = self.testUserOperator
         field_label = testUserOperator._meta.get_field("user_is_third_party").verbose_name
         self.assertEqual(field_label, "user is third party")
 
     def test_proof_of_authority_label(self):
-        testUserOperator = UserOperator.objects.get(id=1)
+        testUserOperator = self.testUserOperator
         field_label = testUserOperator._meta.get_field("proof_of_authority").verbose_name
         self.assertEqual(field_label, "proof of authority")
 
     def test_signed_statuatory_declaration_label(self):
-        testUserOperator = UserOperator.objects.get(id=1)
+        testUserOperator = self.testUserOperator
         field_label = testUserOperator._meta.get_field("signed_statuatory_declaration").verbose_name
         self.assertEqual(field_label, "signed statuatory declaration")
