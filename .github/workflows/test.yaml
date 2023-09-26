@@ -132,17 +132,16 @@ jobs:
           cmd_options: "-a -d -T 5 -m 2"
           issue_title: OWASP Baseline - Frontend
           fail_action: false
-
-      # - name: ZAP Backend Scan
-      #   uses: zaproxy/action-baseline@v0.6.1
-      #   with:
-      #     token: ${{ secrets.GITHUB_TOKEN }}
-      #     docker_name: "owasp/zap2docker-stable"
-      #     target: "http://127.0.0.1:8000/"
-      #     rules_file_name: ".zap/rules-backend.tsv"
-      #     cmd_options: "-a -d -T 5 -m 2"
-      #     issue_title: OWASP Baseline - Backend
-      #     fail_action: false
+      - name: ZAP Backend Scan
+        uses: zaproxy/action-baseline@v0.6.1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          docker_name: "owasp/zap2docker-stable"
+          target: "http://0.0.0.0:8000/"
+          rules_file_name: ".zap/rules-backend.tsv"
+          cmd_options: "-a -d -T 5 -m 2"
+          issue_title: OWASP Baseline - Backend
+          fail_action: false
   e2e:
     needs: ["docker-build", "install-dev-tools"]
     timeout-minutes: 60
