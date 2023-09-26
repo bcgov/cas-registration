@@ -32,7 +32,7 @@
       "operator": 1,
       "name": "string",
       "operation_type": "string",
-      "naics_code": 1,
+      "naics_code": 2,
       "eligible_commercial_product_name": "string",
       "permit_id": "string",
       "npr_id": "string",

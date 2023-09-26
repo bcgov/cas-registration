@@ -37,15 +37,6 @@ export default function Page() {
         const tranformedFormData = {
           ...data.formData,
           registered_for_obps: false,
-          operator_id: operator,
-          naics_code_id: naics_code.toString(),
-          latitude: latitude.toString(),
-          longitude: longitude.toString(),
-          operator_percent_of_ownership:
-            operator_percent_of_ownership.toString(),
-          estimated_emissions: estimated_emissions.toString(),
-          documents: [],
-          contacts: [],
         };
         await addNewOperation(tranformedFormData).then(() =>
           setShowSuccessMessage(true)
