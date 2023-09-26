@@ -1,16 +1,27 @@
 "use client";
-import { useAddNewOperationMutation } from "@/redux";
+import {
+  djangoApiSlice,
+  useAddNewOperationMutation,
+  useGetNaicsCodesQuery,
+} from "@/redux";
 
 import validator from "@rjsf/validator-ajv8";
 import Form from "@rjsf/mui";
 import { operationSchema, operationUiSchema } from "@/jsonSchema/operations";
 import { useState } from "react";
 import Link from "next/link";
+import { createOperationSchema } from "../[operation]/page";
+import { createSelector } from "@reduxjs/toolkit";
+import { useSelector } from "react-redux";
 
 export default function Page() {
   const [addNewOperation, { isLoading }] = useAddNewOperationMutation();
 
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+
+  const { data: naics_codes, isLoading: isLoadingNaicsCodes } =
+    useGetNaicsCodesQuery(null);
+  const localSchema = createOperationSchema(operationSchema, naics_codes);
 
   const operationSubmitHandler = async (data) => {
     const {
@@ -52,7 +63,7 @@ export default function Page() {
     </>
   ) : (
     <Form
-      schema={operationSchema}
+      schema={localSchema}
       validator={validator}
       onSubmit={operationSubmitHandler}
       disabled={isLoading}
