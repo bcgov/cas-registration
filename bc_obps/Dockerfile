@@ -53,4 +53,4 @@ EXPOSE 8000
 # Install project dependencies using Poetry
 RUN poetry install
 USER ${USER_ID}
-CMD ["/usr/bin/env", "bash", "-c", "poetry run python manage.py collectstatic --noinput && poetry run python manage.py migrate && poetry run python manage.py runserver"]
+CMD ["/usr/bin/env", "bash", "-c", "poetry run python manage.py collectstatic --noinput && poetry run python manage.py migrate && poetry run python manage.py runserver 0.0.0.0:8000"]
