@@ -1,0 +1,57 @@
+name: Update Manifests (Deploy)
+on:
+  workflow_run:
+    workflows: ["Test Registration App"]
+    types: [completed]
+    branches: [develop, main]
+
+jobs:
+  on-success:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Get HEAD sha
+        id: get-sha
+        run: |
+          export GIT_HEAD_SHA=$(git rev-parse HEAD)
+          echo "::set-output name=gitsha::$GIT_HEAD_SHA"
+      - name: Prepare deploy key
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.MANIFEST_REPO_DEPLOY_KEY }}
+      - name: Check out manifest repo
+        uses: actions/checkout@v3
+        with:
+          ssh-key: ${{ secrets.MANIFEST_REPO_DEPLOY_KEY }}
+          repository: ${{ secrets.MANIFEST_REPO }}
+      - name: Set global git config
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+      - name: Set SHA in dev manifest
+        shell: bash
+        run: |
+          pushd cas-reg-backend
+          GIT_HEAD_SHA=${{ steps.get-sha.outputs.gitsha }}
+          sed -i "s/sourceRepoImageTag:.*/sourceRepoImageTag: $GIT_HEAD_SHA/g" values-dev.yaml
+          git commit -am "Update source SHA for deploy"
+          git push origin
+          echo 'Manifest repository has been updated."'
+        # if: github.ref == 'refs/heads/develop'
+      - name: Set SHA in dev manifest
+        shell: bash
+        run: |
+          pushd cas-reg-backend
+          GIT_HEAD_SHA=${{ steps.get-sha.outputs.gitsha }}
+          sed -i "s/sourceRepoImageTag:.*/sourceRepoImageTag: $GIT_HEAD_SHA/g" values-test.yaml
+          sed -i "s/sourceRepoImageTag:.*/sourceRepoImageTag: $GIT_HEAD_SHA/g" values-prod.yaml
+          git commit -am "Update source SHA for deploy"
+          git push origin
+          echo 'Manifest repository has been updated."'
+        if: github.ref == 'refs/heads/main'
+  on-failure:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+    steps:
+      - run: echo 'Test Registration App workflow has failed. Manifest repository was not updated."'
