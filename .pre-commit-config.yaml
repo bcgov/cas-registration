@@ -50,7 +50,7 @@ repos:
     rev: "1.7.5"
     hooks:
       - id: bandit
-        args: ["-r", "."]
+        args: ["-c", "bc_obps/bandit.yaml"]
 
   - repo: https://github.com/zricethezav/gitleaks
     rev: v8.2.5
