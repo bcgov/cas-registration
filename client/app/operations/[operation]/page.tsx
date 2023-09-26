@@ -4,7 +4,9 @@ import { createOperationSchema, getNaicsCodes } from "../create/page";
 
 export async function getOperation(id: number) {
   return (
-    await fetch(`http://localhost:8000/api/registration/operations/${id}`)
+    await fetch(`http://localhost:8000/api/registration/operations/${id}`, {
+      cache: "no-store",
+    })
   ).json();
 }
 
