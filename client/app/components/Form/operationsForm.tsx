@@ -50,7 +50,7 @@ export default function OperationsForm(props: Props) {
           return res; // JSON data parsed by `data.json()` call
         });
         if (response.ok) {
-          setShowSuccessMessage(true);
+          setShowSuccessMessage(false);
         }
       } catch (err) {
         console.error("Failed to save the operation: ", err);
@@ -92,7 +92,7 @@ export default function OperationsForm(props: Props) {
       return res; // JSON data parsed by `data.json()` call
     });
     if (response.ok) {
-      setShowSuccessMessage(true);
+      setShowSuccessMessage(false);
     }
   };
 
@@ -102,15 +102,18 @@ export default function OperationsForm(props: Props) {
       <Link href="/operations">Return to operations list</Link>
     </>
   ) : (
-    <Form
-      schema={props.schema}
-      validator={validator}
-      onSubmit={
-        props.formData ? operationUpdateHandler : operationSubmitHandler
-      }
-      // disabled={isLoading}
-      uiSchema={operationUiSchema}
-      formData={props.formData ?? {}}
-    ></Form>
+    <>
+      <Form
+        schema={props.schema}
+        validator={validator}
+        onSubmit={
+          props.formData ? operationUpdateHandler : operationSubmitHandler
+        }
+        // disabled={isLoading}
+        uiSchema={operationUiSchema}
+        formData={props.formData ?? {}}
+      ></Form>
+      <Link href="/operations">Return to operations list</Link>
+    </>
   );
 }
