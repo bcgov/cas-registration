@@ -156,8 +156,6 @@ jobs:
       - name: Install Playwright Browsers
         run: yarn playwright install --with-deps
         working-directory: ./client
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
       - name: Run Playwright tests
         run: DEBUG=pw:browser npx playwright test
         working-directory: ./client
