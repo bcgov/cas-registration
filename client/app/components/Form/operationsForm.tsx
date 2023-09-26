@@ -1,22 +1,25 @@
 "use client";
 
-import { createOperationSchema } from "@/app/operations/[operation]/page";
-import { operationSchema, operationUiSchema } from "@/jsonSchema/operations";
-import { useAddNewOperationMutation, useGetNaicsCodesQuery } from "@/redux";
-import Form from "@rjsf/core";
+import { operationUiSchema } from "@/jsonSchema/operations";
+import { useAddNewOperationMutation, useEditOperationMutation } from "@/redux";
 import Link from "next/link";
 import { useState } from "react";
 import validator from "@rjsf/validator-ajv8";
+import { Form } from "@rjsf/mui";
+import { RJSFSchema } from "@rjsf/utils";
 
-export default function OperationsForm() {
+interface Props {
+  schema: RJSFSchema;
+  formData?: FormData;
+}
+
+export default function OperationsForm(props: Props) {
   const [addNewOperation, { isLoading }] = useAddNewOperationMutation();
 
+  // brianna this doesn't work yet
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
-  const { data: naics_codes, isLoading: isLoadingNaicsCodes } =
-    useGetNaicsCodesQuery(null);
-  const localSchema = createOperationSchema(operationSchema, naics_codes);
-
+  // create stuff
   const operationSubmitHandler = async (data) => {
     const {
       naics_code,
@@ -50,6 +53,36 @@ export default function OperationsForm() {
     }
   };
 
+  // edit stuff
+  const [updateOperation, { isLoading: isLoadingUpdate }] =
+    useEditOperationMutation();
+
+  const operationUpdateHandler = async (data) => {
+    const {
+      naics_code,
+      latitude,
+      longitude,
+      operator_percent_of_ownership,
+      estimated_emissions,
+      operator,
+    } = data.formData;
+
+    const transformedFormData = {
+      ...data.formData,
+      operator_id: operator,
+      naics_code_id: naics_code.toString(),
+      naics_code: naics_code,
+      latitude: latitude.toString(),
+      longitude: longitude.toString(),
+      operator_percent_of_ownership: operator_percent_of_ownership.toString(),
+      estimated_emissions: estimated_emissions.toString(),
+    };
+
+    await updateOperation(transformedFormData).then(() =>
+      setShowSuccessMessage(true)
+    );
+  };
+
   return showSuccessMessage ? (
     <>
       <div>You have successfully submitted the operation form</div>
@@ -57,11 +90,14 @@ export default function OperationsForm() {
     </>
   ) : (
     <Form
-      schema={localSchema}
+      schema={props.schema}
       validator={validator}
-      onSubmit={operationSubmitHandler}
+      onSubmit={
+        props.formData ? operationUpdateHandler : operationSubmitHandler
+      }
       disabled={isLoading}
       uiSchema={operationUiSchema}
+      formData={props.formData ?? {}}
     ></Form>
   );
 }

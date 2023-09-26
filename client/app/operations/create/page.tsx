@@ -1,19 +1,22 @@
-import {
-  djangoApiSlice,
-  useAddNewOperationMutation,
-  useGetNaicsCodesQuery,
-} from "@/redux";
-
-import validator from "@rjsf/validator-ajv8";
-import Form from "@rjsf/mui";
-import { operationSchema, operationUiSchema } from "@/jsonSchema/operations";
-import { useState } from "react";
-import Link from "next/link";
-import { createOperationSchema } from "../[operation]/page";
-import { createSelector } from "@reduxjs/toolkit";
-import { useSelector } from "react-redux";
 import OperationsForm from "@/app/components/Form/operationsForm";
+import { operationSchema } from "@/jsonSchema/operations";
+import { RJSFSchema } from "@rjsf/utils";
 
-export default function Page() {
-  return <OperationsForm />;
+export async function getNaicsCodes() {
+  return (
+    await fetch("http://localhost:8000/api/registration/naics_codes")
+  ).json();
+}
+
+export const createOperationSchema = (schema: RJSFSchema, naicsCodes) => {
+  const localSchema = JSON.parse(JSON.stringify(schema));
+  localSchema.properties.naics_code.enum = naicsCodes?.map((code) => code.id);
+  return localSchema;
+};
+
+export default async function Page() {
+  const codes = await getNaicsCodes();
+  return (
+    <OperationsForm schema={createOperationSchema(operationSchema, codes)} />
+  );
 }
