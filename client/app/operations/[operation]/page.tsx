@@ -14,9 +14,7 @@ import { useMemo, useState } from "react";
 
 export const createOperationSchema = (schema, naics_codes) => {
   const localSchema = JSON.parse(JSON.stringify(operationSchema));
-  localSchema.properties.naics_code.enum = naics_codes?.map(
-    (code) => code.naics_code
-  );
+  localSchema.properties.naics_code.enum = naics_codes?.map((code) => code.id);
   return localSchema;
 };
 
@@ -86,13 +84,13 @@ export default function Page({ params }: { params: { operation: number } }) {
       uiSchema={operationUiSchema}
       formData={{
         ...operation,
-        naics_code: Number(operation.naics_code),
-        latitude: Number(operation.latitude),
-        longitude: Number(operation.longitude),
-        operator_percent_of_ownership: Number(
-          operation.operator_percent_of_ownership
-        ),
-        estimated_emissions: Number(operation.estimated_emissions),
+        // naics_code: Number(operation.naics_code),
+        // latitude: Number(operation.latitude),
+        // longitude: Number(operation.longitude),
+        // operator_percent_of_ownership: Number(
+        //   operation.operator_percent_of_ownership
+        // ),
+        // estimated_emissions: Number(operation.estimated_emissions),
       }}
     ></Form>
   );
