@@ -1,8 +1,8 @@
 import { test, expect } from "@playwright/test";
 
 test("backend is running", async ({ page }) => {
-  await page.goto("http://127.0.0.1:8000");
-  console.log(await page.content());
+  await page.goto("http://127.0.0.1:8000/api/docs");
+
   await expect(page.getByText(/Ninja/i)).toBeVisible();
 });
 
