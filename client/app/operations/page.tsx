@@ -14,7 +14,14 @@ export async function getOperations() {
 }
 
 export default async function Page() {
-  const operations = await getOperations();
+  const operations: {
+    id: number;
+    registration_year: string;
+    submission_date: string;
+    registration_id: string;
+    verified_at: string;
+    name: string;
+  }[] = await getOperations();
 
   if (!operations) {
     return (

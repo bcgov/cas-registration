@@ -11,7 +11,10 @@ export async function getNaicsCodes() {
   ).json();
 }
 
-export const createOperationSchema = (schema: RJSFSchema, naicsCodes) => {
+export const createOperationSchema = (
+  schema: RJSFSchema,
+  naicsCodes: { id: number }[]
+) => {
   const localSchema = JSON.parse(JSON.stringify(schema));
   localSchema.properties.naics_code_id.enum = naicsCodes?.map(
     (code) => code.id
