@@ -9,6 +9,7 @@ on:
 
 env:
   PGUSER: postgres
+  DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
 
 jobs:
   install-dev-tools:
@@ -124,6 +125,8 @@ jobs:
         uses: ./.github/actions/dev-env-setup
       - name: run app locally
         uses: ./.github/actions/local-app-run
+        with:
+          django_secret_key: ${{ env.DJANGO_SECRET_KEY }}
       - name: ZAP Frontend Scan
         uses: zaproxy/action-baseline@v0.9.0
         with:
@@ -154,6 +157,8 @@ jobs:
         uses: ./.github/actions/dev-env-setup
       - name: run app locally
         uses: ./.github/actions/local-app-run
+        with:
+          django_secret_key: ${{ env.DJANGO_SECRET_KEY }}
       - name: Install Playwright Browsers
         run: yarn playwright install --with-deps
         working-directory: ./client
