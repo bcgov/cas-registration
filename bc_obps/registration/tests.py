@@ -7,7 +7,7 @@ class UserModelTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         # Set up minimum required non-modified objects used by all test methods
-        User.objects.create(
+        testUser = User.objects.create(
             first_name="fname-test",
             last_name="lname-test",
             mailing_address="12 34 Street, Test",
@@ -17,8 +17,12 @@ class UserModelTest(TestCase):
             position_title="test",
         )
 
-        cls.doc_one = Document.objects.create(file="test1.tst", document_type="test", description="test")
-        cls.doc_two = Document.objects.create(file="test2.tst", document_type="test", description="test")
+        testUser.documents.set(
+            [
+                Document.objects.create(file="test1.tst", document_type="test", description="test"),
+                Document.objects.create(file="test2.tst", document_type="test", description="test"),
+            ]
+        )
 
     def test_first_name_label(self):
         testUser = User.objects.get(user_guid="00000000-0000-0000-0000-000000000000")
@@ -92,7 +96,6 @@ class UserModelTest(TestCase):
 
     def test_user_has_multiple_documents(self):
         testUser = User.objects.get(user_guid="00000000-0000-0000-0000-000000000000")
-        testUser.documents.set([self.doc_one.pk, self.doc_two.pk])
         self.assertEqual(testUser.documents.count(), 2)
 
 
