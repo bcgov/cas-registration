@@ -1,6 +1,8 @@
 import OperationsForm from "@/app/components/Form/operationsForm";
+import Loading from "@/app/components/loading";
 import { operationSchema } from "@/jsonSchema/operations";
 import { RJSFSchema } from "@rjsf/utils";
+import { Suspense } from "react";
 
 export const dynamic = "force-dynamic";
 export async function getNaicsCodes() {
@@ -20,6 +22,13 @@ export const createOperationSchema = (schema: RJSFSchema, naicsCodes) => {
 export default async function Page() {
   const codes = await getNaicsCodes();
   return (
-    <OperationsForm schema={createOperationSchema(operationSchema, codes)} />
+    <>
+      <h1>Create a New Operation</h1>
+      <Suspense fallback={<Loading />}>
+        <OperationsForm
+          schema={createOperationSchema(operationSchema, codes)}
+        />
+      </Suspense>
+    </>
   );
 }
