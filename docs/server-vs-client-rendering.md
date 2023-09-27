@@ -11,4 +11,4 @@ Here's how to create a new page and set up the cache:
 - write a component, and inside it await the fetching function
 - likely, this server page will need to render some client components. Inside the client component, whenever you need to refresh page data, call `utils/forceRefresh([route-to-refresh])`. This resets Next 13's aggressive client caching.
 
-See the `operations` folder and `operationsForm` for an example.
+See the `operations` folder and `operationsForm` for an example. More information on this solution can be found here: https://github.com/vercel/next.js/discussions/51612
