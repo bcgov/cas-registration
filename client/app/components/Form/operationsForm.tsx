@@ -8,7 +8,6 @@ import { Form } from "@rjsf/mui";
 import { RJSFSchema } from "@rjsf/utils";
 import { forceRefresh } from "@/app/utils/forceRefresh";
 import { Button } from "@mui/material";
-import { BC_GOV_PRIMARY_BRAND_COLOR_BLUE } from "@/app/lib/colors";
 
 export interface OperationsFormData {
   id: number;
@@ -28,7 +27,7 @@ export default function OperationsForm(props: Props) {
   const [operationName, setOperationName] = useState("");
   const operationSubmitHandler = async (
     formData: OperationsFormData,
-    method: "POST" | "PUT"
+    method: "POST" | "PUT",
   ) => {
     try {
       const response = await fetch(
@@ -38,7 +37,7 @@ export default function OperationsForm(props: Props) {
         {
           method,
           body: JSON.stringify(formData),
-        }
+        },
       );
       if (response.ok) {
         setOperationName(formData.name);
@@ -67,7 +66,7 @@ export default function OperationsForm(props: Props) {
       <Form
         schema={props.schema}
         validator={validator}
-        onSubmit={(data) =>
+        onSubmit={(data: { formData: OperationsFormData }) =>
           // if we have props.formData, it means the operation already exists and we need to update rather than create it
           operationSubmitHandler(data.formData, props.formData ? "PUT" : "POST")
         }
@@ -79,7 +78,7 @@ export default function OperationsForm(props: Props) {
             longitude: Number(props.formData?.longitude),
             estimated_emissions: Number(props.formData?.estimated_emissions),
             operator_percent_of_ownership: Number(
-              props.formData?.operator_percent_of_ownership
+              props.formData?.operator_percent_of_ownership,
             ),
           } ??
           // (props.formData as OperationsFormData)
