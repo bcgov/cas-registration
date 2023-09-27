@@ -4,6 +4,7 @@ from django.http import HttpResponse, HttpResponseServerError
 
 logger = logging.getLogger("liveness")
 
+
 class KubernetesHealthCheckMiddleware(object):
     def __init__(self, get_response):
         self.get_response = get_response
@@ -29,6 +30,7 @@ class KubernetesHealthCheckMiddleware(object):
         # being present.
         try:
             from django.db import connections
+
             for name in connections:
                 cursor = connections[name].cursor()
                 cursor.execute("SELECT 1;")
@@ -44,6 +46,7 @@ class KubernetesHealthCheckMiddleware(object):
         try:
             from django.core.cache import caches
             from django.core.cache.backends.memcached import BaseMemcachedCache
+
             for cache in caches.all():
                 if isinstance(cache, BaseMemcachedCache):
                     stats = cache._cache.get_stats()
