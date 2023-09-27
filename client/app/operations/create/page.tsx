@@ -2,11 +2,10 @@ import OperationsForm from "@/app/components/Form/operationsForm";
 import { operationSchema } from "@/jsonSchema/operations";
 import { RJSFSchema } from "@rjsf/utils";
 
+export const dynamic = "force-dynamic";
 export async function getNaicsCodes() {
   return (
-    await fetch("http://localhost:8000/api/registration/naics_codes", {
-      cache: "no-store",
-    })
+    await fetch("http://localhost:8000/api/registration/naics_codes", {})
   ).json();
 }
 
