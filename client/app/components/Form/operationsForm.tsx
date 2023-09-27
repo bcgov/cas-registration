@@ -7,6 +7,8 @@ import validator from "@rjsf/validator-ajv8";
 import { Form } from "@rjsf/mui";
 import { RJSFSchema } from "@rjsf/utils";
 import { forceRefresh } from "@/app/utils/forceRefresh";
+import { Button } from "@mui/material";
+import { BC_GOV_PRIMARY_BRAND_COLOR_BLUE } from "@/app/lib/colors";
 
 export interface OperationsFormData {
   id: number;
@@ -83,7 +85,16 @@ export default function OperationsForm(props: Props) {
           // (props.formData as OperationsFormData)
           {}
         }
-      ></Form>
+      >
+        <div>
+          <Button
+            className={`bg-[#003366] text-white text-sm font-semibold px-4 py-2 rounded`}
+            type="submit"
+          >
+            Submit
+          </Button>
+        </div>
+      </Form>
     </>
   );
 }
