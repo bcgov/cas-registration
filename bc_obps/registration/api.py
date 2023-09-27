@@ -9,25 +9,10 @@ from ninja.orm import create_schema
 from ninja import Field, Schema
 
 
-class TaskSchema(Schema):
-    id: int
-    title: str
-    # The first Field param is the default, use ... for required fields.
-    completed: bool = Field(..., alias="is_completed")
-    owner_first_name: str = Field(None, alias="owner.first_name")
-
-
 router = Router()
 
 
-# Operator code schemas and endpoints
-class OperatorSchema(Schema):
-    id: int
-
-
 # Naics code schemas and endpoints
-
-
 class NaicsCodeSchema(Schema):
     id: int
     naics_code: str
@@ -102,7 +87,6 @@ def get_operation(request, operation_id: int):
 
 @router.post("/operations")
 def create_operation(request, payload: OperationIn):
-    # brianna do you still need now that we're doing in and out?
     if "operator" in payload.dict():
         operator = payload.dict()["operator"]
         op = get_object_or_404(Operator, id=operator)
@@ -113,6 +97,7 @@ def create_operation(request, payload: OperationIn):
         nc = get_object_or_404(NaicsCode, id=naics_code)
         # Assign the naics_code instance to the operation
         payload.naics_code = nc
+        # temporary handling of many-to-many fields, will be addressed in #138
     if "documents" in payload.dict():
         del payload.documents
     if "contacts" in payload.dict():
@@ -136,10 +121,10 @@ def update_operation(request, operation_id: int, payload: OperationIn):
         operation.naics_code = nc
     # Update other attributes as needed
     for attr, value in payload.dict().items():
-        # brianna will need to fix this for docs and contacts
         if (
             attr != "operator"
             and attr != "naics_code"
+            # temporary handling of many-to-many fields, will be addressed in #138
             and attr != "documents"
             and attr != "contacts"
         ):
