@@ -128,7 +128,7 @@ jobs:
         with:
           django_secret_key: ${{ env.DJANGO_SECRET_KEY }}
       - name: Debug - Print DJANGO_SECRET_KEY
-        run: echo ${{ env.DJANGO_SECRET_KEY }}
+        run: echo "${{ env.DJANGO_SECRET_KEY }}"
       - name: Setup tmate session
         uses: mxschmitt/action-tmate@v3
       - name: ZAP Frontend Scan
