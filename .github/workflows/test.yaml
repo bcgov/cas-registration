@@ -132,6 +132,8 @@ jobs:
       #     cmd_options: "-a -d -T 5 -m 2"
       #     issue_title: OWASP Baseline - Frontend
       #     fail_action: false
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
       - name: ZAP Backend Scan
         uses: zaproxy/action-baseline@v0.9.0
         with:
