@@ -20,16 +20,7 @@ export default async function Page({
   return (
     <OperationsForm
       schema={createOperationSchema(operationSchema, codes)}
-      formData={{
-        ...operation,
-        naics_code: Number(operation.naics_code),
-        latitude: Number(operation.latitude),
-        longitude: Number(operation.longitude),
-        operator_percent_of_ownership: Number(
-          operation.operator_percent_of_ownership
-        ),
-        estimated_emissions: Number(operation.estimated_emissions),
-      }}
+      formData={operation}
     />
   );
 }

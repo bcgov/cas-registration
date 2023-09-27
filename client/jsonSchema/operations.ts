@@ -3,10 +3,10 @@ import { RJSFSchema } from "@rjsf/utils";
 export const operationSchema: RJSFSchema = {
   type: "object",
   required: [
-    "operator",
+    "operator_id",
     "name",
     "operation_type",
-    "naics_code",
+    "naics_code_id",
     "eligible_commercial_product_name",
     "latitude",
     "longitude",
@@ -17,10 +17,10 @@ export const operationSchema: RJSFSchema = {
   ],
   properties: {
     // id: { type: "number", title: "id" },
-    operator: { type: "number", title: "operator_id" },
+    operator_id: { type: "number", title: "operator_id" },
     name: { type: "string", title: "name" },
     operation_type: { type: "string", title: "operation_type" },
-    naics_code: { type: "number", title: "naics_code", enum: [] },
+    naics_code_id: { type: "number", title: "naics_code", enum: [] },
     eligible_commercial_product_name: {
       type: "string",
       title: "eligible_commercial_product_name",

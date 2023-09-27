@@ -15,48 +15,29 @@ interface Props {
 
 export default function OperationsForm(props: Props) {
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
-
+  console.log("formData", props.formData);
   // create stuff
   const operationSubmitHandler = async (data) => {
-    const {
-      naics_code,
-      latitude,
-      longitude,
-      operator_percent_of_ownership,
-      estimated_emissions,
-      operator,
-    } = data.formData;
-    if (true) {
-      try {
-        const tranformedFormData = {
-          ...data.formData,
-          registered_for_obps: false,
-          operator_id: operator,
-          naics_code_id: naics_code.toString(),
-          latitude: latitude.toString(),
-          longitude: longitude.toString(),
-          operator_percent_of_ownership:
-            operator_percent_of_ownership.toString(),
-          estimated_emissions: estimated_emissions.toString(),
-          documents: [],
-          contacts: [],
-        };
-        const response = await fetch(
-          "http://localhost:8000/api/registration/operations",
-          {
-            method: "POST",
-            body: JSON.stringify(tranformedFormData),
-          }
-        ).then((res) => {
-          return res; // JSON data parsed by `data.json()` call
-        });
-        if (response.ok) {
-          setShowSuccessMessage(false);
-          forceRefresh("/operations");
+    try {
+      const tranformedFormData = {
+        ...data.formData,
+        registered_for_obps: false,
+      };
+      const response = await fetch(
+        "http://localhost:8000/api/registration/operations",
+        {
+          method: "POST",
+          body: JSON.stringify(tranformedFormData),
         }
-      } catch (err) {
-        console.error("Failed to save the operation: ", err);
+      ).then((res) => {
+        return res; // JSON data parsed by `data.json()` call
+      });
+      if (response.ok) {
+        setShowSuccessMessage(false);
+        forceRefresh("/operations");
       }
+    } catch (err) {
+      console.error("Failed to save the operation: ", err);
     }
   };
 
@@ -72,16 +53,15 @@ export default function OperationsForm(props: Props) {
       operator,
       id,
     } = data.formData;
-
+    console.log("data.formData", data.formData);
     const transformedFormData = {
       ...data.formData,
-      operator_id: operator,
-      naics_code_id: naics_code.toString(),
-      naics_code: naics_code,
-      latitude: latitude.toString(),
-      longitude: longitude.toString(),
-      operator_percent_of_ownership: operator_percent_of_ownership.toString(),
-      estimated_emissions: estimated_emissions.toString(),
+      // foreign keys need _id appended to them
+      // operator_id: operator,
+      // naics_code_id: naics_code,
+      // documents and contacts to be handled in card #138
+      documents: [],
+      contacts: [],
     };
 
     const response = await fetch(
