@@ -504,7 +504,7 @@ class OperationModelTest(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        Operation.objects.create(
+        testOperation = Operation.objects.create(
             operator_id=Operator.objects.get(id=1),
             name="test-name",
             operation_type="test",
@@ -518,6 +518,33 @@ class OperationModelTest(TestCase):
             operator_percent_of_ownership=0.1,
             registered_for_obps=False,
             estimated_emissions=0.1,
+        )
+        testOperation.contacts.set(
+            [
+                Contact.objects.create(
+                    first_name="fname-test",
+                    last_name="lname-test",
+                    mailing_address="12 34 Street, Test",
+                    email=f"test1@example.com",
+                    phone_number="12345678900",
+                    is_operational_representative=False,
+                ),
+                Contact.objects.create(
+                    first_name="fname-test",
+                    last_name="lname-test",
+                    mailing_address="12 34 Street, Test",
+                    email=f"test2@example.com",
+                    phone_number="12345678900",
+                    is_operational_representative=False,
+                ),
+            ]
+        )
+
+        testOperation.documents.set(
+            [
+                Document.objects.create(file="test1.tst", document_type="test", description="test"),
+                Document.objects.create(file="test2.tst", document_type="test", description="test"),
+            ]
         )
 
     def test_operator_id_label(self):
@@ -669,3 +696,11 @@ class OperationModelTest(TestCase):
         testOperation = Operation.objects.get(id=1)
         field_label = testOperation._meta.get_field("contacts").verbose_name
         self.assertEqual(field_label, "contacts")
+
+    def test_operation_has_documents(self):
+        testOperation = Operation.objects.get(id=1)
+        self.assertEqual(testOperation.documents.count(), 2)
+
+    def test_operation_has_contacts(self):
+        testOperation = Operation.objects.get(id=1)
+        self.assertEqual(testOperation.contacts.count(), 2)
