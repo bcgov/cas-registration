@@ -17,8 +17,8 @@ runs:
       with:
         path: |
           ~/.asdf
-          ./backend/.tool-versions
-        key: ${{ runner.os }}-asdf-cache-backend-${{ hashFiles('backend/.tool-versions') }}
+          ./bc_obps/.tool-versions
+        key: ${{ runner.os }}-asdf-cache-backend-${{ hashFiles('bc_obps/.tool-versions') }}
     - uses: actions/cache@v3
       id: yarn-cache
       with:
