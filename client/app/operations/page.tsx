@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Button } from "@mui/material";
 import { Suspense } from "react";
 import OperatorsGrid from "../components/DataGrid/OperatorsGrid";
+import Loading from "../components/loading";
 
 export const dynamic = "force-dynamic";
 export async function getOperations() {
@@ -48,7 +49,7 @@ export default async function Page() {
   return (
     <>
       <h1>Operations List</h1>
-      <Suspense fallback={<p>🚀 Loading data...</p>}>
+      <Suspense fallback={<Loading />}>
         <Link href="/operations/create">
           <Button variant="contained">Add Operation</Button>
         </Link>

@@ -1,6 +1,8 @@
 import { operationSchema } from "@/jsonSchema/operations";
 import OperationsForm from "@/app/components/Form/operationsForm";
 import { createOperationSchema, getNaicsCodes } from "../create/page";
+import { Suspense } from "react";
+import Loading from "@/app/components/loading";
 
 export const dynamic = "force-dynamic";
 export async function getOperation(id: number) {
@@ -18,9 +20,14 @@ export default async function Page({
   const operation = await getOperation(params.operation);
 
   return (
-    <OperationsForm
-      schema={createOperationSchema(operationSchema, codes)}
-      formData={operation}
-    />
+    <>
+      <h1>Edit an Operation</h1>
+      <Suspense fallback={<Loading />}>
+        <OperationsForm
+          schema={createOperationSchema(operationSchema, codes)}
+          formData={operation}
+        />
+      </Suspense>
+    </>
   );
 }
