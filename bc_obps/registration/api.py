@@ -7,7 +7,7 @@ from django.shortcuts import get_object_or_404
 from .models import Operation, Operator, NaicsCode
 from ninja.orm import create_schema
 from ninja import Field, Schema
-import decimal
+from decimal import *
 
 
 router = Router()
@@ -39,13 +39,13 @@ class OperationIn(Schema):
     ghfrp_id: str
     bcghrp_id: str
     petrinex_id: str
-    latitude: decimal
-    longitude: decimal
+    latitude: Decimal
+    longitude: Decimal
     legal_land_description: str
     nearest_municipality: str
-    operator_percent_of_ownership: decimal
+    operator_percent_of_ownership: Decimal
     registered_for_obps: bool
-    estimated_emissions: decimal
+    estimated_emissions: Decimal
     registered_for_obps: str = Field(default=False)
     # contacts:
     # documents:
@@ -63,13 +63,13 @@ class OperationOut(Schema):
     ghfrp_id: str
     bcghrp_id: str
     petrinex_id: str
-    latitude: decimal
-    longitude: decimal
+    latitude: Decimal
+    longitude: Decimal
     legal_land_description: str
     nearest_municipality: str
-    operator_percent_of_ownership: decimal
+    operator_percent_of_ownership: Decimal
     registered_for_obps: bool
-    estimated_emissions: decimal
+    estimated_emissions: Decimal
     # contacts:
     # documents:
 
