@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from .models import Document, Operator, User, NaicsCode, Contact, UserOperator
+from .models import Document, Operation, Operator, User, NaicsCode, Contact, UserOperator
 
 
 class UserModelTest(TestCase):
@@ -497,3 +497,175 @@ class UserOperatorModelTest(TestCase):
         testUserOperator = self.testUserOperator
         field_label = testUserOperator._meta.get_field("signed_statuatory_declaration").verbose_name
         self.assertEqual(field_label, "signed statuatory declaration")
+
+
+class OperationModelTest(TestCase):
+    fixtures = ["operator.json", "naicsCode.json"]
+
+    @classmethod
+    def setUpTestData(cls):
+        Operation.objects.create(
+            operator_id=Operator.objects.get(id=1),
+            name="test-name",
+            operation_type="test",
+            naics_code=NaicsCode.objects.get(id=1),
+            eligible_commercial_product_name="test",
+            permit_id="test",
+            latitude=0.1,
+            longitude=0.1,
+            legal_land_description="test",
+            nearest_municipality="test",
+            operator_percent_of_ownership=0.1,
+            registered_for_obps=False,
+            estimated_emissions=0.1,
+        )
+
+    def test_operator_id_label(self):
+        testOperation = Operation.objects.get(id=1)
+        field_label = testOperation._meta.get_field("operator_id").verbose_name
+        self.assertEqual(field_label, "operator id")
+
+    def test_name_label(self):
+        testOperation = Operation.objects.get(id=1)
+        field_label = testOperation._meta.get_field("name").verbose_name
+        self.assertEqual(field_label, "name")
+
+    def test_name_max_length(self):
+        testOperation = Operation.objects.get(id=1)
+        max_length = testOperation._meta.get_field("name").max_length
+        self.assertEqual(max_length, 1000)
+
+    def test_operation_type_label(self):
+        testOperation = Operation.objects.get(id=1)
+        field_label = testOperation._meta.get_field("operation_type").verbose_name
+        self.assertEqual(field_label, "operation type")
+
+    def test_operation_type_max_length(self):
+        testOperation = Operation.objects.get(id=1)
+        max_length = testOperation._meta.get_field("operation_type").max_length
+        self.assertEqual(max_length, 1000)
+
+    def test_eligible_commercial_product_name_label(self):
+        testOperation = Operation.objects.get(id=1)
+        field_label = testOperation._meta.get_field("eligible_commercial_product_name").verbose_name
+        self.assertEqual(field_label, "eligible commercial product name")
+
+    def test_eligible_commercial_product_name_max_length(self):
+        testOperation = Operation.objects.get(id=1)
+        max_length = testOperation._meta.get_field("eligible_commercial_product_name").max_length
+        self.assertEqual(max_length, 1000)
+
+    def test_permit_id_label(self):
+        testOperation = Operation.objects.get(id=1)
+        field_label = testOperation._meta.get_field("permit_id").verbose_name
+        self.assertEqual(field_label, "permit id")
+
+    def test_permit_id_max_length(self):
+        testOperation = Operation.objects.get(id=1)
+        max_length = testOperation._meta.get_field("permit_id").max_length
+        self.assertEqual(max_length, 1000)
+
+    def test_npr_id_label(self):
+        testOperation = Operation.objects.get(id=1)
+        field_label = testOperation._meta.get_field("npr_id").verbose_name
+        self.assertEqual(field_label, "npr id")
+
+    def test_npr_id_max_length(self):
+        testOperation = Operation.objects.get(id=1)
+        max_length = testOperation._meta.get_field("npr_id").max_length
+        self.assertEqual(max_length, 1000)
+
+    def test_ghfrp_id_label(self):
+        testOperation = Operation.objects.get(id=1)
+        field_label = testOperation._meta.get_field("ghfrp_id").verbose_name
+        self.assertEqual(field_label, "ghfrp id")
+
+    def test_ghfrp_id_max_length(self):
+        testOperation = Operation.objects.get(id=1)
+        max_length = testOperation._meta.get_field("ghfrp_id").max_length
+        self.assertEqual(max_length, 1000)
+
+    def test_bcghrp_id_label(self):
+        testOperation = Operation.objects.get(id=1)
+        field_label = testOperation._meta.get_field("bcghrp_id").verbose_name
+        self.assertEqual(field_label, "bcghrp id")
+
+    def test_bcghrp_id_max_length(self):
+        testOperation = Operation.objects.get(id=1)
+        max_length = testOperation._meta.get_field("bcghrp_id").max_length
+        self.assertEqual(max_length, 1000)
+
+    def test_petrinex_id_label(self):
+        testOperation = Operation.objects.get(id=1)
+        field_label = testOperation._meta.get_field("petrinex_id").verbose_name
+        self.assertEqual(field_label, "petrinex id")
+
+    def test_petrinex_id_max_length(self):
+        testOperation = Operation.objects.get(id=1)
+        max_length = testOperation._meta.get_field("petrinex_id").max_length
+        self.assertEqual(max_length, 1000)
+
+    def test_latitude_label(self):
+        testOperation = Operation.objects.get(id=1)
+        field_label = testOperation._meta.get_field("latitude").verbose_name
+        self.assertEqual(field_label, "latitude")
+
+    def test_longitude_label(self):
+        testOperation = Operation.objects.get(id=1)
+        field_label = testOperation._meta.get_field("longitude").verbose_name
+        self.assertEqual(field_label, "longitude")
+
+    def test_legal_land_description_label(self):
+        testOperation = Operation.objects.get(id=1)
+        field_label = testOperation._meta.get_field("legal_land_description").verbose_name
+        self.assertEqual(field_label, "legal land description")
+
+    def test_legal_land_description_max_length(self):
+        testOperation = Operation.objects.get(id=1)
+        max_length = testOperation._meta.get_field("legal_land_description").max_length
+        self.assertEqual(max_length, 1000)
+
+    def test_nearest_municipality_label(self):
+        testOperation = Operation.objects.get(id=1)
+        field_label = testOperation._meta.get_field("nearest_municipality").verbose_name
+        self.assertEqual(field_label, "nearest municipality")
+
+    def test_nearest_municipality_max_length(self):
+        testOperation = Operation.objects.get(id=1)
+        max_length = testOperation._meta.get_field("nearest_municipality").max_length
+        self.assertEqual(max_length, 1000)
+
+    def test_operator_percent_of_ownership_label(self):
+        testOperation = Operation.objects.get(id=1)
+        field_label = testOperation._meta.get_field("operator_percent_of_ownership").verbose_name
+        self.assertEqual(field_label, "operator percent of ownership")
+
+    def test_registered_for_obps_label(self):
+        testOperation = Operation.objects.get(id=1)
+        field_label = testOperation._meta.get_field("registered_for_obps").verbose_name
+        self.assertEqual(field_label, "registered for obps")
+
+    def test_verified_at_label(self):
+        testOperation = Operation.objects.get(id=1)
+        field_label = testOperation._meta.get_field("verified_at").verbose_name
+        self.assertEqual(field_label, "verified at")
+
+    def test_verified_by_label(self):
+        testOperation = Operation.objects.get(id=1)
+        field_label = testOperation._meta.get_field("verified_by").verbose_name
+        self.assertEqual(field_label, "verified by")
+
+    def test_estimated_emissions_label(self):
+        testOperation = Operation.objects.get(id=1)
+        field_label = testOperation._meta.get_field("estimated_emissions").verbose_name
+        self.assertEqual(field_label, "estimated emissions")
+
+    def test_documents_label(self):
+        testOperation = Operation.objects.get(id=1)
+        field_label = testOperation._meta.get_field("documents").verbose_name
+        self.assertEqual(field_label, "documents")
+
+    def test_contacts_label(self):
+        testOperation = Operation.objects.get(id=1)
+        field_label = testOperation._meta.get_field("contacts").verbose_name
+        self.assertEqual(field_label, "contacts")
