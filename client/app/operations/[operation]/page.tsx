@@ -1,5 +1,7 @@
 import { operationSchema } from "@/jsonSchema/operations";
-import OperationsForm from "@/app/components/Form/operationsForm";
+import OperationsForm, {
+  OperationsFormData,
+} from "@/app/components/Form/operationsForm";
 import { createOperationSchema, getNaicsCodes } from "../create/page";
 import { Suspense } from "react";
 import Loading from "@/app/components/loading";
@@ -25,7 +27,7 @@ export default async function Page({
       <Suspense fallback={<Loading />}>
         <OperationsForm
           schema={createOperationSchema(operationSchema, codes)}
-          formData={operation}
+          formData={operation as OperationsFormData}
         />
       </Suspense>
     </>

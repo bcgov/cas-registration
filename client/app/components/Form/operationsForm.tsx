@@ -8,16 +8,24 @@ import { Form } from "@rjsf/mui";
 import { RJSFSchema } from "@rjsf/utils";
 import { forceRefresh } from "@/app/utils/forceRefresh";
 
+export interface OperationsFormData {
+  id: number;
+  name: string;
+  latitude: number;
+  longitude: number;
+  estimated_emissions: number;
+  operator_percent_of_ownership: number;
+}
+
 interface Props {
   schema: RJSFSchema;
-  formData?: FormData;
+  formData?: OperationsFormData;
 }
 
 export default function OperationsForm(props: Props) {
-  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
-
+  const [operationName, setOperationName] = useState("");
   const operationSubmitHandler = async (
-    formData: { id: number },
+    formData: OperationsFormData,
     method: "POST" | "PUT"
   ) => {
     try {
@@ -31,7 +39,7 @@ export default function OperationsForm(props: Props) {
         }
       );
       if (response.ok) {
-        setShowSuccessMessage(true);
+        setOperationName(formData.name);
         forceRefresh("/operations");
       }
     } catch (err) {
@@ -39,10 +47,18 @@ export default function OperationsForm(props: Props) {
     }
   };
 
-  return showSuccessMessage ? (
+  return operationName ? (
     <>
-      <div>You have successfully submitted the operation form</div>
-      <Link href="/operations">Return to operations list</Link>
+      <p>Your request to register {operationName} has been received.</p>
+      <p>We will review your request as soon as possible!</p>
+      <p>Once approved, you will receive a confirmation email.</p>
+      <p>
+        You can then log back and download the declartion form for carbon tax
+        exemption for the operation.
+      </p>
+      <p>
+        <Link href="#">Have not received the confirmation email yet?</Link>
+      </p>
     </>
   ) : (
     <>
@@ -54,7 +70,19 @@ export default function OperationsForm(props: Props) {
           operationSubmitHandler(data.formData, props.formData ? "PUT" : "POST")
         }
         uiSchema={operationUiSchema}
-        formData={props.formData ?? {}}
+        formData={
+          {
+            ...props.formData,
+            latitude: Number(props.formData?.latitude),
+            longitude: Number(props.formData?.longitude),
+            estimated_emissions: Number(props.formData?.estimated_emissions),
+            operator_percent_of_ownership: Number(
+              props.formData?.operator_percent_of_ownership
+            ),
+          } ??
+          // (props.formData as OperationsFormData)
+          {}
+        }
       ></Form>
     </>
   );
