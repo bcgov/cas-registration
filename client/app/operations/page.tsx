@@ -1,5 +1,4 @@
-import { GridRowsProp, GridColDef } from "@mui/x-data-grid";
-import DataGrid from "../components/DataGrid/DataGrid";
+import { GridRowsProp } from "@mui/x-data-grid";
 import Link from "next/link";
 import { Button } from "@mui/material";
 import { Suspense } from "react";
