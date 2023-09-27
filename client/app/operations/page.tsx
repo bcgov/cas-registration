@@ -3,7 +3,7 @@ import DataGrid from "../components/DataGrid/DataGrid";
 import Link from "next/link";
 import { Button } from "@mui/material";
 import { Suspense } from "react";
-import OperatorsGrid from "../components/DataGrid/OperatorsGrid";
+import OperationsGrid from "../components/DataGrid/OperationsGrid";
 import Loading from "../components/loading";
 
 export const dynamic = "force-dynamic";
@@ -60,7 +60,7 @@ export default async function Page() {
         <Link href="/operations/create">
           <Button variant="contained">Add Operation</Button>
         </Link>
-        <OperatorsGrid rows={rows} />
+        <OperationsGrid rows={rows} />
       </Suspense>
     </>
   );

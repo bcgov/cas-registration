@@ -36,11 +36,11 @@ interface Props {
   rows: GridRowsProp;
 }
 
-const OperatorsGrid: React.FunctionComponent<Props> = ({ rows }) => {
+const OperationsGrid: React.FunctionComponent<Props> = ({ rows }) => {
   return (
     <div style={{ height: "auto", width: "90%" }}>
       <DataGrid rows={rows} columns={columns} />
     </div>
   );
 };
-export default OperatorsGrid;
+export default OperationsGrid;
