@@ -4,20 +4,14 @@ import Link from "next/link";
 import { Button } from "@mui/material";
 import { Suspense } from "react";
 import OperatorsGrid from "../components/DataGrid/OperatorsGrid";
-import { revalidatePath } from "next/cache";
 
-// export const revalidate = 10;
 export const dynamic = "force-dynamic";
 export async function getOperations() {
   return (
-    await fetch("http://localhost:8000/api/registration/operations", {
-      cache: "no-store",
-      // next: { revalidate },
-    })
+    await fetch("http://localhost:8000/api/registration/operations", {})
   ).json();
 }
 
-// does revalidate cache/router.refresh have to be called in a server action?
 export default async function Page() {
   const operations = await getOperations();
 

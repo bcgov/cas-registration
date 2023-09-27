@@ -6,6 +6,7 @@ import { useState } from "react";
 import validator from "@rjsf/validator-ajv8";
 import { Form } from "@rjsf/mui";
 import { RJSFSchema } from "@rjsf/utils";
+import { forceRefresh } from "@/app/utils/forceRefresh";
 
 interface Props {
   schema: RJSFSchema;
@@ -51,6 +52,7 @@ export default function OperationsForm(props: Props) {
         });
         if (response.ok) {
           setShowSuccessMessage(false);
+          forceRefresh("/operations");
         }
       } catch (err) {
         console.error("Failed to save the operation: ", err);
@@ -93,6 +95,7 @@ export default function OperationsForm(props: Props) {
     });
     if (response.ok) {
       setShowSuccessMessage(false);
+      forceRefresh("/operations");
     }
   };
 
