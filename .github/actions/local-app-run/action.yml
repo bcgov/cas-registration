@@ -1,11 +1,17 @@
 name: "Local Registration app run"
 description: "Runs the Registration app locally"
+
+inputs:
+  django_secret_key:
+    description: "Django secret key"
+    required: true
+
 runs:
   using: composite
   steps:
     - name: start backend
       shell: bash
-      run: docker run -d --network=host -e "DB_USER=postgres" -e "DB_NAME=registration" -e "DB_PORT=5432" -e "DB_HOST=localhost" -e "SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}" ghcr.io/bcgov/cas-reg-backend:${{ github.sha }}
+      run: docker run -d --network=host -e "DB_USER=postgres" -e "DB_NAME=registration" -e "DB_PORT=5432" -e "DB_HOST=localhost" -e -e "SECRET_KEY=$1" ghcr.io/bcgov/cas-reg-backend:${{ github.sha }}
     - name: start frontend
       shell: bash
       run: docker run -d --network=host ghcr.io/bcgov/cas-reg-frontend:${{ github.sha }}
