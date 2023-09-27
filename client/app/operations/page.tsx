@@ -57,7 +57,11 @@ export default async function Page() {
       <h1>Operations List</h1>
       <Suspense fallback={<Loading />}>
         <Link href="/operations/create">
-          <Button variant="contained">Add Operation</Button>
+          <Button
+            className={`bg-[#003366] text-white text-sm font-semibold px-4 py-2 rounded`}
+          >
+            Add Operation
+          </Button>
         </Link>
         <OperationsGrid rows={rows} />
       </Suspense>
