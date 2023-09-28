@@ -8,8 +8,6 @@ export default function RootLayout(props: React.PropsWithChildren) {
     <html lang="en">
       <ThemeRegistry>
         <body>
-          {/* Create a container with styles for layout */}
-          {/* Main content area */}
           <main>{props.children}</main>
         </body>
       </ThemeRegistry>
