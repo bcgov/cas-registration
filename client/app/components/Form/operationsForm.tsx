@@ -66,7 +66,7 @@ export default function OperationsForm(props: Props) {
       <Form
         schema={props.schema}
         validator={validator}
-        onSubmit={(data: { formData: OperationsFormData }) =>
+        onSubmit={(data: { formData?: any }) =>
           // if we have props.formData, it means the operation already exists and we need to update rather than create it
           operationSubmitHandler(data.formData, props.formData ? "PUT" : "POST")
         }
