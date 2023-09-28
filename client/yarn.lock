@@ -1262,6 +1262,11 @@
 >>>>>>> 5c603c8 (chore: fix yarn lock)
     to-fast-properties "^2.0.0"
 
+"@bcgov/bc-sans@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@bcgov/bc-sans/-/bc-sans-2.0.0.tgz#a67156c697c57e1401682129e6b6b4f25539f8a3"
+  integrity sha512-hgCYDEwVWZ0t/yzmo802D1oF3hhzDjsjpgB82EZcDEiLPxjV2x9qALv4mBNKAiWDK4ezvBL1VrD99NnIbxG5Vw==
+
 "@bcoe/v8-coverage@^0.2.3":
   version "0.2.3"
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"

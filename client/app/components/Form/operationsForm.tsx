@@ -86,10 +86,7 @@ export default function OperationsForm(props: Props) {
         }
       >
         <div>
-          <Button
-            className={`bg-[#003366] text-white text-sm font-semibold px-4 py-2 rounded`}
-            type="submit"
-          >
+          <Button variant="contained" type="submit">
             Submit
           </Button>
         </div>
