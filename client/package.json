@@ -20,7 +20,6 @@
     "@mui/icons-material": "^5.14.9",
     "@mui/material": "^5.14.10",
     "@mui/x-data-grid": "^6.14.0",
-    "@reduxjs/toolkit": "^1.9.5",
     "@testing-library/jest-dom": "^6.1.3",
     "@rjsf/core": "^5.12.1",
     "@rjsf/mui": "^5.13.0",
