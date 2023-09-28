@@ -1159,11 +1159,14 @@
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 "@babel/runtime@^7.20.7", "@babel/runtime@^7.8.4", "@babel/runtime@^7.9.2":
   version "7.23.1"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.23.1.tgz#72741dc4d413338a91dcb044a86f3c0bc402646d"
   integrity sha512-hC2v6p8ZSI/W0HUzh3V8C5g+NwSKzKPtJwSpTjwl0o297GP9+ZLQSkdvHz46CM3LqyoXxq+5G9komY+eSqSO0g==
 =======
+=======
+>>>>>>> 95af483 (chore: fix yarn lock)
 "@babel/runtime-corejs2@^7.4.5":
   version "7.23.1"
   resolved "https://registry.yarnpkg.com/@babel/runtime-corejs2/-/runtime-corejs2-7.23.1.tgz#f3a25c24d455be4e0309a56e56f0d2ef1a91c567"
@@ -1186,7 +1189,10 @@
   version "7.23.1"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.23.1.tgz#72741dc4d413338a91dcb044a86f3c0bc402646d"
   integrity sha512-hC2v6p8ZSI/W0HUzh3V8C5g+NwSKzKPtJwSpTjwl0o297GP9+ZLQSkdvHz46CM3LqyoXxq+5G9komY+eSqSO0g==
+<<<<<<< HEAD
 >>>>>>> 5c603c8 (chore: fix yarn lock)
+=======
+>>>>>>> 95af483 (chore: fix yarn lock)
   dependencies:
     regenerator-runtime "^0.14.0"
 
@@ -2019,6 +2025,7 @@
     fastq "^1.6.0"
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 "@playwright/test@^1.37.1":
   version "1.38.1"
   resolved "https://registry.yarnpkg.com/@playwright/test/-/test-1.38.1.tgz#8ef4263e355cd1d8ad7905d471d268e8acb82ed6"
@@ -2026,11 +2033,16 @@
   dependencies:
     playwright "1.38.1"
 =======
+=======
+>>>>>>> 95af483 (chore: fix yarn lock)
 "@popperjs/core@^2.11.8":
   version "2.11.8"
   resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.11.8.tgz#6b79032e760a0899cd4204710beede972a3a185f"
   integrity sha512-P1st0aksCrn9sGZhp8GMYwBnQsbvAWsZAX44oXNNvLHGqAOcoVxmjZiohstwQ7SqKnbR47akdNi+uleWD8+g6A==
+<<<<<<< HEAD
 >>>>>>> c69503a (chore: install MUI)
+=======
+>>>>>>> 95af483 (chore: fix yarn lock)
 
 "@rjsf/core@^5.12.1":
   version "5.13.0"
@@ -4442,6 +4454,7 @@ has@^1.0.3:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 html-encoding-sniffer@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/html-encoding-sniffer/-/html-encoding-sniffer-3.0.0.tgz#2cb1a8cf0db52414776e5b2a7a04d5dd98158de9"
@@ -4473,6 +4486,8 @@ hoist-non-react-statics@^3.0.0, hoist-non-react-statics@^3.3.0, hoist-non-react-
 hoist-non-react-statics@^3.3.0, hoist-non-react-statics@^3.3.1, hoist-non-react-statics@^3.3.2:
 >>>>>>> acc9bd6 (chore: remove button toolkit)
 =======
+=======
+>>>>>>> 95af483 (chore: fix yarn lock)
 hoist-non-react-statics@^3.3.1, hoist-non-react-statics@^3.3.2:
 >>>>>>> 8fd4038 (chore: post-rebase cleanup)
   version "3.3.2"
@@ -4480,7 +4495,11 @@ hoist-non-react-statics@^3.3.1, hoist-non-react-statics@^3.3.2:
   integrity sha512-/gGivxi8JPKWNm/W0jSmzcMPpfpPLc3dY/6GxhX2hQ9iGj3aDfklV4ET7NjKpSinLpJ5vafa9iiGIEZg10SfBw==
 >>>>>>> c69503a (chore: install MUI)
   dependencies:
+<<<<<<< HEAD
     whatwg-encoding "^2.0.0"
+=======
+    react-is "^16.7.0"
+>>>>>>> 95af483 (chore: fix yarn lock)
 
 html-escaper@^2.0.0:
   version "2.0.2"
@@ -6193,10 +6212,14 @@ react-dom@18.2.0:
     scheduler "^0.23.0"
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 react-is@^16.13.1:
 =======
 react-is@^16.13.1, react-is@^16.7.0, react-is@^16.8.4:
 >>>>>>> 6980e26 (chore: install rjsf)
+=======
+react-is@^16.13.1, react-is@^16.7.0, react-is@^16.8.4:
+>>>>>>> 95af483 (chore: fix yarn lock)
   version "16.13.1"
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.13.1.tgz#789729a4dc36de2999dc156dd6c1d9c18cea56a4"
   integrity sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==
@@ -6213,8 +6236,11 @@ react-is@^18.0.0, react-is@^18.2.0:
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 =======
+=======
+>>>>>>> 95af483 (chore: fix yarn lock)
 react-jsonschema-form@^1.8.1:
   version "1.8.1"
   resolved "https://registry.yarnpkg.com/react-jsonschema-form/-/react-jsonschema-form-1.8.1.tgz#9c962f29a55b3fe071d8edf2fc3430f05f1b7ed9"
@@ -6269,6 +6295,7 @@ react-transition-group@^4.4.0, react-transition-group@^4.4.5:
     prop-types "^15.6.2"
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 react-typography@^0.16.19:
   version "0.16.23"
   resolved "https://registry.yarnpkg.com/react-typography/-/react-typography-0.16.23.tgz#68c0af17ed876a30fcea256ef0dbbf0bc01b63b3"
@@ -6277,6 +6304,8 @@ react-typography@^0.16.19:
 >>>>>>> c69503a (chore: install MUI)
 =======
 >>>>>>> acc9bd6 (chore: remove button toolkit)
+=======
+>>>>>>> 95af483 (chore: fix yarn lock)
 react@18.2.0:
   version "18.2.0"
   resolved "https://registry.yarnpkg.com/react/-/react-18.2.0.tgz#555bd98592883255fa00de14f1151a917b5d77d5"
@@ -6298,6 +6327,7 @@ readdirp@~3.6.0:
   dependencies:
     picomatch "^2.2.1"
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 redent@^3.0.0:
   version "3.0.0"
@@ -6321,6 +6351,8 @@ redux@^4.2.1:
 
 =======
 >>>>>>> 8fd4038 (chore: post-rebase cleanup)
+=======
+>>>>>>> 95af483 (chore: fix yarn lock)
 reflect.getprototypeof@^1.0.4:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/reflect.getprototypeof/-/reflect.getprototypeof-1.0.4.tgz#aaccbf41aca3821b87bb71d9dcbc7ad0ba50a3f3"
@@ -6395,11 +6427,14 @@ require-from-string@^2.0.2:
   resolved "https://registry.yarnpkg.com/require-from-string/-/require-from-string-2.0.2.tgz#89a7fdd938261267318eafe14f9c32e598c36909"
   integrity sha512-Xf0nWe6RseziFMu+Ap9biiUbmplq6S9/p+7w7YXP/JBHhrUDDUhwa+vANyubuqfZWTveU//DYVGsDG7RKL/vEw==
 
+<<<<<<< HEAD
 requires-port@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/requires-port/-/requires-port-1.0.0.tgz#925d2601d39ac485e091cf0da5c6e694dc3dcaff"
   integrity sha512-KigOCHcocU3XODJxsu8i/j8T9tzT4adHiecwORRQ0ZZFcp7ahwXuRU1m+yuO90C5ZUyGeGfocHDI14M3L3yDAQ==
 
+=======
+>>>>>>> 95af483 (chore: fix yarn lock)
 reselect@^4.1.8:
   version "4.1.8"
   resolved "https://registry.yarnpkg.com/reselect/-/reselect-4.1.8.tgz#3f5dc671ea168dccdeb3e141236f69f02eaec524"
