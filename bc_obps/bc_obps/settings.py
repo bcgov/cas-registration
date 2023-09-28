@@ -48,11 +48,11 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.common.CommonMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
-    "corsheaders.middleware.CorsMiddleware",
-    "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
@@ -145,7 +145,10 @@ STORAGES = {
     },
 }
 GS_BUCKET_NAME = os.environ.get("GS_BUCKET_NAME")
-if os.environ.get("GOOGLE_APPLICATION_CREDENTIALS"):
-    GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
-        os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")
-    )
+GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
+    os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")
+)
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+]
