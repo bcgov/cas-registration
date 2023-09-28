@@ -21,9 +21,7 @@ const columns: GridColDef[] = [
     renderCell: (params) => {
       return (
         <Link href={`operations/${params.row.id}`}>
-          <Button
-            className={`bg-[#003366] text-white text-sm font-semibold px-4 py-2 rounded`}
-          >
+          <Button variant="contained">
             {params.row.status === "Not Registered"
               ? "Start Registration"
               : "View Details"}
