@@ -1,3 +1,5 @@
+// This file is taken from https://github.com/SimulShift/Next13-App-Router-And-Mui5-Example
+
 "use client";
 
 import * as React from "react";
@@ -26,6 +28,7 @@ export function NextAppDirEmotionCacheProvider(
   const { options, CacheProvider = DefaultCacheProvider, children } = props;
 
   const [{ cache, flush }] = React.useState(() => {
+    // eslint-disable-next-line @typescript-eslint/no-shadow
     const cache = createCache(options);
     cache.compat = true;
     const prevInsert = cache.insert;
@@ -37,6 +40,7 @@ export function NextAppDirEmotionCacheProvider(
       }
       return prevInsert(...args);
     };
+    // eslint-disable-next-line @typescript-eslint/no-shadow
     const flush = () => {
       const prevInserted = inserted;
       inserted = [];
