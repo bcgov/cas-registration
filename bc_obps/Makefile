@@ -81,3 +81,7 @@ superuser:
 loadfixtures: ## add all registration fixture files to the db
 loadfixtures:
 	python $(MANAGE_PY) loaddata ./registration/fixtures/*.json
+
+.PHONY: reset_db
+reset_db: ## drop and recreate the db
+reset_db: drop_db create_db migrate loadfixtures
