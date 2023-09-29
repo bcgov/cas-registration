@@ -85,7 +85,7 @@ WSGI_APPLICATION = "bc_obps.wsgi.application"
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('DB_NAME'),
+        'NAME': os.environ.get('DB_NAME', 'registration'),
         'USER': os.environ.get('DB_USER', 'postgres'),
         'PASSWORD': os.environ.get('DB_PASSWORD'),
         'HOST': os.environ.get('DB_HOST', '127.0.0.1'),
@@ -142,4 +142,7 @@ STORAGES = {
     "staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"},
 }
 GS_BUCKET_NAME = os.environ.get('GS_BUCKET_NAME')
-GS_CREDENTIALS = service_account.Credentials.from_service_account_file(os.environ.get('GOOGLE_APPLICATION_CREDENTIALS'))
+if os.environ.get('GOOGLE_APPLICATION_CREDENTIALS'):
+    GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
+        os.environ.get('GOOGLE_APPLICATION_CREDENTIALS')
+    )

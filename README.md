@@ -8,4 +8,4 @@ A web app for Registration in OBPS under the Clean Growth branch
 
 ## Documentation
 
-- [Developer and Application Documentation](./docs)
+- [Developer and Application Documentation](./docs/README.md)

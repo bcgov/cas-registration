@@ -9,9 +9,10 @@ on:
 
 env:
   PGUSER: postgres
+  DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
 
 jobs:
-  install-client-dev-tools:
+  install-dev-tools:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -19,40 +20,8 @@ jobs:
         uses: ./.github/actions/dev-env-setup
       - run: yarn install --frozen-lockfile
         working-directory: ./client
-  install-server-dev-tools:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: dev env setup
-        uses: ./.github/actions/dev-env-setup
-      - name: Set up python
-        id: setup-python
-        uses: actions/setup-python@v4
-        with:
-          # do this dynamically with tool-versions version
-          python-version: "3.9.16"
-      - name: Install Poetry
-        uses: snok/install-poetry@v1
-      - name: Load cached venv
-        id: cached-poetry-dependencies
-        uses: actions/cache@v3
-        with:
-          path: .venv
-          key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
-      #----------------------------------------------
-      # install dependencies if cache does not exist
-      #----------------------------------------------
-      - name: Install dependencies
-        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-        run: poetry install --no-interaction --no-root
-        working-directory: ./bc_obps
-      - name: is pylint installed?
-        run: |
-          poetry run pylint --version
-          echo $PATH
-        working-directory: ./bc_obps
   yarn-test:
-    needs: install-client-dev-tools
+    needs: install-dev-tools
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -60,38 +29,41 @@ jobs:
         uses: ./.github/actions/dev-env-setup
       - run: yarn test
         working-directory: ./client
-  pre-commit:
-    needs: ["install-client-dev-tools", "install-server-dev-tools"]
+  yarn-audit:
+    needs: install-dev-tools
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - name: dev env setup
         uses: ./.github/actions/dev-env-setup
+      - run: yarn audit-deps
+        working-directory: ./client
+  pre-commit:
+    needs: install-dev-tools
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: dev env setup
+        uses: ./.github/actions/dev-env-setup
+      - name: set pre-commit cache directory
+        run: |
+          echo "PRE_COMMIT_HOME=$GITHUB_WORKSPACE/.pre-commit-cache" >> $GITHUB_ENV
+      - name: set PY
+        run: echo "PY=$(python -VV | sha256sum | cut -d' ' -f1)" >> $GITHUB_ENV
+      - name: create commitlint COMMIT_EDITMSG if not exists
+        run: |
+          if test -f ".git/COMMIT_EDITMSG"; then
+              echo "COMMIT_EDITMSG EXISTS, skipping"
+          else
+              touch .git/COMMIT_EDITMSG
+          fi
+      - uses: actions/cache@v3
+        with:
+          path: |
+            ./.pre-commit-cache
+          key: pre-commit-${{ env.PY }}-${{ hashFiles('.pre-commit-config.yaml') }}-v3
       - run: pip install -r requirements.txt
-      - name: Set up python
-        id: setup-python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.9.16"
-      - name: Install Poetry
-        uses: snok/install-poetry@v1
-      - name: Load cached venv
-        id: cached-poetry-dependencies
-        uses: actions/cache@v3
-        with:
-          path: .venv
-          key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
-      #----------------------------------------------
-      # install dependencies if cache does not exist
-      #----------------------------------------------
-      - name: Install dependencies
-        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-        run: poetry install --no-interaction --no-root
-        working-directory: ./bc_obps
       - uses: pre-commit/action@v3.0.0
-      - uses: terraform-linters/setup-tflint@v1
-        with:
-          tflint_version: latest
   docker-build:
     runs-on: ubuntu-latest
     strategy:
@@ -154,8 +126,7 @@ jobs:
           rm -rf /tmp/.buildx-cache
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
   zap-owasp:
-    needs:
-      ["docker-build", "install-client-dev-tools", "install-server-dev-tools"]
+    needs: ["docker-build", "install-dev-tools"]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -163,8 +134,10 @@ jobs:
         uses: ./.github/actions/dev-env-setup
       - name: run app locally
         uses: ./.github/actions/local-app-run
+        with:
+          django_secret_key: ${{ env.DJANGO_SECRET_KEY }}
       - name: ZAP Frontend Scan
-        uses: zaproxy/action-baseline@v0.6.1
+        uses: zaproxy/action-baseline@v0.9.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           docker_name: "owasp/zap2docker-stable"
@@ -173,14 +146,37 @@ jobs:
           cmd_options: "-a -d -T 5 -m 2"
           issue_title: OWASP Baseline - Frontend
           fail_action: false
-
-      # - name: ZAP Backend Scan
-      #   uses: zaproxy/action-baseline@v0.6.1
-      #   with:
-      #     token: ${{ secrets.GITHUB_TOKEN }}
-      #     docker_name: "owasp/zap2docker-stable"
-      #     target: "http://127.0.0.1:8000/"
-      #     rules_file_name: ".zap/rules-backend.tsv"
-      #     cmd_options: "-a -d -T 5 -m 2"
-      #     issue_title: OWASP Baseline - Backend
-      #     fail_action: false
+      - name: ZAP Backend Scan
+        uses: zaproxy/action-baseline@v0.9.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          docker_name: "owasp/zap2docker-stable"
+          target: "http://0.0.0.0:8000/"
+          rules_file_name: ".zap/rules-backend.tsv"
+          cmd_options: "-a -d -T 5 -m 2"
+          issue_title: OWASP Baseline - Backend
+          fail_action: false
+  e2e:
+    needs: ["docker-build", "install-dev-tools"]
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: dev env setup
+        uses: ./.github/actions/dev-env-setup
+      - name: run app locally
+        uses: ./.github/actions/local-app-run
+        with:
+          django_secret_key: ${{ env.DJANGO_SECRET_KEY }}
+      - name: Install Playwright Browsers
+        run: yarn playwright install --with-deps
+        working-directory: ./client
+      - name: Run Playwright tests
+        run: DEBUG=pw:browser npx playwright test
+        working-directory: ./client
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: playwright-report
+          path: client/playwright-report
+          retention-days: 30
