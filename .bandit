@@ -1,3 +1,0 @@
-[bandit]
-# for now until we have real tests
-exclude = test_sample.py

@@ -1,0 +1,2 @@
+# Ignore test_sample.py for now until we have better tests
+exclude_dirs: ["test_sample.py"]
