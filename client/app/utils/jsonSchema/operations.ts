@@ -16,7 +16,6 @@ export const operationSchema: RJSFSchema = {
     "estimated_emissions",
   ],
   properties: {
-    // id: { type: "number", title: "id" },
     operator_id: { type: "number", title: "operator_id" },
     name: { type: "string", title: "name" },
     operation_type: { type: "string", title: "operation_type" },
@@ -38,7 +37,6 @@ export const operationSchema: RJSFSchema = {
       type: "number",
       title: "operator_percent_of_ownership",
     },
-    // registered_for_obps: { type: "boolean", title: "registered_for_obps" },
     estimated_emissions: { type: "number", title: "estimated_emissions" },
     // documents: { type: "string", title: "documents" },
     // contacts: { type: "string", title: "contacts" },

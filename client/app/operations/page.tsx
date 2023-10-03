@@ -2,7 +2,7 @@ import { GridRowsProp } from "@mui/x-data-grid";
 import Link from "next/link";
 import { Button } from "@mui/material";
 import { Suspense } from "react";
-import OperationsGrid from "../components/DataGrid/OperationsGrid";
+import DataGrid from "../components/datagrid/DataGrid";
 import Loading from "../components/loading";
 
 export const dynamic = "force-dynamic";
@@ -59,7 +59,36 @@ export default async function Page() {
         <Link href="/operations/create">
           <Button variant="contained">Add Operation</Button>
         </Link>
-        <OperationsGrid rows={rows} />
+        <DataGrid
+          cntxt="operations"
+          rows={rows}
+          columns={[
+            { field: "operation_id", headerName: "Operation ID", width: 150 },
+            { field: "name", headerName: "Operation", width: 150 },
+            {
+              field: "registration_year",
+              headerName: "Registration Year",
+              width: 150,
+            },
+            {
+              field: "submission_date",
+              headerName: "Submission Date",
+              width: 150,
+            },
+            {
+              field: "registration_id",
+              headerName: "Registration ID",
+              width: 150,
+            },
+            { field: "status", headerName: "Status", width: 150 },
+            {
+              field: "action",
+              headerName: "Action",
+              sortable: false,
+              width: 200,
+            },
+          ]}
+        />
       </Suspense>
     </>
   );

@@ -1,6 +1,6 @@
-import OperationsForm from "@/app/components/Form/operationsForm";
+import OperationsForm from "@/app/components/form/OperationsForm";
 import Loading from "@/app/components/loading";
-import { operationSchema } from "@/jsonSchema/operations";
+import { operationSchema } from "@/app/utils/jsonSchema/operations";
 import { RJSFSchema } from "@rjsf/utils";
 import { Suspense } from "react";
 
