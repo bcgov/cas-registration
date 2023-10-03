@@ -1,6 +1,6 @@
 "use server";
 import { revalidatePath } from "next/cache";
-import { OperationsFormData } from "../components/Form/operationsForm";
+import { OperationsFormData } from "../../components/form/OperationsForm";
 
 export const operationSubmitHandler = async (
   formData: OperationsFormData,
@@ -22,7 +22,6 @@ export const operationSubmitHandler = async (
     revalidatePath("/operations");
     return await response.json();
   } catch (err: any) {
-    console.log("is there an error");
     return { error: err.message };
   }
 };
