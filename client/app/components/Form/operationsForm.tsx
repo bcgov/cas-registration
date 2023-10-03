@@ -1,13 +1,14 @@
 "use client";
 
 import { operationUiSchema } from "@/jsonSchema/operations";
-import Link from "next/link";
-import { useState } from "react";
-import validator from "@rjsf/validator-ajv8";
 import { Form } from "@rjsf/mui";
 import { RJSFSchema } from "@rjsf/utils";
-import { forceRefresh } from "@/app/utils/forceRefresh";
-import { Button } from "@mui/material";
+import validator from "@rjsf/validator-ajv8";
+import Link from "next/link";
+import { useState } from "react";
+import { operationSubmitHandler } from "@/app/utils/submitHandlers";
+import { Alert } from "@mui/material";
+import SubmitButton from "./SubmitButton";
 
 export interface OperationsFormData {
   id: number;
@@ -25,28 +26,7 @@ interface Props {
 
 export default function OperationsForm(props: Props) {
   const [operationName, setOperationName] = useState("");
-  const operationSubmitHandler = async (
-    formData: OperationsFormData,
-    method: "POST" | "PUT",
-  ) => {
-    try {
-      const response = await fetch(
-        method === "POST"
-          ? "http://localhost:8000/api/registration/operations"
-          : `http://localhost:8000/api/registration/operations/${formData.id}`,
-        {
-          method,
-          body: JSON.stringify(formData),
-        },
-      );
-      if (response.ok) {
-        setOperationName(formData.name);
-        forceRefresh("/operations");
-      }
-    } catch (err) {
-      console.error("Failed to save the operation: ", err);
-    }
-  };
+  const [error, setError] = useState(undefined);
 
   return operationName ? (
     <>
@@ -66,10 +46,17 @@ export default function OperationsForm(props: Props) {
       <Form
         schema={props.schema}
         validator={validator}
-        onSubmit={(data: { formData?: any }) =>
-          // if we have props.formData, it means the operation already exists and we need to update rather than create it
-          operationSubmitHandler(data.formData, props.formData ? "PUT" : "POST")
-        }
+        onSubmit={async (data: { formData?: any }) => {
+          const response = await operationSubmitHandler(
+            data.formData,
+            props.formData ? "PUT" : "POST"
+          );
+          if (response.error) {
+            setError(response.error);
+            return;
+          }
+          setOperationName(response.name);
+        }}
         uiSchema={operationUiSchema}
         formData={
           {
@@ -78,18 +65,13 @@ export default function OperationsForm(props: Props) {
             longitude: Number(props.formData?.longitude),
             estimated_emissions: Number(props.formData?.estimated_emissions),
             operator_percent_of_ownership: Number(
-              props.formData?.operator_percent_of_ownership,
+              props.formData?.operator_percent_of_ownership
             ),
-          } ??
-          // (props.formData as OperationsFormData)
-          {}
+          } ?? (props.formData as OperationsFormData)
         }
       >
-        <div>
-          <Button variant="contained" type="submit">
-            Submit
-          </Button>
-        </div>
+        {error && <Alert severity="error">{error}</Alert>}
+        <SubmitButton />
       </Form>
     </>
   );

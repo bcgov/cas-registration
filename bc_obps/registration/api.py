@@ -104,7 +104,7 @@ def create_operation(request, payload: OperationIn):
     if "contacts" in payload.dict():
         del payload.contacts
     operation = Operation.objects.create(**payload.dict())
-    return {"id": operation.id}
+    return {"id": operation.id, "name": operation.name}
 
 
 @router.put("/operations/{operation_id}")
