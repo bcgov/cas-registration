@@ -4,7 +4,7 @@ import * as React from "react";
 import CssBaseline from "@mui/material/CssBaseline";
 import { createTheme, ThemeOptions, ThemeProvider } from "@mui/material/styles";
 import { NextAppDirEmotionCacheProvider } from "./EmotionCache";
-import { BC_GOV_PRIMARY_BRAND_COLOR_BLUE } from "@/app/colors/colors";
+import { BC_GOV_PRIMARY_BRAND_COLOR_BLUE } from "@/app/styles/colors";
 
 const themeOptions: ThemeOptions = {
   typography: {

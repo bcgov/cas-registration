@@ -1,10 +1,10 @@
-import { operationSchema } from "@/jsonSchema/operations";
-import OperationsForm, {
-  OperationsFormData,
-} from "@/app/components/Form/operationsForm";
+import { operationSchema } from "@/app/utils/jsonSchema/operations";
 import { createOperationSchema, getNaicsCodes } from "../create/page";
 import { Suspense } from "react";
 import Loading from "@/app/components/loading";
+import OperationsForm, {
+  OperationsFormData,
+} from "@/app/components/form/OperationsForm";
 
 export const dynamic = "force-dynamic";
 export async function getOperation(id: number) {
