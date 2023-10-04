@@ -44,6 +44,7 @@ export default function OperationsForm(props: Props) {
   ) : (
     <>
       <Form
+        // Because this is an RJSF form, we can't use the Nextjs13.5 pattern of putting a function in the action prop and using the useFormState hook.
         schema={props.schema}
         validator={validator}
         onSubmit={async (data: { formData?: any }) => {
@@ -58,17 +59,15 @@ export default function OperationsForm(props: Props) {
           setOperationName(response.name);
         }}
         uiSchema={operationUiSchema}
-        formData={
-          {
-            ...props.formData,
-            latitude: Number(props.formData?.latitude),
-            longitude: Number(props.formData?.longitude),
-            estimated_emissions: Number(props.formData?.estimated_emissions),
-            operator_percent_of_ownership: Number(
-              props.formData?.operator_percent_of_ownership,
-            ),
-          } ?? (props.formData as OperationsFormData)
-        }
+        formData={{
+          ...props.formData,
+          latitude: Number(props.formData?.latitude),
+          longitude: Number(props.formData?.longitude),
+          estimated_emissions: Number(props.formData?.estimated_emissions),
+          operator_percent_of_ownership: Number(
+            props.formData?.operator_percent_of_ownership,
+          ),
+        }}
       >
         {error && <Alert severity="error">{error}</Alert>}
         <SubmitButton />
