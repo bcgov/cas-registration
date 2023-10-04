@@ -7,9 +7,7 @@ class Document(models.Model):
     """Document model"""
 
     file = models.FileField(upload_to="documents", db_comment="")
-    document_type = models.CharField(
-        max_length=1000, db_comment="Type of document, e.g., boundary map"
-    )
+    document_type = models.CharField(max_length=1000, db_comment="Type of document, e.g., boundary map")
     description = models.CharField(max_length=1000, db_comment="")
 
     class Meta:
@@ -47,9 +45,7 @@ class User(UserAndContactCommonInfo):
     user_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, db_comment="")
     business_guid = models.UUIDField(default=uuid.uuid4, db_comment="")
     position_title = models.CharField(max_length=1000, db_comment="")
-    documents = models.ManyToManyField(
-        Document, blank=True, related_name="user_documents"
-    )
+    documents = models.ManyToManyField(Document, blank=True, related_name="user_documents")
 
     class Meta:
         db_table_comment = "App users"
@@ -76,15 +72,11 @@ class Contact(UserAndContactCommonInfo):
     )
 
     class Meta:
-        db_table_comment = (
-            "Contacts (people who don't use the app, e.g. authorized signing officers)"
-        )
+        db_table_comment = "Contacts (people who don't use the app, e.g. authorized signing officers)"
         indexes = [
             models.Index(fields=["verified_by"], name="contact_verified_by_idx"),
         ]
-        constraints = [
-            models.UniqueConstraint(fields=["email"], name="contact_email_constraint")
-        ]
+        constraints = [models.UniqueConstraint(fields=["email"], name="contact_email_constraint")]
 
 
 class Operator(models.Model):
@@ -105,20 +97,12 @@ class Operator(models.Model):
         blank=True,
         null=True,
     )
-    relationship_with_parent_operator = models.CharField(
-        max_length=1000, db_comment="", blank=True
-    )
-    compliance_obligee = models.ForeignKey(
-        "self", on_delete=models.DO_NOTHING, related_name="obligee", db_comment=""
-    )
+    relationship_with_parent_operator = models.CharField(max_length=1000, db_comment="", blank=True)
+    compliance_obligee = models.ForeignKey("self", on_delete=models.DO_NOTHING, related_name="obligee", db_comment="")
     date_aso_became_responsible_for_operator = models.DateTimeField(db_comment="")
-    documents = models.ManyToManyField(
-        Document, blank=True, related_name="operator_documents"
-    )
+    documents = models.ManyToManyField(Document, blank=True, related_name="operator_documents")
     contacts = models.ManyToManyField(Contact, related_name="operator_contacts")
-    operators = models.ManyToManyField(
-        User, through="UserOperator", related_name="operator_users"
-    )
+    operators = models.ManyToManyField(User, through="UserOperator", related_name="operator_users")
 
     class Meta:
         db_table_comment = "Operators (also called organizations)"
@@ -141,9 +125,7 @@ class UserOperator(models.Model):
         APPROVED = "approved", "Approved"
         REJECTED = "rejected", "Rejected"
 
-    users = models.ForeignKey(
-        User, on_delete=models.DO_NOTHING, related_name="user_operators"
-    )
+    users = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name="user_operators")
     operators = models.ForeignKey(
         Operator,
         on_delete=models.DO_NOTHING,
@@ -174,9 +156,7 @@ class UserOperator(models.Model):
     )
 
     class Meta:
-        db_table_comment = (
-            "Through table to connect Users and Operators and track access requests"
-        )
+        db_table_comment = "Through table to connect Users and Operators and track access requests"
         indexes = [
             models.Index(fields=["users"], name="user_operator_user_id_idx"),
             models.Index(fields=["operators"], name="user_operator_operator_id_idx"),
@@ -186,14 +166,10 @@ class UserOperator(models.Model):
 class Operation(models.Model):
     """Operation model"""
 
-    operator = models.ForeignKey(
-        Operator, on_delete=models.DO_NOTHING, db_comment="", related_name="operations"
-    )
+    operator = models.ForeignKey(Operator, on_delete=models.DO_NOTHING, db_comment="", related_name="operations")
     name = models.CharField(max_length=1000, db_comment="")
     operation_type = models.CharField(max_length=1000, db_comment="")
-    naics_code = models.ForeignKey(
-        NaicsCode, on_delete=models.DO_NOTHING, db_comment="", related_name="operations"
-    )
+    naics_code = models.ForeignKey(NaicsCode, on_delete=models.DO_NOTHING, db_comment="", related_name="operations")
     eligible_commercial_product_name = models.CharField(max_length=1000, db_comment="")
     permit_id = models.CharField(max_length=1000, db_comment="")
     npr_id = models.CharField(max_length=1000, db_comment="", blank=True)
@@ -204,9 +180,7 @@ class Operation(models.Model):
     longitude = models.DecimalField(decimal_places=5, max_digits=10, db_comment="")
     legal_land_description = models.CharField(max_length=1000, db_comment="")
     nearest_municipality = models.CharField(max_length=1000, db_comment="")
-    operator_percent_of_ownership = models.DecimalField(
-        decimal_places=5, max_digits=10, db_comment=""
-    )
+    operator_percent_of_ownership = models.DecimalField(decimal_places=5, max_digits=10, db_comment="")
     registered_for_obps = models.BooleanField(db_comment="")
     verified_at = models.DateTimeField(db_comment="", blank=True, null=True)
     verified_by = models.ForeignKey(
@@ -217,12 +191,8 @@ class Operation(models.Model):
         null=True,
         related_name="operations",
     )
-    estimated_emissions = models.DecimalField(
-        decimal_places=5, max_digits=10, db_comment=""
-    )
-    documents = models.ManyToManyField(
-        Document, blank=True, related_name="operation_documents"
-    )
+    estimated_emissions = models.DecimalField(decimal_places=5, max_digits=10, db_comment="")
+    documents = models.ManyToManyField(Document, blank=True, related_name="operation_documents")
     contacts = models.ManyToManyField(Contact, related_name="operation_contacts")
 
     class Meta:
