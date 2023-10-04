@@ -5,13 +5,7 @@
 export default function Error() {
   return (
     <>
-      <div className="grid h-screen px-4 bg-white place-content-center">
-        <div className="text-center">
-          <h1 className="font-black text-gray-200 text-9xl">
-            DEFAULT ERROR PAGE
-          </h1>
-        </div>
-      </div>
+      <p>DEFAULT ERROR PAGE</p>
     </>
   );
 }

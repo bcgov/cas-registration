@@ -1,28 +1,16 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
 import { MiddlewareFactory } from "./types";
 
 // 👇️ return request's response
 export const withResponse: MiddlewareFactory = () => {
-  return async (request: NextRequest) => {
-    const cookieName = "mock-auth-token";
-    const { pathname } = request.nextUrl;
-
+  return async () => {
     // 👇️ create response
     let response = NextResponse.next();
 
-    // 🔍 Check mock authentication
-    if (pathname.endsWith("/authenticate")) {
-      // redirect to auth path
-      response = NextResponse.redirect(new URL(`/auth`, request.url));
-      // 🍪 set cookie to response to fake auth cookie for next request
-      response.cookies.set(cookieName, "mock-authenticated");
-    }
-
-    if (pathname.endsWith("/signout")) {
-      // 🍪 delete cookie from response
-      response.cookies.delete(cookieName);
-    }
+    /**
+     * response modifications go here
+     */
 
     return response;
   };
