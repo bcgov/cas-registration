@@ -31,7 +31,7 @@ export default function Home() {
           <li key={index}>{todo}</li>
         ))}
       </ul>
-      {/* In a standard HTML form, the action attribute specifies the URL where the form data should be sent when the user submits the form. 
+      {/* In a standard HTML form, the action attribute specifies the URL where the form data should be sent when the user submits the form.
       However, in this case, we are calling the server action function */}
       <form action={addTodo}>
         <input
