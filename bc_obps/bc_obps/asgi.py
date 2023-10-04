@@ -13,4 +13,5 @@ from django.core.asgi import get_asgi_application
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'bc_obps.settings')
 
+# pylint: disable=unused-variable
 application = get_asgi_application()

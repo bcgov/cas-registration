@@ -1,13 +1,9 @@
-from django.contrib import admin
-from django.urls import path
-from datetime import date
 from typing import List
 from ninja import Router
 from django.shortcuts import get_object_or_404
 from .models import Operation, Operator, NaicsCode
-from ninja.orm import create_schema
 from ninja import Field, Schema
-from decimal import *
+from decimal import Decimal
 
 
 router = Router()
