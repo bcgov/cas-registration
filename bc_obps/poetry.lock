@@ -310,6 +310,19 @@ files = [
 
 [package.dependencies]
 Django = ">=3.2"
+name = "django-localflavor"
+version = "4.0"
+description = "Country-specific Django helpers"
+optional = false
+python-versions = "*"
+files = [
+    {file = "django-localflavor-4.0.tar.gz", hash = "sha256:11859e522dba74aa6dde5a659242b1fbc5efb4dea08e9b77315402bdeca5194e"},
+    {file = "django_localflavor-4.0-py3-none-any.whl", hash = "sha256:7a5b1df03ca8e10df9d1b3c2e4314e43383067868183cdf41ab4e7a973694a8b"},
+]
+
+[package.dependencies]
+django = ">=3.2"
+python-stdnum = ">=1.6"
 
 [[package]]
 name = "django-ninja"
@@ -1081,6 +1094,22 @@ files = [
 cli = ["click (>=5.0)"]
 
 [[package]]
+name = "python-stdnum"
+version = "1.19"
+description = "Python module to handle standardized numbers and codes"
+optional = false
+python-versions = "*"
+files = [
+    {file = "python-stdnum-1.19.tar.gz", hash = "sha256:133ec82f56390ea74c190569e98f2fb14b869808b1d54785708f22d0fead8b3f"},
+    {file = "python_stdnum-1.19-py2.py3-none-any.whl", hash = "sha256:1b5b401ad3f45b798b0317313b781a433f5d7a5ff2c9feb8054664f76f78644e"},
+]
+
+[package.extras]
+soap = ["zeep"]
+soap-alt = ["suds"]
+soap-fallback = ["PySimpleSOAP"]
+
+[[package]]
 name = "pyyaml"
 version = "6.0.1"
 description = "YAML parser and emitter for Python"
@@ -1398,4 +1427,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "2607a40121df31caada4760511f104f91d0e91d77815c056880ff4fda03451de"
+content-hash = "5e8b45cca6380526399dce83c65b99f3d7bd2b2db4751414c05b3cf31e5179a6"
