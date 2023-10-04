@@ -1,3 +1,4 @@
+export const runtime = "edge"; // 'nodejs' (default) | 'edge'
 import OperationsForm from "@/app/components/form/OperationsForm";
 import Loading from "@/app/components/loading";
 import { operationSchema } from "@/app/utils/jsonSchema/operations";

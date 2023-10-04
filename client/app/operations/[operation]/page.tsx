@@ -1,3 +1,4 @@
+export const runtime = "edge"; // 'nodejs' (default) | 'edge'
 import { operationSchema } from "@/app/utils/jsonSchema/operations";
 import { createOperationSchema, getNaicsCodes } from "../create/page";
 import { Suspense } from "react";
@@ -5,7 +6,7 @@ import Loading from "@/app/components/loading";
 import OperationsForm, {
   OperationsFormData,
 } from "@/app/components/form/OperationsForm";
-export const dynamic = "auto";
+
 export async function getOperation(id: number) {
   return (
     await fetch(`http://localhost:8000/api/registration/operations/${id}`, {

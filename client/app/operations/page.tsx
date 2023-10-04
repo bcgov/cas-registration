@@ -1,10 +1,11 @@
+export const runtime = "edge"; // 'nodejs' (default) | 'edge'
 import { GridRowsProp } from "@mui/x-data-grid";
 import Link from "next/link";
 import { Button } from "@mui/material";
 import { Suspense } from "react";
 import DataGrid from "../components/datagrid/DataGrid";
 import Loading from "../components/loading";
-export const dynamic = "auto";
+
 export async function getOperations() {
   return (
     await fetch("http://localhost:8000/api/registration/operations", {
