@@ -12,6 +12,21 @@ cd client && yarn test
 
 Front-end unit tests include snapshots. Work that changes the DOM will result in a diff from the last accepted snapshot and cause related tests to fail. You can update the snapshots and review / accept the diff with `yarn test -u`.
 
+### Unit tests for Django models
+
+```shell
+> cd bc_obps
+> make start_pg
+> poetry shell
+
+> python manage.py test
+```
+
+#### Detail directions
+
+1. Navigate to the `~/bc_obps` directory. Start Postgres with `make start_pg`. Start the Poetry shell with `poetry shell`.
+2. Run `python manage.py test`.
+
 ### End-to-end Tests with Playwright
 
 #### Run Playwright Specs
