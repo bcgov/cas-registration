@@ -47,9 +47,6 @@ export const operationUiSchema = {
   id: {
     "ui:widget": "hidden",
   },
-  // operator: {
-  //   "ui:widget": "hidden",
-  // },
   registered_for_obps: {
     "ui:widget": "hidden",
   },
