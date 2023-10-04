@@ -8,9 +8,6 @@ export default async function Page() {
       <ul>
         <Link href="/operations">Operations</Link>
       </ul>
-      <ul>
-        <Link href="/todos">To dos</Link>
-      </ul>
     </>
   );
 }
