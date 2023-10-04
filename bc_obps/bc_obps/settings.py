@@ -145,6 +145,4 @@ STORAGES = {
 GS_BUCKET_NAME = os.environ.get("GS_BUCKET_NAME")
 GS_CREDENTIALS = service_account.Credentials.from_service_account_file(os.environ.get("GOOGLE_APPLICATION_CREDENTIALS"))
 
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-]
+CORS_ALLOWED_ORIGINS = ["http://localhost:3000"]
