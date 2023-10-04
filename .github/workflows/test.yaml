@@ -138,6 +138,10 @@ jobs:
         with:
           django_secret_key: ${{ env.DJANGO_SECRET_KEY }}
           allowed_hosts: ${{ env.ALLOWED_HOSTS }}
+      - name: test backend running
+        run: |
+          curl http://localhost:8000/api/docs
+          curl http://0.0.0.0:8000/api/docs
       - name: ZAP Frontend Scan
         uses: zaproxy/action-baseline@v0.9.0
         with:
