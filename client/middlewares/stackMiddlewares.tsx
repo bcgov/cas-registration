@@ -4,7 +4,7 @@ import { MiddlewareFactory } from "./types";
 // 📚 Define a function for stacking middlewares
 export function stackMiddlewares(
   functions: MiddlewareFactory[] = [], // An array of middleware factory functions
-  index = 0 // Initial index to start with the first middleware
+  index = 0, // Initial index to start with the first middleware
 ): NextMiddleware {
   const current = functions[index]; // Get the current middleware factory function
 

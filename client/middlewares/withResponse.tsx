@@ -1,15 +1,10 @@
-import {
-  NextFetchEvent,
-  NextMiddleware,
-  NextRequest,
-  NextResponse,
-} from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 import { MiddlewareFactory } from "./types";
 
 // 👇️ return request's response
-export const withResponse: MiddlewareFactory = (next: NextMiddleware) => {
-  return async (request: NextRequest, _next: NextFetchEvent) => {
+export const withResponse: MiddlewareFactory = () => {
+  return async (request: NextRequest) => {
     const cookieName = "mock-auth-token";
     const { pathname } = request.nextUrl;
 
