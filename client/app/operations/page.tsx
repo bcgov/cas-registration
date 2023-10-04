@@ -8,7 +8,9 @@ import Loading from "../components/loading";
 export const dynamic = "force-dynamic";
 export async function getOperations() {
   return (
-    await fetch("http://localhost:8000/api/registration/operations", {})
+    await fetch("http://localhost:8000/api/registration/operations", {
+      cache: "no-store",
+    })
   ).json();
 }
 
