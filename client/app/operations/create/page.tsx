@@ -4,10 +4,11 @@ import { operationSchema } from "@/app/utils/jsonSchema/operations";
 import { RJSFSchema } from "@rjsf/utils";
 import { Suspense } from "react";
 
-export const dynamic = "force-dynamic";
 export async function getNaicsCodes() {
   return (
-    await fetch("http://localhost:8000/api/registration/naics_codes", {})
+    await fetch("http://localhost:8000/api/registration/naics_codes", {
+      cache: "no-store",
+    })
   ).json();
 }
 
