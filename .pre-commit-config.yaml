@@ -33,7 +33,7 @@ repos:
     hooks:
       - id: pylint
         name: pylint
-        entry: bash -c "cd bc_obps && poetry run pylint --rcfile=.pylintrc bc_obps"
+        entry: bash -c "cd bc_obps && poetry run pylint --rcfile=.pylintrc **/*.py"
         language: system
         types: [python]
         require_serial: true
