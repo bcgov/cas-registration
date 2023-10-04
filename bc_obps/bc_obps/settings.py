@@ -29,7 +29,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get("DEBUG", False)
+# DEBUG = os.environ.get("DEBUG", False)
+DEBUG = False
 
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "localhost").split(",")
 
@@ -143,6 +144,9 @@ STORAGES = {
     "staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"},
 }
 GS_BUCKET_NAME = os.environ.get("GS_BUCKET_NAME")
-GS_CREDENTIALS = service_account.Credentials.from_service_account_file(os.environ.get("GOOGLE_APPLICATION_CREDENTIALS"))
+if os.environ.get("GOOGLE_APPLICATION_CREDENTIALS"):
+    GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
+        os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")
+    )
 
 CORS_ALLOWED_ORIGINS = ["http://localhost:3000"]
