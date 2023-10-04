@@ -147,4 +147,5 @@ GS_CREDENTIALS = service_account.Credentials.from_service_account_file(os.enviro
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
+    "http://0.0.0.0:3000"
 ]
