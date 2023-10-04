@@ -17,7 +17,7 @@ export const operationSubmitHandler = async (
       },
     );
     if (!response.ok) {
-      throw new Error("i broke :(");
+      throw new Error("Failed to save data.");
     }
     revalidatePath("/operations");
     return await response.json();
