@@ -5,7 +5,8 @@ import Loading from "@/app/components/loading";
 import OperationsForm, {
   OperationsFormData,
 } from "@/app/components/form/OperationsForm";
-export const dynamic = "auto";
+
+export const runtime = "edge";
 export async function getOperation(id: number) {
   return (
     await fetch(`http://localhost:8000/api/registration/operations/${id}`, {
