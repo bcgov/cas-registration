@@ -6,7 +6,7 @@ from phonenumber_field.modelfields import PhoneNumberField
 class Document(models.Model):
     """Document model"""
 
-    file = models.FileField(upload_to='documents', db_comment="")
+    file = models.FileField(upload_to="documents", db_comment="")
     document_type = models.CharField(max_length=1000, db_comment="Type of document, e.g., boundary map")
     description = models.CharField(max_length=1000, db_comment="")
 
@@ -63,7 +63,12 @@ class Contact(UserAndContactCommonInfo):
     is_operational_representative = models.BooleanField(db_comment="")
     verified_at = models.DateTimeField(db_comment="", blank=True, null=True)
     verified_by = models.ForeignKey(
-        User, on_delete=models.DO_NOTHING, db_comment="", blank=True, null=True, related_name='contacts'
+        User,
+        on_delete=models.DO_NOTHING,
+        db_comment="",
+        blank=True,
+        null=True,
+        related_name="contacts",
     )
 
     class Meta:
@@ -71,7 +76,7 @@ class Contact(UserAndContactCommonInfo):
         indexes = [
             models.Index(fields=["verified_by"], name="contact_verified_by_idx"),
         ]
-        constraints = [models.UniqueConstraint(fields=['email'], name='contact_email_constraint')]
+        constraints = [models.UniqueConstraint(fields=["email"], name="contact_email_constraint")]
 
 
 class Operator(models.Model):
@@ -85,14 +90,19 @@ class Operator(models.Model):
     mailing_address = models.CharField(max_length=1000, db_comment="")
     bceid = models.CharField(max_length=1000, db_comment="")
     parent_operator = models.ForeignKey(
-        'self', on_delete=models.DO_NOTHING, related_name='parent', db_comment="", blank=True, null=True
+        "self",
+        on_delete=models.DO_NOTHING,
+        related_name="parent",
+        db_comment="",
+        blank=True,
+        null=True,
     )
     relationship_with_parent_operator = models.CharField(max_length=1000, db_comment="", blank=True)
     compliance_obligee = models.ForeignKey("self", on_delete=models.DO_NOTHING, related_name="obligee", db_comment="")
     date_aso_became_responsible_for_operator = models.DateTimeField(db_comment="")
-    documents = models.ManyToManyField(Document, blank=True, related_name='operator_documents')
-    contacts = models.ManyToManyField(Contact, related_name='operator_contacts')
-    operators = models.ManyToManyField(User, through="UserOperator", related_name='operator_users')
+    documents = models.ManyToManyField(Document, blank=True, related_name="operator_documents")
+    contacts = models.ManyToManyField(Contact, related_name="operator_contacts")
+    operators = models.ManyToManyField(User, through="UserOperator", related_name="operator_users")
 
     class Meta:
         db_table_comment = "Operators (also called organizations)"
@@ -107,29 +117,42 @@ class UserOperator(models.Model):
     """User operator model"""
 
     class Roles(models.TextChoices):
-        ADMIN = 'admin', 'Admin'
-        REPORTER = 'reporter', 'Reporter'
+        ADMIN = "admin", "Admin"
+        REPORTER = "reporter", "Reporter"
 
     class Statuses(models.TextChoices):
-        PENDING = 'pending', 'Pending'
-        APPROVED = 'approved', 'Approved'
-        REJECTED = 'rejected', 'Rejected'
+        PENDING = "pending", "Pending"
+        APPROVED = "approved", "Approved"
+        REJECTED = "rejected", "Rejected"
 
     users = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name="user_operators")
-    operators = models.ForeignKey(Operator, on_delete=models.DO_NOTHING, db_comment="", related_name="user_operators")
+    operators = models.ForeignKey(
+        Operator,
+        on_delete=models.DO_NOTHING,
+        db_comment="",
+        related_name="user_operators",
+    )
     role = models.CharField(max_length=1000, choices=Roles.choices, db_comment="")
-    status = models.CharField(max_length=1000, choices=Statuses.choices, default=Statuses.PENDING, db_comment="")
+    status = models.CharField(
+        max_length=1000,
+        choices=Statuses.choices,
+        default=Statuses.PENDING,
+        db_comment="",
+    )
     user_is_aso = models.BooleanField(db_comment="")
     aso_is_owner_or_operator = models.BooleanField(db_comment="")
     user_is_third_party = models.BooleanField(db_comment="")
     proof_of_authority = models.ForeignKey(
-        Document, on_delete=models.DO_NOTHING, db_comment="", related_name='user_operators_proof_of_authority'
+        Document,
+        on_delete=models.DO_NOTHING,
+        db_comment="",
+        related_name="user_operators_proof_of_authority",
     )
     signed_statuatory_declaration = models.ForeignKey(
         Document,
         on_delete=models.DO_NOTHING,
         db_comment="",
-        related_name='user_operators_signed_statuatory_declaration',
+        related_name="user_operators_signed_statuatory_declaration",
     )
 
     class Meta:
@@ -143,7 +166,7 @@ class UserOperator(models.Model):
 class Operation(models.Model):
     """Operation model"""
 
-    operator_id = models.ForeignKey(Operator, on_delete=models.DO_NOTHING, db_comment="", related_name='operations')
+    operator = models.ForeignKey(Operator, on_delete=models.DO_NOTHING, db_comment="", related_name="operations")
     name = models.CharField(max_length=1000, db_comment="")
     operation_type = models.CharField(max_length=1000, db_comment="")
     naics_code = models.ForeignKey(NaicsCode, on_delete=models.DO_NOTHING, db_comment="", related_name="operations")
@@ -153,19 +176,24 @@ class Operation(models.Model):
     ghfrp_id = models.CharField(max_length=1000, db_comment="", blank=True)
     bcghrp_id = models.CharField(max_length=1000, db_comment="", blank=True)
     petrinex_id = models.CharField(max_length=1000, db_comment="", blank=True)
-    latitude = models.DecimalField(decimal_places=10, max_digits=10, db_comment="")
-    longitude = models.DecimalField(decimal_places=10, max_digits=10, db_comment="")
+    latitude = models.DecimalField(decimal_places=5, max_digits=10, db_comment="")
+    longitude = models.DecimalField(decimal_places=5, max_digits=10, db_comment="")
     legal_land_description = models.CharField(max_length=1000, db_comment="")
     nearest_municipality = models.CharField(max_length=1000, db_comment="")
-    operator_percent_of_ownership = models.DecimalField(decimal_places=10, max_digits=10, db_comment="")
+    operator_percent_of_ownership = models.DecimalField(decimal_places=5, max_digits=10, db_comment="")
     registered_for_obps = models.BooleanField(db_comment="")
     verified_at = models.DateTimeField(db_comment="", blank=True, null=True)
     verified_by = models.ForeignKey(
-        User, on_delete=models.DO_NOTHING, db_comment="", blank=True, null=True, related_name='operations'
+        User,
+        on_delete=models.DO_NOTHING,
+        db_comment="",
+        blank=True,
+        null=True,
+        related_name="operations",
     )
-    estimated_emissions = models.DecimalField(decimal_places=10, max_digits=10, db_comment="")
-    documents = models.ManyToManyField(Document, blank=True, related_name='operation_documents')
-    contacts = models.ManyToManyField(Contact, related_name='operation_contacts')
+    estimated_emissions = models.DecimalField(decimal_places=5, max_digits=10, db_comment="")
+    documents = models.ManyToManyField(Document, blank=True, related_name="operation_documents")
+    contacts = models.ManyToManyField(Contact, related_name="operation_contacts")
 
     class Meta:
         db_table_comment = "Operations (also called facilities)"
