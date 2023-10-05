@@ -13,8 +13,3 @@ def custom_validation_errors(request, exc):
 
 
 api.add_router("/registration/", registration_router)
-
-
-@api.get("/add")
-def add(request, a: int, b: int):
-    return {"result": a + b}
