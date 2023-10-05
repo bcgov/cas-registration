@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "corsheaders",
+    "localflavor",
     "registration.apps.RegistrationConfig",
 ]
 
@@ -141,7 +142,9 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # Google Cloud Storage Settings
 STORAGES = {
     "default": {"BACKEND": "storages.backends.gcloud.GoogleCloudStorage"},
-    "staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"},
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"
+    },
 }
 GS_BUCKET_NAME = os.environ.get("GS_BUCKET_NAME")
 if os.environ.get("GOOGLE_APPLICATION_CREDENTIALS"):
