@@ -1,20 +1,14 @@
 import json
-from django.contrib import admin
-from django.urls import path
 from datetime import date
 from typing import List, Optional
-<<<<<<< HEAD
-from bc_obps.registration.schema import (
-=======
-from ninja import Router
 from django.core import serializers
 from .models import Operation, Operator, NaicsCode, NaicsCategory, User, UserOperator, Contact, ParentChildOperator
 from ninja.responses import codes_4xx
+from ninja import Router
 from django.forms import model_to_dict
 from django.shortcuts import get_object_or_404
 from django.core.exceptions import ValidationError
 from registration.schema import (
->>>>>>> f858def (Feat: Approve/Reject buttons in GUI change status of operation in DB. Still needs cleanup)
     NaicsCategorySchema,
     NaicsCodeSchema,
     OperationIn,
@@ -108,15 +102,15 @@ class OperationOut(OperationSchema):
     operator_id: int = Field(..., alias="operator.id")
     naics_code_id: int = Field(..., alias="naics_code.id")
     naics_category_id: int = Field(..., alias="naics_category.id")
-    previous_year_attributable_emissions: str = None
-    swrs_facility_id: str = None
-    bcghg_id: str = None
-    current_year_estimated_emissions: str = None
-    opt_in: bool = None
-    new_entrant: bool = None
-    start_of_commercial_operation: date = None
-    major_new_operation: bool = None
-    verified_at: date = None
+    previous_year_attributable_emissions: Optional[str] = None
+    swrs_facility_id: Optional[str] = None
+    bcghg_id: Optional[str] = None
+    current_year_estimated_emissions: Optional[str] = None
+    opt_in: Optional[bool] = None
+    new_entrant: Optional[bool] = None
+    start_of_commercial_operation: Optional[date] = None
+    major_new_operation: Optional[bool] = None
+    verified_at: Optional[date] = None
     # temp handling of many to many field, addressed in #138
     # contacts:
     # documents:
