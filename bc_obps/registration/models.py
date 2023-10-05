@@ -1,17 +1,66 @@
 import uuid
 from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
+from localflavor.ca.models import CAPostalCodeField, CAProvinceField
+
+
+class DocumentType(models.Model):
+    """Document type model"""
+
+    # brianna this should be in the table, not choices, migration
+    class Types(models.TextChoices):
+        BOUNDARY_MAP = ("boundary_map", "boundary_map")
+        SIGNED_STATUATORY_DECLARATION = (
+            "signed_statuatory_declaration",
+            "signed_statuatory_declaration",
+        )
+        PROCESS_FLOW_DIAGRAM = ("process_flow_diagram", "process_flow_diagram")
+        PROOF_OF_AUTHORITY_OF_PARTNER_COMPANY = (
+            "proof_of_authority_of_partner_company",
+            "proof_of_authority_of_partner_company",
+        )
+        SENIOR_OFFICER_PROOF_OF_AUTHORITY = (
+            "senior_officer_proof_of_authority",
+            "senior_officer_proof_of_authority",
+        )
+        OPERATION_REPRESENTATIVE_PROOF_OF_AUTHORITY = (
+            "operation_representative_proof_of_authority",
+            "operation_representative_proof_of_authority",
+        )
+        SOCE_SENIOR_OFFICER_PROOF_OF_AUTHORITY = (
+            "soce_senior_officer_proof_of_authority",
+            "soce_senior_officer_proof_of_authority",
+        )
+        PROOF_OF_START = ("proof_of_start", "proof_of_start")
+        OPT_IN_SIGNED_STATUATORY_DECLARATION = (
+            "opt_in_signed_statuatory_declaration",
+            "opt_in_signed_statuatory_declaration",
+        )
+
+    name = models.CharField(max_length=1000, db_comment="", choices=Types.choices)
+
+    class Meta:
+        db_table_comment = "Table that contains types of allowed documents"
 
 
 class Document(models.Model):
     """Document model"""
 
     file = models.FileField(upload_to="documents", db_comment="")
-    document_type = models.CharField(max_length=1000, db_comment="Type of document, e.g., boundary map")
+    type = models.ForeignKey(
+        DocumentType,
+        on_delete=models.DO_NOTHING,
+        related_name="contacts",
+        db_comment="Type of document, e.g., boundary map",
+    )
     description = models.CharField(max_length=1000, db_comment="")
 
     class Meta:
         db_table_comment = "Documents"
+
+    indexes = [
+        models.Index(fields=["type"], name="document_type_idx"),
+    ]
 
 
 class NaicsCode(models.Model):
@@ -25,12 +74,43 @@ class NaicsCode(models.Model):
         db_table_comment = "Naics codes"
 
 
+class NaicsCategory(models.Model):
+    """NAICS category model"""
+
+    naics_category = models.CharField(max_length=1000, db_comment="")
+
+    class Meta:
+        db_table_comment = "Naics categories"
+
+
+class PetrinexId(models.Model):
+    """Petrinex ID model"""
+
+    id = models.CharField(primary_key=True, default=uuid.uuid4, db_comment="")
+
+    class Meta:
+        db_table_comment = "Petrinex ids"
+
+
+class RegulatedProduct(models.Model):
+    """Regulated products model"""
+
+    name = models.CharField(max_length=1000, db_comment="")
+
+    class Meta:
+        db_table_comment = "Regulated products"
+
+
 class UserAndContactCommonInfo(models.Model):
     """User and contact common information abstract base class"""
 
     first_name = models.CharField(max_length=1000, db_comment="")
     last_name = models.CharField(max_length=1000, db_comment="")
-    mailing_address = models.CharField(max_length=1000, db_comment="")
+    position_title = models.CharField(max_length=1000, db_comment="")
+    street_address = models.CharField(max_length=1000, db_comment="")
+    municipality = models.CharField(max_length=1000, db_comment="")
+    province = CAProvinceField(db_comment="")
+    postal_code = CAPostalCodeField(db_comment="")
     email = models.EmailField(max_length=254, db_comment="")
     phone_number = PhoneNumberField(blank=True, db_comment="")
 
@@ -44,7 +124,6 @@ class User(UserAndContactCommonInfo):
 
     user_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, db_comment="")
     business_guid = models.UUIDField(default=uuid.uuid4, db_comment="")
-    position_title = models.CharField(max_length=1000, db_comment="")
     documents = models.ManyToManyField(Document, blank=True, related_name="user_documents")
 
     class Meta:
@@ -57,24 +136,39 @@ class User(UserAndContactCommonInfo):
         ]
 
 
+class Role(models.Model):
+    """Role model"""
+
+    class Roles(models.TextChoices):
+        SENIOR_OFFICER = "senior_officer", "senior officer"
+        OPERATION_REPRESENTATIVE = (
+            "operation_representative",
+            "operation representative",
+        )
+        AUTHORIZED_SIGNING_OFFICER = (
+            "authorized_signing_officer",
+            "authorized signing officer",
+        )
+        OPERATION_REGISTRATION_LEAD = (
+            "operation_registration_lead",
+            "operation registration lead",
+        )
+
+    role_name = models.CharField(max_length=1000, choices=Roles.choices, db_comment="")
+
+    class Meta:
+        db_table_comment = "Table to list all contact roles"
+
+
 class Contact(UserAndContactCommonInfo):
     """Contact model"""
 
-    is_operational_representative = models.BooleanField(db_comment="")
-    verified_at = models.DateTimeField(db_comment="", blank=True, null=True)
-    verified_by = models.ForeignKey(
-        User,
-        on_delete=models.DO_NOTHING,
-        db_comment="",
-        blank=True,
-        null=True,
-        related_name="contacts",
-    )
+    role = models.ForeignKey(Role, on_delete=models.DO_NOTHING, related_name="contacts")
 
     class Meta:
         db_table_comment = "Contacts (people who don't use the app, e.g. authorized signing officers)"
         indexes = [
-            models.Index(fields=["verified_by"], name="contact_verified_by_idx"),
+            models.Index(fields=["role"], name="contact_role_idx"),
         ]
         constraints = [models.UniqueConstraint(fields=["email"], name="contact_email_constraint")]
 
@@ -84,32 +178,67 @@ class Operator(models.Model):
 
     legal_name = models.CharField(max_length=1000, db_comment="")
     trade_name = models.CharField(max_length=1000, db_comment="")
-    cra_business_number = models.CharField(max_length=1000, db_comment="")
-    bc_corporate_registry_number = models.CharField(max_length=1000, db_comment="")
+    cra_business_number = models.IntegerField(db_comment="")
+    bc_corporate_registry_number = models.IntegerField(db_comment="")
+    duns_number = models.IntegerField(db_comment="")
     business_structure = models.CharField(max_length=1000, db_comment="")
-    mailing_address = models.CharField(max_length=1000, db_comment="")
-    bceid = models.CharField(max_length=1000, db_comment="")
-    parent_operator = models.ForeignKey(
-        "self",
-        on_delete=models.DO_NOTHING,
-        related_name="parent",
+    physical_street_address = models.CharField(max_length=1000, db_comment="")
+    physical_municipality = models.CharField(max_length=1000, db_comment="")
+    physical_province = CAProvinceField(db_comment="")
+    physical_postal_code = CAPostalCodeField(db_comment="")
+    mailing_street_address = models.CharField(max_length=1000, db_comment="")
+    mailing_municipality = models.CharField(max_length=1000, db_comment="")
+    mailing_province = CAProvinceField(db_comment="")
+    mailing_postal_code = CAPostalCodeField(db_comment="")
+    website = models.URLField(
+        max_length=200,
         db_comment="",
         blank=True,
         null=True,
     )
-    relationship_with_parent_operator = models.CharField(max_length=1000, db_comment="", blank=True)
-    compliance_obligee = models.ForeignKey("self", on_delete=models.DO_NOTHING, related_name="obligee", db_comment="")
-    date_aso_became_responsible_for_operator = models.DateTimeField(db_comment="")
+    bceid = models.IntegerField(db_comment="")
+    compliance_entity = models.ForeignKey(
+        "self",
+        on_delete=models.DO_NOTHING,
+        related_name="operator_compliance_entity",
+        db_comment="",
+    )
+
     documents = models.ManyToManyField(Document, blank=True, related_name="operator_documents")
     contacts = models.ManyToManyField(Contact, related_name="operator_contacts")
-    operators = models.ManyToManyField(User, through="UserOperator", related_name="operator_users")
 
     class Meta:
         db_table_comment = "Operators (also called organizations)"
         # don't need indexes if we end up using `unique`
         indexes = [
+            models.Index(fields=["compliance_entity"], name="compliance_entity_idx"),
+        ]
+
+
+class ParentChildOperator(models.Model):
+    """Parent child operator model"""
+
+    parent_operator = models.ForeignKey(
+        Operator,
+        on_delete=models.DO_NOTHING,
+        related_name="parent_child_operator_parent_operator",
+        db_comment="",
+    )
+    child_operator = models.ForeignKey(
+        Operator,
+        on_delete=models.DO_NOTHING,
+        related_name="parent_child_operator_child_operator",
+        db_comment="",
+    )
+    percentage_owned_by_parent_company = models.DecimalField(decimal_places=5, max_digits=10, db_comment="")
+
+    relationship_with_parent_operator = models.CharField(max_length=1000, db_comment="", blank=True)
+
+    class Meta:
+        db_table_comment = "Through table to connect parent and child operators"
+        indexes = [
             models.Index(fields=["parent_operator"], name="parent_operator_idx"),
-            models.Index(fields=["compliance_obligee"], name="compliance_obligee_idx"),
+            models.Index(fields=["child_operator"], name="child_operator_idx"),
         ]
 
 
@@ -139,49 +268,6 @@ class UserOperator(models.Model):
         default=Statuses.PENDING,
         db_comment="",
     )
-    user_is_aso = models.BooleanField(db_comment="")
-    aso_is_owner_or_operator = models.BooleanField(db_comment="")
-    user_is_third_party = models.BooleanField(db_comment="")
-    proof_of_authority = models.ForeignKey(
-        Document,
-        on_delete=models.DO_NOTHING,
-        db_comment="",
-        related_name="user_operators_proof_of_authority",
-    )
-    signed_statuatory_declaration = models.ForeignKey(
-        Document,
-        on_delete=models.DO_NOTHING,
-        db_comment="",
-        related_name="user_operators_signed_statuatory_declaration",
-    )
-
-    class Meta:
-        db_table_comment = "Through table to connect Users and Operators and track access requests"
-        indexes = [
-            models.Index(fields=["users"], name="user_operator_user_id_idx"),
-            models.Index(fields=["operators"], name="user_operator_operator_id_idx"),
-        ]
-
-
-class Operation(models.Model):
-    """Operation model"""
-
-    operator = models.ForeignKey(Operator, on_delete=models.DO_NOTHING, db_comment="", related_name="operations")
-    name = models.CharField(max_length=1000, db_comment="")
-    operation_type = models.CharField(max_length=1000, db_comment="")
-    naics_code = models.ForeignKey(NaicsCode, on_delete=models.DO_NOTHING, db_comment="", related_name="operations")
-    eligible_commercial_product_name = models.CharField(max_length=1000, db_comment="")
-    permit_id = models.CharField(max_length=1000, db_comment="")
-    npr_id = models.CharField(max_length=1000, db_comment="", blank=True)
-    ghfrp_id = models.CharField(max_length=1000, db_comment="", blank=True)
-    bcghrp_id = models.CharField(max_length=1000, db_comment="", blank=True)
-    petrinex_id = models.CharField(max_length=1000, db_comment="", blank=True)
-    latitude = models.DecimalField(decimal_places=5, max_digits=10, db_comment="")
-    longitude = models.DecimalField(decimal_places=5, max_digits=10, db_comment="")
-    legal_land_description = models.CharField(max_length=1000, db_comment="")
-    nearest_municipality = models.CharField(max_length=1000, db_comment="")
-    operator_percent_of_ownership = models.DecimalField(decimal_places=5, max_digits=10, db_comment="")
-    registered_for_obps = models.BooleanField(db_comment="")
     verified_at = models.DateTimeField(db_comment="", blank=True, null=True)
     verified_by = models.ForeignKey(
         User,
@@ -189,16 +275,135 @@ class Operation(models.Model):
         db_comment="",
         blank=True,
         null=True,
-        related_name="operations",
+        related_name="user_operators_verified_by",
     )
-    estimated_emissions = models.DecimalField(decimal_places=5, max_digits=10, db_comment="")
+
+    class Meta:
+        db_table_comment = "Through table to connect Users and Operators and track access requests"
+        indexes = [
+            models.Index(fields=["users"], name="user_operator_user_idx"),
+            models.Index(fields=["operators"], name="user_operator_operator_idx"),
+        ]
+
+
+class OperationAndFacilityCommonInfo(models.Model):
+    """User and contact common information abstract base class"""
+
+    name = models.CharField(max_length=1000, db_comment="")
+    type = models.CharField(max_length=1000, db_comment="")
+    naics_code = models.ForeignKey(
+        NaicsCode,
+        on_delete=models.DO_NOTHING,
+        db_comment="",
+        related_name="operations_facilities_naics_code",
+    )
+    naics_category = models.ForeignKey(
+        NaicsCategory,
+        on_delete=models.DO_NOTHING,
+        db_comment="",
+        related_name="operations_facilities_naics_catetories",
+    )
+    reporting_activities = models.CharField(max_length=1000, db_comment="")
+    permit_issuing_agency = models.CharField(
+        max_length=1000,
+        db_comment="",
+        blank=True,
+        null=True,
+    )
+    permit_number = models.CharField(
+        max_length=1000,
+        db_comment="",
+        blank=True,
+        null=True,
+    )
+    previous_year_attributable_emissions = models.DecimalField(
+        decimal_places=5, max_digits=10, db_comment="", blank=True, null=True
+    )
+    swrs_facility_id = models.IntegerField(db_comment="", blank=True, null=True)
+    bcghrp_id = models.CharField(max_length=1000, db_comment="", blank=True)
+    current_year_estimated_emissions = models.DecimalField(
+        decimal_places=5, max_digits=10, db_comment="", blank=True, null=True
+    )
+    opt_in = models.BooleanField(db_comment="")
+    new_entrant = models.BooleanField(db_comment="", blank=True, null=True)
+    start_of_commercial_operation = models.DateTimeField(db_comment="")
+    physical_street_address = models.CharField(max_length=1000, db_comment="")
+    physical_municipality = models.CharField(max_length=1000, db_comment="")
+    physical_province = CAProvinceField(db_comment="")
+    physical_postal_code = CAPostalCodeField(db_comment="")
+    legal_land_description = models.CharField(max_length=1000, db_comment="")
+    latitude = models.DecimalField(decimal_places=5, max_digits=10, db_comment="")
+    longitude = models.DecimalField(decimal_places=5, max_digits=10, db_comment="")
+    npri_id = models.IntegerField(
+        db_comment="",
+        blank=True,
+        null=True,
+    )
+    bcer_permit_id = models.IntegerField(
+        db_comment="",
+        blank=True,
+        null=True,
+    )
+    petrinexids = models.ManyToManyField(PetrinexId, blank=True, related_name="operations_facilities_petrinex_ids")
+    regulated_products = models.ManyToManyField(
+        RegulatedProduct,
+        blank=True,
+        related_name="operations_facilities_regulated_products",
+    )
+
+    class Meta:
+        abstract = True
+        db_table_comment = "An abstract base class (used for putting common information into a number of other models) containing fields for operations and facilities"
+
+
+class Operation(OperationAndFacilityCommonInfo):
+    """Operation model"""
+
+    operator = models.ForeignKey(Operator, on_delete=models.DO_NOTHING, db_comment="", related_name="operations")
+    registered_for_obps = models.BooleanField(db_comment="", default=False)
+    major_new_operation = models.BooleanField(db_comment="", blank=True, null=True)
+    verified_at = models.DateTimeField(db_comment="", blank=True, null=True)
+    verified_by = models.ForeignKey(
+        User,
+        on_delete=models.DO_NOTHING,
+        db_comment="",
+        blank=True,
+        null=True,
+        related_name="operation_verified_by",
+    )
     documents = models.ManyToManyField(Document, blank=True, related_name="operation_documents")
     contacts = models.ManyToManyField(Contact, related_name="operation_contacts")
 
     class Meta:
         db_table_comment = "Operations (also called facilities)"
         indexes = [
-            models.Index(fields=["operator_id"], name="operator_id_idx"),
+            models.Index(fields=["operator"], name="operator_idx"),
             models.Index(fields=["naics_code"], name="naics_code_idx"),
             models.Index(fields=["verified_by"], name="operation_verified_by_idx"),
+        ]
+
+
+class OperatorOperation(models.Model):
+    """OperatorOperation"""
+
+    operators = models.ForeignKey(
+        Operator,
+        on_delete=models.DO_NOTHING,
+        db_comment="",
+        related_name="operator_operators",
+    )
+    operations = models.ForeignKey(
+        Operation,
+        on_delete=models.DO_NOTHING,
+        db_comment="",
+        related_name="operator_operations",
+    )
+
+    class Meta:
+        db_table_comment = (
+            "Through table to connect Operations and Operators and track parent companies and compliance entities"
+        )
+        indexes = [
+            models.Index(fields=["operations"], name="operator_operation_idx"),
+            models.Index(fields=["operators"], name="operator_operator_idx"),
         ]
