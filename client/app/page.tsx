@@ -1,5 +1,13 @@
-//entry point http://localhost:3000/
+/* Components */
+import Link from "next/link";
 
-export default function Page() {
-  return <></>;
+export default async function Page() {
+  return (
+    <>
+      <h1>Links to app pages</h1>
+      <ul>
+        <Link href="/operations">Operations</Link>
+      </ul>
+    </>
+  );
 }
