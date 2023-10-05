@@ -6,8 +6,7 @@ from .models import Document, Operation, Operator, User, NaicsCode, Contact, Use
 class UserModelTest(TestCase):
     @classmethod
     def setUpTestData(cls):
-        # Set up minimum required non-modified objects used by all test methods
-        testUser = User.objects.create(
+        cls.test_user = User.objects.create(
             first_name="fname-test",
             last_name="lname-test",
             mailing_address="12 34 Street, Test",
@@ -17,170 +16,119 @@ class UserModelTest(TestCase):
             position_title="test",
         )
 
-        testUser.documents.set(
+        cls.test_user.documents.set(
             [
                 Document.objects.create(file="test1.tst", document_type="test", description="test"),
                 Document.objects.create(file="test2.tst", document_type="test", description="test"),
             ]
         )
 
-    def test_first_name_label(self):
-        testUser = User.objects.get(user_guid="00000000-0000-0000-0000-000000000000")
-        field_label = testUser._meta.get_field("first_name").verbose_name
-        self.assertEqual(field_label, "first name")
+    def assertFieldLabel(self, field_name, expected_label):
+        field = self.test_user._meta.get_field(field_name)
+        self.assertEqual(field.verbose_name, expected_label)
 
-    def test_first_name_max_length(self):
-        testUser = User.objects.get(user_guid="00000000-0000-0000-0000-000000000000")
-        max_length = testUser._meta.get_field("first_name").max_length
-        self.assertEqual(max_length, 1000)
+    def assertFieldMaxLength(self, field_name, expected_max_length):
+        field = self.test_user._meta.get_field(field_name)
+        self.assertEqual(field.max_length, expected_max_length)
 
-    def test_last_name_label(self):
-        testUser = User.objects.get(user_guid="00000000-0000-0000-0000-000000000000")
-        field_label = testUser._meta.get_field("last_name").verbose_name
-        self.assertEqual(field_label, "last name")
+    def test_field_labels_and_max_lengths(self):
+        # (field_name, expected_label, expected_max_length)
+        field_data = [
+            ("first_name", "first name", 1000),
+            ("last_name", "last name", 1000),
+            ("mailing_address", "mailing address", 1000),
+            ("email", "email", 254),
+            ("phone_number", "phone number", None),  # Replace None with the actual max length if available
+            ("user_guid", "user guid", None),
+            ("business_guid", "business guid", None),
+            ("position_title", "position title", 1000),
+            ("documents", "documents", None),
+        ]
 
-    def test_last_name_max_length(self):
-        testUser = User.objects.get(user_guid="00000000-0000-0000-0000-000000000000")
-        max_length = testUser._meta.get_field("last_name").max_length
-        self.assertEqual(max_length, 1000)
-
-    def test_mailing_address_label(self):
-        testUser = User.objects.get(user_guid="00000000-0000-0000-0000-000000000000")
-        field_label = testUser._meta.get_field("mailing_address").verbose_name
-        self.assertEqual(field_label, "mailing address")
-
-    def test_mailing_address_max_length(self):
-        testUser = User.objects.get(user_guid="00000000-0000-0000-0000-000000000000")
-        max_length = testUser._meta.get_field("mailing_address").max_length
-        self.assertEqual(max_length, 1000)
-
-    def test_email_label(self):
-        testUser = User.objects.get(user_guid="00000000-0000-0000-0000-000000000000")
-        field_label = testUser._meta.get_field("email").verbose_name
-        self.assertEqual(field_label, "email")
-
-    def test_email_max_length(self):
-        testUser = User.objects.get(user_guid="00000000-0000-0000-0000-000000000000")
-        max_length = testUser._meta.get_field("email").max_length
-        self.assertEqual(max_length, 254)
-
-    def test_phone_number_label(self):
-        testUser = User.objects.get(user_guid="00000000-0000-0000-0000-000000000000")
-        field_label = testUser._meta.get_field("phone_number").verbose_name
-        self.assertEqual(field_label, "phone number")
-
-    def test_user_guid_label(self):
-        testUser = User.objects.get(user_guid="00000000-0000-0000-0000-000000000000")
-        field_label = testUser._meta.get_field("user_guid").verbose_name
-        self.assertEqual(field_label, "user guid")
-
-    def test_business_guid_label(self):
-        testUser = User.objects.get(user_guid="00000000-0000-0000-0000-000000000000")
-        field_label = testUser._meta.get_field("business_guid").verbose_name
-        self.assertEqual(field_label, "business guid")
-
-    def test_position_title_label(self):
-        testUser = User.objects.get(user_guid="00000000-0000-0000-0000-000000000000")
-        field_label = testUser._meta.get_field("position_title").verbose_name
-        self.assertEqual(field_label, "position title")
-
-    def test_position_title_max_length(self):
-        testUser = User.objects.get(user_guid="00000000-0000-0000-0000-000000000000")
-        max_length = testUser._meta.get_field("position_title").max_length
-        self.assertEqual(max_length, 1000)
-
-    def test_documents_label(self):
-        testUser = User.objects.get(user_guid="00000000-0000-0000-0000-000000000000")
-        field_label = testUser._meta.get_field("documents").verbose_name
-        self.assertEqual(field_label, "documents")
+        for field_name, expected_label, expected_max_length in field_data:
+            with self.subTest(field_name=field_name):
+                if expected_label:
+                    self.assertFieldLabel(field_name, expected_label)
+                if expected_max_length is not None:
+                    self.assertFieldMaxLength(field_name, expected_max_length)
 
     def test_user_has_multiple_documents(self):
-        testUser = User.objects.get(user_guid="00000000-0000-0000-0000-000000000000")
-        self.assertEqual(testUser.documents.count(), 2)
+        self.assertEqual(self.test_user.documents.count(), 2)
+
+    def test_another_user_has_multiple_documents(self):
+        self.assertEqual(self.test_user.documents.count(), 2)
 
 
 class DocumentModelTest(TestCase):
     @classmethod
     def setUpTestData(cls):
-        # Set up non-modified objects used by all test methods
-        Document.objects.create(
+        cls.test_document = Document.objects.create(
             file="test.tst",
             document_type="test",
             description="test",
         )
 
-    def test_file_label(self):
-        testDocument = Document.objects.get(id=1)
-        field_label = testDocument._meta.get_field("file").verbose_name
-        self.assertEqual(field_label, "file")
+    def assertFieldLabel(self, field_name, expected_label):
+        field = self.test_document._meta.get_field(field_name)
+        self.assertEqual(field.verbose_name, expected_label)
 
-    def test_document_type_label(self):
-        testDocument = Document.objects.get(id=1)
-        field_label = testDocument._meta.get_field("document_type").verbose_name
-        self.assertEqual(field_label, "document type")
+    def assertFieldMaxLength(self, field_name, expected_max_length):
+        field = self.test_document._meta.get_field(field_name)
+        self.assertEqual(field.max_length, expected_max_length)
 
-    def test_document_type_max_length(self):
-        testDocument = Document.objects.get(id=1)
-        max_length = testDocument._meta.get_field("document_type").max_length
-        self.assertEqual(max_length, 1000)
+    def test_field_labels_and_max_lengths(self):
+        # (field_name, expected_label, expected_max_length)
+        field_data = [
+            ("file", "file", None),
+            ("document_type", "document type", 1000),
+            ("description", "description", 1000),
+        ]
 
-    def test_description_label(self):
-        testDocument = Document.objects.get(id=1)
-        field_label = testDocument._meta.get_field("description").verbose_name
-        self.assertEqual(field_label, "description")
-
-    def test_description_max_length(self):
-        testDocument = Document.objects.get(id=1)
-        max_length = testDocument._meta.get_field("description").max_length
-        self.assertEqual(max_length, 1000)
+        for field_name, expected_label, expected_max_length in field_data:
+            with self.subTest(field_name=field_name):
+                if expected_label:
+                    self.assertFieldLabel(field_name, expected_label)
+                if expected_max_length is not None:
+                    self.assertFieldMaxLength(field_name, expected_max_length)
 
 
-class NaicsCodeModelTest(TestCase):
+class NAICSCodeModelTest(TestCase):
     @classmethod
     def setUpTestData(cls):
-        # Set up non-modified objects used by all test methods
-        NaicsCode.objects.create(
+        cls.test_naics_code = NaicsCode.objects.create(
             naics_code="1",
             ciip_sector="2",
             naics_description="test",
         )
 
-    def test_naics_code_label(self):
-        testNaicsCode = NaicsCode.objects.get(id=1)
-        field_label = testNaicsCode._meta.get_field("naics_code").verbose_name
-        self.assertEqual(field_label, "naics code")
+    def assertFieldLabel(self, field_name, expected_label):
+        field = self.test_naics_code._meta.get_field(field_name)
+        self.assertEqual(field.verbose_name, expected_label)
 
-    def test_naics_code_max_length(self):
-        testNaicsCode = NaicsCode.objects.get(id=1)
-        max_length = testNaicsCode._meta.get_field("naics_code").max_length
-        self.assertEqual(max_length, 1000)
+    def assertFieldMaxLength(self, field_name, expected_max_length):
+        field = self.test_naics_code._meta.get_field(field_name)
+        self.assertEqual(field.max_length, expected_max_length)
 
-    def test_ciip_sector_label(self):
-        testNaicsCode = NaicsCode.objects.get(id=1)
-        field_label = testNaicsCode._meta.get_field("ciip_sector").verbose_name
-        self.assertEqual(field_label, "ciip sector")
+    def test_field_labels_and_max_lengths(self):
+        # (field_name, expected_label, expected_max_length)
+        field_data = [
+            ("naics_code", "naics code", 1000),
+            ("ciip_sector", "ciip sector", 1000),
+            ("naics_description", "naics description", 1000),
+        ]
 
-    def test_ciip_sector_max_length(self):
-        testNaicsCode = NaicsCode.objects.get(id=1)
-        max_length = testNaicsCode._meta.get_field("ciip_sector").max_length
-        self.assertEqual(max_length, 1000)
-
-    def test_naics_description_label(self):
-        testNaicsCode = NaicsCode.objects.get(id=1)
-        field_label = testNaicsCode._meta.get_field("naics_description").verbose_name
-        self.assertEqual(field_label, "naics description")
-
-    def test_naics_description_max_length(self):
-        testNaicsCode = NaicsCode.objects.get(id=1)
-        max_length = testNaicsCode._meta.get_field("naics_description").max_length
-        self.assertEqual(max_length, 1000)
+        for field_name, expected_label, expected_max_length in field_data:
+            with self.subTest(field_name=field_name):
+                if expected_label:
+                    self.assertFieldLabel(field_name, expected_label)
+                if expected_max_length is not None:
+                    self.assertFieldMaxLength(field_name, expected_max_length)
 
 
 class ContactModelTest(TestCase):
     @classmethod
     def setUpTestData(cls):
-        # Set up non-modified objects used by all test methods
-        Contact.objects.create(
+        cls.test_contact = Contact.objects.create(
             first_name="fname-test",
             last_name="lname-test",
             mailing_address="12 34 Street, Test",
@@ -189,66 +137,33 @@ class ContactModelTest(TestCase):
             is_operational_representative=False,
         )
 
-    # TODO: DRY up code. Combine Contact & User model common fields
-    def test_first_name_label(self):
-        testContact = Contact.objects.get(id=1)
-        field_label = testContact._meta.get_field("first_name").verbose_name
-        self.assertEqual(field_label, "first name")
+    def assertFieldLabel(self, field_name, expected_label):
+        field = self.test_contact._meta.get_field(field_name)
+        self.assertEqual(field.verbose_name, expected_label)
 
-    def test_first_name_max_length(self):
-        testContact = Contact.objects.get(id=1)
-        max_length = testContact._meta.get_field("first_name").max_length
-        self.assertEqual(max_length, 1000)
+    def assertFieldMaxLength(self, field_name, expected_max_length):
+        field = self.test_contact._meta.get_field(field_name)
+        self.assertEqual(field.max_length, expected_max_length)
 
-    def test_last_name_label(self):
-        testContact = Contact.objects.get(id=1)
-        field_label = testContact._meta.get_field("last_name").verbose_name
-        self.assertEqual(field_label, "last name")
+    def test_field_labels_and_max_lengths(self):
+        # (field_name, expected_label, expected_max_length)
+        field_data = [
+            ("first_name", "first name", 1000),
+            ("last_name", "last name", 1000),
+            ("mailing_address", "mailing address", 1000),
+            ("email", "email", 254),
+            ("phone_number", "phone number", None),
+            ("is_operational_representative", "is operational representative", None),
+            ("verified_at", "verified at", None),
+            ("verified_by", "verified by", None),
+        ]
 
-    def test_last_name_max_length(self):
-        testContact = Contact.objects.get(id=1)
-        max_length = testContact._meta.get_field("last_name").max_length
-        self.assertEqual(max_length, 1000)
-
-    def test_mailing_address_label(self):
-        testContact = Contact.objects.get(id=1)
-        field_label = testContact._meta.get_field("mailing_address").verbose_name
-        self.assertEqual(field_label, "mailing address")
-
-    def test_mailing_address_max_length(self):
-        testContact = Contact.objects.get(id=1)
-        max_length = testContact._meta.get_field("mailing_address").max_length
-        self.assertEqual(max_length, 1000)
-
-    def test_email_label(self):
-        testContact = Contact.objects.get(id=1)
-        field_label = testContact._meta.get_field("email").verbose_name
-        self.assertEqual(field_label, "email")
-
-    def test_email_max_length(self):
-        testContact = Contact.objects.get(id=1)
-        max_length = testContact._meta.get_field("email").max_length
-        self.assertEqual(max_length, 254)
-
-    def test_phone_number_label(self):
-        testContact = Contact.objects.get(id=1)
-        field_label = testContact._meta.get_field("phone_number").verbose_name
-        self.assertEqual(field_label, "phone number")
-
-    def test_is_operational_representative_label(self):
-        testContact = Contact.objects.get(id=1)
-        field_label = testContact._meta.get_field("is_operational_representative").verbose_name
-        self.assertEqual(field_label, "is operational representative")
-
-    def test_verified_at_label(self):
-        testContact = Contact.objects.get(id=1)
-        field_label = testContact._meta.get_field("verified_at").verbose_name
-        self.assertEqual(field_label, "verified at")
-
-    def test_verified_by_label(self):
-        testContact = Contact.objects.get(id=1)
-        field_label = testContact._meta.get_field("verified_by").verbose_name
-        self.assertEqual(field_label, "verified by")
+        for field_name, expected_label, expected_max_length in field_data:
+            with self.subTest(field_name=field_name):
+                if expected_label:
+                    self.assertFieldLabel(field_name, expected_label)
+                if expected_max_length is not None:
+                    self.assertFieldMaxLength(field_name, expected_max_length)
 
 
 class OperatorModelTest(TestCase):
@@ -256,16 +171,16 @@ class OperatorModelTest(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        testOperator = Operator.objects.get(id=1)
+        cls.test_operator = Operator.objects.get(id=1)
 
-        testOperator.documents.set(
+        cls.test_operator.documents.set(
             [
                 Document.objects.create(file="test1.tst", document_type="test", description="test"),
                 Document.objects.create(file="test2.tst", document_type="test", description="test"),
             ]
         )
 
-        testOperator.contacts.set(
+        cls.test_operator.contacts.set(
             [
                 Contact.objects.create(
                     first_name="fname-test",
@@ -302,127 +217,45 @@ class OperatorModelTest(TestCase):
                 ),
             )
 
-    def test_legal_name_label(self):
-        testOperator = Operator.objects.get(id=1)
-        field_label = testOperator._meta.get_field("legal_name").verbose_name
-        self.assertEqual(field_label, "legal name")
+    def assertFieldLabel(self, field_name, expected_label):
+        field = self.test_operator._meta.get_field(field_name)
+        self.assertEqual(field.verbose_name, expected_label)
 
-    def test_legal_name_max_length(self):
-        testOperator = Operator.objects.get(id=1)
-        max_length = testOperator._meta.get_field("legal_name").max_length
-        self.assertEqual(max_length, 1000)
+    def assertFieldMaxLength(self, field_name, expected_max_length):
+        field = self.test_operator._meta.get_field(field_name)
+        self.assertEqual(field.max_length, expected_max_length)
 
-    def test_trade_name_label(self):
-        testOperator = Operator.objects.get(id=1)
-        field_label = testOperator._meta.get_field("trade_name").verbose_name
-        self.assertEqual(field_label, "trade name")
+    def assertHasMultipleRelationsInField(self, field_name, expected_relations_count):
+        field = self.test_operator.__getattribute__(field_name)
+        self.assertEqual(field.count(), expected_relations_count)
 
-    def test_trade_name_max_length(self):
-        testOperator = Operator.objects.get(id=1)
-        max_length = testOperator._meta.get_field("trade_name").max_length
-        self.assertEqual(max_length, 1000)
+    def test_field_labels_and_max_lengths_and_multiple_relations(self):
+        # (field_name, expected_label, expected_max_length, expected_relations_count)
+        field_data = [
+            ("legal_name", "legal name", 1000, None),
+            ("trade_name", "trade name", 1000, None),
+            ("cra_business_number", "cra business number", 1000, None),
+            ("bc_corporate_registry_number", "bc corporate registry number", 1000, None),
+            ("business_structure", "business structure", 1000, None),
+            ("mailing_address", "mailing address", 1000, None),
+            ("bceid", "bceid", 1000, None),
+            ("parent_operator", "parent operator", None, None),
+            ("relationship_with_parent_operator", "relationship with parent operator", 1000, None),
+            ("compliance_obligee", "compliance obligee", None, None),
+            ("date_aso_became_responsible_for_operator", "date aso became responsible for operator", None, None),
+            ("documents", "documents", None, 2),
+            ("contacts", "contacts", None, 2),
+            ("operators", "operators", None, 2),
+        ]
 
-    def test_cra_business_number_label(self):
-        testOperator = Operator.objects.get(id=1)
-        field_label = testOperator._meta.get_field("cra_business_number").verbose_name
-        self.assertEqual(field_label, "cra business number")
-
-    def test_cra_business_number_max_length(self):
-        testOperator = Operator.objects.get(id=1)
-        max_length = testOperator._meta.get_field("cra_business_number").max_length
-        self.assertEqual(max_length, 1000)
-
-    def test_bc_corporate_registry_number_label(self):
-        testOperator = Operator.objects.get(id=1)
-        field_label = testOperator._meta.get_field("bc_corporate_registry_number").verbose_name
-        self.assertEqual(field_label, "bc corporate registry number")
-
-    def test_bc_corporate_registry_number_max_length(self):
-        testOperator = Operator.objects.get(id=1)
-        max_length = testOperator._meta.get_field("bc_corporate_registry_number").max_length
-        self.assertEqual(max_length, 1000)
-
-    def test_business_structure_label(self):
-        testOperator = Operator.objects.get(id=1)
-        field_label = testOperator._meta.get_field("business_structure").verbose_name
-        self.assertEqual(field_label, "business structure")
-
-    def test_business_structure_max_length(self):
-        testOperator = Operator.objects.get(id=1)
-        max_length = testOperator._meta.get_field("business_structure").max_length
-        self.assertEqual(max_length, 1000)
-
-    def test_mailing_address_label(self):
-        testOperator = Operator.objects.get(id=1)
-        field_label = testOperator._meta.get_field("mailing_address").verbose_name
-        self.assertEqual(field_label, "mailing address")
-
-    def test_mailing_address_max_length(self):
-        testOperator = Operator.objects.get(id=1)
-        max_length = testOperator._meta.get_field("mailing_address").max_length
-        self.assertEqual(max_length, 1000)
-
-    def test_bceid_label(self):
-        testOperator = Operator.objects.get(id=1)
-        field_label = testOperator._meta.get_field("bceid").verbose_name
-        self.assertEqual(field_label, "bceid")
-
-    def test_bceid_max_length(self):
-        testOperator = Operator.objects.get(id=1)
-        max_length = testOperator._meta.get_field("bceid").max_length
-        self.assertEqual(max_length, 1000)
-
-    def test_parent_operator_label(self):
-        testOperator = Operator.objects.get(id=1)
-        field_label = testOperator._meta.get_field("parent_operator").verbose_name
-        self.assertEqual(field_label, "parent operator")
-
-    def test_relationship_with_parent_operator_label(self):
-        testOperator = Operator.objects.get(id=1)
-        field_label = testOperator._meta.get_field("relationship_with_parent_operator").verbose_name
-        self.assertEqual(field_label, "relationship with parent operator")
-
-    def test_relationship_with_parent_operator_max_length(self):
-        testOperator = Operator.objects.get(id=1)
-        max_length = testOperator._meta.get_field("relationship_with_parent_operator").max_length
-        self.assertEqual(max_length, 1000)
-
-    def test_compliance_obligee_label(self):
-        testOperator = Operator.objects.get(id=1)
-        field_label = testOperator._meta.get_field("compliance_obligee").verbose_name
-        self.assertEqual(field_label, "compliance obligee")
-
-    def test_date_aso_became_responsible_for_operator_label(self):
-        testOperator = Operator.objects.get(id=1)
-        field_label = testOperator._meta.get_field("date_aso_became_responsible_for_operator").verbose_name
-        self.assertEqual(field_label, "date aso became responsible for operator")
-
-    def test_documents_label(self):
-        testOperator = Operator.objects.get(id=1)
-        field_label = testOperator._meta.get_field("documents").verbose_name
-        self.assertEqual(field_label, "documents")
-
-    def test_contacts_label(self):
-        testOperator = Operator.objects.get(id=1)
-        field_label = testOperator._meta.get_field("contacts").verbose_name
-        self.assertEqual(field_label, "contacts")
-
-    def test_operators_label(self):
-        testOperator = Operator.objects.get(id=1)
-        field_label = testOperator._meta.get_field("operators").verbose_name
-        self.assertEqual(field_label, "operators")
-
-    def test_operator_has_multiple_documents(self):
-        testOperator = Operator.objects.get(id=1)
-        self.assertEqual(testOperator.documents.count(), 2)
-
-    def test_operator_has_multiple_contacts(self):
-        testOperator = Operator.objects.get(id=1)
-        self.assertEqual(testOperator.contacts.count(), 2)
-
-    def test_operator_has_multiple_user_operators(self):
-        testOperator = Operator.objects.get(id=1)
-        self.assertEqual(testOperator.operators.count(), 2)
+        for field_name, expected_label, expected_max_length, expected_relations_count in field_data:
+            with self.subTest(field_name=field_name):
+                if expected_label:
+                    self.assertFieldLabel(field_name, expected_label)
+                if expected_max_length is not None:
+                    self.assertFieldMaxLength(field_name, expected_max_length)
+                if expected_relations_count is not None:
+                    self.assertHasMultipleRelationsInField(field_name, expected_relations_count)
 
 
 class UserOperatorModelTest(TestCase):
@@ -433,8 +266,7 @@ class UserOperatorModelTest(TestCase):
         proof_doc = Document.objects.create(file="test.tst", document_type="test", description="test")
         signed_doc = Document.objects.create(file="test.tst", document_type="test", description="test")
 
-        # Set up non-modified objects used by all test methods
-        cls.testUserOperator = UserOperator.objects.create(
+        cls.test_user_operator = UserOperator.objects.create(
             users=User.objects.get(user_guid="3fa85f64-5717-4562-b3fc-2c963f66afa6"),
             operators=Operator.objects.get(id=1),
             role=UserOperator.Roles.ADMIN,
@@ -446,60 +278,34 @@ class UserOperatorModelTest(TestCase):
             signed_statuatory_declaration=signed_doc,
         )
 
-    def test_users_label(self):
-        testUserOperator = self.testUserOperator
-        field_label = testUserOperator._meta.get_field("users").verbose_name
-        self.assertEqual(field_label, "users")
+    def assertFieldLabel(self, field_name, expected_label):
+        field = self.test_user_operator._meta.get_field(field_name)
+        self.assertEqual(field.verbose_name, expected_label)
 
-    def test_operators_label(self):
-        testUserOperator = self.testUserOperator
-        field_label = testUserOperator._meta.get_field("operators").verbose_name
-        self.assertEqual(field_label, "operators")
+    def assertFieldMaxLength(self, field_name, expected_max_length):
+        field = self.test_user_operator._meta.get_field(field_name)
+        self.assertEqual(field.max_length, expected_max_length)
 
-    def test_role_label(self):
-        testUserOperator = self.testUserOperator
-        field_label = testUserOperator._meta.get_field("role").verbose_name
-        self.assertEqual(field_label, "role")
+    def test_field_labels_and_max_lengths(self):
+        # (field_name, expected_label, expected_max_length)
+        field_data = [
+            ("users", "users", None),
+            ("operators", "operators", None),
+            ("role", "role", 1000),
+            ("status", "status", 1000),
+            ("user_is_aso", "user is aso", None),
+            ("aso_is_owner_or_operator", "aso is owner or operator", None),
+            ("user_is_third_party", "user is third party", None),
+            ("proof_of_authority", "proof of authority", None),
+            ("signed_statuatory_declaration", "signed statuatory declaration", None),
+        ]
 
-    def test_role_max_length(self):
-        testUserOperator = self.testUserOperator
-        max_length = testUserOperator._meta.get_field("role").max_length
-        self.assertEqual(max_length, 1000)
-
-    def test_status_label(self):
-        testUserOperator = self.testUserOperator
-        field_label = testUserOperator._meta.get_field("status").verbose_name
-        self.assertEqual(field_label, "status")
-
-    def test_status_max_length(self):
-        testUserOperator = self.testUserOperator
-        max_length = testUserOperator._meta.get_field("status").max_length
-        self.assertEqual(max_length, 1000)
-
-    def test_user_is_aso_label(self):
-        testUserOperator = self.testUserOperator
-        field_label = testUserOperator._meta.get_field("user_is_aso").verbose_name
-        self.assertEqual(field_label, "user is aso")
-
-    def test_aso_is_owner_or_operator_label(self):
-        testUserOperator = self.testUserOperator
-        field_label = testUserOperator._meta.get_field("aso_is_owner_or_operator").verbose_name
-        self.assertEqual(field_label, "aso is owner or operator")
-
-    def test_user_is_third_party_label(self):
-        testUserOperator = self.testUserOperator
-        field_label = testUserOperator._meta.get_field("user_is_third_party").verbose_name
-        self.assertEqual(field_label, "user is third party")
-
-    def test_proof_of_authority_label(self):
-        testUserOperator = self.testUserOperator
-        field_label = testUserOperator._meta.get_field("proof_of_authority").verbose_name
-        self.assertEqual(field_label, "proof of authority")
-
-    def test_signed_statuatory_declaration_label(self):
-        testUserOperator = self.testUserOperator
-        field_label = testUserOperator._meta.get_field("signed_statuatory_declaration").verbose_name
-        self.assertEqual(field_label, "signed statuatory declaration")
+        for field_name, expected_label, expected_max_length in field_data:
+            with self.subTest(field_name=field_name):
+                if expected_label:
+                    self.assertFieldLabel(field_name, expected_label)
+                if expected_max_length is not None:
+                    self.assertFieldMaxLength(field_name, expected_max_length)
 
 
 class OperationModelTest(TestCase):
@@ -507,7 +313,7 @@ class OperationModelTest(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        testOperation = Operation.objects.create(
+        cls.test_operation = Operation.objects.create(
             operator_id=Operator.objects.get(id=1),
             name="test-name",
             operation_type="test",
@@ -522,7 +328,8 @@ class OperationModelTest(TestCase):
             registered_for_obps=False,
             estimated_emissions=0.1,
         )
-        testOperation.contacts.set(
+
+        cls.test_operation.contacts.set(
             [
                 Contact.objects.create(
                     first_name="fname-test",
@@ -543,167 +350,55 @@ class OperationModelTest(TestCase):
             ]
         )
 
-        testOperation.documents.set(
+        cls.test_operation.documents.set(
             [
                 Document.objects.create(file="test1.tst", document_type="test", description="test"),
                 Document.objects.create(file="test2.tst", document_type="test", description="test"),
             ]
         )
 
-    def test_operator_id_label(self):
-        testOperation = Operation.objects.get(id=1)
-        field_label = testOperation._meta.get_field("operator_id").verbose_name
-        self.assertEqual(field_label, "operator id")
+    def assertFieldLabel(self, field_name, expected_label):
+        field = self.test_operation._meta.get_field(field_name)
+        self.assertEqual(field.verbose_name, expected_label)
 
-    def test_name_label(self):
-        testOperation = Operation.objects.get(id=1)
-        field_label = testOperation._meta.get_field("name").verbose_name
-        self.assertEqual(field_label, "name")
+    def assertFieldMaxLength(self, field_name, expected_max_length):
+        field = self.test_operation._meta.get_field(field_name)
+        self.assertEqual(field.max_length, expected_max_length)
 
-    def test_name_max_length(self):
-        testOperation = Operation.objects.get(id=1)
-        max_length = testOperation._meta.get_field("name").max_length
-        self.assertEqual(max_length, 1000)
+    def assertHasMultipleRelationsInField(self, field_name, expected_relations_count):
+        field = self.test_operation.__getattribute__(field_name)
+        self.assertEqual(field.count(), expected_relations_count)
 
-    def test_operation_type_label(self):
-        testOperation = Operation.objects.get(id=1)
-        field_label = testOperation._meta.get_field("operation_type").verbose_name
-        self.assertEqual(field_label, "operation type")
+    def test_field_labels_and_max_lengths_and_multiple_relations(self):
+        # (field_name, expected_label, expected_max_length, expected_relations_count)
+        field_data = [
+            ("operator_id", "operator id", None, None),
+            ("name", "name", 1000, None),
+            ("operation_type", "operation type", 1000, None),
+            ("eligible_commercial_product_name", "eligible commercial product name", 1000, None),
+            ("permit_id", "permit id", 1000, None),
+            ("npr_id", "npr id", 1000, None),
+            ("ghfrp_id", "ghfrp id", 1000, None),
+            ("bcghrp_id", "bcghrp id", 1000, None),
+            ("petrinex_id", "petrinex id", 1000, None),
+            ("latitude", "latitude", None, None),
+            ("longitude", "longitude", None, None),
+            ("legal_land_description", "legal land description", 1000, None),
+            ("nearest_municipality", "nearest municipality", 1000, None),
+            ("operator_percent_of_ownership", "operator percent of ownership", None, None),
+            ("registered_for_obps", "registered for obps", None, None),
+            ("verified_at", "verified at", None, None),
+            ("verified_by", "verified by", None, None),
+            ("estimated_emissions", "estimated emissions", None, None),
+            ("documents", "documents", None, 2),
+            ("contacts", "contacts", None, 2),
+        ]
 
-    def test_operation_type_max_length(self):
-        testOperation = Operation.objects.get(id=1)
-        max_length = testOperation._meta.get_field("operation_type").max_length
-        self.assertEqual(max_length, 1000)
-
-    def test_eligible_commercial_product_name_label(self):
-        testOperation = Operation.objects.get(id=1)
-        field_label = testOperation._meta.get_field("eligible_commercial_product_name").verbose_name
-        self.assertEqual(field_label, "eligible commercial product name")
-
-    def test_eligible_commercial_product_name_max_length(self):
-        testOperation = Operation.objects.get(id=1)
-        max_length = testOperation._meta.get_field("eligible_commercial_product_name").max_length
-        self.assertEqual(max_length, 1000)
-
-    def test_permit_id_label(self):
-        testOperation = Operation.objects.get(id=1)
-        field_label = testOperation._meta.get_field("permit_id").verbose_name
-        self.assertEqual(field_label, "permit id")
-
-    def test_permit_id_max_length(self):
-        testOperation = Operation.objects.get(id=1)
-        max_length = testOperation._meta.get_field("permit_id").max_length
-        self.assertEqual(max_length, 1000)
-
-    def test_npr_id_label(self):
-        testOperation = Operation.objects.get(id=1)
-        field_label = testOperation._meta.get_field("npr_id").verbose_name
-        self.assertEqual(field_label, "npr id")
-
-    def test_npr_id_max_length(self):
-        testOperation = Operation.objects.get(id=1)
-        max_length = testOperation._meta.get_field("npr_id").max_length
-        self.assertEqual(max_length, 1000)
-
-    def test_ghfrp_id_label(self):
-        testOperation = Operation.objects.get(id=1)
-        field_label = testOperation._meta.get_field("ghfrp_id").verbose_name
-        self.assertEqual(field_label, "ghfrp id")
-
-    def test_ghfrp_id_max_length(self):
-        testOperation = Operation.objects.get(id=1)
-        max_length = testOperation._meta.get_field("ghfrp_id").max_length
-        self.assertEqual(max_length, 1000)
-
-    def test_bcghrp_id_label(self):
-        testOperation = Operation.objects.get(id=1)
-        field_label = testOperation._meta.get_field("bcghrp_id").verbose_name
-        self.assertEqual(field_label, "bcghrp id")
-
-    def test_bcghrp_id_max_length(self):
-        testOperation = Operation.objects.get(id=1)
-        max_length = testOperation._meta.get_field("bcghrp_id").max_length
-        self.assertEqual(max_length, 1000)
-
-    def test_petrinex_id_label(self):
-        testOperation = Operation.objects.get(id=1)
-        field_label = testOperation._meta.get_field("petrinex_id").verbose_name
-        self.assertEqual(field_label, "petrinex id")
-
-    def test_petrinex_id_max_length(self):
-        testOperation = Operation.objects.get(id=1)
-        max_length = testOperation._meta.get_field("petrinex_id").max_length
-        self.assertEqual(max_length, 1000)
-
-    def test_latitude_label(self):
-        testOperation = Operation.objects.get(id=1)
-        field_label = testOperation._meta.get_field("latitude").verbose_name
-        self.assertEqual(field_label, "latitude")
-
-    def test_longitude_label(self):
-        testOperation = Operation.objects.get(id=1)
-        field_label = testOperation._meta.get_field("longitude").verbose_name
-        self.assertEqual(field_label, "longitude")
-
-    def test_legal_land_description_label(self):
-        testOperation = Operation.objects.get(id=1)
-        field_label = testOperation._meta.get_field("legal_land_description").verbose_name
-        self.assertEqual(field_label, "legal land description")
-
-    def test_legal_land_description_max_length(self):
-        testOperation = Operation.objects.get(id=1)
-        max_length = testOperation._meta.get_field("legal_land_description").max_length
-        self.assertEqual(max_length, 1000)
-
-    def test_nearest_municipality_label(self):
-        testOperation = Operation.objects.get(id=1)
-        field_label = testOperation._meta.get_field("nearest_municipality").verbose_name
-        self.assertEqual(field_label, "nearest municipality")
-
-    def test_nearest_municipality_max_length(self):
-        testOperation = Operation.objects.get(id=1)
-        max_length = testOperation._meta.get_field("nearest_municipality").max_length
-        self.assertEqual(max_length, 1000)
-
-    def test_operator_percent_of_ownership_label(self):
-        testOperation = Operation.objects.get(id=1)
-        field_label = testOperation._meta.get_field("operator_percent_of_ownership").verbose_name
-        self.assertEqual(field_label, "operator percent of ownership")
-
-    def test_registered_for_obps_label(self):
-        testOperation = Operation.objects.get(id=1)
-        field_label = testOperation._meta.get_field("registered_for_obps").verbose_name
-        self.assertEqual(field_label, "registered for obps")
-
-    def test_verified_at_label(self):
-        testOperation = Operation.objects.get(id=1)
-        field_label = testOperation._meta.get_field("verified_at").verbose_name
-        self.assertEqual(field_label, "verified at")
-
-    def test_verified_by_label(self):
-        testOperation = Operation.objects.get(id=1)
-        field_label = testOperation._meta.get_field("verified_by").verbose_name
-        self.assertEqual(field_label, "verified by")
-
-    def test_estimated_emissions_label(self):
-        testOperation = Operation.objects.get(id=1)
-        field_label = testOperation._meta.get_field("estimated_emissions").verbose_name
-        self.assertEqual(field_label, "estimated emissions")
-
-    def test_documents_label(self):
-        testOperation = Operation.objects.get(id=1)
-        field_label = testOperation._meta.get_field("documents").verbose_name
-        self.assertEqual(field_label, "documents")
-
-    def test_contacts_label(self):
-        testOperation = Operation.objects.get(id=1)
-        field_label = testOperation._meta.get_field("contacts").verbose_name
-        self.assertEqual(field_label, "contacts")
-
-    def test_operation_has_documents(self):
-        testOperation = Operation.objects.get(id=1)
-        self.assertEqual(testOperation.documents.count(), 2)
-
-    def test_operation_has_contacts(self):
-        testOperation = Operation.objects.get(id=1)
-        self.assertEqual(testOperation.contacts.count(), 2)
+        for field_name, expected_label, expected_max_length, expected_relations_count in field_data:
+            with self.subTest(field_name=field_name):
+                if expected_label:
+                    self.assertFieldLabel(field_name, expected_label)
+                if expected_max_length is not None:
+                    self.assertFieldMaxLength(field_name, expected_max_length)
+                if expected_relations_count is not None:
+                    self.assertHasMultipleRelationsInField(field_name, expected_relations_count)
