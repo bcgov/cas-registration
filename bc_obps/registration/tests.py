@@ -3,7 +3,21 @@ from django.test import TestCase
 from .models import Document, Operation, Operator, User, NaicsCode, Contact, UserOperator
 
 
-class UserModelTest(TestCase):
+class BaseTestCase(TestCase):
+    def assertFieldLabel(self, instance, field_name, expected_label):
+        field = instance._meta.get_field(field_name)
+        self.assertEqual(field.verbose_name, expected_label)
+
+    def assertFieldMaxLength(self, instance, field_name, expected_max_length):
+        field = instance._meta.get_field(field_name)
+        self.assertEqual(field.max_length, expected_max_length)
+
+    def assertHasMultipleRelationsInField(self, instance, field_name, expected_relations_count):
+        field = instance.__getattribute__(field_name)
+        self.assertEqual(field.count(), expected_relations_count)
+
+
+class UserModelTest(BaseTestCase):
     @classmethod
     def setUpTestData(cls):
         cls.test_user = User.objects.create(
@@ -23,43 +37,31 @@ class UserModelTest(TestCase):
             ]
         )
 
-    def assertFieldLabel(self, field_name, expected_label):
-        field = self.test_user._meta.get_field(field_name)
-        self.assertEqual(field.verbose_name, expected_label)
-
-    def assertFieldMaxLength(self, field_name, expected_max_length):
-        field = self.test_user._meta.get_field(field_name)
-        self.assertEqual(field.max_length, expected_max_length)
-
     def test_field_labels_and_max_lengths(self):
-        # (field_name, expected_label, expected_max_length)
+        # (field_name, expected_label, expected_max_length, expected_relations_count)
         field_data = [
-            ("first_name", "first name", 1000),
-            ("last_name", "last name", 1000),
-            ("mailing_address", "mailing address", 1000),
-            ("email", "email", 254),
-            ("phone_number", "phone number", None),  # Replace None with the actual max length if available
-            ("user_guid", "user guid", None),
-            ("business_guid", "business guid", None),
-            ("position_title", "position title", 1000),
-            ("documents", "documents", None),
+            ("first_name", "first name", 1000, None),
+            ("last_name", "last name", 1000, None),
+            ("mailing_address", "mailing address", 1000, None),
+            ("email", "email", 254, None),
+            ("phone_number", "phone number", None, None),  # Replace None with the actual max length if available
+            ("user_guid", "user guid", None, None),
+            ("business_guid", "business guid", None, None),
+            ("position_title", "position title", 1000, None),
+            ("documents", "documents", None, 2),
         ]
 
-        for field_name, expected_label, expected_max_length in field_data:
+        for field_name, expected_label, expected_max_length, expected_relations_count in field_data:
             with self.subTest(field_name=field_name):
                 if expected_label:
-                    self.assertFieldLabel(field_name, expected_label)
+                    self.assertFieldLabel(self.test_user, field_name, expected_label)
                 if expected_max_length is not None:
-                    self.assertFieldMaxLength(field_name, expected_max_length)
-
-    def test_user_has_multiple_documents(self):
-        self.assertEqual(self.test_user.documents.count(), 2)
-
-    def test_another_user_has_multiple_documents(self):
-        self.assertEqual(self.test_user.documents.count(), 2)
+                    self.assertFieldMaxLength(self.test_user, field_name, expected_max_length)
+                if expected_relations_count is not None:
+                    self.assertHasMultipleRelationsInField(self.test_user, field_name, expected_relations_count)
 
 
-class DocumentModelTest(TestCase):
+class DocumentModelTest(BaseTestCase):
     @classmethod
     def setUpTestData(cls):
         cls.test_document = Document.objects.create(
@@ -67,14 +69,6 @@ class DocumentModelTest(TestCase):
             document_type="test",
             description="test",
         )
-
-    def assertFieldLabel(self, field_name, expected_label):
-        field = self.test_document._meta.get_field(field_name)
-        self.assertEqual(field.verbose_name, expected_label)
-
-    def assertFieldMaxLength(self, field_name, expected_max_length):
-        field = self.test_document._meta.get_field(field_name)
-        self.assertEqual(field.max_length, expected_max_length)
 
     def test_field_labels_and_max_lengths(self):
         # (field_name, expected_label, expected_max_length)
@@ -87,12 +81,12 @@ class DocumentModelTest(TestCase):
         for field_name, expected_label, expected_max_length in field_data:
             with self.subTest(field_name=field_name):
                 if expected_label:
-                    self.assertFieldLabel(field_name, expected_label)
+                    self.assertFieldLabel(self.test_document, field_name, expected_label)
                 if expected_max_length is not None:
-                    self.assertFieldMaxLength(field_name, expected_max_length)
+                    self.assertFieldMaxLength(self.test_document, field_name, expected_max_length)
 
 
-class NAICSCodeModelTest(TestCase):
+class NAICSCodeModelTest(BaseTestCase):
     @classmethod
     def setUpTestData(cls):
         cls.test_naics_code = NaicsCode.objects.create(
@@ -100,14 +94,6 @@ class NAICSCodeModelTest(TestCase):
             ciip_sector="2",
             naics_description="test",
         )
-
-    def assertFieldLabel(self, field_name, expected_label):
-        field = self.test_naics_code._meta.get_field(field_name)
-        self.assertEqual(field.verbose_name, expected_label)
-
-    def assertFieldMaxLength(self, field_name, expected_max_length):
-        field = self.test_naics_code._meta.get_field(field_name)
-        self.assertEqual(field.max_length, expected_max_length)
 
     def test_field_labels_and_max_lengths(self):
         # (field_name, expected_label, expected_max_length)
@@ -120,12 +106,12 @@ class NAICSCodeModelTest(TestCase):
         for field_name, expected_label, expected_max_length in field_data:
             with self.subTest(field_name=field_name):
                 if expected_label:
-                    self.assertFieldLabel(field_name, expected_label)
+                    self.assertFieldLabel(self.test_naics_code, field_name, expected_label)
                 if expected_max_length is not None:
-                    self.assertFieldMaxLength(field_name, expected_max_length)
+                    self.assertFieldMaxLength(self.test_naics_code, field_name, expected_max_length)
 
 
-class ContactModelTest(TestCase):
+class ContactModelTest(BaseTestCase):
     @classmethod
     def setUpTestData(cls):
         cls.test_contact = Contact.objects.create(
@@ -136,14 +122,6 @@ class ContactModelTest(TestCase):
             phone_number="12345678900",
             is_operational_representative=False,
         )
-
-    def assertFieldLabel(self, field_name, expected_label):
-        field = self.test_contact._meta.get_field(field_name)
-        self.assertEqual(field.verbose_name, expected_label)
-
-    def assertFieldMaxLength(self, field_name, expected_max_length):
-        field = self.test_contact._meta.get_field(field_name)
-        self.assertEqual(field.max_length, expected_max_length)
 
     def test_field_labels_and_max_lengths(self):
         # (field_name, expected_label, expected_max_length)
@@ -161,12 +139,12 @@ class ContactModelTest(TestCase):
         for field_name, expected_label, expected_max_length in field_data:
             with self.subTest(field_name=field_name):
                 if expected_label:
-                    self.assertFieldLabel(field_name, expected_label)
+                    self.assertFieldLabel(self.test_contact, field_name, expected_label)
                 if expected_max_length is not None:
-                    self.assertFieldMaxLength(field_name, expected_max_length)
+                    self.assertFieldMaxLength(self.test_contact, field_name, expected_max_length)
 
 
-class OperatorModelTest(TestCase):
+class OperatorModelTest(BaseTestCase):
     fixtures = ["operator.json", "user.json"]
 
     @classmethod
@@ -217,18 +195,6 @@ class OperatorModelTest(TestCase):
                 ),
             )
 
-    def assertFieldLabel(self, field_name, expected_label):
-        field = self.test_operator._meta.get_field(field_name)
-        self.assertEqual(field.verbose_name, expected_label)
-
-    def assertFieldMaxLength(self, field_name, expected_max_length):
-        field = self.test_operator._meta.get_field(field_name)
-        self.assertEqual(field.max_length, expected_max_length)
-
-    def assertHasMultipleRelationsInField(self, field_name, expected_relations_count):
-        field = self.test_operator.__getattribute__(field_name)
-        self.assertEqual(field.count(), expected_relations_count)
-
     def test_field_labels_and_max_lengths_and_multiple_relations(self):
         # (field_name, expected_label, expected_max_length, expected_relations_count)
         field_data = [
@@ -251,14 +217,14 @@ class OperatorModelTest(TestCase):
         for field_name, expected_label, expected_max_length, expected_relations_count in field_data:
             with self.subTest(field_name=field_name):
                 if expected_label:
-                    self.assertFieldLabel(field_name, expected_label)
+                    self.assertFieldLabel(self.test_operator, field_name, expected_label)
                 if expected_max_length is not None:
-                    self.assertFieldMaxLength(field_name, expected_max_length)
+                    self.assertFieldMaxLength(self.test_operator, field_name, expected_max_length)
                 if expected_relations_count is not None:
-                    self.assertHasMultipleRelationsInField(field_name, expected_relations_count)
+                    self.assertHasMultipleRelationsInField(self.test_operator, field_name, expected_relations_count)
 
 
-class UserOperatorModelTest(TestCase):
+class UserOperatorModelTest(BaseTestCase):
     fixtures = ["user.json", "operator.json"]
 
     @classmethod
@@ -278,14 +244,6 @@ class UserOperatorModelTest(TestCase):
             signed_statuatory_declaration=signed_doc,
         )
 
-    def assertFieldLabel(self, field_name, expected_label):
-        field = self.test_user_operator._meta.get_field(field_name)
-        self.assertEqual(field.verbose_name, expected_label)
-
-    def assertFieldMaxLength(self, field_name, expected_max_length):
-        field = self.test_user_operator._meta.get_field(field_name)
-        self.assertEqual(field.max_length, expected_max_length)
-
     def test_field_labels_and_max_lengths(self):
         # (field_name, expected_label, expected_max_length)
         field_data = [
@@ -303,12 +261,12 @@ class UserOperatorModelTest(TestCase):
         for field_name, expected_label, expected_max_length in field_data:
             with self.subTest(field_name=field_name):
                 if expected_label:
-                    self.assertFieldLabel(field_name, expected_label)
+                    self.assertFieldLabel(self.test_user_operator, field_name, expected_label)
                 if expected_max_length is not None:
-                    self.assertFieldMaxLength(field_name, expected_max_length)
+                    self.assertFieldMaxLength(self.test_user_operator, field_name, expected_max_length)
 
 
-class OperationModelTest(TestCase):
+class OperationModelTest(BaseTestCase):
     fixtures = ["operator.json", "naicsCode.json"]
 
     @classmethod
@@ -357,14 +315,6 @@ class OperationModelTest(TestCase):
             ]
         )
 
-    def assertFieldLabel(self, field_name, expected_label):
-        field = self.test_operation._meta.get_field(field_name)
-        self.assertEqual(field.verbose_name, expected_label)
-
-    def assertFieldMaxLength(self, field_name, expected_max_length):
-        field = self.test_operation._meta.get_field(field_name)
-        self.assertEqual(field.max_length, expected_max_length)
-
     def assertHasMultipleRelationsInField(self, field_name, expected_relations_count):
         field = self.test_operation.__getattribute__(field_name)
         self.assertEqual(field.count(), expected_relations_count)
@@ -397,8 +347,8 @@ class OperationModelTest(TestCase):
         for field_name, expected_label, expected_max_length, expected_relations_count in field_data:
             with self.subTest(field_name=field_name):
                 if expected_label:
-                    self.assertFieldLabel(field_name, expected_label)
+                    self.assertFieldLabel(self.test_operation, field_name, expected_label)
                 if expected_max_length is not None:
-                    self.assertFieldMaxLength(field_name, expected_max_length)
+                    self.assertFieldMaxLength(self.test_operation, field_name, expected_max_length)
                 if expected_relations_count is not None:
                     self.assertHasMultipleRelationsInField(field_name, expected_relations_count)
