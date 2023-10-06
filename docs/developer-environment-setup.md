@@ -23,16 +23,23 @@ In both the `client` and `bc_obps` directories, create a `.env` file and copy th
 
 ## Backend Environment Setup
 
-1. From the `cas-registration/bc_obps` directory, run `make install_dev_tools`. This will install asdf plugins, poetry and activate the poetry virtual environment (to get into the environment again after setup, run `poetry shell`).
-2. Run `make install_poetry_deps` to install all python dependencies.
-3. Run `make start_pg` to start the postgres server if it is not already running.
-4. Run `make create_db` to create the database.
-5. Run `make migrate` to run all database migrations.
-6. Optional: to load all mock data via fixtures, run `make loadfixtures`
-7. Run `make run`, which will start running the development server locally (default port is :8000; terminal output will indicate what localhost address to use to access the backend server).
-   - to test it out, navigate to the `/api/docs` endpoint in your browser, you should see documentation for the /add endpoint
-   - navigate to the `api/add?a=4&b=2` endpoint in your browser, which should return as a result the sum of the specified values for a and b.
-8. Optional: to test the Django server's connection to your database, run `python3 manage.py check --database default`
+1. Navigate to folder: `cas-registration/bc_obps`.
+2. Copy/Paste the `.env.example` file and rename it `.env`.
+3. Complete the .env file values reflecting the 1Password vault document `OBPS backend ENV`.
+4. Download 1Password vault file `OBPS GCS json` and store it in folder location detailed in `.env\GOOGLE_APPLICATION_CREDENTIALS`.
+5. From the terminal, cd into directory `cas-registration/bc_obps`.
+6. Run `make install_dev_tools`. This will install asdf plugins, poetry and activate the poetry virtual environment (to get into the environment again after setup, run `poetry shell`).
+7. Run `make install_poetry_deps` to install all python dependencies.
+8. Run `make start_pg` to start the postgres server if it is not already running.
+9. Run `make create_db` to create the database.
+10. Run `make migrate` to run all database migrations.
+11. Run `make run`, which will start running the development server locally (default port is :8000; terminal output will indicate what localhost address to use to access the backend. server).
+
+    - to test it out, navigate to the `/api/docs` endpoint in your browser, you should see documentation for the /add endpoint
+    - navigate to the `api/add?a=4&b=2` endpoint in your browser, which should return as a result the sum of the specified values for a and b.
+
+12. Optional: to test the Django server's connection to your database, run `python3 manage.py check --database default`.
+13. Optional: to load mock data via fixtures, run `make loadfixtures`.
 
 ## Backend Environment Use
 
