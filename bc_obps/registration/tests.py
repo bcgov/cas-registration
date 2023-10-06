@@ -1,3 +1,4 @@
+from django.db import IntegrityError
 from django.test import TestCase
 
 from .models import Document, Operation, Operator, User, NaicsCode, Contact, UserOperator
@@ -59,6 +60,21 @@ class UserModelTest(BaseTestCase):
                     self.assertFieldMaxLength(self.test_user, field_name, expected_max_length)
                 if expected_relations_count is not None:
                     self.assertHasMultipleRelationsInField(self.test_user, field_name, expected_relations_count)
+
+    def test_unique_user_guid_and_business_guid_constraint(self):
+        # First user is `cls.test_user`, attempt to create another user with the same user_guid and business_guid
+        user2 = User(
+            first_name="fname-test2",
+            last_name="lname-test2",
+            mailing_address="12 34 Street, Test2",
+            email="test2@example.com",
+            user_guid="00000000-0000-0000-0000-000000000000",
+            business_guid="11111111-1111-1111-1111-111111111111",
+            position_title="test2",
+        )
+
+        with self.assertRaises(IntegrityError):
+            user2.save()
 
 
 class DocumentModelTest(BaseTestCase):
@@ -142,6 +158,20 @@ class ContactModelTest(BaseTestCase):
                     self.assertFieldLabel(self.test_contact, field_name, expected_label)
                 if expected_max_length is not None:
                     self.assertFieldMaxLength(self.test_contact, field_name, expected_max_length)
+
+    def test_unique_email_constraint(self):
+        # First user is `cls.test_user`, attempt to create a second contact with the same email address
+        contact2 = Contact(
+            first_name="fname-test2",
+            last_name="lname-test2",
+            mailing_address="12 34 Street, Test2",
+            email="test@example.com",
+            phone_number="9876543210",
+            is_operational_representative=True,
+        )
+
+        with self.assertRaises(IntegrityError):
+            contact2.save()
 
 
 class OperatorModelTest(BaseTestCase):
