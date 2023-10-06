@@ -38,26 +38,29 @@ export default async function Operations() {
   }
 
   // Transform the fetched data into rows for the DataGrid component
-  const rows: GridRowsProp = operations.map(
-    ({
-      id,
-      registration_year,
-      submission_date,
-      registration_id,
-      verified_at,
-      name,
-    }) => {
-      return {
-        id,
-        name,
-        operation_id: id,
-        registration_year,
-        submission_date,
-        registration_id,
-        status: verified_at ? "Registered" : "Pending",
-      };
-    },
-  );
+  const rows: GridRowsProp =
+    operations.length > 0
+      ? operations.map(
+          ({
+            id,
+            registration_year,
+            submission_date,
+            registration_id,
+            verified_at,
+            name,
+          }) => {
+            return {
+              id,
+              name,
+              operation_id: id,
+              registration_year,
+              submission_date,
+              registration_id,
+              status: verified_at ? "Registered" : "Pending",
+            };
+          }
+        )
+      : [];
 
   // Render the DataGrid component
   return (

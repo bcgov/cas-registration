@@ -6,7 +6,7 @@
 export async function fetchAPI(
   endpoint: string,
   options: RequestInit = {},
-  latency: number = 0, // Default latency is 0 milliseconds
+  latency: number = 0 // Default latency is 0 milliseconds
 ) {
   try {
     // Simulate latency
@@ -23,12 +23,12 @@ export async function fetchAPI(
 
     const response = await fetch(
       `${process.env.API_URL}${endpoint}`,
-      mergedOptions,
+      mergedOptions
     );
 
     if (!response.ok) {
       // Handle HTTP errors, e.g., response.status is not in the 200-299 range
-      throw new Error(`HTTP error! Status: ${response.status}`);
+      return { error: `HTTP error! Status: ${response.status}` };
     }
 
     const data = await response.json();
@@ -36,6 +36,8 @@ export async function fetchAPI(
   } catch (error) {
     // Handle any errors, including network issues
     console.error(`An error occurred while fetching ${endpoint}:`, error);
-    throw error; // Rethrow the error for further handling or logging
+    return {
+      error: `An error occurred while fetching ${endpoint}: ${error.message}`,
+    };
   }
 }
