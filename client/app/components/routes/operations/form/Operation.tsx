@@ -31,11 +31,11 @@ async function getOperation(id: number) {
 // 🛠️ Function to create an operation schema with updated enum values
 const createOperationSchema = (
   schema: RJSFSchema,
-  naicsCodes: { id: number }[]
+  naicsCodes: { id: number }[],
 ) => {
   const localSchema = JSON.parse(JSON.stringify(schema));
   localSchema.properties.naics_code_id.enum = naicsCodes?.map(
-    (code) => code.id
+    (code) => code.id,
   );
   return localSchema;
 };
