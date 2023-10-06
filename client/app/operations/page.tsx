@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import Operations from "@/components/routes/operations/Operations";
 import Loading from "@/components/loading/SkeletonGrid";
 
-export default async function Page() {
+export default function Page() {
   return (
     <>
       <h1>Operations List</h1>
