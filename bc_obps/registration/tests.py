@@ -314,7 +314,7 @@ class OperationModelTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.test_operation = Operation.objects.create(
-            operator_id=Operator.objects.get(id=1),
+            operator=Operator.objects.get(id=1),
             name="test-name",
             operation_type="test",
             naics_code=NaicsCode.objects.get(id=1),
@@ -372,7 +372,7 @@ class OperationModelTest(TestCase):
     def test_field_labels_and_max_lengths_and_multiple_relations(self):
         # (field_name, expected_label, expected_max_length, expected_relations_count)
         field_data = [
-            ("operator_id", "operator id", None, None),
+            ("operator", "operator", None, None),
             ("name", "name", 1000, None),
             ("operation_type", "operation type", 1000, None),
             ("eligible_commercial_product_name", "eligible commercial product name", 1000, None),
