@@ -1,6 +1,6 @@
 "use client";
 
-import { operationUiSchema } from "@/app/utils/jsonSchema/operations";
+import { operationUiSchema } from "@/utils/jsonSchema/operations";
 import { Form } from "@rjsf/mui";
 import { RJSFSchema } from "@rjsf/utils";
 import validator from "@rjsf/validator-ajv8";
@@ -8,7 +8,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { Alert } from "@mui/material";
 import SubmitButton from "./SubmitButton";
-import { operationSubmitHandler } from "@/app/utils/actions/submitHandlers";
+import { operationSubmitHandler } from "@/utils/actions";
 
 export interface OperationsFormData {
   id: number;
