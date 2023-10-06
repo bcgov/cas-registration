@@ -10,8 +10,7 @@
     "format": "prettier --write .",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx . && next lint",
     "e2e": "yarn playwright test",
-    "audit-deps": "improved-yarn-audit",
-    "generate-schema": "openapi --input http://127.0.0.1:8000/api/openapi.json --output ./schema"
+    "audit-deps": "improved-yarn-audit"
   },
   "dependencies": {
     "@babel/traverse": "^7.23.2",
