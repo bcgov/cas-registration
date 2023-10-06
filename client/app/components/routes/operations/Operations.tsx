@@ -56,7 +56,7 @@ export default async function Operations() {
         registration_id,
         status: verified_at ? "Registered" : "Pending",
       };
-    }
+    },
   );
 
   // Render the DataGrid component
