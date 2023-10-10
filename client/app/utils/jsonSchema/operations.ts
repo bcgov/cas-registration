@@ -1,8 +1,9 @@
+import FieldTemplate from "@/app/styles/rjsf/FieldTemplate";
+import GroupedObjectFieldTemplateWrapper from "@/app/styles/rjsf/GroupedObjectFieldTemplateWrapper";
 import { RJSFSchema } from "@rjsf/utils";
 
 export const operationSchema: RJSFSchema = {
   type: "object",
-  title: "Step 1: Operation General Information",
   required: [
     "operator_id",
     "name",
@@ -205,6 +206,7 @@ export const operationSchema: RJSFSchema = {
           "Is the senior officer the same as in the operation form?": {
             type: "string",
             enum: ["No", "Yes"],
+            default: "Yes",
           },
         },
         allOf: [
@@ -289,6 +291,8 @@ export const operationUiSchema = {
     "Would you like to add an additional operation registration lead?",
     "orl",
   ],
+  "ui:ObjectFieldTemplate": GroupedObjectFieldTemplateWrapper,
+  "ui:FieldTemplate": FieldTemplate,
   id: {
     "ui:widget": "hidden",
   },
@@ -310,3 +314,65 @@ export const operationUiSchema = {
 // "Does the operation have multiple operators?": {
 //   type: "boolean",
 // },
+
+export const operationsGroupSchema = [
+  {
+    title: "Step 1: Operation General Information",
+    fields: [
+      "operator_id",
+      "name",
+      "type",
+      "naics_code_id",
+      "naics_category",
+      "reporting_activities",
+      "permit_issuing_agency",
+      "permit_number",
+      "Did you submit a GHG emissions report for reporting year 2022?",
+      "previous_year_attributable_emissions",
+      "swrs_facility_id",
+      "bcghrp_id",
+      "current_year_estimated_emissions",
+      "opt_in",
+      "new_entrant",
+      "start_of_commercial_operation",
+      "major_new_operation",
+    ],
+  },
+  {
+    title: "Step 2: Operation Type Information",
+    fields: [
+      "physical_street_address",
+      "physical_municipality",
+      "physical_province",
+      "physical_postal_code",
+      "mailing_street_address",
+      "mailing_municipality",
+      "mailing_province",
+      "mailing_postal_code",
+      "legal_land_description",
+      "latitude",
+      "longitude",
+      "npri_id",
+      "bcer_permit_id",
+    ],
+  },
+  {
+    title:
+      "Step 3: Operation Operator Information - If operation has multiple operators",
+    fields: [
+      "Does the operation have multiple operators?",
+      "operators",
+      "percentage_ownership",
+    ],
+  },
+  {
+    title: "Step 4: Operation Representative (OR) Information",
+    fields: [
+      'Is the operation representative the same as mentioned in "admin access request"?',
+      "Is the senior officer the same as in the operation form?",
+      "so",
+      "Would you like to add an additional operation registration lead?",
+      "orl",
+    ],
+  },
+];
