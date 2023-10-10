@@ -1,7 +1,7 @@
 /**
 📚 Server Actions Conventions:
 
-Ycan be defined in two places:
+SA can be defined in two places:
 Inside the component that uses it (Server Components only).
 In a separate file (Client and Server Components), for reusability.
 
@@ -13,7 +13,7 @@ import { OperationsFormData } from "@/components/form/OperationsForm";
 
 export const operationSubmitHandler = async (
   formData: OperationsFormData,
-  method: "POST" | "PUT",
+  method: "POST" | "PUT"
 ) => {
   try {
     const response = await fetch(
@@ -23,7 +23,7 @@ export const operationSubmitHandler = async (
       {
         method,
         body: JSON.stringify(formData),
-      },
+      }
     );
     if (!response.ok) {
       throw new Error("Failed to save data.");
