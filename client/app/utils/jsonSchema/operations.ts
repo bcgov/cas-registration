@@ -111,7 +111,6 @@ export const operationSchema: RJSFSchema = {
           },
           opt_in: {
             type: "boolean",
-            default: false,
             title: "Is the operation an opt-in operation?",
           },
           new_entrant: {
@@ -293,6 +292,7 @@ export const operationUiSchema = {
   ],
   "ui:ObjectFieldTemplate": GroupedObjectFieldTemplateWrapper,
   "ui:FieldTemplate": FieldTemplate,
+
   id: {
     "ui:widget": "hidden",
   },
@@ -304,6 +304,28 @@ export const operationUiSchema = {
   },
   naics_code_id: {
     "ui:widget": "select",
+  },
+  opt_in: {
+    "ui:widget": "radio",
+  },
+  major_new_operation: {
+    "ui:widget": "radio",
+  },
+  "Did you submit a GHG emissions report for reporting year 2022?": {
+    "ui:widget": "radio",
+  },
+  "Does the operation have multiple operators?": {
+    "ui:widget": "radio",
+  },
+  'Is the operation representative the same as mentioned in "admin access request"?':
+    {
+      "ui:widget": "radio",
+    },
+  "Is the senior officer the same as in the operation form?": {
+    "ui:widget": "radio",
+  },
+  "Would you like to add an additional operation registration lead?": {
+    "ui:widget": "radio",
   },
 };
 
