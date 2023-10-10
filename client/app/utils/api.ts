@@ -6,7 +6,7 @@
 export async function fetchAPI(
   endpoint: string,
   options: RequestInit = {},
-  latency: number = 0, // Default latency is 0 milliseconds
+  latency: number = 0 // Default latency is 0 milliseconds
 ) {
   try {
     // Simulate latency
@@ -23,7 +23,7 @@ export async function fetchAPI(
 
     const response = await fetch(
       `${process.env.API_URL}${endpoint}`,
-      mergedOptions,
+      mergedOptions
     );
 
     if (!response.ok) {
@@ -33,11 +33,18 @@ export async function fetchAPI(
 
     const data = await response.json();
     return data;
-  } catch (error) {
+  } catch (error: unknown) {
     // Handle any errors, including network issues
-    console.error(`An error occurred while fetching ${endpoint}:`, error);
-    return {
-      error: `An error occurred while fetching ${endpoint}: ${error.message}`,
-    };
+    if (error instanceof Error) {
+      console.error(`An error occurred while fetching ${endpoint}:`, error);
+      return {
+        error: `An error occurred while fetching ${endpoint}: ${error.message}`,
+      };
+    } else {
+      console.error(`An unknown error occurred while fetching ${endpoint}`);
+      return {
+        error: `An unknown error occurred while fetching ${endpoint}`,
+      };
+    }
   }
 }
