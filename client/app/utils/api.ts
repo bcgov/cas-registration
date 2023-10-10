@@ -6,7 +6,7 @@
 export async function fetchAPI(
   endpoint: string,
   options: RequestInit = {},
-  latency: number = 0 // Default latency is 0 milliseconds
+  latency: number = 0, // Default latency is 0 milliseconds
 ) {
   try {
     // Simulate latency
@@ -23,7 +23,7 @@ export async function fetchAPI(
 
     const response = await fetch(
       `${process.env.API_URL}${endpoint}`,
-      mergedOptions
+      mergedOptions,
     );
 
     if (!response.ok) {
