@@ -3,6 +3,15 @@
  * https://jestjs.io/docs/configuration
  */
 const config = {
+  // jest: {
+  //   preset: "ts-jest",
+  //   testEnvironment: "node",
+  //   transform: {
+  //     "node_modules/variables/.+\\.(j|t)sx?$": "ts-jest",
+  //   },
+  //   transformIgnorePatterns: ["node_modules/(?!variables/.*)"],
+  // },
+
   // All imported modules in your tests should be mocked automatically
   // automock: false,
 
@@ -87,7 +96,7 @@ const config = {
   // notifyMode: "failure-change",
 
   // A preset that is used as a base for Jest's configuration
-  // preset: undefined,
+  preset: "ts-jest",
 
   // Run tests from one or more projects
   // projects: undefined,
