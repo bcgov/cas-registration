@@ -35,6 +35,8 @@ jobs:
           pushd cas-reg-backend
           GIT_HEAD_SHA=${{ steps.get-sha.outputs.gitsha }}
           sed -i "s/sourceRepoImageTag:.*/sourceRepoImageTag: $GIT_HEAD_SHA/g" values-dev.yaml
+          popd && pushd cas-reg-frontend
+          sed -i "s/sourceRepoImageTag:.*/sourceRepoImageTag: $GIT_HEAD_SHA/g" values-dev.yaml
           git commit -am "Update source SHA for deploy"
           git push origin
           echo 'Manifest repository has been updated."'
@@ -44,6 +46,9 @@ jobs:
         run: |
           pushd cas-reg-backend
           GIT_HEAD_SHA=${{ steps.get-sha.outputs.gitsha }}
+          sed -i "s/sourceRepoImageTag:.*/sourceRepoImageTag: $GIT_HEAD_SHA/g" values-test.yaml
+          sed -i "s/sourceRepoImageTag:.*/sourceRepoImageTag: $GIT_HEAD_SHA/g" values-prod.yaml
+          popd && pushd cas-reg-frontend
           sed -i "s/sourceRepoImageTag:.*/sourceRepoImageTag: $GIT_HEAD_SHA/g" values-test.yaml
           sed -i "s/sourceRepoImageTag:.*/sourceRepoImageTag: $GIT_HEAD_SHA/g" values-prod.yaml
           git commit -am "Update source SHA for deploy"
