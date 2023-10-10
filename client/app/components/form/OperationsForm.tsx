@@ -50,7 +50,7 @@ export default function OperationsForm(props: Props) {
         onSubmit={async (data: { formData?: any }) => {
           const response = await operationSubmitHandler(
             data.formData,
-            props.formData ? "PUT" : "POST",
+            props.formData ? "PUT" : "POST"
           );
           if (response.error) {
             setError(response.error);
@@ -65,8 +65,11 @@ export default function OperationsForm(props: Props) {
           longitude: Number(props.formData?.longitude),
           estimated_emissions: Number(props.formData?.estimated_emissions),
           operator_percent_of_ownership: Number(
-            props.formData?.operator_percent_of_ownership,
+            props.formData?.operator_percent_of_ownership
           ),
+        }}
+        formContext={{
+          groupSchema: operationsGroupSchema,
         }}
       >
         {error && <Alert severity="error">{error}</Alert>}
