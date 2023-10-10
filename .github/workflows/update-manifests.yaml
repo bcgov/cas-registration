@@ -29,7 +29,7 @@ jobs:
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-      - name: Set SHA in dev manifest
+      - name: Set SHA in dev manifest for cas-reg-backend and cas-reg-frontend
         shell: bash
         run: |
           pushd cas-reg-backend
@@ -41,7 +41,7 @@ jobs:
           git push origin
           echo 'Manifest repository has been updated."'
         # if: github.ref == 'refs/heads/develop'
-      - name: Set SHA in dev manifest
+      - name: Set SHA in test and prod manifest for cas-reg-backend and cas-reg-frontend
         shell: bash
         run: |
           pushd cas-reg-backend
