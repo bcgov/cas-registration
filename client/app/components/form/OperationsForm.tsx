@@ -27,7 +27,6 @@ interface Props {
 export default function OperationsForm(props: Props) {
   const [operationName, setOperationName] = useState("");
   const [error, setError] = useState(undefined);
-
   return operationName ? (
     <>
       <p>Your request to register {operationName} has been received.</p>
@@ -42,6 +41,7 @@ export default function OperationsForm(props: Props) {
       </p>
     </>
   ) : (
+    // Operation General Information
     <>
       <Form
         // Because this is an RJSF form, we can't use the Nextjs13.5 pattern of putting a function in the action prop and using the useFormState hook.

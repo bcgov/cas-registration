@@ -74,13 +74,16 @@ class OperationOut(Schema):
     # documents:
 
 
-@router.get("/operations", response=List[OperationOut])
+OperationSchema = create_schema(Operation)
+
+
+@router.get("/operations", response=List[OperationSchema])
 def list_operations(request):
     qs = Operation.objects.all()
     return qs
 
 
-@router.get("/operations/{operation_id}", response=OperationOut)
+@router.get("/operations/{operation_id}", response=OperationSchema)
 def get_operation(request, operation_id: int):
     operation = get_object_or_404(Operation, id=operation_id)
     return operation
