@@ -6,9 +6,8 @@ You should not manually add <head> tags such as <title> and <meta> to root layou
 */
 
 import ThemeRegistry from "@/components/theme/ThemeRegistry";
-import Footer from "@/components/layout/Footer";
 import Header from "@/components/layout/Header";
-import { Box } from "@mui/material";
+import Footer from "@/components/layout/Footer";
 
 export const metadata = {
   title: "CAS OBPS REGISTRATION",
@@ -24,21 +23,8 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <Header />
-        <ThemeRegistry>
-          <Box
-            component="main"
-            sx={{
-              flexGrow: 1,
-              bgcolor: "background.default",
-              ml: `48px`,
-              mt: ["48px", "56px", "64px"],
-              p: 3,
-            }}
-          >
-            {children}
-          </Box>{" "}
-          <Footer />
-        </ThemeRegistry>
+        <ThemeRegistry>{children}</ThemeRegistry>
+        <Footer />
       </body>
     </html>
   );
