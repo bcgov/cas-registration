@@ -1,28 +1,20 @@
 import json
-from django.contrib import admin
+from datetime import date
 from typing import List, Optional
-from datetime import datetime
-from ninja import Router
-from django.core import serializers
-from django.shortcuts import get_object_or_404
-from django.core import serializers
-from .models import Operation, Operator, NaicsCode, NaicsCategory, User, UserOperator, Contact, ParentChildOperator
-from ninja.responses import codes_4xx
-from django.forms import model_to_dict
-from django.core.exceptions import ValidationError
-from registration.schema import (
+from bc_obps.registration.schema import (
     NaicsCategorySchema,
     NaicsCodeSchema,
     OperationIn,
     OperationOut,
-    OperatorOut,
     RequestAccessOut,
-    SelectOperatorIn,
-    Message,
     UserOperatorIn,
     UserOperatorOut,
 )
-from registration.utils import check_users_admin_request_eligibility, update_model_instance
+from ninja import ModelSchema, Router
+from django.shortcuts import get_object_or_404
+from ninja import Field, Schema, ModelSchema
+from .models import Contact, Operation, Operator, NaicsCode, NaicsCategory, User, UserOperator
+from ninja.errors import HttpError
 
 
 router = Router()
@@ -120,6 +112,21 @@ def update_operation(request, operation_id: int, payload: OperationIn):
     operation.status = "Pending"
     operation.save()
     return {"name": operation.name}
+
+
+# OPERATOR
+class OperatorOut(ModelSchema):
+    """
+    Schema for the Operator model
+    """
+
+    class Config:
+        model = Operator
+        model_fields = '__all__'
+
+
+class SelectOperatorIn(Schema):
+    operator_id: int
 
 
 @router.get("/operators", response=List[OperatorOut])
@@ -356,7 +363,7 @@ def update_operation_status(request, operation_id: int):
     # TODO later: add data to verified_by once user authentication in place
     operation.status = status
     if operation.status in [Operation.Statuses.APPROVED, Operation.Statuses.REJECTED]:
-        operation.verified_at = datetime.now()
+        operation.verified_at = date
     data = serializers.serialize(
         'json',
         [
@@ -366,3 +373,48 @@ def update_operation_status(request, operation_id: int):
     operation_json_data = json.dumps(data, indent=4)
     operation.save()
     return operation_json_data
+
+
+@router.get("/select-operator/{int:operator_id}", response=SelectOperatorIn)
+def select_operator(request, operator_id: int):
+    user: User = User.objects.first()  # FIXME: get the user from the request
+    operator: Operator = get_object_or_404(Operator, id=operator_id)
+
+    # User already has an admin user for this operator
+    if UserOperator.objects.filter(
+        users=user, operators=operator, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.APPROVED
+    ).exists():
+        raise HttpError(400, "You are already an admin for this Operator!")
+
+    # Operator already has an admin user
+    if UserOperator.objects.filter(
+        operators=operator, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.APPROVED
+    ).exists():
+        raise HttpError(400, "This Operator already has an admin user!")
+
+    return {"operator_id": operator.id}
+
+
+@router.post("/select-operator/request-access", response=SelectOperatorIn)
+def request_access(request, payload: SelectOperatorIn):
+    user: User = User.objects.first()  # FIXME: get the user from the request
+    payload_dict: dict = payload.dict()
+    operator: Operator = get_object_or_404(Operator, id=payload_dict.get("operator_id"))
+
+    # User already has an admin user for this operator
+    if UserOperator.objects.filter(
+        users=user, operators=operator, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.APPROVED
+    ).exists():
+        raise HttpError(400, "You are already an admin for this Operator")
+
+    # Operator already has an admin user
+    if UserOperator.objects.filter(
+        operators=operator, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.APPROVED
+    ).exists():
+        raise HttpError(400, "This Operator already has an admin user")
+
+    # Making a draft UserOperator instance
+    UserOperator.objects.create(
+        users=user, operators=operator, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.DRAFT
+    )
+    return {"operator_id": operator.id}
