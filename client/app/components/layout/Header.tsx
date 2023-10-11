@@ -1,63 +1,53 @@
 "use client";
-import * as React from "react";
+
+import Image from "next/image";
+import Box from "@mui/material/Box";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
-import IconButton from "@mui/material/IconButton";
+import Button from "@mui/material/Button";
 import { useRouter } from "next/navigation";
 
 export default function Header() {
   const router = useRouter();
 
   return (
-    <AppBar position="fixed" sx={{ zIndex: 2000 }} aria-label="Main Navigation">
-      <Toolbar
-        sx={{
-          display: "flex", // Use Flexbox
-          alignItems: "center", // Vertically center the content
-          color: "white", // Set text color to white
-          backgroundColor: "#036",
-          justifyContent: "space-between",
-        }}
-      >
-        {/* Left-hand section for image and text */}
-        <div
-          style={{
-            display: "flex", // Use Flexbox for horizontal alignment
-            alignItems: "center", // Vertically center the content
-          }}
-        >
-          <img
-            src="/path/to/your/svg-image.svg"
-            alt="Clean BC"
-            style={{ width: "24px", height: "24px" }}
-            aria-hidden="true" // Hide the image from screen readers
+    <Box
+      sx={{
+        flexGrow: 1,
+      }}
+    >
+      <AppBar position="static" color="primary">
+        <Toolbar>
+          <Image
+            alt="Logo for Province of British Columbia CleanBC"
+            src="/img/BCID_CleanBC_rev_tagline_colour.svg"
+            height={50}
+            width={300}
           />
-          <Typography
-            variant="h6"
-            noWrap
-            component="div"
-            color="inherit" // Inherit the text color from the parent (white)
-            aria-hidden="true" // Hide the text from screen readers
-          >
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             BC OBPS
           </Typography>
-        </div>
-
-        {/* Right-hand section for navigation links */}
-        <div>
-          <IconButton
+          <Button
             color="inherit"
-            aria-label="Login"
+            variant="outlined"
+            sx={{ marginRight: 2 }} // Add margin-right to create space
             onClick={() => router.push("/auth/signin")}
           >
-            <Typography variant="body1" color="inherit">
-              Login
-            </Typography>
-          </IconButton>
-          {/* Add more icons or components as needed */}
-        </div>
-      </Toolbar>
-    </AppBar>
+            Program Administrator
+            <br /> Log In
+          </Button>
+          <Button
+            color="inherit"
+            variant="outlined"
+            sx={{ marginRight: 10 }}
+            onClick={() => router.push("/auth/signin")}
+          >
+            Industrial Operator
+            <br /> Log In
+          </Button>
+        </Toolbar>
+      </AppBar>
+    </Box>
   );
 }

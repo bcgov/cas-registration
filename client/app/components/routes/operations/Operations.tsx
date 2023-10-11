@@ -6,10 +6,9 @@ import { fetchAPI } from "@/utils/api";
 export const runtime = "edge";
 
 // 🛠️ Function to fetch operations
-/**********TEMP: demo  latency simulation****************/
 async function getOperations() {
   try {
-    return await fetchAPI("registration/operations", {}, 5000);
+    return await fetchAPI("registration/operations");
   } catch (error) {
     // Handle the error here or rethrow it to handle it at a higher level
     throw error;

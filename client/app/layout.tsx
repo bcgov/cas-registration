@@ -5,6 +5,7 @@ The root layout must define <html> and <body> tags.
 You should not manually add <head> tags such as <title> and <meta> to root layouts. Instead, you should use the Metadata API which automatically handles advanced requirements such as streaming and de-duplicating <head> elements.
 */
 
+import "@/styles/globals.css";
 import ThemeRegistry from "@/components/theme/ThemeRegistry";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
@@ -21,10 +22,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>
-        <Header />
-        <ThemeRegistry>{children}</ThemeRegistry>
-        <Footer />
+      <body id="__next">
+        <ThemeRegistry>
+          <Header />
+          {children}
+          <Footer />
+        </ThemeRegistry>
       </body>
     </html>
   );
