@@ -1,10 +1,11 @@
-import json
 from datetime import date, datetime
+import json
 from typing import List, Optional
-from django.core import serializers
+from ninja import ModelSchema, Router, Schema, Field
 from django.shortcuts import get_object_or_404
-from ninja import Field, Schema, ModelSchema, Router
-from .models import Operation, Operator, NaicsCode, NaicsCategory
+from django.core import serializers
+from .models import Operation, Operator, NaicsCode, NaicsCategory, User, UserOperator
+from ninja.errors import HttpError
 
 
 router = Router()
@@ -196,3 +197,75 @@ def approve_operation(request, operation_id: int):
     operation_json_data = json.dumps(data, indent=4)
     operation.save()
     return operation_json_data
+
+
+# OPERATOR
+class OperatorOut(ModelSchema):
+    """
+    Schema for the Operator model
+    """
+
+    class Config:
+        model = Operator
+        model_fields = '__all__'
+
+
+class SelectOperatorIn(Schema):
+    operator_id: int
+
+
+@router.get("/operators", response=List[OperatorOut])
+def list_operators(request):
+    qs = Operator.objects.all()
+    return qs
+
+
+@router.get("/operators/{operator_id}", response=OperatorOut)
+def get_operator(request, operator_id: int):
+    operator = get_object_or_404(Operator, id=operator_id)
+    return operator
+
+
+@router.get("/select-operator/{int:operator_id}", response=SelectOperatorIn)
+def select_operator(request, operator_id: int):
+    user: User = User.objects.first()  # FIXME: get the user from the request
+    operator: Operator = get_object_or_404(Operator, id=operator_id)
+
+    # User already has an admin user for this operator
+    if UserOperator.objects.filter(
+        users=user, operators=operator, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.APPROVED
+    ).exists():
+        raise HttpError(400, "You are already an admin for this Operator!")
+
+    # Operator already has an admin user
+    if UserOperator.objects.filter(
+        operators=operator, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.APPROVED
+    ).exists():
+        raise HttpError(400, "This Operator already has an admin user!")
+
+    return {"operator_id": operator.id}
+
+
+@router.post("/select-operator/request-access", response=SelectOperatorIn)
+def request_access(request, payload: SelectOperatorIn):
+    user: User = User.objects.first()  # FIXME: get the user from the request
+    payload_dict: dict = payload.dict()
+    operator: Operator = get_object_or_404(Operator, id=payload_dict.get("operator_id"))
+
+    # User already has an admin user for this operator
+    if UserOperator.objects.filter(
+        users=user, operators=operator, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.APPROVED
+    ).exists():
+        raise HttpError(400, "You are already an admin for this Operator")
+
+    # Operator already has an admin user
+    if UserOperator.objects.filter(
+        operators=operator, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.APPROVED
+    ).exists():
+        raise HttpError(400, "This Operator already has an admin user")
+
+    # Making a draft UserOperator instance
+    UserOperator.objects.create(
+        users=user, operators=operator, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.DRAFT
+    )
+    return {"operator_id": operator.id}
