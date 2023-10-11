@@ -41,6 +41,7 @@ class DocumentType(models.Model):
 
     class Meta:
         db_table_comment = "Table that contains types of allowed documents"
+        db_table = 'erc"."document_type'
 
 
 class Document(models.Model):
@@ -57,6 +58,7 @@ class Document(models.Model):
 
     class Meta:
         db_table_comment = "Documents"
+        db_table = 'erc"."document'
 
     indexes = [
         models.Index(fields=["type"], name="document_type_idx"),
@@ -72,6 +74,7 @@ class NaicsCode(models.Model):
 
     class Meta:
         db_table_comment = "Naics codes"
+        db_table = 'erc"."naics_code'
 
 
 class NaicsCategory(models.Model):
@@ -81,6 +84,7 @@ class NaicsCategory(models.Model):
 
     class Meta:
         db_table_comment = "Naics categories"
+        db_table = 'erc"."naics_category'
 
 
 class PetrinexId(models.Model):
@@ -90,6 +94,7 @@ class PetrinexId(models.Model):
 
     class Meta:
         db_table_comment = "Petrinex ids"
+        db_table = 'erc"."petrinex_id'
 
 
 class RegulatedProduct(models.Model):
@@ -99,6 +104,7 @@ class RegulatedProduct(models.Model):
 
     class Meta:
         db_table_comment = "Regulated products"
+        db_table = 'erc"."regulated_product'
 
 
 class UserAndContactCommonInfo(models.Model):
@@ -128,6 +134,7 @@ class User(UserAndContactCommonInfo):
 
     class Meta:
         db_table_comment = "App users"
+        db_table = 'erc"."user'
         constraints = [
             models.UniqueConstraint(
                 fields=["user_guid", "business_guid"],
@@ -158,6 +165,7 @@ class Role(models.Model):
 
     class Meta:
         db_table_comment = "Table to list all contact roles"
+        db_table = 'erc"."role'
 
 
 class Contact(UserAndContactCommonInfo):
@@ -167,6 +175,7 @@ class Contact(UserAndContactCommonInfo):
 
     class Meta:
         db_table_comment = "Contacts (people who don't use the app, e.g. authorized signing officers)"
+        db_table = 'erc"."contact'
         indexes = [
             models.Index(fields=["role"], name="contact_role_idx"),
         ]
@@ -210,6 +219,7 @@ class Operator(models.Model):
     class Meta:
         db_table_comment = "Operators (also called organizations)"
         # don't need indexes if we end up using `unique`
+        db_table = 'erc"."operator'
         indexes = [
             models.Index(fields=["compliance_entity"], name="compliance_entity_idx"),
         ]
@@ -236,6 +246,7 @@ class ParentChildOperator(models.Model):
 
     class Meta:
         db_table_comment = "Through table to connect parent and child operators"
+        db_table = 'erc"."parent_child_operator'
         indexes = [
             models.Index(fields=["parent_operator"], name="parent_operator_idx"),
             models.Index(fields=["child_operator"], name="child_operator_idx"),
@@ -280,6 +291,7 @@ class UserOperator(models.Model):
 
     class Meta:
         db_table_comment = "Through table to connect Users and Operators and track access requests"
+        db_table = 'erc"."user_operator'
         indexes = [
             models.Index(fields=["users"], name="user_operator_user_idx"),
             models.Index(fields=["operators"], name="user_operator_operator_idx"),
@@ -344,7 +356,7 @@ class OperationAndFacilityCommonInfo(models.Model):
         blank=True,
         null=True,
     )
-    petrinexids = models.ManyToManyField(PetrinexId, blank=True, related_name="operations_facilities_petrinex_ids")
+    petrinex_ids = models.ManyToManyField(PetrinexId, blank=True, related_name="operations_facilities_petrinex_ids")
     regulated_products = models.ManyToManyField(
         RegulatedProduct,
         blank=True,
@@ -376,6 +388,7 @@ class Operation(OperationAndFacilityCommonInfo):
 
     class Meta:
         db_table_comment = "Operations (also called facilities)"
+        db_table = 'erc"."operation'
         indexes = [
             models.Index(fields=["operator"], name="operator_idx"),
             models.Index(fields=["naics_code"], name="naics_code_idx"),
@@ -403,6 +416,7 @@ class OperatorOperation(models.Model):
         db_table_comment = (
             "Through table to connect Operations and Operators and track parent companies and compliance entities"
         )
+        db_table = 'erc"."operator_operation'
         indexes = [
             models.Index(fields=["operations"], name="operator_operation_idx"),
             models.Index(fields=["operators"], name="operator_operator_idx"),
