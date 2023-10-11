@@ -326,7 +326,7 @@ class OperationAndFacilityCommonInfo(models.Model):
     )
     opt_in = models.BooleanField(db_comment="")
     new_entrant = models.BooleanField(db_comment="", blank=True, null=True)
-    start_of_commercial_operation = models.DateTimeField(db_comment="")
+    start_of_commercial_operation = models.DateTimeField(db_comment="", blank=True, null=True)
     physical_street_address = models.CharField(max_length=1000, db_comment="")
     physical_municipality = models.CharField(max_length=1000, db_comment="")
     physical_province = CAProvinceField(db_comment="")
