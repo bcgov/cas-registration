@@ -117,7 +117,6 @@ class User(UserAndContactCommonInfo):
         Document,
         blank=True,
         related_name="user_documents",
-        db_comment="Documents associated with the user (e.g. signed statuatory declaration)",
     )
 
     class Meta:
@@ -209,12 +208,10 @@ class Operator(models.Model):
         Document,
         blank=True,
         related_name="operator_documents",
-        db_comment="Documents associated with the operator",
     )
     contacts = models.ManyToManyField(
         Contact,
         related_name="operator_contacts",
-        db_comment="Contacts associated with the operator",
     )
 
     class Meta:
@@ -422,13 +419,11 @@ class OperationAndFacilityCommonInfo(models.Model):
         PetrinexId,
         blank=True,
         related_name="operations_facilities_petrinex_ids",
-        db_comment="The operation or facility's petrinex ids",
     )
     regulated_products = models.ManyToManyField(
         RegulatedProduct,
         blank=True,
         related_name="operations_facilities_regulated_products",
-        db_comment="The operation or facility's regulated products",
     )
 
     class Meta:
@@ -472,12 +467,10 @@ class Operation(OperationAndFacilityCommonInfo):
         Document,
         blank=True,
         related_name="operation_documents",
-        db_comment="Documents associated with the operation",
     )
     contacts = models.ManyToManyField(
         Contact,
         related_name="operation_contacts",
-        db_comment="Contacts associated with the operation",
     )
 
     class Meta:
