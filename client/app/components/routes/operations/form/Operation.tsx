@@ -8,10 +8,9 @@ import { fetchAPI } from "@/utils/api";
 export const runtime = "edge";
 
 // 🛠️ Function to fetch NAICS codes
-/**********TEMP: demo  latency simulation****************/
 async function getNaicsCodes() {
   try {
-    return await fetchAPI("registration/naics_codes", {}, 5000);
+    return await fetchAPI("registration/naics_codes");
   } catch (error) {
     // Handle the error here or rethrow it to handle it at a higher level
     throw error;
