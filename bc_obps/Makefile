@@ -60,12 +60,22 @@ create_db:
 		grep -q 1 || \
 		$(PSQL) -d postgres -c "CREATE DATABASE $(DB_NAME)";
 
+.PHONY: create_schema
+create_schema: ## Create the schema
+create_schema:
+	@$(PSQL) -d $(DB_NAME) -c "CREATE SCHEMA IF NOT EXISTS $(SCHEMA_NAME)";
+
 .PHONY: drop_db
 drop_db: ## Drop the $(DB_NAME) database if it exists
 drop_db:
 	@$(PSQL) -d postgres -tc "SELECT count(*) FROM pg_database WHERE datname = '$(DB_NAME)'" | \
 		grep -q 0 || \
 		$(PSQL) -d postgres -c "DROP DATABASE $(DB_NAME)";
+
+.PHONY: drop_schema
+drop_schema: ## Drop the schema
+drop_schema:
+	@$(PSQL) -d $(DB_NAME) -c "DROP SCHEMA IF EXISTS $(SCHEMA_NAME)";
 
 .PHONY: run
 run: ## run the server
