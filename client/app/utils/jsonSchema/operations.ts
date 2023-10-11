@@ -9,7 +9,7 @@ export const operationSchema: RJSFSchema = {
     "name",
     "type",
     "naics_code_id",
-    "naics_category",
+    "naics_category_id",
     "reporting_activities",
     "permit_issuing_agency",
     "permit_number",
@@ -26,11 +26,11 @@ export const operationSchema: RJSFSchema = {
     "bcer_permit_id",
   ],
   properties: {
-    operator_id: { type: "string", title: "Operator ID" }, // this will ultimately be determined from their login
+    operator_id: { type: "number", title: "Operator ID" }, // this will ultimately be determined from their login
     name: { type: "string", title: "Operation Name" },
     type: { type: "string", title: "Operation Type" },
     naics_code_id: { type: "number", title: "NAICS Code" },
-    naics_category: { type: "number", title: "NAICS Category" },
+    naics_category_id: { type: "number", title: "NAICS Category" },
     reporting_activities: { type: "string", title: "Reporting Activities" },
     permit_issuing_agency: { type: "string", title: "Permit Issuing Agency " },
     permit_number: { type: "number", title: "Permit Number" },
@@ -41,8 +41,30 @@ export const operationSchema: RJSFSchema = {
     },
     physical_street_address: { type: "string", title: "Physical Address" },
     physical_municipality: { type: "string", title: "Municipality" },
-    physical_province: { type: "string", title: "Province" },
-    physical_postal_code: { type: "string", title: "Postal Code" },
+    physical_province: {
+      type: "string",
+      title: "Province",
+      enum: [
+        "NL",
+        "PE",
+        "NS",
+        "NB",
+        "QC",
+        "ON",
+        "MB",
+        "SK",
+        "AB",
+        "BC",
+        "YT",
+        "NT",
+        "NU",
+      ],
+    },
+    physical_postal_code: {
+      type: "string",
+      title: "Postal Code",
+      maxLength: 7,
+    },
     legal_land_description: { type: "string", title: "Legal Land Description" },
     latitude: { type: "number", title: "Lat coordinates" },
     longitude: { type: "number", title: "Long coordinates" },
@@ -144,19 +166,13 @@ export const operationSchema: RJSFSchema = {
             properties: {
               start_of_commercial_operation: {
                 type: "string",
-                format: "date",
+                format: "datetime",
                 title: "Start of commerical operation",
               },
             },
-            required: ["start_of_commercial_operation"],
           },
+          required: ["start_of_commercial_operation"],
         },
-      ],
-      required: [
-        "current_year_estimated_emissions",
-        "opt_in",
-        "new_entrant",
-        "major_new_operation",
       ],
     },
     {
@@ -188,7 +204,7 @@ export const operationSchema: RJSFSchema = {
             title: "Percentage of ownership of operation",
           },
         },
-        required: ["operators"],
+        required: ["operators", "percentage_ownership"],
       },
     },
     {
@@ -208,6 +224,7 @@ export const operationSchema: RJSFSchema = {
             default: "Yes",
           },
         },
+        required: ["Is the senior officer the same as in the operation form?"],
         allOf: [
           {
             if: {
@@ -255,7 +272,7 @@ export const operationUiSchema = {
     "name",
     "type",
     "naics_code_id",
-    "naics_category",
+    "naics_category_id",
     "reporting_activities",
     "permit_issuing_agency",
     "permit_number",
@@ -305,10 +322,16 @@ export const operationUiSchema = {
   naics_code_id: {
     "ui:widget": "select",
   },
+  physical_province: {
+    "ui:widget": "select",
+  },
   opt_in: {
     "ui:widget": "radio",
   },
   major_new_operation: {
+    "ui:widget": "radio",
+  },
+  new_entrant: {
     "ui:widget": "radio",
   },
   "Did you submit a GHG emissions report for reporting year 2022?": {
@@ -329,14 +352,6 @@ export const operationUiSchema = {
   },
 };
 
-// mailing_street_address: { type: "string", title: "operator_id" },
-//     mailing_municipality: { type: "string", title: "operator_id" },
-//     mailing_province: { type: "string", title: "operator_id" },
-//     mailing_postal_code: { type: "string", title: "operator_id" },
-// "Does the operation have multiple operators?": {
-//   type: "boolean",
-// },
-
 export const operationsGroupSchema = [
   {
     title: "Step 1: Operation General Information",
@@ -345,7 +360,7 @@ export const operationsGroupSchema = [
       "name",
       "type",
       "naics_code_id",
-      "naics_category",
+      "naics_category_id",
       "reporting_activities",
       "permit_issuing_agency",
       "permit_number",
@@ -367,10 +382,6 @@ export const operationsGroupSchema = [
       "physical_municipality",
       "physical_province",
       "physical_postal_code",
-      "mailing_street_address",
-      "mailing_municipality",
-      "mailing_province",
-      "mailing_postal_code",
       "legal_land_description",
       "latitude",
       "longitude",
