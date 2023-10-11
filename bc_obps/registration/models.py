@@ -151,6 +151,16 @@ class User(UserAndContactCommonInfo):
         ]
 
 
+class Role(models.Model):
+    """Role model"""
+
+    role_name = models.CharField(max_length=1000, db_comment="The name of a role a contact can hold")
+
+    class Meta:
+        db_table_comment = "Table to list all contact roles"
+        db_table = 'erc"."role'
+
+
 class Contact(UserAndContactCommonInfo):
     """Contact model"""
 
@@ -262,6 +272,7 @@ class UserOperator(models.Model):
         REPORTER = "reporter", "Reporter"
 
     class Statuses(models.TextChoices):
+        DRAFT = "draft", "Draft"
         PENDING = "pending", "Pending"
         APPROVED = "approved", "Approved"
         REJECTED = "rejected", "Rejected"
@@ -499,4 +510,31 @@ class Operation(OperationAndFacilityCommonInfo):
             models.Index(fields=["operator"], name="operator_idx"),
             models.Index(fields=["naics_code"], name="naics_code_idx"),
             models.Index(fields=["verified_by"], name="operation_verified_by_idx"),
+        ]
+
+
+class OperatorOperation(models.Model):
+    """OperatorOperation"""
+
+    operators = models.ForeignKey(
+        Operator,
+        on_delete=models.DO_NOTHING,
+        db_comment="The operator associated with an operation",
+        related_name="operator_operators",
+    )
+    operations = models.ForeignKey(
+        Operation,
+        on_delete=models.DO_NOTHING,
+        db_comment="The operation associated with an operator",
+        related_name="operator_operations",
+    )
+
+    class Meta:
+        db_table_comment = (
+            "Through table to connect Operations and Operators and track parent companies and compliance entities"
+        )
+        db_table = 'erc"."operator_operation'
+        indexes = [
+            models.Index(fields=["operations"], name="operator_operation_idx"),
+            models.Index(fields=["operators"], name="operator_operator_idx"),
         ]
