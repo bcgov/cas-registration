@@ -366,6 +366,7 @@ class OperationAndFacilityCommonInfo(models.Model):
     class Meta:
         abstract = True
         db_table_comment = "An abstract base class (used for putting common information into a number of other models) containing fields for operations and facilities"
+        db_table = 'erc"."operation'
 
 
 class Operation(OperationAndFacilityCommonInfo):
