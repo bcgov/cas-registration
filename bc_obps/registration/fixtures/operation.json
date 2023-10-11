@@ -28,16 +28,12 @@
       "physical_municipality": "Cityville",
       "physical_province": "ON",
       "physical_postal_code": "M1M 1M1",
-      "mailing_street_address": "456 Elm St",
-      "mailing_municipality": "Townville",
-      "mailing_province": "AB",
-      "mailing_postal_code": "A2A 2A2",
       "legal_land_description": "Lot 123, Concession 456",
       "latitude": "45.67890",
       "longitude": "-123.45678",
       "npri_id": 12345,
       "bcer_permit_id": 563,
-      "petrinexids": [],
+      "petrinex_ids": [],
       "regulated_products": []
     }
   },
@@ -70,16 +66,12 @@
       "physical_municipality": "Villagetown",
       "physical_province": "BC",
       "physical_postal_code": "V3V 3V3",
-      "mailing_street_address": "789 Oak St",
-      "mailing_municipality": "Villagetown",
-      "mailing_province": "BC",
-      "mailing_postal_code": "V3V 3V3",
       "legal_land_description": "Parcel 789",
       "latitude": "50.12345",
       "longitude": "-110.98765",
       "npri_id": null,
       "bcer_permit_id": 54321,
-      "petrinexids": [],
+      "petrinex_ids": [],
       "regulated_products": []
     }
   }
