@@ -359,6 +359,7 @@ class OperationAndFacilityCommonInfo(models.Model):
         max_length=1000,
         db_comment="An operation or facility's BCGHG identifier. Only needed if the operation/facility submitted a report the previous year.",
         blank=True,
+        null=True,
     )
     current_year_estimated_emissions = models.DecimalField(
         decimal_places=5,
