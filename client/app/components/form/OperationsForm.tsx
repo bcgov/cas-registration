@@ -1,6 +1,9 @@
 "use client";
 
-import { operationUiSchema } from "@/utils/jsonSchema/operations";
+import {
+  operationUiSchema,
+  operationsGroupSchema,
+} from "@/utils/jsonSchema/operations";
 import { Form } from "@rjsf/mui";
 import { RJSFSchema } from "@rjsf/utils";
 import validator from "@rjsf/validator-ajv8";
@@ -48,8 +51,16 @@ export default function OperationsForm(props: Props) {
         schema={props.schema}
         validator={validator}
         onSubmit={async (data: { formData?: any }) => {
+          console.log("formdata", data.formData);
           const response = await operationSubmitHandler(
-            data.formData,
+            {
+              ...data.formData,
+              //  temporary handling of required many-to-many fields, will be addressed in #138
+              documents: [],
+              contacts: [],
+              petrinexids: [],
+              regulated_products: [],
+            },
             props.formData ? "PUT" : "POST"
           );
           if (response.error) {
