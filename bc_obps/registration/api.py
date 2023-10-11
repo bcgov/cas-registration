@@ -20,7 +20,6 @@ from registration.schema import (
     NaicsCodeSchema,
     OperationIn,
     OperationOut,
-    OperatorOut,
     RequestAccessOut,
     SelectOperatorIn,
     UserOperatorIn,
@@ -36,6 +35,12 @@ from django.http import JsonResponse
 from django.conf import settings
 from django.http import HttpResponse
 import os
+from ninja import ModelSchema, Router
+from django.shortcuts import get_object_or_404
+from ninja import Field, Schema, ModelSchema
+from .models import Contact, Operation, Operator, NaicsCode, NaicsCategory, User, UserOperator
+from ninja.errors import HttpError
+
 
 router = Router()
 
