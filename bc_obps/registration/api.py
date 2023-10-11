@@ -4,9 +4,9 @@ from datetime import date
 from typing import List
 from ninja import Router
 from django.shortcuts import get_object_or_404
-from .models import Operation, Operator, NaicsCode
+from .models import Operation, Operator, NaicsCode, NaicsCategory
 from ninja.orm import create_schema
-from ninja import Field, Schema
+from ninja import Field, Schema, ModelSchema
 from decimal import *
 
 
@@ -14,16 +14,36 @@ router = Router()
 
 
 # Naics code schemas and endpoints
-class NaicsCodeSchema(Schema):
-    id: int
-    naics_code: str
-    ciip_sector: str
-    naics_description: str
+class NaicsCodeSchema(ModelSchema):
+    """
+    Schema for the NaicsCode model
+    """
+
+    class Config:
+        model = NaicsCode
+        model_fields = "__all__"
 
 
 @router.get("/naics_codes", response=List[NaicsCodeSchema])
 def list_naics_codes(request):
     qs = NaicsCode.objects.all()
+    return qs
+
+
+# Naics category schemas and endpoints
+class NaicsCategorySchema(ModelSchema):
+    """
+    Schema for the NaicsCategory model
+    """
+
+    class Config:
+        model = NaicsCategory
+        model_fields = "__all__"
+
+
+@router.get("/naics_categories", response=List[NaicsCategorySchema])
+def list_naics_codes(request):
+    qs = NaicsCategory.objects.all()
     return qs
 
 
@@ -74,7 +94,14 @@ class OperationOut(Schema):
     # documents:
 
 
-OperationSchema = create_schema(Operation)
+class OperationSchema(ModelSchema):
+    """
+    Schema for the Operation model
+    """
+
+    class Config:
+        model = Operation
+        model_fields = "__all__"
 
 
 @router.get("/operations", response=List[OperationSchema])
@@ -90,7 +117,7 @@ def get_operation(request, operation_id: int):
 
 
 @router.post("/operations")
-def create_operation(request, payload: OperationIn):
+def create_operation(request, payload: OperationSchema):
     if "operator" in payload.dict():
         operator = payload.dict()["operator"]
         op = get_object_or_404(Operator, id=operator)
@@ -101,6 +128,11 @@ def create_operation(request, payload: OperationIn):
         nc = get_object_or_404(NaicsCode, id=naics_code)
         # Assign the naics_code instance to the operation
         payload.naics_code = nc
+    if "naics_category" in payload.dict():
+        naics_category = payload.dict()["naics_category"]
+        nc = get_object_or_404(NaicsCategory, id=naics_category)
+        # Assign the naics_category instance to the operation
+        payload.naics_category = nc
         # temporary handling of many-to-many fields, will be addressed in #138
     if "documents" in payload.dict():
         del payload.documents
@@ -111,7 +143,7 @@ def create_operation(request, payload: OperationIn):
 
 
 @router.put("/operations/{operation_id}")
-def update_operation(request, operation_id: int, payload: OperationIn):
+def update_operation(request, operation_id: int, payload: OperationSchema):
     operation = get_object_or_404(Operation, id=operation_id)
     if "operator" in payload.dict():
         operator = payload.dict()["operator"]
