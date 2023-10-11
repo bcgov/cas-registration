@@ -1,6 +1,15 @@
+/**
+📚 Server Actions Conventions:
+
+SA can be defined in two places:
+Inside the component that uses it (Server Components only).
+In a separate file (Client and Server Components), for reusability.
+
+💡 You can define multiple Server Actions in a single file.
+*/
 "use server";
 import { revalidatePath } from "next/cache";
-import { OperationsFormData } from "../../components/form/OperationsForm";
+import { OperationsFormData } from "@/components/form/OperationsForm";
 
 export const operationSubmitHandler = async (
   formData: OperationsFormData,
@@ -9,8 +18,8 @@ export const operationSubmitHandler = async (
   try {
     const response = await fetch(
       method === "POST"
-        ? "http://localhost:8000/api/registration/operations"
-        : `http://localhost:8000/api/registration/operations/${formData.id}`,
+        ? process.env.API_URL + "registration/operations"
+        : process.env.API_URL + `registration/operations/${formData.id}`,
       {
         method,
         body: JSON.stringify(formData),
