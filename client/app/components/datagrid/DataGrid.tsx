@@ -20,6 +20,8 @@ const DataGrid: React.FC<Props> = ({ rows, columns, cntxt }) => {
   const [customColumns, setCustomColumns] = useState<GridColDef[]>(columns);
 
   useEffect(() => {
+    // 🔍 Props passed from Server Components—for example client/app/operations/page.tsx—must be serializable
+    // Handling non-serializable column functions here...
     switch (cntxt) {
       case "operations":
         // 📚 Define a custom renderCell function for the 'action' column

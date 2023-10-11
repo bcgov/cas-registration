@@ -1,12 +1,15 @@
-/* Components */
+"use client";
+
 import Link from "next/link";
 
-export default async function Page() {
+export default function Home() {
   return (
     <>
-      <h1>Links to app pages</h1>
+      <h1>Links to app pages...</h1>
       <ul>
-        <Link href="/operations">Operations</Link>
+        <Link className="text-red-500" href="/operations">
+          Operations
+        </Link>
       </ul>
     </>
   );
