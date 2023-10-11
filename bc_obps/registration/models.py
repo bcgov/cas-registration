@@ -332,7 +332,7 @@ class OperationAndFacilityCommonInfo(models.Model):
         decimal_places=5, max_digits=10, db_comment="", blank=True, null=True
     )
     swrs_facility_id = models.IntegerField(db_comment="", blank=True, null=True)
-    bcghrp_id = models.CharField(max_length=1000, db_comment="", blank=True)
+    bcghg_id = models.CharField(max_length=1000, db_comment="", blank=True)
     current_year_estimated_emissions = models.DecimalField(
         decimal_places=5, max_digits=10, db_comment="", blank=True, null=True
     )
