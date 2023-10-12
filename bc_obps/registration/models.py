@@ -369,7 +369,9 @@ class OperationAndFacilityCommonInfo(models.Model):
         null=True,
     )
     opt_in = models.BooleanField(
-        db_comment="Whether or not the operation/facility is required to register or is simply opting in. Only needed if the operation/facility did not report the previous year."
+        db_comment="Whether or not the operation/facility is required to register or is simply opting in. Only needed if the operation/facility did not report the previous year.",
+        blank=True,
+        null=True,
     )
     new_entrant = models.BooleanField(
         db_comment="Whether or not an operation or facility is a new entrant. Only needed if the operation/facility did not report the previous year.",
