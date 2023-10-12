@@ -4,7 +4,6 @@
     "pk": 1,
     "fields": {
       "operator": 1,
-      "registered_for_obps": true,
       "verified_at": "2023-10-13T15:27:00.000Z",
       "verified_by": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
       "documents": [],
@@ -29,7 +28,8 @@
       "npri_id": 12345,
       "bcer_permit_id": 563,
       "petrinex_ids": [],
-      "regulated_products": []
+      "regulated_products": [],
+      "status": "Pending"
     }
   },
   {
@@ -37,7 +37,6 @@
     "pk": 2,
     "fields": {
       "operator": 2,
-      "registered_for_obps": false,
       "documents": [],
       "contacts": [],
       "name": "Operation 2",
@@ -62,7 +61,8 @@
       "npri_id": 56,
       "bcer_permit_id": 54321,
       "petrinex_ids": [],
-      "regulated_products": []
+      "regulated_products": [],
+      "status": "Not Registered"
     }
   },
   {
@@ -70,7 +70,6 @@
     "pk": 3,
     "fields": {
       "operator": 2,
-      "registered_for_obps": false,
       "documents": [],
       "contacts": [],
       "name": "Operation 3",
@@ -94,7 +93,8 @@
       "npri_id": 56425,
       "bcer_permit_id": 24643652,
       "petrinex_ids": [],
-      "regulated_products": []
+      "regulated_products": [],
+      "status": "Approved"
     }
   }
 ]

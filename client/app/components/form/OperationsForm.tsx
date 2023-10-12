@@ -29,6 +29,7 @@ export interface OperationsFormData {
   bcghg_id: number;
   start_of_commercial_operation: string;
   verified_at: string;
+  status: string;
 }
 
 interface Props {
@@ -64,6 +65,7 @@ export default function OperationsForm(props: Props) {
       props.formData?.start_of_commercial_operation?.toString(),
     verified_at: props.formData?.verified_at?.toString(),
   };
+  console.log("props.formdata.status", props.formData?.status);
   return operationName ? (
     <>
       <p>Your request to register {operationName} has been received.</p>
@@ -82,6 +84,12 @@ export default function OperationsForm(props: Props) {
     <>
       <Form
         // Because this is an RJSF form, we can't use the Nextjs13.5 pattern of putting a function in the action prop and using the useFormState hook.
+        readonly={
+          props.formData?.status === "Registered" ||
+          props.formData?.status === "Pending"
+            ? true
+            : false
+        }
         schema={props.schema}
         validator={validator}
         onSubmit={async (data: { formData?: any }) => {

@@ -438,6 +438,12 @@ class OperationAndFacilityCommonInfo(models.Model):
 class Operation(OperationAndFacilityCommonInfo):
     """Operation model"""
 
+    class Statuses(models.TextChoices):
+        NOT_REGISTERED = "not_registered", "Not Registered"
+        PENDING = "pending", "Pending"
+        APPROVED = "approved", "Approved"
+        REJECTED = "rejected", "Rejected"
+
     operator = models.ForeignKey(
         Operator,
         on_delete=models.DO_NOTHING,
@@ -474,6 +480,12 @@ class Operation(OperationAndFacilityCommonInfo):
     contacts = models.ManyToManyField(
         Contact,
         related_name="operation_contacts",
+    )
+    status = models.CharField(
+        max_length=1000,
+        choices=Statuses.choices,
+        default=Statuses.PENDING,
+        db_comment="The status of an operation in the app (e.g. pending review)",
     )
 
     class Meta:
