@@ -1,0 +1,30 @@
+[
+  {
+    "model": "registration.role",
+    "pk": 1,
+    "fields": {
+      "role_name": "senior_officer"
+    }
+  },
+  {
+    "model": "registration.role",
+    "pk": 2,
+    "fields": {
+      "role_name": "operation_representative"
+    }
+  },
+  {
+    "model": "registration.role",
+    "pk": 3,
+    "fields": {
+      "role_name": "authorized_signing_officer"
+    }
+  },
+  {
+    "model": "registration.role",
+    "pk": 4,
+    "fields": {
+      "role_name": "operation_registration_lead"
+    }
+  }
+]
