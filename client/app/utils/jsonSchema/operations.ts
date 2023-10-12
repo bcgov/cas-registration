@@ -184,19 +184,15 @@ export const operationSchema: RJSFSchema = {
       then: {
         properties: {
           operators: {
-            type: "array",
-            title: "Parent Operators",
-            items: {
-              type: "string",
-              enum: ["foo", "bar", "fuzz", "qux"],
-            },
+            type: "string",
+            title: "To be added in #136",
           },
           percentage_ownership: {
             type: "number",
             title: "Percentage of ownership of operation",
           },
         },
-        required: ["operators", "percentage_ownership"],
+        required: ["percentage_ownership"],
       },
     },
     {
@@ -229,7 +225,7 @@ export const operationSchema: RJSFSchema = {
               properties: {
                 so: {
                   type: "string",
-                  title: "spread the contact stuff here",
+                  title: "To be added in #136",
                 },
               },
             },
@@ -249,7 +245,7 @@ export const operationSchema: RJSFSchema = {
         properties: {
           orl: {
             type: "string",
-            title: "spread the contact stuff here",
+            title: "To be added in #136",
           },
         },
       },
