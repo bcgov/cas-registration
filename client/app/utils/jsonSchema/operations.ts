@@ -5,7 +5,6 @@ import { RJSFSchema } from "@rjsf/utils";
 export const operationSchema: RJSFSchema = {
   type: "object",
   required: [
-    "operator_id",
     "name",
     "type",
     "naics_code_id",
@@ -26,7 +25,6 @@ export const operationSchema: RJSFSchema = {
     "bcer_permit_id",
   ],
   properties: {
-    operator_id: { type: "number", title: "Operator ID" }, // this will ultimately be determined from their login
     verified_by: { type: "string" },
     verified_at: { type: "string" },
     name: { type: "string", title: "Operation Name" },
@@ -108,7 +106,6 @@ export const operationSchema: RJSFSchema = {
           swrs_facility_id: { type: "number", title: "SWRS Facility ID" },
           bcghg_id: { type: "number", title: "BCGHG ID" },
         },
-        // brianna this required doesn't seem to work
         required: [
           "previous_year_attributable_emissions",
           "swrs_facility_id",
@@ -128,7 +125,8 @@ export const operationSchema: RJSFSchema = {
         properties: {
           current_year_estimated_emissions: {
             type: "number",
-            title: "Estimated attributable Emissions for reporting year 2023",
+            title: "Estimated Emissions for reporting year 2023",
+            default: undefined,
           },
           opt_in: {
             type: "boolean",
@@ -146,7 +144,6 @@ export const operationSchema: RJSFSchema = {
             default: false,
           },
         },
-        // brianna this required doesn't seem to work
         required: [
           "current_year_estimated_emissions",
           "opt_in",
@@ -163,7 +160,6 @@ export const operationSchema: RJSFSchema = {
               },
             },
           },
-          // brianna--to get this to disappear after switching to No, have to clear the new_entrant
           then: {
             properties: {
               start_of_commercial_operation: {
@@ -263,7 +259,6 @@ export const operationSchema: RJSFSchema = {
 
 export const operationUiSchema = {
   "ui:order": [
-    "operator_id",
     "name",
     "type",
     "naics_code_id",
@@ -310,9 +305,6 @@ export const operationUiSchema = {
   id: {
     "ui:widget": "hidden",
   },
-  // operator_id: {
-  //   "ui:widget": "hidden",
-  // },
   verified_by: {
     "ui:widget": "hidden",
   },
@@ -325,38 +317,12 @@ export const operationUiSchema = {
   physical_province: {
     "ui:widget": "select",
   },
-  opt_in: {
-    "ui:widget": "radio",
-  },
-  major_new_operation: {
-    "ui:widget": "radio",
-  },
-  new_entrant: {
-    "ui:widget": "radio",
-  },
-  "Did you submit a GHG emissions report for reporting year 2022?": {
-    "ui:widget": "radio",
-  },
-  "Does the operation have multiple operators?": {
-    "ui:widget": "radio",
-  },
-  'Is the operation representative the same as mentioned in "admin access request"?':
-    {
-      "ui:widget": "radio",
-    },
-  "Is the senior officer the same as in the operation form?": {
-    "ui:widget": "radio",
-  },
-  "Would you like to add an additional operation registration lead?": {
-    "ui:widget": "radio",
-  },
 };
 
 export const operationsGroupSchema = [
   {
     title: "Step 1: Operation General Information",
     fields: [
-      "operator_id",
       "name",
       "type",
       "naics_code_id",

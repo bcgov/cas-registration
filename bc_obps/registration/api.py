@@ -62,6 +62,8 @@ class OperationSchema(ModelSchema):
 
 
 class OperationIn(OperationSchema):
+    # temporarily setting a default operator since we don't have login yet
+    operator: int = 1
     # Converting types
     start_of_commercial_operation: date = None
     verified_at: date = None
