@@ -7,14 +7,20 @@ import { fetchAPI } from "@/utils/api";
 // 📚 runtime mode for dynamic data to allow build w/o api
 export const runtime = "edge";
 
-// 🛠️ Function to fetch NAICS codes
-async function getNaicsCodes() {
-  try {
-    return await fetchAPI("registration/naics_codes");
-  } catch (error) {
-    // Handle the error here or rethrow it to handle it at a higher level
-    throw error;
-  }
+// 🛠️ Functions to fetch NAICS codes and categories
+export async function getNaicsCodes() {
+  return (
+    await fetch("http://localhost:8000/api/registration/naics_codes", {
+      cache: "no-store",
+    })
+  ).json();
+}
+export async function getNaicsCateogories() {
+  return (
+    await fetch("http://localhost:8000/api/registration/naics_categories", {
+      cache: "no-store",
+    })
+  ).json();
 }
 
 // 🛠️ Function to fetch an operation by ID
@@ -28,24 +34,27 @@ async function getOperation(id: number) {
 }
 
 // 🛠️ Function to create an operation schema with updated enum values
-const createOperationSchema = (
+export const createOperationSchema = (
   schema: RJSFSchema,
-  naicsCodes: { id: number }[] | undefined,
+  naicsCodes: { id: number }[],
+  naicsCategories: { id: number }[]
 ) => {
+  // naics codes
   const localSchema = JSON.parse(JSON.stringify(schema));
-
-  if (Array.isArray(naicsCodes)) {
-    localSchema.properties.naics_code_id.enum = naicsCodes.map(
-      (code) => code.id,
-    );
-  }
-
+  localSchema.properties.naics_code_id.enum = naicsCodes?.map(
+    (code) => code.id
+  );
+  // naics categories
+  localSchema.properties.naics_category_id.enum = naicsCategories?.map(
+    (category) => category.id
+  );
   return localSchema;
 };
 
 // 🧩 Main component
 export default async function Operation({ numRow }: { numRow?: number }) {
   const codes = await getNaicsCodes();
+  const categories = await getNaicsCateogories();
   let operation: any;
 
   if (numRow) {
@@ -56,7 +65,7 @@ export default async function Operation({ numRow }: { numRow?: number }) {
   return (
     <>
       <OperationsForm
-        schema={createOperationSchema(operationSchema, codes)}
+        schema={createOperationSchema(operationSchema, codes, categories)}
         formData={operation as OperationsFormData}
       />
     </>

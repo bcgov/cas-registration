@@ -20,6 +20,14 @@ export interface OperationsFormData {
   longitude: number;
   estimated_emissions: number;
   operator_percent_of_ownership: number;
+  bcer_permit_id: number;
+  npri_id: number;
+  previous_year_attributable_emissions: number;
+  current_year_estimated_emissions: number;
+  swrs_facility_id: number;
+  bcghg_id: number;
+  start_of_commercial_operation: string;
+  verified_at: string;
 }
 
 interface Props {
@@ -30,6 +38,7 @@ interface Props {
 export default function OperationsForm(props: Props) {
   const [operationName, setOperationName] = useState("");
   const [error, setError] = useState(undefined);
+  console.log("props.formdata", props.formData);
   return operationName ? (
     <>
       <p>Your request to register {operationName} has been received.</p>
@@ -58,7 +67,7 @@ export default function OperationsForm(props: Props) {
               //  temporary handling of required many-to-many fields, will be addressed in #138
               documents: [],
               contacts: [],
-              petrinexids: [],
+              petrinex_ids: [],
               regulated_products: [],
             },
             props.formData ? "PUT" : "POST"
@@ -74,10 +83,24 @@ export default function OperationsForm(props: Props) {
           ...props.formData,
           latitude: Number(props.formData?.latitude),
           longitude: Number(props.formData?.longitude),
-          estimated_emissions: Number(props.formData?.estimated_emissions),
+          npri_id: Number(props.formData?.npri_id),
+          bcer_permit_id: Number(props.formData?.bcer_permit_id),
+          current_year_estimated_emissions: Number(
+            props.formData?.current_year_estimated_emissions,
+          ),
+          previous_year_attributable_emissions: Number(
+            props.formData?.previous_year_attributable_emissions,
+          ),
+          swrs_facility_id: Number(props.formData?.swrs_facility_id),
+          bcghg_id: Number(props.formData?.bcghg_id),
           operator_percent_of_ownership: Number(
             props.formData?.operator_percent_of_ownership
           ),
+          "Did you submit a GHG emissions report for reporting year 2022?":
+            props.formData?.previous_year_attributable_emissions ? true : false,
+          start_of_commercial_operation:
+            props.formData?.start_of_commercial_operation?.toString(),
+          verified_at: props.formData?.verified_at?.toString(),
         }}
         formContext={{
           groupSchema: operationsGroupSchema,
