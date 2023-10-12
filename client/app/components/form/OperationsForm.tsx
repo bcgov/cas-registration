@@ -70,7 +70,7 @@ export default function OperationsForm(props: Props) {
               petrinex_ids: [],
               regulated_products: [],
             },
-            props.formData ? "PUT" : "POST"
+            props.formData ? "PUT" : "POST",
           );
           if (response.error) {
             setError(response.error);
@@ -94,7 +94,7 @@ export default function OperationsForm(props: Props) {
           swrs_facility_id: Number(props.formData?.swrs_facility_id),
           bcghg_id: Number(props.formData?.bcghg_id),
           operator_percent_of_ownership: Number(
-            props.formData?.operator_percent_of_ownership
+            props.formData?.operator_percent_of_ownership,
           ),
           "Did you submit a GHG emissions report for reporting year 2022?":
             props.formData?.previous_year_attributable_emissions ? true : false,
@@ -108,6 +108,12 @@ export default function OperationsForm(props: Props) {
       >
         {error && <Alert severity="error">{error}</Alert>}
         <SubmitButton />
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
       </Form>
     </>
   );
