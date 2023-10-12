@@ -64,5 +64,37 @@
       "petrinex_ids": [],
       "regulated_products": []
     }
+  },
+  {
+    "model": "registration.operation",
+    "pk": 3,
+    "fields": {
+      "operator": 2,
+      "registered_for_obps": false,
+      "documents": [],
+      "contacts": [],
+      "name": "Operation 3",
+      "type": "Type C",
+      "naics_code": 2,
+      "naics_category": 1,
+      "reporting_activities": "Activity 3",
+      "permit_issuing_agency": "agent",
+      "permit_number": 2467,
+      "current_year_estimated_emissions": 25,
+      "opt_in": false,
+      "new_entrant": false,
+      "major_new_operation": false,
+      "physical_street_address": "123 Maple Lane",
+      "physical_municipality": "Cityville",
+      "physical_province": "AB",
+      "physical_postal_code": "A3V 3V3",
+      "legal_land_description": "Parcel 24",
+      "latitude": "45",
+      "longitude": "-56",
+      "npri_id": 56425,
+      "bcer_permit_id": 24643652,
+      "petrinex_ids": [],
+      "regulated_products": []
+    }
   }
 ]
