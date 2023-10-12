@@ -48,9 +48,6 @@ def list_naics_codes(request):
     return qs
 
 
-#     # documents:
-
-
 class OperationSchema(ModelSchema):
     """
     Schema for the Operation model
@@ -67,18 +64,14 @@ class OperationIn(OperationSchema):
     # Converting types
     start_of_commercial_operation: date = None
     verified_at: date = None
+    verified_by: str = None
 
 
-class OperationOut(Schema):
-    id: int
+class OperationOut(OperationSchema):
+    # handling aliases and optional fields
     operator_id: int = Field(..., alias="operator.id")
-    name: str
-    type: str
     naics_code_id: int = Field(..., alias="naics_code.id")
     naics_category_id: int = Field(..., alias="naics_category.id")
-    reporting_activities: str
-    permit_issuing_agency: str
-    permit_number: str
     previous_year_attributable_emissions: str = None
     swrs_facility_id: str = None
     bcghg_id: str = None
@@ -87,18 +80,9 @@ class OperationOut(Schema):
     new_entrant: bool = None
     start_of_commercial_operation: date = None
     major_new_operation: bool = None
-    physical_street_address: str
-    physical_municipality: str
-    physical_province: str
-    physical_postal_code: str
-    legal_land_description: str
-    latitude: Decimal
-    longitude: Decimal
-    npri_id: str
-    bcer_permit_id: str
-    registered_for_obps: bool
     verified_at: date = None
-    status: str
+    verified_by: str = None
+    # temp handling of many to many field, addressed in #138
     # contacts:
     # documents:
     # regulated_products:
@@ -134,7 +118,6 @@ def create_operation(request, payload: OperationIn):
         nc = get_object_or_404(NaicsCategory, id=naics_category)
         # Assign the naics_category instance to the operation
         payload.naics_category = nc
-
     # temporary handling of many-to-many fields, will be addressed in #138
     if "documents" in payload.dict():
         del payload.documents

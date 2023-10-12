@@ -30,6 +30,7 @@ export interface OperationsFormData {
   start_of_commercial_operation: string;
   verified_at: string;
   status: string;
+  verified_by: string;
 }
 
 interface Props {
@@ -64,6 +65,7 @@ export default function OperationsForm(props: Props) {
     start_of_commercial_operation:
       props.formData?.start_of_commercial_operation?.toString(),
     verified_at: props.formData?.verified_at?.toString(),
+    verified_by: props.formData?.verified_by?.toString(),
   };
   console.log("props.formdata.status", props.formData?.status);
   return operationName ? (

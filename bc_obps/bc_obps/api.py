@@ -5,9 +5,10 @@ from ninja.errors import ValidationError
 api = NinjaAPI()
 
 
+# print errors for 422 status codes for faster debugging
 @api.exception_handler(ValidationError)
 def custom_validation_errors(request, exc):
-    print(exc.errors)  # <--------------------- !!!!
+    print(exc.errors)
     return api.create_response(request, {"detail": exc.errors}, status=422)
 
 
