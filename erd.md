@@ -182,9 +182,9 @@ erDiagram
         id int PK
         operator operator_id FK
         major_new_operation boolean
-        registered_for_obps boolean
         verified_at timestamptz
         verified_by user_id FK
+        status string
 
         name varchar
         type varchar
