@@ -98,6 +98,7 @@ class OperationOut(Schema):
     bcer_permit_id: str
     registered_for_obps: bool
     verified_at: date = None
+    status: str
     # contacts:
     # documents:
     # regulated_products:
@@ -133,6 +134,7 @@ def create_operation(request, payload: OperationIn):
         nc = get_object_or_404(NaicsCategory, id=naics_category)
         # Assign the naics_category instance to the operation
         payload.naics_category = nc
+
     # temporary handling of many-to-many fields, will be addressed in #138
     if "documents" in payload.dict():
         del payload.documents
@@ -142,7 +144,8 @@ def create_operation(request, payload: OperationIn):
         del payload.petrinex_ids
     if "regulated_products" in payload.dict():
         del payload.regulated_products
-
+    # set the operation status to 'pending' on update
+    payload.status = "Pending"
     operation = Operation.objects.create(**payload.dict())
     return {"name": operation.name}
 
@@ -178,5 +181,7 @@ def update_operation(request, operation_id: int, payload: OperationIn):
             and attr != "regulated_products"
         ):
             setattr(operation, attr, value)
+    # set the operation status to 'pending' on update
+    operation.status = "Pending"
     operation.save()
     return {"name": operation.name}

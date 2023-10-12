@@ -23,10 +23,9 @@ export default async function Operations() {
     registration_year: string;
     submission_date: string;
     registration_id: string;
-    verified_at: string;
+    status: string;
     name: string;
   }[] = await getOperations();
-
   if (!operations) {
     return (
       <div>
@@ -45,7 +44,7 @@ export default async function Operations() {
             registration_year,
             submission_date,
             registration_id,
-            verified_at,
+            status,
             name,
           }) => {
             return {
@@ -55,7 +54,7 @@ export default async function Operations() {
               registration_year,
               submission_date,
               registration_id,
-              status: verified_at ? "Registered" : "Pending",
+              status,
             };
           },
         )
