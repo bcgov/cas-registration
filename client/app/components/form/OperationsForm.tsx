@@ -4,7 +4,8 @@ import {
   operationUiSchema,
   operationsGroupSchema,
 } from "@/utils/jsonSchema/operations";
-import { Form } from "@rjsf/mui";
+// import { Form } from "@rjsf/mui";
+import Form from "@rjsf/core";
 import { RJSFSchema } from "@rjsf/utils";
 import validator from "@rjsf/validator-ajv8";
 import Link from "next/link";
@@ -38,7 +39,31 @@ interface Props {
 export default function OperationsForm(props: Props) {
   const [operationName, setOperationName] = useState("");
   const [error, setError] = useState(undefined);
-  console.log("props.formdata", props.formData);
+  const existingFormData = {
+    ...props.formData,
+    latitude: Number(props.formData?.latitude),
+    longitude: Number(props.formData?.longitude),
+    npri_id: Number(props.formData?.npri_id),
+    bcer_permit_id: Number(props.formData?.bcer_permit_id),
+    current_year_estimated_emissions: Number(
+      props.formData?.current_year_estimated_emissions,
+    ),
+    previous_year_attributable_emissions: Number(
+      props.formData?.previous_year_attributable_emissions,
+    ),
+    swrs_facility_id: Number(props.formData?.swrs_facility_id),
+    bcghg_id: Number(props.formData?.bcghg_id),
+    operator_percent_of_ownership: Number(
+      props.formData?.operator_percent_of_ownership,
+    ),
+    "Did you submit a GHG emissions report for reporting year 2022?": props
+      .formData?.previous_year_attributable_emissions
+      ? true
+      : false,
+    start_of_commercial_operation:
+      props.formData?.start_of_commercial_operation?.toString(),
+    verified_at: props.formData?.verified_at?.toString(),
+  };
   return operationName ? (
     <>
       <p>Your request to register {operationName} has been received.</p>
@@ -78,30 +103,11 @@ export default function OperationsForm(props: Props) {
           }
           setOperationName(response.name);
         }}
+        onChange={(formData) =>
+          console.log("onchangeformdata", formData.formData)
+        }
         uiSchema={operationUiSchema}
-        formData={{
-          ...props.formData,
-          latitude: Number(props.formData?.latitude),
-          longitude: Number(props.formData?.longitude),
-          npri_id: Number(props.formData?.npri_id),
-          bcer_permit_id: Number(props.formData?.bcer_permit_id),
-          current_year_estimated_emissions: Number(
-            props.formData?.current_year_estimated_emissions,
-          ),
-          previous_year_attributable_emissions: Number(
-            props.formData?.previous_year_attributable_emissions,
-          ),
-          swrs_facility_id: Number(props.formData?.swrs_facility_id),
-          bcghg_id: Number(props.formData?.bcghg_id),
-          operator_percent_of_ownership: Number(
-            props.formData?.operator_percent_of_ownership,
-          ),
-          "Did you submit a GHG emissions report for reporting year 2022?":
-            props.formData?.previous_year_attributable_emissions ? true : false,
-          start_of_commercial_operation:
-            props.formData?.start_of_commercial_operation?.toString(),
-          verified_at: props.formData?.verified_at?.toString(),
-        }}
+        formData={existingFormData}
         formContext={{
           groupSchema: operationsGroupSchema,
         }}
