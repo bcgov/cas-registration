@@ -67,7 +67,7 @@ drop_db:
 .PHONY: drop_schema
 drop_schema: ## Drop the schema
 drop_schema:
-	@$(PSQL) -d $(DB_NAME) -c "DROP SCHEMA IF EXISTS $(SCHEMA_NAME)";
+	@$(PSQL) -d postgres -c "DROP SCHEMA IF EXISTS $(SCHEMA_NAME)";
 
 .PHONY: run
 run: ## run the server
@@ -95,4 +95,4 @@ loadfixtures:
 
 .PHONY: reset_db
 reset_db: ## drop and recreate the db
-reset_db: drop_db  create_db create_schema migrate loadfixtures
+reset_db:  drop_db drop_schema create_db create_schema migrate loadfixtures
