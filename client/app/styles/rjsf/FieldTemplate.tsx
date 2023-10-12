@@ -16,9 +16,12 @@ function FieldTemplate(props: FieldTemplateProps) {
   return (
     <div className={classNames} style={style}>
       <label htmlFor={id}>
-        I am label in field template: |{label}|{required ? "*" : null}
+        {label}
+        {required ? "*" : null}
       </label>
-      {description}I am chlidren in field template: |{children}|{errors}
+      {description}
+      {children}
+      {errors}
       {help}
     </div>
   );

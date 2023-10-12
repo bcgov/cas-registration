@@ -82,7 +82,7 @@ export const operationSchema: RJSFSchema = {
       type: "boolean",
       default: false,
     },
-
+    // temp handling of many to many, will be addressed in #138
     // petrinex_ids: { type: "number", title: "Petrinex IDs" },
     // regulated_products: { type: "number", title: "Regulated Product Name(s)" },
     // documents: { type: "string", title: "documents" },
