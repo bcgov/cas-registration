@@ -1,6 +1,8 @@
 import Loading from "@/app/components/loading";
 import { Suspense } from "react";
 import PageBar from "@/app/components/PageBar";
+import UserOperatorForm from "@/app/components/form/UserOperatorForm";
+import { userOperatorSchema } from "@/app/utils/jsonSchema/userOperator";
 
 export default async function Page() {
   const pageBarLabel: JSX.Element = (
@@ -12,8 +14,8 @@ export default async function Page() {
     <>
       <PageBar label={pageBarLabel} />
       <Suspense fallback={<Loading />}>
-        <section className="text-center my-60 text-2xl flex flex-col gap-3">
-          USER-OPERATOR-FORM
+        <section className="text-center my-10 text-2xl flex flex-col gap-3">
+          <UserOperatorForm schema={userOperatorSchema} />
         </section>
       </Suspense>
     </>
