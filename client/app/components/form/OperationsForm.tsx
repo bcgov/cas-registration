@@ -13,9 +13,12 @@ import { Alert } from "@mui/material";
 import SubmitButton from "./SubmitButton";
 import { operationSubmitHandler } from "@/utils/actions";
 
+export interface OperationsFormData {
+  [key: string]: any;
+}
 interface Props {
   schema: RJSFSchema;
-  formData?: { [key: string]: any };
+  formData?: OperationsFormData;
 }
 
 export default function OperationsForm(props: Props) {
