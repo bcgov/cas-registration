@@ -4,10 +4,11 @@ from datetime import date
 from typing import List
 from ninja import Router
 from django.shortcuts import get_object_or_404
-from .models import Operation, Operator, NaicsCode, NaicsCategory
+from .models import Operation, Operator, NaicsCode, NaicsCategory, User
 from ninja.orm import create_schema
 from ninja import Field, Schema, ModelSchema
 from decimal import *
+from uuid import *
 
 
 router = Router()
@@ -47,51 +48,7 @@ def list_naics_codes(request):
     return qs
 
 
-# Operation schemas and endpoints
-class OperationIn(Schema):
-    operator: int = Field(..., alias="operator_id")
-    name: str
-    operation_type: str
-    naics_code: int = Field(..., alias="naics_code_id")
-    eligible_commercial_product_name: str
-    permit_id: str
-    npr_id: str
-    ghfrp_id: str
-    bcghrp_id: str
-    petrinex_id: str
-    latitude: Decimal
-    longitude: Decimal
-    legal_land_description: str
-    nearest_municipality: str
-    operator_percent_of_ownership: Decimal
-    registered_for_obps: bool
-    estimated_emissions: Decimal
-    registered_for_obps: str = Field(default=False)
-    # contacts:
-    # documents:
-
-
-class OperationOut(Schema):
-    id: int
-    operator_id: int = Field(..., alias="operator.id")
-    name: str
-    operation_type: str
-    naics_code_id: int = Field(..., alias="naics_code.id")
-    eligible_commercial_product_name: str
-    permit_id: str
-    npr_id: str
-    ghfrp_id: str
-    bcghrp_id: str
-    petrinex_id: str
-    latitude: Decimal
-    longitude: Decimal
-    legal_land_description: str
-    nearest_municipality: str
-    operator_percent_of_ownership: Decimal
-    registered_for_obps: bool
-    estimated_emissions: Decimal
-    # contacts:
-    # documents:
+#     # documents:
 
 
 class OperationSchema(ModelSchema):
@@ -104,20 +61,61 @@ class OperationSchema(ModelSchema):
         model_fields = "__all__"
 
 
-@router.get("/operations", response=List[OperationSchema])
+class OperationIn(OperationSchema):
+    # Converting types
+    start_of_commercial_operation: date = None
+    verified_at: date = None
+
+
+class OperationOut(Schema):
+    id: int
+    operator_id: int = Field(..., alias="operator.id")
+    name: str
+    type: str
+    naics_code_id: int = Field(..., alias="naics_code.id")
+    naics_category_id: int = Field(..., alias="naics_category.id")
+    reporting_activities: str
+    permit_issuing_agency: str
+    permit_number: str
+    previous_year_attributable_emissions: str = None
+    swrs_facility_id: str = None
+    bcghg_id: str = None
+    current_year_estimated_emissions: str = None
+    opt_in: bool = None
+    new_entrant: bool = None
+    start_of_commercial_operation: date = None
+    major_new_operation: bool = None
+    physical_street_address: str
+    physical_municipality: str
+    physical_province: str
+    physical_postal_code: str
+    legal_land_description: str
+    latitude: Decimal
+    longitude: Decimal
+    npri_id: str
+    bcer_permit_id: str
+    registered_for_obps: bool
+    verified_at: date = None
+    # contacts:
+    # documents:
+    # regulated_products:
+    # petrinex_ids:
+
+
+@router.get("/operations", response=List[OperationOut])
 def list_operations(request):
     qs = Operation.objects.all()
     return qs
 
 
-@router.get("/operations/{operation_id}", response=OperationSchema)
+@router.get("/operations/{operation_id}", response=OperationOut)
 def get_operation(request, operation_id: int):
     operation = get_object_or_404(Operation, id=operation_id)
     return operation
 
 
 @router.post("/operations")
-def create_operation(request, payload: OperationSchema):
+def create_operation(request, payload: OperationIn):
     if "operator" in payload.dict():
         operator = payload.dict()["operator"]
         op = get_object_or_404(Operator, id=operator)
@@ -133,17 +131,22 @@ def create_operation(request, payload: OperationSchema):
         nc = get_object_or_404(NaicsCategory, id=naics_category)
         # Assign the naics_category instance to the operation
         payload.naics_category = nc
-        # temporary handling of many-to-many fields, will be addressed in #138
+    # temporary handling of many-to-many fields, will be addressed in #138
     if "documents" in payload.dict():
         del payload.documents
     if "contacts" in payload.dict():
         del payload.contacts
+    if "petrinex_ids" in payload.dict():
+        del payload.petrinex_ids
+    if "regulated_products" in payload.dict():
+        del payload.regulated_products
+
     operation = Operation.objects.create(**payload.dict())
     return {"name": operation.name}
 
 
 @router.put("/operations/{operation_id}")
-def update_operation(request, operation_id: int, payload: OperationSchema):
+def update_operation(request, operation_id: int, payload: OperationIn):
     operation = get_object_or_404(Operation, id=operation_id)
     if "operator" in payload.dict():
         operator = payload.dict()["operator"]
@@ -155,14 +158,22 @@ def update_operation(request, operation_id: int, payload: OperationSchema):
         nc = get_object_or_404(NaicsCode, id=naics_code)
         # Assign the naics_code instance to the operation
         operation.naics_code = nc
+    if "naics_category" in payload.dict():
+        naics_category = payload.dict()["naics_category"]
+        nc = get_object_or_404(NaicsCategory, id=naics_category)
+        # Assign the naics_category instance to the operation
+        payload.naics_category = nc
     # Update other attributes as needed
     for attr, value in payload.dict().items():
         if (
             attr != "operator"
             and attr != "naics_code"
+            and attr != "naics_category"
             # temporary handling of many-to-many fields, will be addressed in #138
             and attr != "documents"
             and attr != "contacts"
+            and attr != "petrinex_ids"
+            and attr != "regulated_products"
         ):
             setattr(operation, attr, value)
     operation.save()
