@@ -64,7 +64,6 @@ class OperationIn(OperationSchema):
     # Converting types
     start_of_commercial_operation: date = None
     verified_at: date = None
-    verified_by: str = None
 
 
 class OperationOut(OperationSchema):
@@ -81,7 +80,6 @@ class OperationOut(OperationSchema):
     start_of_commercial_operation: date = None
     major_new_operation: bool = None
     verified_at: date = None
-    verified_by: str = None
     # temp handling of many to many field, addressed in #138
     # contacts:
     # documents:

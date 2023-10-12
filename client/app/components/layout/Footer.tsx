@@ -43,7 +43,7 @@ export default function Footer() {
               style={{
                 textDecoration: "none",
                 color: "white",
-                margin: "0 10px", // Add margin for spacing
+                margin: "0 10px ", // Add margin for spacing
               }}
             >
               {item.name}

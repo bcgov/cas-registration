@@ -4,7 +4,6 @@ import {
   operationUiSchema,
   operationsGroupSchema,
 } from "@/utils/jsonSchema/operations";
-// import { Form } from "@rjsf/mui";
 import Form from "@rjsf/core";
 import { RJSFSchema } from "@rjsf/utils";
 import validator from "@rjsf/validator-ajv8";
@@ -14,33 +13,16 @@ import { Alert } from "@mui/material";
 import SubmitButton from "./SubmitButton";
 import { operationSubmitHandler } from "@/utils/actions";
 
-export interface OperationsFormData {
-  id: number;
-  name: string;
-  latitude: number;
-  longitude: number;
-  estimated_emissions: number;
-  operator_percent_of_ownership: number;
-  bcer_permit_id: number;
-  npri_id: number;
-  previous_year_attributable_emissions: number;
-  current_year_estimated_emissions: number;
-  swrs_facility_id: number;
-  bcghg_id: number;
-  start_of_commercial_operation: string;
-  verified_at: string;
-  status: string;
-  verified_by: string;
-}
-
 interface Props {
   schema: RJSFSchema;
-  formData?: OperationsFormData;
+  formData?: { [key: string]: any };
 }
 
 export default function OperationsForm(props: Props) {
   const [operationName, setOperationName] = useState("");
   const [error, setError] = useState(undefined);
+
+  // need to convert some of the information received from django into types RJSF can read
   const existingFormData = {
     ...props.formData,
     latitude: Number(props.formData?.latitude),
@@ -67,7 +49,7 @@ export default function OperationsForm(props: Props) {
     verified_at: props.formData?.verified_at?.toString(),
     verified_by: props.formData?.verified_by?.toString(),
   };
-  console.log("props.formdata.status", props.formData?.status);
+
   return operationName ? (
     <>
       <p>Your request to register {operationName} has been received.</p>
@@ -82,7 +64,6 @@ export default function OperationsForm(props: Props) {
       </p>
     </>
   ) : (
-    // Operation General Information
     <>
       <Form
         // Because this is an RJSF form, we can't use the Nextjs13.5 pattern of putting a function in the action prop and using the useFormState hook.
@@ -95,7 +76,6 @@ export default function OperationsForm(props: Props) {
         schema={props.schema}
         validator={validator}
         onSubmit={async (data: { formData?: any }) => {
-          console.log("formdata", data.formData);
           const response = await operationSubmitHandler(
             {
               ...data.formData,
@@ -113,9 +93,6 @@ export default function OperationsForm(props: Props) {
           }
           setOperationName(response.name);
         }}
-        onChange={(formData) =>
-          console.log("onchangeformdata", formData.formData)
-        }
         uiSchema={operationUiSchema}
         formData={existingFormData}
         formContext={{
@@ -124,12 +101,6 @@ export default function OperationsForm(props: Props) {
       >
         {error && <Alert severity="error">{error}</Alert>}
         <SubmitButton />
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
       </Form>
     </>
   );
