@@ -29,7 +29,7 @@
       "bcer_permit_id": 563,
       "petrinex_ids": [],
       "regulated_products": [],
-      "status": "Pending"
+      "status": "Not Registered"
     }
   },
   {
@@ -94,7 +94,7 @@
       "bcer_permit_id": 24643652,
       "petrinex_ids": [],
       "regulated_products": [],
-      "status": "Approved"
+      "status": "Not Registered"
     }
   }
 ]
