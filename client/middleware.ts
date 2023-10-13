@@ -35,7 +35,7 @@ export const config = {
     // "/((?!_next).*)",
     // Optional: only run on root (/) URL
     // '/'
-    "/((?!_next/static|_next/image|favicon.ico).*)",
+    "/((?!static|.*\\..*|_next).*)", //matcher solution for public assets, url.extension, _next exclusion:
   ],
 };
 

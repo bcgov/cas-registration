@@ -36,11 +36,14 @@ export async function fetchAPI(
   } catch (error: unknown) {
     // Handle any errors, including network issues
     if (error instanceof Error) {
+      // eslint-disable-next-line no-console
       console.error(`An error occurred while fetching ${endpoint}:`, error);
       return {
+        // eslint-disable-next-line no-console
         error: `An error occurred while fetching ${endpoint}: ${error.message}`,
       };
     } else {
+      // eslint-disable-next-line no-console
       console.error(`An unknown error occurred while fetching ${endpoint}`);
       return {
         error: `An unknown error occurred while fetching ${endpoint}`,
