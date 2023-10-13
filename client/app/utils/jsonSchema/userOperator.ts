@@ -118,12 +118,10 @@ export const userOperatorSchema: RJSFSchema = {
     website: { type: "string", title: "Website" },
     bceid: { type: "string", title: "BCeID" },
     "Does the operator have a parent company?": {
-      //FIXME: which db field is this?
       enum: ["Yes", "No"],
       default: "Yes",
     },
     "Is operator a compliance entity?": {
-      //FIXME: which db field is this?
       //FIXME: This question is not in the wireframes - waiting for designers to confirm
       enum: ["Yes", "No"],
       default: "Yes",
@@ -139,8 +137,6 @@ export const userOperatorSchema: RJSFSchema = {
         },
       },
       then: {
-        // title:
-        //   "If user is not senior officer (SO) - Ignore this section if you selected 'Yes'",
         type: "object",
         required: [
           "Are you an operation representative of the operator?",
@@ -157,18 +153,17 @@ export const userOperatorSchema: RJSFSchema = {
         ],
         properties: {
           not_senior_officer: {
+            //Not an actual field in the db - this is just to make the form look like the wireframes
             title:
               "If user is not senior officer (SO) - Ignore this section if you selected 'Yes'",
             type: "object",
             readOnly: true,
           },
           "Are you an operation representative of the operator?": {
-            //FIXME: which db field is this?
             enum: ["Yes", "No"],
             default: "Yes", // have to set a default value to fix rendering flow
           },
           "Proof of authority of operation representative from a SO": {
-            //FIXME: which db field is this?
             type: "string",
             format: "data-url",
           },
@@ -219,8 +214,6 @@ export const userOperatorSchema: RJSFSchema = {
               },
             },
             then: {
-              // title:
-              //   "If user is not operation representative (OR) - Ignore this section if you selected 'Yes'",
               type: "object",
               required: [
                 "Proof of authority of operation representative from a OR",
@@ -236,13 +229,13 @@ export const userOperatorSchema: RJSFSchema = {
               ],
               properties: {
                 not_operation_representative: {
+                  //Not an actual field in the db - this is just to make the form look like the wireframes
                   title:
                     "If user is not operation representative (OR) - Ignore this section if you selected 'Yes'",
                   type: "object",
                   readOnly: true,
                 },
                 "Proof of authority of operation representative from a OR": {
-                  //FIXME: which db field is this?
                   type: "string",
                   format: "data-url",
                 },
@@ -318,6 +311,7 @@ export const userOperatorSchema: RJSFSchema = {
         ],
         properties: {
           has_parent_company: {
+            //Not an actual field in the db - this is just to make the form look like the wireframes
             title:
               "If operator has parent company (PC) - Ignore this section if you selected 'Yes'",
             type: "object",
@@ -429,6 +423,7 @@ export const userOperatorSchema: RJSFSchema = {
         ],
         properties: {
           not_compliance_entity: {
+            //Not an actual field in the db - this is just to make the form look like the wireframes
             title:
               "If operator is not compliance entity - Ignore this section if you selected 'Yes'",
             type: "object",
@@ -501,6 +496,7 @@ export const userOperatorSchema: RJSFSchema = {
               ],
               properties: {
                 is_not_senior_officer: {
+                  //Not an actual field in the db - this is just to make the form look like the wireframes
                   title:
                     "If ASO is not senior officer of the compliance entity (SOCE) - Ignore this section if you selected 'Yes'",
                   type: "object",
@@ -663,7 +659,7 @@ export const userOperatorUiSchema = {
   },
   not_senior_officer: {
     "ui:classNames":
-      "text-bc-gov-primary-brand-color-blue text-white no-underline text-start ps-4 text-xs",
+      "text-bc-gov-primary-brand-color-blue no-underline text-start ps-4 text-xs",
   },
   "Are you an operation representative of the operator?": {
     "ui:widget": "radio",
@@ -672,7 +668,7 @@ export const userOperatorUiSchema = {
   },
   not_operation_representative: {
     "ui:classNames":
-      "text-bc-gov-primary-brand-color-blue text-white no-underline text-start ps-4 text-xs",
+      "text-bc-gov-primary-brand-color-blue no-underline text-start ps-4 text-xs",
   },
   step_2: {
     "ui:classNames":
@@ -690,11 +686,11 @@ export const userOperatorUiSchema = {
   },
   has_parent_company: {
     "ui:classNames":
-      "text-bc-gov-primary-brand-color-blue text-white no-underline text-start ps-4 text-xs",
+      "text-bc-gov-primary-brand-color-blue no-underline text-start ps-4 text-xs",
   },
   not_compliance_entity: {
     "ui:classNames":
-      "text-bc-gov-primary-brand-color-blue text-white no-underline text-start ps-4 text-xs",
+      "text-bc-gov-primary-brand-color-blue no-underline text-start ps-4 text-xs",
   },
   "Is ASO a senior officer of the compliance entity?": {
     "ui:widget": "radio",
@@ -703,6 +699,6 @@ export const userOperatorUiSchema = {
   },
   is_not_senior_officer: {
     "ui:classNames":
-      "text-bc-gov-primary-brand-color-blue text-white no-underline text-start ps-4 text-xs",
+      "text-bc-gov-primary-brand-color-blue no-underline text-start ps-4 text-xs",
   },
 };
