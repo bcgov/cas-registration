@@ -153,6 +153,11 @@ class Contact(UserAndContactCommonInfo):
         choices=Roles.choices,
         db_comment="A contact's role with an operation (e.g. senior operator)",
     )
+    documents = models.ManyToManyField(
+        Document,
+        blank=True,
+        related_name="contact_documents",
+    )
 
     class Meta:
         db_table_comment = "Contacts (people who don't use the app, e.g. authorized signing officers)"
