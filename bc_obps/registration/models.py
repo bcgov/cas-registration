@@ -87,19 +87,20 @@ class UserAndContactCommonInfo(models.Model):
     """User and contact common information abstract base class"""
 
     class Roles(models.TextChoices):
-        SENIOR_OFFICER = "senior_officer", "senior officer"
-        OPERATION_REPRESENTATIVE = (
-            "operation_representative",
-            "operation representative",
-        )
-        AUTHORIZED_SIGNING_OFFICER = (
-            "authorized_signing_officer",
-            "authorized signing officer",
-        )
-        OPERATION_REGISTRATION_LEAD = (
-            "operation_registration_lead",
-            "operation registration lead",
-        )
+        class Roles(models.TextChoices):
+            SENIOR_OFFICER = "senior_officer", "Senior Officer"
+            OPERATION_REPRESENTATIVE = (
+                "operation_representative",
+                "Operation Representative",
+            )
+            AUTHORIZED_SIGNING_OFFICER = (
+                "authorized_signing_officer",
+                "Authorized Signing Officer",
+            )
+            OPERATION_REGISTRATION_LEAD = (
+                "operation_registration_lead",
+                "Operation Registration Lead",
+            )
 
     first_name = models.CharField(max_length=1000, db_comment="A user or contact's first name")
     last_name = models.CharField(max_length=1000, db_comment="A user or contact's last name")
