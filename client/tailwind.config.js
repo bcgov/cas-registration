@@ -7,6 +7,8 @@
  *  You can read more about it here in the MUI documentation: https://mui.com/material-ui/guides/interoperability/#setup.
  * */
 
+/** @type {import('tailwindcss').Config} */
+import { BC_GOV_PRIMARY_BRAND_COLOR_BLUE } from "./app/styles/colors";
 module.exports = {
   content: [
     "./app/**/*.{js,ts,jsx,tsx}",
@@ -21,7 +23,11 @@ module.exports = {
   //After adding a prefix you can use your classes for padding like this way: tw-p-4 and for text size
   //prefix: 'tw-',   //👈 Use your desired prefix
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        "bc-gov-primary-brand-color-blue": BC_GOV_PRIMARY_BRAND_COLOR_BLUE,
+      },
+    },
   },
   plugins: [],
 };

@@ -6,11 +6,10 @@ import validator from "@rjsf/validator-ajv8";
 import { useState } from "react";
 import { Alert } from "@mui/material";
 import SubmitButton from "./SubmitButton";
-import ComboBox from "@/app/components/widgets/ComboBox";
-import { createSubmitHandler } from "@/app/utils/actions/createSubmitHandlers";
-import { useRouter } from "next/navigation";
+// import { createSubmitHandler } from "@/app/utils/actions/createSubmitHandlers";
+// import { useRouter } from "next/navigation";
 import { userOperatorUiSchema } from "@/app/utils/jsonSchema/userOperator";
-// import Form from "@rjsf/core";
+import { Button } from "@mui/material";
 
 // export interface SelectOperatorFormData {
 //   operator_id: number;
@@ -21,7 +20,7 @@ interface UserOperatorFormProps {
 }
 
 export default function UserOperatorForm({ schema }: UserOperatorFormProps) {
-  const { push } = useRouter();
+  // const { push } = useRouter();
   const [errorList, setErrorList] = useState([] as any[]);
   const [formData, setFormData] = useState({});
 
@@ -55,9 +54,6 @@ export default function UserOperatorForm({ schema }: UserOperatorFormProps) {
       //   push(`/select-operator/${response.operator_id}`);
       // }}
       uiSchema={userOperatorUiSchema}
-      widgets={{
-        ComboBox,
-      }}
       onChange={handleChange}
       className="flex flex-col gap-2 w-3/4 mx-auto"
     >
@@ -67,7 +63,10 @@ export default function UserOperatorForm({ schema }: UserOperatorFormProps) {
             {e.message}
           </Alert>
         ))}
-      <SubmitButton label="Request Access" />
+      <div className="flex justify-end gap-3">
+        <SubmitButton label="Submit" />
+        <Button variant="outlined">Cancel</Button>
+      </div>
     </Form>
   );
 }
