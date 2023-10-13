@@ -130,24 +130,28 @@ class User(UserAndContactCommonInfo):
         ]
 
 
-class Role(models.Model):
-    """Role model"""
-
-    role_name = models.CharField(max_length=1000, db_comment="The name of a role a contact can hold")
-
-    class Meta:
-        db_table_comment = "Table to list all contact roles"
-        db_table = 'erc"."role'
-
-
 class Contact(UserAndContactCommonInfo):
     """Contact model"""
 
-    role = models.ForeignKey(
-        Role,
-        on_delete=models.DO_NOTHING,
-        related_name="contacts",
-        db_comment="A contact's role (e.g. senior officer)",
+    class Roles(models.TextChoices):
+        SENIOR_OFFICER = "senior_officer", "senior officer"
+        OPERATION_REPRESENTATIVE = (
+            "operation_representative",
+            "operation representative",
+        )
+        AUTHORIZED_SIGNING_OFFICER = (
+            "authorized_signing_officer",
+            "authorized signing officer",
+        )
+        OPERATION_REGISTRATION_LEAD = (
+            "operation_registration_lead",
+            "operation registration lead",
+        )
+
+    role = models.CharField(
+        max_length=1000,
+        choices=Roles.choices,
+        db_comment="A contact's role with an operation (e.g. senior operator)",
     )
 
     class Meta:
