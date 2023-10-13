@@ -26,12 +26,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      {" "}
       {
         //👇️ Used to mark the root element where Next.js will mount the client-side React application
       }
       <body id="__next">
-        {" "}
         {
           //👇️ provide MUI custom theme to the components within the layout
         }
@@ -43,7 +41,7 @@ export default function RootLayout({
               flexDirection: "column",
               minHeight: "100vh",
               marginLeft: "100px",
-              marginTop: "50px",
+              marginTop: "130px",
             }}
           >
             {children}
