@@ -86,6 +86,21 @@ class RegulatedProduct(models.Model):
 class UserAndContactCommonInfo(models.Model):
     """User and contact common information abstract base class"""
 
+    class Roles(models.TextChoices):
+        SENIOR_OFFICER = "senior_officer", "senior officer"
+        OPERATION_REPRESENTATIVE = (
+            "operation_representative",
+            "operation representative",
+        )
+        AUTHORIZED_SIGNING_OFFICER = (
+            "authorized_signing_officer",
+            "authorized signing officer",
+        )
+        OPERATION_REGISTRATION_LEAD = (
+            "operation_registration_lead",
+            "operation registration lead",
+        )
+
     first_name = models.CharField(max_length=1000, db_comment="A user or contact's first name")
     last_name = models.CharField(max_length=1000, db_comment="A user or contact's last name")
     position_title = models.CharField(max_length=1000, db_comment="A user or contact's position title")
@@ -101,6 +116,12 @@ class UserAndContactCommonInfo(models.Model):
     phone_number = PhoneNumberField(
         blank=True,
         db_comment="A user or contact's phone number, limited to valid phone numbers",
+    )
+
+    role = models.CharField(
+        max_length=1000,
+        choices=Roles.choices,
+        db_comment="A user or contact's role with an operation (e.g. senior operator). Certain roles need authority from other roles to do things.",
     )
 
     class Meta:
@@ -133,26 +154,6 @@ class User(UserAndContactCommonInfo):
 class Contact(UserAndContactCommonInfo):
     """Contact model"""
 
-    class Roles(models.TextChoices):
-        SENIOR_OFFICER = "senior_officer", "senior officer"
-        OPERATION_REPRESENTATIVE = (
-            "operation_representative",
-            "operation representative",
-        )
-        AUTHORIZED_SIGNING_OFFICER = (
-            "authorized_signing_officer",
-            "authorized signing officer",
-        )
-        OPERATION_REGISTRATION_LEAD = (
-            "operation_registration_lead",
-            "operation registration lead",
-        )
-
-    role = models.CharField(
-        max_length=1000,
-        choices=Roles.choices,
-        db_comment="A contact's role with an operation (e.g. senior operator)",
-    )
     documents = models.ManyToManyField(
         Document,
         blank=True,
@@ -492,6 +493,13 @@ class Operation(OperationAndFacilityCommonInfo):
         default=Statuses.PENDING,
         db_comment="The status of an operation in the app (e.g. pending review)",
     )
+    # temporary handling, many-to-many handled in #138
+    # operators = models.ForeignKey(
+    #     Operator,
+    #     on_delete=models.DO_NOTHING,
+    #     db_comment="The operator(s) that owns the operation",
+    #     related_name="user_operators",
+    # )
 
     class Meta:
         db_table_comment = "Operations (also called facilities)"
@@ -500,31 +508,4 @@ class Operation(OperationAndFacilityCommonInfo):
             models.Index(fields=["operator"], name="operator_idx"),
             models.Index(fields=["naics_code"], name="naics_code_idx"),
             models.Index(fields=["verified_by"], name="operation_verified_by_idx"),
-        ]
-
-
-class OperatorOperation(models.Model):
-    """OperatorOperation"""
-
-    operators = models.ForeignKey(
-        Operator,
-        on_delete=models.DO_NOTHING,
-        db_comment="The operator associated with an operation",
-        related_name="operator_operators",
-    )
-    operations = models.ForeignKey(
-        Operation,
-        on_delete=models.DO_NOTHING,
-        db_comment="The operation associated with an operator",
-        related_name="operator_operations",
-    )
-
-    class Meta:
-        db_table_comment = (
-            "Through table to connect Operations and Operators and track parent companies and compliance entities"
-        )
-        db_table = 'erc"."operator_operation'
-        indexes = [
-            models.Index(fields=["operations"], name="operator_operation_idx"),
-            models.Index(fields=["operators"], name="operator_operator_idx"),
         ]
