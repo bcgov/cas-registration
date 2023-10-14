@@ -6,7 +6,11 @@ interface BarProps {
 
 const PageBar: React.FC<BarProps> = ({ label }) => {
   return (
-    <AppBar position="static" color="primary" enableColorOnDark>
+    <AppBar
+      position="static"
+      sx={{ backgroundColor: "primary.light" }}
+      enableColorOnDark
+    >
       <Toolbar>
         <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
           {label}

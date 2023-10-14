@@ -8,8 +8,8 @@ import { Alert } from "@mui/material";
 import SubmitButton from "./SubmitButton";
 import ComboBox from "@/app/components/widgets/ComboBox";
 import { selectOperatorUiSchema } from "@/app/utils/jsonSchema/selectOperator";
-import { createSubmitHandler } from "@/app/utils/actions/createSubmitHandlers";
 import { useRouter } from "next/navigation";
+import { createSubmitHandler } from "@/app/utils/actions";
 
 export interface SelectOperatorFormData {
   operator_id: number;
@@ -60,7 +60,7 @@ export default function SelectOperatorForm({
         ComboBox,
       }}
       onChange={handleChange}
-      className="flex flex-col w-64 mx-auto gap-2"
+      className="flex flex-col w-80 mx-auto gap-2"
     >
       {errorList.length > 0 &&
         errorList.map((e: any) => (

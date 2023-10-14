@@ -6,7 +6,6 @@ import validator from "@rjsf/validator-ajv8";
 import { useState } from "react";
 import { Alert } from "@mui/material";
 import SubmitButton from "./SubmitButton";
-// import { createSubmitHandler } from "@/app/utils/actions/createSubmitHandlers";
 // import { useRouter } from "next/navigation";
 import { userOperatorUiSchema } from "@/app/utils/jsonSchema/userOperator";
 import { Button } from "@mui/material";
