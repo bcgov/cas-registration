@@ -51,20 +51,10 @@ export const createSubmitHandler = async (
   formData?: any,
 ) => {
   try {
-<<<<<<< HEAD
     const response: Response = await fetch(`${process.env.API_URL}${apiUrl}`, {
       method,
       body: JSON.stringify(formData),
     });
-=======
-    const response = await fetch(process.env.API_URL + `registration/operations/${formData.id}/update-status`, {
-      method: "PUT",
-      headers: {'content-type': 'application/json;charset=UTF-8'},
-      body: JSON.stringify({status: formData.status})
-    })
-    if (!response.ok) {
-      throw new Error("Failed to update status of application!");
->>>>>>> 51b455e (Feat: Approve/Reject buttons in GUI change status of operation in DB. Still needs cleanup)
 
     const res = await response.json();
 
