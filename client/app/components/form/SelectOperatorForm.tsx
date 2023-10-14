@@ -10,14 +10,7 @@ import ComboBox from "@/app/components/widgets/ComboBox";
 import { selectOperatorUiSchema } from "@/app/utils/jsonSchema/selectOperator";
 import { useRouter } from "next/navigation";
 import { createSubmitHandler } from "@/app/utils/actions";
-<<<<<<< HEAD
 import { SelectOperatorFormData } from "@/app/components/form/formDataTypes";
-=======
-
-export interface SelectOperatorFormData {
-  operator_id: number;
-}
->>>>>>> 4a53950 (chore: cleanup after rebase)
 
 interface SelectOperatorFormProps {
   schema: RJSFSchema;

@@ -6,11 +6,7 @@ import validator from "@rjsf/validator-ajv8";
 import { useState } from "react";
 import { Alert, Button } from "@mui/material";
 import SubmitButton from "./SubmitButton";
-<<<<<<< HEAD
 import { useRouter } from "next/navigation";
-=======
-// import { useRouter } from "next/navigation";
->>>>>>> 4a53950 (chore: cleanup after rebase)
 import { userOperatorUiSchema } from "@/app/utils/jsonSchema/userOperator";
 import { createSubmitHandler } from "@/app/utils/actions";
 import { UserOperatorFormData } from "@/app/components/form/formDataTypes";
