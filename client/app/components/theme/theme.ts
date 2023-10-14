@@ -2,6 +2,7 @@ import { createTheme } from "@mui/material/styles";
 import {
   BC_GOV_PRIMARY_BRAND_COLOR_BLUE,
   BC_GOV_LINKS_COLOR,
+  BC_GOV_BACKGROUND_COLOR_BLUE,
 } from "@/app/styles/colors";
 import "@bcgov/bc-sans/css/BCSans.css";
 
@@ -14,6 +15,7 @@ const theme = createTheme({
   palette: {
     primary: {
       main: BC_GOV_PRIMARY_BRAND_COLOR_BLUE,
+      light: BC_GOV_BACKGROUND_COLOR_BLUE,
       // light: will be calculated from palette.primary.main,
       // dark: will be calculated from palette.primary.main,
       // contrastText: will be calculated to contrast with palette.primary.main
