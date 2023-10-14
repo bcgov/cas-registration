@@ -4,9 +4,9 @@ import { Form } from "@rjsf/mui";
 import validator from "@rjsf/validator-ajv8";
 import SubmitButton from "./SubmitButton";
 import { Alert } from "@mui/material";
-import { createSubmitHandler } from "@/app/utils/actions/createSubmitHandlers";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { createSubmitHandler } from "@/app/utils/actions";
 
 interface AccessRequestFormProps {
   operator_id: number;
