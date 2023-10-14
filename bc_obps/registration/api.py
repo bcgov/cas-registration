@@ -9,11 +9,15 @@ from bc_obps.registration.schema import (
     RequestAccessOut,
     UserOperatorIn,
     UserOperatorOut,
+    Message,
 )
+from registration.utils import check_users_admin_request_eligibility, update_model_instance
 from ninja import ModelSchema, Router
+from ninja.responses import codes_4xx
 from django.shortcuts import get_object_or_404
+from django.forms import model_to_dict
 from ninja import Field, Schema, ModelSchema
-from .models import Contact, Operation, Operator, NaicsCode, NaicsCategory, User, UserOperator
+from .models import Contact, Operation, Operator, NaicsCode, NaicsCategory, ParentChildOperator, User, UserOperator
 from ninja.errors import HttpError
 
 
