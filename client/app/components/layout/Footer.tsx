@@ -2,6 +2,7 @@ import Link from "next/link";
 
 // 🏷 import {named} can be significantly slower than import default
 import Box from "@mui/material/Box";
+import Stack from "@mui/material/Stack/Stack";
 
 const appUrl = process.env.NEXT_PUBLIC_APP_URL; // Ensure this is a valid URL
 
@@ -9,25 +10,27 @@ const footerLinks = [
   {
     name: "Home",
     href: `${appUrl}`,
-    label: "Visit Home Page",
+    label: "Return to the Home Page",
     target: "_self",
   },
   {
     name: "Disclaimer",
     href: "https://www2.gov.bc.ca/gov/content/home/disclaimer",
-    label: "Visit Disclaimer Page",
+    label:
+      "To learn more, visit the Disclaimer page which opens in a new window.",
     target: "_blank",
   },
   {
     name: "Privacy",
     href: "https://www2.gov.bc.ca/gov/content/home/privacy",
-    label: "Visit Privacy Page",
+    label: "To learn more, visit the Privacy page which opens in a new window.",
     target: "_blank",
   },
   {
     name: "Accessibility",
     href: "https://www2.gov.bc.ca/gov/content/home/accessible-government",
-    label: "Accessibility link",
+    label:
+      "To learn more, visit the Accessibility page which opens in a new window.",
     target: "_blank",
   },
   {
@@ -39,7 +42,7 @@ const footerLinks = [
   {
     name: "Contact Us",
     href: "mailto:GHGRegulator@gov.bc.ca",
-    label: "Contact Us Link",
+    label: "To contact us, use the mailto link which opens in a new window.",
     target: "_blank",
   },
 ];
@@ -56,16 +59,15 @@ export default function Footer() {
           mt: "auto", //in a flexbox item, this will push the footer down to the bottom
         }}
       >
-        <Box
-          sx={{
-            marginLeft: "56px",
-          }}
+        <Stack
+          direction={{ xs: "column", sm: "row" }}
+          spacing={{ xs: 1, sm: 2, md: 4 }}
         >
-          {footerLinks.map((item, index) => (
+          {footerLinks.map((link, index) => (
             <Link
               key={index}
-              href={item.href}
-              target={item.target}
+              href={link.href}
+              target={link.target}
               style={{
                 fontWeight: 400,
                 fontSize: "16px",
@@ -74,12 +76,12 @@ export default function Footer() {
                 color: "white",
                 marginLeft: "10px", // Add margin for spacing
               }}
-              aria-label={item.label}
+              aria-label={link.label}
             >
-              {item.name}
+              {link.name}
             </Link>
           ))}
-        </Box>
+        </Stack>
       </Box>
     </>
   );
