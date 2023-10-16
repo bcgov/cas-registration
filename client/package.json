@@ -9,7 +9,7 @@
     "test": "jest",
     "format": "prettier --write .",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx . && next lint",
-    "e2e": "yarn playwright test",
+    "e2e": "yarn playwright test --ui",
     "audit-deps": "improved-yarn-audit"
   },
   "dependencies": {
