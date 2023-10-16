@@ -2,7 +2,6 @@ import Link from "next/link";
 import Image from "next/image";
 
 // 🏷 import {named} can be significantly slower than import default
-import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
@@ -13,6 +12,7 @@ import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
+import Grid from "@mui/material/Grid/Grid";
 
 export default function Page() {
   const features = [
@@ -32,16 +32,17 @@ export default function Page() {
   ];
   return (
     <>
-      <Box
-        sx={{
-          display: "flex",
-        }}
-      >
-        <Box
-          sx={{
-            width: "640px",
-          }}
-        >
+      {/*
+      💻📲
+      MUI responsive layout grid adapts to screen size and orientation, ensuring consistency across layouts.
+      Fluid grids use columns that scale and resize content. A fluid grid's layout can use breakpoints to determine if the layout needs to change dramatically.
+      Column widths are integer values between 1 and 12; they apply at any breakpoint and indicate how many columns are occupied by the component.
+
+      Using breakpoints for responsive design, grid items will display in two columns on laptop & desktop and a single column on mobile & tablet,
+      Using the order prop for stacking order, grid item 1 and 2 will be reverse order on mobile & tablet,
+       */}
+      <Grid container spacing={2} m={3}>
+        <Grid item xs={12} md={6} order={{ xs: 2, md: 1 }}>
           <Typography
             color="secondary"
             sx={{
@@ -112,14 +113,8 @@ export default function Page() {
             width={650}
             style={{ marginTop: "45px" }}
           />
-        </Box>
-
-        <Box
-          sx={{
-            width: "640px",
-            marginLeft: "100px",
-          }}
-        >
+        </Grid>
+        <Grid item xs={12} md={6} order={{ xs: 1, md: 2 }}>
           <Typography
             color="secondary"
             sx={{
@@ -250,8 +245,8 @@ export default function Page() {
               </span>
             </Link>
           </Typography>
-        </Box>
-      </Box>
+        </Grid>
+      </Grid>
     </>
   );
 }
