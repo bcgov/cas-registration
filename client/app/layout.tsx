@@ -17,6 +17,7 @@ export const metadata = {
   title: "CAS OBPS REGISTRATION",
   description:
     "The OBPS is designed to ensure there is a price incentive for industrial emitters to reduce their greenhouse gas emissions and spur innovation while maintaining competitiveness and protecting against carbon leakage.",
+  viewport: "initial-scale=1, width=device-width",
 };
 
 export default function RootLayout({
@@ -35,15 +36,21 @@ export default function RootLayout({
         }
         <ThemeRegistry>
           <Header />
+          {/*
+          The Box component is a versatile and essential building block in Material-UI v5.
+          It serves as a wrapper element that helps structure and organize the layout of your application.
+          One of the Box component's strengths is its ability to create responsive layouts easily...
+          utilizing Box component's sx prop to create a responsive layout...
+          You can use properties like display, flexDirection, alignItems, justifyContent and more to control the arrangement and alignment of elements within a flex container
+          */}
           <Box
             sx={{
               display: "flex",
               flexDirection: "column",
               minHeight: "100vh",
-              marginLeft: "100px",
-              marginTop: "130px",
             }}
           >
+            {/* Content goes here */}
             {children}
           </Box>
           <Footer />
