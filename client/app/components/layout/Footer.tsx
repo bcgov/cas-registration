@@ -74,7 +74,7 @@ export default function Footer() {
                 lineHeight: "19.36px",
                 textDecoration: "none",
                 color: "white",
-                margin: "0 10px ", 
+                margin: "0 10px ",
               }}
               aria-label={link.label}
             >
