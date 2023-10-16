@@ -2,6 +2,7 @@ SHELL := /usr/bin/env bash
 PSQL=psql -h localhost
 DB_NAME=registration
 MANAGE_PY = manage.py
+SCHEMA_NAME=erc
 
 help: ## Show this help.
 	@sed -ne '/@sed/!s/## //p' $(MAKEFILE_LIST)
@@ -84,4 +85,4 @@ loadfixtures:
 
 .PHONY: reset_db
 reset_db: ## drop and recreate the db
-reset_db: drop_db create_db migrate loadfixtures
+reset_db:  drop_db create_db migrate loadfixtures

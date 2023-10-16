@@ -8,7 +8,12 @@ const SubmitButton: React.FunctionComponent = () => {
   const { pending } = useFormStatus();
   return (
     <div>
-      <Button variant="contained" type="submit" aria-disabled={pending}>
+      <Button
+        variant="contained"
+        type="submit"
+        aria-disabled={pending}
+        sx={{ marginBottom: 10 }}
+      >
         Submit
       </Button>
     </div>

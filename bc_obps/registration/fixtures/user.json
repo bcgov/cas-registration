@@ -4,13 +4,33 @@
     "pk": 1,
     "fields": {
       "user_guid": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-      "business_guid": "6B29FC40-CA47-1067-B31D-00DD010662DA",
-      "position_title": "doobedoobop",
-      "first_name": "doobedoobop",
-      "last_name": "doobedoobop",
-      "mailing_address": "doobedoobop",
-      "email": "doobedoobop@email.com",
-      "phone_number": "000000000"
+      "business_guid": "ce83a740-44d1-46c4-91e0-13143e81c492",
+      "first_name": "Michael",
+      "last_name": "Johnson",
+      "position_title": "Manager",
+      "street_address": "123 Main St",
+      "municipality": "Cityville",
+      "province": "ON",
+      "postal_code": "A1B 2C3",
+      "email": "michael@example.com",
+      "phone_number": "+1234567890"
+    }
+  },
+  {
+    "model": "registration.user",
+    "pk": 2,
+    "fields": {
+      "user_guid": "00000000-0000-0000-0000-000000000001",
+      "business_guid": "efb76d57-88b7-4eb6-9f26-ec12b49c14c4",
+      "first_name": "Samantha",
+      "last_name": "Garcia",
+      "position_title": "CEO",
+      "street_address": "456 Elm St",
+      "municipality": "Townsville",
+      "province": "BC",
+      "postal_code": "X0Y 1Z0",
+      "email": "samantha@example.com",
+      "phone_number": "+9876543210"
     }
   }
 ]

@@ -49,7 +49,7 @@ After doing the initial setup, to get the backend re-running:
 2. To set up the database:
    - If you want to drop and recreate the database with mock data, run `make reset_db`. (Warning: This will delete superusers and you will have to recreate with `make superuser`.)
    - If you want to keep your existing database and update (e.g. after a rebase)
-     - If there are new migrations, run `make migrate`.
+     - If there are new migrations, run `make migrate`. (Or, because we're pre-production, you can delete the existing migrations, run `make migrations` and then `make migrate`)
      - If there are new fixtures, `run python manage.py loaddata <path-to-fixture>``
 3. Run `make run`
 
