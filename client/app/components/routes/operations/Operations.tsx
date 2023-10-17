@@ -26,7 +26,6 @@ export default async function Operations() {
     status: string;
     name: string;
   }[] = await getOperations();
-
   if (!operations) {
     return (
       <div>
@@ -60,7 +59,6 @@ export default async function Operations() {
           },
         )
       : [];
-  console.log("rows", rows);
   // Render the DataGrid component
   return (
     <>
