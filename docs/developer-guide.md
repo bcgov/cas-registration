@@ -49,6 +49,13 @@ cd client && yarn test
 
 Front-end unit tests include snapshots. Work that changes the DOM will result in a diff from the last accepted snapshot and cause related tests to fail. You can update the snapshots and review / accept the diff with `yarn test -u`.
 
+#### Writing Unit Tests
+
+Because we're using Next 13's server-side components, there are a couple of new to-dos when setting up a test:
+
+- mock `fetch`. In `beforeEach`, add `fetchMock.enableMocks();`, and in the test, mock the fetch values with `fetchMock.mockResponse([...whatever response you want])`
+- react-testing-library can't render async components, so instead of `render(<Page />)`, use `render(await Page());`
+
 ### Unit tests for Django models
 
 ```shell
@@ -87,6 +94,7 @@ To open last HTML report run:
 
 ```bash
 cd client && yarn playwright show-report
+
 ```
 
 ### Debugging Playwright in CI
