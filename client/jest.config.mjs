@@ -1,8 +1,7 @@
-
 // eslint-disable-next-line import/extensions
 import nextJest from "next/jest.js";
 
-// Following config setup from 
+// Following config setup from
 // https://nextjs.org/docs/pages/building-your-application/optimizing/testing#setting-up-jest-with-the-rust-compiler
 const createJestConfig = nextJest({
   // Provide the path to your Next.js app to load next.config.js and .env files in your test environment
