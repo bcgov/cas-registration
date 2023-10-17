@@ -1,6 +1,6 @@
 import { GridRowsProp } from "@mui/x-data-grid";
-import DataGrid from "@/components/datagrid/DataGrid";
-import { fetchAPI } from "@/utils/api";
+import DataGrid from "../../datagrid/DataGrid";
+import { fetchAPI } from "@/app/utils/api";
 
 // 📚 runtime mode for dynamic data to allow build w/o api
 export const runtime = "edge";
@@ -26,6 +26,7 @@ export default async function Operations() {
     status: string;
     name: string;
   }[] = await getOperations();
+
   if (!operations) {
     return (
       <div>
@@ -59,7 +60,7 @@ export default async function Operations() {
           },
         )
       : [];
-
+  console.log("rows", rows);
   // Render the DataGrid component
   return (
     <>
