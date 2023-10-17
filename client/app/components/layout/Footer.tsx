@@ -62,6 +62,8 @@ export default function Footer() {
         <Stack
           direction={{ xs: "column", sm: "row" }}
           spacing={{ xs: 1, sm: 2, md: 4 }}
+          justifyContent={{ xs: "center", md: "flex-start" }}
+          alignItems={{ xs: "center" }}
         >
           {footerLinks.map((link, index) => (
             <Link

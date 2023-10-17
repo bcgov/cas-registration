@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 // 🏷 import {named} can be significantly slower than import default
@@ -10,37 +9,39 @@ import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import { styled } from "@mui/material/styles";
-import MenuItem from "@mui/material/MenuItem/MenuItem";
-import Menu from "@mui/material/Menu/Menu";
-import MenuIcon from "@mui/icons-material/Menu";
 
 // 🧭 using MUI theme breakpoints for responsive design https://mui.com/material-ui/customization/breakpoints/
 export default function Header() {
   // 🛸 Routing
   const router = useRouter();
 
-  // 🧩 box for buttons using theme breakpoints to hide for mobile & tablet
-  const Buttons = styled(Box)(({ theme }) => ({
+  // 🧩 For login buttons using theme breakpoints to hide for mobile & tablet
+  const ButtonsRight = styled(Box)(({ theme }) => ({
     display: "none",
-    alignItems: "center",
-    gap: "20px",
     [theme.breakpoints.up("md")]: {
       display: "flex",
     },
   }));
 
-  // 🧩 box for icons using theme breakpoints to hide for laptop & desktop
-  const Icons = styled(Box)(({ theme }) => ({
+  // 🧩 For login buttons using theme breakpoints to hide for laptop & desktop
+  const ButtonsBottom = styled(Toolbar)(({ theme }) => ({
     display: "flex",
-    alignItems: "center",
-    gap: "10px",
+    justifyContent: "center",
     [theme.breakpoints.up("md")]: {
       display: "none",
     },
   }));
 
-  // 🧪 state management for mobile & tablet Menu display using MoreMenu icon
-  const [open, setOpen] = useState(false);
+  // 🧩common button config
+  const commonButtonConfig = {
+    width: "160px",
+    height: "60px",
+    fontWeight: 700,
+    fontSize: "12px",
+    lineHeight: "14.52px",
+    textAlign: "center",
+    padding: 0,
+  };
 
   return (
     <AppBar
@@ -48,7 +49,7 @@ export default function Header() {
       color="primary"
       sx={{
         height: {
-          xs: "60px", //mobile & tablet
+          xs: "150px", //mobile & tablet
           md: "80px", //laptop & desktop
         },
       }}
@@ -89,20 +90,11 @@ export default function Header() {
           BC OBPS
         </Typography>
         {/* navigation content for laptop & desktop*/}
-        <Buttons>
+        <ButtonsRight>
           <Button
             color="inherit"
             variant="outlined"
-            sx={{
-              width: "160px",
-              height: "60px",
-              marginTop: "10px",
-              fontWeight: 700,
-              fontSize: "12px",
-              lineHeight: "14.52px",
-              textAlign: "center",
-              padding: 0,
-            }}
+            sx={{ ...commonButtonConfig }}
             onClick={() => router.push("/auth/signin")}
             aria-label="Program Administrator Log In"
           >
@@ -112,61 +104,38 @@ export default function Header() {
           <Button
             color="inherit"
             variant="outlined"
-            sx={{
-              width: "160px",
-              height: "60px",
-              marginTop: "10px",
-              fontWeight: 700,
-              fontSize: "12px",
-              lineHeight: "14.52px",
-              textAlign: "center",
-              padding: 0,
-              marginLeft: "20px",
-            }}
+            sx={{ ...commonButtonConfig, marginLeft: "20px" }}
             onClick={() => router.push("/auth/signin")}
             aria-label="Industrial Operator Log In"
           >
             Industrial Operator
             <br /> Log In
           </Button>
-        </Buttons>
+        </ButtonsRight>
         {/* navigation content for mobile & tablet*/}
-        <Icons>
-          <MenuIcon fontSize="large" onClick={() => setOpen(true)} />
-        </Icons>
       </Toolbar>
-      {/* navigation menu for mobile & tablet*/}
-      <Menu
-        id="mobile-more-menu"
-        aria-labelledby="mobile-more-menu"
-        open={open}
-        onClose={() => setOpen(false)}
-        anchorOrigin={{
-          vertical: "top",
-          horizontal: "right",
-        }}
-        transformOrigin={{
-          vertical: "top",
-          horizontal: "right",
-        }}
-      >
-        <MenuItem
+      <ButtonsBottom>
+        <Button
+          color="inherit"
+          variant="outlined"
+          sx={{ ...commonButtonConfig }}
           onClick={() => router.push("/auth/signin")}
-          role="menuitem"
-          aria-label="Go to Program Administrator Log In"
-          tabIndex={0}
+          aria-label="Program Administrator Log In"
         >
-          Program Administrator Log In
-        </MenuItem>
-        <MenuItem
+          Program Administrator
+          <br /> Log In
+        </Button>
+        <Button
+          color="inherit"
+          variant="outlined"
+          sx={{ ...commonButtonConfig, marginLeft: "20px" }}
           onClick={() => router.push("/auth/signin")}
-          role="menuitem"
-          aria-label="Go to Industrial Operator Log In"
-          tabIndex={1}
+          aria-label="Industrial Operator Log In"
         >
-          Industrial Operator Log In
-        </MenuItem>
-      </Menu>
+          Industrial Operator
+          <br /> Log In
+        </Button>
+      </ButtonsBottom>
     </AppBar>
   );
 }
