@@ -1,7 +1,7 @@
 from django.db import IntegrityError
 from django.test import TestCase
 
-from .models import (
+from registration.models import (
     DocumentType,
     Document,
     NaicsCode,
@@ -16,7 +16,6 @@ from .models import (
     Operation,
     UserAndContactCommonInfo,
 )
-
 
 class BaseTestCase(TestCase):
     def assertFieldLabel(self, instance, field_name, expected_label):

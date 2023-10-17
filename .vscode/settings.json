@@ -4,8 +4,13 @@
     "editor.defaultFormatter": "ms-python.black-formatter"
   },
   "black-formatter.importStrategy": "fromEnvironment",
-  "python.testing.pytestArgs": ["bc_obps"],
+  "python.testing.pytestArgs": [
+    "bc_obps"
+  ],
+  "python.envFile": "${workspaceFolder}/.env",
   "python.testing.unittestEnabled": false,
   "python.testing.pytestEnabled": true,
-  "eslint.workingDirectories": ["client"]
+  "eslint.workingDirectories": [
+    "client"
+  ],
 }
