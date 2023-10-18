@@ -1,9 +1,23 @@
 import { test, expect } from "@playwright/test";
 import { checkboxChecker } from "./helpers";
+const { execSync } = require("child_process");
 
 test.beforeEach(async ({ page }, testInfo) => {
   // eslint-disable-next-line no-console
   console.log(`Running ${testInfo.title}`);
+  // load fixtures
+  const newDirectory = "../bc_obps";
+  const clearDatabase = `cd ${newDirectory} && poetry run make clear_db`;
+  const loadFixtures = `cd ${newDirectory} && poetry run make loadfixtures`;
+  const executeClear = execSync(clearDatabase, { encoding: "utf-8" });
+  const executeLoad = execSync(loadFixtures, { encoding: "utf-8" });
+  if (executeClear.error || executeLoad) {
+    console.error(
+      "Error loading fixtures:",
+      executeClear?.error || executeLoad?.error,
+    );
+  }
+  // navigate to operations page
   await page.goto("http://localhost:3000/operations");
 });
 test("user can create a new operation", async ({ page }) => {
