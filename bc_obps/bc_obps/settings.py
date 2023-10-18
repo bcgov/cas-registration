@@ -92,7 +92,8 @@ DATABASES = {
         "NAME": os.environ.get("DB_NAME", "registration"),
         "USER": os.environ.get("DB_USER", "postgres"),
         "PASSWORD": os.environ.get("DB_PASSWORD"),
-        "HOST": os.environ.get("DB_HOST", "127.0.0.1"),
+        # "HOST": os.environ.get("DB_HOST", "127.0.0.1"),
+        "HOST": "postgres",
         "PORT": os.environ.get("DB_PORT", "5432"),
     }
 }
@@ -143,7 +144,9 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # Google Cloud Storage Settings
 STORAGES = {
     "default": {"BACKEND": "storages.backends.gcloud.GoogleCloudStorage"},
-    "staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"},
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"
+    },
 }
 GS_BUCKET_NAME = os.environ.get("GS_BUCKET_NAME")
 if os.environ.get("GOOGLE_APPLICATION_CREDENTIALS"):
