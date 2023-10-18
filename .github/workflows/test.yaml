@@ -207,7 +207,7 @@ jobs:
         uses: ./.github/actions/dev-env-setup
         # maybe e2e uses ci-app-run, which does a docker-compose up
       - name: run app locally
-        uses: ./.github/actions/local-app-run
+        uses: ./.github/actions/ci-app-run
         with:
           django_secret_key: ${{ env.DJANGO_SECRET_KEY }}
       - name: Install Playwright Browsers
