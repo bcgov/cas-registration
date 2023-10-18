@@ -6,14 +6,17 @@ test.beforeEach(async ({ page }, testInfo) => {
   // eslint-disable-next-line no-console
   console.log(`Running ${testInfo.title}`);
   // load fixtures
-  const newDirectory = "../bc_obps";
-  const clearDatabase = `cd ${newDirectory} && poetry run make clear_db`;
-  const loadFixtures = `cd ${newDirectory} && poetry run make loadfixtures`;
-  const executeClear = execSync(clearDatabase, { encoding: "utf-8" });
-  const executeLoad = execSync(loadFixtures, { encoding: "utf-8" });
-  if (executeClear.error) {
-    console.error("Error clearing fixtures:", executeClear?.error);
-  }
+  // const newDirectory = "../bc_obps";
+  // const clearDatabase = `cd ${newDirectory} && poetry run make clear_db`;
+  // const loadFixtures = `cd ${newDirectory} && poetry run make loadfixtures`;
+  // const executeClear = execSync(clearDatabase, { encoding: "utf-8" });
+  // const executeLoad = execSync(loadFixtures, { encoding: "utf-8" });
+
+  const command = "docker exec cas-reg-backend poetry run make clear_db";
+  const executeLoad = execSync(command, { encoding: "utf-8" });
+  // if (executeClear.error) {
+  //   console.error("Error clearing fixtures:", executeClear?.error);
+  // }
   if (executeLoad.error) {
     console.error("Error loading fixtures:", executeLoad?.error);
   }
