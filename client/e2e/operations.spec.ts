@@ -6,17 +6,22 @@ test.beforeEach(async ({ page }, testInfo) => {
   // eslint-disable-next-line no-console
   console.log(`Running ${testInfo.title}`);
   // load fixtures
-  // const newDirectory = "../bc_obps";
-  // const clearDatabase = `cd ${newDirectory} && poetry run make clear_db`;
-  // const loadFixtures = `cd ${newDirectory} && poetry run make loadfixtures`;
-  // const executeClear = execSync(clearDatabase, { encoding: "utf-8" });
-  // const executeLoad = execSync(loadFixtures, { encoding: "utf-8" });
+  const newDirectory = "../bc_obps";
+  const clearDatabase = `cd ${newDirectory} && poetry run make clear_db`;
+  const loadFixtures = `cd ${newDirectory} && poetry run make loadfixtures`;
+  const executeClear = execSync(clearDatabase, { encoding: "utf-8" });
+  const executeLoad = execSync(loadFixtures, { encoding: "utf-8" });
 
-  const command = "docker exec cas-reg-backend poetry run make clear_db";
-  const executeLoad = execSync(command, { encoding: "utf-8" });
-  // if (executeClear.error) {
-  //   console.error("Error clearing fixtures:", executeClear?.error);
-  // }
+  // for e2e ci tests, docker-compose might work, would need an extra action to run the containers together with docker-compose, lines 8-13 might work
+  // another option: env variable IS_CI, conditionally do lines 8-13 or whatever ends up working for ci
+
+  // getting the sha is in the update manifest workflow, set the sha to another env variable
+  // const command =
+  // "docker exec ghcr.io/bcgov/cas-reg-backend:${{ github.sha }} poetry run make clear_db";
+  // const executeLoad = execSync(command, { encoding: "utf-8" });
+  if (executeClear.error) {
+    console.error("Error clearing fixtures:", executeClear?.error);
+  }
   if (executeLoad.error) {
     console.error("Error loading fixtures:", executeLoad?.error);
   }
@@ -41,7 +46,7 @@ test("user can create a new operation", async ({ page }) => {
   // if the id or aria-role contains numbers or special characters, we have to use the checkboxChecker function
   checkboxChecker(
     page,
-    "Did you submit a GHG emissions report for reporting year 2022?",
+    "Did you submit a GHG emissions report for reporting year 2022?"
   );
 
   await page.fill("#root_current_year_estimated_emissions", "569");
@@ -55,7 +60,7 @@ test("user can create a new operation", async ({ page }) => {
   await page.fill("#root_physical_postal_code", "V8V 1S1");
   await page.fill(
     "#root_legal_land_description",
-    "Your Legal Land Description",
+    "Your Legal Land Description"
   );
   await page.fill("#root_latitude", "64.5");
   await page.fill("#root_longitude", "54.5745");
@@ -72,8 +77,8 @@ test("user can create a new operation", async ({ page }) => {
   // confirmation message
   await expect(
     page.getByText(
-      /Your request to register Sample Operation Name has been received./i,
-    ),
+      /Your request to register Sample Operation Name has been received./i
+    )
   ).toBeVisible();
 });
 
@@ -91,6 +96,6 @@ test("user can edit an existing operation", async ({ page }) => {
 
   // confirmation message
   await expect(
-    page.getByText(/Your request to register CHANGED has been received./i),
+    page.getByText(/Your request to register CHANGED has been received./i)
   ).toBeVisible();
 });

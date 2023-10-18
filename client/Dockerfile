@@ -40,7 +40,8 @@ RUN yarn install --frozen-lockfile --production=false && \
     # same layer as yarn install to keep re-chowned files from using up several hundred MBs more space
     useradd -ms /bin/bash -d ${HOME} --uid ${USER_ID} -g root client && \
     chown -R client:0 ${HOME} && \
-    chmod -R g+rwX ${HOME}
+    chmod -R g+rwX ${HOME} && \
+    yarn playwright install --with-deps
 
 EXPOSE 3000 9000
 USER ${USER_ID}
