@@ -11,11 +11,11 @@ test.beforeEach(async ({ page }, testInfo) => {
   const loadFixtures = `cd ${newDirectory} && poetry run make loadfixtures`;
   const executeClear = execSync(clearDatabase, { encoding: "utf-8" });
   const executeLoad = execSync(loadFixtures, { encoding: "utf-8" });
-  if (executeClear.error || executeLoad) {
-    console.error(
-      "Error loading fixtures:",
-      executeClear?.error || executeLoad?.error,
-    );
+  if (executeClear.error) {
+    console.error("Error clearing fixtures:", executeClear?.error);
+  }
+  if (executeLoad.error) {
+    console.error("Error loading fixtures:", executeLoad?.error);
   }
   // navigate to operations page
   await page.goto("http://localhost:3000/operations");
