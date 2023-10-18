@@ -1,0 +1,14 @@
+name: "CI Registration app run"
+description: "Runs the Registration app with a docker-compose for use in CI"
+
+inputs:
+  django_secret_key:
+    description: "Django secret key"
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: start all containeres
+      shell: bash
+      run: docker-compose up

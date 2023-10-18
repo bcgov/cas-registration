@@ -1,0 +1,55 @@
+version: "3.9"
+services:
+  django:
+    container_name: django
+    build:
+      context: bc_obps
+      dockerfile: Dockerfile
+      target: main
+    volumes:
+      - ./:/app/
+    ports:
+      - "8000:8000"
+    environment:
+      DB_NAME: registration
+      DB_USER: bc_obps
+      DB_PASSWORD: postgres
+      DB_HOST: postgres
+      DB_PORT: 5432
+    # env_file:
+    #   - bc_obps/.env
+    depends_on:
+      - postgres
+    stdin_open: true
+    tty: true
+  client:
+    container_name: client
+    build:
+      context: client
+      dockerfile: Dockerfile
+    volumes:
+      - ./:/app/
+    ports:
+      - "3000:3000"
+    env_file:
+      - client/.env
+    # command: >
+    #   sh -c "yarn playwright install chromium"
+    command: bash -c "yarn starta"
+    depends_on:
+      - django
+    stdin_open: true
+    tty: true
+  postgres:
+    container_name: postgres
+    image: postgres:14
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: bc_obps
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: registration
+volumes:
+  postgres_data:
