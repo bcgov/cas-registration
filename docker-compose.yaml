@@ -35,7 +35,7 @@ services:
       - client/.env
     # command: >
     #   sh -c "yarn playwright install chromium"
-    command: bash -c "yarn starta"
+    command: bash -c "yarn start"
     depends_on:
       - django
     stdin_open: true
