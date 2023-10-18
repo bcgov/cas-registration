@@ -46,7 +46,7 @@ test("user can create a new operation", async ({ page }) => {
   // if the id or aria-role contains numbers or special characters, we have to use the checkboxChecker function
   checkboxChecker(
     page,
-    "Did you submit a GHG emissions report for reporting year 2022?"
+    "Did you submit a GHG emissions report for reporting year 2022?",
   );
 
   await page.fill("#root_current_year_estimated_emissions", "569");
@@ -60,7 +60,7 @@ test("user can create a new operation", async ({ page }) => {
   await page.fill("#root_physical_postal_code", "V8V 1S1");
   await page.fill(
     "#root_legal_land_description",
-    "Your Legal Land Description"
+    "Your Legal Land Description",
   );
   await page.fill("#root_latitude", "64.5");
   await page.fill("#root_longitude", "54.5745");
@@ -77,8 +77,8 @@ test("user can create a new operation", async ({ page }) => {
   // confirmation message
   await expect(
     page.getByText(
-      /Your request to register Sample Operation Name has been received./i
-    )
+      /Your request to register Sample Operation Name has been received./i,
+    ),
   ).toBeVisible();
 });
 
@@ -96,6 +96,6 @@ test("user can edit an existing operation", async ({ page }) => {
 
   // confirmation message
   await expect(
-    page.getByText(/Your request to register CHANGED has been received./i)
+    page.getByText(/Your request to register CHANGED has been received./i),
   ).toBeVisible();
 });
