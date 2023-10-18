@@ -1,6 +1,7 @@
 import { GridRowsProp } from "@mui/x-data-grid";
-import DataGrid from "../../datagrid/DataGrid";
+
 import { fetchAPI } from "@/app/utils/api";
+import DataGrid from "@/app/components/datagrid/DataGrid";
 
 // 📚 runtime mode for dynamic data to allow build w/o api
 export const runtime = "edge";
