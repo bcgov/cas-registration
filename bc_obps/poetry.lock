@@ -804,6 +804,24 @@ files = [
 ]
 
 [[package]]
+name = "model-bakery"
+version = "1.16.0"
+description = "Smart object creation facility for Django."
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "model_bakery-1.16.0-py3-none-any.whl", hash = "sha256:d12a61089d4ba7bd673dc5c5a12597ab3f7c0514499a01941703361a49b21c13"},
+    {file = "model_bakery-1.16.0.tar.gz", hash = "sha256:d7261ae31befda0585c677aadc04d39b34c1aff6da48e3f5f89a9ccbd3371ad3"},
+]
+
+[package.dependencies]
+django = ">=3.2"
+
+[package.extras]
+docs = ["sphinx", "sphinx-rtd-theme"]
+test = ["black", "coverage", "mypy", "pillow", "pytest", "pytest-django", "ruff"]
+
+[[package]]
 name = "more-itertools"
 version = "10.1.0"
 description = "More routines for operating on iterables, beyond itertools"
@@ -1631,4 +1649,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "a52000898b8b0e61094d031f31ffb211e3628aefee664721b5e7cbec2a37030e"
+content-hash = "318a0d4358dc9cfd74b7628248fe8850a97ec05bcdabbb66b6dd01add37fc91a"
