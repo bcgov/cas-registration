@@ -16,8 +16,6 @@ services:
       DB_PASSWORD: postgres
       DB_HOST: postgres
       DB_PORT: 5432
-    # env_file:
-    #   - bc_obps/.env
     depends_on:
       - postgres
     stdin_open: true
@@ -31,8 +29,6 @@ services:
       - ./:/app/
     ports:
       - "3000:3000"
-    env_file:
-      - client/.env
     # command: >
     #   sh -c "yarn playwright install chromium"
     command: bash -c "yarn start"
