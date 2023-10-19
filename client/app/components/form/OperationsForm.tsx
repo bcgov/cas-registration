@@ -3,7 +3,7 @@
 import {
   operationUiSchema,
   operationsGroupSchema,
-} from "@/utils/jsonSchema/operations";
+} from "@/app/utils/jsonSchema/operations";
 import Form from "@rjsf/core";
 import { RJSFSchema } from "@rjsf/utils";
 import validator from "@rjsf/validator-ajv8";
@@ -11,7 +11,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { Alert } from "@mui/material";
 import SubmitButton from "./SubmitButton";
-import { operationSubmitHandler } from "@/utils/actions";
+import { operationSubmitHandler } from "@/app/utils/actions";
 
 export interface OperationsFormData {
   [key: string]: any;

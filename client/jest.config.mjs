@@ -16,10 +16,6 @@ const config = {
   rootDir: ".",
   preset: "ts-jest",
   moduleNameMapper: {
-    "^@/components/(.*)$": "<rootDir>/app/components/$1",
-    "^@/operations/(.*)$": "<rootDir>/app/operations/$1",
-    "^@/styles/(.*)$": "<rootDir>/app/styles/$1",
-    "^@/utils/(.*)$": "<rootDir>/app/utils/$1",
     "\\.(css|scss)$": "<rootDir>/tests/cssFileMock.js",
   },
   setupFilesAfterEnv: ["jest-extended/all", "@testing-library/jest-dom"],
