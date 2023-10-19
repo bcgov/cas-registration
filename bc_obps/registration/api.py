@@ -22,9 +22,27 @@ from django.forms import model_to_dict
 from ninja import Field, Schema, ModelSchema
 from .models import Contact, Operation, Operator, NaicsCode, NaicsCategory, ParentChildOperator, User, UserOperator
 from ninja.errors import HttpError
+from decimal import *
+from uuid import *
+from django.core.management import call_command
+from django.core import serializers
+from django.http import JsonResponse
+from .decorators import dev_only_api
 
 
 router = Router()
+
+
+# testing endpoint
+@router.get("/test-setup")
+@dev_only_api
+def setup(request):
+    try:
+        call_command('truncate_all_tables')
+        call_command('load_fixtures')
+        return JsonResponse({'message': 'Command executed successfully'})
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
 
 
 @router.get("/naics_codes", response=List[NaicsCodeSchema])
