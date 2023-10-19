@@ -94,9 +94,9 @@ describe("Operations component", () => {
     await expect(screen.getByText(/Operation 1/i)).toBeVisible();
     await expect(screen.getByText(/Operation 2/i)).toBeVisible();
     // temporarily commented out because render only renders half the grid
-    // await expect(screen.getByText(/not registered/i)).toHaveLength(2);
-    // await expect(
-    //   screen.getByRole("button", { name: /start registration/i })
-    // ).toHaveLength(2);
+    await expect(screen.getAllByText(/not registered/i)).toHaveLength(2);
+    await expect(
+      screen.getAllByRole("button", { name: /start registration/i }),
+    ).toHaveLength(2);
   });
 });
