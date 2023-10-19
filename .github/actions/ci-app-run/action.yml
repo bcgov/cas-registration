@@ -11,4 +11,4 @@ runs:
   steps:
     - name: start all containers
       shell: bash
-      run: docker-compose up
+      run: docker-compose up -d
