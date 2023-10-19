@@ -47,7 +47,20 @@ module.exports = {
 cd client && yarn test
 ```
 
+If you want to see `console.log` or more detail, add the `--verbose` flag.
+
+If you want to see more HTML output, add `DEBUG_PRINT_LIMIT=1000000` (or any large number).
+
+If you want to access the testing playground, add `screen.logTestingPlaygroundURL()` to your test (although if the URL is too long, the playground will be blank).
+
 Front-end unit tests include snapshots. Work that changes the DOM will result in a diff from the last accepted snapshot and cause related tests to fail. You can update the snapshots and review / accept the diff with `yarn test -u`.
+
+#### Writing Unit Tests
+
+React Testing Library isn't entirely compatible with Next 13 yet, so a few things to note:
+
+- To mock `fetch`,in `beforeEach`, add `fetchMock.enableMocks();`, and in the test, mock the fetch values with `fetchMock.mockResponse([...whatever response you want])`
+- If you're testing a simple async component, you can use `render(await Operations());` instead of `render(<Operations />)`. If the component is more complicated (e.g., it imports other async components, or a mix of client/server), it appears there isn't yet a solution: https://github.com/testing-library/react-testing-library/issues/1209#issuecomment-1673372612
 
 ### Unit tests for Django models
 
@@ -87,6 +100,7 @@ To open last HTML report run:
 
 ```bash
 cd client && yarn playwright show-report
+
 ```
 
 ### Debugging Playwright in CI
