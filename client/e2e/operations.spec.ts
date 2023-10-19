@@ -1,30 +1,11 @@
 import { test, expect } from "@playwright/test";
 import { checkboxChecker } from "./helpers";
-const { execSync } = require("child_process");
 
 test.beforeEach(async ({ page }, testInfo) => {
-  // conditional to determine which to run
   // eslint-disable-next-line no-console
   console.log(`Running ${testInfo.title}`);
-  // load fixtures
-  const clearDatabase = `docker exec django bash -c "poetry run python manage.py truncate_all_tables"`;
-  const loadFixtures = `docker exec django bash -c "poetry run python manage.py loaddata ./registration/fixtures/*.json"`;
-  const executeClear = execSync(clearDatabase, { encoding: "utf-8" });
-  const executeLoad = execSync(loadFixtures, { encoding: "utf-8" });
-
-  // for e2e ci tests, docker-compose might work, would need an extra action to run the containers together with docker-compose, lines 8-13 might work
-  // another option: env variable IS_CI, conditionally do lines 8-13 or whatever ends up working for ci
-
-  // getting the sha is in the update manifest workflow, set the sha to another env variable
-  // const command =
-  // "docker exec ghcr.io/bcgov/cas-reg-backend:${{ github.sha }} poetry run make clear_db";
-  // const executeLoad = execSync(command, { encoding: "utf-8" });
-  if (executeClear.error) {
-    console.error("Error clearing fixtures:", executeClear?.error);
-  }
-  if (executeLoad.error) {
-    console.error("Error loading fixtures:", executeLoad?.error);
-  }
+  // reset db
+  await page.goto("http://localhost:8000/api/registration/test-setup");
   // navigate to operations page
   await page.goto("http://localhost:3000/operations");
 });
