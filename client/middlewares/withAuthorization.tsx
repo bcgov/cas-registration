@@ -8,6 +8,7 @@ export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
      *
      * AUTHENTICATION
      */
+
     //👌 ok: route to next middleware
     return next(request, _next);
   };
