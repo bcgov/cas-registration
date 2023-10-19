@@ -5,7 +5,6 @@ from typing import List
 from ninja import Router
 from django.shortcuts import get_object_or_404
 from .models import Operation, Operator, NaicsCode, NaicsCategory, User
-from ninja.orm import create_schema
 from ninja import Field, Schema, ModelSchema
 from decimal import *
 from uuid import *
@@ -58,12 +57,33 @@ class OperationSchema(ModelSchema):
         model_fields = "__all__"
 
 
-class OperationIn(OperationSchema):
-    # temporarily setting a default operator since we don't have login yet
-    operator: int = 1
-    # Converting types
-    start_of_commercial_operation: date = None
-    verified_at: date = None
+# class OperationIn(OperationSchema):
+#     # temporarily setting a default operator since we don't have login yet
+#     operator: int = 1
+#     # Converting types
+#     start_of_commercial_operation: date = None
+#     verified_at: date = None
+
+
+class OperationIn(Schema):
+    name: str
+    type: str
+    status: str
+    operator_id: int
+    naics_code_id: int
+    naics_category_id: int
+    reporting_activities: str
+    physical_street_address: str
+    physical_municipality: str
+    physical_province: str
+    physical_postal_code: str
+    legal_land_description: str
+    latitude: float
+    longitude: float
+    petrinex_ids: List[str]
+    regulated_products: List[int]
+    documents: List[int]
+    contacts: List[int]
 
 
 class OperationOut(OperationSchema):
@@ -101,6 +121,7 @@ def get_operation(request, operation_id: int):
 
 @router.post("/operations")
 def create_operation(request, payload: OperationIn):
+    print(payload)
     if "operator" in payload.dict():
         operator = payload.dict()["operator"]
         op = get_object_or_404(Operator, id=operator)
