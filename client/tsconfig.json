@@ -14,17 +14,14 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
+    "baseUrl": ".",
     "plugins": [
       {
         "name": "next"
       }
     ],
     "paths": {
-      "@/*": ["./*"],
-      "@/components/*": ["./app/components/*"],
-      "@/content/*": ["./app/content/*"],
-      "@/styles/*": ["./app/styles/*"],
-      "@/utils/*": ["./app/utils/*"]
+      "@/*": ["./*"]
     }
   },
   "include": ["../**/*", "./.eslintrc.js", ".next/types/**/*.ts"],
