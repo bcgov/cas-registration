@@ -123,4 +123,4 @@ pythontests_watch:
 .PHONY: clear_db
 clear_db: ## Clear all data in the datbase
 clear_db:
-	@$(PSQL) -d registration -tc "\i clear_db.sql"
+	python $(MANAGE_PY) truncate_all_tables
