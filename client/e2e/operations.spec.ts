@@ -3,12 +3,12 @@ import { checkboxChecker } from "./helpers";
 const { execSync } = require("child_process");
 
 test.beforeEach(async ({ page }, testInfo) => {
+  // conditional to determine which to run
   // eslint-disable-next-line no-console
   console.log(`Running ${testInfo.title}`);
   // load fixtures
-  const newDirectory = "../bc_obps";
-  const clearDatabase = `cd ${newDirectory} && poetry run make clear_db`;
-  const loadFixtures = `cd ${newDirectory} && poetry run make loadfixtures`;
+  const clearDatabase = `docker exec django bash -c "poetry run python manage.py truncate_all_tables"`;
+  const loadFixtures = `docker exec django bash -c "poetry run python manage.py loaddata ./registration/fixtures/*.json"`;
   const executeClear = execSync(clearDatabase, { encoding: "utf-8" });
   const executeLoad = execSync(loadFixtures, { encoding: "utf-8" });
 
