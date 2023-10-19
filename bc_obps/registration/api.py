@@ -19,9 +19,26 @@ from registration.schema import (
     UserOperatorOut,
 )
 from registration.utils import check_users_admin_request_eligibility, update_model_instance
+from .models import Operation, Operator, NaicsCode, NaicsCategory, User
+from decimal import *
+from uuid import *
+from django.core.management import call_command
+from django.http import JsonResponse
+from .decorators import dev_only_api
 
 
 router = Router()
+
+# testing endpoint
+@router.get("/test-setup")
+@dev_only_api
+def setup(request):
+    try:
+        call_command('truncate_all_tables')
+        call_command('load_fixtures')
+        return JsonResponse({'message': 'Command executed successfully'})
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
 
 
 @router.get("/naics_codes", response=List[NaicsCodeSchema])
