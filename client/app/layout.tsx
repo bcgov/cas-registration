@@ -5,8 +5,6 @@ The root layout must define <html> and <body> tags.
 You should not manually add <head> tags such as <title> and <meta> to root layouts. Instead, you should use the Metadata API which automatically handles advanced requirements such as streaming and de-duplicating <head> elements.
 */
 
-import Footer from "@/app/components/layout/Footer";
-import Header from "@/app/components/layout/Header";
 import ThemeRegistry from "@/app/components/theme/ThemeRegistry";
 
 // 🏷 import {named} can be significantly slower than import default
@@ -34,7 +32,6 @@ export default function RootLayout({
           //👇️ provide MUI custom theme to the components within the layout
         }
         <ThemeRegistry>
-          <Header />
           {/*
           The Box component is a versatile and essential building block in Material-UI v5.
           It serves as a wrapper element that helps structure and organize the layout of your application.
@@ -52,7 +49,6 @@ export default function RootLayout({
             {/* Content goes here */}
             {children}
           </Box>
-          <Footer />
         </ThemeRegistry>
       </body>
     </html>
