@@ -6,11 +6,8 @@ test.beforeEach(async ({ page }, testInfo) => {
   console.log(`Running ${testInfo.title}`);
   // reset db
   await page.goto("http://localhost:8000/api/registration/test-setup");
-  await expect(
-    page.getByText(
-      /This endpoint only exists in the development environment./i,
-    ),
-  ).not.toBeVisible();
+  await expect(page.getByText(/Test setup failed/i)).not.toBeVisible();
+  await expect(page.getByText(/Test setup complete/i)).toBeVisible();
 
   // navigate to operations page
   await page.goto("http://localhost:3000/operations");
