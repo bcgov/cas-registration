@@ -26,12 +26,15 @@ from django.core.management import call_command
 from django.http import JsonResponse
 from django.conf import settings
 from django.http import HttpResponse
+import os
 
 router = Router()
 
 # testing endpoint
 @router.get("/test-setup")
 def setup(request):
+    print(os.environ)
+    print(settings.DEBUG)
     if settings.DEBUG == True:
         try:
             call_command('truncate_all_tables')
