@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import Login from "@/app/components/navigation/Login";
 import Profile from "@/app/components/navigation/Profile";
 
@@ -22,7 +22,7 @@ export default function Header() {
       const isDashboardPage = path.includes("/dashboard");
       setIsAuthenticated(isDashboardPage);
     }
-  });
+  }, []); // Empty dependencies array
 
   // 🖥️📲  using MUI theme breakpoints for responsive design https://mui.com/material-ui/customization/breakpoints/
   // 🧩 For login buttons using theme breakpoints to hide for mobile & tablet

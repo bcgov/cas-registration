@@ -32,24 +32,24 @@ export default function Page() {
   useEffect(() => {
     if (typeof window !== "undefined") {
       const fetchData = async () => {
-        let contents;
+        let contentsModule;
         switch (role) {
           case "admin":
-            contents = await import("@/app/data/dashboard/admin.json");
+            contentsModule = await import("@/app/data/dashboard/admin.json");
             break;
           case "operator":
-            contents = await import("@/app/data/dashboard/operator.json");
+            contentsModule = await import("@/app/data/dashboard/operator.json");
             break;
           default:
-            contents = await import("@/app/data/dashboard/user.json");
+            contentsModule = await import("@/app/data/dashboard/user.json");
             break;
         }
-        setContents(contents.default);
+        setContents(contentsModule.default);
       };
 
       fetchData();
     }
-  });
+  }, []); // Empty dependencies array
 
   return (
     <div>
@@ -82,9 +82,9 @@ export default function Page() {
             </CardContent>
             {/* build bottom links */}
             {typeof content.links === "object" &&
-              content.links.map((link, index) => (
+              content.links.map((link, i) => (
                 <Link
-                  key={index}
+                  key={i}
                   href={link.href}
                   sx={{ textDecoration: "none", padding: "8px" }}
                 >
