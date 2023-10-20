@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     "corsheaders",
     "localflavor",
     "registration.apps.RegistrationConfig",
+    "django_extensions",
 ]
 
 MIDDLEWARE = [
