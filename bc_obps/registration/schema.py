@@ -1,8 +1,8 @@
 from typing import Optional
 from ninja import Field, Schema
-from decimal import Decimal
 from ninja import ModelSchema
-from .models import Operator
+from .models import Operation, Operator, NaicsCode, NaicsCategory
+from datetime import date
 
 
 # Generic schemas
@@ -10,59 +10,65 @@ class Message(Schema):
     message: str
 
 
-# Naics code schemas and endpoints
-class NaicsCodeSchema(Schema):
-    id: int
-    naics_code: str
-    ciip_sector: str
-    naics_description: str
+# Naics code schemas
+class NaicsCodeSchema(ModelSchema):
+    """
+    Schema for the NaicsCode model
+    """
+
+    class Config:
+        model = NaicsCode
+        model_fields = "__all__"
 
 
-# Operation schemas and endpoints
-class OperationIn(Schema):
-    operator: int = Field(..., alias="operator_id")
-    name: str
-    operation_type: str
-    naics_code: int = Field(..., alias="naics_code_id")
-    eligible_commercial_product_name: str
-    permit_id: str
-    npr_id: str
-    ghfrp_id: str
-    bcghrp_id: str
-    petrinex_id: str
-    latitude: Decimal
-    longitude: Decimal
-    legal_land_description: str
-    nearest_municipality: str
-    operator_percent_of_ownership: Decimal
-    registered_for_obps: bool
-    estimated_emissions: Decimal
-    registered_for_obps: str = Field(default=False)
-    # contacts:
-    # documents:
+class NaicsCategorySchema(ModelSchema):
+    """
+    Schema for the NaicsCategory model
+    """
+
+    class Config:
+        model = NaicsCategory
+        model_fields = "__all__"
 
 
-class OperationOut(Schema):
-    id: int
+# Operation schemas
+class OperationSchema(ModelSchema):
+    """
+    Schema for the Operation model
+    """
+
+    class Config:
+        model = Operation
+        model_fields = "__all__"
+
+
+class OperationIn(OperationSchema):
+    # temporarily setting a default operator since we don't have login yet
+    operator: int = 1
+    # Converting types
+    start_of_commercial_operation: Optional[date] = None
+    verified_at: Optional[date] = None
+
+
+class OperationOut(OperationSchema):
+    # handling aliases and optional fields
     operator_id: int = Field(..., alias="operator.id")
-    name: str
-    operation_type: str
     naics_code_id: int = Field(..., alias="naics_code.id")
-    eligible_commercial_product_name: str
-    permit_id: str
-    npr_id: str
-    ghfrp_id: str
-    bcghrp_id: str
-    petrinex_id: str
-    latitude: Decimal
-    longitude: Decimal
-    legal_land_description: str
-    nearest_municipality: str
-    operator_percent_of_ownership: Decimal
-    registered_for_obps: bool
-    estimated_emissions: Decimal
+    naics_category_id: int = Field(..., alias="naics_category.id")
+    previous_year_attributable_emissions: Optional[str] = None
+    swrs_facility_id: Optional[str] = None
+    bcghg_id: Optional[str] = None
+    current_year_estimated_emissions: Optional[str] = None
+    opt_in: Optional[bool] = None
+    new_entrant: Optional[bool] = None
+    start_of_commercial_operation: Optional[date] = None
+    major_new_operation: Optional[bool] = None
+    verified_at: Optional[date] = None
+    # temp handling of many to many field, addressed in #138
     # contacts:
     # documents:
+    # regulated_products:
+    # petrinex_ids:
 
 
 # OPERATOR
