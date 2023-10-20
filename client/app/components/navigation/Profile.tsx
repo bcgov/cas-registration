@@ -10,7 +10,7 @@ export default function Profile() {
         User
       </Link>
       <Link href="/" sx={{ color: "white" }}>
-        Log-Out
+        Log out
       </Link>
     </>
   );
