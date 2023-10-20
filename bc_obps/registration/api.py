@@ -49,14 +49,16 @@ router = Router()
 
 # testing endpoint
 @router.get("/test-setup")
-@dev_only_api
 def setup(request):
-    try:
-        call_command('truncate_all_tables')
-        call_command('load_fixtures')
-        return JsonResponse({'message': 'Command executed successfully'})
-    except Exception as e:
-        return JsonResponse({'error': str(e)}, status=500)
+    if settings.DEBUG == True:
+        try:
+            call_command('truncate_all_tables')
+            call_command('load_fixtures')
+            return JsonResponse({'message': 'Command executed successfully'})
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    else:
+        return HttpResponse("This endpoint only exists in the development environment.", status=404)
 
 
 # testing endpoint
