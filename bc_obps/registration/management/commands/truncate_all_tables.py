@@ -10,5 +10,6 @@ class Command(BaseCommand):
             cursor.execute("SELECT tablename FROM pg_tables WHERE schemaname = 'erc';")
             for row in cursor.fetchall():
                 table_name = row[0]
-                cursor.execute(f'TRUNCATE TABLE erc."{table_name}" RESTART IDENTITY CASCADE;')
+                # Use Django's query building to create a safe parameterized query
+                cursor.execute('TRUNCATE TABLE erc."{}" RESTART IDENTITY CASCADE;'.format(table_name))
         self.stdout.write(self.style.SUCCESS('All tables have been truncated.'))
