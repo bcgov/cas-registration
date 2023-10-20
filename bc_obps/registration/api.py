@@ -67,57 +67,6 @@ def list_naics_codes(request):
     return qs
 
 
-class OperationSchema(ModelSchema):
-    """
-    Schema for the Operation model
-    """
-
-    class Config:
-        model = Operation
-        model_fields = "__all__"
-
-
-class OperationIn(Schema):
-    name: str
-    type: str
-    operator_id: int
-    naics_code_id: int
-    naics_category_id: int
-    reporting_activities: str
-    physical_street_address: str
-    physical_municipality: str
-    physical_province: str
-    physical_postal_code: str
-    legal_land_description: str
-    latitude: float
-    longitude: float
-    petrinex_ids: List[str]
-    regulated_products: List[int]
-    documents: List[int]
-    contacts: List[int]
-
-
-class OperationOut(OperationSchema):
-    # handling aliases and optional fields
-    operator_id: int = Field(..., alias="operator.id")
-    naics_code_id: int = Field(..., alias="naics_code.id")
-    naics_category_id: int = Field(..., alias="naics_category.id")
-    previous_year_attributable_emissions: Optional[str] = None
-    swrs_facility_id: Optional[str] = None
-    bcghg_id: Optional[str] = None
-    current_year_estimated_emissions: Optional[str] = None
-    opt_in: Optional[bool] = None
-    new_entrant: Optional[bool] = None
-    start_of_commercial_operation: Optional[date] = None
-    major_new_operation: Optional[bool] = None
-    verified_at: Optional[date] = None
-    # temp handling of many to many field, addressed in #138
-    # contacts:
-    # documents:
-    # regulated_products:
-    # petrinex_ids:
-
-
 @router.get("/operations", response=List[OperationOut])
 def list_operations(request):
     qs = Operation.objects.all()
@@ -446,7 +395,7 @@ def update_operation_status(request, operation_id: int):
     return operation_json_data
 
 
-@router.get("/select-operator/{int:operator_id}", response=SelectOperatorIn)
+@router.get("/select-operator/{int:operator_id}", response={200: SelectOperatorIn, codes_4xx: Message})
 def select_operator(request, operator_id: int):
     user: User = User.objects.first()  # FIXME: get the user from the request
     operator: Operator = get_object_or_404(Operator, id=operator_id)
