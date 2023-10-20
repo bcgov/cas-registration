@@ -163,10 +163,9 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: dev env setup
-        uses: ./.github/actions/brianna
-        # maybe e2e uses ci-app-run, which does a docker-compose up
+        uses: ./.github/actions/dev-env-setup
       - name: run app locally
-        uses: ./.github/actions/ci-app-run
+        uses: ./.github/actions/local-app-run
         with:
           django_secret_key: ${{ env.DJANGO_SECRET_KEY }}
       - name: Install Playwright Browsers
