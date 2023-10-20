@@ -65,7 +65,7 @@ export const createSubmitHandler = async (
       );
 
       // detail is a custom error message from the server
-      throw new Error(res.detail || "Failed to submit data.");
+      throw new Error(res.message || "Failed to submit data.");
     }
     revalidatePath(pathToRevalidate);
     return res;
