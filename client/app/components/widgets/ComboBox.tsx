@@ -25,6 +25,7 @@ const ComboBox: React.FC<WidgetProps> = (props) => {
     <Autocomplete
       disablePortal
       id={id}
+      autoHighlight
       options={options}
       defaultValue={getSelected()}
       value={getSelected()}
