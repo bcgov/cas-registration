@@ -13,9 +13,9 @@ type TBreadCrumbProps = {
 
 /* 🌐
     The accessibility of this component relies on:
-    A nav element labeled with aria-label identifies the structure as a breadcrumb trail and makes it a navigation landmark 
+    A nav element labeled with aria-label identifies the structure as a breadcrumb trail and makes it a navigation landmark
     The set of links is structured using an ordered list (<ol> element).
-    🔍 Implementing this structure seems to negate the Breadcrumbs props such as 
+    🔍 Implementing this structure seems to negate the Breadcrumbs props such as
           separator=">"
           maxItems={3}
           itemsAfterCollapse={2}

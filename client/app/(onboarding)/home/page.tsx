@@ -18,8 +18,8 @@ import events from "@/app/data/home/events.json";
 import features from "@/app/data/home/features.json";
 import needs from "@/app/data/home/needs.json";
 /*
-📚 
-In the app directory, nested folders are normally mapped to URL paths. 
+📚
+In the app directory, nested folders are normally mapped to URL paths.
 However, you can mark a folder as a Route Group to prevent the folder from being included in the route's URL path.
 This allows you to organize your route segments and project files into logical groups without affecting the URL path structure, (useful in dynamic BreadCrumbs)
 e.g. app\(onboarding)\home maps to route: http://localhost:3000/home
