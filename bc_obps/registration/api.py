@@ -49,8 +49,8 @@ from uuid import *
 from django.core.management import call_command
 from django.core import serializers
 from django.http import JsonResponse
-from .decorators import dev_only_api
-
+from django.conf import settings
+from django.http import HttpResponse
 
 router = Router()
 

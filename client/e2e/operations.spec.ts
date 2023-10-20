@@ -14,7 +14,10 @@ test.beforeEach(async ({ page }, testInfo) => {
       /This endpoint only exists in the development environment./i,
     ),
   ).not.toBeVisible();
+<<<<<<< HEAD
   await expect(page.getByText(/Test setup complete/i)).toBeVisible();
+=======
+>>>>>>> a45af21 (test: set up e2e test endpoint for resetting db)
 
   // navigate to operations page
   await page.goto("http://localhost:3000/dashboard/operations");
