@@ -10,12 +10,9 @@ import ComboBox from "@/app/components/widgets/ComboBox";
 import { selectOperatorUiSchema } from "@/app/utils/jsonSchema/selectOperator";
 import { useRouter } from "next/navigation";
 import { createSubmitHandler } from "@/app/utils/actions";
+import { SelectOperatorFormData } from "@/app/components/form/formDataTypes";
 
-export interface SelectOperatorFormData {
-  operator_id: number;
-}
-
-interface SelectOperatorFormProps {
+export interface SelectOperatorFormProps {
   schema: RJSFSchema;
 }
 
@@ -24,6 +21,8 @@ export default function SelectOperatorForm({
 }: SelectOperatorFormProps) {
   const { push } = useRouter();
   const [errorList, setErrorList] = useState([] as any[]);
+
+  // taking the control of the form data to be able to reset errors on change
   const [formData, setFormData] = useState({} as SelectOperatorFormData);
 
   const handleChange = (data: { formData?: SelectOperatorFormData }) => {
@@ -31,9 +30,7 @@ export default function SelectOperatorForm({
     setFormData(data.formData as SelectOperatorFormData);
   };
 
-  const handleErrors = (errors: any) => {
-    setErrorList(errors);
-  };
+  const handleErrors = (errors: any) => setErrorList(errors);
 
   return (
     <Form
@@ -48,12 +45,13 @@ export default function SelectOperatorForm({
           `registration/select-operator/${data.formData?.operator_id}`,
           "/select-operator",
         );
+
         if (response.error) {
           setErrorList([{ message: response.error }]);
           return;
         }
 
-        push(`/select-operator/${response.operator_id}`);
+        push(`/select-operator/request-access/confirm/${response.operator_id}`);
       }}
       uiSchema={selectOperatorUiSchema}
       widgets={{

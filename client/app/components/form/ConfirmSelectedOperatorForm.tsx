@@ -8,13 +8,13 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createSubmitHandler } from "@/app/utils/actions";
 
-interface AccessRequestFormProps {
+interface ConfirmSelectedOperatorFormProps {
   operator_id: number;
 }
 
-export default function AccessRequestForm({
+export default function ConfirmSelectedOperatorForm({
   operator_id,
-}: AccessRequestFormProps) {
+}: ConfirmSelectedOperatorFormProps) {
   const { push } = useRouter();
   const [errorList, setErrorList] = useState([] as any[]);
 
@@ -31,8 +31,8 @@ export default function AccessRequestForm({
       onSubmit={async () => {
         const response = await createSubmitHandler(
           "POST",
-          `registration/select-operator/request-access`,
-          "/select-operator",
+          "registration/select-operator/request-access",
+          `/select-operator/request-access/confirm/${operator_id}`,
           {
             operator_id,
           },
@@ -42,7 +42,9 @@ export default function AccessRequestForm({
           return;
         }
 
-        push("/user-operator");
+        push(
+          `/select-operator/request-access/user-operator/${response.user_operator_id}`,
+        );
       }}
       className="flex flex-col w-64 mx-auto gap-2"
     >
