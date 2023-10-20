@@ -20,6 +20,7 @@ from registration.schema import (
     NaicsCodeSchema,
     OperationIn,
     OperationOut,
+    OperatorOut,
     RequestAccessOut,
     SelectOperatorIn,
     UserOperatorIn,
@@ -38,6 +39,7 @@ import os
 from ninja import ModelSchema, Router
 from ninja.responses import codes_4xx
 from django.shortcuts import get_object_or_404
+from django.core.exceptions import ValidationError
 from django.forms import model_to_dict
 from ninja import Field, Schema, ModelSchema
 from .models import Contact, Operation, Operator, NaicsCode, NaicsCategory, ParentChildOperator, User, UserOperator
