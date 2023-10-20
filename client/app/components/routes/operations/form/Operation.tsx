@@ -1,9 +1,9 @@
 import OperationsForm, {
   OperationsFormData,
-} from "@/components/form/OperationsForm";
+} from "@/app/components/form/OperationsForm";
 import { operationSchema } from "@/app/utils/jsonSchema/operations";
 import { RJSFSchema } from "@rjsf/utils";
-import { fetchAPI } from "@/utils/api";
+import { fetchAPI } from "@/app/utils/api";
 // 📚 runtime mode for dynamic data to allow build w/o api
 export const runtime = "edge";
 
@@ -39,19 +39,19 @@ async function getOperation(id: number) {
 export const createOperationSchema = (
   schema: RJSFSchema,
   naicsCodes: { id: number }[],
-  naicsCategories: { id: number }[],
+  naicsCategories: { id: number }[]
 ) => {
   const localSchema = JSON.parse(JSON.stringify(schema));
   // naics codes
   if (Array.isArray(naicsCodes)) {
     localSchema.properties.naics_code_id.enum = naicsCodes.map(
-      (code) => code.id,
+      (code) => code.id
     );
   }
   // naics categories
   if (Array.isArray(naicsCategories)) {
     localSchema.properties.naics_category_id.enum = naicsCategories.map(
-      (category) => category.id,
+      (category) => category.id
     );
   }
   return localSchema;

@@ -9,11 +9,11 @@ In a separate file (Client and Server Components), for reusability.
 */
 "use server";
 import { revalidatePath } from "next/cache";
-import { OperationsFormData } from "@/components/form/OperationsForm";
+import { OperationsFormData } from "@/app/components/form/OperationsForm";
 
 export const operationSubmitHandler = async (
   formData: OperationsFormData,
-  method: "POST" | "PUT",
+  method: "POST" | "PUT"
 ) => {
   try {
     const response = await fetch(
@@ -23,7 +23,7 @@ export const operationSubmitHandler = async (
       {
         method,
         body: JSON.stringify(formData),
-      },
+      }
     );
     if (!response.ok) {
       throw new Error("Failed to save data.");

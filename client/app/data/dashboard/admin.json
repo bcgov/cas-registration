@@ -1,0 +1,35 @@
+[
+  {
+    "title": "My Operator",
+    "content": "Not much to say",
+    "links": [
+      { "title": "TBD Administrative Information", "href": "/dashboard/tbd" },
+      { "title": "TBD Contact Information", "href": "/dashboard/tbd" }
+    ]
+  },
+  {
+    "title": "User Access Management",
+    "content": "Slightly more to say than what Card A has to say",
+    "links": [{ "title": "Users", "href": "/dashboard/tbd" }]
+  },
+  {
+    "title": "Operation Registration",
+    "content": "I have quite a lot to say and as a result I am quite tall, but the other cards heights stretch with me...as you can see as I go on and on and on and on and on and on and on ",
+    "links": [{ "title": "Operations", "href": "/dashboard/operations" }]
+  },
+  {
+    "title": "Reporting",
+    "content": "Again, not much to say",
+    "links": [{ "title": "TBD", "href": "/dashboard/tbd" }]
+  },
+  {
+    "title": "Compliance Obligation Administration",
+    "content": "Again, not much to say",
+    "links": [{ "title": "TBD", "href": "/dashboard/tbd" }]
+  },
+  {
+    "title": "Offsets / Credits",
+    "content": "Again, not much to say",
+    "links": [{ "title": "TBD", "href": "/dashboard/tbd" }]
+  }
+]

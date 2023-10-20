@@ -1,6 +1,6 @@
 import { GridRowsProp } from "@mui/x-data-grid";
-import DataGrid from "@/components/datagrid/DataGrid";
-import { fetchAPI } from "@/utils/api";
+import DataGrid from "@/app/components/datagrid/DataGrid";
+import { fetchAPI } from "@/app/utils/api";
 
 // 📚 runtime mode for dynamic data to allow build w/o api
 export const runtime = "edge";
@@ -56,7 +56,7 @@ export default async function Operations() {
               registration_id,
               status,
             };
-          },
+          }
         )
       : [];
 

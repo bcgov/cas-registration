@@ -21,10 +21,10 @@
     ],
     "paths": {
       "@/*": ["./*"],
-      "@/components/*": ["./app/components/*"],
+      "@/app/components/*": ["./app/components/*"],
       "@/content/*": ["./app/content/*"],
       "@/styles/*": ["./app/styles/*"],
-      "@/utils/*": ["./app/utils/*"]
+      "@/app/utils/*": ["./app/utils/*"]
     }
   },
   "include": ["../**/*", "./.eslintrc.js", ".next/types/**/*.ts"],

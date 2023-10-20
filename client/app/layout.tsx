@@ -6,9 +6,7 @@ You should not manually add <head> tags such as <title> and <meta> to root layou
 */
 
 import "@/styles/globals.css";
-import ThemeRegistry from "@/components/theme/ThemeRegistry";
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
+import ThemeRegistry from "@/app/components/theme/ThemeRegistry";
 
 // 🏷 import {named} can be significantly slower than import default
 import Box from "@mui/material/Box";
@@ -35,7 +33,6 @@ export default function RootLayout({
           //👇️ provide MUI custom theme to the components within the layout
         }
         <ThemeRegistry>
-          <Header />
           {/*
           The Box component is a versatile and essential building block in Material-UI v5.
           It serves as a wrapper element that helps structure and organize the layout of your application.
@@ -53,7 +50,6 @@ export default function RootLayout({
             {/* Content goes here */}
             {children}
           </Box>
-          <Footer />
         </ThemeRegistry>
       </body>
     </html>
