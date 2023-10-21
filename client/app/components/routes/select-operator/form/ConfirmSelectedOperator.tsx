@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { BC_GOV_LINKS_COLOR } from "@/app/styles/colors";
-import { fetchAPI } from "@/utils/api";
+import { fetchAPI } from "@/app/utils/api";
 import { Operator } from "@/app/components/routes/select-operator/form/types";
 import ConfirmSelectedOperatorForm from "@/app/components/form/ConfirmSelectedOperatorForm";
 // 📚 runtime mode for dynamic data to allow build w/o api
