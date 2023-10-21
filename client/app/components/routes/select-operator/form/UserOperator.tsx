@@ -1,4 +1,4 @@
-import { fetchAPI } from "@/utils/api";
+import { fetchAPI } from "@/app/utils/api";
 import { userOperatorSchema } from "@/app/utils/jsonSchema/userOperator";
 import UserOperatorForm from "@/app/components/form/UserOperatorForm";
 import { UserOperatorFormData } from "@/app/components/form/formDataTypes";
