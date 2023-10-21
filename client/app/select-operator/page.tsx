@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import Loading from "@/components/loading/SkeletonGrid";
+import Loading from "@/app/components/loading/SkeletonGrid";
 import PageBar from "@/app/components/PageBar";
 import SelectOperator from "@/app/components/routes/select-operator/form/SelectOperator";
 
