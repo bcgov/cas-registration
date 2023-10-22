@@ -6,13 +6,9 @@ import { UserOperatorFormData } from "@/app/components/form/formDataTypes";
 export const runtime = "edge";
 
 export async function getUserOperatorFormData(id: number) {
-  try {
-    return await fetchAPI(
-      `registration/select-operator/request-access/user-operator/${id}`,
-    );
-  } catch (e) {
-    return null;
-  }
+  return fetchAPI(
+    `registration/select-operator/request-access/user-operator/${id}`,
+  );
 }
 
 export default async function UserOperator({
@@ -20,9 +16,12 @@ export default async function UserOperator({
 }: {
   params: { id: number };
 }) {
-  const formData: UserOperatorFormData = await getUserOperatorFormData(
-    params.id,
-  );
+  const formData: UserOperatorFormData | { error: string } =
+    await getUserOperatorFormData(params.id);
+
+  if ("error" in formData) {
+    return <div>Server Error. Please try again later.</div>;
+  }
 
   return (
     <section className="text-center my-20 text-2xl flex flex-col gap-3">

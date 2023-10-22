@@ -5,14 +5,14 @@ import { RJSFSchema } from "@rjsf/utils";
 import validator from "@rjsf/validator-ajv8";
 import { useState } from "react";
 import { Alert } from "@mui/material";
-import SubmitButton from "./SubmitButton";
+import SubmitButton from "@/app/components/form/SubmitButton";
 import ComboBox from "@/app/components/widgets/ComboBox";
 import { selectOperatorUiSchema } from "@/app/utils/jsonSchema/selectOperator";
 import { useRouter } from "next/navigation";
 import { createSubmitHandler } from "@/app/utils/actions";
 import { SelectOperatorFormData } from "@/app/components/form/formDataTypes";
 
-export interface SelectOperatorFormProps {
+interface SelectOperatorFormProps {
   schema: RJSFSchema;
 }
 

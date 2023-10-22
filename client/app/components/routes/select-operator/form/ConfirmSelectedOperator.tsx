@@ -7,11 +7,7 @@ import ConfirmSelectedOperatorForm from "@/app/components/form/ConfirmSelectedOp
 export const runtime = "edge";
 
 export async function getOperator(id: number) {
-  try {
-    return await fetchAPI(`registration/operators/${id}`);
-  } catch (e) {
-    return null;
-  }
+  return fetchAPI(`registration/operators/${id}`);
 }
 
 export default async function ConfirmSelectedOperator({
@@ -19,11 +15,12 @@ export default async function ConfirmSelectedOperator({
 }: {
   params: { id: number };
 }) {
-  const operator: Operator = await getOperator(params.id);
+  const operator: Operator | { error: string } = await getOperator(params.id);
 
-  if (!operator) {
+  if ("error" in operator) {
     return <div>Server Error. Please try again later.</div>;
   }
+
   return (
     <section className="text-center my-60 text-2xl flex flex-col gap-3">
       <p>
