@@ -1,30 +1,20 @@
 import Link from "next/link";
 import { BC_GOV_LINKS_COLOR } from "@/app/styles/colors";
-import { fetchAPI } from "@/app/utils/api";
 import { Operator } from "@/app/components/routes/select-operator/form/types";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-
-// 📚 runtime mode for dynamic data to allow build w/o api
-export const runtime = "edge";
-
-export async function getOperator(id: number) {
-  try {
-    return await fetchAPI(`registration/operators/${id}`);
-  } catch (e) {
-    return null;
-  }
-}
+import { getOperator } from "@/app/components/routes/select-operator/form/ConfirmSelectedOperator";
 
 export default async function AccessRequestReceived({
   params,
 }: {
   params: { id: number };
 }) {
-  const operator: Operator = await getOperator(params.id);
+  const operator: Operator | { error: string } = await getOperator(params.id);
 
-  if (!operator) {
+  if ("error" in operator) {
     return <div>Server Error. Please try again later.</div>;
   }
+
   return (
     <section className="text-center my-60 text-2xl flex flex-col gap-3">
       <span>
