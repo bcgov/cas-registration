@@ -15,7 +15,6 @@
       "physical_postal_code": "A1B 2C3",
       "website": "http://www.example.com",
       "bceid": 98765,
-      "compliance_entity": 1,
       "documents": [],
       "contacts": []
     }
@@ -36,7 +35,6 @@
       "physical_postal_code": "M2N 3P4",
       "website": "http://www.example2.com",
       "bceid": 12345,
-      "compliance_entity": 1,
       "documents": [],
       "contacts": []
     }

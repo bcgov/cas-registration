@@ -207,12 +207,6 @@ class Operator(models.Model):
         null=True,
     )
     bceid = models.IntegerField(db_comment="The BCEID identifier of an operator")
-    compliance_entity = models.ForeignKey(
-        "self",
-        on_delete=models.DO_NOTHING,
-        related_name="operator_compliance_entity",
-        db_comment="The entity that will be paying compliance charges (can be the operator itself or another operator, parent company, partner company, etc.)",
-    )
 
     documents = models.ManyToManyField(
         Document,
@@ -228,9 +222,6 @@ class Operator(models.Model):
         db_table_comment = "Operators (also called organizations)"
         # don't need indexes if we end up using `unique`
         db_table = 'erc"."operator'
-        indexes = [
-            models.Index(fields=["compliance_entity"], name="compliance_entity_idx"),
-        ]
 
 
 class ParentChildOperator(models.Model):
