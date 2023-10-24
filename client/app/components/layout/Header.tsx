@@ -1,20 +1,30 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
+import Login from "@/app/components/navigation/Login";
+import Profile from "@/app/components/navigation/Profile";
 
 // 🏷 import {named} can be significantly slower than import default
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
-import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import { styled } from "@mui/material/styles";
+import { useEffect, useState } from "react";
 
-// 🧭 using MUI theme breakpoints for responsive design https://mui.com/material-ui/customization/breakpoints/
 export default function Header() {
-  // 🛸 Routing
-  const router = useRouter();
+  //🧪 ************ Mock authentication state ***********************
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  // `usePathname` hook from next/navigation to access the current route information
+  const path = usePathname();
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const isDashboardPage = path.includes("/dashboard");
+      setIsAuthenticated(isDashboardPage);
+    }
+  }, []); // Empty dependencies array
 
+  // 🖥️📲  using MUI theme breakpoints for responsive design https://mui.com/material-ui/customization/breakpoints/
   // 🧩 For login buttons using theme breakpoints to hide for mobile & tablet
   const ButtonsRight = styled(Box)(({ theme }) => ({
     display: "none",
@@ -22,7 +32,6 @@ export default function Header() {
       display: "flex",
     },
   }));
-
   // 🧩 For login buttons using theme breakpoints to hide for laptop & desktop
   const ButtonsBottom = styled(Toolbar)(({ theme }) => ({
     display: "flex",
@@ -31,17 +40,6 @@ export default function Header() {
       display: "none",
     },
   }));
-
-  // 🧩common button config
-  const commonButtonConfig = {
-    width: "160px",
-    height: "60px",
-    fontWeight: 700,
-    fontSize: "12px",
-    lineHeight: "14.52px",
-    textAlign: "center",
-    padding: 0,
-  };
 
   return (
     <AppBar
@@ -89,53 +87,24 @@ export default function Header() {
         >
           BC OBPS
         </Typography>
-        {/* navigation content for laptop & desktop*/}
-        <ButtonsRight>
-          <Button
-            color="inherit"
-            variant="outlined"
-            sx={{ ...commonButtonConfig }}
-            onClick={() => router.push("/auth/signin")}
-            aria-label="Program Administrator Log In"
-          >
-            Program Administrator
-            <br /> Log In
-          </Button>
-          <Button
-            color="inherit"
-            variant="outlined"
-            sx={{ ...commonButtonConfig, marginLeft: "20px" }}
-            onClick={() => router.push("/auth/signin")}
-            aria-label="Industrial Operator Log In"
-          >
-            Industrial Operator
-            <br /> Log In
-          </Button>
-        </ButtonsRight>
-        {/* navigation content for mobile & tablet*/}
+
+        {/*📛 To do: use authentication session info to show/hide login buttons*/}
+        {isAuthenticated ? (
+          <Profile />
+        ) : (
+          // Login navigation content for laptop & desktop*
+          <ButtonsRight>
+            <Login />
+          </ButtonsRight>
+        )}
       </Toolbar>
-      <ButtonsBottom>
-        <Button
-          color="inherit"
-          variant="outlined"
-          sx={{ ...commonButtonConfig }}
-          onClick={() => router.push("/auth/signin")}
-          aria-label="Program Administrator Log In"
-        >
-          Program Administrator
-          <br /> Log In
-        </Button>
-        <Button
-          color="inherit"
-          variant="outlined"
-          sx={{ ...commonButtonConfig, marginLeft: "20px" }}
-          onClick={() => router.push("/auth/signin")}
-          aria-label="Industrial Operator Log In"
-        >
-          Industrial Operator
-          <br /> Log In
-        </Button>
-      </ButtonsBottom>
+      {/*📛 To do: use authentication session info to show/hide login buttons*/}
+      {!isAuthenticated && (
+        // Login navigation content for mobile & tablet*
+        <ButtonsBottom>
+          <Login />
+        </ButtonsBottom>
+      )}
     </AppBar>
   );
 }
