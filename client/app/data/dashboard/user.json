@@ -1,0 +1,17 @@
+[
+  {
+    "title": "User Access Management",
+    "content": "Slightly more to say than what Card A has to say",
+    "links": [{ "title": "Users", "href": "/dashboard/tbd" }]
+  },
+  {
+    "title": "Operation Access Management",
+    "content": "I have quite a lot to say and as a result I am quite tall, but the other cards heights stretch with me...as you can see as I go on and on and on and on and on and on and on ",
+    "links": [{ "title": "Operations", "href": "/dashboard/operations" }]
+  },
+  {
+    "title": "Registration Request Management",
+    "content": "I have quite a lot to say and as a result I am quite tall, but the other cards heights stretch with me...as you can see as I go on and on and on and on and on and on and on ",
+    "links": [{ "title": "Operations", "href": "/dashboard/operations" }]
+  }
+]

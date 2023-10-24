@@ -14,22 +14,18 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Grid from "@mui/material/Grid/Grid";
 
+import events from "@/app/data/home/events.json";
+import features from "@/app/data/home/features.json";
+import needs from "@/app/data/home/needs.json";
+/*
+📚
+In the app directory, nested folders are normally mapped to URL paths.
+However, you can mark a folder as a Route Group to prevent the folder from being included in the route's URL path.
+This allows you to organize your route segments and project files into logical groups without affecting the URL path structure, (useful in dynamic BreadCrumbs)
+e.g. app\(onboarding)\home maps to route: http://localhost:3000/home
+*/
+
 export default function Page() {
-  const features = [
-    "Sets a performance standard",
-    "Carbon is only priced above the standard",
-    "Lower-emitting facilities earn credits",
-    "Higher-emitting facilities pay more",
-    "More carbon per unit of production = higher costs",
-  ];
-  const tableData = [
-    { date: "2024-01-15", event: "Event 1" },
-    { date: "2024-02-20", event: "Event 2" },
-    { date: "2024-03-10", event: "Event 3" },
-  ];
-  const needs = [
-    "A Business BCeID account associated with your operator (organization)",
-  ];
   return (
     <>
       {/*
@@ -41,6 +37,7 @@ export default function Page() {
       Using breakpoints for responsive design, grid items will display in two columns on laptop & desktop and a single column on mobile & tablet,
       Using the order prop for stacking order, grid item 1 and 2 will be reverse order on mobile & tablet,
        */}
+      <p className="text-red-500">TEMP: tailwind test of red text</p>
       <Grid container spacing={2} m={3}>
         <Grid item xs={12} md={6} order={{ xs: 2, md: 1 }}>
           <Typography
@@ -158,7 +155,7 @@ export default function Page() {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {tableData.map((row, index) => (
+                {events.map((row, index) => (
                   <TableRow key={index}>
                     <TableCell
                       align="center"
@@ -198,7 +195,7 @@ export default function Page() {
               lineHeight: "36px",
             }}
           >
-            Please see the{" "}
+            Please see the
             <Link href="/completeguidance ">
               complete guidance for registration
             </Link>
