@@ -4,6 +4,14 @@ DB_NAME=registration
 MANAGE_PY = manage.py
 SCHEMA_NAME=erc
 
+# If the VIRTUAL_ENV is specified, we can assume we're in a poetry shell, otherwise
+# we need to execute "poetry run"
+ifdef VIRTUAL_ENV
+POETRY_RUN=
+else
+POETRY_RUN=poetry run
+endif
+
 help: ## Show this help.
 	@sed -ne '/@sed/!s/## //p' $(MAKEFILE_LIST)
 
@@ -86,3 +94,23 @@ loadfixtures:
 .PHONY: reset_db
 reset_db: ## drop and recreate the db
 reset_db:  drop_db create_db migrate loadfixtures
+
+.PHONY: clean
+clean: ## delete python bytecode
+clean:
+	find . -name \*.pyc -delete
+
+.PHONY: pythontests
+pythontests: ## run Python tests
+pythontests:
+	DJANGO_SETTINGS_MODULE=bc_obps.settings pytest
+
+.PHONY: pythontests_verbose
+pythontests_verbose: ## run Python tests with verbose output
+pythontests_verbose:
+	DJANGO_SETTINGS_MODULE=bc_obps.settings pytest -v
+
+.PHONY: pythontests_watch
+pythontests_watch: ## Use pytest-testmon and pytest-watch to trigger test runs on file changes
+pythontests_watch:
+	DJANGO_SETTINGS_MODULE=bc_obps.settings ptw --runner "pytest --picked --testmon"

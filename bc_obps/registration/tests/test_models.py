@@ -1,7 +1,7 @@
 from django.db import IntegrityError
 from django.test import TestCase
 
-from .models import (
+from registration.models import (
     DocumentType,
     Document,
     NaicsCode,
@@ -313,7 +313,6 @@ class OperatorModelTest(BaseTestCase):
                 users=User.objects.get(user_guid="3fa85f64-5717-4562-b3fc-2c963f66afa6"),
                 operators=Operator.objects.get(id=1),
                 role=UserOperator.Roles.ADMIN,
-                status=UserOperator.Statuses.PENDING,
                 verified_at="2013-11-05",
                 verified_by=User.objects.get(user_guid="00000000-0000-0000-0000-000000000001"),
             )
@@ -342,7 +341,6 @@ class OperatorModelTest(BaseTestCase):
             ("mailing_postal_code", "mailing postal code", 7, None),
             ("website", "website", 200, None),
             ("bceid", "bceid", None, None),
-            ("compliance_entity", "compliance entity", None, None),
             ("documents", "documents", None, 2),
             ("contacts", "contacts", None, 2),
         ]

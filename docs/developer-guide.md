@@ -72,6 +72,16 @@ React Testing Library isn't entirely compatible with Next 13 yet, so a few thing
 > python manage.py test
 ```
 
+### Backend unit tests (for API endpoints) with Pytest
+
+The easiest way to run these tests locally is by using commands from the Makefile.
+
+```shell
+> make pythontests              # standard pytest run
+> make pythontests_verbose      # run pytest with verbose output (helpful for troubleshooting unit tests)
+> make pythontests_watch        # adds a watcher that can run pytest in the background; unit tests will re-run whenever changes to a Python file are detected
+```
+
 #### Detail directions
 
 1. Navigate to the `~/bc_obps` directory. Start Postgres with `make start_pg`. Start the Poetry shell with `poetry shell`.
