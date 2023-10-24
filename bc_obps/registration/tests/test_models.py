@@ -18,6 +18,7 @@ from registration.models import (
     UserAndContactCommonInfo,
 )
 
+
 @pytest.mark.skip(reason="Will be updated in another PR")
 class BaseTestCase(TestCase):
     def assertFieldLabel(self, instance, field_name, expected_label):
@@ -31,6 +32,7 @@ class BaseTestCase(TestCase):
     def assertHasMultipleRelationsInField(self, instance, field_name, expected_relations_count):
         field = instance.__getattribute__(field_name)
         self.assertEqual(field.count(), expected_relations_count)
+
 
 class UserModelTest(BaseTestCase):
     @classmethod
@@ -86,6 +88,7 @@ class UserModelTest(BaseTestCase):
 
         with self.assertRaises(IntegrityError):
             user2.save()
+
 
 class DocumentModelTest(BaseTestCase):
     @classmethod
@@ -388,9 +391,7 @@ class OperatorModelTest(BaseTestCase):
                 aso_is_owner_or_operator=True,
                 user_is_third_party=True,
                 proof_of_authority=Document.objects.create(file="test.tst", description="test"),
-                signed_statuatory_declaration=Document.objects.create(
-                    file="test.tst", description="test"
-                ),
+                signed_statuatory_declaration=Document.objects.create(file="test.tst", description="test"),
             )
 
     def test_field_labels_and_max_lengths_and_multiple_relations(self):

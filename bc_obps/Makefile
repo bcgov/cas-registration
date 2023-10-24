@@ -97,12 +97,12 @@ reset_db:  drop_db create_db migrate loadfixtures
 
 .PHONY: clean
 clean: ## delete python bytecode
-clean: 
-	find . -name \*.pyc -delete 
+clean:
+	find . -name \*.pyc -delete
 
 .PHONY: pythontests
 pythontests: ## run Python tests
-pythontests: 
+pythontests:
 	DJANGO_SETTINGS_MODULE=bc_obps.settings pytest
 
 .PHONY: pythontests_verbose
@@ -114,6 +114,3 @@ pythontests_verbose:
 pythontests_watch: ## Use pytest-testmon and pytest-watch to trigger test runs on file changes
 pythontests_watch:
 	DJANGO_SETTINGS_MODULE=bc_obps.settings ptw --runner "pytest --picked --testmon"
-
-
-
