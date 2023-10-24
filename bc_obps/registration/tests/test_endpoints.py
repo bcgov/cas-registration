@@ -89,13 +89,15 @@ class TestOperationsEndpoint:
             regulated_products=[1, 2],
             documents=[document.id],
             contacts=[contact.id],
-            status='Pending',
             operator_id=operator.id,
         )
 
-        response = client.post(self.endpoint, content_type='application/json', data=mock_operation.json())
-        assert response.status_code == 200
-        assert response.json() == {"name": "Springfield Nucular Power Plant"}
+        post_response = client.post(self.endpoint, content_type='application/json', data=mock_operation.json())
+        assert post_response.status_code == 200
+        assert post_response.json() == {"name": "Springfield Nucular Power Plant"}
+        # check that the default status of pending was applied
+        get_response = client.get(self.endpoint).json()[0]
+        assert 'status' in get_response and get_response['status'] == 'pending'
 
     def test_post_new_malformed_operation(self, client):
         response = client.post(self.endpoint, content_type='application/json', data={'garbage': 'i am bad data'})
@@ -127,7 +129,6 @@ class TestOperationEndpoint:
             legal_land_description='It\'s legal',
             latitude=90,
             longitude=-120,
-            status='Pending',
             operator_id=operator.id,
         )
         response = client.get(self.endpoint)
@@ -153,7 +154,6 @@ class TestOperationEndpoint:
             legal_land_description='It\'s legal',
             latitude=90,
             longitude=-120,
-            status='Pending',
             operator_id=operator.id,
         )
 
@@ -174,7 +174,6 @@ class TestOperationEndpoint:
             regulated_products=[1, 2],
             documents=[document.id],
             contacts=[contact.id],
-            status='Pending',
             operator_id=operator.id,
         )
 
