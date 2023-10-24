@@ -4,7 +4,7 @@ NOTE: Facilities may not be included in MVP
 
 Roles can be:
 
-- senior_officer (of an operator, whether that's the operator itself or the compliance entity's officer)
+- senior_officer
 - operation_representative
 - authorized_signing_officer
 - operation_registration_lead
@@ -113,7 +113,6 @@ erDiagram
         mailing_address_postal_code varchar
         website varchar
         bceid number
-        compliance_entity operator_id int FK
 
     }
 
