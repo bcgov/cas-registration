@@ -1,0 +1,29 @@
+{
+  "name": "cas-registration",
+  "version": "0.0.1",
+  "main": "index.js",
+  "repository": "https://github.com/bcgov/cas-registration.git",
+  "author": "ggircs@gov.bc.ca",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@release-it/conventional-changelog": "^7.0.2",
+    "release-it": "^16.2.1"
+  },
+  "release-it": {
+    "npm": {
+      "publish": false
+    },
+    "git": {
+      "commitMessage": "chore: release v${version}"
+    },
+    "plugins": {
+      "@release-it/conventional-changelog": {
+        "preset": "angular",
+        "infile": "CHANGELOG.md"
+      }
+    },
+    "hooks": {
+      "before:git:beforeRelease": "./.bin/pre-commit-format.sh CHANGELOG.md"
+    }
+  }
+}
