@@ -119,7 +119,7 @@ pythontests_verbose:
 pythontests_watch: ## Use pytest-testmon and pytest-watch to trigger test runs on file changes
 pythontests_watch:
 	DJANGO_SETTINGS_MODULE=bc_obps.settings ptw --runner "pytest --picked --testmon"
-	
+
 .PHONY: clear_db
 clear_db: ## Clear all data in the datbase
 clear_db:
