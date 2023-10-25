@@ -101,7 +101,6 @@ erDiagram
         trade_name varchar
         cra_business_number int
         bc_corporate_registry_number int
-        duns_number number int
         business_structure varchar
         physical_address varchar
         physical_address_municipality varchar
@@ -112,7 +111,6 @@ erDiagram
         mailing_address_province varchar
         mailing_address_postal_code varchar
         website varchar
-        bceid number
 
     }
 

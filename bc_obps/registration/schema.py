@@ -126,8 +126,9 @@ class UserOperatorIn(UserOperatorOut):
     Schema for the UserOperator model
     """
 
-    role: bool
+    is_senior_officer: bool
     mailing_address_same_as_physical: bool
+    # so => senior officer
     so_first_name: Optional[str]
     so_last_name: Optional[str]
     so_position_title: Optional[str]
@@ -138,6 +139,7 @@ class UserOperatorIn(UserOperatorOut):
     so_email: Optional[str]
     so_phone_number: Optional[str]
     operator_has_parent_company: bool
+    # pc => parent company
     pc_legal_name: Optional[str]
     pc_cra_business_number: Optional[int]
     pc_bc_corporate_registry_number: Optional[int]
