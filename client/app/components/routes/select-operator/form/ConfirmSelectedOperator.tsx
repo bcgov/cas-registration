@@ -3,8 +3,6 @@ import { BC_GOV_LINKS_COLOR } from "@/app/styles/colors";
 import { fetchAPI } from "@/app/utils/api";
 import { Operator } from "@/app/components/routes/select-operator/form/types";
 import ConfirmSelectedOperatorForm from "@/app/components/form/ConfirmSelectedOperatorForm";
-// 📚 runtime mode for dynamic data to allow build w/o api
-export const runtime = "edge";
 
 export async function getOperator(id: number) {
   return fetchAPI(`registration/operators/${id}`);
