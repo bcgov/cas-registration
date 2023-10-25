@@ -16,7 +16,7 @@ export default async function AccessRequestReceived({
   }
 
   return (
-    <section className="text-center my-60 text-2xl flex flex-col gap-3">
+    <section className="text-center my-auto text-2xl flex flex-col gap-3">
       <span>
         <CheckCircleIcon sx={{ color: "#2E8540", fontSize: 50 }} />
       </span>

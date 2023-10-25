@@ -22,7 +22,7 @@ export default async function ConfirmSelectedOperator({
   }
 
   return (
-    <section className="text-center my-60 text-2xl flex flex-col gap-3">
+    <section className="text-center my-auto text-2xl flex flex-col gap-3">
       <p>
         Hi <b>John!</b> {/* TODO: replace with user name */}
       </p>
