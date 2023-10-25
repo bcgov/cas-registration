@@ -5,14 +5,16 @@ import { experimental_useFormStatus as useFormStatus } from "react-dom";
 
 interface SubmitButtonProps {
   label: string;
+  classNames?: string;
 }
 
 const SubmitButton: React.FunctionComponent<SubmitButtonProps> = ({
   label,
+  classNames,
 }) => {
   const { pending } = useFormStatus();
   return (
-    <div>
+    <div className={classNames}>
       <Button
         variant="contained"
         type="submit"
