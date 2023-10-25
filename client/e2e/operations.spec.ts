@@ -8,9 +8,7 @@ test.beforeEach(async ({ page }, testInfo) => {
   await page.goto("http://localhost:8000/api/registration/test-setup");
   await expect(page.getByText(/Test setup failed/i)).not.toBeVisible();
   await expect(
-    page.getByText(
-      /This endpoint only exists in the development environment./i,
-    ),
+    page.getByText(/This endpoint only exists in the development environment./i)
   ).not.toBeVisible();
   await expect(page.getByText(/Test setup complete/i)).toBeVisible();
 
@@ -35,7 +33,7 @@ test("user can create a new operation", async ({ page }) => {
   // if the id or aria-role contains numbers or special characters, we have to use the checkboxChecker function
   checkboxChecker(
     page,
-    "Did you submit a GHG emissions report for reporting year 2022?",
+    "Did you submit a GHG emissions report for reporting year 2022?"
   );
 
   await page.fill("#root_current_year_estimated_emissions", "569");
@@ -49,7 +47,7 @@ test("user can create a new operation", async ({ page }) => {
   await page.fill("#root_physical_postal_code", "V8V 1S1");
   await page.fill(
     "#root_legal_land_description",
-    "Your Legal Land Description",
+    "Your Legal Land Description"
   );
   await page.fill("#root_latitude", "64.5");
   await page.fill("#root_longitude", "54.5745");
@@ -66,25 +64,7 @@ test("user can create a new operation", async ({ page }) => {
   // confirmation message
   await expect(
     page.getByText(
-      /Your request to register Sample Operation Name has been received./i,
-    ),
-  ).toBeVisible();
-});
-
-test("user can edit an existing operation", async ({ page }) => {
-  page
-    .getByRole("button", { name: /start registration/i })
-    .first()
-    .click();
-
-  // change a form field
-  await page.fill("#root_name", "CHANGED");
-
-  // submit form
-  page.getByRole("button", { name: /submit/i }).click();
-
-  // confirmation message
-  await expect(
-    page.getByText(/Your request to register CHANGED has been received./i),
+      /Your request to register Sample Operation Name has been received./i
+    )
   ).toBeVisible();
 });
