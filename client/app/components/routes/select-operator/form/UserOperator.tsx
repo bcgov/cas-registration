@@ -2,8 +2,6 @@ import { fetchAPI } from "@/app/utils/api";
 import { userOperatorSchema } from "@/app/utils/jsonSchema/userOperator";
 import UserOperatorForm from "@/app/components/form/UserOperatorForm";
 import { UserOperatorFormData } from "@/app/components/form/formDataTypes";
-// 📚 runtime mode for dynamic data to allow build w/o api
-export const runtime = "edge";
 
 export async function getUserOperatorFormData(id: number) {
   return fetchAPI(
