@@ -73,3 +73,31 @@ export const createSubmitHandler = async (
     return { error: err.message };
   }
 };
+
+// TODO: remove this handler, use more generic createSubmitHandler instead
+/**
+ * Creates a submit handler function that sends a request to the specified API endpoint
+ * and returns the response as a JSON object.
+ * @param method The HTTP method to use for the request (GET, POST, PUT, DELETE, PATCH).
+ * @param apiUrl The relative URL of the API endpoint to send the request to.
+ * @param pathToRevalidate The path of the data to revalidate after the request is complete.
+ * @param formData Data to include in the request body
+ * @returns A Promise that resolves to the JSON response from the API endpoint, or an error object if the request fails.
+ */
+export const operationStatusUpdateHandler = async (formData: OperationsFormData) => {
+  try {
+    console.log(JSON.stringify(formData))
+    const response = await fetch(process.env.API_URL + `registration/operations/${formData.id}/updateStatus`, {
+      method: "PUT", body: JSON.stringify({status: formData.status})
+    })
+    console.log(response.json())
+    if (!response.ok) {
+      throw new Error("Failed to update status of application!");
+
+    }
+    revalidatePath("/operations")
+    return await response.json()
+  } catch (err: any) {
+    return { error: err.message}
+  }
+}
