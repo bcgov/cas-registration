@@ -35,7 +35,7 @@ export default function UserOperatorForm({
         const response = await createSubmitHandler(
           "PUT",
           `registration/select-operator/request-access/user-operator/${userOperatorId}`,
-          `/select-operator/request-access/user-operator/${userOperatorId}`,
+          `/dashboard/select-operator/request-access/user-operator/${userOperatorId}`,
           data.formData,
         );
 
@@ -44,7 +44,7 @@ export default function UserOperatorForm({
           return;
         }
         push(
-          `/select-operator/request-access/received/${response.operator_id}`,
+          `/dashboard/select-operator/request-access/received/${response.operator_id}`,
         );
       }}
       uiSchema={userOperatorUiSchema}
@@ -60,7 +60,7 @@ export default function UserOperatorForm({
         <SubmitButton label="Submit" />
         <Button
           variant="outlined"
-          onClick={() => push("/select-operator")}
+          onClick={() => push("/dashboard/select-operator")}
           sx={{ marginBottom: 10 }}
         >
           Cancel
