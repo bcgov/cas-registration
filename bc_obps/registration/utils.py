@@ -4,7 +4,17 @@ from django.db import models
 from .models import User, Operator, UserOperator
 
 
-def check_users_admin_request_eligibility(user: User, operator: Operator):
+def check_users_admin_request_eligibility(user: User, operator: Operator) -> Union[None, tuple[int, dict]]:
+    """
+    Check if a user is eligible to request admin access to an operator.
+
+    Args:
+        user (User): The user for whom eligibility is being checked.
+        operator (Operator): The operator to which admin access is being requested.
+
+    Returns:
+        Union[None, Tuple[int, str]]: Eligibility status. None if eligible, (400, error message) if not.
+    """
     # User already has an admin user for this operator
     if UserOperator.objects.filter(
         user=user, operator=operator, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.APPROVED
@@ -16,6 +26,8 @@ def check_users_admin_request_eligibility(user: User, operator: Operator):
         operator=operator, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.APPROVED
     ).exists():
         return 400, {"message": "This Operator already has an admin user!"}
+
+    return 200, None
 
 
 def update_model_instance(

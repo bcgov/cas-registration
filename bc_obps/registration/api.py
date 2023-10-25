@@ -129,23 +129,27 @@ def get_operator(request, operator_id: int):
 
 @router.get("/select-operator/{int:operator_id}", response={200: SelectOperatorIn, codes_4xx: Message})
 def select_operator(request, operator_id: int):
-    user: User = User.objects.first()  # FIXME: get the user from the request
+    user: User = User.objects.first()  # FIXME: placeholders until after authentication is set up
     operator: Operator = get_object_or_404(Operator, id=operator_id)
 
     # check if user is eligible to request access
-    check_users_admin_request_eligibility(user, operator)
+    status, message = check_users_admin_request_eligibility(user, operator)
+    if status != 200:
+        return status, message
 
     return 200, {"operator_id": operator.id}
 
 
 @router.post("/select-operator/request-access", response={201: RequestAccessOut, codes_4xx: Message})
 def request_access(request, payload: SelectOperatorIn):
-    user: User = User.objects.first()  # FIXME: get the user from the request
+    user: User = User.objects.first()  # FIXME: placeholders until after authentication is set up
     payload_dict: dict = payload.dict()
     operator: Operator = get_object_or_404(Operator, id=payload_dict.get("operator_id"))
 
     # check if user is eligible to request access
-    check_users_admin_request_eligibility(user, operator)
+    status, message = check_users_admin_request_eligibility(user, operator)
+    if status != 200:
+        return status, message
 
     # Making a draft UserOperator instance if one doesn't exist
     user_operator, _ = UserOperator.objects.get_or_create(
@@ -247,6 +251,14 @@ def create_user_operator_request(request, user_operator_id: int, payload: UserOp
                 contact_instance, contact_fields_mapping, payload_dict
             )
 
+        mailing_address_same_as_physical: bool = payload_dict.get("mailing_address_same_as_physical")
+
+        if mailing_address_same_as_physical:
+            payload_dict["mailing_street_address"] = payload_dict["physical_street_address"]
+            payload_dict["mailing_municipality"] = payload_dict["physical_municipality"]
+            payload_dict["mailing_province"] = payload_dict["physical_province"]
+            payload_dict["mailing_postal_code"] = payload_dict["physical_postal_code"]
+
         # fields to update on the Operator model
         operator_related_fields = [
             "legal_name",
@@ -264,7 +276,7 @@ def create_user_operator_request(request, user_operator_id: int, payload: UserOp
         ]
         updated_operator_instance: Operator = update_model_instance(operator, operator_related_fields, payload_dict)
 
-        if not operator_has_parent_company:
+        if operator_has_parent_company:
             parent_operator_fields_mapping = {
                 "pc_legal_name": "legal_name",
                 "pc_trade_name": "trade_name",
@@ -281,6 +293,19 @@ def create_user_operator_request(request, user_operator_id: int, payload: UserOp
                 "pc_mailing_postal_code": "mailing_postal_code",
                 "pc_website": "website",
             }
+
+            # use physical address as mailing address if pc_mailing_address_same_as_physical is true
+            pc_mailing_address_same_as_physical: bool = payload_dict.get("pc_mailing_address_same_as_physical")
+            if pc_mailing_address_same_as_physical:
+                parent_operator_fields_mapping.update(
+                    {
+                        "pc_mailing_street_address": "physical_street_address",
+                        "pc_mailing_municipality": "physical_municipality",
+                        "pc_mailing_province": "physical_province",
+                        "pc_mailing_postal_code": "physical_postal_code",
+                    }
+                )
+
             parent_operator_instance: Operator = Operator()
             parent_operator_instance: Operator = update_model_instance(
                 parent_operator_instance, parent_operator_fields_mapping, payload_dict
@@ -301,7 +326,7 @@ def create_user_operator_request(request, user_operator_id: int, payload: UserOp
         if not is_senior_officer:
             senior_officer_contact.save()
 
-        if not operator_has_parent_company:
+        if operator_has_parent_company:
             parent_operator_instance.save()
             if percentage_owned_by_parent_company:
                 parent_child_operator_instance.save()
