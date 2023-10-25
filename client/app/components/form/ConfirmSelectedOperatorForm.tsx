@@ -48,7 +48,10 @@ export default function ConfirmSelectedOperatorForm({
             {e.message}
           </Alert>
         ))}
-      <SubmitButton label="Request Access" />
+      <SubmitButton
+        label="Request Access as Administrator"
+        classNames="w-max"
+      />
     </Form>
   );
 }
