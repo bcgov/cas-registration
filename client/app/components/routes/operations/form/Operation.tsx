@@ -4,8 +4,6 @@ import OperationsForm, {
 import { operationSchema } from "@/app/utils/jsonSchema/operations";
 import { RJSFSchema } from "@rjsf/utils";
 import { fetchAPI } from "@/app/utils/api";
-// 📚 runtime mode for dynamic data to allow build w/o api
-export const runtime = "edge";
 
 // 🛠️ Function to fetch NAICS codes
 async function getNaicsCodes() {
