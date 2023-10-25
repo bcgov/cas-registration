@@ -127,6 +127,7 @@ class UserOperatorIn(UserOperatorOut):
     """
 
     role: bool
+    mailing_address_same_as_physical: bool
     so_first_name: Optional[str]
     so_last_name: Optional[str]
     so_position_title: Optional[str]
@@ -145,6 +146,7 @@ class UserOperatorIn(UserOperatorOut):
     pc_physical_municipality: Optional[str]
     pc_physical_province: Optional[str]
     pc_physical_postal_code: Optional[str]
+    pc_mailing_address_same_as_physical: Optional[bool]
     pc_mailing_street_address: Optional[str]
     pc_mailing_municipality: Optional[str]
     pc_mailing_province: Optional[str]
