@@ -1,8 +1,6 @@
 ## Release Process
 
-Before releasing our application to our `test` and `prod` environments, an essential step is to add a tag to our sqitch plan, to identify which database mutations are released to prod and should be immutable.
-
-Additionally, to facilitate identification of the changes that are released and communication around them, we want to:
+To facilitate identification of the changes that are released and communication around them, we want to:
 
 - bump the version number, following [semantic versioning](https://semver.org/)
 - generate a change log, based on the commit messages using the [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/) format
