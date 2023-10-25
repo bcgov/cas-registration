@@ -39,7 +39,7 @@ export default function SelectOperatorForm({
         const response = await createSubmitHandler(
           "GET",
           `registration/select-operator/${data.formData?.operator_id}`,
-          "/select-operator",
+          "/dashboard/select-operator",
         );
 
         if (response.error) {
@@ -47,7 +47,9 @@ export default function SelectOperatorForm({
           return;
         }
 
-        push(`/select-operator/request-access/confirm/${response.operator_id}`);
+        push(
+          `/dashboard/select-operator/request-access/confirm/${response.operator_id}`,
+        );
       }}
       uiSchema={selectOperatorUiSchema}
       widgets={{
