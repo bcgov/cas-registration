@@ -329,7 +329,6 @@ class OperatorModelTest(BaseTestCase):
                 None,
                 None,
             ),
-            ("duns_number", "duns number", None, None),
             ("business_structure", "business structure", 1000, None),
             ("physical_street_address", "physical street address", 1000, None),
             ("physical_municipality", "physical municipality", 1000, None),
@@ -340,7 +339,6 @@ class OperatorModelTest(BaseTestCase):
             ("mailing_province", "mailing province", 2, None),
             ("mailing_postal_code", "mailing postal code", 7, None),
             ("website", "website", 200, None),
-            ("bceid", "bceid", None, None),
             ("documents", "documents", None, 2),
             ("contacts", "contacts", None, 2),
         ]
