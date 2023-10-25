@@ -18,16 +18,10 @@ export default function ConfirmSelectedOperatorForm({
   const { push } = useRouter();
   const [errorList, setErrorList] = useState([] as any[]);
 
-  const handleErrors = (errors: any) => {
-    setErrorList(errors);
-  };
-
   return (
     <Form
       schema={{}}
       validator={validator}
-      onError={handleErrors}
-      showErrorList={false}
       onSubmit={async () => {
         const response = await createSubmitHandler(
           "POST",

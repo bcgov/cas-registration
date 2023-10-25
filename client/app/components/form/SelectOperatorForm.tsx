@@ -30,14 +30,10 @@ export default function SelectOperatorForm({
     setFormData(data.formData as SelectOperatorFormData);
   };
 
-  const handleErrors = (errors: any) => setErrorList(errors);
-
   return (
     <Form
       schema={schema}
-      onError={handleErrors}
       validator={validator}
-      showErrorList={false}
       formData={formData}
       onSubmit={async (data: { formData?: SelectOperatorFormData }) => {
         const response = await createSubmitHandler(
