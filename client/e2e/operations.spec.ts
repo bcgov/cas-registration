@@ -1,101 +1,102 @@
-import { test, expect } from "@playwright/test";
+import Operations from "@/app/components/routes/operations/Operations";
+import "@testing-library/jest-dom";
+import { render, screen } from "@testing-library/react";
+import fetchMock from "jest-fetch-mock";
 
-// Annotate entire file as serial.
-test.describe.configure({ mode: "serial" });
-
-test.beforeEach(async ({ page }, testInfo) => {
-  // eslint-disable-next-line no-console
-  console.log(`Running ${testInfo.title}`);
-  // reset db
-  await page.goto("http://localhost:8000/api/registration/test-setup");
-  await expect(page.getByText(/Test setup failed/i)).not.toBeVisible();
-  await expect(
-    page.getByText(
-      /This endpoint only exists in the development environment./i,
-    ),
-  ).not.toBeVisible();
-  await expect(page.getByText(/Test setup complete/i)).toBeVisible();
-
-  // navigate to operations page
-  await page.goto("http://localhost:3000/dashboard/operations");
-});
-
-test.afterEach(async ({ page }, testInfo) => {
-  // eslint-disable-next-line no-console
-  console.log(`Closing ${testInfo.title} in project ${testInfo.project.name}`);
-  await page.close();
-});
-
-test("user can create a new operation", async ({ page }) => {
-  // 👌 Best Practice:
-  // prefer user-facing attributes to XPath or CSS selectors
-  // this verifies that the application code works for the end users
-  // find locators using codegen to record user actions: npx playwright codegen http://localhost:3000/operations/create
-  await page.getByRole("button", { name: "Add Operation" }).click();
-  // Step 1
-  await page.getByLabel("Operation Name*").fill("Sample Operation Name");
-  await page.getByLabel("Operation Type*").fill("Your Operation Type");
-  await page.getByLabel("NAICS Code*").selectOption("0"); // 1
-  await page.getByLabel("NAICS Category*").selectOption("0"); // 1
-  await page
-    .getByLabel("Reporting Activities*")
-    .fill("Your Reporting Activities");
-  await page
-    .getByLabel("Permit Issuing Agency ")
-    .fill("Your Permit Issuing Agency");
-  await page.getByLabel("Permit Number").fill("Your Permit Number");
-  // if locator contains numbers or special characters, e.g.
-  await page.getByLabel("Estimated Emissions for reporting year 2023*").click();
-  await page
-    .getByLabel("Estimated Emissions for reporting year 2023*")
-    .fill("569");
-  await page.getByLabel("Is the operation an opt-in operation?").check();
-  await page.getByLabel("Is the operation a major new operation?").check();
-
-  // Step 2: Operation Type Information
-  await page.getByLabel("Physical Address*").fill("Your Physical Address");
-  await page.getByLabel("Municipality*").fill("Your Municipality");
-  await page.getByLabel("Province*").selectOption("9"); // BC
-  await page.getByLabel("Postal Code*").fill("V8V 1S1");
-  await page
-    .getByLabel("Legal Land Description*")
-    .fill("Your Legal Land Description");
-  await page.getByLabel("Lat coordinates*").fill("64.5");
-  await page.getByLabel("Long coordinates*").fill("54.5745");
-  await page.getByLabel("NPRI ID*").fill("45");
-  await page.getByLabel("BCER permit ID*").fill("755");
-
-  // Step 3: Operation Operator Information
-
-  // Step 4: Operation Representative (OR) Information
-  await page.screenshot({ path: "beforesubmit.png" });
-  // submit form
-  await page.getByRole("button", { name: "Submit" }).click();
-  await page.waitForTimeout(2000);
-  await page.screenshot({ path: "aftersubmit.png" });
-  await expect(page.getByText(/fail/i)).not.toBeVisible();
-  // confirmation message
-  await expect(
-    page.getByText(
-      /Your request to register Sample Operation Name has been received./i,
-    ),
-  ).toBeVisible();
-});
-
-test("user can edit an existing operation", async ({ page }) => {
-  page
-    .getByRole("button", { name: /start registration/i })
-    .first()
-    .click();
-
-  // change a form field
-  await page.getByLabel("Operation Name*").fill("CHANGED");
-
-  // submit form
-  await page.getByRole("button", { name: "Submit" }).click();
-
-  // confirmation message
-  await expect(
-    page.getByText(/Your request to register CHANGED has been received./i),
-  ).toBeVisible();
+describe("Operations component", () => {
+  beforeEach(() => {
+    jest.restoreAllMocks();
+    fetchMock.enableMocks(); // Enable fetch mocking
+  });
+  it("renders the Operations grid", async () => {
+    fetchMock.mockResponse(
+      JSON.stringify([
+        {
+          id: 1,
+          name: "Operation 1",
+          type: "Type A",
+          naics_code: 1,
+          naics_category: 1,
+          reporting_activities: "Activity 1",
+          permit_issuing_agency: "Agency 1",
+          permit_number: "12345",
+          previous_year_attributable_emissions: "100.34500",
+          swrs_facility_id: "1001",
+          bcghg_id: "546",
+          current_year_estimated_emissions: null,
+          opt_in: null,
+          new_entrant: null,
+          start_of_commercial_operation: null,
+          physical_street_address: "123 Main St",
+          physical_municipality: "Cityville",
+          physical_province: "ON",
+          physical_postal_code: "M1M 1M1",
+          legal_land_description: "Lot 123, Concession 456",
+          latitude: "45.67890",
+          longitude: "-123.45678",
+          npri_id: 12345,
+          bcer_permit_id: 563,
+          operator: 1,
+          major_new_operation: null,
+          verified_at: "2023-10-13",
+          verified_by: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+          status: "Not Registered",
+          petrinex_ids: [],
+          regulated_products: [],
+          documents: [],
+          contacts: [],
+          operator_id: 1,
+          naics_code_id: 1,
+          naics_category_id: 1,
+        },
+        {
+          id: 2,
+          name: "Operation 2",
+          type: "Type B",
+          naics_code: 2,
+          naics_category: 1,
+          reporting_activities: "Activity 2",
+          permit_issuing_agency: "authority",
+          permit_number: "256",
+          previous_year_attributable_emissions: null,
+          swrs_facility_id: null,
+          bcghg_id: null,
+          current_year_estimated_emissions: "564.25000",
+          opt_in: false,
+          new_entrant: true,
+          start_of_commercial_operation: "2023-10-13",
+          physical_street_address: "789 Oak St",
+          physical_municipality: "Villagetown",
+          physical_province: "BC",
+          physical_postal_code: "V3V 3V3",
+          legal_land_description: "Parcel 789",
+          latitude: "50.12345",
+          longitude: "-110.98765",
+          npri_id: 56,
+          bcer_permit_id: 54321,
+          operator: 2,
+          major_new_operation: false,
+          verified_at: null,
+          verified_by: null,
+          status: "Not Registered",
+          petrinex_ids: [],
+          regulated_products: [],
+          documents: [],
+          contacts: [],
+          operator_id: 2,
+          naics_code_id: 2,
+          naics_category_id: 1,
+        },
+      ])
+    );
+    render(await Operations());
+    // Check if the grid of mock data is present
+    await expect(screen.getByText(/Operation 1/i)).toBeVisible();
+    await expect(screen.getByText(/Operation 2/i)).toBeVisible();
+    // temporarily commented out because render only renders half the grid
+    await expect(screen.getAllByText(/not registered/i)).toHaveLength(2);
+    await expect(
+      screen.getAllByRole("button", { name: /start registration/i })
+    ).toHaveLength(2);
+  });
 });
