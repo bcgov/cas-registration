@@ -13,7 +13,7 @@ export const userOperatorSchema: RJSFSchema = {
     "email",
     "phone_number",
     "province",
-    "role",
+    "is_senior_officer",
     // "file", temporary handling of many-to-many fields, will be addressed in #138
     "legal_name",
     "business_structure",
@@ -49,7 +49,7 @@ export const userOperatorSchema: RJSFSchema = {
     //   type: "string",
     //   format: "data-url",
     // },
-    role: {
+    is_senior_officer: {
       title: "Are you a senior officer of the operator?",
       type: "boolean",
       default: true,
@@ -119,7 +119,7 @@ export const userOperatorSchema: RJSFSchema = {
     {
       if: {
         properties: {
-          role: {
+          is_senior_officer: {
             const: false,
           },
         },
@@ -139,7 +139,7 @@ export const userOperatorSchema: RJSFSchema = {
           "so_phone_number",
         ],
         properties: {
-          not_senior_officer: {
+          senior_officer_section: {
             //Not an actual field in the db - this is just to make the form look like the wireframes
             title:
               "Please provide information about the Senior Officer (SO) of the Operator:",
@@ -210,7 +210,7 @@ export const userOperatorSchema: RJSFSchema = {
           "pc_physical_municipality",
           "pc_physical_province",
           "pc_physical_postal_code",
-          "parent_company_mailing_address_same_as_physical",
+          "pc_mailing_address_same_as_physical",
         ],
         properties: {
           has_parent_company: {
@@ -260,7 +260,7 @@ export const userOperatorSchema: RJSFSchema = {
             type: "string",
             title: "PA Postal Code",
           },
-          parent_company_mailing_address_same_as_physical: {
+          pc_mailing_address_same_as_physical: {
             title: "Is the mailing address the same as the physical address?",
             type: "boolean",
             default: true,
@@ -314,7 +314,7 @@ export const userOperatorSchema: RJSFSchema = {
     {
       if: {
         properties: {
-          parent_company_mailing_address_same_as_physical: {
+          pc_mailing_address_same_as_physical: {
             const: false,
           },
         },
@@ -371,9 +371,10 @@ export const userOperatorUiSchema = {
     "email",
     "phone_number",
     // "file", temporary handling of many-to-many fields, will be addressed in #138
-    "role",
-    "not_senior_officer",
+    "is_senior_officer",
+    "senior_officer_section",
     // "Proof of authority of operation representative from a SO", temporary handling of many-to-many fields, will be addressed in #138
+    // so = senior officer
     "so_first_name",
     "so_last_name",
     "so_position_title",
@@ -403,6 +404,7 @@ export const userOperatorUiSchema = {
     "mailing_province",
     "mailing_postal_code",
     "has_parent_company",
+    // pc = parent company
     "pc_legal_name",
     "pc_trade_name",
     "pc_cra_business_number",
@@ -414,7 +416,7 @@ export const userOperatorUiSchema = {
     "pc_physical_municipality",
     "pc_physical_province",
     "pc_physical_postal_code",
-    "parent_company_mailing_address_same_as_physical",
+    "pc_mailing_address_same_as_physical",
     "pc_mailing_address_section",
     "pc_mailing_street_address",
     "pc_mailing_municipality",
@@ -427,10 +429,10 @@ export const userOperatorUiSchema = {
   email: {
     "ui:widget": "EmailWidget",
   },
-  role: {
+  is_senior_officer: {
     "ui:widget": "SelectWidget",
   },
-  not_senior_officer: {
+  senior_officer_section: {
     "ui:classNames": "text-bc-gov-primary-brand-color-blue text-start",
   },
   so_email: {
@@ -448,7 +450,7 @@ export const userOperatorUiSchema = {
   mailing_address_same_as_physical: {
     "ui:widget": "SelectWidget",
   },
-  parent_company_mailing_address_same_as_physical: {
+  pc_mailing_address_same_as_physical: {
     "ui:widget": "SelectWidget",
   },
   website: {
