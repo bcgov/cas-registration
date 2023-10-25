@@ -84,7 +84,14 @@ export const operationSchema: RJSFSchema = {
     },
     // temp handling of many to many, will be addressed in #138
     // petrinex_ids: { type: "number", title: "Petrinex IDs" },
-    // regulated_products: { type: "number", title: "Regulated Product Name(s)" },
+    regulated_products: {
+      type: "array",
+      items: {
+        type: "string",
+        enum: ["foo", "bar", "fuzz", "qux"],
+      },
+      title: "Regulated Product Name(s)",
+    },
     // documents: { type: "string", title: "documents" },
     // contacts: { type: "string", title: "contacts" },
   },
@@ -259,6 +266,7 @@ export const operationUiSchema = {
     "type",
     "naics_code_id",
     "naics_category_id",
+    "regulated_products",
     "reporting_activities",
     "permit_issuing_agency",
     "permit_number",
@@ -313,6 +321,9 @@ export const operationUiSchema = {
   physical_province: {
     "ui:widget": "select",
   },
+  regulated_products: {
+    "ui:widget": "MultipleSelectCheckmarks",
+  },
 };
 
 export const operationsGroupSchema = [
@@ -323,6 +334,7 @@ export const operationsGroupSchema = [
       "type",
       "naics_code_id",
       "naics_category_id",
+      "regulated_products",
       "reporting_activities",
       "permit_issuing_agency",
       "permit_number",

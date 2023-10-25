@@ -4,7 +4,8 @@ import {
   operationUiSchema,
   operationsGroupSchema,
 } from "@/app/utils/jsonSchema/operations";
-import Form from "@rjsf/core";
+// import Form from "@rjsf/core";
+import { Form } from "@rjsf/mui";
 import { RJSFSchema } from "@rjsf/utils";
 import validator from "@rjsf/validator-ajv8";
 import Link from "next/link";
@@ -12,6 +13,7 @@ import { useState } from "react";
 import { Alert } from "@mui/material";
 import SubmitButton from "./SubmitButton";
 import { operationSubmitHandler } from "@/app/utils/actions";
+import MultipleSelectCheckmarks from "@/app/components/widgets/MultipleSelectCheckmarks";
 
 export interface OperationsFormData {
   [key: string]: any;
@@ -33,15 +35,15 @@ export default function OperationsForm(props: Props) {
     npri_id: Number(props.formData?.npri_id),
     bcer_permit_id: Number(props.formData?.bcer_permit_id),
     current_year_estimated_emissions: Number(
-      props.formData?.current_year_estimated_emissions,
+      props.formData?.current_year_estimated_emissions
     ),
     previous_year_attributable_emissions: Number(
-      props.formData?.previous_year_attributable_emissions,
+      props.formData?.previous_year_attributable_emissions
     ),
     swrs_facility_id: Number(props.formData?.swrs_facility_id),
     bcghg_id: Number(props.formData?.bcghg_id),
     operator_percent_of_ownership: Number(
-      props.formData?.operator_percent_of_ownership,
+      props.formData?.operator_percent_of_ownership
     ),
     "Did you submit a GHG emissions report for reporting year 2022?": props
       .formData?.previous_year_attributable_emissions
@@ -79,6 +81,7 @@ export default function OperationsForm(props: Props) {
         schema={props.schema}
         validator={validator}
         onSubmit={async (data: { formData?: any }) => {
+          console.log("data.formdata", data.formData);
           const response = await operationSubmitHandler(
             {
               ...data.formData,
@@ -88,7 +91,7 @@ export default function OperationsForm(props: Props) {
               petrinex_ids: [],
               regulated_products: [],
             },
-            props.formData ? "PUT" : "POST",
+            props.formData ? "PUT" : "POST"
           );
           if (response.error) {
             setError(response.error);
@@ -101,6 +104,7 @@ export default function OperationsForm(props: Props) {
         formContext={{
           groupSchema: operationsGroupSchema,
         }}
+        widgets={{ MultipleSelectCheckmarks }}
       >
         {error && <Alert severity="error">{error}</Alert>}
         <SubmitButton />
