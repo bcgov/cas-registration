@@ -32,7 +32,7 @@ function MyComponent() {
 
 **Optional:** It is best practice while using Tailwind and MUI together to add a prefix in the tailwind class and by setting tailwind to important so that class conflicts are reduced between these two libraries.
 
-```
+```js
 // tailwind.config.js
 module.exports = {
   prefix: 'tw-',   👈 Use your desired prefix
@@ -116,3 +116,18 @@ cd client && yarn playwright show-report
 ### Debugging Playwright in CI
 
 You can download the artifacts from the CI job and run the tests locally by following the steps in the [Playwright documentation](https://playwright.dev/docs/ci-intro#downloading-the-html-report).
+
+### Debugging Django using Shell Plus
+
+[Shell Plus](https://django-extensions.readthedocs.io/en/latest/shell_plus.html) is a Django extension that allows you to run a shell with all of your Django models and settings pre-loaded. This is useful for debugging and testing.
+You can run Shell Plus with the following command:
+
+```shell
+> python manage.py shell_plus
+```
+
+### Sonarcloud Integration
+
+Our project benefits from Sonarcloud integration, a static code analysis tool seamlessly integrated with Github. This integration is configured to automatically run on every pull request, identifying and reporting code issues for quick resolution. You can view the results and analysis insights on the [Sonarcloud dashboard](https://sonarcloud.io/project/overview?id=bcgov_cas-registration).
+
+For advanced customization and configuration, we've provided a `.sonarcloud.properties` file. This file allows you to fine-tune Sonarcloud analysis settings to suit your project's unique requirements and code quality standards.
