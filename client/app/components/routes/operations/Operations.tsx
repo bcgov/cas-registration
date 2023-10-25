@@ -3,9 +3,6 @@ import { GridRowsProp } from "@mui/x-data-grid";
 import { fetchAPI } from "@/app/utils/api";
 import DataGrid from "@/app/components/datagrid/DataGrid";
 
-// 📚 runtime mode for dynamic data to allow build w/o api
-export const runtime = "edge";
-
 // 🛠️ Function to fetch operations
 async function getOperations() {
   try {
