@@ -241,6 +241,31 @@ export default function Page() {
               </span>
             </Link>
           </Typography>
+          {/* TEMP Links */}
+          <Typography
+            color="secondary"
+            sx={{
+              marginTop: "40px",
+              fontWeight: 700,
+              fontSize: "24px",
+              lineHeight: "29.05px",
+            }}
+          >
+            Workflows
+          </Typography>
+          <Typography variant="body1" component="div">
+            Logging in as a prime admin:{" "}
+            <Link href="/dashboard/select-operator">
+              <span
+                style={{
+                  fontWeight: "bold",
+                  textDecoration: "none",
+                }}
+              >
+                Select Operator Page
+              </span>
+            </Link>
+          </Typography>
         </Grid>
       </Grid>
     </>
