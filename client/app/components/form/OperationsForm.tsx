@@ -51,6 +51,8 @@ export default function OperationsForm(props: Props) {
       props.formData?.start_of_commercial_operation?.toString(),
     verified_at: props.formData?.verified_at?.toString(),
     verified_by: props.formData?.verified_by?.toString(),
+    // temporary handling of operator ID until bceid auth is completed
+    operator_id: 1,
   };
 
   return operationName ? (
