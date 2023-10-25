@@ -50,6 +50,7 @@ export default function Header() {
           xs: "150px", //mobile & tablet
           md: "80px", //laptop & desktop
         },
+        justifyContent: "center",
       }}
     >
       <Toolbar>

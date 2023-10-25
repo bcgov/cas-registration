@@ -54,11 +54,12 @@ export default async function SelectOperator() {
         Don&apos;t see the operator?{" "}
         <Link
           href="#"
-          className="underline hover:no-underline"
+          className="underline hover:no-underline mr-2"
           style={{ color: BC_GOV_LINKS_COLOR }}
         >
           Add Operator
         </Link>
+        instead
       </p>
     </section>
   );

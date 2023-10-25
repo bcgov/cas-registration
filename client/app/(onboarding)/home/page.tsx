@@ -37,8 +37,7 @@ export default function Page() {
       Using breakpoints for responsive design, grid items will display in two columns on laptop & desktop and a single column on mobile & tablet,
       Using the order prop for stacking order, grid item 1 and 2 will be reverse order on mobile & tablet,
        */}
-      <p className="text-red-500">TEMP: tailwind test of red text</p>
-      <Grid container spacing={2} m={3}>
+      <Grid container spacing={2} p={3}>
         <Grid item xs={12} md={6} order={{ xs: 2, md: 1 }}>
           <Typography
             color="secondary"
@@ -195,7 +194,7 @@ export default function Page() {
               lineHeight: "36px",
             }}
           >
-            Please see the
+            Please see the{" "}
             <Link href="/completeguidance ">
               complete guidance for registration
             </Link>
@@ -229,7 +228,7 @@ export default function Page() {
             ))}
           </List>
           <Typography variant="body1" component="div">
-            If you have any questions, please us at <br />
+            If you have any questions, please email us at <br />
             <Link href="mailto:GHGRegulator@gov.bc.ca">
               <span
                 style={{
