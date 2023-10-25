@@ -71,7 +71,7 @@ test("user can create a new operation", async ({ page }) => {
 
   // submit form
   await page.getByRole("button", { name: "Submit" }).click();
-
+  await page.waitForTimeout(2000);
   // confirmation message
   await expect(
     page.getByText(
