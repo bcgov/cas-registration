@@ -121,6 +121,7 @@ class UserAndContactCommonInfo(models.Model):
     role = models.CharField(
         max_length=1000,
         choices=Roles.choices,
+        blank=True,
         db_comment="A user or contact's role with an operation (e.g. senior operator). Certain roles need authority from other roles to do things.",
     )
 
@@ -173,10 +174,9 @@ class Operator(models.Model):
     """Operator model"""
 
     legal_name = models.CharField(max_length=1000, db_comment="The legal name of an operator")
-    trade_name = models.CharField(max_length=1000, db_comment="The trade name of an operator")
+    trade_name = models.CharField(max_length=1000, blank=True, db_comment="The trade name of an operator")
     cra_business_number = models.IntegerField(db_comment="The CRA business number of an operator")
     bc_corporate_registry_number = models.IntegerField(db_comment="The BC corporate registry number of an operator")
-    duns_number = models.IntegerField(db_comment="The DUNS number of an operator")
     business_structure = models.CharField(max_length=1000, db_comment="The legal name of an operator")
     physical_street_address = models.CharField(
         max_length=1000,
@@ -206,7 +206,6 @@ class Operator(models.Model):
         blank=True,
         null=True,
     )
-    bceid = models.IntegerField(db_comment="The BCEID identifier of an operator")
 
     documents = models.ManyToManyField(
         Document,
@@ -215,6 +214,7 @@ class Operator(models.Model):
     )
     contacts = models.ManyToManyField(
         Contact,
+        blank=True,
         related_name="operator_contacts",
     )
 
@@ -262,17 +262,18 @@ class UserOperator(models.Model):
         REPORTER = "reporter", "Reporter"
 
     class Statuses(models.TextChoices):
+        DRAFT = "draft", "Draft"
         PENDING = "pending", "Pending"
         APPROVED = "approved", "Approved"
         REJECTED = "rejected", "Rejected"
 
-    users = models.ForeignKey(
+    user = models.ForeignKey(
         User,
         on_delete=models.DO_NOTHING,
         related_name="user_operators",
         db_comment="A user associated with an operator",
     )
-    operators = models.ForeignKey(
+    operator = models.ForeignKey(
         Operator,
         on_delete=models.DO_NOTHING,
         db_comment="An operator associated with a user",
@@ -286,7 +287,7 @@ class UserOperator(models.Model):
     status = models.CharField(
         max_length=1000,
         choices=Statuses.choices,
-        default=Statuses.PENDING,
+        default=Statuses.DRAFT,
         db_comment="The status of an operator in the app (e.g. pending review)",
     )
     verified_at = models.DateTimeField(
@@ -307,8 +308,8 @@ class UserOperator(models.Model):
         db_table_comment = "Through table to connect Users and Operators and track access requests"
         db_table = 'erc"."user_operator'
         indexes = [
-            models.Index(fields=["users"], name="user_operator_user_idx"),
-            models.Index(fields=["operators"], name="user_operator_operator_idx"),
+            models.Index(fields=["user"], name="user_operator_user_idx"),
+            models.Index(fields=["operator"], name="user_operator_operator_idx"),
         ]
 
 

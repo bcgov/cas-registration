@@ -19,6 +19,14 @@ function translateNumericPart(segment: string): string {
   return segment;
 }
 
+// 🛠️ Function to un-slugify and capitalize a string
+function unslugifyAndCapitalize(segment: string): string {
+  return segment
+    .split("-")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}
+
 /* 🌐
     The accessibility of this component relies on:
     A nav element labeled with aria-label identifies the structure as a breadcrumb trail and makes it a navigation landmark
@@ -73,6 +81,10 @@ export default function Bread({
           {pathNames.map((link, index) => {
             const isLastItem = index === pathNames.length - 1;
 
+            const content = capitalizeLinks
+              ? translateNumericPart(unslugifyAndCapitalize(link))
+              : translateNumericPart(link);
+
             if (!isLastItem) {
               //  🔗 Not the last item, create a link
               return (
@@ -81,11 +93,7 @@ export default function Bread({
                     href={`/${pathNames.slice(0, index + 1).join("/")}`}
                     style={aStyle}
                   >
-                    {capitalizeLinks
-                      ? translateNumericPart(
-                          link[0].toUpperCase() + link.slice(1),
-                        )
-                      : translateNumericPart(link)}
+                    {content}
                   </Link>
                   {separator}
                 </li>
@@ -94,11 +102,7 @@ export default function Bread({
               // Last item, no link, bold styling
               return (
                 <li key={link} style={{ fontWeight: "bold", ...liStyle }}>
-                  {capitalizeLinks
-                    ? translateNumericPart(
-                        link[0].toUpperCase() + link.slice(1),
-                      )
-                    : translateNumericPart(link)}
+                  {content}
                 </li>
               );
             }

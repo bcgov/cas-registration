@@ -1,20 +1,27 @@
 "use client";
 
-import * as React from "react";
 import { Button } from "@mui/material";
 import { experimental_useFormStatus as useFormStatus } from "react-dom";
 
-const SubmitButton: React.FunctionComponent = () => {
+interface SubmitButtonProps {
+  label: string;
+  classNames?: string;
+}
+
+const SubmitButton: React.FunctionComponent<SubmitButtonProps> = ({
+  label,
+  classNames,
+}) => {
   const { pending } = useFormStatus();
   return (
-    <div>
+    <div className={classNames}>
       <Button
         variant="contained"
         type="submit"
         aria-disabled={pending}
         sx={{ marginBottom: 10 }}
       >
-        Submit
+        {label}
       </Button>
     </div>
   );

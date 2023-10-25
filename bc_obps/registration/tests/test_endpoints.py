@@ -1,12 +1,10 @@
 import pytest
 import json
-from registration.api import OperationIn, OperationSchema
 from model_bakery import baker
 from django.test import Client
-from registration.models import NaicsCode, NaicsCategory, Operation, Operator
-from django.test import TestCase
 from localflavor.ca.models import CAPostalCodeField
 from registration.models import NaicsCode, NaicsCategory, Document, Contact, Operation, Operator
+from registration.schema import OperationIn
 
 pytestmark = pytest.mark.django_db
 
@@ -73,7 +71,7 @@ class TestOperationsEndpoint:
         contact = baker.make(Contact, postal_code='V1V 1V1')
         operator = baker.make(Operator)
         mock_operation = OperationIn(
-            name='Springfield Nucular Power Plant',
+            name='Springfield Nuclear Power Plant',
             type='Type 1',
             naics_code_id=naics_code.id,
             naics_category_id=naics_category.id,
@@ -94,7 +92,7 @@ class TestOperationsEndpoint:
 
         post_response = client.post(self.endpoint, content_type='application/json', data=mock_operation.json())
         assert post_response.status_code == 200
-        assert post_response.json() == {"name": "Springfield Nucular Power Plant"}
+        assert post_response.json() == {"name": "Springfield Nuclear Power Plant"}
         # check that the default status of pending was applied
         get_response = client.get(self.endpoint).json()[0]
         assert 'status' in get_response and get_response['status'] == 'pending'
@@ -117,7 +115,7 @@ class TestOperationEndpoint:
         operator = baker.make(Operator)
         Operation.objects.create(
             id=1,
-            name='Springfield Nucular Power Plant',
+            name='Springfield Nuclear Power Plant',
             type='Type 1',
             naics_code_id=naics_code.id,
             naics_category_id=naics_category.id,
@@ -142,7 +140,7 @@ class TestOperationEndpoint:
         operator = baker.make(Operator)
         Operation.objects.create(
             id=1,
-            name='Springfield Nucular Power Plant',
+            name='Springfield Nuclear Power Plant',
             type='Type 1',
             naics_code_id=naics_code.id,
             naics_category_id=naics_category.id,
