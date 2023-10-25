@@ -35,7 +35,7 @@ export default async function ConfirmSelectedOperator({
       <p>Please contact the operator directly if not sure.</p>
       <ConfirmSelectedOperatorForm operator_id={operator.id} />
       <Link
-        href="/select-operator"
+        href="/dashboard/select-operator"
         className="underline hover:no-underline"
         style={{ color: BC_GOV_LINKS_COLOR }}
       >
