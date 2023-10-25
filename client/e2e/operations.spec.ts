@@ -6,7 +6,7 @@ test.describe.configure({ mode: "serial" });
 test.beforeEach(async ({ page }, testInfo) => {
   // eslint-disable-next-line no-console
   console.log(`Running ${testInfo.title}`);
-  // reset db
+  // reset db and confirm there are no errors setting up the test data
   await page.goto("http://localhost:8000/api/registration/test-setup");
   await expect(page.getByText(/Test setup failed/i)).not.toBeVisible();
   await expect(
@@ -68,10 +68,12 @@ test("user can create a new operation", async ({ page }) => {
   // Step 3: Operation Operator Information
 
   // Step 4: Operation Representative (OR) Information
-
+  await page.screenshot({ path: "beforesubmit.png" });
   // submit form
   await page.getByRole("button", { name: "Submit" }).click();
   await page.waitForTimeout(2000);
+  await page.screenshot({ path: "aftersubmit.png" });
+  await expect(page.getByText(/fail/i)).not.toBeVisible();
   // confirmation message
   await expect(
     page.getByText(
