@@ -25,12 +25,9 @@ export default function UserOperatorForm({
   const { push } = useRouter();
   const [errorList, setErrorList] = useState([] as any[]);
 
-  const handleErrors = (errors: any) => setErrorList(errors);
-
   return (
     <Form
       schema={schema}
-      onError={handleErrors}
       validator={validator}
       showErrorList={false}
       formData={formData}
