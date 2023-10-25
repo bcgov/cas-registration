@@ -1,19 +1,58 @@
 import { RJSFSchema } from "@rjsf/utils";
 
 const provinceOptions = [
-  "NL",
-  "PE",
-  "NS",
-  "NB",
-  "QC",
-  "ON",
-  "MB",
-  "SK",
-  "AB",
-  "BC",
-  "YT",
-  "NT",
-  "NU",
+  {
+    const: "AB",
+    title: "Alberta",
+  },
+  {
+    const: "BC",
+    title: "British Columbia",
+  },
+  {
+    const: "MB",
+    title: "Manitoba",
+  },
+  {
+    const: "NB",
+    title: "New Brunswick",
+  },
+  {
+    const: "NL",
+    title: "Newfoundland and Labrador",
+  },
+  {
+    const: "NT",
+    title: "Northwest Territories",
+  },
+  {
+    const: "NS",
+    title: "Nova Scotia",
+  },
+  {
+    const: "NU",
+    title: "Nunavut",
+  },
+  {
+    const: "ON",
+    title: "Ontario",
+  },
+  {
+    const: "PE",
+    title: "Prince Edward Island",
+  },
+  {
+    const: "QC",
+    title: "Quebec",
+  },
+  {
+    const: "SK",
+    title: "Saskatchewan",
+  },
+  {
+    const: "YT",
+    title: "Yukon",
+  },
 ];
 
 export const userOperatorSchema: RJSFSchema = {
@@ -53,7 +92,7 @@ export const userOperatorSchema: RJSFSchema = {
     province: {
       type: "string",
       title: "Province",
-      enum: provinceOptions,
+      oneOf: provinceOptions,
     },
     postal_code: { type: "string", title: "Postal Code" },
     email: { type: "string", title: "Email Address" },
@@ -113,7 +152,7 @@ export const userOperatorSchema: RJSFSchema = {
     physical_province: {
       type: "string",
       title: "Province",
-      enum: provinceOptions,
+      anyOf: provinceOptions,
     },
     physical_postal_code: {
       type: "string",
@@ -184,7 +223,7 @@ export const userOperatorSchema: RJSFSchema = {
           so_province: {
             type: "string",
             title: "Province",
-            enum: provinceOptions,
+            anyOf: provinceOptions,
           },
           so_postal_code: {
             type: "string",
@@ -269,7 +308,7 @@ export const userOperatorSchema: RJSFSchema = {
           pc_physical_province: {
             type: "string",
             title: "PA Province",
-            enum: provinceOptions,
+            anyOf: provinceOptions,
           },
           pc_physical_postal_code: {
             type: "string",
@@ -317,7 +356,7 @@ export const userOperatorSchema: RJSFSchema = {
           mailing_province: {
             type: "string",
             title: "Province",
-            enum: provinceOptions,
+            anyOf: provinceOptions,
           },
           mailing_postal_code: {
             type: "string",
@@ -361,7 +400,7 @@ export const userOperatorSchema: RJSFSchema = {
           pc_mailing_province: {
             type: "string",
             title: "Province",
-            enum: provinceOptions,
+            anyOf: provinceOptions,
           },
           pc_mailing_postal_code: {
             type: "string",
