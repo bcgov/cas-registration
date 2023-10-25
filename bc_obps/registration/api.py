@@ -1,3 +1,4 @@
+import json
 from django.contrib import admin
 from django.urls import path
 from datetime import date
@@ -76,7 +77,6 @@ class OperationIn(Schema):
     documents: List[int]
     contacts: List[int]
 
-
 class OperationOut(OperationSchema):
     # handling aliases and optional fields
     operator_id: int = Field(..., alias="operator.id")
@@ -141,6 +141,9 @@ def create_operation(request, payload: OperationIn):
 
 
 @router.put("/operations/{operation_id}")
+# NOTE: this endpoint automatically sets the operation's status to 'Pending', therefore
+# it should be used when IOs are updating their own operational info, but cannot
+# be used by program administrators reviewing a carbon tax exemption request
 def update_operation(request, operation_id: int, payload: OperationIn):
     operation = get_object_or_404(Operation, id=operation_id)
     if "operator" in payload.dict():
@@ -175,3 +178,13 @@ def update_operation(request, operation_id: int, payload: OperationIn):
     operation.status = "Pending"
     operation.save()
     return {"name": operation.name}
+
+@router.put("/operations/{operation_id}/updateStatus")
+def approve_operation(request, operation_id: int):
+    # need to convert request.body (a bytes object) to a string, and convert the string to a JSON object
+    payload = json.loads(request.body.decode())
+    status = payload.get('status')
+    operation = get_object_or_404(Operation, id=operation_id)
+    operation.status = status
+    operation.save()
+    return json.dumps(operation)

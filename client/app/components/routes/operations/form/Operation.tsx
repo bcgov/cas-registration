@@ -4,6 +4,9 @@ import OperationsForm, {
 import { operationSchema } from "@/app/utils/jsonSchema/operations";
 import { RJSFSchema } from "@rjsf/utils";
 import { fetchAPI } from "@/app/utils/api";
+import Review from "./Review";
+// 📚 runtime mode for dynamic data to allow build w/o api
+export const runtime = "edge";
 
 // 🛠️ Function to fetch NAICS codes
 async function getNaicsCodes() {
@@ -68,6 +71,7 @@ export default async function Operation({ numRow }: { numRow?: number }) {
   // Render the OperationsForm component with schema and formData?
   return (
     <>
+      <Review operation={operation} />
       <OperationsForm
         schema={createOperationSchema(operationSchema, codes, categories)}
         formData={operation as OperationsFormData}

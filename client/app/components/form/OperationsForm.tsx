@@ -59,7 +59,7 @@ export default function OperationsForm(props: Props) {
       <p>We will review your request as soon as possible!</p>
       <p>Once approved, you will receive a confirmation email.</p>
       <p>
-        You can then log back and download the declartion form for carbon tax
+        You can then log back and download the declaration form for carbon tax
         exemption for the operation.
       </p>
       <p>
