@@ -68,10 +68,11 @@ test("user can create a new operation", async ({ page }) => {
   // Step 3: Operation Operator Information
 
   // Step 4: Operation Representative (OR) Information
-
+  await page.screenshot({ path: "beforesubmit.png" });
   // submit form
   await page.getByRole("button", { name: "Submit" }).click();
   await page.waitForTimeout(2000);
+  await page.screenshot({ path: "aftersubmit.png" });
   await expect(page.getByText(/fail/i)).not.toBeVisible();
   // confirmation message
   await expect(
