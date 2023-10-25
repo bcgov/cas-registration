@@ -5,12 +5,32 @@ from typing import List
 from ninja import Router
 from django.shortcuts import get_object_or_404
 from .models import Operation, Operator, NaicsCode, NaicsCategory, User
+from ninja.orm import create_schema
 from ninja import Field, Schema, ModelSchema
 from decimal import *
 from uuid import *
-
+from django.core.management import call_command
+from django.http import JsonResponse
+from django.conf import settings
+from django.http import HttpResponse
+import os
 
 router = Router()
+
+# testing endpoint
+@router.get("/test-setup")
+def setup(request):
+    print(settings.ENVIRONMENT)
+    print(type(settings.ENVIRONMENT))
+    if settings.ENVIRONMENT == "develop":
+        try:
+            call_command('truncate_all_tables')
+            call_command('load_fixtures')
+            return HttpResponse("Test setup complete.", status=200)
+        except Exception as e:
+            return HttpResponse("Test setup failed.", status=500)
+    else:
+        return HttpResponse("This endpoint only exists in the development environment.", status=404)
 
 
 # Naics code schemas and endpoints
@@ -57,24 +77,12 @@ class OperationSchema(ModelSchema):
         model_fields = "__all__"
 
 
-class OperationIn(Schema):
-    name: str
-    type: str
-    operator_id: int
-    naics_code_id: int
-    naics_category_id: int
-    reporting_activities: str
-    physical_street_address: str
-    physical_municipality: str
-    physical_province: str
-    physical_postal_code: str
-    legal_land_description: str
-    latitude: float
-    longitude: float
-    petrinex_ids: List[str]
-    regulated_products: List[int]
-    documents: List[int]
-    contacts: List[int]
+class OperationIn(OperationSchema):
+    # temporarily setting a default operator since we don't have login yet
+    operator: int = 1
+    # Converting types
+    start_of_commercial_operation: date = None
+    verified_at: date = None
 
 
 class OperationOut(OperationSchema):
@@ -136,6 +144,8 @@ def create_operation(request, payload: OperationIn):
         del payload.petrinex_ids
     if "regulated_products" in payload.dict():
         del payload.regulated_products
+    # set the operation status to 'pending' on update
+    payload.status = "Pending"
     operation = Operation.objects.create(**payload.dict())
     return {"name": operation.name}
 
