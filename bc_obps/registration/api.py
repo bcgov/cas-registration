@@ -214,8 +214,8 @@ def create_user_operator_request(request, user_operator_id: int, payload: UserOp
         operator: Operator = user_operator.operator
         payload_dict = payload.dict()
 
-        is_senior_officer: bool = payload_dict.get("role")
-        operator_has_parent_company: bool = payload_dict.get("operator_has_parent_company")
+        ### USER Part
+        is_senior_officer: bool = payload_dict.get("is_senior_officer")
 
         # fields to update on the User model
         user_related_fields = [
@@ -235,6 +235,7 @@ def create_user_operator_request(request, user_operator_id: int, payload: UserOp
         if is_senior_officer:
             updated_user_instance.role = User.Roles.SENIOR_OFFICER
         else:
+            # Create a new Contact instance for the Senior Officer
             contact_fields_mapping = {
                 "so_first_name": "first_name",
                 "so_last_name": "last_name",
@@ -251,9 +252,10 @@ def create_user_operator_request(request, user_operator_id: int, payload: UserOp
                 contact_instance, contact_fields_mapping, payload_dict
             )
 
-        mailing_address_same_as_physical: bool = payload_dict.get("mailing_address_same_as_physical")
+        ### OPERATOR Part
+        operator_has_parent_company: bool = payload_dict.get("operator_has_parent_company")
 
-        if mailing_address_same_as_physical:
+        if payload_dict.get("mailing_address_same_as_physical"):
             payload_dict["mailing_street_address"] = payload_dict["physical_street_address"]
             payload_dict["mailing_municipality"] = payload_dict["physical_municipality"]
             payload_dict["mailing_province"] = payload_dict["physical_province"]
@@ -277,6 +279,7 @@ def create_user_operator_request(request, user_operator_id: int, payload: UserOp
         updated_operator_instance: Operator = update_model_instance(operator, operator_related_fields, payload_dict)
 
         if operator_has_parent_company:
+            # Create a new Operator instance for the Parent Company
             parent_operator_fields_mapping = {
                 "pc_legal_name": "legal_name",
                 "pc_trade_name": "trade_name",
@@ -295,22 +298,18 @@ def create_user_operator_request(request, user_operator_id: int, payload: UserOp
             }
 
             # use physical address as mailing address if pc_mailing_address_same_as_physical is true
-            pc_mailing_address_same_as_physical: bool = payload_dict.get("pc_mailing_address_same_as_physical")
-            if pc_mailing_address_same_as_physical:
-                parent_operator_fields_mapping.update(
-                    {
-                        "pc_mailing_street_address": "physical_street_address",
-                        "pc_mailing_municipality": "physical_municipality",
-                        "pc_mailing_province": "physical_province",
-                        "pc_mailing_postal_code": "physical_postal_code",
-                    }
-                )
+            if payload_dict.get("pc_mailing_address_same_as_physical"):
+                payload_dict["pc_mailing_street_address"] = payload_dict["pc_physical_street_address"]
+                payload_dict["pc_mailing_municipality"] = payload_dict["pc_physical_municipality"]
+                payload_dict["pc_mailing_province"] = payload_dict["pc_physical_province"]
+                payload_dict["pc_mailing_postal_code"] = payload_dict["pc_physical_postal_code"]
 
             parent_operator_instance: Operator = Operator()
             parent_operator_instance: Operator = update_model_instance(
                 parent_operator_instance, parent_operator_fields_mapping, payload_dict
             )
 
+            # Create a new ParentChildOperator instance
             percentage_owned_by_parent_company: Optional[int] = payload_dict.get('percentage_owned_by_parent_company')
             if percentage_owned_by_parent_company:
                 parent_child_operator_instance = ParentChildOperator(
