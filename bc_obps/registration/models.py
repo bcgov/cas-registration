@@ -177,7 +177,6 @@ class Operator(models.Model):
     trade_name = models.CharField(max_length=1000, blank=True, db_comment="The trade name of an operator")
     cra_business_number = models.IntegerField(db_comment="The CRA business number of an operator")
     bc_corporate_registry_number = models.IntegerField(db_comment="The BC corporate registry number of an operator")
-    duns_number = models.IntegerField(blank=True, null=True, db_comment="The DUNS number of an operator")
     business_structure = models.CharField(max_length=1000, db_comment="The legal name of an operator")
     physical_street_address = models.CharField(
         max_length=1000,
@@ -206,15 +205,6 @@ class Operator(models.Model):
         db_comment="The website address of an operator",
         blank=True,
         null=True,
-    )
-    bceid = models.IntegerField(blank=True, null=True, db_comment="The BCEID identifier of an operator")
-    compliance_entity = models.ForeignKey(
-        "self",
-        on_delete=models.DO_NOTHING,
-        blank=True,
-        null=True,
-        related_name="operator_compliance_entity",
-        db_comment="The entity that will be paying compliance charges (can be the operator itself or another operator, parent company, partner company, etc.)",
     )
 
     documents = models.ManyToManyField(
