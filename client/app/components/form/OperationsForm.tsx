@@ -24,17 +24,10 @@ interface Props {
 export default function OperationsForm(props: Props) {
   const [operationName, setOperationName] = useState("");
   const [error, setError] = useState(undefined);
-
   // need to convert some of the information received from django into types RJSF can read
   const existingFormData = {
     ...props.formData,
-    latitude: Number(props.formData?.latitude),
-    longitude: Number(props.formData?.longitude),
-    npri_id: Number(props.formData?.npri_id),
-    bcer_permit_id: Number(props.formData?.bcer_permit_id),
-    current_year_estimated_emissions: Number(
-      props.formData?.current_year_estimated_emissions,
-    ),
+
     previous_year_attributable_emissions: Number(
       props.formData?.previous_year_attributable_emissions,
     ),
@@ -47,12 +40,11 @@ export default function OperationsForm(props: Props) {
       .formData?.previous_year_attributable_emissions
       ? true
       : false,
-    start_of_commercial_operation:
-      props.formData?.start_of_commercial_operation?.toString(),
     verified_at: props.formData?.verified_at?.toString(),
     verified_by: props.formData?.verified_by?.toString(),
-    // temporary handling of operator ID until bceid auth is completed
-    operator_id: 1,
+    //  temporary handling of required many-to-many fields, will be addressed in #138
+    regulated_products: "",
+    reporting_activities: "",
   };
 
   return operationName ? (
@@ -87,8 +79,9 @@ export default function OperationsForm(props: Props) {
               //  temporary handling of required many-to-many fields, will be addressed in #138
               documents: [],
               contacts: [],
-              petrinex_ids: [],
               regulated_products: [],
+              reporting_activities: [],
+              operator_id: 1,
             },
             props.formData ? "PUT" : "POST",
           );
