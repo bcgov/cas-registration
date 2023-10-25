@@ -49,7 +49,7 @@ export default function Page() {
 
       fetchData();
     }
-  }, []); // Empty dependencies array
+  }, [role]); // dependencies array
 
   return (
     <div>
