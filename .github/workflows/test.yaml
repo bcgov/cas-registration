@@ -213,7 +213,7 @@ jobs:
         run: yarn playwright install --with-deps
         working-directory: ./client
       - name: Run Playwright tests
-        run: DEBUG=pw:browser npx playwright test --workers=1 client/e2e/*
+        run: DEBUG=pw:browser npx playwright test
         working-directory: ./client
       - uses: actions/upload-artifact@v3
         if: always()
