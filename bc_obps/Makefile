@@ -67,6 +67,11 @@ drop_db:
 		grep -q 0 || \
 		$(PSQL) -d postgres -c "DROP DATABASE $(DB_NAME)";
 
+.PHONY: drop_schema
+drop_schema: ## Drop the schema
+drop_schema:
+	@$(PSQL) -d $(DB_NAME) -c "DROP SCHEMA IF EXISTS $(SCHEMA_NAME)";
+
 .PHONY: run
 run: ## run the server
 run:

@@ -103,7 +103,7 @@ export default function OperationsForm(props: Props) {
         }}
       >
         {error && <Alert severity="error">{error}</Alert>}
-        <SubmitButton />
+        <SubmitButton label="submit" />
       </Form>
     </>
   );
