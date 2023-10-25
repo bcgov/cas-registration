@@ -51,7 +51,7 @@ export default function UserOperatorForm({
         );
       }}
       uiSchema={userOperatorUiSchema}
-      className="flex flex-col gap-2 w-3/4 mx-auto"
+      className="flex flex-col w-3/4 mx-auto"
     >
       {errorList.length > 0 &&
         errorList.map((e: any) => (
@@ -61,7 +61,11 @@ export default function UserOperatorForm({
         ))}
       <div className="flex justify-end gap-3">
         <SubmitButton label="Submit" />
-        <Button variant="outlined" onClick={() => push("/select-operator")}>
+        <Button
+          variant="outlined"
+          onClick={() => push("/select-operator")}
+          sx={{ marginBottom: 10 }}
+        >
           Cancel
         </Button>
       </div>
