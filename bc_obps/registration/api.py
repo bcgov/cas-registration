@@ -1,8 +1,10 @@
 import json
 from django.contrib import admin
 from django.urls import path
-from datetime import datetime
 from typing import List, Optional
+from datetime import date, datetime
+from ninja import Router
+from django.core import serializers
 from django.shortcuts import get_object_or_404
 from django.core import serializers
 from ninja import Router
@@ -372,8 +374,18 @@ def create_user_operator_request(request, user_operator_id: int, payload: UserOp
 def approve_operation(request, operation_id: int):
     # need to convert request.body (a bytes object) to a string, and convert the string to a JSON object
     payload = json.loads(request.body.decode())
-    status = payload.get('status')
+    status = getattr(Operation.Statuses, payload.get('status').upper())
     operation = get_object_or_404(Operation, id=operation_id)
+    # TODO later: add data to verified_by once user authentication in place
     operation.status = status
+    if operation.status == Operation.Statuses.APPROVED:
+        operation.verified_at = datetime.now()
+    data = serializers.serialize(
+        'json',
+        [
+            operation,
+        ],
+    )
+    operation_json_data = json.dumps(data, indent=4)
     operation.save()
-    return json.dumps(operation)
+    return operation_json_data
