@@ -93,11 +93,11 @@ export const createSubmitHandler = async (
  */
 export const operationStatusUpdateHandler = async (formData: OperationsFormData) => {
   try {
-    console.log(JSON.stringify(formData))
-    const response = await fetch(process.env.API_URL + `registration/operations/${formData.id}/updateStatus`, {
-      method: "PUT", body: JSON.stringify({status: formData.status})
+    const response = await fetch(process.env.API_URL + `registration/operations/${formData.id}/update-status`, {
+      method: "PUT",
+      headers: {'content-type': 'application/json;charset=UTF-8'},
+      body: JSON.stringify({status: formData.status})
     })
-    console.log(response.json())
     if (!response.ok) {
       throw new Error("Failed to update status of application!");
 
