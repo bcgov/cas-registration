@@ -2,7 +2,6 @@ import Link from "next/link";
 
 // 🏷 import {named} can be significantly slower than import default
 import Box from "@mui/material/Box";
-import Stack from "@mui/material/Stack/Stack";
 import footerLinks from "@/app/data/layout/footer.json";
 const links = footerLinks.map((link, index) => (
   <Link
