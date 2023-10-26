@@ -91,22 +91,43 @@ The easiest way to run these tests locally is by using commands from the Makefil
 
 #### Run Playwright Specs
 
-First, ensure the client app (`cd client && yarn dev`) and server (`cd bc_obps && make run`) are running.
-Alternatively, you can uncomment the `webServer` array in `playwright.config.ts` to run the tests without running client and server separately.
+1.0 Ensure the server is running:
 
-For faster performance, build and run the app:
+Start server from new terminal command:
 
 ```bash
-yarn build && yarn start
+cd bc_obps && make run
 ```
 
-Then run the tests:
+2.0 Ensure the client app is running:
+
+Start client app from new terminal command:
+
+```bash
+cd client && yarn dev
+```
+
+2.1 Or, for faster performance:
+
+Build and start client app from new terminal command:
+
+```bash
+cd client && yarn build && yarn start
+```
+
+Alternatively, you can uncomment the `webServer` array in `playwright.config.ts` to run the tests without running client and server separately.
+
+3.0 Run the tests:
+
+Run tests from new terminal command:
 
 ```bash
 cd client && yarn e2e
 ```
 
-To open last HTML report run:
+4.0 To open last HTML report run:
+
+Open report from new terminal command:
 
 ```bash
 cd client && yarn playwright show-report
