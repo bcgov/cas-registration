@@ -94,6 +94,8 @@ def create_operation(request, payload: OperationIn):
         del payload.petrinex_ids
     if "regulated_products" in payload.dict():
         del payload.regulated_products
+    if "reporting_activities" in payload.dict():
+        del payload.reporting_activities
     operation = Operation.objects.create(**payload.dict())
     return {"name": operation.name}
 
@@ -125,7 +127,7 @@ def update_operation(request, operation_id: int, payload: OperationIn):
             # temporary handling of many-to-many fields, will be addressed in #138
             and attr != "documents"
             and attr != "contacts"
-            and attr != "petrinex_ids"
+            and attr != "reporting_activities"
             and attr != "regulated_products"
         ):
             setattr(operation, attr, value)
