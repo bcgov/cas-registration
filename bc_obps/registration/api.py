@@ -33,8 +33,6 @@ router = Router()
 # testing endpoint
 @router.get("/test-setup")
 def setup(request):
-    print(settings.ENVIRONMENT)
-    print(type(settings.ENVIRONMENT))
     if settings.ENVIRONMENT == "develop":
         try:
             call_command('truncate_all_tables')
