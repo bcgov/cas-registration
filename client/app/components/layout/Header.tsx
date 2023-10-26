@@ -22,7 +22,7 @@ export default function Header() {
       const isDashboardPage = path.includes("/dashboard");
       setIsAuthenticated(isDashboardPage);
     }
-  }, []); // Empty dependencies array
+  }, [path]); // dependencies array
 
   // 🖥️📲  using MUI theme breakpoints for responsive design https://mui.com/material-ui/customization/breakpoints/
   // 🧩 For login buttons using theme breakpoints to hide for mobile & tablet
