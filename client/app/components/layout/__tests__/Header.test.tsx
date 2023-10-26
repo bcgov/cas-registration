@@ -1,71 +1,111 @@
-import { render, screen } from "@testing-library/react";
-import Header from "../Header";
-import React from "react";
+"use client";
 
-// Mock the usePathname hook
-jest.mock("next/navigation", () => ({
-  usePathname: () => "/home",
-}));
+import { usePathname } from "next/navigation";
+import Login from "@/app/components/navigation/Login";
+import Profile from "@/app/components/navigation/Profile";
 
-describe("Header component", () => {
-  describe("Render", () => {
-    test("should render the header element", () => {
-      // 🧩  Arrange: Render the Header component
-      render(<Header />);
+// 🏷 import {named} can be significantly slower than import default
+import AppBar from "@mui/material/AppBar";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
+import { styled } from "@mui/material/styles";
+import { useEffect, useState } from "react";
 
-      // 🚀 Act: Use the screen object find the header element
-      const header = screen.getByRole("banner");
+export default function Header() {
+  //🧪 ************ Mock authentication state ***********************
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  // `usePathname` hook from next/navigation to access the current route information
+  const path = usePathname();
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const isDashboardPage = path.includes("/dashboard");
+      setIsAuthenticated(isDashboardPage);
+    }
+  }, [path]); // dependencies array
 
-      // 🔍 Assert: Check that the header element is present in the rendered component
-      expect(header).toBeInTheDocument();
-    });
+  // 🖥️📲  using MUI theme breakpoints for responsive design https://mui.com/material-ui/customization/breakpoints/
+  // 🧩 For login buttons using theme breakpoints to hide for mobile & tablet
+  const ButtonsRight = styled(Box)(({ theme }) => ({
+    display: "none",
+    [theme.breakpoints.up("md")]: {
+      display: "flex",
+    },
+  }));
+  // 🧩 For login buttons using theme breakpoints to hide for laptop & desktop
+  const ButtonsBottom = styled(Toolbar)(({ theme }) => ({
+    display: "flex",
+    justifyContent: "center",
+    [theme.breakpoints.up("md")]: {
+      display: "none",
+    },
+  }));
 
-    test("should render the img element", () => {
-      // 🧩  Arrange: Render the Header component
-      render(<Header />);
+  return (
+    <AppBar
+      position="static"
+      color="primary"
+      sx={{
+        height: {
+          xs: "150px", //mobile & tablet
+          md: "80px", //laptop & desktop
+        },
+        justifyContent: "center",
+      }}
+    >
+      <Toolbar>
+        <Box
+          component="img"
+          sx={{
+            height: {
+              xs: "36.46px", //mobile & tablet
+              md: "42.67px", //laptop & desktop
+            },
+            width: {
+              xs: "170px", //mobile & tablet
+              md: "200px", //laptop & desktop
+            },
+          }}
+          alt="Logo for Province of British Columbia CleanBC"
+          src="/img/BCID_CleanBC_rev_tagline_colour.svg"
+          aria-label="CleanBC Logo"
+        />
+        <Typography
+          component="div"
+          sx={{
+            flexGrow: 1,
+            fontWeight: 700,
+            fontSize: {
+              xs: "20px", //mobile & tablet
+              md: "28px", //laptop & desktop
+            },
+            lineHeight: {
+              xs: "24.2px", //mobile & tablet
+              md: "33.89px", //laptop & desktop
+            },
+            marginLeft: "24px",
+          }}
+        >
+          BC OBPS
+        </Typography>
 
-      // 🚀 Act: Use the screen object to find the img element by its alt text
-      const image = screen.getByAltText(
-        "Logo for Province of British Columbia CleanBC",
-      );
-
-      // 🔍 Assert: Check that the image element is present in the rendered component
-      expect(image).toBeInTheDocument();
-    });
-  });
-  describe("Behavior", () => {
-    test("should render the Login component links when not authenticated", () => {
-      // 🧩  Arrange: Mock not authenticated state
-      jest.spyOn(React, "useState").mockReturnValueOnce([false, jest.fn()]);
-      render(<Header />);
-
-      //🚀 Act: Use the screen object to query for the links based on their text content
-      const adminLink = screen.getByRole("link", {
-        name: "Program Administrator Log In",
-      });
-      const operLink = screen.getByRole("link", {
-        name: "Industrial Operator Log In",
-      });
-
-      // 🔍 Assert: Check that the not authenticated links are present in the rendered component
-      expect(adminLink).toBeInTheDocument();
-      expect(operLink).toBeInTheDocument();
-    });
-    test("should render the Profile component links when authenticated", () => {
-      // 🧩  Arrange: Mock authenticated state
-      jest.spyOn(React, "useState").mockReturnValueOnce([true, jest.fn()]);
-      render(<Header />);
-
-      //🚀 Act: Use the screen object to query for the links based on their text content
-      const userLink = screen.getByRole("link", {
-        name: "User",
-      });
-      const logoutLink = screen.getByRole("link", {
-        name: "Log out",
-      });
-      // 🔍 Assert: Check that the authenticated links are present in the rendered component
-      expect(userLink).toBeInTheDocument();
-      expect(logoutLink).toBeInTheDocument();
-    });
-  });
-});
+        {/*📛 To do: use authentication session info to show/hide login buttons*/}
+        {isAuthenticated ? (
+          <Profile />
+        ) : (
+          // Login navigation content for laptop & desktop*
+          <ButtonsRight>
+            <Login />
+          </ButtonsRight>
+        )}
+      </Toolbar>
+      {/*📛 To do: use authentication session info to show/hide login buttons*/}
+      {!isAuthenticated && (
+        // Login navigation content for mobile & tablet*
+        <ButtonsBottom>
+          <Login />
+        </ButtonsBottom>
+      )}
+    </AppBar>
+  );
+}
