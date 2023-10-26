@@ -26,7 +26,7 @@ describe("Header component", () => {
 
       // 🚀 Act: Use the screen object to find the img element by its alt text
       const image = screen.getByAltText(
-        "Logo for Province of British Columbia CleanBC"
+        "Logo for Province of British Columbia CleanBC",
       );
 
       // 🔍 Assert: Check that the image element is present in the rendered component
