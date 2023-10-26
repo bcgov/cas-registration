@@ -7,24 +7,36 @@ import RecommendIcon from '@mui/icons-material/Recommend'
 import DoNotDisturbIcon from '@mui/icons-material/DoNotDisturb'
 import { operationStatusUpdateHandler } from '@/app/utils/actions';
 import { OperationsFormData } from '@/app/components/form/OperationsForm';
-import { useState } from 'react';
+import React, { useState } from 'react';
+import { Status } from '@/app/types';
 
 interface Props {
     operation: OperationsFormData
 }
 
 export default function Review(props: Props) {
-    const [requestStatus, setRequestStatus] = useState(props.operation.status)
     const [error, setError] = useState(undefined)
 
     async function approveRequest() {
-        props.operation.status = "Approved"
+        props.operation.status = Status.APPROVED
         const response = await operationStatusUpdateHandler(props.operation)
         if (response.error) {
             setError(response.error)
             return
         } else if (response.status === 200) {
             alert('You have approved the request for carbon tax exemption')
+        }
+    }
+
+    async function rejectRequest() {
+        props.operation.status = Status.REJECTED
+        const response = await operationStatusUpdateHandler(props.operation)
+        if (response.error) {
+            setError(response.error)
+            alert('An error occurred!')
+            return
+        } else if (response.status === 200) {
+            alert('You have rejected the request for carbon tax exemption')
         }
     }
 
@@ -37,7 +49,7 @@ export default function Review(props: Props) {
             }}>
                 <ButtonGroup variant="contained">
                     <Button onClick={approveRequest} color="success" aria-label="Approve application">Approve <RecommendIcon /></Button>
-                    <Button color="error" aria-label="Reject application">Reject <DoNotDisturbIcon /></Button>
+                    <Button onClick={rejectRequest} color="error" aria-label="Reject application">Reject <DoNotDisturbIcon /></Button>
                 </ButtonGroup>
             </Box>
         </>

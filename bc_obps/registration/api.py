@@ -1,9 +1,10 @@
 import json
 from django.contrib import admin
 from django.urls import path
-from datetime import date
+from datetime import date, datetime
 from typing import List
 from ninja import Router
+from django.core import serializers
 from django.shortcuts import get_object_or_404
 from .models import Operation, Operator, NaicsCode, NaicsCategory, User
 from ninja import Field, Schema, ModelSchema
@@ -76,6 +77,7 @@ class OperationIn(Schema):
     regulated_products: List[int]
     documents: List[int]
     contacts: List[int]
+
 
 class OperationOut(OperationSchema):
     # handling aliases and optional fields
@@ -179,12 +181,23 @@ def update_operation(request, operation_id: int, payload: OperationIn):
     operation.save()
     return {"name": operation.name}
 
-@router.put("/operations/{operation_id}/updateStatus")
+
+@router.put("/operations/{operation_id}/update-status")
 def approve_operation(request, operation_id: int):
     # need to convert request.body (a bytes object) to a string, and convert the string to a JSON object
     payload = json.loads(request.body.decode())
-    status = payload.get('status')
+    status = getattr(Operation.Statuses, payload.get('status').upper())
     operation = get_object_or_404(Operation, id=operation_id)
+    # TODO later: add data to verified_by once user authentication in place
     operation.status = status
+    if operation.status == Operation.Statuses.APPROVED:
+        operation.verified_at = datetime.now()
+    data = serializers.serialize(
+        'json',
+        [
+            operation,
+        ],
+    )
+    operation_json_data = json.dumps(data, indent=4)
     operation.save()
-    return json.dumps(operation)
+    return operation_json_data
