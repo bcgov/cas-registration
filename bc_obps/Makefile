@@ -120,6 +120,11 @@ pythontests_watch: ## Use pytest-testmon and pytest-watch to trigger test runs o
 pythontests_watch:
 	$(POETRY_RUN) ptw --runner "pytest --picked --testmon"
 
+.PHONY: pythontests_coverage
+pythontests_coverage: ## run Python tests with coverage
+pythontests_coverage:
+	$(POETRY_RUN) pytest --cov=. --cov-config=.coveragerc --cov-report=term-missing --no-cov-on-fail
+
 .PHONY: clear_db
 clear_db: ## Clear all data in the datbase
 clear_db:
