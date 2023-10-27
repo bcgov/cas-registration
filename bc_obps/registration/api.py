@@ -20,10 +20,7 @@ from registration.schema import (
 )
 from registration.utils import check_users_admin_request_eligibility, update_model_instance
 from .models import Operation, Operator, NaicsCode, NaicsCategory, User
-from decimal import *
-from uuid import *
 from django.core.management import call_command
-from django.http import JsonResponse
 from django.conf import settings
 from django.http import HttpResponse
 import os
