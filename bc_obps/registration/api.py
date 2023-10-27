@@ -3,7 +3,7 @@ from django.contrib import admin
 from django.urls import path
 from datetime import datetime
 from typing import List, Optional
-from datetime import date, datetime
+from datetime import datetime
 from ninja import Router
 from django.core import serializers
 from django.shortcuts import get_object_or_404
