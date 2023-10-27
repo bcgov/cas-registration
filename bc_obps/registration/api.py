@@ -23,7 +23,6 @@ from .models import Operation, Operator, NaicsCode, NaicsCategory, User
 from django.core.management import call_command
 from django.conf import settings
 from django.http import HttpResponse
-import os
 
 router = Router()
 
