@@ -308,7 +308,7 @@ class OperatorModelTest(BaseTestCase):
         cls.test_operator.contacts.set([Contact.objects.get(id=1), Contact.objects.get(id=2)])
 
         # Create multiple UserOperators connected with the test Operator
-        for x in range(2):
+        for _ in range(2):
             UserOperator.objects.create(
                 user=User.objects.get(user_guid="3fa85f64-5717-4562-b3fc-2c963f66afa6"),
                 operator=Operator.objects.get(id=1),
