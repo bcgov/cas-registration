@@ -19,9 +19,29 @@ from registration.schema import (
     UserOperatorOut,
 )
 from registration.utils import check_users_admin_request_eligibility, update_model_instance
-
+from .models import Operation, Operator, NaicsCode, NaicsCategory, User
+from decimal import *
+from uuid import *
+from django.core.management import call_command
+from django.http import JsonResponse
+from django.conf import settings
+from django.http import HttpResponse
+import os
 
 router = Router()
+
+# testing endpoint
+@router.get("/test-setup")
+def setup(request):
+    if settings.ENVIRONMENT == "develop":
+        try:
+            call_command('truncate_all_tables')
+            call_command('load_fixtures')
+            return HttpResponse("Test setup complete.", status=200)
+        except Exception as e:
+            return HttpResponse("Test setup failed.", status=500)
+    else:
+        return HttpResponse("This endpoint only exists in the development environment.", status=404)
 
 
 @router.get("/naics_codes", response=List[NaicsCodeSchema])
