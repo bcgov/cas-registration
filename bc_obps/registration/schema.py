@@ -31,9 +31,7 @@ class NaicsCategorySchema(ModelSchema):
         model_fields = "__all__"
 
 
-# Operation schemas
-
-
+#### Operation schemas
 class OperationIn(ModelSchema):
     # temporarily setting a default operator since we don't have login yet
     operator_id: int = 1
@@ -58,6 +56,10 @@ class OperationOut(ModelSchema):
     current_year_estimated_emissions: Optional[str] = None
     opt_in: Optional[bool] = None
     verified_at: Optional[date] = None
+
+    class Config:
+        model = Operation
+        model_fields = "__all__"
 
     class Config:
         model = Operation
