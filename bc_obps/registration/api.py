@@ -370,7 +370,7 @@ def create_user_operator_request(request, user_operator_id: int, payload: UserOp
     return 200, {"operator_id": operator.id}
 
 
-@router.put("/operations/{operation_id}/updateStatus")
+@router.put("/operations/{operation_id}/update-status")
 def approve_operation(request, operation_id: int):
     # need to convert request.body (a bytes object) to a string, and convert the string to a JSON object
     payload = json.loads(request.body.decode())
@@ -388,4 +388,5 @@ def approve_operation(request, operation_id: int):
     )
     operation_json_data = json.dumps(data, indent=4)
     operation.save()
+    print(operation_json_data)
     return operation_json_data

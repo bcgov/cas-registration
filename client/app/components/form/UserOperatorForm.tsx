@@ -44,7 +44,7 @@ export default function UserOperatorForm({
           return;
         }
         push(
-          `/dashboard/select-operator/request-access/received/${response.operator_id}`,
+          `/dashboard/select-operator/request-access/received/${response.res.operator_id}`,
         );
       }}
       uiSchema={userOperatorUiSchema}

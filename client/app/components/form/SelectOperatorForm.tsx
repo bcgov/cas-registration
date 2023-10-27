@@ -48,7 +48,7 @@ export default function SelectOperatorForm({
         }
 
         push(
-          `/dashboard/select-operator/request-access/confirm/${response.operator_id}`,
+          `/dashboard/select-operator/request-access/confirm/${response.res.operator_id}`,
         );
       }}
       uiSchema={selectOperatorUiSchema}
