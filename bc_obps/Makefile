@@ -107,8 +107,8 @@ clean:
 
 .PHONY: pythontests
 pythontests: ## run Python tests
-pythontests:
-	$(POETRY_RUN) pytest
+pythontests: # ARGS can be used to pass arguments to pytest like -k to specify a test name
+	$(POETRY_RUN) pytest $(ARGS)
 
 .PHONY: pythontests_verbose
 pythontests_verbose: ## run Python tests with verbose output
