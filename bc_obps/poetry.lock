@@ -1986,4 +1986,8 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
+<<<<<<< HEAD
 content-hash = "47c110975f58fc0e4ab58ce5788f0d5dd3ff82ebeb1aeddf018b124c8c177b42"
+=======
+content-hash = "54449de61d21b26639ff44cbba8c8037be6ecae43ade91ea72f9ddc2a365211e"
+>>>>>>> chore: add pytest coverage
