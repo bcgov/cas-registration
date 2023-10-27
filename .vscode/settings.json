@@ -4,11 +4,7 @@
   },
   "python.formatting.provider": "black",
   "black-formatter.importStrategy": "fromEnvironment",
-  "python.testing.pytestArgs": [
-    "${workspaceFolder}",
-    "--rootdir=${workspaceFolder}",
-    "bc_obps"
-  ],
+  "python.testing.pytestArgs": ["bc_obps"],
   "python.envFile": "${workspaceFolder}/.env",
   "python.poetryPath": ".venv/bin/poetry",
   "python.testing.pytestPath": ".venv/bin/pytest",
