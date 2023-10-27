@@ -122,27 +122,6 @@ def update_operation(request, operation_id: int, payload: OperationIn):
     return {"name": operation.name}
 
 
-@router.put("/operations/{operation_id}/update-status")
-def approve_operation(request, operation_id: int):
-    # need to convert request.body (a bytes object) to a string, and convert the string to a JSON object
-    payload = json.loads(request.body.decode())
-    status = getattr(Operation.Statuses, payload.get('status').upper())
-    operation = get_object_or_404(Operation, id=operation_id)
-    # TODO later: add data to verified_by once user authentication in place
-    operation.status = status
-    if operation.status == Operation.Statuses.APPROVED:
-        operation.verified_at = datetime.now()
-    data = serializers.serialize(
-        'json',
-        [
-            operation,
-        ],
-    )
-    operation_json_data = json.dumps(data, indent=4)
-    operation.save()
-    return operation_json_data
-
-
 @router.get("/operators", response=List[OperatorOut])
 def list_operators(request):
     qs = Operator.objects.all()
@@ -369,14 +348,14 @@ def create_user_operator_request(request, user_operator_id: int, payload: UserOp
 
 
 @router.put("/operations/{operation_id}/update-status")
-def approve_operation(request, operation_id: int):
+def update_operation_status(request, operation_id: int):
     # need to convert request.body (a bytes object) to a string, and convert the string to a JSON object
     payload = json.loads(request.body.decode())
     status = getattr(Operation.Statuses, payload.get('status').upper())
     operation = get_object_or_404(Operation, id=operation_id)
     # TODO later: add data to verified_by once user authentication in place
     operation.status = status
-    if operation.status == Operation.Statuses.APPROVED:
+    if operation.status in [Operation.Statuses.APPROVED, Operation.Statuses.REJECTED]:
         operation.verified_at = datetime.now()
     data = serializers.serialize(
         'json',
@@ -386,5 +365,4 @@ def approve_operation(request, operation_id: int):
     )
     operation_json_data = json.dumps(data, indent=4)
     operation.save()
-    print(operation_json_data)
     return operation_json_data
