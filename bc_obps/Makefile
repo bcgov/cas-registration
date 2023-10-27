@@ -75,26 +75,26 @@ drop_schema:
 .PHONY: run
 run: ## run the server
 run:
-	@poetry run python $(MANAGE_PY) runserver
+	$(POETRY_RUN) python $(MANAGE_PY) runserver
 
 .PHONY: migrate
 migrate: ## run the migrations
 migrate:
-	@poetry run python $(MANAGE_PY) migrate
+	$(POETRY_RUN) python $(MANAGE_PY) migrate
 
 .PHONY: migrations
 migrations: ## create the migrations
 migrations:
-	@poetry run python $(MANAGE_PY) makemigrations
+	$(POETRY_RUN) python $(MANAGE_PY) makemigrations
 
 .PHONY: superuser
 superuser: ## create a superuser
 superuser:
-	@poetry run python $(MANAGE_PY) createsuperuser
+	$(POETRY_RUN) python $(MANAGE_PY) createsuperuser
 
 loadfixtures: ## add all registration fixture files to the db
 loadfixtures:
-	python $(MANAGE_PY) loaddata ./registration/fixtures/*.json
+	$(POETRY_RUN) python $(MANAGE_PY) loaddata ./registration/fixtures/*.json
 
 .PHONY: reset_db
 reset_db: ## drop and recreate the db
@@ -108,19 +108,19 @@ clean:
 .PHONY: pythontests
 pythontests: ## run Python tests
 pythontests:
-	DJANGO_SETTINGS_MODULE=bc_obps.settings pytest
+	$(POETRY_RUN) pytest
 
 .PHONY: pythontests_verbose
 pythontests_verbose: ## run Python tests with verbose output
 pythontests_verbose:
-	DJANGO_SETTINGS_MODULE=bc_obps.settings pytest -v
+	$(POETRY_RUN) pytest -v
 
 .PHONY: pythontests_watch
 pythontests_watch: ## Use pytest-testmon and pytest-watch to trigger test runs on file changes
 pythontests_watch:
-	DJANGO_SETTINGS_MODULE=bc_obps.settings ptw --runner "pytest --picked --testmon"
+	$(POETRY_RUN) ptw --runner "pytest --picked --testmon"
 
 .PHONY: clear_db
 clear_db: ## Clear all data in the datbase
 clear_db:
-	python $(MANAGE_PY) truncate_all_tables
+	$(POETRY_RUN) python $(MANAGE_PY) truncate_all_tables
