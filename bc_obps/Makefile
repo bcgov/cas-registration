@@ -107,13 +107,9 @@ clean:
 
 .PHONY: pythontests
 pythontests: ## run Python tests
-<<<<<<< HEAD
 pythontests: # ARGS can be used to pass arguments to pytest like -k to specify a test name
 	$(POETRY_RUN) pytest $(ARGS)
-=======
-pythontests:
-	$(POETRY_RUN) pytest
->>>>>>> 4bd726a (chore: refactor makefile)
+
 
 .PHONY: pythontests_verbose
 pythontests_verbose: ## run Python tests with verbose output
