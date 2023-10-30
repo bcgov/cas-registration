@@ -112,20 +112,77 @@ class TestOperationsEndpoint:
         url = self.endpoint + '/' + str(operation.id) + '/update-status'
 
         now = datetime.now(timezone.utc)
-        response = client.put(url, content_type='application/json', data={"status": "approved"})
-        assert response.status_code == 200
+        put_response = client.put(url, content_type='application/json', data={"status": "approved"})
+        assert put_response.status_code == 200
+        put_response_content = json.loads(put_response.content.decode('utf-8'))
+        parsed_list = json.loads(put_response_content)
+        # the put_response content is returned as a list but there's only ever one object in the list
+        parsed_object = parsed_list[0]
+        assert parsed_object.get('pk') == operation.id
+        assert parsed_object.get('fields').get('status') == 'approved'
 
         get_response = client.get(self.endpoint + '/' + str(operation.id))
         assert get_response.status_code == 200
-        json_response = json.loads(response.content)
-        # print(type(response.content))
-        # print(type(json_response))
-        # print(json_response)
-        json_dump = json.dumps(json_response, indent=4, sort_keys=True)
-        # print(json_dump)
-        assert json_dump.get('status') == 'approved'
-        time_diff = json_dump.get('verified_at') - now
-        assert time_diff.total_seconds() < timedelta(seconds=60)
+        get_response_dict = get_response.json()
+        assert get_response_dict.get('status') == 'approved'
+        now_as_string = now.strftime("%Y-%m-%d")
+        assert get_response_dict.get('verified_at') == now_as_string
+
+    def test_put_operation_update_status_rejected(self, client):
+        operation = baker.make(Operation)
+        assert operation.status == Operation.Statuses.PENDING
+
+        url = self.endpoint + '/' + str(operation.id) + '/update-status'
+
+        now = datetime.now(timezone.utc)
+        put_response = client.put(url, content_type='application/json', data={"status": "rejected"})
+        assert put_response.status_code == 200
+        put_response_content = json.loads(put_response.content.decode('utf-8'))
+        parsed_list = json.loads(put_response_content)
+        # the put_response content is returned as a list but there's only ever one object in the list
+        parsed_object = parsed_list[0]
+        assert parsed_object.get('pk') == operation.id
+        assert parsed_object.get('fields').get('status') == 'rejected'
+
+        get_response = client.get(self.endpoint + '/' + str(operation.id))
+        assert get_response.status_code == 200
+        get_response_dict = get_response.json()
+        assert get_response_dict.get('status') == 'rejected'
+        now_as_string = now.strftime("%Y-%m-%d")
+        assert get_response_dict.get('verified_at') == now_as_string
+
+    def test_put_operation_not_verified_when_not_registered(self, client):
+        operation = baker.make(Operation)
+        assert operation.status == Operation.Statuses.PENDING
+
+        url = self.endpoint + '/' + str(operation.id) + '/update-status'
+
+        put_response = client.put(url, content_type='application/json', data={"status": "not_registered"})
+        assert put_response.status_code == 200
+        put_response_content = json.loads(put_response.content.decode('utf-8'))
+        parsed_list = json.loads(put_response_content)
+        # the put_response content is returned as a list but there's only ever one object in the list
+        parsed_object = parsed_list[0]
+        assert parsed_object.get('pk') == operation.id
+        assert parsed_object.get('fields').get('status') == 'not_registered'
+
+        get_response = client.get(self.endpoint + '/' + str(operation.id))
+        assert get_response.status_code == 200
+        get_response_dict = get_response.json()
+        assert get_response_dict.get('status') == 'not_registered'
+        assert get_response_dict.get('verified_at') is None
+
+    def test_put_operation_update_status_invalid_data(self, client):
+        def send_put_invalid_data():
+            operation = baker.make(Operation)
+            assert operation.status == Operation.Statuses.PENDING
+
+            url = self.endpoint + '/' + str(operation.id) + '/update-status'
+
+            client.put(url, content_type='application/json', data={"status": "nonsense"})
+
+        with pytest.raises(AttributeError):
+            send_put_invalid_data()
 
 
 class TestOperationEndpoint:
