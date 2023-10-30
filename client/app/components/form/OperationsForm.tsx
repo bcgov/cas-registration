@@ -81,6 +81,7 @@ export default function OperationsForm(props: Props) {
               contacts: [],
               regulated_products: [],
               reporting_activities: [],
+              operator_id: 1,
             },
             props.formData ? "PUT" : "POST",
           );
