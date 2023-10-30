@@ -15,8 +15,10 @@ const config = {
   moduleFileExtensions: ["js", "jsx", "ts", "tsx", "json"],
   rootDir: ".",
   preset: "ts-jest",
+  transformIgnorePatterns: [`/node_modules/(?!nanoid)`],
   moduleNameMapper: {
     "\\.(css|scss)$": "<rootDir>/tests/cssFileMock.js",
+    "^nanoid(/(.*)|$)": "nanoid$1",
   },
   setupFilesAfterEnv: ["jest-extended/all", "@testing-library/jest-dom"],
   testEnvironment: "jest-environment-jsdom",

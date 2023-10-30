@@ -8,7 +8,7 @@ import Form from "@rjsf/core";
 import { RJSFSchema } from "@rjsf/utils";
 import validator from "@rjsf/validator-ajv8";
 import Link from "next/link";
-import { useState } from "react";
+import React from "react";
 import { Alert } from "@mui/material";
 import SubmitButton from "./SubmitButton";
 import { operationSubmitHandler } from "@/app/utils/actions";
@@ -22,8 +22,8 @@ interface Props {
 }
 
 export default function OperationsForm(props: Props) {
-  const [operationName, setOperationName] = useState("");
-  const [error, setError] = useState(undefined);
+  const [operationName, setOperationName] = React.useState("");
+  const [error, setError] = React.useState(undefined);
   // need to convert some of the information received from django into types RJSF can read
   const existingFormData = {
     ...props.formData,
