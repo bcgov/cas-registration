@@ -16,7 +16,7 @@ export default function SkeletonGrid() {
           <TableCell>
             <Skeleton />
           </TableCell>
-        </TableRow>
+        </TableRow>,
       );
     }
     return rows;

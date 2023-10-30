@@ -4,9 +4,7 @@ import UserOperatorForm from "@/app/components/form/UserOperatorForm";
 import { UserOperatorFormData } from "@/app/components/form/formDataTypes";
 
 export async function getUserOperatorFormData(id: number) {
-  return fetchAPI(
-    `registration/select-operator/request-access/user-operator/${id}`,
-  );
+  return fetchAPI(`registration/select-operator/user-operator/${id}`);
 }
 
 export default async function UserOperator({

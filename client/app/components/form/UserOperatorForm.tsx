@@ -34,8 +34,8 @@ export default function UserOperatorForm({
       onSubmit={async (data: { formData?: UserOperatorFormData }) => {
         const response = await createSubmitHandler(
           "PUT",
-          `registration/select-operator/request-access/user-operator/${userOperatorId}`,
-          `/dashboard/select-operator/request-access/user-operator/${userOperatorId}`,
+          `registration/select-operator/user-operator/${userOperatorId}`,
+          `/dashboard/select-operator/user-operator/${userOperatorId}`,
           data.formData,
         );
 
@@ -43,9 +43,7 @@ export default function UserOperatorForm({
           setErrorList([{ message: response.error }]);
           return;
         }
-        push(
-          `/dashboard/select-operator/request-access/received/${response.operator_id}`,
-        );
+        push(`/dashboard/select-operator/received/${response.operator_id}`);
       }}
       uiSchema={userOperatorUiSchema}
       className="flex flex-col w-3/4 mx-auto"

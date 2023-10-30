@@ -47,9 +47,7 @@ export default function SelectOperatorForm({
           return;
         }
 
-        push(
-          `/dashboard/select-operator/request-access/confirm/${response.operator_id}`,
-        );
+        push(`/dashboard/select-operator/confirm/${response.operator_id}`);
       }}
       uiSchema={selectOperatorUiSchema}
       widgets={{
