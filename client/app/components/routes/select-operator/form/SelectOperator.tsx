@@ -7,7 +7,7 @@ import { fetchAPI } from "@/app/utils/api";
 import { Operator } from "@/app/components/routes/select-operator/form/types";
 
 async function getOperators() {
-  return fetchAPI("registration/operators", {}, 10000);
+  return fetchAPI("registration/operators");
 }
 
 // 🛠️ Function to create a select operator schema with updated enum values
