@@ -4,7 +4,6 @@ from django.urls import path
 from datetime import datetime
 import pytz
 from typing import List, Optional
-from datetime import date, datetime
 from ninja import Router
 from django.core import serializers
 from django.shortcuts import get_object_or_404
