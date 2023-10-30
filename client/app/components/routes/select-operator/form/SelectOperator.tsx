@@ -12,7 +12,7 @@ async function getOperators() {
 
 // 🛠️ Function to create a select operator schema with updated enum values
 export const createSelectOperatorSchema = (
-  operatorsList: { id: number; label: string }[]
+  operatorsList: { id: number; label: string }[],
 ): RJSFSchema => {
   const localSchema = JSON.parse(JSON.stringify(selectOperatorSchema));
   localSchema.properties.operator_id = {
