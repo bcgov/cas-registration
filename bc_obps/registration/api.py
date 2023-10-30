@@ -36,7 +36,7 @@ def setup(request):
             call_command('load_fixtures')
             return HttpResponse("Test setup complete.", status=200)
         except Exception as e:
-            return HttpResponse("Test setup failed.", status=500)
+            return HttpResponse(f"Test setup failed. Reason:{e}", status=500)
     else:
         return HttpResponse("This endpoint only exists in the development environment.", status=404)
 
