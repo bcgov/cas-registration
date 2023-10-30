@@ -7,12 +7,12 @@ import { fetchAPI } from "@/app/utils/api";
 import { Operator } from "@/app/components/routes/select-operator/form/types";
 
 async function getOperators() {
-  return fetchAPI("registration/operators");
+  return fetchAPI("registration/operators", {}, 10000);
 }
 
 // 🛠️ Function to create a select operator schema with updated enum values
 export const createSelectOperatorSchema = (
-  operatorsList: { id: number; label: string }[],
+  operatorsList: { id: number; label: string }[]
 ): RJSFSchema => {
   const localSchema = JSON.parse(JSON.stringify(selectOperatorSchema));
   localSchema.properties.operator_id = {
@@ -41,14 +41,6 @@ export default async function SelectOperator() {
 
   return (
     <section className="text-center my-auto text-2xl flex flex-col gap-3">
-      <p>
-        Hi <b>John!</b> {/* TODO: replace with user name */}
-      </p>
-      <p>Which operator would you like to log in to?</p>
-      <p>
-        Please search by the business name or the Canada Revenue Agency (CRA)
-        Business Number below.
-      </p>
       <SelectOperatorForm schema={createSelectOperatorSchema(operatorsList)} />
       <p className="mt-4">
         Don&apos;t see the operator?{" "}
