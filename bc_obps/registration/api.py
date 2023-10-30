@@ -103,11 +103,12 @@ def create_operation(request, payload: OperationIn):
 @router.put("/operations/{operation_id}")
 def update_operation(request, operation_id: int, payload: OperationIn):
     operation = get_object_or_404(Operation, id=operation_id)
-    if "operator" in payload.dict():
-        operator = payload.dict()["operator"]
-        op = get_object_or_404(Operator, id=operator)
-        # Assign the Operator instance to the operation
-        operation.operator = op
+    operation.operator: Operator = Operator.objects.first()  # FIXME: placeholders until after authentication is set up
+    # if "operator" in payload.dict():
+    #     operator = payload.dict()["operator"]
+    #     op = get_object_or_404(Operator, id=operator)
+    #     # Assign the Operator instance to the operation
+    #     operation.operator = op
     if "naics_code" in payload.dict():
         naics_code = payload.dict()["naics_code"]
         nc = get_object_or_404(NaicsCode, id=naics_code)
