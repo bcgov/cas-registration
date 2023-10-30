@@ -63,3 +63,7 @@ install:
 	else \
 		helm upgrade $(HELM_OPTS) $(CHART_INSTANCE) $(CHART_DIR); \
 	fi;
+
+.PHONY: generate_credentials
+generate_credentials:
+	./scripts/generate-gcloud-credentials.sh $(service_account)
