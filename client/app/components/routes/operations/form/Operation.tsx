@@ -39,19 +39,19 @@ async function getOperation(id: number) {
 export const createOperationSchema = (
   schema: RJSFSchema,
   naicsCodes: { id: number }[],
-  naicsCategories: { id: number }[],
+  naicsCategories: { id: number }[]
 ) => {
   const localSchema = JSON.parse(JSON.stringify(schema));
   // naics codes
   if (Array.isArray(naicsCodes)) {
     localSchema.properties.naics_code_id.enum = naicsCodes.map(
-      (code) => code.id,
+      (code) => code.id
     );
   }
   // naics categories
   if (Array.isArray(naicsCategories)) {
     localSchema.properties.naics_category_id.enum = naicsCategories.map(
-      (category) => category.id,
+      (category) => category.id
     );
   }
   return localSchema;
@@ -67,8 +67,7 @@ export default async function Operation({ numRow }: { numRow?: number }) {
   if (numRow) {
     operation = await getOperation(numRow);
   }
-
-  // Render the OperationsForm component with schema and formData?
+  // Render the OperationsForm component with schema and formData if the operation already exists
   return (
     <>
       {operation?.status === Status.PENDING ? (
