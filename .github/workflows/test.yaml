@@ -232,8 +232,6 @@ jobs:
         uses: ./.github/actions/local-app-run
         with:
           django_secret_key: ${{ env.DJANGO_SECRET_KEY }}
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
       - name: Run pytest
         working-directory: ./bc_obps
         run: make pythontests_verbose
