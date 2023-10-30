@@ -1,9 +1,9 @@
 import json
 from django.contrib import admin
 from django.urls import path
-from datetime import date, datetime
+from datetime import datetime
+import pytz
 from typing import List, Optional
-from datetime import datetime, timezone
 from ninja import Router
 from django.core import serializers
 from django.shortcuts import get_object_or_404
@@ -389,16 +389,15 @@ def update_operation_status(request, operation_id: int):
     # TODO later: add data to verified_by once user authentication in place
     operation.status = status
     if operation.status in [Operation.Statuses.APPROVED, Operation.Statuses.REJECTED]:
-        operation.verified_at = date.today()
+        operation.verified_at = datetime.now(pytz.utc)
     data = serializers.serialize(
         'json',
         [
             operation,
         ],
     )
-    operation_json_data = json.dumps(data, indent=4)
     operation.save()
-    return operation_json_data
+    return data
 
 
 @router.get("/select-operator/{int:operator_id}", response={200: SelectOperatorIn, codes_4xx: Message})

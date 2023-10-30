@@ -1,6 +1,7 @@
 import pytest
 import json
-from datetime import datetime, timezone, timedelta
+from datetime import datetime
+import pytz
 from model_bakery import baker
 from django.test import Client
 from localflavor.ca.models import CAPostalCodeField
@@ -71,9 +72,6 @@ class TestOperationsEndpoint:
         document = baker.make(Document)
         contact = baker.make(Contact, postal_code='V1V 1V1')
         operator = baker.make(Operator)
-        print('NAICS')
-        print(naics_code.id)
-        print(naics_category.id)
         mock_operation = OperationIn(
             name='Springfield Nuclear Power Plant',
             type='Type 1',
@@ -111,7 +109,7 @@ class TestOperationsEndpoint:
 
         url = self.endpoint + '/' + str(operation.id) + '/update-status'
 
-        now = datetime.now(timezone.utc)
+        now = datetime.now(pytz.utc)
         put_response = client.put(url, content_type='application/json', data={"status": "approved"})
         assert put_response.status_code == 200
         put_response_content = json.loads(put_response.content.decode('utf-8'))
@@ -134,7 +132,7 @@ class TestOperationsEndpoint:
 
         url = self.endpoint + '/' + str(operation.id) + '/update-status'
 
-        now = datetime.now(timezone.utc)
+        now = datetime.now(pytz.utc)
         put_response = client.put(url, content_type='application/json', data={"status": "rejected"})
         assert put_response.status_code == 200
         put_response_content = json.loads(put_response.content.decode('utf-8'))
