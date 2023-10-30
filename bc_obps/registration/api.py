@@ -1,9 +1,9 @@
 import json
 from django.contrib import admin
 from django.urls import path
-from datetime import datetime
+from datetime import date, datetime
 from typing import List, Optional
-from datetime import datetime
+from datetime import datetime, timezone
 from ninja import Router
 from django.core import serializers
 from django.shortcuts import get_object_or_404
@@ -389,7 +389,7 @@ def update_operation_status(request, operation_id: int):
     # TODO later: add data to verified_by once user authentication in place
     operation.status = status
     if operation.status in [Operation.Statuses.APPROVED, Operation.Statuses.REJECTED]:
-        operation.verified_at = date
+        operation.verified_at = date.today()
     data = serializers.serialize(
         'json',
         [

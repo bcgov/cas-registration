@@ -1,5 +1,6 @@
 import pytest
 import json
+from datetime import datetime, timezone, timedelta
 from model_bakery import baker
 from django.test import Client
 from localflavor.ca.models import CAPostalCodeField
@@ -70,6 +71,9 @@ class TestOperationsEndpoint:
         document = baker.make(Document)
         contact = baker.make(Contact, postal_code='V1V 1V1')
         operator = baker.make(Operator)
+        print('NAICS')
+        print(naics_code.id)
+        print(naics_category.id)
         mock_operation = OperationIn(
             name='Springfield Nuclear Power Plant',
             type='Type 1',
@@ -100,6 +104,28 @@ class TestOperationsEndpoint:
     def test_post_new_malformed_operation(self, client):
         response = client.post(self.endpoint, content_type='application/json', data={'garbage': 'i am bad data'})
         assert response.status_code == 422
+
+    def test_put_operation_update_status_approved(self, client):
+        operation = baker.make(Operation)
+        assert operation.status == Operation.Statuses.PENDING
+
+        url = self.endpoint + '/' + str(operation.id) + '/update-status'
+
+        now = datetime.now(timezone.utc)
+        response = client.put(url, content_type='application/json', data={"status": "approved"})
+        assert response.status_code == 200
+
+        get_response = client.get(self.endpoint + '/' + str(operation.id))
+        assert get_response.status_code == 200
+        json_response = json.loads(response.content)
+        # print(type(response.content))
+        # print(type(json_response))
+        # print(json_response)
+        json_dump = json.dumps(json_response, indent=4, sort_keys=True)
+        # print(json_dump)
+        assert json_dump.get('status') == 'approved'
+        time_diff = json_dump.get('verified_at') - now
+        assert time_diff.total_seconds() < timedelta(seconds=60)
 
 
 class TestOperationEndpoint:
