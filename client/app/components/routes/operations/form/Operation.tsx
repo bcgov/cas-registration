@@ -58,6 +58,8 @@ export const createOperationSchema = (
 // 🧩 Main component
 export default async function Operation({ numRow }: { numRow?: number }) {
   const codes = await getNaicsCodes();
+  console.log({ codes });
+
   const categories = await getNaicsCategories();
   let operation: any;
 
