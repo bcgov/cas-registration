@@ -34,43 +34,21 @@ test("user can create a new operation", async ({ page }) => {
   await page.getByRole("button", { name: "Add Operation" }).click();
   // Step 1
   await page.getByLabel("Operation Name*").fill("Sample Operation Name");
-  await page.getByLabel("Operation Type*").fill("Your Operation Type");
+  await page
+    .getByLabel("Operation Type*")
+    .selectOption("Single Facility Operation");
   await page.getByLabel("NAICS Code*").selectOption("0"); // 1
   await page.getByLabel("NAICS Category*").selectOption("0"); // 1
   await page
-    .getByLabel("Reporting Activities*")
-    .fill("Your Reporting Activities");
-  await page
-    .getByLabel("Permit Issuing Agency ")
-    .fill("Your Permit Issuing Agency");
-  await page.getByLabel("Permit Number").fill("Your Permit Number");
-  // if locator contains numbers or special characters, e.g.
-  await page.getByLabel("Estimated Emissions for reporting year 2023*").click();
-  await page
-    .getByLabel("Estimated Emissions for reporting year 2023*")
-    .fill("569");
-  await page.getByLabel("Is the operation an opt-in operation?").check();
-  await page.getByLabel("Is the operation a major new operation?").check();
+    .getByLabel("Is the operation an opt-in operation?")
+    .selectOption("No");
 
-  // Step 2: Operation Type Information
-  await page.getByLabel("Physical Address*").fill("Your Physical Address");
-  await page.getByLabel("Municipality*").fill("Your Municipality");
-  await page.getByLabel("Province*").selectOption("9"); // BC
-  await page.getByLabel("Postal Code*").fill("V8V 1S1");
-  await page
-    .getByLabel("Legal Land Description*")
-    .fill("Your Legal Land Description");
-  await page.getByLabel("Lat coordinates*").fill("64.5");
-  await page.getByLabel("Long coordinates*").fill("54.5745");
-  await page.getByLabel("NPRI ID*").fill("45");
-  await page.getByLabel("BCER permit ID*").fill("755");
+  // Step 2: Operation Operator Information
 
-  // Step 3: Operation Operator Information
+  // Step 3: Operation Lead Information
 
-  // Step 4: Operation Representative (OR) Information
   // submit form
   await page.getByRole("button", { name: "Submit" }).click();
-  await page.waitForTimeout(2000);
   await expect(page.getByText(/fail/i)).not.toBeVisible();
   // confirmation message
   await expect(

@@ -72,24 +72,15 @@ class TestOperationsEndpoint:
         operator = baker.make(Operator)
         mock_operation = OperationIn(
             name='Springfield Nuclear Power Plant',
-            type='Type 1',
+            type='Single Facility Operation',
             naics_code_id=naics_code.id,
             naics_category_id=naics_category.id,
-            reporting_activities='donuts eaten',
-            physical_street_address='19 Evergreen Terrace',
-            physical_municipality='Springfield',
-            physical_province='BC',
-            physical_postal_code='V1V 1V1',
-            legal_land_description='It\'s legal',
-            latitude=90,
-            longitude=-120,
-            petrinex_ids=['123', '124'],
+            reporting_activities=['123', '124'],
             regulated_products=[1, 2],
             documents=[document.id],
             contacts=[contact.id],
             operator_id=operator.id,
         )
-
         post_response = client.post(self.endpoint, content_type='application/json', data=mock_operation.json())
         assert post_response.status_code == 200
         assert post_response.json() == {"name": "Springfield Nuclear Power Plant"}
@@ -116,19 +107,12 @@ class TestOperationEndpoint:
         Operation.objects.create(
             id=1,
             name='Springfield Nuclear Power Plant',
-            type='Type 1',
+            type='Single Facility Operation',
             naics_code_id=naics_code.id,
             naics_category_id=naics_category.id,
-            reporting_activities='donuts eaten',
-            physical_street_address='19 Evergreen Terrace',
-            physical_municipality='Springfield',
-            physical_province='BC',
-            physical_postal_code='V1V 1V1',
-            legal_land_description='It\'s legal',
-            latitude=90,
-            longitude=-120,
             operator_id=operator.id,
         )
+
         response = client.get(self.endpoint)
         assert response.status_code == 200
 
@@ -141,40 +125,22 @@ class TestOperationEndpoint:
         Operation.objects.create(
             id=1,
             name='Springfield Nuclear Power Plant',
-            type='Type 1',
+            type='Single Facility Operation',
             naics_code_id=naics_code.id,
             naics_category_id=naics_category.id,
-            reporting_activities='donuts eaten',
-            physical_street_address='19 Evergreen Terrace',
-            physical_municipality='Springfield',
-            physical_province='BC',
-            physical_postal_code='V1V 1V1',
-            legal_land_description='It\'s legal',
-            latitude=90,
-            longitude=-120,
             operator_id=operator.id,
         )
-
         mock_operation = OperationIn(
             name='New name',
-            type='Type 1',
+            type='Single Facility Operation',
             naics_code_id=naics_code.id,
             naics_category_id=naics_category.id,
-            reporting_activities='donuts eaten',
-            physical_street_address='19 Evergreen Terrace',
-            physical_municipality='Springfield',
-            physical_province='BC',
-            physical_postal_code='V1V 1V1',
-            legal_land_description='It\'s legal',
-            latitude=90,
-            longitude=-120,
-            petrinex_ids=['123', '124'],
+            reporting_activities=['123', '124'],
             regulated_products=[1, 2],
             documents=[document.id],
             contacts=[contact.id],
             operator_id=operator.id,
         )
-
         response = client.put(self.endpoint, content_type='application/json', data=mock_operation.json())
         assert response.status_code == 200
         assert response.json() == {"name": "New name"}

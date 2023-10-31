@@ -32,25 +32,22 @@ class NaicsCategorySchema(ModelSchema):
 
 
 # Operation schemas
-class OperationSchema(ModelSchema):
-    """
-    Schema for the Operation model
-    """
+
+
+class OperationIn(ModelSchema):
+    # temporarily setting a default operator since we don't have login yet
+    operator_id: int = 1
+    # Converting types
+    naics_code_id: int
+    naics_category_id: int
+    verified_at: Optional[date] = None
 
     class Config:
         model = Operation
-        model_fields = "__all__"
+        model_exclude = ["id"]  # need to exclude id since it's auto generated and we don't want to pass it in
 
 
-class OperationIn(OperationSchema):
-    # temporarily setting a default operator since we don't have login yet
-    operator: int = 1
-    # Converting types
-    start_of_commercial_operation: Optional[date] = None
-    verified_at: Optional[date] = None
-
-
-class OperationOut(OperationSchema):
+class OperationOut(ModelSchema):
     # handling aliases and optional fields
     operator_id: int = Field(..., alias="operator.id")
     naics_code_id: int = Field(..., alias="naics_code.id")
@@ -60,15 +57,11 @@ class OperationOut(OperationSchema):
     bcghg_id: Optional[str] = None
     current_year_estimated_emissions: Optional[str] = None
     opt_in: Optional[bool] = None
-    new_entrant: Optional[bool] = None
-    start_of_commercial_operation: Optional[date] = None
-    major_new_operation: Optional[bool] = None
     verified_at: Optional[date] = None
-    # temp handling of many to many field, addressed in #138
-    # contacts:
-    # documents:
-    # regulated_products:
-    # petrinex_ids:
+
+    class Config:
+        model = Operation
+        model_fields = "__all__"
 
 
 # OPERATOR
