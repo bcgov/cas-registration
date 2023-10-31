@@ -11,7 +11,10 @@ from registration.schema import Message, UserOperatorIn, UserOperatorOut, Select
 ##### GET #####
 
 
-@router.get("/select-operator/user-operator/{int:user_operator_id}", response=UserOperatorOut)
+@router.get(
+    "/select-operator/user-operator/{int:user_operator_id}",
+    response=UserOperatorOut,
+)
 def get_user_operator(request, user_operator_id: int):
     user_operator = get_object_or_404(UserOperator, id=user_operator_id)
     user: User = user_operator.user
@@ -169,7 +172,7 @@ def create_user_operator_request(request, user_operator_id: int, payload: UserOp
             )
 
             # Create a new ParentChildOperator instance
-            percentage_owned_by_parent_company: Optional[int] = payload_dict.get('percentage_owned_by_parent_company')
+            percentage_owned_by_parent_company: Optional[int] = payload_dict.get("percentage_owned_by_parent_company")
             if percentage_owned_by_parent_company:
                 parent_child_operator_instance = ParentChildOperator(
                     parent_operator=parent_operator_instance,

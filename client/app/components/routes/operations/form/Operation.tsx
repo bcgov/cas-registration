@@ -5,7 +5,12 @@ import { operationSchema } from "@/app/utils/jsonSchema/operations";
 import { RJSFSchema } from "@rjsf/utils";
 import { fetchAPI } from "@/app/utils/api";
 import Review from "./Review";
+<<<<<<< HEAD
 import { Status } from "@/app/types";
+=======
+// 📚 runtime mode for dynamic data to allow build w/o api
+export const runtime = "edge";
+>>>>>>> 1c86db3 (Feat: Implemented Approve/Reject operation functionality with unit tests; 2 other unrelated tests failing)
 
 // 🛠️ Function to fetch NAICS codes
 async function getNaicsCodes() {
