@@ -63,16 +63,6 @@ class NaicsCategory(models.Model):
         db_table = 'erc"."naics_category'
 
 
-class PetrinexId(models.Model):
-    """Petrinex ID model"""
-
-    id = models.CharField(primary_key=True, default=uuid.uuid4, db_comment="Petrinex id")
-
-    class Meta:
-        db_table_comment = "Petrinex ids"
-        db_table = 'erc"."petrinex_id'
-
-
 class RegulatedProduct(models.Model):
     """Regulated products model"""
 
@@ -81,6 +71,16 @@ class RegulatedProduct(models.Model):
     class Meta:
         db_table_comment = "Regulated products"
         db_table = 'erc"."regulated_product'
+
+
+class ReportingActivity(models.Model):
+    """Reporting activity model"""
+
+    name = models.CharField(max_length=1000, db_comment="The name of a reporting activity")
+
+    class Meta:
+        db_table_comment = "Reporting activities"
+        db_table = 'erc"."reporting_activity'
 
 
 class UserAndContactCommonInfo(models.Model):
@@ -243,6 +243,8 @@ class ParentChildOperator(models.Model):
         decimal_places=5,
         max_digits=10,
         db_comment="The percentage of an operator owned by the parent company",
+        blank=True,
+        null=True,
     )
 
     class Meta:
@@ -314,7 +316,7 @@ class UserOperator(models.Model):
 
 
 class OperationAndFacilityCommonInfo(models.Model):
-    """User and contact common information abstract base class"""
+    """Operation and facility common information abstract base class"""
 
     name = models.CharField(max_length=1000, db_comment="An operation or facility's name")
     type = models.CharField(max_length=1000, db_comment="An operation or facility's type")
@@ -330,21 +332,7 @@ class OperationAndFacilityCommonInfo(models.Model):
         db_comment="An operation or facility's NAICS category",
         related_name="operations_facilities_naics_catetories",
     )
-    reporting_activities = models.CharField(
-        max_length=1000, db_comment="An operation or facility's reporting activities"
-    )
-    permit_issuing_agency = models.CharField(
-        max_length=1000,
-        db_comment="The agency that issued a permit to the operation or facility",
-        blank=True,
-        null=True,
-    )
-    permit_number = models.CharField(
-        max_length=1000,
-        db_comment="An operation or facility's permit number",
-        blank=True,
-        null=True,
-    )
+
     previous_year_attributable_emissions = models.DecimalField(
         decimal_places=5,
         max_digits=10,
@@ -363,72 +351,22 @@ class OperationAndFacilityCommonInfo(models.Model):
         blank=True,
         null=True,
     )
-    current_year_estimated_emissions = models.DecimalField(
-        decimal_places=5,
-        max_digits=10,
-        db_comment="An operation or facility's estimated emissions for the current year. Only needed if the operation/facility did not report the previous year.",
-        blank=True,
-        null=True,
-    )
+
     opt_in = models.BooleanField(
         db_comment="Whether or not the operation/facility is required to register or is simply opting in. Only needed if the operation/facility did not report the previous year.",
         blank=True,
         null=True,
     )
-    new_entrant = models.BooleanField(
-        db_comment="Whether or not an operation or facility is a new entrant. Only needed if the operation/facility did not report the previous year.",
-        blank=True,
-        null=True,
-    )
-    start_of_commercial_operation = models.DateTimeField(
-        db_comment="An operation or facility's start of commercial operation. Only needed if the operation/facility did not report the previous year.",
-        blank=True,
-        null=True,
-    )
-    physical_street_address = models.CharField(
-        max_length=1000, db_comment="An operation or facility's physical street address"
-    )
-    physical_municipality = models.CharField(
-        max_length=1000, db_comment="An operation or facility's physical municipality"
-    )
-    physical_province = CAProvinceField(
-        db_comment="An operation or facility's physical province, restricted to two-letter province postal abbreviations"
-    )
-    physical_postal_code = CAPostalCodeField(
-        db_comment="An operation or facility's postal code, limited to valid Canadian postal codes"
-    )
-    legal_land_description = models.CharField(
-        max_length=1000, db_comment="An operation or facility's legal land description"
-    )
-    latitude = models.DecimalField(
-        decimal_places=5,
-        max_digits=10,
-        db_comment="An operation or facility's reporting activities",
-    )
-    longitude = models.DecimalField(
-        decimal_places=5,
-        max_digits=10,
-        db_comment="An operation or facility's latitude",
-    )
-    npri_id = models.IntegerField(
-        db_comment="An operation or facility's longitude",
-        blank=True,
-        null=True,
-    )
-    bcer_permit_id = models.IntegerField(
-        db_comment="An operation or facility's BCER permit id",
-        blank=True,
-        null=True,
-    )
-    petrinex_ids = models.ManyToManyField(
-        PetrinexId,
-        blank=True,
-        related_name="operations_facilities_petrinex_ids",
-    )
+
     regulated_products = models.ManyToManyField(
         RegulatedProduct,
         blank=True,
         related_name="operations_facilities_regulated_products",
+    )
+    reporting_activities = models.ManyToManyField(
+        ReportingActivity,
+        blank=True,
+        related_name="operations_facilities_reporting_activity",
     )
 
     class Meta:
@@ -452,11 +390,7 @@ class Operation(OperationAndFacilityCommonInfo):
         db_comment="The operator who owns the operation",
         related_name="operations",
     )
-    major_new_operation = models.BooleanField(
-        db_comment="Whether or not the operation is a Major New Operation",
-        blank=True,
-        null=True,
-    )
+
     verified_at = models.DateTimeField(
         db_comment="The time the operation was verified by an IRC user. If exists, the operation is registered for OBPS.",
         blank=True,

@@ -6,7 +6,7 @@ from registration.models import (
     Document,
     NaicsCode,
     NaicsCategory,
-    PetrinexId,
+    ReportingActivity,
     RegulatedProduct,
     User,
     Contact,
@@ -122,31 +122,10 @@ class NaicsCategoryModelTest(BaseTestCase):
                     self.assertFieldMaxLength(self.test_naics_category, field_name, expected_max_length)
 
 
-class PetrinexIdModelTest(BaseTestCase):
-    @classmethod
-    def setUpTestData(cls):
-        cls.test_naics_category = PetrinexId.objects.create(
-            id="12456",
-        )
-
-    def test_field_labels_and_max_lengths(self):
-        # (field_name, expected_label, expected_max_length)
-        field_data = [
-            ("id", "id", None),
-        ]
-
-        for field_name, expected_label, expected_max_length in field_data:
-            with self.subTest(field_name=field_name):
-                if expected_label:
-                    self.assertFieldLabel(self.test_naics_category, field_name, expected_label)
-                if expected_max_length is not None:
-                    self.assertFieldMaxLength(self.test_naics_category, field_name, expected_max_length)
-
-
 class RegulatedProductModelTest(BaseTestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.test_naics_category = RegulatedProduct.objects.create(
+        cls.test_regulated_product = RegulatedProduct.objects.create(
             name="test product",
         )
 
@@ -159,9 +138,30 @@ class RegulatedProductModelTest(BaseTestCase):
         for field_name, expected_label, expected_max_length in field_data:
             with self.subTest(field_name=field_name):
                 if expected_label:
-                    self.assertFieldLabel(self.test_naics_category, field_name, expected_label)
+                    self.assertFieldLabel(self.test_regulated_product, field_name, expected_label)
                 if expected_max_length is not None:
-                    self.assertFieldMaxLength(self.test_naics_category, field_name, expected_max_length)
+                    self.assertFieldMaxLength(self.test_regulated_product, field_name, expected_max_length)
+
+
+class ReportingActivityModelTest(BaseTestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.test_reporting_activity = ReportingActivity.objects.create(
+            name="test activity",
+        )
+
+    def test_field_labels_and_max_lengths(self):
+        # (field_name, expected_label, expected_max_length)
+        field_data = [
+            ("name", "name", 1000),
+        ]
+
+        for field_name, expected_label, expected_max_length in field_data:
+            with self.subTest(field_name=field_name):
+                if expected_label:
+                    self.assertFieldLabel(self.test_reporting_activity, field_name, expected_label)
+                if expected_max_length is not None:
+                    self.assertFieldMaxLength(self.test_reporting_activity, field_name, expected_max_length)
 
 
 class UserModelTest(BaseTestCase):
@@ -310,8 +310,8 @@ class OperatorModelTest(BaseTestCase):
         # Create multiple UserOperators connected with the test Operator
         for x in range(2):
             UserOperator.objects.create(
-                users=User.objects.get(user_guid="3fa85f64-5717-4562-b3fc-2c963f66afa6"),
-                operators=Operator.objects.get(id=1),
+                user=User.objects.get(user_guid="3fa85f64-5717-4562-b3fc-2c963f66afa6"),
+                operator=Operator.objects.get(id=1),
                 role=UserOperator.Roles.ADMIN,
                 verified_at="2013-11-05",
                 verified_by=User.objects.get(user_guid="00000000-0000-0000-0000-000000000001"),
@@ -395,8 +395,8 @@ class UserOperatorModelTest(BaseTestCase):
     @classmethod
     def setUpTestData(cls):
         cls.test_user_operator = UserOperator.objects.create(
-            users=User.objects.get(user_guid="3fa85f64-5717-4562-b3fc-2c963f66afa6"),
-            operators=Operator.objects.get(id=1),
+            user=User.objects.get(user_guid="3fa85f64-5717-4562-b3fc-2c963f66afa6"),
+            operator=Operator.objects.get(id=1),
             role=UserOperator.Roles.ADMIN,
             status=UserOperator.Statuses.PENDING,
             verified_at="2013-11-05",
@@ -406,8 +406,8 @@ class UserOperatorModelTest(BaseTestCase):
     def test_field_labels_and_max_lengths(self):
         # (field_name, expected_label, expected_max_length)
         field_data = [
-            ("users", "users", None),
-            ("operators", "operators", None),
+            ("user", "user", None),
+            ("operator", "operator", None),
             ("role", "role", 1000),
             ("status", "status", 1000),
             ("verified_by", "verified by", None),
@@ -451,10 +451,10 @@ class OperationModelTest(BaseTestCase):
             ]
         )
 
-        cls.test_operation.petrinex_ids.set(
+        cls.test_operation.reporting_activities.set(
             [
-                PetrinexId.objects.create(id="test"),
-                PetrinexId.objects.create(id="test2"),
+                ReportingActivity.objects.create(name="test"),
+                ReportingActivity.objects.create(name="test2"),
             ]
         )
         cls.test_operation.regulated_products.set(
@@ -475,9 +475,8 @@ class OperationModelTest(BaseTestCase):
             ("type", "type", 1000, None),
             ("naics_code", "naics code", None, None),
             ("naics_category", "naics category", None, None),
-            ("reporting_activities", "reporting activities", 1000, None),
-            ("permit_issuing_agency", "permit issuing agency", 1000, None),
-            ("permit_number", "permit number", 1000, None),
+            ("regulated_products", "regulated products", None, 2),
+            ("reporting_activities", "reporting activities", None, 2),
             (
                 "previous_year_attributable_emissions",
                 "previous year attributable emissions",
@@ -486,35 +485,11 @@ class OperationModelTest(BaseTestCase):
             ),
             ("swrs_facility_id", "swrs facility id", None, None),
             ("bcghg_id", "bcghg id", None, None),
-            (
-                "current_year_estimated_emissions",
-                "current year estimated emissions",
-                None,
-                None,
-            ),
             ("opt_in", "opt in", None, None),
-            ("new_entrant", "new entrant", None, None),
-            (
-                "start_of_commercial_operation",
-                "start of commercial operation",
-                None,
-                None,
-            ),
-            ("physical_street_address", "physical street address", 1000, None),
-            ("physical_municipality", "physical municipality", 1000, None),
-            ("physical_province", "physical province", 2, None),
-            ("physical_postal_code", "physical postal code", 7, None),
-            ("legal_land_description", "legal land description", 1000, None),
-            ("latitude", "latitude", None, None),
-            ("longitude", "longitude", None, None),
-            ("npri_id", "npri id", None, None),
-            ("bcer_permit_id", "bcer permit id", None, None),
             ("verified_at", "verified at", None, None),
             ("verified_by", "verified by", None, None),
             ("documents", "documents", None, 2),
             ("contacts", "contacts", None, 2),
-            ("petrinex_ids", "petrinex ids", None, 2),
-            ("regulated_products", "regulated products", None, 2),
         ]
 
         for (
