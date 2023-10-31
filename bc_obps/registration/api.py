@@ -1,13 +1,11 @@
 import json
 from django.contrib import admin
-from django.urls import path
 from datetime import datetime
 import pytz
 from typing import List, Optional
 from ninja import Router
 from django.core import serializers
 from django.shortcuts import get_object_or_404
-from django.core import serializers
 from ninja import Router
 from .models import Operation, Operator, NaicsCode, NaicsCategory, User, UserOperator, Contact, ParentChildOperator
 from ninja.responses import codes_4xx
@@ -30,26 +28,9 @@ from registration.utils import check_users_admin_request_eligibility, update_mod
 from decimal import *
 from uuid import *
 from django.core.management import call_command
-from django.core import serializers
-from django.http import JsonResponse
 from django.conf import settings
 from django.http import HttpResponse
-import os
-from ninja import ModelSchema, Router
-from ninja.responses import codes_4xx
-from django.shortcuts import get_object_or_404
-from django.core.exceptions import ValidationError
-from django.forms import model_to_dict
-from ninja import Field, Schema, ModelSchema
-from .models import Contact, Operation, Operator, NaicsCode, NaicsCategory, ParentChildOperator, User, UserOperator
-from ninja.errors import HttpError
-from decimal import *
-from uuid import *
-from django.core.management import call_command
-from django.core import serializers
-from django.http import JsonResponse
-from django.conf import settings
-from django.http import HttpResponse
+
 
 router = Router()
 
