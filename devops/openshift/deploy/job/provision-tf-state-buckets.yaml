@@ -1,0 +1,65 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: provision-tf-state-buckets
+spec:
+  backoffLimit: 0
+  activeDeadlineSeconds: 900
+  parallelism: 1
+  completions: 1
+  template:
+    metadata:
+      name: provision-tf-state-buckets
+    spec:
+      containers:
+        - name: provision-tf-state-buckets
+          resources:
+            limits:
+              cpu: 1000m
+              memory: 128Mi
+            requests:
+              cpu: 100m
+              memory: 64Mi
+          # TODO: Create this image via workflows: `image: docker.pkg.github.com/bcgov/cas-registration/provision-tf-state-buckets:0.0.1`
+          image: joshbutton/provision-state-buckets:0.0.1 # Test image from public repo.
+          imagePullPolicy: Always
+          volumeMounts:
+            - mountPath: /etc/gcp
+              name: service-account-credentials-volume
+              readOnly: true
+            - name: gcloud-config
+              mountPath: /etc/.config/gcloud
+          env:
+            - name: OPENSHIFT_NAMEPLATE
+              valueFrom:
+                secretKeyRef:
+                  name: gcp-credentials-secret
+                  key: ocp_nameplate
+            - name: CLOUDSDK_CORE_PROJECT
+              valueFrom:
+                secretKeyRef:
+                  name: gcp-credentials-secret
+                  key: gcp_project_id
+            - name: CLOUDSDK_CORE_DISABLE_FILE_LOGGING
+              value: "True"
+            - name: CLOUDSDK_AUTH_CREDENTIAL_FILE_OVERRIDE
+              value: "/etc/gcp/credentials.json"
+            - name: CLOUDSDK_CONFIG
+              value: "/etc/.config/gcloud"
+          command:
+            [
+              "bash",
+              "/buckets.sh",
+              "$(OPENSHIFT_NAMEPLATE)",
+              "$(CLOUDSDK_CORE_PROJECT)",
+            ]
+      restartPolicy: Never
+      volumes:
+        - name: service-account-credentials-volume
+          secret:
+            secretName: gcp-credentials-secret
+            items:
+              - key: sa_json
+                path: credentials.json
+        - name: gcloud-config
+          emptyDir: {}
