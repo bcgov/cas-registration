@@ -26,24 +26,6 @@ test.afterEach(async ({ page }, testInfo) => {
   await page.close();
 });
 
-test("user can edit an existing operation", async ({ page }) => {
-  page
-    .getByRole("button", { name: /start registration/i })
-    .first()
-    .click();
-
-  // change a form field
-  await page.getByLabel("Operation Name*").fill("CHANGED");
-
-  // submit form
-  await page.getByRole("button", { name: "Submit" }).click();
-
-  // confirmation message
-  await expect(
-    page.getByText(/Your request to register CHANGED has been received./i),
-  ).toBeVisible();
-});
-
 test("user can create a new operation", async ({ page }) => {
   // 👌 Best Practice:
   // prefer user-facing attributes to XPath or CSS selectors
@@ -73,5 +55,23 @@ test("user can create a new operation", async ({ page }) => {
     page.getByText(
       /Your request to register Sample Operation Name has been received./i,
     ),
+  ).toBeVisible();
+});
+
+test("user can edit an existing operation", async ({ page }) => {
+  page
+    .getByRole("button", { name: /start registration/i })
+    .first()
+    .click();
+
+  // change a form field
+  await page.getByLabel("Operation Name*").fill("CHANGED");
+
+  // submit form
+  await page.getByRole("button", { name: "Submit" }).click();
+
+  // confirmation message
+  await expect(
+    page.getByText(/Your request to register CHANGED has been received./i),
   ).toBeVisible();
 });
