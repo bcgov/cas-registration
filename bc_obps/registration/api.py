@@ -174,7 +174,7 @@ def request_access(request, payload: SelectOperatorIn):
     return 201, {"user_operator_id": user_operator.id}
 
 
-@router.get("/select-operator/request-access/user-operator/{int:user_operator_id}", response=UserOperatorOut)
+@router.get("/select-operator/user-operator/{int:user_operator_id}", response=UserOperatorOut)
 def get_user_operator(request, user_operator_id: int):
     user_operator = get_object_or_404(UserOperator, id=user_operator_id)
     user: User = user_operator.user
@@ -220,7 +220,7 @@ def get_user_operator(request, user_operator_id: int):
 
 
 @router.put(
-    "/select-operator/request-access/user-operator/{int:user_operator_id}",
+    "/select-operator/user-operator/{int:user_operator_id}",
     response={200: SelectOperatorIn, codes_4xx: Message},
 )
 def create_user_operator_request(request, user_operator_id: int, payload: UserOperatorIn):

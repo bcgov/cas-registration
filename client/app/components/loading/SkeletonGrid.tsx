@@ -1,6 +1,6 @@
 import { Table, TableBody, TableCell, TableRow, Skeleton } from "@mui/material";
 
-export default function Loading() {
+export default function SkeletonGrid() {
   // Simulate loading by rendering Skeleton components
   const renderLoadingRows = () => {
     const rows = [];

@@ -27,6 +27,22 @@ function unslugifyAndCapitalize(segment: string): string {
     .join(" ");
 }
 
+// 🛠️ Function to determine valid crumb link
+function isValidLink(segment: string): boolean {
+  // Define invalid links
+  const invalidWords: string[] = ["confirm", "received", "user-operator"];
+  // Convert the segment to lowercase for case-insensitive comparison
+  const lowerSegment = segment.toLowerCase();
+  // Check if the segment contains any of the invalid words
+  for (const word of invalidWords) {
+    if (lowerSegment.includes(word)) {
+      return false; // Invalid segment
+    }
+  }
+
+  return true; // Valid segment
+}
+
 /* 🌐
     The accessibility of this component relies on:
     A nav element labeled with aria-label identifies the structure as a breadcrumb trail and makes it a navigation landmark
@@ -84,27 +100,34 @@ export default function Bread({
             const content = capitalizeLinks
               ? translateNumericPart(unslugifyAndCapitalize(link))
               : translateNumericPart(link);
-
-            if (!isLastItem) {
-              //  🔗 Not the last item, create a link
-              return (
-                <li key={link} style={liStyle}>
-                  <Link
-                    href={`/${pathNames.slice(0, index + 1).join("/")}`}
-                    style={aStyle}
+            if (isValidLink(link)) {
+              if (!isLastItem) {
+                //  🔗 create a link
+                return (
+                  <li key={link} style={liStyle}>
+                    <Link
+                      href={`/${pathNames.slice(0, index + 1).join("/")}`}
+                      style={aStyle}
+                    >
+                      {content}
+                    </Link>
+                    {separator}
+                  </li>
+                );
+              } else {
+                // Last item, no link, bold styling
+                return (
+                  <li
+                    key={link}
+                    style={{
+                      fontWeight: isLastItem ? "bold" : "normal",
+                      ...liStyle,
+                    }}
                   >
                     {content}
-                  </Link>
-                  {separator}
-                </li>
-              );
-            } else {
-              // Last item, no link, bold styling
-              return (
-                <li key={link} style={{ fontWeight: "bold", ...liStyle }}>
-                  {content}
-                </li>
-              );
+                  </li>
+                );
+              }
             }
           })}
         </ol>
