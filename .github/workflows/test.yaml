@@ -234,4 +234,4 @@ jobs:
           django_secret_key: ${{ env.DJANGO_SECRET_KEY }}
       - name: Run pytest
         working-directory: ./bc_obps
-        run: make pythontests_verbose
+        run: make pythontests
