@@ -21,6 +21,11 @@ const config = {
   setupFilesAfterEnv: ["jest-extended/all", "@testing-library/jest-dom"],
   testEnvironment: "jest-environment-jsdom",
   testPathIgnorePatterns: ["/node_modules/", "/e2e/"],
+  transformIgnorePatterns: [`/node_modules/(?!nanoid)`],
+  moduleNameMapper: {
+    "\\.(css|scss)$": "<rootDir>/tests/cssFileMock.js",
+    "^nanoid(/(.*)|$)": "nanoid$1",
+  },
 };
 
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async

@@ -15,7 +15,7 @@ export default function Login() {
 
   return (
     <>
-      <Link href="/dashboard?role=admin" sx={{ color: "white" }}>
+      <Link href="/signin/internal" sx={{ color: "white" }}>
         <Button
           sx={{ ...commonButtonConfig }}
           aria-label="Program Administrator Log In"

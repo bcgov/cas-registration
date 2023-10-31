@@ -25,5 +25,8 @@
     "hooks": {
       "before:git:beforeRelease": "./.bin/pre-commit-format.sh CHANGELOG.md"
     }
+  },
+  "dependencies": {
+    "yup": "^1.3.2"
   }
 }
