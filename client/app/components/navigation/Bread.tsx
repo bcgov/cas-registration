@@ -30,7 +30,7 @@ function unslugifyAndCapitalize(segment: string): string {
 // 🛠️ Function to determine valid crumb link
 function isValidLink(segment: string): boolean {
   // Define invalid links
-  const invalidWords: string[] = ["confirm", "received"];
+  const invalidWords: string[] = ["confirm", "received", "user-operator"];
   // Convert the segment to lowercase for case-insensitive comparison
   const lowerSegment = segment.toLowerCase();
   // Check if the segment contains any of the invalid words
