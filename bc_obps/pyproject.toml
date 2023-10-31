@@ -18,7 +18,6 @@ whitenoise = "^6.5.0"
 pre-commit = "^3.4.0"
 django-cors-headers = "4.2.0"
 django-localflavor = "^4.0"
-pytest-cov = "^4.1.0"
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.7.0"
@@ -31,6 +30,7 @@ pytest-picked = "^0.5.0"
 model-bakery = "^1.16.0"
 django-extensions = "^3.2.3"
 ipdb = "^0.13.13"
+pytest-cov = "^4.1.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
