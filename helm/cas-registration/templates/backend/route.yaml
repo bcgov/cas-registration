@@ -1,0 +1,23 @@
+{{- if not (hasSuffix "-prod" .Release.Namespace)}}
+
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: {{ .Release.Name }}-backend
+  labels:
+{{ include "cas-registration.labels" . | indent 4 }}
+  annotations:
+    haproxy.router.openshift.io/balance: roundrobin
+
+spec:
+  host: {{ .Values.backend.route.host }}
+  port:
+    targetPort: {{ .Release.Name }}-backend
+  tls:
+    insecureEdgeTerminationPolicy: Redirect
+    termination: edge
+  to:
+    kind: Service
+    name:  {{ .Release.Name }}-backend
+    weight: 100
+{{ end }}
