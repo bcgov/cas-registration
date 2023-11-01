@@ -30,6 +30,7 @@ pytest-picked = "^0.5.0"
 model-bakery = "^1.16.0"
 django-extensions = "^3.2.3"
 ipdb = "^0.13.13"
+pytest-cov = "^4.1.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

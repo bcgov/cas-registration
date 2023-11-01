@@ -80,6 +80,7 @@ The easiest way to run these tests locally is by using commands from the Makefil
 > make pythontests              # standard pytest run
 > make pythontests_verbose      # run pytest with verbose output (helpful for troubleshooting unit tests)
 > make pythontests_watch        # adds a watcher that can run pytest in the background; unit tests will re-run whenever changes to a Python file are detected
+> make pythontests_coverage     # run pytest with coverage report
 ```
 
 #### Detail directions
@@ -122,7 +123,7 @@ Alternatively, you can uncomment the `webServer` array in `playwright.config.ts`
 Run tests from new terminal command:
 
 ```bash
-cd client && yarn e2e
+cd client && yarn e2e:ui
 ```
 
 4.0 To open last HTML report run:

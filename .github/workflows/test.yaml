@@ -221,3 +221,17 @@ jobs:
           name: playwright-report
           path: client/playwright-report
           retention-days: 30
+  backend-tests:
+    needs: [backend-docker-build, install-dev-tools]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: dev env setup
+        uses: ./.github/actions/dev-env-setup
+      - name: run app locally
+        uses: ./.github/actions/local-app-run
+        with:
+          django_secret_key: ${{ env.DJANGO_SECRET_KEY }}
+      - name: Run pytest
+        working-directory: ./bc_obps
+        run: make pythontests
