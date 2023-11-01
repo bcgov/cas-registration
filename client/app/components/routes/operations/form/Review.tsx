@@ -12,7 +12,7 @@ interface Props {
   operation: OperationsFormData;
 }
 
-export default function Review(props: Props) {
+export default function Review(props: Readonly<Props>) {
   const [errorList, setErrorList] = useState([] as any[]);
   const [successMessageList, setSuccessMessageList] = useState([] as any[]);
 
@@ -26,12 +26,10 @@ export default function Review(props: Props) {
     );
     if (response.error) {
       setErrorList([{ message: response.error }]);
-      return;
     } else if (response.ok) {
       setSuccessMessageList([
         { message: "You have approved the request for carbon tax exemption." },
       ]);
-      return;
     }
   }
 
@@ -45,12 +43,10 @@ export default function Review(props: Props) {
     );
     if (response.error) {
       setErrorList([{ message: response.error }]);
-      return;
     } else if (response.ok) {
       setSuccessMessageList([
         { message: "You have rejected the request for carbon tax exemption." },
       ]);
-      return;
     }
   }
 

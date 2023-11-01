@@ -15,6 +15,8 @@ client = Client()
 
 base_endpoint = "/api/registration/"
 
+content_type_json = "application/json"
+
 
 def mock_postal_code():
     return "v8v3g1"
@@ -56,6 +58,9 @@ class TestNaicsCategoriesEndpoint:
 class TestOperationsEndpoint:
     endpoint = base_endpoint + "operations"
 
+    def build_update_status_url(self, operation_id: int) -> str:
+        return self.endpoint + "/" + str(operation_id) + "/update-status"
+
     def test_get_method_for_200_status(self, client):
         response = client.get(self.endpoint)
         assert response.status_code == 200
@@ -83,7 +88,7 @@ class TestOperationsEndpoint:
             contacts=[contact.id],
             operator_id=operator.id,
         )
-        post_response = client.post(self.endpoint, content_type='application/json', data=mock_operation.json())
+        post_response = client.post(self.endpoint, content_type=content_type_json, data=mock_operation.json())
         assert post_response.status_code == 200
         assert post_response.json() == {"name": "Springfield Nuclear Power Plant"}
         # check that the default status of pending was applied
@@ -93,7 +98,7 @@ class TestOperationsEndpoint:
     def test_post_new_malformed_operation(self, client):
         response = client.post(
             self.endpoint,
-            content_type="application/json",
+            content_type=content_type_json,
             data={"garbage": "i am bad data"},
         )
         assert response.status_code == 422
@@ -102,10 +107,10 @@ class TestOperationsEndpoint:
         operation = baker.make(Operation)
         assert operation.status == Operation.Statuses.PENDING
 
-        url = self.endpoint + "/" + str(operation.id) + "/update-status"
+        url = self.build_update_status_url(operation_id=operation.id)
 
         now = datetime.now(pytz.utc)
-        put_response = client.put(url, content_type="application/json", data={"status": "approved"})
+        put_response = client.put(url, content_type=content_type_json, data={"status": "approved"})
         assert put_response.status_code == 200
         put_response_content = json.loads(put_response.content.decode("utf-8"))
         parsed_list = json.loads(put_response_content)
@@ -125,10 +130,10 @@ class TestOperationsEndpoint:
         operation = baker.make(Operation)
         assert operation.status == Operation.Statuses.PENDING
 
-        url = self.endpoint + "/" + str(operation.id) + "/update-status"
+        url = self.build_update_status_url(operation_id=operation.id)
 
         now = datetime.now(pytz.utc)
-        put_response = client.put(url, content_type="application/json", data={"status": "rejected"})
+        put_response = client.put(url, content_type=content_type_json, data={"status": "rejected"})
         assert put_response.status_code == 200
         put_response_content = json.loads(put_response.content.decode("utf-8"))
         parsed_list = json.loads(put_response_content)
@@ -148,9 +153,9 @@ class TestOperationsEndpoint:
         operation = baker.make(Operation)
         assert operation.status == Operation.Statuses.PENDING
 
-        url = self.endpoint + "/" + str(operation.id) + "/update-status"
+        url = self.build_update_status_url(operation_id=operation.id)
 
-        put_response = client.put(url, content_type="application/json", data={"status": "not_registered"})
+        put_response = client.put(url, content_type=content_type_json, data={"status": "not_registered"})
         assert put_response.status_code == 200
         put_response_content = json.loads(put_response.content.decode("utf-8"))
         parsed_list = json.loads(put_response_content)
@@ -170,9 +175,9 @@ class TestOperationsEndpoint:
             operation = baker.make(Operation)
             assert operation.status == Operation.Statuses.PENDING
 
-            url = self.endpoint + "/" + str(operation.id) + "/update-status"
+            url = self.build_update_status_url(operation_id=operation.id)
 
-            client.put(url, content_type="application/json", data={"status": "nonsense"})
+            client.put(url, content_type=content_type_json, data={"status": "nonsense"})
 
         with pytest.raises(AttributeError):
             send_put_invalid_data()
@@ -224,7 +229,7 @@ class TestOperationEndpoint:
         )
 
         response = client.put(
-            self.endpoint + str(operation.id), content_type="application/json", data=mock_operation.json()
+            self.endpoint + str(operation.id), content_type=content_type_json, data=mock_operation.json()
         )
         assert response.status_code == 200
         assert response.json() == {"name": "New name"}
@@ -233,7 +238,7 @@ class TestOperationEndpoint:
         operation = baker.make(Operation)
         response = client.put(
             self.endpoint + str(operation.id),
-            content_type="application/json",
+            content_type=content_type_json,
             data={"garbage": "i am bad data"},
         )
         assert response.status_code == 422
