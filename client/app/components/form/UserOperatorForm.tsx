@@ -43,7 +43,7 @@ export default function UserOperatorForm({
           setErrorList([{ message: response.error }]);
           return;
         }
-        push(`/dashboard/select-operator/received/${response.operator_id}`);
+        push(`/dashboard/select-operator/received/${response.res.operator_id}`);
       }}
       uiSchema={userOperatorUiSchema}
       className="flex flex-col w-3/4 mx-auto"
