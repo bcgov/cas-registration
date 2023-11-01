@@ -1,0 +1,28 @@
+{{- if not (hasSuffix "-prod" .Release.Namespace)}}
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ template "cas-registration.fullname" . }}-load-dev-data
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    "helm.sh/hook": post-upgrade, post-install
+spec:
+  selector: {}
+  template:
+    metadata:
+      name: {{ template "cas-registration.fullname" . }}-load-dev-data
+    backoffLimit: 0
+    activeDeadlineSeconds: 300
+    spec:
+      backoffLimit: 0
+      activeDeadlineSeconds: 300
+      containers:
+        - name:  {{ template "cas-registration.fullname" . }}-load-dev-data
+          image: curlimages/curl
+          command:
+            - /bin/sh
+            - -ec
+            - "curl https://cas-registration-dev.apps.silver.devops.gov.bc.ca/api/registration/test-setup"
+      restartPolicy: Never
+{{ end }}
