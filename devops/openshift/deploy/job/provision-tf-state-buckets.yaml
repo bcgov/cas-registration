@@ -30,11 +30,11 @@ spec:
             - name: gcloud-config
               mountPath: /etc/.config/gcloud
           env:
-            - name: OPENSHIFT_NAMEPLATE
+            - name: OPENSHIFT_NAMESPACE
               valueFrom:
                 secretKeyRef:
                   name: gcp-credentials-secret
-                  key: ocp_nameplate
+                  key: ocp_namespace
             - name: CLOUDSDK_CORE_PROJECT
               valueFrom:
                 secretKeyRef:
@@ -49,8 +49,8 @@ spec:
           command:
             [
               "bash",
-              "/buckets.sh",
-              "$(OPENSHIFT_NAMEPLATE)",
+              "/bucket.sh",
+              "$(OPENSHIFT_NAMESPACE)",
               "$(CLOUDSDK_CORE_PROJECT)",
             ]
       restartPolicy: Never

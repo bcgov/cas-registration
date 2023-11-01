@@ -2,9 +2,14 @@
 generate_credentials:
 	./scripts/generate-gcloud-credentials.sh $(service_account)
 
-.PHONY: create_state_buckets
-create_state_buckets:
-	./scripts/create-state-buckets.sh $(openshift_nameplate) "ggl-cas-storage"
+# TODO!: Add an example.env file to pull in all these variables for ease of scripting.
+.PHONY: create_state_bucket
+create_state_bucket:
+	./scripts/create-state-bucket.sh $(openshift_namespace) "ggl-cas-storage"
+
+.PHONY: create_all_state_buckets
+create_all_state_buckets:
+	./scripts/create-all-state-buckets.sh $(openshift_nameplate) "ggl-cas-storage"
 
 .PHONY: create_terraform_backend
 create_terraform_backend:
