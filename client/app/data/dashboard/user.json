@@ -7,7 +7,9 @@
   {
     "title": "Operation Access Management",
     "content": "I have quite a lot to say and as a result I am quite tall, but the other cards heights stretch with me...as you can see as I go on and on and on and on and on and on and on ",
-    "links": [{ "title": "Operations", "href": "/dashboard/operations" }]
+    "links": [
+      { "title": "Access Requests", "href": "/dashboard/access-requests" }
+    ]
   },
   {
     "title": "Registration Request Management",
