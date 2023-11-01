@@ -222,7 +222,8 @@ jobs:
           path: client/playwright-report
           retention-days: 30
   backend-tests:
-    needs: [backend-docker-build, install-dev-tools]
+    needs:
+      ["backend-docker-build", "frontend-docker-build", "install-dev-tools"]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
