@@ -34,7 +34,7 @@ resource "google_storage_bucket_iam_binding" "database_binding" {
   members = [
     "projectEditor:ggl-cas-storage",
     "projectOwner:ggl-cas-storage",
-    google_service_account.accout.email,
+    "serviceAccount:${google_service_account.accout.email}",
   ]
   depends_on = [ google_service_account.accout ]
 }
