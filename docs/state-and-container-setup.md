@@ -25,3 +25,4 @@ The one-liner above preforms what the scripts below do.
    a. Use `oc project {openshift namespace}` to change projects.
 4. Move `credentials.json` from the root directory to `/devops`.
 5. Move the `{environment}.gcs.tfbackend$` from the root directory to `/devops`, and run `terraform init -backend-config={environment}.gcs.tfbackend`.
+6. Run `make create-kubernetes-secret-admin-sa OPENSHIFT_NAMESPACE={openshift_namespace}` to provision a service account in Openshift for Terraform to use.
