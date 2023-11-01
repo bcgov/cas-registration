@@ -20,3 +20,7 @@ create_all_terraform_backends:
 	./scripts/create-terraform-backend.sh $(openshift_nameplate) "dev"
 	./scripts/create-terraform-backend.sh $(openshift_nameplate) "test"
 	./scripts/create-terraform-backend.sh $(openshift_nameplate) "prod"
+
+PHONY: create-kubernetes-secret-admin-sa
+create-kubernetes-secret-admin-sa:
+	./scripts/create-kubernetes-secret-admin-sa.sh $(openshift_namespace)

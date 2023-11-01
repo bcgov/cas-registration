@@ -80,3 +80,4 @@ bootstrap_terraform:
 	./devops/scripts/create-terraform-backend.sh $(OPENSHIFT_NAMEPLATE) $(ENVIRONMENT)
 	@mv $(ENVIRONMENT).gcs.tfbackend ./devops
 	@mv credentials.json ./devops
+	./devops/scripts/create-kubernetes-secret-admin-sa.sh $(OPENSHIFT_NAMESPACE)
