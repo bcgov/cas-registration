@@ -71,3 +71,12 @@ generate_credentials:
 .PHONY: create_state_buckets
 create_state_buckets:
 	./scripts/create-state-buckets.sh $(openshift_nameplate) "ggl-cas-storage"
+
+include .env.devops
+.PHONY: bootstrap_terraform
+bootstrap_terraform:
+	./devops/scripts/generate-gcloud-credentials.sh $(SERVICE_ACCOUNT)
+	./devops/scripts/create-state-bucket.sh $(OPENSHIFT_NAMESPACE) "ggl-cas-storage"
+	./devops/scripts/create-terraform-backend.sh $(OPENSHIFT_NAMEPLATE) $(ENVIRONMENT)
+	@mv $(ENVIRONMENT).gcs.tfbackend ./devops
+	@mv credentials.json ./devops
