@@ -14,7 +14,7 @@ import { UserOperatorFormData } from "@/app/components/form/formDataTypes";
 export interface UserOperatorFormProps {
   schema: RJSFSchema;
   formData?: UserOperatorFormData;
-  userOperatorId: number;
+  userOperatorId?: number;
 }
 
 export default function UserOperatorForm({
@@ -45,7 +45,7 @@ export default function UserOperatorForm({
           setErrorList([{ message: response.error }]);
           return;
         }
-        push(`/dashboard/select-operator/received/${response.operator_id}`);
+        push(`/dashboard/select-operator/received/${response.res.operator_id}`);
       }}
       uiSchema={userOperatorUiSchema}
     >

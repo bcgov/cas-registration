@@ -49,7 +49,7 @@ export default async function SelectOperator() {
       <p className="mt-4">
         Don&apos;t see the operator?{" "}
         <Link
-          href="#"
+          href="/dashboard/select-operator/create"
           className="underline hover:no-underline mr-2"
           style={{ color: BC_GOV_LINKS_COLOR }}
         >
