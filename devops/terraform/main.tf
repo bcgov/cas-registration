@@ -15,16 +15,16 @@ provider "google" {
 }
 
 resource "google_storage_bucket" "database_backups" {
-  name = "${var.openshift-nameplate}-${var.openshift-environment}-obps-postgres-backups"
+  name = "${var.openshift_nameplate}-${var.openshift_environment}-obps-postgres-backups"
   location = var.region
 
   public_access_prevention = "enforced"
 
 }
 
-resource "google_service_account" "accout" {
-  account_id = "${var.openshift-nameplate}-${var.openshift-environment}-backups-sa"
-  display_name = "${var.openshift-nameplate}-${var.openshift-environment}-backups-sa"
+resource "google_service_account" "account" {
+  account_id = "${var.openshift_nameplate}-${var.openshift_environment}-backups-sa"
+  display_name = "${var.openshift_nameplate}-${var.openshift_environment}-backups-sa"
   depends_on = [ google_storage_bucket.database_backups ]
 }
 
@@ -34,7 +34,7 @@ resource "google_storage_bucket_iam_binding" "database_binding" {
   members = [
     "projectEditor:ggl-cas-storage",
     "projectOwner:ggl-cas-storage",
-    "serviceAccount:${google_service_account.accout.email}",
+    "serviceAccount:${google_service_account.account.email}",
   ]
-  depends_on = [ google_service_account.accout ]
+  depends_on = [ google_service_account.account ]
 }

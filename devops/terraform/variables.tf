@@ -9,12 +9,11 @@ variable "region" {
   default = "NORTHAMERICA-NORTHEAST1"
 }
 
-variable "openshift-nameplate" {
+variable "openshift_nameplate" {
   description = "The nameplate of the OpenShift namespace"
   type = string
 }
 
-variable "openshift-environment" {
+variable "openshift_environment" {
   description = "The environment of the OpenShift namepsace (dev, test, prod)"
-  default = "dev"
 }
