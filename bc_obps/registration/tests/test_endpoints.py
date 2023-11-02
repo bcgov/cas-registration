@@ -210,7 +210,7 @@ class TestOperationEndpoint:
 
         mock_operation = OperationIn(
             name="New name",
-            type="Type 1",
+            type="Single Facility Operation",
             naics_code_id=naics_code.id,
             naics_category_id=naics_category.id,
             reporting_activities=[2],
