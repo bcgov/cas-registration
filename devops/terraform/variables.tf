@@ -17,3 +17,11 @@ variable "openshift_nameplate" {
 variable "openshift_environment" {
   description = "The environment of the OpenShift namepsace (dev, test, prod)"
 }
+
+variable "kubernetes_host" {
+  description = "The hostname of the Openshift cluster"
+}
+
+variable "kubernetes_token" {
+  description = "The authentication token for the Openshift cluster"
+}
