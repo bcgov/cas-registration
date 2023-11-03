@@ -4,15 +4,13 @@ import {
   operationUiSchema,
   operationsGroupSchema,
 } from "@/app/utils/jsonSchema/operations";
-import Form from "@rjsf/core";
+import FormBase from "@/app/components/form/FormBase";
 import { RJSFSchema } from "@rjsf/utils";
-import validator from "@rjsf/validator-ajv8";
 import Link from "next/link";
 import React from "react";
 import { Alert } from "@mui/material";
 import SubmitButton from "./SubmitButton";
 import { operationSubmitHandler } from "@/app/utils/actions";
-import * as widgets from "app/components/form/widgets";
 
 export interface OperationsFormData {
   [key: string]: any;
@@ -63,7 +61,7 @@ export default function OperationsForm(props: Props) {
     </>
   ) : (
     <>
-      <Form
+      <FormBase
         // Because this is an RJSF form, we can't use the Nextjs13.5 pattern of putting a function in the action prop and using the useFormState hook.
         readonly={
           props.formData?.status === "Registered" ||
@@ -72,7 +70,6 @@ export default function OperationsForm(props: Props) {
             : false
         }
         schema={props.schema}
-        validator={validator}
         onSubmit={async (data: { formData?: any }) => {
           const response = await operationSubmitHandler(
             {
@@ -94,14 +91,13 @@ export default function OperationsForm(props: Props) {
         }}
         uiSchema={operationUiSchema}
         formData={existingFormData}
-        widgets={widgets}
         formContext={{
           groupSchema: operationsGroupSchema,
         }}
       >
         {error && <Alert severity="error">{error}</Alert>}
         <SubmitButton label="submit" />
-      </Form>
+      </FormBase>
     </>
   );
 }
