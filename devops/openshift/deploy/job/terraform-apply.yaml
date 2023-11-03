@@ -1,0 +1,58 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: terraform-apply
+spec:
+  backoffLimit: 0
+  activeDeadlineSeconds: 900
+  parallelism: 1
+  completions: 1
+  template:
+    spec:
+      containers:
+        - name: terraform-apply
+          resources:
+            limits:
+              cpu: 1000m
+              memory: 128Mi
+            requests:
+              cpu: 100m
+              memory: 64Mi
+            image: joshbutton/cas-reg-devops:0.0.1
+            imagePullPolicy: Always
+            volumeMounts:
+              - mountPath: /etc/gcp
+                name: service-account-credentials-volume
+                readOnly: "True"
+            env:
+              - name: TF_VAR_project
+                valueFrom:
+                  secretKeyRef:
+                    name: gcp-credentials-secret
+                    key: gcp_project_id
+              - name: TF_VAR_openshift_nameplate
+                valueFrom:
+                  secretKeyRef:
+                    name: gcp-credentials-secret
+                    key: name
+              - name: TF_VAR_openshift_environment
+                valueFrom:
+                  secretKeyRef:
+                    name: gcp-credentials-secret
+                    key: openshift_environment
+              - name: TF_VAR_kubernetes_host
+                value: "https://api.silver.devops.gov.bc.ca:6443"
+              - name: TF_VAR_kubernetes_token_name
+                valueFrom:
+                  secretKeyRef:
+                    name: gcp-credentials-secret
+                    key: terraform-secrets-sa-name
+            command: ["/bin/sh", "-c", "terraform init && terraform apply"]
+      restartPolicy: Never
+      volumes:
+        - name: service-account-credentials-volume
+          secret:
+            secretName: gcp-credentials-secret
+            items:
+              - key: sa_json
+                path: credentials.json
