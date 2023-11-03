@@ -6,7 +6,7 @@ import validator from "@rjsf/validator-ajv8";
 import { useState } from "react";
 import { Alert } from "@mui/material";
 import SubmitButton from "@/app/components/form/SubmitButton";
-import ComboBox from "@/app/components/widgets/ComboBox";
+import ComboBox from "@/app/components/form/widgets/ComboBox";
 import { selectOperatorUiSchema } from "@/app/utils/jsonSchema/selectOperator";
 import { useRouter } from "next/navigation";
 import { createSubmitHandler } from "@/app/utils/actions";
