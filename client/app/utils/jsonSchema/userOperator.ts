@@ -75,12 +75,10 @@ export const userOperatorSchema: RJSFSchema = {
     cra_business_number: {
       type: "number",
       title: "CRA Business Number",
-      readOnly: true,
     },
     bc_corporate_registry_number: {
       type: "number",
       title: "BC Corporate Registry Number",
-      readOnly: true,
     },
     business_structure: {
       type: "string",

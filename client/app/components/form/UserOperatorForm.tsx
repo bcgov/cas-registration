@@ -25,9 +25,21 @@ export default function UserOperatorForm({
   const { push } = useRouter();
   const [errorList, setErrorList] = useState([] as any[]);
 
+  const localSchema = schema;
+  if (userOperatorId && localSchema.properties) {
+    localSchema.properties.cra_business_number = {
+      ...localSchema.properties.cra_business_number,
+      readOnly: true,
+    };
+    localSchema.properties.bc_corporate_registry_number = {
+      ...localSchema.properties.bc_corporate_registry_number,
+      readOnly: true,
+    };
+  }
+
   return (
     <Form
-      schema={schema}
+      schema={localSchema}
       validator={validator}
       showErrorList={false}
       formData={formData}
