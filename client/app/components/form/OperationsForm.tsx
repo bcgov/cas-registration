@@ -12,6 +12,7 @@ import React from "react";
 import { Alert } from "@mui/material";
 import SubmitButton from "./SubmitButton";
 import { operationSubmitHandler } from "@/app/utils/actions";
+import * as widgets from "app/components/form/widgets";
 
 export interface OperationsFormData {
   [key: string]: any;
@@ -93,6 +94,7 @@ export default function OperationsForm(props: Props) {
         }}
         uiSchema={operationUiSchema}
         formData={existingFormData}
+        widgets={widgets}
         formContext={{
           groupSchema: operationsGroupSchema,
         }}

@@ -12,11 +12,12 @@ export const operationSchema: RJSFSchema = {
     // keys that are questions aren't saved in the database
     "Did you submit a GHG emissions report for reporting year 2022?",
   ],
+  title: "Operation",
   properties: {
     verified_by: { type: "string" },
     verified_at: { type: "string" },
     name: { type: "string", title: "Operation Name" },
-    type: {
+    operation_type: {
       type: "string",
       title: "Operation Type",
       enum: ["Single Facility Operation", "Linear Facilities Operation"],
@@ -174,7 +175,7 @@ export const operationSchema: RJSFSchema = {
 export const operationUiSchema = {
   "ui:order": [
     "name",
-    "type",
+    "operation_type",
     "naics_code_id",
     "naics_category_id",
     "regulated_products",
@@ -202,6 +203,10 @@ export const operationUiSchema = {
   id: {
     "ui:widget": "hidden",
   },
+  operation_type: {
+    "ui:widget": "SelectWidget",
+    "ui:placeholder": "Select operation type",
+  },
   verified_by: {
     "ui:widget": "hidden",
   },
@@ -212,16 +217,16 @@ export const operationUiSchema = {
     "ui:widget": "select",
   },
   "Did you submit a GHG emissions report for reporting year 2022?": {
-    "ui:widget": "SelectWidget",
+    "ui:widget": "radio",
   },
   "Does the operation have multiple operators?": {
-    "ui:widget": "SelectWidget",
+    "ui:widget": "radio",
   },
   "Would you like to add an exemption ID application lead?": {
-    "ui:widget": "SelectWidget",
+    "ui:widget": "radio",
   },
   opt_in: {
-    "ui:widget": "SelectWidget",
+    "ui:widget": "radio",
   },
 };
 
@@ -230,7 +235,7 @@ export const operationsGroupSchema = [
     title: "Step 1: Operation General Information",
     fields: [
       "name",
-      "type",
+      "operation_type",
       "naics_code_id",
       "naics_category_id",
       "regulated_products",
