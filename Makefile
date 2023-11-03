@@ -37,7 +37,7 @@ verify_postgres_deployment:
 	@set -euo pipefail; \
 	if ! helm status --namespace $(NAMESPACE) cas-obps-postgres; then \
 		echo "Postgres is not deployed to $(NAMESPACE)."; \
-		exit 1;
+		exit 1; \
 
 .PHONY: install
 install: ## Installs the helm chart on the OpenShift cluster
