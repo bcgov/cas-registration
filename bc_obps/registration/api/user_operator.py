@@ -86,6 +86,7 @@ def create_user_operator(payload: SelectOperatorIn):
     )
     return 201, {"user_operator_id": user_operator.id}
 
+
 def handle_user_operator_user(payload: UserOperatorIn, user):
     payload_dict = payload.dict()
     is_senior_officer: bool = payload_dict.get("is_senior_officer")
@@ -125,7 +126,8 @@ def handle_user_operator_user(payload: UserOperatorIn, user):
         updated_user_instance.save()
         if not is_senior_officer:
             senior_officer_contact.save()
-            
+
+
 def handle_user_operator_operator(payload: UserOperatorIn, operator):
     payload_dict = payload.dict()
     operator_has_parent_company: bool = payload_dict.get("operator_has_parent_company")
@@ -205,6 +207,7 @@ def handle_user_operator_operator(payload: UserOperatorIn, operator):
             parent_operator_instance.save()
             if percentage_owned_by_parent_company:
                 parent_child_operator_instance.save()
+                
                 
 @router.put(
     "/select-operator/user-operator/{int:user_operator_id}",
