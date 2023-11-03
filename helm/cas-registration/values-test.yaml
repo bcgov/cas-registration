@@ -1,7 +1,3 @@
-postgres:
-  replicaCount: 1
-
-  environment: test
 
 backend:
   replicaCount: 1

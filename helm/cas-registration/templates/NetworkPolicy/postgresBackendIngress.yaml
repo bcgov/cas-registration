@@ -1,0 +1,17 @@
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: postgres-backend-ingress
+  labels: {{ include "cas-reg-backend.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: {{ .Release.Name }}
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          release: cas-obps-postgres
+    - podSelector:
+        matchLabels:
+          app.kubernetes.io/name: cas-obps-postgres
