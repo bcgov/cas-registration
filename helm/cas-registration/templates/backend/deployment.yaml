@@ -35,22 +35,22 @@ spec:
               valueFrom:
                 secretKeyRef:
                   key: user
-                  name: cas-registration-postgres-pguser-registration
+                  name: cas-obps-postgres-pguser-registration
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
                   key: password
-                  name: cas-registration-postgres-pguser-registration
+                  name: cas-obps-postgres-pguser-registration
             - name: DB_NAME
               valueFrom:
                 secretKeyRef:
                   key: dbname
-                  name: cas-registration-postgres-pguser-registration
+                  name: cas-obps-postgres-pguser-registration
             - name: DB_PORT
               valueFrom:
                 secretKeyRef:
                   key: port
-                  name: cas-registration-postgres-pguser-registration
+                  name: cas-obps-postgres-pguser-registration
             - name: DB_HOST
               valueFrom:
                 secretKeyRef:
