@@ -15,3 +15,6 @@ BINDING_NAME="${SERVICE_ACCOUNT_NAME}-secret-admin-binding"
 oc create role $ROLE_NAME --verb=create,delete,deletecollection,get,list,patch,update,watch --resource=secrets -n=$OPENSHIFT_NAMESPACE_WITH_ENV
 oc create sa $SERVICE_ACCOUNT_NAME
 oc create rolebinding $BINDING_NAME --role=$ROLE_NAME --serviceaccount=$SERVICE_ACCOUNT_ADDRESS
+export TF_SA_TOKEN_NAME=$(oc describe serviceaccount $SERVICE_ACCOUNT_NAME | grep -Po "(?<=^Tokens:)\s+.*" | awk '{$1=$1};1')
+echo "A Service Account has been created for Terraform as a Secret Admin has been created in Openshift as:\n$TF_SA_TOKEN_NAME"
+# ALTERNATE_SA_TOKEN_NAME=$(oc get secrets | grep -Po "$SERVICE_ACCOUNT_NAME-token-\w+")

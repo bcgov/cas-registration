@@ -76,9 +76,9 @@ include .env.devops
 .PHONY: bootstrap_terraform
 bootstrap_terraform:
 	./devops/scripts/generate-gcloud-credentials.sh $(SERVICE_ACCOUNT)
-	./oc create secret generic gcp-credentials-secret --from-file=sa_json=./credentials.json --from-literal=gcp_project_id="ggl-cas-storage" --from-literal=openshift_namespace=$(OPENSHIFT_NAMESPACE) --from-literal=openshift_nameplate=$(OPENSHIFT_NAMEPLATE) --from-literal=openshift_environment=$(OPENSHIFT_ENVIRONMENT)
+	./devops/scripts/create-kubernetes-secret-admin-sa.sh $(OPENSHIFT_NAMESPACE)
+	./oc create secret generic gcp-credentials-secret --from-file=sa_json=./credentials.json --from-literal=gcp_project_id="ggl-cas-storage" --from-literal=openshift_namespace=$(OPENSHIFT_NAMESPACE) --from-literal=openshift_nameplate=$(OPENSHIFT_NAMEPLATE) --from-literal=openshift_environment=$(OPENSHIFT_ENVIRONMENT) --from-literal=terraform-secrets-sa-name=$(TF_SA_TOKEN_NAME)
 	./devops/scripts/create-state-bucket.sh $(OPENSHIFT_NAMESPACE) "ggl-cas-storage"
 	./devops/scripts/create-terraform-backend.sh $(OPENSHIFT_NAMEPLATE) $(OPENSHIFT_ENVIRONMENT)
 	@mv $(OPENSHIFT_ENVIRONMENT).gcs.tfbackend ./devops
 	@mv credentials.json ./devops
-	./devops/scripts/create-kubernetes-secret-admin-sa.sh $(OPENSHIFT_NAMESPACE)

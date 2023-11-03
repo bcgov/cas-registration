@@ -19,10 +19,10 @@ The one-liner above preforms what the scripts below do.
 
 0. Ensure you are in the root directory.
 1. Use `./devops/scripts/generate-gcloud-credentials.sh {Google Service Account Email}`, where `{Google Service Account Email}` is the service account email (ie. `terraform@project.iam.gserviceaccount.com`) Credentials will be stored as `/credentials.json`.
-2. Create the requisite secrets in your OpenShift project with `oc create secret generic gcp-credentials-secret --from-file=sa_json=./credentials.json --from-literal=gcp_project_id={Google Project ID} --from-literal=openshift_namespace={Openshift Namespace} --from-literal=openshift_nameplate={Openshift Nameplate} --from-literal=openshift_environment={Openshift environment}`, where `{Google Project ID}` is the Project where the storage buckets will be created (matching the credentials used) and `{Openshift **}` is the namespace, nameplate, and environment of the Openshift project.
+2. Run `make create-kubernetes-secret-admin-sa OPENSHIFT_NAMESPACE={openshift_namespace}` to provision a service account in Openshift for Terraform to use.
+3. Create the requisite secrets in your OpenShift project with `oc create secret generic gcp-credentials-secret --from-file=sa_json=./credentials.json --from-literal=gcp_project_id={Google Project ID} --from-literal=openshift_namespace={Openshift Namespace} --from-literal=openshift_nameplate={Openshift Nameplate} --from-literal=openshift_environment={Openshift environment} --from-literal=terraform-secrets-sa-name=`, where `{Google Project ID}` is the Project where the storage buckets will be created (matching the credentials used) and `{Openshift **}` is the namespace, nameplate, and environment of the Openshift project.
    a. You will need to be logged into OpenShift, using your token provided by the web interface.
-3. Provision the job to Openshift to generate the state bucket for a particular namespace with `oc create -f ./devops/openshift/deploy/job/provision-tf-state-bucket.yaml`.
+4. Provision the job to Openshift to generate the state bucket for a particular namespace with `oc create -f ./devops/openshift/deploy/job/provision-tf-state-bucket.yaml`.
    a. Use `oc project {openshift namespace}` to change projects.
-4. Move `credentials.json` from the root directory to `/devops`.
-5. Move the `{environment}.gcs.tfbackend$` from the root directory to `/devops`, and run `terraform init -backend-config={environment}.gcs.tfbackend`.
-6. Run `make create-kubernetes-secret-admin-sa OPENSHIFT_NAMESPACE={openshift_namespace}` to provision a service account in Openshift for Terraform to use.
+5. Move `credentials.json` from the root directory to `/devops`.
+6. Move the `{environment}.gcs.tfbackend$` from the root directory to `/devops`, and run `terraform init -backend-config={environment}.gcs.tfbackend`.
