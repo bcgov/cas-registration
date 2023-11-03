@@ -51,8 +51,7 @@ install: CHART_DIR=./helm/cas-registration
 install: CHART_INSTANCE=cas-registration
 install: HELM_OPTS=--atomic --wait-for-jobs --timeout 2400s --namespace $(NAMESPACE) \
 										--set defaultImageTag=$(IMAGE_TAG) \
-										--values $(CHART_DIR)/values-$(ENVIRONMENT).yaml \
-										--dry-run
+										--values $(CHART_DIR)/values-$(ENVIRONMENT).yaml
 install:
 	@set -euo pipefail; \
 	helm dep up $(CHART_DIR); \
