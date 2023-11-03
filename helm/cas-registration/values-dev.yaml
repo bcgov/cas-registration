@@ -1,11 +1,3 @@
-# Default values for cas-registration.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
-
-postgres:
-  replicaCount: 1
-
-  environment: develop
 
 backend:
   replicaCount: 1
