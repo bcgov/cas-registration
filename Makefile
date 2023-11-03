@@ -16,7 +16,7 @@ lint_chart: ## Checks the configured helm chart template definitions against the
 lint_chart:
 	@set -euo pipefail; \
 	helm dep up ./helm/cas-registration; \
-	helm template --set ggircs.namespace=dummy-namespace --set ciip.prefix=ciip-prefix -f ./helm/cas-registration/values-dev.yaml cas-registration ./helm/cas-registration --validate;
+	helm template -f ./helm/cas-registration/values-dev.yaml cas-registration ./helm/cas-registration --validate;
 
 
 check_environment: ## Making sure the environment is properly configured for helm
@@ -35,14 +35,14 @@ check_environment:
 verify_postgres_deployment: ## Making sure the environment is properly configured for helm
 verify_postgres_deployment:
 	@set -euo pipefail; \
-	if ! helm status --namespace $(NAMESPACE) cas-obps-postgres; then \
-		echo "Postgres is not deployed to $(NAMESPACE)."; \
+	if ! helm status --namespace $(NAMESPACE) cas-obps-postgress; then \
+		echo "Postgres is not deployed to $(NAMESPACE)." \
 		exit 1; \
+	fi; \
 
 .PHONY: install
 install: ## Installs the helm chart on the OpenShift cluster
 install: check_environment
-install: verify_postgres_deployment
 install:
 install: GIT_SHA1=$(shell git rev-parse HEAD)
 install: IMAGE_TAG=$(GIT_SHA1)
@@ -51,11 +51,14 @@ install: CHART_DIR=./helm/cas-registration
 install: CHART_INSTANCE=cas-registration
 install: HELM_OPTS=--atomic --wait-for-jobs --timeout 2400s --namespace $(NAMESPACE) \
 										--set defaultImageTag=$(IMAGE_TAG) \
-										--values $(CHART_DIR)/values-$(ENVIRONMENT).yaml
+										--values $(CHART_DIR)/values-$(ENVIRONMENT).yaml \
+										--dry-run
 install:
 	@set -euo pipefail; \
 	helm dep up $(CHART_DIR); \
-	if ! helm status --namespace $(NAMESPACE) $(CHART_INSTANCE); then \
+	if ! helm status --namespace $(NAMESPACE) cas-obps-postgres; then \
+		echo "ERROR: Postgres is not deployed to $(NAMESPACE)."; \
+	elif ! helm status --namespace $(NAMESPACE) $(CHART_INSTANCE); then \
 		echo 'Installing the application'; \
 		helm install $(HELM_OPTS) $(CHART_INSTANCE) $(CHART_DIR); \
 	else \

@@ -7,7 +7,7 @@ metadata:
 spec:
   podSelector:
     matchLabels:
-      app.kubernetes.io/name: {{ include "cas-registration.fullname" . }}
+      app.kubernetes.io/name: {{ include "cas-registration.fullname" . }}-backend
   ingress:
     - from:
         - namespaceSelector:
