@@ -32,9 +32,17 @@ check_environment:
 	fi; \
 
 
+verify_postgres_deployment: ## Making sure the environment is properly configured for helm
+verify_postgres_deployment:
+	@set -euo pipefail; \
+	if ! helm status --namespace $(NAMESPACE) cas-obps-postgres; then \
+		echo "Postgres is not deployed to $(NAMESPACE)."; \
+		exit 1;
+
 .PHONY: install
 install: ## Installs the helm chart on the OpenShift cluster
 install: check_environment
+install: verify_postgres_deployment
 install:
 install: GIT_SHA1=$(shell git rev-parse HEAD)
 install: IMAGE_TAG=$(GIT_SHA1)
