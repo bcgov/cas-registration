@@ -12,6 +12,8 @@ spec:
     - podSelector:
         matchLabels:
           release: {{ .Release.Name }}
+          component: backend
     - podSelector:
         matchLabels:
           app.kubernetes.io/name: {{ .Release.Name }}
+          component: backend
