@@ -11,12 +11,11 @@ metadata:
   annotations:
     "helm.sh/hook": post-upgrade, post-install
 spec:
-  backoffLimit: 0
-  activeDeadlineSeconds: 300
   template:
     metadata:
       name: {{ template "cas-registration.fullname" . }}-load-dev-data
     spec:
+      activeDeadlineSeconds: 300
       containers:
         - name:  {{ template "cas-registration.fullname" . }}-load-dev-data
           image: curlimages/curl
