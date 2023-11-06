@@ -6,7 +6,8 @@ metadata:
 spec:
   podSelector:
     matchLabels:
-      app.kubernetes.io/name: {{ .Release.Name }}-backend
+      app.kubernetes.io/name: {{ .Release.Name }}
+      component: backend
   ingress:
   - from:
     - podSelector:
