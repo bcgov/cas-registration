@@ -26,7 +26,7 @@ spec:
           image: "{{ .Values.backend.image.repository }}:{{ .Values.backend.sourceRepoImageTag | default .Values.backend.image.tag }}"
           imagePullPolicy: {{ .Values.backend.image.pullPolicy }}
           env:
-            - name: SECRET_KEY
+            - name: DJANGO_SECRET_KEY
               valueFrom:
                 secretKeyRef:
                   key: django-secret-key
