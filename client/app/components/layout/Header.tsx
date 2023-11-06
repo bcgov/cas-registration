@@ -49,7 +49,6 @@ export default function Header() {
         color="primary"
         sx={{
           margin: "0 auto",
-          clipPath: "inset(-5px 0px -5px 0px)",
           boxSize: "border-box",
           justifyContent: "center",
           width: "100%",
