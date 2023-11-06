@@ -51,8 +51,8 @@ export default function Header() {
           margin: "0 auto",
           clipPath: "inset(-5px 0px -5px 0px)",
           boxSize: "border-box",
+          justifyContent: "center",
           width: "100%",
-          minWidget: "100%",
           maxWidth: "1536px",
         }}
       >
