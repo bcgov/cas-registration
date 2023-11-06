@@ -57,6 +57,7 @@ export default async function RootLayout({
                 display: "flex",
                 flexDirection: "column",
                 minHeight: "100vh",
+                maxWidth: "1536px",
               }}
             >
               {/* Content goes here */}
