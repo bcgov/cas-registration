@@ -23,29 +23,37 @@ const links = footerLinks.map((link, index) => (
 ));
 export default function Footer() {
   return (
-    <>
+    <Box
+      position="absolute"
+      component="footer"
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        mt: "auto",
+        width: "100%",
+        bgcolor: "primary.main",
+        py: 3,
+        px: 2,
+        left: 0,
+        bottom: "5px",
+        top: "100%",
+      }}
+    >
       <Box
-        component="footer"
+        component="div"
         sx={{
-          bgcolor: "primary.main",
-          py: 3,
-          px: 2,
-          mt: "auto", //in a flexbox item, this will push the footer down to the bottom
+          display: "flex",
+          flexDirection: {
+            xs: "column", //mobile small
+            sm: "row",
+          },
+          margin: "0 auto",
+          width: "100%",
+          maxWidth: "1536px",
         }}
       >
-        <Box
-          component="div"
-          sx={{
-            display: "flex",
-            flexDirection: {
-              xs: "column", //mobile small
-              sm: "row",
-            },
-          }}
-        >
-          {links}
-        </Box>
+        {links}
       </Box>
-    </>
+    </Box>
   );
 }
