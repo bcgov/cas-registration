@@ -3,6 +3,9 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
+  labels:
+{{- include "cas-registration.labels" . | nindent 4 }}
+    component: backend
   name: {{ template "cas-registration.fullname" . }}-load-dev-data
   namespace: {{ .Release.Namespace }}
   annotations:
@@ -20,6 +23,6 @@ spec:
           command:
             - /bin/sh
             - -ec
-            - "curl https://cas-registration-dev.apps.silver.devops.gov.bc.ca/api/registration/test-setup"
+            - "curl https://cas-reg-backend-dev.apps.silver.devops.gov.bc.ca/api/registration/test-setup"
       restartPolicy: Never
 {{ end }}
