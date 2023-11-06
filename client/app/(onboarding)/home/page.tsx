@@ -37,7 +37,7 @@ export default function Page() {
       Using breakpoints for responsive design, grid items will display in two columns on laptop & desktop and a single column on mobile & tablet,
       Using the order prop for stacking order, grid item 1 and 2 will be reverse order on mobile & tablet,
        */}
-      <Grid container spacing={2} px={1} py={8}>
+      <Grid container spacing={2}>
         <Grid item xs={12} md={6} order={{ xs: 2, md: 1 }}>
           <Typography
             color="secondary"
