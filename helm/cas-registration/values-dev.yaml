@@ -1,0 +1,24 @@
+
+backend:
+  replicaCount: 1
+
+  image:
+    tag: "latest"
+
+  route:
+    host: cas-reg-backend-dev.apps.silver.devops.gov.bc.ca
+
+  environment: develop
+
+frontend:
+  replicaCount: 1
+
+  image:
+    tag: "latest"
+
+  route:
+    host: cas-reg-frontend-dev.apps.silver.devops.gov.bc.ca
+
+  apiUrl: https://cas-reg-backend-dev.apps.silver.devops.gov.bc.ca/api/
+
+  environment: develop
