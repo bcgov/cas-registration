@@ -4,8 +4,8 @@ import CardContent from "@mui/material/CardContent";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import Link from "@mui/material/Link";
-import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
 
 /*
 📚
@@ -23,11 +23,9 @@ type ContentItem = {
 };
 
 export default function Page() {
-  // 📛 *********** Mock authentication role ***********************
-  // useSearchParams is a Client Component hook that lets you read the current URL's query string.
-  const searchParams = useSearchParams();
-  const role = searchParams.get("role");
-  // 👇️ mock role base navigation tiles
+  const { data: session } = useSession();
+  const role = session?.user?.role;
+
   const [contents, setContents] = useState<ContentItem[]>([]);
   useEffect(() => {
     if (typeof window !== "undefined") {
