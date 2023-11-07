@@ -27,15 +27,21 @@ export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
     });
 
     if (token) {
+<<<<<<< HEAD
       // 👉️ OK: authenticated user
       if (pathname.endsWith("/") || pathname.endsWith("/home")) {
         //route to (authenticated)/dashboard
+=======
+      if (pathname.endsWith("/") || pathname.endsWith("/home")) {
+        //route to (authenticated)\dashboard
+>>>>>>> 280d666 (🚧 nextauth with keycloak provider)
         return NextResponse.redirect(new URL(`/dashboard`, request.url));
       } else {
         //👌 ok: route to next middleware
         return next(request, _next);
       }
     } else {
+<<<<<<< HEAD
       //📛 ANONYMOUS
       // route to (onboarding)/home
       if (pathname.endsWith("/home")) {
@@ -44,6 +50,16 @@ export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
       }
       // route to (onboarding)\home
       return NextResponse.redirect(new URL(`/home`, request.url));
+=======
+      //📛 route to (onboarding)\home
+      if (pathname.endsWith("/home")) {
+        //👌 ok: route to next middleware
+        return next(request, _next);
+      } else {
+        //route to (onboarding)\home
+        return NextResponse.redirect(new URL(`/home`, request.url));
+      }
+>>>>>>> 280d666 (🚧 nextauth with keycloak provider)
     }
   };
 };

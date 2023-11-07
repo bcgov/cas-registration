@@ -1,5 +1,6 @@
 import Button from "@mui/material/Button/Button";
 import Link from "@mui/material/Link";
+<<<<<<< HEAD
 import { signIn, signOut, useSession } from "next-auth/react";
 import { useEffect } from "react";
 
@@ -14,10 +15,19 @@ async function keycloakSessionLogOut() {
     }
     // call nextauth logout
     signOut();
+=======
+import { signOut } from "next-auth/react";
+
+// 🛠️ Function to ensure keycloak session logout
+async function keycloakSessionLogOut() {
+  try {
+    await fetch(`/api/auth/logout`, { method: "GET" });
+>>>>>>> 280d666 (🚧 nextauth with keycloak provider)
   } catch (err) {
     console.error(err);
   }
 }
+<<<<<<< HEAD
 
 export default function Profile({ name }: { readonly name: string }) {
   /* use the NextAuth useSession hook to get session data, and if a specific error condition is met,
@@ -29,6 +39,9 @@ export default function Profile({ name }: { readonly name: string }) {
       signIn("keycloak"); // Force sign in to hopefully resolve error
     }
   }, [session]);
+=======
+export default function Profile({ name }: { name: string }) {
+>>>>>>> 280d666 (🚧 nextauth with keycloak provider)
   return (
     <>
       <Link
@@ -44,7 +57,11 @@ export default function Profile({ name }: { readonly name: string }) {
           variant="outlined"
           onClick={() => {
             //keycloak logout then nextauth logout
+<<<<<<< HEAD
             keycloakSessionLogOut();
+=======
+            keycloakSessionLogOut().then(() => signOut({ callbackUrl: "/" }));
+>>>>>>> 280d666 (🚧 nextauth with keycloak provider)
           }}
         >
           Log Out
