@@ -10,6 +10,16 @@ const TextWidget: React.FC<WidgetProps> = (props) => {
     const val = e.target.value;
     onChange(val === "" ? undefined : val);
   };
-  return <TextField id={id} value={value} onChange={handleChange} />;
+
+  return (
+    <TextField
+      id={id}
+      value={value}
+      onChange={handleChange}
+      sx={{
+        width: "100%",
+      }}
+    />
+  );
 };
 export default TextWidget;

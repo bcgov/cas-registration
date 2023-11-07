@@ -33,6 +33,59 @@ const theme = createTheme({
         },
       },
     },
+
+    MuiTextField: {
+      styleOverrides: {
+        root: {
+          "& .MuiOutlinedInput-root": {
+            "& fieldset": {
+              borderColor: "#F2F2F2",
+            },
+            "&:hover fieldset": {
+              borderColor: "#3F85ED",
+            },
+            "&.Mui-focused fieldset": {
+              borderColor: "#3F85ED",
+            },
+          },
+        },
+      },
+    },
+    MuiSelect: {
+      styleOverrides: {
+        root: {
+          "& .MuiOutlinedInput-root": {
+            "& fieldset": {
+              borderColor: "red",
+            },
+            "&:hover fieldset": {
+              borderColor: "yellow",
+            },
+            "&.Mui-focused fieldset": {
+              borderColor: "green",
+            },
+          },
+        },
+      },
+    },
+    MuiOutlinedInput: {
+      styleOverrides: {
+        root: {
+          "& .MuiOutlinedInput-root": {
+            "& fieldset": {
+              borderColor: "#F2F2F2",
+            },
+            "&:hover fieldset": {
+              borderColor: "#3F85ED",
+            },
+            "&.Mui-focused fieldset": {
+              borderColor: "#3F85ED",
+            },
+          },
+        },
+      },
+    },
+
     MuiTypography: {
       styleOverrides: {
         root: {
