@@ -8,6 +8,17 @@ from registration.schema import (
 
 ##### GET #####
 
+@router.get("/naics_codes", response=List[NaicsCodeSchema])
+def list_naics_codes(request):
+    qs = NaicsCode.objects.all()
+    return qs
+
+
+@router.get("/naics_categories", response=List[NaicsCategorySchema])
+def list_naics_codes(request):
+    qs = NaicsCategory.objects.all()
+    return qs
+
 
 @router.get("/naics_codes", response=List[NaicsCodeSchema])
 def list_naics_codes(request):
