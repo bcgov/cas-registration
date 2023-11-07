@@ -3,10 +3,9 @@ import {
   BC_GOV_PRIMARY_BRAND_COLOR_BLUE,
   BC_GOV_LINKS_COLOR,
   BC_GOV_BACKGROUND_COLOR_BLUE,
-  LIGHT_GREY_BG_COLOR,
+  DARK_GREY_BG_COLOR,
 } from "@/app/styles/colors";
 import "@bcgov/bc-sans/css/BCSans.css";
-console.log("BC_GOV_BACKGROUND_COLOR_BLUE", BC_GOV_BACKGROUND_COLOR_BLUE);
 
 const theme = createTheme({
   typography: {
@@ -41,7 +40,7 @@ const theme = createTheme({
         root: {
           "& .MuiOutlinedInput-root": {
             "& fieldset": {
-              borderColor: LIGHT_GREY_BG_COLOR,
+              borderColor: DARK_GREY_BG_COLOR,
             },
             "&:hover fieldset": {
               borderColor: BC_GOV_LINKS_COLOR,
@@ -57,7 +56,7 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           "& .MuiOutlinedInput-notchedOutline": {
-            borderColor: LIGHT_GREY_BG_COLOR,
+            borderColor: DARK_GREY_BG_COLOR,
           },
           "&:hover .MuiOutlinedInput-notchedOutline": {
             borderColor: BC_GOV_LINKS_COLOR,
@@ -74,7 +73,7 @@ const theme = createTheme({
         root: {
           "& .MuiOutlinedInput-root": {
             "& fieldset": {
-              borderColor: LIGHT_GREY_BG_COLOR,
+              borderColor: DARK_GREY_BG_COLOR,
             },
             "&:hover fieldset": {
               borderColor: BC_GOV_LINKS_COLOR,

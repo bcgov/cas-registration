@@ -1,4 +1,5 @@
 import FieldTemplate from "@/app/styles/rjsf/FieldTemplate";
+import GroupTitleFieldTemplate from "@/app/styles/rjsf/GroupTitleFieldTemplate";
 import GroupedObjectFieldTemplateWrapper from "@/app/styles/rjsf/GroupedObjectFieldTemplateWrapper";
 import { RJSFSchema } from "@rjsf/utils";
 
@@ -38,13 +39,11 @@ export const operationSchema: RJSFSchema = {
       type: "string",
       title: "Process Flow Diagram",
       format: "data-url",
-      readOnly: true,
     },
     boundary_map: {
       type: "string",
       title: "Boundary Map",
       format: "data-url",
-      readOnly: true,
     },
 
     "Did you submit a GHG emissions report for reporting year 2022?": {
@@ -200,7 +199,7 @@ export const operationUiSchema = {
   "ui:ObjectFieldTemplate": GroupedObjectFieldTemplateWrapper,
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
-
+  "ui:TitleFieldTemplate": GroupTitleFieldTemplate,
   id: {
     "ui:widget": "hidden",
   },
@@ -228,6 +227,12 @@ export const operationUiSchema = {
   },
   opt_in: {
     "ui:widget": "radio",
+  },
+  data_flow_diagram: {
+    "ui:widget": "FileWidget",
+  },
+  boundary_map: {
+    "ui:widget": "FileWidget",
   },
 };
 
