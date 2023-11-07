@@ -14,11 +14,7 @@ from .api_base import router
 ##### POST #####
 
 
-
-
 ##### PUT #####
-
-
 
 
 ##### DELETE #####
