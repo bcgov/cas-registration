@@ -1,5 +1,6 @@
 import Link from "@mui/material/Link";
 import Button from "@mui/material/Button";
+import { signIn } from "next-auth/react";
 
 export default function Login() {
   // 🧩common button config
@@ -15,23 +16,25 @@ export default function Login() {
 
   return (
     <>
-      <Link href="/dashboard?role=admin" sx={{ color: "white" }}>
+      <Link href="#" sx={{ color: "white" }}>
         <Button
           sx={{ ...commonButtonConfig }}
           aria-label="Program Administrator Log In"
           color="inherit"
           variant="outlined"
+          onClick={() => signIn("keycloak")}
         >
           Program Administrator
           <br /> Log In
         </Button>
       </Link>
-      <Link href="/dashboard?role=operator" sx={{ color: "white" }}>
+      <Link href="#" sx={{ color: "white" }}>
         <Button
           sx={{ ...commonButtonConfig, marginLeft: "20px" }}
           aria-label="Industrial Operator Log In"
           color="inherit"
           variant="outlined"
+          onClick={() => signIn("keycloak")}
         >
           Industrial Operator
           <br /> Log In
