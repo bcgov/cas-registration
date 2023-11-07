@@ -4,15 +4,11 @@ from django.shortcuts import get_object_or_404
 from registration.models import Operation, Operator, NaicsCode, NaicsCategory, User, UserOperator
 from registration.utils import check_users_admin_request_eligibility, update_model_instance
 from ninja.responses import codes_4xx
-from registration.schema import (
-    Message,
-    OperatorOut,
-    RequestAccessOut,
-    SelectOperatorIn
-)
+from registration.schema import Message, OperatorOut, RequestAccessOut, SelectOperatorIn
 
 
 ##### GET #####
+
 
 @router.get("/operators", response=List[OperatorOut])
 def list_operators(request):
@@ -41,6 +37,7 @@ def select_operator(request, operator_id: int):
 
 ##### POST #####
 
+
 @router.post("/select-operator/request-access", response={201: RequestAccessOut, codes_4xx: Message})
 def request_access(request, payload: SelectOperatorIn):
     user: User = User.objects.first()  # FIXME: placeholders until after authentication is set up
@@ -59,11 +56,7 @@ def request_access(request, payload: SelectOperatorIn):
     return 201, {"user_operator_id": user_operator.id}
 
 
-
-
 ##### PUT #####
-
-
 
 
 ##### DELETE #####

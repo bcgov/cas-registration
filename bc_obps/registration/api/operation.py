@@ -2,13 +2,11 @@ from .api_base import router
 from typing import List
 from django.shortcuts import get_object_or_404
 from registration.models import Operation, Operator, NaicsCode, NaicsCategory
-from registration.schema import (
-    OperationIn,
-    OperationOut
-)
+from registration.schema import OperationIn, OperationOut
 
 
 ##### GET #####
+
 
 @router.get("/operations", response=List[OperationOut])
 def list_operations(request):
@@ -23,6 +21,7 @@ def get_operation(request, operation_id: int):
 
 
 ##### POST #####
+
 
 @router.post("/operations")
 def create_operation(request, payload: OperationIn):
@@ -49,9 +48,8 @@ def create_operation(request, payload: OperationIn):
     return {"name": operation.name}
 
 
-
-
 ##### PUT #####
+
 
 @router.put("/operations/{operation_id}")
 def update_operation(request, operation_id: int, payload: OperationIn):
@@ -89,8 +87,6 @@ def update_operation(request, operation_id: int, payload: OperationIn):
         operation.status = "Pending"
         operation.save()
         return {"name": operation.name}
-
-
 
 
 ##### DELETE #####

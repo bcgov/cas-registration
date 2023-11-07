@@ -2,6 +2,7 @@ from ninja import Router
 from django.core.management import call_command
 from django.conf import settings
 from django.http import HttpResponse
+
 router = Router()
 
 # testing endpoint
