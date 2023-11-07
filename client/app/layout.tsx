@@ -6,6 +6,8 @@ You should not manually add <head> tags such as <title> and <meta> to root layou
 */
 
 import "@/app/styles/globals.css";
+import { getServerSession } from "next-auth";
+import SessionProvider from "@/app/components/auth/SessionProvider";
 import ThemeRegistry from "@/app/components/theme/ThemeRegistry";
 
 // 🏷 import {named} can be significantly slower than import default
@@ -18,39 +20,46 @@ export const metadata = {
   viewport: "initial-scale=1, width=device-width",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  // Invoke the nextauth server side session fetcher fucntion getServerSessio
+  // Wrap the returned auth session in SessionProvider to expose the useSession function in client components
+  const session = await getServerSession();
+
   return (
     <html lang="en">
       {
         //👇️ Used to mark the root element where Next.js will mount the client-side React application
       }
       <body id="__next">
-        {
-          //👇️ provide MUI custom theme to the components within the layout
-        }
-        <ThemeRegistry>
-          {/*
-          The Box component is a versatile and essential building block in Material-UI v5.
+        {/* 👇️  nextauth SessionProvider available to client children via useSession */}
+        <SessionProvider session={session}>
+          {
+            //👇️ provide MUI custom theme to the components within the layout
+          }
+          <ThemeRegistry>
+            {/*
+          MUI Box component is a versatile and essential building block in Material-UI v5.
           It serves as a wrapper element that helps structure and organize the layout of your application.
           One of the Box component's strengths is its ability to create responsive layouts easily...
           utilizing Box component's sx prop to create a responsive layout...
           You can use properties like display, flexDirection, alignItems, justifyContent and more to control the arrangement and alignment of elements within a flex container
           */}
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              minHeight: "100vh",
-            }}
-          >
-            {/* Content goes here */}
-            {children}
-          </Box>
-        </ThemeRegistry>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                minHeight: "100vh",
+              }}
+            >
+              {/* Content goes here */}
+              {children}
+            </Box>
+          </ThemeRegistry>
+        </SessionProvider>
       </body>
     </html>
   );
