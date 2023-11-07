@@ -59,6 +59,11 @@ def get_user_operator(request, user_operator_id: int):
     }
 
 
+##### GET #####
+
+
+
+
 ##### POST #####
 
 
@@ -200,6 +205,11 @@ def create_user_operator_request(request, user_operator_id: int, payload: UserOp
     user_operator.save(update_fields=["status"])
 
     return 200, {"operator_id": operator.id}
+
+
+##### PUT #####
+
+
 
 
 ##### DELETE #####

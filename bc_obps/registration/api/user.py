@@ -10,4 +10,16 @@ from .api_base import router
 ##### PUT #####
 
 
+
+
+##### POST #####
+
+
+
+
+##### PUT #####
+
+
+
+
 ##### DELETE #####
