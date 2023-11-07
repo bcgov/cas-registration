@@ -19,11 +19,14 @@ export const metadata: Metadata = {
     "The OBPS is designed to ensure there is a price incentive for industrial emitters to reduce their greenhouse gas emissions and spur innovation while maintaining competitiveness and protecting against carbon leakage.",
 };
 
+<<<<<<< HEAD
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
 };
 
+=======
+>>>>>>> 280d666 (🚧 nextauth with keycloak provider)
 export default async function RootLayout({
   children,
 }: {
