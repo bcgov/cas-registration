@@ -4,4 +4,4 @@ router = Router()
 
 @router.get("/hello")
 def hello(request):
-    return "Hello world"
+    return "Hello from the base api class"
