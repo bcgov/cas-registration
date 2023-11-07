@@ -11,10 +11,7 @@ from registration.schema import Message, UserOperatorIn, UserOperatorOut, Select
 ##### GET #####
 
 
-@router.get(
-    "/select-operator/user-operator/{int:user_operator_id}",
-    response=UserOperatorOut,
-)
+@router.get("/select-operator/user-operator/{int:user_operator_id}", response=UserOperatorOut)
 def get_user_operator(request, user_operator_id: int):
     user_operator = get_object_or_404(UserOperator, id=user_operator_id)
     user: User = user_operator.user
