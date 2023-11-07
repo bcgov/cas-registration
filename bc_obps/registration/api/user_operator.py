@@ -6,14 +6,10 @@ from django.core.exceptions import ValidationError
 from registration.models import Operator, User, UserOperator, Contact, ParentChildOperator
 from registration.utils import update_model_instance
 from ninja.responses import codes_4xx
-from registration.schema import (
-    Message,
-    UserOperatorIn,
-    UserOperatorOut,
-    SelectOperatorIn
-)
+from registration.schema import Message, UserOperatorIn, UserOperatorOut, SelectOperatorIn
 
 ##### GET #####
+
 
 @router.get("/select-operator/user-operator/{int:user_operator_id}", response=UserOperatorOut)
 def get_user_operator(request, user_operator_id: int):
@@ -63,9 +59,8 @@ def get_user_operator(request, user_operator_id: int):
 ##### POST #####
 
 
-
-
 ##### PUT #####
+
 
 @router.put(
     "/select-operator/user-operator/{int:user_operator_id}",
@@ -202,8 +197,6 @@ def create_user_operator_request(request, user_operator_id: int, payload: UserOp
     user_operator.save(update_fields=["status"])
 
     return 200, {"operator_id": operator.id}
-
-
 
 
 ##### DELETE #####
