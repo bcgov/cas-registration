@@ -3,8 +3,10 @@ import {
   BC_GOV_PRIMARY_BRAND_COLOR_BLUE,
   BC_GOV_LINKS_COLOR,
   BC_GOV_BACKGROUND_COLOR_BLUE,
+  LIGHT_GREY_BG_COLOR,
 } from "@/app/styles/colors";
 import "@bcgov/bc-sans/css/BCSans.css";
+console.log("BC_GOV_BACKGROUND_COLOR_BLUE", BC_GOV_BACKGROUND_COLOR_BLUE);
 
 const theme = createTheme({
   typography: {
@@ -21,7 +23,7 @@ const theme = createTheme({
       // contrastText: will be calculated to contrast with palette.primary.main
     },
     secondary: {
-      main: "#38598A",
+      main: BC_GOV_BACKGROUND_COLOR_BLUE,
     },
   },
   components: {
@@ -39,13 +41,13 @@ const theme = createTheme({
         root: {
           "& .MuiOutlinedInput-root": {
             "& fieldset": {
-              borderColor: "#F2F2F2",
+              borderColor: LIGHT_GREY_BG_COLOR,
             },
             "&:hover fieldset": {
-              borderColor: "#3F85ED",
+              borderColor: BC_GOV_LINKS_COLOR,
             },
             "&.Mui-focused fieldset": {
-              borderColor: "#3F85ED",
+              borderColor: BC_GOV_LINKS_COLOR,
             },
           },
         },
@@ -54,16 +56,15 @@ const theme = createTheme({
     MuiSelect: {
       styleOverrides: {
         root: {
-          "& .MuiOutlinedInput-root": {
-            "& fieldset": {
-              borderColor: "red",
-            },
-            "&:hover fieldset": {
-              borderColor: "yellow",
-            },
-            "&.Mui-focused fieldset": {
-              borderColor: "green",
-            },
+          "& .MuiOutlinedInput-notchedOutline": {
+            borderColor: LIGHT_GREY_BG_COLOR,
+          },
+          "&:hover .MuiOutlinedInput-notchedOutline": {
+            borderColor: BC_GOV_LINKS_COLOR,
+            borderWidth: "1px",
+          },
+          "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+            borderColor: BC_GOV_LINKS_COLOR,
           },
         },
       },
@@ -73,13 +74,13 @@ const theme = createTheme({
         root: {
           "& .MuiOutlinedInput-root": {
             "& fieldset": {
-              borderColor: "#F2F2F2",
+              borderColor: LIGHT_GREY_BG_COLOR,
             },
             "&:hover fieldset": {
-              borderColor: "#3F85ED",
+              borderColor: BC_GOV_LINKS_COLOR,
             },
             "&.Mui-focused fieldset": {
-              borderColor: "#3F85ED",
+              borderColor: BC_GOV_LINKS_COLOR,
             },
           },
         },
