@@ -127,15 +127,13 @@ const FileWidget = ({
   /*   File input styling options are limited so we are attaching a ref to it, hiding it and triggering it with a styled button. */
   return (
     <div className="py-4 flex ">
-      <div
+      <button
         onClick={handleClick}
-        className="p-0 decoration-solid text-bc-gov-links-color cursor-pointer underline"
+        className="p-0 decoration-solid border-0 text-lg bg-transparent text-bc-gov-links-color cursor-pointer underline"
       >
         Upload attachment
-      </div>
-
+      </button>
       <input
-        data-testid="file-test"
         ref={hiddenFileInput}
         onChange={handleChange}
         style={{ display: "none" }}
@@ -149,7 +147,7 @@ const FileWidget = ({
       {value ? (
         <FilesInfo filesInfo={filesInfo} preview={options.filePreview} />
       ) : (
-        <span className="ml-4">No attachment was uploaded</span>
+        <span className="ml-4 text-lg">No attachment was uploaded</span>
       )}
     </div>
   );
