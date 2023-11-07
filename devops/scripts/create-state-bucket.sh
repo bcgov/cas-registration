@@ -15,5 +15,5 @@ EXISTING_BUCKET=$(gcloud storage ls | grep -o $BUCKET_NAME)
 if [ -z "$EXISTING_BUCKET" ]; then
   gcloud storage buckets create $BUCKET_NAME --project=$GOOGLE_PROJECT_ID --location=$REGION
 else
-  echo "Bucket gs://$BUCKET_NAME already exists."
+  echo "Bucket $BUCKET_NAME already exists."
 fi
