@@ -199,6 +199,7 @@ export const operationUiSchema = {
   ],
   "ui:ObjectFieldTemplate": GroupedObjectFieldTemplateWrapper,
   "ui:FieldTemplate": FieldTemplate,
+  "ui:classNames": "form-heading-label",
 
   id: {
     "ui:widget": "hidden",
@@ -217,13 +218,13 @@ export const operationUiSchema = {
     "ui:widget": "select",
   },
   "Did you submit a GHG emissions report for reporting year 2022?": {
-    "ui:widget": "radio",
+    "ui:widget": "RadioWidget",
   },
   "Does the operation have multiple operators?": {
-    "ui:widget": "radio",
+    "ui:widget": "RadioWidget",
   },
   "Would you like to add an exemption ID application lead?": {
-    "ui:widget": "radio",
+    "ui:widget": "RadioWidget",
   },
   opt_in: {
     "ui:widget": "radio",

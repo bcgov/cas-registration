@@ -4,11 +4,8 @@ import Loading from "@/app/components/loading/SkeletonForm";
 
 export default function Page() {
   return (
-    <>
-      <h1>Create a New Operation</h1>
-      <Suspense fallback={<Loading />}>
-        <Operation />
-      </Suspense>
-    </>
+    <Suspense fallback={<Loading />}>
+      <Operation />
+    </Suspense>
   );
 }

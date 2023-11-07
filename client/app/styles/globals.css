@@ -3,6 +3,13 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer components {
+  .form-heading-label {
+    /* Selecting label child element so we can pass it in using ui:classNames in the form schema */
+    @apply [&>label]:text-2xl [&>label]:py-2 [&>label]:w-full [&>label]:font-bold [&>label]:border-solid [&>label]:text-bc-gov-background-color-blue [&>label]:border-bc-gov-background-color-blue [&>label]:border-l-0 [&>label]:border-r-0 [&>label]:mb-4;
+  }
+}
+
 /* CSS resets */
 
 fieldset {

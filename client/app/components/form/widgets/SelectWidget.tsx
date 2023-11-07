@@ -1,6 +1,8 @@
 "use client";
 
 import MenuItem from "@mui/material/MenuItem";
+import FormControl from "@mui/material/FormControl";
+import InputLabel from "@mui/material/InputLabel";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import { WidgetProps } from "@rjsf/utils/lib/types";
 
@@ -16,19 +18,39 @@ const SelectWidget: React.FC<WidgetProps> = (props) => {
     const val = e.target.value;
     onChange(val === "" ? undefined : val);
   };
+
   return (
-    <Select id={id} value={value} onChange={handleChange}>
-      {placeholder && (
-        <MenuItem disabled value="">
-          {`${placeholder} ...`}
-        </MenuItem>
-      )}
-      {options?.map((option) => (
-        <MenuItem key={option} value={option}>
-          {option}
-        </MenuItem>
-      ))}
-    </Select>
+    <FormControl
+      sx={{
+        width: "100%",
+      }}
+    >
+      <InputLabel shrink={false} id={`${id}-label`}>
+        {placeholder}
+      </InputLabel>
+      <Select
+        id={id}
+        value={value}
+        onChange={handleChange}
+        sx={{
+          width: "100%",
+          "& .MuiSelect-outlined": {
+            borderColor: "rgba(0, 0, 0, 0.23)",
+          },
+        }}
+      >
+        {placeholder && (
+          <MenuItem disabled value="">
+            <em>{`${placeholder} ...`}</em>
+          </MenuItem>
+        )}
+        {options?.map((option) => (
+          <MenuItem key={option} value={option}>
+            {option}
+          </MenuItem>
+        ))}
+      </Select>
+    </FormControl>
   );
 };
 export default SelectWidget;
