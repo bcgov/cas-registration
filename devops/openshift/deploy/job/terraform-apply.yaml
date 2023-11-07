@@ -18,36 +18,50 @@ spec:
             requests:
               cpu: 100m
               memory: 64Mi
-            image: joshbutton/cas-reg-devops:0.0.1
-            imagePullPolicy: Always
-            volumeMounts:
-              - mountPath: /etc/gcp
-                name: service-account-credentials-volume
-                readOnly: "True"
-            env:
-              - name: TF_VAR_project
-                valueFrom:
-                  secretKeyRef:
-                    name: gcp-credentials-secret
-                    key: gcp_project_id
-              - name: TF_VAR_openshift_nameplate
-                valueFrom:
-                  secretKeyRef:
-                    name: gcp-credentials-secret
-                    key: name
-              - name: TF_VAR_openshift_environment
-                valueFrom:
-                  secretKeyRef:
-                    name: gcp-credentials-secret
-                    key: openshift_environment
-              - name: TF_VAR_kubernetes_host
-                value: "https://api.silver.devops.gov.bc.ca:6443"
-              - name: TF_VAR_kubernetes_token_name
-                valueFrom:
-                  secretKeyRef:
-                    name: gcp-credentials-secret
-                    key: terraform-secrets-sa-name
-            command: ["/bin/sh", "-c", "terraform init && terraform apply"]
+          image: joshbutton/cas-reg-devops:0.0.1
+          imagePullPolicy: Always
+          volumeMounts:
+            - mountPath: /etc/gcp
+              name: service-account-credentials-volume
+              readOnly: True
+            - mountPath: /etc/tf
+              name: terraform-backend-config-volume
+              readOnly: True
+            - name: tf-working-dir
+              mountPath: /working
+              readOnly: False
+            - name: tf-cache
+              mountPath: /working/.terraform
+              readOnly: False
+          env:
+            - name: TF_VAR_project
+              valueFrom:
+                secretKeyRef:
+                  name: gcp-credentials-secret
+                  key: gcp_project_id
+            - name: TF_VAR_openshift_nameplate
+              valueFrom:
+                secretKeyRef:
+                  name: gcp-credentials-secret
+                  key: openshift_nameplate
+            - name: TF_VAR_openshift_environment
+              valueFrom:
+                secretKeyRef:
+                  name: gcp-credentials-secret
+                  key: openshift_environment
+            - name: TF_VAR_kubernetes_host
+              value: "https://api.silver.devops.gov.bc.ca:6443"
+            - name: TF_VAR_kubernetes_token_name
+              valueFrom:
+                secretKeyRef:
+                  name: gcp-credentials-secret
+                  key: terraform-secrets-sa-name
+          command:
+            [
+              "/bin/sh",
+              "-c",
+              "terraform init -backend-config=/etc/tf/gcs.tfbackend && terraform plan",
+            ]
       restartPolicy: Never
       volumes:
         - name: service-account-credentials-volume
@@ -56,3 +70,13 @@ spec:
             items:
               - key: sa_json
                 path: credentials.json
+        - name: terraform-backend-config-volume
+          secret:
+            secretName: gcp-credentials-secret
+            items:
+              - key: tf_backend
+                path: gcs.tfbackend
+        - name: tf-working-dir
+          emptyDir: {}
+        - name: tf-cache
+          emptyDir: {}
