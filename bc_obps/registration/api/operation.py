@@ -17,12 +17,6 @@ def list_operations(request):
     qs = Operation.objects.all()
     return qs
 
-
-@router.get("/operations", response=List[OperationOut])
-def list_operations(request):
-    qs = Operation.objects.all()
-    return qs
-
 @router.get("/operations", response=List[OperationOut])
 def list_operations(request):
     qs = Operation.objects.all()
@@ -53,31 +47,6 @@ def get_operation(request, operation_id: int):
 
 
 ##### POST #####
-
-
-@router.post("/operations")
-def create_operation(request, payload: OperationIn):
-    fields_to_assign = ["operator", "naics_code", "naics_category"]
-
-    for field_name in fields_to_assign:
-        if field_name in payload.dict():
-            field_value = payload.dict()[field_name]
-            model_class = {
-                "operator": Operator,
-                "naics_code": NaicsCode,
-                "naics_category": NaicsCategory,
-            }[field_name]
-            obj = get_object_or_404(model_class, id=field_value)
-            setattr(payload, field_name, obj)
-
-    fields_to_delete = ["documents", "contacts", "petrinex_ids", "regulated_products", "reporting_activities"]
-
-    for field_name in fields_to_delete:
-        if field_name in payload.dict():
-            delattr(payload, field_name)
-
-    operation = Operation.objects.create(**payload.dict())
-    return {"name": operation.name}
 
 
 @router.post("/operations")

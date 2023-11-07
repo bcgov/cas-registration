@@ -172,7 +172,7 @@ def create_user_operator_request(request, user_operator_id: int, payload: UserOp
             )
 
             # Create a new ParentChildOperator instance
-            percentage_owned_by_parent_company: Optional[int] = payload_dict.get("percentage_owned_by_parent_company")
+            percentage_owned_by_parent_company: Optional[int] = payload_dict.get('percentage_owned_by_parent_company')
             if percentage_owned_by_parent_company:
                 parent_child_operator_instance = ParentChildOperator(
                     parent_operator=parent_operator_instance,
