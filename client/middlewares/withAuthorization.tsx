@@ -27,15 +27,17 @@ export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
     });
 
     if (token) {
+      // 👉️ OK: authenticated user
       if (pathname.endsWith("/") || pathname.endsWith("/home")) {
-        //route to (authenticated)\dashboard
+        //route to (authenticated)/dashboard
         return NextResponse.redirect(new URL(`/dashboard`, request.url));
       } else {
         //👌 ok: route to next middleware
         return next(request, _next);
       }
     } else {
-      //📛 route to (onboarding)\home
+      //📛 ANONYMOUS
+      // route to (onboarding)/home
       if (pathname.endsWith("/home")) {
         //👌 ok: route to next middleware
         return next(request, _next);
