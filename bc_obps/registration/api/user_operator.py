@@ -1,174 +1,14 @@
-from typing import List, Optional
-from ninja import Router
+from .api_base import router
+from typing import Optional
 from django.shortcuts import get_object_or_404
-from .models import Operation, Operator, NaicsCode, NaicsCategory, User, UserOperator, Contact, ParentChildOperator
-from ninja.responses import codes_4xx
 from django.forms import model_to_dict
-from django.shortcuts import get_object_or_404
 from django.core.exceptions import ValidationError
-from registration.schema import (
-    NaicsCategorySchema,
-    NaicsCodeSchema,
-    OperationIn,
-    OperationOut,
-    OperatorOut,
-    RequestAccessOut,
-    SelectOperatorIn,
-    Message,
-    UserOperatorIn,
-    UserOperatorOut,
-)
-from registration.utils import check_users_admin_request_eligibility, update_model_instance
-from .models import Operation, Operator, NaicsCode, NaicsCategory, User
-from django.core.management import call_command
-from django.conf import settings
-from django.http import HttpResponse
+from registration.models import Operator, User, UserOperator, Contact, ParentChildOperator
+from registration.utils import update_model_instance
+from ninja.responses import codes_4xx
+from registration.schema import Message, UserOperatorIn, UserOperatorOut, SelectOperatorIn
 
-router = Router()
-
-
-# testing endpoint
-@router.get("/test-setup")
-def setup(request):
-    if settings.ENVIRONMENT == "develop":
-        try:
-            call_command('truncate_all_tables')
-            call_command('load_fixtures')
-            return HttpResponse("Test setup complete.", status=200)
-        except Exception as e:
-            return HttpResponse(f"Test setup failed. Reason:{e}", status=500)
-    else:
-        return HttpResponse("This endpoint only exists in the development environment.", status=404)
-
-
-@router.get("/naics_codes", response=List[NaicsCodeSchema])
-def list_naics_codes(request):
-    qs = NaicsCode.objects.all()
-    return qs
-
-
-@router.get("/naics_categories", response=List[NaicsCategorySchema])
-def list_naics_codes(request):
-    qs = NaicsCategory.objects.all()
-    return qs
-
-
-@router.get("/operations", response=List[OperationOut])
-def list_operations(request):
-    qs = Operation.objects.all()
-    return qs
-
-
-@router.get("/operations/{operation_id}", response=OperationOut)
-def get_operation(request, operation_id: int):
-    operation = get_object_or_404(Operation, id=operation_id)
-    return operation
-
-
-@router.post("/operations")
-def create_operation(request, payload: OperationIn):
-    fields_to_assign = ["operator", "naics_code", "naics_category"]
-
-    for field_name in fields_to_assign:
-        if field_name in payload.dict():
-            field_value = payload.dict()[field_name]
-            model_class = {
-                "operator": Operator,
-                "naics_code": NaicsCode,
-                "naics_category": NaicsCategory,
-            }[field_name]
-            obj = get_object_or_404(model_class, id=field_value)
-            setattr(payload, field_name, obj)
-
-    fields_to_delete = ["documents", "contacts", "petrinex_ids", "regulated_products", "reporting_activities"]
-
-    for field_name in fields_to_delete:
-        if field_name in payload.dict():
-            delattr(payload, field_name)
-
-    operation = Operation.objects.create(**payload.dict())
-    return {"name": operation.name}
-
-
-@router.put("/operations/{operation_id}")
-def update_operation(request, operation_id: int, payload: OperationIn):
-    operation = get_object_or_404(Operation, id=operation_id)
-    if "operator" in payload.dict():
-        operator = payload.dict()["operator"]
-        op = get_object_or_404(Operator, id=operator)
-        # Assign the Operator instance to the operation
-        operation.operator = op
-    if "naics_code" in payload.dict():
-        naics_code = payload.dict()["naics_code"]
-        nc = get_object_or_404(NaicsCode, id=naics_code)
-        # Assign the naics_code instance to the operation
-        operation.naics_code = nc
-    if "naics_category" in payload.dict():
-        naics_category = payload.dict()["naics_category"]
-        nc = get_object_or_404(NaicsCategory, id=naics_category)
-        # Assign the naics_category instance to the operation
-        payload.naics_category = nc
-    # Update other attributes as needed
-    excluded_fields = [
-        "operator",
-        "naics_code",
-        "naics_category",
-        "documents",
-        "contacts",
-        "reporting_activities",
-        "regulated_products",
-    ]
-
-    for attr, value in payload.dict().items():
-        if attr not in excluded_fields:
-            setattr(operation, attr, value)
-        # set the operation status to 'pending' on update
-        operation.status = "Pending"
-        operation.save()
-        return {"name": operation.name}
-
-
-@router.get("/operators", response=List[OperatorOut])
-def list_operators(request):
-    qs = Operator.objects.all()
-    return qs
-
-
-@router.get("/operators/{operator_id}", response=OperatorOut)
-def get_operator(request, operator_id: int):
-    operator = get_object_or_404(Operator, id=operator_id)
-    return operator
-
-
-@router.get("/select-operator/{int:operator_id}", response={200: SelectOperatorIn, codes_4xx: Message})
-def select_operator(request, operator_id: int):
-    user: User = User.objects.first()  # FIXME: placeholders until after authentication is set up
-    operator: Operator = get_object_or_404(Operator, id=operator_id)
-
-    # check if user is eligible to request access
-    status, message = check_users_admin_request_eligibility(user, operator)
-    if status != 200:
-        return status, message
-
-    return 200, {"operator_id": operator.id}
-
-
-@router.post("/select-operator/request-access", response={201: RequestAccessOut, codes_4xx: Message})
-def request_access(request, payload: SelectOperatorIn):
-    user: User = User.objects.first()  # FIXME: placeholders until after authentication is set up
-    payload_dict: dict = payload.dict()
-    operator: Operator = get_object_or_404(Operator, id=payload_dict.get("operator_id"))
-
-    # check if user is eligible to request access
-    status, message = check_users_admin_request_eligibility(user, operator)
-    if status != 200:
-        return status, message
-
-    # Making a draft UserOperator instance if one doesn't exist
-    user_operator, _ = UserOperator.objects.get_or_create(
-        user=user, operator=operator, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.DRAFT
-    )
-    return 201, {"user_operator_id": user_operator.id}
+##### GET #####
 
 
 @router.get("/select-operator/user-operator/{int:user_operator_id}", response=UserOperatorOut)
@@ -214,6 +54,12 @@ def get_user_operator(request, user_operator_id: int):
         "phone_number": user.phone_number.as_e164,  # PhoneNumberField returns a PhoneNumber object and we need a string
         **operator_related_fields_dict,
     }
+
+
+##### POST #####
+
+
+##### PUT #####
 
 
 @router.put(
@@ -351,3 +197,6 @@ def create_user_operator_request(request, user_operator_id: int, payload: UserOp
     user_operator.save(update_fields=["status"])
 
     return 200, {"operator_id": operator.id}
+
+
+##### DELETE #####
