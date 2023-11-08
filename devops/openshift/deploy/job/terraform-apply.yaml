@@ -9,6 +9,7 @@ spec:
   completions: 1
   template:
     spec:
+      serviceAccountName: "terraform-kubernetes-service-account"
       containers:
         - name: terraform-apply
           resources:
@@ -51,16 +52,11 @@ spec:
                   key: openshift_environment
             - name: TF_VAR_kubernetes_host
               value: "https://api.silver.devops.gov.bc.ca:6443"
-            - name: TF_VAR_kubernetes_token_name
-              valueFrom:
-                secretKeyRef:
-                  name: gcp-credentials-secret
-                  key: terraform-secrets-sa-name
           command:
             [
               "/bin/sh",
               "-c",
-              "terraform init -backend-config=/etc/tf/gcs.tfbackend && terraform plan",
+              "export TF_VAR_kubernetes_token='$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)' && terraform init -backend-config=/etc/tf/gcs.tfbackend && terraform plan -lock=false",
             ]
       restartPolicy: Never
       volumes:
