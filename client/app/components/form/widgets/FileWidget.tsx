@@ -87,6 +87,7 @@ const extractFileInfo = (dataURLs: string[]): FileInfoType[] => {
 };
 
 const FileWidget = ({
+  id,
   disabled,
   readonly,
   required,
@@ -134,6 +135,7 @@ const FileWidget = ({
         Upload attachment
       </button>
       <input
+        name={id}
         ref={hiddenFileInput}
         onChange={handleChange}
         style={{ display: "none" }}
