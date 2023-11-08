@@ -21,7 +21,7 @@ describe("Footer component", () => {
       const footerLinks = [
         {
           name: "Home",
-          href: "/",
+          href: "/home",
           label: "Return to the Home Page",
           target: "_self",
         },
