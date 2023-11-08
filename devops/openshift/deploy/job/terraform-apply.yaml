@@ -32,7 +32,7 @@ spec:
               mountPath: /working
               readOnly: False
             - name: tf-cache
-              mountPath: /working/.terraform
+              mountPath: /.terraform
               readOnly: False
           env:
             - name: TF_VAR_project
