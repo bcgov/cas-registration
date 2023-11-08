@@ -2,6 +2,11 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: terraform-apply
+  labels:
+    component: backend
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    "helm.sh/hook": pre-install, pre-upgrade
 spec:
   backoffLimit: 0
   activeDeadlineSeconds: 900
@@ -12,15 +17,9 @@ spec:
       serviceAccountName: "terraform-kubernetes-service-account"
       containers:
         - name: terraform-apply
-          resources:
-            limits:
-              cpu: 1000m
-              memory: 512Mi
-            requests:
-              cpu: 100m
-              memory: 64Mi
-          image: ghcr.io/bcgov/cas-reg-devops:latest
-          imagePullPolicy: Always
+          resources: {{ toYaml .Values.devops.resources | nindent 12 }}
+          image: "{{ .Values.devops.image.repository }}:{{ .Values.devops.sourceRepoImageTag | default .Values.devops.image.tag }}"
+          imagePullPolicy: {{ .Values.devops.image.pullPolicy }}
           volumeMounts:
             - mountPath: /etc/gcp
               name: service-account-credentials-volume
@@ -28,9 +27,6 @@ spec:
             - mountPath: /etc/tf
               name: terraform-backend-config-volume
               readOnly: True
-            - name: tf-working-dir
-              mountPath: /working
-              readOnly: False
             - name: tf-cache
               mountPath: /.terraform
               readOnly: False
@@ -74,7 +70,5 @@ spec:
             items:
               - key: tf_backend
                 path: gcs.tfbackend
-        - name: tf-working-dir
-          emptyDir: {}
         - name: tf-cache
           emptyDir: {}
