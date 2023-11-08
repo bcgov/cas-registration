@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "cas-registration.fullname" . }}-frontend
+  labels:
+    component: frontend
+{{- include "cas-registration.labels" . | nindent 4 }}
+spec:
+{{- if not .Values.frontend.autoscaling.enabled }}
+  replicas: {{ .Values.frontend.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "cas-registration.selectorLabels" . | nindent 6 }}
+      component: frontend
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+{{- include "cas-registration.selectorLabels" . | nindent 8 }}
+        component: frontend
+    spec:
+      containers:
+        - name: {{ template "cas-registration.fullname" . }}-frontend
+          env:
+            - name: API_URL
+              value: {{ .Values.frontend.apiUrl }}
+          image: "{{ .Values.frontend.image.repository }}:{{ .Values.frontend.sourceRepoImageTag | default .Values.frontend.image.tag }}"
+          imagePullPolicy: {{ .Values.frontend.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.frontend.service.port }}
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.frontend.resources | nindent 12 }}
+      restartPolicy: Always
