@@ -14,6 +14,7 @@ const TextWidget: React.FC<WidgetProps> = (props) => {
   return (
     <TextField
       id={id}
+      name={id}
       value={value}
       onChange={handleChange}
       sx={{
