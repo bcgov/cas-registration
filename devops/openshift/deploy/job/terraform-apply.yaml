@@ -19,7 +19,7 @@ spec:
             requests:
               cpu: 100m
               memory: 64Mi
-          image: joshbutton/cas-reg-devops:0.0.1
+          image: ghcr.io/bcgov/cas-reg-devops:latest
           imagePullPolicy: Always
           volumeMounts:
             - mountPath: /etc/gcp
