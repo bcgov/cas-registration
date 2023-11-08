@@ -18,15 +18,27 @@ async function keycloakSessionLogOut() {
 =======
 import { signOut } from "next-auth/react";
 
-// 🛠️ Function to ensure keycloak session logout
+// 🛠️ Function for keycloak session logout
 async function keycloakSessionLogOut() {
   try {
+<<<<<<< HEAD
     await fetch(`/api/auth/logout`, { method: "GET" });
 >>>>>>> 280d666 (🚧 nextauth with keycloak provider)
+=======
+    // call keycloak
+    const response = await fetch(`/api/auth/logout`, { method: "GET" });
+    if (!response.ok) {
+      // redirect to keycloak basic logout SSO page
+      window.open(process.env.NEXT_PUBLIC_KEYCLOAK_LOGOUT_URL, "_blank");
+    }
+    // call nextauth logout
+    signOut();
+>>>>>>> 42b636c (🚧 nextauth SSO)
   } catch (err) {
     console.error(err);
   }
 }
+<<<<<<< HEAD
 <<<<<<< HEAD
 
 export default function Profile({ name }: { readonly name: string }) {
@@ -40,6 +52,9 @@ export default function Profile({ name }: { readonly name: string }) {
     }
   }, [session]);
 =======
+=======
+
+>>>>>>> 42b636c (🚧 nextauth SSO)
 export default function Profile({ name }: { name: string }) {
 >>>>>>> 280d666 (🚧 nextauth with keycloak provider)
   return (
@@ -58,10 +73,14 @@ export default function Profile({ name }: { name: string }) {
           onClick={() => {
             //keycloak logout then nextauth logout
 <<<<<<< HEAD
+<<<<<<< HEAD
             keycloakSessionLogOut();
 =======
             keycloakSessionLogOut().then(() => signOut({ callbackUrl: "/" }));
 >>>>>>> 280d666 (🚧 nextauth with keycloak provider)
+=======
+            keycloakSessionLogOut();
+>>>>>>> 42b636c (🚧 nextauth SSO)
           }}
         >
           Log Out

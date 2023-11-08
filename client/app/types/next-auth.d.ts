@@ -46,6 +46,7 @@ declare module "next-auth/jwt" {
   // 👇️ Module augmentation to add 'role' definition to the JWT
   interface JWT {
     id_token: string | undefined;
+    idir_user_guid: string | undefined;
     error?: string;
     role?: string;
   }

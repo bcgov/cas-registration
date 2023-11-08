@@ -150,14 +150,20 @@ export const authOptions: NextAuthOptions = {
         error: token.error,
 =======
     // 👇️ called whenever a JSON Web Token is created
-    async jwt({ token, account }) {
+    async jwt({ token, account, profile }) {
       try {
         if (account) {
           //📌  Account is only available on a new session (after the user signs in)
           // On a new sessions, you can add information to the next-auth created token
-          // 👇️ used fpr federated logout, client/app/api/auth/logout/route.ts
+
+          // 👇️ used for federated logout, client/app/api/auth/logout/route.ts
           token.id_token = account.id_token;
-          //🚧 fixme
+          // 👇️ used for DJANGO API calls
+          token.idir_user_guid = profile?.sub;
+          /* sub: '58f255ed8d4644eeb2fe9f8d3d92c684@idir',
+            idir_user_guid: '58F255ED8D4644EEB2FE9F8D3D92C684',*/
+
+          //🚧 fixme 👇️ used for route access
           token.role = "user";
         }
       } catch (error) {
