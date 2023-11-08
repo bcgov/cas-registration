@@ -24,7 +24,7 @@ export const authOptions: NextAuthOptions = {
 
 export const authOptions: NextAuthOptions = {
   providers: [
-    //https://github.com/nextauthjs/next-auth/blob/v4/packages/next-auth/src/providers/keycloak.ts
+    //https://next-auth.js.org/providers/keycloak
     KeycloakProvider({
       clientId: `${process.env.KEYCLOAK_CLIENT_ID}`,
       clientSecret: `${process.env.KEYCLOAK_CLIENT_SECRET}`,
@@ -155,6 +155,7 @@ export const authOptions: NextAuthOptions = {
         if (account) {
           //📌  Account is only available on a new session (after the user signs in)
           // On a new sessions, you can add information to the next-auth created token
+          // 🧩 custom properties are configured through module augmentation in client/app/types/next-auth.d.ts
 
           // 👇️ used for federated logout, client/app/api/auth/logout/route.ts
           token.id_token = account.id_token;
