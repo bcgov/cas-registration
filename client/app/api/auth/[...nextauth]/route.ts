@@ -164,7 +164,7 @@ export const authOptions: NextAuthOptions = {
           /* sub: '58f255ed8d4644eeb2fe9f8d3d92c684@idir',
             idir_user_guid: '58F255ED8D4644EEB2FE9F8D3D92C684',*/
 
-          //🚧 fixme 👇️ used for route access
+          //🚧 used for route access
           token.role = "user";
         }
       } catch (error) {
@@ -180,7 +180,6 @@ export const authOptions: NextAuthOptions = {
        💡 If you want to make something available that you added to the token in the jwt() callback,
       you have to explicitly forward it here to make it available to the client.*/
 
-      // session.roles = token.client_roles;
       return {
         ...session,
 >>>>>>> 280d666 (🚧 nextauth with keycloak provider)

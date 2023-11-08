@@ -42,6 +42,7 @@ async function keycloakSessionLogOut() {
 <<<<<<< HEAD
 
 export default function Profile({ name }: { readonly name: string }) {
+<<<<<<< HEAD
   /* use the NextAuth useSession hook to get session data, and if a specific error condition is met,
      triggers a forced sign-in using the "keycloak" provider to potentially resolve the error related to refreshing access tokens.*/
   const { data: session } = useSession();
@@ -57,6 +58,8 @@ export default function Profile({ name }: { readonly name: string }) {
 >>>>>>> 42b636c (🚧 nextauth SSO)
 export default function Profile({ name }: { name: string }) {
 >>>>>>> 280d666 (🚧 nextauth with keycloak provider)
+=======
+>>>>>>> 6734a9f (🦨 fix: code smell)
   return (
     <>
       <Link
