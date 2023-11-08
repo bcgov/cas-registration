@@ -52,6 +52,8 @@ spec:
                   key: openshift_environment
             - name: TF_VAR_kubernetes_host
               value: "https://api.silver.devops.gov.bc.ca:6443"
+            - name: GOOGLE_APPLICATION_CREDENTIALS
+              value: "/etc/gcp/credentials.json"
           command:
             [
               "/bin/sh",
