@@ -19,16 +19,14 @@ export async function GET(request: NextRequest) {
       `?id_token_hint=${
         token.id_token
       }&post_logout_redirect_uri=${encodeURIComponent(
-        process.env.NEXTAUTH_URL as string,
+        process.env.NEXTAUTH_URL as string
       )}`;
   } else {
-    if (!token) {
-      // Respond with error
-      return NextResponse.json(
-        { message: "Missing JWT token." },
-        { status: 500 },
-      );
-    }
+    // Respond with error
+    return NextResponse.json(
+      { message: "Missing JWT token." },
+      { status: 500 }
+    );
   }
   try {
     // log out from Keycloak
@@ -36,15 +34,15 @@ export async function GET(request: NextRequest) {
     if (!response.ok) {
       return NextResponse.json(
         { message: "Keycloak logout error" },
-        { status: 500 },
+        { status: 500 }
       );
+    } else {
+      return NextResponse.json({ message: "Success" }, { status: 200 });
     }
   } catch (err) {
     return NextResponse.json(
       { message: "Internal Server Error" },
-      { status: 500 },
+      { status: 500 }
     );
   }
-
-  return NextResponse.json({ message: "Success" }, { status: 200 });
 }
