@@ -9,6 +9,7 @@ export const operationSchema: RJSFSchema = {
     "name",
     "type",
     "naics_code_id",
+    "operation_type",
     "naics_category_id",
     // keys that are questions aren't saved in the database
     "Did you submit a GHG emissions report for reporting year 2022?",

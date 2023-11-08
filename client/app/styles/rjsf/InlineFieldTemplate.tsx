@@ -9,6 +9,7 @@ function FieldTemplate({
   help,
   description,
   errors,
+  required,
   children,
 }: FieldTemplateProps) {
   return (
@@ -23,6 +24,7 @@ function FieldTemplate({
       <Grid item xs={12} md={3} order={{ xs: 2, md: 1 }}>
         <label htmlFor={id} className="font-bold">
           {label}
+          {required ? "*" : null}
         </label>
       </Grid>
       <Grid item xs={12} md={4} order={{ xs: 1, md: 2 }}>
