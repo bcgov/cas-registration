@@ -18,7 +18,7 @@ async function keycloakSessionLogOut() {
   }
 }
 
-export default function Profile({ name }: { name: string }) {
+export default function Profile({ name }: { readonly name: string }) {
   return (
     <>
       <Link
