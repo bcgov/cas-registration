@@ -20,8 +20,7 @@ spec:
             requests:
               cpu: 100m
               memory: 64Mi
-          # TODO: Create this image via workflows: `image: docker.pkg.github.com/bcgov/cas-registration/cas-reg-devops:0.0.1`
-          image: joshbutton/cas-reg-devops:0.0.1 # Test image from public repo.
+          image: ghcr.io/bcgov/cas-reg-devops:latest
           imagePullPolicy: Always
           volumeMounts:
             - mountPath: /etc/gcp
