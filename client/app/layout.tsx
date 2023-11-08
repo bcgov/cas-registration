@@ -23,7 +23,7 @@ export const metadata = {
 export default async function RootLayout({
   children,
 }: {
-  children: React.ReactNode;
+  readonly children: React.ReactNode;
 }) {
   // Invoke the nextauth server side session fetcher fucntion getServerSessio
   // Wrap the returned auth session in SessionProvider to expose the useSession function in client components
