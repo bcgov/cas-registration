@@ -16,7 +16,7 @@ SERVICE_ACCOUNT_KEY_FILE="credentials.json"
 cat <<EOL > $ENVIRONMENT.gcs.tfbackend
 bucket = "$BUCKET_NAME"
 prefix = "terraform/state"
-credentials = "$SERVICE_ACCOUNT_KEY_FILE"
+credentials = "/etc/gcp/$SERVICE_ACCOUNT_KEY_FILE"
 EOL
 
 # Easy color variables for echo
