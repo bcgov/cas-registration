@@ -38,9 +38,10 @@ export async function GET(request: NextRequest) {
       `?id_token_hint=${
         token.id_token
       }&post_logout_redirect_uri=${encodeURIComponent(
-        process.env.NEXTAUTH_URL as string,
+        process.env.NEXTAUTH_URL as string
       )}`;
   } else {
+<<<<<<< HEAD
 <<<<<<< HEAD
     // Respond with error
     return NextResponse.json(
@@ -68,11 +69,14 @@ export async function GET(request: NextRequest) {
 =======
 
   if (!token) {
+=======
+>>>>>>> 6734a9f (🦨 fix: code smell)
     // Respond with error
     return NextResponse.json(
       { message: "Missing JWT token." },
       { status: 500 }
     );
+<<<<<<< HEAD
 =======
     if (!token) {
       // Respond with error
@@ -82,6 +86,8 @@ export async function GET(request: NextRequest) {
       );
     }
 >>>>>>> 42b636c (🚧 nextauth SSO)
+=======
+>>>>>>> 6734a9f (🦨 fix: code smell)
   }
   try {
     // log out from Keycloak
@@ -89,15 +95,18 @@ export async function GET(request: NextRequest) {
     if (!response.ok) {
       return NextResponse.json(
         { message: "Keycloak logout error" },
-        { status: 500 },
+        { status: 500 }
       );
+    } else {
+      return NextResponse.json({ message: "Success" }, { status: 200 });
     }
   } catch (err) {
     return NextResponse.json(
       { message: "Internal Server Error" },
-      { status: 500 },
+      { status: 500 }
     );
   }
+<<<<<<< HEAD
 
 <<<<<<< HEAD
   return new Response(null, {
@@ -108,4 +117,6 @@ export async function GET(request: NextRequest) {
 =======
   return NextResponse.json({ message: "Success" }, { status: 200 });
 >>>>>>> 42b636c (🚧 nextauth SSO)
+=======
+>>>>>>> 6734a9f (🦨 fix: code smell)
 }
