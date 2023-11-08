@@ -28,6 +28,7 @@ export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
 
     if (token) {
 <<<<<<< HEAD
+<<<<<<< HEAD
       // 👉️ OK: authenticated user
       if (pathname.endsWith("/") || pathname.endsWith("/home")) {
         //route to (authenticated)/dashboard
@@ -35,12 +36,18 @@ export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
       if (pathname.endsWith("/") || pathname.endsWith("/home")) {
         //route to (authenticated)\dashboard
 >>>>>>> 280d666 (🚧 nextauth with keycloak provider)
+=======
+      // 👉️ OK: authenticated user
+      if (pathname.endsWith("/") || pathname.endsWith("/home")) {
+        //route to (authenticated)/dashboard
+>>>>>>> 42b636c (🚧 nextauth SSO)
         return NextResponse.redirect(new URL(`/dashboard`, request.url));
       } else {
         //👌 ok: route to next middleware
         return next(request, _next);
       }
     } else {
+<<<<<<< HEAD
 <<<<<<< HEAD
       //📛 ANONYMOUS
       // route to (onboarding)/home
@@ -52,6 +59,10 @@ export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
       return NextResponse.redirect(new URL(`/home`, request.url));
 =======
       //📛 route to (onboarding)\home
+=======
+      //📛 ANONYMOUS
+      // route to (onboarding)/home
+>>>>>>> 42b636c (🚧 nextauth SSO)
       if (pathname.endsWith("/home")) {
         //👌 ok: route to next middleware
         return next(request, _next);
