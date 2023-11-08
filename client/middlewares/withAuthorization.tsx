@@ -54,6 +54,7 @@ export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
       if (pathname.endsWith("/home")) {
         //👌 ok: route to next middleware
         return next(request, _next);
+<<<<<<< HEAD
       }
       // route to (onboarding)\home
       return NextResponse.redirect(new URL(`/home`, request.url));
@@ -71,6 +72,11 @@ export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
         return NextResponse.redirect(new URL(`/home`, request.url));
       }
 >>>>>>> 280d666 (🚧 nextauth with keycloak provider)
+=======
+      }
+      // route to (onboarding)\home
+      return NextResponse.redirect(new URL(`/home`, request.url));
+>>>>>>> 0fe7d50 (🦨 fix: code smell)
     }
   };
 };

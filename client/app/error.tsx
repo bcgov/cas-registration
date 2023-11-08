@@ -1,6 +1,9 @@
 "use client";
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 0fe7d50 (🦨 fix: code smell)
 export default async function RootError() {
   return <p>Error ocurred.</p>;
 =======
