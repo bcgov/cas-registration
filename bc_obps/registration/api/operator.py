@@ -38,7 +38,7 @@ def select_operator(request, operator_id: int):
 ##### POST #####
 
 
-@router.post("/select-operator/request-access", response={201: RequestAccessOut, codes_4xx: Message})
+@router.post("/select-operator/request-admin-access", response={201: RequestAccessOut, codes_4xx: Message})
 def request_access(request, payload: SelectOperatorIn):
     user: User = User.objects.first()  # FIXME: placeholders until after authentication is set up
     payload_dict: dict = payload.dict()
@@ -52,6 +52,18 @@ def request_access(request, payload: SelectOperatorIn):
     # Making a draft UserOperator instance if one doesn't exist
     user_operator, _ = UserOperator.objects.get_or_create(
         user=user, operator=operator, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.DRAFT
+    )
+    return 201, {"user_operator_id": user_operator.id}
+
+@router.post("/select-operator/request-access", response={201: RequestAccessOut, codes_4xx: Message})
+def request_access(request, payload: SelectOperatorIn):
+    user: User = User.objects.first()  # FIXME: placeholders until after authentication is set up
+    payload_dict: dict = payload.dict()
+    operator: Operator = get_object_or_404(Operator, id=payload_dict.get("operator_id"))
+
+    # Making a draft UserOperator instance if one doesn't exist
+    user_operator, _ = UserOperator.objects.get_or_create(
+        user=user, operator=operator, status=UserOperator.Statuses.DRAFT
     )
     return 201, {"user_operator_id": user_operator.id}
 

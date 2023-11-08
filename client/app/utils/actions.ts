@@ -73,3 +73,23 @@ export const createSubmitHandler = async (
     return { error: err.message };
   }
 };
+
+export const requestAccessHandler = async (
+  operatorId: number
+) => {
+  try {
+    const response: Response = await fetch(
+      process.env.API_URL + "registration/select-operator/request-access", {
+        method: "POST",
+        body: JSON.stringify({"operator_id": operatorId}),
+      },
+    );
+    if (!response.ok) {
+      throw new Error("Failed to save data.");
+    }
+    revalidatePath(`/dashboard/select-operator/confirm/${operatorId}`);
+    return await response.json();
+  } catch (err: any) {
+    return { error: err.message };
+  }
+};
