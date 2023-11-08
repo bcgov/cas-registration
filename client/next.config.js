@@ -1,9 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  experimental: {
-    serverActions: true,
-  },
   swcMinify: true,
   //use modularizeImports properties to optimize the imports in the application
   modularizeImports: {
