@@ -35,10 +35,7 @@ async function getOperators() {
 // 🧩 Main component
 export default async function AccessRequests() {
   // Fetch operations data
-  const userOperators: {
-    id: number;
-    status: string;
-  }[] = await getUserOperators();
+  const userOperators: any = await getUserOperators();
   console.log("userOperators: ", userOperators);
   if (!userOperators) {
     return (

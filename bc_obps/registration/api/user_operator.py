@@ -59,9 +59,11 @@ def get_user_operator(request, user_operator_id: int):
         **operator_related_fields_dict,
     }
 
+
 @router.get("/user-operators", response=List[UserOperatorOut])
 def list_operations(request):
     qs = UserOperator.objects.all()
+    print(qs)
     return qs
 
 
