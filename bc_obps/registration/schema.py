@@ -1,7 +1,7 @@
 from typing import Optional
 from ninja import Field, Schema
 from ninja import ModelSchema
-from .models import Operation, Operator, NaicsCode, NaicsCategory
+from .models import Operation, Operator, NaicsCode, NaicsCategory, User
 from datetime import date
 
 
@@ -149,3 +149,14 @@ class UserOperatorIn(UserOperatorOut):
     pc_mailing_province: Optional[str]
     pc_mailing_postal_code: Optional[str]
     percentage_owned_by_parent_company: Optional[int]
+
+
+# USER
+class UserOut(ModelSchema):
+    """
+    Schema for the User model
+    """
+
+    class Config:
+        model = User
+        model_fields = '__all__'

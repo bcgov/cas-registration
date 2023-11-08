@@ -3,10 +3,29 @@ import { GridRowsProp } from "@mui/x-data-grid";
 import { fetchAPI } from "@/app/utils/api";
 import DataGrid from "@/app/components/datagrid/DataGrid";
 
-// 🛠️ Function to fetch operations
-async function getOperations() {
+// 🛠️ Function to fetch user-operators
+async function getUserOperators() {
   try {
-    return await fetchAPI("registration/operations");
+    return await fetchAPI("registration/user-operators");
+  } catch (error) {
+    // Handle the error here or rethrow it to handle it at a higher level
+    throw error;
+  }
+}
+// 🛠️ Function to fetch user-operators
+async function getUsers() {
+  try {
+    return await fetchAPI("registration/users");
+  } catch (error) {
+    // Handle the error here or rethrow it to handle it at a higher level
+    throw error;
+  }
+}
+
+// 🛠️ Function to fetch user-operators
+async function getOperators() {
+  try {
+    return await fetchAPI("registration/operators");
   } catch (error) {
     // Handle the error here or rethrow it to handle it at a higher level
     throw error;
@@ -16,71 +35,99 @@ async function getOperations() {
 // 🧩 Main component
 export default async function AccessRequests() {
   // Fetch operations data
-  const operations: {
+  const userOperators: {
     id: number;
-    registration_year: string;
-    submission_date: string;
-    registration_id: string;
     status: string;
-    name: string;
-  }[] = await getOperations();
-  if (!operations) {
+  }[] = await getUserOperators();
+  console.log("userOperators: ", userOperators);
+  if (!userOperators) {
     return (
       <div>
-        No operations data in database (did you forget to run `make
+        No user-operators data in database (did you forget to run `make
+        loadfixtures`?)
+      </div>
+    );
+  }
+  const users: {
+    first_name: string;
+    last_name: string;
+    email: string;
+  }[] = await getUsers();
+  console.log("users: ", users);
+  if (!users) {
+    return (
+      <div>
+        No users data in database (did you forget to run `make loadfixtures`?)
+      </div>
+    );
+  }
+  const operators: {
+    id: number;
+    name: string;
+  }[] = await getOperators();
+  console.log("operators: ", operators);
+
+  if (!operators) {
+    return (
+      <div>
+        No operators data in database (did you forget to run `make
         loadfixtures`?)
       </div>
     );
   }
 
   // Transform the fetched data into rows for the DataGrid component
-  const rows: GridRowsProp =
-    operations.length > 0
-      ? operations.map(
-          ({
+  const rows1: GridRowsProp =
+    userOperators.length > 0
+      ? userOperators.map(({ id, status }) => {
+          return {
             id,
-            registration_year,
-            submission_date,
-            registration_id,
             status,
-            name,
-          }) => {
-            return {
-              id,
-              name,
-              operation_id: id,
-              registration_year,
-              submission_date,
-              registration_id,
-              status,
-            };
-          },
-        )
+          };
+        })
       : [];
+  console.log("rows1: ", rows1);
+
+  // Transform the fetched data into rows for the DataGrid component
+  const rows2: GridRowsProp =
+    users.length > 0
+      ? users.map(({ first_name, last_name, email }) => {
+          return {
+            first_name,
+            last_name,
+            email,
+          };
+        })
+      : [];
+  console.log("rows2: ", rows2);
+
+  // Transform the fetched data into rows for the DataGrid component
+  const rows3: GridRowsProp =
+    operators.length > 0
+      ? operators.map(({ id, name }) => {
+          return {
+            id,
+            name,
+          };
+        })
+      : [];
+  console.log("rows3: ", rows3);
+
+  const rows = [...rows1, ...rows2, ...rows3];
+  console.log("rows: ", rows);
+
   // Render the DataGrid component
   return (
     <>
       <DataGrid
-        cntxt="operations"
+        cntxt="user-operators"
         rows={rows}
         columns={[
-          { field: "operation_id", headerName: "Operation ID", width: 150 },
-          { field: "name", headerName: "Operation", width: 150 },
-          {
-            field: "registration_year",
-            headerName: "Registration Year",
-            width: 150,
-          },
-          {
-            field: "submission_date",
-            headerName: "Submission Date",
-            width: 150,
-          },
-          {
-            field: "registration_id",
-            headerName: "Registration ID",
-            width: 150,
-          },
+          { field: "id", headerName: "Request ID", width: 150 },
+          { field: "first_name", headerName: "First Name", width: 150 },
+          { field: "last_name", headerName: "Last Name", width: 150 },
+          { field: "email", headerName: "Email", width: 150 },
+          { field: "operator", headerName: "Operator", width: 150 },
           { field: "status", headerName: "Status", width: 150 },
           {
             field: "action",

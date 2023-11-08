@@ -6,6 +6,7 @@ from django.core.exceptions import ValidationError
 from registration.models import BusinessRole, Operator, User, UserOperator, Contact, ParentChildOperator
 from registration.utils import update_model_instance
 from ninja.responses import codes_4xx
+from typing import List
 from registration.schema import Message, UserOperatorIn, UserOperatorOut, SelectOperatorIn
 
 ##### GET #####
@@ -57,6 +58,11 @@ def get_user_operator(request, user_operator_id: int):
         "phone_number": user.phone_number.as_e164,  # PhoneNumberField returns a PhoneNumber object and we need a string
         **operator_related_fields_dict,
     }
+
+@router.get("/user-operators", response=List[UserOperatorOut])
+def list_operations(request):
+    qs = UserOperator.objects.all()
+    return qs
 
 
 ##### POST #####
