@@ -7,15 +7,19 @@ You should not manually add <head> tags such as <title> and <meta> to root layou
 
 import "@/app/styles/globals.css";
 import ThemeRegistry from "@/app/components/theme/ThemeRegistry";
-
+import type { Metadata, Viewport } from "next";
 // 🏷 import {named} can be significantly slower than import default
 import Box from "@mui/material/Box";
 
-export const metadata = {
+export const metadata: Metadata = {
   title: "CAS OBPS REGISTRATION",
   description:
     "The OBPS is designed to ensure there is a price incentive for industrial emitters to reduce their greenhouse gas emissions and spur innovation while maintaining competitiveness and protecting against carbon leakage.",
-  viewport: "initial-scale=1, width=device-width",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default function RootLayout({
