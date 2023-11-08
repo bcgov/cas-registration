@@ -41,10 +41,9 @@ export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
       if (pathname.endsWith("/home")) {
         //👌 ok: route to next middleware
         return next(request, _next);
-      } else {
-        //route to (onboarding)\home
-        return NextResponse.redirect(new URL(`/home`, request.url));
       }
+      // route to (onboarding)\home
+      return NextResponse.redirect(new URL(`/home`, request.url));
     }
   };
 };
