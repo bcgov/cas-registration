@@ -32,13 +32,14 @@ export async function GET(request: NextRequest) {
 =======
 >>>>>>> 42b636c (🚧 nextauth SSO)
   if (token) {
+    console.log(token);
     // set parameters
     url =
       url +
       `?id_token_hint=${
         token.id_token
       }&post_logout_redirect_uri=${encodeURIComponent(
-        process.env.NEXTAUTH_URL as string
+        process.env.NEXTAUTH_URL as string,
       )}`;
   } else {
 <<<<<<< HEAD
@@ -74,7 +75,7 @@ export async function GET(request: NextRequest) {
     // Respond with error
     return NextResponse.json(
       { message: "Missing JWT token." },
-      { status: 500 }
+      { status: 500 },
     );
 <<<<<<< HEAD
 =======
@@ -95,7 +96,7 @@ export async function GET(request: NextRequest) {
     if (!response.ok) {
       return NextResponse.json(
         { message: "Keycloak logout error" },
-        { status: 500 }
+        { status: 500 },
       );
     } else {
       return NextResponse.json({ message: "Success" }, { status: 200 });
@@ -103,7 +104,7 @@ export async function GET(request: NextRequest) {
   } catch (err) {
     return NextResponse.json(
       { message: "Internal Server Error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 <<<<<<< HEAD
