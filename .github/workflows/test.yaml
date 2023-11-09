@@ -199,7 +199,7 @@ jobs:
       - name: Build image
         uses: docker/build-push-action@v3
         with:
-          context: client
+          context: devops
           builder: ${{ steps.buildx.outputs.name }}
           push: true
           file: devops/Dockerfile
