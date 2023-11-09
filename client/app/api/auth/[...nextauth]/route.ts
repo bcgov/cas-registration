@@ -38,8 +38,8 @@ export const authOptions: NextAuthOptions = {
           // 🧩 custom properties are configured through module augmentation in client/app/types/next-auth.d.ts
 
           // 👇️ used for refresh token strategy
-          token.accessToken = account.access_token;
-          token.refreshToken = account.refresh_token;
+          token.access_token = account.access_token;
+          token.refresh_token = account.refresh_token;
           token.expires_at = account.expires_at;
 
           // 👇️ used for federated logout, client/app/api/auth/logout/route.ts
@@ -57,11 +57,22 @@ export const authOptions: NextAuthOptions = {
           if (Date.now() > (token.expires_at ?? 0) * 1000) {
             // 👇️ refresh token- returns a new token with updated properties
             try {
+              /*
+              Keycloak provides a REST API enables the creation of an access_token through a POST endpoint with application/x-www-form-urlencoded outcome
+              Method: POST
+                URL: https://keycloak.example.com/auth/realms/myrealm/protocol/openid-connect/token
+                Body type: x-www-form-urlencoded
+                Form fields:
+                client_id :
+                client_secret :
+                grant_type : refresh_token
+                refresh_token:
+              */
               const details = {
-                clientId: `${process.env.KEYCLOAK_CLIENT_ID}`,
-                clientSecret: `${process.env.KEYCLOAK_CLIENT_SECRET}`,
+                client_id: `${process.env.KEYCLOAK_CLIENT_ID}`,
+                client_secret: `${process.env.KEYCLOAK_CLIENT_SECRET}`,
                 grant_type: ["refresh_token"],
-                refresh_token: token.refreshToken,
+                refresh_token: token.refresh_token,
               };
               const formBody: string[] = [];
               Object.entries(details).forEach(([key, value]: [string, any]) => {
@@ -80,28 +91,27 @@ export const authOptions: NextAuthOptions = {
                 body: formData,
               });
               const refreshedToken = await response.json();
+
               if (!response.ok) throw refreshedToken;
               return {
                 ...token,
-                accessToken: refreshedToken.access_token,
+                error: refreshedToken.error,
+                access_token: refreshedToken.access_token,
                 expires_at: refreshedToken.expires_at,
-                refreshToken:
-                  refreshedToken.refresh_token ?? token.refreshToken, // Fall back to old refresh token
+                refresh_token:
+                  refreshedToken.refresh_token ?? token.refresh_token, // Fall back to old refresh token
               };
             } catch (error) {
               console.log(error);
-              // The ErrorRefreshAccessToken error is passed to the client used direct the user to the sign in flow
-              return {
-                ...token,
-                error: "ErrorRefreshAccessToken",
-              };
+              token.error = "ErrorRefreshAccessToken";
             }
           }
         }
       } catch (error) {
         console.log(error);
+        token.error = "ErrorJWTCallback";
       }
-
+      console.log(token);
       // 🔒 return encrypted nextauth JWT
       return token;
     },
@@ -119,6 +129,7 @@ export const authOptions: NextAuthOptions = {
       //🚨 🚨  Do not expose sensitive information, such as access tokens.
       return {
         ...session,
+        error: token.error,
         user: {
           ...session.user,
           role: token.role,
