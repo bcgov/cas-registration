@@ -41,6 +41,9 @@
     "eslint-plugin-import": "^2.25.3",
     "jest-fetch-mock": "^3.0.3",
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 39f8e42 (🧹 shore: cleanup)
     "next-auth": "^4.24.4",
     "next": "^14.0.1",
 =======
