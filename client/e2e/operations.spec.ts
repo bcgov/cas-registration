@@ -34,11 +34,12 @@ test("user can create a new operation", async ({ page }) => {
   await page.getByRole("button", { name: "Add Operation" }).click();
   // Step 1
   await page.getByLabel("Operation Name*").fill("Sample Operation Name");
-  await page.click("#root_operation_type");
+  await page.click("#root_type");
   await page.getByRole("option", { name: "Single Facility Operation" }).click();
   await page.click("#root_naics_code_id");
   await page.getByRole("option", { name: "1" }).click();
-  await page.getByLabel("NAICS Category*").fill("1");
+  await page.click("#root_naics_category_id");
+  await page.getByRole("option", { name: "1" }).click();
   await page.locator("#root_opt_in").locator("input").first().click();
 
   // Step 2: Operation Operator Information
