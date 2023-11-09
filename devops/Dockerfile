@@ -4,4 +4,4 @@ RUN apk --update add terraform
 
 COPY ./scripts/create-state-bucket.sh /bucket.sh
 
-COPY ./terraform /terraform
+COPY ./terraform/ /terraform/
