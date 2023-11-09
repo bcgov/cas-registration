@@ -32,7 +32,6 @@ export async function GET(request: NextRequest) {
 =======
 >>>>>>> 42b636c (🚧 nextauth SSO)
   if (token) {
-    console.log(token);
     // set parameters
     url =
       url +
