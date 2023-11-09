@@ -5,7 +5,7 @@
 ## Next.js 14
 
 **TLDR**
-Architectural design using Next.js 14 includes employing a hierarchical structure of React server components as much as possible to enhance page loading and performance. Nested client pages are utilized whenever user interactions or event handling are required. An improved user experience is achieved through the use of layout.tsx, loading.tsx, and error.tsx components, in conjunction with Suspense components that enable the display of a fallback while asynchronous content is being loaded. The data-fetching pattern involves server actions for centralizing data access management and reducing API route definitions.
+Architectural design using Next.js 14 includes employing a hierarchical structure of React server components as much as possible to enhance page loading and performance. Nested client pages are utilized whenever user interactions or event handling are required. An improved user experience is achieved through the use of layout.tsx, loading.tsx, and error.tsx components, in conjunction with Suspense components that enable the display of a fallback while asynchronous content is being loaded. The data-fetching pattern involves server actions for server side fetching security, for centralizing data access management, and for reduced API route definitions.
 
 Next.js 14 foundation is the App Router which boasts a range of features, including:
 
@@ -43,9 +43,12 @@ Next.js extends the native fetch Web API to allow you to configure the caching a
 
 You can use fetch with:
 
-- React Server Components
-- Route Handlers
-- Server Actions
+- [React Server Components](https://nextjs.org/docs/app/building-your-application/rendering/server-components)
+- [Route Handlers](https://nextjs.org/docs/app/building-your-application/routing/route-handlers)
+- [Server Actions](https://nextjs.org/docs/app/api-reference/functions/server-actions)
+
+With Server Actions, you don't need to manually create API endpoints. Instead, you define asynchronous server functions that can be called directly from Server Components or from Client Components and forms.
+**Note**: Defining, or importing, a server action in a (parent) Server Component allows the (child) form `action` to function without JavaScript, providing progressive enhancement.
 
 ### NextAuth with Keycloak
 
