@@ -1,6 +1,7 @@
 import Button from "@mui/material/Button/Button";
 import Link from "@mui/material/Link";
-import { signOut } from "next-auth/react";
+import { signIn, signOut, useSession } from "next-auth/react";
+import { useEffect } from "react";
 
 // 🛠️ Function for keycloak session logout
 async function keycloakSessionLogOut() {
@@ -19,6 +20,12 @@ async function keycloakSessionLogOut() {
 }
 
 export default function Profile({ name }: { readonly name: string }) {
+  const { data: session } = useSession();
+  useEffect(() => {
+    if (session?.error === "ErrorRefreshAccessToken") {
+      signIn("keycloak"); // Force sign in to hopefully resolve error
+    }
+  }, [session]);
   return (
     <>
       <Link
