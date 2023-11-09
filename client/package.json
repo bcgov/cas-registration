@@ -41,9 +41,12 @@
     "eslint-plugin-import": "^2.25.3",
     "jest-fetch-mock": "^3.0.3",
 <<<<<<< HEAD
+<<<<<<< HEAD
     "next": "^14.0.1",
 =======
     "next": "^13.5.4",
+=======
+>>>>>>> 🧹 shore: cleanup
     "next-auth": "^4.24.4",
 >>>>>>> 🚧 nextauth with keycloak provider
     "postcss": "^8.4.30",
