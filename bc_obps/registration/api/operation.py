@@ -28,24 +28,6 @@ def get_operation(request, operation_id: int):
     operation = get_object_or_404(Operation, id=operation_id)
     return operation
 
-@router.get("/operations/{operation_id}", response=OperationOut)
-def get_operation(request, operation_id: int):
-    operation = get_object_or_404(Operation, id=operation_id)
-    return operation
-
-
-@router.get("/operations/{operation_id}", response=OperationOut)
-def get_operation(request, operation_id: int):
-    operation = get_object_or_404(Operation, id=operation_id)
-    return operation
-
-
-@router.get("/operations/{operation_id}", response=OperationOut)
-def get_operation(request, operation_id: int):
-    operation = get_object_or_404(Operation, id=operation_id)
-    return operation
-
-
 ##### POST #####
 
 
