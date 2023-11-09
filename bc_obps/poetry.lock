@@ -1997,16 +1997,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-content-hash = "47c110975f58fc0e4ab58ce5788f0d5dd3ff82ebeb1aeddf018b124c8c177b42"
-=======
-content-hash = "54449de61d21b26639ff44cbba8c8037be6ecae43ade91ea72f9ddc2a365211e"
->>>>>>> chore: add pytest coverage
-=======
-content-hash = "47c110975f58fc0e4ab58ce5788f0d5dd3ff82ebeb1aeddf018b124c8c177b42"
->>>>>>> chore: move pytest-cov to dev dependencies
-=======
 content-hash = "31d34c2230799dc1214b4fa88c9cc76f8b666ac81597dad633ed4a26b712da52"
->>>>>>> Chore: added pytz to pyproject
