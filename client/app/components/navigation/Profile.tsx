@@ -47,6 +47,7 @@ async function keycloakSessionLogOut() {
 export default function Profile({ name }: { readonly name: string }) {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   /* use the NextAuth useSession hook to get session data, and if a specific error condition is met,
      triggers a forced sign-in using the "keycloak" provider to potentially resolve the error related to refreshing access tokens.*/
   const { data: session } = useSession();
@@ -65,7 +66,12 @@ export default function Profile({ name }: { name: string }) {
 =======
 >>>>>>> 6734a9f (🦨 fix: code smell)
 =======
+=======
+  /* use the NextAuth useSession hook to get session data, and if a specific error condition is met,
+     triggers a forced sign-in using the "keycloak" provider to potentially resolve the error related to refreshing access tokens.*/
+>>>>>>> 52b634c (🏗️  feat: NextAuth Keycloak SSOn; SSOff; TokenRefresh)
   const { data: session } = useSession();
+  // 👇️ run function whenever the session object changes e.g. session.error changes
   useEffect(() => {
     if (session?.error === "ErrorRefreshAccessToken") {
       signIn("keycloak"); // Force sign in to hopefully resolve error
