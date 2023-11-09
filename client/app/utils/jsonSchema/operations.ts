@@ -9,10 +9,8 @@ export const operationSchema: RJSFSchema = {
     "name",
     "type",
     "naics_code_id",
-    "operation_type",
     "naics_category_id",
     // keys that are questions aren't saved in the database
-    "Did you submit a GHG emissions report for reporting year 2022?",
   ],
   title: "Operation",
   properties: {
@@ -24,7 +22,11 @@ export const operationSchema: RJSFSchema = {
       title: "Operation Type",
       enum: ["Single Facility Operation", "Linear Facilities Operation"],
     },
-    naics_code_id: { type: "number", title: "Primary NAICS Code" },
+    naics_code_id: {
+      type: "string",
+      title: "Primary NAICS Code",
+      enum: ["0", "1"],
+    },
     naics_category_id: { type: "number", title: "NAICS Category" },
     regulated_products: {
       type: "string",
@@ -227,7 +229,7 @@ export const operationUiSchema = {
     "ui:widget": "RadioWidget",
   },
   opt_in: {
-    "ui:widget": "radio",
+    "ui:widget": "RadioWidget",
   },
   data_flow_diagram: {
     "ui:widget": "FileWidget",
