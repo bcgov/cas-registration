@@ -13,7 +13,6 @@ export async function GET(request: NextRequest) {
     secret: process.env.NEXTAUTH_SECRET,
   });
   if (token) {
-    console.log(token);
     // set parameters
     url =
       url +
