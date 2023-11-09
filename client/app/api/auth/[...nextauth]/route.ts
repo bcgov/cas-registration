@@ -189,34 +189,47 @@ export const authOptions: NextAuthOptions = {
         } else {
           // checking if the current timestamp, obtained using Date.now(), is greater than the expiration time of a token
           if (Date.now() > (token.expires_at ?? 0) * 1000) {
-            // 👇️ refreshes a token- returns a new token with updated properties
-            const details = {
-              clientId: `${process.env.KEYCLOAK_CLIENT_ID}`,
-              clientSecret: `${process.env.KEYCLOAK_CLIENT_SECRET}`,
-              grant_type: ["refresh_token"],
-              refresh_token: token.refreshToken,
-            };
-            const formBody: string[] = [];
-            Object.entries(details).forEach(([key, value]: [string, any]) => {
-              const encodedKey = encodeURIComponent(key);
-              const encodedValue = encodeURIComponent(value);
-              formBody.push(encodedKey + "=" + encodedValue);
-            });
-            const formData = formBody.join("&");
-            const url = `${process.env.KEYCLOAK_TOKEN_URL}`;
-            const response = await fetch(url, {
-              method: "POST",
-              headers: {
-                "Content-Type":
-                  "application/x-www-form-urlencoded;charset=UTF-8",
-              },
-              body: formData,
-            });
-            const refreshedToken = await response.json();
-            if (!response.ok) throw refreshedToken;
-            token.accessToken = refreshedToken.access_token;
-            token.refreshToken = refreshedToken.refresh_token;
-            token.expires_at = refreshedToken.expires_at;
+            // 👇️ refresh token- returns a new token with updated properties
+            try {
+              const details = {
+                clientId: `${process.env.KEYCLOAK_CLIENT_ID}`,
+                clientSecret: `${process.env.KEYCLOAK_CLIENT_SECRET}`,
+                grant_type: ["refresh_token"],
+                refresh_token: token.refreshToken,
+              };
+              const formBody: string[] = [];
+              Object.entries(details).forEach(([key, value]: [string, any]) => {
+                const encodedKey = encodeURIComponent(key);
+                const encodedValue = encodeURIComponent(value);
+                formBody.push(encodedKey + "=" + encodedValue);
+              });
+              const formData = formBody.join("&");
+              const url = `${process.env.KEYCLOAK_TOKEN_URL}`;
+              const response = await fetch(url, {
+                method: "POST",
+                headers: {
+                  "Content-Type":
+                    "application/x-www-form-urlencoded;charset=UTF-8",
+                },
+                body: formData,
+              });
+              const refreshedToken = await response.json();
+              if (!response.ok) throw refreshedToken;
+              return {
+                ...token,
+                accessToken: refreshedToken.access_token,
+                expires_at: refreshedToken.expires_at,
+                refreshToken:
+                  refreshedToken.refresh_token ?? token.refreshToken, // Fall back to old refresh token
+              };
+            } catch (error) {
+              console.log(error);
+              // The ErrorRefreshAccessToken error is passed to the client used direct the user to the sign in flow
+              return {
+                ...token,
+                error: "ErrorRefreshAccessToken",
+              };
+            }
           }
         }
       } catch (error) {
