@@ -73,6 +73,7 @@ export default function OperationsForm(props: Props) {
         onSubmit={async (data: { formData?: any }) => {
           const response = await operationSubmitHandler(
             {
+              ...props.formData,
               ...data.formData,
               //  temporary handling of required many-to-many fields, will be addressed in #138
               documents: [],
