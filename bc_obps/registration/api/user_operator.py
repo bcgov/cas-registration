@@ -66,7 +66,7 @@ def get_user_operator(request, user_operator_id: int):
 
 
 @router.put(
-    "/select-operator/request-access/user-operator/{int:user_operator_id}",
+    "/select-operator/user-operator/{int:user_operator_id}",
     response={200: SelectOperatorIn, codes_4xx: Message},
 )
 def create_user_operator_request(request, user_operator_id: int, payload: UserOperatorIn):

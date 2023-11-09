@@ -17,16 +17,12 @@ def list_operations(request):
     qs = Operation.objects.all()
     return qs
 
-@router.get("/operations", response=List[OperationOut])
-def list_operations(request):
-    qs = Operation.objects.all()
-    return qs
-
 
 @router.get("/operations/{operation_id}", response=OperationOut)
 def get_operation(request, operation_id: int):
     operation = get_object_or_404(Operation, id=operation_id)
     return operation
+
 
 ##### POST #####
 
