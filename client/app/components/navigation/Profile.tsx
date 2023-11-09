@@ -1,6 +1,9 @@
 import Button from "@mui/material/Button/Button";
 import Link from "@mui/material/Link";
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 650d9e4 (🚧 feat: nextauth refreshtoken client side)
 import { signIn, signOut, useSession } from "next-auth/react";
 import { useEffect } from "react";
 
@@ -43,6 +46,7 @@ async function keycloakSessionLogOut() {
 
 export default function Profile({ name }: { readonly name: string }) {
 <<<<<<< HEAD
+<<<<<<< HEAD
   /* use the NextAuth useSession hook to get session data, and if a specific error condition is met,
      triggers a forced sign-in using the "keycloak" provider to potentially resolve the error related to refreshing access tokens.*/
   const { data: session } = useSession();
@@ -60,6 +64,14 @@ export default function Profile({ name }: { name: string }) {
 >>>>>>> 280d666 (🚧 nextauth with keycloak provider)
 =======
 >>>>>>> 6734a9f (🦨 fix: code smell)
+=======
+  const { data: session } = useSession();
+  useEffect(() => {
+    if (session?.error === "ErrorRefreshAccessToken") {
+      signIn("keycloak"); // Force sign in to hopefully resolve error
+    }
+  }, [session]);
+>>>>>>> 650d9e4 (🚧 feat: nextauth refreshtoken client side)
   return (
     <>
       <Link
