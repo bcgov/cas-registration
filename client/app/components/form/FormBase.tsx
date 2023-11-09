@@ -14,12 +14,12 @@ const FormBase: React.FC<FormPropsWithTheme<any>> = (props) => {
 
   return (
     <Form
-      {...props}
       formData={formData ?? {}}
       noHtml5Validate
       omitExtraData={omitExtraData ?? true}
       showErrorList={false}
       validator={validator}
+      {...props}
     />
   );
 };

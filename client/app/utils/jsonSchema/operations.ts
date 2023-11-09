@@ -17,15 +17,14 @@ export const operationSchema: RJSFSchema = {
     verified_by: { type: "string" },
     verified_at: { type: "string" },
     name: { type: "string", title: "Operation Name" },
-    operation_type: {
+    type: {
       type: "string",
       title: "Operation Type",
       enum: ["Single Facility Operation", "Linear Facilities Operation"],
     },
     naics_code_id: {
-      type: "string",
+      type: "number",
       title: "Primary NAICS Code",
-      enum: ["0", "1"],
     },
     naics_category_id: { type: "number", title: "NAICS Category" },
     regulated_products: {
@@ -177,7 +176,7 @@ export const operationSchema: RJSFSchema = {
 export const operationUiSchema = {
   "ui:order": [
     "name",
-    "operation_type",
+    "type",
     "naics_code_id",
     "naics_category_id",
     "regulated_products",
@@ -206,7 +205,7 @@ export const operationUiSchema = {
   id: {
     "ui:widget": "hidden",
   },
-  operation_type: {
+  type: {
     "ui:widget": "SelectWidget",
     "ui:placeholder": "Select operation type",
   },
@@ -244,7 +243,7 @@ export const operationsGroupSchema = [
     title: "Step 1: Operation General Information",
     fields: [
       "name",
-      "operation_type",
+      "type",
       "naics_code_id",
       "naics_category_id",
       "regulated_products",
