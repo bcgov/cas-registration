@@ -8,7 +8,7 @@ export default function Page() {
   return (
     <>
       <h1>Operations List</h1>
-      <Link href="/dashboard/operations/create">
+      <Link href="/dashboard/operations/create/1">
         <Button variant="contained">Add Operation</Button>
       </Link>
       <Suspense fallback={<Loading />}>
