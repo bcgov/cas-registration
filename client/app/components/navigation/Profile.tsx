@@ -25,7 +25,7 @@ export default function Profile({ name }: { readonly name: string }) {
   const { data: session } = useSession();
   // 👇️ run function whenever the session object changes e.g. session.error changes
   useEffect(() => {
-    if (session?.error === "ErrorRefreshAccessToken") {
+    if (session?.error === "ErrorAccessToken") {
       signIn("keycloak"); // Force sign in to hopefully resolve error
     }
   }, [session]);
