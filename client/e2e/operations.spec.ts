@@ -75,3 +75,51 @@ test("user can edit an existing operation", async ({ page }) => {
     page.getByText(/Your request to register CHANGED has been received./i),
   ).toBeVisible();
 });
+
+test("user can approve a pending operation", async ({ page }) => {
+  page
+    .getByRole("button", { name: /view details/i })
+    .first()
+    .click();
+
+  // click button to approve
+  await page
+    .getByRole("button", { name: /approve/i })
+    .first()
+    .click();
+
+  // check for confirmation message
+  await expect(page.getByText(/You have approved the request/i)).toBeVisible();
+});
+
+test("user can reject a pending operation", async ({ page }) => {
+  page
+    .getByRole("button", { name: /view details/i })
+    .first()
+    .click();
+
+  // click button to reject
+  await page
+    .getByRole("button", { name: /reject/i })
+    .first()
+    .click();
+
+  // check for confirmation message
+  await expect(page.getByText(/You have rejected the request/i)).toBeVisible();
+});
+
+test("user cannot approve or reject an operation that hasn't requested exemption", async ({
+  page,
+}) => {
+  await page
+    .getByRole("button", { name: /start registration/i })
+    .first()
+    .click();
+
+  await expect(page.getByText(/Operation Name*/i)).toBeVisible();
+
+  await expect(
+    page.getByRole("button", { name: /approve/i }),
+  ).not.toBeVisible();
+  await expect(page.getByRole("button", { name: /reject/i })).not.toBeVisible();
+});

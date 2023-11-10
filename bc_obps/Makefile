@@ -110,6 +110,7 @@ pythontests: ## run Python tests
 pythontests: # ARGS can be used to pass arguments to pytest like -k to specify a test name
 	$(POETRY_RUN) pytest $(ARGS)
 
+
 .PHONY: pythontests_verbose
 pythontests_verbose: ## run Python tests with verbose output
 pythontests_verbose:
