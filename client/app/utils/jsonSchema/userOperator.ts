@@ -2,7 +2,12 @@ import { RJSFSchema } from "@rjsf/utils";
 import provinceOptions from "@/app/data/provinces.json";
 import FieldTemplate from "@/app/styles/rjsf/FieldTemplate";
 import GroupTitleFieldTemplate from "@/app/styles/rjsf/GroupTitleFieldTemplate";
-import GroupedObjectFieldTemplateWrapper from "@/app/styles/rjsf/GroupedObjectFieldTemplateWrapper";
+import TitleOnlyFieldTemplate from "@/app/styles/rjsf/TitleOnlyFieldTemplate";
+
+const subheading = {
+  "ui:classNames": "text-bc-gov-primary-brand-color-blue text-start text-lg",
+  "ui:FieldTemplate": TitleOnlyFieldTemplate,
+};
 
 export const userOperatorSchema: RJSFSchema = {
   type: "object",
@@ -26,7 +31,7 @@ export const userOperatorSchema: RJSFSchema = {
     "physical_postal_code",
     "operator_has_parent_company",
   ],
-  title: "User Information",
+  "ui:title": "User Information",
   properties: {
     first_name: { type: "string", title: "First Name" },
     last_name: { type: "string", title: "Last Name" },
@@ -52,6 +57,12 @@ export const userOperatorSchema: RJSFSchema = {
       type: "boolean",
       default: true,
     },
+    operator_information: {
+      //Not an actual field in the db - this is just to make the form look like the wireframes
+      type: "object",
+      title: "Operator Information",
+      readOnly: true,
+    },
     legal_name: { type: "string", title: "Legal Name" },
     trade_name: { type: "string", title: "Trade Name" },
     cra_business_number: {
@@ -74,6 +85,11 @@ export const userOperatorSchema: RJSFSchema = {
       type: "boolean",
       default: false,
     },
+    physical_address_section: {
+      title:
+        "Please provide information about the physical address of this operator:",
+      type: "object",
+    },
     physical_street_address: {
       type: "string",
       title: "Physical Address",
@@ -90,6 +106,11 @@ export const userOperatorSchema: RJSFSchema = {
     physical_postal_code: {
       type: "string",
       title: "Postal Code",
+    },
+    mailing_address_section: {
+      title:
+        "Please provide information about the mailing address of this operator:",
+      type: "object",
     },
     mailing_address_same_as_physical: {
       title: "Is the mailing address the same as the physical address?",
@@ -267,6 +288,12 @@ export const userOperatorSchema: RJSFSchema = {
           "mailing_postal_code",
         ],
         properties: {
+          mailing_address_section: {
+            //Not an actual field in the db - this is just to make the form look like the wireframes
+            title: "Mailing Address",
+            type: "object",
+            readOnly: true,
+          },
           mailing_street_address: {
             type: "string",
             title: "Mailing Address",
@@ -304,6 +331,13 @@ export const userOperatorSchema: RJSFSchema = {
           "pc_mailing_postal_code",
         ],
         properties: {
+          pc_mailing_address_section: {
+            //Not an actual field in the db - this is just to make the form look like the wireframes
+            title:
+              "Please provide information about the mailing address of this operator:",
+            type: "object",
+            readOnly: true,
+          },
           pc_mailing_street_address: {
             type: "string",
             title: "Mailing Address",
@@ -389,34 +423,27 @@ export const userOperatorUiSchema = {
     "pc_mailing_province",
     "pc_mailing_postal_code",
   ],
-  "ui:ObjectFieldTemplate": GroupedObjectFieldTemplateWrapper,
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
   "ui:TitleFieldTemplate": GroupTitleFieldTemplate,
-  user_information: {
-    "ui:classNames": "text-bc-gov-primary-brand-color-blue text-start",
-  },
+  "ui:title": "User Information",
   email: {
     "ui:widget": "EmailWidget",
   },
   is_senior_officer: {
     "ui:widget": "RadioWidget",
   },
-  senior_officer_section: {
-    "ui:classNames": "text-bc-gov-primary-brand-color-blue text-start",
-  },
+  senior_officer_section: subheading,
   so_email: {
     "ui:widget": "EmailWidget",
   },
-  operator_information: {
-    "ui:classNames": "text-bc-gov-primary-brand-color-blue text-start mt-40",
-  },
+  operator_information: subheading,
+  mailing_address_section: subheading,
+  physical_address_section: subheading,
   operator_has_parent_company: {
     "ui:widget": "RadioWidget",
   },
-  has_parent_company: {
-    "ui:classNames": "text-bc-gov-primary-brand-color-blue text-start",
-  },
+  has_parent_company: subheading,
   mailing_address_same_as_physical: {
     "ui:widget": "RadioWidget",
   },
@@ -430,102 +457,3 @@ export const userOperatorUiSchema = {
     "ui:widget": "URLWidget",
   },
 };
-
-export const userOperatorGroupSchema = [
-  {
-    title: "Step 1: Operation General Information",
-    fields: [
-      "user_information",
-      "first_name",
-      "last_name",
-      "position_title",
-      "street_address",
-      "municipality",
-      "province",
-      "postal_code",
-      "email",
-      "phone_number",
-      // "file", temporary handling of many-to-many fields, will be addressed in #138
-      "is_senior_officer",
-      "senior_officer_section",
-    ],
-  },
-  {
-    title:
-      "Please provide information about the Senior Officer (SO) of the Operator:",
-    fields: [
-      // so = senior officer
-      "so_first_name",
-      "so_last_name",
-      "so_position_title",
-      "so_street_address",
-      "so_municipality",
-      "so_province",
-      "so_postal_code",
-      "so_email",
-      "so_phone_number",
-      "operator_information",
-      "legal_name",
-      "trade_name",
-      "cra_business_number",
-      "bc_corporate_registry_number",
-      "business_structure",
-      "website",
-      "operator_has_parent_company",
-      "physical_address_section",
-      "physical_street_address",
-      "physical_municipality",
-      "physical_province",
-      "physical_postal_code",
-      "mailing_address_section",
-      "mailing_address_same_as_physical",
-      "mailing_street_address",
-      "mailing_municipality",
-      "mailing_province",
-      "mailing_postal_code",
-      "has_parent_company",
-    ],
-  },
-  {
-    title:
-      "Please provide information about the mailing address of this operator:",
-    fields: [
-      "operator_information",
-      "legal_name",
-      "trade_name",
-      "cra_business_number",
-      "bc_corporate_registry_number",
-      "business_structure",
-      "website",
-      "operator_has_parent_company",
-      "physical_address_section",
-      "physical_street_address",
-      "physical_municipality",
-      "physical_province",
-      "physical_postal_code",
-      "mailing_address_section",
-      "mailing_address_same_as_physical",
-      "mailing_street_address",
-      "mailing_municipality",
-      "mailing_province",
-      "mailing_postal_code",
-      "has_parent_company",
-      "pc_legal_name",
-      "pc_trade_name",
-      "pc_cra_business_number",
-      "pc_bc_corporate_registry_number",
-      "pc_business_structure",
-      "pc_website",
-      "percentage_owned_by_parent_company",
-      "pc_physical_street_address",
-      "pc_physical_municipality",
-      "pc_physical_province",
-      "pc_physical_postal_code",
-      "pc_mailing_address_same_as_physical",
-      "pc_mailing_street_address",
-      "pc_mailing_municipality",
-      "pc_mailing_province",
-      "pc_mailing_postal_code",
-    ],
-  },
-];
