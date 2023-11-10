@@ -7,10 +7,7 @@ import { useState } from "react";
 import { Alert, Button } from "@mui/material";
 import SubmitButton from "./SubmitButton";
 import { useRouter } from "next/navigation";
-import {
-  userOperatorUiSchema,
-  userOperatorGroupSchema,
-} from "@/app/utils/jsonSchema/userOperator";
+import { userOperatorUiSchema } from "@/app/utils/jsonSchema/userOperator";
 import { createSubmitHandler } from "@/app/utils/actions";
 import { UserOperatorFormData } from "@/app/components/form/formDataTypes";
 
@@ -34,9 +31,6 @@ export default function UserOperatorForm({
       validator={validator}
       showErrorList={false}
       formData={formData}
-      formContext={{
-        groupSchema: userOperatorGroupSchema,
-      }}
       onSubmit={async (data: { formData?: UserOperatorFormData }) => {
         const response = await createSubmitHandler(
           "PUT",

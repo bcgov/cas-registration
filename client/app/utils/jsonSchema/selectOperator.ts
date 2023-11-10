@@ -1,4 +1,5 @@
 import { RJSFSchema } from "@rjsf/utils";
+import FieldTemplate from "@/app/styles/rjsf/FieldTemplate";
 
 export const selectOperatorSchema: RJSFSchema = {
   type: "object",
@@ -9,6 +10,7 @@ export const selectOperatorSchema: RJSFSchema = {
 };
 
 export const selectOperatorUiSchema = {
+  "ui:FieldTemplate": FieldTemplate,
   operator_id: {
     "ui:widget": "ComboBox",
   },
