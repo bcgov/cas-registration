@@ -1,13 +1,16 @@
 "use client";
 
-import { Form } from "@rjsf/mui";
+import Form from "./FormBase";
 import { RJSFSchema } from "@rjsf/utils";
 import validator from "@rjsf/validator-ajv8";
 import { useState } from "react";
 import { Alert, Button } from "@mui/material";
 import SubmitButton from "./SubmitButton";
 import { useRouter } from "next/navigation";
-import { userOperatorUiSchema } from "@/app/utils/jsonSchema/userOperator";
+import {
+  userOperatorUiSchema,
+  userOperatorGroupSchema,
+} from "@/app/utils/jsonSchema/userOperator";
 import { createSubmitHandler } from "@/app/utils/actions";
 import { UserOperatorFormData } from "@/app/components/form/formDataTypes";
 
@@ -31,6 +34,9 @@ export default function UserOperatorForm({
       validator={validator}
       showErrorList={false}
       formData={formData}
+      formContext={{
+        groupSchema: userOperatorGroupSchema,
+      }}
       onSubmit={async (data: { formData?: UserOperatorFormData }) => {
         const response = await createSubmitHandler(
           "PUT",
@@ -46,7 +52,6 @@ export default function UserOperatorForm({
         push(`/dashboard/select-operator/received/${response.res.operator_id}`);
       }}
       uiSchema={userOperatorUiSchema}
-      className="flex flex-col w-3/4 mx-auto"
     >
       {errorList.length > 0 &&
         errorList.map((e: any) => (
