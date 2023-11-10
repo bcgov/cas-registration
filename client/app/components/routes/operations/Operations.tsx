@@ -13,6 +13,10 @@ async function getOperations() {
   }
 }
 
+function capitalizeString(value: string): string {
+  return value.slice(0, 1).toUpperCase() + value.slice(1);
+}
+
 // 🧩 Main component
 export default async function Operations() {
   // Fetch operations data
@@ -52,7 +56,7 @@ export default async function Operations() {
               registration_year,
               submission_date,
               registration_id,
-              status,
+              status: capitalizeString(status),
             };
           },
         )

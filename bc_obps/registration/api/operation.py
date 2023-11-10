@@ -1,4 +1,8 @@
 from .api_base import router
+import json
+from datetime import datetime
+import pytz
+from django.core import serializers
 from typing import List
 from django.shortcuts import get_object_or_404
 from registration.models import Operation, Operator, NaicsCode, NaicsCategory
@@ -87,6 +91,26 @@ def update_operation(request, operation_id: int, payload: OperationIn):
         operation.status = "Pending"
         operation.save()
         return {"name": operation.name}
+
+
+@router.put("/operations/{operation_id}/update-status")
+def update_operation_status(request, operation_id: int):
+    # need to convert request.body (a bytes object) to a string, and convert the string to a JSON object
+    payload = json.loads(request.body.decode())
+    status = getattr(Operation.Statuses, payload.get("status").upper())
+    operation = get_object_or_404(Operation, id=operation_id)
+    # TODO later: add data to verified_by once user authentication in place
+    operation.status = status
+    if operation.status in [Operation.Statuses.APPROVED, Operation.Statuses.REJECTED]:
+        operation.verified_at = datetime.now(pytz.utc)
+    data = serializers.serialize(
+        "json",
+        [
+            operation,
+        ],
+    )
+    operation.save()
+    return data
 
 
 ##### DELETE #####

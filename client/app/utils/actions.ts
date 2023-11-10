@@ -68,7 +68,7 @@ export const createSubmitHandler = async (
       throw new Error(res.message || "Failed to submit data.");
     }
     revalidatePath(pathToRevalidate);
-    return res;
+    return { res: res, ok: response.ok };
   } catch (err: any) {
     return { error: err.message };
   }
