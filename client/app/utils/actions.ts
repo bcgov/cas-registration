@@ -11,6 +11,32 @@ In a separate file (Client and Server Components), for reusability.
 import { revalidatePath } from "next/cache";
 import { OperationsFormData } from "@/app/components/form/OperationsForm";
 
+
+export const actionHandler = async (
+  method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH",
+  backendEndpoint: string,
+  pathToRevalidate: string,
+  queryParameters: Object
+) => {
+  try {
+    const response: Response = await fetch(`${process.env.API_URL}${backendEndpoint}`, {
+      method,
+      body: JSON.stringify(queryParameters),
+    });
+
+    const res = await response.json();
+
+    if (!response.ok) {
+      // detail is a custom error message from the server
+      throw new Error(res.message || "Query Failed");
+    }
+    revalidatePath(pathToRevalidate);
+    return res;
+  } catch (err: any) {
+    return { error: err.message };
+  }
+}
+
 export const operationSubmitHandler = async (
   formData: OperationsFormData,
   method: "POST" | "PUT",

@@ -1,7 +1,7 @@
 "use client";
 
 import Button from "@mui/material/Button";
-import { requestAccessHandler } from "@/app/utils/actions";
+import { actionHandler } from "@/app/utils/actions";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Alert } from "@mui/material";
@@ -9,8 +9,6 @@ import { Alert } from "@mui/material";
 interface RequestAccessButtonProps {
   operatorId: number;
 }
-
-
 
 export default function RequestAccessButton({operatorId}: RequestAccessButtonProps) {
   // 🧩common button config
@@ -28,7 +26,12 @@ export default function RequestAccessButton({operatorId}: RequestAccessButtonPro
   const [errorList, setErrorList] = useState([] as any[]);
 
   const handleRequestAccess = async () => {
-    const response = await requestAccessHandler(operatorId)
+    const response = await actionHandler(
+      'POST',
+      'registration/select-operator/request-access',
+      `/dashboard/select-operator/confirm/${operatorId}`,
+      {operatorId: operatorId}
+    )
     if (response.error) {
       setErrorList([{ message: response.error }]);
       return;
@@ -37,9 +40,6 @@ export default function RequestAccessButton({operatorId}: RequestAccessButtonPro
     push(
       `/dashboard/select-operator/received/${operatorId}`,
     );
-
-
-
   }
 
   return (
@@ -51,10 +51,11 @@ export default function RequestAccessButton({operatorId}: RequestAccessButtonPro
           </Alert>
       ))}
       <Button
+        style={{margin: '0 auto', display: "flex"}}
         sx={{ ...commonButtonConfig }}
         aria-label="Request Access"
-        color="inherit"
-        variant="outlined"
+        color="primary"
+        variant="contained"
         onClick={async () => handleRequestAccess()}
       >
         Request Access
