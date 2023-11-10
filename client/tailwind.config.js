@@ -12,6 +12,7 @@ import {
   BC_GOV_PRIMARY_BRAND_COLOR_BLUE,
   BC_GOV_BACKGROUND_COLOR_BLUE,
   BC_GOV_LINKS_COLOR,
+  BC_GOV_YELLOW,
   DARK_GREY_BG_COLOR,
   LIGHT_GREY_BG_COLOR,
 } from "./app/styles/colors";
@@ -35,8 +36,12 @@ module.exports = {
         "bc-gov-primary-brand-color-blue": BC_GOV_PRIMARY_BRAND_COLOR_BLUE,
         "bc-gov-background-color-blue": BC_GOV_BACKGROUND_COLOR_BLUE,
         "bc-gov-links-color": BC_GOV_LINKS_COLOR,
+        "bc-gov-yellow": BC_GOV_YELLOW,
         "dark-grey-bg-color": DARK_GREY_BG_COLOR,
         "light-grey-bg-color": LIGHT_GREY_BG_COLOR,
+      },
+      lineHeight: {
+        12: "48px",
       },
     },
   },

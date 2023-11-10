@@ -1,11 +1,11 @@
 import FieldTemplate from "@/app/styles/rjsf/FieldTemplate";
 import GroupTitleFieldTemplate from "@/app/styles/rjsf/GroupTitleFieldTemplate";
-import GroupedObjectFieldTemplateWrapper from "@/app/styles/rjsf/GroupedObjectFieldTemplateWrapper";
+/* import GroupedObjectFieldTemplateWrapper from "@/app/styles/rjsf/GroupedObjectFieldTemplateWrapper"; */
 import { RJSFSchema } from "@rjsf/utils";
 
 const operationPage1: RJSFSchema = {
   type: "object",
-  title: "Step 1: Operation General Information",
+  title: "Operation General Information",
   required: [
     "name",
     "type",
@@ -130,8 +130,7 @@ const operationPage1: RJSFSchema = {
 
 const operationPage2: RJSFSchema = {
   type: "object",
-  title:
-    "Step 2: Operation Operator Information - If operation has multiple operators",
+  title: "Multiple Operators Information",
   properties: {
     "Does the operation have multiple operators?": {
       type: "boolean",
@@ -165,7 +164,7 @@ const operationPage2: RJSFSchema = {
 
 const operationPage3: RJSFSchema = {
   type: "object",
-  title: "Step 3: Operation Representative (OR) Information",
+  title: "Application Lead",
   properties: {
     "Would you like to add an exemption ID application lead?": {
       type: "boolean",
@@ -278,7 +277,6 @@ export const operationUiSchema = {
 
 export const operationsGroupSchema = [
   {
-    title: "Step 1: Operation General Information",
     fields: [
       "name",
       "type",
@@ -298,8 +296,6 @@ export const operationsGroupSchema = [
     ],
   },
   {
-    title:
-      "Step 2: Operation Operator Information - If operation has multiple operators",
     fields: [
       "Does the operation have multiple operators?",
       "operators",
@@ -307,7 +303,6 @@ export const operationsGroupSchema = [
     ],
   },
   {
-    title: "Step 3: Operation Representative (OR) Information",
     fields: [
       'Is the operation representative the same as mentioned in "admin access request"?',
       "Is the senior officer the same as in the operation form?",
