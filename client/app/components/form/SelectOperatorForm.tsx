@@ -1,6 +1,6 @@
 "use client";
 
-import { Form } from "@rjsf/mui";
+import Form from "@/app/components/form/FormBase";
 import { RJSFSchema } from "@rjsf/utils";
 import validator from "@rjsf/validator-ajv8";
 import { useState } from "react";
@@ -54,7 +54,7 @@ export default function SelectOperatorForm({
         ComboBox,
       }}
       onChange={handleChange}
-      className="flex flex-col w-80 mx-auto gap-2"
+      className="flex flex-col mx-auto gap-2 justify-center"
     >
       {errorList.length > 0 &&
         errorList.map((e: any) => (
