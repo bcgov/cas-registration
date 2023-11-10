@@ -173,8 +173,8 @@ export const authOptions: NextAuthOptions = {
 
           // 👇️ used for refresh token strategy
           token.access_token = account.access_token;
+          token.access_token_expires_at = account.expires_at;
           token.refresh_token = account.refresh_token;
-          token.expires_at = account.expires_at;
 
           // 👇️ used for federated logout, client/app/api/auth/logout/route.ts
           token.id_token = account.id_token;
@@ -187,8 +187,10 @@ export const authOptions: NextAuthOptions = {
           //🚧 ???used for route access???
           token.role = "admin";
         } else {
-          // checking if the current timestamp, obtained using Date.now(), is greater than the expiration time of a token
-          if (Date.now() > (token.expires_at ?? 0) * 1000) {
+          // check if token is expired
+          if (
+            (token.access_token_expires_at ?? 0) < Math.floor(Date.now() / 1000)
+          ) {
             // 👇️ refresh token- returns a new token with updated properties
             try {
               /*
@@ -225,27 +227,27 @@ export const authOptions: NextAuthOptions = {
                 body: formData,
               });
               const refreshedToken = await response.json();
-
               if (!response.ok) throw refreshedToken;
               return {
                 ...token,
                 error: refreshedToken.error,
                 access_token: refreshedToken.access_token,
-                expires_at: refreshedToken.expires_at,
+                access_token_expires_at:
+                  Math.floor(Date.now() / 1000) +
+                  (refreshedToken.refresh_expires_in ?? 0),
                 refresh_token:
                   refreshedToken.refresh_token ?? token.refresh_token, // Fall back to old refresh token
               };
             } catch (error) {
               console.log(error);
-              token.error = "ErrorRefreshAccessToken";
+              token.error = "ErrorAccessToken";
             }
           }
         }
       } catch (error) {
         console.log(error);
-        token.error = "ErrorJWTCallback";
+        token.error = "ErrorAccessToken";
       }
-      console.log(token);
       // 🔒 return encrypted nextauth JWT
       return token;
     },
