@@ -54,6 +54,7 @@ export default function Profile({ name }: { readonly name: string }) {
   // 👇️ run function whenever the session object changes e.g. session.error changes
   useEffect(() => {
     if (session?.error === "ErrorAccessToken") {
+<<<<<<< HEAD
       signIn("keycloak"); // Force sign in to hopefully resolve error
     }
   }, [session]);
@@ -74,6 +75,8 @@ export default function Profile({ name }: { name: string }) {
   // 👇️ run function whenever the session object changes e.g. session.error changes
   useEffect(() => {
     if (session?.error === "ErrorRefreshAccessToken") {
+=======
+>>>>>>> 4c4f8a9 (🏗️ feat: NextAuth Keycloak SSOn; SSOff; TokenRefresh; Re-Login on error)
       signIn("keycloak"); // Force sign in to hopefully resolve error
     }
   }, [session]);
