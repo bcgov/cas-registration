@@ -8,9 +8,8 @@ import {
 } from "@/app/utils/jsonSchema/operations";
 import FormBase from "@/app/components/form/FormBase";
 import { RJSFSchema } from "@rjsf/utils";
-import { Button } from "@mui/material";
 import Link from "next/link";
-import React from "react";
+import MultiStepButtons from "@/app/components/form/MultiStepButtons";
 import { Alert } from "@mui/material";
 import { operationSubmitHandler } from "@/app/utils/actions";
 
@@ -74,7 +73,7 @@ export default function OperationsForm({ formData, schema }: Props) {
           ? true
           : false
       }
-      schema={schema.properties[formSectionList[formSection]]}
+      schema={schema.properties[formSectionList[formSection]] as RJSFSchema}
       onSubmit={async (data: { formData?: any }) => {
         const response = await operationSubmitHandler(
           {
@@ -99,7 +98,7 @@ export default function OperationsForm({ formData, schema }: Props) {
       // formContext={{
       //   groupSchema: operationsGroupSchema,
       // }}
-      formData={formState[formSectionList[formSection]]}
+      formData={formState}
       onChange={(e) => {
         // merge page data with existing form data
         setFormState({
@@ -109,36 +108,12 @@ export default function OperationsForm({ formData, schema }: Props) {
       }}
     >
       {error && <Alert severity="error">{error}</Alert>}
-      {formSection !== 0 ? (
-        <Link href={`/dashboard/operations/create/${formSection}`}>
-          <Button
-            variant="contained"
-            type="button"
-            disabled={formSection === 0}
-          >
-            Previous
-          </Button>
-        </Link>
-      ) : (
-        <Button variant="contained" type="button" disabled>
-          Previous
-        </Button>
-      )}
-      {formSection !== formSectionList.length - 1 ? (
-        <Link href={`/dashboard/operations/create/${formSection + 2}`}>
-          <Button
-            variant="contained"
-            type="button"
-            disabled={formSection === formSectionList.length - 1}
-          >
-            Next
-          </Button>
-        </Link>
-      ) : (
-        <Button type="submit" variant="contained">
-          Submit
-        </Button>
-      )}
+      <MultiStepButtons
+        baseUrl="/dashboard/operations/create"
+        formSection={formSection}
+        formSectionList={formSectionList}
+        cancelUrl="/dashboard/operations"
+      />
     </FormBase>
   );
 }
