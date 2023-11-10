@@ -32,7 +32,7 @@ const DataGrid: React.FC<Props> = ({ rows, columns, cntxt }) => {
               renderCell: (params: GridRenderCellParams) => (
                 <div>
                   {/* 🔗 Add reg or details link */}
-                  <Link href={`operations/${params.row.id}`}>
+                  <Link href={`operations/${params.row.id}/1`}>
                     <Button variant="contained">
                       {params.row.status === "Not Registered"
                         ? "Start Registration"

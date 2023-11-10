@@ -17,8 +17,9 @@ import { operationSubmitHandler } from "@/app/utils/actions";
 export interface OperationsFormData {
   [key: string]: any;
 }
+
 interface Props {
-  schema: RJSFSchema;
+  schema: any;
   formData?: OperationsFormData;
 }
 
