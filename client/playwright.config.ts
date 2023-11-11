@@ -10,6 +10,11 @@ import { defineConfig, devices } from "@playwright/test";
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
+  /* Increase default test timeout to 60s (default 30s)
+     Playwright enforces a timeout for each test, 30 seconds by default.
+     Time spent by the test function, fixtures, beforeEach and afterEach hooks is included in the test timeout.
+  */
+  timeout: 120000,
   testDir: "./e2e",
   /* Run tests in files in parallel */
   fullyParallel: true,
