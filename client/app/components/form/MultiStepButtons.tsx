@@ -8,14 +8,14 @@ interface SubmitButtonProps {
   baseUrl: string;
   cancelUrl: string;
   classNames?: string;
-  formSectionList: string[];
-  formSection: number;
+  step: number;
+  steps: string[];
 }
 
 const SubmitButton: React.FunctionComponent<SubmitButtonProps> = ({
   baseUrl,
-  formSection,
-  formSectionList,
+  step,
+  steps,
   cancelUrl,
   classNames,
 }) => {
@@ -28,12 +28,12 @@ const SubmitButton: React.FunctionComponent<SubmitButtonProps> = ({
         </Link>
       )}
       <div>
-        {formSection !== 0 ? (
-          <Link href={`${baseUrl}/${formSection}`}>
+        {step !== 0 ? (
+          <Link href={`${baseUrl}/${step}`}>
             <Button
               variant="contained"
               type="button"
-              disabled={formSection === 0}
+              disabled={step === 0}
               className="mr-4"
             >
               Back
@@ -44,12 +44,12 @@ const SubmitButton: React.FunctionComponent<SubmitButtonProps> = ({
             Back
           </Button>
         )}
-        {formSection !== formSectionList.length - 1 ? (
-          <Link href={`${baseUrl}/${formSection + 2}`}>
+        {step !== steps.length - 1 ? (
+          <Link href={`${baseUrl}/${step + 2}`}>
             <Button
               variant="contained"
               type="button"
-              disabled={formSection === formSectionList.length - 1}
+              disabled={step === steps.length - 1}
             >
               Next
             </Button>
