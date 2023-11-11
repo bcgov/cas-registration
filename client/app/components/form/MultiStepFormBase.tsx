@@ -38,7 +38,7 @@ const MultiStepFormBase = ({
   );
   return (
     <>
-      <MultiStepHeader step={formSection} steps={formSectionList} />
+      <MultiStepHeader step={formSection} steps={formSectionTitles} />
       <FormBase
         schema={schema.properties[formSectionList[formSection]] as RJSFSchema}
         uiSchema={uiSchema}
@@ -56,7 +56,7 @@ const MultiStepFormBase = ({
       </FormBase>
       <MultiStepButtons
         step={formSection}
-        steps={formSectionTitles}
+        steps={formSectionList}
         baseUrl={baseUrl}
         cancelUrl={cancelUrl}
       />
