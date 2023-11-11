@@ -53,13 +53,13 @@ const MultiStepFormBase = ({
         }}
       >
         {error && <Alert severity="error">{error}</Alert>}
+        <MultiStepButtons
+          step={formSection}
+          steps={formSectionList}
+          baseUrl={baseUrl}
+          cancelUrl={cancelUrl}
+        />
       </FormBase>
-      <MultiStepButtons
-        step={formSection}
-        steps={formSectionList}
-        baseUrl={baseUrl}
-        cancelUrl={cancelUrl}
-      />
     </>
   );
 };
