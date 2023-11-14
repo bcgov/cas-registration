@@ -10,6 +10,7 @@ interface SubmitButtonProps {
   classNames?: string;
   step: number;
   steps: string[];
+  submitEveryStep?: boolean;
 }
 
 const SubmitButton: React.FunctionComponent<SubmitButtonProps> = ({
@@ -18,8 +19,10 @@ const SubmitButton: React.FunctionComponent<SubmitButtonProps> = ({
   steps,
   cancelUrl,
   classNames,
+  submitEveryStep,
 }) => {
   const { pending } = useFormStatus();
+  const isFinalStep = step === steps.length - 1;
   return (
     <div className={`flex w-full mt-8 justify-between ${classNames}`}>
       {cancelUrl && (
@@ -44,19 +47,21 @@ const SubmitButton: React.FunctionComponent<SubmitButtonProps> = ({
             Back
           </Button>
         )}
-        {step !== steps.length - 1 ? (
+        {!isFinalStep && !submitEveryStep && (
           <Link href={`${baseUrl}/${step + 2}`}>
-            <Button
-              variant="contained"
-              type="button"
-              disabled={step === steps.length - 1}
-            >
+            <Button variant="contained" type="button" disabled={isFinalStep}>
               Next
             </Button>
           </Link>
-        ) : (
+        )}
+        {isFinalStep && !submitEveryStep && (
           <Button type="submit" aria-disabled={pending} variant="contained">
             Submit
+          </Button>
+        )}
+        {submitEveryStep && (
+          <Button type="submit" aria-disabled={pending} variant="contained">
+            {!isFinalStep ? "Next" : "Submit"}
           </Button>
         )}
       </div>
