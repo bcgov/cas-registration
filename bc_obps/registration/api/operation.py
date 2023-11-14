@@ -49,7 +49,7 @@ def create_operation(request, payload: OperationIn):
             delattr(payload, field_name)
 
     operation = Operation.objects.create(**payload.dict())
-    return {"name": operation.name}
+    return {"name": operation.name, "id": operation.id}
 
 
 ##### PUT #####
