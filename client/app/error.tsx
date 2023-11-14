@@ -1,5 +1,5 @@
 "use client";
 
-export default async function RootError() {
+export default function RootError() {
   return <p>Error ocurred.</p>;
 }
