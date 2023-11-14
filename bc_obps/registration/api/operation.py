@@ -1,4 +1,5 @@
 from .api_base import router
+from ninja import File, UploadedFile, Form
 import json
 from datetime import datetime
 import pytz
@@ -28,7 +29,7 @@ def get_operation(request, operation_id: int):
 
 
 @router.post("/operations")
-def create_operation(request, payload: OperationIn):
+def create_operation(request, payload: OperationIn = Form(...), documents: List[UploadedFile] = File(...)):
     fields_to_assign = ["operator", "naics_code", "naics_category"]
 
     for field_name in fields_to_assign:
@@ -42,14 +43,14 @@ def create_operation(request, payload: OperationIn):
             obj = get_object_or_404(model_class, id=field_value)
             setattr(payload, field_name, obj)
 
-    fields_to_delete = ["documents", "contacts", "petrinex_ids", "regulated_products", "reporting_activities"]
+    fields_to_delete = ["contacts", "regulated_products", "reporting_activities"]
 
     for field_name in fields_to_delete:
         if field_name in payload.dict():
             delattr(payload, field_name)
 
     operation = Operation.objects.create(**payload.dict())
-    return {"name": operation.name}
+    return {"operation": operation.dict(), "documents": [doc.name for doc in documents]}
 
 
 ##### PUT #####
