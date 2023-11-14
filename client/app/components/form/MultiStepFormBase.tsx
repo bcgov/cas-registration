@@ -15,6 +15,7 @@ interface MultiStepFormProps {
   onSubmit: any;
   readonly?: boolean;
   schema: any;
+  submitEveryStep?: boolean;
   uiSchema: any;
 }
 
@@ -27,6 +28,7 @@ const MultiStepFormBase = ({
   onSubmit,
   readonly,
   schema,
+  submitEveryStep,
   uiSchema,
 }: MultiStepFormProps) => {
   const params = useParams();
@@ -40,6 +42,7 @@ const MultiStepFormBase = ({
     <>
       <MultiStepHeader step={formSection} steps={formSectionTitles} />
       <FormBase
+        className="[&>div>fieldset]:min-h-[40vh]"
         schema={schema.properties[formSectionList[formSection]] as RJSFSchema}
         uiSchema={uiSchema}
         readonly={readonly}
@@ -56,6 +59,7 @@ const MultiStepFormBase = ({
         <MultiStepButtons
           step={formSection}
           steps={formSectionList}
+          submitEveryStep={submitEveryStep}
           baseUrl={baseUrl}
           cancelUrl={cancelUrl}
         />

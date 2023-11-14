@@ -7,6 +7,7 @@ import {
 } from "@/app/utils/jsonSchema/operations";
 import MultiStepFormBase from "@/app/components/form/MultiStepFormBase";
 import { operationSubmitHandler } from "@/app/utils/actions";
+import { useParams, useRouter } from "next/navigation";
 
 export interface OperationsFormData {
   [key: string]: any;
@@ -21,6 +22,11 @@ export default function OperationsForm({ formData, schema }: Props) {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [operationName, setOperationName] = useState("");
   const [error, setError] = useState(undefined);
+  const router = useRouter();
+  const params = useParams();
+  const formSection = parseInt(params?.formSection as string) - 1;
+  const operationId = params?.operation;
+  const isCreate = params?.operation === "create";
 
   // need to convert some of the information received from django into types RJSF can read
   const existingFormData = {
@@ -44,7 +50,7 @@ export default function OperationsForm({ formData, schema }: Props) {
     reporting_activities: "",
   };
   const formSectionList = Object.keys(schema.properties as any);
-
+  const isNotFinalStep = formSection !== formSectionList.length - 1;
   // Todo: reimplement success message
   // {operationName ? (
   //         <>
@@ -61,7 +67,7 @@ export default function OperationsForm({ formData, schema }: Props) {
   //         </>
   return (
     <MultiStepFormBase
-      baseUrl="/dashboard/operations/create"
+      baseUrl={`/dashboard/operations/${operationId}`}
       cancelUrl="/dashboard/operations"
       formData={existingFormData}
       formSectionList={formSectionList}
@@ -72,6 +78,7 @@ export default function OperationsForm({ formData, schema }: Props) {
       }
       error={error}
       schema={schema}
+      submitEveryStep
       onSubmit={async (data: { formData?: any }) => {
         const response = await operationSubmitHandler(
           {
@@ -84,13 +91,20 @@ export default function OperationsForm({ formData, schema }: Props) {
             reporting_activities: [],
             operator_id: 1,
           },
-          formData ? "PUT" : "POST"
+          isCreate ? "POST" : "PUT"
         );
+
+        const operation = response?.id || operationId;
+
         if (response.error) {
           setError(response.error);
           return;
         }
-        setOperationName(response.name);
+        if (isNotFinalStep) {
+          router.push(`/dashboard/operations/${operation}/${formSection + 2}`);
+          return;
+        }
+        /*    setOperationName(response.name); */
       }}
       uiSchema={operationUiSchema}
       // formContext={{
