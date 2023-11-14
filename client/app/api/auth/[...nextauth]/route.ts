@@ -133,13 +133,11 @@ export const authOptions: NextAuthOptions = {
                   refreshedToken.refresh_token ?? token.refresh_token, // Fall back to old refresh token
               };
             } catch (error) {
-              console.log(error);
               token.error = "ErrorAccessToken";
             }
           }
         }
       } catch (error) {
-        console.log(error);
         token.error = "ErrorAccessToken";
       }
       // 🔒 return encrypted nextauth JWT

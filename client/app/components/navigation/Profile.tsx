@@ -38,7 +38,7 @@ async function keycloakSessionLogOut() {
     signOut();
 >>>>>>> 42b636c (🚧 nextauth SSO)
   } catch (err) {
-    console.error(err);
+    //console.error(err);
   }
 }
 <<<<<<< HEAD
