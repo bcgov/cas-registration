@@ -3,7 +3,11 @@ import "@testing-library/jest-dom";
 import { render, screen } from "@testing-library/react";
 import fetchMock from "jest-fetch-mock";
 
-jest.mock("../../../../app/components/form/SubmitButton");
+// Mock useFormStatus
+jest.mock("react-dom", () => ({
+  ...jest.requireActual("react-dom"),
+  useFormStatus: jest.fn().mockReturnValue({ pending: false }),
+}));
 
 describe("Operations component", () => {
   beforeEach(() => {
