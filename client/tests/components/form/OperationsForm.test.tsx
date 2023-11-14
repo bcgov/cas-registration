@@ -5,7 +5,11 @@ import "@testing-library/jest-dom";
 import { render, screen } from "@testing-library/react";
 import React from "react";
 
-jest.mock("../../../app/components/form/SubmitButton");
+// Mock useFormStatus
+jest.mock("react-dom", () => ({
+  ...jest.requireActual("react-dom"),
+  useFormStatus: jest.fn().mockReturnValue({ pending: false }),
+}));
 
 const testFormData = {
   id: 1,
@@ -51,8 +55,7 @@ describe("Operations component", () => {
       screen.getByText(/Step 3: Operation Representative \(OR\) Information/i),
     ).toBeInTheDocument();
 
-    // Test for Input elements
-
+    /* Test for Input elements */
     // Operation Name
     expect(screen.getByLabelText(/Operation Name+/i)).toBeInTheDocument();
 
@@ -104,6 +107,7 @@ describe("Operations component", () => {
     ).toBeInTheDocument();
 
     // Submit button
+    expect(screen.getByRole("button", { name: /Submit/i })).toBeInTheDocument();
   });
 
   it("loads an existing OperationsForm", async () => {
@@ -170,6 +174,9 @@ describe("Operations component", () => {
         /Would you like to add an exemption ID application lead\?+/i,
       ),
     ).toHaveValue("1");
+
+    // Submit button
+    expect(screen.getByRole("button", { name: /Submit/i })).toBeInTheDocument();
   });
 
   it("shows the success message when operationName is defined", async () => {
@@ -178,6 +185,5 @@ describe("Operations component", () => {
     expect(
       screen.getByText(/Your request to register Operation 1/i),
     ).toBeInTheDocument();
-    // Submit button
   });
 });
