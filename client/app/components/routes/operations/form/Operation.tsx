@@ -67,8 +67,7 @@ export default async function Operation({ numRow }: { numRow?: number }) {
   if (numRow) {
     operation = await getOperation(numRow);
   }
-
-  // Render the OperationsForm component with schema and formData?
+  // Render the OperationsForm component with schema and formData if the operation already exists
   return (
     <>
       {operation?.status === Status.PENDING ? (
