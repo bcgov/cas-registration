@@ -6,7 +6,7 @@ from django.core.exceptions import ValidationError
 from registration.models import BusinessRole, Operator, User, UserOperator, Contact, ParentChildOperator
 from registration.utils import update_model_instance, check_users_admin_request_eligibility
 from ninja.responses import codes_4xx
-from registration.schema import (Message, UserOperatorIn, UserOperatorOut, SelectOperatorIn, RequestAccessOut)
+from registration.schema import Message, UserOperatorIn, UserOperatorOut, SelectOperatorIn, RequestAccessOut
 
 ##### GET #####
 
@@ -62,7 +62,7 @@ def get_user_operator(request, user_operator_id: int):
 ##### POST #####
 @router.post("/select-operator/request-access", response={201: RequestAccessOut, codes_4xx: Message})
 def request_access(request, payload):
-    breakpoint()
+    # breakpoint()
     return create_user_operator(payload)
 
 
@@ -207,8 +207,8 @@ def handle_user_operator_operator(payload: UserOperatorIn, operator):
             parent_operator_instance.save()
             if percentage_owned_by_parent_company:
                 parent_child_operator_instance.save()
-                
-                
+
+
 @router.put(
     "/select-operator/user-operator/{int:user_operator_id}",
     response={200: SelectOperatorIn, codes_4xx: Message},
