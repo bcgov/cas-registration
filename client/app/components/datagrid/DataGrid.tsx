@@ -54,7 +54,7 @@ const DataGrid: React.FC<Props> = ({ rows, columns, cntxt }) => {
   }, [columns, cntxt]);
 
   return (
-    <div style={{ height: "auto", width: "90%" }}>
+    <div style={{ height: "auto", width: "100%" }}>
       <MuiGrid rows={rows} columns={customColumns} disableVirtualization />
     </div>
   );

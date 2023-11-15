@@ -29,16 +29,15 @@ export default function Footer() {
       position="absolute"
       component="footer"
       sx={{
-        display: "flex",
         alignItems: "center",
+        maxHeight: "fit-content",
         mt: "auto",
         width: "100%",
         bgcolor: "primary.main",
+        overflow: "hidden",
         py: 3,
         px: 2,
-        left: 0,
-        bottom: "5px",
-        top: "100%",
+        bottom: 0,
       }}
     >
       <Box
