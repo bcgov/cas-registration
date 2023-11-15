@@ -11,7 +11,11 @@ function FieldTemplate({
   errors,
   required,
   children,
+  uiSchema,
 }: FieldTemplateProps) {
+  const isHidden = uiSchema?.["ui:widget"] === "hidden";
+  if (isHidden) return null;
+
   return (
     <Grid
       container
