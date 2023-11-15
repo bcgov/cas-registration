@@ -14,7 +14,8 @@ declare module "next-auth/jwt" {
     access_token_expires_at: number | undefined;
     refresh_token?: string | undefined;
     id_token: string | undefined;
-    idir_user_guid: string | undefined;
+    user_guid: string | undefined;
+    identity_provider: string | undefined;
     error?: string;
     role?: string;
   }
@@ -23,8 +24,9 @@ declare module "next-auth/jwt" {
 declare module "next-auth" {
   interface Session {
     error?: string;
+    identity_provider: string | undefined;
     user: {
-      idir_user_guid: string | undefined;
+      user_guid: string | undefined;
       role?: string;
     } & DefaultSession["user"];
   }

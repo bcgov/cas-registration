@@ -31,11 +31,11 @@ export const authOptions: NextAuthOptions = {
      * @return {object}            JSON Web Token that will be saved
      */
     // 👇️ called whenever a JSON Web Token is created
-    async jwt({ token, account, profile }) {
+    async jwt({ token, account }) {
       try {
         //📌  Provider account (only available on sign in)
         if (account) {
-          //✨  On a new sessions, you can add information to the next-auth created token...
+          // ✨  On a new sessions, you can add information to the next-auth created token...
           // 🧩 custom properties are configured through module augmentation in client/app/types/next-auth.d.ts
 
           // 👇️ used for refresh token strategy
@@ -46,10 +46,14 @@ export const authOptions: NextAuthOptions = {
           // 👇️ used for federated logout, client/app/api/auth/logout/route.ts
           token.id_token = account.id_token;
 
-          // 👇️ used for DJANGO API calls
-          token.idir_user_guid = profile?.sub;
+          // 👇️ used for role lookup and DJANGO API calls
+          token.user_guid = account.providerAccountId
+            .split("@")[0]
+            .toUpperCase();
+          token.identity_provider = account.providerAccountId.split("@")[1];
 
-          //🚧 ???used for route access???
+          console.log(token);
+          //🚧 wip - used for route access: TDB DB LOOKUP
           token.role = "admin";
         } else {
           // check if token is expired
@@ -131,9 +135,10 @@ export const authOptions: NextAuthOptions = {
       return {
         ...session,
         error: token.error,
+        identity_provider: token.identity_provider,
         user: {
           ...session.user,
-          idir_user_guid: token.idir_user_guid,
+          user_guid: token.user_guid,
           role: token.role,
         },
       };
