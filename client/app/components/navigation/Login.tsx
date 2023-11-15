@@ -22,7 +22,7 @@ export default function Login() {
           aria-label="Program Administrator Log In"
           color="inherit"
           variant="outlined"
-          onClick={() => signIn("keycloak")}
+          onClick={() => signIn("keycloak", undefined, { kc_idp_hint: "idir" })}
         >
           Program Administrator
           <br /> Log In
@@ -34,7 +34,9 @@ export default function Login() {
           aria-label="Industrial Operator Log In"
           color="inherit"
           variant="outlined"
-          onClick={() => signIn("keycloak")}
+          onClick={() =>
+            signIn("keycloak", undefined, { kc_idp_hint: "bceidboth" })
+          }
         >
           Industrial Operator
           <br /> Log In
