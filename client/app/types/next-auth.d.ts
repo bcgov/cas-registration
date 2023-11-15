@@ -24,6 +24,7 @@ declare module "next-auth" {
   interface Session {
     error?: string;
     user: {
+      idir_user_guid: string | undefined;
       role?: string;
     } & DefaultSession["user"];
   }

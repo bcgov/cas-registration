@@ -23,6 +23,7 @@ export default function Profile({ name }: { readonly name: string }) {
   /* use the NextAuth useSession hook to get session data, and if a specific error condition is met,
      triggers a forced sign-in using the "keycloak" provider to potentially resolve the error related to refreshing access tokens.*/
   const { data: session } = useSession();
+  //console.log(session);
   // 👇️ run function whenever the session object changes e.g. session.error changes
   useEffect(() => {
     if (session?.error === "ErrorAccessToken") {
