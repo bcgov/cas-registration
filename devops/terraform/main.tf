@@ -34,8 +34,8 @@ resource "google_storage_bucket" "database_backups" {
 }
 
 resource "google_service_account" "backups_sa" {
-  account_id = "${var.openshift_nameplate}-${var.openshift_environment}-backups-sa"
-  display_name = "${var.openshift_nameplate}-${var.openshift_environment}-backups-sa"
+  account_id = "${var.openshift_nameplate}-${var.openshift_environment}-obps-backups-sa"
+  display_name = "${var.openshift_nameplate}-${var.openshift_environment}-obps-backups-sa"
   depends_on = [ google_storage_bucket.database_backups ]
 }
 
@@ -56,7 +56,6 @@ resource "google_service_account_key" "backups_sa_key" {
 
 resource "kubernetes_secret" "storage_secret" {
   metadata {
-    # name = "key" gcp-d193ca-dev-obps-backups-sa-key
     name = "gcp-${google_service_account.backups_sa.display_name}-key"
     namespace = "${var.openshift_nameplate}-${var.openshift_environment}"
     labels = {
