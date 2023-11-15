@@ -29,28 +29,30 @@ def get_operation(request, operation_id: int):
 
 
 @router.post("/operations")
-def create_operation(request, payload: OperationIn = Form(...), documents: List[UploadedFile] = File(...)):
+def create_operation(
+    request, operation_info: OperationIn, opt_in_signed_statuatory_declaration: UploadedFile = File(...)
+):
     fields_to_assign = ["operator", "naics_code", "naics_category"]
 
     for field_name in fields_to_assign:
-        if field_name in payload.dict():
-            field_value = payload.dict()[field_name]
+        if field_name in operation_info.dict():
+            field_value = operation_info.dict()[field_name]
             model_class = {
                 "operator": Operator,
                 "naics_code": NaicsCode,
                 "naics_category": NaicsCategory,
             }[field_name]
             obj = get_object_or_404(model_class, id=field_value)
-            setattr(payload, field_name, obj)
+            setattr(operation_info, field_name, obj)
 
     fields_to_delete = ["contacts", "regulated_products", "reporting_activities"]
 
     for field_name in fields_to_delete:
-        if field_name in payload.dict():
-            delattr(payload, field_name)
+        if field_name in operation_info.dict():
+            delattr(operation_info, field_name)
 
-    operation = Operation.objects.create(**payload.dict())
-    return {"operation": operation.dict(), "documents": [doc.name for doc in documents]}
+    operation = Operation.objects.create(**operation_info.dict())
+    return {"operation": operation.dict(), "statuatory_declaration": opt_in_signed_statuatory_declaration}
 
 
 ##### PUT #####

@@ -123,7 +123,7 @@ export const operationSchema: RJSFSchema = {
                   type: "string",
                   title: "Opt-in Signed Statuatory Declaration",
                   format: "data-url",
-                  readOnly: true,
+                  readOnly: false,
                 },
               },
             },
