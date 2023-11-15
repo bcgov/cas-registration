@@ -15,7 +15,7 @@ async function keycloakSessionLogOut() {
     // call nextauth logout
     signOut();
   } catch (err) {
-    //console.error(err);
+    console.error(err);
   }
 }
 
