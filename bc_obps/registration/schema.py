@@ -165,7 +165,7 @@ class UserOut(Schema):
     province: str
     postal_code: str
     email: str
-    # phone_number: str
+    phone_number: str
     role: str
     user_guid: int
     business_guid: int
@@ -181,9 +181,8 @@ class UserOut(Schema):
 
 class UserOperatorListOut(Schema):
     id: int
-    role: str
     status: str
-    verified_at: Optional[date]
-    operator_id: int
-    user_id: int
-    verified_by_id: Optional[int]
+    first_name: str
+    last_name: str
+    email: str
+    legal_name: str
