@@ -15,6 +15,7 @@ interface MultiStepFormProps {
   onSubmit: any;
   readonly?: boolean;
   schema: any;
+  showSubmissionStep?: boolean;
   submitEveryStep?: boolean;
   uiSchema: any;
 }

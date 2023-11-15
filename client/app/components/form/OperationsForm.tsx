@@ -6,6 +6,7 @@ import {
   /*   operationsGroupSchema, */
 } from "@/app/utils/jsonSchema/operations";
 import MultiStepFormBase from "@/app/components/form/MultiStepFormBase";
+import Link from "next/link";
 import { operationSubmitHandler } from "@/app/utils/actions";
 import { useParams, useRouter } from "next/navigation";
 
@@ -51,65 +52,80 @@ export default function OperationsForm({ formData, schema }: Props) {
   };
   const formSectionList = Object.keys(schema.properties as any);
   const isNotFinalStep = formSection !== formSectionList.length - 1;
+  const isFinalStep = formSection === formSectionList.length - 1;
   // Todo: reimplement success message
-  // {operationName ? (
-  //         <>
-  //           <p>Your request to register {operationName} has been received.</p>
-  //           <p>We will review your request as soon as possible!</p>
-  //           <p>Once approved, you will receive a confirmation email.</p>
-  //           <p>
-  //             You can then log back and download the declartion form for carbon
-  //             tax exemption for the operation.
-  //           </p>
-  //           <p>
-  //             <Link href="#">Have not received the confirmation email yet?</Link>
-  //           </p>
-  //         </>
+
   return (
-    <MultiStepFormBase
-      baseUrl={`/dashboard/operations/${operationId}`}
-      cancelUrl="/dashboard/operations"
-      formData={existingFormData}
-      formSectionList={formSectionList}
-      readonly={
-        formData?.status === "Registered" || formData?.status === "Pending"
-          ? true
-          : false
-      }
-      error={error}
-      schema={schema}
-      submitEveryStep
-      onSubmit={async (data: { formData?: any }) => {
-        const response = await operationSubmitHandler(
-          {
-            ...formData,
-            ...data.formData,
-            //  temporary handling of required many-to-many fields, will be addressed in #138
-            documents: [],
-            contacts: [],
-            regulated_products: [],
-            reporting_activities: [],
-            operator_id: 1,
-          },
-          isCreate ? "POST" : "PUT"
-        );
+    <>
+      {operationName ? (
+        <section className="w-full flex-col flex align-center">
+          <p>
+            Your request to register <b>{operationName}</b> has been received.
+          </p>
+          <p>We will review your request as soon as possible!</p>
+          <p>Once approved, you will receive a confirmation email.</p>
+          <p>
+            You can then log back and download the declartion form for carbon
+            tax exemption for the operation.
+          </p>
+          <p>
+            <Link href="#">Have not received the confirmation email yet?</Link>
+          </p>
+        </section>
+      ) : (
+        <MultiStepFormBase
+          baseUrl={`/dashboard/operations/${operationId}`}
+          cancelUrl="/dashboard/operations"
+          formData={existingFormData}
+          formSectionList={formSectionList}
+          readonly={
+            formData?.status === "Registered" || formData?.status === "Pending"
+              ? true
+              : false
+          }
+          error={error}
+          schema={schema}
+          submitEveryStep
+          onSubmit={async (data: { formData?: any }) => {
+            const response = await operationSubmitHandler(
+              {
+                ...formData,
+                ...data.formData,
+                //  temporary handling of required many-to-many fields, will be addressed in #138
+                documents: [],
+                contacts: [],
+                regulated_products: [],
+                reporting_activities: [],
+                operator_id: 1,
+              },
+              isCreate ? "POST" : "PUT",
+              isFinalStep
+            );
 
-        const operation = response?.id || operationId;
+            const operation = response?.id || operationId;
 
-        if (response.error) {
-          setError(response.error);
-          return;
-        }
-        if (isNotFinalStep) {
-          router.push(`/dashboard/operations/${operation}/${formSection + 2}`);
-          return;
-        }
-        /*    setOperationName(response.name); */
-      }}
-      uiSchema={operationUiSchema}
-      // formContext={{
-      //   groupSchema: operationsGroupSchema,
-      // }}
-    />
+            if (response.error) {
+              setError(response.error);
+              return;
+            }
+
+            router.replace(
+              `/dashboard/operations/${operation}/${formSection + 1}`
+            );
+            if (isNotFinalStep) {
+              router.push(
+                `/dashboard/operations/${operation}/${formSection + 2}`
+              );
+              return;
+            }
+            setOperationName(response.name);
+          }}
+          uiSchema={operationUiSchema}
+          // formContext={{
+          //   groupSchema: operationsGroupSchema,
+          // }}
+        />
+      )}
+    </>
   );
 }
