@@ -1,5 +1,5 @@
 import FieldTemplate from "@/app/styles/rjsf/FieldTemplate";
-import GroupTitleFieldTemplate from "@/app/styles/rjsf/GroupTitleFieldTemplate";
+/* import GroupTitleFieldTemplate from "@/app/styles/rjsf/GroupTitleFieldTemplate"; */
 /* import GroupedObjectFieldTemplateWrapper from "@/app/styles/rjsf/GroupedObjectFieldTemplateWrapper"; */
 import { RJSFSchema } from "@rjsf/utils";
 
@@ -232,7 +232,7 @@ export const operationUiSchema = {
   ],
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
-  "ui:TitleFieldTemplate": GroupTitleFieldTemplate,
+  "ui:options": { label: false },
   /*   "ui:ObjectFieldTemplate": GroupedObjectFieldTemplateWrapper, */
   id: {
     "ui:widget": "hidden",
