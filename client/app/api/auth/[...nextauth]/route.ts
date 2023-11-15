@@ -8,6 +8,7 @@ You can define authentication providers, callbacks, refreshtoken, and other sett
 */
 
 // https://next-auth.js.org/configuration/options
+// Use authOptions when calling getServerSession(authOptions) from the server-side i.e. in React Server Components, Route Handlers, API routes
 export const authOptions: NextAuthOptions = {
   providers: [
     //https://next-auth.js.org/providers/keycloak
@@ -47,8 +48,6 @@ export const authOptions: NextAuthOptions = {
 
           // 👇️ used for DJANGO API calls
           token.idir_user_guid = profile?.sub;
-          /* sub: '58f255ed8d4644eeb2fe9f8d3d92c684@idir',
-            idir_user_guid: '58F255ED8D4644EEB2FE9F8D3D92C684',*/
 
           //🚧 ???used for route access???
           token.role = "admin";
@@ -107,6 +106,8 @@ export const authOptions: NextAuthOptions = {
             } catch (error) {
               token.error = "ErrorAccessToken";
             }
+          } else {
+            // The token is still valid; no need to refresh
           }
         }
       } catch (error) {
@@ -126,7 +127,7 @@ export const authOptions: NextAuthOptions = {
       // By default, for security, only a subset of the token is returned...
       //💡 if you want to make a nextauth JWT property available to the client session...
       // you have to explicitly forward it here to make it available to the client
-      //🚨 🚨  Do not expose sensitive information, such as access tokens.
+      //🚨  Do not expose sensitive information, such as access-tokens.
       return {
         ...session,
         error: token.error,
