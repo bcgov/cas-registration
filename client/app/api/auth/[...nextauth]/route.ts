@@ -123,7 +123,7 @@ export const authOptions: NextAuthOptions = {
      */
     // 👇️ called whenever a session is checked
     async session({ session, token }) {
-      //🚨 🚨  By default, for security, only a subset of the token is returned...
+      // By default, for security, only a subset of the token is returned...
       //💡 if you want to make a nextauth JWT property available to the client session...
       // you have to explicitly forward it here to make it available to the client
       //🚨 🚨  Do not expose sensitive information, such as access tokens.
@@ -132,6 +132,7 @@ export const authOptions: NextAuthOptions = {
         error: token.error,
         user: {
           ...session.user,
+          idir_user_guid: token.idir_user_guid,
           role: token.role,
         },
       };
