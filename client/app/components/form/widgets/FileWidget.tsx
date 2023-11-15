@@ -108,6 +108,7 @@ const FileWidget = ({
 
   const handleChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
+      event.preventDefault();
       if (!event.target.files) {
         return;
       }
@@ -129,6 +130,7 @@ const FileWidget = ({
   return (
     <div className="py-4 flex ">
       <button
+        type="button"
         onClick={handleClick}
         className="p-0 decoration-solid border-0 text-lg bg-transparent text-bc-gov-links-color cursor-pointer underline"
       >

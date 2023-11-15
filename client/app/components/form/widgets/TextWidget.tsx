@@ -3,9 +3,13 @@
 import { TextField } from "@mui/material";
 import { WidgetProps } from "@rjsf/utils/lib/types";
 
-const TextWidget: React.FC<WidgetProps> = (props) => {
-  const { id, onChange, value } = props;
-
+const TextWidget: React.FC<WidgetProps> = ({
+  disabled,
+  id,
+  onChange,
+  readonly,
+  value,
+}) => {
   const handleChange = (e: { target: { value: string } }) => {
     const val = e.target.value;
     onChange(val === "" ? undefined : val);
@@ -14,6 +18,7 @@ const TextWidget: React.FC<WidgetProps> = (props) => {
   return (
     <TextField
       id={id}
+      disabled={disabled || readonly}
       name={id}
       value={value}
       onChange={handleChange}

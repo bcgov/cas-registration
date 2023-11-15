@@ -7,7 +7,7 @@ import Select, { SelectChangeEvent } from "@mui/material/Select";
 import { WidgetProps } from "@rjsf/utils/lib/types";
 
 const SelectWidget: React.FC<WidgetProps> = (props) => {
-  const { id, onChange, schema, uiSchema, value } = props;
+  const { disabled, id, onChange, readonly, schema, uiSchema, value } = props;
   const placeholder = uiSchema?.["ui:placeholder"];
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -31,6 +31,9 @@ const SelectWidget: React.FC<WidgetProps> = (props) => {
       <Select
         labelId={id}
         value={value || ""}
+        id={id}
+        disabled={disabled || readonly}
+        name={id}
         onChange={handleChange}
         sx={{
           width: "100%",
