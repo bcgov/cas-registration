@@ -416,7 +416,7 @@ class Operation(OperationAndFacilityCommonInfo):
     status = models.CharField(
         max_length=1000,
         choices=Statuses.choices,
-        default=Statuses.PENDING,
+        default=Statuses.NOT_REGISTERED,
         db_comment="The status of an operation in the app (e.g. pending review)",
     )
     # temporary handling, many-to-many handled in #138
