@@ -37,6 +37,7 @@ export default async function AccessRequests() {
   // Fetch operations data
   const userOperators: any = await getUserOperators();
   console.log("userOperators: ", userOperators);
+  console.log("type: ", typeof userOperators);
   if (!userOperators) {
     return (
       <div>

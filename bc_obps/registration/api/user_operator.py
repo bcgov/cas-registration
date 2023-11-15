@@ -102,6 +102,7 @@ def list_user_operators(request):
             ],
         )
         print("operator_related_fields_dict: ", operator_related_fields_dict)
+        print("type: ", type(operator_related_fields_dict))  # dict or json
 
         user_operator_list.append(
             {
