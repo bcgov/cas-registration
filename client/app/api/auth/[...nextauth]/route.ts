@@ -52,7 +52,6 @@ export const authOptions: NextAuthOptions = {
             .toUpperCase();
           token.identity_provider = account.providerAccountId.split("@")[1];
 
-          console.log(token);
           //🚧 wip - used for route access: TDB DB LOOKUP
           token.role = "admin";
         } else {
