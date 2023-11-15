@@ -7,7 +7,7 @@ from registration.models import BusinessRole, Operator, User, UserOperator, Cont
 from registration.utils import update_model_instance
 from ninja.responses import codes_4xx
 from typing import List
-from registration.schema import Message, UserOperatorIn, UserOperatorOut, SelectOperatorIn
+from registration.schema import Message, UserOperatorIn, UserOperatorOut, SelectOperatorIn, UserOperatorListOut
 
 ##### GET #####
 
@@ -60,11 +60,60 @@ def get_user_operator(request, user_operator_id: int):
     }
 
 
-@router.get("/user-operators", response=List[UserOperatorOut])
-def list_operations(request):
+# @router.get("/user-operators", response=List[UserOperatorOut])
+# def list_operations(request):
+#     qs = UserOperator.objects.all()
+#     print(qs)
+#     return qs
+
+
+@router.get("/user-operators", response=List[UserOperatorListOut])
+def list_user_operators(request):
     qs = UserOperator.objects.all()
     print(qs)
-    return qs
+    user_operator_list = []
+
+    for user_operator in qs:
+        # user_operator = get_object_or_404(UserOperator)
+        print("user_operator: ", user_operator)
+        user_operator_related_fields_dict = model_to_dict(
+            user_operator,
+            fields=[
+                "id",
+                "status",
+            ],
+        )
+        print("user_operator_related_fields_dict: ", user_operator_related_fields_dict)
+        user = user_operator.user
+        user_related_fields_dict = model_to_dict(
+            user,
+            fields=[
+                "first_name",
+                "last_name",
+                "email",
+            ],
+        )
+        print("user_related_fields_dict: ", user_related_fields_dict)
+        operator = user_operator.operator
+        operator_related_fields_dict = model_to_dict(
+            operator,
+            fields=[
+                "legal_name",
+            ],
+        )
+        print("operator_related_fields_dict: ", operator_related_fields_dict)
+
+        user_operator_list.append(
+            {
+                **user_operator_related_fields_dict,
+                **user_related_fields_dict,
+                **operator_related_fields_dict,
+            }
+        )
+        print("user_operator_list: ", user_operator_list)
+        print("length: ", len(user_operator_list))
+
+    return user_operator_list
 
 
 ##### POST #####

@@ -3,6 +3,9 @@ from ninja import Field, Schema
 from ninja import ModelSchema
 from .models import Operation, Operator, NaicsCode, NaicsCategory, User
 from datetime import date
+from uuid import UUID
+
+# from localflavor.ca.models import CAPostalCodeField, CAProvinceField
 
 
 # Generic schemas
@@ -152,11 +155,35 @@ class UserOperatorIn(UserOperatorOut):
 
 
 # USER
-class UserOut(ModelSchema):
-    """
-    Schema for the User model
-    """
+class UserOut(Schema):
+    id: int
+    first_name: str
+    last_name: str
+    position_title: str
+    street_address: str
+    municipality: str
+    province: str
+    postal_code: str
+    email: str
+    # phone_number: str
+    role: str
+    user_guid: int
+    business_guid: int
 
-    class Config:
-        model = User
-        model_fields = '__all__'
+    # """
+    # Schema for the Operator model
+    # """
+
+    # class Config:
+    #     model = User
+    #     model_exclude = ["phone_number"]
+
+
+class UserOperatorListOut(Schema):
+    id: int
+    role: str
+    status: str
+    verified_at: Optional[date]
+    operator_id: int
+    user_id: int
+    verified_by_id: Optional[int]
