@@ -19,14 +19,11 @@ export const metadata: Metadata = {
     "The OBPS is designed to ensure there is a price incentive for industrial emitters to reduce their greenhouse gas emissions and spur innovation while maintaining competitiveness and protecting against carbon leakage.",
 };
 
-<<<<<<< HEAD
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
 };
 
-=======
->>>>>>> 280d666 (🚧 nextauth with keycloak provider)
 export default async function RootLayout({
   children,
 }: {
@@ -42,7 +39,7 @@ export default async function RootLayout({
         //👇️ Used to mark the root element where Next.js will mount the client-side React application
       }
       <body id="__next">
-        {/* 👇️  nextauth SessionProvider available to client children via useSession */}
+        {/* 👇️  NextAuth SessionProvider available to client children via useSession */}
         <SessionProvider session={session}>
           {
             //👇️ provide MUI custom theme to the components within the layout
