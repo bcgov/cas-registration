@@ -3,7 +3,6 @@ import { FieldTemplateProps } from "@rjsf/utils";
 
 function FieldTemplate({
   classNames,
-  displayLabel,
   id,
   style,
   label,
@@ -15,12 +14,10 @@ function FieldTemplate({
 }: FieldTemplateProps) {
   return (
     <div style={style} className={`w-full ${classNames}`}>
-      {displayLabel && (
-        <label htmlFor={id} className="inline-block">
-          {label}
-          {required ? "*" : null}
-        </label>
-      )}
+      <label htmlFor={id} className="inline-block">
+        {label}
+        {required ? "*" : null}
+      </label>
       {description}
       {children}
       {errors}
