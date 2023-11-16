@@ -35,7 +35,7 @@ export default function Login() {
           color="inherit"
           variant="outlined"
           onClick={() =>
-            signIn("keycloak", undefined, { kc_idp_hint: "bceidboth" })
+            signIn("keycloak", undefined, { kc_idp_hint: "bceidbusiness" })
           }
         >
           Industrial Operator
