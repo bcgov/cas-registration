@@ -38,6 +38,10 @@ export default function Header() {
         top: 0,
         left: 0,
         right: 0,
+        height: {
+          xs: "150px", //mobile & tablet
+          md: "80px", //laptop & desktop
+        },
       }}
     >
       <Box
@@ -47,13 +51,9 @@ export default function Header() {
           margin: "0 auto",
           clipPath: "inset(-5px 0px -5px 0px)",
           boxSize: "border-box",
-          justifyContent: "center",
           width: "100%",
+          minWidget: "100%",
           maxWidth: "1536px",
-          height: {
-            xs: "150px", //mobile & tablet
-            md: "80px", //laptop & desktop
-          },
         }}
       >
         <Toolbar>
