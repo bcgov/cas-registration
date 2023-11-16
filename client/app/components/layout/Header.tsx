@@ -1,38 +1,24 @@
 "use client";
-
-import { usePathname } from "next/navigation";
-import Login from "@/app/components/navigation/Login";
-import Profile from "@/app/components/navigation/Profile";
-
 // 🏷 import {named} can be significantly slower than import default
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import { styled } from "@mui/material/styles";
-import { useEffect, useState } from "react";
+
+import Session from "@/app/components/navigation/Session";
 
 export default function Header() {
-  //🧪 ************ Mock authentication state ***********************
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  // `usePathname` hook from next/navigation to access the current route information
-  const path = usePathname();
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const isDashboardPage = path.includes("/dashboard");
-      setIsAuthenticated(isDashboardPage);
-    }
-  }, [path]); // dependencies array
-
   // 🖥️📲  using MUI theme breakpoints for responsive design https://mui.com/material-ui/customization/breakpoints/
-  // 🧩 For login buttons using theme breakpoints to hide for mobile & tablet
+
+  // 🧩 For authentication content using theme breakpoints to hide for mobile & tablet
   const ButtonsRight = styled(Box)(({ theme }) => ({
     display: "none",
     [theme.breakpoints.up("md")]: {
       display: "flex",
     },
   }));
-  // 🧩 For login buttons using theme breakpoints to hide for laptop & desktop
+  // 🧩 For authentication content using theme breakpoints to hide for laptop & desktop
   const ButtonsBottom = styled(Toolbar)(({ theme }) => ({
     display: "flex",
     justifyContent: "center",
@@ -88,24 +74,15 @@ export default function Header() {
         >
           BC OBPS
         </Typography>
-
-        {/*📛 To do: use authentication session info to show/hide login buttons*/}
-        {isAuthenticated ? (
-          <Profile />
-        ) : (
-          // Login navigation content for laptop & desktop*
-          <ButtonsRight>
-            <Login />
-          </ButtonsRight>
-        )}
+        {/* 👇️ Authentication content for laptop & desktop */}
+        <ButtonsRight>
+          <Session />
+        </ButtonsRight>
       </Toolbar>
-      {/*📛 To do: use authentication session info to show/hide login buttons*/}
-      {!isAuthenticated && (
-        // Login navigation content for mobile & tablet*
-        <ButtonsBottom>
-          <Login />
-        </ButtonsBottom>
-      )}
+      {/* 👇️ Authentication content for mobile & tablet */}
+      <ButtonsBottom>
+        <Session />
+      </ButtonsBottom>
     </AppBar>
   );
 }

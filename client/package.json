@@ -40,6 +40,7 @@
     "eslint-config-next": "^14.0.1",
     "eslint-plugin-import": "^2.25.3",
     "jest-fetch-mock": "^3.0.3",
+    "next-auth": "^4.24.4",
     "next": "^14.0.1",
     "postcss": "^8.4.30",
     "react": "^18.2.0",
