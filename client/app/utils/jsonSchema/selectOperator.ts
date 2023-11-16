@@ -12,6 +12,8 @@ export const selectOperatorSchema: RJSFSchema = {
 export const selectOperatorUiSchema = {
   "ui:FieldTemplate": FieldTemplate,
   operator_id: {
+    "ui:FieldTemplate": FieldTemplate,
+    "ui:classNames": "[&>label]:hidden",
     "ui:widget": "ComboBox",
   },
 };
