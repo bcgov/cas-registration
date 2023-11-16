@@ -41,7 +41,7 @@ export const userOperatorSchema: RJSFSchema = {
     province: {
       type: "string",
       title: "Province",
-      oneOf: provinceOptions,
+      anyOf: provinceOptions,
     },
     postal_code: { type: "string", title: "Postal Code" },
     email: { type: "string", title: "Email Address" },
@@ -457,6 +457,15 @@ export const userOperatorUiSchema = {
     "ui:widget": "URLWidget",
   },
   pc_mailing_province: {
-    "ui:widget": "SelectWidget",
+    "ui:widget": "ComboBox",
+  },
+  province: {
+    "ui:widget": "ComboBox",
+  },
+  physical_province: {
+    "ui:widget": "ComboBox",
+  },
+  pc_physical_province: {
+    "ui:widget": "ComboBox",
   },
 };
