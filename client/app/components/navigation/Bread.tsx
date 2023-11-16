@@ -105,7 +105,7 @@ export default function Bread({
           marginRight: "auto",
           marginTop: {
             xs: "160px",
-            sm: "80px",
+            md: "80px",
           },
         }}
       >
