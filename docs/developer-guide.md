@@ -141,16 +141,6 @@ React Testing Library isn't entirely compatible with Next 13 yet, so a few thing
 - To mock `fetch`,in `beforeEach`, add `fetchMock.enableMocks();`, and in the test, mock the fetch values with `fetchMock.mockResponse([...whatever response you want])`
 - If you're testing a simple async component, you can use `render(await Operations());` instead of `render(<Operations />)`. If the component is more complicated (e.g., it imports other async components, or a mix of client/server), it appears there isn't yet a solution: https://github.com/testing-library/react-testing-library/issues/1209#issuecomment-1673372612
 
-### Unit tests for Django models
-
-```shell
-> cd bc_obps
-> make start_pg
-> poetry shell
-
-> python manage.py test
-```
-
 ### Backend unit tests (for API endpoints) with Pytest
 
 The easiest way to run these tests locally is by using commands from the Makefile.
@@ -160,6 +150,7 @@ The easiest way to run these tests locally is by using commands from the Makefil
 > make pythontests_verbose      # run pytest with verbose output (helpful for troubleshooting unit tests)
 > make pythontests_watch        # adds a watcher that can run pytest in the background; unit tests will re-run whenever changes to a Python file are detected
 > make pythontests_coverage     # run pytest with coverage report
+> make pythontests ARGS='registration/tests/<file_name.py>' # run pytest for a specific file
 ```
 
 #### Detail directions
