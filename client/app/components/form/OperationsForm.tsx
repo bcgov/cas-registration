@@ -28,7 +28,7 @@ export default function OperationsForm({ formData, schema }: Props) {
   const params = useParams();
   const formSection = parseInt(params?.formSection as string) - 1;
   const operationId = params?.operation;
-  const isCreate = params?.operation === "create";
+  const isCreate = params?.operation === "0";
 
   // need to convert some of the information received from django into types RJSF can read
   const existingFormData = {
@@ -106,7 +106,7 @@ export default function OperationsForm({ formData, schema }: Props) {
                 operator_id: 1,
               },
               isCreate ? "POST" : "PUT",
-              isFinalStep
+              isFinalStep,
             );
 
             const operation = response?.id || operationId;
@@ -117,11 +117,11 @@ export default function OperationsForm({ formData, schema }: Props) {
             }
 
             router.replace(
-              `/dashboard/operations/${operation}/${formSection + 1}`
+              `/dashboard/operations/${operation}/${formSection + 1}`,
             );
             if (isNotFinalStep) {
               router.push(
-                `/dashboard/operations/${operation}/${formSection + 2}`
+                `/dashboard/operations/${operation}/${formSection + 2}`,
               );
               return;
             }
