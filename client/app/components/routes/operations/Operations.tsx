@@ -55,7 +55,7 @@ export default async function Operations() {
               registration_year,
               submission_date,
               registration_id,
-              status: capitalizeString(status.split("_").join(" ")),
+              status: capitalizeString(status),
             };
           },
         )
