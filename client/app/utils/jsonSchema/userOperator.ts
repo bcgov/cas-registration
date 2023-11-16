@@ -456,4 +456,7 @@ export const userOperatorUiSchema = {
   pc_website: {
     "ui:widget": "URLWidget",
   },
+  pc_mailing_province: {
+    "ui:widget": "SelectWidget",
+  },
 };

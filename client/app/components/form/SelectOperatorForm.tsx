@@ -54,7 +54,7 @@ export default function SelectOperatorForm({
         ComboBox,
       }}
       onChange={handleChange}
-      className="flex flex-col mx-auto gap-2 justify-center"
+      className="flex flex-col mx-auto justify-center w-80"
     >
       {errorList.length > 0 &&
         errorList.map((e: any) => (
@@ -62,7 +62,7 @@ export default function SelectOperatorForm({
             {e.message}
           </Alert>
         ))}
-      <SubmitButton label="Request Access" />
+      <SubmitButton label="Request Access" classNames="mt-4" />
     </Form>
   );
 }
