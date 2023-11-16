@@ -6,6 +6,7 @@ import {
   /*   operationsGroupSchema, */
 } from "@/app/utils/jsonSchema/operations";
 import MultiStepFormBase from "@/app/components/form/MultiStepFormBase";
+import { Button } from "@mui/material";
 import Link from "next/link";
 import { operationSubmitHandler } from "@/app/utils/actions";
 import { useParams, useRouter } from "next/navigation";
@@ -58,12 +59,14 @@ export default function OperationsForm({ formData, schema }: Props) {
   return (
     <>
       {operationName ? (
-        <section className="w-full flex-col flex align-center">
+        <section className="w-full text-center text-2xl mt-20">
           <p>
             Your request to register <b>{operationName}</b> has been received.
           </p>
-          <p>We will review your request as soon as possible!</p>
-          <p>Once approved, you will receive a confirmation email.</p>
+          <p>
+            We will review your request as soon as possible! Once approved, you
+            will receive a confirmation email.
+          </p>
           <p>
             You can then log back and download the declartion form for carbon
             tax exemption for the operation.
@@ -71,6 +74,9 @@ export default function OperationsForm({ formData, schema }: Props) {
           <p>
             <Link href="#">Have not received the confirmation email yet?</Link>
           </p>
+          <Link href="/dashboard/operations">
+            <Button variant="contained">Return to Operations List</Button>
+          </Link>
         </section>
       ) : (
         <MultiStepFormBase
