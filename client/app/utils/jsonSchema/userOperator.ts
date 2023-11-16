@@ -31,7 +31,7 @@ export const userOperatorSchema: RJSFSchema = {
     "physical_postal_code",
     "operator_has_parent_company",
   ],
-  "ui:title": "User Information",
+  title: "User Information",
   properties: {
     first_name: { type: "string", title: "First Name" },
     last_name: { type: "string", title: "Last Name" },
@@ -419,7 +419,9 @@ export const userOperatorUiSchema = {
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
   "ui:TitleFieldTemplate": GroupTitleFieldTemplate,
-  "ui:title": "User Information",
+  "ui:options": {
+    label: false,
+  },
   email: {
     "ui:widget": "EmailWidget",
   },
@@ -459,6 +461,9 @@ export const userOperatorUiSchema = {
     "ui:widget": "ComboBox",
   },
   pc_physical_province: {
+    "ui:widget": "ComboBox",
+  },
+  so_province: {
     "ui:widget": "ComboBox",
   },
 };
