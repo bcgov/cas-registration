@@ -8,8 +8,10 @@ from registration.models import (
     UserOperator,
     Operation,
     ParentChildOperator,
+    AppRole
 )
 
+admin.site.register(AppRole)
 admin.site.register(NaicsCode)
 admin.site.register(Document)
 admin.site.register(User)
@@ -18,3 +20,4 @@ admin.site.register(Operator)
 admin.site.register(UserOperator)
 admin.site.register(Operation)
 admin.site.register(ParentChildOperator)
+
