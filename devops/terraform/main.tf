@@ -25,6 +25,12 @@ provider "kubernetes" {
   token = var.kubernetes_token
 }
 
+## ---------------------------------------------------------------------------------------------------------------------
+## STORAGE FOR POSTGRES BACKUPS
+## Provisions storage buckets and service accounts for the buckets, then loads the secrets for the service accounts
+## into an OpenShift secret.
+## ---------------------------------------------------------------------------------------------------------------------
+
 resource "google_storage_bucket" "database_backups" {
   name = "${var.openshift_nameplate}-${var.openshift_environment}-obps-postgres-backups"
   location = var.region
@@ -85,7 +91,7 @@ resource "google_storage_bucket" "reg_attachments" {
 
 resource "google_service_account" "reg_attachments_sa" {
   account_id = "${var.openshift_nameplate}-${var.openshift_environment}-reg-attachments-sa"
-  display_name = "${var.openshift_nameplate}-${var.openshift_environment}-reg-attachments-sa"
+  display_name = "${var.openshift_nameplate}-${var.openshift_environment}-reg-attachments-servive-account"
   depends_on = [ google_storage_bucket.reg_attachments ]
 }
 
