@@ -16,7 +16,7 @@ const SelectWidget: React.FC<WidgetProps> = (props) => {
 
   const handleChange = (e: SelectChangeEvent) => {
     const val = e.target.value;
-    onChange(val);
+    onChange(val || "");
   };
 
   return (
@@ -25,11 +25,12 @@ const SelectWidget: React.FC<WidgetProps> = (props) => {
         width: "100%",
       }}
     >
-      <InputLabel shrink={false}>{!value && placeholder}</InputLabel>
+      <InputLabel id={id} shrink={false}>
+        {!value && placeholder}
+      </InputLabel>
       <Select
-        id={id}
-        name={id}
-        value={value}
+        labelId={id}
+        value={value || ""}
         onChange={handleChange}
         sx={{
           width: "100%",
