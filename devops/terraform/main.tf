@@ -91,7 +91,7 @@ resource "google_storage_bucket" "reg_attachments" {
 
 resource "google_service_account" "reg_attachments_sa" {
   account_id = "${var.openshift_nameplate}-${var.openshift_environment}-reg-attachments-sa"
-  display_name = "${var.openshift_nameplate}-${var.openshift_environment}-reg-attachments-servive-account"
+  display_name = "${var.openshift_nameplate}-${var.openshift_environment}-reg-attachments-service-account"
   depends_on = [ google_storage_bucket.reg_attachments ]
 }
 
