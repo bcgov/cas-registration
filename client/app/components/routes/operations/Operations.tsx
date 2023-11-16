@@ -36,7 +36,6 @@ export default async function Operations() {
       </div>
     );
   }
-
   // Transform the fetched data into rows for the DataGrid component
   const rows: GridRowsProp =
     operations.length > 0
@@ -56,7 +55,7 @@ export default async function Operations() {
               registration_year,
               submission_date,
               registration_id,
-              status: capitalizeString(status),
+              status: capitalizeString(status.split("_").join(" ")),
             };
           },
         )

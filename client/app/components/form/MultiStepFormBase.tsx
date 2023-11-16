@@ -29,6 +29,7 @@ const MultiStepFormBase = ({
   onSubmit,
   readonly,
   schema,
+  showSubmissionStep,
   submitEveryStep,
   uiSchema,
 }: MultiStepFormProps) => {
@@ -36,9 +37,14 @@ const MultiStepFormBase = ({
   const formSection = parseInt(params?.formSection as string) - 1;
   const [formState, setFormState] = useState(formData || {});
 
-  const formSectionTitles = formSectionList.map(
+  const mapSectionTitles = formSectionList.map(
     (section) => schema.properties[section].title,
   );
+
+  const formSectionTitles = showSubmissionStep
+    ? [...mapSectionTitles, "Submission"]
+    : mapSectionTitles;
+
   return (
     <>
       <MultiStepHeader step={formSection} steps={formSectionTitles} />
