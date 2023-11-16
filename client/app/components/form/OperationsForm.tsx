@@ -86,6 +86,7 @@ export default function OperationsForm({ formData, schema }: Props) {
           error={error}
           schema={schema}
           submitEveryStep
+          showSubmissionStep
           onSubmit={async (data: { formData?: any }) => {
             const response = await operationSubmitHandler(
               {

@@ -7,7 +7,7 @@ interface MultiStepHeaderProps {
 
 const MultiStepHeader = ({ step, steps }: MultiStepHeaderProps) => {
   return (
-    <div className="flex flex-row my-10 justify-between w-full">
+    <div className="block sm:flex flex-row my-10 justify-between w-full">
       {steps.map((s, i) => {
         const isLastStep = i === steps.length - 1;
         const bgColor =
@@ -17,7 +17,7 @@ const MultiStepHeader = ({ step, steps }: MultiStepHeaderProps) => {
 
         return (
           <div
-            className={`flex flex-row items-center ${
+            className={`mb-4 flex flex-row items-center ${
               isLastStep ? "grow-0" : "grow"
             }`}
             key={step}
@@ -30,7 +30,7 @@ const MultiStepHeader = ({ step, steps }: MultiStepHeaderProps) => {
             </div>
             <div className="ml-4 h-min">{steps[i]}</div>
             {!isLastStep && (
-              <div className="mx-4 grow">
+              <div className="hidden sm:block mx-4 grow">
                 <hr className="border-black" />
               </div>
             )}
