@@ -142,13 +142,6 @@ export const userOperatorSchema: RJSFSchema = {
           "so_phone_number",
         ],
         properties: {
-          senior_officer_section: {
-            //Not an actual field in the db - this is just to make the form look like the wireframes
-            title:
-              "Please provide information about the Senior Officer (SO) of the Operator:",
-            type: "object",
-            readOnly: true,
-          },
           so_first_name: {
             type: "string",
             title: "First Name",
