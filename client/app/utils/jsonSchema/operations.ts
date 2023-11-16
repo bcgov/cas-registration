@@ -216,7 +216,12 @@ export const operationUiSchema = {
     "ui:widget": "hidden",
   },
   naics_code_id: {
-    "ui:widget": "select",
+    "ui:widget": "SelectWidget",
+    "ui:placeholder": "Select Primary NAICS code",
+  },
+  naics_category_id: {
+    "ui:widget": "SelectWidget",
+    "ui:placeholder": "Select NAICS category",
   },
   "Did you submit a GHG emissions report for reporting year 2022?": {
     "ui:widget": "RadioWidget",
