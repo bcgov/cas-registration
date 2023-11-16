@@ -39,7 +39,7 @@ async function getOperation(id: number) {
 export const createOperationSchema = (
   schema: RJSFSchema,
   naicsCodes: { id: number }[],
-  naicsCategories: { id: number }[]
+  naicsCategories: { id: number }[],
 ) => {
   const localSchema = JSON.parse(JSON.stringify(schema));
   // naics codes
