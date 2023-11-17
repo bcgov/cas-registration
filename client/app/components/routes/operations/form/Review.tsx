@@ -6,7 +6,7 @@ import DoNotDisturbIcon from "@mui/icons-material/DoNotDisturb";
 import { createSubmitHandler } from "@/app/utils/actions";
 import { OperationsFormData } from "@/app/components/form/OperationsForm";
 import React, { useState } from "react";
-import { Status } from "@/app/types";
+import { Status } from "@/app/types/types";
 
 interface Props {
   operation: OperationsFormData;
@@ -22,7 +22,7 @@ export default function Review(props: Readonly<Props>) {
       "PUT",
       `registration/operations/${props.operation.id}/update-status`,
       `dashboard/operations/${props.operation.id}`,
-      props.operation,
+      props.operation
     );
     if (response.error) {
       setErrorList([{ message: response.error }]);
@@ -39,7 +39,7 @@ export default function Review(props: Readonly<Props>) {
       "PUT",
       `registration/operations/${props.operation.id}/update-status`,
       `dashboard/operations/${props.operation.id}`,
-      props.operation,
+      props.operation
     );
     if (response.error) {
       setErrorList([{ message: response.error }]);
