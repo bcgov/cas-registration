@@ -4,9 +4,8 @@ import {
   operationUiSchema,
   operationsGroupSchema,
 } from "@/app/utils/jsonSchema/operations";
-import Form from "@rjsf/core";
+import FormBase from "@/app/components/form/FormBase";
 import { RJSFSchema } from "@rjsf/utils";
-import validator from "@rjsf/validator-ajv8";
 import Link from "next/link";
 import React from "react";
 import { Alert } from "@mui/material";
@@ -61,45 +60,43 @@ export default function OperationsForm(props: Props) {
       </p>
     </>
   ) : (
-    <>
-      <Form
-        // Because this is an RJSF form, we can't use the Nextjs13.5 pattern of putting a function in the action prop and using the useFormState hook.
-        readonly={
-          props.formData?.status === "Registered" ||
-          props.formData?.status === "Pending"
-            ? true
-            : false
+    <FormBase
+      // Because this is an RJSF form, we can't use the Nextjs13.5 pattern of putting a function in the action prop and using the useFormState hook.
+      readonly={
+        props.formData?.status === "Registered" ||
+        props.formData?.status === "Pending"
+          ? true
+          : false
+      }
+      schema={props.schema}
+      onSubmit={async (data: { formData?: any }) => {
+        const response = await operationSubmitHandler(
+          {
+            ...props.formData,
+            ...data.formData,
+            //  temporary handling of required many-to-many fields, will be addressed in #138
+            documents: [],
+            contacts: [],
+            regulated_products: [],
+            reporting_activities: [],
+            operator_id: 1,
+          },
+          props.formData ? "PUT" : "POST",
+        );
+        if (response.error) {
+          setError(response.error);
+          return;
         }
-        schema={props.schema}
-        validator={validator}
-        onSubmit={async (data: { formData?: any }) => {
-          const response = await operationSubmitHandler(
-            {
-              ...data.formData,
-              //  temporary handling of required many-to-many fields, will be addressed in #138
-              documents: [],
-              contacts: [],
-              regulated_products: [],
-              reporting_activities: [],
-              operator_id: 1,
-            },
-            props.formData ? "PUT" : "POST",
-          );
-          if (response.error) {
-            setError(response.error);
-            return;
-          }
-          setOperationName(response.name);
-        }}
-        uiSchema={operationUiSchema}
-        formData={existingFormData}
-        formContext={{
-          groupSchema: operationsGroupSchema,
-        }}
-      >
-        {error && <Alert severity="error">{error}</Alert>}
-        <SubmitButton label="submit" />
-      </Form>
-    </>
+        setOperationName(response.name);
+      }}
+      uiSchema={operationUiSchema}
+      formData={existingFormData}
+      formContext={{
+        groupSchema: operationsGroupSchema,
+      }}
+    >
+      {error && <Alert severity="error">{error}</Alert>}
+      <SubmitButton label="submit" />
+    </FormBase>
   );
 }

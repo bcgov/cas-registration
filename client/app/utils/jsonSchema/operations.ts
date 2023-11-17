@@ -1,4 +1,5 @@
 import FieldTemplate from "@/app/styles/rjsf/FieldTemplate";
+import GroupTitleFieldTemplate from "@/app/styles/rjsf/GroupTitleFieldTemplate";
 import GroupedObjectFieldTemplateWrapper from "@/app/styles/rjsf/GroupedObjectFieldTemplateWrapper";
 import { RJSFSchema } from "@rjsf/utils";
 
@@ -10,8 +11,8 @@ export const operationSchema: RJSFSchema = {
     "naics_code_id",
     "naics_category_id",
     // keys that are questions aren't saved in the database
-    "Did you submit a GHG emissions report for reporting year 2022?",
   ],
+  title: "Operation",
   properties: {
     verified_by: { type: "string" },
     verified_at: { type: "string" },
@@ -21,7 +22,10 @@ export const operationSchema: RJSFSchema = {
       title: "Operation Type",
       enum: ["Single Facility Operation", "Linear Facilities Operation"],
     },
-    naics_code_id: { type: "number", title: "Primary NAICS Code" },
+    naics_code_id: {
+      type: "number",
+      title: "Primary NAICS Code",
+    },
     naics_category_id: { type: "number", title: "NAICS Category" },
     regulated_products: {
       type: "string",
@@ -37,13 +41,11 @@ export const operationSchema: RJSFSchema = {
       type: "string",
       title: "Process Flow Diagram",
       format: "data-url",
-      readOnly: true,
     },
     boundary_map: {
       type: "string",
       title: "Boundary Map",
       format: "data-url",
-      readOnly: true,
     },
 
     "Did you submit a GHG emissions report for reporting year 2022?": {
@@ -198,9 +200,14 @@ export const operationUiSchema = {
   ],
   "ui:ObjectFieldTemplate": GroupedObjectFieldTemplateWrapper,
   "ui:FieldTemplate": FieldTemplate,
-
+  "ui:classNames": "form-heading-label",
+  "ui:TitleFieldTemplate": GroupTitleFieldTemplate,
   id: {
     "ui:widget": "hidden",
+  },
+  type: {
+    "ui:widget": "SelectWidget",
+    "ui:placeholder": "Select operation type",
   },
   verified_by: {
     "ui:widget": "hidden",
@@ -209,19 +216,30 @@ export const operationUiSchema = {
     "ui:widget": "hidden",
   },
   naics_code_id: {
-    "ui:widget": "select",
+    "ui:widget": "SelectWidget",
+    "ui:placeholder": "Select Primary NAICS code",
+  },
+  naics_category_id: {
+    "ui:widget": "SelectWidget",
+    "ui:placeholder": "Select NAICS category",
   },
   "Did you submit a GHG emissions report for reporting year 2022?": {
-    "ui:widget": "SelectWidget",
+    "ui:widget": "RadioWidget",
   },
   "Does the operation have multiple operators?": {
-    "ui:widget": "SelectWidget",
+    "ui:widget": "RadioWidget",
   },
   "Would you like to add an exemption ID application lead?": {
-    "ui:widget": "SelectWidget",
+    "ui:widget": "RadioWidget",
   },
   opt_in: {
-    "ui:widget": "SelectWidget",
+    "ui:widget": "RadioWidget",
+  },
+  data_flow_diagram: {
+    "ui:widget": "FileWidget",
+  },
+  boundary_map: {
+    "ui:widget": "FileWidget",
   },
 };
 

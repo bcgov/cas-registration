@@ -1,12 +1,12 @@
 "use client";
 
-import { Form } from "@rjsf/mui";
+import Form from "@/app/components/form/FormBase";
 import { RJSFSchema } from "@rjsf/utils";
 import validator from "@rjsf/validator-ajv8";
 import { useState } from "react";
 import { Alert } from "@mui/material";
 import SubmitButton from "@/app/components/form/SubmitButton";
-import ComboBox from "@/app/components/widgets/ComboBox";
+import ComboBox from "@/app/components/form/widgets/ComboBox";
 import { selectOperatorUiSchema } from "@/app/utils/jsonSchema/selectOperator";
 import { useRouter } from "next/navigation";
 import { createSubmitHandler } from "@/app/utils/actions";
@@ -54,7 +54,7 @@ export default function SelectOperatorForm({
         ComboBox,
       }}
       onChange={handleChange}
-      className="flex flex-col w-80 mx-auto gap-2"
+      className="flex flex-col mx-auto justify-center w-80"
     >
       {errorList.length > 0 &&
         errorList.map((e: any) => (
@@ -62,7 +62,7 @@ export default function SelectOperatorForm({
             {e.message}
           </Alert>
         ))}
-      <SubmitButton label="Request Access" />
+      <SubmitButton label="Request Access" classNames="mt-4" />
     </Form>
   );
 }

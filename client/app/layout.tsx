@@ -55,8 +55,13 @@ export default async function RootLayout({
             <Box
               sx={{
                 display: "flex",
-                flexDirection: "column",
                 minHeight: "100vh",
+                flexDirection: "column",
+                justifyContent: "space-between",
+                alignItems: "center",
+                margin: "0 auto",
+                maxWidth: "1536px",
+                padding: "0 16px",
               }}
             >
               {/* Content goes here */}

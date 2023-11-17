@@ -1,6 +1,7 @@
 "use client";
 import React, { ReactNode } from "react";
 import { usePathname } from "next/navigation";
+import Box from "@mui/material/Box";
 import Link from "@mui/material/Link";
 import Breadcrumbs from "@mui/material/Breadcrumbs/Breadcrumbs";
 
@@ -83,14 +84,29 @@ export default function Bread({
   const pathNames = paths.split("/").filter((path) => path);
 
   return (
-    <>
+    <Box
+      sx={{
+        width: "100%",
+        justifyContent: "center",
+        position: "absolute",
+        backgroundColor: "primary.light",
+      }}
+    >
       <Breadcrumbs
         aria-label="breadcrumbs"
         sx={{
-          display: "flex", // Make the container a flex container
+          display: "flex",
           alignItems: "center",
           backgroundColor: "primary.light",
+          width: "100%",
+          maxWidth: "1536px",
           height: 80,
+          marginLeft: "auto",
+          marginRight: "auto",
+          marginTop: {
+            xs: "160px",
+            md: "80px",
+          },
         }}
       >
         <ol style={olStyle}>
@@ -132,6 +148,6 @@ export default function Bread({
           })}
         </ol>
       </Breadcrumbs>
-    </>
+    </Box>
   );
 }

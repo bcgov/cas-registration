@@ -34,18 +34,17 @@ test("user can create a new operation", async ({ page }) => {
   await page.getByRole("button", { name: "Add Operation" }).click();
   // Step 1
   await page.getByLabel("Operation Name*").fill("Sample Operation Name");
-  await page
-    .getByLabel("Operation Type*")
-    .selectOption("Single Facility Operation");
-  await page.getByLabel("NAICS Code*").selectOption("0"); // 1
-  await page.getByLabel("NAICS Category*").selectOption("0"); // 1
-  await page
-    .getByLabel("Is the operation an opt-in operation?")
-    .selectOption("No");
+  await page.click("#root_type");
+  await page.getByRole("option", { name: "Single Facility Operation" }).click();
+  await page.click("#root_naics_code_id");
+  await page.getByRole("option", { name: "1" }).click();
+  await page.click("#root_naics_category_id");
+  await page.getByRole("option", { name: "1" }).click();
+  await page.locator("#root_opt_in").locator("input").first().click();
 
   // Step 2: Operation Operator Information
 
-  // Step 3: Operation Lead Information
+  // Step 3: Operation Lead Informaton
 
   // submit form
   await page.getByRole("button", { name: "Submit" }).click();

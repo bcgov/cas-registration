@@ -1,5 +1,13 @@
 import { RJSFSchema } from "@rjsf/utils";
 import provinceOptions from "@/app/data/provinces.json";
+import FieldTemplate from "@/app/styles/rjsf/FieldTemplate";
+import GroupTitleFieldTemplate from "@/app/styles/rjsf/GroupTitleFieldTemplate";
+import TitleOnlyFieldTemplate from "@/app/styles/rjsf/TitleOnlyFieldTemplate";
+
+const subheading = {
+  "ui:classNames": "text-bc-gov-primary-brand-color-blue text-start text-lg",
+  "ui:FieldTemplate": TitleOnlyFieldTemplate,
+};
 
 export const userOperatorSchema: RJSFSchema = {
   type: "object",
@@ -23,13 +31,8 @@ export const userOperatorSchema: RJSFSchema = {
     "physical_postal_code",
     "operator_has_parent_company",
   ],
+  title: "User Information",
   properties: {
-    user_information: {
-      //Not an actual field in the db - this is just to make the form look like the wireframes
-      type: "object",
-      title: "User Information",
-      readOnly: true,
-    },
     first_name: { type: "string", title: "First Name" },
     last_name: { type: "string", title: "Last Name" },
     position_title: { type: "string", title: "Position Title" },
@@ -38,7 +41,7 @@ export const userOperatorSchema: RJSFSchema = {
     province: {
       type: "string",
       title: "Province",
-      oneOf: provinceOptions,
+      anyOf: provinceOptions,
     },
     postal_code: { type: "string", title: "Postal Code" },
     email: { type: "string", title: "Email Address" },
@@ -139,13 +142,6 @@ export const userOperatorSchema: RJSFSchema = {
           "so_phone_number",
         ],
         properties: {
-          senior_officer_section: {
-            //Not an actual field in the db - this is just to make the form look like the wireframes
-            title:
-              "Please provide information about the Senior Officer (SO) of the Operator:",
-            type: "object",
-            readOnly: true,
-          },
           so_first_name: {
             type: "string",
             title: "First Name",
@@ -360,7 +356,6 @@ export const userOperatorSchema: RJSFSchema = {
 
 export const userOperatorUiSchema = {
   "ui:order": [
-    "user_information",
     "first_name",
     "last_name",
     "position_title",
@@ -372,7 +367,6 @@ export const userOperatorUiSchema = {
     "phone_number",
     // "file", temporary handling of many-to-many fields, will be addressed in #138
     "is_senior_officer",
-    "senior_officer_section",
     // "Proof of authority of operation representative from a SO", temporary handling of many-to-many fields, will be addressed in #138
     // so = senior officer
     "so_first_name",
@@ -417,46 +411,59 @@ export const userOperatorUiSchema = {
     "pc_physical_province",
     "pc_physical_postal_code",
     "pc_mailing_address_same_as_physical",
-    "pc_mailing_address_section",
     "pc_mailing_street_address",
     "pc_mailing_municipality",
     "pc_mailing_province",
     "pc_mailing_postal_code",
   ],
-  user_information: {
-    "ui:classNames": "text-bc-gov-primary-brand-color-blue text-start",
+  "ui:FieldTemplate": FieldTemplate,
+  "ui:classNames": "form-heading-label",
+  "ui:TitleFieldTemplate": GroupTitleFieldTemplate,
+  "ui:options": {
+    label: false,
   },
   email: {
     "ui:widget": "EmailWidget",
   },
   is_senior_officer: {
-    "ui:widget": "SelectWidget",
+    "ui:widget": "RadioWidget",
   },
-  senior_officer_section: {
-    "ui:classNames": "text-bc-gov-primary-brand-color-blue text-start",
-  },
+  senior_officer_section: subheading,
   so_email: {
     "ui:widget": "EmailWidget",
   },
-  operator_information: {
-    "ui:classNames": "text-bc-gov-primary-brand-color-blue text-start mt-40",
-  },
+  operator_information: subheading,
+  mailing_address_section: subheading,
+  physical_address_section: subheading,
   operator_has_parent_company: {
-    "ui:widget": "SelectWidget",
+    "ui:widget": "RadioWidget",
   },
-  has_parent_company: {
-    "ui:classNames": "text-bc-gov-primary-brand-color-blue text-start",
-  },
+  has_parent_company: subheading,
   mailing_address_same_as_physical: {
-    "ui:widget": "SelectWidget",
+    "ui:widget": "RadioWidget",
   },
   pc_mailing_address_same_as_physical: {
-    "ui:widget": "SelectWidget",
+    "ui:widget": "RadioWidget",
   },
   website: {
     "ui:widget": "URLWidget",
   },
   pc_website: {
     "ui:widget": "URLWidget",
+  },
+  pc_mailing_province: {
+    "ui:widget": "ComboBox",
+  },
+  province: {
+    "ui:widget": "ComboBox",
+  },
+  physical_province: {
+    "ui:widget": "ComboBox",
+  },
+  pc_physical_province: {
+    "ui:widget": "ComboBox",
+  },
+  so_province: {
+    "ui:widget": "ComboBox",
   },
 };
