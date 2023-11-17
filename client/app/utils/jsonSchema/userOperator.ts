@@ -242,6 +242,12 @@ const userOperatorPage2: RJSFSchema = {
             type: "number",
             title: "Percentage of ownership of operator (%)",
           },
+          pc_physical_address_section: {
+            //Not an actual field in the db - this is just to make the form look like the wireframes
+            title:
+              "Please provide information about the physical address of the parent company:",
+            type: "object",
+          },
           pc_physical_street_address: {
             type: "string",
             title: "Physical Address",
@@ -258,6 +264,13 @@ const userOperatorPage2: RJSFSchema = {
           pc_physical_postal_code: {
             type: "string",
             title: "PA Postal Code",
+          },
+          pc_mailing_address_section: {
+            //Not an actual field in the db - this is just to make the form look like the wireframes
+            title:
+              "Please provide information about the mailing address of the parent company:",
+            type: "object",
+            readOnly: true,
           },
           pc_mailing_address_same_as_physical: {
             title: "Is the mailing address the same as the physical address?",
@@ -327,13 +340,6 @@ const userOperatorPage2: RJSFSchema = {
           "pc_mailing_postal_code",
         ],
         properties: {
-          pc_mailing_address_section: {
-            //Not an actual field in the db - this is just to make the form look like the wireframes
-            title:
-              "Please provide information about the mailing address of this operator:",
-            type: "object",
-            readOnly: true,
-          },
           pc_mailing_street_address: {
             type: "string",
             title: "Mailing Address",
@@ -397,23 +403,6 @@ export const userOperatorUiSchema = {
     "business_structure",
     "website",
     "operator_has_parent_company",
-    // pc = parent company
-    "pc_legal_name",
-    "pc_trade_name",
-    "pc_cra_business_number",
-    "pc_bc_corporate_registry_number",
-    "pc_business_structure",
-    "pc_website",
-    "percentage_owned_by_parent_company",
-    "pc_physical_street_address",
-    "pc_physical_municipality",
-    "pc_physical_province",
-    "pc_physical_postal_code",
-    "pc_mailing_address_same_as_physical",
-    "pc_mailing_street_address",
-    "pc_mailing_municipality",
-    "pc_mailing_province",
-    "pc_mailing_postal_code",
 
     "physical_address_section",
     "physical_street_address",
@@ -427,6 +416,26 @@ export const userOperatorUiSchema = {
     "mailing_province",
     "mailing_postal_code",
     "has_parent_company",
+
+    // pc = parent company
+    "pc_legal_name",
+    "pc_trade_name",
+    "pc_cra_business_number",
+    "pc_bc_corporate_registry_number",
+    "pc_business_structure",
+    "pc_website",
+    "percentage_owned_by_parent_company",
+    "pc_physical_address_section",
+    "pc_physical_street_address",
+    "pc_physical_municipality",
+    "pc_physical_province",
+    "pc_physical_postal_code",
+    "pc_mailing_address_section",
+    "pc_mailing_address_same_as_physical",
+    "pc_mailing_street_address",
+    "pc_mailing_municipality",
+    "pc_mailing_province",
+    "pc_mailing_postal_code",
   ],
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
@@ -449,7 +458,12 @@ export const userOperatorUiSchema = {
   operator_has_parent_company: {
     "ui:widget": "RadioWidget",
   },
-  has_parent_company: subheading,
+  has_parent_company: {
+    "ui:classNames": "form-heading",
+    "ui:FieldTemplate": TitleOnlyFieldTemplate,
+  },
+  pc_mailing_address_section: subheading,
+  pc_physical_address_section: subheading,
   mailing_address_same_as_physical: {
     "ui:widget": "RadioWidget",
   },
