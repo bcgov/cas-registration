@@ -21,7 +21,7 @@ export const operationSubmitHandler = async (
       method === "POST"
         ? process.env.API_URL + "registration/operations"
         : process.env.API_URL +
-            `registration/operations/${formData.id}/${submit}`,
+            `registration/operations/${formData.id}?submit=${submit}`,
       {
         method,
         body: JSON.stringify(formData),
