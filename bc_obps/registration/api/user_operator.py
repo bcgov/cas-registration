@@ -217,27 +217,45 @@ def create_operator_and_user_operator_request(request, payload: UserOperatorIn):
     return 200, {"operator_id": created_operator_instance.id}
 
 
+##### PUT #####
 @router.put(
     "/select-operator/user-operator/{int:user_operator_id}",
     response={200: SelectOperatorIn, codes_4xx: Message},
 )
 def create_user_operator_request(request, user_operator_id: int, payload: UserOperatorIn):
+    """
+    This endpoint is used to update the User and Operator model instances associated with a UserOperator instance.
+    We also create a new Contact instance for the Senior Officer if the user is not a Senior Officer.
+    finally, we update the status of the UserOperator instance to PENDING.
+    """
     try:
         user_operator = get_object_or_404(UserOperator, id=user_operator_id)
-        user: User = user_operator.user
-        operator: Operator = user_operator.operator
 
-        handle_user_operator_user(payload, user)
-        handle_user_operator_operator(payload)
+        updated_user_instance, senior_officer_contact = handle_user_operator_user(payload, user_operator.user)
+        (
+            updated_operator_instance,
+            parent_operator_instance,
+            parent_child_operator_instance,
+        ) = handle_user_operator_operator(payload)
 
     except ValidationError as e:
-        return 400, {"message": e.messages[0]}
+        return 400, {"message": generate_useful_error(e)}
+
+    updated_user_instance.save()
+    if senior_officer_contact:
+        senior_officer_contact.save()
+
+    updated_operator_instance.save()
+    if parent_operator_instance:
+        parent_operator_instance.save()
+        if parent_child_operator_instance:
+            parent_child_operator_instance.save()
 
     # updating the status of the UserOperator instance
     user_operator.status = UserOperator.Statuses.PENDING
     user_operator.save(update_fields=["status"])
 
-    return 200, {"operator_id": operator.id}
+    return 200, {"operator_id": user_operator.operator.id}
 
 
 ##### DELETE #####
