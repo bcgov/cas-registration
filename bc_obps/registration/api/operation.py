@@ -91,7 +91,8 @@ def update_operation(request, operation_id: int, submit, payload: OperationIn):
             # set the operation status to 'pending' on update
         if submit == "true":
             operation.status = "Pending"
-            operation.save()
+
+        operation.save()
         return {"name": operation.name}
 
 
