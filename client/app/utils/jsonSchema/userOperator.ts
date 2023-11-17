@@ -9,7 +9,7 @@ const subheading = {
   "ui:FieldTemplate": TitleOnlyFieldTemplate,
 };
 
-export const userOperatorSchema: RJSFSchema = {
+const userOperatorPage1: RJSFSchema = {
   type: "object",
   required: [
     "first_name",
@@ -62,60 +62,6 @@ export const userOperatorSchema: RJSFSchema = {
       type: "object",
       title: "Operator Information",
       readOnly: true,
-    },
-    legal_name: { type: "string", title: "Legal Name" },
-    trade_name: { type: "string", title: "Trade Name" },
-    cra_business_number: {
-      type: "number",
-      title: "CRA Business Number",
-      readOnly: true,
-    },
-    bc_corporate_registry_number: {
-      type: "number",
-      title: "BC Corporate Registry Number",
-      readOnly: true,
-    },
-    business_structure: {
-      type: "string",
-      title: "Business Structure",
-    },
-    website: { type: "string", title: "Website (optional)" },
-    operator_has_parent_company: {
-      title: "Does the operator have a parent company?",
-      type: "boolean",
-      default: false,
-    },
-    physical_address_section: {
-      title:
-        "Please provide information about the physical address of this operator:",
-      type: "object",
-    },
-    physical_street_address: {
-      type: "string",
-      title: "Physical Address",
-    },
-    physical_municipality: {
-      type: "string",
-      title: "Municipality",
-    },
-    physical_province: {
-      type: "string",
-      title: "Province",
-      anyOf: provinceOptions,
-    },
-    physical_postal_code: {
-      type: "string",
-      title: "Postal Code",
-    },
-    mailing_address_section: {
-      title:
-        "Please provide information about the mailing address of this operator:",
-      type: "object",
-    },
-    mailing_address_same_as_physical: {
-      title: "Is the mailing address the same as the physical address?",
-      type: "boolean",
-      default: true,
     },
   },
   allOf: [
@@ -187,6 +133,69 @@ export const userOperatorSchema: RJSFSchema = {
         },
       },
     },
+  ],
+};
+
+const userOperatorPage2: RJSFSchema = {
+  type: "object",
+  title: "Operator Information",
+  properties: {
+    legal_name: { type: "string", title: "Legal Name" },
+    trade_name: { type: "string", title: "Trade Name" },
+    cra_business_number: {
+      type: "number",
+      title: "CRA Business Number",
+      readOnly: true,
+    },
+    bc_corporate_registry_number: {
+      type: "number",
+      title: "BC Corporate Registry Number",
+      readOnly: true,
+    },
+    business_structure: {
+      type: "string",
+      title: "Business Structure",
+    },
+    website: { type: "string", title: "Website (optional)" },
+    operator_has_parent_company: {
+      title: "Does the operator have a parent company?",
+      type: "boolean",
+      default: false,
+    },
+    physical_address_section: {
+      title:
+        "Please provide information about the physical address of this operator:",
+      type: "object",
+    },
+    physical_street_address: {
+      type: "string",
+      title: "Physical Address",
+    },
+    physical_municipality: {
+      type: "string",
+      title: "Municipality",
+    },
+    physical_province: {
+      type: "string",
+      title: "Province",
+      anyOf: provinceOptions,
+    },
+    physical_postal_code: {
+      type: "string",
+      title: "Postal Code",
+    },
+    mailing_address_section: {
+      title:
+        "Please provide information about the mailing address of this operator:",
+      type: "object",
+    },
+    mailing_address_same_as_physical: {
+      title: "Is the mailing address the same as the physical address?",
+      type: "boolean",
+      default: true,
+    },
+  },
+  allOf: [
     {
       if: {
         properties: {
@@ -354,6 +363,15 @@ export const userOperatorSchema: RJSFSchema = {
   ],
 };
 
+export const userOperatorSchema: RJSFSchema = {
+  type: "object",
+  title: "Operation",
+  properties: {
+    userOperatorPage1,
+    userOperatorPage2,
+  },
+};
+
 export const userOperatorUiSchema = {
   "ui:order": [
     "first_name",
@@ -386,18 +404,6 @@ export const userOperatorUiSchema = {
     "business_structure",
     "website",
     "operator_has_parent_company",
-    "physical_address_section",
-    "physical_street_address",
-    "physical_municipality",
-    "physical_province",
-    "physical_postal_code",
-    "mailing_address_section",
-    "mailing_address_same_as_physical",
-    "mailing_street_address",
-    "mailing_municipality",
-    "mailing_province",
-    "mailing_postal_code",
-    "has_parent_company",
     // pc = parent company
     "pc_legal_name",
     "pc_trade_name",
@@ -415,6 +421,19 @@ export const userOperatorUiSchema = {
     "pc_mailing_municipality",
     "pc_mailing_province",
     "pc_mailing_postal_code",
+
+    "physical_address_section",
+    "physical_street_address",
+    "physical_municipality",
+    "physical_province",
+    "physical_postal_code",
+    "mailing_address_section",
+    "mailing_address_same_as_physical",
+    "mailing_street_address",
+    "mailing_municipality",
+    "mailing_province",
+    "mailing_postal_code",
+    "has_parent_company",
   ],
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",

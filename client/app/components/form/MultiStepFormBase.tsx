@@ -11,7 +11,6 @@ interface MultiStepFormProps {
   cancelUrl: string;
   error?: any;
   formData?: any;
-  formSectionList: string[];
   onSubmit: any;
   readonly?: boolean;
   schema: any;
@@ -25,7 +24,6 @@ const MultiStepFormBase = ({
   cancelUrl,
   error,
   formData,
-  formSectionList,
   onSubmit,
   readonly,
   schema,
@@ -37,6 +35,7 @@ const MultiStepFormBase = ({
   const formSection = parseInt(params?.formSection as string) - 1;
   const [formState, setFormState] = useState(formData || {});
 
+  const formSectionList = Object.keys(schema.properties as any);
   const mapSectionTitles = formSectionList.map(
     (section) => schema.properties[section].title,
   );
