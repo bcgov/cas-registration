@@ -51,9 +51,30 @@ export const authOptions: NextAuthOptions = {
             .split("@")[0]
             .toUpperCase();
           token.identity_provider = account.providerAccountId.split("@")[1];
+          // 🚧 WIP 🚧
 
-          //🚧 wip - used for route access: TDB DB LOOKUP
-          token.role = "admin";
+          // 🚧 TEMP: HARDCODED FOR DEV- need bceid login
+          //token.identity_provider = "bceid";
+
+          // 🚧 TODO: DB LOOKUP
+          switch (token.identity_provider) {
+            case "idir":
+              // 🚧 DB LOOKUP: user table
+              // SELECT roles.role_name
+              // FROM users
+              // JOIN roles ON users.role_id = roles.role_id
+              // WHERE users.user_guid = token.user_guid;
+              //token.role = "cas_pending";
+              //token.role = "cas_analyst";
+              token.role = "cas_admin";
+              break;
+            case "bceid":
+              token.role = "industry_user";
+              // 🚧 DB LOOKUP:
+              // USER is in user_operator table?
+              //token.role = "industry_user" + "_admin";
+              break;
+          }
         } else {
           // check if token is expired
           if (

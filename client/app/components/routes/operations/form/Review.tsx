@@ -6,7 +6,7 @@ import DoNotDisturbIcon from "@mui/icons-material/DoNotDisturb";
 import { createSubmitHandler } from "@/app/utils/actions";
 import { OperationsFormData } from "@/app/components/form/OperationsForm";
 import React, { useState } from "react";
-import { Status } from "@/app/types";
+import { Status } from "@/app/types/types";
 
 interface Props {
   operation: OperationsFormData;
