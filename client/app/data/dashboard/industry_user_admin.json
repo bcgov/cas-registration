@@ -1,0 +1,22 @@
+[
+  {
+    "title": "My Operator",
+    "content": "View or update your operator information.",
+    "links": [{ "title": "Operator ➤", "href": "/dashboard/select-operator" }]
+  },
+  {
+    "title": "Operations Registration",
+    "content": "Apply to qualify for carbon tax exemption.",
+    "links": [{ "title": "Operations ➤", "href": "/dashboard/operations" }]
+  },
+  {
+    "title": "User Access Management",
+    "content": " For managing user access for your operators.",
+    "links": [{ "title": "Users ➤", "href": "/dashboard/users" }]
+  },
+  {
+    "title": "Report a Problem",
+    "content": "Something wrong?",
+    "links": [{ "title": "Tell the team ➤", "href": "/dashboard/problem" }]
+  }
+]
