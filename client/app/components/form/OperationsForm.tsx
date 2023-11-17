@@ -1,10 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import {
-  operationUiSchema,
-  /*   operationsGroupSchema, */
-} from "@/app/utils/jsonSchema/operations";
+import { operationUiSchema } from "@/app/utils/jsonSchema/operations";
 import MultiStepFormBase from "@/app/components/form/MultiStepFormBase";
 import { Button } from "@mui/material";
 import Link from "next/link";
@@ -54,7 +51,6 @@ export default function OperationsForm({ formData, schema }: Props) {
   const formSectionList = Object.keys(schema.properties as any);
   const isNotFinalStep = formSection !== formSectionList.length - 1;
   const isFinalStep = formSection === formSectionList.length - 1;
-  // Todo: reimplement success message
 
   return (
     <>
@@ -128,9 +124,6 @@ export default function OperationsForm({ formData, schema }: Props) {
             setOperationName(response.name);
           }}
           uiSchema={operationUiSchema}
-          // formContext={{
-          //   groupSchema: operationsGroupSchema,
-          // }}
         />
       )}
     </>

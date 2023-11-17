@@ -1,6 +1,4 @@
 import FieldTemplate from "@/app/styles/rjsf/FieldTemplate";
-/* import GroupTitleFieldTemplate from "@/app/styles/rjsf/GroupTitleFieldTemplate"; */
-/* import GroupedObjectFieldTemplateWrapper from "@/app/styles/rjsf/GroupedObjectFieldTemplateWrapper"; */
 import { RJSFSchema } from "@rjsf/utils";
 
 const operationPage1: RJSFSchema = {
@@ -274,41 +272,3 @@ export const operationUiSchema = {
     "ui:widget": "FileWidget",
   },
 };
-
-export const operationsGroupSchema = [
-  {
-    fields: [
-      "name",
-      "type",
-      "naics_code_id",
-      "naics_category_id",
-      "regulated_products",
-      "reporting_activities",
-      "process_flow_diagram",
-      "boundary_map",
-      "Did you submit a GHG emissions report for reporting year 2022?",
-      "previous_year_attributable_emissions",
-      "swrs_facility_id",
-      "bcghg_id",
-      "current_year_estimated_emissions",
-      "opt_in",
-      "opt_in_signed_statuatory_declaration",
-    ],
-  },
-  {
-    fields: [
-      "Does the operation have multiple operators?",
-      "operators",
-      "percentage_ownership",
-    ],
-  },
-  {
-    fields: [
-      'Is the operation representative the same as mentioned in "admin access request"?',
-      "Is the senior officer the same as in the operation form?",
-      "so",
-      "Would you like to add an exemption ID application lead?",
-      "application_lead",
-    ],
-  },
-];
