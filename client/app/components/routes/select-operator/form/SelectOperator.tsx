@@ -1,8 +1,6 @@
 import { RJSFSchema } from "@rjsf/utils";
 import SelectOperatorForm from "@/app/components/form/SelectOperatorForm";
-import Link from "next/link";
 import { selectOperatorSchema } from "@/app/utils/jsonSchema/selectOperator";
-import { BC_GOV_LINKS_COLOR } from "@/app/styles/colors";
 import { actionHandler } from "@/app/utils/actions";
 import { Operator } from "@/app/components/routes/select-operator/form/types";
 
@@ -44,19 +42,6 @@ export default async function SelectOperator() {
   }));
 
   return (
-    <section className="text-center my-auto text-2xl">
-      <SelectOperatorForm schema={createSelectOperatorSchema(operatorsList)} />
-      <p className="mt-4">
-        Don&apos;t see the operator?{" "}
-        <Link
-          href="/dashboard/select-operator/create"
-          className="underline hover:no-underline mr-2"
-          style={{ color: BC_GOV_LINKS_COLOR }}
-        >
-          Add Operator
-        </Link>
-        instead
-      </p>
-    </section>
+    <SelectOperatorForm schema={createSelectOperatorSchema(operatorsList)} />
   );
 }
