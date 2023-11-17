@@ -1,4 +1,4 @@
-export interface UserOperatorFormData {
+export interface UserFormData {
   first_name: string;
   last_name: string;
   position_title: string;
@@ -8,6 +8,8 @@ export interface UserOperatorFormData {
   email: string;
   phone_number: string;
   province: string;
+}
+export interface UserOperatorFormData extends UserFormData {
   is_senior_officer: string;
   legal_name: string;
   trade_name?: string;
