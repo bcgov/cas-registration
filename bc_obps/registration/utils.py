@@ -71,3 +71,13 @@ def update_model_instance(
 
     # We don't save the instance here; This allows further operations or validation before the actual save.
     return instance
+
+
+def generate_useful_error(error):
+    """
+    Generate a useful error message from a ValidationError.
+    NOTE: this only returns the first error message until we can figure out a better way to handle multiple errors in the client side.
+    """
+    for key, value in error.message_dict.items():
+        formatted_key = ' '.join(word.capitalize() for word in key.split('_'))
+        return f"{formatted_key}: {value[0]}"
