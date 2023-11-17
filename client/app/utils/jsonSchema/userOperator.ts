@@ -52,6 +52,11 @@ const userOperatorPage1: RJSFSchema = {
     //   type: "string",
     //   format: "data-url",
     // },
+    senior_officer_section: {
+      title:
+        "Please provide information about the Senior Officer (SO) of the Operator:",
+      type: "object",
+    },
     is_senior_officer: {
       title: "Are you a senior officer of the operator?",
       type: "boolean",
@@ -384,6 +389,7 @@ export const userOperatorUiSchema = {
     "email",
     "phone_number",
     // "file", temporary handling of many-to-many fields, will be addressed in #138
+    "senior_officer_section",
     "is_senior_officer",
     // "Proof of authority of operation representative from a SO", temporary handling of many-to-many fields, will be addressed in #138
     // so = senior officer
