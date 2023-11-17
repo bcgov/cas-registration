@@ -27,6 +27,14 @@ def check_users_admin_request_eligibility(user: User, operator: Operator) -> Uni
     ).exists():
         return 400, {"message": "This Operator already has an admin user!"}
 
+    # User already has a pending request for this operator
+    # NOTE: This is a bit of a weird case, but it's possible for a user to have a pending request for an operator
+    #       and if we show the UserOperator request form, they could submit another request and end up with two Contact
+    if UserOperator.objects.filter(
+        user=user, operator=operator, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.PENDING
+    ).exists():
+        return 400, {"message": "You already have a pending request for this Operator!"}
+
     return 200, None
 
 
