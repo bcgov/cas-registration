@@ -31,6 +31,8 @@ export const userOperatorSchema: RJSFSchema = {
     "is_senior_officer",
     // "file", temporary handling of many-to-many fields, will be addressed in #138
     "legal_name",
+    "cra_business_number",
+    "bc_corporate_registry_number",
     "business_structure",
     "physical_street_address",
     "physical_municipality",
