@@ -1,3 +1,5 @@
+from registration.models import User
+from registration.schema import UserOut
 from .api_base import router
 from ninja import Schema
 from django.shortcuts import get_object_or_404
@@ -6,6 +8,10 @@ from registration.schema import AppRoleOut
 
 
 ##### GET #####
+@router.get("/user", response=UserOut)
+def get_user(request):
+    # FIXME: for now we just return the first user in the database
+    return User.objects.first()
 
 
 @router.get("/get-user-role/{user_guid}", response=AppRoleOut)
