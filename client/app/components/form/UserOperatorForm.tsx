@@ -9,11 +9,14 @@ import SubmitButton from "./SubmitButton";
 import { useRouter } from "next/navigation";
 import { userOperatorUiSchema } from "@/app/utils/jsonSchema/userOperator";
 import { actionHandler } from "@/app/utils/actions";
-import { UserOperatorFormData } from "@/app/components/form/formDataTypes";
+import {
+  UserFormData,
+  UserOperatorFormData,
+} from "@/app/components/form/formDataTypes";
 
 export interface UserOperatorFormProps {
   schema: RJSFSchema;
-  formData?: UserOperatorFormData;
+  formData?: UserFormData | UserOperatorFormData;
   userOperatorId?: number;
 }
 
@@ -25,7 +28,10 @@ export default function UserOperatorForm({
   const { push } = useRouter();
   const [errorList, setErrorList] = useState([] as any[]);
 
-  const localSchema = schema;
+  // manage formDataState to prevent formData from being reset on submit
+  const [formDataState, setFormDataState] = useState(formData);
+
+  const localSchema = JSON.parse(JSON.stringify(schema));
   if (userOperatorId && localSchema.properties) {
     localSchema.properties.cra_business_number = {
       ...localSchema.properties.cra_business_number,
@@ -37,29 +43,41 @@ export default function UserOperatorForm({
     };
   }
 
+  const submitHandler = async (data: { formData?: UserOperatorFormData }) => {
+    setFormDataState(data.formData);
+
+    const endpointPrefix = "/dashboard/select-operator";
+    const method = userOperatorId ? "PUT" : "POST";
+    const urlSuffix = userOperatorId
+      ? `user-operator/${userOperatorId}`
+      : "user-operator/create";
+
+    const response = await actionHandler(
+      `registration/select-operator/${urlSuffix}`,
+      method,
+      `${endpointPrefix}${urlSuffix}`,
+      {
+        body: JSON.stringify(data.formData),
+      },
+    );
+
+    if (response.error) {
+      setErrorList([{ message: response.error }]);
+      return;
+    }
+
+    const operatorId = response.res.operator_id;
+    push(`${endpointPrefix}/received/${operatorId}`);
+  };
+
   return (
     <Form
       schema={localSchema}
       validator={validator}
       showErrorList={false}
-      formData={formData}
-      onSubmit={async (data: { formData?: UserOperatorFormData }) => {
-        const response = await actionHandler(
-          `registration/select-operator/user-operator/${userOperatorId}`,
-          "PUT",
-          `/dashboard/select-operator/user-operator/${userOperatorId}`,
-          {
-            body: JSON.stringify(data.formData),
-          },
-        );
-
-        if (response.error) {
-          setErrorList([{ message: response.error }]);
-          return;
-        }
-        push(`/dashboard/select-operator/received/${response.operator_id}`);
-      }}
+      onSubmit={submitHandler}
       uiSchema={userOperatorUiSchema}
+      formData={formDataState}
     >
       {errorList.length > 0 &&
         errorList.map((e: any) => (
