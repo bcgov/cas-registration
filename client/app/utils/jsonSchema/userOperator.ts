@@ -57,12 +57,6 @@ const userOperatorPage1: RJSFSchema = {
       type: "boolean",
       default: true,
     },
-    operator_information: {
-      //Not an actual field in the db - this is just to make the form look like the wireframes
-      type: "object",
-      title: "Operator Information",
-      readOnly: true,
-    },
   },
   allOf: [
     {
@@ -396,7 +390,6 @@ export const userOperatorUiSchema = {
     "so_postal_code",
     "so_email",
     "so_phone_number",
-    "operator_information",
     "legal_name",
     "trade_name",
     "cra_business_number",
@@ -451,7 +444,6 @@ export const userOperatorUiSchema = {
   so_email: {
     "ui:widget": "EmailWidget",
   },
-  operator_information: subheading,
   mailing_address_section: subheading,
   physical_address_section: subheading,
   operator_has_parent_company: {
