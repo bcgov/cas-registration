@@ -3,6 +3,13 @@ import provinceOptions from "@/app/data/provinces.json";
 import FieldTemplate from "@/app/styles/rjsf/FieldTemplate";
 import GroupTitleFieldTemplate from "@/app/styles/rjsf/GroupTitleFieldTemplate";
 import TitleOnlyFieldTemplate from "@/app/styles/rjsf/TitleOnlyFieldTemplate";
+import {
+  OperatorMailingAddressTitle,
+  OperatorPhysicalAddressTitle,
+  ParentCompanyMailingAddressTitle,
+  ParentCompanyPhysicalAddressTitle,
+  SeniorOfficerTitle,
+} from "@/app/components/form/titles/userOperatorTitles";
 
 const subheading = {
   "ui:classNames": "text-bc-gov-primary-brand-color-blue text-start text-lg",
@@ -455,12 +462,27 @@ export const userOperatorUiSchema = {
   is_senior_officer: {
     "ui:widget": "RadioWidget",
   },
-  senior_officer_section: subheading,
+  senior_officer_section: {
+    ...subheading,
+    "ui:options": {
+      jsxTitle: SeniorOfficerTitle,
+    },
+  },
   so_email: {
     "ui:widget": "EmailWidget",
   },
-  mailing_address_section: subheading,
-  physical_address_section: subheading,
+  mailing_address_section: {
+    ...subheading,
+    "ui:options": {
+      jsxTitle: OperatorMailingAddressTitle,
+    },
+  },
+  physical_address_section: {
+    ...subheading,
+    "ui:options": {
+      jsxTitle: OperatorPhysicalAddressTitle,
+    },
+  },
   operator_has_parent_company: {
     "ui:widget": "RadioWidget",
   },
@@ -468,8 +490,18 @@ export const userOperatorUiSchema = {
     "ui:classNames": "form-heading",
     "ui:FieldTemplate": TitleOnlyFieldTemplate,
   },
-  pc_mailing_address_section: subheading,
-  pc_physical_address_section: subheading,
+  pc_mailing_address_section: {
+    ...subheading,
+    "ui:options": {
+      jsxTitle: ParentCompanyMailingAddressTitle,
+    },
+  },
+  pc_physical_address_section: {
+    ...subheading,
+    "ui:options": {
+      jsxTitle: ParentCompanyPhysicalAddressTitle,
+    },
+  },
   mailing_address_same_as_physical: {
     "ui:widget": "RadioWidget",
   },
