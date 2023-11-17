@@ -56,8 +56,8 @@ def create_operation(request, payload: OperationIn):
 ##### PUT #####
 
 
-@router.put("/operations/{operation_id}/{submit}")
-def update_operation(request, operation_id: int, submit: bool, payload: OperationIn):
+@router.put("/operations/{operation_id}")
+def update_operation(request, operation_id: int, submit, payload: OperationIn):
     operation = get_object_or_404(Operation, id=operation_id)
     if "operator" in payload.dict():
         operator = payload.dict()["operator"]
@@ -74,7 +74,7 @@ def update_operation(request, operation_id: int, submit: bool, payload: Operatio
         nc = get_object_or_404(NaicsCategory, id=naics_category)
         # Assign the naics_category instance to the operation
         payload.naics_category = nc
-    # Update other attributes as needed
+    # Update other attributes as neede
     excluded_fields = [
         "operator",
         "naics_code",
@@ -88,8 +88,8 @@ def update_operation(request, operation_id: int, submit: bool, payload: Operatio
     for attr, value in payload.dict().items():
         if attr not in excluded_fields:
             setattr(operation, attr, value)
-        # set the operation status to 'pending' on update
-        if submit:
+            # set the operation status to 'pending' on update
+        if submit == "true":
             operation.status = "Pending"
             operation.save()
         return {"name": operation.name}
