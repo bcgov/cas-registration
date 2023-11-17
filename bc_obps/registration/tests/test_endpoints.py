@@ -142,7 +142,7 @@ class TestOperationsEndpoint:
         assert parsed_object.get("pk") == operation.id
         assert parsed_object.get("fields").get("status") == "rejected"
 
-        get_response = client.get(self.endpoint + "/" + str(operation.id) + "?submit=false")
+        get_response = client.get(self.endpoint + "/" + str(operation.id))
         assert get_response.status_code == 200
         get_response_dict = get_response.json()
         assert get_response_dict.get("status") == "rejected"
@@ -198,7 +198,7 @@ class TestOperationEndpoint:
         response = client.get(self.endpoint + str(operation.id))
         assert response.status_code == 200
 
-    def test_put_operation(self, client):
+    def test_put_operation_without_submit(self, client):
         naics_code = baker.make(NaicsCode)
         naics_category = baker.make(NaicsCategory)
         document = baker.make(Document)
@@ -235,6 +235,42 @@ class TestOperationEndpoint:
         )
         assert response.status_code == 200
         assert response.json() == {"name": "New name"}
+
+        get_response = client.get(self.endpoint + str(operation.id)).json()
+        assert get_response["status"] == Operation.Statuses.NOT_REGISTERED
+
+    def test_put_operation_with_submit(self, client):
+        naics_code = baker.make(NaicsCode)
+        naics_category = baker.make(NaicsCategory)
+        document = baker.make(Document)
+        contact = baker.make(Contact, postal_code="V1V 1V2")
+        operator = baker.make(Operator)
+        activity = baker.make(ReportingActivity)
+        operation = baker.make(Operation)
+        operation.reporting_activities.set([activity.id])
+
+        mock_operation = OperationIn(
+            name="New name",
+            type="Single Facility Operation",
+            naics_code_id=naics_code.id,
+            reporting_activities=[1],
+            regulated_products=[1],
+            naics_category_id=naics_category.id,
+            documents=[document.id],
+            contacts=[contact.id],
+            operator_id=operator.id,
+        )
+
+        response = client.put(
+            self.endpoint + str(operation.id) + "?submit=true",
+            content_type=content_type_json,
+            data=mock_operation.json(),
+        )
+        assert response.status_code == 200
+        assert response.json() == {"name": "New name"}
+
+        get_response = client.get(self.endpoint + str(operation.id)).json()
+        assert get_response["status"] == Operation.Statuses.PENDING
 
     def test_put_malformed_operation(self, client):
         operation = baker.make(Operation)

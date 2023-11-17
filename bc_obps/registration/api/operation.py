@@ -74,7 +74,7 @@ def update_operation(request, operation_id: int, submit, payload: OperationIn):
         nc = get_object_or_404(NaicsCategory, id=naics_category)
         # Assign the naics_category instance to the operation
         payload.naics_category = nc
-    # Update other attributes as neede
+    # Update other attributes as needed
     excluded_fields = [
         "operator",
         "naics_code",
@@ -90,7 +90,7 @@ def update_operation(request, operation_id: int, submit, payload: OperationIn):
             setattr(operation, attr, value)
             # set the operation status to 'pending' on update
         if submit == "true":
-            operation.status = "Pending"
+            operation.status = Operation.Statuses.PENDING
 
         operation.save()
         return {"name": operation.name}
