@@ -19,7 +19,7 @@ export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
     const isAuth = authList.some((path) => pathname.includes(path));
     if (isAuth) {
       //👌 ok: route to path
-      return NextResponse.next();
+      return next(request, _next);
     } else {
       // 🔍 check for NextAuth token
       const token = await getToken({
@@ -44,7 +44,7 @@ export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
 
         if (isAllowed) {
           //👌 ok: route to path
-          return NextResponse.next();
+          return next(request, _next);
         } else {
           // 🔒 AUTHORIZATION REQUIRED ROUTES
           /* 📚  Protected Routes
@@ -67,9 +67,10 @@ export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
           } else {
             // ❗ Routes with the folder structure break the breadcrumbs; so...
             // 🛸 Return a redirect to the "page" route w/o the folder structure
-            const pageSegment = pathname.replace(authRoute, "");
+            const pageSegment = pathname.replace(`/${authRoute}`, "");
+
             return NextResponse.redirect(
-              new URL(`/${pageSegment}`, request.url)
+              new URL(`${pageSegment}`, request.url),
             );
           }
         }
@@ -78,7 +79,7 @@ export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
         // route to (onboarding)/home
         if (pathname.endsWith("/home")) {
           //👌 OK: return request
-          return NextResponse.next();
+          return next(request, _next);
         } else {
           // 🛸 Return a redirect to (onboarding)\home
           return NextResponse.redirect(new URL(`/home`, request.url));
