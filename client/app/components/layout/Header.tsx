@@ -29,60 +29,78 @@ export default function Header() {
 
   return (
     <AppBar
-      position="static"
       color="primary"
       sx={{
+        width: "100%",
+        justifyContent: "center",
+        position: "absolute",
+        backgroundColor: "primary.main",
+        top: 0,
+        left: 0,
+        right: 0,
         height: {
           xs: "150px", //mobile & tablet
           md: "80px", //laptop & desktop
         },
-        justifyContent: "center",
       }}
     >
-      <Toolbar>
-        <Box
-          component="img"
-          sx={{
-            height: {
-              xs: "36.46px", //mobile & tablet
-              md: "42.67px", //laptop & desktop
-            },
-            width: {
-              xs: "170px", //mobile & tablet
-              md: "200px", //laptop & desktop
-            },
-          }}
-          alt="Logo for Province of British Columbia CleanBC"
-          src="/img/BCID_CleanBC_rev_tagline_colour.svg"
-          aria-label="CleanBC Logo"
-        />
-        <Typography
-          component="div"
-          sx={{
-            flexGrow: 1,
-            fontWeight: 700,
-            fontSize: {
-              xs: "20px", //mobile & tablet
-              md: "28px", //laptop & desktop
-            },
-            lineHeight: {
-              xs: "24.2px", //mobile & tablet
-              md: "33.89px", //laptop & desktop
-            },
-            marginLeft: "24px",
-          }}
-        >
-          BC OBPS
-        </Typography>
-        {/* 👇️ Authentication content for laptop & desktop */}
-        <ButtonsRight>
+      <Box
+        position="relative"
+        color="primary"
+        sx={{
+          margin: "0 auto",
+          clipPath: "inset(-5px 0px -5px 0px)",
+          boxSize: "border-box",
+          width: "100%",
+          minWidget: "100%",
+          maxWidth: "1536px",
+        }}
+      >
+        <Toolbar>
+          <Box
+            component="img"
+            sx={{
+              height: {
+                xs: "36.46px", //mobile & tablet
+                md: "42.67px", //laptop & desktop
+              },
+              width: {
+                xs: "170px", //mobile & tablet
+                md: "200px", //laptop & desktop
+              },
+            }}
+            alt="Logo for Province of British Columbia CleanBC"
+            src="/img/BCID_CleanBC_rev_tagline_colour.svg"
+            aria-label="CleanBC Logo"
+          />
+          <Typography
+            component="div"
+            sx={{
+              flexGrow: 1,
+              fontWeight: 700,
+              fontSize: {
+                xs: "20px", //mobile & tablet
+                md: "28px", //laptop & desktop
+              },
+              lineHeight: {
+                xs: "24.2px", //mobile & tablet
+                md: "33.89px", //laptop & desktop
+              },
+              marginLeft: "24px",
+            }}
+          >
+            BC OBPS
+          </Typography>
+          {/* 👇️ Authentication content for laptop & desktop */}
+          <ButtonsRight>
+            <Session />
+          </ButtonsRight>
+        </Toolbar>
+        {/* 👇️ Authentication content for mobile & tablet */}
+        <ButtonsBottom>
           <Session />
-        </ButtonsRight>
-      </Toolbar>
-      {/* 👇️ Authentication content for mobile & tablet */}
-      <ButtonsBottom>
-        <Session />
-      </ButtonsBottom>
+        </ButtonsBottom>
+      </Box>
     </AppBar>
   );
 }

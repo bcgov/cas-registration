@@ -40,7 +40,7 @@ export default async function SelectOperator() {
   }));
 
   return (
-    <section className="text-center my-auto text-2xl flex flex-col gap-3">
+    <section className="text-center my-auto text-2xl">
       <SelectOperatorForm schema={createSelectOperatorSchema(operatorsList)} />
       <p className="mt-4">
         Don&apos;t see the operator?{" "}

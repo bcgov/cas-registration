@@ -1,6 +1,6 @@
 "use client";
 
-import { Form } from "@rjsf/mui";
+import Form from "@/app/components/form/FormBase";
 import validator from "@rjsf/validator-ajv8";
 import SubmitButton from "./SubmitButton";
 import { Alert } from "@mui/material";

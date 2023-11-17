@@ -62,6 +62,7 @@ export default async function Operation({ numRow }: { numRow?: number }) {
   const codes = await getNaicsCodes();
 
   const categories = await getNaicsCategories();
+
   let operation: any;
 
   if (numRow) {

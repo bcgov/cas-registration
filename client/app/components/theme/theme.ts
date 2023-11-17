@@ -3,6 +3,7 @@ import {
   BC_GOV_PRIMARY_BRAND_COLOR_BLUE,
   BC_GOV_LINKS_COLOR,
   BC_GOV_BACKGROUND_COLOR_BLUE,
+  DARK_GREY_BG_COLOR,
 } from "@/app/styles/colors";
 import "@bcgov/bc-sans/css/BCSans.css";
 
@@ -21,7 +22,7 @@ const theme = createTheme({
       // contrastText: will be calculated to contrast with palette.primary.main
     },
     secondary: {
-      main: "#38598A",
+      main: BC_GOV_BACKGROUND_COLOR_BLUE,
     },
   },
   components: {
@@ -33,6 +34,58 @@ const theme = createTheme({
         },
       },
     },
+
+    MuiTextField: {
+      styleOverrides: {
+        root: {
+          "& .MuiOutlinedInput-root": {
+            "& fieldset": {
+              borderColor: DARK_GREY_BG_COLOR,
+            },
+            "&:hover fieldset": {
+              borderColor: BC_GOV_LINKS_COLOR,
+            },
+            "&.Mui-focused fieldset": {
+              borderColor: BC_GOV_LINKS_COLOR,
+            },
+          },
+        },
+      },
+    },
+    MuiSelect: {
+      styleOverrides: {
+        root: {
+          "& .MuiOutlinedInput-notchedOutline": {
+            borderColor: DARK_GREY_BG_COLOR,
+          },
+          "&:hover .MuiOutlinedInput-notchedOutline": {
+            borderColor: BC_GOV_LINKS_COLOR,
+            borderWidth: "1px",
+          },
+          "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+            borderColor: BC_GOV_LINKS_COLOR,
+          },
+        },
+      },
+    },
+    MuiOutlinedInput: {
+      styleOverrides: {
+        root: {
+          "& .MuiOutlinedInput-root": {
+            "& fieldset": {
+              borderColor: DARK_GREY_BG_COLOR,
+            },
+            "&:hover fieldset": {
+              borderColor: BC_GOV_LINKS_COLOR,
+            },
+            "&.Mui-focused fieldset": {
+              borderColor: BC_GOV_LINKS_COLOR,
+            },
+          },
+        },
+      },
+    },
+
     MuiTypography: {
       styleOverrides: {
         root: {

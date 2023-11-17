@@ -1,6 +1,6 @@
 "use client";
 
-import { Form } from "@rjsf/mui";
+import Form from "./FormBase";
 import { RJSFSchema } from "@rjsf/utils";
 import validator from "@rjsf/validator-ajv8";
 import { useState } from "react";
@@ -46,7 +46,6 @@ export default function UserOperatorForm({
         push(`/dashboard/select-operator/received/${response.res.operator_id}`);
       }}
       uiSchema={userOperatorUiSchema}
-      className="flex flex-col w-3/4 mx-auto"
     >
       {errorList.length > 0 &&
         errorList.map((e: any) => (

@@ -1,21 +1,20 @@
 "use client";
 import { FieldTemplateProps } from "@rjsf/utils";
 
-function FieldTemplate(props: FieldTemplateProps) {
-  const {
-    id,
-    classNames,
-    style,
-    label,
-    help,
-    required,
-    description,
-    errors,
-    children,
-  } = props;
+function FieldTemplate({
+  classNames,
+  id,
+  style,
+  label,
+  help,
+  required,
+  description,
+  errors,
+  children,
+}: FieldTemplateProps) {
   return (
-    <div className={classNames} style={style}>
-      <label htmlFor={id}>
+    <div style={style} className={`w-full ${classNames}`}>
+      <label htmlFor={id} className="inline-block">
         {label}
         {required ? "*" : null}
       </label>

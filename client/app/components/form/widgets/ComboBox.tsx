@@ -8,14 +8,15 @@ const ComboBox: React.FC<WidgetProps> = (props) => {
   const { id, onChange, schema, value, label } = props;
 
   const handleChange = (e: React.ChangeEvent<{}>, option: any) => {
-    onChange(option?.enum?.[0]);
+    onChange(option?.const);
   };
 
   const getSelected = useCallback(() => {
     if (!value || !schema?.anyOf) return null;
     const selectedValue = schema.anyOf.find(
-      (option) => (option as any).enum?.[0] === value,
+      (option) => (option as any).const === value,
     );
+
     return selectedValue;
   }, [schema, value]);
 

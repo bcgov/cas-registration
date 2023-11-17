@@ -8,7 +8,14 @@
  * */
 
 /** @type {import('tailwindcss').Config} */
-import { BC_GOV_PRIMARY_BRAND_COLOR_BLUE } from "./app/styles/colors";
+import {
+  BC_GOV_PRIMARY_BRAND_COLOR_BLUE,
+  BC_GOV_BACKGROUND_COLOR_BLUE,
+  BC_GOV_LINKS_COLOR,
+  DARK_GREY_BG_COLOR,
+  LIGHT_GREY_BG_COLOR,
+} from "./app/styles/colors";
+
 module.exports = {
   content: [
     "./app/**/*.{js,ts,jsx,tsx}",
@@ -26,6 +33,10 @@ module.exports = {
     extend: {
       colors: {
         "bc-gov-primary-brand-color-blue": BC_GOV_PRIMARY_BRAND_COLOR_BLUE,
+        "bc-gov-background-color-blue": BC_GOV_BACKGROUND_COLOR_BLUE,
+        "bc-gov-links-color": BC_GOV_LINKS_COLOR,
+        "dark-grey-bg-color": DARK_GREY_BG_COLOR,
+        "light-grey-bg-color": LIGHT_GREY_BG_COLOR,
       },
     },
   },

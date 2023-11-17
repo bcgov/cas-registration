@@ -3,6 +3,7 @@ import Link from "next/link";
 // 🏷 import {named} can be significantly slower than import default
 import Box from "@mui/material/Box";
 import footerLinks from "@/app/data/layout/footer.json";
+
 const links = footerLinks.map((link, index) => (
   <Link
     key={index}
@@ -21,31 +22,39 @@ const links = footerLinks.map((link, index) => (
     {link.name}
   </Link>
 ));
+
 export default function Footer() {
   return (
-    <>
+    <Box
+      position="absolute"
+      component="footer"
+      sx={{
+        alignItems: "center",
+        maxHeight: "fit-content",
+        mt: "auto",
+        width: "100%",
+        bgcolor: "primary.main",
+        overflow: "hidden",
+        py: 3,
+        px: 2,
+        bottom: 0,
+      }}
+    >
       <Box
-        component="footer"
+        component="div"
         sx={{
-          bgcolor: "primary.main",
-          py: 3,
-          px: 2,
-          mt: "auto", //in a flexbox item, this will push the footer down to the bottom
+          display: "flex",
+          flexDirection: {
+            xs: "column", //mobile small
+            sm: "row",
+          },
+          margin: "0 auto",
+          width: "100%",
+          maxWidth: "1536px",
         }}
       >
-        <Box
-          component="div"
-          sx={{
-            display: "flex",
-            flexDirection: {
-              xs: "column", //mobile small
-              sm: "row",
-            },
-          }}
-        >
-          {links}
-        </Box>
+        {links}
       </Box>
-    </>
+    </Box>
   );
 }
