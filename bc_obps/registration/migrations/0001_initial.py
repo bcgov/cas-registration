@@ -333,7 +333,7 @@ class Migration(migrations.Migration):
                     models.ForeignKey(
                         db_comment='The role assigned to this user which defines the permissions the use has.',
                         on_delete=django.db.models.deletion.DO_NOTHING,
-                        related_name='user_app_role',
+                        related_name='user_app_roles',
                         to='registration.approle',
                     ),
                 ),
