@@ -24,6 +24,11 @@ spec:
       containers:
         - name: {{ template "cas-registration.fullname" . }}-frontend
           env:
+            - name: NEXTAUTH_SECRET
+              valueFrom:
+                secretKeyRef:
+                  key: nextauth-secret-key
+                  name: {{ .Release.Name }}-frontend
             - name: API_URL
               value: {{ .Values.frontend.apiUrl }}
           image: "{{ .Values.frontend.image.repository }}:{{ .Values.frontend.sourceRepoImageTag | default .Values.frontend.image.tag }}"
