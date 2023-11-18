@@ -6,3 +6,4 @@ export const BC_GOV_BACKGROUND_COLOR_BLUE: string = "#38598a";
 export const DARK_GREY_BG_COLOR: string = "#E5E5E5";
 export const LIGHT_GREY_BG_COLOR: string = "#fafafc";
 export const BC_GOV_YELLOW: string = "#FCBA19";
+export const BC_GOV_SEMANTICS_RED: string = "#D8292F";

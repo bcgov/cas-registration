@@ -20,7 +20,7 @@ const MultiStepHeader = ({ step, steps }: MultiStepHeaderProps) => {
             className={`mb-4 flex flex-row items-center ${
               isLastStep ? "grow-0" : "grow"
             }`}
-            key={step}
+            key={steps[i]}
           >
             <div
               key={s}
