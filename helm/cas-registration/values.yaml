@@ -42,6 +42,12 @@ frontend:
     # Overrides the image tag whose default is the chart appVersion.
     tag: "latest"
 
+  auth:
+    keycloakAuthUrl: ~
+    keycloakRealms: /realms/standard
+    keycloakOidc: /protocol/openid-connect
+    keycloakClientId: obps-4953
+
   service:
     type: ClusterIP
     port: 3000
