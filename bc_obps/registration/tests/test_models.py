@@ -16,6 +16,7 @@ from registration.models import (
     ParentChildOperator,
     Operation,
     UserAndContactCommonInfo,
+    AppRole,
 )
 
 
@@ -506,3 +507,27 @@ class OperationModelTest(BaseTestCase):
                     self.assertFieldMaxLength(self.test_operation, field_name, expected_max_length)
                 if expected_relations_count is not None:
                     self.assertHasMultipleRelationsInField(field_name, expected_relations_count)
+
+
+class AppRoleModelTest(BaseTestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.test_app_role = AppRole.objects.first()
+
+    def test_field_labels_and_max_lengths(self):
+        # (field_name, expected_label, expected_max_length, expected_relations_count)
+        field_data = [("role_name", "role name", 100, None), ("role_description", "role description", 1000, None)]
+
+        for (
+            field_name,
+            expected_label,
+            expected_max_length,
+            expected_relations_count,
+        ) in field_data:
+            with self.subTest(field_name=field_name):
+                if expected_label:
+                    self.assertFieldLabel(self.test_app_role, field_name, expected_label)
+                if expected_max_length is not None:
+                    self.assertFieldMaxLength(self.test_app_role, field_name, expected_max_length)
+                if expected_relations_count is not None:
+                    self.assertHasMultipleRelationsInField(self.test_app_role, field_name, expected_relations_count)

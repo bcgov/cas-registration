@@ -4,6 +4,22 @@ from phonenumber_field.modelfields import PhoneNumberField
 from localflavor.ca.models import CAPostalCodeField, CAProvinceField
 
 
+class AppRole(models.Model):
+    """AppRole model"""
+
+    role_name = models.CharField(
+        primary_key=True,
+        serialize=False,
+        db_comment='The name identifying the role assigned to a user. This role defines their permissions within the app. Also acts as the primary key.',
+        max_length=100,
+    )
+    role_description = models.CharField(db_comment='Description of the app role', max_length=1000)
+
+    class Meta:
+        db_table_comment = "This table contains the definitions for roles within the app/database. These roles are used to define the permissions a user has within the app"
+        db_table = 'erc"."app_role'
+
+
 class DocumentType(models.Model):
     """Document type model"""
 
@@ -139,6 +155,12 @@ class User(UserAndContactCommonInfo):
         Document,
         blank=True,
         related_name="user_documents",
+    )
+    app_role = models.ForeignKey(
+        AppRole,
+        on_delete=models.DO_NOTHING,
+        related_name="user_app_roles",
+        db_comment="The role assigned to this user which defines the permissions the use has.",
     )
 
     class Meta:
