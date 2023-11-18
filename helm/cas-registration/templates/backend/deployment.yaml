@@ -30,7 +30,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   key: django-secret-key
-                  name: {{ .Release.Name }}
+                  name: {{ .Release.Name }}-backend
             - name: DB_USER
               valueFrom:
                 secretKeyRef:

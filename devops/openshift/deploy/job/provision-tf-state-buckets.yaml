@@ -1,0 +1,64 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: provision-tf-state-buckets
+spec:
+  backoffLimit: 0
+  activeDeadlineSeconds: 900
+  parallelism: 1
+  completions: 1
+  template:
+    metadata:
+      name: provision-tf-state-buckets
+    spec:
+      containers:
+        - name: provision-tf-state-buckets
+          resources:
+            limits:
+              cpu: 1000m
+              memory: 128Mi
+            requests:
+              cpu: 100m
+              memory: 64Mi
+          image: ghcr.io/bcgov/cas-reg-devops:latest
+          imagePullPolicy: Always
+          volumeMounts:
+            - mountPath: /etc/gcp
+              name: service-account-credentials-volume
+              readOnly: true
+            - name: gcloud-config
+              mountPath: /etc/.config/gcloud
+          env:
+            - name: OPENSHIFT_NAMESPACE
+              valueFrom:
+                secretKeyRef:
+                  name: gcp-credentials-secret
+                  key: ocp_namespace
+            - name: CLOUDSDK_CORE_PROJECT
+              valueFrom:
+                secretKeyRef:
+                  name: gcp-credentials-secret
+                  key: gcp_project_id
+            - name: CLOUDSDK_CORE_DISABLE_FILE_LOGGING
+              value: "True"
+            - name: CLOUDSDK_AUTH_CREDENTIAL_FILE_OVERRIDE
+              value: "/etc/gcp/credentials.json"
+            - name: CLOUDSDK_CONFIG
+              value: "/etc/.config/gcloud"
+          command:
+            [
+              "bash",
+              "/bucket.sh",
+              "$(OPENSHIFT_NAMESPACE)",
+              "$(CLOUDSDK_CORE_PROJECT)",
+            ]
+      restartPolicy: Never
+      volumes:
+        - name: service-account-credentials-volume
+          secret:
+            secretName: gcp-credentials-secret
+            items:
+              - key: sa_json
+                path: credentials.json
+        - name: gcloud-config
+          emptyDir: {}

@@ -6,7 +6,7 @@ backend:
     tag: "latest"
 
   route:
-    host: cas-reg-backend-dev.apps.silver.devops.gov.bc.ca
+    host: cas-reg-backend-test.apps.silver.devops.gov.bc.ca
 
   environment: test
 
@@ -17,8 +17,8 @@ frontend:
     tag: "latest"
 
   route:
-    host: cas-reg-frontend-dev.apps.silver.devops.gov.bc.ca
+    host: cas-reg-frontend-test.apps.silver.devops.gov.bc.ca
 
-  apiUrl: https://cas-reg-backend-dev.apps.silver.devops.gov.bc.ca/api/
+  apiUrl: https://cas-reg-backend-test.apps.silver.devops.gov.bc.ca/api/
 
   environment: test
