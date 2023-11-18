@@ -159,7 +159,7 @@ class User(UserAndContactCommonInfo):
     app_role = models.ForeignKey(
         AppRole,
         on_delete=models.DO_NOTHING,
-        related_name="user_app_role",
+        related_name="user_app_roles",
         db_comment="The role assigned to this user which defines the permissions the use has.",
     )
 
