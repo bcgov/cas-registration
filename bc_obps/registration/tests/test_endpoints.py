@@ -1,3 +1,4 @@
+from django.forms import model_to_dict
 import pytest
 import json
 from datetime import datetime
@@ -281,3 +282,24 @@ class TestOperationEndpoint:
             data={"garbage": "i am bad data"},
         )
         assert response.status_code == 422
+
+
+class TestOperatorsEndpoint:
+    endpoint = base_endpoint + "operators"
+
+    def test_get_method_for_200_status(self, client):
+        response = client.get(self.endpoint)
+        assert response.status_code == 200
+
+    def test_get_method_with_mock_data(self, client):
+        baker.make(Operator, _quantity=2)
+
+        response = client.get(self.endpoint)
+        assert response.status_code == 200
+        assert len(json.loads(response.content)) == 2
+
+    def test_retrieve_operator(self, client):
+        operator = baker.make(Operator)
+        response = client.get(self.endpoint + "/" + str(operator.id))
+        assert response.status_code == 200
+        assert response.json() == model_to_dict(operator)
