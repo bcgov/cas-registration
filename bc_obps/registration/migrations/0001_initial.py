@@ -7,12 +7,57 @@ import phonenumber_field.modelfields
 import uuid
 
 
+def init_app_role_data(apps, schema_monitor):
+    '''
+    Add initial data to erc.app_role
+    '''
+    table = apps.get_model('registration', 'AppRole')
+
+    table.objects.create(
+        role_name='cas_admin', role_description='Admin user from the BC Government. Highest government user privilege.'
+    )
+    table.objects.create(
+        role_name='cas_analyst',
+        role_description='Analyst user from the BC Government. Lower access privileges than cas_admin.',
+    )
+    table.objects.create(
+        role_name='cas_pending',
+        role_description='Pending BC Government user. Requires access to be granted by an admin before having any privileges.',
+    )
+    table.objects.create(
+        role_name='industry_user',
+        role_description='External user from industry. All industry_users have the same initial privileges. Their privileges for individual operators are further defined and applied in the user_operator through table.',
+    )
+
+
 class Migration(migrations.Migration):
     initial = True
 
     dependencies = []
 
     operations = [
+        # app_role table definition
+        migrations.CreateModel(
+            name='AppRole',
+            fields=[
+                (
+                    'role_name',
+                    models.CharField(
+                        primary_key=True,
+                        serialize=False,
+                        db_comment='The name identifying the role assigned to a user. This role defines their permissions within the app. Also acts as the primary key.',
+                        max_length=100,
+                    ),
+                ),
+                ('role_description', models.CharField(db_comment='Description of the app role', max_length=1000)),
+            ],
+            options={
+                'db_table': 'erc"."app_role',
+                'db_table_comment': 'This table contains the definitions for roles within the app/database. These roles are used to define the permissions a user has within the app',
+            },
+        ),
+        # app_role table initial data population
+        migrations.RunPython(init_app_role_data),
         migrations.CreateModel(
             name='Contact',
             fields=[
@@ -282,6 +327,15 @@ class Migration(migrations.Migration):
                 (
                     'documents',
                     models.ManyToManyField(blank=True, related_name='user_documents', to='registration.document'),
+                ),
+                (
+                    'app_role',
+                    models.ForeignKey(
+                        db_comment='The role assigned to this user which defines the permissions the use has.',
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name='user_app_roles',
+                        to='registration.approle',
+                    ),
                 ),
             ],
             options={
