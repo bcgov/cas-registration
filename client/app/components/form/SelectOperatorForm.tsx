@@ -33,9 +33,6 @@ export default function SelectOperatorForm({
   return (
     <Form
       schema={schema}
-      onError={(e) => {
-        console.log(e);
-      }}
       validator={validator}
       formData={formData}
       onSubmit={async (data: { formData?: SelectOperatorFormData }) => {
