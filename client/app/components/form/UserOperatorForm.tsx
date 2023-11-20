@@ -42,12 +42,20 @@ export default function UserOperatorForm({
         const newFormData = {
           ...formData,
           ...data.formData,
-          mailing_address_same_as_physical: true,
-          operator_has_parent_company: false,
+          // Hacky method to get around api type check
+          mailing_address_same_as_physical:
+            formData?.mailing_address_same_as_physical
+              ? formData?.mailing_address_same_as_physical
+              : false,
+          operator_has_parent_company: data.formData
+            ?.operator_has_parent_company
+            ? data.formData?.operator_has_parent_company
+            : false,
+          is_senior_officer: data.formData?.is_senior_officer || false,
         };
 
-        const savePartialUrl = `registration/select-operator/user-operator/partial/${userOperatorId}`;
-        const saveFullUrl = `registration/select-operator/user-operator/${userOperatorId}`;
+        const savePartialUrl = `registration/select-operator/user-operator/page-1/${userOperatorId}`;
+        const saveFullUrl = `registration/select-operator/user-operator/submit/${userOperatorId}`;
         const apiUrl = isFinalStep ? saveFullUrl : savePartialUrl;
         const response = (await createSubmitHandler(
           "PUT",

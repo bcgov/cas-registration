@@ -531,4 +531,7 @@ export const userOperatorUiSchema = {
   so_province: {
     "ui:widget": "ComboBox",
   },
+  mailing_province: {
+    "ui:widget": "ComboBox",
+  },
 };
