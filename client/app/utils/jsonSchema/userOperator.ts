@@ -29,14 +29,6 @@ const userOperatorPage1: RJSFSchema = {
     "phone_number",
     "province",
     "is_senior_officer",
-    // "file", temporary handling of many-to-many fields, will be addressed in #138
-    "legal_name",
-    "business_structure",
-    "physical_street_address",
-    "physical_municipality",
-    "physical_province",
-    "physical_postal_code",
-    "operator_has_parent_company",
   ],
   title: "User Information",
   properties: {
@@ -145,6 +137,16 @@ const userOperatorPage1: RJSFSchema = {
 const userOperatorPage2: RJSFSchema = {
   type: "object",
   title: "Operator Information",
+  required: [
+    // "file", temporary handling of many-to-many fields, will be addressed in #138
+    "legal_name",
+    "business_structure",
+    "physical_street_address",
+    "physical_municipality",
+    "physical_province",
+    "physical_postal_code",
+    "operator_has_parent_company",
+  ],
   properties: {
     legal_name: { type: "string", title: "Legal Name" },
     trade_name: { type: "string", title: "Trade Name" },
