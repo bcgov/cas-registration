@@ -120,7 +120,6 @@ export default function OperationsForm({ formData, schema }: Props) {
               );
               return;
             }
-            console.log(response);
             setOperationName(response.name);
           }}
           uiSchema={operationUiSchema}
