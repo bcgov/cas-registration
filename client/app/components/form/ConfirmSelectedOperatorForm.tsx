@@ -37,7 +37,7 @@ export default function ConfirmSelectedOperatorForm({
         }
 
         push(
-          `/dashboard/select-operator/user-operator/${response.res.user_operator_id}`,
+          `/dashboard/select-operator/user-operator/${response.res.user_operator_id}/1`,
         );
       }}
       className="flex flex-col w-64 mx-auto gap-2"
