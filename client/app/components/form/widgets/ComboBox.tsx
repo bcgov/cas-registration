@@ -3,9 +3,14 @@
 import { Autocomplete, TextField } from "@mui/material";
 import { WidgetProps } from "@rjsf/utils/lib/types";
 import { useCallback } from "react";
+import {
+  BC_GOV_LINKS_COLOR,
+  DARK_GREY_BG_COLOR,
+  BC_GOV_SEMANTICS_RED,
+} from "@/app/styles/colors";
 
 const ComboBox: React.FC<WidgetProps> = (props) => {
-  const { id, onChange, schema, value, label } = props;
+  const { id, onChange, rawErrors, schema, value } = props;
 
   const handleChange = (e: React.ChangeEvent<{}>, option: any) => {
     onChange(option?.const || option?.value);
@@ -23,6 +28,26 @@ const ComboBox: React.FC<WidgetProps> = (props) => {
 
   const options = schema?.anyOf ?? [];
 
+  const isError = rawErrors && rawErrors.length > 0;
+  const borderColor = isError ? BC_GOV_SEMANTICS_RED : DARK_GREY_BG_COLOR;
+
+  const styles = {
+    width: "100%",
+    "& .MuiSelect-outlined": {
+      borderColor: DARK_GREY_BG_COLOR,
+    },
+    "& .MuiOutlinedInput-notchedOutline": {
+      borderColor: borderColor,
+    },
+    "&:hover .MuiOutlinedInput-notchedOutline": {
+      borderColor: BC_GOV_LINKS_COLOR,
+      borderWidth: "1px",
+    },
+    "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+      borderColor: borderColor,
+    },
+  };
+
   return (
     <Autocomplete
       disablePortal
@@ -31,13 +56,14 @@ const ComboBox: React.FC<WidgetProps> = (props) => {
       options={options}
       defaultValue={getSelected()}
       value={getSelected()}
+      sx={styles}
       onChange={handleChange}
       getOptionLabel={(option: any) => (option ? option.title : "")}
-      renderInput={(params) => <TextField {...params} label={label} />}
+      renderInput={(params) => <TextField {...params} />}
       // 👻 define how to render each option to bypass key warning
       renderOption={(renderProps, option: any) => {
         return (
-          <li {...renderProps} key={option.value}>
+          <li {...renderProps} key={option.title}>
             {option.title}
           </li>
         );

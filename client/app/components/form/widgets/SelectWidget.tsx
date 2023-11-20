@@ -5,9 +5,23 @@ import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import { WidgetProps } from "@rjsf/utils/lib/types";
+import {
+  BC_GOV_LINKS_COLOR,
+  DARK_GREY_BG_COLOR,
+  BC_GOV_SEMANTICS_RED,
+} from "@/app/styles/colors";
 
 const SelectWidget: React.FC<WidgetProps> = (props) => {
-  const { disabled, id, onChange, readonly, schema, uiSchema, value } = props;
+  const {
+    disabled,
+    id,
+    onChange,
+    rawErrors,
+    readonly,
+    schema,
+    uiSchema,
+    value,
+  } = props;
   const placeholder = uiSchema?.["ui:placeholder"];
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -17,6 +31,26 @@ const SelectWidget: React.FC<WidgetProps> = (props) => {
   const handleChange = (e: SelectChangeEvent) => {
     const val = e.target.value;
     onChange(val || "");
+  };
+
+  const isError = rawErrors && rawErrors.length > 0;
+  const borderColor = isError ? BC_GOV_SEMANTICS_RED : DARK_GREY_BG_COLOR;
+
+  const styles = {
+    width: "100%",
+    "& .MuiSelect-outlined": {
+      borderColor: DARK_GREY_BG_COLOR,
+    },
+    "& .MuiOutlinedInput-notchedOutline": {
+      borderColor: borderColor,
+    },
+    "&:hover .MuiOutlinedInput-notchedOutline": {
+      borderColor: BC_GOV_LINKS_COLOR,
+      borderWidth: "1px",
+    },
+    "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+      borderColor: borderColor,
+    },
   };
 
   return (
@@ -35,12 +69,7 @@ const SelectWidget: React.FC<WidgetProps> = (props) => {
         disabled={disabled || readonly}
         name={id}
         onChange={handleChange}
-        sx={{
-          width: "100%",
-          "& .MuiSelect-outlined": {
-            borderColor: "rgba(0, 0, 0, 0.23)",
-          },
-        }}
+        sx={styles}
       >
         {placeholder && (
           <MenuItem disabled value="">
