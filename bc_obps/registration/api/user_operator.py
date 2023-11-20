@@ -202,4 +202,69 @@ def create_user_operator_request(request, user_operator_id: int, payload: UserOp
     return 200, {"operator_id": operator.id}
 
 
+@router.put(
+    "/select-operator/user-operator/partial/{int:user_operator_id}",
+    response={200: SelectOperatorIn, codes_4xx: Message},
+)
+def create_partial_user_operator_request(request, user_operator_id: int, payload: UserOperatorIn):
+    try:
+        user_operator = get_object_or_404(UserOperator, id=user_operator_id)
+        user: User = user_operator.user
+        operator: Operator = user_operator.operator
+        payload_dict = payload.dict()
+
+        ### USER Part
+        is_senior_officer: bool = payload_dict.get("is_senior_officer")
+
+        # fields to update on the User model
+        user_related_fields = [
+            "first_name",
+            "last_name",
+            "position_title",
+            "street_address",
+            "municipality",
+            "province",
+            "postal_code",
+            "email",
+            "phone_number",
+        ]
+
+        updated_user_instance: User = update_model_instance(user, user_related_fields, payload_dict)
+
+        if is_senior_officer:
+            updated_user_instance.role = User.Roles.SENIOR_OFFICER
+        else:
+            # Create a new Contact instance for the Senior Officer
+            contact_fields_mapping = {
+                "so_first_name": "first_name",
+                "so_last_name": "last_name",
+                "so_position_title": "position_title",
+                "so_street_address": "street_address",
+                "so_municipality": "municipality",
+                "so_province": "province",
+                "so_postal_code": "postal_code",
+                "so_email": "email",
+                "so_phone_number": "phone_number",
+            }
+            contact_instance: Contact = Contact(role=Contact.Roles.SENIOR_OFFICER)
+            senior_officer_contact: Contact = update_model_instance(
+                contact_instance, contact_fields_mapping, payload_dict
+            )
+
+        # saving the updated instances
+        updated_user_instance.save()
+
+        if not is_senior_officer:
+            senior_officer_contact.save()
+
+    except ValidationError as e:
+        return 400, {"message": e.messages[0]}
+
+    # updating the status of the UserOperator instance
+    user_operator.status = UserOperator.Statuses.PENDING
+    user_operator.save(update_fields=["status"])
+
+    return 200, {"operator_id": operator.id}
+
+
 ##### DELETE #####
