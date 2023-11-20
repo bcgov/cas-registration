@@ -63,7 +63,7 @@ const ComboBox: React.FC<WidgetProps> = (props) => {
       // 👻 define how to render each option to bypass key warning
       renderOption={(renderProps, option: any) => {
         return (
-          <li {...renderProps} key={option.value}>
+          <li {...renderProps} key={option.title}>
             {option.title}
           </li>
         );
