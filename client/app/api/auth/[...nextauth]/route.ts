@@ -51,10 +51,6 @@ export const authOptions: NextAuthOptions = {
           token.user_guid = account.providerAccountId.split("@")[0];
           token.identity_provider = account.providerAccountId.split("@")[1];
           // 🚧 WIP 🚧
-
-          // 🚧 TEMP: HARDCODED FOR DEV- need bceid login
-          //token.identity_provider = "bceid";
-
           switch (token.identity_provider) {
             case "idir":
               token.app_role = "cas_pending";
@@ -62,7 +58,7 @@ export const authOptions: NextAuthOptions = {
                 const response = await fetchAPI(
                   `registration/get-user-role/${token.user_guid}`
                 );
-                if (response !== null && response.role_name) {
+                if (response?.role_name) {
                   token.app_role = response.role_name;
                 } else {
                   // Default app_role if the API call fails

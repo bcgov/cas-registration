@@ -11,7 +11,7 @@ export async function getOperator(id: number) {
 export default async function ConfirmSelectedOperator({
   params,
 }: {
-  params: { id: number };
+  params: Readonly<{ id: number }>;;
 }) {
   const operator: Operator | { error: string } = await getOperator(params.id);
 

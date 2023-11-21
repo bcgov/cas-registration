@@ -2,7 +2,11 @@ import { Suspense } from "react";
 import Loading from "@/app/components/loading/SkeletonGrid";
 import UserOperator from "@/app/components/routes/select-operator/form/UserOperator";
 
-export default async function Page({ params }: { params: { id: number } }) {
+export default async function Page({
+  params,
+}: {
+  params: Readonly<{ id: number }>;
+}) {
   return (
     <Suspense fallback={<Loading />}>
       <UserOperator params={params} />
