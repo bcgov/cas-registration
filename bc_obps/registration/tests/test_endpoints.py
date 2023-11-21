@@ -6,7 +6,17 @@ import pytz
 from model_bakery import baker
 from django.test import Client
 from localflavor.ca.models import CAPostalCodeField
-from registration.models import NaicsCode, NaicsCategory, Document, Contact, Operation, Operator, ReportingActivity
+from registration.models import (
+    NaicsCode,
+    NaicsCategory,
+    Document,
+    Contact,
+    Operation,
+    Operator,
+    ReportingActivity,
+    User,
+    UserOperator,
+)
 from registration.schema import OperationIn
 
 pytestmark = pytest.mark.django_db
@@ -303,3 +313,56 @@ class TestOperatorsEndpoint:
         response = client.get(self.endpoint + "/" + str(operator.id))
         assert response.status_code == 200
         assert response.json() == model_to_dict(operator)
+
+
+class TestUserOperatorEndpoint:
+    endpoint = base_endpoint + "select-operator"
+
+    def test_select_operator_with_valid_id(self):
+        baker.make(User)
+        operators = baker.make(Operator, _quantity=1)
+
+        response = client.get(f"{self.endpoint}/{operators[0].id}")
+
+        assert response.status_code == 200
+        assert response.json() == {"operator_id": operators[0].id}
+
+    def test_select_operator_with_invalid_id(self):
+        baker.make(User)
+        invalid_operator_id = 99999  # Invalid operator ID
+
+        response = client.get(f"{self.endpoint}/{invalid_operator_id}")
+
+        assert response.status_code == 404
+        assert response.json() == {"detail": "Not Found"}
+
+    def test_request_access_with_valid_payload(self):
+        user = baker.make(User)
+        operator = baker.make(Operator)
+        response = client.post(
+            f"{self.endpoint}/request-access", content_type=content_type_json, data={"operator_id": operator.id}
+        )
+
+        response_json = response.json()
+
+        assert response.status_code == 201
+        assert "user_operator_id" in response_json
+
+        user_operator_exists = UserOperator.objects.filter(
+            id=response_json["user_operator_id"],
+            user=user,
+            operator=operator,
+            status=UserOperator.Statuses.DRAFT,
+            role=UserOperator.Roles.ADMIN,
+        ).exists()
+
+        assert user_operator_exists, "UserOperator object was not created"
+
+    def test_request_access_with_invalid_payload(self):
+        baker.make(User)
+        invalid_payload = {"operator_id": 99999}  # Invalid operator ID
+
+        response = client.post(f"{self.endpoint}/request-access", content_type=content_type_json, data=invalid_payload)
+
+        assert response.status_code == 404
+        assert response.json() == {"detail": "Not Found"}
