@@ -13,6 +13,10 @@ async function getUserOperators() {
   }
 }
 
+function capitalizeString(value: string): string {
+  return value.slice(0, 1).toUpperCase() + value.slice(1);
+}
+
 // 🧩 Main component
 export default async function AccessRequests() {
   // Fetch userOperator data
@@ -33,7 +37,7 @@ export default async function AccessRequests() {
           ({ id, status, first_name, last_name, email, legal_name }) => {
             return {
               id,
-              status,
+              status: capitalizeString(status),
               first_name,
               last_name,
               email,

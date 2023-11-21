@@ -7,6 +7,10 @@ from registration.models import BusinessRole, Operator, User, UserOperator, Cont
 from registration.utils import update_model_instance
 from ninja.responses import codes_4xx
 from typing import List
+import json
+from datetime import datetime
+import pytz
+from django.core import serializers
 from registration.schema import Message, UserOperatorIn, UserOperatorOut, SelectOperatorIn, UserOperatorListOut
 
 ##### GET #####
@@ -243,6 +247,26 @@ def create_user_operator_request(request, user_operator_id: int, payload: UserOp
     user_operator.save(update_fields=["status"])
 
     return 200, {"operator_id": operator.id}
+
+
+@router.put("/user-operators/{int:user_operator_id}/update-status")
+def update_user_operator_status(request, user_operator_id: int):
+    # need to convert request.body (a bytes object) to a string, and convert the string to a JSON object
+    payload = json.loads(request.body.decode())
+    status = getattr(UserOperator.Statuses, payload.get("status").upper())
+    user_operator = get_object_or_404(UserOperator, id=user_operator_id)
+    # TODO later: add data to verified_by once user authentication in place
+    user_operator.status = status
+    if user_operator.status in [UserOperator.Statuses.APPROVED, UserOperator.Statuses.REJECTED]:
+        user_operator.verified_at = datetime.now(pytz.utc)
+    data = serializers.serialize(
+        "json",
+        [
+            user_operator,
+        ],
+    )
+    user_operator.save()
+    return data
 
 
 ##### DELETE #####
