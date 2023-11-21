@@ -71,7 +71,7 @@ export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
             const pageSegment = pathname.replace(`/${authRoute}`, "");
 
             return NextResponse.redirect(
-              new URL(`${pageSegment}`, request.url)
+              new URL(`${pageSegment}`, request.url),
             );
           }
         }
