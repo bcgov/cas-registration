@@ -1,10 +1,10 @@
 "use client";
 
-import Form from "./FormBase";
+import Form from "@/app/components/form/FormBase";
 import { RJSFSchema } from "@rjsf/utils";
 import { useState } from "react";
 import { Alert, Button } from "@mui/material";
-import SubmitButton from "./SubmitButton";
+import SubmitButton from "@/app/components/form/SubmitButton";
 import { useRouter } from "next/navigation";
 import { userOperatorUiSchema } from "@/app/utils/jsonSchema/userOperator";
 import { actionHandler } from "@/app/utils/actions";
