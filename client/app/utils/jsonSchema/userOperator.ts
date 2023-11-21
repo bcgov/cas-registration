@@ -73,7 +73,7 @@ export const userOperatorSchema: RJSFSchema = {
       readOnly: true,
     },
     legal_name: { type: "string", title: "Legal Name" },
-    trade_name: { type: "string", title: "Trade Name" },
+    trade_name: { type: "string", title: "Trade Name (optional)", default: "" },
     cra_business_number: {
       type: "number",
       title: "CRA Business Number",
@@ -115,6 +115,7 @@ export const userOperatorSchema: RJSFSchema = {
       title: "Postal Code",
     },
     mailing_address_section: {
+      //Not an actual field in the db - this is just to make the form look like the wireframes
       title:
         "Please provide information about the mailing address of this operator:",
       type: "object",
@@ -247,6 +248,11 @@ export const userOperatorSchema: RJSFSchema = {
             type: "number",
             title: "Percentage of ownership of operator (%)",
           },
+          pc_physical_address_section: {
+            title:
+              "Please provide information about the physical address of this operator:",
+            type: "object",
+          },
           pc_physical_street_address: {
             type: "string",
             title: "Physical Address",
@@ -263,6 +269,12 @@ export const userOperatorSchema: RJSFSchema = {
           pc_physical_postal_code: {
             type: "string",
             title: "PA Postal Code",
+          },
+          pc_mailing_address_section: {
+            //Not an actual field in the db - this is just to make the form look like the wireframes
+            title:
+              "Please provide information about the mailing address of this operator:",
+            type: "object",
           },
           pc_mailing_address_same_as_physical: {
             title: "Is the mailing address the same as the physical address?",
@@ -289,12 +301,6 @@ export const userOperatorSchema: RJSFSchema = {
           "mailing_postal_code",
         ],
         properties: {
-          mailing_address_section: {
-            //Not an actual field in the db - this is just to make the form look like the wireframes
-            title: "Mailing Address",
-            type: "object",
-            readOnly: true,
-          },
           mailing_street_address: {
             type: "string",
             title: "Mailing Address",
@@ -332,13 +338,6 @@ export const userOperatorSchema: RJSFSchema = {
           "pc_mailing_postal_code",
         ],
         properties: {
-          pc_mailing_address_section: {
-            //Not an actual field in the db - this is just to make the form look like the wireframes
-            title:
-              "Please provide information about the mailing address of this operator:",
-            type: "object",
-            readOnly: true,
-          },
           pc_mailing_street_address: {
             type: "string",
             title: "Mailing Address",
@@ -487,6 +486,8 @@ export const userOperatorUiSchema = {
   mailing_address_same_as_physical: {
     "ui:widget": "RadioWidget",
   },
+  pc_mailing_address_section: subheading,
+  pc_physical_address_section: subheading,
   pc_mailing_address_same_as_physical: {
     "ui:widget": "RadioWidget",
   },
