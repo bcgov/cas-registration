@@ -60,7 +60,7 @@ export const authOptions: NextAuthOptions = {
               token.app_role = "cas_pending";
               try {
                 const response = await fetchAPI(
-                  `registration/get-user-role/${token.user_guid}`,
+                  `registration/get-user-role/${token.user_guid}`
                 );
                 if (response !== null && response.role_name) {
                   token.app_role = response.role_name;
@@ -141,8 +141,6 @@ export const authOptions: NextAuthOptions = {
         token.error = "ErrorAccessToken";
       }
       // 🔒 return encrypted nextauth JWT
-      //*******************TEMP**********************
-      console.log(token);
       return token;
     },
     /**
