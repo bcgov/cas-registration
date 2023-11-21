@@ -10,7 +10,7 @@ REGION="northamerica-northeast1" # Montreal
 OPENSHIFT_NAMESPACE="$1"
 BUCKET_NAME="gs://${OPENSHIFT_NAMESPACE}-state"
 
-EXISTING_BUCKET=$(gcloud storage ls | grep -o $BUCKET_NAME)
+EXISTING_BUCKET=$(gcloud storage ls --project="${GOOGLE_PROJECT_ID}"| grep -o $BUCKET_NAME)
 
 if [ -z "$EXISTING_BUCKET" ]; then
   gcloud storage buckets create $BUCKET_NAME --project=$GOOGLE_PROJECT_ID --location=$REGION
