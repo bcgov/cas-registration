@@ -49,19 +49,19 @@ export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
           // 🔒 AUTHORIZATION REQUIRED ROUTES
           /* 📚  Protected Routes
           initial route should reflect a "page" route
-          for app security this "page" route will be augment with the NextAuth user's idp and role_name
-          and reflect the folder structure of app\idp\role_name\*page*
+          for app security this "page" route will be augment with the NextAuth user's idp and app_role
+          and reflect the folder structure of app\idp\app_role\*page*
           NOTES:
           app url will reflect the "page" route and regression "pathname code" will work as expected
-          if the folder structure of app\idp\role_name\*page* does not exist a "not authorized" default page will display
+          if the folder structure of app\idp\app_role\*page* does not exist a "not authorized" default page will display
           */
-          // 👇️ Define the authorization routes based on identity provider and role_name
+          // 👇️ Define the authorization routes based on identity provider and app_role
           const idp = token.identity_provider;
-          const role_name = token.role_name;
+          const app_role = token.app_role;
 
-          const authRoute = `${idp}/${role_name}`;
+          const authRoute = `${idp}/${app_role}`;
           if (!pathname.includes(authRoute)) {
-            // 🔒 Set the route to protected app folder structure based idp/role_name
+            // 🔒 Set the route to protected app folder structure based idp/app_role
             request.nextUrl.pathname = `${authRoute}${pathname}`;
             // 🧹 Rewrite the route so to redirect to protected route without reflecting change in the app url
             return NextResponse.rewrite(request.nextUrl);
@@ -71,7 +71,7 @@ export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
             const pageSegment = pathname.replace(`/${authRoute}`, "");
 
             return NextResponse.redirect(
-              new URL(`${pageSegment}`, request.url),
+              new URL(`${pageSegment}`, request.url)
             );
           }
         }
