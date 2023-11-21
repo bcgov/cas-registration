@@ -21,7 +21,7 @@ const isAuthenticatedAllowListedPath = (pathname: string): boolean => {
 
 const isAuthorizationRequiredPath = (
   pathname: string,
-  token: { identity_provider?: string; app_role?: string }
+  token: { identity_provider?: string; app_role?: string },
 ): boolean => {
   if (!token) {
     return false;
@@ -67,7 +67,7 @@ export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
 
       const pageSegment = pathname.replace(
         `/${token.identity_provider}/${token.app_role}`,
-        ""
+        "",
       );
 
       return NextResponse.redirect(new URL(`${pageSegment}`, request.url));
