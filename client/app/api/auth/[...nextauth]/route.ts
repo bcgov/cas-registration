@@ -1,6 +1,7 @@
 import NextAuth, { NextAuthOptions } from "next-auth";
 import KeycloakProvider from "next-auth/providers/keycloak";
 
+import { fetchAPI } from "@/app/utils/api";
 /**
 📚 [...nextauth] is a catch all nextauth route
 route.js is used to configuring NextAuth.js
@@ -46,14 +47,42 @@ export const authOptions: NextAuthOptions = {
           // 👇️ used for federated logout, client/app/api/auth/logout/route.ts
           token.id_token = account.id_token;
 
-          // 👇️ used for role lookup and DJANGO API calls
-          token.user_guid = account.providerAccountId
-            .split("@")[0]
-            .toUpperCase();
+          // 👇️ used for role_name lookup and DJANGO API calls
+          token.user_guid = account.providerAccountId.split("@")[0];
           token.identity_provider = account.providerAccountId.split("@")[1];
+          // 🚧 WIP 🚧
 
-          //🚧 wip - used for route access: TDB DB LOOKUP
-          token.role = "admin";
+          // 🚧 TEMP: HARDCODED FOR DEV- need bceid login
+          //token.identity_provider = "bceid";
+
+          switch (token.identity_provider) {
+            case "idir":
+              token.role_name = "cas_pending";
+              try {
+                const response = await fetchAPI(
+                  `registration/get-user-role/${token.user_guid}`,
+                );
+                /*
+                 const response = await fetchAPI(
+                  `registration/get-user-role/3fa85f64-5717-4562-b3fc-2c963f66afa6`
+                );*/
+
+                if (response !== null && response.role_name) {
+                  token.role_name = response.role_name;
+                } else {
+                  // Default role_name if the API call fails
+                }
+              } catch (error) {
+                // Default role_name if there's an error in the API call
+              }
+              break;
+            case "bceid":
+              token.role_name = "industry_user";
+              // 🚧 DB LOOKUP ?
+              // USER is in user_operator table?
+              //token.role_name = "industry_user" + "_admin";
+              break;
+          }
         } else {
           // check if token is expired
           if (
@@ -117,6 +146,7 @@ export const authOptions: NextAuthOptions = {
         token.error = "ErrorAccessToken";
       }
       // 🔒 return encrypted nextauth JWT
+      console.log(token);
       return token;
     },
     /**
@@ -138,7 +168,7 @@ export const authOptions: NextAuthOptions = {
         user: {
           ...session.user,
           user_guid: token.user_guid,
-          role: token.role,
+          role_name: token.role_name,
         },
       };
     },
