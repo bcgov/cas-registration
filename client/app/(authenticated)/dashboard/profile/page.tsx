@@ -13,7 +13,7 @@ export default async function Page() {
       {session && (
         <>
           <p>Name: {session?.user?.name}</p>
-          <p>Role: {session?.user?.role}</p>
+          <p>Role: {session?.user?.app_role}</p>
           <p>GUID: {session?.user?.user_guid}</p>
           <p>IP: {session?.identity_provider}</p>
         </>
