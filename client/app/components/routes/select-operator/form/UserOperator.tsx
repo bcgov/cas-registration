@@ -10,7 +10,7 @@ export async function getUserOperatorFormData(id: number) {
 export default async function UserOperator({
   params,
 }: {
-  params: Readonly<{ id: number }>;;
+  params: Readonly<{ id: number }>;
 }) {
   const formData: UserOperatorFormData | { error: string } =
     await getUserOperatorFormData(params.id);
