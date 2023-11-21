@@ -3,6 +3,13 @@ import provinceOptions from "@/app/data/provinces.json";
 import FieldTemplate from "@/app/styles/rjsf/FieldTemplate";
 import GroupTitleFieldTemplate from "@/app/styles/rjsf/GroupTitleFieldTemplate";
 import TitleOnlyFieldTemplate from "@/app/styles/rjsf/TitleOnlyFieldTemplate";
+import {
+  OperatorMailingAddressTitle,
+  OperatorPhysicalAddressTitle,
+  ParentCompanyMailingAddressTitle,
+  ParentCompanyPhysicalAddressTitle,
+  SeniorOfficerTitle,
+} from "@/app/components/form/titles/userOperatorTitles";
 
 const subheading = {
   "ui:classNames": "text-bc-gov-primary-brand-color-blue text-start text-lg",
@@ -366,6 +373,7 @@ export const userOperatorUiSchema = {
     "email",
     "phone_number",
     // "file", temporary handling of many-to-many fields, will be addressed in #138
+    "senior_officer_section",
     "is_senior_officer",
     // "Proof of authority of operation representative from a SO", temporary handling of many-to-many fields, will be addressed in #138
     // so = senior officer
@@ -378,14 +386,15 @@ export const userOperatorUiSchema = {
     "so_postal_code",
     "so_email",
     "so_phone_number",
-    "operator_information",
     "legal_name",
     "trade_name",
     "cra_business_number",
     "bc_corporate_registry_number",
     "business_structure",
     "website",
+    "operator_information",
     "operator_has_parent_company",
+
     "physical_address_section",
     "physical_street_address",
     "physical_municipality",
@@ -398,6 +407,7 @@ export const userOperatorUiSchema = {
     "mailing_province",
     "mailing_postal_code",
     "has_parent_company",
+
     // pc = parent company
     "pc_legal_name",
     "pc_trade_name",
@@ -406,10 +416,12 @@ export const userOperatorUiSchema = {
     "pc_business_structure",
     "pc_website",
     "percentage_owned_by_parent_company",
+    "pc_physical_address_section",
     "pc_physical_street_address",
     "pc_physical_municipality",
     "pc_physical_province",
     "pc_physical_postal_code",
+    "pc_mailing_address_section",
     "pc_mailing_address_same_as_physical",
     "pc_mailing_street_address",
     "pc_mailing_municipality",
@@ -428,17 +440,49 @@ export const userOperatorUiSchema = {
   is_senior_officer: {
     "ui:widget": "RadioWidget",
   },
-  senior_officer_section: subheading,
+  senior_officer_section: {
+    ...subheading,
+    "ui:options": {
+      jsxTitle: SeniorOfficerTitle,
+    },
+  },
+  operator_information: {
+    ...subheading,
+  },
   so_email: {
     "ui:widget": "EmailWidget",
   },
-  operator_information: subheading,
-  mailing_address_section: subheading,
-  physical_address_section: subheading,
+  mailing_address_section: {
+    ...subheading,
+    "ui:options": {
+      jsxTitle: OperatorMailingAddressTitle,
+    },
+  },
+  physical_address_section: {
+    ...subheading,
+    "ui:options": {
+      jsxTitle: OperatorPhysicalAddressTitle,
+    },
+  },
   operator_has_parent_company: {
     "ui:widget": "RadioWidget",
   },
-  has_parent_company: subheading,
+  has_parent_company: {
+    "ui:classNames": "form-heading",
+    "ui:FieldTemplate": TitleOnlyFieldTemplate,
+  },
+  pc_mailing_address_section: {
+    ...subheading,
+    "ui:options": {
+      jsxTitle: ParentCompanyMailingAddressTitle,
+    },
+  },
+  pc_physical_address_section: {
+    ...subheading,
+    "ui:options": {
+      jsxTitle: ParentCompanyPhysicalAddressTitle,
+    },
+  },
   mailing_address_same_as_physical: {
     "ui:widget": "RadioWidget",
   },
@@ -464,6 +508,9 @@ export const userOperatorUiSchema = {
     "ui:widget": "ComboBox",
   },
   so_province: {
+    "ui:widget": "ComboBox",
+  },
+  mailing_province: {
     "ui:widget": "ComboBox",
   },
 };
