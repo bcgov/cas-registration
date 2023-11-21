@@ -5,7 +5,7 @@ import { operationSchema } from "@/app/utils/jsonSchema/operations";
 import { RJSFSchema } from "@rjsf/utils";
 import { fetchAPI } from "@/app/utils/api";
 import Review from "./Review";
-import { Status } from "@/app/types";
+import { Status } from "@/app/types/types";
 
 // 🛠️ Function to fetch NAICS codes
 async function getNaicsCodes() {
