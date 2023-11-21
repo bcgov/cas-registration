@@ -2,6 +2,7 @@
 // 🏷 import {named} can be significantly slower than import default
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
+import Link from "next/link";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import { styled } from "@mui/material/styles";
@@ -21,7 +22,7 @@ export default function Header() {
   // 🧩 For authentication content using theme breakpoints to hide for laptop & desktop
   const ButtonsBottom = styled(Toolbar)(({ theme }) => ({
     display: "flex",
-    justifyContent: "center",
+    justifyContent: "flex-start",
     [theme.breakpoints.up("md")]: {
       display: "none",
     },
@@ -56,22 +57,24 @@ export default function Header() {
         }}
       >
         <Toolbar>
-          <Box
-            component="img"
-            sx={{
-              height: {
-                xs: "36.46px", //mobile & tablet
-                md: "42.67px", //laptop & desktop
-              },
-              width: {
-                xs: "170px", //mobile & tablet
-                md: "200px", //laptop & desktop
-              },
-            }}
-            alt="Logo for Province of British Columbia CleanBC"
-            src="/img/BCID_CleanBC_rev_tagline_colour.svg"
-            aria-label="CleanBC Logo"
-          />
+          <Link href="/" passHref>
+            <Box
+              component="img"
+              sx={{
+                height: {
+                  xs: "36.46px", //mobile & tablet
+                  md: "42.67px", //laptop & desktop
+                },
+                width: {
+                  xs: "170px", //mobile & tablet
+                  md: "200px", //laptop & desktop
+                },
+              }}
+              alt="Logo for Province of British Columbia CleanBC"
+              src="/img/BCID_CleanBC_rev_tagline_colour.svg"
+              aria-label="CleanBC Logo"
+            />
+          </Link>
           <Typography
             component="div"
             sx={{
@@ -86,6 +89,7 @@ export default function Header() {
                 md: "33.89px", //laptop & desktop
               },
               marginLeft: "24px",
+              cursor: "default",
             }}
           >
             BC OBPS
