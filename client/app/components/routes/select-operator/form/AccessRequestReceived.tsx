@@ -7,7 +7,7 @@ import { getOperator } from "@/app/components/routes/select-operator/form/Confir
 export default async function AccessRequestReceived({
   params,
 }: {
-  params: { id: number };
+  params: Readonly<{ id: number }>;;
 }) {
   const operator: Operator | { error: string } = await getOperator(params.id);
 
