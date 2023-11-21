@@ -4,12 +4,12 @@ import { Alert, Button, ButtonGroup, Box } from "@mui/material";
 import RecommendIcon from "@mui/icons-material/Recommend";
 import DoNotDisturbIcon from "@mui/icons-material/DoNotDisturb";
 import { createSubmitHandler } from "@/app/utils/actions";
-import { UserOperatorFormData } from "@/app/components/form/formDataTypes";
+import { UserOperatorFormProps } from "@/app/components/form/UserOperatorForm";
 import React, { useState } from "react";
 import { Status } from "@/app/types";
 
 interface Props {
-  userOperator: UserOperatorFormData;
+  userOperator: UserOperatorFormProps;
 }
 
 export default function Review(props: Readonly<Props>) {
@@ -17,11 +17,11 @@ export default function Review(props: Readonly<Props>) {
   const [successMessageList, setSuccessMessageList] = useState([] as any[]);
 
   async function approveRequest() {
-    props.userOperator.status = Status.APPROVED;
+    props.userOperator.formData.status = Status.APPROVED;
     const response = await createSubmitHandler(
       "PUT",
-      `registration/userOperators/${props.userOperator.id}/update-status`,
-      `dashboard/userOperators/${props.userOperator.id}`,
+      `registration/userOperators/${props.userOperator.userOperatorId}/update-status`,
+      `dashboard/userOperators/${props.userOperator.userOperatorId}`,
       props.userOperator,
     );
     if (response.error) {
@@ -37,8 +37,8 @@ export default function Review(props: Readonly<Props>) {
     props.userOperator.status = Status.REJECTED;
     const response = await createSubmitHandler(
       "PUT",
-      `registration/userOperators/${props.userOperator.id}/update-status`,
-      `dashboard/userOperators/${props.userOperator.id}`,
+      `registration/userOperators/${props.userOperator.userOperatorId}/update-status`,
+      `dashboard/userOperators/${props.userOperator.userOperatorId}`,
       props.userOperator,
     );
     if (response.error) {
