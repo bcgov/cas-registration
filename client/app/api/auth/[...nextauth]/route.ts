@@ -47,7 +47,7 @@ export const authOptions: NextAuthOptions = {
           // 👇️ used for federated logout, client/app/api/auth/logout/route.ts
           token.id_token = account.id_token;
 
-          // 👇️ used for role_name lookup and DJANGO API calls
+          // 👇️ used for app_role lookup and DJANGO API calls
           token.user_guid = account.providerAccountId.split("@")[0];
           token.identity_provider = account.providerAccountId.split("@")[1];
           // 🚧 WIP 🚧
@@ -57,30 +57,25 @@ export const authOptions: NextAuthOptions = {
 
           switch (token.identity_provider) {
             case "idir":
-              token.role_name = "cas_pending";
+              token.app_role = "cas_pending";
               try {
                 const response = await fetchAPI(
-                  `registration/get-user-role/${token.user_guid}`,
+                  `registration/get-user-role/${token.user_guid}`
                 );
-                /*
-                 const response = await fetchAPI(
-                  `registration/get-user-role/3fa85f64-5717-4562-b3fc-2c963f66afa6`
-                );*/
-
                 if (response !== null && response.role_name) {
-                  token.role_name = response.role_name;
+                  token.app_role = response.role_name;
                 } else {
-                  // Default role_name if the API call fails
+                  // Default app_role if the API call fails
                 }
               } catch (error) {
-                // Default role_name if there's an error in the API call
+                // Default app_role if there's an error in the API call
               }
               break;
             case "bceid":
-              token.role_name = "industry_user";
+              token.app_role = "industry_user";
               // 🚧 DB LOOKUP ?
               // USER is in user_operator table?
-              //token.role_name = "industry_user" + "_admin";
+              //token.app_role = "industry_user" + "_admin";
               break;
           }
         } else {
@@ -146,6 +141,7 @@ export const authOptions: NextAuthOptions = {
         token.error = "ErrorAccessToken";
       }
       // 🔒 return encrypted nextauth JWT
+      //*******************TEMP**********************
       console.log(token);
       return token;
     },
@@ -168,7 +164,7 @@ export const authOptions: NextAuthOptions = {
         user: {
           ...session.user,
           user_guid: token.user_guid,
-          role_name: token.role_name,
+          app_role: token.app_role,
         },
       };
     },

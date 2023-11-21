@@ -24,7 +24,7 @@ type ContentItem = {
 
 export default function Page() {
   const { data: session } = useSession();
-  const role = session?.user?.role_name;
+  const role = session?.user?.app_role;
 
   const [contents, setContents] = useState<ContentItem[]>([]);
   useEffect(() => {
