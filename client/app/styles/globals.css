@@ -4,6 +4,9 @@
 @tailwind utilities;
 
 @layer components {
+  a {
+    @apply text-bc-gov-links-color;
+  }
   .form-heading {
     @apply text-2xl py-2 w-full font-bold border-solid text-bc-gov-background-color-blue border-bc-gov-background-color-blue border-l-0 border-r-0 mb-4;
   }
