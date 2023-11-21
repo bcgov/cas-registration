@@ -79,7 +79,6 @@ export default function OperationsForm({ formData, schema }: Props) {
           baseUrl={`/dashboard/operations/${operationId}`}
           cancelUrl="/dashboard/operations"
           formData={existingFormData}
-          formSectionList={formSectionList}
           readonly={
             formData?.status === "Registered" || formData?.status === "Pending"
               ? true
