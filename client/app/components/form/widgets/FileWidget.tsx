@@ -126,13 +126,18 @@ const FileWidget = ({
     [multiple, value, filesInfo, onChange],
   );
 
+  const disabledColour =
+    disabled || readonly
+      ? "text-dark-grey-bg-color"
+      : "text-bc-gov-links-color";
+
   /*   File input styling options are limited so we are attaching a ref to it, hiding it and triggering it with a styled button. */
   return (
-    <div className="py-4 flex ">
+    <div className="py-4 flex">
       <button
         type="button"
         onClick={handleClick}
-        className="p-0 decoration-solid border-0 text-lg bg-transparent text-bc-gov-links-color cursor-pointer underline"
+        className={`p-0 decoration-solid border-0 text-lg bg-transparent cursor-pointer underline ${disabledColour}`}
       >
         Upload attachment
       </button>
