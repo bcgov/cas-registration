@@ -1,6 +1,6 @@
 "use client";
 
-import { Alert, Button, ButtonGroup, Box } from "@mui/material";
+import { Alert, Button, Box } from "@mui/material";
 import RecommendIcon from "@mui/icons-material/Recommend";
 import DoNotDisturbIcon from "@mui/icons-material/DoNotDisturb";
 import { createSubmitHandler } from "@/app/utils/actions";
@@ -56,25 +56,37 @@ export default function Review(props: Readonly<Props>) {
         sx={{
           display: "flex",
           flexDirection: "column",
-          alignItems: "right",
+          alignItems: "flex-end",
         }}
       >
-        <ButtonGroup variant="contained">
+        <Box>
           <Button
             onClick={approveRequest}
+            className="mr-2"
             color="success"
+            variant="outlined"
             aria-label="Approve application"
+            sx={{
+              marginRight: "12px",
+              border: "1px solid",
+              fontWeight: "bold",
+            }}
           >
             Approve <RecommendIcon />
           </Button>
           <Button
             onClick={rejectRequest}
             color="error"
+            variant="outlined"
             aria-label="Reject application"
+            sx={{
+              border: "1px solid",
+              fontWeight: "bold",
+            }}
           >
             Reject <DoNotDisturbIcon />
           </Button>
-        </ButtonGroup>
+        </Box>
       </Box>
       {errorList.length > 0 &&
         errorList.map((e: any) => (
