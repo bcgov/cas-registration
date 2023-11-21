@@ -2,7 +2,6 @@
 
 import Form from "./FormBase";
 import { RJSFSchema } from "@rjsf/utils";
-import validator from "@rjsf/validator-ajv8";
 import { useState } from "react";
 import { Alert, Button } from "@mui/material";
 import SubmitButton from "./SubmitButton";
@@ -73,11 +72,9 @@ export default function UserOperatorForm({
   return (
     <Form
       schema={localSchema}
-      validator={validator}
-      showErrorList={false}
+      formData={formDataState}
       onSubmit={submitHandler}
       uiSchema={userOperatorUiSchema}
-      formData={formDataState}
     >
       {errorList.length > 0 &&
         errorList.map((e: any) => (
