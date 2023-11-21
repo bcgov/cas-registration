@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import ErrorComponent from "@/app/components/Error";
 
-export default function Error({
+export default function ErrorBoundary({
   error,
   reset,
 }: {

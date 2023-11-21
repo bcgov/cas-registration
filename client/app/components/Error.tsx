@@ -7,7 +7,7 @@ interface Props {
   error: Error & { digest?: string };
   reset: () => void;
 }
-export default function Error({ error, reset }: Props) {
+export default function ErrorBoundary({ error, reset }: Props) {
   return (
     <div className="flex flex-col items-center text-bc-gov-links-color">
       <Alert
