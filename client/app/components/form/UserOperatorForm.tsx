@@ -50,7 +50,7 @@ export default function UserOperatorForm({
     const method = userOperatorId ? "PUT" : "POST";
     const urlSuffix = userOperatorId
       ? `user-operator/${userOperatorId}`
-      : "user-operator/create";
+      : "user-operator";
 
     const response = await actionHandler(
       `registration/select-operator/${urlSuffix}`,
