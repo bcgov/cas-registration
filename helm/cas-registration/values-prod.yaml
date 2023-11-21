@@ -22,3 +22,6 @@ frontend:
   apiUrl: https://cas-reg-backend-dev.apps.silver.devops.gov.bc.ca/api/
 
   environment: production
+
+  auth:
+    keycloakAuthUrl: https://loginproxy.gov.bc.ca/auth

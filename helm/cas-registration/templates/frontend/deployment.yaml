@@ -24,13 +24,36 @@ spec:
       containers:
         - name: {{ template "cas-registration.fullname" . }}-frontend
           env:
+            - name: API_URL
+              value: {{ .Values.frontend.apiUrl }}
+            - name: KEYCLOAK_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-gold-client-secret
+                  key: kcClientSecret
+            - name: KEYCLOAK_AUTH_URL
+              value: {{ .Values.frontend.auth.keycloakAuthUrl}}
+            - name: KEYCLOAK_REALMS
+              value: {{ .Values.frontend.auth.keycloakRealms}}
+            - name: KEYCLOAK_OIDC
+              value: {{ .Values.frontend.auth.keycloakOidc}}
+            - name: KEYCLOAK_LOGIN_URL
+              value: {{ .Values.frontend.auth.keycloakAuthUrl}}{{ .Values.frontend.auth.keycloakRealms }}
+            - name: KEYCLOAK_LOGOUT_URL
+              value: {{ .Values.frontend.auth.keycloakAuthUrl}}{{ .Values.frontend.auth.keycloakRealms }}/logout
+            - name: KEYCLOAK_TOKEN_URL
+              value: {{ .Values.frontend.auth.keycloakAuthUrl}}{{ .Values.frontend.auth.keycloakRealms }}/token
+            - name: NEXTAUTH_URL
+              value: https://{{ .Values.frontend.route.host }}
+            - name: NEXT_PUBLIC_KEYCLOAK_LOGOUT_URL
+              value: {{ .Values.frontend.auth.keycloakAuthUrl}}{{ .Values.frontend.auth.keycloakRealms }}/logout
+            - name: KEYCLOAK_CLIENT_ID
+              value: {{ .Values.frontend.auth.keycloakClientId }}
             - name: NEXTAUTH_SECRET
               valueFrom:
                 secretKeyRef:
-                  key: nextauth-secret-key
-                  name: {{ .Release.Name }}-frontend
-            - name: API_URL
-              value: {{ .Values.frontend.apiUrl }}
+                  name: {{ template "cas-registration.fullname" . }}-nextauth
+                  key: nextauth-secret
           image: "{{ .Values.frontend.image.repository }}:{{ .Values.frontend.sourceRepoImageTag | default .Values.frontend.image.tag }}"
           imagePullPolicy: {{ .Values.frontend.image.pullPolicy }}
           ports:
