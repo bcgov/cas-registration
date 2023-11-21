@@ -5,13 +5,14 @@ from registration.schema import (
     UserOperatorIn,
     UserOut,
     OperatorOut,
+    RequestAccessOut,
 )
 from .api_base import router
 from typing import Optional
 from django.shortcuts import get_object_or_404
 from django.core.exceptions import ValidationError
 from registration.models import Operator, User, UserOperator, Contact, ParentChildOperator, BusinessRole
-from registration.utils import generate_useful_error, update_model_instance
+from registration.utils import generate_useful_error, update_model_instance, check_users_admin_request_eligibility
 from ninja.responses import codes_4xx
 
 
@@ -169,6 +170,20 @@ def handle_user_operator_user(payload: UserOperatorIn, user):
 
 
 ##### GET #####
+@router.get("/select-operator/{int:operator_id}", response={200: SelectOperatorIn, codes_4xx: Message})
+def select_operator(request, operator_id: int):
+    user: User = User.objects.first()  # FIXME: placeholders until after authentication is set up
+    operator: Operator = get_object_or_404(Operator, id=operator_id)
+
+    # check if user is eligible to request access
+    status, message = check_users_admin_request_eligibility(user, operator)
+    if status != 200:
+        return status, message
+
+    return 200, {"operator_id": operator.id}
+
+
+# FIXME: We might not need this endpoint anymore once ticket #299 is complete
 @router.get(
     "/select-operator/user-operator/{int:user_operator_id}",
     response=UserOperatorOut,
@@ -182,7 +197,23 @@ def get_user_operator(request, user_operator_id: int):
 
 
 ##### POST #####
-@router.post("/select-operator/user-operator/create", response={200: SelectOperatorIn, codes_4xx: Message})
+@router.post("/select-operator/request-access", response={201: RequestAccessOut, codes_4xx: Message})
+def request_access(request, payload: SelectOperatorIn):
+    user: User = User.objects.first()  # FIXME: placeholders until after authentication is set up
+    payload_dict: dict = payload.dict()
+    operator: Operator = get_object_or_404(Operator, id=payload_dict.get("operator_id"))
+
+    # check if user is eligible to request access
+    status, message = check_users_admin_request_eligibility(user, operator)
+    if status != 200:
+        return status, message
+
+    # Making a draft UserOperator instance if one doesn't exist
+    user_operator, _ = UserOperator.objects.get_or_create(user=user, operator=operator, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.DRAFT)
+    return 201, {"user_operator_id": user_operator.id}
+
+
+@router.post("/select-operator/user-operator", response={200: SelectOperatorIn, codes_4xx: Message})
 def create_operator_and_user_operator_request(request, payload: UserOperatorIn):
     try:
         user: User = User.objects.first()  # FIXME: placeholders until after authentication is set up
