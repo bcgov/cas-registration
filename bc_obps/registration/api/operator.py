@@ -5,6 +5,7 @@ from registration.models import Operation, Operator, NaicsCode, NaicsCategory, U
 from registration.utils import check_users_admin_request_eligibility, update_model_instance
 from ninja.responses import codes_4xx
 from registration.schema import Message, OperatorOut, RequestAccessOut, SelectOperatorIn
+import json
 
 
 ##### GET #####
@@ -24,7 +25,8 @@ def get_operator(request, operator_id: int):
 
 @router.get("/select-operator/{int:operator_id}", response={200: SelectOperatorIn, codes_4xx: Message})
 def select_operator(request, operator_id: int):
-    user: User = User.objects.first()  # FIXME: placeholders until after authentication is set up
+    current_user_guid = json.loads(request.headers.get('Authorization'))["user_guid"]
+    user: User = get_object_or_404(User, user_guid=current_user_guid)
     operator: Operator = get_object_or_404(Operator, id=operator_id)
 
     # check if user is eligible to request access
@@ -40,7 +42,8 @@ def select_operator(request, operator_id: int):
 
 @router.post("/select-operator/request-access", response={201: RequestAccessOut, codes_4xx: Message})
 def request_access(request, payload: SelectOperatorIn):
-    user: User = User.objects.first()  # FIXME: placeholders until after authentication is set up
+    current_user_guid = json.loads(request.headers.get('Authorization'))["user_guid"]
+    user: User = get_object_or_404(User, user_guid=current_user_guid)
     payload_dict: dict = payload.dict()
     operator: Operator = get_object_or_404(Operator, id=payload_dict.get("operator_id"))
 
