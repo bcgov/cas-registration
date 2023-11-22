@@ -61,8 +61,6 @@ export const operationSchema: RJSFSchema = {
       default: false,
     },
     // temp handling of many to many, will be addressed in #138
-    // petrinex_ids: { type: "number", title: "Petrinex IDs" },
-
     // documents: { type: "string", title: "documents" },
     // contacts: { type: "string", title: "contacts" },
   },
