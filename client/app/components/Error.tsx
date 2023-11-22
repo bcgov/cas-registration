@@ -1,5 +1,4 @@
-"use client"; // Error components must be Client Components
-
+import { useEffect } from "react";
 import { Button } from "@mui/material";
 import { Alert, AlertTitle } from "@mui/material";
 
@@ -8,6 +7,11 @@ interface Props {
   reset: () => void;
 }
 export default function ErrorBoundary({ error, reset }: Props) {
+  useEffect(() => {
+    // Log the error to an error reporting service
+    console.error(error);
+  }, [error]);
+
   return (
     <div className="flex flex-col items-center text-bc-gov-links-color">
       <Alert
