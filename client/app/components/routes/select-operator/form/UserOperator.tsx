@@ -1,6 +1,7 @@
 import { actionHandler } from "@/app/utils/actions";
 import { userOperatorSchema } from "@/app/utils/jsonSchema/userOperator";
 import UserOperatorForm from "@/app/components/form/UserOperatorForm";
+import Review from "@/app/components/routes/access-requests/form/Review";
 import { UserOperatorFormData } from "@/app/components/form/formDataTypes";
 
 export async function getUserOperatorFormData(id: number) {
@@ -24,10 +25,16 @@ export default async function UserOperator({
   }
 
   return (
-    <UserOperatorForm
-      schema={userOperatorSchema}
-      formData={formData}
-      userOperatorId={params.id}
-    />
+    <>
+      {/* {formData?.status === Status.PENDING ? (
+        <Review formData={formData} />
+      ) : null} */}
+      <Review formData={formData} />
+      <UserOperatorForm
+        schema={userOperatorSchema}
+        formData={formData}
+        userOperatorId={params.id}
+      />
+    </>
   );
 }
