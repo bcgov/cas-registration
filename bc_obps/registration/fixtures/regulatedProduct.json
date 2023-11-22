@@ -1,0 +1,23 @@
+[
+  {
+    "model": "registration.regulatedproduct",
+    "pk": 1,
+    "fields": {
+      "name": "Product 1"
+    }
+  },
+  {
+    "model": "registration.regulatedproduct",
+    "pk": 2,
+    "fields": {
+      "name": "Product 2"
+    }
+  },
+  {
+    "model": "registration.regulatedproduct",
+    "pk": 3,
+    "fields": {
+      "name": "Product 3"
+    }
+  }
+]

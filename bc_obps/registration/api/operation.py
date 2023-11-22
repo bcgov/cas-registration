@@ -5,8 +5,8 @@ import pytz
 from django.core import serializers
 from typing import List
 from django.shortcuts import get_object_or_404
-from registration.models import Operation, Operator, NaicsCode
-from registration.schema.operation import OperationIn, OperationOut
+from registration.models import Operation, Operator, NaicsCode, NaicsCategory, RegulatedProduct
+from registration.schema import OperationIn, OperationOut
 
 
 ##### GET #####
@@ -29,8 +29,7 @@ def get_operation(request, operation_id: int):
 
 @router.post("/operations")
 def create_operation(request, payload: OperationIn):
-    fields_to_assign = ["operator", "naics_code"]
-
+    fields_to_assign = ["operator", "naics_code", "naics_category"]
     for field_name in fields_to_assign:
         if field_name in payload.dict():
             field_value = payload.dict()[field_name]
@@ -41,6 +40,8 @@ def create_operation(request, payload: OperationIn):
             obj = get_object_or_404(model_class, id=field_value)
             setattr(payload, field_name, obj)
 
+    regulated_products = payload.regulated_products
+
     fields_to_delete = ["documents", "contacts", "petrinex_ids", "regulated_products", "reporting_activities"]
 
     for field_name in fields_to_delete:
@@ -48,7 +49,8 @@ def create_operation(request, payload: OperationIn):
             delattr(payload, field_name)
 
     operation = Operation.objects.create(**payload.dict())
-
+    for product in regulated_products:
+        operation.regulated_products.add(product)  # Adds each product
     return {"name": operation.name, "id": operation.id}
 
 
@@ -85,8 +87,11 @@ def update_operation(request, operation_id: int, submit, payload: OperationIn):
         if submit == "true":
             operation.status = Operation.Statuses.PENDING
 
-        operation.save()
-        return {"name": operation.name}
+    operation.regulated_products.clear()  # Clear existing products
+    for product_id in payload.regulated_products:
+        operation.regulated_products.add(product_id)  # Adds each product
+    operation.save()
+    return {"name": operation.name}
 
 
 @router.put("/operations/{operation_id}/update-status")

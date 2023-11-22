@@ -14,7 +14,31 @@ async function getNaicsCodes() {
     return await actionHandler(
       "registration/naics_codes",
       "GET",
-      "/dashboard/operations",
+      "/dashboard/operations"
+    );
+  } catch (error) {
+    // Handle the error here or rethrow it to handle it at a higher level
+    throw error;
+  }
+}
+export async function getNaicsCategories() {
+  try {
+    return await actionHandler(
+      "registration/naics_categories",
+      "GET",
+      "/operations"
+    );
+  } catch (error) {
+    // Handle the error here or rethrow it to handle it at a higher level
+    throw error;
+  }
+}
+export async function getRegulatedProducts() {
+  try {
+    return await actionHandler(
+      "registration/regulated_products",
+      "GET",
+      "/operations"
     );
   } catch (error) {
     // Handle the error here or rethrow it to handle it at a higher level
@@ -28,7 +52,7 @@ async function getOperation(id: number) {
     return await actionHandler(
       `registration/operations/${id}`,
       "GET",
-      `/operations/${id}`,
+      `/operations/${id}`
     );
   } catch (error) {
     // Handle the error here or rethrow it to handle it at a higher level
@@ -40,6 +64,8 @@ async function getOperation(id: number) {
 export const createOperationSchema = (
   schema: RJSFSchema,
   naicsCodes: { id: number }[],
+  naicsCategories: { id: number }[],
+  regulatedProducts: { id: number }[]
 ) => {
   const localSchema = JSON.parse(JSON.stringify(schema));
   // naics codes
@@ -48,12 +74,25 @@ export const createOperationSchema = (
     localSchema.properties.operationPage1.properties.naics_code_id.enum =
       naicsCodes.map((code) => code.id);
   }
+  // naics categories
+  if (Array.isArray(naicsCategories)) {
+    // add to nested operation page1 schema
+    localSchema.properties.operationPage1.properties.naics_category_id.enum =
+      naicsCategories.map((category) => category.id);
+  }
+  // regulated products
+  if (Array.isArray(regulatedProducts)) {
+    localSchema.properties.operationPage1.properties.regulated_products.items.enum =
+      regulatedProducts.map((product) => product.id);
+  }
   return localSchema;
 };
 
 // 🧩 Main component
 export default async function Operation({ numRow }: { numRow?: number }) {
   const codes = await getNaicsCodes();
+  const categories = await getNaicsCategories();
+  const products = await getRegulatedProducts();
 
   let operation: any;
 
@@ -67,7 +106,12 @@ export default async function Operation({ numRow }: { numRow?: number }) {
         <Review operation={operation} />
       ) : null}
       <OperationsForm
-        schema={createOperationSchema(operationSchema, codes)}
+        schema={createOperationSchema(
+          operationSchema,
+          codes,
+          categories,
+          products
+        )}
         formData={operation as OperationsFormData}
       />
     </>
