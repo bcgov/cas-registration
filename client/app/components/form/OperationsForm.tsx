@@ -22,7 +22,7 @@ export default function OperationsForm({ formData, schema }: Props) {
   const [error, setError] = useState(undefined);
   const router = useRouter();
   const params = useParams();
-  const formSection = parseInt(params?.formSection as string) - 1;
+  const formSection = parseInt(params?.formSection as string);
   const operationId = params?.operation;
   const isCreate = params?.operation === "0";
 
@@ -48,8 +48,8 @@ export default function OperationsForm({ formData, schema }: Props) {
     reporting_activities: "",
   };
   const formSectionList = Object.keys(schema.properties as any);
-  const isNotFinalStep = formSection !== formSectionList.length - 1;
-  const isFinalStep = formSection === formSectionList.length - 1;
+  const isNotFinalStep = formSection !== formSectionList.length;
+  const isFinalStep = formSection === formSectionList.length;
 
   return (
     <>
@@ -110,12 +110,10 @@ export default function OperationsForm({ formData, schema }: Props) {
               return;
             }
 
-            router.replace(
-              `/dashboard/operations/${operation}/${formSection + 1}`,
-            );
+            router.replace(`/dashboard/operations/${operation}/${formSection}`);
             if (isNotFinalStep) {
               router.push(
-                `/dashboard/operations/${operation}/${formSection + 2}`,
+                `/dashboard/operations/${operation}/${formSection + 1}`,
               );
               return;
             }

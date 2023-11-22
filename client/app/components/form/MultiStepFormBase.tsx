@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useParams } from "next/navigation";
 import { RJSFSchema } from "@rjsf/utils";
 import { Alert } from "@mui/material";
@@ -33,7 +32,6 @@ const MultiStepFormBase = ({
 }: MultiStepFormProps) => {
   const params = useParams();
   const formSection = parseInt(params?.formSection as string) - 1;
-  const [formState, setFormState] = useState(formData || {});
 
   const formSectionList = Object.keys(schema.properties as any);
   const mapSectionTitles = formSectionList.map(
@@ -53,13 +51,7 @@ const MultiStepFormBase = ({
         uiSchema={uiSchema}
         readonly={readonly}
         onSubmit={onSubmit}
-        formData={formState}
-        onChange={(e) => {
-          setFormState({
-            ...formState,
-            ...e.formData,
-          });
-        }}
+        formData={formData}
       >
         {error && <Alert severity="error">{error}</Alert>}
         <MultiStepButtons
