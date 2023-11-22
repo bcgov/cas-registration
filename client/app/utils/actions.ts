@@ -9,48 +9,8 @@ In a separate file (Client and Server Components), for reusability.
 */
 "use server";
 import { revalidatePath } from "next/cache";
-import { OperationsFormData } from "@/app/components/form/OperationsForm";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-
-/**
- * Creates a submit handler function that sends a request to the specified API endpoint
- * and returns the response as a JSON object.
- * @param method The HTTP method to use for the request (GET, POST, PUT, DELETE, PATCH).
- * @param apiUrl The relative URL of the API endpoint to send the request to.
- * @param pathToRevalidate The path of the data to revalidate after the request is complete.
- * @param formData Optional data to include in the request body (for POST, PUT, and PATCH requests).
- * @returns A Promise that resolves to the JSON response from the API endpoint, or an error object if the request fails.
- */
-export const createSubmitHandler = async (
-  method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH",
-  apiUrl: string,
-  pathToRevalidate: string,
-  formData?: any,
-) => {
-  try {
-    const response: Response = await fetch(`${process.env.API_URL}${apiUrl}`, {
-      method,
-      body: JSON.stringify(formData),
-    });
-
-    const res = await response.json();
-
-    if (!response.ok) {
-      // eslint-disable-next-line no-console
-      console.log(
-        `CreateSubmitHandler: ${response.status} ${response.statusText}`,
-      );
-
-      // detail is a custom error message from the server
-      throw new Error(res.message || "Failed to submit data.");
-    }
-    revalidatePath(pathToRevalidate);
-    return { res: res, ok: response.ok };
-  } catch (err: any) {
-    return { error: err.message };
-  }
-};
 
 export const requestAccessHandler = async (
   operatorId: number
@@ -72,18 +32,24 @@ export const requestAccessHandler = async (
   }
 };
 
-
+/**
+ * Generic action handler that sends a request to the specified API endpoint
+ * and returns the response as a JSON object.
+ * @param apiUrl The relative URL of the API endpoint to send the request to.
+ * @param method The HTTP method to use for the request (GET, POST, PUT, DELETE, PATCH).
+ * @param pathToRevalidate The path of the data to revalidate after the request is complete.
+ * @param options Optional data to include in the request body (example: body for POST, PUT, and PATCH requests, overriding cache control).
+ * @param options Optional data to include in the request body (example: body for POST, PUT, and PATCH requests, overriding cache control).
+ * @returns A Promise that resolves to the JSON response from the API endpoint, or an error object if the request fails.
+ */
 export async function actionHandler(
   endpoint: string,
   method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH",
   pathToRevalidate: string,
-  options: RequestInit = {},
-  latency: number = 0, // Default latency is 0 milliseconds,
+  options: RequestInit = {}
 
 ) {
   try {
-    // Simulate latency
-    if (latency > 0) await new Promise((r) => setTimeout(r, latency));
 
     const session = await getServerSession(authOptions);
 

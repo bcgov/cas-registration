@@ -9,7 +9,7 @@ import SubmitButton from "@/app/components/form/SubmitButton";
 import ComboBox from "@/app/components/form/widgets/ComboBox";
 import { selectOperatorUiSchema } from "@/app/utils/jsonSchema/selectOperator";
 import { useRouter } from "next/navigation";
-import { createSubmitHandler } from "@/app/utils/actions";
+import { actionHandler } from "@/app/utils/actions";
 import { SelectOperatorFormData } from "@/app/components/form/formDataTypes";
 
 interface SelectOperatorFormProps {
@@ -36,9 +36,9 @@ export default function SelectOperatorForm({
       validator={validator}
       formData={formData}
       onSubmit={async (data: { formData?: SelectOperatorFormData }) => {
-        const response = await createSubmitHandler(
-          "GET",
+        const response = await actionHandler(
           `registration/select-operator/${data.formData?.operator_id}`,
+          "GET",
           "/dashboard/select-operator",
         );
 
