@@ -3,11 +3,11 @@ import SelectOperatorForm from "@/app/components/form/SelectOperatorForm";
 import Link from "next/link";
 import { selectOperatorSchema } from "@/app/utils/jsonSchema/selectOperator";
 import { BC_GOV_LINKS_COLOR } from "@/app/styles/colors";
-import { fetchAPI } from "@/app/utils/api";
+import { actionHandler } from "@/app/utils/actions";
 import { Operator } from "@/app/components/routes/select-operator/form/types";
 
 async function getOperators() {
-  return fetchAPI("registration/operators");
+  return actionHandler("registration/operators", "GET", '/operators');
 }
 
 // 🛠️ Function to create a select operator schema with updated enum values
