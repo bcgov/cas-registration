@@ -3,6 +3,7 @@ from django.test import TestCase
 from django.utils import timezone
 
 from registration.models import (
+    BusinessRole,
     DocumentType,
     Document,
     NaicsCode,
@@ -204,6 +205,7 @@ class UserModelTest(BaseTestCase):
             ("user_guid", "user guid", None, None),
             ("business_guid", "business guid", None, None),
             ("documents", "documents", None, 2),
+            ("app_role", "app role", None, None),
         ]
 
         for (
@@ -266,7 +268,7 @@ class ContactModelTest(BaseTestCase):
                 None,
                 None,
             ),  # Replace None with the actual max length if available
-            ("role", "role", 1000, None),
+            ("business_role", "business role", None, None),
         ]
 
         for (
@@ -295,7 +297,6 @@ class ContactModelTest(BaseTestCase):
             postal_code="V7W 3R4",
             email="john.doe@example.com",
             phone_number="9876543210",
-            role=UserAndContactCommonInfo.Roles.AUTHORIZED_SIGNING_OFFICER,
         )
 
         with self.assertRaises(IntegrityError):
@@ -543,3 +544,45 @@ class AppRoleModelTest(BaseTestCase):
                     self.assertFieldMaxLength(self.test_app_role, field_name, expected_max_length)
                 if expected_relations_count is not None:
                     self.assertHasMultipleRelationsInField(self.test_app_role, field_name, expected_relations_count)
+
+    def test_initial_data(self):
+        expected_roles = sorted(['cas_admin', 'cas_analyst', 'cas_pending', 'industry_user'])
+        existing_roles = sorted(list(AppRole.objects.values_list('role_name', flat=True)))
+
+        self.assertEqual(len(existing_roles), len(expected_roles))
+        self.assertEqual(existing_roles, expected_roles)
+
+
+class BusinessRoleModelTest(BaseTestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.test_business_role = BusinessRole.objects.first()
+
+    def test_field_labels_and_max_lengths(self):
+        # (field_name, expected_label, expected_max_length, expected_relations_count)
+        field_data = [("role_name", "role name", 100, None), ("role_description", "role description", 1000, None)]
+
+        for (
+            field_name,
+            expected_label,
+            expected_max_length,
+            expected_relations_count,
+        ) in field_data:
+            with self.subTest(field_name=field_name):
+                if expected_label:
+                    self.assertFieldLabel(self.test_business_role, field_name, expected_label)
+                if expected_max_length is not None:
+                    self.assertFieldMaxLength(self.test_business_role, field_name, expected_max_length)
+                if expected_relations_count is not None:
+                    self.assertHasMultipleRelationsInField(
+                        self.test_business_role, field_name, expected_relations_count
+                    )
+
+    def test_initial_data(self):
+        expected_roles = sorted(
+            ['Senior Officer', 'Operation Representative', 'Authorized Signing Officer', 'Operation Registration Lead']
+        )
+        existing_roles = sorted(list(BusinessRole.objects.values_list('role_name', flat=True)))
+
+        self.assertEqual(len(existing_roles), len(expected_roles))
+        self.assertEqual(existing_roles, expected_roles)
