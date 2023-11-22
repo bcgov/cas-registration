@@ -127,9 +127,7 @@ const FileWidget = ({
   );
 
   const disabledColour =
-    disabled || readonly
-      ? "text-dark-grey-bg-color"
-      : "text-bc-gov-links-color";
+    disabled || readonly ? "text-bc-bg-dark-grey" : "text-bc-link-blue";
 
   /*   File input styling options are limited so we are attaching a ref to it, hiding it and triggering it with a styled button. */
   return (
