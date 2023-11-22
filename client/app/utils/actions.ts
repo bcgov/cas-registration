@@ -12,26 +12,6 @@ import { revalidatePath } from "next/cache";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
-export const requestAccessHandler = async (
-  operatorId: number
-) => {
-  try {
-    const response: Response = await fetch(
-      process.env.API_URL + "registration/select-operator/request-access", {
-        method: "POST",
-        body: JSON.stringify({"operator_id": operatorId}),
-      },
-    );
-    if (!response.ok) {
-      throw new Error("Failed to save data.");
-    }
-    revalidatePath(`/dashboard/select-operator/confirm/${operatorId}`);
-    return await response.json();
-  } catch (err: any) {
-    return { error: err.message };
-  }
-};
-
 /**
  * Generic action handler that sends a request to the specified API endpoint
  * and returns the response as a JSON object.
