@@ -20,6 +20,15 @@ from registration.models import (
 )
 
 
+OPERATOR_FIXTURE = ("operator.json",)
+USER_FIXTURE = ("user.json",)
+OPERATION_FIXTURE = ("operation.json",)
+NAICS_CODE_FIXTURE = ("naicsCode.json",)
+NAICS_CATEGORY_FIXTURE = ("naicsCategory.json",)
+CONTACT_FIXTURE = ("contact.json",)
+DOCUMENT_FIXTURE = ("document.json",)
+
+
 class BaseTestCase(TestCase):
     def assertFieldLabel(self, instance, field_name, expected_label):
         field = instance._meta.get_field(field_name)
@@ -56,7 +65,7 @@ class DocumentTypeModelTest(BaseTestCase):
 
 
 class DocumentModelTest(BaseTestCase):
-    fixtures = ["document.json"]
+    fixtures = [DOCUMENT_FIXTURE]
 
     @classmethod
     def setUpTestData(cls):
@@ -167,7 +176,7 @@ class ReportingActivityModelTest(BaseTestCase):
 
 
 class UserModelTest(BaseTestCase):
-    fixtures = ["user.json", "document.json"]
+    fixtures = [USER_FIXTURE, DOCUMENT_FIXTURE]
 
     @classmethod
     def setUpTestData(cls):
@@ -232,7 +241,7 @@ class UserModelTest(BaseTestCase):
 
 
 class ContactModelTest(BaseTestCase):
-    fixtures = ["contact.json", "document.json"]
+    fixtures = [CONTACT_FIXTURE, DOCUMENT_FIXTURE]
 
     @classmethod
     def setUpTestData(cls):
@@ -294,7 +303,7 @@ class ContactModelTest(BaseTestCase):
 
 
 class OperatorModelTest(BaseTestCase):
-    fixtures = ["operator.json", "user.json", "document.json", "contact.json"]
+    fixtures = [OPERATOR_FIXTURE, USER_FIXTURE, CONTACT_FIXTURE, DOCUMENT_FIXTURE]
 
     @classmethod
     def setUpTestData(cls):
@@ -343,6 +352,9 @@ class OperatorModelTest(BaseTestCase):
             ("website", "website", 200, None),
             ("documents", "documents", None, 2),
             ("contacts", "contacts", None, 2),
+            ("status", "status", 1000, None),
+            ("verified_by", "verified by", None, None),
+            ("verified_at", "verified at", None, None),
         ]
 
         for (
@@ -361,7 +373,7 @@ class OperatorModelTest(BaseTestCase):
 
 
 class ParentChildOperatorModelTest(BaseTestCase):
-    fixtures = ["operator.json"]
+    fixtures = [OPERATOR_FIXTURE]
 
     @classmethod
     def setUpTestData(cls):
@@ -392,7 +404,7 @@ class ParentChildOperatorModelTest(BaseTestCase):
 
 
 class UserOperatorModelTest(BaseTestCase):
-    fixtures = ["user.json", "operator.json"]
+    fixtures = [OPERATOR_FIXTURE, USER_FIXTURE]
 
     @classmethod
     def setUpTestData(cls):
@@ -426,13 +438,13 @@ class UserOperatorModelTest(BaseTestCase):
 
 class OperationModelTest(BaseTestCase):
     fixtures = [
-        "user.json",
-        "operator.json",
-        "operation.json",
-        "naicsCode.json",
-        "naicsCategory.json",
-        "contact.json",
-        "document.json",
+        USER_FIXTURE,
+        OPERATOR_FIXTURE,
+        OPERATION_FIXTURE,
+        NAICS_CODE_FIXTURE,
+        NAICS_CATEGORY_FIXTURE,
+        CONTACT_FIXTURE,
+        DOCUMENT_FIXTURE,
     ]
 
     @classmethod
