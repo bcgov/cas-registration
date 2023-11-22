@@ -37,13 +37,19 @@ function FieldTemplate({
     <Grid
       container
       sx={{
-        marginBottom: "8px",
+        marginBottom: {
+          xs: "16px",
+          sm: "8px",
+        },
         display: "flex",
-        alignItems: "center",
+        alignItems: {
+          xs: "flex-start",
+          sm: "center",
+        },
       }}
     >
       {label && (
-        <Grid item xs={12} md={3} order={{ xs: 2, md: 1 }} className="w-10">
+        <Grid item xs={12} md={3} className="w-10">
           <label htmlFor={id} className="font-bold">
             {label}
             {required ? "*" : null}
@@ -54,7 +60,6 @@ function FieldTemplate({
         item
         xs={12}
         md={4}
-        order={{ xs: 1, md: 2 }}
         sx={{
           position: "relative",
           display: "flex",
