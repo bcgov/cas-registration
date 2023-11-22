@@ -231,7 +231,6 @@ export const operationUiSchema = {
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
   "ui:options": { label: false },
-  /*   "ui:ObjectFieldTemplate": GroupedObjectFieldTemplateWrapper, */
   id: {
     "ui:widget": "hidden",
   },
