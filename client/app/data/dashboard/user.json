@@ -2,7 +2,7 @@
   {
     "title": "User Access Management",
     "content": "Slightly more to say than what Card A has to say",
-    "links": [{ "title": "Users", "href": "/dashboard/tbd" }]
+    "links": [{ "title": "Users", "href": "/dashboard/access-requests" }]
   },
   {
     "title": "Operation Access Management",
