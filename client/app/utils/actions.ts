@@ -13,32 +13,6 @@ import { OperationsFormData } from "@/app/components/form/OperationsForm";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
-export const operationSubmitHandler = async (
-  formData: OperationsFormData,
-  method: "POST" | "PUT",
-  submit: boolean,
-) => {
-  try {
-    const response = await fetch(
-      method === "POST"
-        ? process.env.API_URL + "registration/operations"
-        : process.env.API_URL +
-            `registration/operations/${formData.id}?submit=${submit}`,
-      {
-        method,
-        body: JSON.stringify(formData),
-      },
-    );
-    if (!response.ok) {
-      throw new Error("Failed to save data.");
-    }
-    revalidatePath("/operations");
-    return await response.json();
-  } catch (err: any) {
-    return { error: err.message };
-  }
-};
-
 /**
  * Creates a submit handler function that sends a request to the specified API endpoint
  * and returns the response as a JSON object.
