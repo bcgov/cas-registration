@@ -16,10 +16,22 @@ def init_app_role_data(apps, schema_monitor):
     AppRole = apps.get_model('registration', 'AppRole')
     AppRole.objects.bulk_create(
         [
-            AppRole(role_name='cas_admin', role_description='Admin user from the BC Government. Highest government user privilege.'),
-            AppRole(role_name='cas_analyst', role_description='Analyst user from the BC Government. Lower access privileges than cas_admin.'),
-            AppRole(role_name='cas_pending', role_description='Pending BC Government user. Requires access to be granted by an admin before having any privileges.'),
-            AppRole(role_name='industry_user', role_description='External user from industry. All industry_users have the same initial privileges. Their privileges for individual operators are further defined and applied in the user_operator through table.'),
+            AppRole(
+                role_name='cas_admin',
+                role_description='Admin user from the BC Government. Highest government user privilege.',
+            ),
+            AppRole(
+                role_name='cas_analyst',
+                role_description='Analyst user from the BC Government. Lower access privileges than cas_admin.',
+            ),
+            AppRole(
+                role_name='cas_pending',
+                role_description='Pending BC Government user. Requires access to be granted by an admin before having any privileges.',
+            ),
+            AppRole(
+                role_name='industry_user',
+                role_description='External user from industry. All industry_users have the same initial privileges. Their privileges for individual operators are further defined and applied in the user_operator through table.',
+            ),
         ]
     )
 
@@ -30,7 +42,6 @@ def reverse_init_app_role_data(apps, schema_monitor):
     '''
     AppRole = apps.get_model('registration', 'AppRole')
     AppRole.objects.filter(role_name__in=['cas_admin', 'cas_analyst', 'cas_pending', 'industry_user']).delete()
-
 
 
 def init_business_role_data(apps, schema_monitor):
@@ -65,7 +76,14 @@ def reverse_init_business_role_data(apps, schema_monitor):
     Remove initial data from erc.business_role
     '''
     BusinessRole = apps.get_model('registration', 'BusinessRole')
-    BusinessRole.objects.filter(role_name__in=['Senior Officer', 'Operation Representative', 'Authorized Signing Officer', 'Operation Registration Lead']).delete()
+    BusinessRole.objects.filter(
+        role_name__in=[
+            'Senior Officer',
+            'Operation Representative',
+            'Authorized Signing Officer',
+            'Operation Registration Lead',
+        ]
+    ).delete()
 
 
 class Migration(migrations.Migration):
