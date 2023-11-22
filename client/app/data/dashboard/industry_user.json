@@ -5,11 +5,6 @@
     "links": [{ "title": "Operator ➤", "href": "/dashboard/select-operator" }]
   },
   {
-    "title": "Operations Registration",
-    "content": "Apply to qualify for carbon tax exemption.",
-    "links": [{ "title": "Operations ➤", "href": "/dashboard/operations" }]
-  },
-  {
     "title": "Report a Problem",
     "content": "Something wrong?",
     "links": [{ "title": "Tell the team ➤", "href": "/dashboard/tbd" }]
