@@ -7,7 +7,7 @@ import { actionHandler } from "@/app/utils/actions";
 import { Operator } from "@/app/components/routes/select-operator/form/types";
 
 async function getOperators() {
-  return actionHandler("registration/operators", "GET", '/operators');
+  return actionHandler("registration/operators", "GET", '/dashboard/select-operator');
 }
 
 // 🛠️ Function to create a select operator schema with updated enum values

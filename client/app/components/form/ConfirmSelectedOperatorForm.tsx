@@ -26,7 +26,7 @@ export default function ConfirmSelectedOperatorForm({
         const response = await actionHandler(
           "registration/select-operator/request-access",
           "POST",
-          `/dashboard/select-operator/confirm/${operator_id}`,
+          `/dashboard/select-operator/user-operator/${operator_id}`,
           {
             body:
               JSON.stringify({
@@ -40,7 +40,7 @@ export default function ConfirmSelectedOperatorForm({
         }
 
         push(
-          `/dashboard/select-operator/user-operator/${response.res.user_operator_id}`,
+          `/dashboard/select-operator/user-operator/${response.user_operator_id}`,
         );
       }}
       className="flex flex-col w-64 mx-auto gap-2"
