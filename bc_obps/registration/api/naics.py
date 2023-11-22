@@ -14,6 +14,12 @@ def list_naics_codes(request):
     return qs
 
 
+@router.get("/naics_categories", response=List[NaicsCategorySchema])
+def list_naics_categories(request):
+    qs = NaicsCategory.objects.all()
+    return qs
+
+
 ##### POST #####
 
 

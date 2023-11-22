@@ -24,9 +24,11 @@ const operationPage1: RJSFSchema = {
       title: "Primary NAICS Code",
     },
     regulated_products: {
-      type: "string",
+      type: "array",
+      items: {
+        type: "number",
+      },
       title: "Regulated Product Name(s)",
-      readOnly: true,
     },
     reporting_activities: {
       type: "string",

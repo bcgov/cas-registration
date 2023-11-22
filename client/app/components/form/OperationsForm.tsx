@@ -45,7 +45,6 @@ export default function OperationsForm({ formData, schema }: Props) {
     verified_at: formData?.verified_at?.toString(),
     verified_by: formData?.verified_by?.toString(),
     //  temporary handling of required many-to-many fields, will be addressed in #138
-    regulated_products: "",
     reporting_activities: "",
   };
   const formSectionList = Object.keys(schema.properties as any);
@@ -107,11 +106,10 @@ export default function OperationsForm({ formData, schema }: Props) {
                   //  temporary handling of required many-to-many fields, will be addressed in #138
                   documents: [],
                   contacts: [],
-                  regulated_products: [],
                   reporting_activities: [],
                   operator_id: 1,
                 }),
-              },
+              }
             );
 
             const operation = response?.id || operationId;
@@ -124,7 +122,7 @@ export default function OperationsForm({ formData, schema }: Props) {
             router.replace(`/dashboard/operations/${operation}/${formSection}`);
             if (isNotFinalStep) {
               router.push(
-                `/dashboard/operations/${operation}/${formSection + 1}`,
+                `/dashboard/operations/${operation}/${formSection + 1}`
               );
               return;
             }
