@@ -195,6 +195,12 @@ class Contact(UserAndContactCommonInfo):
 class Operator(models.Model):
     """Operator model"""
 
+    class Statuses(models.TextChoices):
+        DRAFT = "Draft"
+        PENDING = "Pending"
+        APPROVED = "Approved"
+        REJECTED = "Rejected"
+
     legal_name = models.CharField(max_length=1000, db_comment="The legal name of an operator")
     trade_name = models.CharField(max_length=1000, blank=True, db_comment="The trade name of an operator")
     cra_business_number = models.IntegerField(db_comment="The CRA business number of an operator")
@@ -238,6 +244,25 @@ class Operator(models.Model):
         Contact,
         blank=True,
         related_name="operator_contacts",
+    )
+    status = models.CharField(
+        max_length=1000,
+        choices=Statuses.choices,
+        default=Statuses.DRAFT,
+        db_comment="The status of an operator in the app (e.g. draft)",
+    )
+    verified_at = models.DateTimeField(
+        db_comment="The time an operator was verified by an IRC user",
+        blank=True,
+        null=True,
+    )
+    verified_by = models.ForeignKey(
+        User,
+        on_delete=models.DO_NOTHING,
+        db_comment="The IRC user who verified the operator",
+        blank=True,
+        null=True,
+        related_name="operators_verified_by",
     )
 
     class Meta:
@@ -312,17 +337,17 @@ class UserOperator(models.Model):
         max_length=1000,
         choices=Statuses.choices,
         default=Statuses.DRAFT,
-        db_comment="The status of an operator in the app (e.g. pending review)",
+        db_comment="The status of an user operator in the app (e.g. pending review)",
     )
     verified_at = models.DateTimeField(
-        db_comment="The time an operator was verified by an IRC user",
+        db_comment="The time a user operator was verified by an IRC user",
         blank=True,
         null=True,
     )
     verified_by = models.ForeignKey(
         User,
         on_delete=models.DO_NOTHING,
-        db_comment="The IRC user who verified the operator",
+        db_comment="The IRC user who verified the user operator",
         blank=True,
         null=True,
         related_name="user_operators_verified_by",
