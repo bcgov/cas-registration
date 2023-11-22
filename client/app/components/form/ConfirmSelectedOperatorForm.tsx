@@ -28,10 +28,9 @@ export default function ConfirmSelectedOperatorForm({
           "POST",
           `/dashboard/select-operator/user-operator/${operator_id}`,
           {
-            body:
-              JSON.stringify({
-                operator_id,
-            })
+            body: JSON.stringify({
+              operator_id,
+            }),
           },
         );
         if (response.error) {

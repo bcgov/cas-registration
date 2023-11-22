@@ -4,7 +4,11 @@ import UserOperatorForm from "@/app/components/form/UserOperatorForm";
 import { UserOperatorFormData } from "@/app/components/form/formDataTypes";
 
 export async function getUserOperatorFormData(id: number) {
-  return actionHandler(`registration/select-operator/user-operator/${id}`, "GET", `/user-operator/${id}`);
+  return actionHandler(
+    `registration/select-operator/user-operator/${id}`,
+    "GET",
+    `/user-operator/${id}`,
+  );
 }
 
 export default async function UserOperator({

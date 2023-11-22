@@ -23,9 +23,8 @@ export default function Review(props: Readonly<Props>) {
       "PUT",
       `dashboard/operations/${props.operation.id}`,
       {
-        body:
-          JSON.stringify(props.operation)
-      }
+        body: JSON.stringify(props.operation),
+      },
     );
     if (response.error) {
       setErrorList([{ message: response.error }]);
@@ -44,7 +43,7 @@ export default function Review(props: Readonly<Props>) {
       `dashboard/operations/${props.operation.id}`,
       {
         body: JSON.stringify(props.operation),
-      }
+      },
     );
     if (response.error) {
       setErrorList([{ message: response.error }]);
