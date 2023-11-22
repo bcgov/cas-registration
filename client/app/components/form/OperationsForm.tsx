@@ -137,27 +137,29 @@ export default function OperationsForm({ formData, schema }: Props) {
       }
       schema={props.schema}
       onSubmit={async (data: { formData?: any }) => {
-        const method = props.formData ? "PUT" : "POST"
-        const endpoint = props.formData ? `registration/operations/${props.formData.id}` : "registration/operations"
-        const pathToRevalidate = props.formData ? `dashboard/operations/${props.formData.id}` : "dashboard/operations"
+        const method = props.formData ? "PUT" : "POST";
+        const endpoint = props.formData
+          ? `registration/operations/${props.formData.id}`
+          : "registration/operations";
+        const pathToRevalidate = props.formData
+          ? `dashboard/operations/${props.formData.id}`
+          : "dashboard/operations";
         const response = await actionHandler(
           endpoint,
           method,
           pathToRevalidate,
           {
-            body:
-              JSON.stringify({
-                ...props.formData,
-                ...data.formData,
-                //  temporary handling of required many-to-many fields, will be addressed in #138
-                documents: [],
-                contacts: [],
-                regulated_products: [],
-                reporting_activities: [],
-                operator_id: 1,
-              })
+            body: JSON.stringify({
+              ...props.formData,
+              ...data.formData,
+              //  temporary handling of required many-to-many fields, will be addressed in #138
+              documents: [],
+              contacts: [],
+              regulated_products: [],
+              reporting_activities: [],
+              operator_id: 1,
+            }),
           },
-
         );
         if (response.error) {
           setError(response.error);

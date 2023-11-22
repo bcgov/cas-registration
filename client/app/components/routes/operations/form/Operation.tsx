@@ -11,7 +11,11 @@ import { Status } from "@/app/types";
 // 🛠️ Function to fetch NAICS codes
 async function getNaicsCodes() {
   try {
-    return await actionHandler("registration/naics_codes", "GET", "/dashboard/operations");
+    return await actionHandler(
+      "registration/naics_codes",
+      "GET",
+      "/dashboard/operations",
+    );
   } catch (error) {
     // Handle the error here or rethrow it to handle it at a higher level
     throw error;
@@ -19,7 +23,11 @@ async function getNaicsCodes() {
 }
 export async function getNaicsCategories() {
   try {
-    return await actionHandler("registration/naics_categories", "GET", '/operations');
+    return await actionHandler(
+      "registration/naics_categories",
+      "GET",
+      "/operations",
+    );
   } catch (error) {
     // Handle the error here or rethrow it to handle it at a higher level
     throw error;
@@ -29,7 +37,11 @@ export async function getNaicsCategories() {
 // 🛠️ Function to fetch an operation by ID
 async function getOperation(id: number) {
   try {
-    return await actionHandler(`registration/operations/${id}`, 'GET', `/operations/${id}`);
+    return await actionHandler(
+      `registration/operations/${id}`,
+      "GET",
+      `/operations/${id}`,
+    );
   } catch (error) {
     // Handle the error here or rethrow it to handle it at a higher level
     throw error;

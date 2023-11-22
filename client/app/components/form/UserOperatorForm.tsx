@@ -37,9 +37,8 @@ export default function UserOperatorForm({
           "PUT",
           `/dashboard/select-operator/user-operator/${userOperatorId}`,
           {
-            body:
-              JSON.stringify(data.formData),
-          }
+            body: JSON.stringify(data.formData),
+          },
         );
 
         if (response.error) {

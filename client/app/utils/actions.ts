@@ -26,21 +26,19 @@ export async function actionHandler(
   endpoint: string,
   method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH",
   pathToRevalidate: string,
-  options: RequestInit = {}
-
+  options: RequestInit = {},
 ) {
   try {
-
     const session = await getServerSession(authOptions);
 
     const defaultOptions: RequestInit = {
       cache: "no-store", // Default cache option
       method,
       headers: new Headers({
-        'Authorization': JSON.stringify({
-        'user_guid': session?.user?.user_guid
-        })
-      })
+        Authorization: JSON.stringify({
+          user_guid: session?.user?.user_guid,
+        }),
+      }),
     };
 
     const mergedOptions: RequestInit = {

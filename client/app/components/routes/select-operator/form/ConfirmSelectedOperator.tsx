@@ -5,7 +5,11 @@ import { Operator } from "@/app/components/routes/select-operator/form/types";
 import ConfirmSelectedOperatorForm from "@/app/components/form/ConfirmSelectedOperatorForm";
 
 export async function getOperator(id: number) {
-  return actionHandler(`registration/operators/${id}`, "GET", `dashboard/select-operator/confirm/${id}`);
+  return actionHandler(
+    `registration/operators/${id}`,
+    "GET",
+    `dashboard/select-operator/confirm/${id}`,
+  );
 }
 
 export default async function ConfirmSelectedOperator({

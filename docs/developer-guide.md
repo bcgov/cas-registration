@@ -58,7 +58,6 @@ A single `actionHandler()` function has been created in `utils/actions` to handl
 - The path to revalidate (where was it called from on the frontend)
 - An optional options object (for example, the body of a POST request goes in this object)
 
-
 ### NextAuth with Keycloak
 
 NextAuth.js is a library specifically designed to handle authentication solutions in Next.js apps, see [NextAuth.js repo](https://github.com/nextauthjs/next-auth) to learn more.
