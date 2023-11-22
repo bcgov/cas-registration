@@ -5,8 +5,11 @@ import { operationUiSchema } from "@/app/utils/jsonSchema/operations";
 import MultiStepFormBase from "@/app/components/form/MultiStepFormBase";
 import { Button } from "@mui/material";
 import Link from "next/link";
-import { operationSubmitHandler } from "@/app/utils/actions";
 import { useParams, useRouter } from "next/navigation";
+import React from "react";
+import { Alert } from "@mui/material";
+import SubmitButton from "./SubmitButton";
+import { operationSubmitHandler, actionHandler } from "@/app/utils/actions";
 
 export interface OperationsFormData {
   [key: string]: any;
@@ -123,5 +126,52 @@ export default function OperationsForm({ formData, schema }: Props) {
         />
       )}
     </>
+  ) : (
+    <FormBase
+      // Because this is an RJSF form, we can't use the Nextjs13.5 pattern of putting a function in the action prop and using the useFormState hook.
+      readonly={
+        props.formData?.status === "Registered" ||
+        props.formData?.status === "Pending"
+          ? true
+          : false
+      }
+      schema={props.schema}
+      onSubmit={async (data: { formData?: any }) => {
+        const method = props.formData ? "PUT" : "POST"
+        const endpoint = props.formData ? `registration/operations/${props.formData.id}` : "registration/operations"
+        const response = await actionHandler(
+          endpoint,
+          method,
+          "/operations",
+          {
+            body:
+              JSON.stringify({
+                ...props.formData,
+                ...data.formData,
+                //  temporary handling of required many-to-many fields, will be addressed in #138
+                documents: [],
+                contacts: [],
+                regulated_products: [],
+                reporting_activities: [],
+                operator_id: 1,
+              })
+          },
+
+        );
+        if (response.error) {
+          setError(response.error);
+          return;
+        }
+        setOperationName(response.name);
+      }}
+      uiSchema={operationUiSchema}
+      formData={existingFormData}
+      formContext={{
+        groupSchema: operationsGroupSchema,
+      }}
+    >
+      {error && <Alert severity="error">{error}</Alert>}
+      <SubmitButton label="submit" />
+    </FormBase>
   );
 }
