@@ -1,5 +1,3 @@
-"use client";
-
 interface MultiStepHeaderProps {
   step: number;
   steps: string[];
