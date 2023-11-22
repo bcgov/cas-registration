@@ -22,7 +22,7 @@ const MultiStepHeader = ({ step, steps }: MultiStepHeaderProps) => {
           >
             <div
               key={s}
-              className={`leading-12 text-center rounded-full w-12 h-12 text-white font-bold ${bgColor}`}
+              className={`leading-12 text-center rounded-full min-w-[3rem] min-h-[3rem] w-12 h-12 text-white font-bold ${bgColor}`}
             >
               {i + 1}
             </div>
