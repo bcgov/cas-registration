@@ -3,14 +3,15 @@ import OperationsForm, {
 } from "@/app/components/form/OperationsForm";
 import { operationSchema } from "@/app/utils/jsonSchema/operations";
 import { RJSFSchema } from "@rjsf/utils";
-import { fetchAPI } from "@/app/utils/api";
+// import { actionHandler } from "@/app/utils/api";
+import { actionHandler } from "@/app/utils/actions";
 import Review from "./Review";
 import { Status } from "@/app/types";
 
 // 🛠️ Function to fetch NAICS codes
 async function getNaicsCodes() {
   try {
-    return await fetchAPI("registration/naics_codes");
+    return await actionHandler("registration/naics_codes", "GET", "/dashboard/operations");
   } catch (error) {
     // Handle the error here or rethrow it to handle it at a higher level
     throw error;
@@ -18,7 +19,7 @@ async function getNaicsCodes() {
 }
 export async function getNaicsCategories() {
   try {
-    return await fetchAPI("registration/naics_categories");
+    return await actionHandler("registration/naics_categories", "GET", '/operations');
   } catch (error) {
     // Handle the error here or rethrow it to handle it at a higher level
     throw error;
@@ -28,7 +29,7 @@ export async function getNaicsCategories() {
 // 🛠️ Function to fetch an operation by ID
 async function getOperation(id: number) {
   try {
-    return await fetchAPI(`registration/operations/${id}`);
+    return await actionHandler(`registration/operations/${id}`, 'GET', `/operations/${id}`);
   } catch (error) {
     // Handle the error here or rethrow it to handle it at a higher level
     throw error;
