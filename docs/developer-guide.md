@@ -51,6 +51,14 @@ You can use fetch with:
 With Server Actions, you don't need to manually create API endpoints. Instead, you define asynchronous server functions that can be called directly from Server Components or from Client Components and forms.
 **Note**: Defining, or importing, a server action in a (parent) Server Component allows the (child) form `action` to function without JavaScript, providing progressive enhancement.
 
+A single `actionHandler()` function has been created in `utils/actions` to handle all requests to the backend at a single point. This action handler takes:
+
+- A backend endpoint
+- A method (GET,PUT,POST,DELETE,PATCH)
+- The path to revalidate (where was it called from on the frontend)
+- An optional options object (for example, the body of a POST request goes in this object)
+
+
 ### NextAuth with Keycloak
 
 NextAuth.js is a library specifically designed to handle authentication solutions in Next.js apps, see [NextAuth.js repo](https://github.com/nextauthjs/next-auth) to learn more.
