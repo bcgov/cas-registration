@@ -18,7 +18,6 @@ interface Props {
 }
 
 export default function OperationsForm({ formData, schema }: Props) {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [operationName, setOperationName] = useState("");
   const [error, setError] = useState(undefined);
   const router = useRouter();
