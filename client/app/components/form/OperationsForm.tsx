@@ -139,10 +139,11 @@ export default function OperationsForm({ formData, schema }: Props) {
       onSubmit={async (data: { formData?: any }) => {
         const method = props.formData ? "PUT" : "POST"
         const endpoint = props.formData ? `registration/operations/${props.formData.id}` : "registration/operations"
+        const pathToRevalidate = props.formData ? `dashboard/operations/${props.formData.id}` : "dashboard/operations"
         const response = await actionHandler(
           endpoint,
           method,
-          "/operations",
+          pathToRevalidate,
           {
             body:
               JSON.stringify({
