@@ -575,7 +575,7 @@ class Migration(migrations.Migration):
                             ('approved', 'Approved'),
                             ('rejected', 'Rejected'),
                         ],
-                        db_comment='The status of an user operator in the app (e.g. pending review)',
+                        db_comment='The status of a user operator in the app (e.g. pending review)',
                         default='draft',
                         max_length=1000,
                     ),

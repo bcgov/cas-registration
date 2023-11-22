@@ -337,7 +337,7 @@ class UserOperator(models.Model):
         max_length=1000,
         choices=Statuses.choices,
         default=Statuses.DRAFT,
-        db_comment="The status of an user operator in the app (e.g. pending review)",
+        db_comment="The status of a user operator in the app (e.g. pending review)",
     )
     verified_at = models.DateTimeField(
         db_comment="The time a user operator was verified by an IRC user",
