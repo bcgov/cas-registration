@@ -520,7 +520,7 @@ class Migration(migrations.Migration):
                             ('rejected', 'Rejected'),
                         ],
                         db_comment='The status of an operation in the app (e.g. pending review)',
-                        default='pending',
+                        default='not_registered',
                         max_length=1000,
                     ),
                 ),
