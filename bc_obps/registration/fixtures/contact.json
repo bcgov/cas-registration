@@ -3,7 +3,7 @@
     "model": "registration.contact",
     "pk": 1,
     "fields": {
-      "role": "senior_officer",
+      "business_role": "Senior Officer",
       "first_name": "John",
       "last_name": "Doe",
       "position_title": "Senior Officer",
@@ -19,7 +19,7 @@
     "model": "registration.contact",
     "pk": 2,
     "fields": {
-      "role": "authorized_signing_officer",
+      "business_role": "Authorized Signing Officer",
       "first_name": "Jane",
       "last_name": "Smith",
       "position_title": "Authorized Signing Officer",
