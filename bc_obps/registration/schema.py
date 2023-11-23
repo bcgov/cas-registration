@@ -117,6 +117,8 @@ class UserOperatorOut(Schema):
     mailing_province: str
     mailing_postal_code: str
     website: Optional[str]
+    status: str
+    role: str
 
 
 class UserOperatorIn(UserOperatorOut):

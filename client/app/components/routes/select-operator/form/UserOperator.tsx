@@ -2,7 +2,6 @@ import { actionHandler } from "@/app/utils/actions";
 import { userOperatorSchema } from "@/app/utils/jsonSchema/userOperator";
 import UserOperatorForm from "@/app/components/form/UserOperatorForm";
 import Review from "@/app/components/routes/access-requests/form/Review";
-import { UserOperatorFormData } from "@/app/components/form/formDataTypes";
 
 export async function getUserOperatorFormData(id: number) {
   return actionHandler(
@@ -17,8 +16,7 @@ export default async function UserOperator({
 }: {
   params: { id: number };
 }) {
-  const formData: UserOperatorFormData | { error: string } =
-    await getUserOperatorFormData(params.id);
+  const formData: any = await getUserOperatorFormData(params.id);
 
   if ("error" in formData) {
     return <div>Server Error. Please try again later.</div>;
@@ -26,10 +24,7 @@ export default async function UserOperator({
 
   return (
     <>
-      {/* {formData?.status === Status.PENDING ? (
-        <Review formData={formData} />
-      ) : null} */}
-      <Review formData={formData} />
+      <Review userOperator={formData} userOperatorId={params.id} />
       <UserOperatorForm
         schema={userOperatorSchema}
         formData={formData}

@@ -1,4 +1,6 @@
 export interface UserOperatorFormData {
+  role: string;
+  status: string;
   first_name: string;
   last_name: string;
   position_title: string;

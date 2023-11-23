@@ -22,6 +22,7 @@ from registration.schema import Message, UserOperatorIn, UserOperatorOut, Select
 )
 def get_user_operator(request, user_operator_id: int):
     user_operator = get_object_or_404(UserOperator, id=user_operator_id)
+    user_operator_fields_dict = model_to_dict(user_operator, fields=["role", "status"])
     user: User = user_operator.user
     user_related_fields_dict = model_to_dict(
         user,
@@ -57,11 +58,14 @@ def get_user_operator(request, user_operator_id: int):
         ],
     )
 
-    return {
+    user_operator = {
+        **user_operator_fields_dict,
         **user_related_fields_dict,
         "phone_number": user.phone_number.as_e164,  # PhoneNumberField returns a PhoneNumber object and we need a string
         **operator_related_fields_dict,
     }
+
+    return user_operator
 
 
 @router.get("/user-operators", response=List[UserOperatorListOut])
@@ -101,7 +105,6 @@ def list_user_operators(request):
                 **operator_related_fields_dict,
             }
         )
-
     return user_operator_list
 
 
