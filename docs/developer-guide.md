@@ -214,7 +214,7 @@ You can download the artifacts from the CI job and run the tests locally by foll
 [Shell Plus](https://django-extensions.readthedocs.io/en/latest/shell_plus.html) is a Django extension that allows you to run a shell with all of your Django models and settings pre-loaded. This is useful for debugging and testing.
 You can run Shell Plus with the following command:
 
-```shell
+```bash
 > python manage.py shell_plus
 ```
 
@@ -223,3 +223,14 @@ You can run Shell Plus with the following command:
 Our project benefits from Sonarcloud integration, a static code analysis tool seamlessly integrated with Github. This integration is configured to automatically run on every pull request, identifying and reporting code issues for quick resolution. You can view the results and analysis insights on the [Sonarcloud dashboard](https://sonarcloud.io/project/overview?id=bcgov_cas-registration).
 
 For advanced customization and configuration, we've provided a `.sonarcloud.properties` file. This file allows you to fine-tune Sonarcloud analysis settings to suit your project's unique requirements and code quality standards.
+
+### Entity-Relationship Diagram (ERD) Generation
+
+We use [Mermaid](https://mermaid-js.github.io/mermaid/) to create ERD diagrams for our data models. The [django-diagram](https://github.com/nick-solly/django-diagram) package enables the generation of ERD diagrams specific to our Django models.
+
+To generate the most recent ERD diagram, navigate to the `bc_obps` directory (where the `manage.py` file is located) and execute the following command in your terminal:
+
+```bash
+poetry run python -m django_diagram --app=registration --output=../erd.md --settings=bc_obps.settings
+
+```
