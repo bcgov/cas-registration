@@ -10,8 +10,10 @@ const TextWidget: React.FC<WidgetProps> = ({
   onChange,
   rawErrors,
   readonly,
+  schema,
   value,
 }) => {
+  const type = schema.type === "number" ? "number" : "text";
   const handleChange = (e: { target: { value: string } }) => {
     const val = e.target.value;
     onChange(val === "" ? undefined : val);
@@ -36,6 +38,7 @@ const TextWidget: React.FC<WidgetProps> = ({
       value={value}
       onChange={handleChange}
       sx={styles}
+      type={type}
     />
   );
 };
