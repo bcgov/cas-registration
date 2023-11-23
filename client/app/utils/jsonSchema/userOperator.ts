@@ -185,6 +185,7 @@ export const userOperatorSchema: RJSFSchema = {
           so_phone_number: {
             type: "string",
             title: "Phone Number",
+            format: "phone",
           },
           // temporary handling of many-to-many fields, will be addressed in #138
           // "Proof of authority of operation representative from a SO": {
