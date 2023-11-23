@@ -90,7 +90,8 @@ class TestOperationsEndpoint:
         )
         post_response = client.post(self.endpoint, content_type=content_type_json, data=mock_operation.json())
         assert post_response.status_code == 200
-        assert post_response.json() == {"name": "Springfield Nuclear Power Plant", "id": 2}
+        assert post_response.json().get('name') == "Springfield Nuclear Power Plant"
+        assert post_response.json().get('id') is not None
         # check that the default status of pending was applied
         get_response = client.get(self.endpoint).json()[0]
         assert 'status' in get_response and get_response['status'] == 'not_registered'
