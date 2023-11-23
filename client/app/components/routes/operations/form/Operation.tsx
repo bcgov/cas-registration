@@ -44,15 +44,15 @@ export const createOperationSchema = (
   const localSchema = JSON.parse(JSON.stringify(schema));
   // naics codes
   if (Array.isArray(naicsCodes)) {
-    localSchema.properties.naics_code_id.enum = naicsCodes.map(
-      (code) => code.id,
-    );
+    // add to nested operation page1 schema
+    localSchema.properties.operationPage1.properties.naics_code_id.enum =
+      naicsCodes.map((code) => code.id);
   }
   // naics categories
   if (Array.isArray(naicsCategories)) {
-    localSchema.properties.naics_category_id.enum = naicsCategories.map(
-      (category) => category.id,
-    );
+    // add to nested operation page1 schema
+    localSchema.properties.operationPage1.properties.naics_category_id.enum =
+      naicsCategories.map((category) => category.id);
   }
   return localSchema;
 };

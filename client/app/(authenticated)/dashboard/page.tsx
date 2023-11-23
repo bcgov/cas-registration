@@ -48,7 +48,6 @@ export default function Page() {
       fetchData();
     }
   }, [role]); // dependencies array
-
   return (
     <div>
       {/* 🪜 create a grid layout using container prop to create a container that wraps the grid items */}

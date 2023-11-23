@@ -1,10 +1,9 @@
 import FieldTemplate from "@/app/styles/rjsf/FieldTemplate";
-import GroupTitleFieldTemplate from "@/app/styles/rjsf/GroupTitleFieldTemplate";
-import GroupedObjectFieldTemplateWrapper from "@/app/styles/rjsf/GroupedObjectFieldTemplateWrapper";
 import { RJSFSchema } from "@rjsf/utils";
 
-export const operationSchema: RJSFSchema = {
+const operationPage1: RJSFSchema = {
   type: "object",
+  title: "Operation General Information",
   required: [
     "name",
     "type",
@@ -12,7 +11,6 @@ export const operationSchema: RJSFSchema = {
     "naics_category_id",
     // keys that are questions aren't saved in the database
   ],
-  title: "Operation",
   properties: {
     verified_by: { type: "string" },
     verified_at: { type: "string" },
@@ -52,14 +50,7 @@ export const operationSchema: RJSFSchema = {
       type: "boolean",
       default: false,
     },
-    "Does the operation have multiple operators?": {
-      type: "boolean",
-      default: false,
-    },
-    "Would you like to add an exemption ID application lead?": {
-      type: "boolean",
-      default: false,
-    },
+
     // temp handling of many to many, will be addressed in #138
     // petrinex_ids: { type: "number", title: "Petrinex IDs" },
 
@@ -132,6 +123,19 @@ export const operationSchema: RJSFSchema = {
         required: ["opt_in"],
       },
     },
+  ],
+};
+
+const operationPage2: RJSFSchema = {
+  type: "object",
+  title: "Multiple Operators Information",
+  properties: {
+    "Does the operation have multiple operators?": {
+      type: "boolean",
+      default: false,
+    },
+  },
+  allOf: [
     {
       if: {
         properties: {
@@ -153,6 +157,19 @@ export const operationSchema: RJSFSchema = {
         },
       },
     },
+  ],
+};
+
+const operationPage3: RJSFSchema = {
+  type: "object",
+  title: "Application Lead",
+  properties: {
+    "Would you like to add an exemption ID application lead?": {
+      type: "boolean",
+      default: false,
+    },
+  },
+  allOf: [
     {
       if: {
         properties: {
@@ -173,8 +190,21 @@ export const operationSchema: RJSFSchema = {
   ],
 };
 
+export const operationSchema: RJSFSchema = {
+  type: "object",
+  title: "Operation",
+  properties: {
+    operationPage1,
+    operationPage2,
+    operationPage3,
+  },
+};
+
 export const operationUiSchema = {
   "ui:order": [
+    "operationPage1",
+    "operationPage2",
+    "operationPage3",
     "name",
     "type",
     "naics_code_id",
@@ -198,10 +228,9 @@ export const operationUiSchema = {
     "verified_by",
     "verified_at",
   ],
-  "ui:ObjectFieldTemplate": GroupedObjectFieldTemplateWrapper,
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
-  "ui:TitleFieldTemplate": GroupTitleFieldTemplate,
+  "ui:options": { label: false },
   id: {
     "ui:widget": "hidden",
   },
@@ -242,45 +271,3 @@ export const operationUiSchema = {
     "ui:widget": "FileWidget",
   },
 };
-
-export const operationsGroupSchema = [
-  {
-    title: "Step 1: Operation General Information",
-    fields: [
-      "name",
-      "type",
-      "naics_code_id",
-      "naics_category_id",
-      "regulated_products",
-      "reporting_activities",
-      "process_flow_diagram",
-      "boundary_map",
-      "Did you submit a GHG emissions report for reporting year 2022?",
-      "previous_year_attributable_emissions",
-      "swrs_facility_id",
-      "bcghg_id",
-      "current_year_estimated_emissions",
-      "opt_in",
-      "opt_in_signed_statuatory_declaration",
-    ],
-  },
-  {
-    title:
-      "Step 2: Operation Operator Information - If operation has multiple operators",
-    fields: [
-      "Does the operation have multiple operators?",
-      "operators",
-      "percentage_ownership",
-    ],
-  },
-  {
-    title: "Step 3: Operation Representative (OR) Information",
-    fields: [
-      'Is the operation representative the same as mentioned in "admin access request"?',
-      "Is the senior officer the same as in the operation form?",
-      "so",
-      "Would you like to add an exemption ID application lead?",
-      "application_lead",
-    ],
-  },
-];

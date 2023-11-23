@@ -36,7 +36,6 @@ export default async function Operations() {
       </div>
     );
   }
-
   // Transform the fetched data into rows for the DataGrid component
   const rows: GridRowsProp =
     operations.length > 0

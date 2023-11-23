@@ -49,14 +49,15 @@ def create_operation(request, payload: OperationIn):
             delattr(payload, field_name)
 
     operation = Operation.objects.create(**payload.dict())
-    return {"name": operation.name}
+
+    return {"name": operation.name, "id": operation.id}
 
 
 ##### PUT #####
 
 
 @router.put("/operations/{operation_id}")
-def update_operation(request, operation_id: int, payload: OperationIn):
+def update_operation(request, operation_id: int, submit, payload: OperationIn):
     operation = get_object_or_404(Operation, id=operation_id)
     if "operator" in payload.dict():
         operator = payload.dict()["operator"]
@@ -87,8 +88,10 @@ def update_operation(request, operation_id: int, payload: OperationIn):
     for attr, value in payload.dict().items():
         if attr not in excluded_fields:
             setattr(operation, attr, value)
-        # set the operation status to 'pending' on update
-        operation.status = "Pending"
+            # set the operation status to 'pending' on update
+        if submit == "true":
+            operation.status = Operation.Statuses.PENDING
+
         operation.save()
         return {"name": operation.name}
 
