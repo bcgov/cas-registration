@@ -1,12 +1,16 @@
 import { GridRowsProp } from "@mui/x-data-grid";
 
-import { fetchAPI } from "@/app/utils/api";
+import { actionHandler } from "@/app/utils/actions";
 import DataGrid from "@/app/components/datagrid/DataGrid";
 
 // 🛠️ Function to fetch operations
 async function getOperations() {
   try {
-    return await fetchAPI("registration/operations");
+    return await actionHandler(
+      "registration/operations",
+      "GET",
+      "/dashboard/operations",
+    );
   } catch (error) {
     // Handle the error here or rethrow it to handle it at a higher level
     throw error;

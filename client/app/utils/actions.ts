@@ -9,69 +9,71 @@ In a separate file (Client and Server Components), for reusability.
 */
 "use server";
 import { revalidatePath } from "next/cache";
-import { OperationsFormData } from "@/app/components/form/OperationsForm";
-
-export const operationSubmitHandler = async (
-  formData: OperationsFormData,
-  method: "POST" | "PUT",
-  submit: boolean,
-) => {
-  try {
-    const response = await fetch(
-      method === "POST"
-        ? process.env.API_URL + "registration/operations"
-        : process.env.API_URL +
-            `registration/operations/${formData.id}?submit=${submit}`,
-      {
-        method,
-        body: JSON.stringify(formData),
-      },
-    );
-    if (!response.ok) {
-      throw new Error("Failed to save data.");
-    }
-    revalidatePath("/operations");
-    return await response.json();
-  } catch (err: any) {
-    return { error: err.message };
-  }
-};
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 /**
- * Creates a submit handler function that sends a request to the specified API endpoint
+ * Generic action handler that sends a request to the specified API endpoint
  * and returns the response as a JSON object.
- * @param method The HTTP method to use for the request (GET, POST, PUT, DELETE, PATCH).
  * @param apiUrl The relative URL of the API endpoint to send the request to.
+ * @param method The HTTP method to use for the request (GET, POST, PUT, DELETE, PATCH).
  * @param pathToRevalidate The path of the data to revalidate after the request is complete.
- * @param formData Optional data to include in the request body (for POST, PUT, and PATCH requests).
+ * @param options Optional data to include in the request body (example: body for POST, PUT, and PATCH requests, overriding cache control).
+ * @param options Optional data to include in the request body (example: body for POST, PUT, and PATCH requests, overriding cache control).
  * @returns A Promise that resolves to the JSON response from the API endpoint, or an error object if the request fails.
  */
-export const createSubmitHandler = async (
+export async function actionHandler(
+  endpoint: string,
   method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH",
-  apiUrl: string,
   pathToRevalidate: string,
-  formData?: any,
-) => {
+  options: RequestInit = {},
+) {
   try {
-    const response: Response = await fetch(`${process.env.API_URL}${apiUrl}`, {
-      method,
-      body: JSON.stringify(formData),
-    });
+    const session = await getServerSession(authOptions);
 
-    const res = await response.json();
+    const defaultOptions: RequestInit = {
+      cache: "no-store", // Default cache option
+      method,
+      headers: new Headers({
+        Authorization: JSON.stringify({
+          user_guid: session?.user?.user_guid,
+        }),
+      }),
+    };
+
+    const mergedOptions: RequestInit = {
+      ...defaultOptions,
+      ...options, // Merge the provided options, allowing cache to be overridden
+    };
+
+    const response = await fetch(
+      `${process.env.API_URL}${endpoint}`,
+      mergedOptions,
+    );
 
     if (!response.ok) {
-      // eslint-disable-next-line no-console
-      console.log(
-        `CreateSubmitHandler: ${response.status} ${response.statusText}`,
-      );
-
-      // detail is a custom error message from the server
-      throw new Error(res.message || "Failed to submit data.");
+      // Handle HTTP errors, e.g., response.status is not in the 200-299 range
+      return { error: `HTTP error! Status: ${response.status}` };
     }
+
+    const data = await response.json();
     revalidatePath(pathToRevalidate);
-    return { res: res, ok: response.ok };
-  } catch (err: any) {
-    return { error: err.message };
+    return data;
+  } catch (error: unknown) {
+    // Handle any errors, including network issues
+    if (error instanceof Error) {
+      // eslint-disable-next-line no-console
+      console.error(`An error occurred while fetching ${endpoint}:`, error);
+      return {
+        // eslint-disable-next-line no-console
+        error: `An error occurred while fetching ${endpoint}: ${error.message}`,
+      };
+    } else {
+      // eslint-disable-next-line no-console
+      console.error(`An unknown error occurred while fetching ${endpoint}`);
+      return {
+        error: `An unknown error occurred while fetching ${endpoint}`,
+      };
+    }
   }
-};
+}

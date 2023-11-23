@@ -5,8 +5,9 @@ import { operationUiSchema } from "@/app/utils/jsonSchema/operations";
 import MultiStepFormBase from "@/app/components/form/MultiStepFormBase";
 import { Button } from "@mui/material";
 import Link from "next/link";
-import { operationSubmitHandler } from "@/app/utils/actions";
 import { useParams, useRouter } from "next/navigation";
+import React from "react";
+import { actionHandler } from "@/app/utils/actions";
 
 export interface OperationsFormData {
   [key: string]: any;
@@ -88,19 +89,29 @@ export default function OperationsForm({ formData, schema }: Props) {
           submitEveryStep
           showSubmissionStep
           onSubmit={async (data: { formData?: any }) => {
-            const response = await operationSubmitHandler(
+            const method = isCreate ? "POST" : "PUT";
+            const endpoint = isCreate
+              ? "registration/operations"
+              : `registration/operations/${formData?.id}?submit=${isFinalStep}`;
+            const pathToRevalidate = isCreate
+              ? "dashboard/operations"
+              : `dashboard/operations/${formData?.id}`;
+            const response = await actionHandler(
+              endpoint,
+              method,
+              pathToRevalidate,
               {
-                ...formData,
-                ...data.formData,
-                //  temporary handling of required many-to-many fields, will be addressed in #138
-                documents: [],
-                contacts: [],
-                regulated_products: [],
-                reporting_activities: [],
-                operator_id: 1,
+                body: JSON.stringify({
+                  ...formData,
+                  ...data.formData,
+                  //  temporary handling of required many-to-many fields, will be addressed in #138
+                  documents: [],
+                  contacts: [],
+                  regulated_products: [],
+                  reporting_activities: [],
+                  operator_id: 1,
+                }),
               },
-              isCreate ? "POST" : "PUT",
-              isFinalStep,
             );
 
             const operation = response?.id || operationId;
