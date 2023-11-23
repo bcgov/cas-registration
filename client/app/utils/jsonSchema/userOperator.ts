@@ -12,7 +12,7 @@ import {
 } from "@/app/components/form/titles/userOperatorTitles";
 
 const subheading = {
-  "ui:classNames": "text-bc-gov-primary-brand-color-blue text-start text-lg",
+  "ui:classNames": "text-bc-bg-blue text-start text-lg",
   "ui:FieldTemplate": TitleOnlyFieldTemplate,
 };
 

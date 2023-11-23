@@ -8,10 +8,7 @@ const MultiStepHeader = ({ step, steps }: MultiStepHeaderProps) => {
     <div className="block md:flex flex-row mt-10 mb-6 justify-between w-full">
       {steps.map((s, i) => {
         const isLastStep = i === steps.length - 1;
-        const bgColor =
-          i === step
-            ? "bg-bc-gov-yellow"
-            : "bg-bc-gov-primary-brand-color-blue";
+        const bgColor = i === step ? "bg-bc-yellow" : "bg-bc-primary-blue";
 
         return (
           <div
