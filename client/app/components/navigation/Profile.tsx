@@ -30,18 +30,19 @@ export default function Profile({ name }: { readonly name: string }) {
     }
   }, [session]);
   return (
-    <>
+    <div className="flex items-center">
       <Link
         href="/dashboard/profile"
         sx={{ color: "white", marginRight: "10px" }}
       >
-        <div>{name}</div>
+        <div className="font-bold text-lg underline">{name}</div>
       </Link>
-      <Link href="#" sx={{ color: "white" }}>
+      <Link href="#" sx={{ color: "white", marginLeft: "8px" }}>
         <Button
           aria-label="Log out"
           color="inherit"
-          variant="outlined"
+          variant="text"
+          className="text-lg"
           onClick={() => {
             //keycloak logout then nextauth logout
             keycloakSessionLogOut();
@@ -50,6 +51,6 @@ export default function Profile({ name }: { readonly name: string }) {
           Log Out
         </Button>
       </Link>
-    </>
+    </div>
   );
 }

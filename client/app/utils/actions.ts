@@ -14,12 +14,14 @@ import { OperationsFormData } from "@/app/components/form/OperationsForm";
 export const operationSubmitHandler = async (
   formData: OperationsFormData,
   method: "POST" | "PUT",
+  submit: boolean,
 ) => {
   try {
     const response = await fetch(
       method === "POST"
         ? process.env.API_URL + "registration/operations"
-        : process.env.API_URL + `registration/operations/${formData.id}`,
+        : process.env.API_URL +
+            `registration/operations/${formData.id}?submit=${submit}`,
       {
         method,
         body: JSON.stringify(formData),

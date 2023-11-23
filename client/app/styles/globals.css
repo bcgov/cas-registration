@@ -4,6 +4,12 @@
 @tailwind utilities;
 
 @layer components {
+  a {
+    @apply text-bc-gov-links-color;
+  }
+  .form-heading {
+    @apply text-2xl py-2 w-full font-bold border-solid text-bc-gov-background-color-blue border-bc-gov-background-color-blue border-l-0 border-r-0 mb-4;
+  }
   .form-heading-label {
     /* Selecting label child element so we can pass it in using ui:classNames in the form schema */
     @apply [&>label]:text-2xl [&>label]:py-2 [&>label]:w-full [&>label]:font-bold [&>label]:border-solid [&>label]:text-bc-gov-background-color-blue [&>label]:border-bc-gov-background-color-blue [&>label]:border-l-0 [&>label]:border-r-0 [&>label]:mb-4;
