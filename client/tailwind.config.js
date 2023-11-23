@@ -11,10 +11,13 @@
 import {
   BC_GOV_PRIMARY_BRAND_COLOR_BLUE,
   BC_GOV_BACKGROUND_COLOR_BLUE,
+  BC_GOV_TEXT,
   BC_GOV_LINKS_COLOR,
   BC_GOV_YELLOW,
   DARK_GREY_BG_COLOR,
   LIGHT_GREY_BG_COLOR,
+  BC_GOV_SEMANTICS_RED,
+  BC_GOV_SEMANTICS_GREEN,
 } from "./app/styles/colors";
 
 module.exports = {
@@ -33,12 +36,15 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        "bc-gov-primary-brand-color-blue": BC_GOV_PRIMARY_BRAND_COLOR_BLUE,
-        "bc-gov-background-color-blue": BC_GOV_BACKGROUND_COLOR_BLUE,
-        "bc-gov-links-color": BC_GOV_LINKS_COLOR,
-        "bc-gov-yellow": BC_GOV_YELLOW,
-        "dark-grey-bg-color": DARK_GREY_BG_COLOR,
-        "light-grey-bg-color": LIGHT_GREY_BG_COLOR,
+        "bc-text": BC_GOV_TEXT,
+        "bc-primary-blue": BC_GOV_PRIMARY_BRAND_COLOR_BLUE,
+        "bc-bg-blue": BC_GOV_BACKGROUND_COLOR_BLUE,
+        "bc-link-blue": BC_GOV_LINKS_COLOR,
+        "bc-yellow": BC_GOV_YELLOW,
+        "bc-bg-dark-grey": DARK_GREY_BG_COLOR,
+        "bc-bg-light-grey": LIGHT_GREY_BG_COLOR,
+        "bc-success-green": BC_GOV_SEMANTICS_GREEN,
+        "bc-error-red": BC_GOV_SEMANTICS_RED,
       },
       lineHeight: {
         12: "48px",

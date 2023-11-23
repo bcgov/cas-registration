@@ -90,6 +90,8 @@ Client\middleware implements middleware to secured the app routes based on NextA
 
 ## Styling
 
+[CSS theme guide](/docs/css-theme-guide.md)
+
 ### MUI v5
 
 [Material-UI (MUI)](https://mui.com/material-ui/getting-started/) is a popular open-source UI framework for React applications that is based on Google's Material Design guidelines. It provides a wide range of reusable and customizable components and styles to help you build modern, attractive, and responsive web applications
