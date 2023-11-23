@@ -25,7 +25,7 @@ class DocumentType(models.Model):
 
     name = models.CharField(
         max_length=1000,
-        db_comment="Name of document type (e.g. opt in signed statuatory declaration)",
+        db_comment="Name of document type (e.g. opt in signed statutory declaration)",
     )
 
     class Meta:
@@ -40,7 +40,7 @@ class Document(models.Model):
     type = models.ForeignKey(
         DocumentType,
         on_delete=models.DO_NOTHING,
-        related_name="contacts",
+        related_name="documents",
         db_comment="Type of document, e.g., boundary map",
     )
     description = models.CharField(max_length=1000, db_comment="Description of the document")
@@ -72,7 +72,7 @@ class NaicsCode(models.Model):
 class NaicsCategory(models.Model):
     """NAICS category model"""
 
-    naics_category = models.CharField(max_length=1000, db_comment="The naics_catory name")
+    naics_category = models.CharField(max_length=1000, db_comment="The naics_category name")
 
     class Meta:
         db_table_comment = "Naics categories"
@@ -102,21 +102,6 @@ class ReportingActivity(models.Model):
 class UserAndContactCommonInfo(models.Model):
     """User and contact common information abstract base class"""
 
-    class Roles(models.TextChoices):
-        SENIOR_OFFICER = "senior_officer", "Senior Officer"
-        OPERATION_REPRESENTATIVE = (
-            "operation_representative",
-            "Operation Representative",
-        )
-        AUTHORIZED_SIGNING_OFFICER = (
-            "authorized_signing_officer",
-            "Authorized Signing Officer",
-        )
-        OPERATION_REGISTRATION_LEAD = (
-            "operation_registration_lead",
-            "Operation Registration Lead",
-        )
-
     first_name = models.CharField(max_length=1000, db_comment="A user or contact's first name")
     last_name = models.CharField(max_length=1000, db_comment="A user or contact's last name")
     position_title = models.CharField(max_length=1000, db_comment="A user or contact's position title")
@@ -134,13 +119,6 @@ class UserAndContactCommonInfo(models.Model):
         db_comment="A user or contact's phone number, limited to valid phone numbers",
     )
 
-    role = models.CharField(
-        max_length=1000,
-        choices=Roles.choices,
-        blank=True,
-        db_comment="A user or contact's role with an operation (e.g. senior operator). Certain roles need authority from other roles to do things.",
-    )
-
     class Meta:
         abstract = True
         db_table_comment = "An abstract base class (used for putting common information into a number of other models) containing fields for users and contacts"
@@ -154,12 +132,12 @@ class User(UserAndContactCommonInfo):
     documents = models.ManyToManyField(
         Document,
         blank=True,
-        related_name="user_documents",
+        related_name="users",
     )
     app_role = models.ForeignKey(
         AppRole,
         on_delete=models.DO_NOTHING,
-        related_name="user_app_roles",
+        related_name="users",
         db_comment="The role assigned to this user which defines the permissions the use has.",
     )
 
@@ -174,20 +152,44 @@ class User(UserAndContactCommonInfo):
         ]
 
 
+class BusinessRole(models.Model):
+    """
+    Roles that a Contact can have within an operator/operation
+    """
+
+    role_name = models.CharField(
+        primary_key=True,
+        serialize=False,
+        db_comment='The name identifying the role assigned to a Contact. Also acts as the primary key.',
+        max_length=100,
+    )
+    role_description = models.CharField(db_comment='Description of the business role', max_length=1000)
+
+    class Meta:
+        db_table_comment = "This table contains the definitions for roles within the operator/operation. These roles are used to define the permissions a user has within the operator/operation"
+        db_table = 'erc"."business_role'
+
+
 class Contact(UserAndContactCommonInfo):
     """Contact model"""
 
     documents = models.ManyToManyField(
         Document,
         blank=True,
-        related_name="contact_documents",
+        related_name="contacts",
+    )
+    business_role = models.ForeignKey(
+        BusinessRole,
+        on_delete=models.DO_NOTHING,
+        related_name="contacts",
+        db_comment="The role assigned to this contact which defines the permissions the contact has.",
     )
 
     class Meta:
         db_table_comment = "Contacts (people who don't use the app, e.g. authorized signing officers)"
         db_table = 'erc"."contact'
         indexes = [
-            models.Index(fields=["role"], name="contact_role_idx"),
+            models.Index(fields=["business_role"], name="contact_role_idx"),
         ]
         constraints = [models.UniqueConstraint(fields=["email"], name="contact_email_constraint")]
 
@@ -238,12 +240,12 @@ class Operator(models.Model):
     documents = models.ManyToManyField(
         Document,
         blank=True,
-        related_name="operator_documents",
+        related_name="operators",
     )
     contacts = models.ManyToManyField(
         Contact,
         blank=True,
-        related_name="operator_contacts",
+        related_name="operators",
     )
     status = models.CharField(
         max_length=1000,
@@ -277,13 +279,13 @@ class ParentChildOperator(models.Model):
     parent_operator = models.ForeignKey(
         Operator,
         on_delete=models.DO_NOTHING,
-        related_name="parent_child_operator_parent_operator",
+        related_name="parent_child_operator_parent_operators",
         db_comment="The parent operator of an operator in a parent-child relationship",
     )
     child_operator = models.ForeignKey(
         Operator,
         on_delete=models.DO_NOTHING,
-        related_name="parent_child_operator_child_operator",
+        related_name="parent_child_operator_child_operators",
         db_comment="The child operator of an operator in a parent-child relationship",
     )
     percentage_owned_by_parent_company = models.DecimalField(
@@ -371,13 +373,13 @@ class OperationAndFacilityCommonInfo(models.Model):
         NaicsCode,
         on_delete=models.DO_NOTHING,
         db_comment="An operation or facility's NAICS code",
-        related_name="operations_facilities_naics_code",
+        related_name="operations_and_facilities",
     )
     naics_category = models.ForeignKey(
         NaicsCategory,
         on_delete=models.DO_NOTHING,
         db_comment="An operation or facility's NAICS category",
-        related_name="operations_facilities_naics_catetories",
+        related_name="operations_and_facilities",
     )
 
     previous_year_attributable_emissions = models.DecimalField(
@@ -408,12 +410,12 @@ class OperationAndFacilityCommonInfo(models.Model):
     regulated_products = models.ManyToManyField(
         RegulatedProduct,
         blank=True,
-        related_name="operations_facilities_regulated_products",
+        related_name="operations_and_facilities",
     )
     reporting_activities = models.ManyToManyField(
         ReportingActivity,
         blank=True,
-        related_name="operations_facilities_reporting_activity",
+        related_name="operations_and_facilities",
     )
 
     class Meta:
@@ -454,11 +456,11 @@ class Operation(OperationAndFacilityCommonInfo):
     documents = models.ManyToManyField(
         Document,
         blank=True,
-        related_name="operation_documents",
+        related_name="operations",
     )
     contacts = models.ManyToManyField(
         Contact,
-        related_name="operation_contacts",
+        related_name="operations",
     )
     status = models.CharField(
         max_length=1000,

@@ -3,7 +3,7 @@ from typing import Optional
 from django.shortcuts import get_object_or_404
 from django.forms import model_to_dict
 from django.core.exceptions import ValidationError
-from registration.models import Operator, User, UserOperator, Contact, ParentChildOperator
+from registration.models import BusinessRole, Operator, User, UserOperator, Contact, ParentChildOperator
 from registration.utils import update_model_instance
 from ninja.responses import codes_4xx
 from registration.schema import Message, UserOperatorIn, UserOperatorOut, SelectOperatorIn
@@ -95,7 +95,8 @@ def create_user_operator_request(request, user_operator_id: int, payload: UserOp
         updated_user_instance: User = update_model_instance(user, user_related_fields, payload_dict)
 
         if is_senior_officer:
-            updated_user_instance.role = User.Roles.SENIOR_OFFICER
+            # updated_user_instance.role = User.Roles.SENIOR_OFFICER (This will be replaced with contact in PR #250)
+            pass
         else:
             # Create a new Contact instance for the Senior Officer
             contact_fields_mapping = {
@@ -109,7 +110,7 @@ def create_user_operator_request(request, user_operator_id: int, payload: UserOp
                 "so_email": "email",
                 "so_phone_number": "phone_number",
             }
-            contact_instance: Contact = Contact(role=Contact.Roles.SENIOR_OFFICER)
+            contact_instance: Contact = Contact(business_role=BusinessRole.objects.get(name="Senior Officer"))
             senior_officer_contact: Contact = update_model_instance(
                 contact_instance, contact_fields_mapping, payload_dict
             )
