@@ -6,7 +6,7 @@ authors = ["Andrea Williams <andrea.williams@gov.bc.ca>"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
-Django = "^4.2.4"
+Django = "^4.2.7"
 python-dotenv = "^1.0.0"
 django-ninja = "^0.22.2"
 psycopg = "^3.1.10"
