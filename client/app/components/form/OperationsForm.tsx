@@ -7,8 +7,6 @@ import { Button } from "@mui/material";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import React from "react";
-import { Alert } from "@mui/material";
-import SubmitButton from "./SubmitButton";
 import { actionHandler } from "@/app/utils/actions";
 
 export interface OperationsFormData {
@@ -94,7 +92,7 @@ export default function OperationsForm({ formData, schema }: Props) {
             const method = isCreate ? "POST" : "PUT";
             const endpoint = isCreate
               ? "registration/operations"
-              : `registration/operations/${formData?.id}?submit=${isFinalStep}`
+              : `registration/operations/${formData?.id}?submit=${isFinalStep}`;
             const pathToRevalidate = isCreate
               ? "dashboard/operations"
               : `dashboard/operations/${formData?.id}`;
