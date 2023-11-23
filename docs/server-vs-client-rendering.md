@@ -10,4 +10,4 @@ Here's how to create a new page:
 - write a component, and inside it await the fetching function
 - if the page includes a form, we need to use a mix of client and server forms and functions. RJSF isn't compatible with server components, so RJSF forms must be client components imported into server components. To ensure form submission still happens on the server, the RJSF form `onSubmit` prop should be a server action.
 
-See the `operations` folder for a page example. `OperationsForm` and `submitHandlers` are an example of RJSF with server actions.
+See the `operations` folder for a page example. `OperationsForm` and `actionHandler` are an example of RJSF with server actions.

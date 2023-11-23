@@ -1,11 +1,15 @@
 import Link from "next/link";
 import { BC_GOV_LINKS_COLOR } from "@/app/styles/colors";
-import { fetchAPI } from "@/app/utils/api";
+import { actionHandler } from "@/app/utils/actions";
 import { Operator } from "@/app/components/routes/select-operator/form/types";
 import ConfirmSelectedOperatorForm from "@/app/components/form/ConfirmSelectedOperatorForm";
 
 export async function getOperator(id: number) {
-  return fetchAPI(`registration/operators/${id}`);
+  return actionHandler(
+    `registration/operators/${id}`,
+    "GET",
+    `dashboard/select-operator/confirm/${id}`,
+  );
 }
 
 export default async function ConfirmSelectedOperator({

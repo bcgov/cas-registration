@@ -6,7 +6,7 @@ import SubmitButton from "./SubmitButton";
 import { Alert } from "@mui/material";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { createSubmitHandler } from "@/app/utils/actions";
+import { actionHandler } from "@/app/utils/actions";
 
 interface ConfirmSelectedOperatorFormProps {
   operator_id: number;
@@ -23,12 +23,14 @@ export default function ConfirmSelectedOperatorForm({
       schema={{}}
       validator={validator}
       onSubmit={async () => {
-        const response = await createSubmitHandler(
-          "POST",
+        const response = await actionHandler(
           "registration/select-operator/request-access",
-          `/dashboard/select-operator/confirm/${operator_id}`,
+          "POST",
+          `/dashboard/select-operator/user-operator/${operator_id}`,
           {
-            operator_id,
+            body: JSON.stringify({
+              operator_id,
+            }),
           },
         );
         if (response.error) {
@@ -37,7 +39,7 @@ export default function ConfirmSelectedOperatorForm({
         }
 
         push(
-          `/dashboard/select-operator/user-operator/${response.res.user_operator_id}`,
+          `/dashboard/select-operator/user-operator/${response.user_operator_id}`,
         );
       }}
       className="flex flex-col w-64 mx-auto gap-2"

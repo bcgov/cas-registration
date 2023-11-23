@@ -8,7 +8,7 @@ import { Alert, Button } from "@mui/material";
 import SubmitButton from "./SubmitButton";
 import { useRouter } from "next/navigation";
 import { userOperatorUiSchema } from "@/app/utils/jsonSchema/userOperator";
-import { createSubmitHandler } from "@/app/utils/actions";
+import { actionHandler } from "@/app/utils/actions";
 import { UserOperatorFormData } from "@/app/components/form/formDataTypes";
 
 export interface UserOperatorFormProps {
@@ -32,11 +32,13 @@ export default function UserOperatorForm({
       showErrorList={false}
       formData={formData}
       onSubmit={async (data: { formData?: UserOperatorFormData }) => {
-        const response = await createSubmitHandler(
-          "PUT",
+        const response = await actionHandler(
           `registration/select-operator/user-operator/${userOperatorId}`,
+          "PUT",
           `/dashboard/select-operator/user-operator/${userOperatorId}`,
-          data.formData,
+          {
+            body: JSON.stringify(data.formData),
+          },
         );
 
         if (response.error) {
