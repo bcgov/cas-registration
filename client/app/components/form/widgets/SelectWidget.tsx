@@ -5,11 +5,7 @@ import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import { WidgetProps } from "@rjsf/utils/lib/types";
-import {
-  BC_GOV_LINKS_COLOR,
-  DARK_GREY_BG_COLOR,
-  BC_GOV_SEMANTICS_RED,
-} from "@/app/styles/colors";
+import { DARK_GREY_BG_COLOR, BC_GOV_SEMANTICS_RED } from "@/app/styles/colors";
 
 const SelectWidget: React.FC<WidgetProps> = (props) => {
   const {
@@ -42,13 +38,6 @@ const SelectWidget: React.FC<WidgetProps> = (props) => {
       borderColor: DARK_GREY_BG_COLOR,
     },
     "& .MuiOutlinedInput-notchedOutline": {
-      borderColor: borderColor,
-    },
-    "&:hover .MuiOutlinedInput-notchedOutline": {
-      borderColor: BC_GOV_LINKS_COLOR,
-      borderWidth: "1px",
-    },
-    "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
       borderColor: borderColor,
     },
   };
