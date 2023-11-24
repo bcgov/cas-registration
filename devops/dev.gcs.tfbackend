@@ -1,3 +1,0 @@
-bucket = "d193ca-dev-state"
-prefix = "terraform/state"
-credentials = "/etc/gcp/credentials.json"
