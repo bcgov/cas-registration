@@ -45,7 +45,18 @@ export async function getRegulatedProducts() {
     throw error;
   }
 }
-
+export async function getReportingActivities() {
+  try {
+    return await actionHandler(
+      "registration/reporting_activities",
+      "GET",
+      "/operations"
+    );
+  } catch (error) {
+    // Handle the error here or rethrow it to handle it at a higher level
+    throw error;
+  }
+}
 // 🛠️ Function to fetch an operation by ID
 async function getOperation(id: number) {
   try {
@@ -65,7 +76,8 @@ export const createOperationSchema = (
   schema: RJSFSchema,
   naicsCodes: { id: number }[],
   naicsCategories: { id: number }[],
-  regulatedProducts: { id: number }[]
+  regulatedProducts: { id: number }[],
+  reportingActivities: { id: number }[]
 ) => {
   const localSchema = JSON.parse(JSON.stringify(schema));
   // naics codes
@@ -85,6 +97,11 @@ export const createOperationSchema = (
     localSchema.properties.operationPage1.properties.regulated_products.items.enum =
       regulatedProducts.map((product) => product.id);
   }
+  // reporting activities
+  if (Array.isArray(reportingActivities)) {
+    localSchema.properties.operationPage1.properties.reporting_activities.items.enum =
+      reportingActivities.map((product) => product.id);
+  }
   return localSchema;
 };
 
@@ -93,6 +110,7 @@ export default async function Operation({ numRow }: { numRow?: number }) {
   const codes = await getNaicsCodes();
   const categories = await getNaicsCategories();
   const products = await getRegulatedProducts();
+  const activities = await getReportingActivities();
 
   let operation: any;
 
@@ -110,7 +128,8 @@ export default async function Operation({ numRow }: { numRow?: number }) {
           operationSchema,
           codes,
           categories,
-          products
+          products,
+          activities
         )}
         formData={operation as OperationsFormData}
       />

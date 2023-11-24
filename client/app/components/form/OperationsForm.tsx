@@ -44,8 +44,6 @@ export default function OperationsForm({ formData, schema }: Props) {
       formData?.previous_year_attributable_emissions ? true : false,
     verified_at: formData?.verified_at?.toString(),
     verified_by: formData?.verified_by?.toString(),
-    //  temporary handling of required many-to-many fields, will be addressed in #138
-    reporting_activities: "",
   };
   const formSectionList = Object.keys(schema.properties as any);
   const isNotFinalStep = formSection !== formSectionList.length;
@@ -106,10 +104,9 @@ export default function OperationsForm({ formData, schema }: Props) {
                   //  temporary handling of required many-to-many fields, will be addressed in #138
                   documents: [],
                   contacts: [],
-                  reporting_activities: [],
                   operator_id: 1,
                 }),
-              }
+              },
             );
 
             const operation = response?.id || operationId;
@@ -122,7 +119,7 @@ export default function OperationsForm({ formData, schema }: Props) {
             router.replace(`/dashboard/operations/${operation}/${formSection}`);
             if (isNotFinalStep) {
               router.push(
-                `/dashboard/operations/${operation}/${formSection + 1}`
+                `/dashboard/operations/${operation}/${formSection + 1}`,
               );
               return;
             }

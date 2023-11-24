@@ -31,9 +31,11 @@ const operationPage1: RJSFSchema = {
       title: "Regulated Product Name(s)",
     },
     reporting_activities: {
-      type: "string",
+      type: "array",
+      items: {
+        type: "number",
+      },
       title: "Reporting Activities",
-      readOnly: true,
     },
     process_flow_diagram: {
       type: "string",
