@@ -1,7 +1,7 @@
 from typing import Optional
 from ninja import Field, Schema
 from ninja import ModelSchema
-from .models import Operation, Operator, NaicsCode, NaicsCategory, RegulatedProduct
+from .models import Operation, Operator, NaicsCode, NaicsCategory, RegulatedProduct, ReportingActivity
 from datetime import date
 
 
@@ -39,6 +39,17 @@ class RegulatedProductSchema(ModelSchema):
 
     class Config:
         model = RegulatedProduct
+        model_fields = "__all__"
+
+
+# Reporting activity schemas
+class ReportingActivitySchema(ModelSchema):
+    """
+    Schema for the ReportingActivity model
+    """
+
+    class Config:
+        model = ReportingActivity
         model_fields = "__all__"
 
 
