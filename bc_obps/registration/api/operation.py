@@ -30,7 +30,6 @@ def get_operation(request, operation_id: int):
 
 @router.post("/operations")
 def create_operation(request, payload: OperationIn):
-
     # application_lead_related_fields = extract_fields_from_dict(payload, [
     #     "al_first_name",
     #     "al_last_name",
@@ -59,9 +58,9 @@ def create_operation(request, payload: OperationIn):
             "verified_by",
             "application_lead",
             "status",
-            "regulated_products",
-            "reporting_activities",
-            "documents",
+            # "regulated_products",
+            # "reporting_activities",
+            # "documents",
             # "operator_id",
             # "naics_code_id",
             # "naics_category_id",
@@ -80,12 +79,10 @@ def create_operation(request, payload: OperationIn):
             operation_related_fields[field_name] = obj
             # setattr(operation_related_fields, field_name, obj)
     print('operation_related_fields', operation_related_fields)
-    breakpoint()
-    operation = Operation.objects.create(operation_related_fields)
-    for product_id in payload.regulated_products:
-        operation.regulated_products.add(product_id)  # Adds each product
-    for activity_id in payload.reporting_activities:
-        operation.reporting_activities.add(activity_id)  # Adds each activity
+    operation = Operation.objects.create(**operation_related_fields)
+    operation.regulated_products.set(payload.regulated_products)
+    operation.reporting_activities.set(payload.reporting_activities)
+    operation.documents.set(payload.documents)
 
     # Contact.objects.create(application_lead_related_fields)
     return {"name": operation.name, "id": operation.id}
@@ -96,7 +93,6 @@ def create_operation(request, payload: OperationIn):
 
 @router.put("/operations/{operation_id}")
 def update_operation(request, operation_id: int, submit, payload: OperationIn):
-    breakpoint()
     operation = get_object_or_404(Operation, id=operation_id)
     if "operator" in payload.dict():
         operator = payload.dict()["operator"]
@@ -114,7 +110,6 @@ def update_operation(request, operation_id: int, submit, payload: OperationIn):
         # Assign the naics_category instance to the operation
         payload.naics_category = nc
     if "Would you like to add an exemption ID application lead?" in payload.dict():
-        breakpoint()
         # Create a new Contact instance for the application lead
         contact_fields_mapping = {
             "al_first_name": "first_name",
@@ -134,7 +129,6 @@ def update_operation(request, operation_id: int, submit, payload: OperationIn):
         application_lead_contact.save()
         payload.application_lead = application_lead_contact
 
-    breakpoint()
     # Update other attributes as needed
     excluded_fields = [
         "operator",
