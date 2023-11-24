@@ -10,6 +10,7 @@ from registration.models import (
     Operation,
     ParentChildOperator,
     AppRole,
+    ReportingActivity,
 )
 
 admin.site.register(AppRole)
@@ -22,3 +23,4 @@ admin.site.register(UserOperator)
 admin.site.register(Operation)
 admin.site.register(ParentChildOperator)
 admin.site.register(RegulatedProduct)
+admin.site.register(ReportingActivity)
