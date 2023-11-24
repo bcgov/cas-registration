@@ -15,6 +15,7 @@ from registration.models import (
     ReportingActivity,
     User,
     UserOperator,
+    RegulatedProduct,
 )
 from registration.schema import OperationIn
 
@@ -50,6 +51,36 @@ class TestNaicsCodeEndpoint:
         assert len(json.loads(response.content)) == 2
 
 
+class TestNaicsCategoriesEndpoint:
+    endpoint = base_endpoint + "naics_categories"
+
+    def test_get_method_for_200_status(self, client):
+        response = client.get(self.endpoint)
+        assert response.status_code == 200
+
+    def test_get_method_with_mock_data(self, client):
+        baker.make(NaicsCategory, _quantity=3)
+
+        response = client.get(self.endpoint)
+        assert response.status_code == 200
+        assert len(json.loads(response.content)) == 3
+
+
+class TestRegulatedProductsEndpoint:
+    endpoint = base_endpoint + "regulated_products"
+
+    def test_get_method_for_200_status(self, client):
+        response = client.get(self.endpoint)
+        assert response.status_code == 200
+
+    def test_get_method_with_mock_data(self, client):
+        baker.make(RegulatedProduct, _quantity=4)
+
+        response = client.get(self.endpoint)
+        assert response.status_code == 200
+        assert len(json.loads(response.content)) == 4
+
+
 class TestOperationsEndpoint:
     endpoint = base_endpoint + "operations"
 
@@ -76,7 +107,7 @@ class TestOperationsEndpoint:
             type='Single Facility Operation',
             naics_code_id=naics_code.id,
             reporting_activities=['123', '124'],
-            regulated_products=[1, 2],
+            regulated_products=[baker.make(RegulatedProduct).id, baker.make(RegulatedProduct).id],
             documents=[document.id],
             contacts=[contact.id],
             operator_id=operator.id,
@@ -213,7 +244,7 @@ class TestOperationEndpoint:
             latitude=90,
             longitude=-120,
             petrinex_ids=["123", "124"],
-            regulated_products=[1, 2],
+            regulated_products=[baker.make(RegulatedProduct).id, baker.make(RegulatedProduct).id],
             documents=[document.id],
             contacts=[contact.id],
             operator_id=operator.id,
