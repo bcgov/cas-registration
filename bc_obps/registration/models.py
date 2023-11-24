@@ -453,9 +453,13 @@ class Operation(OperationAndFacilityCommonInfo):
         blank=True,
         related_name="operations",
     )
-    contacts = models.ManyToManyField(
+    application_lead = models.ForeignKey(
         Contact,
-        related_name="operations",
+        on_delete=models.DO_NOTHING,
+        related_name="contacts",
+        blank=True,
+        null=True,
+        db_comment="Foreign key to the contact that is the application lead",
     )
     status = models.CharField(
         max_length=1000,

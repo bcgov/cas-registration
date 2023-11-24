@@ -48,7 +48,7 @@ export default function OperationsForm({ formData, schema }: Props) {
   const formSectionList = Object.keys(schema.properties as any);
   const isNotFinalStep = formSection !== formSectionList.length;
   const isFinalStep = formSection === formSectionList.length;
-
+  console.log("schema", schema);
   return (
     <>
       {operationName ? (
@@ -86,6 +86,7 @@ export default function OperationsForm({ formData, schema }: Props) {
           submitEveryStep
           showSubmissionStep
           onSubmit={async (data: { formData?: any }) => {
+            console.log("data", data.formData);
             const method = isCreate ? "POST" : "PUT";
             const endpoint = isCreate
               ? "registration/operations"
@@ -103,7 +104,6 @@ export default function OperationsForm({ formData, schema }: Props) {
                   ...data.formData,
                   //  temporary handling of required many-to-many fields, will be addressed in #138
                   documents: [],
-                  contacts: [],
                   operator_id: 1,
                 }),
               },

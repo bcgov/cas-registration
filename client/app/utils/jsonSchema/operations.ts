@@ -1,5 +1,6 @@
 import FieldTemplate from "@/app/styles/rjsf/FieldTemplate";
 import { RJSFSchema } from "@rjsf/utils";
+import provinceOptions from "@/app/data/provinces.json";
 
 const operationPage1: RJSFSchema = {
   type: "object",
@@ -52,9 +53,6 @@ const operationPage1: RJSFSchema = {
       type: "boolean",
       default: false,
     },
-
-    // temp handling of many to many, will be addressed in #138
-    // petrinex_ids: { type: "number", title: "Petrinex IDs" },
 
     // documents: { type: "string", title: "documents" },
     // contacts: { type: "string", title: "contacts" },
@@ -181,10 +179,55 @@ const operationPage3: RJSFSchema = {
         },
       },
       then: {
+        type: "object",
+        required: [
+          "al_first_name",
+          "al_last_name",
+          "al_position_title",
+          "al_street_address",
+          "al_municipality",
+          "al_province",
+          "al_postal_code",
+          "al_email",
+          "al_phone_number",
+        ],
         properties: {
-          application_lead: {
+          al_first_name: {
             type: "string",
-            title: "To be added in #136",
+            title: "First Name",
+          },
+          al_last_name: {
+            type: "string",
+            title: "Last Name",
+          },
+          al_position_title: {
+            type: "string",
+            title: "Position Title",
+          },
+          al_street_address: {
+            type: "string",
+            title: "Mailing Address",
+          },
+          al_municipality: {
+            type: "string",
+            title: "Municipality",
+          },
+          al_province: {
+            type: "string",
+            title: "Province",
+            anyOf: provinceOptions,
+          },
+          al_postal_code: {
+            type: "string",
+            title: "Postal Code",
+          },
+          al_email: {
+            type: "string",
+            title: "Email Address",
+          },
+          al_phone_number: {
+            type: "string",
+            title: "Phone Number",
           },
         },
       },
@@ -225,7 +268,15 @@ export const operationUiSchema = {
     "operators",
     "percentage_ownership",
     "Would you like to add an exemption ID application lead?",
-    "application_lead",
+    "al_first_name",
+    "al_last_name",
+    "al_position_title",
+    "al_street_address",
+    "al_municipality",
+    "al_province",
+    "al_postal_code",
+    "al_email",
+    "al_phone_number",
     "verified_by",
     "verified_at",
   ],
@@ -266,5 +317,8 @@ export const operationUiSchema = {
   },
   boundary_map: {
     "ui:widget": "FileWidget",
+  },
+  al_province: {
+    "ui:widget": "ComboBox",
   },
 };

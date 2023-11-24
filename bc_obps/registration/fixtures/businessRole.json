@@ -1,0 +1,16 @@
+[
+  {
+    "model": "registration.businessrole",
+    "pk": 1,
+    "fields": {
+      "role_name": "Senior Officer"
+    }
+  },
+  {
+    "model": "registration.businessrole",
+    "pk": 1,
+    "fields": {
+      "role_name": "Authorized Signing Officer"
+    }
+  }
+]

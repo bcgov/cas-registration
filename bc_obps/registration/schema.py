@@ -61,6 +61,16 @@ class OperationIn(ModelSchema):
     naics_code_id: int
     naics_category_id: int
     verified_at: Optional[date] = None
+    # al => application lead
+    al_first_name: Optional[str] = None
+    al_last_name: Optional[str] = None
+    al_position_title: Optional[str] = None
+    al_street_address: Optional[str] = None
+    al_municipality: Optional[str] = None
+    al_province: Optional[str] = None
+    al_postal_code: Optional[str] = None
+    al_email: Optional[str] = None
+    al_phone_number: Optional[str] = None
 
     class Config:
         model = Operation

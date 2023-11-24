@@ -452,7 +452,17 @@ class Migration(migrations.Migration):
                         max_length=1000,
                     ),
                 ),
-                ('contacts', models.ManyToManyField(related_name='operations', to='registration.contact')),
+                (
+                    'application_lead',
+                    models.ForeignKey(
+                        blank=True,
+                        db_comment='Foreign key to the contact that is the application lead',
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name='contacts',
+                        to='registration.contact',
+                    ),
+                ),
                 (
                     'documents',
                     models.ManyToManyField(blank=True, related_name='operations', to='registration.document'),

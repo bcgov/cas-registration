@@ -5,8 +5,9 @@ import pytz
 from django.core import serializers
 from typing import List
 from django.shortcuts import get_object_or_404
-from registration.models import Operation, Operator, NaicsCode, NaicsCategory
+from registration.models import Operation, Operator, NaicsCode, NaicsCategory, Contact, BusinessRole
 from registration.schema import OperationIn, OperationOut
+from registration.utils import update_model_instance, extract_fields_from_dict
 
 
 ##### GET #####
@@ -29,31 +30,64 @@ def get_operation(request, operation_id: int):
 
 @router.post("/operations")
 def create_operation(request, payload: OperationIn):
+
+    # application_lead_related_fields = extract_fields_from_dict(payload, [
+    #     "al_first_name",
+    #     "al_last_name",
+    #     "al_position_title",
+    #     "al_street_address",
+    #     "al_municipality",
+    #     "al_province",
+    #     "al_postal_code",
+    #     "al_email",
+    #     "al_phone_number",
+    # ])
+
+    operation_related_fields: OperationIn = extract_fields_from_dict(
+        payload.dict(),
+        [
+            "name",
+            "type",
+            "naics_code",
+            "naics_category",
+            "previous_year_attributable_emissions",
+            "swrs_facility_id",
+            "bcghg_id",
+            "opt_in",
+            "operator",
+            "verified_at",
+            "verified_by",
+            "application_lead",
+            "status",
+            "regulated_products",
+            "reporting_activities",
+            "documents",
+            # "operator_id",
+            # "naics_code_id",
+            # "naics_category_id",
+        ],
+    )
+
     fields_to_assign = ["operator", "naics_code", "naics_category"]
     for field_name in fields_to_assign:
-        if field_name in payload.dict():
-            field_value = payload.dict()[field_name]
+        if field_name in operation_related_fields:
+            field_value = operation_related_fields[field_name]
             model_class = {
                 "operator": Operator,
                 "naics_code": NaicsCode,
             }[field_name]
             obj = get_object_or_404(model_class, id=field_value)
-            setattr(payload, field_name, obj)
-
-    regulated_products = payload.regulated_products
-    reporting_activities = payload.reporting_activities
-
-    fields_to_delete = ["documents", "contacts", "petrinex_ids", "regulated_products", "reporting_activities"]
-
-    for field_name in fields_to_delete:
-        if field_name in payload.dict():
-            delattr(payload, field_name)
-
-    operation = Operation.objects.create(**payload.dict())
-    for product_id in regulated_products:
+            operation_related_fields[field_name] = obj
+            # setattr(operation_related_fields, field_name, obj)
+    print('operation_related_fields', operation_related_fields)
+    breakpoint()
+    operation = Operation.objects.create(operation_related_fields)
+    for product_id in payload.regulated_products:
         operation.regulated_products.add(product_id)  # Adds each product
-    for activity_id in reporting_activities:
+    for activity_id in payload.reporting_activities:
         operation.reporting_activities.add(activity_id)  # Adds each activity
+
+    # Contact.objects.create(application_lead_related_fields)
     return {"name": operation.name, "id": operation.id}
 
 
@@ -62,6 +96,7 @@ def create_operation(request, payload: OperationIn):
 
 @router.put("/operations/{operation_id}")
 def update_operation(request, operation_id: int, submit, payload: OperationIn):
+    breakpoint()
     operation = get_object_or_404(Operation, id=operation_id)
     if "operator" in payload.dict():
         operator = payload.dict()["operator"]
@@ -73,6 +108,33 @@ def update_operation(request, operation_id: int, submit, payload: OperationIn):
         nc = get_object_or_404(NaicsCode, id=naics_code)
         # Assign the naics_code instance to the operation
         operation.naics_code = nc
+    if "naics_category" in payload.dict():
+        naics_category = payload.dict()["naics_category"]
+        nc = get_object_or_404(NaicsCategory, id=naics_category)
+        # Assign the naics_category instance to the operation
+        payload.naics_category = nc
+    if "Would you like to add an exemption ID application lead?" in payload.dict():
+        breakpoint()
+        # Create a new Contact instance for the application lead
+        contact_fields_mapping = {
+            "al_first_name": "first_name",
+            "al_last_name": "last_name",
+            "al_position_title": "position_title",
+            "al_street_address": "street_address",
+            "al_municipality": "municipality",
+            "al_province": "province",
+            "al_postal_code": "postal_code",
+            "al_email": "email",
+            "al_phone_number": "phone_number",
+        }
+        contact_instance: Contact = Contact(business_role=BusinessRole.objects.get(name="Operation Registration Lead"))
+        application_lead_contact: Contact = update_model_instance(
+            contact_instance, contact_fields_mapping, payload.dict()
+        )
+        application_lead_contact.save()
+        payload.application_lead = application_lead_contact
+
+    breakpoint()
     # Update other attributes as needed
     excluded_fields = [
         "operator",
