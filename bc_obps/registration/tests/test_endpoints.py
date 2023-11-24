@@ -81,6 +81,21 @@ class TestRegulatedProductsEndpoint:
         assert len(json.loads(response.content)) == 4
 
 
+class TestReportingActivitiesEndpoint:
+    endpoint = base_endpoint + "reporting_activities"
+
+    def test_get_method_for_200_status(self, client):
+        response = client.get(self.endpoint)
+        assert response.status_code == 200
+
+    def test_get_method_with_mock_data(self, client):
+        baker.make(RegulatedProduct, _quantity=4)
+
+        response = client.get(self.endpoint)
+        assert response.status_code == 200
+        assert len(json.loads(response.content)) == 4
+
+
 class TestOperationsEndpoint:
     endpoint = base_endpoint + "operations"
 
@@ -106,8 +121,9 @@ class TestOperationsEndpoint:
             name='Springfield Nuclear Power Plant',
             type='Single Facility Operation',
             naics_code_id=naics_code.id,
-            reporting_activities=['123', '124'],
-            regulated_products=[baker.make(RegulatedProduct).id, baker.make(RegulatedProduct).id],
+            naics_category_id=naics_category.id,
+            reporting_activities=[1, 2],
+            regulated_products=[1, 2],
             documents=[document.id],
             contacts=[contact.id],
             operator_id=operator.id,
@@ -243,8 +259,7 @@ class TestOperationEndpoint:
             legal_land_description="It's legal",
             latitude=90,
             longitude=-120,
-            petrinex_ids=["123", "124"],
-            regulated_products=[baker.make(RegulatedProduct).id, baker.make(RegulatedProduct).id],
+            regulated_products=[1, 2],
             documents=[document.id],
             contacts=[contact.id],
             operator_id=operator.id,
