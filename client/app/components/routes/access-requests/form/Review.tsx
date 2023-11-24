@@ -29,7 +29,7 @@ export default function Review(props: Props) {
       setErrorList([{ message: response.error }]);
     } else if (response.ok) {
       setSuccessMessageList([
-        { message: "You have approved the request for carbon tax exemption." },
+        { message: "You have approved the request for prime admin access." },
       ]);
     }
   }
@@ -46,7 +46,7 @@ export default function Review(props: Props) {
       setErrorList([{ message: response.error }]);
     } else if (response.ok) {
       setSuccessMessageList([
-        { message: "You have rejected the request for carbon tax exemption." },
+        { message: "You have rejected the request for prime admin access." },
       ]);
     }
   }

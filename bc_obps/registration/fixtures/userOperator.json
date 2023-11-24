@@ -6,7 +6,7 @@
       "user": "00000000-0000-0000-0000-000000000001",
       "operator": 2,
       "role": "admin",
-      "status": "approved",
+      "status": "Pending",
       "verified_at": null,
       "verified_by": null
     }

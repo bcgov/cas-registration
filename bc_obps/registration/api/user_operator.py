@@ -260,8 +260,8 @@ def update_user_operator_status(request, user_operator_id: int):
     user_operator = get_object_or_404(UserOperator, id=user_operator_id)
     # TODO later: add data to verified_by once user authentication in place
     user_operator.status = status
-    # if user_operator.status in [UserOperator.Statuses.APPROVED, UserOperator.Statuses.REJECTED]:
-    #     user_operator.verified_at = datetime.now(pytz.utc)
+    if user_operator.status in [UserOperator.Statuses.APPROVED, UserOperator.Statuses.REJECTED]:
+        user_operator.verified_at = datetime.now(pytz.utc)
     data = serializers.serialize(
         "json",
         [
