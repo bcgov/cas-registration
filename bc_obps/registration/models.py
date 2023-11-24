@@ -194,6 +194,16 @@ class Contact(UserAndContactCommonInfo):
         constraints = [models.UniqueConstraint(fields=["email"], name="contact_email_constraint")]
 
 
+class BusinessStructure(models.Model):
+    """The legal name of an operator"""
+
+    name = models.CharField(primary_key=True, max_length=1000, db_comment="The name of a business structure")
+
+    class Meta:
+        db_table_comment = "The legal name of an operator"
+        db_table = 'erc"."business_structure'
+
+
 class Operator(models.Model):
     """Operator model"""
 
@@ -207,7 +217,12 @@ class Operator(models.Model):
     trade_name = models.CharField(max_length=1000, blank=True, db_comment="The trade name of an operator")
     cra_business_number = models.IntegerField(db_comment="The CRA business number of an operator")
     bc_corporate_registry_number = models.IntegerField(db_comment="The BC corporate registry number of an operator")
-    business_structure = models.CharField(max_length=1000, db_comment="The legal name of an operator")
+    business_structure = models.ForeignKey(
+        BusinessStructure,
+        on_delete=models.DO_NOTHING,
+        db_comment="The business structure of an operator",
+        related_name="operators",
+    )
     physical_street_address = models.CharField(
         max_length=1000,
         db_comment="The physical street address of an operator (where the operator is physically located)",
