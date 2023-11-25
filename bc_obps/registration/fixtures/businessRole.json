@@ -12,5 +12,12 @@
     "fields": {
       "role_name": "Authorized Signing Officer"
     }
+  },
+  {
+    "model": "registration.businessrole",
+    "pk": 1,
+    "fields": {
+      "role_name": "Application Lead"
+    }
   }
 ]

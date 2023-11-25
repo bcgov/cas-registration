@@ -5,7 +5,7 @@ import pytz
 from django.core import serializers
 from typing import List
 from django.shortcuts import get_object_or_404
-from registration.models import Operation, Operator, NaicsCode, NaicsCategory, Contact, BusinessRole
+from registration.models import Operation, Operator, NaicsCode, NaicsCategory, Contact, BusinessRole, User
 from registration.schema import OperationIn, OperationOut
 from registration.utils import update_model_instance, extract_fields_from_dict
 
@@ -22,6 +22,7 @@ def list_operations(request):
 @router.get("/operations/{operation_id}", response=OperationOut)
 def get_operation(request, operation_id: int):
     operation = get_object_or_404(Operation, id=operation_id)
+    # fetch the contact data here again
     return operation
 
 
@@ -30,17 +31,6 @@ def get_operation(request, operation_id: int):
 
 @router.post("/operations")
 def create_operation(request, payload: OperationIn):
-    # application_lead_related_fields = extract_fields_from_dict(payload, [
-    #     "al_first_name",
-    #     "al_last_name",
-    #     "al_position_title",
-    #     "al_street_address",
-    #     "al_municipality",
-    #     "al_province",
-    #     "al_postal_code",
-    #     "al_email",
-    #     "al_phone_number",
-    # ])
 
     operation_related_fields: OperationIn = extract_fields_from_dict(
         payload.dict(),
@@ -56,14 +46,7 @@ def create_operation(request, payload: OperationIn):
             "operator",
             "verified_at",
             "verified_by",
-            "application_lead",
             "status",
-            # "regulated_products",
-            # "reporting_activities",
-            # "documents",
-            # "operator_id",
-            # "naics_code_id",
-            # "naics_category_id",
         ],
     )
 
@@ -77,14 +60,10 @@ def create_operation(request, payload: OperationIn):
             }[field_name]
             obj = get_object_or_404(model_class, id=field_value)
             operation_related_fields[field_name] = obj
-            # setattr(operation_related_fields, field_name, obj)
-    print('operation_related_fields', operation_related_fields)
     operation = Operation.objects.create(**operation_related_fields)
     operation.regulated_products.set(payload.regulated_products)
     operation.reporting_activities.set(payload.reporting_activities)
     operation.documents.set(payload.documents)
-
-    # Contact.objects.create(application_lead_related_fields)
     return {"name": operation.name, "id": operation.id}
 
 
@@ -93,6 +72,7 @@ def create_operation(request, payload: OperationIn):
 
 @router.put("/operations/{operation_id}")
 def update_operation(request, operation_id: int, submit, payload: OperationIn):
+
     operation = get_object_or_404(Operation, id=operation_id)
     if "operator" in payload.dict():
         operator = payload.dict()["operator"]
@@ -109,25 +89,49 @@ def update_operation(request, operation_id: int, submit, payload: OperationIn):
         nc = get_object_or_404(NaicsCategory, id=naics_category)
         # Assign the naics_category instance to the operation
         payload.naics_category = nc
-    if "Would you like to add an exemption ID application lead?" in payload.dict():
-        # Create a new Contact instance for the application lead
-        contact_fields_mapping = {
-            "al_first_name": "first_name",
-            "al_last_name": "last_name",
-            "al_position_title": "position_title",
-            "al_street_address": "street_address",
-            "al_municipality": "municipality",
-            "al_province": "province",
-            "al_postal_code": "postal_code",
-            "al_email": "email",
-            "al_phone_number": "phone_number",
-        }
-        contact_instance: Contact = Contact(business_role=BusinessRole.objects.get(name="Operation Registration Lead"))
-        application_lead_contact: Contact = update_model_instance(
-            contact_instance, contact_fields_mapping, payload.dict()
-        )
-        application_lead_contact.save()
-        payload.application_lead = application_lead_contact
+
+    if "is_application_lead_external" in payload.dict():
+        print('I AM IN is_application_lead_external')
+
+        if payload.dict()["is_application_lead_external"]:
+            print('I AM IN payload.dict()["is_application_lead_external"]')
+            external_application_lead = payload.dict()["application_lead"]
+            print('APPLICATION_LEAD', external_application_lead)
+            eal, created = Contact.objects.update_or_create(
+                id=external_application_lead,
+                defaults={
+                    "first_name": payload.al_first_name,
+                    "last_name": payload.al_last_name,
+                    "position_title": payload.al_position_title,
+                    "street_address": payload.al_street_address,
+                    "municipality": payload.al_municipality,
+                    "province": payload.al_province,
+                    "postal_code": payload.al_postal_code,
+                    "email": payload.al_email,
+                    "phone_number": payload.al_phone_number,
+                    "business_role": BusinessRole.objects.get(role_name="Application Lead"),
+                },
+            )
+            operation.application_lead = eal
+        if payload.dict()["is_application_lead_external"] is False:
+            current_user_guid = json.loads(request.headers.get('Authorization'))["user_guid"]
+            user: User = get_object_or_404(User, user_guid=current_user_guid)
+            al, created = Contact.objects.update_or_create(
+                email=user.email,
+                defaults={
+                    "first_name": user.first_name,
+                    "last_name": user.last_name,
+                    "position_title": user.position_title,
+                    "street_address": user.street_address,
+                    "municipality": user.municipality,
+                    "province": user.province,
+                    "postal_code": user.postal_code,
+                    "email": user.email,
+                    "phone_number": user.phone_number,
+                    "business_role": BusinessRole.objects.get(role_name="Application Lead"),
+                },
+            )
+            operation.application_lead = al
 
     # Update other attributes as needed
     excluded_fields = [
@@ -137,6 +141,7 @@ def update_operation(request, operation_id: int, submit, payload: OperationIn):
         "contacts",
         "reporting_activities",
         "regulated_products",
+        "application_lead",
     ]
 
     for attr, value in payload.dict().items():

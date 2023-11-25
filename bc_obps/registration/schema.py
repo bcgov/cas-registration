@@ -1,8 +1,9 @@
 from typing import Optional
 from ninja import Field, Schema
 from ninja import ModelSchema
-from .models import Operation, Operator, NaicsCode, NaicsCategory, RegulatedProduct, ReportingActivity
+from .models import Operation, Operator, NaicsCode, NaicsCategory, RegulatedProduct, ReportingActivity, Contact
 from datetime import date
+from phonenumber_field.modelfields import PhoneNumberField
 
 
 # Generic schemas
@@ -53,6 +54,23 @@ class ReportingActivitySchema(ModelSchema):
         model_fields = "__all__"
 
 
+class ContactSchema(ModelSchema):
+    """
+    Schema for the Contact model
+    """
+
+    @staticmethod
+    def resolve_phone_number(obj):
+        # PhoneNumberField returns a PhoneNumber object and we need a string
+        if not obj.phone_number:
+            return
+        return obj.phone_number.as_e164
+
+    class Config:
+        model = Contact
+        model_fields = "__all__"
+
+
 #### Operation schemas
 class OperationIn(ModelSchema):
     # temporarily setting a default operator since we don't have login yet
@@ -71,6 +89,8 @@ class OperationIn(ModelSchema):
     al_postal_code: Optional[str] = None
     al_email: Optional[str] = None
     al_phone_number: Optional[str] = None
+    application_lead: Optional[int] = None
+    is_application_lead_external: Optional[bool] = None
 
     class Config:
         model = Operation
@@ -88,6 +108,10 @@ class OperationOut(ModelSchema):
     current_year_estimated_emissions: Optional[str] = None
     opt_in: Optional[bool] = None
     verified_at: Optional[date] = None
+    # application_lead_id: Optional[int] = Field(..., alias="application_lead.id")
+    is_application_lead_external: Optional[bool] = None
+    application_lead: Optional[ContactSchema]
+    # brianna django ninja fetch data for foreign keys, can just do it here, don't have to do on the other forms https://django-ninja.dev/guides/response/?h=nested#nested-objects
 
     class Config:
         model = Operation
