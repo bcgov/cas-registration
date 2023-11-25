@@ -12,7 +12,8 @@ These directions are used to establish the initial state buckets through deployi
 
 0. Ensure you are in the root directory.
 1. Make a copy of `/devops/.env.devops.example` to `/.env.devops`. Fill in the fields.
-2. Run `make bootstrap_terraform`.
+2. Uncomment the `make bootstrap_terraform` make target in root Makefile
+3. Run `make bootstrap_terraform`.
 
 ### Manual with scripts
 
