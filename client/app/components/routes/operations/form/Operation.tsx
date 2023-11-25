@@ -57,6 +57,8 @@ export async function getReportingActivities() {
     throw error;
   }
 }
+
+// brianna fetch contacts here
 // 🛠️ Function to fetch an operation by ID
 async function getOperation(id: number) {
   try {

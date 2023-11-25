@@ -164,8 +164,9 @@ const operationPage3: RJSFSchema = {
   type: "object",
   title: "Application Lead",
   properties: {
-    "Would you like to add an exemption ID application lead?": {
+    is_application_lead_external: {
       type: "boolean",
+      title: "Would you like to add an exemption ID application lead?",
       default: false,
     },
   },
@@ -173,7 +174,7 @@ const operationPage3: RJSFSchema = {
     {
       if: {
         properties: {
-          "Would you like to add an exemption ID application lead?": {
+          is_application_lead_external: {
             const: true,
           },
         },
@@ -267,7 +268,7 @@ export const operationUiSchema = {
     "Does the operation have multiple operators?",
     "operators",
     "percentage_ownership",
-    "Would you like to add an exemption ID application lead?",
+    "is_application_lead_external",
     "al_first_name",
     "al_last_name",
     "al_position_title",
@@ -306,7 +307,7 @@ export const operationUiSchema = {
   "Does the operation have multiple operators?": {
     "ui:widget": "RadioWidget",
   },
-  "Would you like to add an exemption ID application lead?": {
+  is_application_lead_external: {
     "ui:widget": "RadioWidget",
   },
   opt_in: {

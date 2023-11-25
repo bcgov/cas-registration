@@ -5,5 +5,12 @@
     "fields": {
       "role_name": "industry_user"
     }
+  },
+  {
+    "model": "registration.approle",
+    "pk": 1,
+    "fields": {
+      "role_name": "cas_admin"
+    }
   }
 ]

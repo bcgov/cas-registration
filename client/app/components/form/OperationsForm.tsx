@@ -8,6 +8,7 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import React from "react";
 import { actionHandler } from "@/app/utils/actions";
+import { useSession } from "next-auth/react";
 
 export interface OperationsFormData {
   [key: string]: any;
@@ -19,6 +20,9 @@ interface Props {
 }
 
 export default function OperationsForm({ formData, schema }: Props) {
+  const { data: session } = useSession();
+  const userEmail = session?.user?.email;
+
   const [operationName, setOperationName] = useState("");
   const [error, setError] = useState(undefined);
   const router = useRouter();
@@ -26,11 +30,31 @@ export default function OperationsForm({ formData, schema }: Props) {
   const formSection = parseInt(params?.formSection as string);
   const operationId = params?.operation;
   const isCreate = params?.operation === "0";
+  console.log("formData", formData);
+
+  const isApplicationLeadExternal =
+    userEmail === formData?.application_lead?.email ? false : true;
+  console.log("userEmail", userEmail);
+  console.log(
+    "formData?.application_lead?.email",
+    formData?.application_lead?.email,
+  );
+
+  const applicationLeadDetails = {
+    al_first_name: formData?.application_lead?.first_name,
+    al_last_name: formData?.application_lead?.last_name,
+    al_position_title: formData?.application_lead?.position_title,
+    al_street_address: formData?.application_lead?.street_address,
+    al_municipality: formData?.application_lead?.municipality,
+    al_province: formData?.application_lead?.province,
+    al_postal_code: formData?.application_lead?.postal_code,
+    al_email: formData?.application_lead?.email,
+    al_phone_number: formData?.application_lead?.phone_number,
+  };
 
   // need to convert some of the information received from django into types RJSF can read
-  const existingFormData = {
+  const transformedFormData = {
     ...formData,
-
     previous_year_attributable_emissions:
       formData?.previous_year_attributable_emissions &&
       Number(formData?.previous_year_attributable_emissions),
@@ -42,13 +66,19 @@ export default function OperationsForm({ formData, schema }: Props) {
       Number(formData?.operator_percent_of_ownership),
     "Did you submit a GHG emissions report for reporting year 2022?":
       formData?.previous_year_attributable_emissions ? true : false,
+    // brianna change back to question in schema and here if this works
+    is_application_lead_external:
+      formData?.is_application_lead_external !== null ??
+      isApplicationLeadExternal,
+    ...(isApplicationLeadExternal && applicationLeadDetails),
     verified_at: formData?.verified_at?.toString(),
     verified_by: formData?.verified_by?.toString(),
   };
+
   const formSectionList = Object.keys(schema.properties as any);
   const isNotFinalStep = formSection !== formSectionList.length;
   const isFinalStep = formSection === formSectionList.length;
-  console.log("schema", schema);
+  console.log("transformedFormData", transformedFormData);
   return (
     <>
       {operationName ? (
@@ -75,7 +105,7 @@ export default function OperationsForm({ formData, schema }: Props) {
         <MultiStepFormBase
           baseUrl={`/dashboard/operations/${operationId}`}
           cancelUrl="/dashboard/operations"
-          formData={existingFormData}
+          formData={transformedFormData}
           readonly={
             formData?.status === "Registered" || formData?.status === "Pending"
               ? true
@@ -86,7 +116,6 @@ export default function OperationsForm({ formData, schema }: Props) {
           submitEveryStep
           showSubmissionStep
           onSubmit={async (data: { formData?: any }) => {
-            console.log("data", data.formData);
             const method = isCreate ? "POST" : "PUT";
             const endpoint = isCreate
               ? "registration/operations"
@@ -94,18 +123,34 @@ export default function OperationsForm({ formData, schema }: Props) {
             const pathToRevalidate = isCreate
               ? "dashboard/operations"
               : `dashboard/operations/${formData?.id}`;
+            console.log("data.formdata", data.formData);
+            console.log(
+              "would you like",
+              data?.formData?.[
+                "Would you like to add an exemption ID application lead?"
+              ],
+            );
+            const body = {
+              // ...applicationLeadDetails,
+              ...formData,
+              ...data.formData,
+              //  temporary handling of documents, will be addressed in #332/325
+              documents: [],
+              // temporarily mocking login
+              operator_id: 1,
+              // is_application_lead_external:
+              //   data?.formData?.[
+              //     "Would you like to add an exemption ID application lead?"
+              //   ],
+              application_lead: formData?.application_lead?.id,
+            };
+            console.log("body", body);
             const response = await actionHandler(
               endpoint,
               method,
               pathToRevalidate,
               {
-                body: JSON.stringify({
-                  ...formData,
-                  ...data.formData,
-                  //  temporary handling of required many-to-many fields, will be addressed in #138
-                  documents: [],
-                  operator_id: 1,
-                }),
+                body: JSON.stringify(body),
               },
             );
 
