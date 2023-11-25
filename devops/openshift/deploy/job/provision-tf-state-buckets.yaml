@@ -33,7 +33,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: gcp-credentials-secret
-                  key: ocp_namespace
+                  key: openshift_namespace
             - name: CLOUDSDK_CORE_PROJECT
               valueFrom:
                 secretKeyRef:
