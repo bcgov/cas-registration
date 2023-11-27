@@ -1,0 +1,109 @@
+import { test, expect } from "@playwright/test";
+// Annotate entire file as serial.
+test.describe.configure({ mode: "serial" });
+// environment variables stored in client/e2e/.env.local
+import * as dotenv from "dotenv";
+dotenv.config({
+  path: "./e2e/.env.local",
+});
+
+// State storage
+const casAdminAuthFile = process.env.CAS_ADMIN_STORAGE || "";
+const casAnalystAuthFile = process.env.CAS_ANALYST_STORAGE || "";
+const casPendingAuthFile = process.env.CAS_PENDING_STORAGE || "";
+const industryUserAuthFile = process.env.INDUSTRY_USER_STORAGE || "";
+const industryUserAdminAuthFile = process.env.INDUSTRY_USER_ADMIN_STORAGE || "";
+
+// Import role based dashboard navigation
+import casAdminDashboard from "@/app/data/dashboard/cas_admin.json";
+import casAnalystDashboard from "@/app/data/dashboard/cas_analyst.json";
+import industryUserDashboard from "@/app/data/dashboard/industry_user.json";
+import industryUserAdminDashboard from "@/app/data/dashboard/industry_user_admin.json";
+
+// 📐 Type: Dashboard Tiles JSON structure
+type DashboardSection = {
+  title: string;
+  content: string;
+  links: DashboardLink[];
+};
+
+type DashboardLink = {
+  title: string;
+  href: string;
+};
+
+// 🛠️ function: navigate to dashboard and validate section titles align with auth session role
+const assertDashboardNavigation = async (
+  page: any,
+  dashboardData: DashboardSection[],
+) => {
+  // Navigate to the dashboard
+  await page.goto("http://localhost:3000/dashboard");
+  // 🔍 Assert authenticated user's dashboard tiles
+  for (const section of dashboardData) {
+    // Use Playwright selectors to find and validate section titles
+    const titleSelector = `:is(h1, h2, h3, h4, h5, h6):has-text("${section.title}")`;
+    // Use Playwright page.waitForSelector function to wait for an element to appear in the DOM
+    expect(await page.waitForSelector(titleSelector)).toBeTruthy();
+  }
+  const cardContentSelector = '[data-testid="dashboard-nav-card"]';
+  const cardContentElements = await page.$$(cardContentSelector);
+  expect(cardContentElements.length).toBe(dashboardData.length);
+};
+
+test.describe("Test Dashboard", () => {
+  test.describe("Test Auth Session - cas_admin", () => {
+    const storageState = casAdminAuthFile;
+    const dashboardData = casAdminDashboard;
+    test.use({ storageState: storageState });
+    test("Test Role Based UX", async ({ page }) => {
+      await assertDashboardNavigation(page, dashboardData);
+    });
+  });
+  test.describe("Test Auth Session - cas_analyst", () => {
+    const storageState = casAnalystAuthFile;
+    const dashboardData = casAnalystDashboard;
+    test.use({ storageState: storageState });
+    test("Test Role Based UX", async ({ page }) => {
+      await assertDashboardNavigation(page, dashboardData);
+    });
+  });
+  test.describe("Test Auth Session - cas_pending", () => {
+    const storageState = casPendingAuthFile;
+    test.use({ storageState: storageState });
+    test("Test Role Based UX", async ({ page }) => {
+      await page.goto("http://localhost:3000/dashboard");
+
+      // Wait for the profile navigation link to be present
+      const profileNavSelector = '[data-testid="profile-nav-user"]';
+      await page.waitForSelector(profileNavSelector);
+
+      // Assert that authenticated user profile link is visible
+      expect(await page.isVisible(profileNavSelector)).toBe(true);
+
+      // Wait for the pending message to be present
+      const pendingMessageSelector =
+        '[data-testid="dashboard-pending-message"]';
+      await page.waitForSelector(pendingMessageSelector);
+
+      // Assert that pending message is visible
+      expect(await page.isVisible(pendingMessageSelector)).toBe(true);
+    });
+  });
+  test.describe("Test Auth Session - industry_user", () => {
+    const storageState = industryUserAuthFile;
+    const dashboardData = industryUserDashboard;
+    test.use({ storageState: storageState });
+    test("Test Role Based UX", async ({ page }) => {
+      await assertDashboardNavigation(page, dashboardData);
+    });
+  });
+  test.describe("Test Auth Session - industry_user_admin", () => {
+    const storageState = industryUserAdminAuthFile;
+    const dashboardData = industryUserAdminDashboard;
+    test.use({ storageState: storageState });
+    test("Test Role Based UX", async ({ page }) => {
+      await assertDashboardNavigation(page, dashboardData);
+    });
+  });
+});
