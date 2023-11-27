@@ -1,6 +1,6 @@
 from typing import Type, Union, Iterable, Dict, Any
 from django.core.exceptions import ValidationError
-from django.db import models
+from django.db import IntegrityError, models
 from .models import User, Operator, UserOperator
 
 
@@ -68,6 +68,8 @@ def update_model_instance(
         instance.full_clean()
     except ValidationError as e:
         raise ValidationError(e)
+    except IntegrityError as e:
+        raise IntegrityError(e)
 
     # We don't save the instance here; This allows further operations or validation before the actual save.
     return instance
