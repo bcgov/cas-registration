@@ -6,7 +6,7 @@ import { useCallback } from "react";
 import { DARK_GREY_BG_COLOR, BC_GOV_SEMANTICS_RED } from "@/app/styles/colors";
 
 const ComboBox: React.FC<WidgetProps> = (props) => {
-  const { id, onChange, rawErrors, schema, value } = props;
+  const { id, onChange, rawErrors, schema, value, uiSchema } = props;
 
   const handleChange = (e: React.ChangeEvent<{}>, option: any) => {
     onChange(option?.const || option?.value);
@@ -48,7 +48,12 @@ const ComboBox: React.FC<WidgetProps> = (props) => {
       sx={styles}
       onChange={handleChange}
       getOptionLabel={(option: any) => (option ? option.title : "")}
-      renderInput={(params) => <TextField {...params} />}
+      renderInput={(params) => (
+        <TextField
+          {...params}
+          placeholder={uiSchema?.["ui:placeholder"] ?? ""}
+        />
+      )}
       // 👻 define how to render each option to bypass key warning
       renderOption={(renderProps, option: any) => {
         return (
