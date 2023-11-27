@@ -27,12 +27,13 @@ const PhoneWidget: React.FC<WidgetProps> = ({
 
   return (
     <MuiTelInput
-      onlyCountries={["CA"]}
       id={id}
       disabled={disabled || readonly}
       name={id}
       value={value}
       onChange={handleChange}
+      defaultCountry="CA"
+      onlyCountries={["CA"]}
       sx={styles}
     />
   );
