@@ -52,8 +52,15 @@ export interface UserOperatorFormData extends UserFormData {
   pc_mailing_province?: string;
   pc_mailing_postal_code?: string;
   percentage_owned_by_parent_company?: number;
+  // Not in form, but needed for API to create a contact based on the existing user-operator
+  user_operator_id?: string;
 }
 
 export interface SelectOperatorFormData {
   operator_id: number;
+}
+
+export interface UserInformationInitialFormData {
+  phone_number: string;
+  email: string;
 }
