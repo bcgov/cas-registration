@@ -94,7 +94,6 @@ def list_user_operators(request):
         operator_related_fields_dict = model_to_dict(
             operator,
             fields=[
-                "status",
                 "legal_name",
             ],
         )

@@ -33,6 +33,11 @@ export default function Review(props: Props) {
       setSuccessMessageList([
         { message: "You have approved the request for prime admin access." },
       ]);
+
+      // Add a delay of 2000 milliseconds (2 seconds) before clearing the success message
+      setTimeout(() => {
+        setSuccessMessageList([]);
+      }, 2000);
     }
   }
 
@@ -52,6 +57,11 @@ export default function Review(props: Props) {
       setSuccessMessageList([
         { message: "You have rejected the request for prime admin access." },
       ]);
+
+      // Add a delay of 2000 milliseconds (2 seconds) before clearing the success message
+      setTimeout(() => {
+        setSuccessMessageList([]);
+      }, 2000);
     }
   }
 
