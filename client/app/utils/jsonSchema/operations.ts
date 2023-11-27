@@ -1,6 +1,16 @@
 import FieldTemplate from "@/app/styles/rjsf/FieldTemplate";
 import { RJSFSchema } from "@rjsf/utils";
 import provinceOptions from "@/app/data/provinces.json";
+import TitleOnlyFieldTemplate from "@/app/styles/rjsf/TitleOnlyFieldTemplate";
+import {
+  OperatorMailingAddressTitle,
+  OperatorPhysicalAddressTitle,
+} from "@/app/components/form/titles/userOperatorTitles";
+
+const subheading = {
+  "ui:classNames": "text-bc-bg-blue text-start text-lg",
+  "ui:FieldTemplate": TitleOnlyFieldTemplate,
+};
 
 const operationPage1: RJSFSchema = {
   type: "object",
@@ -129,8 +139,9 @@ const operationPage2: RJSFSchema = {
   type: "object",
   title: "Multiple Operators Information",
   properties: {
-    "Does the operation have multiple operators?": {
+    operation_has_multiple_operators: {
       type: "boolean",
+      title: "Does the operation have multiple operators?",
       default: false,
     },
   },
@@ -138,20 +149,122 @@ const operationPage2: RJSFSchema = {
     {
       if: {
         properties: {
-          "Does the operation have multiple operators?": {
+          operation_has_multiple_operators: {
             const: true,
           },
         },
       },
       then: {
         properties: {
-          operators: {
-            type: "string",
-            title: "To be added in #136",
-          },
-          percentage_ownership: {
-            type: "number",
-            title: "Percentage of ownership of operation",
+          multiple_operators_array: {
+            type: "array",
+            title: " ",
+            default: [{}],
+            items: {
+              type: "object",
+              required: ["operators"],
+              properties: {
+                mo_legal_name: {
+                  type: "string",
+                  title: "Legal Name",
+                },
+                mo_trade_name: {
+                  type: "string",
+                  title: "Trade Name",
+                },
+                mo_cra_business_number: {
+                  type: "string",
+                  title: "CRA Business Number",
+                },
+                mo_bc_registries_number: {
+                  type: "string",
+                  title: "BC Corporate Registries Number",
+                },
+                mo_business_structure: {
+                  type: "string",
+                  title: "Business Structure",
+                },
+                mo_website: {
+                  type: "string",
+                  title: "Website (optional)",
+                },
+                mo_percentage_ownership: {
+                  type: "number",
+                  title: "Percentage of ownership of operation (%)",
+                },
+                mo_proof_of_authority: {
+                  type: "string",
+                  title:
+                    "Proof of authority of designated operator from partner company",
+                  format: "data-url",
+                },
+                mo_physical_address_section: {
+                  title:
+                    "Please provide information about the physical address of this operator:",
+                  type: "object",
+                },
+                mo_physical_street_address: {
+                  type: "string",
+                  title: "Physical Address",
+                },
+                mo_physical_municipality: {
+                  type: "string",
+                  title: "Municipality",
+                },
+                mo_physical_province: {
+                  type: "string",
+                  title: "Province",
+                  anyOf: provinceOptions,
+                },
+                mo_physical_postal_code: {
+                  type: "string",
+                  title: "Postal Code",
+                },
+                mo_mailing_address_section: {
+                  title:
+                    "Please provide information about the mailing address of this operator:",
+                  type: "object",
+                },
+                mo_mailing_address_same_as_physical: {
+                  title:
+                    "Is the mailing address the same as the physical address?",
+                  type: "boolean",
+                  default: true,
+                },
+              },
+              allOf: [
+                {
+                  if: {
+                    properties: {
+                      mo_mailing_address_same_as_physical: {
+                        const: false,
+                      },
+                    },
+                  },
+                  then: {
+                    properties: {
+                      mo_mailing_street_address: {
+                        type: "string",
+                        title: "Mailing Address",
+                      },
+                      mo_mailing_municipality: {
+                        type: "string",
+                        title: "Municipality",
+                      },
+                      mo_mailing_province: {
+                        type: "string",
+                        title: "Province",
+                        anyOf: provinceOptions,
+                      },
+                      mo_mailing_postal_code: {
+                        type: "string",
+                        title: "Postal Code",
+                      },
+                    },
+                  },
+                },
+              ],
+            },
           },
         },
       },
@@ -279,6 +392,17 @@ export const operationUiSchema = {
     "postal_code",
     "email",
     "phone_number",
+    "operation_has_multiple_operators",
+    "multiple_operators_array",
+    "mo_percentage_ownership",
+    "mo_mailing_address_same_as_physical",
+    "mo_mailing_address_section",
+    "mo_mailing_street_address",
+    "mo_mailing_municipality",
+    "mo_mailing_province",
+    "mo_mailing_postal_code",
+    "Would you like to add an exemption ID application lead?",
+    "application_lead",
     "verified_by",
     "verified_at",
   ],
@@ -305,7 +429,8 @@ export const operationUiSchema = {
   "Did you submit a GHG emissions report for reporting year 2022?": {
     "ui:widget": "RadioWidget",
   },
-  "Does the operation have multiple operators?": {
+  operation_has_multiple_operators: {
+    "ui:FieldTemplate": FieldTemplate,
     "ui:widget": "RadioWidget",
   },
   is_application_lead_external: {
@@ -322,6 +447,35 @@ export const operationUiSchema = {
   },
   province: {
     "ui:widget": "ComboBox",
+  multiple_operators_array: {
+    "ui:FieldTemplate": FieldTemplate,
+    "ui:options": {
+      addable: false,
+      label: false,
+    },
+    items: {
+      mo_physical_address_section: {
+        ...subheading,
+        "ui:options": {
+          jsxTitle: OperatorPhysicalAddressTitle,
+        },
+      },
+      mo_mailing_address_same_as_physical: {
+        "ui:widget": "RadioWidget",
+      },
+      mo_physical_province: {
+        "ui:widget": "ComboBox",
+      },
+      mo_mailing_province: {
+        "ui:widget": "ComboBox",
+      },
+      mo_mailing_address_section: {
+        ...subheading,
+        "ui:options": {
+          jsxTitle: OperatorMailingAddressTitle,
+        },
+      },
+    },
   },
   regulated_products: {
     "ui:widget": "MultiSelectWidget",
