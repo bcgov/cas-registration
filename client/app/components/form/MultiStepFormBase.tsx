@@ -15,6 +15,7 @@ interface MultiStepFormProps {
   schema: any;
   showSubmissionStep?: boolean;
   submitEveryStep?: boolean;
+  allowBackNavigation?: boolean;
   uiSchema: any;
 }
 
@@ -28,6 +29,7 @@ const MultiStepFormBase = ({
   schema,
   showSubmissionStep,
   submitEveryStep,
+  allowBackNavigation,
   uiSchema,
 }: MultiStepFormProps) => {
   const params = useParams();
@@ -60,6 +62,7 @@ const MultiStepFormBase = ({
           submitEveryStep={submitEveryStep}
           baseUrl={baseUrl}
           cancelUrl={cancelUrl}
+          allowBackNavigation={allowBackNavigation}
         />
       </FormBase>
     </>

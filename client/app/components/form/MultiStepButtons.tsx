@@ -11,6 +11,7 @@ interface SubmitButtonProps {
   step: number;
   steps: string[];
   submitEveryStep?: boolean;
+  allowBackNavigation?: boolean;
 }
 
 const SubmitButton: React.FunctionComponent<SubmitButtonProps> = ({
@@ -20,6 +21,7 @@ const SubmitButton: React.FunctionComponent<SubmitButtonProps> = ({
   cancelUrl,
   classNames,
   submitEveryStep,
+  allowBackNavigation,
 }) => {
   const { pending } = useFormStatus();
   const isFinalStep = step === steps.length - 1;
@@ -31,22 +33,23 @@ const SubmitButton: React.FunctionComponent<SubmitButtonProps> = ({
         </Link>
       )}
       <div>
-        {step !== 0 ? (
-          <Link href={`${baseUrl}/${step}`}>
-            <Button
-              variant="contained"
-              type="button"
-              disabled={step === 0}
-              className="mr-4"
-            >
+        {allowBackNavigation &&
+          (step !== 0 ? (
+            <Link href={`${baseUrl}/${step}`}>
+              <Button
+                variant="contained"
+                type="button"
+                disabled={step === 0}
+                className="mr-4"
+              >
+                Back
+              </Button>
+            </Link>
+          ) : (
+            <Button variant="contained" type="button" disabled className="mr-4">
               Back
             </Button>
-          </Link>
-        ) : (
-          <Button variant="contained" type="button" disabled className="mr-4">
-            Back
-          </Button>
-        )}
+          ))}
         {!isFinalStep && !submitEveryStep && (
           <Link href={`${baseUrl}/${step + 2}`}>
             <Button variant="contained" type="button" disabled={isFinalStep}>
