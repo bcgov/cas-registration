@@ -161,7 +161,18 @@ const operationPage1: RJSFSchema = {
             default: [{}],
             items: {
               type: "object",
-              required: ["operators"],
+              required: [
+                "mo_legal_name",
+                "mo_trade_name",
+                "mo_cra_business_number",
+                "mo_bc_registries_number",
+                "mo_business_structure",
+                "mo_percentage_ownership",
+                "mo_physical_street_address",
+                "mo_physical_municipality",
+                "mo_physical_province",
+                "mo_physical_postal_code",
+              ],
               properties: {
                 mo_legal_name: {
                   type: "string",
@@ -245,6 +256,12 @@ const operationPage1: RJSFSchema = {
                     },
                   },
                   then: {
+                    required: [
+                      "mo_mailing_street_address",
+                      "mo_mailing_municipality",
+                      "mo_mailing_province",
+                      "mo_mailing_postal_code",
+                    ],
                     properties: {
                       mo_mailing_street_address: {
                         type: "string",
@@ -461,7 +478,6 @@ export const operationUiSchema = {
   multiple_operators_array: {
     "ui:FieldTemplate": FieldTemplate,
     "ui:options": {
-      addable: false,
       label: false,
     },
     items: {
