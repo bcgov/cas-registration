@@ -64,7 +64,7 @@ export default function OperationsForm({ formData, schema }: Props) {
             will receive a confirmation email.
           </p>
           <p>
-            You can then log back and download the declartion form for carbon
+            You can then log back and download the declaration form for carbon
             tax exemption for the operation.
           </p>
           <p>
