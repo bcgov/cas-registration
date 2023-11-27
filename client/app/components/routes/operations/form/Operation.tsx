@@ -6,7 +6,7 @@ import { RJSFSchema } from "@rjsf/utils";
 // import { actionHandler } from "@/app/utils/api";
 import { actionHandler } from "@/app/utils/actions";
 import Review from "./Review";
-import { Status } from "@/app/types";
+import { Status } from "@/app/types/types";
 
 // 🛠️ Function to fetch NAICS codes
 async function getNaicsCodes() {

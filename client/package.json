@@ -9,8 +9,9 @@
     "test": "jest",
     "format": "prettier --write .",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx . && next lint",
+    "e2e": "yarn playwright test",
     "e2e:ui": "yarn playwright test --ui",
-    "e2e:operation:sequential": "playwright test --workers=1 client/e2e/*",
+    "e2e:sequential": "playwright test --workers=1 client/e2e/*",
     "audit-deps": "improved-yarn-audit"
   },
   "dependencies": {
@@ -34,6 +35,7 @@
     "@types/react-dom": "^18.2.14",
     "autoprefixer": "^10.4.16",
     "classnames": "^2.3.2",
+    "dotenv": "^16.3.1",
     "eslint": "8.48.0",
     "eslint-config-airbnb-typescript": "^17.1.0",
     "eslint-config-next": "^14.0.1",

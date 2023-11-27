@@ -9,11 +9,11 @@ export default async function Page() {
 
   return (
     <>
-      <h1>Server Page Session Information</h1>
+      <h1>Profile Page With Server Side Session Information</h1>
       {session && (
         <>
           <p>Name: {session?.user?.name}</p>
-          <p>Role: {session?.user?.role}</p>
+          <p>Role: {session?.user?.app_role}</p>
           <p>GUID: {session?.user?.user_guid}</p>
           <p>IP: {session?.identity_provider}</p>
         </>

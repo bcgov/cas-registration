@@ -1,0 +1,17 @@
+[
+  {
+    "title": "Operators",
+    "content": "For managing external operator admin access requests.",
+    "links": [{ "title": "Operators ➤", "href": "/dashboard/operators" }]
+  },
+  {
+    "title": "Operation Registration",
+    "content": "For managing operation registration and carbon tax exemption requests.",
+    "links": [{ "title": "Operations ➤", "href": "/dashboard/operations" }]
+  },
+  {
+    "title": "Report a Problem",
+    "content": "Something wrong?",
+    "links": [{ "title": "Tell the team ➤", "href": "/dashboard/problem" }]
+  }
+]

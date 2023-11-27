@@ -2,8 +2,8 @@
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Grid from "@mui/material/Grid";
-import Typography from "@mui/material/Typography";
 import Link from "@mui/material/Link";
+import Typography from "@mui/material/Typography";
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 
@@ -24,7 +24,7 @@ type ContentItem = {
 
 export default function Page() {
   const { data: session } = useSession();
-  const role = session?.user?.role;
+  const role = session?.user?.app_role;
 
   const [contents, setContents] = useState<ContentItem[]>([]);
   useEffect(() => {
@@ -32,17 +32,34 @@ export default function Page() {
       const fetchData = async () => {
         let contentsModule;
         switch (role) {
-          case "admin":
-            contentsModule = await import("@/app/data/dashboard/admin.json");
+          case "cas_admin":
+            contentsModule = await import(
+              "@/app/data/dashboard/cas_admin.json"
+            );
             break;
-          case "operator":
-            contentsModule = await import("@/app/data/dashboard/operator.json");
+          case "cas_analyst":
+            contentsModule = await import(
+              "@/app/data/dashboard/cas_analyst.json"
+            );
             break;
+          case "industry_user_admin":
+            contentsModule = await import(
+              "@/app/data/dashboard/industry_user_admin.json"
+            );
+            break;
+          case "industry_user":
+            contentsModule = await import(
+              "@/app/data/dashboard/industry_user.json"
+            );
+            break;
+
           default:
-            contentsModule = await import("@/app/data/dashboard/user.json");
+            contentsModule = null;
             break;
         }
-        setContents(contentsModule.default);
+        if (contentsModule) {
+          setContents(contentsModule.default);
+        }
       };
 
       fetchData();
@@ -50,47 +67,65 @@ export default function Page() {
   }, [role]); // dependencies array
   return (
     <div>
-      {/* 🪜 create a grid layout using container prop to create a container that wraps the grid items */}
-      <Grid container>
-        {/* 🖥️📲 make items responsive using screensize breachpoints and style items to matching heights using sx */}
-        {contents.map((content, index) => (
-          <Grid
-            key={index}
-            item
-            component={Card}
-            xs={12}
-            sm={6}
-            md={3}
-            sx={{
-              margin: 6,
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "space-between",
-            }}
-          >
-            <CardContent>
-              <Typography variant="h5" component="h2">
-                {content.title}
-              </Typography>
+      {role === "cas_pending" ? (
+        // Display pending message
+        <Card
+          data-testid="dashboard-pending-message"
+          sx={{ padding: 2, margin: 2, border: "none", boxShadow: "none" }}
+        >
+          <Typography variant="h5" component="div">
+            Welcome to CAS Registration App
+          </Typography>
+          <Typography variant="body1" color="textSecondary" component="div">
+            Your current status is pending approval.
+          </Typography>
+          <Typography variant="body1" color="textSecondary" component="div">
+            Once approved, you will have access to the application.
+          </Typography>
+        </Card>
+      ) : (
+        // 🪜 create a grid layout using container prop to create a container that wraps the grid items
+        <Grid container>
+          {/* 🖥️📲 make items responsive using screensize breachpoints and style items to matching heights using sx */}
+          {contents.map((content, index) => (
+            <Grid
+              key={index}
+              item
+              component={Card}
+              xs={12}
+              sm={6}
+              md={3}
+              sx={{
+                margin: 6,
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+              }}
+            >
+              <CardContent data-testid="dashboard-nav-card">
+                <Typography variant="h5" component="h2">
+                  {content.title}
+                </Typography>
 
-              <Typography component="p" color="textSecondary">
-                {content.content}
-              </Typography>
-            </CardContent>
-            {/* build bottom links */}
-            {typeof content.links === "object" &&
-              content.links.map((link, i) => (
-                <Link
-                  key={i}
-                  href={link.href}
-                  sx={{ textDecoration: "none", padding: "8px" }}
-                >
-                  {link.title}
-                </Link>
-              ))}
-          </Grid>
-        ))}
-      </Grid>
+                <Typography component="p" color="textSecondary">
+                  {content.content}
+                </Typography>
+              </CardContent>
+              {/* build bottom links */}
+              {typeof content.links === "object" &&
+                content.links.map((link, i) => (
+                  <Link
+                    key={i}
+                    href={link.href}
+                    sx={{ textDecoration: "none", padding: "8px" }}
+                  >
+                    {link.title}
+                  </Link>
+                ))}
+            </Grid>
+          ))}
+        </Grid>
+      )}
     </div>
   );
 }
