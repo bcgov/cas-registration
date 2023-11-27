@@ -1,97 +1,90 @@
 "use client";
 
-import Form from "@/app/components/form/FormBase";
 import { RJSFSchema } from "@rjsf/utils";
 import { useState } from "react";
-import { Alert, Button } from "@mui/material";
-import SubmitButton from "@/app/components/form/SubmitButton";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { userOperatorUiSchema } from "@/app/utils/jsonSchema/userOperator";
 import { actionHandler } from "@/app/utils/actions";
+import MultiStepFormBase from "@/app/components/form/MultiStepFormBase";
 import {
-  UserFormData,
   UserOperatorFormData,
+  UserFormData,
 } from "@/app/components/form/formDataTypes";
 
-export interface UserOperatorFormProps {
-  schema: RJSFSchema;
-  formData?: UserFormData | UserOperatorFormData;
-  userOperatorId?: number;
+interface UserOperatorFormProps {
+  readonly schema: RJSFSchema;
+  readonly formData: Partial<UserFormData>;
 }
 
 export default function UserOperatorForm({
   schema,
   formData,
-  userOperatorId,
 }: UserOperatorFormProps) {
   const { push } = useRouter();
-  const [errorList, setErrorList] = useState([] as any[]);
+  const params = useParams();
+  const searchParams = useSearchParams();
+  const [error, setError] = useState(undefined);
+  const [formState, setFormState] = useState(formData);
 
-  // manage formDataState to prevent formData from being reset on submit
-  const [formDataState, setFormDataState] = useState(formData);
+  const formSection = parseInt(params?.formSection as string) - 1;
 
-  const localSchema = JSON.parse(JSON.stringify(schema));
-  if (userOperatorId && localSchema.properties) {
-    localSchema.properties.cra_business_number = {
-      ...localSchema.properties.cra_business_number,
-      readOnly: true,
-    };
-    localSchema.properties.bc_corporate_registry_number = {
-      ...localSchema.properties.bc_corporate_registry_number,
-      readOnly: true,
-    };
-  }
+  const formSectionList = Object.keys(schema.properties as RJSFSchema);
+  const isFinalStep = formSection === formSectionList.length - 1;
 
   const submitHandler = async (data: { formData?: UserOperatorFormData }) => {
-    setFormDataState(data.formData);
+    const newFormData = {
+      ...formState,
+      ...data.formData,
+    } as UserOperatorFormData;
 
-    const endpointPrefix = "/dashboard/select-operator";
-    const method = userOperatorId ? "PUT" : "POST";
-    const urlSuffix = userOperatorId
-      ? `user-operator/${userOperatorId}`
-      : "user-operator";
+    // to prevent resetting the form state when errors occur
+    setFormState(newFormData);
+
+    // add user operator id to form data if it exists (to be used in senior officer creation)
+    const userOperatorId = searchParams.get("user-operator-id");
+    if (userOperatorId) newFormData.user_operator_id = userOperatorId;
+
+    const apiUrl = `registration/user-operator/${
+      isFinalStep ? "contact" : "operator"
+    }`;
 
     const response = await actionHandler(
-      `registration/select-operator/${urlSuffix}`,
-      method,
-      `${endpointPrefix}${urlSuffix}`,
+      apiUrl,
+      "POST",
+      `/dashboard/select-operator/user-operator/create/${params?.formSection}`,
       {
-        body: JSON.stringify(data.formData),
+        body: JSON.stringify(newFormData),
       },
     );
 
     if (response.error) {
-      setErrorList([{ message: response.error }]);
+      setError(response.error);
       return;
     }
 
-    const operatorId = response.res.operator_id;
-    push(`${endpointPrefix}/received/${operatorId}`);
+    if (isFinalStep) {
+      push(
+        `/dashboard/select-operator/received/add-operator/${response.res.operator_id}`,
+      );
+      return;
+    }
+    push(
+      `/dashboard/select-operator/user-operator/create/${
+        formSection + 2
+      }?user-operator-id=${response.res.user_operator_id}`,
+    );
   };
 
   return (
-    <Form
-      schema={localSchema}
-      formData={formDataState}
+    <MultiStepFormBase
+      baseUrl={"/dashboard/select-operator/user-operator/create"}
+      cancelUrl="/dashboard/select-operator"
+      schema={schema}
+      error={error}
+      formData={formState}
+      submitEveryStep
       onSubmit={submitHandler}
       uiSchema={userOperatorUiSchema}
-    >
-      {errorList.length > 0 &&
-        errorList.map((e: any) => (
-          <Alert key={e.message} severity="error">
-            {e?.stack ?? e.message}
-          </Alert>
-        ))}
-      <div className="flex justify-end gap-3">
-        <SubmitButton label="Submit" />
-        <Button
-          variant="outlined"
-          onClick={() => push("/dashboard/select-operator")}
-          sx={{ marginBottom: 10 }}
-        >
-          Cancel
-        </Button>
-      </div>
-    </Form>
+    />
   );
 }
