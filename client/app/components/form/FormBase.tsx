@@ -1,7 +1,13 @@
 import defaultTheme from "./defaultTheme";
 import { useMemo } from "react";
-import validator from "@rjsf/validator-ajv8";
+import { customizeValidator } from "@rjsf/validator-ajv8";
 import { FormProps, withTheme, ThemeProps } from "@rjsf/core";
+
+const customFormats = {
+  phone: /\(?\d{3}\)?[\s-]?\d{3}[\s-]?\d{4}$/,
+};
+
+const validator = customizeValidator({ customFormats });
 
 interface FormPropsWithTheme<T> extends Omit<FormProps<T>, "validator"> {
   theme?: ThemeProps;

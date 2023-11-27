@@ -52,7 +52,7 @@ export const userOperatorSchema: RJSFSchema = {
     },
     postal_code: { type: "string", title: "Postal Code" },
     email: { type: "string", title: "Email Address" },
-    phone_number: { type: "string", title: "Phone Number" },
+    phone_number: { type: "string", title: "Phone Number", format: "phone" },
     // temporary handling of many-to-many fields, will be addressed in #138
     // file: {
     //   title: "Signed Statutory Declaration",
@@ -185,6 +185,7 @@ export const userOperatorSchema: RJSFSchema = {
           so_phone_number: {
             type: "string",
             title: "Phone Number",
+            format: "phone",
           },
           // temporary handling of many-to-many fields, will be addressed in #138
           // "Proof of authority of operation representative from a SO": {
@@ -512,5 +513,11 @@ export const userOperatorUiSchema = {
   },
   mailing_province: {
     "ui:widget": "ComboBox",
+  },
+  phone_number: {
+    "ui:widget": "PhoneWidget",
+  },
+  so_phone_number: {
+    "ui:widget": "PhoneWidget",
   },
 };
