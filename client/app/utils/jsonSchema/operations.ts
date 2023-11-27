@@ -63,6 +63,19 @@ const operationPage1: RJSFSchema = {
       type: "boolean",
       default: false,
     },
+    multiple_operators_section: {
+      //Not an actual field in the db - this is just to make the form look like the wireframes
+      title: "Multiple operators information",
+      type: "object",
+      readOnly: true,
+    },
+    operation_has_multiple_operators: {
+      type: "boolean",
+      title: "Does the operation have multiple operators?",
+      default: false,
+    },
+    // temp handling of many to many, will be addressed in #138
+    // petrinex_ids: { type: "number", title: "Petrinex IDs" },
 
     // documents: { type: "string", title: "documents" },
   },
@@ -132,20 +145,6 @@ const operationPage1: RJSFSchema = {
         required: ["opt_in"],
       },
     },
-  ],
-};
-
-const operationPage2: RJSFSchema = {
-  type: "object",
-  title: "Multiple Operators Information",
-  properties: {
-    operation_has_multiple_operators: {
-      type: "boolean",
-      title: "Does the operation have multiple operators?",
-      default: false,
-    },
-  },
-  allOf: [
     {
       if: {
         properties: {
@@ -199,9 +198,11 @@ const operationPage2: RJSFSchema = {
                   format: "data-url",
                 },
                 mo_physical_address_section: {
+                  //Not an actual field in the db - this is just to make the form look like the wireframes
                   title:
                     "Please provide information about the physical address of this operator:",
                   type: "object",
+                  readOnly: true,
                 },
                 mo_physical_street_address: {
                   type: "string",
@@ -221,9 +222,11 @@ const operationPage2: RJSFSchema = {
                   title: "Postal Code",
                 },
                 mo_mailing_address_section: {
+                  //Not an actual field in the db - this is just to make the form look like the wireframes
                   title:
                     "Please provide information about the mailing address of this operator:",
                   type: "object",
+                  readOnly: true,
                 },
                 mo_mailing_address_same_as_physical: {
                   title:
@@ -272,7 +275,7 @@ const operationPage2: RJSFSchema = {
   ],
 };
 
-const operationPage3: RJSFSchema = {
+const operationPage2: RJSFSchema = {
   type: "object",
   title: "Application Lead",
   properties: {
@@ -356,7 +359,6 @@ export const operationSchema: RJSFSchema = {
   properties: {
     operationPage1,
     operationPage2,
-    operationPage3,
   },
 };
 
@@ -392,6 +394,7 @@ export const operationUiSchema = {
     "postal_code",
     "email",
     "phone_number",
+    "multiple_operators_section",
     "operation_has_multiple_operators",
     "multiple_operators_array",
     "mo_percentage_ownership",
@@ -434,6 +437,7 @@ export const operationUiSchema = {
     "ui:widget": "RadioWidget",
   },
   is_application_lead_external: {
+  "Would you like to add an exemption ID application lead?": {
     "ui:widget": "RadioWidget",
   },
   opt_in: {
@@ -447,6 +451,13 @@ export const operationUiSchema = {
   },
   province: {
     "ui:widget": "ComboBox",
+  multiple_operators_section: {
+    ...subheading,
+  },
+  operation_has_multiple_operators: {
+    "ui:widget": "RadioWidget",
+  },
+
   multiple_operators_array: {
     "ui:FieldTemplate": FieldTemplate,
     "ui:options": {
