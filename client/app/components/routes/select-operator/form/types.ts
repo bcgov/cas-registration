@@ -17,3 +17,7 @@ export interface Operator {
   documents: Array<number>;
   contacts: Array<number>;
 }
+
+export interface BusinessStructure {
+  name: string;
+}
