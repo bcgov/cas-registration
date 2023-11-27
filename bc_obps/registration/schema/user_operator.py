@@ -1,5 +1,6 @@
 from typing import Optional
-from ninja import Schema
+from ninja import ModelSchema, Schema
+from registration.models import Contact, User
 
 
 class RequestAccessOut(Schema):
@@ -37,23 +38,27 @@ class UserOperatorOut(Schema):
     website: Optional[str]
 
 
-class UserOperatorIn(UserOperatorOut):
+class UserOperatorOperatorIn(Schema):
     """
-    Schema for the UserOperator model
+    Schema for the Operator Information part of the user operator form
     """
 
-    is_senior_officer: bool
+    legal_name: str
+    trade_name: Optional[str] = ""
+    cra_business_number: int
+    bc_corporate_registry_number: int
+    business_structure: str
+    physical_street_address: str
+    physical_municipality: str
+    physical_province: str
+    physical_postal_code: str
+    # below are optional fields because we might use physical address as mailing address
+    mailing_street_address: Optional[str]
+    mailing_municipality: Optional[str]
+    mailing_province: Optional[str]
+    mailing_postal_code: Optional[str]
+    website: Optional[str]
     mailing_address_same_as_physical: bool
-    # so => senior officer
-    so_first_name: Optional[str]
-    so_last_name: Optional[str]
-    so_position_title: Optional[str]
-    so_street_address: Optional[str]
-    so_municipality: Optional[str]
-    so_province: Optional[str]
-    so_postal_code: Optional[str]
-    so_email: Optional[str]
-    so_phone_number: Optional[str]
     operator_has_parent_company: bool
     # pc => parent company
     pc_legal_name: Optional[str]
@@ -70,3 +75,38 @@ class UserOperatorIn(UserOperatorOut):
     pc_mailing_province: Optional[str]
     pc_mailing_postal_code: Optional[str]
     percentage_owned_by_parent_company: Optional[int]
+
+
+class UserOperatorContactIn(ModelSchema):
+    """
+    Schema for the User Information part of the user operator form
+    """
+
+    is_senior_officer: bool
+    so_phone_number: Optional[str] = None
+    so_email: Optional[str] = None
+    # these fields are optional because we might use the user's info as the contact info
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    user_operator_id: int
+
+    class Config:
+        model = Contact
+        model_exclude = ["id", "documents", "business_role"]
+
+
+class UserOperatorUserOut(ModelSchema):
+    """
+    Custom schema for the user operator user form
+    """
+
+    @staticmethod
+    def resolve_phone_number(obj):
+        # PhoneNumberField returns a PhoneNumber object and we need a string
+        if not obj.phone_number:
+            return
+        return obj.phone_number.as_e164
+
+    class Config:
+        model = User
+        model_fields = ["phone_number", "email"]
