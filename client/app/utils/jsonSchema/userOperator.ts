@@ -16,20 +16,10 @@ const subheading = {
   "ui:FieldTemplate": TitleOnlyFieldTemplate,
 };
 
-export const userOperatorSchema: RJSFSchema = {
+const userOperatorPage1: RJSFSchema = {
   type: "object",
+  title: "Operator Information",
   required: [
-    "first_name",
-    "last_name",
-    "position_title",
-    "street_address",
-    "municipality",
-    "postal_code",
-    "email",
-    "phone_number",
-    "province",
-    "is_senior_officer",
-    // "file", temporary handling of many-to-many fields, will be addressed in #138
     "legal_name",
     "cra_business_number",
     "bc_corporate_registry_number",
@@ -40,40 +30,9 @@ export const userOperatorSchema: RJSFSchema = {
     "physical_postal_code",
     "operator_has_parent_company",
   ],
-  title: "User Information",
   properties: {
-    first_name: { type: "string", title: "First Name" },
-    last_name: { type: "string", title: "Last Name" },
-    position_title: { type: "string", title: "Position Title" },
-    street_address: { type: "string", title: "Mailing Address" },
-    municipality: { type: "string", title: "Municipality" },
-    province: {
-      type: "string",
-      title: "Province",
-      anyOf: provinceOptions,
-    },
-    postal_code: { type: "string", title: "Postal Code" },
-    email: { type: "string", title: "Email Address" },
-    phone_number: { type: "string", title: "Phone Number", format: "phone" },
-    // temporary handling of many-to-many fields, will be addressed in #138
-    // file: {
-    //   title: "Signed Statutory Declaration",
-    //   type: "string",
-    //   format: "data-url",
-    // },
-    is_senior_officer: {
-      title: "Are you a senior officer of the operator?",
-      type: "boolean",
-      default: true,
-    },
-    operator_information: {
-      //Not an actual field in the db - this is just to make the form look like the wireframes
-      type: "object",
-      title: "Operator Information",
-      readOnly: true,
-    },
     legal_name: { type: "string", title: "Legal Name" },
-    trade_name: { type: "string", title: "Trade Name (optional)", default: "" },
+    trade_name: { type: "string", title: "Trade Name" },
     cra_business_number: {
       type: "number",
       title: "CRA Business Number",
@@ -85,6 +44,7 @@ export const userOperatorSchema: RJSFSchema = {
     business_structure: {
       type: "string",
       title: "Business Structure",
+      anyOf: [],
     },
     website: { type: "string", title: "Website (optional)" },
     operator_has_parent_company: {
@@ -115,7 +75,6 @@ export const userOperatorSchema: RJSFSchema = {
       title: "Postal Code",
     },
     mailing_address_section: {
-      //Not an actual field in the db - this is just to make the form look like the wireframes
       title:
         "Please provide information about the mailing address of this operator:",
       type: "object",
@@ -127,75 +86,6 @@ export const userOperatorSchema: RJSFSchema = {
     },
   },
   allOf: [
-    {
-      if: {
-        properties: {
-          is_senior_officer: {
-            const: false,
-          },
-        },
-      },
-      then: {
-        type: "object",
-        required: [
-          // "Proof of authority of operation representative from a SO", uncomment when we have document upload working
-          "so_first_name",
-          "so_last_name",
-          "so_position_title",
-          "so_street_address",
-          "so_municipality",
-          "so_province",
-          "so_postal_code",
-          "so_email",
-          "so_phone_number",
-        ],
-        properties: {
-          so_first_name: {
-            type: "string",
-            title: "First Name",
-          },
-          so_last_name: {
-            type: "string",
-            title: "Last Name",
-          },
-          so_position_title: {
-            type: "string",
-            title: "Position Title",
-          },
-          so_street_address: {
-            type: "string",
-            title: "Mailing Address",
-          },
-          so_municipality: {
-            type: "string",
-            title: "Municipality",
-          },
-          so_province: {
-            type: "string",
-            title: "Province",
-            anyOf: provinceOptions,
-          },
-          so_postal_code: {
-            type: "string",
-            title: "Postal Code",
-          },
-          so_email: {
-            type: "string",
-            title: "Email Address",
-          },
-          so_phone_number: {
-            type: "string",
-            title: "Phone Number",
-            format: "phone",
-          },
-          // temporary handling of many-to-many fields, will be addressed in #138
-          // "Proof of authority of operation representative from a SO": {
-          //   type: "string",
-          //   format: "data-url",
-          // },
-        },
-      },
-    },
     {
       if: {
         properties: {
@@ -218,7 +108,7 @@ export const userOperatorSchema: RJSFSchema = {
           "pc_mailing_address_same_as_physical",
         ],
         properties: {
-          has_parent_company: {
+          has_parent_company_section: {
             //Not an actual field in the db - this is just to make the form look like the wireframes
             title: "Parent Company Information",
             type: "object",
@@ -242,6 +132,7 @@ export const userOperatorSchema: RJSFSchema = {
           pc_business_structure: {
             type: "string",
             title: "Business Structure",
+            anyOf: [],
           },
           pc_website: { type: "string", title: "Website" },
           percentage_owned_by_parent_company: {
@@ -249,8 +140,9 @@ export const userOperatorSchema: RJSFSchema = {
             title: "Percentage of ownership of operator (%)",
           },
           pc_physical_address_section: {
+            //Not an actual field in the db - this is just to make the form look like the wireframes
             title:
-              "Please provide information about the physical address of this operator:",
+              "Please provide information about the physical address of the parent company:",
             type: "object",
           },
           pc_physical_street_address: {
@@ -273,8 +165,9 @@ export const userOperatorSchema: RJSFSchema = {
           pc_mailing_address_section: {
             //Not an actual field in the db - this is just to make the form look like the wireframes
             title:
-              "Please provide information about the mailing address of this operator:",
+              "Please provide information about the mailing address of the parent company:",
             type: "object",
+            readOnly: true,
           },
           pc_mailing_address_same_as_physical: {
             title: "Is the mailing address the same as the physical address?",
@@ -282,6 +175,45 @@ export const userOperatorSchema: RJSFSchema = {
             default: true,
           },
         },
+        allOf: [
+          {
+            if: {
+              properties: {
+                pc_mailing_address_same_as_physical: {
+                  const: false,
+                },
+              },
+            },
+            then: {
+              type: "object",
+              required: [
+                "pc_mailing_street_address",
+                "pc_mailing_municipality",
+                "pc_mailing_province",
+                "pc_mailing_postal_code",
+              ],
+              properties: {
+                pc_mailing_street_address: {
+                  type: "string",
+                  title: "Mailing Address",
+                },
+                pc_mailing_municipality: {
+                  type: "string",
+                  title: "Municipality",
+                },
+                pc_mailing_province: {
+                  type: "string",
+                  title: "Province",
+                  anyOf: provinceOptions,
+                },
+                pc_mailing_postal_code: {
+                  type: "string",
+                  title: "Postal Code",
+                },
+              },
+            },
+          },
+        ],
       },
     },
     {
@@ -301,6 +233,12 @@ export const userOperatorSchema: RJSFSchema = {
           "mailing_postal_code",
         ],
         properties: {
+          mailing_address_section: {
+            //Not an actual field in the db - this is just to make the form look like the wireframes
+            title: "Mailing Address",
+            type: "object",
+            readOnly: true,
+          },
           mailing_street_address: {
             type: "string",
             title: "Mailing Address",
@@ -321,39 +259,101 @@ export const userOperatorSchema: RJSFSchema = {
         },
       },
     },
+  ],
+};
+
+const userOperatorPage2: RJSFSchema = {
+  type: "object",
+  title: "User Information",
+  required: [
+    "is_senior_officer",
+    "position_title",
+    "street_address",
+    "municipality",
+    "province",
+    "postal_code",
+    "email",
+    "phone_number",
+  ],
+  properties: {
+    is_senior_officer: {
+      title: "Are you a senior officer of the operator?",
+      type: "boolean",
+      default: true,
+    },
+    senior_officer_section: {
+      title:
+        "Please provide information about the Senior Officer (SO) of the Operator:",
+      type: "object",
+    },
+    position_title: {
+      type: "string",
+      title: "Position Title",
+    },
+    street_address: {
+      type: "string",
+      title: "Mailing Address",
+    },
+    municipality: {
+      type: "string",
+      title: "Municipality",
+    },
+    province: {
+      type: "string",
+      title: "Province",
+      anyOf: provinceOptions,
+    },
+    postal_code: {
+      type: "string",
+      title: "Postal Code",
+    },
+  },
+  allOf: [
     {
       if: {
         properties: {
-          pc_mailing_address_same_as_physical: {
+          is_senior_officer: {
             const: false,
           },
         },
       },
       then: {
         type: "object",
-        required: [
-          "pc_mailing_street_address",
-          "pc_mailing_municipality",
-          "pc_mailing_province",
-          "pc_mailing_postal_code",
-        ],
+        required: ["first_name", "last_name", "so_email", "so_phone_number"],
         properties: {
-          pc_mailing_street_address: {
+          first_name: {
             type: "string",
-            title: "Mailing Address",
+            title: "First Name",
           },
-          pc_mailing_municipality: {
+          last_name: {
             type: "string",
-            title: "Municipality",
+            title: "Last Name",
           },
-          pc_mailing_province: {
+          so_email: {
             type: "string",
-            title: "Province",
-            anyOf: provinceOptions,
+            title: "Email Address",
+            default: "",
           },
-          pc_mailing_postal_code: {
+          so_phone_number: {
             type: "string",
-            title: "Postal Code",
+            title: "Phone Number",
+            default: "",
+          },
+        },
+      },
+      else: {
+        type: "object",
+        required: ["email", "phone_number"],
+        properties: {
+          email: {
+            type: "string",
+            title: "Email Address",
+            readOnly: true,
+          },
+          phone_number: {
+            type: "string",
+            title: "Phone Number",
+            readOnly: true,
           },
         },
       },
@@ -361,8 +361,18 @@ export const userOperatorSchema: RJSFSchema = {
   ],
 };
 
+export const userOperatorSchema: RJSFSchema = {
+  type: "object",
+  properties: {
+    userOperatorPage1,
+    userOperatorPage2,
+  },
+};
+
 export const userOperatorUiSchema = {
   "ui:order": [
+    "is_senior_officer",
+    "senior_officer_section",
     "first_name",
     "last_name",
     "position_title",
@@ -372,18 +382,7 @@ export const userOperatorUiSchema = {
     "postal_code",
     "email",
     "phone_number",
-    // "file", temporary handling of many-to-many fields, will be addressed in #138
-    "senior_officer_section",
-    "is_senior_officer",
-    // "Proof of authority of operation representative from a SO", temporary handling of many-to-many fields, will be addressed in #138
     // so = senior officer
-    "so_first_name",
-    "so_last_name",
-    "so_position_title",
-    "so_street_address",
-    "so_municipality",
-    "so_province",
-    "so_postal_code",
     "so_email",
     "so_phone_number",
     "legal_name",
@@ -392,9 +391,7 @@ export const userOperatorUiSchema = {
     "bc_corporate_registry_number",
     "business_structure",
     "website",
-    "operator_information",
     "operator_has_parent_company",
-
     "physical_address_section",
     "physical_street_address",
     "physical_municipality",
@@ -406,7 +403,7 @@ export const userOperatorUiSchema = {
     "mailing_municipality",
     "mailing_province",
     "mailing_postal_code",
-    "has_parent_company",
+    "has_parent_company_section",
 
     // pc = parent company
     "pc_legal_name",
@@ -446,9 +443,6 @@ export const userOperatorUiSchema = {
       jsxTitle: SeniorOfficerTitle,
     },
   },
-  operator_information: {
-    ...subheading,
-  },
   so_email: {
     "ui:widget": "EmailWidget",
   },
@@ -467,7 +461,7 @@ export const userOperatorUiSchema = {
   operator_has_parent_company: {
     "ui:widget": "RadioWidget",
   },
-  has_parent_company: {
+  has_parent_company_section: {
     "ui:classNames": "form-heading",
     "ui:FieldTemplate": TitleOnlyFieldTemplate,
   },
@@ -486,8 +480,6 @@ export const userOperatorUiSchema = {
   mailing_address_same_as_physical: {
     "ui:widget": "RadioWidget",
   },
-  pc_mailing_address_section: subheading,
-  pc_physical_address_section: subheading,
   pc_mailing_address_same_as_physical: {
     "ui:widget": "RadioWidget",
   },
@@ -499,21 +491,31 @@ export const userOperatorUiSchema = {
   },
   pc_mailing_province: {
     "ui:widget": "ComboBox",
-  },
-  province: {
-    "ui:widget": "ComboBox",
+    "ui:placeholder": "Select a province",
   },
   physical_province: {
     "ui:widget": "ComboBox",
+    "ui:placeholder": "Select a province",
   },
   pc_physical_province: {
     "ui:widget": "ComboBox",
+    "ui:placeholder": "Select a province",
   },
-  so_province: {
+  province: {
     "ui:widget": "ComboBox",
+    "ui:placeholder": "Select a province",
   },
   mailing_province: {
     "ui:widget": "ComboBox",
+    "ui:placeholder": "Select a province",
+  },
+  business_structure: {
+    "ui:widget": "ComboBox",
+    "ui:placeholder": "Select a business structure",
+  },
+  pc_business_structure: {
+    "ui:widget": "ComboBox",
+    "ui:placeholder": "Select a business structure",
   },
   phone_number: {
     "ui:widget": "PhoneWidget",
