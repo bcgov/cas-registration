@@ -28,7 +28,7 @@ In both the `client` and `bc_obps` directories, create a `.env` file and copy th
 3. Complete the .env file values reflecting the 1Password vault document `OBPS backend ENV`.
 4. Download 1Password vault file `OBPS GCS json` and store it in folder location detailed in `.env\GOOGLE_APPLICATION_CREDENTIALS`.
 5. From the terminal, cd into directory `cas-registration/bc_obps`.
-6. Run `make install_dev_tools`. This will install asdf plugins, poetry and activate the poetry virtual environment (to get into the environment again after setup, run `poetry shell`).
+6. Run `make install_dev_tools`. This will install asdf plugins, poetry and activate the poetry virtual environment (to get into the environment again after setup, run `poetry shell`). To exit the shell run `exit`.
 7. Run `make install_poetry_deps` to install all python dependencies.
 8. Run `make start_pg` to start the postgres server if it is not already running.
 9. Run `make create_db` to create the database.

@@ -156,31 +156,6 @@ class UserOperatorIn(UserOperatorOut):
     percentage_owned_by_parent_company: Optional[int]
 
 
-# USER
-class UserOut(Schema):
-    id: int
-    first_name: str
-    last_name: str
-    position_title: str
-    street_address: str
-    municipality: str
-    province: str
-    postal_code: str
-    email: str
-    phone_number: str
-    role: str
-    user_guid: int
-    business_guid: int
-
-    # """
-    # Schema for the Operator model
-    # """
-
-    # class Config:
-    #     model = User
-    #     model_exclude = ["phone_number"]
-
-
 class UserOperatorListOut(Schema):
     id: int
     status: str
