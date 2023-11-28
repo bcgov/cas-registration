@@ -10,7 +10,9 @@ interface RequestAccessButtonProps {
   operatorId: number;
 }
 
-export default function RequestAccessButton({operatorId}: RequestAccessButtonProps) {
+export default function RequestAccessButton({
+  operatorId,
+}: RequestAccessButtonProps) {
   // 🧩common button config
   const commonButtonConfig = {
     width: "160px",
@@ -27,25 +29,22 @@ export default function RequestAccessButton({operatorId}: RequestAccessButtonPro
 
   const handleRequestAccess = async () => {
     const response = await actionHandler(
-
-      'registration/select-operator/request-access',
-      'POST',
+      "registration/select-operator/request-access",
+      "POST",
       `/dashboard/select-operator/confirm/${operatorId}`,
       {
         body: JSON.stringify({
-          operator_id: operatorId
-        })
-      }
-    )
+          operator_id: operatorId,
+        }),
+      },
+    );
     if (response.error) {
       setErrorList([{ message: response.error }]);
       return;
     }
 
-    push(
-      `/dashboard/select-operator/received/${operatorId}`,
-    );
-  }
+    push(`/dashboard/select-operator/received/${operatorId}`);
+  };
 
   return (
     <>
@@ -54,9 +53,9 @@ export default function RequestAccessButton({operatorId}: RequestAccessButtonPro
           <Alert key={e.message} severity="error">
             {e.message}
           </Alert>
-      ))}
+        ))}
       <Button
-        style={{margin: '0 auto', display: "flex"}}
+        style={{ margin: "0 auto", display: "flex" }}
         sx={{ ...commonButtonConfig }}
         aria-label="Request Access"
         color="primary"
