@@ -149,3 +149,9 @@ class UserOperatorIn(UserOperatorOut):
     pc_mailing_province: Optional[str]
     pc_mailing_postal_code: Optional[str]
     percentage_owned_by_parent_company: Optional[int]
+
+
+# AppRole schemas
+class AppRoleOut(Schema):
+    role_name: str
+    role_description: str

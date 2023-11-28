@@ -1,5 +1,6 @@
 import NextAuth, { NextAuthOptions } from "next-auth";
 import KeycloakProvider from "next-auth/providers/keycloak";
+import { actionHandler } from "@/app/utils/actions";
 
 /**
 📚 [...nextauth] is a catch all nextauth route
@@ -46,14 +47,37 @@ export const authOptions: NextAuthOptions = {
           // 👇️ used for federated logout, client/app/api/auth/logout/route.ts
           token.id_token = account.id_token;
 
-          // 👇️ used for role lookup and DJANGO API calls
-          token.user_guid = account.providerAccountId
-            .split("@")[0]
-            .toUpperCase();
+          // 👇️ used for app_role lookup and DJANGO API calls
+          token.user_guid = account.providerAccountId.split("@")[0];
           token.identity_provider = account.providerAccountId.split("@")[1];
-
-          //🚧 wip - used for route access: TDB DB LOOKUP
-          token.role = "admin";
+          // 🚧 WIP 🚧
+          switch (token.identity_provider) {
+            case "idir":
+              // Default role
+              token.app_role = "cas_pending";
+              try {
+                // Get user tole by guid
+                const response = await actionHandler(
+                  `registration/get-user-role/${token.user_guid}`,
+                  "GET",
+                  "",
+                );
+                if (response?.role_name) {
+                  token.app_role = response.role_name;
+                } else {
+                  // Default app_role if the API call fails
+                }
+              } catch (error) {
+                // Default app_role if there's an error in the API call
+              }
+              break;
+            case "bceidbusiness":
+              // Default role
+              token.app_role = "industry_user";
+              // 🚧 token.app_role = "industry_user" + "_admin";
+              // ticket 321
+              break;
+          }
         } else {
           // check if token is expired
           if (
@@ -138,7 +162,7 @@ export const authOptions: NextAuthOptions = {
         user: {
           ...session.user,
           user_guid: token.user_guid,
-          role: token.role,
+          app_role: token.app_role,
         },
       };
     },

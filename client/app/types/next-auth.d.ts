@@ -17,7 +17,7 @@ declare module "next-auth/jwt" {
     user_guid: string | undefined;
     identity_provider: string | undefined;
     error?: string;
-    role?: string;
+    app_role?: string;
   }
 }
 
@@ -27,7 +27,7 @@ declare module "next-auth" {
     identity_provider: string | undefined;
     user: {
       user_guid: string | undefined;
-      role?: string;
+      app_role?: string;
     } & DefaultSession["user"];
   }
 }

@@ -1,6 +1,5 @@
 import { stackMiddlewares } from "@/middlewares/stackMiddlewares";
 import { withAuthorization } from "@/middlewares/withAuthorization";
-import { withResponse } from "@/middlewares/withResponse";
 
 /* 📌
 Middleware allows you to run code before a request is completed so you can modify the response by
@@ -40,4 +39,4 @@ export const config = {
 };
 
 // ⛓️ Chaining middleware for maintainability, and scalability by apply a series of task specific functions to a request
-export default stackMiddlewares([withAuthorization, withResponse]);
+export default stackMiddlewares([withAuthorization]);

@@ -32,6 +32,7 @@ export default function Profile({ name }: { readonly name: string }) {
   return (
     <div className="flex items-center">
       <Link
+        data-testid="profile-nav-user"
         href="/dashboard/profile"
         sx={{ color: "white", marginRight: "10px" }}
       >
