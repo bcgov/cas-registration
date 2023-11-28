@@ -52,6 +52,7 @@ def request_access(request, payload: SelectOperatorIn):
     )
     return 201, {"user_operator_id": user_operator.id}
 
+
 @router.post("/select-operator/request-access", response={201: RequestAccessOut, codes_4xx: Message})
 def request_access(request, payload: SelectOperatorIn):
     current_user_guid = json.loads(request.headers.get('Authorization'))["user_guid"]
@@ -61,7 +62,7 @@ def request_access(request, payload: SelectOperatorIn):
 
     status, message = check_access_request_matches_business_guid(current_user_guid, operator)
     if status != 200:
-      return status, message
+        return status, message
 
     # Making a draft UserOperator instance if one doesn't exist
     user_operator, _ = UserOperator.objects.get_or_create(

@@ -95,12 +95,14 @@ def check_access_request_matches_business_guid(user_guid: str, operator: Operato
     Returns:
         Union[None, Tuple[int, str]]: Eligibility status. None if eligible, (400, error message) if not.
     """
-    admin_user_operator_data = UserOperator.objects.filter(operator=operator, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.APPROVED)[0]
+    admin_user_operator_data = UserOperator.objects.filter(
+        operator=operator, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.APPROVED
+    )[0]
     # Operator already has an admin user
     admin_user = get_object_or_404(User, user_guid=admin_user_operator_data.user_id)
     current_user = get_object_or_404(User, user_guid=user_guid)
 
-    if (admin_user.business_guid != current_user.business_guid):
-      return 403, {"message": "Your business bceid does not match that of the approved admin!"}
+    if admin_user.business_guid != current_user.business_guid:
+        return 403, {"message": "Your business bceid does not match that of the approved admin!"}
 
     return 200, None

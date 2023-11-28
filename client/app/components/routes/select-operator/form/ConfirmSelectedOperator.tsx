@@ -3,10 +3,8 @@ import { BC_GOV_LINKS_COLOR } from "@/app/styles/colors";
 import { actionHandler } from "@/app/utils/actions";
 import { Operator } from "@/app/components/routes/select-operator/form/types";
 import ConfirmSelectedOperatorForm from "@/app/components/form/ConfirmSelectedOperatorForm";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import RequestAccessButton from "@/app/components/button/RequestAccessButton"
-import WarningIcon from '@mui/icons-material/Warning';
+import RequestAccessButton from "@/app/components/button/RequestAccessButton";
+import WarningIcon from "@mui/icons-material/Warning";
 
 export async function getOperator(id: number) {
   return actionHandler(
@@ -20,7 +18,7 @@ export async function getOperatorHasAdmin(id: number) {
   return actionHandler(
     `registration/operator-has-admin/${id}`,
     "GET",
-    `dashboard/select-operator/confirm/${id}`
+    `dashboard/select-operator/confirm/${id}`,
   );
 }
 
@@ -30,9 +28,9 @@ export default async function ConfirmSelectedOperator({
   readonly params: { id: number };
 }) {
   const operator: Operator | { error: string } = await getOperator(params.id);
-  const hasAdmin: Boolean | { error: string } = await getOperatorHasAdmin(params.id);
-  const session = await getServerSession(authOptions);
-  const userName = session?.user?.name?.split(' ')?.[0];
+  const hasAdmin: Boolean | { error: string } = await getOperatorHasAdmin(
+    params.id,
+  );
 
   if ("error" in operator) {
     return <div>Server Error. Please try again later.</div>;
@@ -46,11 +44,12 @@ export default async function ConfirmSelectedOperator({
       {hasAdmin ? (
         <>
           <p>
-            Looks like you do not have access to <b>{operator.legal_name}</b><br />
-            You'll need the administrator of your operator to grant you access.
+            Looks like you do not have access to <b>{operator.legal_name}</b>
+            <br />
+            You will need the administrator of your operator to grant you access.
           </p>
           <p>Confirm below if you would like to request access to it</p>
-          <RequestAccessButton operatorId={operator.id}/>
+          <RequestAccessButton operatorId={operator.id} />
         </>
       ) : (
         <>
