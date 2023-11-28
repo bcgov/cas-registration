@@ -337,6 +337,7 @@ const userOperatorPage2: RJSFSchema = {
           so_phone_number: {
             type: "string",
             title: "Phone Number",
+            format: "phone",
             default: "",
           },
         },
@@ -353,6 +354,7 @@ const userOperatorPage2: RJSFSchema = {
           phone_number: {
             type: "string",
             title: "Phone Number",
+            format: "phone",
             readOnly: true,
           },
         },
