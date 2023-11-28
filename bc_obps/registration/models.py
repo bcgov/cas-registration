@@ -511,6 +511,24 @@ class Operation(OperationAndFacilityCommonInfo):
 class MultipleOperator(models.Model):
     """def here"""
 
+    operation_id = models.ForeignKey(
+        Operation,
+        on_delete=models.DO_NOTHING,
+    )
+    operator_number = models.IntegerField(
+        db_comment="Number used to differentiate operators for this operation for saving/updating purposes"
+    )
+    legal_name = models.CharField(max_length=1000, db_comment="The legal name of an operator")
+    trade_name = models.CharField(max_length=1000, blank=True, db_comment="The trade name of an operator")
+    cra_business_number = models.IntegerField(db_comment="The CRA business number of an operator")
+    bc_corporate_registry_number = models.IntegerField(db_comment="The BC corporate registry number of an operator")
+    business_structure = models.CharField(max_length=1000, db_comment="The legal name of an operator")
+    website = models.URLField(
+        max_length=200,
+        db_comment="The website address of an operator",
+        blank=True,
+        null=True,
+    )
     percentage_ownership = models.DecimalField(
         decimal_places=3,
         max_digits=3,
@@ -518,9 +536,32 @@ class MultipleOperator(models.Model):
         blank=True,
         null=True,
     )
-    legal_name = models.CharField(max_length=1000, db_comment="")
-    # TODO: add remaining fields here
-    operation_id = models.ForeignKey(
-        Operation,
-        on_delete=models.DO_NOTHING,
+    # TODO: add documents
+    # proof_of_authority = models.FileField(
+    #     upload_to="documents",
+    #     db_comment="",
+    #     blank=True,
+    #     null=True,
+    # )
+    physical_street_address = models.CharField(
+        max_length=1000,
+        db_comment="The physical street address of an operator (where the operator is physically located)",
+    )
+    physical_municipality = models.CharField(
+        max_length=1000,
+        db_comment="The physical municipality of an operator ",
+    )
+    physical_province = CAProvinceField(
+        db_comment="The physical street address of an operator, restricted to two-letter province postal abbreviations"
+    )
+    physical_postal_code = CAPostalCodeField(
+        db_comment="The physical postal code address of an operator, limited to valid Canadian postal codes"
+    )
+    mailing_street_address = models.CharField(max_length=1000, db_comment="The mailing street address of an operator")
+    mailing_municipality = models.CharField(max_length=1000, db_comment="The mailing municipality of an operator")
+    mailing_province = CAProvinceField(
+        db_comment="The mailing province of an operator, restricted to two-letter province postal abbreviations"
+    )
+    mailing_postal_code = CAPostalCodeField(
+        db_comment="The mailing postal code of an operator, limited to valid Canadian postal codes"
     )

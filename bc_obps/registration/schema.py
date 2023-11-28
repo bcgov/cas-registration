@@ -61,10 +61,6 @@ class OperationOut(ModelSchema):
         model = Operation
         model_fields = "__all__"
 
-    class Config:
-        model = Operation
-        model_fields = "__all__"
-
 
 # OPERATOR
 class OperatorOut(ModelSchema):
@@ -79,7 +75,21 @@ class OperatorOut(ModelSchema):
 
 class MultipleOperatorIn(Schema):
     operation_id: int
-    # TODO: more fields needed here
+    operation_number: int
+    legal_name: str
+    trade_name: str
+    cra_business_number: int
+    bc_corporate_registry_number: int
+    business_structure: str
+    website: str
+    physical_street_address: str
+    physical_municipality: str
+    physical_province: str
+    physical_postal_code: str
+    mailing_street_address: str
+    mailing_municipality: str
+    mailing_province: str
+    mailing_postal_code: str
 
 
 class MultipleOperatorOut(ModelSchema):
