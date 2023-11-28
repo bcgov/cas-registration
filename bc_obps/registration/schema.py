@@ -108,10 +108,8 @@ class OperationOut(ModelSchema):
     current_year_estimated_emissions: Optional[str] = None
     opt_in: Optional[bool] = None
     verified_at: Optional[date] = None
-    # application_lead_id: Optional[int] = Field(..., alias="application_lead.id")
     is_application_lead_external: Optional[bool] = None
     application_lead: Optional[ContactSchema]
-    # brianna django ninja fetch data for foreign keys, can just do it here, don't have to do on the other forms https://django-ninja.dev/guides/response/?h=nested#nested-objects
 
     class Config:
         model = Operation

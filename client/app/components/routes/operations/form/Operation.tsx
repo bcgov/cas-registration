@@ -58,7 +58,6 @@ export async function getReportingActivities() {
   }
 }
 
-// brianna fetch contacts here
 // 🛠️ Function to fetch an operation by ID
 async function getOperation(id: number) {
   try {
