@@ -317,33 +317,34 @@ class TestOperatorsEndpoint:
 
 class TestUserOperatorEndpoint:
     endpoint = base_endpoint + "select-operator"
-    headers = {'Authorization': '{"user_guid":"3fa85f64-5717-4562-b3fc-2c963f66afa6"}'}
+
+    def setup(self):
+        self.user: User = baker.make(User)
+        self.auth_header = {'user_guid': str(self.user.user_guid)}
+        self.auth_header_dumps = json.dumps(self.auth_header)
 
     def test_select_operator_with_valid_id(self):
-        baker.make(User, user_guid="3fa85f64-5717-4562-b3fc-2c963f66afa6")
         operators = baker.make(Operator, _quantity=1)
-        response = client.get(f"{self.endpoint}/{operators[0].id}", headers=self.headers)
+        response = client.get(f"{self.endpoint}/{operators[0].id}", HTTP_AUTHORIZATION=self.auth_header_dumps)
 
         assert response.status_code == 200
         assert response.json() == {"operator_id": operators[0].id}
 
     def test_select_operator_with_invalid_id(self):
-        baker.make(User, user_guid="3fa85f64-5717-4562-b3fc-2c963f66afa6")
         invalid_operator_id = 99999  # Invalid operator ID
 
-        response = client.get(f"{self.endpoint}/{invalid_operator_id}", headers=self.headers)
+        response = client.get(f"{self.endpoint}/{invalid_operator_id}", HTTP_AUTHORIZATION=self.auth_header_dumps)
 
         assert response.status_code == 404
         assert response.json() == {"detail": "Not Found"}
 
     def test_request_access_with_valid_payload(self):
-        user = baker.make(User, user_guid="3fa85f64-5717-4562-b3fc-2c963f66afa6")
         operator = baker.make(Operator)
         response = client.post(
             f"{self.endpoint}/request-access",
             content_type=content_type_json,
             data={"operator_id": operator.id},
-            headers=self.headers,
+            HTTP_AUTHORIZATION=self.auth_header_dumps,
         )
 
         response_json = response.json()
@@ -353,7 +354,7 @@ class TestUserOperatorEndpoint:
 
         user_operator_exists = UserOperator.objects.filter(
             id=response_json["user_operator_id"],
-            user=user,
+            user=self.user,
             operator=operator,
             status=UserOperator.Statuses.DRAFT,
             role=UserOperator.Roles.ADMIN,
@@ -362,14 +363,13 @@ class TestUserOperatorEndpoint:
         assert user_operator_exists, "UserOperator object was not created"
 
     def test_request_access_with_invalid_payload(self):
-        baker.make(User, user_guid="3fa85f64-5717-4562-b3fc-2c963f66afa6")
         invalid_payload = {"operator_id": 99999}  # Invalid operator ID
 
         response = client.post(
             f"{self.endpoint}/request-access",
             content_type=content_type_json,
             data=invalid_payload,
-            headers=self.headers,
+            HTTP_AUTHORIZATION=self.auth_header_dumps,
         )
 
         assert response.status_code == 404
