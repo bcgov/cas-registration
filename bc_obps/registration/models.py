@@ -506,3 +506,21 @@ class Operation(OperationAndFacilityCommonInfo):
             models.Index(fields=["naics_code"], name="naics_code_idx"),
             models.Index(fields=["verified_by"], name="operation_verified_by_idx"),
         ]
+
+
+class MultipleOperator(models.Model):
+    """def here"""
+
+    percentage_ownership = models.DecimalField(
+        decimal_places=3,
+        max_digits=3,
+        db_comment="",
+        blank=True,
+        null=True,
+    )
+    legal_name = models.CharField(max_length=1000, db_comment="")
+    # TODO: add remaining fields here
+    operation_id = models.ForeignKey(
+        Operation,
+        on_delete=models.DO_NOTHING,
+    )
