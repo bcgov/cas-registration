@@ -1,9 +1,7 @@
 from registration.models import User
-from registration.schema import UserOperatorUserOut
+from registration.schema import UserOperatorUserOut, AppRoleOut
 from .api_base import router
 from django.shortcuts import get_object_or_404
-from registration.models import User
-from registration.schema import AppRoleOut
 import json
 
 
