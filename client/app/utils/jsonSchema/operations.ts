@@ -490,6 +490,9 @@ export const operationUiSchema = {
       mo_mailing_address_same_as_physical: {
         "ui:widget": "RadioWidget",
       },
+      mo_business_structure: {
+        "ui:widget": "ComboBox",
+      },
       mo_physical_province: {
         "ui:widget": "ComboBox",
       },
