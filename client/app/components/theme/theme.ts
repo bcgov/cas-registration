@@ -4,6 +4,7 @@ import {
   BC_GOV_BACKGROUND_COLOR_BLUE,
   BC_GOV_LINKS_COLOR,
   BC_GOV_YELLOW,
+  BC_GOV_TEXT,
   DARK_GREY_BG_COLOR,
   LIGHT_GREY_BG_COLOR,
   BC_GOV_SEMANTICS_RED,
@@ -15,6 +16,9 @@ const theme = createTheme({
   typography: {
     fontFamily: "BCSans, sans-serif",
     // Include "sans-serif" as a fallback font family.
+    allVariants: {
+      color: BC_GOV_TEXT,
+    },
   },
   // To modify each color directly, provide an object with one or more of the color tokens. Only the main token is required; light, dark, and contrastText are optional, and if not provided, then their values are calculated
   palette: {
@@ -37,6 +41,9 @@ const theme = createTheme({
     },
     success: {
       main: BC_GOV_SEMANTICS_GREEN,
+    },
+    text: {
+      primary: BC_GOV_TEXT,
     },
   },
   components: {
