@@ -447,13 +447,6 @@ class OperationModelTest(BaseTestCase):
     def setUpTestData(cls):
         cls.test_operation = Operation.objects.get(id=1)
 
-        cls.test_operation.contacts.set(
-            [
-                Contact.objects.get(id=1),
-                Contact.objects.get(id=2),
-            ]
-        )
-
         cls.test_operation.documents.set(
             [
                 Document.objects.get(id=1),
@@ -497,8 +490,8 @@ class OperationModelTest(BaseTestCase):
             ("opt_in", "opt in", None, None),
             ("verified_at", "verified at", None, None),
             ("verified_by", "verified by", None, None),
+            ("application_lead", "application lead", None, None),
             ("documents", "documents", None, 2),
-            ("contacts", "contacts", None, 2),
         ]
 
         for (
