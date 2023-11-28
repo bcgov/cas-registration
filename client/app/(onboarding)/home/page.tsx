@@ -40,7 +40,7 @@ export default function Page() {
       <Grid container spacing={2}>
         <Grid item xs={12} md={6} order={{ xs: 2, md: 1 }}>
           <Typography
-            color="secondary"
+            color="primary.light"
             sx={{
               fontWeight: 700,
               fontSize: "24px",
@@ -112,7 +112,7 @@ export default function Page() {
         </Grid>
         <Grid item xs={12} md={6} order={{ xs: 1, md: 2 }}>
           <Typography
-            color="secondary"
+            color="primary.light"
             sx={{
               fontWeight: 700,
               fontSize: "24px",
@@ -174,7 +174,7 @@ export default function Page() {
             </Table>
           </TableContainer>{" "}
           <Typography
-            color="secondary"
+            color="primary.light"
             sx={{
               marginTop: "40px",
               fontWeight: 700,
@@ -243,7 +243,7 @@ export default function Page() {
           </Typography>
           {/* TEMP Links */}
           <Typography
-            color="secondary"
+            color="primary.light"
             sx={{
               marginTop: "40px",
               fontWeight: 700,
