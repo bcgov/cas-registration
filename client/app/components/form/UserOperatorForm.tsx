@@ -64,14 +64,15 @@ export default function UserOperatorForm({
 
     if (isFinalStep) {
       push(
-        `/dashboard/select-operator/received/add-operator/${response.res.operator_id}`,
+        `/dashboard/select-operator/received/add-operator/${response.operator_id}`,
       );
       return;
     }
+
     push(
       `/dashboard/select-operator/user-operator/create/${
         formSection + 2
-      }?user-operator-id=${response.res.user_operator_id}`,
+      }?user-operator-id=${response.user_operator_id}`,
     );
   };
 
