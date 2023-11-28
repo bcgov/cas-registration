@@ -3,7 +3,7 @@ from typing import List
 from django.shortcuts import get_object_or_404
 from registration.models import Operator
 from registration.schema import OperatorOut
-from registration.utils import check_users_admin_request_eligibility
+from registration.utils import check_users_admin_request_eligibility, check_access_request_matches_business_guid
 from ninja.responses import codes_4xx
 from registration.schema import Message, OperatorOut, RequestAccessOut, SelectOperatorIn
 import json
@@ -58,6 +58,10 @@ def request_access(request, payload: SelectOperatorIn):
     user: User = get_object_or_404(User, user_guid=current_user_guid)
     payload_dict: dict = payload.dict()
     operator: Operator = get_object_or_404(Operator, id=payload_dict.get("operator_id"))
+
+    status, message = check_access_request_matches_business_guid(current_user_guid, operator)
+    if status != 200:
+      return status, message
 
     # Making a draft UserOperator instance if one doesn't exist
     user_operator, _ = UserOperator.objects.get_or_create(
