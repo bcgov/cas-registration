@@ -24,7 +24,7 @@ export default function ConfirmSelectedOperatorForm({
       validator={validator}
       onSubmit={async () => {
         const response = await actionHandler(
-          "registration/select-operator/request-access",
+          "registration/select-operator/request-admin-access",
           "POST",
           `/dashboard/select-operator/user-operator/${operator_id}`,
           {
