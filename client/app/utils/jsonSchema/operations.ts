@@ -55,7 +55,6 @@ const operationPage1: RJSFSchema = {
     },
 
     // documents: { type: "string", title: "documents" },
-    // contacts: { type: "string", title: "contacts" },
   },
   allOf: [
     {

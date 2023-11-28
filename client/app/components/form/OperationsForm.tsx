@@ -30,15 +30,9 @@ export default function OperationsForm({ formData, schema }: Props) {
   const formSection = parseInt(params?.formSection as string);
   const operationId = params?.operation;
   const isCreate = params?.operation === "0";
-  console.log("formData", formData);
 
   const isApplicationLeadExternal =
     userEmail === formData?.application_lead?.email ? false : true;
-  console.log("userEmail", userEmail);
-  console.log(
-    "formData?.application_lead?.email",
-    formData?.application_lead?.email,
-  );
 
   const applicationLeadDetails = {
     al_first_name: formData?.application_lead?.first_name,
@@ -66,10 +60,8 @@ export default function OperationsForm({ formData, schema }: Props) {
       Number(formData?.operator_percent_of_ownership),
     "Did you submit a GHG emissions report for reporting year 2022?":
       formData?.previous_year_attributable_emissions ? true : false,
-    // brianna change back to question in schema and here if this works
-    is_application_lead_external:
-      formData?.is_application_lead_external !== null ??
-      isApplicationLeadExternal,
+
+    is_application_lead_external: isApplicationLeadExternal,
     ...(isApplicationLeadExternal && applicationLeadDetails),
     verified_at: formData?.verified_at?.toString(),
     verified_by: formData?.verified_by?.toString(),
@@ -78,7 +70,7 @@ export default function OperationsForm({ formData, schema }: Props) {
   const formSectionList = Object.keys(schema.properties as any);
   const isNotFinalStep = formSection !== formSectionList.length;
   const isFinalStep = formSection === formSectionList.length;
-  console.log("transformedFormData", transformedFormData);
+
   return (
     <>
       {operationName ? (
@@ -123,28 +115,15 @@ export default function OperationsForm({ formData, schema }: Props) {
             const pathToRevalidate = isCreate
               ? "dashboard/operations"
               : `dashboard/operations/${formData?.id}`;
-            console.log("data.formdata", data.formData);
-            console.log(
-              "would you like",
-              data?.formData?.[
-                "Would you like to add an exemption ID application lead?"
-              ],
-            );
             const body = {
-              // ...applicationLeadDetails,
               ...formData,
               ...data.formData,
               //  temporary handling of documents, will be addressed in #332/325
               documents: [],
-              // temporarily mocking login
+              // temporarily mocking bceid login
               operator_id: 1,
-              // is_application_lead_external:
-              //   data?.formData?.[
-              //     "Would you like to add an exemption ID application lead?"
-              //   ],
               application_lead: formData?.application_lead?.id,
             };
-            console.log("body", body);
             const response = await actionHandler(
               endpoint,
               method,

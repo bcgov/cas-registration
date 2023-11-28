@@ -105,9 +105,6 @@ class UserAndContactCommonInfo(models.Model):
         db_comment="A user or contact's phone number, limited to valid phone numbers",
     )
 
-    class Config:
-        arbitrary_types_allowed = True
-
     class Meta:
         abstract = True
         db_table_comment = "An abstract base class (used for putting common information into a number of other models) containing fields for users and contacts"
@@ -456,11 +453,6 @@ class Operation(OperationAndFacilityCommonInfo):
         blank=True,
         related_name="operations",
     )
-    # is_application_lead_external = models.BooleanField(
-    #     db_comment="Whether or not the operation has an application lead besides the user",
-    #     blank=True,
-    #     null=True,
-    # )
     application_lead = models.ForeignKey(
         Contact,
         on_delete=models.DO_NOTHING,

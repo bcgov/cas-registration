@@ -22,7 +22,6 @@ def list_operations(request):
 @router.get("/operations/{operation_id}", response=OperationOut)
 def get_operation(request, operation_id: int):
     operation = get_object_or_404(Operation, id=operation_id)
-    # fetch the contact data here again
     return operation
 
 
@@ -89,14 +88,10 @@ def update_operation(request, operation_id: int, submit, payload: OperationIn):
         nc = get_object_or_404(NaicsCategory, id=naics_category)
         # Assign the naics_category instance to the operation
         payload.naics_category = nc
-
+    # if is_application_lead_external is null, the user hasn't filled out that part of the form. If it's true, the user has assigned a contact; if it's false, the lead is the user
     if "is_application_lead_external" in payload.dict():
-        print('I AM IN is_application_lead_external')
-
         if payload.dict()["is_application_lead_external"]:
-            print('I AM IN payload.dict()["is_application_lead_external"]')
             external_application_lead = payload.dict()["application_lead"]
-            print('APPLICATION_LEAD', external_application_lead)
             eal, created = Contact.objects.update_or_create(
                 id=external_application_lead,
                 defaults={
