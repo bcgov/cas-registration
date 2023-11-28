@@ -60,6 +60,9 @@ def get_user_operator(request, user_operator_id: int):
 
     return {**user_dict, **operator_dict}
 
+@router.get("/operator-has-admin/{operator_id}", response=bool)
+def get_user_operator_admin_exists(request, operator_id: int):
+    return UserOperator.objects.filter(operator_id=operator_id, role='admin', status='approved').exists()
 
 ##### POST #####
 @router.post("/select-operator/request-access", response={201: RequestAccessOut, codes_4xx: Message})
