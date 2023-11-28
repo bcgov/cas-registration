@@ -341,7 +341,7 @@ class OperatorModelTest(BaseTestCase):
                 None,
                 None,
             ),
-            ("business_structure", "business structure", 1000, None),
+            ("business_structure", "business structure", None, None),
             ("physical_street_address", "physical street address", 1000, None),
             ("physical_municipality", "physical municipality", 1000, None),
             ("physical_province", "physical province", 2, None),
