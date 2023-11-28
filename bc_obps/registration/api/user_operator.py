@@ -23,12 +23,14 @@ from registration.models import (
 )
 from registration.utils import generate_useful_error, update_model_instance, check_users_admin_request_eligibility
 from ninja.responses import codes_4xx
+import json
 
 
 ##### GET #####
 @router.get("/select-operator/{int:operator_id}", response={200: SelectOperatorIn, codes_4xx: Message})
 def select_operator(request, operator_id: int):
-    user: User = User.objects.first()  # FIXME: placeholders until after authentication is set up
+    current_user_guid = json.loads(request.headers.get('Authorization'))["user_guid"]
+    user: User = get_object_or_404(User, user_guid=current_user_guid)
     operator: Operator = get_object_or_404(Operator, id=operator_id)
 
     # check if user is eligible to request access
@@ -54,7 +56,8 @@ def get_user_operator(request, user_operator_id: int):
 ##### POST #####
 @router.post("/select-operator/request-access", response={201: RequestAccessOut, codes_4xx: Message})
 def request_access(request, payload: SelectOperatorIn):
-    user: User = User.objects.first()  # FIXME: placeholders until after authentication is set up
+    current_user_guid = json.loads(request.headers.get('Authorization'))["user_guid"]
+    user: User = get_object_or_404(User, user_guid=current_user_guid)
     payload_dict: dict = payload.dict()
     operator: Operator = get_object_or_404(Operator, id=payload_dict.get("operator_id"))
 
@@ -72,7 +75,8 @@ def request_access(request, payload: SelectOperatorIn):
 
 @router.post("/user-operator/operator", response={200: RequestAccessOut, codes_4xx: Message})
 def create_operator_and_user_operator(request, payload: UserOperatorOperatorIn):
-    user: User = User.objects.first()  # FIXME: placeholders until after authentication is set up
+    current_user_guid = json.loads(request.headers.get('Authorization'))["user_guid"]
+    user: User = get_object_or_404(User, user_guid=current_user_guid)
     try:
         payload_dict = payload.dict()
         operator_has_parent_company: bool = payload_dict.get("operator_has_parent_company")
