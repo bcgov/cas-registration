@@ -26,7 +26,7 @@ export default function Page() {
         <p>
           Don&apos;t see the operator?{" "}
           <Link
-            href="/dashboard/select-operator/user-operator/create"
+            href="/dashboard/select-operator/user-operator/create/1"
             className="underline hover:no-underline mr-2"
             style={{ color: BC_GOV_LINKS_COLOR }}
           >
