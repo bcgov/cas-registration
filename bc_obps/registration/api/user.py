@@ -4,13 +4,15 @@ from .api_base import router
 from django.shortcuts import get_object_or_404
 from registration.models import User
 from registration.schema import AppRoleOut
+import json
 
 
 ##### GET #####
 @router.get("/user", response=UserOperatorUserOut)
 def get_user(request):
-    # FIXME: for now we just return the first user in the database
-    return User.objects.first()
+    current_user_guid = json.loads(request.headers.get('Authorization'))["user_guid"]
+    user: User = get_object_or_404(User, user_guid=current_user_guid)
+    return user
 
 
 @router.get("/get-user-role/{user_guid}", response=AppRoleOut)
