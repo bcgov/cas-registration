@@ -89,7 +89,7 @@ class TestReportingActivitiesEndpoint:
         assert response.status_code == 200
 
     def test_get_method_with_mock_data(self, client):
-        baker.make(RegulatedProduct, _quantity=4)
+        baker.make(ReportingActivity, _quantity=4)
 
         response = client.get(self.endpoint)
         assert response.status_code == 200
@@ -115,17 +115,19 @@ class TestOperationsEndpoint:
     def test_post_new_operation(self, client):
         naics_code = baker.make(NaicsCode)
         document = baker.make(Document)
-        contact = baker.make(Contact, postal_code='V1V 1V1')
+        reporting_activities = baker.make(ReportingActivity, _quantity=2)
+        regulated_products = baker.make(RegulatedProduct, _quantity=2)
+        application_lead = baker.make(Contact, postal_code='V1V 1V1')
         operator = baker.make(Operator)
         mock_operation = OperationIn(
             name='Springfield Nuclear Power Plant',
             type='Single Facility Operation',
             naics_code_id=naics_code.id,
             naics_category_id=naics_category.id,
-            reporting_activities=[1, 2],
-            regulated_products=[1, 2],
+            reporting_activities=reporting_activities,
+            regulated_products=regulated_products,
             documents=[document.id],
-            contacts=[contact.id],
+            application_lead=application_lead.id,
             operator_id=operator.id,
         )
         post_response = client.post(self.endpoint, content_type=content_type_json, data=mock_operation.json())
@@ -241,17 +243,20 @@ class TestOperationEndpoint:
     def test_put_operation_without_submit(self, client):
         naics_code = baker.make(NaicsCode)
         document = baker.make(Document)
-        contact = baker.make(Contact, postal_code="V1V 1V1")
+        application_lead = baker.make(Contact, postal_code="V1V 1V1")
         operator = baker.make(Operator)
         activity = baker.make(ReportingActivity)
+        product = baker.make(RegulatedProduct)
         operation = baker.make(Operation)
         operation.reporting_activities.set([activity.id])
+        operation.regulated_products.set([product.id])
 
         mock_operation = OperationIn(
             name="New name",
             type="Single Facility Operation",
             naics_code_id=naics_code.id,
-            reporting_activities=[2],
+            naics_category_id=naics_category.id,
+            reporting_activities=[activity.id],
             physical_street_address="19 Evergreen Terrace",
             physical_municipality="Springfield",
             physical_province="BC",
@@ -259,9 +264,9 @@ class TestOperationEndpoint:
             legal_land_description="It's legal",
             latitude=90,
             longitude=-120,
-            regulated_products=[1, 2],
+            regulated_products=[product.id],
             documents=[document.id],
-            contacts=[contact.id],
+            application_lead=application_lead.id,
             operator_id=operator.id,
         )
 
@@ -279,20 +284,23 @@ class TestOperationEndpoint:
     def test_put_operation_with_submit(self, client):
         naics_code = baker.make(NaicsCode)
         document = baker.make(Document)
-        contact = baker.make(Contact, postal_code="V1V 1V2")
+        application_lead = baker.make(Contact, postal_code="V1V 1V2")
         operator = baker.make(Operator)
         activity = baker.make(ReportingActivity)
+        product = baker.make(RegulatedProduct)
         operation = baker.make(Operation)
         operation.reporting_activities.set([activity.id])
+        operation.regulated_products.set([product.id])
 
         mock_operation = OperationIn(
             name="New name",
             type="Single Facility Operation",
             naics_code_id=naics_code.id,
-            reporting_activities=[1],
-            regulated_products=[1],
+            reporting_activities=[activity.id],
+            regulated_products=[product.id],
+            naics_category_id=naics_category.id,
             documents=[document.id],
-            contacts=[contact.id],
+            application_lead=application_lead.id,
             operator_id=operator.id,
         )
 

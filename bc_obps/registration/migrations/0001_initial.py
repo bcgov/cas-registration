@@ -32,6 +32,8 @@ class Migration(migrations.Migration):
                 'db_table_comment': 'This table contains the definitions for roles within the app/database. These roles are used to define the permissions a user has within the app',
             },
         ),
+        # app_role table initial data population
+        migrations.RunPython(init_app_role_data, reverse_init_app_role_data),
         migrations.CreateModel(
             name='BusinessRole',
             fields=[
@@ -51,6 +53,8 @@ class Migration(migrations.Migration):
                 'db_table_comment': 'This table contains the definitions for roles within the operator/operation. These roles are used to define the permissions a user has within the operator/operation',
             },
         ),
+        # business_role table initial data population
+        migrations.RunPython(init_business_role_data, reverse_init_business_role_data),
         migrations.CreateModel(
             name='BusinessStructure',
             fields=[
