@@ -8,8 +8,7 @@ import json
 ##### GET #####
 @router.get("/user", response=UserOperatorUserOut)
 def get_user(request):
-    current_user_guid = json.loads(request.headers.get('Authorization'))["user_guid"]
-    user: User = get_object_or_404(User, user_guid=current_user_guid)
+    user: User = request.current_user
     return user
 
 
