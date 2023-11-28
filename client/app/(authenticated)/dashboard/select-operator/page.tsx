@@ -6,7 +6,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 export default async function Page() {
   const session = await getServerSession(authOptions);
-  const userName = session?.user?.name.split(" ")[0];
+  const userName = session?.user?.name?.split(" ")?.[0];
   return (
     <>
       <section className="text-center my-auto text-2xl flex flex-col gap-3">
