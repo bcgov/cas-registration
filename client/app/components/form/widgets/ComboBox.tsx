@@ -3,11 +3,7 @@
 import { Autocomplete, TextField } from "@mui/material";
 import { WidgetProps } from "@rjsf/utils/lib/types";
 import { useCallback } from "react";
-import {
-  BC_GOV_LINKS_COLOR,
-  DARK_GREY_BG_COLOR,
-  BC_GOV_SEMANTICS_RED,
-} from "@/app/styles/colors";
+import { DARK_GREY_BG_COLOR, BC_GOV_SEMANTICS_RED } from "@/app/styles/colors";
 
 const ComboBox: React.FC<WidgetProps> = (props) => {
   const { id, onChange, rawErrors, schema, value } = props;
@@ -37,13 +33,6 @@ const ComboBox: React.FC<WidgetProps> = (props) => {
       borderColor: DARK_GREY_BG_COLOR,
     },
     "& .MuiOutlinedInput-notchedOutline": {
-      borderColor: borderColor,
-    },
-    "&:hover .MuiOutlinedInput-notchedOutline": {
-      borderColor: BC_GOV_LINKS_COLOR,
-      borderWidth: "1px",
-    },
-    "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
       borderColor: borderColor,
     },
   };

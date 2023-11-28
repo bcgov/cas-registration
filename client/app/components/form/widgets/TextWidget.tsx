@@ -2,11 +2,7 @@
 
 import { TextField } from "@mui/material";
 import { WidgetProps } from "@rjsf/utils/lib/types";
-import {
-  BC_GOV_LINKS_COLOR,
-  DARK_GREY_BG_COLOR,
-  BC_GOV_SEMANTICS_RED,
-} from "@/app/styles/colors";
+import { DARK_GREY_BG_COLOR, BC_GOV_SEMANTICS_RED } from "@/app/styles/colors";
 
 const TextWidget: React.FC<WidgetProps> = ({
   disabled,
@@ -14,10 +10,18 @@ const TextWidget: React.FC<WidgetProps> = ({
   onChange,
   rawErrors,
   readonly,
+  schema,
   value,
 }) => {
+  const type = schema.type === "number" ? "number" : "text";
+  // in the future we will add an option to allow users to set a max value
+  const maxNum = 2147483647;
+
   const handleChange = (e: { target: { value: string } }) => {
     const val = e.target.value;
+    if (type === "number" && !isNaN(Number(val)) && Number(val) > maxNum)
+      return;
+
     onChange(val === "" ? undefined : val);
   };
 
@@ -30,12 +34,6 @@ const TextWidget: React.FC<WidgetProps> = ({
       "& fieldset": {
         borderColor,
       },
-      "&:hover fieldset": {
-        borderColor: BC_GOV_LINKS_COLOR,
-      },
-      "&.Mui-focused fieldset": {
-        borderColor: BC_GOV_LINKS_COLOR,
-      },
     },
   };
 
@@ -47,6 +45,7 @@ const TextWidget: React.FC<WidgetProps> = ({
       value={value}
       onChange={handleChange}
       sx={styles}
+      type={type}
     />
   );
 };
