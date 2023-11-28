@@ -77,6 +77,7 @@ export default function Header() {
           </Link>
           <Typography
             component="div"
+            color="white"
             sx={{
               flexGrow: 1,
               fontWeight: 700,
