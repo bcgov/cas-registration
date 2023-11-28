@@ -3,14 +3,18 @@ import Loading from "@/app/components/loading/SkeletonField";
 import SelectOperator from "@/app/components/routes/select-operator/form/SelectOperator";
 import { BC_GOV_LINKS_COLOR } from "@/app/styles/colors";
 import Link from "next/link";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
-export default function SelectOperatorPage() {
+export default async function SelectOperatorPage() {
+  const session = await getServerSession(authOptions);
+  const userName = session?.user?.name?.split(' ')?.[0];
   return (
     <>
       <section className="text-center my-auto text-2xl flex flex-col gap-3">
         {/* Streaming to render UI parts in a client incrementally, as soon as possible */}
         <p>
-          Hi <b>John!</b> {/* TODO: replace with user name */}
+          Hi <b>{userName}</b>
         </p>
         <p>Which operator would you like to log in to?</p>
         <p>

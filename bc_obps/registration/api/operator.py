@@ -24,6 +24,14 @@ def get_operator(request, operator_id: int):
     return operator
 
 
+@router.get("/select-operator/{int:operator_id}", response={200: SelectOperatorIn, codes_4xx: Message})
+def select_operator(request, operator_id: int):
+    user: User = request.current_user
+    operator: Operator = get_object_or_404(Operator, id=operator_id)
+
+    return 200, {"operator_id": operator.id}
+
+
 ##### POST #####
 
 
@@ -40,7 +48,7 @@ def request_access(request, payload: SelectOperatorIn):
 
     # Making a draft UserOperator instance if one doesn't exist
     user_operator, _ = UserOperator.objects.get_or_create(
-        user=user, operator=operator, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.DRAFT
+        user=user, operator=operator, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.PENDING
     )
     return 201, {"user_operator_id": user_operator.id}
 
@@ -53,7 +61,7 @@ def request_access(request, payload: SelectOperatorIn):
 
     # Making a draft UserOperator instance if one doesn't exist
     user_operator, _ = UserOperator.objects.get_or_create(
-        user=user, operator=operator, status=UserOperator.Statuses.DRAFT
+        user=user, operator=operator, status=UserOperator.Statuses.PENDING
     )
     return 201, {"user_operator_id": user_operator.id}
 
