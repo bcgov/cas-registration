@@ -25,8 +25,7 @@ def get_operator(request, operator_id: int):
 
 @router.get("/select-operator/{int:operator_id}", response={200: SelectOperatorIn, codes_4xx: Message})
 def select_operator(request, operator_id: int):
-    current_user_guid = json.loads(request.headers.get('Authorization'))["user_guid"]
-    user: User = get_object_or_404(User, user_guid=current_user_guid)
+    user: User = request.current_user
     operator: Operator = get_object_or_404(Operator, id=operator_id)
 
     # check if user is eligible to request access
@@ -42,8 +41,7 @@ def select_operator(request, operator_id: int):
 
 @router.post("/select-operator/request-access", response={201: RequestAccessOut, codes_4xx: Message})
 def request_access(request, payload: SelectOperatorIn):
-    current_user_guid = json.loads(request.headers.get('Authorization'))["user_guid"]
-    user: User = get_object_or_404(User, user_guid=current_user_guid)
+    user: User = request.current_user
     payload_dict: dict = payload.dict()
     operator: Operator = get_object_or_404(Operator, id=payload_dict.get("operator_id"))
 
