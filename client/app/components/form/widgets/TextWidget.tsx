@@ -14,10 +14,17 @@ const TextWidget: React.FC<WidgetProps> = ({
   value,
 }) => {
   const type = schema.type === "number" ? "number" : "text";
+  // in the future we will add an option to allow users to set a max value
+  const maxNum = 2147483647;
+
   const handleChange = (e: { target: { value: string } }) => {
     const val = e.target.value;
+    if (type === "number" && !isNaN(Number(val)) && Number(val) > maxNum)
+      return;
+
     onChange(val === "" ? undefined : val);
   };
+
   const isError = rawErrors && rawErrors.length > 0;
   const borderColor = isError ? BC_GOV_SEMANTICS_RED : DARK_GREY_BG_COLOR;
 
