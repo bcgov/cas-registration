@@ -34,5 +34,23 @@
       "phone_number": "+16044015432",
       "app_role": "industry_user"
     }
+  },
+  {
+    "model": "registration.user",
+    "pk": 3,
+    "fields": {
+      "user_guid": "58f255ed8d4644eeb2fe9f8d3d92c684",
+      "business_guid": "efb76d57-88b7-4eb6-9f26-ec12b49c14c1",
+      "first_name": "Shon",
+      "last_name": "Hogan",
+      "position_title": "Code Monkey",
+      "street_address": "1 Street",
+      "municipality": "Townsville",
+      "province": "QC",
+      "postal_code": "H0H 0H0",
+      "email": "shon@button.is",
+      "phone_number": "+123456789",
+      "app_role": "cas_admin"
+    }
   }
 ]
