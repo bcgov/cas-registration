@@ -84,7 +84,10 @@ def create_operator_and_user_operator(request, payload: UserOperatorOperatorIn):
         # use an existing Operator instance if one exists, otherwise create a new one
         cra_business_number: str = payload_dict.get("cra_business_number")
         existing_operator: Operator = Operator.objects.filter(cra_business_number=cra_business_number).first()
-        operator_instance: Operator = existing_operator or Operator(
+        if existing_operator:
+            return 400, {"message": "Operator with this CRA Business Number already exists."}
+
+        operator_instance: Operator = Operator(
             cra_business_number=cra_business_number,
             bc_corporate_registry_number=payload_dict.get("bc_corporate_registry_number"),
             # treating business_structure as a foreign key
@@ -184,7 +187,6 @@ def create_operator_and_user_operator(request, payload: UserOperatorOperatorIn):
         role=UserOperator.Roles.ADMIN,
     )
 
-    # TODO: might be better to have a UUID as the primary key for UserOperator and return that instead
     return 200, {"user_operator_id": user_operator.id}
 
 
