@@ -165,8 +165,8 @@ const operationPage1: RJSFSchema = {
                 "mo_legal_name",
                 "mo_trade_name",
                 "mo_cra_business_number",
-                "mo_bc_registries_number",
-                "mo_business_structure",
+                "mo_bc_corporate_registry_number",
+                /* "mo_business_structure", */
                 "mo_percentage_ownership",
                 "mo_physical_street_address",
                 "mo_physical_municipality",
@@ -183,11 +183,11 @@ const operationPage1: RJSFSchema = {
                   title: "Trade Name",
                 },
                 mo_cra_business_number: {
-                  type: "string",
+                  type: "number",
                   title: "CRA Business Number",
                 },
-                mo_bc_registries_number: {
-                  type: "string",
+                mo_bc_corporate_registry_number: {
+                  type: "number",
                   title: "BC Corporate Registries Number",
                 },
                 mo_business_structure: {
