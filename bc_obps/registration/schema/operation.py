@@ -1,8 +1,9 @@
 from typing import Optional
 from ninja import Field
 from ninja import ModelSchema
-from registration.models import Operation
+from registration.models import Operation, Contact
 from datetime import date
+from .contact import ContactSchema
 
 
 #### Operation schemas
@@ -12,6 +13,18 @@ class OperationIn(ModelSchema):
     # Converting types
     naics_code_id: int
     verified_at: Optional[date] = None
+    # al => application lead
+    al_first_name: Optional[str] = None
+    al_last_name: Optional[str] = None
+    al_position_title: Optional[str] = None
+    al_street_address: Optional[str] = None
+    al_municipality: Optional[str] = None
+    al_province: Optional[str] = None
+    al_postal_code: Optional[str] = None
+    al_email: Optional[str] = None
+    al_phone_number: Optional[str] = None
+    application_lead: Optional[int] = None
+    is_application_lead_external: Optional[bool] = None
 
     class Config:
         model = Operation
@@ -28,6 +41,8 @@ class OperationOut(ModelSchema):
     current_year_estimated_emissions: Optional[str] = None
     opt_in: Optional[bool] = None
     verified_at: Optional[date] = None
+    is_application_lead_external: Optional[bool] = None
+    application_lead: Optional[ContactSchema]
 
     class Config:
         model = Operation
