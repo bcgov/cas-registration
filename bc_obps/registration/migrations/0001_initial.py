@@ -522,6 +522,85 @@ class Migration(migrations.Migration):
                 'db_table_comment': 'Operations (also called facilities)',
             },
         ),
+        migrations.CreateModel(
+            name='MultipleOperator',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                (
+                    'operator_number',
+                    models.IntegerField(
+                        db_comment='Number used to differentiate operators for this operation for saving/updating purposes'
+                    ),
+                ),
+                ('legal_name', models.CharField(db_comment='The legal name of an operator', max_length=1000)),
+                (
+                    'trade_name',
+                    models.CharField(blank=True, db_comment='The trade name of an operator', max_length=1000),
+                ),
+                ('cra_business_number', models.IntegerField(db_comment='The CRA business number of an operator')),
+                (
+                    'bc_corporate_registry_number',
+                    models.IntegerField(db_comment='The BC corporate registry number of an operator'),
+                ),
+                ('business_structure', models.CharField(db_comment='The legal name of an operator', max_length=1000)),
+                ('website', models.URLField(blank=True, db_comment='The website address of an operator', null=True)),
+                (
+                    'percentage_ownership',
+                    models.DecimalField(blank=True, db_comment='', decimal_places=5, max_digits=10, null=True),
+                ),
+                (
+                    'physical_street_address',
+                    models.CharField(
+                        db_comment='The physical street address of an operator (where the operator is physically located)',
+                        max_length=1000,
+                    ),
+                ),
+                (
+                    'physical_municipality',
+                    models.CharField(db_comment='The physical municipality of an operator ', max_length=1000),
+                ),
+                (
+                    'physical_province',
+                    localflavor.ca.models.CAProvinceField(
+                        db_comment='The physical street address of an operator, restricted to two-letter province postal abbreviations',
+                        max_length=2,
+                    ),
+                ),
+                (
+                    'physical_postal_code',
+                    localflavor.ca.models.CAPostalCodeField(
+                        db_comment='The physical postal code address of an operator, limited to valid Canadian postal codes',
+                        max_length=7,
+                    ),
+                ),
+                (
+                    'mailing_street_address',
+                    models.CharField(db_comment='The mailing street address of an operator', max_length=1000),
+                ),
+                (
+                    'mailing_municipality',
+                    models.CharField(db_comment='The mailing municipality of an operator', max_length=1000),
+                ),
+                (
+                    'mailing_province',
+                    localflavor.ca.models.CAProvinceField(
+                        db_comment='The mailing province of an operator, restricted to two-letter province postal abbreviations',
+                        max_length=2,
+                    ),
+                ),
+                (
+                    'mailing_postal_code',
+                    localflavor.ca.models.CAPostalCodeField(
+                        db_comment='The mailing postal code of an operator, limited to valid Canadian postal codes',
+                        max_length=7,
+                    ),
+                ),
+                (
+                    'operation',
+                    models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, to='registration.operation'),
+                ),
+            ],
+        ),
         migrations.AddField(
             model_name='document',
             name='type',
