@@ -530,8 +530,8 @@ class MultipleOperator(models.Model):
         null=True,
     )
     percentage_ownership = models.DecimalField(
-        decimal_places=3,
-        max_digits=3,
+        decimal_places=5,
+        max_digits=10,
         db_comment="",
         blank=True,
         null=True,
