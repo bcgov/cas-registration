@@ -39,6 +39,8 @@ class OperationIn(ModelSchema):
     naics_code_id: int
     naics_category_id: int
     verified_at: Optional[date] = None
+    operation_has_multiple_operators: Optional[bool]
+    multiple_operators_array: Optional[list] = None
 
     class Config:
         model = Operation
@@ -75,21 +77,20 @@ class OperatorOut(ModelSchema):
 
 class MultipleOperatorIn(Schema):
     operation_id: int
-    operation_number: int
-    legal_name: str
-    trade_name: str
-    cra_business_number: int
-    bc_corporate_registry_number: int
-    business_structure: str
-    website: str
-    physical_street_address: str
-    physical_municipality: str
-    physical_province: str
-    physical_postal_code: str
-    mailing_street_address: str
-    mailing_municipality: str
-    mailing_province: str
-    mailing_postal_code: str
+    mo_legal_name: str
+    mo_trade_name: str
+    mo_cra_business_number: int
+    mo_bc_corporate_registry_number: int
+    mo_business_structure: Optional[str]
+    mo_website: Optional[str]
+    mo_physical_street_address: str
+    mo_physical_municipality: str
+    mo_physical_province: str
+    mo_physical_postal_code: str
+    mo_mailing_street_address: Optional[str]
+    mo_mailing_municipality: Optional[str]
+    mo_mailing_province: Optional[str]
+    mo_mailing_postal_code: Optional[str]
 
 
 class MultipleOperatorOut(ModelSchema):

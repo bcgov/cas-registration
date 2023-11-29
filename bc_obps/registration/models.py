@@ -511,7 +511,7 @@ class Operation(OperationAndFacilityCommonInfo):
 class MultipleOperator(models.Model):
     """def here"""
 
-    operation_id = models.ForeignKey(
+    operation = models.ForeignKey(
         Operation,
         on_delete=models.DO_NOTHING,
     )
