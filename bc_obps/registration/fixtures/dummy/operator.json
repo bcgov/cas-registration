@@ -1,0 +1,44 @@
+[
+  {
+    "model": "registration.operator",
+    "pk": 1,
+    "fields": {
+      "legal_name": "Operator 1 Legal Name",
+      "trade_name": "Operator 1 Trade Name",
+      "cra_business_number": 123456789,
+      "bc_corporate_registry_number": 987654321,
+      "business_structure": "Sole Proprietorship",
+      "physical_street_address": "123 Main St",
+      "physical_municipality": "City",
+      "physical_province": "ON",
+      "physical_postal_code": "A1B 2C3",
+      "website": "http://www.example.com",
+      "documents": [],
+      "contacts": [],
+      "status": "Draft",
+      "verified_at": null,
+      "verified_by": null
+    }
+  },
+  {
+    "model": "registration.operator",
+    "pk": 2,
+    "fields": {
+      "legal_name": "Operator 2 Legal Name",
+      "trade_name": "Operator 2 Trade Name",
+      "cra_business_number": 987654321,
+      "bc_corporate_registry_number": 123456789,
+      "business_structure": "BC Corporation",
+      "physical_street_address": "789 Oak St",
+      "physical_municipality": "Village",
+      "physical_province": "BC",
+      "physical_postal_code": "M2N 3P4",
+      "website": "http://www.example2.com",
+      "documents": [],
+      "contacts": [],
+      "status": "Approved",
+      "verified_at": null,
+      "verified_by": null
+    }
+  }
+]
