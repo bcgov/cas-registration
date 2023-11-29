@@ -62,6 +62,13 @@
       "first_name": "Bcgov",
       "last_name": "Cas",
       "position_title": "Code Monkey",
+    "pk": 3,
+    "fields": {
+      "user_guid": "279c80cf-5781-4c28-8727-40a133d17c0d",
+      "business_guid": "efb76d57-88b7-4eb6-9f26-ec12b49c14c4",
+      "first_name": "reporter",
+      "last_name": "user",
+      "position_title": "reporter",
       "street_address": "1 Street",
       "municipality": "Townsville",
       "province": "QC",

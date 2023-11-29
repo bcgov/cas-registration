@@ -33,6 +33,7 @@ export default async function SelectOperator() {
   const operators: Operator[] | { error: string } = await getOperators();
 
   if ("error" in operators) {
+    console.log(operators)
     return <div>Server Error. Please try again later.</div>;
   }
 
