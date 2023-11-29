@@ -43,7 +43,7 @@ export default function RequestAccessButton({
       return;
     }
 
-    push(`/dashboard/select-operator/received/${operatorId}`);
+    push(`/dashboard/select-operator/received/request-access/${operatorId}`);
   };
 
   return (
