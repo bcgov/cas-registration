@@ -1,6 +1,6 @@
 from typing import Type, Union, Iterable, Dict, Any
 from django.core.exceptions import ValidationError
-from django.db import models
+from django.db import IntegrityError, models
 from .models import User, Operator, UserOperator
 
 
@@ -26,6 +26,14 @@ def check_users_admin_request_eligibility(user: User, operator: Operator) -> Uni
         operator=operator, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.APPROVED
     ).exists():
         return 400, {"message": "This Operator already has an admin user!"}
+
+    # User already has a pending request for this operator
+    # NOTE: This is a bit of a weird case, but it's possible for a user to have a pending request for an operator
+    #       and if we show the UserOperator request form, they could submit another request and end up with two Contact
+    if UserOperator.objects.filter(
+        user=user, operator=operator, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.PENDING
+    ).exists():
+        return 400, {"message": "You already have a pending request for this Operator!"}
 
     return 200, None
 
@@ -60,6 +68,18 @@ def update_model_instance(
         instance.full_clean()
     except ValidationError as e:
         raise ValidationError(e)
+    except IntegrityError as e:
+        raise IntegrityError(e)
 
     # We don't save the instance here; This allows further operations or validation before the actual save.
     return instance
+
+
+def generate_useful_error(error):
+    """
+    Generate a useful error message from a ValidationError.
+    NOTE: this only returns the first error message until we can figure out a better way to handle multiple errors in the client side.
+    """
+    for key, value in error.message_dict.items():
+        formatted_key = ' '.join(word.capitalize() for word in key.split('_'))
+        return f"{formatted_key}: {value[0]}"

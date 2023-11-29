@@ -1,3 +1,4 @@
+from django.forms import model_to_dict
 import pytest
 import json
 from datetime import datetime
@@ -5,7 +6,17 @@ import pytz
 from model_bakery import baker
 from django.test import Client
 from localflavor.ca.models import CAPostalCodeField
-from registration.models import NaicsCode, NaicsCategory, Document, Contact, Operation, Operator, ReportingActivity
+from registration.models import (
+    NaicsCode,
+    NaicsCategory,
+    Document,
+    Contact,
+    Operation,
+    Operator,
+    ReportingActivity,
+    User,
+    UserOperator,
+)
 from registration.schema import OperationIn
 
 pytestmark = pytest.mark.django_db
@@ -281,3 +292,85 @@ class TestOperationEndpoint:
             data={"garbage": "i am bad data"},
         )
         assert response.status_code == 422
+
+
+class TestOperatorsEndpoint:
+    endpoint = base_endpoint + "operators"
+
+    def test_get_method_for_200_status(self, client):
+        response = client.get(self.endpoint)
+        assert response.status_code == 200
+
+    def test_get_method_with_mock_data(self, client):
+        baker.make(Operator, _quantity=2)
+
+        response = client.get(self.endpoint)
+        assert response.status_code == 200
+        assert len(json.loads(response.content)) == 2
+
+    def test_retrieve_operator(self, client):
+        operator = baker.make(Operator)
+        response = client.get(self.endpoint + "/" + str(operator.id))
+        assert response.status_code == 200
+        assert response.json() == model_to_dict(operator)
+
+
+class TestUserOperatorEndpoint:
+    endpoint = base_endpoint + "select-operator"
+
+    def setup(self):
+        self.user: User = baker.make(User)
+        self.auth_header = {'user_guid': str(self.user.user_guid)}
+        self.auth_header_dumps = json.dumps(self.auth_header)
+
+    def test_select_operator_with_valid_id(self):
+        operators = baker.make(Operator, _quantity=1)
+        response = client.get(f"{self.endpoint}/{operators[0].id}", HTTP_AUTHORIZATION=self.auth_header_dumps)
+
+        assert response.status_code == 200
+        assert response.json() == {"operator_id": operators[0].id}
+
+    def test_select_operator_with_invalid_id(self):
+        invalid_operator_id = 99999  # Invalid operator ID
+
+        response = client.get(f"{self.endpoint}/{invalid_operator_id}", HTTP_AUTHORIZATION=self.auth_header_dumps)
+
+        assert response.status_code == 404
+        assert response.json() == {"detail": "Not Found"}
+
+    def test_request_access_with_valid_payload(self):
+        operator = baker.make(Operator)
+        response = client.post(
+            f"{self.endpoint}/request-access",
+            content_type=content_type_json,
+            data={"operator_id": operator.id},
+            HTTP_AUTHORIZATION=self.auth_header_dumps,
+        )
+
+        response_json = response.json()
+
+        assert response.status_code == 201
+        assert "user_operator_id" in response_json
+
+        user_operator_exists = UserOperator.objects.filter(
+            id=response_json["user_operator_id"],
+            user=self.user,
+            operator=operator,
+            status=UserOperator.Statuses.DRAFT,
+            role=UserOperator.Roles.ADMIN,
+        ).exists()
+
+        assert user_operator_exists, "UserOperator object was not created"
+
+    def test_request_access_with_invalid_payload(self):
+        invalid_payload = {"operator_id": 99999}  # Invalid operator ID
+
+        response = client.post(
+            f"{self.endpoint}/request-access",
+            content_type=content_type_json,
+            data=invalid_payload,
+            HTTP_AUTHORIZATION=self.auth_header_dumps,
+        )
+
+        assert response.status_code == 404
+        assert response.json() == {"detail": "Not Found"}

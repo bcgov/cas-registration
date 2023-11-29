@@ -5,7 +5,7 @@ import AccessRequestReceived from "@/app/components/routes/select-operator/form/
 export default async function SelectOperatorRequestAccessReceivedPage({
   params,
 }: {
-  params: { id: number };
+  readonly params: { id: number; step: string };
 }) {
   return (
     <Suspense fallback={<Loading />}>
