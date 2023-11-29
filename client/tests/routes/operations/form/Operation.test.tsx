@@ -24,13 +24,6 @@ describe("Operations component", () => {
         },
       ]),
     );
-    fetchMock.mockResponseOnce(
-      JSON.stringify([
-        { id: 1, naics_category: "Information Technology" },
-        { id: 2, naics_category: "Healthcare" },
-        { id: 3, naics_category: "Manufacturing" },
-      ]),
-    );
   });
 
   it("renders the dropdown options for fields that require a fetch (e.g. NAICS codes)", async () => {

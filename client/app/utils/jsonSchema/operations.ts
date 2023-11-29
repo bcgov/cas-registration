@@ -8,7 +8,6 @@ const operationPage1: RJSFSchema = {
     "name",
     "type",
     "naics_code_id",
-    "naics_category_id",
     // keys that are questions aren't saved in the database
   ],
   properties: {
@@ -24,7 +23,6 @@ const operationPage1: RJSFSchema = {
       type: "number",
       title: "Primary NAICS Code",
     },
-    naics_category_id: { type: "number", title: "NAICS Category" },
     regulated_products: {
       type: "string",
       title: "Regulated Product Name(s)",
@@ -208,7 +206,6 @@ export const operationUiSchema = {
     "name",
     "type",
     "naics_code_id",
-    "naics_category_id",
     "regulated_products",
     "reporting_activities",
     "process_flow_diagram",
@@ -247,10 +244,6 @@ export const operationUiSchema = {
   naics_code_id: {
     "ui:widget": "SelectWidget",
     "ui:placeholder": "Select Primary NAICS code",
-  },
-  naics_category_id: {
-    "ui:widget": "SelectWidget",
-    "ui:placeholder": "Select NAICS category",
   },
   "Did you submit a GHG emissions report for reporting year 2022?": {
     "ui:widget": "RadioWidget",

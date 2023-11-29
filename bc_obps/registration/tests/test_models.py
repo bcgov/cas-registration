@@ -420,7 +420,6 @@ class OperationModelTest(BaseTestCase):
         OPERATOR_FIXTURE,
         OPERATION_FIXTURE,
         NAICS_CODE_FIXTURE,
-        NAICS_CATEGORY_FIXTURE,
         CONTACT_FIXTURE,
         DOCUMENT_FIXTURE,
     ]
@@ -466,7 +465,6 @@ class OperationModelTest(BaseTestCase):
             ("name", "name", 1000, None),
             ("type", "type", 1000, None),
             ("naics_code", "naics code", None, None),
-            ("naics_category", "naics category", None, None),
             ("regulated_products", "regulated products", None, 2),
             ("reporting_activities", "reporting activities", None, 2),
             (

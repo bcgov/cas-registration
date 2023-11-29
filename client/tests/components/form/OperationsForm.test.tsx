@@ -16,7 +16,6 @@ const testFormData = {
   name: "Operation 1",
   type: "Single Facility Operation",
   naics_code: 45,
-  naics_category: 100,
   previous_year_attributable_emissions: "100.34500",
   swrs_facility_id: "1001",
   bcghg_id: "546",
@@ -31,7 +30,6 @@ const testFormData = {
   contacts: [],
   operator_id: 1,
   naics_code_id: 1,
-  naics_category_id: 1,
   current_year_estimated_emissions: null,
 };
 
