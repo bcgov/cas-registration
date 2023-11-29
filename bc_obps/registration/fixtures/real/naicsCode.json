@@ -1,0 +1,226 @@
+[
+  {
+    "model": "registration.naicsCode",
+    "fields": {
+      "naics_code": "211110",
+      "naics_description": "Oil and gas extraction (except oil sands)"
+    }
+  },
+  {
+    "model": "registration.naicsCode",
+    "fields": {
+      "naics_code": "212114",
+      "naics_description": "Bituminous coal mining"
+    }
+  },
+  {
+    "model": "registration.naicsCode",
+    "fields": {
+      "naics_code": "212220",
+      "naics_description": "Gold and silver ore mining"
+    }
+  },
+  {
+    "model": "registration.naicsCode",
+    "fields": {
+      "naics_code": "212231",
+      "naics_description": "Lead-zinc ore mining"
+    }
+  },
+  {
+    "model": "registration.naicsCode",
+    "fields": {
+      "naics_code": "212233",
+      "naics_description": "Copper-zinc ore mining"
+    }
+  },
+  {
+    "model": "registration.naicsCode",
+    "fields": {
+      "naics_code": "212299",
+      "naics_description": "All other metal ore mining"
+    }
+  },
+  {
+    "model": "registration.naicsCode",
+    "fields": {
+      "naics_code": "213118",
+      "naics_description": "Services to oil and gas extraction"
+    }
+  },
+  {
+    "model": "registration.naicsCode",
+    "fields": {
+      "naics_code": "311119",
+      "naics_description": "Other animal food manufacturing"
+    }
+  },
+  {
+    "model": "registration.naicsCode",
+    "fields": {
+      "naics_code": "311310",
+      "naics_description": "Sugar manufacturing"
+    }
+  },
+  {
+    "model": "registration.naicsCode",
+    "fields": {
+      "naics_code": "311614",
+      "naics_description": "Rendering and meat processing from carcasses"
+    }
+  },
+  {
+    "model": "registration.naicsCode",
+    "fields": {
+      "naics_code": "321111",
+      "naics_description": "Sawmills (except shingle and shake mills)"
+    }
+  },
+  {
+    "model": "registration.naicsCode",
+    "fields": {
+      "naics_code": "321212",
+      "naics_description": "Softwood veneer and plywood mills"
+    }
+  },
+  {
+    "model": "registration.naicsCode",
+    "fields": {
+      "naics_code": "321216",
+      "naics_description": "Particle board and fibreboard mills"
+    }
+  },
+  {
+    "model": "registration.naicsCode",
+    "fields": {
+      "naics_code": "321999",
+      "naics_description": "All other miscellaneous wood product manufacturing"
+    }
+  },
+  {
+    "model": "registration.naicsCode",
+    "fields": {
+      "naics_code": "322111",
+      "naics_description": "Mechanical pulp mills"
+    }
+  },
+  {
+    "model": "registration.naicsCode",
+    "fields": {
+      "naics_code": "322112",
+      "naics_description": "Chemical pulp mills"
+    }
+  },
+  {
+    "model": "registration.naicsCode",
+    "fields": {
+      "naics_code": "322121",
+      "naics_description": "Paper (except newsprint) mills"
+    }
+  },
+  {
+    "model": "registration.naicsCode",
+    "fields": {
+      "naics_code": "322122",
+      "naics_description": "Newsprint mills"
+    }
+  },
+  {
+    "model": "registration.naicsCode",
+    "fields": {
+      "naics_code": "324110",
+      "naics_description": "Petroleum refineries"
+    }
+  },
+  {
+    "model": "registration.naicsCode",
+    "fields": {
+      "naics_code": "325120",
+      "naics_description": "Industrial gas manufacturing"
+    }
+  },
+  {
+    "model": "registration.naicsCode",
+    "fields": {
+      "naics_code": "325181",
+      "naics_description": "Alkali and chlorine manufacturing"
+    }
+  },
+  {
+    "model": "registration.naicsCode",
+    "fields": {
+      "naics_code": "325189",
+      "naics_description": "All other basic inorganic chemical manufacturing"
+    }
+  },
+  {
+    "model": "registration.naicsCode",
+    "fields": {
+      "naics_code": "327310",
+      "naics_description": "Cement manufacturing"
+    }
+  },
+  {
+    "model": "registration.naicsCode",
+    "fields": {
+      "naics_code": "327410",
+      "naics_description": "Lime manufacturing"
+    }
+  },
+  {
+    "model": "registration.naicsCode",
+    "fields": {
+      "naics_code": "327420",
+      "naics_description": "Gypsum product manufacturing"
+    }
+  },
+  {
+    "model": "registration.naicsCode",
+    "fields": {
+      "naics_code": "327990",
+      "naics_description": "All other non-metallic mineral product manufacturing"
+    }
+  },
+  {
+    "model": "registration.naicsCode",
+    "fields": {
+      "naics_code": "331222",
+      "naics_description": "Steel wire drawing"
+    }
+  },
+  {
+    "model": "registration.naicsCode",
+    "fields": {
+      "naics_code": "331313",
+      "naics_description": "Primary production of alumina and aluminum"
+    }
+  },
+  {
+    "model": "registration.naicsCode",
+    "fields": {
+      "naics_code": "331410",
+      "naics_description": "Non-ferrous metal (except aluminum) smelting and refining"
+    }
+  },
+  {
+    "model": "registration.naicsCode",
+    "fields": {
+      "naics_code": "331511",
+      "naics_description": "Iron foundries"
+    }
+  },
+  {
+    "model": "registration.naicsCode",
+    "fields": {
+      "naics_code": "412110",
+      "naics_description": "Petroleum, petroleum products, and other hydrocarbons merchant wholesalers"
+    }
+  },
+  {
+    "model": "registration.naicsCode",
+    "fields": {
+      "naics_code": "486210",
+      "naics_description": "Pipeline transportation of natural gas"
+    }
+  }
+]

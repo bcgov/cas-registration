@@ -58,25 +58,11 @@ class NaicsCode(models.Model):
     """NAICS code model"""
 
     naics_code = models.CharField(max_length=1000, db_comment="NAICS code")
-    ciip_sector = models.CharField(
-        max_length=1000,
-        db_comment="Sector that the code belongs to in the CIIP program",
-    )
     naics_description = models.CharField(max_length=1000, db_comment="Description of the NAICS code")
 
     class Meta:
         db_table_comment = "Naics codes"
         db_table = 'erc"."naics_code'
-
-
-class NaicsCategory(models.Model):
-    """NAICS category model"""
-
-    naics_category = models.CharField(max_length=1000, db_comment="The naics_category name")
-
-    class Meta:
-        db_table_comment = "Naics categories"
-        db_table = 'erc"."naics_category'
 
 
 class RegulatedProduct(models.Model):
@@ -388,12 +374,6 @@ class OperationAndFacilityCommonInfo(models.Model):
         NaicsCode,
         on_delete=models.DO_NOTHING,
         db_comment="An operation or facility's NAICS code",
-        related_name="operations_and_facilities",
-    )
-    naics_category = models.ForeignKey(
-        NaicsCategory,
-        on_delete=models.DO_NOTHING,
-        db_comment="An operation or facility's NAICS category",
         related_name="operations_and_facilities",
     )
 

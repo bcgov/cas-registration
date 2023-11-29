@@ -7,7 +7,6 @@ from registration.models import (
     DocumentType,
     Document,
     NaicsCode,
-    NaicsCategory,
     ReportingActivity,
     RegulatedProduct,
     User,
@@ -25,7 +24,6 @@ OPERATOR_FIXTURE = ("operator.json",)
 USER_FIXTURE = ("user.json",)
 OPERATION_FIXTURE = ("operation.json",)
 NAICS_CODE_FIXTURE = ("naicsCode.json",)
-NAICS_CATEGORY_FIXTURE = ("naicsCategory.json",)
 CONTACT_FIXTURE = ("contact.json",)
 DOCUMENT_FIXTURE = ("document.json",)
 
@@ -111,27 +109,6 @@ class NaicsCodeModelTest(BaseTestCase):
                     self.assertFieldLabel(self.test_naics_code, field_name, expected_label)
                 if expected_max_length is not None:
                     self.assertFieldMaxLength(self.test_naics_code, field_name, expected_max_length)
-
-
-class NaicsCategoryModelTest(BaseTestCase):
-    @classmethod
-    def setUpTestData(cls):
-        cls.test_naics_category = NaicsCategory.objects.create(
-            naics_category="1",
-        )
-
-    def test_field_labels_and_max_lengths(self):
-        # (field_name, expected_label, expected_max_length)
-        field_data = [
-            ("naics_category", "naics category", 1000),
-        ]
-
-        for field_name, expected_label, expected_max_length in field_data:
-            with self.subTest(field_name=field_name):
-                if expected_label:
-                    self.assertFieldLabel(self.test_naics_category, field_name, expected_label)
-                if expected_max_length is not None:
-                    self.assertFieldMaxLength(self.test_naics_category, field_name, expected_max_length)
 
 
 class RegulatedProductModelTest(BaseTestCase):
