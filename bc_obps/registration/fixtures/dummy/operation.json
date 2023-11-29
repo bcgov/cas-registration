@@ -10,7 +10,7 @@
       "contacts": [],
       "name": "Operation 1",
       "type": "Single Facility Operation",
-      "naics_code_id": 2,
+      "naics_code": 1,
 
       "previous_year_attributable_emissions": "100.345",
       "swrs_facility_id": 1001,
