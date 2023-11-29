@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import List, Optional
 from ninja import Field, Schema
 from ninja import ModelSchema
 from .models import Operation, Operator, NaicsCode, NaicsCategory, MultipleOperator
@@ -39,12 +39,25 @@ class OperationIn(ModelSchema):
     naics_code_id: int
     naics_category_id: int
     verified_at: Optional[date] = None
-    operation_has_multiple_operators: Optional[bool]
+    operation_has_multiple_operators: Optional[bool] = None
     multiple_operators_array: Optional[list] = None
 
     class Config:
         model = Operation
         model_exclude = ["id"]  # need to exclude id since it's auto generated and we don't want to pass it in
+
+
+class MultipleOperatorOut(ModelSchema):
+    """
+    Schema for the MultipleOperator model
+    """
+
+    # operation_id: int = Field(..., alias="operation.id")
+    operation: OperationIn
+
+    class Config:
+        model = MultipleOperator
+        model_fields = '__all__'
 
 
 class OperationOut(ModelSchema):
@@ -58,10 +71,20 @@ class OperationOut(ModelSchema):
     current_year_estimated_emissions: Optional[str] = None
     opt_in: Optional[bool] = None
     verified_at: Optional[date] = None
+    multiple_operators_array: List[MultipleOperatorOut]
+
+    @staticmethod
+    def resolve_multiple_operators_array(obj):
+        if obj.multiple_operators.exists():
+            return [MultipleOperatorOut.from_orm(operator).dict() for operator in obj.multiple_operators.all()]
+        return None
 
     class Config:
         model = Operation
         model_fields = "__all__"
+
+
+OperationOut.update_forward_refs()
 
 
 # OPERATOR
@@ -91,18 +114,6 @@ class MultipleOperatorIn(Schema):
     mo_mailing_municipality: Optional[str]
     mo_mailing_province: Optional[str]
     mo_mailing_postal_code: Optional[str]
-
-
-class MultipleOperatorOut(ModelSchema):
-    """
-    Schema for the MultipleOperator model
-    """
-
-    operation_id: int = Field(..., alias="operation.id")
-
-    class Config:
-        model = MultipleOperator
-        model_fields = '__all__'
 
 
 class SelectOperatorIn(Schema):

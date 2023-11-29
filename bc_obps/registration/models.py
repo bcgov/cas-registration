@@ -499,6 +499,7 @@ class MultipleOperator(models.Model):
     operation = models.ForeignKey(
         Operation,
         on_delete=models.DO_NOTHING,
+        related_name="multiple_operators",
     )
     operator_number = models.IntegerField(
         db_comment="Number used to differentiate operators for this operation for saving/updating purposes"
