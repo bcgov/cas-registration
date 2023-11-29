@@ -3,7 +3,7 @@ import SelectOperatorRequestAccessConfirmPage from "@/app/components/routes/sele
 export default async function Page({
   params,
 }: {
-  params: Readonly<{ id: number }>;
+  readonly params: { id: number };
 }) {
   return <SelectOperatorRequestAccessConfirmPage params={params} />;
 }

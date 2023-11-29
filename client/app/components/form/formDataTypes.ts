@@ -1,4 +1,4 @@
-export interface UserOperatorFormData {
+export interface UserFormData {
   first_name: string;
   last_name: string;
   position_title: string;
@@ -8,6 +8,8 @@ export interface UserOperatorFormData {
   email: string;
   phone_number: string;
   province: string;
+}
+export interface UserOperatorFormData extends UserFormData {
   is_senior_officer: string;
   legal_name: string;
   trade_name?: string;
@@ -50,8 +52,15 @@ export interface UserOperatorFormData {
   pc_mailing_province?: string;
   pc_mailing_postal_code?: string;
   percentage_owned_by_parent_company?: number;
+  // Not in form, but needed for API to create a contact based on the existing user-operator
+  user_operator_id?: string;
 }
 
 export interface SelectOperatorFormData {
   operator_id: number;
+}
+
+export interface UserInformationInitialFormData {
+  phone_number: string;
+  email: string;
 }

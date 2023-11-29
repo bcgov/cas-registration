@@ -52,6 +52,11 @@ export async function actionHandler(
     );
 
     if (!response.ok) {
+      const res = await response.json();
+
+      // Handle API errors, if any
+      if ("message" in res) return { error: res.message };
+
       // Handle HTTP errors, e.g., response.status is not in the 200-299 range
       return { error: `HTTP error! Status: ${response.status}` };
     }

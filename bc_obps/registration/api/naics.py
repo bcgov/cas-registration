@@ -1,6 +1,6 @@
 from .api_base import router
-from typing import List, Optional
-from registration.models import Operation, Operator, NaicsCode, NaicsCategory
+from typing import List
+from registration.models import NaicsCode, NaicsCategory
 from registration.schema import (
     NaicsCategorySchema,
     NaicsCodeSchema,
