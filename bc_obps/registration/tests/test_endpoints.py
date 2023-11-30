@@ -316,7 +316,8 @@ class TestOperatorsEndpoint:
 
 
 class TestUserOperatorEndpoint:
-    endpoint = base_endpoint + "select-operator"
+    select_endpoint = base_endpoint + "select-operator"
+    operator_endpoint = base_endpoint + "operators"
 
     def setup(self):
         self.user: User = baker.make(User)
@@ -325,15 +326,16 @@ class TestUserOperatorEndpoint:
 
     def test_select_operator_with_valid_id(self):
         operators = baker.make(Operator, _quantity=1)
-        response = client.get(f"{self.endpoint}/{operators[0].id}", HTTP_AUTHORIZATION=self.auth_header_dumps)
+        response = client.get(f"{self.operator_endpoint}/{operators[0].id}", HTTP_AUTHORIZATION=self.auth_header_dumps)
 
         assert response.status_code == 200
-        assert response.json() == {"operator_id": operators[0].id}
+        print(response.json())
+        assert response.json()['id'] == operators[0].id
 
     def test_select_operator_with_invalid_id(self):
         invalid_operator_id = 99999  # Invalid operator ID
 
-        response = client.get(f"{self.endpoint}/{invalid_operator_id}", HTTP_AUTHORIZATION=self.auth_header_dumps)
+        response = client.get(f"{self.operator_endpoint}/{invalid_operator_id}", HTTP_AUTHORIZATION=self.auth_header_dumps)
 
         assert response.status_code == 404
         assert response.json() == {"detail": "Not Found"}
@@ -341,7 +343,7 @@ class TestUserOperatorEndpoint:
     def test_request_admin_access_with_valid_payload(self):
         operator = baker.make(Operator)
         response = client.post(
-            f"{self.endpoint}/request-admin-access",
+            f"{self.select_endpoint}/request-admin-access",
             content_type=content_type_json,
             data={"operator_id": operator.id},
             HTTP_AUTHORIZATION=self.auth_header_dumps,
@@ -366,7 +368,7 @@ class TestUserOperatorEndpoint:
         invalid_payload = {"operator_id": 99999}  # Invalid operator ID
 
         response = client.post(
-            f"{self.endpoint}/request-admin-access",
+            f"{self.select_endpoint}/request-admin-access",
             content_type=content_type_json,
             data=invalid_payload,
             HTTP_AUTHORIZATION=self.auth_header_dumps,
@@ -407,7 +409,7 @@ class TestUserOperatorEndpoint:
             status=UserOperator.Statuses.APPROVED,
         )
         response = client.post(
-            f"{self.endpoint}/request-access",
+            f"{self.select_endpoint}/request-access",
             content_type=content_type_json,
             data={"operator_id": operator.id},
             HTTP_AUTHORIZATION=self.auth_header_dumps,

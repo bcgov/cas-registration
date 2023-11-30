@@ -24,13 +24,6 @@ def get_operator(request, operator_id: int):
     return operator
 
 
-@router.get("/select-operator/{int:operator_id}", response={200: SelectOperatorIn, codes_4xx: Message})
-def select_operator(request, operator_id: int):
-    operator: Operator = get_object_or_404(Operator, id=operator_id)
-
-    return 200, {"operator_id": operator.id}
-
-
 ##### POST #####
 
 

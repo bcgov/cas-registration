@@ -1,4 +1,4 @@
-from typing import Type, Union, Iterable, Dict, Any
+from typing import Type, Union, Iterable, Dict, Any, Tuple, Optional
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError, models
 from .models import User, Operator, UserOperator
@@ -86,20 +86,20 @@ def generate_useful_error(error):
         return f"{formatted_key}: {value[0]}"
 
 
-def check_access_request_matches_business_guid(user_guid: str, operator: Operator) -> Union[None, tuple[int, dict]]:
+def check_access_request_matches_business_guid(user_guid: str, operator: Operator) -> Tuple[int, Optional[Union[dict[str, str], None]]]:
     """
     Check if a the business_guid of a subsequent user who is requesting access matches the business_guid of the admin
 
     Args:
         user_guid (User): The guid of the user for whom eligibility is being checked.
-        operator (Operator): The operator to whichaccess is being requested.
+        operator (Operator): The operator to which access is being requested.
 
     Returns:
         Union[None, Tuple[int, str]]: Eligibility status. None if eligible, (400, error message) if not.
     """
     admin_user_operator_data = UserOperator.objects.filter(
         operator=operator, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.APPROVED
-    )[0]
+    ).first()
     # Operator already has an admin user
     admin_user = get_object_or_404(User, user_guid=admin_user_operator_data.user_id)
     current_user = get_object_or_404(User, user_guid=user_guid)

@@ -1,5 +1,3 @@
-# from uuid import UUID
-import uuid
 import pytest
 from model_bakery import baker
 from registration.models import User, Operator, UserOperator
@@ -192,13 +190,11 @@ class TestGenerateUsefulError:
 class TestCheckUserAdminRequestEligibility:
     @staticmethod
     def test_user_business_guid_matches_admin():
-        matching_guid = uuid.uuid4()
 
-        admin_user = baker.make(User, user_guid=uuid.uuid4(), business_guid=matching_guid)
+        admin_user = baker.make(User)
         user = baker.make(
             User,
-            user_guid=uuid.uuid4(),
-            business_guid=matching_guid,
+            business_guid=admin_user.business_guid,
         )
 
         operator = baker.make(Operator)
@@ -218,8 +214,8 @@ class TestCheckUserAdminRequestEligibility:
 
     @staticmethod
     def test_user_business_guid_not_match_admin():
-        admin_user = baker.make(User, user_guid=uuid.uuid4(), business_guid=uuid.uuid4())
-        user = baker.make(User, user_guid=uuid.uuid4(), business_guid=uuid.uuid4())
+        admin_user = baker.make(User)
+        user = baker.make(User)
 
         operator = baker.make(Operator)
 
