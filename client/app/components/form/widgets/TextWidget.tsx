@@ -11,13 +11,15 @@ const TextWidget: React.FC<WidgetProps> = ({
   rawErrors,
   readonly,
   schema,
-  value,
   uiSchema,
+  value,
 }) => {
   const type = schema.type === "number" ? "number" : "text";
-  // in the future we will add an option to allow users to set a max value
-  const maxNum = 2147483647;
-  const placeholder = uiSchema?.["ui:placeholder"];
+  const max =
+    uiSchema?.["ui:options"]?.max && Number(uiSchema?.["ui:options"]?.max);
+  const maxNumDbLimit = 2147483647;
+
+  const maxNum = max || maxNumDbLimit;
 
   const handleChange = (e: { target: { value: string } }) => {
     const val = e.target.value;
