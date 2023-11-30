@@ -40,21 +40,6 @@ def is_approved_admin_user_operator(request, user_guid: str):
 
     return 200, {"approved": True if approved_user_operator else False}
 
-
-@router.get("/select-operator/{int:operator_id}", response={200: SelectOperatorIn, codes_4xx: Message})
-def select_operator(request, operator_id: int):
-    user: User = request.current_user
-    operator: Operator = get_object_or_404(Operator, id=operator_id)
-
-    # check if user is eligible to request access
-    status, message = check_users_admin_request_eligibility(user, operator)
-    if status != 200:
-        return status, message
-
-    return 200, {"operator_id": operator.id}
-
-
-
 @router.get(
     "/select-operator/user-operator/{int:user_operator_id}",
     response=UserOperatorOut,
