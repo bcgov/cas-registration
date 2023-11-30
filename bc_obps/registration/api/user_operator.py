@@ -7,7 +7,7 @@ from registration.schema import (
     OperatorOut,
     RequestAccessOut,
     UserOperatorContactIn,
-    Count,
+    IsApprovedUserOperator,
 )
 from .api_base import router
 from typing import Optional
@@ -29,11 +29,11 @@ from typing import List
 
 
 ##### GET #####
-@router.get("/count-approved-admin-user-operators/{user_guid}", response={200: Count, codes_4xx: Message})
-def count_approved_admin_user_operators(request, user_guid: str):
-    user_operators: List[UserOperator] = UserOperator.objects.filter(user_id=user_guid, role="admin", status='approved')
+@router.get("/is-approved-admin-user-operator/{user_guid}", response={200: IsApprovedUserOperator, codes_4xx: Message})
+def is_approved_admin_user_operator(request, user_guid: str):
+    approved_user_operator = UserOperator.objects.filter(user_id=user_guid, role="admin", status='approved')
 
-    return 200, {"count": len(user_operators)}
+    return 200, {"approved": True if approved_user_operator else False}
 
 
 @router.get("/select-operator/{int:operator_id}", response={200: SelectOperatorIn, codes_4xx: Message})
