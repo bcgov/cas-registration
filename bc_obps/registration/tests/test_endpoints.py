@@ -338,7 +338,7 @@ class TestUserOperatorEndpoint:
         assert response.status_code == 404
         assert response.json() == {"detail": "Not Found"}
 
-    def test_request_access_with_valid_payload(self):
+    def test_request_admin_access_with_valid_payload(self):
         operator = baker.make(Operator)
         response = client.post(
             f"{self.endpoint}/request-admin-access",
@@ -396,3 +396,33 @@ class TestUserOperatorEndpoint:
 
         assert response.status_code == 200
         assert response.json() == {"approved": False}
+    def test_request_subsequent_access_with_valid_payload(self):
+        operator = baker.make(Operator)
+        admin_user = baker.make(User, business_guid=self.user.business_guid)
+        baker.make(
+            UserOperator,
+            user=admin_user,
+            operator=operator,
+            role=UserOperator.Roles.ADMIN,
+            status=UserOperator.Statuses.APPROVED,
+        )
+        response = client.post(
+            f"{self.endpoint}/request-access",
+            content_type=content_type_json,
+            data={"operator_id": operator.id},
+            HTTP_AUTHORIZATION=self.auth_header_dumps,
+        )
+
+        response_json = response.json()
+
+        assert response.status_code == 201
+        assert "user_operator_id" in response_json
+
+        user_operator_exists = UserOperator.objects.filter(
+            id=response_json["user_operator_id"],
+            user=self.user,
+            operator=operator,
+            status=UserOperator.Statuses.PENDING
+        ).exists()
+
+        assert user_operator_exists, "UserOperator object was not created"
