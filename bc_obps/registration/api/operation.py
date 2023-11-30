@@ -20,6 +20,7 @@ from ninja.responses import codes_4xx
 
 
 
+# Function to save multiple operators so we can reuse it in put/post routes
 def save_multiple_operators(multiple_operators_array, operation):
     multiple_operator_fields_mapping = {
         "mo_legal_name": "legal_name",

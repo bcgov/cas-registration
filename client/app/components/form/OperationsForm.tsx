@@ -90,7 +90,6 @@ export default function OperationsForm({ formData, schema }: Props) {
           error={error}
           schema={schema}
           submitEveryStep
-          showSubmissionStep
           onSubmit={async (data: { formData?: any }) => {
             const method = isCreate ? "POST" : "PUT";
             const endpoint = isCreate
