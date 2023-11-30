@@ -514,13 +514,13 @@ class MultipleOperator(models.Model):
         max_length=1000,
         db_comment="The legal name of an operator",
         blank=True,
-        null=True,
+        default="",
     )
     website = models.URLField(
         max_length=200,
         db_comment="The website address of an operator",
         blank=True,
-        null=True,
+        default="",
     )
     percentage_ownership = models.DecimalField(
         decimal_places=5,
