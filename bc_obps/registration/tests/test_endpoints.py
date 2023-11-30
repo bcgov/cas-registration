@@ -335,7 +335,9 @@ class TestUserOperatorEndpoint:
     def test_select_operator_with_invalid_id(self):
         invalid_operator_id = 99999  # Invalid operator ID
 
-        response = client.get(f"{self.operator_endpoint}/{invalid_operator_id}", HTTP_AUTHORIZATION=self.auth_header_dumps)
+        response = client.get(
+            f"{self.operator_endpoint}/{invalid_operator_id}", HTTP_AUTHORIZATION=self.auth_header_dumps
+        )
 
         assert response.status_code == 404
         assert response.json() == {"detail": "Not Found"}
@@ -398,6 +400,7 @@ class TestUserOperatorEndpoint:
 
         assert response.status_code == 200
         assert response.json() == {"approved": False}
+
     def test_request_subsequent_access_with_valid_payload(self):
         operator = baker.make(Operator)
         admin_user = baker.make(User, business_guid=self.user.business_guid)

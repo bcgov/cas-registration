@@ -32,7 +32,10 @@ export default async function ConfirmSelectedOperator({
     params.id,
   );
 
-  if ("error" in operator || ((typeof(hasAdmin) !==  'boolean') && "error" in hasAdmin)) {
+  if (
+    "error" in operator ||
+    (typeof hasAdmin !== "boolean" && "error" in hasAdmin)
+  ) {
     return <div>Server Error. Please try again later.</div>;
   }
 
