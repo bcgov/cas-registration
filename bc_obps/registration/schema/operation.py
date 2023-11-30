@@ -54,6 +54,10 @@ class OperationUpdateIn(ModelSchema):
         model = Operation
         model_exclude = ["id"]  # need to exclude id since it's auto generated and we don't want to pass it in
         
+### Multiple Operator schemas
+# TODO: find solution to circular import error and put multiple operator schemas in multiple_operator.py
+
+
 class MultipleOperatorIn(Schema):
     operation_id: int
     mo_legal_name: str

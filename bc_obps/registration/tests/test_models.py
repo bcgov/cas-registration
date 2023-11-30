@@ -15,6 +15,8 @@ from registration.models import (
     UserOperator,
     ParentChildOperator,
     Operation,
+    MultipleOperator,
+    UserAndContactCommonInfo,
     AppRole,
 )
 
@@ -574,3 +576,79 @@ class BusinessRoleModelTest(BaseTestCase):
 
         self.assertEqual(len(existing_roles), len(expected_roles))
         self.assertEqual(existing_roles, expected_roles)
+
+
+class MultipleOperatorModelTest(BaseTestCase):
+    fixtures = [
+        USER_FIXTURE,
+        OPERATOR_FIXTURE,
+        OPERATION_FIXTURE,
+        NAICS_CODE_FIXTURE,
+        NAICS_CATEGORY_FIXTURE,
+        CONTACT_FIXTURE,
+        DOCUMENT_FIXTURE,
+    ]
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.test_multiple_operator = MultipleOperator.objects.create(
+            operation=Operation.objects.get(id=1),
+            operator_number=1,
+            legal_name="test",
+            trade_name="test",
+            cra_business_number=1,
+            bc_corporate_registry_number=1,
+            business_structure="test",
+            website="test",
+            physical_street_address="test",
+            physical_municipality="test",
+            physical_province="BC",
+            physical_postal_code="test",
+            mailing_address_same_as_physical=False,
+            mailing_street_address="test",
+            mailing_municipality="test",
+            mailing_province="BC",
+            mailing_postal_code="test",
+        )
+
+    def test_field_labels_and_max_lengths(self):
+        # (field_name, expected_label, expected_max_length, expected_relations_count)
+        field_data = [
+            ("operation", "operation", None, None),
+            ("legal_name", "legal name", 1000, None),
+            ("trade_name", "trade name", 1000, None),
+            ("cra_business_number", "cra business number", None, None),
+            (
+                "bc_corporate_registry_number",
+                "bc corporate registry number",
+                None,
+                None,
+            ),
+            ("business_structure", "business structure", None, None),
+            ("physical_street_address", "physical street address", 1000, None),
+            ("physical_municipality", "physical municipality", 1000, None),
+            ("physical_province", "physical province", 2, None),
+            ("physical_postal_code", "physical postal code", 7, None),
+            ("mailing_address_same_as_physical", "mailing address same as physical", None, None),
+            ("mailing_street_address", "mailing street address", 1000, None),
+            ("mailing_municipality", "mailing municipality", 1000, None),
+            ("mailing_province", "mailing province", 2, None),
+            ("mailing_postal_code", "mailing postal code", 7, None),
+            ("website", "website", 200, None),
+        ]
+
+        for (
+            field_name,
+            expected_label,
+            expected_max_length,
+            expected_relations_count,
+        ) in field_data:
+            with self.subTest(field_name=field_name):
+                if expected_label:
+                    self.assertFieldLabel(self.test_multiple_operator, field_name, expected_label)
+                if expected_max_length is not None:
+                    self.assertFieldMaxLength(self.test_multiple_operator, field_name, expected_max_length)
+                if expected_relations_count is not None:
+                    self.assertHasMultipleRelationsInField(
+                        self.test_multiple_operator, field_name, expected_relations_count
+                    )
