@@ -443,9 +443,7 @@ class Operation(OperationAndFacilityCommonInfo):
         related_name="operations",
     )
     operation_has_multiple_operators = models.BooleanField(
-        db_comment="Whether or not the operation has multiple operators",
-        blank=True,
-        null=True,
+        db_comment="Whether or not the operation has multiple operators", default=False
     )
     verified_at = models.DateTimeField(
         db_comment="The time the operation was verified by an IRC user. If exists, the operation is registered for OBPS.",
@@ -553,9 +551,7 @@ class MultipleOperator(models.Model):
         db_comment="The physical postal code address of an operator, limited to valid Canadian postal codes"
     )
     mailing_address_same_as_physical = models.BooleanField(
-        db_comment="Whether or not the mailing address is the same as the physical address",
-        blank=True,
-        null=True,
+        db_comment="Whether or not the mailing address is the same as the physical address", default=True
     )
     mailing_street_address = models.CharField(max_length=1000, db_comment="The mailing street address of an operator")
     mailing_municipality = models.CharField(max_length=1000, db_comment="The mailing municipality of an operator")
