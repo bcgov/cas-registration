@@ -29,8 +29,6 @@ from registration.utils import (
     check_access_request_matches_business_guid,
 )
 from ninja.responses import codes_4xx
-import json
-from typing import List
 
 
 ##### GET #####
@@ -52,9 +50,10 @@ def get_user_operator(request, user_operator_id: int):
     return {**user_dict, **operator_dict}
 
 
-@router.get("/operator-has-admin/{operator_id}", response=bool)
+@router.get("/operator-has-admin/{operator_id}", response={200: bool, codes_4xx: Message})
 def get_user_operator_admin_exists(request, operator_id: int):
-    return UserOperator.objects.filter(operator_id=operator_id, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.APPROVED).exists()
+    hasAdmin = UserOperator.objects.filter(operator_id=operator_id, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.APPROVED).exists()
+    return 200, hasAdmin
 
 
 ##### POST #####
