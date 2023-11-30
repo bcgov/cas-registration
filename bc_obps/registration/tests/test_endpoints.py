@@ -351,3 +351,25 @@ class TestUserOperatorEndpoint:
 
         assert response.status_code == 404
         assert response.json() == {"detail": "Not Found"}
+
+    def test_is_approved_admin_user_operator_with_approved_user(self):
+        mock_user = baker.make(User)
+        mock_user_operator = baker.make(UserOperator, role="admin", status="approved", user_id=mock_user.user_guid)
+        response = client.get(
+            f"{base_endpoint}is-approved-admin-user-operator/{mock_user_operator.user_id}",
+            HTTP_AUTHORIZATION=self.auth_header_dumps,
+        )
+
+        assert response.status_code == 200
+        assert response.json() == {"approved": True}
+
+    def test_is_approved_admin_user_operator_without_approved_user(self):
+        mock_user = baker.make(User)
+        mock_user_operator = baker.make(UserOperator, role="admin", status="pending", user_id=mock_user.user_guid)
+        response = client.get(
+            f"{base_endpoint}is-approved-admin-user-operator/{mock_user_operator.user_id}",
+            HTTP_AUTHORIZATION=self.auth_header_dumps,
+        )
+
+        assert response.status_code == 200
+        assert response.json() == {"approved": False}
