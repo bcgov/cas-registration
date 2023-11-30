@@ -46,7 +46,8 @@ export default async function ConfirmSelectedOperator({
           <p>
             Looks like you do not have access to <b>{operator.legal_name}</b>
             <br />
-            You will need the administrator of your operator to grant you access.
+            You will need the administrator of your operator to grant you
+            access.
           </p>
           <p>Confirm below if you would like to request access to it</p>
           <RequestAccessButton operatorId={operator.id} />
