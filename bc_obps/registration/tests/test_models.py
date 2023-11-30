@@ -19,12 +19,12 @@ from registration.models import (
 )
 
 
-OPERATOR_FIXTURE = ("dummy/operator.json",)
-USER_FIXTURE = ("dummy/user.json",)
-OPERATION_FIXTURE = ("dummy/operation.json",)
+OPERATOR_FIXTURE = ("mock/operator.json",)
+USER_FIXTURE = ("mock/user.json",)
+OPERATION_FIXTURE = ("mock/operation.json",)
 NAICS_CODE_FIXTURE = ("real/naicsCode.json",)
-CONTACT_FIXTURE = ("dummy/contact.json",)
-DOCUMENT_FIXTURE = ("dummy/document.json",)
+CONTACT_FIXTURE = ("mock/contact.json",)
+DOCUMENT_FIXTURE = ("mock/document.json",)
 DOCUMENT_TYPE_FIXTURE = ("real/documentType.json",)
 BUSINESS_ROLE_FIXTURE = ("real/businessRole.json",)
 APP_ROLE_FIXTURE = ("real/appRole.json",)
