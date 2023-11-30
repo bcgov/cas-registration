@@ -34,6 +34,7 @@ def save_multiple_operators(multiple_operators_array, operation):
         "mo_physical_municipality": "physical_municipality",
         "mo_physical_province": "physical_province",
         "mo_physical_postal_code": "physical_postal_code",
+        "mo_mailing_address_same_as_physical": "mailing_address_same_as_physical",
         "mo_mailing_street_address": "mailing_street_address",
         "mo_mailing_municipality": "mailing_municipality",
         "mo_mailing_province": "mailing_province",
