@@ -1,28 +1,50 @@
 from typing import Optional
 from ninja import Field
-from ninja import ModelSchema
+from ninja import ModelSchema, Schema
 from registration.models import Operation, Contact
 from datetime import date
 from .contact import ContactSchema
 
 
 #### Operation schemas
-class OperationIn(ModelSchema):
-    # temporarily setting a default operator since we don't have login yet
-    operator_id: int = 1
+
+
+class OperationCreateOut(Schema):
+    id: int
+    name: str
+
+
+class OperationCreateIn(ModelSchema):
+    operator_id: int
     # Converting types
     naics_code_id: int
     verified_at: Optional[date] = None
-    # al => application lead
-    al_first_name: Optional[str] = None
-    al_last_name: Optional[str] = None
-    al_position_title: Optional[str] = None
-    al_street_address: Optional[str] = None
-    al_municipality: Optional[str] = None
-    al_province: Optional[str] = None
-    al_postal_code: Optional[str] = None
-    al_email: Optional[str] = None
-    al_phone_number: Optional[str] = None
+
+    class Config:
+        model = Operation
+        model_exclude = ["id"]  # need to exclude id since it's auto generated and we don't want to pass it in
+
+
+class OperationUpdateOut(Schema):
+    name: str
+
+
+class OperationUpdateIn(ModelSchema):
+    operator_id: int
+    # Converting types
+    naics_code_id: int
+    naics_category_id: int
+    verified_at: Optional[date] = None
+    # application lead details
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    position_title: Optional[str] = None
+    street_address: Optional[str] = None
+    municipality: Optional[str] = None
+    province: Optional[str] = None
+    postal_code: Optional[str] = None
+    email: Optional[str] = None
+    phone_number: Optional[str] = None
     application_lead: Optional[int] = None
     is_application_lead_external: Optional[bool] = None
 

@@ -6,33 +6,48 @@ from django.core import serializers
 from typing import List
 from django.shortcuts import get_object_or_404
 from registration.models import Operation, Operator, NaicsCode, NaicsCategory, Contact, BusinessRole, User
-from registration.schema import OperationIn, OperationOut
-from registration.utils import update_model_instance, extract_fields_from_dict
+from registration.schema import (
+    OperationCreateIn,
+    OperationUpdateIn,
+    OperationOut,
+    OperationCreateOut,
+    OperationUpdateOut,
+    Message,
+)
+from registration.utils import extract_fields_from_dict
+from ninja.responses import codes_4xx
 
 
 ##### GET #####
 
 
-@router.get("/operations", response=List[OperationOut])
+@router.get("/operations", response={200: List[OperationOut], codes_4xx: Message})
 def list_operations(request):
     qs = Operation.objects.all()
-    return qs
+    return 200, qs
 
 
-@router.get("/operations/{operation_id}", response=OperationOut)
+@router.get("/operations/{operation_id}", response={200: OperationOut, codes_4xx: Message})
 def get_operation(request, operation_id: int):
     operation = get_object_or_404(Operation, id=operation_id)
-    return operation
+    return 200, operation
 
 
 ##### POST #####
 
 
-@router.post("/operations")
-def create_operation(request, payload: OperationIn):
+@router.post("/operations", response={201: OperationCreateOut, codes_4xx: Message})
+def create_operation(request, payload: OperationCreateIn):
+    payload_dict: dict = payload.dict()
 
-    operation_related_fields: OperationIn = extract_fields_from_dict(
-        payload.dict(),
+    # check that the operation doesn't already exist
+    bcghg_id: str = payload_dict.get("bcghg_id")
+    if bcghg_id:
+        existing_operation: Operation = Operation.objects.filter(bcghg_id=bcghg_id).first()
+        if existing_operation:
+            return 400, {"message": "Operation with this BCGHG ID already exists."}
+    operation_related_fields: OperationCreateIn = extract_fields_from_dict(
+        payload_dict,
         [
             "name",
             "type",
@@ -63,52 +78,52 @@ def create_operation(request, payload: OperationIn):
     operation.regulated_products.set(payload.regulated_products)
     operation.reporting_activities.set(payload.reporting_activities)
     operation.documents.set(payload.documents)
-    return {"name": operation.name, "id": operation.id}
+    return 201, {"name": operation.name, "id": operation.id}
 
 
 ##### PUT #####
 
 
-@router.put("/operations/{operation_id}")
-def update_operation(request, operation_id: int, submit, payload: OperationIn):
-
+@router.put("/operations/{operation_id}", response={200: OperationUpdateOut, codes_4xx: Message})
+def update_operation(request, operation_id: int, submit, payload: OperationUpdateIn):
+    payload_dict: dict = payload.dict()
     operation = get_object_or_404(Operation, id=operation_id)
-    if "operator" in payload.dict():
-        operator = payload.dict()["operator"]
+    if "operator" in payload_dict:
+        operator = payload_dict["operator"]
         op = get_object_or_404(Operator, id=operator)
         # Assign the Operator instance to the operation
         operation.operator = op
-    if "naics_code" in payload.dict():
-        naics_code = payload.dict()["naics_code"]
+    if "naics_code" in payload_dict:
+        naics_code = payload_dict["naics_code"]
         nc = get_object_or_404(NaicsCode, id=naics_code)
         # Assign the naics_code instance to the operation
         operation.naics_code = nc
-    if "naics_category" in payload.dict():
-        naics_category = payload.dict()["naics_category"]
+    if "naics_category" in payload_dict:
+        naics_category = payload_dict["naics_category"]
         nc = get_object_or_404(NaicsCategory, id=naics_category)
         # Assign the naics_category instance to the operation
         payload.naics_category = nc
     # if is_application_lead_external is null, the user hasn't filled out that part of the form. If it's true, the user has assigned a contact; if it's false, the lead is the user
-    if "is_application_lead_external" in payload.dict():
-        if payload.dict()["is_application_lead_external"]:
-            external_application_lead = payload.dict()["application_lead"]
+    if "is_application_lead_external" in payload_dict:
+        if payload_dict["is_application_lead_external"]:
+            external_application_lead = payload_dict["application_lead"]
             eal, created = Contact.objects.update_or_create(
                 id=external_application_lead,
                 defaults={
-                    "first_name": payload.al_first_name,
-                    "last_name": payload.al_last_name,
-                    "position_title": payload.al_position_title,
-                    "street_address": payload.al_street_address,
-                    "municipality": payload.al_municipality,
-                    "province": payload.al_province,
-                    "postal_code": payload.al_postal_code,
-                    "email": payload.al_email,
-                    "phone_number": payload.al_phone_number,
+                    "first_name": payload.first_name,
+                    "last_name": payload.last_name,
+                    "position_title": payload.position_title,
+                    "street_address": payload.street_address,
+                    "municipality": payload.municipality,
+                    "province": payload.province,
+                    "postal_code": payload.postal_code,
+                    "email": payload.email,
+                    "phone_number": payload.phone_number,
                     "business_role": BusinessRole.objects.get(role_name="Application Lead"),
                 },
             )
             operation.application_lead = eal
-        if payload.dict()["is_application_lead_external"] is False:
+        if payload_dict["is_application_lead_external"] is False:
             current_user_guid = json.loads(request.headers.get('Authorization'))["user_guid"]
             user: User = get_object_or_404(User, user_guid=current_user_guid)
             al, created = Contact.objects.update_or_create(
@@ -139,7 +154,7 @@ def update_operation(request, operation_id: int, submit, payload: OperationIn):
         "application_lead",
     ]
 
-    for attr, value in payload.dict().items():
+    for attr, value in payload_dict.items():
         if attr not in excluded_fields:
             setattr(operation, attr, value)
             # set the operation status to 'pending' on update
@@ -154,7 +169,7 @@ def update_operation(request, operation_id: int, submit, payload: OperationIn):
         operation.reporting_activities.add(activity_id)  # Adds each activity
 
     operation.save()
-    return {"name": operation.name}
+    return 200, {"name": operation.name}
 
 
 @router.put("/operations/{operation_id}/update-status")

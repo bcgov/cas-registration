@@ -456,7 +456,7 @@ class Operation(OperationAndFacilityCommonInfo):
     application_lead = models.ForeignKey(
         Contact,
         on_delete=models.DO_NOTHING,
-        related_name="contacts",
+        related_name="operations",
         blank=True,
         null=True,
         db_comment="Foreign key to the contact that is the application lead",
