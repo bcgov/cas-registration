@@ -37,7 +37,7 @@ export default function SelectOperatorForm({
       formData={formData}
       onSubmit={async (data: { formData?: SelectOperatorFormData }) => {
         const response = await actionHandler(
-          `registration/select-operator/${data.formData?.operator_id}`,
+          `registration/operators/${data.formData?.operator_id}`,
           "GET",
           "/dashboard/select-operator",
         );
@@ -47,7 +47,7 @@ export default function SelectOperatorForm({
           return;
         }
 
-        push(`/dashboard/select-operator/confirm/${response.operator_id}`);
+        push(`/dashboard/select-operator/confirm/${response.id}`);
       }}
       uiSchema={selectOperatorUiSchema}
       widgets={{
