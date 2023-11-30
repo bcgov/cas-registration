@@ -110,7 +110,8 @@ def check_access_request_matches_business_guid(
         return 403, {"message": "Your business bceid does not match that of the approved admin."}
 
     return 200, None
-    
+
+
 def extract_fields_from_dict(data_dict, fields_to_extract):
     new_dict = dict()
     for field in fields_to_extract:

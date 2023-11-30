@@ -463,7 +463,7 @@ class Migration(migrations.Migration):
                         db_comment='Foreign key to the contact that is the application lead',
                         null=True,
                         on_delete=django.db.models.deletion.DO_NOTHING,
-                        related_name='contacts',
+                        related_name='operations',
                         to='registration.contact',
                     ),
                 ),

@@ -181,51 +181,51 @@ const operationPage3: RJSFSchema = {
       then: {
         type: "object",
         required: [
-          "al_first_name",
-          "al_last_name",
-          "al_position_title",
-          "al_street_address",
-          "al_municipality",
-          "al_province",
-          "al_postal_code",
-          "al_email",
-          "al_phone_number",
+          "first_name",
+          "last_name",
+          "position_title",
+          "street_address",
+          "municipality",
+          "province",
+          "postal_code",
+          "email",
+          "phone_number",
         ],
         properties: {
-          al_first_name: {
+          first_name: {
             type: "string",
             title: "First Name",
           },
-          al_last_name: {
+          last_name: {
             type: "string",
             title: "Last Name",
           },
-          al_position_title: {
+          position_title: {
             type: "string",
             title: "Position Title",
           },
-          al_street_address: {
+          street_address: {
             type: "string",
             title: "Mailing Address",
           },
-          al_municipality: {
+          municipality: {
             type: "string",
             title: "Municipality",
           },
-          al_province: {
+          province: {
             type: "string",
             title: "Province",
             anyOf: provinceOptions,
           },
-          al_postal_code: {
+          postal_code: {
             type: "string",
             title: "Postal Code",
           },
-          al_email: {
+          email: {
             type: "string",
             title: "Email Address",
           },
-          al_phone_number: {
+          phone_number: {
             type: "string",
             title: "Phone Number",
           },
@@ -268,15 +268,15 @@ export const operationUiSchema = {
     "operators",
     "percentage_ownership",
     "is_application_lead_external",
-    "al_first_name",
-    "al_last_name",
-    "al_position_title",
-    "al_street_address",
-    "al_municipality",
-    "al_province",
-    "al_postal_code",
-    "al_email",
-    "al_phone_number",
+    "first_name",
+    "last_name",
+    "position_title",
+    "street_address",
+    "municipality",
+    "province",
+    "postal_code",
+    "email",
+    "phone_number",
     "verified_by",
     "verified_at",
   ],
@@ -318,7 +318,7 @@ export const operationUiSchema = {
   boundary_map: {
     "ui:widget": "FileWidget",
   },
-  al_province: {
+  province: {
     "ui:widget": "ComboBox",
   },
 };

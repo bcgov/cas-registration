@@ -6,7 +6,6 @@ import MultiStepFormBase from "@/app/components/form/MultiStepFormBase";
 import { Button } from "@mui/material";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import React from "react";
 import { actionHandler } from "@/app/utils/actions";
 import { useSession } from "next-auth/react";
 
@@ -32,23 +31,13 @@ export default function OperationsForm({ formData, schema }: Props) {
   const isCreate = params?.operation === "0";
 
   const isApplicationLeadExternal =
-    userEmail === formData?.application_lead?.email ? false : true;
-
-  const applicationLeadDetails = {
-    al_first_name: formData?.application_lead?.first_name,
-    al_last_name: formData?.application_lead?.last_name,
-    al_position_title: formData?.application_lead?.position_title,
-    al_street_address: formData?.application_lead?.street_address,
-    al_municipality: formData?.application_lead?.municipality,
-    al_province: formData?.application_lead?.province,
-    al_postal_code: formData?.application_lead?.postal_code,
-    al_email: formData?.application_lead?.email,
-    al_phone_number: formData?.application_lead?.phone_number,
-  };
+    userEmail !== formData?.application_lead?.email;
 
   // need to convert some of the information received from django into types RJSF can read
   const transformedFormData = {
     ...formData,
+    // we only add the application lead data to the formData (ie, show it in the form) if the application lead is external (ie, someone other than the user)
+    ...(isApplicationLeadExternal && formData?.application_lead),
     previous_year_attributable_emissions:
       formData?.previous_year_attributable_emissions &&
       Number(formData?.previous_year_attributable_emissions),
@@ -62,11 +51,9 @@ export default function OperationsForm({ formData, schema }: Props) {
       formData?.previous_year_attributable_emissions ? true : false,
 
     is_application_lead_external: isApplicationLeadExternal,
-    ...(isApplicationLeadExternal && applicationLeadDetails),
     verified_at: formData?.verified_at?.toString(),
     verified_by: formData?.verified_by?.toString(),
   };
-
   const formSectionList = Object.keys(schema.properties as any);
   const isNotFinalStep = formSection !== formSectionList.length;
   const isFinalStep = formSection === formSectionList.length;
@@ -100,8 +87,6 @@ export default function OperationsForm({ formData, schema }: Props) {
           formData={transformedFormData}
           readonly={
             formData?.status === "Registered" || formData?.status === "Pending"
-              ? true
-              : false
           }
           error={error}
           schema={schema}
