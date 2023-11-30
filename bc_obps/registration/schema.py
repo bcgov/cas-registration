@@ -71,12 +71,13 @@ class OperationOut(ModelSchema):
     current_year_estimated_emissions: Optional[str] = None
     opt_in: Optional[bool] = None
     verified_at: Optional[date] = None
+    operation_has_multiple_operators: Optional[bool] = Field(..., alias="operation_has_multiple_operators")
     multiple_operators_array: List[MultipleOperatorOut]
 
     @staticmethod
     def resolve_multiple_operators_array(obj):
-        if obj.multiple_operators.exists():
-            return [MultipleOperatorOut.from_orm(operator).dict() for operator in obj.multiple_operators.all()]
+        if obj.multiple_operator.exists():
+            return [MultipleOperatorOut.from_orm(operator).dict() for operator in obj.multiple_operator.all()]
         return None
 
     class Config:
