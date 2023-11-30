@@ -86,7 +86,9 @@ def generate_useful_error(error):
         return f"{formatted_key}: {value[0]}"
 
 
-def check_access_request_matches_business_guid(user_guid: str, operator: Operator) -> Tuple[int, Optional[Union[dict[str, str], None]]]:
+def check_access_request_matches_business_guid(
+    user_guid: str, operator: Operator
+) -> Tuple[int, Optional[Union[dict[str, str], None]]]:
     """
     Check if a the business_guid of a subsequent user who is requesting access matches the business_guid of the admin
 
