@@ -84,13 +84,14 @@ def generate_useful_error(error):
     for key, value in error.message_dict.items():
         formatted_key = ' '.join(word.capitalize() for word in key.split('_'))
         return f"{formatted_key}: {value[0]}"
+
 def check_access_request_matches_business_guid(user_guid: str, operator: Operator) -> Union[None, tuple[int, dict]]:
     """
-    Check if a user is eligible to request admin access to an operator.
+    Check if a the business_guid of a subsequent user who is requesting access matches the business_guid of the admin
 
     Args:
-        user (User): The user for whom eligibility is being checked.
-        operator (Operator): The operator to which admin access is being requested.
+        user_guid (User): The guid of the user for whom eligibility is being checked.
+        operator (Operator): The operator to whichaccess is being requested.
 
     Returns:
         Union[None, Tuple[int, str]]: Eligibility status. None if eligible, (400, error message) if not.
@@ -103,6 +104,6 @@ def check_access_request_matches_business_guid(user_guid: str, operator: Operato
     current_user = get_object_or_404(User, user_guid=user_guid)
 
     if admin_user.business_guid != current_user.business_guid:
-        return 403, {"message": "Your business bceid does not match that of the approved admin!"}
+        return 403, {"message": "Your business bceid does not match that of the approved admin."}
 
     return 200, None

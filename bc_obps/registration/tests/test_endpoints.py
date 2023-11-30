@@ -341,7 +341,7 @@ class TestUserOperatorEndpoint:
     def test_request_access_with_valid_payload(self):
         operator = baker.make(Operator)
         response = client.post(
-            f"{self.endpoint}/request-access",
+            f"{self.endpoint}/request-admin-access",
             content_type=content_type_json,
             data={"operator_id": operator.id},
             HTTP_AUTHORIZATION=self.auth_header_dumps,
@@ -366,7 +366,7 @@ class TestUserOperatorEndpoint:
         invalid_payload = {"operator_id": 99999}  # Invalid operator ID
 
         response = client.post(
-            f"{self.endpoint}/request-access",
+            f"{self.endpoint}/request-admin-access",
             content_type=content_type_json,
             data=invalid_payload,
             HTTP_AUTHORIZATION=self.auth_header_dumps,
