@@ -27,9 +27,9 @@
     "model": "registration.useroperator",
     "pk": 3,
     "fields": {
-      "user": "279c80cf57814c28872740a133d17c0d",
+      "user": "ba2ba62a121842e0942aab9e92ce8822",
       "operator": 2,
-      "role": "reporter",
+      "role": "admin",
       "status": "pending",
       "verified_at": null,
       "verified_by": null

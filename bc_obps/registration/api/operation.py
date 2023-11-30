@@ -5,8 +5,8 @@ import pytz
 from django.core import serializers
 from typing import List
 from django.shortcuts import get_object_or_404
-from registration.models import Operation, Operator, NaicsCode, NaicsCategory
-from registration.schema import OperationIn, OperationOut
+from registration.models import Operation, Operator, NaicsCode
+from registration.schema.operation import OperationIn, OperationOut
 
 
 ##### GET #####
@@ -29,7 +29,7 @@ def get_operation(request, operation_id: int):
 
 @router.post("/operations")
 def create_operation(request, payload: OperationIn):
-    fields_to_assign = ["operator", "naics_code", "naics_category"]
+    fields_to_assign = ["operator", "naics_code"]
 
     for field_name in fields_to_assign:
         if field_name in payload.dict():
@@ -37,7 +37,6 @@ def create_operation(request, payload: OperationIn):
             model_class = {
                 "operator": Operator,
                 "naics_code": NaicsCode,
-                "naics_category": NaicsCategory,
             }[field_name]
             obj = get_object_or_404(model_class, id=field_value)
             setattr(payload, field_name, obj)
@@ -69,16 +68,10 @@ def update_operation(request, operation_id: int, submit, payload: OperationIn):
         nc = get_object_or_404(NaicsCode, id=naics_code)
         # Assign the naics_code instance to the operation
         operation.naics_code = nc
-    if "naics_category" in payload.dict():
-        naics_category = payload.dict()["naics_category"]
-        nc = get_object_or_404(NaicsCategory, id=naics_category)
-        # Assign the naics_category instance to the operation
-        payload.naics_category = nc
     # Update other attributes as needed
     excluded_fields = [
         "operator",
         "naics_code",
-        "naics_category",
         "documents",
         "contacts",
         "reporting_activities",
