@@ -487,6 +487,11 @@ export const operationUiSchema = {
           jsxTitle: OperatorPhysicalAddressTitle,
         },
       },
+      mo_percentage_ownership: {
+        "ui:options": {
+          max: 100,
+        },
+      },
       mo_mailing_address_same_as_physical: {
         "ui:widget": "RadioWidget",
       },
