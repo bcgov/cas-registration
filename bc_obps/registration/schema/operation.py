@@ -66,7 +66,7 @@ class MultipleOperatorIn(Schema):
     mo_physical_municipality: str
     mo_physical_province: str
     mo_physical_postal_code: str
-    mo_mailing_address_same_as_physical: Optional[bool]
+    mo_mailing_address_same_as_physical: Optional[bool] = False
     mo_mailing_street_address: Optional[str]
     mo_mailing_municipality: Optional[str]
     mo_mailing_province: Optional[str]
@@ -88,7 +88,7 @@ class MultipleOperatorOut(ModelSchema):
     mo_physical_municipality: str = Field(..., alias="physical_municipality")
     mo_physical_province: str = Field(..., alias="physical_province")
     mo_physical_postal_code: str = Field(..., alias="physical_postal_code")
-    mo_mailing_address_same_as_physical: Optional[bool] = Field(None, alias="mailing_address_same_as_physical")
+    mo_mailing_address_same_as_physical: Optional[bool] = Field(False, alias="mailing_address_same_as_physical")
     mo_mailing_street_address: Optional[str] = Field(None, alias="mailing_street_address")
     mo_mailing_municipality: Optional[str] = Field(None, alias="mailing_municipality")
     mo_mailing_province: Optional[str] = Field(None, alias="mailing_province")
@@ -114,7 +114,7 @@ class OperationOut(ModelSchema):
     verified_at: Optional[date] = None
     is_application_lead_external: Optional[bool] = None
     application_lead: Optional[ContactSchema]
-    operation_has_multiple_operators: Optional[bool] = Field(..., alias="operation_has_multiple_operators")
+    operation_has_multiple_operators: Optional[bool] = Field(..., alias="operation_has_multiple_operators") or False
     multiple_operators_array: Optional[List[MultipleOperatorOut]] = None
 
     @staticmethod
