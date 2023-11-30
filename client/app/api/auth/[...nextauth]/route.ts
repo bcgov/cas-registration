@@ -77,12 +77,13 @@ export const authOptions: NextAuthOptions = {
               try {
                 // Check if user is approved
                 const response = await actionHandler(
-                  `registration/count-approved-admin-user-operators/${token.user_guid}`,
+                  `registration/is-approved-admin-user-operator/${token.user_guid}`,
                   "GET",
                   "",
                 );
-                if (response?.count > 0) {
-                  token.app_role = "industry_user" + "_admin";
+
+                if (response?.approved) {
+                  token.app_role = token.app_role + "_admin";
                 } else {
                   // Default app_role if the API call fails
                 }
