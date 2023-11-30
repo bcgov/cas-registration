@@ -10,5 +10,29 @@
       "verified_at": null,
       "verified_by": null
     }
+  },
+  {
+    "model": "registration.useroperator",
+    "pk": 2,
+    "fields": {
+      "user": "ba2ba62a121842e0942aab9e92ce8822",
+      "operator": 2,
+      "role": "admin",
+      "status": "approved",
+      "verified_at": null,
+      "verified_by": null
+    }
+  },
+  {
+    "model": "registration.useroperator",
+    "pk": 3,
+    "fields": {
+      "user": "ba2ba62a121842e0942aab9e92ce8822",
+      "operator": 2,
+      "role": "admin",
+      "status": "pending",
+      "verified_at": null,
+      "verified_by": null
+    }
   }
 ]

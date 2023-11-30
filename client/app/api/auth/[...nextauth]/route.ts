@@ -56,7 +56,7 @@ export const authOptions: NextAuthOptions = {
               // Default role
               token.app_role = "cas_pending";
               try {
-                // Get user tole by guid
+                // Get user role by guid
                 const response = await actionHandler(
                   `registration/get-user-role/${token.user_guid}`,
                   "GET",
@@ -74,8 +74,22 @@ export const authOptions: NextAuthOptions = {
             case "bceidbusiness":
               // Default role
               token.app_role = "industry_user";
-              // 🚧 token.app_role = "industry_user" + "_admin";
-              // ticket 321
+              try {
+                // Check if user is approved
+                const response = await actionHandler(
+                  `registration/is-approved-admin-user-operator/${token.user_guid}`,
+                  "GET",
+                  "",
+                );
+
+                if (response?.approved) {
+                  token.app_role = token.app_role + "_admin";
+                } else {
+                  // Default app_role if the API call fails
+                }
+              } catch (error) {
+                // Default app_role if there's an error in the API call
+              }
               break;
           }
         } else {
