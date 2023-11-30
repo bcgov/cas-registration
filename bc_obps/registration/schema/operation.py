@@ -115,7 +115,7 @@ class OperationOut(ModelSchema):
     is_application_lead_external: Optional[bool] = None
     application_lead: Optional[ContactSchema]
     operation_has_multiple_operators: Optional[bool] = Field(..., alias="operation_has_multiple_operators")
-    multiple_operators_array: List[MultipleOperatorOut]
+    multiple_operators_array: Optional[List[MultipleOperatorOut]] = None
 
     @staticmethod
     def resolve_multiple_operators_array(obj):

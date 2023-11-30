@@ -58,7 +58,6 @@ export default function OperationsForm({ formData, schema }: Props) {
   const formSectionList = Object.keys(schema.properties as any);
   const isNotFinalStep = formSection !== formSectionList.length;
   const isFinalStep = formSection === formSectionList.length;
-
   return (
     <>
       {operationName ? (
@@ -89,6 +88,7 @@ export default function OperationsForm({ formData, schema }: Props) {
           readonly={formData?.status === Status.PENDING}
           error={error}
           schema={schema}
+          allowBackNavigation
           submitEveryStep
           onSubmit={async (data: { formData?: any }) => {
             const method = isCreate ? "POST" : "PUT";
@@ -98,6 +98,7 @@ export default function OperationsForm({ formData, schema }: Props) {
             const pathToRevalidate = isCreate
               ? "dashboard/operations"
               : `dashboard/operations/${formData?.id}`;
+
             const body = {
               ...formData,
               ...data.formData,
@@ -107,13 +108,14 @@ export default function OperationsForm({ formData, schema }: Props) {
               operator_id: 1,
               application_lead: formData?.application_lead?.id,
             };
+
             const response = await actionHandler(
               endpoint,
               method,
               pathToRevalidate,
               {
                 body: JSON.stringify(body),
-              },
+              }
             );
 
             const operation = response?.id || operationId;
@@ -126,7 +128,7 @@ export default function OperationsForm({ formData, schema }: Props) {
             router.replace(`/dashboard/operations/${operation}/${formSection}`);
             if (isNotFinalStep) {
               router.push(
-                `/dashboard/operations/${operation}/${formSection + 1}`,
+                `/dashboard/operations/${operation}/${formSection + 1}`
               );
               return;
             }
