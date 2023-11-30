@@ -120,7 +120,10 @@ class OperationOut(ModelSchema):
     @staticmethod
     def resolve_multiple_operators_array(obj):
         if obj.multiple_operator.exists():
-            return [MultipleOperatorOut.from_orm(operator).dict() for operator in obj.multiple_operator.all()]
+            return [
+                MultipleOperatorOut.from_orm(operator).dict()
+                for operator in obj.multiple_operator.filter(operation_id=obj.id)
+            ]
         return None
 
     class Config:
