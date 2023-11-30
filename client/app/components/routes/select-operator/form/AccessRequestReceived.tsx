@@ -36,12 +36,13 @@ export default async function AccessRequestReceived({
         as its administrator.
       </p>
     </>
-  )
+  );
 
   const requestSubsequentAccessJSX: JSX.Element = (
     <>
       <p>
-        Your access request has been sent to the administrator of <b>{operator.legal_name}</b> for review.
+        Your access request has been sent to the administrator of{" "}
+        <b>{operator.legal_name}</b> for review.
         <br />
         Once approved, you will receive a confirmation email.
       </p>
@@ -50,33 +51,32 @@ export default async function AccessRequestReceived({
         permissions.
       </p>
     </>
-  )
+  );
 
   return (
     <section className="text-center my-auto text-2xl flex flex-col gap-3">
-        <span>
-          <AccessTimeIcon sx={{ color: "#FFCC00", fontSize: 50 }} />
-        </span>
-        {params.step === "add-operator" ? (
-            <>
-              <p>
-                Your request to add operator <b>{operator.legal_name}</b> has been
-                received.
-              </p>
-              {adminRequestJSX}
-            </>
-          ) : (
-            hasAdmin ? requestSubsequentAccessJSX : (
-              <>
-                <p>
-                  Your request to access to operator <b>{operator.legal_name}</b> as its
-                  administrator has been received.
-                </p>
-                {adminRequestJSX}
-              </>
-            )
-          )
-        }
+      <span>
+        <AccessTimeIcon sx={{ color: "#FFCC00", fontSize: 50 }} />
+      </span>
+      {params.step === "add-operator" ? (
+        <>
+          <p>
+            Your request to add operator <b>{operator.legal_name}</b> has been
+            received.
+          </p>
+          {adminRequestJSX}
+        </>
+      ) : hasAdmin ? (
+        requestSubsequentAccessJSX
+      ) : (
+        <>
+          <p>
+            Your request to access to operator <b>{operator.legal_name}</b> as
+            its administrator has been received.
+          </p>
+          {adminRequestJSX}
+        </>
+      )}
     </section>
   );
 }

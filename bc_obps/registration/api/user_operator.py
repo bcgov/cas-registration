@@ -22,7 +22,12 @@ from registration.models import (
     Contact,
     ParentChildOperator,
 )
-from registration.utils import generate_useful_error, update_model_instance, check_users_admin_request_eligibility, check_access_request_matches_business_guid
+from registration.utils import (
+    generate_useful_error,
+    update_model_instance,
+    check_users_admin_request_eligibility,
+    check_access_request_matches_business_guid,
+)
 from ninja.responses import codes_4xx
 import json
 from typing import List
@@ -49,6 +54,7 @@ def select_operator(request, operator_id: int):
     return 200, {"operator_id": operator.id}
 
 
+
 @router.get(
     "/select-operator/user-operator/{int:user_operator_id}",
     response=UserOperatorOut,
@@ -68,6 +74,7 @@ def get_user_operator_admin_exists(request, operator_id: int):
 
 ##### POST #####
 
+
 @router.post("/select-operator/request-admin-access", response={201: RequestAccessOut, codes_4xx: Message})
 def request_access(request, payload: SelectOperatorIn):
     user: User = request.current_user
@@ -84,6 +91,7 @@ def request_access(request, payload: SelectOperatorIn):
         user=user, operator=operator, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.DRAFT
     )
     return 201, {"user_operator_id": user_operator.id}
+
 
 @router.post("/select-operator/request-access", response={201: RequestAccessOut, codes_4xx: Message})
 def request_access(request, payload: SelectOperatorIn):

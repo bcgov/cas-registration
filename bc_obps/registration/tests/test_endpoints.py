@@ -422,7 +422,7 @@ class TestUserOperatorEndpoint:
             id=response_json["user_operator_id"],
             user=self.user,
             operator=operator,
-            status=UserOperator.Statuses.PENDING
+            status=UserOperator.Statuses.PENDING,
         ).exists()
 
         assert user_operator_exists, "UserOperator object was not created"

@@ -3,7 +3,12 @@ import uuid
 import pytest
 from model_bakery import baker
 from registration.models import User, Operator, UserOperator
-from registration.utils import check_users_admin_request_eligibility, update_model_instance, generate_useful_error, check_access_request_matches_business_guid
+from registration.utils import (
+    check_users_admin_request_eligibility,
+    update_model_instance,
+    generate_useful_error,
+    check_access_request_matches_business_guid,
+)
 from localflavor.ca.models import CAPostalCodeField
 from django.core.exceptions import ValidationError
 
@@ -183,20 +188,17 @@ class TestGenerateUsefulError:
         expected_error = "Field1: Error message 1 for field1"
         assert useful_error == expected_error
 
+
 class TestCheckUserAdminRequestEligibility:
     @staticmethod
     def test_user_business_guid_matches_admin():
         matching_guid = uuid.uuid4()
 
-        admin_user = baker.make(
-          User,
-          user_guid=uuid.uuid4(),
-          business_guid=matching_guid
-        )
+        admin_user = baker.make(User, user_guid=uuid.uuid4(), business_guid=matching_guid)
         user = baker.make(
-          User,
-          user_guid=uuid.uuid4(),
-          business_guid=matching_guid,
+            User,
+            user_guid=uuid.uuid4(),
+            business_guid=matching_guid,
         )
 
         operator = baker.make(Operator)
@@ -216,16 +218,8 @@ class TestCheckUserAdminRequestEligibility:
 
     @staticmethod
     def test_user_business_guid_not_match_admin():
-        admin_user = baker.make(
-          User,
-          user_guid=uuid.uuid4(),
-          business_guid=uuid.uuid4()
-        )
-        user = baker.make(
-          User,
-          user_guid=uuid.uuid4(),
-          business_guid=uuid.uuid4()
-        )
+        admin_user = baker.make(User, user_guid=uuid.uuid4(), business_guid=uuid.uuid4())
+        user = baker.make(User, user_guid=uuid.uuid4(), business_guid=uuid.uuid4())
 
         operator = baker.make(Operator)
 
