@@ -32,7 +32,7 @@ export default async function ConfirmSelectedOperator({
     params.id,
   );
 
-  if ("error" in operator) {
+  if ("error" in operator || "error" in hasAdmin) {
     return <div>Server Error. Please try again later.</div>;
   }
 

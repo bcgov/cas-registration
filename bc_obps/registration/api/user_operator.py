@@ -36,7 +36,7 @@ from typing import List
 ##### GET #####
 @router.get("/is-approved-admin-user-operator/{user_guid}", response={200: IsApprovedUserOperator, codes_4xx: Message})
 def is_approved_admin_user_operator(request, user_guid: str):
-    approved_user_operator = UserOperator.objects.filter(user_id=user_guid, role="admin", status='approved')
+    approved_user_operator = UserOperator.objects.filter(user_id=user_guid, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.APPROVED)
 
     return 200, {"approved": True if approved_user_operator else False}
 
@@ -54,7 +54,7 @@ def get_user_operator(request, user_operator_id: int):
 
 @router.get("/operator-has-admin/{operator_id}", response=bool)
 def get_user_operator_admin_exists(request, operator_id: int):
-    return UserOperator.objects.filter(operator_id=operator_id, role='admin', status='approved').exists()
+    return UserOperator.objects.filter(operator_id=operator_id, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.APPROVED).exists()
 
 
 ##### POST #####
@@ -80,7 +80,7 @@ def request_access(request, payload: SelectOperatorIn):
 
 @router.post("/select-operator/request-access", response={201: RequestAccessOut, codes_4xx: Message})
 def request_access(request, payload: SelectOperatorIn):
-    current_user_guid = json.loads(request.headers.get('Authorization'))["user_guid"]
+    current_user_guid = request.current_user.user_guid
     user: User = get_object_or_404(User, user_guid=current_user_guid)
     payload_dict: dict = payload.dict()
     operator: Operator = get_object_or_404(Operator, id=payload_dict.get("operator_id"))
