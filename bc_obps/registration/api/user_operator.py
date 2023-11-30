@@ -7,6 +7,7 @@ from registration.schema import (
     OperatorOut,
     RequestAccessOut,
     UserOperatorContactIn,
+    IsApprovedUserOperator,
 )
 from .api_base import router
 from typing import Optional
@@ -24,9 +25,17 @@ from registration.models import (
 from registration.utils import generate_useful_error, update_model_instance, check_users_admin_request_eligibility
 from ninja.responses import codes_4xx
 import json
+from typing import List
 
 
 ##### GET #####
+@router.get("/is-approved-admin-user-operator/{user_guid}", response={200: IsApprovedUserOperator, codes_4xx: Message})
+def is_approved_admin_user_operator(request, user_guid: str):
+    approved_user_operator = UserOperator.objects.filter(user_id=user_guid, role="admin", status='approved')
+
+    return 200, {"approved": True if approved_user_operator else False}
+
+
 @router.get("/select-operator/{int:operator_id}", response={200: SelectOperatorIn, codes_4xx: Message})
 def select_operator(request, operator_id: int):
     user: User = request.current_user
