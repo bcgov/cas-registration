@@ -1,24 +1,10 @@
 [
   {
-    "model": "registration.documenttype",
-    "pk": 1,
-    "fields": {
-      "name": "Opt-In Signed Statutory Declaration"
-    }
-  },
-  {
-    "model": "registration.documenttype",
-    "pk": 2,
-    "fields": {
-      "name": "Boundary Map"
-    }
-  },
-  {
     "model": "registration.document",
     "pk": 1,
     "fields": {
       "file": "documents/file1.pdf",
-      "type": 1,
+      "type": 2,
       "description": "A signed statutory declaration for opt-in."
     }
   },
@@ -27,7 +13,7 @@
     "pk": 2,
     "fields": {
       "file": "documents/file2.pdf",
-      "type": 2,
+      "type": 1,
       "description": "A boundary map document."
     }
   }

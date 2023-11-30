@@ -7,7 +7,6 @@ from registration.models import (
     DocumentType,
     Document,
     NaicsCode,
-    NaicsCategory,
     ReportingActivity,
     RegulatedProduct,
     User,
@@ -16,18 +15,20 @@ from registration.models import (
     UserOperator,
     ParentChildOperator,
     Operation,
-    UserAndContactCommonInfo,
     AppRole,
 )
 
 
-OPERATOR_FIXTURE = ("operator.json",)
-USER_FIXTURE = ("user.json",)
-OPERATION_FIXTURE = ("operation.json",)
-NAICS_CODE_FIXTURE = ("naicsCode.json",)
-NAICS_CATEGORY_FIXTURE = ("naicsCategory.json",)
-CONTACT_FIXTURE = ("contact.json",)
-DOCUMENT_FIXTURE = ("document.json",)
+OPERATOR_FIXTURE = ("mock/operator.json",)
+USER_FIXTURE = ("mock/user.json",)
+OPERATION_FIXTURE = ("mock/operation.json",)
+NAICS_CODE_FIXTURE = ("real/naicsCode.json",)
+CONTACT_FIXTURE = ("mock/contact.json",)
+DOCUMENT_FIXTURE = ("mock/document.json",)
+DOCUMENT_TYPE_FIXTURE = ("real/documentType.json",)
+BUSINESS_ROLE_FIXTURE = ("real/businessRole.json",)
+APP_ROLE_FIXTURE = ("real/appRole.json",)
+BUSINESS_STRUCTURE_FIXTURE = ("real/businessStructure.json",)
 
 
 class BaseTestCase(TestCase):
@@ -66,7 +67,7 @@ class DocumentTypeModelTest(BaseTestCase):
 
 
 class DocumentModelTest(BaseTestCase):
-    fixtures = [DOCUMENT_FIXTURE]
+    fixtures = [DOCUMENT_FIXTURE, DOCUMENT_TYPE_FIXTURE]
 
     @classmethod
     def setUpTestData(cls):
@@ -93,7 +94,6 @@ class NaicsCodeModelTest(BaseTestCase):
     def setUpTestData(cls):
         cls.test_naics_code = NaicsCode.objects.create(
             naics_code="1",
-            ciip_sector="2",
             naics_description="test",
         )
 
@@ -101,7 +101,6 @@ class NaicsCodeModelTest(BaseTestCase):
         # (field_name, expected_label, expected_max_length)
         field_data = [
             ("naics_code", "naics code", 1000),
-            ("ciip_sector", "ciip sector", 1000),
             ("naics_description", "naics description", 1000),
         ]
 
@@ -111,27 +110,6 @@ class NaicsCodeModelTest(BaseTestCase):
                     self.assertFieldLabel(self.test_naics_code, field_name, expected_label)
                 if expected_max_length is not None:
                     self.assertFieldMaxLength(self.test_naics_code, field_name, expected_max_length)
-
-
-class NaicsCategoryModelTest(BaseTestCase):
-    @classmethod
-    def setUpTestData(cls):
-        cls.test_naics_category = NaicsCategory.objects.create(
-            naics_category="1",
-        )
-
-    def test_field_labels_and_max_lengths(self):
-        # (field_name, expected_label, expected_max_length)
-        field_data = [
-            ("naics_category", "naics category", 1000),
-        ]
-
-        for field_name, expected_label, expected_max_length in field_data:
-            with self.subTest(field_name=field_name):
-                if expected_label:
-                    self.assertFieldLabel(self.test_naics_category, field_name, expected_label)
-                if expected_max_length is not None:
-                    self.assertFieldMaxLength(self.test_naics_category, field_name, expected_max_length)
 
 
 class RegulatedProductModelTest(BaseTestCase):
@@ -177,7 +155,12 @@ class ReportingActivityModelTest(BaseTestCase):
 
 
 class UserModelTest(BaseTestCase):
-    fixtures = [USER_FIXTURE, DOCUMENT_FIXTURE]
+    fixtures = [
+        USER_FIXTURE,
+        DOCUMENT_FIXTURE,
+        DOCUMENT_TYPE_FIXTURE,
+        APP_ROLE_FIXTURE,
+    ]
 
     @classmethod
     def setUpTestData(cls):
@@ -243,7 +226,7 @@ class UserModelTest(BaseTestCase):
 
 
 class ContactModelTest(BaseTestCase):
-    fixtures = [CONTACT_FIXTURE, DOCUMENT_FIXTURE]
+    fixtures = [CONTACT_FIXTURE, DOCUMENT_FIXTURE, DOCUMENT_TYPE_FIXTURE, BUSINESS_ROLE_FIXTURE]
 
     @classmethod
     def setUpTestData(cls):
@@ -304,7 +287,16 @@ class ContactModelTest(BaseTestCase):
 
 
 class OperatorModelTest(BaseTestCase):
-    fixtures = [OPERATOR_FIXTURE, USER_FIXTURE, CONTACT_FIXTURE, DOCUMENT_FIXTURE]
+    fixtures = [
+        OPERATOR_FIXTURE,
+        USER_FIXTURE,
+        CONTACT_FIXTURE,
+        DOCUMENT_FIXTURE,
+        DOCUMENT_TYPE_FIXTURE,
+        BUSINESS_STRUCTURE_FIXTURE,
+        APP_ROLE_FIXTURE,
+        BUSINESS_ROLE_FIXTURE,
+    ]
 
     @classmethod
     def setUpTestData(cls):
@@ -374,7 +366,7 @@ class OperatorModelTest(BaseTestCase):
 
 
 class ParentChildOperatorModelTest(BaseTestCase):
-    fixtures = [OPERATOR_FIXTURE]
+    fixtures = [OPERATOR_FIXTURE, BUSINESS_STRUCTURE_FIXTURE]
 
     @classmethod
     def setUpTestData(cls):
@@ -405,7 +397,7 @@ class ParentChildOperatorModelTest(BaseTestCase):
 
 
 class UserOperatorModelTest(BaseTestCase):
-    fixtures = [OPERATOR_FIXTURE, USER_FIXTURE]
+    fixtures = [OPERATOR_FIXTURE, USER_FIXTURE, BUSINESS_STRUCTURE_FIXTURE, APP_ROLE_FIXTURE]
 
     @classmethod
     def setUpTestData(cls):
@@ -443,9 +435,12 @@ class OperationModelTest(BaseTestCase):
         OPERATOR_FIXTURE,
         OPERATION_FIXTURE,
         NAICS_CODE_FIXTURE,
-        NAICS_CATEGORY_FIXTURE,
         CONTACT_FIXTURE,
         DOCUMENT_FIXTURE,
+        DOCUMENT_TYPE_FIXTURE,
+        APP_ROLE_FIXTURE,
+        BUSINESS_STRUCTURE_FIXTURE,
+        BUSINESS_ROLE_FIXTURE,
     ]
 
     @classmethod
@@ -489,7 +484,6 @@ class OperationModelTest(BaseTestCase):
             ("name", "name", 1000, None),
             ("type", "type", 1000, None),
             ("naics_code", "naics code", None, None),
-            ("naics_category", "naics category", None, None),
             ("regulated_products", "regulated products", None, 2),
             ("reporting_activities", "reporting activities", None, 2),
             (
@@ -523,6 +517,8 @@ class OperationModelTest(BaseTestCase):
 
 
 class AppRoleModelTest(BaseTestCase):
+    fixtures = [APP_ROLE_FIXTURE]
+
     @classmethod
     def setUpTestData(cls):
         cls.test_app_role = AppRole.objects.first()
@@ -554,6 +550,8 @@ class AppRoleModelTest(BaseTestCase):
 
 
 class BusinessRoleModelTest(BaseTestCase):
+    fixtures = [BUSINESS_ROLE_FIXTURE]
+
     @classmethod
     def setUpTestData(cls):
         cls.test_business_role = BusinessRole.objects.first()

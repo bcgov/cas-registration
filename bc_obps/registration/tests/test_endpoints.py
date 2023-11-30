@@ -8,7 +8,6 @@ from django.test import Client
 from localflavor.ca.models import CAPostalCodeField
 from registration.models import (
     NaicsCode,
-    NaicsCategory,
     Document,
     Contact,
     Operation,
@@ -51,21 +50,6 @@ class TestNaicsCodeEndpoint:
         assert len(json.loads(response.content)) == 2
 
 
-class TestNaicsCategoriesEndpoint:
-    endpoint = base_endpoint + "naics_categories"
-
-    def test_get_method_for_200_status(self, client):
-        response = client.get(self.endpoint)
-        assert response.status_code == 200
-
-    def test_get_method_with_mock_data(self, client):
-        baker.make(NaicsCategory, _quantity=3)
-
-        response = client.get(self.endpoint)
-        assert response.status_code == 200
-        assert len(json.loads(response.content)) == 3
-
-
 class TestOperationsEndpoint:
     endpoint = base_endpoint + "operations"
 
@@ -84,7 +68,6 @@ class TestOperationsEndpoint:
 
     def test_post_new_operation(self, client):
         naics_code = baker.make(NaicsCode)
-        naics_category = baker.make(NaicsCategory)
         document = baker.make(Document)
         contact = baker.make(Contact, postal_code='V1V 1V1')
         operator = baker.make(Operator)
@@ -92,7 +75,6 @@ class TestOperationsEndpoint:
             name='Springfield Nuclear Power Plant',
             type='Single Facility Operation',
             naics_code_id=naics_code.id,
-            naics_category_id=naics_category.id,
             reporting_activities=['123', '124'],
             regulated_products=[1, 2],
             documents=[document.id],
@@ -204,7 +186,6 @@ class TestOperationEndpoint:
 
     def test_get_method_for_200_status(self, client):
         baker.make(NaicsCode)
-        baker.make(NaicsCategory)
         baker.make(Operator)
         operation = baker.make(Operation)
         response = client.get(self.endpoint + str(operation.id))
@@ -212,7 +193,6 @@ class TestOperationEndpoint:
 
     def test_put_operation_without_submit(self, client):
         naics_code = baker.make(NaicsCode)
-        naics_category = baker.make(NaicsCategory)
         document = baker.make(Document)
         contact = baker.make(Contact, postal_code="V1V 1V1")
         operator = baker.make(Operator)
@@ -224,7 +204,6 @@ class TestOperationEndpoint:
             name="New name",
             type="Single Facility Operation",
             naics_code_id=naics_code.id,
-            naics_category_id=naics_category.id,
             reporting_activities=[2],
             physical_street_address="19 Evergreen Terrace",
             physical_municipality="Springfield",
@@ -253,7 +232,6 @@ class TestOperationEndpoint:
 
     def test_put_operation_with_submit(self, client):
         naics_code = baker.make(NaicsCode)
-        naics_category = baker.make(NaicsCategory)
         document = baker.make(Document)
         contact = baker.make(Contact, postal_code="V1V 1V2")
         operator = baker.make(Operator)
@@ -267,7 +245,6 @@ class TestOperationEndpoint:
             naics_code_id=naics_code.id,
             reporting_activities=[1],
             regulated_products=[1],
-            naics_category_id=naics_category.id,
             documents=[document.id],
             contacts=[contact.id],
             operator_id=operator.id,
@@ -316,8 +293,7 @@ class TestOperatorsEndpoint:
 
 
 class TestUserOperatorEndpoint:
-    select_endpoint = base_endpoint + "select-operator"
-    operator_endpoint = base_endpoint + "operators"
+    endpoint = base_endpoint + "select-operator"
 
     def setup(self):
         self.user: User = baker.make(User)
@@ -326,26 +302,23 @@ class TestUserOperatorEndpoint:
 
     def test_select_operator_with_valid_id(self):
         operators = baker.make(Operator, _quantity=1)
-        response = client.get(f"{self.operator_endpoint}/{operators[0].id}", HTTP_AUTHORIZATION=self.auth_header_dumps)
+        response = client.get(f"{self.endpoint}/{operators[0].id}", HTTP_AUTHORIZATION=self.auth_header_dumps)
 
         assert response.status_code == 200
-        print(response.json())
-        assert response.json()['id'] == operators[0].id
+        assert response.json() == {"operator_id": operators[0].id}
 
     def test_select_operator_with_invalid_id(self):
         invalid_operator_id = 99999  # Invalid operator ID
 
-        response = client.get(
-            f"{self.operator_endpoint}/{invalid_operator_id}", HTTP_AUTHORIZATION=self.auth_header_dumps
-        )
+        response = client.get(f"{self.endpoint}/{invalid_operator_id}", HTTP_AUTHORIZATION=self.auth_header_dumps)
 
         assert response.status_code == 404
         assert response.json() == {"detail": "Not Found"}
 
-    def test_request_admin_access_with_valid_payload(self):
+    def test_request_access_with_valid_payload(self):
         operator = baker.make(Operator)
         response = client.post(
-            f"{self.select_endpoint}/request-admin-access",
+            f"{self.endpoint}/request-access",
             content_type=content_type_json,
             data={"operator_id": operator.id},
             HTTP_AUTHORIZATION=self.auth_header_dumps,
@@ -370,7 +343,7 @@ class TestUserOperatorEndpoint:
         invalid_payload = {"operator_id": 99999}  # Invalid operator ID
 
         response = client.post(
-            f"{self.select_endpoint}/request-admin-access",
+            f"{self.endpoint}/request-access",
             content_type=content_type_json,
             data=invalid_payload,
             HTTP_AUTHORIZATION=self.auth_header_dumps,
@@ -400,34 +373,3 @@ class TestUserOperatorEndpoint:
 
         assert response.status_code == 200
         assert response.json() == {"approved": False}
-
-    def test_request_subsequent_access_with_valid_payload(self):
-        operator = baker.make(Operator)
-        admin_user = baker.make(User, business_guid=self.user.business_guid)
-        baker.make(
-            UserOperator,
-            user=admin_user,
-            operator=operator,
-            role=UserOperator.Roles.ADMIN,
-            status=UserOperator.Statuses.APPROVED,
-        )
-        response = client.post(
-            f"{self.select_endpoint}/request-access",
-            content_type=content_type_json,
-            data={"operator_id": operator.id},
-            HTTP_AUTHORIZATION=self.auth_header_dumps,
-        )
-
-        response_json = response.json()
-
-        assert response.status_code == 201
-        assert "user_operator_id" in response_json
-
-        user_operator_exists = UserOperator.objects.filter(
-            id=response_json["user_operator_id"],
-            user=self.user,
-            operator=operator,
-            status=UserOperator.Statuses.PENDING,
-        ).exists()
-
-        assert user_operator_exists, "UserOperator object was not created"

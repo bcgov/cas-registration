@@ -21,18 +21,6 @@ async function getNaicsCodes() {
     throw error;
   }
 }
-export async function getNaicsCategories() {
-  try {
-    return await actionHandler(
-      "registration/naics_categories",
-      "GET",
-      "/operations",
-    );
-  } catch (error) {
-    // Handle the error here or rethrow it to handle it at a higher level
-    throw error;
-  }
-}
 
 // 🛠️ Function to fetch an operation by ID
 async function getOperation(id: number) {
@@ -52,7 +40,6 @@ async function getOperation(id: number) {
 export const createOperationSchema = (
   schema: RJSFSchema,
   naicsCodes: { id: number }[],
-  naicsCategories: { id: number }[],
 ) => {
   const localSchema = JSON.parse(JSON.stringify(schema));
   // naics codes
@@ -61,20 +48,12 @@ export const createOperationSchema = (
     localSchema.properties.operationPage1.properties.naics_code_id.enum =
       naicsCodes.map((code) => code.id);
   }
-  // naics categories
-  if (Array.isArray(naicsCategories)) {
-    // add to nested operation page1 schema
-    localSchema.properties.operationPage1.properties.naics_category_id.enum =
-      naicsCategories.map((category) => category.id);
-  }
   return localSchema;
 };
 
 // 🧩 Main component
 export default async function Operation({ numRow }: { numRow?: number }) {
   const codes = await getNaicsCodes();
-
-  const categories = await getNaicsCategories();
 
   let operation: any;
 
@@ -88,7 +67,7 @@ export default async function Operation({ numRow }: { numRow?: number }) {
         <Review operation={operation} />
       ) : null}
       <OperationsForm
-        schema={createOperationSchema(operationSchema, codes, categories)}
+        schema={createOperationSchema(operationSchema, codes)}
         formData={operation as OperationsFormData}
       />
     </>
