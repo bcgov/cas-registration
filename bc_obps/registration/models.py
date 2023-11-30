@@ -442,7 +442,11 @@ class Operation(OperationAndFacilityCommonInfo):
         db_comment="The operator who owns the operation",
         related_name="operations",
     )
-
+    operation_has_multiple_operators = models.BooleanField(
+        db_comment="Whether or not the operation has multiple operators",
+        blank=True,
+        null=True,
+    )
     verified_at = models.DateTimeField(
         db_comment="The time the operation was verified by an IRC user. If exists, the operation is registered for OBPS.",
         blank=True,
@@ -499,16 +503,21 @@ class MultipleOperator(models.Model):
     operation = models.ForeignKey(
         Operation,
         on_delete=models.DO_NOTHING,
-        related_name="multiple_operators",
+        related_name="multiple_operator",
     )
     operator_number = models.IntegerField(
         db_comment="Number used to differentiate operators for this operation for saving/updating purposes"
     )
     legal_name = models.CharField(max_length=1000, db_comment="The legal name of an operator")
-    trade_name = models.CharField(max_length=1000, blank=True, db_comment="The trade name of an operator")
+    trade_name = models.CharField(max_length=1000, db_comment="The trade name of an operator")
     cra_business_number = models.IntegerField(db_comment="The CRA business number of an operator")
     bc_corporate_registry_number = models.IntegerField(db_comment="The BC corporate registry number of an operator")
-    business_structure = models.CharField(max_length=1000, db_comment="The legal name of an operator")
+    business_structure = models.CharField(
+        max_length=1000,
+        db_comment="The legal name of an operator",
+        blank=True,
+        null=True,
+    )
     website = models.URLField(
         max_length=200,
         db_comment="The website address of an operator",
@@ -518,7 +527,7 @@ class MultipleOperator(models.Model):
     percentage_ownership = models.DecimalField(
         decimal_places=5,
         max_digits=10,
-        db_comment="",
+        db_comment="The percentage of an operator owned by the parent company",
         blank=True,
         null=True,
     )
@@ -551,3 +560,7 @@ class MultipleOperator(models.Model):
     mailing_postal_code = CAPostalCodeField(
         db_comment="The mailing postal code of an operator, limited to valid Canadian postal codes"
     )
+
+    class Meta:
+        db_table_comment = "Table to store multiple operator metadata"
+        db_table = 'erc"."multiple_operator'

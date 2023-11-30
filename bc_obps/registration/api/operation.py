@@ -136,7 +136,6 @@ def create_operation(request, payload: OperationCreateIn):
         "regulated_products",
         "reporting_activities",
         "multiple_operators_array",
-        "operation_has_multiple_operators",
     ]
 
     for field_name in fields_to_delete:
@@ -219,7 +218,6 @@ def update_operation(request, operation_id: int, submit, payload: OperationUpdat
         "regulated_products",
         "application_lead",
         "multiple_operators_array",
-        "operation_has_multiple_operators",
     ]
 
 
