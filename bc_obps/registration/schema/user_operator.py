@@ -3,6 +3,10 @@ from ninja import ModelSchema, Schema
 from registration.models import Contact, User
 
 
+class IsApprovedUserOperator(Schema):
+    approved: bool
+
+
 class RequestAccessOut(Schema):
     user_operator_id: int
 
