@@ -14,9 +14,7 @@ import json
 
 @router.get("/operators", response=List[OperatorOut])
 def list_operators(request):
-    print('here')
     qs = Operator.objects.all()
-    print(qs)
     return qs
 
 
@@ -28,7 +26,6 @@ def get_operator(request, operator_id: int):
 
 @router.get("/select-operator/{int:operator_id}", response={200: SelectOperatorIn, codes_4xx: Message})
 def select_operator(request, operator_id: int):
-    print('HERE', operator_id)
     operator: Operator = get_object_or_404(Operator, id=operator_id)
 
     return 200, {"operator_id": operator.id}
