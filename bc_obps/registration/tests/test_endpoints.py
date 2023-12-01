@@ -147,8 +147,7 @@ class TestOperationsEndpoint:
         assert response.status_code == 422
 
     def test_post_existing_operation(self, client):
-        mock_operation1 = baker.make(Operation, bcghg_id=123)
-        print('mock_operation1', mock_operation1)
+        baker.make(Operation, bcghg_id=123)
         naics_code = baker.make(NaicsCode)
         naics_category = baker.make(NaicsCategory)
         document = baker.make(Document)
@@ -386,7 +385,6 @@ class TestUserOperatorEndpoint:
         response = client.get(f"{self.operator_endpoint}/{operators[0].id}", HTTP_AUTHORIZATION=self.auth_header_dumps)
 
         assert response.status_code == 200
-        print(response.json())
         assert response.json()['id'] == operators[0].id
 
     def test_select_operator_with_invalid_id(self):
