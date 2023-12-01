@@ -109,7 +109,6 @@ export default async function Operation({ numRow }: { numRow?: number }) {
         schema={createOperationSchema(
           operationSchema,
           codes,
-          categories,
           products,
           activities,
         )}
