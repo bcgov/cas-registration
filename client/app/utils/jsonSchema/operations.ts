@@ -2,6 +2,7 @@ import FieldTemplate from "@/app/styles/rjsf/FieldTemplate";
 import { RJSFSchema } from "@rjsf/utils";
 import provinceOptions from "@/app/data/provinces.json";
 import TitleOnlyFieldTemplate from "@/app/styles/rjsf/TitleOnlyFieldTemplate";
+import ArrayFieldTemplate from "@/app/styles/rjsf/ArrayFieldTemplate";
 import {
   OperatorMailingAddressTitle,
   OperatorPhysicalAddressTitle,
@@ -453,8 +454,9 @@ export const operationUiSchema = {
     "ui:widget": "RadioWidget",
   },
   is_application_lead_external: {
-  "Would you like to add an exemption ID application lead?": {
-    "ui:widget": "RadioWidget",
+    "Would you like to add an exemption ID application lead?": {
+      "ui:widget": "RadioWidget",
+    },
   },
   opt_in: {
     "ui:widget": "RadioWidget",
@@ -467,15 +469,16 @@ export const operationUiSchema = {
   },
   province: {
     "ui:widget": "ComboBox",
+  },
   multiple_operators_section: {
     ...subheading,
   },
   operation_has_multiple_operators: {
     "ui:widget": "RadioWidget",
   },
-
   multiple_operators_array: {
     "ui:FieldTemplate": FieldTemplate,
+    "ui:ArrayFieldTemplate": ArrayFieldTemplate,
     "ui:options": {
       label: false,
       arrayAddLabel: "Add another operator",
