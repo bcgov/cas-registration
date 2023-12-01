@@ -58,6 +58,7 @@ export default function OperationsForm({ formData, schema }: Props) {
   const formSectionList = Object.keys(schema.properties as any);
   const isNotFinalStep = formSection !== formSectionList.length;
   const isFinalStep = formSection === formSectionList.length;
+
   return (
     <>
       {operationName ? (
@@ -115,7 +116,7 @@ export default function OperationsForm({ formData, schema }: Props) {
               pathToRevalidate,
               {
                 body: JSON.stringify(body),
-              }
+              },
             );
 
             const operation = response?.id || operationId;
@@ -128,7 +129,7 @@ export default function OperationsForm({ formData, schema }: Props) {
             router.replace(`/dashboard/operations/${operation}/${formSection}`);
             if (isNotFinalStep) {
               router.push(
-                `/dashboard/operations/${operation}/${formSection + 1}`
+                `/dashboard/operations/${operation}/${formSection + 1}`,
               );
               return;
             }
