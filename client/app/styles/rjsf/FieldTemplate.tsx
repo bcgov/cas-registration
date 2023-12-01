@@ -11,13 +11,18 @@ function FieldTemplate({
   description,
   errors,
   children,
+  uiSchema,
 }: FieldTemplateProps) {
+  const isLabel = uiSchema?.["ui:options"]?.label !== false;
+
   return (
     <div style={style} className={`w-full ${classNames}`}>
-      <label htmlFor={id} className="inline-block">
-        {label}
-        {required ? "*" : null}
-      </label>
+      {isLabel && (
+        <label htmlFor={id} className="inline-block">
+          {label}
+          {required ? "*" : null}
+        </label>
+      )}
       {description}
       {children}
       {errors}

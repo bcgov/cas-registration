@@ -157,7 +157,6 @@ const operationPage1: RJSFSchema = {
         properties: {
           multiple_operators_array: {
             type: "array",
-            title: " ",
             default: [{}],
             items: {
               type: "object",

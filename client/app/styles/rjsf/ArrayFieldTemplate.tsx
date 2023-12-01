@@ -27,7 +27,7 @@ const ArrayFieldTemplate = (props: ArrayFieldTemplateProps) => {
       {items?.map((item, i: number) => {
         return (
           <div key={item.key} className="min-w-full">
-            <div className="form-heading flex justify-between m-w-full">
+            <div className="form-heading flex justify-between m-w-full my-10">
               <span>Multiple Operator(s) information - Operator {i + 1}</span>
               {i !== 0 && (
                 <button
