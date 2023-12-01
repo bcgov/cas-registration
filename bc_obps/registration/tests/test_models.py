@@ -142,9 +142,7 @@ class ReportingActivityModelTest(BaseTestCase):
 
     def test_field_labels_and_max_lengths(self):
         # (field_name, expected_label, expected_max_length)
-        field_data = [
-            ("name", "name", 1000),
-        ]
+        field_data = [("name", "name", 1000), ("applicable_to", "applicable to", None)]
 
         for field_name, expected_label, expected_max_length in field_data:
             with self.subTest(field_name=field_name):
@@ -431,22 +429,21 @@ class UserOperatorModelTest(BaseTestCase):
 
 class OperationModelTest(BaseTestCase):
     fixtures = [
-        USER_FIXTURE,
-        OPERATOR_FIXTURE,
-        OPERATION_FIXTURE,
         NAICS_CODE_FIXTURE,
-        CONTACT_FIXTURE,
-        DOCUMENT_FIXTURE,
-        DOCUMENT_TYPE_FIXTURE,
+        USER_FIXTURE,
+        BUSINESS_ROLE_FIXTURE,
+        OPERATOR_FIXTURE,
         APP_ROLE_FIXTURE,
         BUSINESS_STRUCTURE_FIXTURE,
-        BUSINESS_ROLE_FIXTURE,
+        CONTACT_FIXTURE,
+        OPERATION_FIXTURE,
+        DOCUMENT_FIXTURE,
+        DOCUMENT_TYPE_FIXTURE,
     ]
 
     @classmethod
     def setUpTestData(cls):
-        cls.test_operation = Operation.objects.get(id=1)
-
+        cls.test_operation = Operation.objects.all().first()
         cls.test_operation.documents.set(
             [
                 Document.objects.get(id=1),
