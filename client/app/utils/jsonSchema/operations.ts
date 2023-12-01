@@ -224,6 +224,7 @@ const operationPage3: RJSFSchema = {
           email: {
             type: "string",
             title: "Email Address",
+            format: "email",
           },
           phone_number: {
             type: "string",

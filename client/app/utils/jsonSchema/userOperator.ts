@@ -46,7 +46,7 @@ const userOperatorPage1: RJSFSchema = {
       title: "Business Structure",
       anyOf: [],
     },
-    website: { type: "string", title: "Website (optional)" },
+    website: { type: "string", title: "Website (optional)", format: "url" },
     operator_has_parent_company: {
       title: "Does the operator have a parent company?",
       type: "boolean",
@@ -134,7 +134,7 @@ const userOperatorPage1: RJSFSchema = {
             title: "Business Structure",
             anyOf: [],
           },
-          pc_website: { type: "string", title: "Website" },
+          pc_website: { type: "string", title: "Website", format: "url" },
           percentage_owned_by_parent_company: {
             type: "number",
             title: "Percentage of ownership of operator (%)",
@@ -333,6 +333,7 @@ const userOperatorPage2: RJSFSchema = {
             type: "string",
             title: "Email Address",
             default: "",
+            format: "email",
           },
           so_phone_number: {
             type: "string",
@@ -350,6 +351,7 @@ const userOperatorPage2: RJSFSchema = {
             type: "string",
             title: "Email Address",
             readOnly: true,
+            format: "email",
           },
           phone_number: {
             type: "string",
