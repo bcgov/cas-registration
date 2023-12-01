@@ -57,6 +57,8 @@ def save_multiple_operators(multiple_operators_array, operation):
             if field in multiple_operator_fields_mapping:
                 new_operator[multiple_operator_fields_mapping[field]] = operator[field]
 
+        # TODO: archive multiple operators in #361 that are not in the array anymore once #326 is done
+
         # check if there is a multiple_operator with that operation id and number
         # if there is, update it, if not, create it
         if MultipleOperator.objects.filter(operation_id=operation.id, operator_number=idx + 1).exists():
