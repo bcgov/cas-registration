@@ -120,15 +120,9 @@ class TestOperationsEndpoint:
             name='Springfield Nuclear Power Plant',
             type='Single Facility Operation',
             naics_code_id=naics_code.id,
-<<<<<<< HEAD
             reporting_activities=reporting_activities,
             regulated_products=regulated_products,
-=======
-            naics_category_id=naics_category.id,
             operation_has_multiple_operators=False,
-            reporting_activities=['123', '124'],
-            regulated_products=[1, 2],
->>>>>>> b690d3c (test: add models and endpoint test for multiple operators)
             documents=[document.id],
             application_lead=application_lead.id,
             operator_id=operator.id,
@@ -143,15 +137,15 @@ class TestOperationsEndpoint:
 
     def test_post_new_operation_with_multiple_operators(self, client):
         naics_code = baker.make(NaicsCode)
-        naics_category = baker.make(NaicsCategory)
         document = baker.make(Document)
         contact = baker.make(Contact, postal_code='V1V 1V1')
+        regulated_products = baker.make(RegulatedProduct, _quantity=2)
+        reporting_activities = baker.make(ReportingActivity, _quantity=2)
         operator = baker.make(Operator)
-        mock_operation = OperationIn(
+        mock_operation = OperationCreateIn(
             name='Springfield Nuclear Power Plant',
             type='Single Facility Operation',
             naics_code_id=naics_code.id,
-            naics_category_id=naics_category.id,
             operation_has_multiple_operators=True,
             multiple_operators_array=[
                 {
@@ -189,17 +183,18 @@ class TestOperationsEndpoint:
                     "mo_mailing_postal_code": "V1V 1V1",
                 },
             ],
-            reporting_activities=['123', '124'],
-            regulated_products=[1, 2],
+            reporting_activities=reporting_activities,
+            regulated_products=regulated_products,
             documents=[document.id],
             contacts=[contact.id],
             operator_id=operator.id,
         )
         post_response = client.post(self.endpoint, content_type=content_type_json, data=mock_operation.json())
-        assert post_response.status_code == 200
+        assert post_response.status_code == 201
         assert post_response.json().get('id') is not None
 
         get_response = client.get(self.endpoint).json()[0]
+        print(get_response)
         assert (
             'operation_has_multiple_operators' in get_response
             and get_response['operation_has_multiple_operators'] == True
