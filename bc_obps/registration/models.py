@@ -78,7 +78,15 @@ class RegulatedProduct(models.Model):
 class ReportingActivity(models.Model):
     """Reporting activity model"""
 
+    class Applicablity(models.TextChoices):
+        SFO = "sfo"
+        LFO = "lfo"
+        ALL = "all"
+
     name = models.CharField(max_length=1000, db_comment="The name of a reporting activity")
+    applicable_to = models.CharField(
+        max_length=1000, choices=Applicablity.choices, db_comment="Which type of facility the activity applies to"
+    )
 
     class Meta:
         db_table_comment = "Reporting activities"
@@ -453,9 +461,13 @@ class Operation(OperationAndFacilityCommonInfo):
         blank=True,
         related_name="operations",
     )
-    contacts = models.ManyToManyField(
+    application_lead = models.ForeignKey(
         Contact,
+        on_delete=models.DO_NOTHING,
         related_name="operations",
+        blank=True,
+        null=True,
+        db_comment="Foreign key to the contact that is the application lead",
     )
     status = models.CharField(
         max_length=1000,

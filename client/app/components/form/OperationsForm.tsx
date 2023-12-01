@@ -6,8 +6,8 @@ import MultiStepFormBase from "@/app/components/form/MultiStepFormBase";
 import { Button } from "@mui/material";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import React from "react";
 import { actionHandler } from "@/app/utils/actions";
+import { useSession } from "next-auth/react";
 
 export interface OperationsFormData {
   [key: string]: any;
@@ -19,6 +19,9 @@ interface Props {
 }
 
 export default function OperationsForm({ formData, schema }: Props) {
+  const { data: session } = useSession();
+  const userEmail = session?.user?.email;
+
   const [operationName, setOperationName] = useState("");
   const [error, setError] = useState(undefined);
   const router = useRouter();
@@ -27,10 +30,14 @@ export default function OperationsForm({ formData, schema }: Props) {
   const operationId = params?.operation;
   const isCreate = params?.operation === "0";
 
-  // need to convert some of the information received from django into types RJSF can read
-  const existingFormData = {
-    ...formData,
+  const isApplicationLeadExternal =
+    userEmail !== formData?.application_lead?.email;
 
+  // need to convert some of the information received from django into types RJSF can read
+  const transformedFormData = {
+    ...formData,
+    // we only add the application lead data to the formData (ie, show it in the form) if the application lead is external (ie, someone other than the user)
+    ...(isApplicationLeadExternal && formData?.application_lead),
     previous_year_attributable_emissions:
       formData?.previous_year_attributable_emissions &&
       Number(formData?.previous_year_attributable_emissions),
@@ -42,11 +49,10 @@ export default function OperationsForm({ formData, schema }: Props) {
       Number(formData?.operator_percent_of_ownership),
     "Did you submit a GHG emissions report for reporting year 2022?":
       formData?.previous_year_attributable_emissions ? true : false,
+
+    is_application_lead_external: isApplicationLeadExternal,
     verified_at: formData?.verified_at?.toString(),
     verified_by: formData?.verified_by?.toString(),
-    //  temporary handling of required many-to-many fields, will be addressed in #138
-    regulated_products: "",
-    reporting_activities: "",
   };
   const formSectionList = Object.keys(schema.properties as any);
   const isNotFinalStep = formSection !== formSectionList.length;
@@ -78,11 +84,9 @@ export default function OperationsForm({ formData, schema }: Props) {
         <MultiStepFormBase
           baseUrl={`/dashboard/operations/${operationId}`}
           cancelUrl="/dashboard/operations"
-          formData={existingFormData}
+          formData={transformedFormData}
           readonly={
             formData?.status === "Registered" || formData?.status === "Pending"
-              ? true
-              : false
           }
           error={error}
           schema={schema}
@@ -96,21 +100,21 @@ export default function OperationsForm({ formData, schema }: Props) {
             const pathToRevalidate = isCreate
               ? "dashboard/operations"
               : `dashboard/operations/${formData?.id}`;
+            const body = {
+              ...formData,
+              ...data.formData,
+              //  temporary handling of documents, will be addressed in #332/325
+              documents: [],
+              // temporarily mocking bceid login
+              operator_id: 1,
+              application_lead: formData?.application_lead?.id,
+            };
             const response = await actionHandler(
               endpoint,
               method,
               pathToRevalidate,
               {
-                body: JSON.stringify({
-                  ...formData,
-                  ...data.formData,
-                  //  temporary handling of required many-to-many fields, will be addressed in #138
-                  documents: [],
-                  contacts: [],
-                  regulated_products: [],
-                  reporting_activities: [],
-                  operator_id: 1,
-                }),
+                body: JSON.stringify(body),
               },
             );
 

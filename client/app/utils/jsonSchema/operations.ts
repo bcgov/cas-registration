@@ -1,5 +1,6 @@
 import FieldTemplate from "@/app/styles/rjsf/FieldTemplate";
 import { RJSFSchema } from "@rjsf/utils";
+import provinceOptions from "@/app/data/provinces.json";
 
 const operationPage1: RJSFSchema = {
   type: "object",
@@ -24,14 +25,18 @@ const operationPage1: RJSFSchema = {
       title: "Primary NAICS Code",
     },
     regulated_products: {
-      type: "string",
+      type: "array",
+      items: {
+        type: "number",
+      },
       title: "Regulated Product Name(s)",
-      readOnly: true,
     },
     reporting_activities: {
-      type: "string",
+      type: "array",
+      items: {
+        type: "number",
+      },
       title: "Reporting Activities",
-      readOnly: true,
     },
     process_flow_diagram: {
       type: "string",
@@ -49,11 +54,7 @@ const operationPage1: RJSFSchema = {
       default: false,
     },
 
-    // temp handling of many to many, will be addressed in #138
-    // petrinex_ids: { type: "number", title: "Petrinex IDs" },
-
     // documents: { type: "string", title: "documents" },
-    // contacts: { type: "string", title: "contacts" },
   },
   allOf: [
     {
@@ -162,8 +163,9 @@ const operationPage3: RJSFSchema = {
   type: "object",
   title: "Application Lead",
   properties: {
-    "Would you like to add an exemption ID application lead?": {
+    is_application_lead_external: {
       type: "boolean",
+      title: "Would you like to add an exemption ID application lead?",
       default: false,
     },
   },
@@ -171,16 +173,61 @@ const operationPage3: RJSFSchema = {
     {
       if: {
         properties: {
-          "Would you like to add an exemption ID application lead?": {
+          is_application_lead_external: {
             const: true,
           },
         },
       },
       then: {
+        type: "object",
+        required: [
+          "first_name",
+          "last_name",
+          "position_title",
+          "street_address",
+          "municipality",
+          "province",
+          "postal_code",
+          "email",
+          "phone_number",
+        ],
         properties: {
-          application_lead: {
+          first_name: {
             type: "string",
-            title: "To be added in #136",
+            title: "First Name",
+          },
+          last_name: {
+            type: "string",
+            title: "Last Name",
+          },
+          position_title: {
+            type: "string",
+            title: "Position Title",
+          },
+          street_address: {
+            type: "string",
+            title: "Mailing Address",
+          },
+          municipality: {
+            type: "string",
+            title: "Municipality",
+          },
+          province: {
+            type: "string",
+            title: "Province",
+            anyOf: provinceOptions,
+          },
+          postal_code: {
+            type: "string",
+            title: "Postal Code",
+          },
+          email: {
+            type: "string",
+            title: "Email Address",
+          },
+          phone_number: {
+            type: "string",
+            title: "Phone Number",
           },
         },
       },
@@ -220,8 +267,16 @@ export const operationUiSchema = {
     "Does the operation have multiple operators?",
     "operators",
     "percentage_ownership",
-    "Would you like to add an exemption ID application lead?",
-    "application_lead",
+    "is_application_lead_external",
+    "first_name",
+    "last_name",
+    "position_title",
+    "street_address",
+    "municipality",
+    "province",
+    "postal_code",
+    "email",
+    "phone_number",
     "verified_by",
     "verified_at",
   ],
@@ -251,7 +306,7 @@ export const operationUiSchema = {
   "Does the operation have multiple operators?": {
     "ui:widget": "RadioWidget",
   },
-  "Would you like to add an exemption ID application lead?": {
+  is_application_lead_external: {
     "ui:widget": "RadioWidget",
   },
   opt_in: {
@@ -262,5 +317,8 @@ export const operationUiSchema = {
   },
   boundary_map: {
     "ui:widget": "FileWidget",
+  },
+  province: {
+    "ui:widget": "ComboBox",
   },
 };
