@@ -51,21 +51,6 @@ class TestNaicsCodeEndpoint:
         assert len(json.loads(response.content)) == 2
 
 
-class TestNaicsCategoriesEndpoint:
-    endpoint = base_endpoint + "naics_categories"
-
-    def test_get_method_for_200_status(self, client):
-        response = client.get(self.endpoint)
-        assert response.status_code == 200
-
-    def test_get_method_with_mock_data(self, client):
-        baker.make(NaicsCategory, _quantity=3)
-
-        response = client.get(self.endpoint)
-        assert response.status_code == 200
-        assert len(json.loads(response.content)) == 3
-
-
 class TestRegulatedProductsEndpoint:
     endpoint = base_endpoint + "regulated_products"
 
@@ -123,7 +108,6 @@ class TestOperationsEndpoint:
             name='Springfield Nuclear Power Plant',
             type='Single Facility Operation',
             naics_code_id=naics_code.id,
-            naics_category_id=naics_category.id,
             reporting_activities=reporting_activities,
             regulated_products=regulated_products,
             documents=[document.id],
@@ -149,7 +133,6 @@ class TestOperationsEndpoint:
     def test_post_existing_operation(self, client):
         baker.make(Operation, bcghg_id=123)
         naics_code = baker.make(NaicsCode)
-        naics_category = baker.make(NaicsCategory)
         document = baker.make(Document)
         reporting_activities = baker.make(ReportingActivity, _quantity=2)
         regulated_products = baker.make(RegulatedProduct, _quantity=2)
@@ -159,7 +142,6 @@ class TestOperationsEndpoint:
             name='Springfield Nuclear Power Plant',
             type='Single Facility Operation',
             naics_code_id=naics_code.id,
-            naics_category_id=naics_category.id,
             reporting_activities=reporting_activities,
             regulated_products=regulated_products,
             documents=[document.id],
@@ -280,7 +262,6 @@ class TestOperationEndpoint:
             name="New name",
             type="Single Facility Operation",
             naics_code_id=naics_code.id,
-            naics_category_id=naics_category.id,
             reporting_activities=[activity.id],
             physical_street_address="19 Evergreen Terrace",
             physical_municipality="Springfield",
@@ -323,7 +304,6 @@ class TestOperationEndpoint:
             naics_code_id=naics_code.id,
             reporting_activities=[activity.id],
             regulated_products=[product.id],
-            naics_category_id=naics_category.id,
             documents=[document.id],
             application_lead=application_lead.id,
             operator_id=operator.id,

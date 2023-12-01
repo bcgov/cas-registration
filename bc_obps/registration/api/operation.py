@@ -5,7 +5,7 @@ import pytz
 from django.core import serializers
 from typing import List
 from django.shortcuts import get_object_or_404
-from registration.models import Operation, Operator, NaicsCode, NaicsCategory, Contact, BusinessRole, User
+from registration.models import Operation, Operator, NaicsCode, Contact, BusinessRole, User
 from registration.schema import (
     OperationCreateIn,
     OperationUpdateIn,
@@ -52,7 +52,6 @@ def create_operation(request, payload: OperationCreateIn):
             "name",
             "type",
             "naics_code",
-            "naics_category",
             "previous_year_attributable_emissions",
             "swrs_facility_id",
             "bcghg_id",
@@ -64,7 +63,7 @@ def create_operation(request, payload: OperationCreateIn):
         ],
     )
 
-    fields_to_assign = ["operator", "naics_code", "naics_category"]
+    fields_to_assign = ["operator", "naics_code"]
     for field_name in fields_to_assign:
         if field_name in operation_related_fields:
             field_value = operation_related_fields[field_name]
@@ -98,11 +97,6 @@ def update_operation(request, operation_id: int, submit, payload: OperationUpdat
         nc = get_object_or_404(NaicsCode, id=naics_code)
         # Assign the naics_code instance to the operation
         operation.naics_code = nc
-    if "naics_category" in payload_dict:
-        naics_category = payload_dict["naics_category"]
-        nc = get_object_or_404(NaicsCategory, id=naics_category)
-        # Assign the naics_category instance to the operation
-        payload.naics_category = nc
     # if is_application_lead_external is null, the user hasn't filled out that part of the form. If it's true, the user has assigned a contact; if it's false, the lead is the user
     if "is_application_lead_external" in payload_dict:
         if payload_dict["is_application_lead_external"]:
