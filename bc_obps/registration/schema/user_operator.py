@@ -1,5 +1,5 @@
 from typing import Optional
-from ninja import ModelSchema, Schema
+from ninja import ModelSchema, Schema, Field
 from registration.models import Contact, User
 from pydantic import Field
 
@@ -115,3 +115,17 @@ class UserOperatorUserOut(ModelSchema):
     class Config:
         model = User
         model_fields = ["phone_number", "email"]
+
+
+class SelectUserOperatorStatus(Schema):
+    """
+    Schema for a User Operator model
+    """
+
+    first_name: str = Field(..., alias="user.first_name")
+    last_name: str = Field(..., alias="user.last_name")
+    position_title: str = Field(..., alias="user.position_title")
+    business_name: str = Field(..., alias="operator.legal_name")
+
+    role: str
+    status: str
