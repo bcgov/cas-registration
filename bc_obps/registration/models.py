@@ -514,12 +514,14 @@ class MultipleOperator(models.Model):
         max_length=1000,
         db_comment="The legal name of an operator",
         blank=True,
+        # default blank since optional fields returning null will trigger RJSF validation the next time the form is saved
         default="",
     )
     website = models.URLField(
         max_length=200,
         db_comment="The website address of an operator",
         blank=True,
+        # default blank since optional fields returning null will trigger RJSF validation the next time the form is saved
         default="",
     )
     percentage_ownership = models.DecimalField(

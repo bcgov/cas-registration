@@ -125,6 +125,7 @@ class OperationOut(ModelSchema):
     @staticmethod
     def resolve_multiple_operators_array(obj):
         if obj.multiple_operator.exists():
+            # TODO: filter multple operators by archived_at is null or similar once #361 is done
             return [
                 MultipleOperatorOut.from_orm(operator).dict()
                 for operator in obj.multiple_operator.filter(operation_id=obj.id)
