@@ -580,75 +580,78 @@ class BusinessRoleModelTest(BaseTestCase):
 
 class MultipleOperatorModelTest(BaseTestCase):
     fixtures = [
-        USER_FIXTURE,
-        OPERATOR_FIXTURE,
-        OPERATION_FIXTURE,
         NAICS_CODE_FIXTURE,
-        NAICS_CATEGORY_FIXTURE,
+        USER_FIXTURE,
+        BUSINESS_ROLE_FIXTURE,
+        OPERATOR_FIXTURE,
+        APP_ROLE_FIXTURE,
+        BUSINESS_STRUCTURE_FIXTURE,
         CONTACT_FIXTURE,
         DOCUMENT_FIXTURE,
+        DOCUMENT_TYPE_FIXTURE,
     ]
 
     @classmethod
     def setUpTestData(cls):
         cls.test_multiple_operator = MultipleOperator.objects.create(
-            operation=Operation.objects.get(id=1),
+            operation=Operation.objects.create(
+                name="test",
+                type="test",
+                naics_code=NaicsCode.objects.all().first(),
+                operator=Operator.objects.all().first(),
+                previous_year_attributable_emissions=1,
+                swrs_facility_id=1,
+                bcghg_id=1,
+                opt_in=True,
+                verified_at=timezone.now(),
+                verified_by=User.objects.get(user_guid="00000000-0000-0000-0000-000000000001"),
+                application_lead=Contact.objects.all().first(),
+            ),
+            operation_id=Operation.objects.all().first().id,
             operator_number=1,
             legal_name="test",
             trade_name="test",
-            cra_business_number=1,
-            bc_corporate_registry_number=1,
+            cra_business_number=123456789,
+            bc_corporate_registry_number=123456789,
             business_structure="test",
             website="test",
+            percentage_ownership=100,
             physical_street_address="test",
             physical_municipality="test",
             physical_province="BC",
-            physical_postal_code="test",
-            mailing_address_same_as_physical=False,
+            physical_postal_code="V7W 3R4",
+            mailing_address_same_as_physical=True,
             mailing_street_address="test",
             mailing_municipality="test",
             mailing_province="BC",
-            mailing_postal_code="test",
+            mailing_postal_code="V7W 3R4",
         )
 
     def test_field_labels_and_max_lengths(self):
-        # (field_name, expected_label, expected_max_length, expected_relations_count)
+        # (field_name, expected_label, expected_max_length)
         field_data = [
-            ("operation", "operation", None, None),
-            ("legal_name", "legal name", 1000, None),
-            ("trade_name", "trade name", 1000, None),
-            ("cra_business_number", "cra business number", None, None),
-            (
-                "bc_corporate_registry_number",
-                "bc corporate registry number",
-                None,
-                None,
-            ),
-            ("business_structure", "business structure", None, None),
-            ("physical_street_address", "physical street address", 1000, None),
-            ("physical_municipality", "physical municipality", 1000, None),
-            ("physical_province", "physical province", 2, None),
-            ("physical_postal_code", "physical postal code", 7, None),
-            ("mailing_address_same_as_physical", "mailing address same as physical", None, None),
-            ("mailing_street_address", "mailing street address", 1000, None),
-            ("mailing_municipality", "mailing municipality", 1000, None),
-            ("mailing_province", "mailing province", 2, None),
-            ("mailing_postal_code", "mailing postal code", 7, None),
-            ("website", "website", 200, None),
+            ("operator_number", "operator number", None),
+            ("legal_name", "legal name", 1000),
+            ("trade_name", "trade name", 1000),
+            ("cra_business_number", "cra business number", None),
+            ("bc_corporate_registry_number", "bc corporate registry number", None),
+            ("business_structure", "business structure", None),
+            ("website", "website", 200),
+            ("percentage_ownership", "percentage ownership", None),
+            ("physical_street_address", "physical street address", 1000),
+            ("physical_municipality", "physical municipality", 1000),
+            ("physical_province", "physical province", 2),
+            ("physical_postal_code", "physical postal code", 7),
+            ("mailing_address_same_as_physical", "mailing address same as physical", None),
+            ("mailing_street_address", "mailing street address", 1000),
+            ("mailing_municipality", "mailing municipality", 1000),
+            ("mailing_province", "mailing province", 2),
+            ("mailing_postal_code", "mailing postal code", 7),
         ]
 
-        for (
-            field_name,
-            expected_label,
-            expected_max_length,
-            expected_relations_count,
-        ) in field_data:
+        for field_name, expected_label, expected_max_length in field_data:
             with self.subTest(field_name=field_name):
                 if expected_label:
                     self.assertFieldLabel(self.test_multiple_operator, field_name, expected_label)
                 if expected_max_length is not None:
                     self.assertFieldMaxLength(self.test_multiple_operator, field_name, expected_max_length)
-                if expected_relations_count is not None:
-                    self.assertHasMultipleRelationsInField(
-                        self.test_multiple_operator, field_name, expected_relations_count
-                    )
