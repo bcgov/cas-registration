@@ -20,8 +20,15 @@ const MinusSVG = () => (
   </svg>
 );
 
-const ArrayFieldTemplate = (props: ArrayFieldTemplateProps) => {
-  const { canAdd, items, onAddClick } = props;
+const ArrayFieldTemplate = ({
+  canAdd,
+  items,
+  onAddClick,
+  uiSchema,
+}: ArrayFieldTemplateProps) => {
+  const arrayAddLabel =
+    (uiSchema?.["ui:options"]?.arrayAddLabel as string) || "Add";
+
   return (
     <div className="flex min-w-full flex-col">
       {items?.map((item, i: number) => {
@@ -55,8 +62,12 @@ const ArrayFieldTemplate = (props: ArrayFieldTemplateProps) => {
         );
       })}
       {canAdd && (
-        <Button variant="contained" className="w-fit" onClick={onAddClick}>
-          Add
+        <Button
+          variant="contained"
+          className="w-fit my-8 normal-case"
+          onClick={onAddClick}
+        >
+          {arrayAddLabel}
         </Button>
       )}
     </div>
