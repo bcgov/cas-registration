@@ -18,7 +18,7 @@ const AlertIcon = () => (
   </svg>
 );
 
-function FieldTemplate({
+function InlineFieldTemplate({
   id,
   label,
   help,
@@ -27,11 +27,15 @@ function FieldTemplate({
   required,
   children,
   uiSchema,
+  classNames,
 }: FieldTemplateProps) {
   const isHidden = uiSchema?.["ui:widget"] === "hidden";
   if (isHidden) return null;
 
   const isErrors = rawErrors && rawErrors.length > 0;
+
+  // UI Schema options
+  const hideLabel = uiSchema?.["ui:options"]?.hideLabel as boolean;
 
   return (
     <Grid
@@ -47,8 +51,9 @@ function FieldTemplate({
           sm: "center",
         },
       }}
+      className={classNames}
     >
-      {label && (
+      {!hideLabel && label && (
         <Grid item xs={12} md={3} className="w-10">
           <label htmlFor={id} className="font-bold">
             {label}
@@ -84,4 +89,4 @@ function FieldTemplate({
   );
 }
 
-export default FieldTemplate;
+export default InlineFieldTemplate;

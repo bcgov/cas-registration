@@ -18,6 +18,7 @@ const RadioWidget = ({
   onChange,
   onBlur,
   onFocus,
+  uiSchema,
 }: WidgetProps) => {
   const { enumOptions, enumDisabled, emptyValue } = options;
 
@@ -30,7 +31,7 @@ const RadioWidget = ({
   }: FocusEvent<HTMLInputElement>) =>
     onFocus(id, enumOptionsValueForIndex(value, enumOptions, emptyValue));
 
-  const row = options ? options.inline : false;
+  const row = uiSchema?.["ui:options"]?.inline;
   const selectedIndex = enumOptionsIndexForValue(val, enumOptions) ?? null;
 
   return (
@@ -38,10 +39,7 @@ const RadioWidget = ({
       id={id}
       name={id}
       value={selectedIndex}
-      sx={{
-        flexDirection: "row",
-      }}
-      row={row as boolean}
+      row={row ?? true} // default to row layout since that's the most common case for our app
       onChange={onChangeHandler}
       onBlur={onBlurHandler}
       onFocus={onFocusHandler}
