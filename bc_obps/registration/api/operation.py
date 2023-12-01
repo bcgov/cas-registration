@@ -5,7 +5,7 @@ import pytz
 from django.core import serializers
 from typing import List
 from django.shortcuts import get_object_or_404
-from registration.models import MultipleOperator,Operation, Operator, NaicsCode, Contact, BusinessRole, User
+from registration.models import MultipleOperator, Operation, Operator, NaicsCode, Contact, BusinessRole, User
 from registration.schema import (
     OperationCreateIn,
     OperationUpdateIn,
@@ -16,8 +16,6 @@ from registration.schema import (
 )
 from registration.utils import extract_fields_from_dict
 from ninja.responses import codes_4xx
-
-
 
 
 # Function to save multiple operators so we can reuse it in put/post routes
@@ -109,6 +107,7 @@ def create_operation(request, payload: OperationCreateIn):
             "verified_at",
             "verified_by",
             "status",
+            "operation_has_multiple_operators" "multiple_operators_array",
         ],
     )
 
@@ -122,36 +121,19 @@ def create_operation(request, payload: OperationCreateIn):
             }[field_name]
             obj = get_object_or_404(model_class, id=field_value)
             operation_related_fields[field_name] = obj
+
+    operation_has_multiple_operators: bool = payload_dict.get("operation_has_multiple_operators")
+    multiple_operators_array: list = payload_dict.get("multiple_operators_array")
+
     operation = Operation.objects.create(**operation_related_fields)
     operation.regulated_products.set(payload.regulated_products)
     operation.reporting_activities.set(payload.reporting_activities)
     operation.documents.set(payload.documents)
 
-    setattr(payload, field_name, obj)
-
-    operation_has_multiple_operators: bool = payload.dict().get("operation_has_multiple_operators")
-    multiple_operators_array: list = payload.dict().get("multiple_operators_array")
-
-    fields_to_delete = [
-        "documents",
-        "contacts",
-        "petrinex_ids",
-        "regulated_products",
-        "reporting_activities",
-        "multiple_operators_array",
-    ]
-
-    for field_name in fields_to_delete:
-        if field_name in payload.dict():
-            delattr(payload, field_name)
-
-    operation = Operation.objects.create(**payload.dict())
-
     if operation_has_multiple_operators:
         save_multiple_operators(multiple_operators_array, operation)
 
     return 201, {"name": operation.name, "id": operation.id}
-
 
 
 ##### PUT #####
@@ -161,6 +143,9 @@ def create_operation(request, payload: OperationCreateIn):
 def update_operation(request, operation_id: int, submit, payload: OperationUpdateIn):
     payload_dict: dict = payload.dict()
     operation = get_object_or_404(Operation, id=operation_id)
+    operation_has_multiple_operators: bool = payload_dict.get("operation_has_multiple_operators")
+    multiple_operators_array: list = payload_dict.get("multiple_operators_array")
+
     if "operator" in payload_dict:
         operator = payload_dict["operator"]
         op = get_object_or_404(Operator, id=operator)
@@ -220,17 +205,9 @@ def update_operation(request, operation_id: int, submit, payload: OperationUpdat
         "reporting_activities",
         "regulated_products",
         "application_lead",
-        "multiple_operators_array",
     ]
 
-
-    operation_has_multiple_operators: bool = payload.dict().get("operation_has_multiple_operators")
-    multiple_operators_array: list = payload.dict().get("multiple_operators_array")
-
-    if operation_has_multiple_operators:
-        save_multiple_operators(multiple_operators_array, operation)
-
-    for attr, value in payload.dict().items():
+    for attr, value in payload_dict.items():
         if attr not in excluded_fields:
             setattr(operation, attr, value)
             # set the operation status to 'pending' on update
@@ -245,6 +222,10 @@ def update_operation(request, operation_id: int, submit, payload: OperationUpdat
         operation.reporting_activities.add(activity_id)  # Adds each activity
 
     operation.save()
+
+    if operation_has_multiple_operators:
+        save_multiple_operators(multiple_operators_array, operation)
+
     return 200, {"name": operation.name}
 
 
@@ -266,6 +247,3 @@ def update_operation_status(request, operation_id: int):
     )
     operation.save()
     return data
-
-
-##### DELETE #####
