@@ -66,6 +66,14 @@ def get_user_operator_admin_exists(request, operator_id: int):
     return 200, has_admin
 
 
+@router.get("/get-users-operators/{user_id}", response=List[SelectUserOperatorOperatorsOut])
+def get_user(request, user_id: str):
+    UserOperatorList = UserOperator.objects.filter(
+        user_id=user_id, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.APPROVED
+    )
+    return UserOperatorList
+
+
 ##### POST #####
 
 
