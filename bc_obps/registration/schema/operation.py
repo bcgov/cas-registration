@@ -33,7 +33,6 @@ class OperationUpdateIn(ModelSchema):
     operator_id: int
     # Converting types
     naics_code_id: int
-    naics_category_id: int
     verified_at: Optional[date] = None
     # application lead details
     first_name: Optional[str] = None
