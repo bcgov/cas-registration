@@ -1,7 +1,7 @@
 from typing import Type, Union, Iterable, Dict, Any, Tuple, Optional
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError, models
-from .models import User, Operator, UserOperator
+from .models import User, Operator, UserOperator, AppRole
 from django.shortcuts import get_object_or_404
 
 
@@ -118,3 +118,12 @@ def extract_fields_from_dict(data_dict, fields_to_extract):
         if field in data_dict:
             new_dict[field] = data_dict[field]
     return new_dict
+
+
+def check_if_role_authorized(role: AppRole, allowedRoles) -> Tuple[int, Optional[Union[dict[str, str], None]]]:
+    role_name = getattr(role, "role_name")
+
+    if role_name not in allowedRoles:
+        return 401, {"message": "Unauthorized."}
+
+    return 200, None
