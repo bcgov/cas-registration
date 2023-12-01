@@ -19,7 +19,7 @@ const SubmitButton: React.FunctionComponent<SubmitButtonProps> = ({
         variant="contained"
         type="submit"
         aria-disabled={pending}
-        sx={{ marginBottom: 10 }}
+        className="h-full"
       >
         {label}
       </Button>
