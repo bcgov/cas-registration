@@ -14,6 +14,7 @@ from .api_base import router
 from typing import Optional
 from django.shortcuts import get_object_or_404
 from django.core.exceptions import ValidationError
+from django.core import serializers
 from registration.models import (
     BusinessRole,
     BusinessStructure,
@@ -30,6 +31,9 @@ from registration.utils import (
     check_access_request_matches_business_guid,
 )
 from ninja.responses import codes_4xx
+import json
+from datetime import datetime
+import pytz
 
 
 ##### GET #####
@@ -262,6 +266,30 @@ def create_user_operator_contact(request, payload: UserOperatorContactIn):
 
 
 ##### PUT #####
+
+
+@router.put("/select-operator/user-operator/{int:user_operator_id}/update-status")
+def update_user_operator_status(request, user_operator_id: int):
+    payload = json.loads(request.body.decode())
+    status = getattr(UserOperator.Statuses, payload.get("status").upper())
+    user_operator = get_object_or_404(UserOperator, id=user_operator_id)
+    user_operator.status = status
+
+    if user_operator.status in [UserOperator.Statuses.APPROVED, UserOperator.Statuses.REJECTED]:
+        user_operator.verified_at = datetime.now(pytz.utc)
+    if user_operator.status in [UserOperator.Statuses.PENDING]:
+        user_operator.verified_at = None
+        user_operator.verified_by_id = None
+
+    data = serializers.serialize(
+        "json",
+        [
+            user_operator,
+        ],
+    )
+
+    user_operator.save()
+    return data
 
 
 ##### DELETE #####
