@@ -1,13 +1,13 @@
 export interface UserFormData {
   first_name: string;
   last_name: string;
-  position_title: string;
-  street_address: string;
-  municipality: string;
-  postal_code: string;
   email: string;
   phone_number: string;
-  province: string;
+  position_title: string;
+  street_address?: string;
+  municipality?: string;
+  postal_code?: string;
+  province?: string;
 }
 export interface UserOperatorFormData extends UserFormData {
   is_senior_officer: string;

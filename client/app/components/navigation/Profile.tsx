@@ -1,23 +1,8 @@
+import { useEffect } from "react";
 import Button from "@mui/material/Button/Button";
 import Link from "@mui/material/Link";
-import { signIn, signOut, useSession } from "next-auth/react";
-import { useEffect } from "react";
-
-// 🛠️ Function for keycloak session logout
-async function keycloakSessionLogOut() {
-  try {
-    // call keycloak
-    const response = await fetch(`/api/auth/logout`, { method: "GET" });
-    if (!response.ok) {
-      // redirect to keycloak basic logout SSO page
-      window.open(process.env.NEXT_PUBLIC_KEYCLOAK_LOGOUT_URL, "_blank");
-    }
-    // call nextauth logout
-    signOut();
-  } catch (err) {
-    console.error(err);
-  }
-}
+import { signIn, useSession } from "next-auth/react";
+import { keycloakSessionLogOut } from "@/app/utils/auth/actions";
 
 export default function Profile({ name }: { readonly name: string }) {
   /* use the NextAuth useSession hook to get session data, and if a specific error condition is met,

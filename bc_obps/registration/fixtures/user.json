@@ -70,23 +70,5 @@
       "phone_number": "+123456789",
       "app_role": "industry_user"
     }
-  },
-  {
-    "model": "registration.user",
-    "pk": 5,
-    "fields": {
-      "user_guid": "279c80cf57814c28872740a133d17c0d",
-      "business_guid": "efb76d57-88b7-4eb6-9f26-ec12b49c14c1",
-      "first_name": "Bcgov",
-      "last_name": "Cas SECONDARY",
-      "position_title": "Code Monkey",
-      "street_address": "1 Street",
-      "municipality": "Townsville",
-      "province": "QC",
-      "postal_code": "H0H 0H0",
-      "email": "email@email.com",
-      "phone_number": "+123456789",
-      "app_role": "industry_user"
-    }
   }
 ]

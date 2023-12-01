@@ -65,6 +65,18 @@ export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
     }
     // Check if the user is authenticated
     if (token) {
+      // Check for the existence of token.app_role
+      if (!token.app_role) {
+        // route to profile form
+        if (pathname.endsWith("/profile")) {
+          return next(request, _next);
+        } else {
+          return NextResponse.redirect(
+            new URL(`/dashboard/profile`, request.url),
+          );
+        }
+      }
+
       // Redirect root or home requests to the dashboard
       if (pathname.endsWith("/") || pathname.endsWith("/home")) {
         return NextResponse.redirect(new URL(`/dashboard`, request.url));

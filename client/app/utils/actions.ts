@@ -1,11 +1,9 @@
 /**
-📚 Server Actions Conventions:
+📚 Server Actions:
+ Server actions are JavaScript async functions that run on the server
+and can be caled from  server components or from client components.
 
-SA can be defined in two places:
-Inside the component that uses it (Server Components only).
-In a separate file (Client and Server Components), for reusability.
-
-💡 You can define multiple Server Actions in a single file.
+💡 You can define Server actins in RSC or define multiple Server Actions in a single file.
 */
 "use server";
 import { revalidatePath } from "next/cache";

@@ -1,12 +1,21 @@
 from ninja import ModelSchema
+from ninja import Field, Schema
 from registration.models import AppRole, User
 
 
 # AppRole schemas
-class AppRoleOut(ModelSchema):
+class UserAppRoleOut(ModelSchema):
     class Config:
         model = AppRole
         model_fields = '__all__'
+
+
+class UserIn(Schema):
+    first_name: str
+    last_name: str
+    email: str
+    position_title: str
+    phone_number: str
 
 
 class UserOut(ModelSchema):
