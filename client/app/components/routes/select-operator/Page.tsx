@@ -11,16 +11,12 @@ export default async function SelectOperatorPage() {
   const userName = session?.user?.name?.split(" ")?.[0];
   return (
     <>
-      <section className="text-center my-auto text-2xl flex flex-col gap-3">
-        {/* Streaming to render UI parts in a client incrementally, as soon as possible */}
+      {/* Streaming to render UI parts in a client incrementally, as soon as possible */}
+      <section className="text-center my-auto text-2xl flex flex-col gap-3 mx-auto">
         <p>
-          Hi <b>{userName}</b>
+          Hi <b>{userName}!</b>
         </p>
         <p>Which operator would you like to log in to?</p>
-        <p>
-          Please search by the business name or the Canada Revenue Agency (CRA)
-          Business Number below.
-        </p>
       </section>
       <section className="text-center text-2xl flex flex-col">
         {/* slow-loading components (data-fetching) can be wrapped using the <Suspense/> component boundary until they’ve been rendered on the server */}
