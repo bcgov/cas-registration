@@ -22,6 +22,31 @@ async function getNaicsCodes() {
   }
 }
 
+export async function getRegulatedProducts() {
+  try {
+    return await actionHandler(
+      "registration/regulated_products",
+      "GET",
+      "/operations",
+    );
+  } catch (error) {
+    // Handle the error here or rethrow it to handle it at a higher level
+    throw error;
+  }
+}
+export async function getReportingActivities() {
+  try {
+    return await actionHandler(
+      "registration/reporting_activities",
+      "GET",
+      "/operations",
+    );
+  } catch (error) {
+    // Handle the error here or rethrow it to handle it at a higher level
+    throw error;
+  }
+}
+
 // 🛠️ Function to fetch an operation by ID
 async function getOperation(id: number) {
   try {
@@ -40,6 +65,8 @@ async function getOperation(id: number) {
 export const createOperationSchema = (
   schema: RJSFSchema,
   naicsCodes: { id: number }[],
+  regulatedProducts: { id: number }[],
+  reportingActivities: { id: number }[],
 ) => {
   const localSchema = JSON.parse(JSON.stringify(schema));
   // naics codes
@@ -48,12 +75,24 @@ export const createOperationSchema = (
     localSchema.properties.operationPage1.properties.naics_code_id.enum =
       naicsCodes.map((code) => code.id);
   }
+  // regulated products
+  if (Array.isArray(regulatedProducts)) {
+    localSchema.properties.operationPage1.properties.regulated_products.items.enum =
+      regulatedProducts.map((product) => product.id);
+  }
+  // reporting activities
+  if (Array.isArray(reportingActivities)) {
+    localSchema.properties.operationPage1.properties.reporting_activities.items.enum =
+      reportingActivities.map((product) => product.id);
+  }
   return localSchema;
 };
 
 // 🧩 Main component
 export default async function Operation({ numRow }: { numRow?: number }) {
   const codes = await getNaicsCodes();
+  const products = await getRegulatedProducts();
+  const activities = await getReportingActivities();
 
   let operation: any;
 
@@ -67,7 +106,12 @@ export default async function Operation({ numRow }: { numRow?: number }) {
         <Review operation={operation} />
       ) : null}
       <OperationsForm
-        schema={createOperationSchema(operationSchema, codes)}
+        schema={createOperationSchema(
+          operationSchema,
+          codes,
+          products,
+          activities,
+        )}
         formData={operation as OperationsFormData}
       />
     </>

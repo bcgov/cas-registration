@@ -15,8 +15,9 @@ from registration.models import (
     ReportingActivity,
     User,
     UserOperator,
+    RegulatedProduct,
 )
-from registration.schema import OperationIn
+from registration.schema import OperationCreateIn, OperationUpdateIn
 
 pytestmark = pytest.mark.django_db
 
@@ -50,6 +51,36 @@ class TestNaicsCodeEndpoint:
         assert len(json.loads(response.content)) == 2
 
 
+class TestRegulatedProductsEndpoint:
+    endpoint = base_endpoint + "regulated_products"
+
+    def test_get_method_for_200_status(self, client):
+        response = client.get(self.endpoint)
+        assert response.status_code == 200
+
+    def test_get_method_with_mock_data(self, client):
+        baker.make(RegulatedProduct, _quantity=4)
+
+        response = client.get(self.endpoint)
+        assert response.status_code == 200
+        assert len(json.loads(response.content)) == 4
+
+
+class TestReportingActivitiesEndpoint:
+    endpoint = base_endpoint + "reporting_activities"
+
+    def test_get_method_for_200_status(self, client):
+        response = client.get(self.endpoint)
+        assert response.status_code == 200
+
+    def test_get_method_with_mock_data(self, client):
+        baker.make(ReportingActivity, _quantity=4)
+
+        response = client.get(self.endpoint)
+        assert response.status_code == 200
+        assert len(json.loads(response.content)) == 4
+
+
 class TestOperationsEndpoint:
     endpoint = base_endpoint + "operations"
 
@@ -69,20 +100,22 @@ class TestOperationsEndpoint:
     def test_post_new_operation(self, client):
         naics_code = baker.make(NaicsCode)
         document = baker.make(Document)
-        contact = baker.make(Contact, postal_code='V1V 1V1')
+        reporting_activities = baker.make(ReportingActivity, _quantity=2)
+        regulated_products = baker.make(RegulatedProduct, _quantity=2)
+        application_lead = baker.make(Contact)
         operator = baker.make(Operator)
-        mock_operation = OperationIn(
+        mock_operation = OperationCreateIn(
             name='Springfield Nuclear Power Plant',
             type='Single Facility Operation',
             naics_code_id=naics_code.id,
-            reporting_activities=['123', '124'],
-            regulated_products=[1, 2],
+            reporting_activities=reporting_activities,
+            regulated_products=regulated_products,
             documents=[document.id],
-            contacts=[contact.id],
+            application_lead=application_lead.id,
             operator_id=operator.id,
         )
         post_response = client.post(self.endpoint, content_type=content_type_json, data=mock_operation.json())
-        assert post_response.status_code == 200
+        assert post_response.status_code == 201
         assert post_response.json().get('name') == "Springfield Nuclear Power Plant"
         assert post_response.json().get('id') is not None
         # check that the default status of pending was applied
@@ -96,6 +129,29 @@ class TestOperationsEndpoint:
             data={"garbage": "i am bad data"},
         )
         assert response.status_code == 422
+
+    def test_post_existing_operation(self, client):
+        baker.make(Operation, bcghg_id=123)
+        naics_code = baker.make(NaicsCode)
+        document = baker.make(Document)
+        reporting_activities = baker.make(ReportingActivity, _quantity=2)
+        regulated_products = baker.make(RegulatedProduct, _quantity=2)
+        application_lead = baker.make(Contact)
+        operator = baker.make(Operator)
+        mock_operation2 = OperationCreateIn(
+            name='Springfield Nuclear Power Plant',
+            type='Single Facility Operation',
+            naics_code_id=naics_code.id,
+            reporting_activities=reporting_activities,
+            regulated_products=regulated_products,
+            documents=[document.id],
+            application_lead=application_lead.id,
+            operator_id=operator.id,
+            bcghg_id=123,
+        )
+        post_response = client.post(self.endpoint, content_type=content_type_json, data=mock_operation2.json())
+        assert post_response.status_code == 400
+        assert post_response.json().get('message') == "Operation with this BCGHG ID already exists."
 
     def test_put_operation_update_status_approved(self, client):
         operation = baker.make(Operation)
@@ -194,17 +250,19 @@ class TestOperationEndpoint:
     def test_put_operation_without_submit(self, client):
         naics_code = baker.make(NaicsCode)
         document = baker.make(Document)
-        contact = baker.make(Contact, postal_code="V1V 1V1")
+        application_lead = baker.make(Contact)
         operator = baker.make(Operator)
         activity = baker.make(ReportingActivity)
+        product = baker.make(RegulatedProduct)
         operation = baker.make(Operation)
         operation.reporting_activities.set([activity.id])
+        operation.regulated_products.set([product.id])
 
-        mock_operation = OperationIn(
+        mock_operation = OperationUpdateIn(
             name="New name",
             type="Single Facility Operation",
             naics_code_id=naics_code.id,
-            reporting_activities=[2],
+            reporting_activities=[activity.id],
             physical_street_address="19 Evergreen Terrace",
             physical_municipality="Springfield",
             physical_province="BC",
@@ -212,10 +270,9 @@ class TestOperationEndpoint:
             legal_land_description="It's legal",
             latitude=90,
             longitude=-120,
-            petrinex_ids=["123", "124"],
-            regulated_products=[1, 2],
+            regulated_products=[product.id],
             documents=[document.id],
-            contacts=[contact.id],
+            application_lead=application_lead.id,
             operator_id=operator.id,
         )
 
@@ -233,20 +290,22 @@ class TestOperationEndpoint:
     def test_put_operation_with_submit(self, client):
         naics_code = baker.make(NaicsCode)
         document = baker.make(Document)
-        contact = baker.make(Contact, postal_code="V1V 1V2")
+        application_lead = baker.make(Contact)
         operator = baker.make(Operator)
         activity = baker.make(ReportingActivity)
+        product = baker.make(RegulatedProduct)
         operation = baker.make(Operation)
         operation.reporting_activities.set([activity.id])
+        operation.regulated_products.set([product.id])
 
-        mock_operation = OperationIn(
+        mock_operation = OperationUpdateIn(
             name="New name",
             type="Single Facility Operation",
             naics_code_id=naics_code.id,
-            reporting_activities=[1],
-            regulated_products=[1],
+            reporting_activities=[activity.id],
+            regulated_products=[product.id],
             documents=[document.id],
-            contacts=[contact.id],
+            application_lead=application_lead.id,
             operator_id=operator.id,
         )
 
@@ -306,7 +365,6 @@ class TestUserOperatorEndpoint:
         response = client.get(f"{self.operator_endpoint}/{operators[0].id}", HTTP_AUTHORIZATION=self.auth_header_dumps)
 
         assert response.status_code == 200
-        print(response.json())
         assert response.json()['id'] == operators[0].id
 
     def test_select_operator_with_invalid_id(self):

@@ -1,0 +1,169 @@
+[
+  {
+    "model": "registration.reportingactivity",
+    "fields": {
+      "name": "General stationary combustion",
+      "applicable_to": "all"
+    }
+  },
+  {
+    "model": "registration.reportingactivity",
+    "fields": {
+      "name": "Fuel combustion by mobile equipment ",
+      "applicable_to": "sfo"
+    }
+  },
+  {
+    "model": "registration.reportingactivity",
+    "fields": {
+      "name": "Aluminum or alumina production",
+      "applicable_to": "sfo"
+    }
+  },
+  {
+    "model": "registration.reportingactivity",
+    "fields": { "name": "Ammonia production", "applicable_to": "sfo" }
+  },
+  {
+    "model": "registration.reportingactivity",
+    "fields": { "name": "Cement production", "applicable_to": "sfo" }
+  },
+  {
+    "model": "registration.reportingactivity",
+    "fields": { "name": "Underground coal mining", "applicable_to": "sfo" }
+  },
+  {
+    "model": "registration.reportingactivity",
+    "fields": {
+      "name": "Coal storage at facilities that combust coal",
+      "applicable_to": "sfo"
+    }
+  },
+  {
+    "model": "registration.reportingactivity",
+    "fields": {
+      "name": "Copper or nickel smelting or refining",
+      "applicable_to": "sfo"
+    }
+  },
+  {
+    "model": "registration.reportingactivity",
+    "fields": { "name": "Electricity generation", "applicable_to": "sfo" }
+  },
+  {
+    "model": "registration.reportingactivity",
+    "fields": { "name": "Electronics manufacturing", "applicable_to": "sfo" }
+  },
+  {
+    "model": "registration.reportingactivity",
+    "fields": { "name": "Ferroalloy production", "applicable_to": "sfo" }
+  },
+  {
+    "model": "registration.reportingactivity",
+    "fields": { "name": "Glass manufacturing", "applicable_to": "sfo" }
+  },
+  {
+    "model": "registration.reportingactivity",
+    "fields": { "name": "Hydrogen production", "applicable_to": "sfo" }
+  },
+  {
+    "model": "registration.reportingactivity",
+    "fields": {
+      "name": "Industrial wastewater processing",
+      "applicable_to": "sfo"
+    }
+  },
+  {
+    "model": "registration.reportingactivity",
+    "fields": { "name": "Lead production", "applicable_to": "sfo" }
+  },
+  {
+    "model": "registration.reportingactivity",
+    "fields": { "name": "Lime manufacturing", "applicable_to": "sfo" }
+  },
+  {
+    "model": "registration.reportingactivity",
+    "fields": { "name": "Magnesium production", "applicable_to": "sfo" }
+  },
+  {
+    "model": "registration.reportingactivity",
+    "fields": { "name": "Nitric acid manufacturing", "applicable_to": "sfo" }
+  },
+  {
+    "model": "registration.reportingactivity",
+    "fields": { "name": "Petrochemical production", "applicable_to": "sfo" }
+  },
+  {
+    "model": "registration.reportingactivity",
+    "fields": { "name": "Petroleum refining", "applicable_to": "sfo" }
+  },
+  {
+    "model": "registration.reportingactivity",
+    "fields": { "name": "Phosphoric acid production", "applicable_to": "sfo" }
+  },
+  {
+    "model": "registration.reportingactivity",
+    "fields": { "name": "Pulp and paper production", "applicable_to": "sfo" }
+  },
+  {
+    "model": "registration.reportingactivity",
+    "fields": { "name": "Refinery fuel gas combustion", "applicable_to": "sfo" }
+  },
+  {
+    "model": "registration.reportingactivity",
+    "fields": { "name": "Zinc production", "applicable_to": "sfo" }
+  },
+  {
+    "model": "registration.reportingactivity",
+    "fields": { "name": "Open pit coal mining", "applicable_to": "sfo" }
+  },
+  {
+    "model": "registration.reportingactivity",
+    "fields": {
+      "name": "Storage of petroleum products",
+      "applicable_to": "sfo"
+    }
+  },
+  {
+    "model": "registration.reportingactivity",
+    "fields": { "name": "Carbonate use", "applicable_to": "sfo" }
+  },
+  {
+    "model": "registration.reportingactivity",
+    "fields": { "name": "", "applicable_to": "sfo" }
+  },
+  {
+    "model": "registration.reportingactivity",
+    "fields": {
+      "name": "Oil and gas extraction and gas processing activities",
+      "applicable_to": "lfo"
+    }
+  },
+  {
+    "model": "registration.reportingactivity",
+    "fields": {
+      "name": "Carbon dioxide transportation and oil transmission",
+      "applicable_to": "lfo"
+    }
+  },
+  {
+    "model": "registration.reportingactivity",
+    "fields": { "name": "Electricity transmission", "applicable_to": "lfo" }
+  },
+  {
+    "model": "registration.reportingactivity",
+    "fields": { "name": "Natural gas transmission", "applicable_to": "lfo" }
+  },
+  {
+    "model": "registration.reportingactivity",
+    "fields": { "name": "Natural gas distribution", "applicable_to": "lfo" }
+  },
+  {
+    "model": "registration.reportingactivity",
+    "fields": { "name": "Natural gas storage", "applicable_to": "lfo" }
+  },
+  {
+    "model": "registration.reportingactivity",
+    "fields": { "name": "LNG activities", "applicable_to": "lfo" }
+  }
+]
