@@ -107,7 +107,7 @@ def create_operation(request, payload: OperationCreateIn):
             "verified_at",
             "verified_by",
             "status",
-            "operation_has_multiple_operators" "multiple_operators_array",
+            "operation_has_multiple_operators",
         ],
     )
 
