@@ -478,6 +478,7 @@ export const operationUiSchema = {
     "ui:FieldTemplate": FieldTemplate,
     "ui:options": {
       label: false,
+      arrayAddLabel: "Add another operator",
     },
     items: {
       mo_physical_address_section: {
