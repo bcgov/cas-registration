@@ -18,7 +18,7 @@ class OperationCreateIn(ModelSchema):
     # Converting types
     naics_code_id: int
     verified_at: Optional[date] = None
-    operation_has_multiple_operators: Optional[bool] = None
+    operation_has_multiple_operators: Optional[bool] = False
     multiple_operators_array: Optional[list] = None
 
     class Config:
@@ -47,13 +47,14 @@ class OperationUpdateIn(ModelSchema):
     phone_number: Optional[str] = None
     application_lead: Optional[int] = None
     is_application_lead_external: Optional[bool] = None
-    operation_has_multiple_operators: Optional[bool] = None
+    operation_has_multiple_operators: Optional[bool] = False
     multiple_operators_array: Optional[list] = None
 
     class Config:
         model = Operation
         model_exclude = ["id"]  # need to exclude id since it's auto generated and we don't want to pass it in
-        
+
+
 ### Multiple Operator schemas
 # TODO: find solution to circular import error and put multiple operator schemas in multiple_operator.py
 
@@ -98,7 +99,6 @@ class MultipleOperatorOut(ModelSchema):
     mo_mailing_municipality: Optional[str] = Field(None, alias="mailing_municipality")
     mo_mailing_province: Optional[str] = Field(None, alias="mailing_province")
     mo_mailing_postal_code: Optional[str] = Field(None, alias="mailing_postal_code")
-
 
     operation: OperationCreateIn
 
