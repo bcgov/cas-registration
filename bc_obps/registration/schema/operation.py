@@ -11,7 +11,6 @@ class OperationIn(ModelSchema):
     operator_id: int = 1
     # Converting types
     naics_code_id: int
-    naics_category_id: int
     verified_at: Optional[date] = None
 
     class Config:
@@ -23,7 +22,6 @@ class OperationOut(ModelSchema):
     # handling aliases and optional fields
     operator_id: int = Field(..., alias="operator.id")
     naics_code_id: int = Field(..., alias="naics_code.id")
-    naics_category_id: int = Field(..., alias="naics_category.id")
     previous_year_attributable_emissions: Optional[str] = None
     swrs_facility_id: Optional[str] = None
     bcghg_id: Optional[str] = None

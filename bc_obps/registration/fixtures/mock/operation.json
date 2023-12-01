@@ -11,7 +11,6 @@
       "name": "Operation 1",
       "type": "Single Facility Operation",
       "naics_code": 1,
-      "naics_category": 1,
 
       "previous_year_attributable_emissions": "100.345",
       "swrs_facility_id": 1001,
@@ -30,7 +29,6 @@
       "name": "Operation 2",
       "type": "Single Facility Operation",
       "naics_code": 2,
-      "naics_category": 1,
 
       "opt_in": false,
       "regulated_products": [],
@@ -47,7 +45,6 @@
       "name": "Operation 3",
       "type": "Single Facility Operation",
       "naics_code": 2,
-      "naics_category": 1,
 
       "opt_in": false,
       "regulated_products": [],

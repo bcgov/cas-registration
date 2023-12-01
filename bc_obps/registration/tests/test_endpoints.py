@@ -8,7 +8,6 @@ from django.test import Client
 from localflavor.ca.models import CAPostalCodeField
 from registration.models import (
     NaicsCode,
-    NaicsCategory,
     Document,
     Contact,
     Operation,
@@ -51,21 +50,6 @@ class TestNaicsCodeEndpoint:
         assert len(json.loads(response.content)) == 2
 
 
-class TestNaicsCategoriesEndpoint:
-    endpoint = base_endpoint + "naics_categories"
-
-    def test_get_method_for_200_status(self, client):
-        response = client.get(self.endpoint)
-        assert response.status_code == 200
-
-    def test_get_method_with_mock_data(self, client):
-        baker.make(NaicsCategory, _quantity=3)
-
-        response = client.get(self.endpoint)
-        assert response.status_code == 200
-        assert len(json.loads(response.content)) == 3
-
-
 class TestOperationsEndpoint:
     endpoint = base_endpoint + "operations"
 
@@ -84,7 +68,6 @@ class TestOperationsEndpoint:
 
     def test_post_new_operation(self, client):
         naics_code = baker.make(NaicsCode)
-        naics_category = baker.make(NaicsCategory)
         document = baker.make(Document)
         contact = baker.make(Contact, postal_code='V1V 1V1')
         operator = baker.make(Operator)
@@ -92,7 +75,6 @@ class TestOperationsEndpoint:
             name='Springfield Nuclear Power Plant',
             type='Single Facility Operation',
             naics_code_id=naics_code.id,
-            naics_category_id=naics_category.id,
             reporting_activities=['123', '124'],
             regulated_products=[1, 2],
             documents=[document.id],
@@ -204,7 +186,6 @@ class TestOperationEndpoint:
 
     def test_get_method_for_200_status(self, client):
         baker.make(NaicsCode)
-        baker.make(NaicsCategory)
         baker.make(Operator)
         operation = baker.make(Operation)
         response = client.get(self.endpoint + str(operation.id))
@@ -212,7 +193,6 @@ class TestOperationEndpoint:
 
     def test_put_operation_without_submit(self, client):
         naics_code = baker.make(NaicsCode)
-        naics_category = baker.make(NaicsCategory)
         document = baker.make(Document)
         contact = baker.make(Contact, postal_code="V1V 1V1")
         operator = baker.make(Operator)
@@ -224,7 +204,6 @@ class TestOperationEndpoint:
             name="New name",
             type="Single Facility Operation",
             naics_code_id=naics_code.id,
-            naics_category_id=naics_category.id,
             reporting_activities=[2],
             physical_street_address="19 Evergreen Terrace",
             physical_municipality="Springfield",
@@ -253,7 +232,6 @@ class TestOperationEndpoint:
 
     def test_put_operation_with_submit(self, client):
         naics_code = baker.make(NaicsCode)
-        naics_category = baker.make(NaicsCategory)
         document = baker.make(Document)
         contact = baker.make(Contact, postal_code="V1V 1V2")
         operator = baker.make(Operator)
@@ -267,7 +245,6 @@ class TestOperationEndpoint:
             naics_code_id=naics_code.id,
             reporting_activities=[1],
             regulated_products=[1],
-            naics_category_id=naics_category.id,
             documents=[document.id],
             contacts=[contact.id],
             operator_id=operator.id,
