@@ -34,11 +34,11 @@ from ninja.responses import codes_4xx
 ##### GET #####
 @router.get("/is-approved-admin-user-operator/{user_guid}", response={200: IsApprovedUserOperator, codes_4xx: Message})
 def is_approved_admin_user_operator(request, user_guid: str):
-    approved_user_operator = UserOperator.objects.filter(
+    approved_user_operator: bool = UserOperator.objects.filter(
         user_id=user_guid, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.APPROVED
-    )
+    ).exists()
 
-    return 200, {"approved": True if approved_user_operator else False}
+    return 200, {"approved": approved_user_operator}
 
 
 @router.get(
@@ -55,10 +55,10 @@ def get_user_operator(request, user_operator_id: int):
 
 @router.get("/operator-has-admin/{operator_id}", response={200: bool, codes_4xx: Message})
 def get_user_operator_admin_exists(request, operator_id: int):
-    hasAdmin = UserOperator.objects.filter(
+    has_admin = UserOperator.objects.filter(
         operator_id=operator_id, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.APPROVED
     ).exists()
-    return 200, hasAdmin
+    return 200, has_admin
 
 
 ##### POST #####
