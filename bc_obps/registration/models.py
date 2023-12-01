@@ -78,7 +78,15 @@ class RegulatedProduct(models.Model):
 class ReportingActivity(models.Model):
     """Reporting activity model"""
 
+    class Applicablity(models.TextChoices):
+        SFO = "sfo"
+        LFO = "lfo"
+        ALL = "all"
+
     name = models.CharField(max_length=1000, db_comment="The name of a reporting activity")
+    applicable_to = models.CharField(
+        max_length=1000, choices=Applicablity.choices, db_comment="Which type of facility the activity applies to"
+    )
 
     class Meta:
         db_table_comment = "Reporting activities"

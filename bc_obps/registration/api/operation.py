@@ -113,7 +113,7 @@ def update_operation(request, operation_id: int, submit, payload: OperationUpdat
                     "postal_code": payload.postal_code,
                     "email": payload.email,
                     "phone_number": payload.phone_number,
-                    "business_role": BusinessRole.objects.get(role_name="Application Lead"),
+                    "business_role": BusinessRole.objects.get(role_name="Operation Registration Lead"),
                 },
             )
             operation.application_lead = eal
@@ -132,7 +132,7 @@ def update_operation(request, operation_id: int, submit, payload: OperationUpdat
                     "postal_code": user.postal_code,
                     "email": user.email,
                     "phone_number": user.phone_number,
-                    "business_role": BusinessRole.objects.get(role_name="Application Lead"),
+                    "business_role": BusinessRole.objects.get(role_name="Operation Registration Lead"),
                 },
             )
             operation.application_lead = al

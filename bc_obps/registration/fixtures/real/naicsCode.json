@@ -1,18 +1,14 @@
 [
   {
     "model": "registration.naicsCode",
-    "pk": 1,
     "fields": {
-      "id": 1,
       "naics_code": "211110",
       "naics_description": "Oil and gas extraction (except oil sands)"
     }
   },
   {
     "model": "registration.naicsCode",
-    "pk": 2,
     "fields": {
-      "id": 2,
       "naics_code": "212114",
       "naics_description": "Bituminous coal mining"
     }
