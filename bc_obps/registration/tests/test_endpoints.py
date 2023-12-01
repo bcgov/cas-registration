@@ -379,7 +379,7 @@ class TestUserOperatorEndpoint:
         )
 
         assert response.status_code == 404
-        assert response.json() == {"detail": "Not Found"}
+        assert response.json() == {"message": "No matching operator found"}
 
     def test_request_admin_access_with_valid_payload(self):
         operator = baker.make(Operator)
