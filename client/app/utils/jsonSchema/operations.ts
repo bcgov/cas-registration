@@ -220,6 +220,7 @@ const operationPage3: RJSFSchema = {
           postal_code: {
             type: "string",
             title: "Postal Code",
+            format: "postal-code",
           },
           email: {
             type: "string",
@@ -328,5 +329,8 @@ export const operationUiSchema = {
   reporting_activities: {
     "ui:widget": "MultiSelectWidget",
     "ui:placeholder": "Select reporting activities",
+  },
+  postal_code: {
+    "ui:widget": "PostalCodeWidget",
   },
 };
