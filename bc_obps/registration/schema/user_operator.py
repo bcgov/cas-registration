@@ -1,4 +1,6 @@
 from typing import Optional
+import uuid
+from django.forms import UUIDField
 from ninja import ModelSchema, Schema, Field
 from registration.models import Contact, User, UserOperator
 from pydantic import Field
@@ -124,9 +126,10 @@ class SelectUserOperatorStatus(Schema):
 
     first_name: str = Field(..., alias="user.first_name")
     last_name: str = Field(..., alias="user.last_name")
+    email: str = Field(..., alias="user.email")
     position_title: str = Field(..., alias="user.position_title")
     business_name: str = Field(..., alias="operator.legal_name")
-
+    user_id: uuid.UUID = Field(..., alias="user.user_guid")
     role: str
     status: str
 
