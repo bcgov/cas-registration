@@ -73,6 +73,7 @@ const userOperatorPage1: RJSFSchema = {
     physical_postal_code: {
       type: "string",
       title: "Postal Code",
+      format: "postal-code",
     },
     mailing_address_section: {
       title:
@@ -161,6 +162,7 @@ const userOperatorPage1: RJSFSchema = {
           pc_physical_postal_code: {
             type: "string",
             title: "PA Postal Code",
+            format: "postal-code",
           },
           pc_mailing_address_section: {
             //Not an actual field in the db - this is just to make the form look like the wireframes
@@ -209,6 +211,7 @@ const userOperatorPage1: RJSFSchema = {
                 pc_mailing_postal_code: {
                   type: "string",
                   title: "Postal Code",
+                  format: "postal-code",
                 },
               },
             },
@@ -255,6 +258,7 @@ const userOperatorPage1: RJSFSchema = {
           mailing_postal_code: {
             type: "string",
             title: "Postal Code",
+            format: "postal-code",
           },
         },
       },
@@ -306,6 +310,7 @@ const userOperatorPage2: RJSFSchema = {
     postal_code: {
       type: "string",
       title: "Postal Code",
+      format: "postal-code",
     },
   },
   allOf: [
@@ -524,5 +529,20 @@ export const userOperatorUiSchema = {
   },
   so_phone_number: {
     "ui:widget": "PhoneWidget",
+  },
+  postal_code: {
+    "ui:widget": "PostalCodeWidget",
+  },
+  pc_physical_postal_code: {
+    "ui:widget": "PostalCodeWidget",
+  },
+  physical_postal_code: {
+    "ui:widget": "PostalCodeWidget",
+  },
+  pc_mailing_postal_code: {
+    "ui:widget": "PostalCodeWidget",
+  },
+  mailing_postal_code: {
+    "ui:widget": "PostalCodeWidget",
   },
 };
