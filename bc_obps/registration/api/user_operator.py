@@ -10,6 +10,8 @@ from registration.schema import (
     UserOperatorContactIn,
     IsApprovedUserOperator,
 )
+from registration.schema.user_operator import SelectUserOperatorOperatorsOut
+from typing import List
 from .api_base import router
 from typing import Optional
 from django.shortcuts import get_object_or_404

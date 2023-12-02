@@ -7,10 +7,12 @@ type BusinessUserOperator = {
 };
 
 interface UserOperatorStatus {
+  user_id: string;
   first_name: string;
   last_name: string;
   position_title: string;
   business_name: string;
+  email: string;
   role: string;
   status: string;
 }
