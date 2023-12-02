@@ -5,6 +5,8 @@ import { FormProps, withTheme, ThemeProps } from "@rjsf/core";
 
 const customFormats = {
   phone: /\(?\d{3}\)?[\s-]?\d{3}[\s-]?\d{4}$/,
+  "postal-code":
+    /^[ABCEGHJ-NPRSTVXY]\d[ABCEGHJ-NPRSTV-Z][ -]?\d[ABCEGHJ-NPRSTV-Z]\d$/i,
 };
 
 const validator = customizeValidator({ customFormats });
