@@ -1,3 +1,6 @@
+import { GridRowsProp } from "@mui/x-data-grid";
+import DataGrid from "@/app/components/datagrid/DataGrid";
+
 import { actionHandler } from "@/app/utils/actions";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
@@ -63,12 +66,29 @@ export default async function Page() {
     ).flat();
   }
 
+  const columns = [
+    { field: "id", headerName: "User ID" },
+    { field: "name", headerName: "Name" },
+    { field: "email", headerName: "Email" },
+    { field: "business", headerName: "BCeID Business" },
+    { field: "userRole", headerName: "User Role" },
+    { field: "status", headerName: "Status" },
+    { field: "actions", headerName: "Actions" },
+  ];
+
+  const statusRows: GridRowsProp = userOperatorStatuses.map((uOS) => ({
+    id: uOS.user_id,
+    name: `${uOS.first_name} ${uOS.last_name}`,
+    email: uOS.email,
+    business: uOS.business_name,
+    userRole: uOS.role,
+    status: uOS.status,
+    actions: "todo: Approve/Reject func",
+  }));
+
   return (
     <>
-      <h1>TO DO: Users Page</h1>
-      <pre>
-        {userOperatorStatuses && JSON.stringify(userOperatorStatuses, null, 2)}
-      </pre>
+      <DataGrid rows={statusRows} columns={columns} cntxt="userOperators" />
     </>
   );
 }
