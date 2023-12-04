@@ -16,13 +16,14 @@ const TextWidget: React.FC<WidgetProps> = ({
   const re = /^[a-zA-Z0-9]+$/;
 
   const handleChange = (e: { target: { value: string } }) => {
-    // remove spaces
-    const val = e.target.value && e.target.value.split(" ").join("");
+    // remove spaces and convert to uppercase
+    const val =
+      e.target.value && e.target.value.split(" ").join("").toUpperCase();
     if (!val) return onChange(undefined);
     if (val.length > 6) return;
     if (!re.test(val)) return;
 
-    onChange(val === "" ? undefined : val);
+    onChange(val);
   };
 
   const isError = rawErrors && rawErrors.length > 0;
@@ -44,7 +45,7 @@ const TextWidget: React.FC<WidgetProps> = ({
       name={id}
       value={
         // format the postal code in uppercase with a space
-        value && value.length >= 4
+        value && value.length > 3
           ? `${value.slice(0, 3)} ${value.slice(3)}`.toUpperCase()
           : value
       }
