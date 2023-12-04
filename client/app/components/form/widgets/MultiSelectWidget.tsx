@@ -4,6 +4,11 @@ import { TextField, Autocomplete, MenuItem } from "@mui/material";
 import { WidgetProps } from "@rjsf/utils/lib/types";
 import { DARK_GREY_BG_COLOR, BC_GOV_SEMANTICS_RED } from "@/app/styles/colors";
 
+interface Option {
+  const: string | number;
+  title: string;
+}
+
 const ComboBox: React.FC<WidgetProps> = ({
   id,
   onChange,
@@ -19,7 +24,7 @@ const ComboBox: React.FC<WidgetProps> = ({
   };
   const enumValues = fieldSchema?.enum as any;
   const enumNames = fieldSchema?.enumNames as any;
-  const options = enumValues.map((val, index) => ({
+  const options = enumValues.map((val: string | number, index: number) => ({
     const: val,
     title: enumNames[index] || val,
   }));
@@ -28,15 +33,14 @@ const ComboBox: React.FC<WidgetProps> = ({
     e: React.ChangeEvent<{}>,
     option: Array<{ const: string | number; title: string }>,
   ) => {
-    onChange(option.map((o) => o.const));
+    onChange(option.map((o: Option) => o.const));
   };
 
   const placeholder = uiSchema?.["ui:placeholder"]
     ? `${uiSchema["ui:placeholder"]}...`
     : "";
 
-  const displayPlaceholder =
-    typeof value === "undefined" || value?.length === 0;
+  const displayPlaceholder = value?.length === 0;
 
   const isError = rawErrors && rawErrors.length > 0;
   const borderColor = isError ? BC_GOV_SEMANTICS_RED : DARK_GREY_BG_COLOR;
@@ -53,10 +57,13 @@ const ComboBox: React.FC<WidgetProps> = ({
       disablePortal
       id={id}
       multiple
+      filterSelectedOptions
       autoHighlight
       options={options}
       sx={styles}
-      isOptionEqualToValue={(option: any, val: any) => option.const === val}
+      isOptionEqualToValue={(option: Option, val: any) => {
+        return option.const === val.const;
+      }}
       onChange={handleChange}
       getOptionLabel={(option: any) => String(option.title)}
       renderInput={(params) => (
