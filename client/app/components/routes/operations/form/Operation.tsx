@@ -65,8 +65,14 @@ async function getOperation(id: number) {
 export const createOperationSchema = (
   schema: RJSFSchema,
   naicsCodes: { id: number }[],
-  regulatedProducts: { id: number }[],
-  reportingActivities: { id: number }[],
+  regulatedProducts: {
+    name: any;
+    id: number;
+  }[],
+  reportingActivities: {
+    name: any;
+    id: number;
+  }[],
 ) => {
   const localSchema = JSON.parse(JSON.stringify(schema));
   // naics codes
@@ -78,12 +84,18 @@ export const createOperationSchema = (
   // regulated products
   if (Array.isArray(regulatedProducts)) {
     localSchema.properties.operationPage1.properties.regulated_products.items.enum =
-      regulatedProducts.map((product) => product.id);
+      regulatedProducts.map((product) => product?.id);
+
+    localSchema.properties.operationPage1.properties.regulated_products.items.enumNames =
+      regulatedProducts.map((product) => product?.name);
   }
   // reporting activities
   if (Array.isArray(reportingActivities)) {
     localSchema.properties.operationPage1.properties.reporting_activities.items.enum =
-      reportingActivities.map((product) => product.id);
+      reportingActivities.map((activity) => activity?.id);
+
+    localSchema.properties.operationPage1.properties.reporting_activities.items.enumNames =
+      reportingActivities.map((activity) => activity?.name);
   }
   return localSchema;
 };
