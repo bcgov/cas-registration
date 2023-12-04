@@ -6,10 +6,10 @@ import { DARK_GREY_BG_COLOR, BC_GOV_SEMANTICS_RED } from "@/app/styles/colors";
 
 interface Option {
   const: string | number;
-  title: string;
+  title: string | number;
 }
 
-const ComboBox: React.FC<WidgetProps> = ({
+const MultiSelectWidget: React.FC<WidgetProps> = ({
   id,
   onChange,
   rawErrors,
@@ -18,21 +18,18 @@ const ComboBox: React.FC<WidgetProps> = ({
   uiSchema,
 }) => {
   const fieldSchema = schema.items as {
-    enum: any[];
-    enumNames: any[];
+    enum: Array<string | number>;
+    enumNames: Array<string | number>;
     type: string;
   };
-  const enumValues = fieldSchema?.enum as any;
-  const enumNames = fieldSchema?.enumNames as any;
+  const enumValues = fieldSchema?.enum;
+  const enumNames = fieldSchema?.enumNames;
   const options = enumValues.map((val: string | number, index: number) => ({
     const: val,
     title: enumNames[index] || val,
   }));
 
-  const handleChange = (
-    e: React.ChangeEvent<{}>,
-    option: Array<{ const: string | number; title: string }>,
-  ) => {
+  const handleChange = (e: React.ChangeEvent<{}>, option: Array<Option>) => {
     onChange(option.map((o: Option) => o.const));
   };
 
@@ -61,11 +58,11 @@ const ComboBox: React.FC<WidgetProps> = ({
       autoHighlight
       options={options}
       sx={styles}
-      isOptionEqualToValue={(option: Option, val: any) => {
+      isOptionEqualToValue={(option: Option, val: Option) => {
         return option.const === val.const;
       }}
       onChange={handleChange}
-      getOptionLabel={(option: any) => String(option.title)}
+      getOptionLabel={(option: Option) => String(option.title)}
       renderInput={(params) => (
         <TextField
           {...params}
@@ -82,4 +79,5 @@ const ComboBox: React.FC<WidgetProps> = ({
     />
   );
 };
-export default ComboBox;
+
+export default MultiSelectWidget;
