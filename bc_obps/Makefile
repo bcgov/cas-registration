@@ -93,7 +93,7 @@ loadfixtures:
 
 .PHONY: reset_db
 reset_db: ## drop and recreate the db
-reset_db:  drop_db create_db migrate loadfixtures
+reset_db:  drop_db create_db migrations migrate loadfixtures
 
 .PHONY: clean
 clean: ## delete python bytecode
