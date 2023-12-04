@@ -2,6 +2,7 @@ import uuid
 from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
 from localflavor.ca.models import CAPostalCodeField, CAProvinceField
+from simple_history.models import HistoricalRecords
 
 
 class AppRole(models.Model):
@@ -178,6 +179,7 @@ class Contact(UserAndContactCommonInfo):
         related_name="contacts",
         db_comment="The role assigned to this contact which defines the permissions the contact has.",
     )
+    history = HistoricalRecords(table_name='erc_history"."contact_history')
 
     class Meta:
         db_table_comment = "Contacts (people who don't use the app, e.g. authorized signing officers)"
@@ -275,6 +277,7 @@ class Operator(models.Model):
         null=True,
         related_name="operators_verified_by",
     )
+    history = HistoricalRecords(table_name='erc_history"."operator_history')
 
     class Meta:
         db_table_comment = "Operators (also called organizations)"
@@ -482,6 +485,7 @@ class Operation(OperationAndFacilityCommonInfo):
     #     db_comment="The operator(s) that owns the operation",
     #     related_name="user_operators",
     # )
+    history = HistoricalRecords(table_name='erc_history"."operation_history')
 
     class Meta:
         db_table_comment = "Operations (also called facilities)"
