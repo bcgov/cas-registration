@@ -57,6 +57,9 @@ const MultiSelectWidget: React.FC<WidgetProps> = ({
       filterSelectedOptions
       autoHighlight
       options={options}
+      value={value.map((val: string | number) => {
+        return options.find((option: Option) => option.const === val);
+      })}
       sx={styles}
       isOptionEqualToValue={(option: Option, val: Option) => {
         return option.const === val.const;
