@@ -229,6 +229,7 @@ const operationPage3: RJSFSchema = {
           phone_number: {
             type: "string",
             title: "Phone Number",
+            format: "phone",
           },
         },
       },
@@ -332,5 +333,8 @@ export const operationUiSchema = {
   },
   postal_code: {
     "ui:widget": "PostalCodeWidget",
+  },
+  phone_number: {
+    "ui:widget": "PhoneWidget",
   },
 };
