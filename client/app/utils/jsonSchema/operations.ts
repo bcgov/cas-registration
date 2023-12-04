@@ -30,6 +30,7 @@ const operationPage1: RJSFSchema = {
         type: "number",
       },
       title: "Regulated Product Name(s)",
+      uniqueItems: true,
     },
     reporting_activities: {
       type: "array",
@@ -37,6 +38,8 @@ const operationPage1: RJSFSchema = {
         type: "number",
       },
       title: "Reporting Activities",
+
+      uniqueItems: true,
     },
     process_flow_diagram: {
       type: "string",
@@ -320,5 +323,13 @@ export const operationUiSchema = {
   },
   province: {
     "ui:widget": "ComboBox",
+  },
+  regulated_products: {
+    "ui:widget": "MultiSelectWidget",
+    "ui:placeholder": "Select regulated products",
+  },
+  reporting_activities: {
+    "ui:widget": "MultiSelectWidget",
+    "ui:placeholder": "Select reporting activities",
   },
 };
