@@ -19,14 +19,17 @@ const MultiSelectWidget: React.FC<WidgetProps> = ({
 }) => {
   const fieldSchema = schema.items as {
     enum: Array<string | number>;
-    enumNames: Array<string | number>;
+    enumNames?: Array<string | number>;
     type: string;
   };
+
+  // Using enum and enumNames as anyOf was triggering a lot of validation errors for multiselect
+  // If no enumNames are provided, use the enum values as the names. The enumNames will not be saved in the formData.
   const enumValues = fieldSchema?.enum;
   const enumNames = fieldSchema?.enumNames;
   const options = enumValues.map((val: string | number, index: number) => ({
     const: val,
-    title: enumNames[index] || val,
+    title: enumNames?.[index] || val,
   }));
 
   const handleChange = (e: React.ChangeEvent<{}>, option: Array<Option>) => {
@@ -76,6 +79,7 @@ const MultiSelectWidget: React.FC<WidgetProps> = ({
         return val.map((option: Option, index: number) => {
           return (
             <Chip
+              {...getTagProps}
               key={option.const}
               label={option.title}
               {...getTagProps({
@@ -85,7 +89,7 @@ const MultiSelectWidget: React.FC<WidgetProps> = ({
           );
         });
       }}
-      renderOption={(renderProps, option: any) => {
+      renderOption={(renderProps, option: Option) => {
         return (
           <MenuItem {...renderProps} key={option.const} value={option.const}>
             {option.title}
