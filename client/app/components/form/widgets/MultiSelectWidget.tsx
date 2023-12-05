@@ -27,10 +27,12 @@ const MultiSelectWidget: React.FC<WidgetProps> = ({
   // If no enumNames are provided, use the enum values as the names. The enumNames will not be saved in the formData.
   const enumValues = fieldSchema?.enum;
   const enumNames = fieldSchema?.enumNames;
-  const options = enumValues.map((val: string | number, index: number) => ({
-    id: val,
-    label: enumNames?.[index] || val,
-  }));
+  const options = enumValues.map(
+    (enumValue: string | number, index: number) => ({
+      id: enumValue,
+      label: enumNames?.[index] || enumValue,
+    }),
+  );
 
   const handleChange = (e: React.ChangeEvent<{}>, option: Array<Option>) => {
     onChange(option.map((o: Option) => o.id));
@@ -75,8 +77,8 @@ const MultiSelectWidget: React.FC<WidgetProps> = ({
           placeholder={displayPlaceholder ? placeholder : ""}
         />
       )}
-      renderTags={(val: Array<Option>, getTagProps: any) => {
-        return val.map((option: Option, index: number) => {
+      renderTags={(renderOptions: Array<Option>, getTagProps: any) => {
+        return renderOptions.map((option: Option, index: number) => {
           return (
             <Chip
               {...getTagProps}
