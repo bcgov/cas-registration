@@ -28,12 +28,10 @@ export default function UserForm({ formData, isCreate }: UserFormProps) {
   const { data: session } = useSession();
   const idp = session?.identity_provider || "";
 
-  // 🛠️ Function to signout\signin new user
+  // 🛠️ Function to signout
   const handleSignOut = async () => {
     await fetch(`/api/auth/logout`, { method: "GET" });
-    await signOut({
-      callbackUrl: `/api/auth/signin/keycloak?kc_idp_hint=${idp}`,
-    });
+    await signOut();
   };
 
   // 🛠️ Function to submit user form data to API
