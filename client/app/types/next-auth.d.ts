@@ -26,7 +26,6 @@ declare module "next-auth" {
     error?: string;
     identity_provider: string | undefined;
     user: {
-      user_guid: string | undefined;
       app_role?: string;
     } & DefaultSession["user"];
   }
