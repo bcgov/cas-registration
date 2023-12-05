@@ -4,13 +4,13 @@ import FormBase from "@/app/components/form/FormBase";
 import { Alert } from "@mui/material";
 import SubmitButton from "@/app/components/form/SubmitButton";
 import { actionHandler } from "@/app/utils/actions";
-import { UserFormData } from "@/app/components/form/formDataTypes";
+import { UserProfileFormData } from "@/app/components/form/formDataTypes";
 import { userSchema, userUiSchema } from "@/app/utils/jsonSchema/user";
 import { useSession, signOut } from "next-auth/react";
 
 // 📐 Interface: expected properties and their types for UserForm component
 interface UserFormProps {
-  formData?: UserFormData;
+  formData?: UserProfileFormData;
   isCreate: boolean;
 }
 
@@ -37,7 +37,7 @@ export default function UserForm({ formData, isCreate }: UserFormProps) {
   };
 
   // 🛠️ Function to submit user form data to API
-  const submitHandler = async (data: { formData?: UserFormData }) => {
+  const submitHandler = async (data: { formData?: UserProfileFormData }) => {
     //Set states
     setErrorList([]);
     setIsLoading(true);
@@ -51,7 +51,7 @@ export default function UserForm({ formData, isCreate }: UserFormProps) {
       "",
       {
         body: JSON.stringify(data.formData),
-      },
+      }
     );
     // 🛑 Set loading to false after the API call is completed
     setIsLoading(false);

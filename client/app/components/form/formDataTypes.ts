@@ -9,6 +9,13 @@ export interface UserFormData {
   phone_number: string;
   province: string;
 }
+export interface UserProfileFormData {
+  first_name: string;
+  last_name: string;
+  position_title: string;
+  email: string;
+  phone_number: string;
+}
 export interface UserOperatorFormData extends UserFormData {
   is_senior_officer: string;
   legal_name: string;

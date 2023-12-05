@@ -1,11 +1,13 @@
 import { actionHandler } from "@/app/utils/actions";
 import UserForm from "@/app/components/routes/profile/form/UserForm";
-import { UserFormData } from "@/app/components/form/formDataTypes";
+import { UserProfileFormData } from "@/app/components/form/formDataTypes";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 // 🚀 API call: GET user's data
-async function getUserFormData(): Promise<UserFormData | { error: string }> {
+async function getUserFormData(): Promise<
+  UserProfileFormData | { error: string }
+> {
   return actionHandler(`registration/user-profile`, "GET", "");
 }
 
@@ -15,7 +17,8 @@ export default async function User() {
   // determines POST or PUT based on formData.error.includes("404")
   let isCreate = false;
   // get user's data
-  let formData: UserFormData | { error: string } = await getUserFormData();
+  let formData: UserProfileFormData | { error: string } =
+    await getUserFormData();
   if ("error" in formData) {
     if (formData.error.includes("404")) {
       // No user found, create formData to reflect new user in user table

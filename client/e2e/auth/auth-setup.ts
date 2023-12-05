@@ -15,12 +15,15 @@ const industryUserAdminUserName =
   process.env.INDUSTRY_USER_ADMIN_USERNAME || "";
 const industryUserAdminPassword =
   process.env.INDUSTRY_USER_ADMIN_PASSWORD || "";
+const newUserName = process.env.NEW_USER_USERNAME || "";
+const newUserPassword = process.env.NEW_USER_PASSWORD || "";
 // State storage
 const casAdminAuthFile = process.env.CAS_ADMIN_STORAGE || "";
 const casAnalystAuthFile = process.env.CAS_ANALYST_STORAGE || "";
 const casPendingAuthFile = process.env.CAS_PENDING_STORAGE || "";
 const industryUserAuthFile = process.env.INDUSTRY_USER_STORAGE || "";
 const industryUserAdminAuthFile = process.env.INDUSTRY_USER_ADMIN_STORAGE || "";
+const newUserAuthFile = process.env.NEW_USER_STORAGE || "";
 
 // 🛠️ function: login with valid ID and stores auth state
 const setupAuth = async (
@@ -29,7 +32,7 @@ const setupAuth = async (
   button: string,
   username: string,
   password: string,
-  authFile: string,
+  authFile: string
 ) => {
   // 🔑 Login
   await page.goto("http://localhost:3000/home");
@@ -41,7 +44,7 @@ const setupAuth = async (
   await page.getByRole("button", { name: "Continue" }).click();
 
   // Wait for the profile navigation link to be present
-  const profileNavSelector = '[data-testid="profile-nav-user"]';
+  const profileNavSelector = '[data-testid="nav-user-profile"]';
   await page.waitForSelector(profileNavSelector);
 
   // Assert that authenticated user profile link is visible
@@ -88,7 +91,7 @@ setup("Setup Auth - cas_admin", async ({ page, context }) => {
     "Program Administrator Log In",
     casAdminUserName,
     casAdminPassword,
-    casAdminAuthFile,
+    casAdminAuthFile
   );
 });
 
@@ -113,7 +116,7 @@ setup("Setup Auth - industry_user", async ({ page, context }) => {
     "Industrial Operator Log In",
     industryUserUserName,
     industryUserPassword,
-    industryUserAuthFile,
+    industryUserAuthFile
   );
 });
 
@@ -124,6 +127,17 @@ setup("Setup Auth - industry_user_admin", async ({ page, context }) => {
     "Industrial Operator Log In",
     industryUserAdminUserName,
     industryUserAdminPassword,
-    industryUserAdminAuthFile,
+    industryUserAdminAuthFile
+  );
+});
+
+setup("Setup Auth - new user", async ({ page, context }) => {
+  await setupAuth(
+    page,
+    context,
+    "Industrial Operator Log In",
+    newUserName,
+    newUserPassword,
+    newUserAuthFile
   );
 });

@@ -13,6 +13,7 @@ const casAnalystAuthFile = process.env.CAS_ANALYST_STORAGE || "";
 const casPendingAuthFile = process.env.CAS_PENDING_STORAGE || "";
 const industryUserAuthFile = process.env.INDUSTRY_USER_STORAGE || "";
 const industryUserAdminAuthFile = process.env.INDUSTRY_USER_ADMIN_STORAGE || "";
+const newUserAuthFile = process.env.NEW_USER_STORAGE || "";
 
 // Import role based dashboard navigation
 import casAdminDashboard from "@/app/data/dashboard/cas_admin.json";
@@ -35,7 +36,7 @@ type DashboardLink = {
 // 🛠️ function: navigate to dashboard and validate section titles align with auth session role
 const assertDashboardNavigation = async (
   page: any,
-  dashboardData: DashboardSection[],
+  dashboardData: DashboardSection[]
 ) => {
   // Navigate to the dashboard
   await page.goto("http://localhost:3000/dashboard");
@@ -75,7 +76,7 @@ test.describe("Test Dashboard", () => {
       await page.goto("http://localhost:3000/dashboard");
 
       // Wait for the profile navigation link to be present
-      const profileNavSelector = '[data-testid="profile-nav-user"]';
+      const profileNavSelector = '[data-testid="nav-user-profile"]';
       await page.waitForSelector(profileNavSelector);
 
       // Assert that authenticated user profile link is visible
@@ -104,6 +105,21 @@ test.describe("Test Dashboard", () => {
     test.use({ storageState: storageState });
     test("Test Role Based UX", async ({ page }) => {
       await assertDashboardNavigation(page, dashboardData);
+    });
+  });
+  test.describe("Test Auth Session - new user", () => {
+    const storageState = newUserAuthFile;
+    test.use({ storageState: storageState });
+    test("Test Role Based UX", async ({ page }) => {
+      await page.goto("http://localhost:3000/dashboard");
+      // New user has no role; so, redirected to: http://localhost:3000/dashboard/profile
+
+      // Wait for the navigation to complete
+      await page.waitForLoadState("load");
+
+      // Assert that the current URL ends with "/profile"
+      const currentUrl = page.url();
+      expect(currentUrl).toContain("/profile");
     });
   });
 });
