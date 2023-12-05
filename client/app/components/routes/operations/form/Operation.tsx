@@ -64,22 +64,24 @@ async function getOperation(id: number) {
 // 🛠️ Function to create an operation schema with updated enum values
 export const createOperationSchema = (
   schema: RJSFSchema,
-  naicsCodes: { id: number }[],
+  naicsCodes: { id: number; naics_code: string }[],
   regulatedProducts: {
-    name: any;
     id: number;
+    name: string;
   }[],
   reportingActivities: {
-    name: any;
     id: number;
+    name: string;
   }[],
 ) => {
   const localSchema = JSON.parse(JSON.stringify(schema));
   // naics codes
   if (Array.isArray(naicsCodes)) {
     // add to nested operation page1 schema
-    localSchema.properties.operationPage1.properties.naics_code_id.enum =
-      naicsCodes.map((code) => code.id);
+    localSchema.properties.operationPage1.properties.naics_code_id.anyOf =
+      naicsCodes.map((code) => {
+        return { const: code?.id, title: code?.naics_code };
+      });
   }
   // regulated products
   if (Array.isArray(regulatedProducts)) {

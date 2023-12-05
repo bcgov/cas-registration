@@ -300,7 +300,7 @@ export const operationUiSchema = {
     "ui:widget": "hidden",
   },
   naics_code_id: {
-    "ui:widget": "SelectWidget",
+    "ui:widget": "ComboBox",
     "ui:placeholder": "Select Primary NAICS code",
   },
   "Did you submit a GHG emissions report for reporting year 2022?": {
