@@ -5,8 +5,8 @@ import { WidgetProps } from "@rjsf/utils/lib/types";
 import { DARK_GREY_BG_COLOR, BC_GOV_SEMANTICS_RED } from "@/app/styles/colors";
 
 interface Option {
-  const: string | number;
-  title: string | number;
+  id: string | number;
+  label: string | number;
 }
 
 const MultiSelectWidget: React.FC<WidgetProps> = ({
@@ -28,12 +28,12 @@ const MultiSelectWidget: React.FC<WidgetProps> = ({
   const enumValues = fieldSchema?.enum;
   const enumNames = fieldSchema?.enumNames;
   const options = enumValues.map((val: string | number, index: number) => ({
-    const: val,
-    title: enumNames?.[index] || val,
+    id: val,
+    label: enumNames?.[index] || val,
   }));
 
   const handleChange = (e: React.ChangeEvent<{}>, option: Array<Option>) => {
-    onChange(option.map((o: Option) => o.const));
+    onChange(option.map((o: Option) => o.id));
   };
 
   const placeholder = uiSchema?.["ui:placeholder"]
@@ -61,14 +61,14 @@ const MultiSelectWidget: React.FC<WidgetProps> = ({
       autoHighlight
       options={options}
       value={value.map((val: string | number) => {
-        return options.find((option: Option) => option.const === val);
+        return options.find((option: Option) => option.id === val);
       })}
       sx={styles}
       isOptionEqualToValue={(option: Option, val: Option) => {
-        return option.const === val.const;
+        return option.id === val.id;
       }}
       onChange={handleChange}
-      getOptionLabel={(option: Option) => String(option.title)}
+      getOptionLabel={(option: Option) => String(option.label)}
       renderInput={(params) => (
         <TextField
           {...params}
@@ -80,8 +80,8 @@ const MultiSelectWidget: React.FC<WidgetProps> = ({
           return (
             <Chip
               {...getTagProps}
-              key={option.const}
-              label={option.title}
+              key={option.id}
+              label={option.label}
               {...getTagProps({
                 index,
               })}
@@ -91,8 +91,8 @@ const MultiSelectWidget: React.FC<WidgetProps> = ({
       }}
       renderOption={(renderProps, option: Option) => {
         return (
-          <MenuItem {...renderProps} key={option.const} value={option.const}>
-            {option.title}
+          <MenuItem {...renderProps} key={option.id} value={option.id}>
+            {option.label}
           </MenuItem>
         );
       }}
