@@ -1,5 +1,4 @@
 import { actionHandler } from "@/app/utils/actions";
-import { userSchema } from "@/app/utils/jsonSchema/user";
 import UserForm from "@/app/components/routes/profile/form/UserForm";
 import { UserFormData } from "@/app/components/form/formDataTypes";
 import { getServerSession } from "next-auth";
@@ -10,7 +9,7 @@ async function getUserFormData(): Promise<UserFormData | { error: string }> {
   return actionHandler(`registration/user-profile`, "GET", "");
 }
 
-// 🏗️ Async server component for route: dashboard\profile
+// 🏗️ Async server component: dashboard\profile
 // Gets session user's data from API then rendered to client side form
 export default async function User() {
   // determines POST or PUT based on formData.error.includes("404")

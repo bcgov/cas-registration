@@ -6,8 +6,7 @@ import SubmitButton from "@/app/components/form/SubmitButton";
 import { actionHandler } from "@/app/utils/actions";
 import { UserFormData } from "@/app/components/form/formDataTypes";
 import { userSchema, userUiSchema } from "@/app/utils/jsonSchema/user";
-import { useSession } from "next-auth/react";
-import { keycloakSessionLogOut } from "@/app/utils/auth/actions";
+import { useSession, signOut } from "next-auth/react";
 
 // 📐 Interface: expected properties and their types for UserForm component
 interface UserFormProps {
@@ -15,18 +14,27 @@ interface UserFormProps {
   isCreate: boolean;
 }
 
-// 🏗️ Client side component user form
+// 🏗️ Client side component: dashboard\profile
 export default function UserForm({ formData, isCreate }: UserFormProps) {
-  // 👤 Use NextAuth.js hook to get information about the user's session
-  //  Destructuring assignment from data property of the object returned by useSession()
-  const { data: session } = useSession();
-
   // 🐜 To display errors
   const [errorList, setErrorList] = useState([] as any[]);
   // 🌀 Loading state for the Submit button
   const [isLoading, setIsLoading] = useState(false);
   // ✅ Success state for for the Submit button
   const [isSuccess, setIsSuccess] = useState(false);
+
+  // 👤 Use NextAuth.js hook to get information about the user's session
+  //  Destructuring assignment from data property of the object returned by useSession()
+  const { data: session } = useSession();
+  const idp = session?.identity_provider || "";
+
+  // 🛠️ Function to signout\signin new user
+  const handleSignOut = async () => {
+    await fetch(`/api/auth/logout`, { method: "GET" });
+    await signOut({
+      callbackUrl: `/api/auth/signin/keycloak?kc_idp_hint=${idp}`,
+    });
+  };
 
   // 🛠️ Function to submit user form data to API
   const submitHandler = async (data: { formData?: UserFormData }) => {
@@ -37,13 +45,13 @@ export default function UserForm({ formData, isCreate }: UserFormProps) {
     // 🚀 API call: POST/PUT user form data
     const response = await actionHandler(
       isCreate
-        ? `registration/user-profile/${session?.identity_provider}`
+        ? `registration/user-profile/${idp}`
         : `registration/user-profile`,
       isCreate ? "POST" : "PUT",
       "",
       {
         body: JSON.stringify(data.formData),
-      }
+      },
     );
     // 🛑 Set loading to false after the API call is completed
     setIsLoading(false);
@@ -54,7 +62,7 @@ export default function UserForm({ formData, isCreate }: UserFormProps) {
     }
     if (isCreate) {
       // 🛸 Routing: logout to re-login to apply new role to NextAuth JWT
-      await keycloakSessionLogOut();
+      await handleSignOut();
     }
     // ✅ Set success state to true
     setIsSuccess(true);
@@ -63,6 +71,7 @@ export default function UserForm({ formData, isCreate }: UserFormProps) {
       setIsSuccess(false);
     }, 1000);
   };
+
   return (
     <FormBase
       className="[&>div>fieldset]:min-h-[40vh]"

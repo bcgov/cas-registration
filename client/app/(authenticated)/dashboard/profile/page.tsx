@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import Loading from "@/app/components/loading/SkeletonSpinner";
 import User from "@/app/components/routes/profile/User";
 
-// 🏗️ Server component for route: dashboard\profile
+// 🏗️ Sync server component: dashboard\profile
 export default function Page() {
   return (
     <>
