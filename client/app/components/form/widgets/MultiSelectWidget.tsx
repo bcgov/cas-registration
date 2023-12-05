@@ -1,6 +1,6 @@
 "use client";
 
-import { TextField, Autocomplete, MenuItem } from "@mui/material";
+import { Autocomplete, Chip, MenuItem, TextField } from "@mui/material";
 import { WidgetProps } from "@rjsf/utils/lib/types";
 import { DARK_GREY_BG_COLOR, BC_GOV_SEMANTICS_RED } from "@/app/styles/colors";
 
@@ -72,6 +72,19 @@ const MultiSelectWidget: React.FC<WidgetProps> = ({
           placeholder={displayPlaceholder ? placeholder : ""}
         />
       )}
+      renderTags={(val: Array<Option>, getTagProps: any) => {
+        return val.map((option: Option, index: number) => {
+          return (
+            <Chip
+              key={option.const}
+              label={option.title}
+              {...getTagProps({
+                index,
+              })}
+            />
+          );
+        });
+      }}
       renderOption={(renderProps, option: any) => {
         return (
           <MenuItem {...renderProps} key={option.const} value={option.const}>

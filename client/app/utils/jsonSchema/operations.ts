@@ -30,7 +30,6 @@ const operationPage1: RJSFSchema = {
         type: "number",
       },
       title: "Regulated Product Name(s)",
-      uniqueItems: true,
     },
     reporting_activities: {
       type: "array",
@@ -38,8 +37,6 @@ const operationPage1: RJSFSchema = {
         type: "number",
       },
       title: "Reporting Activities",
-
-      uniqueItems: true,
     },
     process_flow_diagram: {
       type: "string",
