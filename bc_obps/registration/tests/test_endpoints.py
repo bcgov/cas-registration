@@ -19,6 +19,7 @@ from registration.models import (
     RegulatedProduct,
 )
 from registration.schema import OperationCreateIn, OperationUpdateIn, UserIn
+APP_ROLE_FIXTURE = ("real/appRole.json",)
 
 pytestmark = pytest.mark.django_db
 
@@ -470,6 +471,7 @@ class TestUserOperatorEndpoint:
 
 
 class TestUserEndpoint:
+    fixtures = [APP_ROLE_FIXTURE]
     endpoint = base_endpoint + "user"
     endpoint_profile = endpoint + "-profile"
 
