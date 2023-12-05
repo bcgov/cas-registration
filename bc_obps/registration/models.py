@@ -431,10 +431,10 @@ class Operation(OperationAndFacilityCommonInfo):
     """Operation model"""
 
     class Statuses(models.TextChoices):
-        NOT_REGISTERED = "not_registered", "Not Registered"
-        PENDING = "pending", "Pending"
-        APPROVED = "approved", "Approved"
-        REJECTED = "rejected", "Rejected"
+        NOT_REGISTERED = "Not Registered"
+        PENDING = "Pending"
+        APPROVED = "Approved"
+        REJECTED = "Rejected"
 
     operator = models.ForeignKey(
         Operator,
