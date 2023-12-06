@@ -103,7 +103,7 @@ def check_access_request_matches_business_guid(
         operator=operator, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.APPROVED
     ).first()
     # Operator already has an admin user
-    admin_user = get_object_or_404(User, user_guid=admin_user_operator_data.user.id)
+    admin_user = get_object_or_404(User, user_guid=admin_user_operator_data.user.user_guid)
     current_user = get_object_or_404(User, user_guid=user_guid)
 
     if admin_user.business_guid != current_user.business_guid:
