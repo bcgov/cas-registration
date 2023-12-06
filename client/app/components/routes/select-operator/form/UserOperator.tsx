@@ -70,6 +70,7 @@ export default async function UserOperator({
   params?: { id?: number; readonly?: boolean };
 }>) {
   const serverError = <div>Server Error. Please try again later.</div>;
+
   const businessStructures: BusinessStructure[] | { error: string } =
     await getBusinessStructures();
 
@@ -80,7 +81,6 @@ export default async function UserOperator({
   const userOperatorData: any | { error: string } =
     await getUserOperatorFormData(params.id);
 
-  const serverError = <div>Server Error. Please try again later.</div>;
 
   if (
     "error" in userData ||
@@ -106,14 +106,13 @@ export default async function UserOperator({
   console.log(createUserOperatorSchema(businessStructuresList));
 
   return (
-    <>
-      {/* TODO: fix type of userData here? */}
-      <Review userOperator={userOperatorData} userOperatorId={params.id} />
-      <UserOperatorForm
-        schema={createUserOperatorSchema(businessStructuresList)}
-        formData={userOperatorData}
-        readonly={params.readonly}
-      />
-    </>
+  // If operator has an admin, use the single page form to show the user information
+  return params?.id ? (
+    <UserOperatorForm schema={userOperatorPage2} formData={userData} />
+  ) : (
+    <UserOperatorMultiStepForm
+      schema={createUserOperatorSchema(businessStructuresList)}
+      formData={userData}
+    />
   );
 }
