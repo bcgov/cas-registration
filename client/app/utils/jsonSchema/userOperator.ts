@@ -266,7 +266,7 @@ const userOperatorPage1: RJSFSchema = {
   ],
 };
 
-const userOperatorPage2: RJSFSchema = {
+export const userOperatorPage2: RJSFSchema = {
   type: "object",
   title: "User Information",
   required: [
