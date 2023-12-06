@@ -19,7 +19,7 @@ The `defaultTheme` includes many custom widgets which can be set in the forms `u
 
 ### Phone widget
 
-To enable the phone widget set the widget type in the forms `uiSchema`.
+To enable the phone widget set the widget type in the forms `uiSchema`:
 
 ```
 phone_field {
@@ -27,7 +27,7 @@ phone_field {
 }
 ```
 
-To enable validation of the phone widget the format must be set to `format: phone` in the form schema
+To enable validation of the phone widget the format must be set to `format: phone` in the form schema:
 
 ```
 phone_field {
@@ -60,4 +60,24 @@ multiselect_field {
   },
   title: "MultiSelect field",
 }
+```
+
+### Postal code widget
+
+A widget for 6 character Canadian postal code format. To enable the postal code widget set the widget type in the forms `uiSchema`:
+
+```
+postal_code_field {
+  'ui:widget': 'PostalCodeWidget'
+}
+```
+
+To enable validation of the postal code widget the format must be set to `format: 'postal-code'` in the form schema:
+
+```
+  postal_code_field {
+    type: 'string',
+    format: 'postal-code',
+    title: 'Postal codefield'
+  }
 ```
