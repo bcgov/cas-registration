@@ -511,12 +511,11 @@ class MultipleOperator(models.Model):
     trade_name = models.CharField(max_length=1000, db_comment="The trade name of an operator")
     cra_business_number = models.IntegerField(db_comment="The CRA business number of an operator")
     bc_corporate_registry_number = models.IntegerField(db_comment="The BC corporate registry number of an operator")
-    business_structure = models.CharField(
-        max_length=1000,
-        db_comment="The legal name of an operator",
-        blank=True,
-        # default blank since optional fields returning null will trigger RJSF validation the next time the form is saved
-        default="",
+    business_structure = models.ForeignKey(
+        BusinessStructure,
+        on_delete=models.DO_NOTHING,
+        db_comment="The business structure of an operator",
+        related_name="multiple_operator",
     )
     website = models.URLField(
         max_length=200,
