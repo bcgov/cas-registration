@@ -8,6 +8,7 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { actionHandler } from "@/app/utils/actions";
 import { useSession } from "next-auth/react";
+import { Status } from "@/app/types/types";
 
 export interface OperationsFormData {
   [key: string]: any;
@@ -85,9 +86,7 @@ export default function OperationsForm({ formData, schema }: Props) {
           baseUrl={`/dashboard/operations/${operationId}`}
           cancelUrl="/dashboard/operations"
           formData={transformedFormData}
-          readonly={
-            formData?.status === "Registered" || formData?.status === "Pending"
-          }
+          readonly={formData?.status === Status.PENDING}
           error={error}
           schema={schema}
           submitEveryStep
