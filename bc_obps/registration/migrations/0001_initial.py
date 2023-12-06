@@ -928,12 +928,6 @@ class Migration(migrations.Migration):
                     'bc_corporate_registry_number',
                     models.IntegerField(db_comment='The BC corporate registry number of an operator'),
                 ),
-                (
-                    'business_structure',
-                    models.CharField(
-                        blank=True, db_comment='The legal name of an operator', default='', max_length=1000
-                    ),
-                ),
                 ('website', models.URLField(blank=True, db_comment='The website address of an operator', default='')),
                 (
                     'percentage_ownership',
@@ -997,6 +991,15 @@ class Migration(migrations.Migration):
                     localflavor.ca.models.CAPostalCodeField(
                         db_comment='The mailing postal code of an operator, limited to valid Canadian postal codes',
                         max_length=7,
+                    ),
+                ),
+                (
+                    'business_structure',
+                    models.ForeignKey(
+                        db_comment='The business structure of an operator',
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name='multiple_operator',
+                        to='registration.businessstructure',
                     ),
                 ),
                 (
