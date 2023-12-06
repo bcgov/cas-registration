@@ -10,9 +10,11 @@ interface Option {
 }
 
 const MultiSelectWidget: React.FC<WidgetProps> = ({
+  disabled,
   id,
   onChange,
   rawErrors,
+  readonly,
   schema,
   value,
   uiSchema,
@@ -56,8 +58,9 @@ const MultiSelectWidget: React.FC<WidgetProps> = ({
 
   return (
     <Autocomplete
-      disablePortal
       id={id}
+      disabled={disabled || readonly}
+      disablePortal
       multiple
       filterSelectedOptions
       autoHighlight
