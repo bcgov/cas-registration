@@ -36,7 +36,7 @@ type DashboardLink = {
 // 🛠️ function: navigate to dashboard and validate section titles align with auth session role
 const assertDashboardNavigation = async (
   page: any,
-  dashboardData: DashboardSection[]
+  dashboardData: DashboardSection[],
 ) => {
   // Navigate to the dashboard
   await page.goto("http://localhost:3000/dashboard");

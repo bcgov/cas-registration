@@ -7,9 +7,9 @@ export default function Page() {
   return (
     <>
       <div className="w-full form-group field field-object form-heading-label">
-        <label className="inline-block">
+        <div className="form-heading">
           Please update or verify your information
-        </label>
+        </div>
       </div>
       <Suspense fallback={<Loading />}>
         <User />

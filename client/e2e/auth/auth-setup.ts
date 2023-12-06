@@ -32,7 +32,7 @@ const setupAuth = async (
   button: string,
   username: string,
   password: string,
-  authFile: string
+  authFile: string,
 ) => {
   // 🔑 Login
   await page.goto("http://localhost:3000/home");
@@ -91,7 +91,7 @@ setup("Setup Auth - cas_admin", async ({ page, context }) => {
     "Program Administrator Log In",
     casAdminUserName,
     casAdminPassword,
-    casAdminAuthFile
+    casAdminAuthFile,
   );
 });
 
@@ -116,7 +116,7 @@ setup("Setup Auth - industry_user", async ({ page, context }) => {
     "Industrial Operator Log In",
     industryUserUserName,
     industryUserPassword,
-    industryUserAuthFile
+    industryUserAuthFile,
   );
 });
 
@@ -127,7 +127,7 @@ setup("Setup Auth - industry_user_admin", async ({ page, context }) => {
     "Industrial Operator Log In",
     industryUserAdminUserName,
     industryUserAdminPassword,
-    industryUserAdminAuthFile
+    industryUserAdminAuthFile,
   );
 });
 
@@ -138,6 +138,6 @@ setup("Setup Auth - new user", async ({ page, context }) => {
     "Industrial Operator Log In",
     newUserName,
     newUserPassword,
-    newUserAuthFile
+    newUserAuthFile,
   );
 });
