@@ -497,6 +497,7 @@ export const operationUiSchema = {
       },
       mo_business_structure: {
         "ui:widget": "ComboBox",
+        "ui:placeholder": "Select a business structure",
       },
       mo_physical_province: {
         "ui:widget": "ComboBox",
