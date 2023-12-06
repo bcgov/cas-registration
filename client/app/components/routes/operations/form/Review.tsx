@@ -11,49 +11,54 @@ import { Status } from "@/app/types/types";
 
 interface Props {
   operation: OperationsFormData;
+  status: Status;
 }
 
-export default function Review(props: Readonly<Props>) {
+export default function Review({ operation, status }: Readonly<Props>) {
   const [errorList, setErrorList] = useState([] as any[]);
   const [successMessageList, setSuccessMessageList] = useState([] as any[]);
   const [modalState, setModalState] = useState("" as string);
 
   async function approveRequest() {
-    props.operation.status = Status.APPROVED;
+    operation.status = Status.APPROVED;
     const response = await actionHandler(
-      `registration/operations/${props.operation.id}/update-status`,
+      `registration/operations/${operation.id}/update-status`,
       "PUT",
-      `dashboard/operations/${props.operation.id}`,
+      `dashboard/operations/${operation.id}`,
       {
-        body: JSON.stringify(props.operation),
+        body: JSON.stringify(operation),
       },
     );
     if (response.error) {
-      setErrorList([{ message: response.error }]);
-    } else if (response.ok) {
-      setSuccessMessageList([
-        { message: "You have approved the request for carbon tax exemption." },
-      ]);
+      setModalState("");
+      return setErrorList([{ message: response.error }]);
     }
+
+    setModalState("");
+    return setSuccessMessageList([
+      { message: "You have approved the request for carbon tax exemption." },
+    ]);
   }
 
   async function rejectRequest() {
-    props.operation.status = Status.REJECTED;
+    operation.status = Status.REJECTED;
     const response = await actionHandler(
-      `registration/operations/${props.operation.id}/update-status`,
+      `registration/operations/${operation.id}/update-status`,
       "PUT",
-      `dashboard/operations/${props.operation.id}`,
+      `dashboard/operations/${operation.id}`,
       {
-        body: JSON.stringify(props.operation),
+        body: JSON.stringify(operation),
       },
     );
     if (response.error) {
+      setModalState("");
       setErrorList([{ message: response.error }]);
-    } else if (response.ok) {
-      setSuccessMessageList([
-        { message: "You have rejected the request for carbon tax exemption." },
-      ]);
     }
+
+    setModalState("");
+    return setSuccessMessageList([
+      { message: "You have rejected the request for carbon tax exemption." },
+    ]);
   }
 
   const handleApprove = () => {
@@ -67,6 +72,10 @@ export default function Review(props: Readonly<Props>) {
   const handleClose = () => {
     setModalState("");
   };
+
+  const isPending = status === Status.PENDING;
+  const isReviewButtons =
+    isPending && errorList.length === 0 && successMessageList.length === 0;
 
   return (
     <>
@@ -116,45 +125,44 @@ export default function Review(props: Readonly<Props>) {
         </Box>
       </Modal>
 
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "flex-end",
-        }}
-      >
-        <Box>
-          <Button
-            onClick={handleApprove}
-            /*     onClick={approveRequest} */
-
-            className="mr-2"
-            color="success"
-            variant="outlined"
-            aria-label="Approve application"
-            sx={{
-              marginRight: "12px",
-              border: "1px solid",
-              fontWeight: "bold",
-            }}
-          >
-            Approve <RecommendIcon />
-          </Button>
-          <Button
-            onClick={handleReject}
-            /*    onClick={rejectRequest} */
-            color="error"
-            variant="outlined"
-            aria-label="Reject application"
-            sx={{
-              border: "1px solid",
-              fontWeight: "bold",
-            }}
-          >
-            Reject <DoNotDisturbIcon />
-          </Button>
+      {isReviewButtons && (
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "flex-end",
+          }}
+        >
+          <Box>
+            <Button
+              onClick={handleApprove}
+              className="mr-2"
+              color="success"
+              variant="outlined"
+              aria-label="Approve application"
+              sx={{
+                marginRight: "12px",
+                border: "1px solid",
+                fontWeight: "bold",
+              }}
+            >
+              Approve <RecommendIcon />
+            </Button>
+            <Button
+              onClick={handleReject}
+              color="error"
+              variant="outlined"
+              aria-label="Reject application"
+              sx={{
+                border: "1px solid",
+                fontWeight: "bold",
+              }}
+            >
+              Reject <DoNotDisturbIcon />
+            </Button>
+          </Box>
         </Box>
-      </Box>
+      )}
       {errorList.length > 0 &&
         errorList.map((e: any) => (
           <Alert key={e.message} severity="error">
