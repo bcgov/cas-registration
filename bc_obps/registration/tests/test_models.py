@@ -608,7 +608,7 @@ class MultipleOperatorModelTest(BaseTestCase):
                 application_lead=Contact.objects.all().first(),
             ),
             operation_id=Operation.objects.all().first().id,
-            operator_number=1,
+            operator_index=1,
             legal_name="test",
             trade_name="test",
             cra_business_number=123456789,
@@ -630,7 +630,7 @@ class MultipleOperatorModelTest(BaseTestCase):
     def test_field_labels_and_max_lengths(self):
         # (field_name, expected_label, expected_max_length)
         field_data = [
-            ("operator_number", "operator number", None),
+            ("operator_index", "operator index", None),
             ("legal_name", "legal name", 1000),
             ("trade_name", "trade name", 1000),
             ("cra_business_number", "cra business number", None),

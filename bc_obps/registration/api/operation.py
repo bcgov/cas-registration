@@ -42,7 +42,7 @@ def save_multiple_operators(multiple_operators_array, operation):
     for idx, operator in enumerate(multiple_operators_array):
         new_operator = {}
         new_operator["operation_id"] = operation.id
-        new_operator["operator_number"] = idx + 1
+        new_operator["operator_index"] = idx + 1
 
         # use physical address as mailing address if mo_mailing_address_same_as_physical is true
         if operator["mo_mailing_address_same_as_physical"]:
@@ -59,8 +59,8 @@ def save_multiple_operators(multiple_operators_array, operation):
 
         # check if there is a multiple_operator with that operation id and number
         # if there is, update it, if not, create it
-        if MultipleOperator.objects.filter(operation_id=operation.id, operator_number=idx + 1).exists():
-            MultipleOperator.objects.filter(operation_id=operation.id, operator_number=idx + 1).update(**new_operator)
+        if MultipleOperator.objects.filter(operation_id=operation.id, operator_index=idx + 1).exists():
+            MultipleOperator.objects.filter(operation_id=operation.id, operator_index=idx + 1).update(**new_operator)
         else:
             MultipleOperator.objects.create(**new_operator)
 
