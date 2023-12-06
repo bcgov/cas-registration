@@ -282,7 +282,7 @@ def create_user_operator_contact(request, payload: UserOperatorContactIn):
 def update_user_operator_status(request, user_operator_id: int):
     payload = json.loads(request.body.decode())
     status = getattr(UserOperator.Statuses, payload.get("status").upper())
-    user_operator = get_object_or_404(UserOperator, id=user_operator_id)
+    user_operator = get_object_or_404(UserOperator, user=user_id)
     user_operator.status = status
 
     if user_operator.status in [UserOperator.Statuses.APPROVED, UserOperator.Statuses.REJECTED]:
