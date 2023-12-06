@@ -280,6 +280,7 @@ def create_user_operator_contact(request, payload: UserOperatorContactIn):
 
 @router.put("/select-operator/user-operator/{user_id}/update-status")
 def update_user_operator_status(request, user_id: str):
+    current_admin_user = request.current_user
     payload = json.loads(request.body.decode())
     status = getattr(UserOperator.Statuses, payload.get("status").upper())
     user_operator = get_object_or_404(UserOperator, user=user_id)
@@ -287,6 +288,7 @@ def update_user_operator_status(request, user_id: str):
 
     if user_operator.status in [UserOperator.Statuses.APPROVED, UserOperator.Statuses.REJECTED]:
         user_operator.verified_at = datetime.now(pytz.utc)
+        user_operator.verified_by_id = current_admin_user
     if user_operator.status in [UserOperator.Statuses.PENDING]:
         user_operator.verified_at = None
         user_operator.verified_by_id = None
