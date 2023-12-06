@@ -56,7 +56,7 @@ class OperationUpdateIn(ModelSchema):
 
 
 ### Multiple Operator schemas
-# TODO: find solution to circular import error and put multiple operator schemas in multiple_operator.py
+# TODO: find solution to circular import error and put multiple operator schemas in multiple_operator.py - #384
 
 
 class MultipleOperatorIn(Schema):
