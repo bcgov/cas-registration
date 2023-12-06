@@ -15,25 +15,20 @@ interface SelectOperatorFormProps {
 
 export default function SelectOperatorForm({
   schema,
-}: SelectOperatorFormProps) {
+}: Readonly<SelectOperatorFormProps>) {
   const { push } = useRouter();
   const [errorList, setErrorList] = useState([] as any[]);
-
-  // taking the control of the form data to be able to reset errors on change
-  const [formData, setFormData] = useState({} as SelectOperatorFormData);
-
-  const handleChange = (data: { formData?: SelectOperatorFormData }) => {
-    setErrorList([]);
-    setFormData(data.formData as SelectOperatorFormData);
-  };
 
   return (
     <Form
       schema={schema}
-      formData={formData}
       onSubmit={async (data: { formData?: SelectOperatorFormData }) => {
+        const queryParam = `?${data.formData?.search_type}=${data.formData?.[
+          data.formData?.search_type as keyof SelectOperatorFormData
+        ]}`;
+
         const response = await actionHandler(
-          `registration/operators/${data.formData?.operator_id}`,
+          `registration/operators${queryParam}`,
           "GET",
           "/dashboard/select-operator",
         );
@@ -46,7 +41,6 @@ export default function SelectOperatorForm({
         push(`/dashboard/select-operator/confirm/${response.id}`);
       }}
       uiSchema={selectOperatorUiSchema}
-      onChange={handleChange}
       className="mx-auto"
     >
       {errorList.length > 0 &&
