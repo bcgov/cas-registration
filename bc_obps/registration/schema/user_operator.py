@@ -51,6 +51,8 @@ class UserOperatorOut(Schema):
     mailing_province: Optional[str]
     mailing_postal_code: Optional[str]
     website: Optional[str]
+    status: str
+    role: str
 
 
 class UserOperatorOperatorIn(Schema):
@@ -150,3 +152,11 @@ class SelectUserOperatorOperatorsOut(ModelSchema):
     class Config:
         model = UserOperator
         model_fields = ["operator"]
+
+class UserOperatorListOut(Schema):
+    id: int
+    status: str
+    first_name: str
+    last_name: str
+    email: str
+    legal_name: str

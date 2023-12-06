@@ -82,6 +82,7 @@ export default async function UserOperator({
   return params?.id ? (
     <UserOperatorForm schema={userOperatorPage2} formData={userData} />
   ) : (
+    <Review userOperator={userOperatorData} userOperatorId={params.id} />
     <UserOperatorMultiStepForm
       schema={createUserOperatorSchema(businessStructuresList)}
       formData={userData}

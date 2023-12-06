@@ -8,6 +8,8 @@ export interface UserFormData {
   email: string;
   phone_number: string;
   province: string;
+  role: string;
+  status: string;
 }
 export interface UserOperatorFormData extends UserFormData {
   is_senior_officer: string;
