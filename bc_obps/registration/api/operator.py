@@ -1,24 +1,30 @@
+from typing import Optional
 from .api_base import router
-from typing import List
 from django.shortcuts import get_object_or_404
 from registration.models import Operator
-from registration.schema import OperatorOut
-from registration.utils import check_users_admin_request_eligibility, check_access_request_matches_business_guid
-from ninja.responses import codes_4xx
-from registration.schema import Message, OperatorOut, RequestAccessOut, SelectOperatorIn
-import json
+from ninja.responses import codes_4xx, codes_5xx
+from registration.schema import Message, OperatorOut
 
 
 ##### GET #####
 
 
-@router.get("/operators", response={200: List[OperatorOut], codes_4xx: Message})
-def list_operators(request):
+@router.get("/operators", response={200: OperatorOut, codes_4xx: Message, codes_5xx: Message})
+def get_operator_by_legal_name_or_cra(
+    request, legal_name: Optional[str] = None, cra_business_number: Optional[int] = None
+):
     try:
-        operators = Operator.objects.all()
-    except Exception as e:
+        if legal_name:
+            operator = Operator.objects.get(legal_name=legal_name)
+        elif cra_business_number:
+            operator = Operator.objects.get(cra_business_number=cra_business_number)
+        else:
+            return 404, {"message": "No parameters provided"}
+    except Operator.DoesNotExist:
         return 404, {"message": "No matching operator found"}
-    return 200, operators
+    except Exception as e:
+        return 500, {"message": "An error occurred!"}
+    return 200, operator
 
 
 @router.get("/operators/{operator_id}", response={200: OperatorOut, codes_4xx: Message})
