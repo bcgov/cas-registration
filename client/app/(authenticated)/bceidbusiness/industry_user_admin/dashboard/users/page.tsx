@@ -64,7 +64,11 @@ export default async function Page() {
           getUserOperatorsForOperator(associatedOperator.operator),
         ),
       )
-    ).flat();
+    )
+      .flat()
+      .filter(
+        (userOperator) => !(userOperator.user_id.replace(/-/g, "") === uid),
+      );
   }
 
   const columns = [
