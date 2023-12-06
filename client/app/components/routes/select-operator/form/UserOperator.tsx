@@ -78,15 +78,17 @@ export default async function UserOperator({
   const userData: UserInformationInitialFormData | { error: string } =
     await getCurrentUser();
 
-  const userOperatorData: UserOperatorFormData | { error: string } =
-    await getUserOperatorFormData(userOperatorId);
+  // TODO: define schema of data returned from endpoint
+  const userOperatorData: any | { error: string } =
+    await getUserOperatorFormData(params.id);
+
 
   if (
     "error" in userData ||
     "error" in businessStructures ||
     "error" in userOperatorData
   )
-    return;
+    return serverError;
 
   const businessStructuresList = businessStructures?.map(
     (businessStructure: BusinessStructure) => ({
@@ -94,7 +96,21 @@ export default async function UserOperator({
       label: businessStructure.name,
     }),
   );
+
+  console.log("user data:");
+  console.log(userData);
+
+  userOperatorData.is_senior_officer = "true";
+  userOperatorData.operator_has_parent_company = "no";
+  console.log(userOperatorData);
+
+  console.log(createUserOperatorSchema(businessStructuresList));
+
   return (
+  // If operator has an admin, use the single page form to show the user information
+  return params?.id ? (
+    <UserOperatorForm schema={userOperatorPage2} formData={userData} />
+  ) : (
     <UserOperatorMultiStepForm
       schema={createUserOperatorSchema(businessStructuresList)}
       formData={userOperatorData}
