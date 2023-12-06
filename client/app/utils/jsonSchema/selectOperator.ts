@@ -4,18 +4,18 @@ import FieldTemplateWithSubmitButton from "@/app/styles/rjsf/FieldTemplateWithSu
 
 export const selectOperatorSchema: RJSFSchema = {
   type: "object",
-  required: ["search_type", "search_value"],
+  required: ["search_type"],
   properties: {
     search_type: {
       type: "string",
       anyOf: [
-        { title: "Search by Business Legal Name", const: "name" },
+        { title: "Search by Business Legal Name", const: "legal_name" },
         {
           title: "Search by Canada Revenue Agency (CRA) Business Number",
-          const: "cra",
+          const: "cra_business_number",
         },
       ],
-      default: "name",
+      default: "legal_name",
     },
   },
   allOf: [
@@ -23,14 +23,14 @@ export const selectOperatorSchema: RJSFSchema = {
       if: {
         properties: {
           search_type: {
-            const: "name",
+            const: "legal_name",
           },
         },
       },
       then: {
-        required: ["search_by_name"],
+        required: ["legal_name"],
         properties: {
-          search_by_name: {
+          legal_name: {
             type: "string",
             minLength: 1,
             maxLength: 100,
@@ -38,10 +38,10 @@ export const selectOperatorSchema: RJSFSchema = {
         },
       },
       else: {
-        required: ["search_by_cra"],
+        required: ["cra_business_number"],
         properties: {
-          search_by_cra: {
-            type: "string",
+          cra_business_number: {
+            type: "number",
             minLength: 1,
             maxLength: 100,
           },
@@ -52,7 +52,7 @@ export const selectOperatorSchema: RJSFSchema = {
 };
 
 export const selectOperatorUiSchema = {
-  "ui:order": ["search_type", "search_by_name", "search_by_cra"],
+  "ui:order": ["search_type", "legal_name", "cra_business_number"],
   "ui:FieldTemplate": FieldTemplate,
   search_type: {
     "ui:FieldTemplate": FieldTemplate,
@@ -62,19 +62,17 @@ export const selectOperatorUiSchema = {
       inline: false,
     },
   },
-  search_by_name: {
+  legal_name: {
     "ui:FieldTemplate": FieldTemplateWithSubmitButton,
     "ui:widget": "TextWidget",
     "ui:placeholder": "Enter Business Legal Name",
-    "ui:classNames": "mt-10",
     "ui:options": {
       hideLabel: true,
       buttonLabel: "Search Operator",
     },
   },
-  search_by_cra: {
+  cra_business_number: {
     "ui:FieldTemplate": FieldTemplateWithSubmitButton,
-    "ui:classNames": "mt-10",
     "ui:widget": "TextWidget",
     "ui:placeholder": "Enter CRA Business Number",
     "ui:options": {
