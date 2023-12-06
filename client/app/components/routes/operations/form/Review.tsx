@@ -52,7 +52,7 @@ export default function Review({ operation, status }: Readonly<Props>) {
     );
     if (response.error) {
       setModalState("");
-      setErrorList([{ message: response.error }]);
+      return setErrorList([{ message: response.error }]);
     }
 
     setModalState("");
@@ -80,7 +80,7 @@ export default function Review({ operation, status }: Readonly<Props>) {
   return (
     <>
       <Modal
-        title="Confirmation"
+        title="Please confirm"
         open={Boolean(modalState)}
         onClose={handleClose}
       >
@@ -99,26 +99,21 @@ export default function Review({ operation, status }: Readonly<Props>) {
         >
           <Button
             onClick={modalState === "approve" ? approveRequest : rejectRequest}
-            color="success"
-            variant="outlined"
+            color="primary"
+            variant="contained"
             aria-label="Confirm"
             sx={{
               marginRight: "12px",
-              border: "1px solid",
-              fontWeight: "bold",
+              textTransform: "capitalize",
             }}
           >
-            Confirm
+            {modalState}
           </Button>
           <Button
             onClick={handleClose}
-            color="error"
+            color="primary"
             variant="outlined"
             aria-label="Cancel"
-            sx={{
-              border: "1px solid",
-              fontWeight: "bold",
-            }}
           >
             Cancel
           </Button>
