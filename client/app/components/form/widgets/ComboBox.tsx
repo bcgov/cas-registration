@@ -5,9 +5,16 @@ import { WidgetProps } from "@rjsf/utils/lib/types";
 import { useCallback } from "react";
 import { DARK_GREY_BG_COLOR, BC_GOV_SEMANTICS_RED } from "@/app/styles/colors";
 
-const ComboBox: React.FC<WidgetProps> = (props) => {
-  const { id, onChange, rawErrors, schema, value, uiSchema } = props;
-
+const ComboBox: React.FC<WidgetProps> = ({
+  disabled,
+  id,
+  onChange,
+  rawErrors,
+  readonly,
+  schema,
+  value,
+  uiSchema,
+}) => {
   const handleChange = (e: React.ChangeEvent<{}>, option: any) => {
     onChange(option?.const || option?.value);
   };
@@ -41,6 +48,7 @@ const ComboBox: React.FC<WidgetProps> = (props) => {
     <Autocomplete
       disablePortal
       id={id}
+      disabled={disabled || readonly}
       autoHighlight
       options={options}
       defaultValue={getSelected()}
