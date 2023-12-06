@@ -23,7 +23,7 @@ def get_operator_by_legal_name_or_cra(
     except Operator.DoesNotExist:
         return 404, {"message": "No matching operator found"}
     except Exception as e:
-        return 500, {"message": "An error occurred!"}
+        return 500, {"message": str(e)}
     return 200, operator
 
 
