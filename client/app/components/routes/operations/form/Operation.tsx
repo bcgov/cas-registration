@@ -6,7 +6,6 @@ import { RJSFSchema } from "@rjsf/utils";
 // import { actionHandler } from "@/app/utils/api";
 import { actionHandler } from "@/app/utils/actions";
 import Review from "./Review";
-import { Status } from "@/app/types/types";
 
 // 🛠️ Function to fetch NAICS codes
 async function getNaicsCodes() {
@@ -116,9 +115,7 @@ export default async function Operation({ numRow }: { numRow?: number }) {
   // Render the OperationsForm component with schema and formData if the operation already exists
   return (
     <>
-      {operation?.status === Status.PENDING ? (
-        <Review operation={operation} />
-      ) : null}
+      <Review operation={operation} status={operation?.status} />
       <OperationsForm
         schema={createOperationSchema(
           operationSchema,
