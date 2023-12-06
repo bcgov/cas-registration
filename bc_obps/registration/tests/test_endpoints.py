@@ -19,7 +19,15 @@ from registration.models import (
     RegulatedProduct,
 )
 from registration.schema import OperationCreateIn, OperationUpdateIn, UserIn
-APP_ROLE_FIXTURE = ("real/appRole.json",)
+
+
+from django.core.management import call_command
+
+# 
+@pytest.fixture(scope='function')
+def app_role_fixture():
+    # Load the fixture data into the test database
+    call_command('loaddata', 'real/appRole.json')
 
 pytestmark = pytest.mark.django_db
 
@@ -471,7 +479,6 @@ class TestUserOperatorEndpoint:
 
 
 class TestUserEndpoint:
-    fixtures = [APP_ROLE_FIXTURE]
     endpoint = base_endpoint + "user"
     endpoint_profile = endpoint + "-profile"
 
@@ -539,6 +546,7 @@ class TestUserEndpoint:
         assert 'user_guid' not in content
 
     # POST USER PROFILE BCEID
+    @pytest.mark.usefixtures('app_role_fixture')
     def test_create_user_profile_bceidbusiness(self):
 
         # Arrange
@@ -579,6 +587,7 @@ class TestUserEndpoint:
         assert 'user_guid' not in content
 
     # POST USER PROFILE IDIR
+    @pytest.mark.usefixtures('app_role_fixture')
     def test_create_user_profile_idir(self):
 
         # Arrange
