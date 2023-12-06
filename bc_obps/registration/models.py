@@ -542,7 +542,7 @@ class MultipleOperator(models.Model):
     percentage_ownership = models.DecimalField(
         decimal_places=5,
         max_digits=10,
-        db_comment="The percentage of an operator owned by the parent company",
+        db_comment="The percentage of the operation which this operator owns",
         blank=True,
         null=True,
     )
