@@ -8,28 +8,27 @@ import { Alert } from "@mui/material";
 
 interface RequestAccessButtonProps {
   operatorId: number;
+  isAdminRequest?: boolean;
 }
 
 export default function RequestAccessButton({
   operatorId,
-}: RequestAccessButtonProps) {
-  // 🧩common button config
-  const commonButtonConfig = {
-    width: "160px",
-    height: "60px",
-    fontWeight: 700,
-    fontSize: "12px",
-    lineHeight: "14.52px",
-    textAlign: "center",
-    padding: 0,
-  };
-
+  isAdminRequest = false,
+}: Readonly<RequestAccessButtonProps>) {
   const { push } = useRouter();
   const [errorList, setErrorList] = useState([] as any[]);
 
+  const label = isAdminRequest
+    ? "Request access as an administrator"
+    : "Request Access";
+
+  const endpointUrl = `registration/select-operator/${
+    isAdminRequest ? "request-admin-access" : "request-access"
+  }`;
+
   const handleRequestAccess = async () => {
     const response = await actionHandler(
-      "registration/select-operator/request-access",
+      endpointUrl,
       "POST",
       `/dashboard/select-operator/confirm/${operatorId}`,
       {
@@ -43,7 +42,13 @@ export default function RequestAccessButton({
       return;
     }
 
-    push(`/dashboard/select-operator/received/request-access/${operatorId}`);
+    // if user is requesting access as an admin, redirect to user operator form
+    if (isAdminRequest)
+      push(
+        `/dashboard/select-operator/user-operator/${response.user_operator_id}`,
+      );
+    else
+      push(`/dashboard/select-operator/received/request-access/${operatorId}`);
   };
 
   return (
@@ -55,14 +60,14 @@ export default function RequestAccessButton({
           </Alert>
         ))}
       <Button
-        style={{ margin: "0 auto", display: "flex" }}
-        sx={{ ...commonButtonConfig }}
-        aria-label="Request Access"
+        className="my-10"
+        sx={{ textTransform: "none" }} //to remove uppercase text
+        aria-label={label ?? "Request Access"}
         color="primary"
         variant="contained"
         onClick={async () => handleRequestAccess()}
       >
-        Request Access
+        {label}
       </Button>
     </>
   );
