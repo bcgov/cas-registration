@@ -2,6 +2,7 @@ import OperationsForm, {
   OperationsFormData,
 } from "@/app/components/form/OperationsForm";
 import { operationSchema } from "@/app/utils/jsonSchema/operations";
+import { BusinessStructure } from "@/app/components/routes/select-operator/form/types";
 import { RJSFSchema } from "@rjsf/utils";
 // import { actionHandler } from "@/app/utils/api";
 import { actionHandler } from "@/app/utils/actions";
@@ -47,6 +48,15 @@ export async function getReportingActivities() {
   }
 }
 
+// 🛠️ Function to fetch the business structures
+async function getBusinessStructures() {
+  return actionHandler(
+    `registration/business_structures`,
+    "GET",
+    `/dashboard/select-operator/user-operator`,
+  );
+}
+
 // 🛠️ Function to fetch an operation by ID
 async function getOperation(id: number) {
   try {
@@ -73,6 +83,7 @@ export const createOperationSchema = (
     id: number;
     name: string;
   }[],
+  businessStructureList: { id: string; label: string }[],
 ) => {
   const localSchema = JSON.parse(JSON.stringify(schema));
   // naics codes
@@ -99,6 +110,21 @@ export const createOperationSchema = (
     localSchema.properties.operationPage1.properties.reporting_activities.items.enumNames =
       reportingActivities.map((activity) => activity?.name);
   }
+  // business structures
+  const businessStructureOptions = businessStructureList?.map(
+    (businessStructure) => ({
+      type: "string",
+      title: businessStructure.label,
+      enum: [businessStructure.id],
+      value: businessStructure.id,
+    }),
+  );
+
+  if (Array.isArray(businessStructureOptions)) {
+    localSchema.properties.operationPage1.allOf[2].then.properties.multiple_operators_array.items.properties.mo_business_structure.anyOf =
+      businessStructureOptions;
+  }
+
   return localSchema;
 };
 
@@ -107,12 +133,20 @@ export default async function Operation({ numRow }: { numRow?: number }) {
   const codes = await getNaicsCodes();
   const products = await getRegulatedProducts();
   const activities = await getReportingActivities();
+  const businessStructures: BusinessStructure[] = await getBusinessStructures();
 
   let operation: any;
 
   if (numRow) {
     operation = await getOperation(numRow);
   }
+
+  const businessStructuresList = businessStructures?.map(
+    (businessStructure: BusinessStructure) => ({
+      id: businessStructure.name,
+      label: businessStructure.name,
+    }),
+  );
   // Render the OperationsForm component with schema and formData if the operation already exists
   return (
     <>
@@ -125,6 +159,7 @@ export default async function Operation({ numRow }: { numRow?: number }) {
           codes,
           products,
           activities,
+          businessStructuresList,
         )}
         formData={operation as OperationsFormData}
       />
