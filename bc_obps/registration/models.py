@@ -503,8 +503,8 @@ class MultipleOperator(models.Model):
         on_delete=models.DO_NOTHING,
         related_name="multiple_operator",
     )
-    operator_number = models.IntegerField(
-        db_comment="Number used to differentiate operators for this operation for saving/updating purposes"
+    operator_index = models.IntegerField(
+        db_comment="Index used to differentiate operators for this operation for saving/updating purposes"
     )
     legal_name = models.CharField(max_length=1000, db_comment="The legal name of an operator")
     trade_name = models.CharField(max_length=1000, db_comment="The trade name of an operator")
