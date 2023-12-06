@@ -30,9 +30,34 @@ phone_field {
 To enable validation of the phone widget the format must be set to `format: phone` in the form schema
 
 ```
-  phone_field {
-    type: 'string',
-    format: 'phone',
-    title: 'Phone field'
-  }
+phone_field {
+  type: 'string',
+  format: 'phone',
+  title: 'Phone field'
+}
+```
+
+### Multi select widget
+
+A select widget using MUI Autocomplete for fields with `type: array` to store multiple values. To enable the `MultiSelectWidget` set the widget type in the `uiSchema`:
+
+```
+multiselect_field {
+ 'ui:widget': 'MultiSelectWidget'
+}
+```
+
+An `enum` array is required in the array `items` section to set the available values. An optional `enumNames` array can be set if alternative option labels is required.
+
+```
+multiselect_field {
+  type: "array",
+  items: {
+    type: "string",
+    enum: ["one", "two", "three"]
+    // enumNames is optional
+    enumNames: ["Option 1", "Option 2", "Option 3"]
+  },
+  title: "MultiSelect field",
+}
 ```

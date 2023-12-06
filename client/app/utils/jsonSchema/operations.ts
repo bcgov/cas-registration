@@ -297,7 +297,7 @@ export const operationUiSchema = {
     "ui:widget": "hidden",
   },
   naics_code_id: {
-    "ui:widget": "SelectWidget",
+    "ui:widget": "ComboBox",
     "ui:placeholder": "Select Primary NAICS code",
   },
   "Did you submit a GHG emissions report for reporting year 2022?": {
@@ -320,5 +320,13 @@ export const operationUiSchema = {
   },
   province: {
     "ui:widget": "ComboBox",
+  },
+  regulated_products: {
+    "ui:widget": "MultiSelectWidget",
+    "ui:placeholder": "Select regulated products",
+  },
+  reporting_activities: {
+    "ui:widget": "MultiSelectWidget",
+    "ui:placeholder": "Select reporting activities",
   },
 };
