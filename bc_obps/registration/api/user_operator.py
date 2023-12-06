@@ -278,8 +278,8 @@ def create_user_operator_contact(request, payload: UserOperatorContactIn):
 ##### PUT #####
 
 
-@router.put("/select-operator/user-operator/{int:user_operator_id}/update-status")
-def update_user_operator_status(request, user_operator_id: int):
+@router.put("/select-operator/user-operator/{user_id}/update-status")
+def update_user_operator_status(request, user_id: str):
     payload = json.loads(request.body.decode())
     status = getattr(UserOperator.Statuses, payload.get("status").upper())
     user_operator = get_object_or_404(UserOperator, user=user_id)
