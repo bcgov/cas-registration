@@ -120,7 +120,7 @@ class TestOperationsEndpoint:
         assert post_response.json().get('id') is not None
         # check that the default status of pending was applied
         get_response = client.get(self.endpoint).json()[0]
-        assert 'status' in get_response and get_response['status'] == 'not_registered'
+        assert 'status' in get_response and get_response['status'] == 'Not Registered'
 
     def test_post_new_malformed_operation(self, client):
         response = client.post(
@@ -167,12 +167,12 @@ class TestOperationsEndpoint:
         # the put_response content is returned as a list but there's only ever one object in the list
         parsed_object = parsed_list[0]
         assert parsed_object.get("pk") == operation.id
-        assert parsed_object.get("fields").get("status") == "approved"
+        assert parsed_object.get("fields").get("status") == "Approved"
 
         get_response = client.get(self.endpoint + "/" + str(operation.id))
         assert get_response.status_code == 200
         get_response_dict = get_response.json()
-        assert get_response_dict.get("status") == "approved"
+        assert get_response_dict.get("status") == "Approved"
         now_as_string = now.strftime("%Y-%m-%d")
         assert get_response_dict.get("verified_at") == now_as_string
 
@@ -190,12 +190,12 @@ class TestOperationsEndpoint:
         # the put_response content is returned as a list but there's only ever one object in the list
         parsed_object = parsed_list[0]
         assert parsed_object.get("pk") == operation.id
-        assert parsed_object.get("fields").get("status") == "rejected"
+        assert parsed_object.get("fields").get("status") == "Rejected"
 
         get_response = client.get(self.endpoint + "/" + str(operation.id))
         assert get_response.status_code == 200
         get_response_dict = get_response.json()
-        assert get_response_dict.get("status") == "rejected"
+        assert get_response_dict.get("status") == "Rejected"
         now_as_string = now.strftime("%Y-%m-%d")
         assert get_response_dict.get("verified_at") == now_as_string
 
@@ -212,12 +212,12 @@ class TestOperationsEndpoint:
         # the put_response content is returned as a list but there's only ever one object in the list
         parsed_object = parsed_list[0]
         assert parsed_object.get("pk") == operation.id
-        assert parsed_object.get("fields").get("status") == "not_registered"
+        assert parsed_object.get("fields").get("status") == "Not Registered"
 
         get_response = client.get(self.endpoint + "/" + str(operation.id))
         assert get_response.status_code == 200
         get_response_dict = get_response.json()
-        assert get_response_dict.get("status") == "not_registered"
+        assert get_response_dict.get("status") == "Not Registered"
         assert get_response_dict.get("verified_at") is None
 
     def test_put_operation_update_status_invalid_data(self, client):
