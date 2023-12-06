@@ -3,7 +3,7 @@
 import Grid from "@mui/material/Grid";
 import { FieldTemplateProps } from "@rjsf/utils";
 
-const AlertIcon = () => (
+export const AlertIcon = () => (
   <svg
     width="26"
     height="26"
