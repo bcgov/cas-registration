@@ -494,7 +494,9 @@ class Operation(OperationAndFacilityCommonInfo):
         blank=True,
         related_name="operations_and_facilities",
     )
-    history = HistoricalRecords(table_name='erc_history"."operation_history', m2m_fields=[regulated_products, reporting_activities, documents])
+    history = HistoricalRecords(
+        table_name='erc_history"."operation_history', m2m_fields=[regulated_products, reporting_activities, documents]
+    )
 
     class Meta:
         db_table_comment = "Operations (also called facilities)"
