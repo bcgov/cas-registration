@@ -15,6 +15,7 @@ class AppRole(models.Model):
         max_length=100,
     )
     role_description = models.CharField(db_comment='Description of the app role', max_length=1000)
+    history = HistoricalRecords(table_name='erc_history"."app_role_history')
 
     class Meta:
         db_table_comment = "This table contains the definitions for roles within the app/database. These roles are used to define the permissions a user has within the app"
@@ -28,6 +29,7 @@ class DocumentType(models.Model):
         max_length=1000,
         db_comment="Name of document type (e.g. opt in signed statutory declaration)",
     )
+    history = HistoricalRecords(table_name='erc_history"."document_type_history')
 
     class Meta:
         db_table_comment = "Table that contains types of documents"
@@ -45,6 +47,7 @@ class Document(models.Model):
         db_comment="Type of document, e.g., boundary map",
     )
     description = models.CharField(max_length=1000, db_comment="Description of the document")
+    history = HistoricalRecords(table_name='erc_history"."document_history')
 
     class Meta:
         db_table_comment = "Documents"
@@ -60,6 +63,7 @@ class NaicsCode(models.Model):
 
     naics_code = models.CharField(max_length=1000, db_comment="NAICS code")
     naics_description = models.CharField(max_length=1000, db_comment="Description of the NAICS code")
+    history = HistoricalRecords(table_name='erc_history"."naics_code_history')
 
     class Meta:
         db_table_comment = "Naics codes"
@@ -70,6 +74,7 @@ class RegulatedProduct(models.Model):
     """Regulated products model"""
 
     name = models.CharField(max_length=1000, db_comment="The name of a regulated product")
+    history = HistoricalRecords(table_name='erc_history"."regulated_product_history')
 
     class Meta:
         db_table_comment = "Regulated products"
@@ -88,6 +93,7 @@ class ReportingActivity(models.Model):
     applicable_to = models.CharField(
         max_length=1000, choices=Applicablity.choices, db_comment="Which type of facility the activity applies to"
     )
+    history = HistoricalRecords(table_name='erc_history"."reporting_activity_history')
 
     class Meta:
         db_table_comment = "Reporting activities"
@@ -135,6 +141,7 @@ class User(UserAndContactCommonInfo):
         related_name="users",
         db_comment="The role assigned to this user which defines the permissions the use has.",
     )
+    history = HistoricalRecords(table_name='erc_history"."user_history', m2m_fields=[documents])
 
     class Meta:
         db_table_comment = "App users"
@@ -159,6 +166,7 @@ class BusinessRole(models.Model):
         max_length=100,
     )
     role_description = models.CharField(db_comment='Description of the business role', max_length=1000)
+    history = HistoricalRecords(table_name='erc_history"."business_role_history')
 
     class Meta:
         db_table_comment = "This table contains the definitions for roles within the operator/operation. These roles are used to define the permissions a user has within the operator/operation"
@@ -179,7 +187,7 @@ class Contact(UserAndContactCommonInfo):
         related_name="contacts",
         db_comment="The role assigned to this contact which defines the permissions the contact has.",
     )
-    history = HistoricalRecords(table_name='erc_history"."contact_history')
+    history = HistoricalRecords(table_name='erc_history"."contact_history', m2m_fields=[documents])
 
     class Meta:
         db_table_comment = "Contacts (people who don't use the app, e.g. authorized signing officers)"
@@ -194,6 +202,7 @@ class BusinessStructure(models.Model):
     """The legal name of an operator"""
 
     name = models.CharField(primary_key=True, max_length=1000, db_comment="The name of a business structure")
+    history = HistoricalRecords(table_name='erc_history"."business_structure_history')
 
     class Meta:
         db_table_comment = "The legal name of an operator"
@@ -277,7 +286,7 @@ class Operator(models.Model):
         null=True,
         related_name="operators_verified_by",
     )
-    history = HistoricalRecords(table_name='erc_history"."operator_history')
+    history = HistoricalRecords(table_name='erc_history"."operator_history', m2m_fields=[documents, contacts])
 
     class Meta:
         db_table_comment = "Operators (also called organizations)"
@@ -366,6 +375,7 @@ class UserOperator(models.Model):
         null=True,
         related_name="user_operators_verified_by",
     )
+    history = HistoricalRecords(table_name='erc_history"."user_operator_history')
 
     class Meta:
         db_table_comment = "Through table to connect Users and Operators and track access requests"
@@ -411,17 +421,6 @@ class OperationAndFacilityCommonInfo(models.Model):
         db_comment="Whether or not the operation/facility is required to register or is simply opting in. Only needed if the operation/facility did not report the previous year.",
         blank=True,
         null=True,
-    )
-
-    regulated_products = models.ManyToManyField(
-        RegulatedProduct,
-        blank=True,
-        related_name="operations_and_facilities",
-    )
-    reporting_activities = models.ManyToManyField(
-        ReportingActivity,
-        blank=True,
-        related_name="operations_and_facilities",
     )
 
     class Meta:
@@ -485,7 +484,17 @@ class Operation(OperationAndFacilityCommonInfo):
     #     db_comment="The operator(s) that owns the operation",
     #     related_name="user_operators",
     # )
-    history = HistoricalRecords(table_name='erc_history"."operation_history')
+    regulated_products = models.ManyToManyField(
+        RegulatedProduct,
+        blank=True,
+        related_name="operations_and_facilities",
+    )
+    reporting_activities = models.ManyToManyField(
+        ReportingActivity,
+        blank=True,
+        related_name="operations_and_facilities",
+    )
+    history = HistoricalRecords(table_name='erc_history"."operation_history', m2m_fields=[regulated_products, reporting_activities, documents])
 
     class Meta:
         db_table_comment = "Operations (also called facilities)"
