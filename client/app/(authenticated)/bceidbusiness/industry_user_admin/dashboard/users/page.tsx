@@ -4,6 +4,7 @@ import DataGrid from "@/app/components/datagrid/DataGrid";
 import { actionHandler } from "@/app/utils/actions";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { ChangeUserOperatorStatusColumnCell } from "@/app/components/datagrid/ChangeUserOperatorStatusColumnCell";
 
 type BusinessUserOperator = {
   operator: string;
@@ -73,7 +74,11 @@ export default async function Page() {
     { field: "business", headerName: "BCeID Business" },
     { field: "userRole", headerName: "User Role" },
     { field: "status", headerName: "Status" },
-    { field: "actions", headerName: "Actions" },
+    {
+      field: "actions",
+      headerName: "Actions",
+      renderCell: ChangeUserOperatorStatusColumnCell,
+    },
   ];
 
   const statusRows: GridRowsProp = userOperatorStatuses.map((uOS) => ({
