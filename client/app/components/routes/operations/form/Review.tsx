@@ -1,11 +1,12 @@
 "use client";
 
+import { useState } from "react";
 import { Alert, Button, Box } from "@mui/material";
 import RecommendIcon from "@mui/icons-material/Recommend";
 import DoNotDisturbIcon from "@mui/icons-material/DoNotDisturb";
 import { actionHandler } from "@/app/utils/actions";
 import { OperationsFormData } from "@/app/components/form/OperationsForm";
-import React, { useState } from "react";
+import Modal from "@/app/components/modal/Modal";
 import { Status } from "@/app/types/types";
 
 interface Props {
@@ -15,6 +16,7 @@ interface Props {
 export default function Review(props: Readonly<Props>) {
   const [errorList, setErrorList] = useState([] as any[]);
   const [successMessageList, setSuccessMessageList] = useState([] as any[]);
+  const [modalState, setModalState] = useState("" as string);
 
   async function approveRequest() {
     props.operation.status = Status.APPROVED;
@@ -54,8 +56,66 @@ export default function Review(props: Readonly<Props>) {
     }
   }
 
+  const handleApprove = () => {
+    setModalState("approve");
+  };
+
+  const handleReject = () => {
+    setModalState("reject");
+  };
+
+  const handleClose = () => {
+    setModalState("");
+  };
+
   return (
     <>
+      <Modal
+        title="Confirmation"
+        open={Boolean(modalState)}
+        onClose={handleClose}
+      >
+        <Box sx={{ fontSize: "20px", margin: "8px 0" }}>
+          Are you sure you want to <b>{modalState}</b> this operation?
+        </Box>
+        <Box
+          sx={{
+            width: "100%",
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "center",
+            alignItems: "center",
+            marginTop: "24px",
+          }}
+        >
+          <Button
+            onClick={modalState === "approve" ? approveRequest : rejectRequest}
+            color="success"
+            variant="outlined"
+            aria-label="Confirm"
+            sx={{
+              marginRight: "12px",
+              border: "1px solid",
+              fontWeight: "bold",
+            }}
+          >
+            Confirm
+          </Button>
+          <Button
+            onClick={handleClose}
+            color="error"
+            variant="outlined"
+            aria-label="Cancel"
+            sx={{
+              border: "1px solid",
+              fontWeight: "bold",
+            }}
+          >
+            Cancel
+          </Button>
+        </Box>
+      </Modal>
+
       <Box
         sx={{
           display: "flex",
@@ -65,7 +125,9 @@ export default function Review(props: Readonly<Props>) {
       >
         <Box>
           <Button
-            onClick={approveRequest}
+            onClick={handleApprove}
+            /*     onClick={approveRequest} */
+
             className="mr-2"
             color="success"
             variant="outlined"
@@ -79,7 +141,8 @@ export default function Review(props: Readonly<Props>) {
             Approve <RecommendIcon />
           </Button>
           <Button
-            onClick={rejectRequest}
+            onClick={handleReject}
+            /*    onClick={rejectRequest} */
             color="error"
             variant="outlined"
             aria-label="Reject application"
