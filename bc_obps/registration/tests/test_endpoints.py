@@ -337,22 +337,28 @@ class TestOperationEndpoint:
 class TestOperatorsEndpoint:
     endpoint = base_endpoint + "operators"
 
-    def test_get_method_for_200_status(self, client):
+    def setup(self):
+        self.operator = baker.make(Operator, legal_name="Test Operator legal name", cra_business_number=123456789)
+
+    def test_get_operators_no_parameters(self):
         response = client.get(self.endpoint)
-        assert response.status_code == 200
+        assert response.status_code == 404
+        assert response.json() == {"message": "No parameters provided"}
 
-    def test_get_method_with_mock_data(self, client):
-        baker.make(Operator, _quantity=2)
-
-        response = client.get(self.endpoint)
+    def test_get_operators_by_legal_name(self):
+        response = client.get(self.endpoint + "?legal_name=Test Operator legal name")
         assert response.status_code == 200
-        assert len(json.loads(response.content)) == 2
+        assert response.json() == model_to_dict(self.operator)
 
-    def test_retrieve_operator(self, client):
-        operator = baker.make(Operator)
-        response = client.get(self.endpoint + "/" + str(operator.id))
+    def test_get_operators_by_cra_number(self):
+        response = client.get(self.endpoint + "?cra_business_number=123456789")
         assert response.status_code == 200
-        assert response.json() == model_to_dict(operator)
+        assert response.json() == model_to_dict(self.operator)
+
+    def test_get_operators_no_matching_operator(self):
+        response = client.get(self.endpoint + "?legal_name=Test Operator legal name 2")
+        assert response.status_code == 404
+        assert response.json() == {"message": "No matching operator found"}
 
 
 class TestUserOperatorEndpoint:
