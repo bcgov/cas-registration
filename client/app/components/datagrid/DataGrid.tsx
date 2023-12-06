@@ -25,7 +25,7 @@ const DataGrid: React.FC<Props> = ({ rows, columns, cntxt }) => {
     switch (cntxt) {
       case "operations":
         // 📚 Define a custom renderCell function for the 'action' column
-        const updatedColumns = columns.map((column) => {
+        const updatedColumnsOperators = columns.map((column) => {
           if (column.field === "action") {
             return {
               ...column,
@@ -46,7 +46,28 @@ const DataGrid: React.FC<Props> = ({ rows, columns, cntxt }) => {
           return column;
         });
         //  🔄 Use updatedColumns for rendering the DataGrid
-        setCustomColumns(updatedColumns);
+        setCustomColumns(updatedColumnsOperators);
+        break;
+      case "user-operators":
+        // 📚 Define a custom renderCell function for the 'action' column
+        const updatedColumnsUserOperators = columns.map((column) => {
+          if (column.field === "action") {
+            return {
+              ...column,
+              renderCell: (params: GridRenderCellParams) => (
+                <div>
+                  {/* 🔗 Add reg or details link */}
+                  <Link href={`access-requests/user-operator/${params.row.id}`}>
+                    <Button variant="contained">View Details</Button>
+                  </Link>
+                </div>
+              ),
+            };
+          }
+          return column;
+        });
+        //  🔄 Use updatedColumns for rendering the DataGrid
+        setCustomColumns(updatedColumnsUserOperators);
         break;
       default:
         break;
