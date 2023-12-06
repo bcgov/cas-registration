@@ -500,6 +500,7 @@ class MultipleOperator(models.Model):
 
     operation = models.ForeignKey(
         Operation,
+        db_comment="The operation that this multiple operator is associated with",
         on_delete=models.DO_NOTHING,
         related_name="multiple_operator",
     )
