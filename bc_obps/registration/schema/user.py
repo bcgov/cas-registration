@@ -1,12 +1,15 @@
+from pyexpat import model
 from ninja import ModelSchema
+from ninja import Field, Schema
 from registration.models import AppRole, User
 
 
-# AppRole schemas
-class AppRoleOut(ModelSchema):
-    class Config:
-        model = AppRole
-        model_fields = '__all__'
+class UserIn(Schema):
+    first_name: str
+    last_name: str
+    email: str
+    position_title: str
+    phone_number: str
 
 
 class UserOut(ModelSchema):
@@ -27,6 +30,26 @@ class UserOut(ModelSchema):
             "municipality",
             "province",
             "postal_code",
+            "email",
+            "phone_number",
+        ]
+
+
+class UserAppRoleOut(ModelSchema):
+    class Config:
+        model = AppRole
+        model_fields = ['role_name']
+
+
+class UserProfileOut(UserOut):
+    app_role: UserAppRoleOut  # Include AppRoleOut model as a field
+
+    class Config:
+        model = User
+        model_fields = [
+            "first_name",
+            "last_name",
+            "position_title",
             "email",
             "phone_number",
         ]

@@ -1,16 +1,34 @@
 /**
-📚 Server Actions Conventions:
+📚 Server Actions:
+ Server actions are JavaScript async functions that run on the server
+and can be caled from  server components or from client components.
 
-SA can be defined in two places:
-Inside the component that uses it (Server Components only).
-In a separate file (Client and Server Components), for reusability.
-
-💡 You can define multiple Server Actions in a single file.
+💡 You can define Server actins in RSC or define multiple Server Actions in a single file.
 */
 "use server";
 import { revalidatePath } from "next/cache";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { cookies } from "next/headers";
+
+// 🔒 App API route to get the encrypted JWT
+async function getToken() {
+  try {
+    const res = await fetch(`${process.env.NEXTAUTH_URL}/api/auth/token`, {
+      method: "GET",
+      headers: { Cookie: cookies().toString() },
+    });
+
+    if (!res.ok) {
+      // eslint-disable-next-line no-console
+      console.error(`Failed to fetch token. Status: ${res.status}`);
+      return {};
+    }
+    return await res.json();
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error(`An error occurred while fetching token: ${error}`);
+    return {};
+  }
+}
 
 /**
  * Generic action handler that sends a request to the specified API endpoint
@@ -29,14 +47,18 @@ export async function actionHandler(
   options: RequestInit = {},
 ) {
   try {
-    const session = await getServerSession(authOptions);
+    // 🔒 Get the encrypted JWT
+    const token = await getToken();
+    // get the user_guid from the JWT
+    const userGuid = token?.user_guid ?? "";
 
+    // Add user_guid to Django API Auhtorization header
     const defaultOptions: RequestInit = {
       cache: "no-store", // Default cache option
       method,
       headers: new Headers({
         Authorization: JSON.stringify({
-          user_guid: session?.user?.user_guid,
+          user_guid: userGuid,
         }),
       }),
     };
@@ -50,7 +72,6 @@ export async function actionHandler(
       `${process.env.API_URL}${endpoint}`,
       mergedOptions,
     );
-
     if (!response.ok) {
       const res = await response.json();
 
@@ -62,6 +83,7 @@ export async function actionHandler(
     }
 
     const data = await response.json();
+
     revalidatePath(pathToRevalidate);
     return data;
   } catch (error: unknown) {
