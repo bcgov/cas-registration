@@ -5,7 +5,16 @@ import pytz
 from django.core import serializers
 from typing import List
 from django.shortcuts import get_object_or_404
-from registration.models import MultipleOperator, Operation, Operator, NaicsCode, Contact, BusinessRole, User
+from registration.models import (
+    MultipleOperator,
+    Operation,
+    Operator,
+    NaicsCode,
+    Contact,
+    BusinessRole,
+    BusinessStructure,
+    User,
+)
 from registration.schema import (
     OperationCreateIn,
     OperationUpdateIn,
@@ -43,7 +52,7 @@ def save_multiple_operators(multiple_operators_array, operation):
         new_operator = {}
         new_operator["operation_id"] = operation.id
         new_operator["operator_index"] = idx + 1
-
+        print(operator)
         # use physical address as mailing address if mo_mailing_address_same_as_physical is true
         if operator["mo_mailing_address_same_as_physical"]:
             operator["mo_mailing_street_address"] = operator["mo_physical_street_address"]
@@ -54,6 +63,8 @@ def save_multiple_operators(multiple_operators_array, operation):
         for field in operator:
             if field in multiple_operator_fields_mapping:
                 new_operator[multiple_operator_fields_mapping[field]] = operator[field]
+
+        new_operator["business_structure"] = BusinessStructure.objects.get(name=operator["mo_business_structure"])
 
         # TODO: archive multiple operators in #361 that are not in the array anymore once #326 is done
 
