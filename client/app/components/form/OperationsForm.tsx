@@ -54,6 +54,11 @@ export default function OperationsForm({ formData, schema }: Props) {
     is_application_lead_external: isApplicationLeadExternal,
     verified_at: formData?.verified_at?.toString(),
     verified_by: formData?.verified_by?.toString(),
+
+    // fix for null values not opening the multiple operators form if loading a previously saved form
+    multiple_operators_array: formData?.multiple_operators_array
+      ? formData?.multiple_operators_array
+      : [{}],
   };
   const formSectionList = Object.keys(schema.properties as any);
   const isNotFinalStep = formSection !== formSectionList.length;
