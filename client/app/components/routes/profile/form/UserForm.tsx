@@ -9,13 +9,13 @@ import { userSchema, userUiSchema } from "@/app/utils/jsonSchema/user";
 import { useSession, signOut } from "next-auth/react";
 
 // 📐 Interface: expected properties and their types for UserForm component
-interface UserFormProps {
-  formData?: Readonly<UserProfileFormData>;
+
+interface Props {
+  formData?: UserProfileFormData;
   isCreate: boolean;
 }
-
 // 🏗️ Client side component: dashboard\profile
-export default function UserForm({ formData, isCreate }: UserFormProps) {
+export default function UserForm({ formData, isCreate }: Props) {
   // 🐜 To display errors
   const [errorList, setErrorList] = useState([] as any[]);
   // 🌀 Loading state for the Submit button
