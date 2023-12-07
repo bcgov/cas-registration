@@ -65,31 +65,67 @@ export default async function Page() {
           getUserOperatorsForOperator(associatedOperator.operator),
         ),
       )
-    )
-      .flat()
-      .filter(
-        (userOperator) => !(userOperator.user_id.replace(/-/g, "") === uid),
-      );
+    ).flat();
+
+    // 🤳Identify current admin user in the list
+    const selfIndex = userOperatorStatuses.findIndex(
+      (userOperator) => userOperator.user_id.replace(/-/g, "") === uid,
+    );
+    userOperatorStatuses[selfIndex].status = "myself";
   }
 
   const columns = [
-    { field: "id", headerName: "User ID", flex: 2 },
-    { field: "name", headerName: "Name", flex: 2 },
-    { field: "email", headerName: "Email", flex: 6 },
-    { field: "business", headerName: "BCeID Business", flex: 6 },
-    { field: "userRole", headerName: "User Role", flex: 4 },
+    {
+      field: "id",
+      headerName: "User ID",
+      flex: 2,
+      align: "center",
+      headerAlign: "center",
+    },
+    {
+      field: "name",
+      headerName: "Name",
+      flex: 2,
+      align: "center",
+      headerAlign: "center",
+    },
+    {
+      field: "email",
+      headerName: "Email",
+      flex: 6,
+      align: "center",
+      headerAlign: "center",
+    },
+    {
+      field: "business",
+      headerName: "BCeID Business",
+      flex: 6,
+      align: "center",
+      headerAlign: "center",
+    },
+    {
+      field: "userRole",
+      headerName: "User Role",
+      flex: 4,
+      align: "center",
+      headerAlign: "center",
+    },
     {
       field: "status",
       headerName: "Status",
       flex: 3,
       renderCell: statusStyle,
+      align: "center",
+      headerAlign: "center",
     },
     {
       field: "actions",
       headerName: "Actions",
       sortable: false,
       renderCell: ChangeUserOperatorStatusColumnCell,
-      flex: 4,
+      flex: 6,
+      align: "center",
+      headerAlign: "center",
     },
   ];
 
