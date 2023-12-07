@@ -11,12 +11,19 @@ const casAdminUserName = process.env.CAS_ADMIN_USERNAME || "";
 const casAdminPassword = process.env.CAS_ADMIN_PASSWORD || "";
 const industryUserUserName = process.env.INDUSTRY_USER_USERNAME || "";
 const industryUserPassword = process.env.INDUSTRY_USER_PASSWORD || "";
+const industryUserAdminUserName =
+  process.env.INDUSTRY_USER_ADMIN_USERNAME || "";
+const industryUserAdminPassword =
+  process.env.INDUSTRY_USER_ADMIN_PASSWORD || "";
+const newUserName = process.env.NEW_USER_USERNAME || "";
+const newUserPassword = process.env.NEW_USER_PASSWORD || "";
 // State storage
 const casAdminAuthFile = process.env.CAS_ADMIN_STORAGE || "";
 const casAnalystAuthFile = process.env.CAS_ANALYST_STORAGE || "";
 const casPendingAuthFile = process.env.CAS_PENDING_STORAGE || "";
 const industryUserAuthFile = process.env.INDUSTRY_USER_STORAGE || "";
 const industryUserAdminAuthFile = process.env.INDUSTRY_USER_ADMIN_STORAGE || "";
+const newUserAuthFile = process.env.NEW_USER_STORAGE || "";
 
 // 🛠️ function: login with valid ID and stores auth state
 const setupAuth = async (
@@ -28,7 +35,6 @@ const setupAuth = async (
   authFile: string,
 ) => {
   // 🔑 Login
-  console.log(authFile);
   await page.goto("http://localhost:3000/home");
   await page.getByRole("button", { name: button }).click();
   await page.locator("#user").click();
@@ -38,7 +44,7 @@ const setupAuth = async (
   await page.getByRole("button", { name: "Continue" }).click();
 
   // Wait for the profile navigation link to be present
-  const profileNavSelector = '[data-testid="profile-nav-user"]';
+  const profileNavSelector = '[data-testid="nav-user-profile"]';
   await page.waitForSelector(profileNavSelector);
 
   // Assert that authenticated user profile link is visible
@@ -74,7 +80,7 @@ function updateSessionToken(jsonFilePath: string): void {
     fs.writeFileSync(jsonFilePath, JSON.stringify(data, null, 2));
   } catch (error) {
     // eslint-disable-next-line no-console
-    console.log(`Error updating mock token ${jsonFilePath}:` + error);
+    console.error(`Error updating mock token ${jsonFilePath}:` + error);
   }
 }
 
@@ -114,9 +120,24 @@ setup("Setup Auth - industry_user", async ({ page, context }) => {
   );
 });
 
-setup("Setup Auth - industry_user_admin", async () => {
-  // Note: mocked auth session created using
-  // npx playwright codegen localhost:3000 --save-storage=playwright/.auth/industry_user_admin.json
-  // with hardcoded role in client/app/api/auth/[...nextauth]/route.ts
-  updateSessionToken(industryUserAdminAuthFile);
+setup("Setup Auth - industry_user_admin", async ({ page, context }) => {
+  await setupAuth(
+    page,
+    context,
+    "Industrial Operator Log In",
+    industryUserAdminUserName,
+    industryUserAdminPassword,
+    industryUserAdminAuthFile,
+  );
+});
+
+setup("Setup Auth - new user", async ({ page, context }) => {
+  await setupAuth(
+    page,
+    context,
+    "Industrial Operator Log In",
+    newUserName,
+    newUserPassword,
+    newUserAuthFile,
+  );
 });

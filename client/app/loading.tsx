@@ -1,5 +1,5 @@
-import Skeleton from "@mui/material/Skeleton";
+import SkeletonSpinner from "@/app/components/loading/SkeletonSpinner";
 
 export default function Loading() {
-  return <Skeleton variant="circular" width={40} height={40} />;
+  return <SkeletonSpinner />;
 }
