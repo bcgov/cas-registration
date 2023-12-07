@@ -9,7 +9,7 @@ async function getUserOperators() {
     return await actionHandler(
       "registration/user-operators",
       "GET",
-      "/dashboard/access-requests",
+      "/dashboard/operators",
     );
   } catch (error) {
     // Handle the error here or rethrow it to handle it at a higher level

@@ -13,6 +13,7 @@ from registration.schema import (
     UserOperatorOperatorIdOut,
     UserOperatorStatus,
     UserOperatorListOut,
+    UserOperatorRoleOut,
 )
 from registration.schema.user_operator import SelectUserOperatorOperatorsOut
 from typing import List
@@ -92,11 +93,21 @@ def get_user_operator(request, user_operator_id: int):
         raise HttpError(401, UNAUTHORIZED_MESSAGE)
 
     user_operator_dict = UserOperatorOut.from_orm(user_operator, fields=["role", "status"])
+    user_operator_role_dict = UserOperatorRoleOut.from_orm(user_operator).dict()
     # user_operator_fields_dict = model_to_dict(user_operator, fields=["role", "status"])
     user_dict = UserOut.from_orm(user_operator.user).dict()
     operator_dict = OperatorOut.from_orm(user_operator.operator).dict()
 
-    return {**user_operator_dict, **user_dict, **operator_dict}
+    print("USER DICT")
+    print(user_dict)
+    print("OPERATOR DICT")
+    print(operator_dict)
+
+    result = {**user_operator_role_dict, **user_dict, **operator_dict}
+    print("RESULT")
+    print(result)
+
+    return result
 
 
 @router.get("/operator-has-admin/{operator_id}", response={200: bool, codes_4xx: Message})

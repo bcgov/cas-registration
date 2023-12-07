@@ -25,6 +25,14 @@ async function getBusinessStructures() {
   );
 }
 
+export async function getUserOperatorFormData(id: number) {
+  return actionHandler(
+    `registration/select-operator/user-operator/${id}`,
+    "GET",
+    `/user-operator/${id}`,
+  );
+}
+
 // To populate the options for the business structure select field
 const createUserOperatorSchema = (
   businessStructureList: { id: string; label: string }[],
@@ -62,14 +70,24 @@ export default async function UserOperator({
   params?: { id?: number };
 }>) {
   const serverError = <div>Server Error. Please try again later.</div>;
-
   const businessStructures: BusinessStructure[] | { error: string } =
     await getBusinessStructures();
 
   const userData: UserInformationInitialFormData | { error: string } =
     await getCurrentUser();
 
-  if ("error" in userData || "error" in businessStructures) return serverError;
+  // TODO: define schema of data returned from endpoint
+  const userOperatorData: any | { error: string } =
+    await getUserOperatorFormData(params.id);
+
+  const serverError = <div>Server Error. Please try again later.</div>;
+
+  if (
+    "error" in userData ||
+    "error" in businessStructures ||
+    "error" in userOperatorData
+  )
+    return serverError;
 
   const businessStructuresList = businessStructures?.map(
     (businessStructure: BusinessStructure) => ({
@@ -87,5 +105,7 @@ export default async function UserOperator({
       schema={createUserOperatorSchema(businessStructuresList)}
       formData={userData}
     />
+  console.log(userOperatorData);
+  console.log(createUserOperatorSchema(businessStructuresList));
   );
 }
