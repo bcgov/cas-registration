@@ -105,7 +105,7 @@ class MultipleOperatorIn(Schema):
     mo_trade_name: str
     mo_cra_business_number: int
     mo_bc_corporate_registry_number: int
-    mo_business_structure: Optional[str]
+    mo_business_structure: str
     mo_website: Optional[str]
     mo_physical_street_address: str
     mo_physical_municipality: str
