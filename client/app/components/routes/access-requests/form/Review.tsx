@@ -5,10 +5,11 @@ import RecommendIcon from "@mui/icons-material/Recommend";
 import DoNotDisturbIcon from "@mui/icons-material/DoNotDisturb";
 import { actionHandler } from "@/app/utils/actions";
 import React, { useState } from "react";
-import { Status } from "@/app/types";
+import { Status } from "@/app/types/types";
 import { UserOperatorFormData } from "@/app/components/form/formDataTypes";
 
 interface Props {
+  // TODO: fix schema of userOperator data
   userOperator: UserOperatorFormData;
   userOperatorId: number;
 }
@@ -22,7 +23,7 @@ export default function Review(props: Props) {
     const response = await actionHandler(
       `registration/user-operators/${props.userOperatorId}/update-status`,
       "PUT",
-      `dashboard/user-operators/${props.userOperatorId}`,
+      `dashboard/operators/user-operators/${props.userOperatorId}`,
       {
         body: JSON.stringify(props.userOperator),
       },
@@ -46,7 +47,7 @@ export default function Review(props: Props) {
     const response = await actionHandler(
       `registration/user-operators/${props.userOperatorId}/update-status`,
       "PUT",
-      `dashboard/user-operators/${props.userOperatorId}`,
+      `dashboard/operators/user-operators/${props.userOperatorId}`,
       {
         body: JSON.stringify(props.userOperator),
       },
