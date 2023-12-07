@@ -355,8 +355,13 @@ class TestOperatorsEndpoint:
         assert response.status_code == 200
         assert response.json() == model_to_dict(self.operator)
 
-    def test_get_operators_no_matching_operator(self):
+    def test_get_operators_no_matching_operator_legal_name(self):
         response = client.get(self.endpoint + "?legal_name=Test Operator legal name 2")
+        assert response.status_code == 404
+        assert response.json() == {"message": "No matching operator found"}
+
+    def test_get_operators_no_matching_operator_cra_number(self):
+        response = client.get(self.endpoint + "?cra_business_number=987654321")
         assert response.status_code == 404
         assert response.json() == {"message": "No matching operator found"}
 
