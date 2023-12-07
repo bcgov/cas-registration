@@ -16,11 +16,13 @@ import SubmitButton from "@/app/components/form/SubmitButton";
 interface UserOperatorFormProps {
   schema: RJSFSchema;
   formData: Partial<UserFormData>;
+  readonly?: boolean;
 }
 
 export default function UserOperatorMultiStepForm({
   schema,
   formData,
+  readonly
 }: Readonly<UserOperatorFormProps>) {
   const { push, back } = useRouter();
   const params = useParams();
@@ -40,14 +42,31 @@ export default function UserOperatorMultiStepForm({
     // to prevent resetting the form state when errors occur
     setFormState(newFormData);
 
-    const response = await actionHandler(
-      "registration/user-operator/contact",
-      "POST",
-      `/dashboard/select-operator/user-operator/${userOperatorId}`,
-      {
-        body: JSON.stringify(newFormData),
-      },
-    );
+    // add user operator id to form data if it exists (to be used in senior officer creation)
+    const userOperatorId = searchParams.get("user-operator-id");
+    if (userOperatorId) newFormData.user_operator_id = userOperatorId;
+
+    const apiUrl = `registration/user-operator/${
+      isFinalStep ? "contact" : "operator"
+    }`;
+
+    let response: Promise<any>;
+    if (readonly) {
+      response = await actionHandler(
+        apiUrl,
+        "GET",
+        `/dashboard/select-operator/user-operator/create/${params?.formSection}`,
+      );
+    } else {
+      response = await actionHandler(
+        apiUrl,
+        "POST",
+        `/dashboard/select-operator/user-operator/create/${params?.formSection}`,
+        {
+          body: JSON.stringify(newFormData),
+        },
+      );
+    }
 
     if (response.error) {
       setErrorList([{ message: response.error }]);
@@ -62,6 +81,8 @@ export default function UserOperatorMultiStepForm({
   return (
     <Form
       schema={schema}
+      error={error}
+      readonly={readonly}
       formData={formState}
       onSubmit={submitHandler}
       uiSchema={userOperatorUiSchema}

@@ -57,7 +57,7 @@ const DataGrid: React.FC<Props> = ({ rows, columns, cntxt }) => {
               renderCell: (params: GridRenderCellParams) => (
                 <div>
                   {/* 🔗 Add reg or details link */}
-                  <Link href={`operators/user-operator/${params.row.id}`}>
+                  <Link href={`operators/user-operator/${params.row.id}/1`}>
                     <Button variant="contained">View Details</Button>
                   </Link>
                 </div>
