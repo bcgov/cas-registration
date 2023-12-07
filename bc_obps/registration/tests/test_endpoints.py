@@ -16,6 +16,8 @@ from registration.models import (
     User,
     UserOperator,
     RegulatedProduct,
+    HistoricalOperation,
+    HistoricalUserOperator,
 )
 from registration.schema import OperationCreateIn, OperationUpdateIn
 
@@ -319,6 +321,8 @@ class TestOperationEndpoint:
 
         get_response = client.get(self.endpoint + str(operation.id)).json()
         assert get_response["status"] == Operation.Statuses.PENDING
+        has_history_record = HistoricalOperation.objects.all()
+        assert has_history_record.count() > 0, "History record was not created"
 
     def test_put_malformed_operation(self, client):
         operation = baker.make(Operation)
@@ -466,3 +470,6 @@ class TestUserOperatorEndpoint:
         ).exists()
 
         assert user_operator_exists, "UserOperator object was not created"
+
+        has_history_record = HistoricalUserOperator.objects.all()
+        assert has_history_record.count() > 0, "History record was not created"
