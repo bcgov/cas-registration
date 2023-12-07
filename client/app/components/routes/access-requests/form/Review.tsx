@@ -29,17 +29,11 @@ export default function Review(props: Props) {
       },
     );
     if (response.error) {
-      setErrorList([{ message: response.error }]);
-    } else if (response.ok) {
-      setSuccessMessageList([
-        { message: "You have approved the request for prime admin access." },
-      ]);
-
-      // Add a delay of 2000 milliseconds (2 seconds) before clearing the success message
-      setTimeout(() => {
-        setSuccessMessageList([]);
-      }, 2000);
+      return setErrorList([{ message: response.error }]);
     }
+    return setSuccessMessageList([
+      { message: "You have approved the request for prime admin access." },
+    ]);
   }
 
   async function rejectRequest() {
@@ -53,17 +47,12 @@ export default function Review(props: Props) {
       },
     );
     if (response.error) {
-      setErrorList([{ message: response.error }]);
-    } else if (response.ok) {
-      setSuccessMessageList([
-        { message: "You have rejected the request for prime admin access." },
-      ]);
-
-      // Add a delay of 2000 milliseconds (2 seconds) before clearing the success message
-      setTimeout(() => {
-        setSuccessMessageList([]);
-      }, 2000);
+      return setErrorList([{ message: response.error }]);
     }
+
+    return setSuccessMessageList([
+      { message: "You have rejected the request for prime admin access." },
+    ]);
   }
 
   return (
