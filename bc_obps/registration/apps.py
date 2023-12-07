@@ -3,9 +3,10 @@ from django.apps import AppConfig
 from django.db import connection
 
 
-def create_erc_schema(sender, app_config, **kwargs):
+def create_erc_schemas(sender, app_config, **kwargs):
     cursor = connection.cursor()
     cursor.execute("CREATE SCHEMA IF NOT EXISTS erc")
+    cursor.execute("CREATE SCHEMA IF NOT EXISTS erc_history")
 
 
 class RegistrationConfig(AppConfig):
@@ -13,4 +14,4 @@ class RegistrationConfig(AppConfig):
     name = "registration"
 
     def ready(self):
-        pre_migrate.connect(create_erc_schema, sender=self)
+        pre_migrate.connect(create_erc_schemas, sender=self)
