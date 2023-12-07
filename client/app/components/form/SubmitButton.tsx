@@ -6,11 +6,13 @@ import { useFormStatus } from "react-dom";
 interface SubmitButtonProps {
   label: string;
   classNames?: string;
+  disabled?: boolean;
 }
 
 const SubmitButton: React.FunctionComponent<SubmitButtonProps> = ({
   label,
   classNames,
+  disabled,
 }) => {
   const { pending } = useFormStatus();
   return (
@@ -18,8 +20,9 @@ const SubmitButton: React.FunctionComponent<SubmitButtonProps> = ({
       <Button
         variant="contained"
         type="submit"
-        aria-disabled={pending}
+        aria-disabled={pending || pending}
         className="h-full"
+        sx={{ marginBottom: 10 }}
       >
         {label}
       </Button>
