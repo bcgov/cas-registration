@@ -1,4 +1,5 @@
 "use client";
+import { Operator } from "@/app/components/routes/select-operator/form/types";
 
 import {
   Box,
@@ -17,7 +18,7 @@ import { BC_GOV_LINKS_COLOR, DARK_GREY_BG_COLOR } from "@/app/styles/colors";
 import Button from "@mui/material/Button";
 
 interface ConfirmSelectedOperatorFormProps {
-  operator: any;
+  operator: Operator;
   hasAdmin: boolean;
 }
 
