@@ -5,6 +5,7 @@ import { actionHandler } from "@/app/utils/actions";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { ChangeUserOperatorStatusColumnCell } from "@/app/components/datagrid/ChangeUserOperatorStatusColumnCell";
+import { statusStyle } from "@/app/components/datagrid/userPageHelpers";
 
 type BusinessUserOperator = {
   operator: string;
@@ -72,22 +73,29 @@ export default async function Page() {
   }
 
   const columns = [
-    { field: "id", headerName: "User ID" },
-    { field: "name", headerName: "Name" },
-    { field: "email", headerName: "Email" },
-    { field: "business", headerName: "BCeID Business" },
-    { field: "userRole", headerName: "User Role" },
-    { field: "status", headerName: "Status" },
+    { field: "id", headerName: "User ID", flex: 2 },
+    { field: "name", headerName: "Name", flex: 2 },
+    { field: "email", headerName: "Email", flex: 6 },
+    { field: "business", headerName: "BCeID Business", flex: 6 },
+    { field: "userRole", headerName: "User Role", flex: 4 },
+    {
+      field: "status",
+      headerName: "Status",
+      flex: 3,
+      renderCell: statusStyle,
+    },
     {
       field: "actions",
       headerName: "Actions",
+      sortable: false,
       renderCell: ChangeUserOperatorStatusColumnCell,
+      flex: 4,
     },
   ];
 
   const statusRows: GridRowsProp = userOperatorStatuses.map((uOS) => ({
     id: uOS.user_id,
-    name: `${uOS.first_name} ${uOS.last_name}`,
+    name: `${uOS.first_name} ${uOS.last_name.slice(0, 1)}`,
     email: uOS.email,
     business: uOS.business_name,
     userRole: uOS.role,
