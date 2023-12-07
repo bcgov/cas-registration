@@ -10,7 +10,7 @@ import { useSession, signOut } from "next-auth/react";
 
 // 📐 Interface: expected properties and their types for UserForm component
 interface UserFormProps {
-  formData?: UserProfileFormData;
+  formData?: Readonly<UserProfileFormData>;
   isCreate: boolean;
 }
 

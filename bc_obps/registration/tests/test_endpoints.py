@@ -23,6 +23,7 @@ from registration.schema import OperationCreateIn, OperationUpdateIn, UserIn
 
 from django.core.management import call_command
 
+
 @pytest.fixture(scope='function')
 def app_role_fixture():
     # Load the fixture data into the test database
