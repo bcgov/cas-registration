@@ -1,10 +1,13 @@
 "use client";
 
-import { Button, ButtonOwnProps } from "@mui/material";
+import { Chip, ChipOwnProps } from "@mui/material";
 import { GridValueGetterParams } from "@mui/x-data-grid";
 
+const capitalizeFirstLetter = (label: string) =>
+  label.charAt(0).toUpperCase() + label.slice(1);
+
 export const statusStyle = (params: GridValueGetterParams) => {
-  const colorMap = new Map<string, ButtonOwnProps["color"]>([
+  const colorMap = new Map<string, ChipOwnProps["color"]>([
     ["myself", "primary"],
     ["pending", "primary"],
     ["approved", "success"],
@@ -14,8 +17,11 @@ export const statusStyle = (params: GridValueGetterParams) => {
   const statusColor = colorMap.get(params.value) || "primary";
 
   return (
-    <Button variant="outlined" color={statusColor} sx={{ borderRadius: 32 }}>
-      {params.value}
-    </Button>
+    <Chip
+      label={capitalizeFirstLetter(params.value)}
+      variant="outlined"
+      color={statusColor}
+      sx={{ mx: "auto", width: 90 }}
+    ></Chip>
   );
 };
