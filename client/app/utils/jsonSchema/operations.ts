@@ -473,9 +473,6 @@ export const operationUiSchema = {
   multiple_operators_section: {
     ...subheading,
   },
-  operation_has_multiple_operators: {
-    "ui:widget": "RadioWidget",
-  },
   multiple_operators_array: {
     "ui:FieldTemplate": FieldTemplate,
     "ui:ArrayFieldTemplate": ArrayFieldTemplate,
