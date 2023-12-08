@@ -36,7 +36,6 @@ const Modal: React.FC<Props> = ({ children, id, onClose, open, title }) => {
         {onClose ? (
           <IconButton
             aria-label="close"
-            data-testid="close-button"
             onClick={onClose}
             sx={{
               color: "#FFFFFF",
