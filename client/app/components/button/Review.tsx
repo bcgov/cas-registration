@@ -5,6 +5,8 @@ import { Alert, Button, Box } from "@mui/material";
 import RecommendIcon from "@mui/icons-material/Recommend";
 import DoNotDisturbIcon from "@mui/icons-material/DoNotDisturb";
 import Modal from "@/app/components/modal/Modal";
+import IconButton from "@mui/material/IconButton";
+import CloseIcon from "@mui/icons-material/Close";
 
 interface Props {
   confirmApproveMessage: string;
@@ -16,7 +18,26 @@ interface Props {
   onReject: () => Promise<any>;
 }
 
-export default function Review({
+interface CloseProps {
+  onClose: () => void;
+}
+
+const CloseButton = ({ onClose }: CloseProps) => {
+  return (
+    <IconButton
+      aria-label="close"
+      color="inherit"
+      size="small"
+      onClick={() => {
+        onClose();
+      }}
+    >
+      <CloseIcon fontSize="inherit" />
+    </IconButton>
+  );
+};
+
+const Review = ({
   approvedMessage,
   confirmApproveMessage,
   confirmRejectMessage,
@@ -24,10 +45,11 @@ export default function Review({
   rejectedMessage,
   onApprove,
   onReject,
-}: Readonly<Props>) {
+}: Readonly<Props>) => {
   const [errorList, setErrorList] = useState([] as any[]);
   const [successMessageList, setSuccessMessageList] = useState([] as any[]);
   const [modalState, setModalState] = useState("" as string);
+  const [dismissAlert, setDismissAlert] = useState(false);
 
   const handleApprove = () => {
     setModalState("approve");
@@ -63,6 +85,10 @@ export default function Review({
     return setSuccessMessageList([{ message: rejectedMessage }]);
   };
 
+  const handleCloseAlert = () => {
+    setDismissAlert(true);
+  };
+
   const isReviewButtons =
     isStatusPending &&
     errorList.length === 0 &&
@@ -74,7 +100,11 @@ export default function Review({
     : confirmRejectMessage;
 
   return (
-    <>
+    <Box
+      sx={{
+        minHeight: "48px",
+      }}
+    >
       <Modal
         title="Please confirm"
         open={Boolean(modalState)}
@@ -165,17 +195,29 @@ export default function Review({
         </Box>
       )}
       {errorList.length > 0 &&
+        !dismissAlert &&
         errorList.map((e: any) => (
-          <Alert key={e.message} severity="error">
+          <Alert
+            key={e.message}
+            action={<CloseButton onClose={handleCloseAlert} />}
+            severity="error"
+          >
             {e?.stack ?? e.message}
           </Alert>
         ))}
       {successMessageList.length > 0 &&
+        !dismissAlert &&
         successMessageList.map((e: any) => (
-          <Alert key={e.message} severity="success">
+          <Alert
+            key={e.message}
+            action={<CloseButton onClose={handleCloseAlert} />}
+            severity="success"
+          >
             {e.message}
           </Alert>
         ))}
-    </>
+    </Box>
   );
-}
+};
+
+export default Review;
