@@ -17,6 +17,7 @@ const Modal: React.FC<Props> = ({ children, id, onClose, open, title }) => {
       id={id}
       onClose={onClose}
       open={open}
+      closeAfterTransition
       aria-labelledby={title}
       maxWidth="xl"
     >

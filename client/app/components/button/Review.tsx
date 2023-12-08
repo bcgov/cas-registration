@@ -4,62 +4,30 @@ import { useState } from "react";
 import { Alert, Button, Box } from "@mui/material";
 import RecommendIcon from "@mui/icons-material/Recommend";
 import DoNotDisturbIcon from "@mui/icons-material/DoNotDisturb";
-import { actionHandler } from "@/app/utils/actions";
-import { OperationsFormData } from "@/app/components/form/OperationsForm";
 import Modal from "@/app/components/modal/Modal";
-import { Status } from "@/app/types/types";
 
 interface Props {
-  operation: OperationsFormData;
-  status: Status;
+  confirmApproveMessage: string;
+  confirmRejectMessage: string;
+  approvedMessage: string;
+  rejectedMessage: string;
+  isStatusPending: boolean;
+  onApprove: () => Promise<any>;
+  onReject: () => Promise<any>;
 }
 
-export default function Review({ operation, status }: Readonly<Props>) {
+export default function Review({
+  approvedMessage,
+  confirmApproveMessage,
+  confirmRejectMessage,
+  isStatusPending,
+  rejectedMessage,
+  onApprove,
+  onReject,
+}: Readonly<Props>) {
   const [errorList, setErrorList] = useState([] as any[]);
   const [successMessageList, setSuccessMessageList] = useState([] as any[]);
   const [modalState, setModalState] = useState("" as string);
-
-  async function approveRequest() {
-    operation.status = Status.APPROVED;
-    const response = await actionHandler(
-      `registration/operations/${operation.id}/update-status`,
-      "PUT",
-      `dashboard/operations/${operation.id}`,
-      {
-        body: JSON.stringify(operation),
-      },
-    );
-    if (response.error) {
-      setModalState("");
-      return setErrorList([{ message: response.error }]);
-    }
-
-    setModalState("");
-    return setSuccessMessageList([
-      { message: "You have approved the request for carbon tax exemption." },
-    ]);
-  }
-
-  async function rejectRequest() {
-    operation.status = Status.REJECTED;
-    const response = await actionHandler(
-      `registration/operations/${operation.id}/update-status`,
-      "PUT",
-      `dashboard/operations/${operation.id}`,
-      {
-        body: JSON.stringify(operation),
-      },
-    );
-    if (response.error) {
-      setModalState("");
-      return setErrorList([{ message: response.error }]);
-    }
-
-    setModalState("");
-    return setSuccessMessageList([
-      { message: "You have rejected the request for carbon tax exemption." },
-    ]);
-  }
 
   const handleApprove = () => {
     setModalState("approve");
@@ -69,23 +37,57 @@ export default function Review({ operation, status }: Readonly<Props>) {
     setModalState("reject");
   };
 
-  const handleClose = () => {
+  const handleCloseModal = () => {
     setModalState("");
   };
 
-  const isPending = status === Status.PENDING;
+  const handleConfirmApprove = async () => {
+    const response = await onApprove();
+    if (response.error) {
+      setModalState("");
+      return setErrorList([{ message: response.error }]);
+    }
+
+    setModalState("");
+    return setSuccessMessageList([{ message: approvedMessage }]);
+  };
+
+  const handleConfirmReject = async () => {
+    const response = await onReject();
+    if (response.error) {
+      setModalState("");
+      return setErrorList([{ message: response.error }]);
+    }
+
+    setModalState("");
+    return setSuccessMessageList([{ message: rejectedMessage }]);
+  };
+
   const isReviewButtons =
-    isPending && errorList.length === 0 && successMessageList.length === 0;
+    isStatusPending &&
+    errorList.length === 0 &&
+    successMessageList.length === 0;
+
+  const isApprove = modalState === "approve";
+  const confirmMessage = isApprove
+    ? confirmApproveMessage
+    : confirmRejectMessage;
 
   return (
     <>
       <Modal
         title="Please confirm"
         open={Boolean(modalState)}
-        onClose={handleClose}
+        onClose={handleCloseModal}
       >
-        <Box sx={{ fontSize: "20px", margin: "8px 0" }}>
-          Are you sure you want to <b>{modalState}</b> this operation?
+        <Box
+          sx={{
+            fontSize: "20px",
+            minWidth: "100%",
+            margin: "8px 0",
+          }}
+        >
+          {confirmMessage}
         </Box>
         <Box
           sx={{
@@ -98,7 +100,11 @@ export default function Review({ operation, status }: Readonly<Props>) {
           }}
         >
           <Button
-            onClick={modalState === "approve" ? approveRequest : rejectRequest}
+            onClick={
+              modalState === "approve"
+                ? handleConfirmApprove
+                : handleConfirmReject
+            }
             color="primary"
             variant="contained"
             aria-label="Confirm"
@@ -107,10 +113,10 @@ export default function Review({ operation, status }: Readonly<Props>) {
               textTransform: "capitalize",
             }}
           >
-            {modalState}
+            {modalState || "Approve"}
           </Button>
           <Button
-            onClick={handleClose}
+            onClick={handleCloseModal}
             color="primary"
             variant="outlined"
             aria-label="Cancel"

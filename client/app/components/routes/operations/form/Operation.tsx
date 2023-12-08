@@ -3,9 +3,8 @@ import OperationsForm, {
 } from "@/app/components/form/OperationsForm";
 import { operationSchema } from "@/app/utils/jsonSchema/operations";
 import { RJSFSchema } from "@rjsf/utils";
-// import { actionHandler } from "@/app/utils/api";
 import { actionHandler } from "@/app/utils/actions";
-import Review from "./Review";
+import OperationReview from "./OperationReview";
 
 // 🛠️ Function to fetch NAICS codes
 async function getNaicsCodes() {
@@ -112,10 +111,11 @@ export default async function Operation({ numRow }: { numRow?: number }) {
   if (numRow) {
     operation = await getOperation(numRow);
   }
+
   // Render the OperationsForm component with schema and formData if the operation already exists
   return (
     <>
-      <Review operation={operation} status={operation?.status} />
+      <OperationReview operation={operation} />
       <OperationsForm
         schema={createOperationSchema(
           operationSchema,
