@@ -1,4 +1,5 @@
 from typing import Optional
+from registration.utils import check_users_admin_request_eligibility
 from .api_base import router
 from django.shortcuts import get_object_or_404
 from registration.models import Operator
@@ -21,9 +22,15 @@ def get_operator_by_legal_name_or_cra(
         else:
             return 404, {"message": "No parameters provided"}
     except Operator.DoesNotExist:
-        return 404, {"message": "No matching operator found"}
+        return 404, {"message": "No matching operator found. Retry or add operator."}
     except Exception as e:
         return 500, {"message": str(e)}
+
+    # check if user is eligible to request access(mainly to prevent duplicate requests for the same operator and user)
+    status, message = check_users_admin_request_eligibility(request.current_user, operator)
+    if status != 200:
+        return status, message
+
     return 200, operator
 
 
