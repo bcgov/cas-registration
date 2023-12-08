@@ -339,6 +339,9 @@ class TestOperatorsEndpoint:
 
     def setup(self):
         self.operator = baker.make(Operator, legal_name="Test Operator legal name", cra_business_number=123456789)
+        self.user: User = baker.make(User)
+        self.auth_header = {'user_guid': str(self.user.user_guid)}
+        self.auth_header_dumps = json.dumps(self.auth_header)
 
     def test_get_operators_no_parameters(self):
         response = client.get(self.endpoint)
@@ -346,24 +349,32 @@ class TestOperatorsEndpoint:
         assert response.json() == {"message": "No parameters provided"}
 
     def test_get_operators_by_legal_name(self):
-        response = client.get(self.endpoint + "?legal_name=Test Operator legal name")
+        response = client.get(
+            self.endpoint + "?legal_name=Test Operator legal name", HTTP_AUTHORIZATION=self.auth_header_dumps
+        )
         assert response.status_code == 200
         assert response.json() == model_to_dict(self.operator)
 
     def test_get_operators_by_cra_number(self):
-        response = client.get(self.endpoint + "?cra_business_number=123456789")
+        response = client.get(
+            self.endpoint + "?cra_business_number=123456789", HTTP_AUTHORIZATION=self.auth_header_dumps
+        )
         assert response.status_code == 200
         assert response.json() == model_to_dict(self.operator)
 
     def test_get_operators_no_matching_operator_legal_name(self):
-        response = client.get(self.endpoint + "?legal_name=Test Operator legal name 2")
+        response = client.get(
+            self.endpoint + "?legal_name=Test Operator legal name 2", HTTP_AUTHORIZATION=self.auth_header_dumps
+        )
         assert response.status_code == 404
-        assert response.json() == {"message": "No matching operator found"}
+        assert response.json() == {"message": "No matching operator found. Retry or add operator."}
 
     def test_get_operators_no_matching_operator_cra_number(self):
-        response = client.get(self.endpoint + "?cra_business_number=987654321")
+        response = client.get(
+            self.endpoint + "?cra_business_number=987654321", HTTP_AUTHORIZATION=self.auth_header_dumps
+        )
         assert response.status_code == 404
-        assert response.json() == {"message": "No matching operator found"}
+        assert response.json() == {"message": "No matching operator found. Retry or add operator."}
 
 
 class TestUserOperatorEndpoint:
