@@ -1,4 +1,4 @@
-import { GridRowsProp } from "@mui/x-data-grid";
+import { GridColDef, GridRowsProp } from "@mui/x-data-grid";
 import DataGrid from "@/app/components/datagrid/DataGrid";
 
 import { actionHandler } from "@/app/utils/actions";
@@ -74,7 +74,7 @@ export default async function Page() {
     userOperatorStatuses[selfIndex].status = "myself";
   }
 
-  const columns = [
+  const columns: GridColDef[] = [
     {
       field: "id",
       headerName: "User ID",
@@ -136,7 +136,6 @@ export default async function Page() {
     business: uOS.business_name,
     userRole: uOS.role,
     status: uOS.status,
-    actions: "todo: Approve/Reject func",
   }));
 
   return (
