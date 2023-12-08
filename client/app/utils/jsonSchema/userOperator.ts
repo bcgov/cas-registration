@@ -270,7 +270,6 @@ export const userOperatorPage2: RJSFSchema = {
   type: "object",
   title: "User Information",
   required: [
-    "is_senior_officer",
     "position_title",
     "street_address",
     "municipality",
@@ -281,9 +280,9 @@ export const userOperatorPage2: RJSFSchema = {
   ],
   properties: {
     is_senior_officer: {
-      title: "Are you a senior officer of the operator?",
+      title: "If you are the Senior Officer of the Operator check this box",
       type: "boolean",
-      default: true,
+      default: false,
     },
     senior_officer_section: {
       title:
@@ -442,7 +441,9 @@ export const userOperatorUiSchema = {
     "ui:widget": "EmailWidget",
   },
   is_senior_officer: {
-    "ui:widget": "RadioWidget",
+    "ui:options": {
+      label: false,
+    },
   },
   senior_officer_section: {
     ...subheading,
