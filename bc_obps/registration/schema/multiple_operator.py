@@ -34,8 +34,9 @@ class MultipleOperatorOut(ModelSchema):
     mo_trade_name: str = Field(..., alias="trade_name")
     mo_cra_business_number: int = Field(..., alias="cra_business_number")
     mo_bc_corporate_registry_number: int = Field(..., alias="bc_corporate_registry_number")
-    mo_business_structure: str = Field(..., alias="business_structure")
-    mo_business_structure: str = Field(..., alias="business_structure")
+    from .business_structure import BusinessStructureOut
+
+    mo_business_structure: BusinessStructureOut = Field(..., alias="business_structure")
     mo_website: Optional[str] = Field(..., alias="website")
     mo_percentage_ownership: int = Field(None, alias="percentage_ownership")
     mo_physical_street_address: str = Field(..., alias="physical_street_address")
@@ -55,6 +56,3 @@ class MultipleOperatorOut(ModelSchema):
     class Config:
         model = MultipleOperator
         model_fields = '__all__'
-
-
-from .business_structure import BusinessStructureOut
