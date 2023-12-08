@@ -506,6 +506,7 @@ class TestUserOperatorEndpoint:
         has_history_record = HistoricalUserOperator.objects.all()
         assert has_history_record.count() > 0, "History record was not created"
 
+
 class TestUserEndpoint:
     endpoint = base_endpoint + "user"
     endpoint_profile = endpoint + "-profile"
