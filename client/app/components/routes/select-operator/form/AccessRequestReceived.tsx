@@ -16,10 +16,12 @@ export default async function AccessRequestReceived({
 }: {
   readonly params: { id: number; step: string };
 }) {
-  const operator: Operator | { error: string } = await getOperator(params.id);
-  const hasAdmin: Boolean | { error: string } = await getOperatorHasAdmin(
-    params.id,
-  );
+  const operatorId: number = params.id;
+  const step: string = params.step;
+
+  const operator: Operator | { error: string } = await getOperator(operatorId);
+  const hasAdmin: boolean | { error: string } =
+    await getOperatorHasAdmin(operatorId);
 
   if ("error" in operator) {
     return <div>Server Error. Please try again later.</div>;
@@ -27,14 +29,21 @@ export default async function AccessRequestReceived({
 
   const adminRequestJSX: JSX.Element = (
     <>
+      <p>Once approved, you will receive a confirmation email.</p>
       <p>
-        We will review your request as soon as possible. Once approved, you will
-        receive a confirmation email.
+        You can then log back in using your Business BCeID with full
+        permissions.
       </p>
+    </>
+  );
+
+  const addOperatorJSX: JSX.Element = (
+    <>
       <p>
-        You can then log back in using your Business BCeID with full permissions
-        as its administrator.
+        Your request to add <b>{operator.legal_name}</b> and become its
+        administrator has been received and will be reviewed.
       </p>
+      {adminRequestJSX}
     </>
   );
 
@@ -44,8 +53,8 @@ export default async function AccessRequestReceived({
         Your access request has been sent to the administrator of{" "}
         <b>{operator.legal_name}</b> for review.
         <br />
-        Once approved, you will receive a confirmation email.
       </p>
+      <p>Once approved, you will receive a confirmation email.</p>
       <p>
         You can then log back in using your Business BCeID with designated
         permissions.
@@ -53,30 +62,26 @@ export default async function AccessRequestReceived({
     </>
   );
 
+  let content: JSX.Element | undefined;
+  if (step === "add-operator") content = addOperatorJSX;
+  else if (step === "request-access")
+    content = (
+      <>
+        <p>
+          Your access request for <b>{operator.legal_name}</b> as its
+          administrator has been received and will be reviewed.
+        </p>
+        {adminRequestJSX}
+      </>
+    );
+  else if (hasAdmin) content = requestSubsequentAccessJSX;
+
   return (
     <section className="text-center my-auto text-2xl flex flex-col gap-3">
       <span>
         <AccessTimeIcon sx={{ color: "#FFCC00", fontSize: 50 }} />
       </span>
-      {params.step === "add-operator" ? (
-        <>
-          <p>
-            Your request to add operator <b>{operator.legal_name}</b> has been
-            received.
-          </p>
-          {adminRequestJSX}
-        </>
-      ) : hasAdmin ? (
-        requestSubsequentAccessJSX
-      ) : (
-        <>
-          <p>
-            Your request to access to operator <b>{operator.legal_name}</b> as
-            its administrator has been received.
-          </p>
-          {adminRequestJSX}
-        </>
-      )}
+      {content}
     </section>
   );
 }

@@ -1,9 +1,13 @@
 import { actionHandler } from "@/app/utils/actions";
-import { userOperatorSchema } from "@/app/utils/jsonSchema/userOperator";
-import UserOperatorForm from "@/app/components/form/UserOperatorForm";
+import {
+  userOperatorSchema,
+  userOperatorPage2,
+} from "@/app/utils/jsonSchema/userOperator";
+import UserOperatorMultiStepForm from "@/app/components/form/UserOperatorMultiStepForm";
 import { BusinessStructure } from "@/app/components/routes/select-operator/form/types";
 import { RJSFSchema } from "@rjsf/utils";
 import { UserInformationInitialFormData } from "@/app/components/form/formDataTypes";
+import UserOperatorForm from "@/app/components/form/UserOperatorForm";
 
 async function getCurrentUser() {
   return actionHandler(
@@ -52,14 +56,18 @@ const createUserOperatorSchema = (
   return localSchema;
 };
 
-export default async function UserOperator() {
+export default async function UserOperator({
+  params,
+}: Readonly<{
+  params?: { id?: number };
+}>) {
+  const serverError = <div>Server Error. Please try again later.</div>;
+
   const businessStructures: BusinessStructure[] | { error: string } =
     await getBusinessStructures();
 
   const userData: UserInformationInitialFormData | { error: string } =
     await getCurrentUser();
-
-  const serverError = <div>Server Error. Please try again later.</div>;
 
   if ("error" in userData || "error" in businessStructures) return serverError;
 
@@ -70,8 +78,11 @@ export default async function UserOperator() {
     }),
   );
 
-  return (
-    <UserOperatorForm
+  // If operator has an admin, use the single page form to show the user information
+  return params?.id ? (
+    <UserOperatorForm schema={userOperatorPage2} formData={userData} />
+  ) : (
+    <UserOperatorMultiStepForm
       schema={createUserOperatorSchema(businessStructuresList)}
       formData={userData}
     />

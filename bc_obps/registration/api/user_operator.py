@@ -1,3 +1,4 @@
+from django.db import IntegrityError
 from registration.schema import (
     UserOperatorOut,
     SelectOperatorIn,
@@ -34,11 +35,11 @@ from ninja.responses import codes_4xx
 ##### GET #####
 @router.get("/is-approved-admin-user-operator/{user_guid}", response={200: IsApprovedUserOperator, codes_4xx: Message})
 def is_approved_admin_user_operator(request, user_guid: str):
-    approved_user_operator = UserOperator.objects.filter(
+    approved_user_operator: bool = UserOperator.objects.filter(
         user_id=user_guid, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.APPROVED
-    )
+    ).exists()
 
-    return 200, {"approved": True if approved_user_operator else False}
+    return 200, {"approved": approved_user_operator}
 
 
 @router.get(
@@ -55,10 +56,10 @@ def get_user_operator(request, user_operator_id: int):
 
 @router.get("/operator-has-admin/{operator_id}", response={200: bool, codes_4xx: Message})
 def get_user_operator_admin_exists(request, operator_id: int):
-    hasAdmin = UserOperator.objects.filter(
+    has_admin = UserOperator.objects.filter(
         operator_id=operator_id, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.APPROVED
     ).exists()
-    return 200, hasAdmin
+    return 200, has_admin
 
 
 ##### POST #####
@@ -67,8 +68,7 @@ def get_user_operator_admin_exists(request, operator_id: int):
 @router.post("/select-operator/request-admin-access", response={201: RequestAccessOut, codes_4xx: Message})
 def request_access(request, payload: SelectOperatorIn):
     user: User = request.current_user
-    payload_dict: dict = payload.dict()
-    operator: Operator = get_object_or_404(Operator, id=payload_dict.get("operator_id"))
+    operator: Operator = get_object_or_404(Operator, id=payload.operator_id)
 
     # check if user is eligible to request access
     status, message = check_users_admin_request_eligibility(user, operator)
@@ -84,12 +84,10 @@ def request_access(request, payload: SelectOperatorIn):
 
 @router.post("/select-operator/request-access", response={201: RequestAccessOut, codes_4xx: Message})
 def request_access(request, payload: SelectOperatorIn):
-    current_user_guid = request.current_user.user_guid
-    user: User = get_object_or_404(User, user_guid=current_user_guid)
-    payload_dict: dict = payload.dict()
-    operator: Operator = get_object_or_404(Operator, id=payload_dict.get("operator_id"))
+    user: User = request.current_user
+    operator: Operator = get_object_or_404(Operator, id=payload.operator_id)
 
-    status, message = check_access_request_matches_business_guid(current_user_guid, operator)
+    status, message = check_access_request_matches_business_guid(user.user_guid, operator)
     if status != 200:
         return status, message
 
@@ -219,18 +217,17 @@ def create_operator_and_user_operator(request, payload: UserOperatorOperatorIn):
 @router.post("/user-operator/contact", response={200: SelectOperatorIn, codes_4xx: Message})
 def create_user_operator_contact(request, payload: UserOperatorContactIn):
     try:
-        payload_dict: dict = payload.dict()
-        user_operator_instance: UserOperator = get_object_or_404(UserOperator, id=payload_dict.get("user_operator_id"))
-        user: User = user_operator_instance.user
-        is_senior_officer: bool = payload_dict.get("is_senior_officer")
+        user_operator_instance: UserOperator = get_object_or_404(UserOperator, id=payload.user_operator_id)
+        user: User = request.current_user
+        is_senior_officer: bool = payload.is_senior_officer
 
         senior_officer_contact: Contact = Contact(
             business_role=BusinessRole.objects.get(role_name='Senior Officer'),
-            position_title=payload_dict.get("position_title"),
-            street_address=payload_dict.get("street_address"),
-            municipality=payload_dict.get("municipality"),
-            province=payload_dict.get("province"),
-            postal_code=payload_dict.get("postal_code"),
+            position_title=payload.position_title,
+            street_address=payload.street_address,
+            municipality=payload.municipality,
+            province=payload.province,
+            postal_code=payload.postal_code,
         )
 
         if is_senior_officer:
@@ -239,15 +236,18 @@ def create_user_operator_contact(request, payload: UserOperatorContactIn):
             senior_officer_contact.email = user.email
             senior_officer_contact.phone_number = user.phone_number
         else:
-            senior_officer_contact.first_name = payload_dict.get("first_name")
-            senior_officer_contact.last_name = payload_dict.get("last_name")
-            senior_officer_contact.email = payload_dict.get("so_email")
-            senior_officer_contact.phone_number = payload_dict.get("so_phone_number")
+            senior_officer_contact.first_name = payload.first_name
+            senior_officer_contact.last_name = payload.last_name
+            senior_officer_contact.email = payload.so_email
+            senior_officer_contact.phone_number = payload.so_phone_number
 
         senior_officer_contact.save()
 
     except ValidationError as e:
         return 400, {"message": generate_useful_error(e)}
+    # error handling when an existing contact with the same email already exists
+    except IntegrityError as e:
+        return 400, {"message": "A contact with this email already exists."}
     except Exception as e:
         return 400, {"message": str(e)}
 

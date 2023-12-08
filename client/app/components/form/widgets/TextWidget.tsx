@@ -12,10 +12,12 @@ const TextWidget: React.FC<WidgetProps> = ({
   readonly,
   schema,
   value,
+  uiSchema,
 }) => {
   const type = schema.type === "number" ? "number" : "text";
   // in the future we will add an option to allow users to set a max value
   const maxNum = 2147483647;
+  const placeholder = uiSchema?.["ui:placeholder"];
 
   const handleChange = (e: { target: { value: string } }) => {
     const val = e.target.value;
@@ -46,6 +48,7 @@ const TextWidget: React.FC<WidgetProps> = ({
       onChange={handleChange}
       sx={styles}
       type={type}
+      placeholder={placeholder}
     />
   );
 };
