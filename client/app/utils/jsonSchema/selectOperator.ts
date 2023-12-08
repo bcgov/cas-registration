@@ -1,19 +1,83 @@
 import { RJSFSchema } from "@rjsf/utils";
 import FieldTemplate from "@/app/styles/rjsf/FieldTemplate";
+import FieldTemplateWithSubmitButton from "@/app/styles/rjsf/FieldTemplateWithSubmitButton";
 
 export const selectOperatorSchema: RJSFSchema = {
   type: "object",
-  required: ["operator_id"],
+  required: ["search_type"],
   properties: {
-    operator_id: { type: "number", title: "Select Operator", anyOf: [] },
+    search_type: {
+      type: "string",
+      anyOf: [
+        { title: "Search by Business Legal Name", const: "legal_name" },
+        {
+          title: "Search by Canada Revenue Agency (CRA) Business Number",
+          const: "cra_business_number",
+        },
+      ],
+      default: "legal_name",
+    },
   },
+  allOf: [
+    {
+      if: {
+        properties: {
+          search_type: {
+            const: "legal_name",
+          },
+        },
+      },
+      then: {
+        required: ["legal_name"],
+        properties: {
+          legal_name: {
+            type: "string",
+            minLength: 1,
+            maxLength: 100,
+          },
+        },
+      },
+      else: {
+        required: ["cra_business_number"],
+        properties: {
+          cra_business_number: {
+            type: "number",
+            minLength: 1,
+            maxLength: 100,
+          },
+        },
+      },
+    },
+  ],
 };
 
 export const selectOperatorUiSchema = {
+  "ui:order": ["search_type", "legal_name", "cra_business_number"],
   "ui:FieldTemplate": FieldTemplate,
-  operator_id: {
+  search_type: {
     "ui:FieldTemplate": FieldTemplate,
-    "ui:classNames": "[&>label]:hidden",
-    "ui:widget": "ComboBox",
+    "ui:widget": "RadioWidget",
+    "ui:options": {
+      hideLabel: true,
+      inline: false,
+    },
+  },
+  legal_name: {
+    "ui:FieldTemplate": FieldTemplateWithSubmitButton,
+    "ui:widget": "TextWidget",
+    "ui:placeholder": "Enter Business Legal Name",
+    "ui:options": {
+      hideLabel: true,
+      buttonLabel: "Search Operator",
+    },
+  },
+  cra_business_number: {
+    "ui:FieldTemplate": FieldTemplateWithSubmitButton,
+    "ui:widget": "TextWidget",
+    "ui:placeholder": "Enter CRA Business Number",
+    "ui:options": {
+      hideLabel: true,
+      buttonLabel: "Search Operator",
+    },
   },
 };

@@ -57,7 +57,9 @@ export interface UserOperatorFormData extends UserFormData {
 }
 
 export interface SelectOperatorFormData {
-  operator_id: number;
+  search_type: string;
+  legal_name?: string;
+  cra_business_number?: number;
 }
 
 export interface UserInformationInitialFormData {
