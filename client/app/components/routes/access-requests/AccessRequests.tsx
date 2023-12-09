@@ -61,8 +61,8 @@ export default async function AccessRequests() {
           { field: "id", headerName: "Request ID", width: 150 },
           { field: "first_name", headerName: "First Name", width: 150 },
           { field: "last_name", headerName: "Last Name", width: 150 },
-          { field: "email", headerName: "Email", width: 150 },
-          { field: "legal_name", headerName: "Operator", width: 150 },
+          { field: "email", headerName: "Email", width: 300 },
+          { field: "legal_name", headerName: "Operator", width: 300 },
           { field: "status", headerName: "Status", width: 150 },
           {
             field: "action",
