@@ -55,7 +55,13 @@ export interface UserOperatorFormData extends UserFormData {
   // Not in form, but needed for API to create a contact based on the existing user-operator
   user_operator_id?: string;
 }
-
+export interface UserProfileFormData {
+  first_name: string;
+  last_name: string;
+  position_title: string;
+  email: string;
+  phone_number: string;
+}
 export interface SelectOperatorFormData {
   search_type: string;
   legal_name?: string;

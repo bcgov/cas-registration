@@ -47,50 +47,42 @@ export const authOptions: NextAuthOptions = {
           // 👇️ used for federated logout, client/app/api/auth/logout/route.ts
           token.id_token = account.id_token;
 
-          // 👇️ used for app_role lookup and DJANGO API calls
+          // 👇️ used for routing and DJANGO API calls
           token.user_guid = account.providerAccountId.split("@")[0];
           token.identity_provider = account.providerAccountId.split("@")[1];
-          // 🚧 WIP 🚧
-          switch (token.identity_provider) {
-            case "idir":
-              // Default role
-              token.app_role = "cas_pending";
-              try {
-                // Get user role by guid
-                const response = await actionHandler(
-                  `registration/get-user-role/${token.user_guid}`,
-                  "GET",
-                  "",
-                );
-                if (response?.role_name) {
-                  token.app_role = response.role_name;
-                } else {
-                  // Default app_role if the API call fails
-                }
-              } catch (error) {
-                // Default app_role if there's an error in the API call
-              }
-              break;
-            case "bceidbusiness":
-              // Default role
-              token.app_role = "industry_user";
-              try {
-                // Check if user is approved
-                const response = await actionHandler(
-                  `registration/is-approved-admin-user-operator/${token.user_guid}`,
-                  "GET",
-                  "",
-                );
 
-                if (response?.approved) {
-                  token.app_role = token.app_role + "_admin";
-                } else {
-                  // Default app_role if the API call fails
+          if (!token.app_role) {
+            // 🚀 API call: Get user app_role by user_guid from user table
+            const responseRole = await actionHandler(
+              `registration/user-app-role/${token.user_guid}`,
+              "GET",
+              "",
+            );
+            if (responseRole?.role_name) {
+              // user found in table, assign role to token
+              token.app_role = responseRole.role_name;
+
+              //for bceid users, augment with admin based on operator-user table
+              if (token.identity_provider === "bceidbusiness") {
+                try {
+                  // 🚀 API call: check if user is admin approved
+                  const response = await actionHandler(
+                    `registration/is-approved-admin-user-operator/${token.user_guid}`,
+                    "GET",
+                    "",
+                  );
+                  if (response?.approved) {
+                    token.app_role = token.app_role + "_admin";
+                  } else {
+                    // Default app_role if the API call fails
+                  }
+                } catch (error) {
+                  // Default app_role if there's an error in the API call
                 }
-              } catch (error) {
-                // Default app_role if there's an error in the API call
               }
-              break;
+            } else {
+              // 🛸 Routing: no app_role users will be routed to dashboard\profile
+            }
           }
         } else {
           // check if token is expired
@@ -175,7 +167,6 @@ export const authOptions: NextAuthOptions = {
         identity_provider: token.identity_provider,
         user: {
           ...session.user,
-          user_guid: token.user_guid,
           app_role: token.app_role,
         },
       };
