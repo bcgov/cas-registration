@@ -71,7 +71,6 @@ export default async function UserOperator({
 }: Readonly<{
   params?: { id?: number; readonly?: boolean };
 }>) {
-  const userOperatorId = params?.id;
   const businessStructures: BusinessStructure[] | { error: string } =
     await getBusinessStructures();
 
@@ -97,16 +96,10 @@ export default async function UserOperator({
     }),
   );
 
-  console.log("user data:");
-  console.log(userData);
-
   userOperatorData.is_senior_officer = "true";
   userOperatorData.operator_has_parent_company = "no";
   console.log(userOperatorData);
 
-  console.log(createUserOperatorSchema(businessStructuresList));
-
-  return (
   // If operator has an admin, use the single page form to show the user information
   return params?.id ? (
     <UserOperatorForm schema={userOperatorPage2} formData={userData} />
