@@ -1,7 +1,6 @@
 "use client";
 
 import { RJSFSchema } from "@rjsf/utils";
-import Form from "@/app/components/form/FormBase";
 import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { userOperatorUiSchema } from "@/app/utils/jsonSchema/userOperator";
@@ -12,6 +11,7 @@ import {
 } from "@/app/components/form/formDataTypes";
 import { Alert, Button } from "@mui/material";
 import SubmitButton from "@/app/components/form/SubmitButton";
+import MultiStepFormBase from "./MultiStepFormBase";
 
 interface UserOperatorFormProps {
   schema: RJSFSchema;
@@ -22,7 +22,7 @@ interface UserOperatorFormProps {
 export default function UserOperatorMultiStepForm({
   schema,
   formData,
-  readonly
+  readonly = false,
 }: Readonly<UserOperatorFormProps>) {
   const { push, back } = useRouter();
   const params = useParams();
@@ -32,7 +32,6 @@ export default function UserOperatorMultiStepForm({
 
   const formSection = parseInt(params?.formSection as string);
   const userOperatorId = params?.id as string;
-
   const formSectionList = Object.keys(schema.properties as RJSFSchema);
   const isFinalStep = formSection === formSectionList.length - 1;
 
@@ -88,7 +87,7 @@ export default function UserOperatorMultiStepForm({
       baseUrl={`/dashboard/operators/user-operator/${parseInt(userOperatorId)}`}
       cancelUrl="/dashboard/operators"
       schema={schema}
-      error={error}
+      error={errorList}
       readonly={readonly}
       formData={formState}
       onSubmit={submitHandler}
@@ -106,6 +105,6 @@ export default function UserOperatorMultiStepForm({
         </Button>
         <SubmitButton label="Submit" />
       </div>
-    </Form>
+    </MultiStepFormBase>
   );
 }
