@@ -36,7 +36,6 @@ export default function UserOperatorMultiStepForm({
 
   const formSection = parseInt(params?.formSection as string);
   const userOperatorId = params?.id as string;
-
   const formSectionList = Object.keys(schema.properties as RJSFSchema);
   const isFinalStep = formSection === formSectionList.length - 1;
 
@@ -90,6 +89,7 @@ export default function UserOperatorMultiStepForm({
   return (
     <FormBase
       schema={schema}
+      error={errorList}
       readonly={readonly}
       formData={formState}
       onSubmit={submitHandler}
