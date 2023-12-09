@@ -16,7 +16,7 @@ describe("Operations component", () => {
           name: "Operation 1",
           type: "Single Facility Operation",
           naics_code: 1,
-          previous_year_attributable_emissions: "100.34500",
+          previous_year_attributable_emissions: "100",
           swrs_facility_id: "1001",
           bcghg_id: "546",
           opt_in: false,

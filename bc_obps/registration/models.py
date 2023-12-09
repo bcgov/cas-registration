@@ -398,9 +398,7 @@ class OperationAndFacilityCommonInfo(models.Model):
         related_name="operations_and_facilities",
     )
 
-    previous_year_attributable_emissions = models.DecimalField(
-        decimal_places=5,
-        max_digits=10,
+    previous_year_attributable_emissions = models.IntegerField(
         db_comment="An operation or facility's attributable emissions from the previous year. Only needed if the operation/facility submitted a report the previous year.",
         blank=True,
         null=True,
