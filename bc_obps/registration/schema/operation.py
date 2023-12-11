@@ -1,7 +1,6 @@
-from typing import Optional
-from ninja import Field
-from ninja import ModelSchema, Schema
-from registration.models import Operation, Contact
+from typing import List, Optional
+from ninja import Field, ModelSchema, Schema
+from registration.models import Operation
 from datetime import date
 from .contact import ContactSchema
 
@@ -19,6 +18,8 @@ class OperationCreateIn(ModelSchema):
     # Converting types
     naics_code_id: int
     verified_at: Optional[date] = None
+    operation_has_multiple_operators: Optional[bool] = False
+    multiple_operators_array: Optional[list] = None
 
     class Config:
         model = Operation
@@ -46,6 +47,8 @@ class OperationUpdateIn(ModelSchema):
     phone_number: Optional[str] = None
     application_lead: Optional[int] = None
     is_application_lead_external: Optional[bool] = None
+    operation_has_multiple_operators: Optional[bool] = False
+    multiple_operators_array: Optional[list] = None
 
     class Config:
         model = Operation
@@ -64,7 +67,24 @@ class OperationOut(ModelSchema):
     verified_at: Optional[date] = None
     is_application_lead_external: Optional[bool] = None
     application_lead: Optional[ContactSchema]
+    operation_has_multiple_operators: Optional[bool] = Field(..., alias="operation_has_multiple_operators") or False
+    multiple_operators_array: Optional["List[MultipleOperatorOut]"] = None
+
+    @staticmethod
+    def resolve_multiple_operators_array(obj):
+        if obj.multiple_operator.exists():
+            # TODO: filter multple operators by archived_at is null or similar once #361 is done
+            return [
+                MultipleOperatorOut.from_orm(operator).dict()
+                for operator in obj.multiple_operator.filter(operation_id=obj.id)
+            ]
+        return None
 
     class Config:
         model = Operation
         model_fields = "__all__"
+
+
+from .multiple_operator import MultipleOperatorOut
+
+OperationOut.update_forward_refs()

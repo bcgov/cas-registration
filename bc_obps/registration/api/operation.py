@@ -5,7 +5,7 @@ import pytz
 from django.core import serializers
 from typing import List
 from django.shortcuts import get_object_or_404
-from registration.models import Operation, Operator, NaicsCode, Contact, BusinessRole, User
+from registration.models import MultipleOperator, Operation, Operator, NaicsCode, Contact, BusinessRole, User
 from registration.schema import (
     OperationCreateIn,
     OperationUpdateIn,
@@ -16,6 +16,53 @@ from registration.schema import (
 )
 from registration.utils import extract_fields_from_dict
 from ninja.responses import codes_4xx
+
+
+# Function to save multiple operators so we can reuse it in put/post routes
+def save_multiple_operators(multiple_operators_array, operation):
+    multiple_operator_fields_mapping = {
+        "mo_legal_name": "legal_name",
+        "mo_trade_name": "trade_name",
+        "mo_cra_business_number": "cra_business_number",
+        "mo_bc_corporate_registry_number": "bc_corporate_registry_number",
+        "mo_business_structure": "business_structure",
+        "mo_website": "website",
+        "mo_percentage_ownership": "percentage_ownership",
+        "mo_physical_street_address": "physical_street_address",
+        "mo_physical_municipality": "physical_municipality",
+        "mo_physical_province": "physical_province",
+        "mo_physical_postal_code": "physical_postal_code",
+        "mo_mailing_address_same_as_physical": "mailing_address_same_as_physical",
+        "mo_mailing_street_address": "mailing_street_address",
+        "mo_mailing_municipality": "mailing_municipality",
+        "mo_mailing_province": "mailing_province",
+        "mo_mailing_postal_code": "mailing_postal_code",
+    }
+
+    for idx, operator in enumerate(multiple_operators_array):
+        new_operator = {}
+        new_operator["operation_id"] = operation.id
+        new_operator["operator_index"] = idx + 1
+
+        # use physical address as mailing address if mo_mailing_address_same_as_physical is true
+        if operator["mo_mailing_address_same_as_physical"]:
+            operator["mo_mailing_street_address"] = operator["mo_physical_street_address"]
+            operator["mo_mailing_municipality"] = operator["mo_physical_municipality"]
+            operator["mo_mailing_province"] = operator["mo_physical_province"]
+            operator["mo_mailing_postal_code"] = operator["mo_physical_postal_code"]
+
+        for field in operator:
+            if field in multiple_operator_fields_mapping:
+                new_operator[multiple_operator_fields_mapping[field]] = operator[field]
+
+        # TODO: archive multiple operators in #361 that are not in the array anymore once #326 is done
+
+        # check if there is a multiple_operator with that operation id and number
+        # if there is, update it, if not, create it
+        if MultipleOperator.objects.filter(operation_id=operation.id, operator_index=idx + 1).exists():
+            MultipleOperator.objects.filter(operation_id=operation.id, operator_index=idx + 1).update(**new_operator)
+        else:
+            MultipleOperator.objects.create(**new_operator)
 
 
 ##### GET #####
@@ -60,6 +107,7 @@ def create_operation(request, payload: OperationCreateIn):
             "verified_at",
             "verified_by",
             "status",
+            "operation_has_multiple_operators",
         ],
     )
 
@@ -73,10 +121,18 @@ def create_operation(request, payload: OperationCreateIn):
             }[field_name]
             obj = get_object_or_404(model_class, id=field_value)
             operation_related_fields[field_name] = obj
+
+    operation_has_multiple_operators: bool = payload_dict.get("operation_has_multiple_operators")
+    multiple_operators_array: list = payload_dict.get("multiple_operators_array")
+
     operation = Operation.objects.create(**operation_related_fields)
     operation.regulated_products.set(payload.regulated_products)
     operation.reporting_activities.set(payload.reporting_activities)
     operation.documents.set(payload.documents)
+
+    if operation_has_multiple_operators:
+        save_multiple_operators(multiple_operators_array, operation)
+
     return 201, {"name": operation.name, "id": operation.id}
 
 
@@ -87,6 +143,9 @@ def create_operation(request, payload: OperationCreateIn):
 def update_operation(request, operation_id: int, submit, payload: OperationUpdateIn):
     payload_dict: dict = payload.dict()
     operation = get_object_or_404(Operation, id=operation_id)
+    operation_has_multiple_operators: bool = payload_dict.get("operation_has_multiple_operators")
+    multiple_operators_array: list = payload_dict.get("multiple_operators_array")
+
     if "operator" in payload_dict:
         operator = payload_dict["operator"]
         op = get_object_or_404(Operator, id=operator)
@@ -163,6 +222,10 @@ def update_operation(request, operation_id: int, submit, payload: OperationUpdat
         operation.reporting_activities.add(activity_id)  # Adds each activity
 
     operation.save()
+
+    if operation_has_multiple_operators:
+        save_multiple_operators(multiple_operators_array, operation)
+
     return 200, {"name": operation.name}
 
 
@@ -184,6 +247,3 @@ def update_operation_status(request, operation_id: int):
     )
     operation.save()
     return data
-
-
-##### DELETE #####

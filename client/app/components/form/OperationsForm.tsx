@@ -89,8 +89,8 @@ export default function OperationsForm({ formData, schema }: Props) {
           readonly={formData?.status === Status.PENDING}
           error={error}
           schema={schema}
+          allowBackNavigation
           submitEveryStep
-          showSubmissionStep
           onSubmit={async (data: { formData?: any }) => {
             const method = isCreate ? "POST" : "PUT";
             const endpoint = isCreate
@@ -99,6 +99,7 @@ export default function OperationsForm({ formData, schema }: Props) {
             const pathToRevalidate = isCreate
               ? "dashboard/operations"
               : `dashboard/operations/${formData?.id}`;
+
             const body = {
               ...formData,
               ...data.formData,
@@ -108,6 +109,7 @@ export default function OperationsForm({ formData, schema }: Props) {
               operator_id: 1,
               application_lead: formData?.application_lead?.id,
             };
+
             const response = await actionHandler(
               endpoint,
               method,

@@ -7,7 +7,7 @@ from registration.middleware.kubernetes_middleware import KubernetesHealthCheckM
 from registration.models import User
 from model_bakery import baker
 from localflavor.ca.models import CAPostalCodeField
-from registration.tests.test_endpoints import mock_postal_code
+from registration.tests.test_02_endpoints import mock_postal_code
 
 
 pytestmark = pytest.mark.django_db
