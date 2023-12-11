@@ -53,7 +53,7 @@ function InlineFieldTemplate({
       }}
       className={classNames}
     >
-      {!isLabel && label && (
+      {isLabel && label && (
         <Grid item xs={12} md={3} className="w-10">
           <label htmlFor={id} className="font-bold">
             {label}

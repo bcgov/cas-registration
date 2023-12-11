@@ -12,6 +12,7 @@ const TextWidget: React.FC<WidgetProps> = ({
   readonly,
   schema,
   uiSchema,
+  placeholder,
   value,
 }) => {
   const type = schema.type === "number" ? "number" : "text";
