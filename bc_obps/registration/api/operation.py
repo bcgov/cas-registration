@@ -52,7 +52,7 @@ def save_multiple_operators(multiple_operators_array, operation):
         new_operator = {}
         new_operator["operation_id"] = operation.id
         new_operator["operator_index"] = idx + 1
-        print(operator)
+
         # use physical address as mailing address if mo_mailing_address_same_as_physical is true
         if operator["mo_mailing_address_same_as_physical"]:
             operator["mo_mailing_street_address"] = operator["mo_physical_street_address"]
