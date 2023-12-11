@@ -58,7 +58,7 @@ export const selectOperatorUiSchema = {
     "ui:FieldTemplate": FieldTemplate,
     "ui:widget": "RadioWidget",
     "ui:options": {
-      hideLabel: true,
+      false: false,
       inline: false,
     },
   },
@@ -67,7 +67,7 @@ export const selectOperatorUiSchema = {
     "ui:widget": "TextWidget",
     "ui:placeholder": "Enter Business Legal Name",
     "ui:options": {
-      hideLabel: true,
+      label: false,
       buttonLabel: "Search Operator",
     },
   },
@@ -76,7 +76,7 @@ export const selectOperatorUiSchema = {
     "ui:widget": "TextWidget",
     "ui:placeholder": "Enter CRA Business Number",
     "ui:options": {
-      hideLabel: true,
+      label: false,
       buttonLabel: "Search Operator",
     },
   },

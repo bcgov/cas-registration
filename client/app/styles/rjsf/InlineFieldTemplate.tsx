@@ -35,7 +35,7 @@ function InlineFieldTemplate({
   const isErrors = rawErrors && rawErrors.length > 0;
 
   // UI Schema options
-  const hideLabel = uiSchema?.["ui:options"]?.hideLabel as boolean;
+  const isLabel = uiSchema?.["ui:options"]?.label !== false;
 
   return (
     <Grid
@@ -53,7 +53,7 @@ function InlineFieldTemplate({
       }}
       className={classNames}
     >
-      {!hideLabel && label && (
+      {isLabel && label && (
         <Grid item xs={12} md={3} className="w-10">
           <label htmlFor={id} className="font-bold">
             {label}

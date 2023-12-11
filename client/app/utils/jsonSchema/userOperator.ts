@@ -473,6 +473,11 @@ export const userOperatorUiSchema = {
     "ui:classNames": "form-heading",
     "ui:FieldTemplate": TitleOnlyFieldTemplate,
   },
+  percentage_owned_by_parent_company: {
+    "ui:options": {
+      max: 100,
+    },
+  },
   pc_mailing_address_section: {
     ...subheading,
     "ui:options": {

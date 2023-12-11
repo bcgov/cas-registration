@@ -122,6 +122,7 @@ class TestOperationsEndpoint:
             naics_code_id=naics_code.id,
             reporting_activities=reporting_activities,
             regulated_products=regulated_products,
+            operation_has_multiple_operators=False,
             documents=[document.id],
             application_lead=application_lead.id,
             operator_id=operator.id,
@@ -133,6 +134,72 @@ class TestOperationsEndpoint:
         # check that the default status of pending was applied
         get_response = client.get(self.endpoint).json()[0]
         assert 'status' in get_response and get_response['status'] == 'Not Registered'
+
+    def test_post_new_operation_with_multiple_operators(self, client):
+        naics_code = baker.make(NaicsCode)
+        document = baker.make(Document)
+        contact = baker.make(Contact, postal_code='V1V 1V1')
+        regulated_products = baker.make(RegulatedProduct, _quantity=2)
+        reporting_activities = baker.make(ReportingActivity, _quantity=2)
+        operator = baker.make(Operator)
+        mock_operation = OperationCreateIn(
+            name='Springfield Nuclear Power Plant',
+            type='Single Facility Operation',
+            naics_code_id=naics_code.id,
+            operation_has_multiple_operators=True,
+            multiple_operators_array=[
+                {
+                    "mo_legal_name": "test",
+                    "mo_trade_name": "test",
+                    "mo_cra_business_number": 123,
+                    "mo_bc_corporate_registry_number": 123,
+                    "mo_business_structure": "test",
+                    "mo_website": "test",
+                    "mo_physical_street_address": "test",
+                    "mo_physical_municipality": "test",
+                    "mo_physical_province": "BC",
+                    "mo_physical_postal_code": "V1V 1V1",
+                    "mo_mailing_address_same_as_physical": True,
+                    "mo_mailing_street_address": "test",
+                    "mo_mailing_municipality": "test",
+                    "mo_mailing_province": "BC",
+                    "mo_mailing_postal_code": "V1V 1V1",
+                },
+                {
+                    "mo_legal_name": "test2",
+                    "mo_trade_name": "test2",
+                    "mo_cra_business_number": 123,
+                    "mo_bc_corporate_registry_number": 123,
+                    "mo_business_structure": "test",
+                    "mo_website": "test",
+                    "mo_physical_street_address": "test",
+                    "mo_physical_municipality": "test",
+                    "mo_physical_province": "BC",
+                    "mo_physical_postal_code": "V1V 1V1",
+                    "mo_mailing_address_same_as_physical": True,
+                    "mo_mailing_street_address": "test",
+                    "mo_mailing_municipality": "test",
+                    "mo_mailing_province": "BC",
+                    "mo_mailing_postal_code": "V1V 1V1",
+                },
+            ],
+            reporting_activities=reporting_activities,
+            regulated_products=regulated_products,
+            documents=[document.id],
+            contacts=[contact.id],
+            operator_id=operator.id,
+        )
+        post_response = client.post(self.endpoint, content_type=content_type_json, data=mock_operation.json())
+        assert post_response.status_code == 201
+        assert post_response.json().get('id') is not None
+
+        get_response = client.get(self.endpoint).json()[0]
+        print(get_response)
+        assert (
+            'operation_has_multiple_operators' in get_response
+            and get_response['operation_has_multiple_operators'] == True
+        )
+        assert 'multiple_operators_array' in get_response and len(get_response['multiple_operators_array']) == 2
 
     def test_post_new_malformed_operation(self, client):
         response = client.post(

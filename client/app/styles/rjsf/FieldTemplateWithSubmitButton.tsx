@@ -19,13 +19,13 @@ function FieldTemplateWithSubmitButton(props: Readonly<FieldTemplateProps>) {
   const isErrors = rawErrors && rawErrors.length > 0;
 
   // UI Schema options
-  const hideLabel = uiSchema?.["ui:options"]?.hideLabel as boolean;
+  const isLabel = uiSchema?.["ui:options"]?.label !== false;
   const buttonLabel = uiSchema?.["ui:options"]?.buttonLabel as string;
 
   return (
     <div style={style} className={`grid grid-cols-3 gap-2 my-6 ${classNames}`}>
       <div className="col-span-2 flex gap-2 items-center">
-        {!hideLabel && label && (
+        {isLabel && label && (
           <label htmlFor={id} className="font-bold">
             {label}
             {required ? "*" : null}
