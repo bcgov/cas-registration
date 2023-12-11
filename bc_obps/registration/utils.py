@@ -1,8 +1,23 @@
-from typing import Type, Union, Iterable, Dict, Any, Tuple, Optional
+from typing import List, Type, Union, Iterable, Dict, Any, Tuple, Optional
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError, models
 from .models import User, Operator, UserOperator, AppRole
 from django.shortcuts import get_object_or_404
+from ninja.errors import HttpError
+from model_bakery import baker
+from django.test import Client
+from registration.models import (
+    NaicsCode,
+    Document,
+    Contact,
+    Operator,
+    ReportingActivity,
+    User,
+    UserOperator,
+    RegulatedProduct,
+    Operation,
+)
+from registration.schema import OperationCreateIn, OperationUpdateIn
 
 
 def check_users_admin_request_eligibility(user: User, operator: Operator) -> Union[None, tuple[int, dict]]:
@@ -120,10 +135,97 @@ def extract_fields_from_dict(data_dict, fields_to_extract):
     return new_dict
 
 
-def check_if_role_authorized(role: AppRole, allowedRoles) -> Tuple[int, Optional[Union[dict[str, str], None]]]:
-    role_name = getattr(role, "role_name")
+def raise_401_if_role_not_authorized(request, authorized_roles) -> Tuple[int, Optional[Union[dict[str, str], None]]]:
+    if not hasattr(request, 'current_user'):
+        raise HttpError(401, "Unauthorized.")
+    role_name = getattr(request.current_user.app_role, "role_name")
+    if role_name not in authorized_roles:
+        raise HttpError(401, "Unauthorized.")
 
-    if role_name not in allowedRoles:
-        return 401, {"message": "Unauthorized."}
 
-    return 200, None
+def get_an_operators_users(operator: Operator) -> List[User]:
+    # get a list of all the operator's approved user ids
+    user_ids = UserOperator.objects.filter(operator_id=operator.id, status=UserOperator.Statuses.APPROVED).values_list(
+        'user_id', flat=True
+    )
+
+    return User.objects.filter(pk__in=user_ids).values_list('user_guid', flat=True)
+
+
+class TestUtils:
+    # initialize the APIClient app
+    client = Client()
+
+    def save_app_role(self, role_name):
+        baker.make(AppRole, role_name=role_name)
+        self.user.app_role = baker.make(AppRole, role_name=role_name)
+        self.user.save()
+
+    def mock_get_with_auth_role(self, role_name, endpoint=None):
+        TestUtils.save_app_role(self, role_name)
+        return TestUtils.client.get(endpoint or self.endpoint, HTTP_AUTHORIZATION=self.auth_header_dumps)
+
+    def mock_post_with_auth_role(self, role_name, content_type, data, endpoint=None):
+        TestUtils.save_app_role(self, role_name)
+        return TestUtils.client.post(
+            endpoint or self.endpoint, content_type=content_type, data=data, HTTP_AUTHORIZATION=self.auth_header_dumps
+        )
+
+    def mock_put_with_auth_role(self, role_name, content_type, data, endpoint=None):
+        TestUtils.save_app_role(self, role_name)
+        return TestUtils.client.put(
+            endpoint or self.endpoint, content_type=content_type, data=data, HTTP_AUTHORIZATION=self.auth_header_dumps
+        )
+
+    def authorize_current_user_as_operator_user(self, operator):
+        baker.make(UserOperator, user_id=self.user.user_guid, status=UserOperator.Statuses.APPROVED, operator=operator)
+
+    def mock_postal_code():
+        return "v8v3g1"
+
+    def created_mock_operation(operator: Operator = None):
+        naics_code = baker.make(NaicsCode)
+        document = baker.make(Document)
+        reporting_activities = baker.make(ReportingActivity, _quantity=2)
+        regulated_products = baker.make(RegulatedProduct, _quantity=2)
+        application_lead = baker.make(Contact)
+        operator = operator or baker.make(Operator)
+        return OperationCreateIn(
+            name='Springfield Nuclear Power Plant',
+            type='Single Facility Operation',
+            naics_code_id=naics_code.id,
+            reporting_activities=reporting_activities,
+            regulated_products=regulated_products,
+            documents=[document.id],
+            application_lead=application_lead.id,
+            operator_id=operator.id,
+        )
+
+    def updated_mock_operation():
+        naics_code = baker.make(NaicsCode)
+        document = baker.make(Document)
+        application_lead = baker.make(Contact)
+        operator = baker.make(Operator)
+        activity = baker.make(ReportingActivity)
+        product = baker.make(RegulatedProduct)
+        operation = baker.make(Operation)
+        operation.reporting_activities.set([activity.id])
+        operation.regulated_products.set([product.id])
+
+        return OperationUpdateIn(
+            name="New name",
+            type="Single Facility Operation",
+            naics_code_id=naics_code.id,
+            reporting_activities=[activity.id],
+            physical_street_address="19 Evergreen Terrace",
+            physical_municipality="Springfield",
+            physical_province="BC",
+            physical_postal_code="V1V 1V1",
+            legal_land_description="It's legal",
+            latitude=90,
+            longitude=-120,
+            regulated_products=[product.id],
+            documents=[document.id],
+            application_lead=application_lead.id,
+            operator_id=operator.id,
+        )
