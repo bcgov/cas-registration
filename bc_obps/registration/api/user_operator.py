@@ -47,6 +47,7 @@ from ninja.errors import HttpError
 ##### GET #####
 @router.get("/user-operator-status-from-user", response={200: UserOperatorStatus, codes_4xx: Message})
 def get_user_operator_operator_id(request):
+    raise_401_if_role_not_authorized(request, ["industry_user", "industry_user_admin"])
     user_operator = get_object_or_404(UserOperator, user_id=request.current_user.user_guid)
     return 200, {"status": user_operator.status}
 
