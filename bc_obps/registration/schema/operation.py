@@ -67,18 +67,8 @@ class OperationOut(ModelSchema):
     verified_at: Optional[date] = None
     is_application_lead_external: Optional[bool] = None
     application_lead: Optional[ContactSchema]
-    operation_has_multiple_operators: Optional[bool] = Field(..., alias="operation_has_multiple_operators") or False
-    multiple_operators_array: Optional["List[MultipleOperatorOut]"] = None
-
-    @staticmethod
-    def resolve_multiple_operators_array(obj):
-        if obj.multiple_operator.exists():
-            # TODO: filter multple operators by archived_at is null or similar once #361 is done
-            return [
-                MultipleOperatorOut.from_orm(operator).dict()
-                for operator in obj.multiple_operator.filter(operation_id=obj.id)
-            ]
-        return None
+    operation_has_multiple_operators: Optional[bool] = Field(False, alias="operation_has_multiple_operators")
+    multiple_operators_array: Optional["List[MultipleOperatorOut]"] = Field(None, alias="multiple_operator")
 
     class Config:
         model = Operation
