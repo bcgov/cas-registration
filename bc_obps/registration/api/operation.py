@@ -14,6 +14,8 @@ from registration.models import (
     BusinessRole,
     BusinessStructure,
     User,
+    UserOperator,
+    MultipleOperator,
 )
 from registration.schema import (
     OperationCreateIn,
@@ -23,8 +25,14 @@ from registration.schema import (
     OperationUpdateOut,
     Message,
 )
-from registration.utils import extract_fields_from_dict
+from registration.utils import (
+    raise_401_if_role_not_authorized,
+    extract_fields_from_dict,
+    get_an_operators_users,
+)
 from ninja.responses import codes_4xx
+from ninja.errors import HttpError
+from django.forms.models import model_to_dict
 
 
 # Function to save multiple operators so we can reuse it in put/post routes
@@ -81,12 +89,38 @@ def save_multiple_operators(multiple_operators_array, operation):
 
 @router.get("/operations", response={200: List[OperationOut], codes_4xx: Message})
 def list_operations(request):
-    qs = Operation.objects.all()
-    return 200, qs
+    raise_401_if_role_not_authorized(request, ["industry_user", "industry_user_admin", "cas_admin", "cas_analyst"])
+    user = request.current_user
+    # IRC users can see all operations
+    if user.app_role.role_name in ['cas_admin', 'cas_analyst']:
+        qs = Operation.objects.all()
+        return 200, qs
+    # Industry users can only see their companies' operations (if there's no user_operator, then the user isn't approved to make any changes)
+    user_operator = UserOperator.objects.filter(user_id=user.user_guid).first()
+    if not user_operator:
+        raise HttpError(401, "Unauthorized.")
+    operator = get_object_or_404(Operator, id=user_operator.operator_id)
+
+    authorized_users = get_an_operators_users(operator)
+    if request.current_user.user_guid not in authorized_users:
+        raise HttpError(401, "Unauthorized.")
+
+    authorized_operations = Operation.objects.filter(operator_id=user_operator.operator_id)
+    return 200, authorized_operations
 
 
 @router.get("/operations/{operation_id}", response={200: OperationOut, codes_4xx: Message})
 def get_operation(request, operation_id: int):
+    raise_401_if_role_not_authorized(request, ["industry_user", "industry_user_admin", "cas_admin", "cas_analyst"])
+    operation = get_object_or_404(Operation, id=operation_id)
+    if request.current_user.app_role.role_name not in ["cas_admin", 'cas_analyst']:
+        user_operator = get_object_or_404(UserOperator, user_id=request.current_user.user_guid)
+        operator = get_object_or_404(Operator, id=user_operator.operator_id)
+
+        authorized_users = get_an_operators_users(operator)
+        if request.current_user.user_guid not in authorized_users:
+            raise HttpError(401, "Unauthorized.")
+
     operation = get_object_or_404(Operation, id=operation_id)
     return 200, operation
 
@@ -96,6 +130,7 @@ def get_operation(request, operation_id: int):
 
 @router.post("/operations", response={201: OperationCreateOut, codes_4xx: Message})
 def create_operation(request, payload: OperationCreateIn):
+    raise_401_if_role_not_authorized(request, ["industry_user", "industry_user_admin"])
     payload_dict: dict = payload.dict()
 
     # check that the operation doesn't already exist
@@ -152,6 +187,18 @@ def create_operation(request, payload: OperationCreateIn):
 
 @router.put("/operations/{operation_id}", response={200: OperationUpdateOut, codes_4xx: Message})
 def update_operation(request, operation_id: int, submit, payload: OperationUpdateIn):
+    raise_401_if_role_not_authorized(request, ["industry_user", "industry_user_admin", "cas_admin", "cas_analyst"])
+    user = request.current_user
+    user_operator = UserOperator.objects.filter(user_id=user.user_guid).first()
+    # if there's no user_operator or operator, then the user isn't approved to make any changes
+    if not user_operator:
+        raise HttpError(401, "Unauthorized.")
+    operator = Operator.objects.get(id=user_operator.operator_id)
+
+    authorized_users = get_an_operators_users(operator)
+    if request.current_user.user_guid not in authorized_users:
+        raise HttpError(401, "Unauthorized.")
+
     payload_dict: dict = payload.dict()
     operation = get_object_or_404(Operation, id=operation_id)
     operation_has_multiple_operators: bool = payload_dict.get("operation_has_multiple_operators")
@@ -242,6 +289,7 @@ def update_operation(request, operation_id: int, submit, payload: OperationUpdat
 
 @router.put("/operations/{operation_id}/update-status")
 def update_operation_status(request, operation_id: int):
+    raise_401_if_role_not_authorized(request, ["cas_admin", "cas_analyst"])
     # need to convert request.body (a bytes object) to a string, and convert the string to a JSON object
     payload = json.loads(request.body.decode())
     status = getattr(Operation.Statuses, payload.get("status").upper())
