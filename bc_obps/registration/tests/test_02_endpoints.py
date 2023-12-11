@@ -7,6 +7,7 @@ from model_bakery import baker
 from django.test import Client
 from localflavor.ca.models import CAPostalCodeField
 from registration.models import (
+    BusinessStructure,
     NaicsCode,
     Document,
     Contact,
@@ -139,6 +140,7 @@ class TestOperationsEndpoint:
         naics_code = baker.make(NaicsCode)
         document = baker.make(Document)
         contact = baker.make(Contact, postal_code='V1V 1V1')
+        baker.make(BusinessStructure, name='BC Corporation')
         regulated_products = baker.make(RegulatedProduct, _quantity=2)
         reporting_activities = baker.make(ReportingActivity, _quantity=2)
         operator = baker.make(Operator)
@@ -153,7 +155,7 @@ class TestOperationsEndpoint:
                     "mo_trade_name": "test",
                     "mo_cra_business_number": 123,
                     "mo_bc_corporate_registry_number": 123,
-                    "mo_business_structure": "test",
+                    "mo_business_structure": "BC Corporation",
                     "mo_website": "test",
                     "mo_physical_street_address": "test",
                     "mo_physical_municipality": "test",
@@ -170,7 +172,7 @@ class TestOperationsEndpoint:
                     "mo_trade_name": "test2",
                     "mo_cra_business_number": 123,
                     "mo_bc_corporate_registry_number": 123,
-                    "mo_business_structure": "test",
+                    "mo_business_structure": "BC Corporation",
                     "mo_website": "test",
                     "mo_physical_street_address": "test",
                     "mo_physical_municipality": "test",
@@ -585,7 +587,6 @@ class TestUserEndpoint:
 
     # GET USER
     def test_get_user(self):
-
         # Act
         response = client.get(self.endpoint, HTTP_AUTHORIZATION=self.auth_header_dumps)
         content = response.json()
@@ -616,7 +617,6 @@ class TestUserEndpoint:
 
     # GET USER PROFILE
     def test_get_user_profile(self):
-
         # Arrange
         url = f"{self.endpoint_profile}"
 
@@ -644,7 +644,6 @@ class TestUserEndpoint:
     # POST USER PROFILE BCEID
     @pytest.mark.usefixtures('app_role_fixture')
     def test_create_user_profile_bceidbusiness(self):
-
         # Arrange
         mock_payload = UserIn(
             first_name='Bceid',
@@ -685,7 +684,6 @@ class TestUserEndpoint:
     # POST USER PROFILE IDIR
     @pytest.mark.usefixtures('app_role_fixture')
     def test_create_user_profile_idir(self):
-
         # Arrange
         mock_payload = UserIn(
             first_name='Idir',
@@ -725,7 +723,6 @@ class TestUserEndpoint:
 
     # PUT USER PROFILE
     def test_update_user_profile(self):
-
         # Arrange
         mock_payload = UserIn(
             first_name='Test',
