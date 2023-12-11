@@ -17,7 +17,7 @@ function FieldTemplate({
 
   return (
     <div style={style} className={`w-full ${classNames}`}>
-      {isLabel && (
+      {isLabel && label && (
         <label htmlFor={id} className="inline-block">
           {label}
           {required ? "*" : null}
