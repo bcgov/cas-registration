@@ -13,7 +13,7 @@ async function getNaicsCodes() {
     return await actionHandler(
       "registration/naics_codes",
       "GET",
-      "/dashboard/operations"
+      "/dashboard/operations",
     );
   } catch (error) {
     // Handle the error here or rethrow it to handle it at a higher level
@@ -26,7 +26,7 @@ export async function getRegulatedProducts() {
     return await actionHandler(
       "registration/regulated_products",
       "GET",
-      "/operations"
+      "/operations",
     );
   } catch (error) {
     // Handle the error here or rethrow it to handle it at a higher level
@@ -38,7 +38,7 @@ export async function getReportingActivities() {
     return await actionHandler(
       "registration/reporting_activities",
       "GET",
-      "/operations"
+      "/operations",
     );
   } catch (error) {
     // Handle the error here or rethrow it to handle it at a higher level
@@ -51,7 +51,7 @@ async function getBusinessStructures() {
   return actionHandler(
     `registration/business_structures`,
     "GET",
-    `/dashboard/select-operator/user-operator`
+    `/dashboard/select-operator/user-operator`,
   );
 }
 
@@ -61,7 +61,7 @@ async function getOperation(id: number) {
     return await actionHandler(
       `registration/operations/${id}`,
       "GET",
-      `/operations/${id}`
+      `/operations/${id}`,
     );
   } catch (error) {
     // Handle the error here or rethrow it to handle it at a higher level
@@ -81,7 +81,7 @@ export const createOperationSchema = (
     id: number;
     name: string;
   }[],
-  businessStructureList: { id: string; label: string }[]
+  businessStructureList: { id: string; label: string }[],
 ) => {
   const localSchema = JSON.parse(JSON.stringify(schema));
   // naics codes
@@ -115,7 +115,7 @@ export const createOperationSchema = (
       title: businessStructure.label,
       enum: [businessStructure.id],
       value: businessStructure.id,
-    })
+    }),
   );
 
   if (Array.isArray(businessStructureOptions)) {
@@ -143,7 +143,7 @@ export default async function Operation({ numRow }: { numRow?: number }) {
     (businessStructure: BusinessStructure) => ({
       id: businessStructure.name,
       label: businessStructure.name,
-    })
+    }),
   );
   // Render the OperationsForm component with schema and formData if the operation already exists
   return (
@@ -155,7 +155,7 @@ export default async function Operation({ numRow }: { numRow?: number }) {
           codes,
           products,
           activities,
-          businessStructuresList
+          businessStructuresList,
         )}
         formData={operation as OperationsFormData}
       />
