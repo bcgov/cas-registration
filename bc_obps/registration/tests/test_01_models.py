@@ -4,6 +4,7 @@ from django.utils import timezone
 
 from registration.models import (
     BusinessRole,
+    BusinessStructure,
     DocumentType,
     Document,
     NaicsCode,
@@ -16,7 +17,6 @@ from registration.models import (
     ParentChildOperator,
     Operation,
     MultipleOperator,
-    UserAndContactCommonInfo,
     AppRole,
 )
 
@@ -613,7 +613,7 @@ class MultipleOperatorModelTest(BaseTestCase):
             trade_name="test",
             cra_business_number=123456789,
             bc_corporate_registry_number=123456789,
-            business_structure="test",
+            business_structure=BusinessStructure.objects.all().first(),
             website="test",
             percentage_ownership=100,
             physical_street_address="test",
