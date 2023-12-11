@@ -166,7 +166,7 @@ const operationPage1: RJSFSchema = {
                 "mo_trade_name",
                 "mo_cra_business_number",
                 "mo_bc_corporate_registry_number",
-                /* "mo_business_structure", */
+                "mo_business_structure",
                 "mo_percentage_ownership",
                 "mo_physical_street_address",
                 "mo_physical_municipality",
@@ -497,6 +497,7 @@ export const operationUiSchema = {
       },
       mo_business_structure: {
         "ui:widget": "ComboBox",
+        "ui:placeholder": "Select a business structure",
       },
       mo_physical_province: {
         "ui:widget": "ComboBox",
