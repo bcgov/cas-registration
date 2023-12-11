@@ -49,6 +49,7 @@ export const authOptions: NextAuthOptions = {
 
           // 👇️ used for routing and DJANGO API calls
           token.user_guid = account.providerAccountId.split("@")[0];
+
           token.identity_provider = account.providerAccountId.split("@")[1];
 
           if (!token.app_role) {

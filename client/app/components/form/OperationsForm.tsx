@@ -34,6 +34,13 @@ export default function OperationsForm({ formData, schema }: Props) {
   const isApplicationLeadExternal =
     userEmail !== formData?.application_lead?.email;
 
+  // empty array is not a valid value for multiple_operators_array as empty default should be [{}]
+  // to avoid buggy behaviour opening
+  const isMultipleOperatorsArray =
+    formData &&
+    Array.isArray(formData?.multiple_operators_array) &&
+    formData.multiple_operators_array.length > 0;
+
   // need to convert some of the information received from django into types RJSF can read
   const transformedFormData = {
     ...formData,
@@ -54,6 +61,11 @@ export default function OperationsForm({ formData, schema }: Props) {
     is_application_lead_external: isApplicationLeadExternal,
     verified_at: formData?.verified_at?.toString(),
     verified_by: formData?.verified_by?.toString(),
+
+    // fix for null values not opening the multiple operators form if loading a previously saved form
+    multiple_operators_array: isMultipleOperatorsArray
+      ? formData?.multiple_operators_array
+      : [{}],
   };
   const formSectionList = Object.keys(schema.properties as any);
   const isNotFinalStep = formSection !== formSectionList.length;
