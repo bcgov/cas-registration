@@ -11,7 +11,7 @@ import {
 } from "@/app/components/form/formDataTypes";
 import { Alert, Button } from "@mui/material";
 import SubmitButton from "@/app/components/form/SubmitButton";
-import MultiStepFormBase from "./MultiStepFormBase";
+import FormBase from "@/app/components/form/FormBase";
 
 interface UserOperatorFormProps {
   schema: RJSFSchema;
@@ -82,11 +82,8 @@ export default function UserOperatorMultiStepForm({
   };
 
   return (
-    <MultiStepFormBase
-      baseUrl={`/dashboard/operators/user-operator/${parseInt(userOperatorId)}`}
-      cancelUrl="/dashboard/operators"
+    <FormBase
       schema={schema}
-      error={errorList}
       readonly={readonly}
       formData={formState}
       onSubmit={submitHandler}
@@ -104,6 +101,6 @@ export default function UserOperatorMultiStepForm({
         </Button>
         <SubmitButton label="Submit" />
       </div>
-    </MultiStepFormBase>
+    </FormBase>
   );
 }

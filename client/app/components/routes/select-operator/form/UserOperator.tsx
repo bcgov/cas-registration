@@ -1,14 +1,10 @@
 import { actionHandler } from "@/app/utils/actions";
-import {
-  userOperatorSchema,
-  userOperatorPage2,
-} from "@/app/utils/jsonSchema/userOperator";
-import UserOperatorMultiStepForm from "@/app/components/form/UserOperatorMultiStepForm";
+import { userOperatorSchema } from "@/app/utils/jsonSchema/userOperator";
+
 import { BusinessStructure } from "@/app/components/routes/select-operator/form/types";
 import { RJSFSchema } from "@rjsf/utils";
 import { UserInformationInitialFormData } from "@/app/components/form/formDataTypes";
-import UserOperatorForm from "@/app/components/form/UserOperatorForm";
-import Review from "../../access-requests/form/Review";
+import UserOperatorMultiStepForm from "@/app/components/form/UserOperatorMultiStepForm";
 
 async function getCurrentUser() {
   return actionHandler(
@@ -62,6 +58,7 @@ const createUserOperatorSchema = (
         .pc_business_structure,
       anyOf: businessStructureOptions,
     };
+
   return localSchema;
 };
 
@@ -97,21 +94,13 @@ export default async function UserOperator({
   // FIXME: this data is bogus. Replace with genuine data.
   userOperatorData.is_senior_officer = "true";
   userOperatorData.operator_has_parent_company = "no";
-  console.log(userOperatorData);
-
   // If operator has an admin, use the single page form to show the user information
   // TODO: is there a better/smarter way to distinguish between what form component should be displayed?
-  return params?.id ? (
-    // for internal users reviewing prime admin access requests
-    <>
-      <Review userOperator={userOperatorData} userOperatorId={params.id} />
-      <UserOperatorForm schema={userOperatorPage2} formData={userData} />
-    </>
-  ) : (
-    // for external users requesting prime admin access
+  return (
     <UserOperatorMultiStepForm
       schema={createUserOperatorSchema(businessStructuresList)}
       formData={userData}
+      userOperatorData={userOperatorData}
     />
   );
 }

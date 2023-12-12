@@ -5,21 +5,26 @@ import { useState } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { userOperatorUiSchema } from "@/app/utils/jsonSchema/userOperator";
 import { actionHandler } from "@/app/utils/actions";
+import { useSession } from "next-auth/react";
+import Review from "@/app/components/routes/access-requests/form/Review";
 import MultiStepFormBase from "@/app/components/form/MultiStepFormBase";
 import {
   UserOperatorFormData,
   UserFormData,
 } from "@/app/components/form/formDataTypes";
-import { useSession } from "next-auth/react";
 
 interface UserOperatorFormProps {
   readonly schema: RJSFSchema;
   readonly formData: Partial<UserFormData>;
+  readonly disabled?: boolean;
+  readonly userOperatorData?: any;
 }
 
 export default function UserOperatorMultiStepForm({
+  disabled,
   schema,
   formData,
+  userOperatorData,
 }: UserOperatorFormProps) {
   const { data: session } = useSession();
   const { push } = useRouter();
@@ -32,6 +37,7 @@ export default function UserOperatorMultiStepForm({
 
   const formSectionList = Object.keys(schema.properties as RJSFSchema);
   const isFinalStep = formSection === formSectionList.length - 1;
+  const userOperatorId = searchParams.get("user-operator-id");
 
   const submitHandler = async (data: { formData?: UserOperatorFormData }) => {
     const newFormData = {
@@ -43,7 +49,6 @@ export default function UserOperatorMultiStepForm({
     setFormState(newFormData);
 
     // add user operator id to form data if it exists (to be used in senior officer creation)
-    const userOperatorId = searchParams.get("user-operator-id");
     if (userOperatorId) newFormData.user_operator_id = userOperatorId;
 
     const apiUrl = `registration/user-operator/${
@@ -56,7 +61,7 @@ export default function UserOperatorMultiStepForm({
       `/dashboard/select-operator/user-operator/create/${params?.formSection}`,
       {
         body: JSON.stringify(newFormData),
-      },
+      }
     );
 
     if (response.error) {
@@ -66,7 +71,7 @@ export default function UserOperatorMultiStepForm({
 
     if (isFinalStep) {
       push(
-        `/dashboard/select-operator/received/add-operator/${response.operator_id}`,
+        `/dashboard/select-operator/received/add-operator/${response.operator_id}`
       );
       return;
     }
@@ -74,21 +79,31 @@ export default function UserOperatorMultiStepForm({
     push(
       `/dashboard/select-operator/user-operator/create/${
         formSection + 2
-      }?user-operator-id=${response.user_operator_id}`,
+      }?user-operator-id=${response.user_operator_id}`
     );
   };
 
+  const isAdmin = session?.user.app_role?.includes("cas");
+
   return (
-    <MultiStepFormBase
-      baseUrl={"/dashboard/select-operator/user-operator/create"}
-      cancelUrl="/dashboard/select-operator"
-      schema={schema}
-      error={error}
-      formData={formState}
-      submitEveryStep
-      onSubmit={submitHandler}
-      uiSchema={userOperatorUiSchema}
-      readonly={session?.user.app_role?.includes("cas")}
-    />
+    <>
+      {isAdmin && (
+        <Review
+          userOperator={userOperatorData}
+          userOperatorId={Number(userOperatorId)}
+        />
+      )}
+      <MultiStepFormBase
+        baseUrl={"/dashboard/select-operator/user-operator/create"}
+        cancelUrl="/dashboard/select-operator"
+        schema={schema}
+        disabled={disabled}
+        error={error}
+        formData={formState}
+        submitEveryStep
+        onSubmit={submitHandler}
+        uiSchema={userOperatorUiSchema}
+      />
+    </>
   );
 }
