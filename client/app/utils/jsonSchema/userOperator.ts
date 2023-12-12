@@ -38,8 +38,9 @@ const userOperatorPage1: RJSFSchema = {
       title: "CRA Business Number",
     },
     bc_corporate_registry_number: {
-      type: "number",
+      type: "string",
       title: "BC Corporate Registry Number",
+      format: "bc_corporate_registry_number",
     },
     business_structure: {
       type: "string",
@@ -127,8 +128,9 @@ const userOperatorPage1: RJSFSchema = {
             title: "CRA Business Number",
           },
           pc_bc_corporate_registry_number: {
-            type: "number",
+            type: "string",
             title: "BC Corporate Registry Number",
+            format: "bc_corporate_registry_number",
           },
           pc_business_structure: {
             type: "string",

@@ -51,7 +51,6 @@ export default function OperationsForm({ formData, schema }: Props) {
       Number(formData?.previous_year_attributable_emissions),
     swrs_facility_id:
       formData?.swrs_facility_id && Number(formData?.swrs_facility_id),
-    bcghg_id: formData?.bcghg_id && Number(formData?.bcghg_id),
     operator_percent_of_ownership:
       formData?.operator_percent_of_ownership &&
       Number(formData?.operator_percent_of_ownership),
