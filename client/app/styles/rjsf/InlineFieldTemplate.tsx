@@ -3,8 +3,9 @@
 import Grid from "@mui/material/Grid";
 import { FieldTemplateProps } from "@rjsf/utils";
 
-export const AlertIcon = () => (
+export const AlertIcon = ({ classNames }) => (
   <svg
+    className={classNames}
     width="26"
     height="26"
     viewBox="0 0 26 26"
@@ -33,6 +34,8 @@ function InlineFieldTemplate({
   if (isHidden) return null;
 
   const isErrors = rawErrors && rawErrors.length > 0;
+  const error = rawErrors && rawErrors[0];
+  console.log(error);
 
   // UI Schema options
   const isLabel = uiSchema?.["ui:options"]?.label !== false;
@@ -73,15 +76,27 @@ function InlineFieldTemplate({
         }}
       >
         {children}
-        {isErrors && (
-          <div
-            className="text-red-500 absolute right-[-40px] pt-2"
-            role="alert"
-          >
-            <AlertIcon />
-          </div>
-        )}
       </Grid>
+      {isErrors && (
+        <Grid
+          item
+          xs={12}
+          md={4}
+          role="alert"
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            color: "error.main",
+            marginLeft: {
+              xs: "0",
+              md: "16px",
+            },
+          }}
+        >
+          <AlertIcon classNames="hidden md:block mr-2" />
+          <span>{error}</span>
+        </Grid>
+      )}
 
       {description}
       {help}
