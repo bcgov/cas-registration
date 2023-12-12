@@ -10,7 +10,7 @@ import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 
 // 🔒 App API route to get the encrypted JWT
-async function getToken() {
+export async function getToken() {
   try {
     const res = await fetch(`${process.env.NEXTAUTH_URL}/api/auth/token`, {
       method: "GET",
@@ -44,7 +44,7 @@ export async function actionHandler(
   endpoint: string,
   method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH",
   pathToRevalidate: string,
-  options: RequestInit = {},
+  options: RequestInit = {}
 ) {
   try {
     // 🔒 Get the encrypted JWT
@@ -70,7 +70,7 @@ export async function actionHandler(
 
     const response = await fetch(
       `${process.env.API_URL}${endpoint}`,
-      mergedOptions,
+      mergedOptions
     );
     if (!response.ok) {
       const res = await response.json();

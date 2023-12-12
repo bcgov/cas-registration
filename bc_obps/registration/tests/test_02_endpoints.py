@@ -575,6 +575,23 @@ class TestUserOperatorEndpoint:
         has_history_record = HistoricalUserOperator.objects.all()
         assert has_history_record.count() > 0, "History record was not created"
 
+    # GET USER OPERATOR ID
+    def test_user_operator_id(self):
+
+        # Act
+        mock_user = baker.make(User)
+        mock_user_operator = baker.make(UserOperator, role="admin", status="approved", user_id=mock_user.user_guid)
+        response = client.get(
+            f"{base_endpoint}user-operator-id/{mock_user_operator.user_id}",
+            HTTP_AUTHORIZATION=self.auth_header_dumps,
+        )
+        response_json = response.json()
+
+        # Assert
+        assert response.status_code == 200
+
+        # Additional Assertions       
+        assert "operator_id" in response_json
 
 class TestUserEndpoint:
     endpoint = base_endpoint + "user"
