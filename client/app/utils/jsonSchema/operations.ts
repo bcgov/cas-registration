@@ -198,6 +198,7 @@ const operationPage1: RJSFSchema = {
                 mo_website: {
                   type: "string",
                   title: "Website (optional)",
+                  format: "url",
                 },
                 mo_percentage_ownership: {
                   type: "number",
@@ -361,6 +362,7 @@ const operationPage2: RJSFSchema = {
           email: {
             type: "string",
             title: "Email Address",
+            format: "email",
           },
           phone_number: {
             type: "string",
