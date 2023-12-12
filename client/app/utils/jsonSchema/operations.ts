@@ -459,9 +459,7 @@ export const operationUiSchema = {
     "ui:widget": "RadioWidget",
   },
   is_application_lead_external: {
-    "Would you like to add an exemption ID application lead?": {
-      "ui:widget": "RadioWidget",
-    },
+    "ui:widget": "RadioWidget",
   },
   opt_in: {
     "ui:widget": "RadioWidget",
