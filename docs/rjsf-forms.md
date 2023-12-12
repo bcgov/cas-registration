@@ -17,6 +17,22 @@ number_field {
 
 The `defaultTheme` includes many custom widgets which can be set in the forms `uiSchema` using the `ui:widget` option.
 
+## Custom validation
+
+To create custom validation for a field, in `FormBase`, add your format to the `customFormats` object. e.g.:
+
+```
+const customFormats = {
+  bc_corporate_registry_number: "^[A-Za-z]{1,3}\\d{7}$",
+};
+```
+
+Then, in the form schema, add `format: <customFormats key`> to the relevant field. e.g.
+
+```
+bc_corporate_registry_number: { type: "string", title: "title", format: "bc_corporate_registry_number" }
+```
+
 ### Phone widget
 
 To enable the phone widget set the widget type in the forms `uiSchema`:
