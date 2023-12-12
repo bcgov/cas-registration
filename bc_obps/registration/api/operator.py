@@ -41,7 +41,8 @@ def get_operator_by_legal_name_or_cra(
 
     return 200, operator
 
-#FIXME: renamed this endpoint during rebasing to resolve conflict; will still need this endpoint in some places, will need to refactor where /operators endpoint is used to determine whether it needs to be replaced with /all-operators
+
+# FIXME: renamed this endpoint during rebasing to resolve conflict; will still need this endpoint in some places, will need to refactor where /operators endpoint is used to determine whether it needs to be replaced with /all-operators
 @router.get("/all-operators", response={200: List[OperatorOut], codes_4xx: Message})
 def list_operators(request):
     try:
