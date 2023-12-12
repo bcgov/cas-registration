@@ -35,7 +35,6 @@ function InlineFieldTemplate({
 
   const isErrors = rawErrors && rawErrors.length > 0;
   const error = rawErrors && rawErrors[0];
-  console.log(error);
 
   // UI Schema options
   const isLabel = uiSchema?.["ui:options"]?.label !== false;
