@@ -93,7 +93,7 @@ function InlineFieldTemplate({
             },
           }}
         >
-          <AlertIcon classNames="hidden md:block mr-2" />
+          <AlertIcon classNames="hidden md:block mr-4" />
           <span>{error}</span>
         </Grid>
       )}

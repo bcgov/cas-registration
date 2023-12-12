@@ -99,3 +99,11 @@ To enable validation of the postal code widget the format must be set to `format
     title: 'Postal codefield'
   }
 ```
+
+## Custom validation with formats
+
+- `url` - accepts a URL with or without `http://`, `https://` or `www`
+- `email` - built in RJSF format to verify an email address is valid
+- `postal-code` - accepts a Canadian postal code in `A1A 1A1
+` format
+- `phone` - accepts a phone number in `+11234567890` format
