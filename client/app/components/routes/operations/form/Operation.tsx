@@ -6,6 +6,10 @@ import { BusinessStructure } from "@/app/components/routes/select-operator/form/
 import { RJSFSchema } from "@rjsf/utils";
 import { actionHandler } from "@/app/utils/actions";
 import OperationReview from "./OperationReview";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import CancelIcon from "@mui/icons-material/Cancel";
+import { Fade } from "@mui/material";
+import { Status } from "@/app/types/types";
 
 // 🛠️ Function to fetch NAICS codes
 async function getNaicsCodes() {
@@ -145,10 +149,54 @@ export default async function Operation({ numRow }: { numRow?: number }) {
       label: businessStructure.name,
     }),
   );
+  const exemptionIdJSX: JSX.Element = (
+    <div className="flex items-start gap-3 mt-4">
+      <CheckCircleIcon fontSize="large" color="success" />
+      <div>
+        <p className="mt-0">
+          <b>Exemption ID: </b>
+          {operation?.tax_exemption_id}
+        </p>
+        <p>
+          This operation is registered and you can use the Exemption ID above to
+          apply for carbon tax exemption with the British Columbia&apos;s
+          Ministry of Finance.
+        </p>
+      </div>
+    </div>
+  );
+
+  const operationRegistrationRejectedJSX: JSX.Element = (
+    <div className="flex items-start gap-3 mt-4">
+      <CancelIcon fontSize="large" color="error" />
+      <div>
+        <p className="mt-0">
+          This operation registration request was rejected.
+        </p>
+        <p className="mb-0">
+          <b>Reason for rejection from Program Area:</b>
+        </p>
+        <em>Check your email</em>
+      </div>
+    </div>
+  );
+
+  const showRegistrationRequestResult: boolean = [
+    Status.REJECTED,
+    Status.APPROVED,
+  ].includes(operation?.status);
+
   // Render the OperationsForm component with schema and formData if the operation already exists
   return (
     <>
       <OperationReview operation={operation} />
+      {showRegistrationRequestResult && (
+        <Fade in={showRegistrationRequestResult}>
+          {showRegistrationRequestResult && operation?.tax_exemption_id
+            ? exemptionIdJSX
+            : operationRegistrationRejectedJSX}
+        </Fade>
+      )}
       <OperationsForm
         schema={createOperationSchema(
           operationSchema,
