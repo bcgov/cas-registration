@@ -159,7 +159,7 @@ export default async function Page() {
 
   return (
     <>
-      <DataGrid rows={statusRows} columns={columns} cntxt="userOperators" />
+      <DataGrid rows={statusRows} columns={columns} />
     </>
   );
 }
