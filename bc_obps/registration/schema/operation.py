@@ -78,3 +78,9 @@ class OperationOut(ModelSchema):
 from .multiple_operator import MultipleOperatorOut
 
 OperationOut.update_forward_refs()
+
+
+class OperationUpdateStatusIn(ModelSchema):
+    class Config:
+        model = Operation
+        model_fields = ["status"]
