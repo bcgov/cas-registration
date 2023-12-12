@@ -96,7 +96,7 @@ const operationPage1: RJSFSchema = {
             title: "2022 attributable emissions",
           },
           swrs_facility_id: { type: "number", title: "SWRS Facility ID" },
-          bcghg_id: { type: "number", title: "BCGHG ID" },
+          bcghg_id: { type: "string", title: "BCGHG ID" },
         },
         required: [
           "previous_year_attributable_emissions",
@@ -187,8 +187,9 @@ const operationPage1: RJSFSchema = {
                   title: "CRA Business Number",
                 },
                 mo_bc_corporate_registry_number: {
-                  type: "number",
+                  type: "string",
                   title: "BC Corporate Registries Number",
+                  format: "bc_corporate_registry_number",
                 },
                 mo_business_structure: {
                   type: "string",
