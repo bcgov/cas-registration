@@ -580,10 +580,10 @@ class TestUserOperatorEndpoint:
 
         # Act
         mock_user = baker.make(User)
-        mock_user_operator = baker.make(UserOperator, role="admin", status="approved", user_id=mock_user.user_guid)
+        baker.make(UserOperator, role="admin", status="approved", user_id=mock_user.user_guid)
         response = client.get(
-            f"{base_endpoint}user-operator-id/{mock_user_operator.user_id}",
-            HTTP_AUTHORIZATION=self.auth_header_dumps,
+            f"{base_endpoint}user-operator-id",
+            HTTP_AUTHORIZATION=json.dumps({'user_guid': str(mock_user.user_guid)}),
         )
         response_json = response.json()
 
