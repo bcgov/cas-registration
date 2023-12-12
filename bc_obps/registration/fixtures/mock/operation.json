@@ -12,7 +12,7 @@
       "naics_code": 19,
       "previous_year_attributable_emissions": "10001",
       "swrs_facility_id": 1001,
-      "bcghg_id": 546,
+      "bcghg_id": "123",
       "regulated_products": [],
       "status": "Not Registered"
     }

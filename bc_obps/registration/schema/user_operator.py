@@ -1,6 +1,7 @@
 from typing import Optional
 from ninja import ModelSchema, Schema
 from registration.models import Contact, User
+from pydantic import Field
 
 
 class IsApprovedUserOperator(Schema):
@@ -28,7 +29,7 @@ class UserOperatorOut(Schema):
     legal_name: str
     trade_name: Optional[str]
     cra_business_number: Optional[int]
-    bc_corporate_registry_number: Optional[int]
+    bc_corporate_registry_number: Optional[str] = Field(regex=r"^[A-Za-z]{1,3}\d{7}$")
     business_structure: str
     physical_street_address: str
     physical_municipality: str
@@ -50,7 +51,7 @@ class UserOperatorOperatorIn(Schema):
     legal_name: str
     trade_name: Optional[str] = ""
     cra_business_number: int
-    bc_corporate_registry_number: int
+    bc_corporate_registry_number: str = Field(regex=r"^[A-Za-z]{1,3}\d{7}$")
     business_structure: str
     physical_street_address: str
     physical_municipality: str
@@ -67,7 +68,7 @@ class UserOperatorOperatorIn(Schema):
     # pc => parent company
     pc_legal_name: Optional[str]
     pc_cra_business_number: Optional[int]
-    pc_bc_corporate_registry_number: Optional[int]
+    pc_bc_corporate_registry_number: Optional[str] = Field(regex=r"^[A-Za-z]{1,3}\d{7}$")
     pc_business_structure: Optional[str]
     pc_physical_street_address: Optional[str]
     pc_physical_municipality: Optional[str]

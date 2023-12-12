@@ -7,6 +7,7 @@ const customFormats = {
   phone: /\(?\d{3}\)?[\s-]?\d{3}[\s-]?\d{4}$/,
   "postal-code":
     /^[ABCEGHJ-NPRSTVXY]\d[ABCEGHJ-NPRSTV-Z][ -]?\d[ABCEGHJ-NPRSTV-Z]\d$/i,
+  bc_corporate_registry_number: "^[A-Za-z]{1,3}\\d{7}$",
 };
 
 const validator = customizeValidator({ customFormats });
