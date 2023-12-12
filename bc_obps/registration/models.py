@@ -655,6 +655,9 @@ class MultipleOperator(models.Model):
     mailing_postal_code = CAPostalCodeField(
         db_comment="The mailing postal code of an operator, limited to valid Canadian postal codes"
     )
+    history = HistoricalRecords(
+        table_name='erc_history"."multiple_operator_history',
+    )
 
     class Meta:
         db_table_comment = "Table to store multiple operator metadata"
