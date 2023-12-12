@@ -1,7 +1,7 @@
 from django.db import IntegrityError
 from django.test import TestCase
 from django.utils import timezone
-
+from django.core.exceptions import ValidationError
 from registration.models import (
     BusinessRole,
     BusinessStructure,
@@ -19,6 +19,16 @@ from registration.models import (
     MultipleOperator,
     AppRole,
 )
+from model_bakery import baker
+from localflavor.ca.models import CAPostalCodeField
+from datetime import datetime
+
+
+def mock_postal_code():
+    return "v8v3g1"
+
+
+baker.generators.add(CAPostalCodeField, mock_postal_code)
 
 
 OPERATOR_FIXTURE = ("mock/operator.json",)
@@ -445,7 +455,7 @@ class OperationModelTest(BaseTestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.test_operation = Operation.objects.all().first()
+        cls.test_operation = Operation.objects.first()
         cls.test_operation.documents.set(
             [
                 Document.objects.get(id=1),
@@ -465,10 +475,6 @@ class OperationModelTest(BaseTestCase):
                 RegulatedProduct.objects.create(name="test2"),
             ]
         )
-
-    def assertHasMultipleRelationsInField(self, field_name, expected_relations_count):
-        field = self.test_operation.__getattribute__(field_name)
-        self.assertEqual(field.count(), expected_relations_count)
 
     def test_field_labels_and_max_lengths_and_multiple_relations(self):
         # (field_name, expected_label, expected_max_length, expected_relations_count)
@@ -491,6 +497,7 @@ class OperationModelTest(BaseTestCase):
             ("verified_by", "verified by", None, None),
             ("application_lead", "application lead", None, None),
             ("documents", "documents", None, 2),
+            ("tax_exemption_id", "tax exemption id", 255, None),
         ]
 
         for (
@@ -505,7 +512,110 @@ class OperationModelTest(BaseTestCase):
                 if expected_max_length is not None:
                     self.assertFieldMaxLength(self.test_operation, field_name, expected_max_length)
                 if expected_relations_count is not None:
-                    self.assertHasMultipleRelationsInField(field_name, expected_relations_count)
+                    self.assertHasMultipleRelationsInField(self.test_operation, field_name, expected_relations_count)
+
+    def test_unique_tax_exemption_id(self):
+        baker.make(Operation, tax_exemption_id='25-0001')
+
+        with self.assertRaises(ValidationError):
+            baker.make(
+                Operation,
+                tax_exemption_id='25-0001',
+                name='test',
+                type='test',
+                naics_code=NaicsCode.objects.first(),
+                operator=Operator.objects.first(),
+            )
+
+    def test_valid_tax_exemption_id_format(self):
+        valid_ids = ['24-0001', '20-1234', '18-5678']
+        for tax_id in valid_ids:
+            baker.make(
+                Operation,
+                tax_exemption_id=tax_id,
+                name='test',
+                type='test',
+                naics_code=NaicsCode.objects.first(),
+                operator=Operator.objects.first(),
+            )
+
+    def test_invalid_tax_exemption_id_format(self):
+        invalid_ids = ['240001', '24-ABCD', '24_0001', '24-']
+        for tax_id in invalid_ids:
+            with self.assertRaises(ValidationError):
+                baker.make(
+                    Operation,
+                    tax_exemption_id=tax_id,
+                    name='test',
+                    type='test',
+                    naics_code=NaicsCode.objects.first(),
+                    operator=Operator.objects.first(),
+                )
+
+    def test_generate_unique_tax_exemption_id_existing_id(self):
+        # Case: Operation already has a tax exemption ID
+        existing_id = "22-0001"  # Example existing ID for the current year
+        self.test_operation.tax_exemption_id = existing_id
+        generated_id = self.test_operation.generate_unique_tax_exemption_id()
+        self.assertEqual(generated_id, existing_id, "Should return the existing ID.")
+
+    def test_generate_unique_tax_exemption_id_no_existing_id(self):
+        # Case: No existing tax exemption ID
+        self.test_operation.tax_exemption_id = None
+        self.test_operation.generate_unique_tax_exemption_id()
+        current_year = datetime.now().year % 100
+        expected_id = f"{current_year:02d}-0001"  # Assuming the first ID for the year
+        self.assertEqual(
+            self.test_operation.tax_exemption_id, expected_id, "Should generate a new ID for the current year."
+        )
+
+    def test_generate_unique_tax_exemption_id_multiple_existing_ids_same_year(self):
+        # Case: Multiple existing tax exemption IDs for the current year
+        existing_ids = ["23-0002", "23-0003", "23-0001"]
+        Operation.objects.bulk_create(
+            [
+                Operation(
+                    name="test",
+                    type="test",
+                    naics_code=NaicsCode.objects.first(),
+                    operator=Operator.objects.first(),
+                    tax_exemption_id=existing_id,
+                )
+                for existing_id in existing_ids
+            ]
+        )
+
+        self.test_operation.tax_exemption_id = None
+        self.test_operation.generate_unique_tax_exemption_id()
+        current_year = datetime.now().year % 100
+        expected_id = f"{current_year:02d}-0004"
+        self.assertEqual(
+            self.test_operation.tax_exemption_id, expected_id, "Should generate a new ID for the current year."
+        )
+
+    def test_generate_unique_tax_exemption_id_multiple_existing_ids_different_year(self):
+        # Case: Multiple existing tax exemption IDs for the current year
+        existing_ids = ["22-0001", "22-0002", "22-0003"]
+        Operation.objects.bulk_create(
+            [
+                Operation(
+                    name="test",
+                    type="test",
+                    naics_code=NaicsCode.objects.first(),
+                    operator=Operator.objects.first(),
+                    tax_exemption_id=existing_id,
+                )
+                for existing_id in existing_ids
+            ]
+        )
+
+        self.test_operation.tax_exemption_id = None
+        self.test_operation.generate_unique_tax_exemption_id()
+        current_year = datetime.now().year % 100
+        expected_id = f"{current_year:02d}-0001"
+        self.assertEqual(
+            self.test_operation.tax_exemption_id, expected_id, "Should generate a new ID for the current year."
+        )
 
 
 class AppRoleModelTest(BaseTestCase):

@@ -97,20 +97,29 @@ class TestReportingActivitiesEndpoint:
 class TestOperationsEndpoint:
     endpoint = base_endpoint + "operations"
 
+    def setup(self):
+        self.user: User = baker.make(User)
+        self.auth_header = {'user_guid': str(self.user.user_guid)}
+        self.auth_header_dumps = json.dumps(self.auth_header)
+
     def build_update_status_url(self, operation_id: int) -> str:
         return self.endpoint + "/" + str(operation_id) + "/update-status"
 
-    def test_get_method_for_200_status(self, client):
+    def test_get_method_for_invalid_operation_id(self):
+        response = client.get(self.endpoint + "/99999")
+        assert response.status_code == 404
+        assert response.json().get('detail') == "Not Found"
+
+    def test_get_method_with_mock_data(self):
+        operation = baker.make(Operation)
         response = client.get(self.endpoint)
         assert response.status_code == 200
+        response_dict_list = response.json()
+        assert len(response_dict_list) == 1
+        assert response_dict_list[0].get('id') == operation.id
+        assert response_dict_list[0].get('name') == operation.name
 
-    def test_get_method_with_mock_data(self, client):
-        baker.make(Operation, _quantity=1)
-        response = client.get(self.endpoint)
-        assert response.status_code == 200
-        assert len(json.loads(response.content)) == 1
-
-    def test_post_new_operation(self, client):
+    def test_post_new_operation(self):
         naics_code = baker.make(NaicsCode)
         document = baker.make(Document)
         reporting_activities = baker.make(ReportingActivity, _quantity=2)
@@ -136,7 +145,7 @@ class TestOperationsEndpoint:
         get_response = client.get(self.endpoint).json()[0]
         assert 'status' in get_response and get_response['status'] == 'Not Registered'
 
-    def test_post_new_operation_with_multiple_operators(self, client):
+    def test_post_new_operation_with_multiple_operators(self):
         naics_code = baker.make(NaicsCode)
         document = baker.make(Document)
         contact = baker.make(Contact, postal_code='V1V 1V1')
@@ -196,14 +205,13 @@ class TestOperationsEndpoint:
         assert post_response.json().get('id') is not None
 
         get_response = client.get(self.endpoint).json()[0]
-        print(get_response)
         assert (
             'operation_has_multiple_operators' in get_response
             and get_response['operation_has_multiple_operators'] == True
         )
         assert 'multiple_operators_array' in get_response and len(get_response['multiple_operators_array']) == 2
 
-    def test_post_new_malformed_operation(self, client):
+    def test_post_new_malformed_operation(self):
         response = client.post(
             self.endpoint,
             content_type=content_type_json,
@@ -211,7 +219,7 @@ class TestOperationsEndpoint:
         )
         assert response.status_code == 422
 
-    def test_post_existing_operation(self, client):
+    def test_post_existing_operation(self):
         baker.make(Operation, bcghg_id='123')
         naics_code = baker.make(NaicsCode)
         document = baker.make(Document)
@@ -234,99 +242,83 @@ class TestOperationsEndpoint:
         assert post_response.status_code == 400
         assert post_response.json().get('message') == "Operation with this BCGHG ID already exists."
 
-    def test_put_operation_update_status_approved(self, client):
+    def test_put_operation_update_invalid_operation_id(self):
+        url = self.build_update_status_url(operation_id=99999999999)
+        put_response = client.put(
+            url, content_type=content_type_json, data={"status": "Approved"}, HTTP_AUTHORIZATION=self.auth_header_dumps
+        )
+        assert put_response.status_code == 404
+        assert put_response.json().get('detail') == "Not Found"
+
+    def test_put_operation_update_status_approved(self):
+        operation = baker.make(Operation)
+        assert operation.status == Operation.Statuses.NOT_REGISTERED
+
+        url = self.build_update_status_url(operation.id)
+
+        now = datetime.now(pytz.utc)
+        put_response = client.put(
+            url, content_type=content_type_json, data={"status": "Approved"}, HTTP_AUTHORIZATION=self.auth_header_dumps
+        )
+        assert put_response.status_code == 200
+        put_response_dict = put_response.json()
+        assert put_response_dict.get("id") == operation.id
+        assert put_response_dict.get("status") == "Approved"
+        assert put_response_dict.get("verified_by") == str(self.user.user_guid)
+        assert put_response_dict.get("tax_exemption_id") is not None
+        now_as_string = now.strftime("%Y-%m-%d")
+        assert put_response_dict.get("verified_at") == now_as_string
+
+    def test_put_operation_update_status_rejected(self):
         operation = baker.make(Operation)
         assert operation.status == Operation.Statuses.NOT_REGISTERED
 
         url = self.build_update_status_url(operation_id=operation.id)
 
         now = datetime.now(pytz.utc)
-        put_response = client.put(url, content_type=content_type_json, data={"status": "approved"})
+        put_response = client.put(
+            url, content_type=content_type_json, data={"status": "Rejected"}, HTTP_AUTHORIZATION=self.auth_header_dumps
+        )
         assert put_response.status_code == 200
-        put_response_content = json.loads(put_response.content.decode("utf-8"))
-        parsed_list = json.loads(put_response_content)
-        # the put_response content is returned as a list but there's only ever one object in the list
-        parsed_object = parsed_list[0]
-        assert parsed_object.get("pk") == operation.id
-        assert parsed_object.get("fields").get("status") == "Approved"
-
-        get_response = client.get(self.endpoint + "/" + str(operation.id))
-        assert get_response.status_code == 200
-        get_response_dict = get_response.json()
-        assert get_response_dict.get("status") == "Approved"
+        put_response_dict = put_response.json()
+        assert put_response_dict.get("id") == operation.id
+        assert put_response_dict.get("status") == "Rejected"
+        assert put_response_dict.get("verified_by") == str(self.user.user_guid)
+        assert put_response_dict.get("tax_exemption_id") is None
         now_as_string = now.strftime("%Y-%m-%d")
-        assert get_response_dict.get("verified_at") == now_as_string
+        assert put_response_dict.get("verified_at") == now_as_string
 
-    def test_put_operation_update_status_rejected(self, client):
+    def test_put_operation_not_verified_when_not_registered(self):
         operation = baker.make(Operation)
         assert operation.status == Operation.Statuses.NOT_REGISTERED
 
         url = self.build_update_status_url(operation_id=operation.id)
 
-        now = datetime.now(pytz.utc)
-        put_response = client.put(url, content_type=content_type_json, data={"status": "rejected"})
+        put_response = client.put(
+            url,
+            content_type=content_type_json,
+            data={"status": "Not Registered"},
+            HTTP_AUTHORIZATION=self.auth_header_dumps,
+        )
         assert put_response.status_code == 200
-        put_response_content = json.loads(put_response.content.decode("utf-8"))
-        parsed_list = json.loads(put_response_content)
-        # the put_response content is returned as a list but there's only ever one object in the list
-        parsed_object = parsed_list[0]
-        assert parsed_object.get("pk") == operation.id
-        assert parsed_object.get("fields").get("status") == "Rejected"
+        put_response_dict = put_response.json()
+        assert put_response_dict.get("id") == operation.id
+        assert put_response_dict.get("status") == "Not Registered"
+        assert put_response_dict.get("verified_by") is None
+        assert put_response_dict.get("tax_exemption_id") is None
 
-        get_response = client.get(self.endpoint + "/" + str(operation.id))
-        assert get_response.status_code == 200
-        get_response_dict = get_response.json()
-        assert get_response_dict.get("status") == "Rejected"
-        now_as_string = now.strftime("%Y-%m-%d")
-        assert get_response_dict.get("verified_at") == now_as_string
-
-    def test_put_operation_not_verified_when_not_registered(self, client):
+    def test_put_operation_update_status_invalid_data(self):
         operation = baker.make(Operation)
         assert operation.status == Operation.Statuses.NOT_REGISTERED
 
         url = self.build_update_status_url(operation_id=operation.id)
 
-        put_response = client.put(url, content_type=content_type_json, data={"status": "not_registered"})
-        assert put_response.status_code == 200
-        put_response_content = json.loads(put_response.content.decode("utf-8"))
-        parsed_list = json.loads(put_response_content)
-        # the put_response content is returned as a list but there's only ever one object in the list
-        parsed_object = parsed_list[0]
-        assert parsed_object.get("pk") == operation.id
-        assert parsed_object.get("fields").get("status") == "Not Registered"
-
-        get_response = client.get(self.endpoint + "/" + str(operation.id))
-        assert get_response.status_code == 200
-        get_response_dict = get_response.json()
-        assert get_response_dict.get("status") == "Not Registered"
-        assert get_response_dict.get("verified_at") is None
-
-    def test_put_operation_update_status_invalid_data(self, client):
-        def send_put_invalid_data():
-            operation = baker.make(Operation)
-            assert operation.status == Operation.Statuses.NOT_REGISTERED
-
-            url = self.build_update_status_url(operation_id=operation.id)
-
+        with pytest.raises(ValueError):
             client.put(url, content_type=content_type_json, data={"status": "nonsense"})
-
-        with pytest.raises(AttributeError):
-            send_put_invalid_data()
 
 
 class TestOperationEndpoint:
     endpoint = base_endpoint + "operations/"
-
-    def test_put_nonexistant_operation(self, client):
-        response = client.get(self.endpoint + "1")
-        assert response.status_code == 404
-
-    def test_get_method_for_200_status(self, client):
-        baker.make(NaicsCode)
-        baker.make(Operator)
-        operation = baker.make(Operation)
-        response = client.get(self.endpoint + str(operation.id))
-        assert response.status_code == 200
 
     def test_put_operation_without_submit(self, client):
         naics_code = baker.make(NaicsCode)
@@ -458,7 +450,7 @@ class TestOperatorsEndpoint:
     def test_get_list_user_operators_status(self):
         operator = baker.make(Operator)
         user = baker.make(User)
-        userOperatorPrime = baker.make(
+        baker.make(
             UserOperator,
             user=user,
             operator=operator,
