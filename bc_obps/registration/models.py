@@ -4,6 +4,10 @@ from phonenumber_field.modelfields import PhoneNumberField
 from localflavor.ca.models import CAPostalCodeField, CAProvinceField
 from simple_history.models import HistoricalRecords
 from django.core.validators import RegexValidator
+from django.core.exceptions import ValidationError
+import re
+from django.utils import timezone
+from django.db.models import Q
 
 
 class AppRole(models.Model):
@@ -436,6 +440,9 @@ class OperationAndFacilityCommonInfo(models.Model):
         db_table = 'erc"."operation'
 
 
+tax_exemption_id_pattern = r'^\d{2}-\d{4}$'
+
+
 class Operation(OperationAndFacilityCommonInfo):
     """Operation model"""
 
@@ -486,13 +493,6 @@ class Operation(OperationAndFacilityCommonInfo):
         default=Statuses.NOT_REGISTERED,
         db_comment="The status of an operation in the app (e.g. pending review)",
     )
-    # temporary handling, many-to-many handled in #138
-    # operators = models.ForeignKey(
-    #     Operator,
-    #     on_delete=models.DO_NOTHING,
-    #     db_comment="The operator(s) that owns the operation",
-    #     related_name="user_operators",
-    # )
     regulated_products = models.ManyToManyField(
         RegulatedProduct,
         blank=True,
@@ -503,9 +503,71 @@ class Operation(OperationAndFacilityCommonInfo):
         blank=True,
         related_name="operations_and_facilities",
     )
+    tax_exemption_id = models.CharField(
+        max_length=255,
+        unique=True,
+        blank=True,
+        null=True,
+        db_comment="The tax exemption ID of an operation when operation is approved",
+    )
     history = HistoricalRecords(
         table_name='erc_history"."operation_history', m2m_fields=[regulated_products, reporting_activities, documents]
     )
+
+    def validate_tax_exemption_id(self):
+        existing_operations = self.__class__.objects.filter(
+            Q(tax_exemption_id=self.tax_exemption_id)
+            & ~Q(tax_exemption_id__isnull=True)
+            & ~Q(
+                pk=self.pk
+            )  # exclude null values  # exclude the current operation from the query if it is being updated
+        )
+
+        if existing_operations.exists():
+            raise ValidationError('Tax exemption ID must be unique.')
+
+        # Perform validation using regular expression
+        if not re.match(tax_exemption_id_pattern, self.tax_exemption_id):
+            raise ValidationError("Tax exemption ID must be in the format yy-xxxx (e.g., 24-0001)")
+
+    def generate_unique_tax_exemption_id(self) -> None:
+        """
+        Generate a unique tax exemption ID for the operation based on the current year and the latest tax exemption ID.
+        """
+        # if the operation already has a tax exemption ID, return it
+        if self.tax_exemption_id:
+            return self.tax_exemption_id
+
+        current_year_last_digits = timezone.now().year % 100  # Get the last two digits of the current year
+
+        latest_tax_exemption = (
+            Operation.objects.exclude(tax_exemption_id__isnull=True)
+            .order_by('-tax_exemption_id')
+            .values_list('tax_exemption_id', flat=True)
+            .first()
+        )
+
+        latest_number = 1
+        if latest_tax_exemption:
+            latest_tax_exemption_year, latest_tax_exemption_number = map(int, latest_tax_exemption.split('-'))
+            # Check if the latest tax exemption ID is from the current year
+            if latest_tax_exemption_year == current_year_last_digits:
+                latest_number = latest_tax_exemption_number + 1
+
+        new_tax_exemption_id = f"{current_year_last_digits}-{latest_number:04d}"
+
+        if (
+            re.match(tax_exemption_id_pattern, new_tax_exemption_id)
+            and not Operation.objects.filter(tax_exemption_id=new_tax_exemption_id).exists()
+        ):
+            self.tax_exemption_id = new_tax_exemption_id
+        else:
+            raise ValidationError("Failed to generate a unique tax exemption ID.")
+
+    def save(self, *args, **kwargs):
+        if self.tax_exemption_id:
+            self.validate_tax_exemption_id()
+        super().save()
 
     class Meta:
         db_table_comment = "Operations (also called facilities)"
