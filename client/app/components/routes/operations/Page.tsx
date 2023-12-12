@@ -6,13 +6,9 @@ import Loading from "@/app/components/loading/SkeletonGrid";
 import { actionHandler, getToken } from "@/app/utils/actions";
 
 export default async function OperationsPage() {
-  // 👤 Use NextAuth.js encrypted token to get authenticated user's user_guid
-  const token = await getToken();
-  const uid = token?.user_guid ?? "";
-
   // 🚀 API call: Get operator id associated with this user_guid
   const response = await actionHandler(
-    `registration/user-operator-id/${uid}`,
+    `registration/user-operator-id`,
     "GET",
     "",
   );

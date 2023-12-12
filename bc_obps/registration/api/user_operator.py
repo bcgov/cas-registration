@@ -1,4 +1,5 @@
 from django.db import IntegrityError
+import json
 from registration.schema import (
     UserOperatorOut,
     SelectOperatorIn,
@@ -43,10 +44,11 @@ def is_approved_admin_user_operator(request, user_guid: str):
     return 200, {"approved": approved_user_operator}
 
 
-@router.get("/user-operator-id/{user_guid}", response={200: UserOperatorIdOut, codes_4xx: Message})
-def user_operator_id(request, user_guid: str):
+@router.get("/user-operator-id", response={200: UserOperatorIdOut, codes_4xx: Message})
+def user_operator_id(request):
+    current_user_guid = json.loads(request.headers.get('Authorization'))["user_guid"]
     user_operator = get_object_or_404(
-        UserOperator, user_id=user_guid, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.APPROVED
+        UserOperator, user_id=current_user_guid, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.APPROVED
     )
     return 200, {"operator_id": user_operator.operator_id}
 
