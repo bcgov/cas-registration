@@ -3,12 +3,26 @@ import { Button } from "@mui/material";
 import { Suspense } from "react";
 import Operations from "@/app/components/routes/operations/Operations";
 import Loading from "@/app/components/loading/SkeletonGrid";
+import { actionHandler, getToken } from "@/app/utils/actions";
 
-export default function OperationsPage() {
+export default async function OperationsPage() {
+  // 👤 Use NextAuth.js encrypted token to get authenticated user's user_guid
+  const token = await getToken();
+  const uid = token?.user_guid ?? "";
+
+  // 🚀 API call: Get operator id associated with this user_guid
+  const response = await actionHandler(
+    `registration/user-operator-id/${uid}`,
+    "GET",
+    ""
+  );
+  const operator_id = response?.operator_id ?? 0;
+
   return (
     <>
       <h1>Operations List</h1>
-      <Link href="/dashboard/operations/0/1">
+      {/* Update the href dynamically based on users operator_id */}
+      <Link href={`/dashboard/operations/${operator_id}/1`}>
         <Button variant="contained">Add Operation</Button>
       </Link>
       <Suspense fallback={<Loading />}>
