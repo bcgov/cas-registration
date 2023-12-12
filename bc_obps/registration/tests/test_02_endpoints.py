@@ -595,23 +595,25 @@ class TestUserOperatorEndpoint:
 
     def test_get_users_operators_list(self):
         operators = baker.make(Operator, _quantity=2)
-        user = baker.make(User)
         baker.make(
             UserOperator,
-            user=user,
+            user=self.user,
             operator=operators[0],
             role=UserOperator.Roles.ADMIN,
             status=UserOperator.Statuses.APPROVED,
         )
         baker.make(
             UserOperator,
-            user=user,
+            user=self.user,
             operator=operators[1],
             role=UserOperator.Roles.ADMIN,
             status=UserOperator.Statuses.APPROVED,
         )
 
-        response = client.get(f"{base_endpoint}get-users-operators/{user.user_guid}")
+        response = client.get(
+            f"{base_endpoint}get-current-users-operators",
+            HTTP_AUTHORIZATION=self.auth_header_dumps,
+        )
 
         assert len(json.loads(response.content)) == 2
 
@@ -635,6 +637,7 @@ class TestUserOperatorEndpoint:
 
         assert parsed_object.get("fields").get("status") == UserOperator.Statuses.APPROVED
         assert parsed_object.get("fields").get("verified_by") == str(self.user.user_guid)
+
 
 class TestUserEndpoint:
     endpoint = base_endpoint + "user"
