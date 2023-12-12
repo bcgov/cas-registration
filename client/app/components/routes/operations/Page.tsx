@@ -14,7 +14,7 @@ export default async function OperationsPage() {
   const response = await actionHandler(
     `registration/user-operator-id/${uid}`,
     "GET",
-    ""
+    "",
   );
   const operator_id = response?.operator_id ?? "";
 

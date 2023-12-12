@@ -9,8 +9,8 @@ class IsApprovedUserOperator(Schema):
 
 class UserOperatorIdOut(Schema):
     operator_id: int
-    
-    
+
+
 class RequestAccessOut(Schema):
     user_operator_id: int
 

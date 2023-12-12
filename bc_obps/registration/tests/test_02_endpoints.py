@@ -590,8 +590,9 @@ class TestUserOperatorEndpoint:
         # Assert
         assert response.status_code == 200
 
-        # Additional Assertions       
+        # Additional Assertions
         assert "operator_id" in response_json
+
 
 class TestUserEndpoint:
     endpoint = base_endpoint + "user"
