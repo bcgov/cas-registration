@@ -18,7 +18,7 @@ const testFormData = {
   naics_code: 45,
   previous_year_attributable_emissions: "1000",
   swrs_facility_id: "1001",
-  bcghg_id: "546",
+  bcghg_id: "123",
   opt_in: null,
   operator: 1,
   verified_at: "2023-10-13",
@@ -159,7 +159,7 @@ describe("Operations component", () => {
     );
 
     expect(screen.getByLabelText(/SWRS Facility ID/i)).toHaveValue(1001);
-    expect(screen.getByLabelText(/BCGHG ID/i)).toHaveValue(546);
+    expect(screen.getByLabelText(/BCGHG ID/i)).toHaveValue(123);
 
     // Does the operation have multiple operators?
     expect(
