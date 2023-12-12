@@ -7,16 +7,10 @@ import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import DoNotDisturbIcon from "@mui/icons-material/DoNotDisturb";
 import { ReactNode } from "react";
 import { Stack } from "@mui/system";
-
-type UserOperatorStatus =
-  | "draft"
-  | "pending"
-  | "approved"
-  | "rejected"
-  | "myself";
+import { Status } from "@/app/types/types";
 
 interface UserOperatorStatusAction {
-  statusTo: UserOperatorStatus;
+  statusTo: Status;
   title: string;
   color: ButtonOwnProps["color"];
   icon?: ReactNode;
@@ -29,14 +23,14 @@ interface ButtonRenderCellParams extends GridRenderCellParams {
     email: string;
     business: string;
     userRole: string;
-    status: UserOperatorStatus;
+    status: Status;
     actions: string;
   };
 }
 
 const handleUpdateStatus = async (
   userOperatorId: string,
-  statusUpdate: UserOperatorStatus,
+  statusUpdate: Status,
 ) => {
   try {
     return await actionHandler(
@@ -60,33 +54,28 @@ export async function ChangeUserOperatorStatusColumnCell(
   const userOperatorStatus = params.row.status;
   const userOperatorId = params.row.id;
 
-  const buttonsToShow = (
-    status: UserOperatorStatus,
-  ): UserOperatorStatusAction[] => {
-    if (status.toLowerCase() === "myself") {
+  const buttonsToShow = (status: Status): UserOperatorStatusAction[] => {
+    if (status === Status.MYSELF) {
       return [];
-    } else if (status.toLowerCase() === "pending") {
+    } else if (status === Status.PENDING) {
       return [
         {
-          statusTo: "approved",
+          statusTo: Status.APPROVED,
           title: "Approve",
           color: "success",
           icon: <ThumbUpIcon />,
         },
         {
-          statusTo: "rejected",
+          statusTo: Status.REJECTED,
           title: "Deny",
           color: "error",
           icon: <DoNotDisturbIcon />,
         },
       ];
-    } else if (
-      status.toLowerCase() === "approved" ||
-      status.toLowerCase() === "rejected"
-    ) {
+    } else if (status === Status.APPROVED || status === Status.REJECTED) {
       return [
         {
-          statusTo: "pending",
+          statusTo: Status.PENDING,
           title: "Undo",
           color: "primary",
         },

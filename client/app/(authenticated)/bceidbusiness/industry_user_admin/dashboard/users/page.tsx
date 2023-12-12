@@ -6,6 +6,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { ChangeUserOperatorStatusColumnCell } from "@/app/components/datagrid/ChangeUserOperatorStatusColumnCell";
 import { statusStyle } from "@/app/components/datagrid/userPageHelpers";
+import { Status } from "@/app/types/types";
 
 type BusinessUserOperator = {
   operator: string;
@@ -19,7 +20,7 @@ interface UserOperatorStatus {
   business_name: string;
   email: string;
   role: string;
-  status: string;
+  status: string | Status;
 }
 
 // 🛠️ Function to fetch userOperators
@@ -52,6 +53,26 @@ async function getAdminsApprovedUserOperators(
   }
 }
 
+const statusStringToEnum = (status: string): Status => {
+  switch (status.toUpperCase()) {
+    case "MYSELF":
+      return Status.MYSELF;
+      break;
+    case "APPROVED":
+      return Status.APPROVED;
+      break;
+    case "REJECTED":
+      return Status.REJECTED;
+      break;
+    case "PENDING":
+      return Status.PENDING;
+      break;
+    case "DRAFT":
+    default:
+      return Status.DRAFT;
+  }
+};
+
 export default async function Page() {
   const session = await getServerSession(authOptions);
   let userOperatorStatuses: UserOperatorStatus[] = [];
@@ -65,13 +86,18 @@ export default async function Page() {
           getUserOperatorsForOperator(associatedOperator.operator),
         ),
       )
-    ).flat();
+    )
+      .flat()
+      .map((uo) => {
+        uo.status = statusStringToEnum(uo.status);
+        return uo;
+      });
 
     // 🤳Identify current admin user in the list
     const selfIndex = userOperatorStatuses.findIndex(
       (userOperator) => userOperator.user_id.replace(/-/g, "") === uid,
     );
-    userOperatorStatuses[selfIndex].status = "myself";
+    userOperatorStatuses[selfIndex].status = Status.MYSELF;
   }
 
   const columns: GridColDef[] = [
