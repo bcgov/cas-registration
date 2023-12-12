@@ -28,7 +28,6 @@ export default function UserOperatorMultiStepForm({
   const params = useParams();
   const [errorList, setErrorList] = useState([] as any[]);
   const [formState, setFormState] = useState(formData);
-  const userOperatorId: string = params.id.toString();
 
   const formSection = parseInt(params?.formSection as string);
   const userOperatorId = params?.id as string;

@@ -8,6 +8,7 @@ import { BusinessStructure } from "@/app/components/routes/select-operator/form/
 import { RJSFSchema } from "@rjsf/utils";
 import { UserInformationInitialFormData } from "@/app/components/form/formDataTypes";
 import UserOperatorForm from "@/app/components/form/UserOperatorForm";
+import Review from "../../access-requests/form/Review";
 
 async function getCurrentUser() {
   return actionHandler(
@@ -79,7 +80,6 @@ export default async function UserOperator({
   const userOperatorData: any | { error: string } =
     await getUserOperatorFormData(params.id);
 
-
   if (
     "error" in userData ||
     "error" in businessStructures ||
@@ -94,14 +94,21 @@ export default async function UserOperator({
     }),
   );
 
+  // FIXME: this data is bogus. Replace with genuine data.
   userOperatorData.is_senior_officer = "true";
   userOperatorData.operator_has_parent_company = "no";
   console.log(userOperatorData);
 
   // If operator has an admin, use the single page form to show the user information
+  // TODO: is there a better/smarter way to distinguish between what form component should be displayed?
   return params?.id ? (
-    <UserOperatorForm schema={userOperatorPage2} formData={userData} />
+    // for internal users reviewing prime admin access requests
+    <>
+      <Review userOperator={userOperatorData} userOperatorId={params.id} />
+      <UserOperatorForm schema={userOperatorPage2} formData={userData} />
+    </>
   ) : (
+    // for external users requesting prime admin access
     <UserOperatorMultiStepForm
       schema={createUserOperatorSchema(businessStructuresList)}
       formData={userData}
