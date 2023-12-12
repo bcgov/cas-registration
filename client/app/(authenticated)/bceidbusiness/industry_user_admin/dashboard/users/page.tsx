@@ -55,16 +55,12 @@ const statusStringToEnum = (status: string): Status => {
   switch (status.toUpperCase()) {
     case "MYSELF":
       return Status.MYSELF;
-      break;
     case "APPROVED":
       return Status.APPROVED;
-      break;
     case "REJECTED":
       return Status.REJECTED;
-      break;
     case "PENDING":
       return Status.PENDING;
-      break;
     case "DRAFT":
     default:
       return Status.DRAFT;
