@@ -104,3 +104,33 @@ export async function actionHandler(
     }
   }
 }
+
+/**
+ * Returns the user's GUID for comparison purposes.
+ * @returns A Promise that resolves to the string equalling the user's GUID.
+ */
+export async function getCurrentUserGuid() {
+  try {
+    // 🔒 Get the encrypted JWT
+    const token = await getToken();
+    // get the user_guid from the JWT
+    return token?.user_guid ?? "";
+  } catch (error: unknown) {
+    // Handle any errors, including network issues
+    if (error instanceof Error) {
+      // eslint-disable-next-line no-console
+      return {
+        // eslint-disable-next-line no-console
+        error: `An error occurred while fetching current users GUID: ${error.message}`,
+      };
+    } else {
+      // eslint-disable-next-line no-console
+      console.error(
+        `An unknown error occurred while fetching current users GUID`,
+      );
+      return {
+        error: `An unknown error occurred while fetching current users GUID`,
+      };
+    }
+  }
+}

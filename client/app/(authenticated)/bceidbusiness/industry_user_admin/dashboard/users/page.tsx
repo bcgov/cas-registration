@@ -1,9 +1,7 @@
 import { GridColDef, GridRowsProp } from "@mui/x-data-grid";
 import DataGrid from "@/app/components/datagrid/DataGrid";
 
-import { actionHandler } from "@/app/utils/actions";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { actionHandler, getCurrentUserGuid } from "@/app/utils/actions";
 import { ChangeUserOperatorStatusColumnCell } from "@/app/components/datagrid/ChangeUserOperatorStatusColumnCell";
 import { statusStyle } from "@/app/components/datagrid/userPageHelpers";
 import { Status } from "@/app/types/types";
@@ -39,12 +37,12 @@ async function getUserOperatorsForOperator(
 }
 
 // 🛠️ Function to fetch a user's approved UserOperators, returning the business id as `obj.operator`
-async function getAdminsApprovedUserOperators(
-  user_guid: string,
-): Promise<BusinessUserOperator[]> {
+async function getAdminsApprovedUserOperators(): Promise<
+  BusinessUserOperator[]
+> {
   try {
     return await actionHandler(
-      `registration/get-users-operators/${user_guid}`,
+      `registration/get-current-users-operators`,
       "GET",
       "/dashboard/users",
     );
@@ -74,15 +72,14 @@ const statusStringToEnum = (status: string): Status => {
 };
 
 export default async function Page() {
-  const session = await getServerSession(authOptions);
   let userOperatorStatuses: UserOperatorStatus[] = [];
+  const approvedOperators = await getAdminsApprovedUserOperators();
 
-  if (session?.user.user_guid) {
-    const uid = session.user.user_guid;
-    const approvedOperator = await getAdminsApprovedUserOperators(uid);
+  if (approvedOperators) {
+    const uid = await getCurrentUserGuid();
     userOperatorStatuses = (
       await Promise.all(
-        approvedOperator.flatMap((associatedOperator) =>
+        approvedOperators.flatMap((associatedOperator) =>
           getUserOperatorsForOperator(associatedOperator.operator),
         ),
       )
