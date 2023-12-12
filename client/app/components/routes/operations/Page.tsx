@@ -16,15 +16,17 @@ export default async function OperationsPage() {
     "GET",
     ""
   );
-  const operator_id = response?.operator_id ?? 0;
+  const operator_id = response?.operator_id ?? "";
 
   return (
     <>
       <h1>Operations List</h1>
-      {/* Update the href dynamically based on users operator_id */}
-      <Link href={`/dashboard/operations/${operator_id}/1`}>
-        <Button variant="contained">Add Operation</Button>
-      </Link>
+      {/* Conditionally render the button only if operator_id is an integer */}
+      {typeof operator_id === "number" && Number.isInteger(operator_id) && (
+        <Link href={`/dashboard/operations/${operator_id}/1`}>
+          <Button variant="contained">Add Operation</Button>
+        </Link>
+      )}
       <Suspense fallback={<Loading />}>
         <Operations />
       </Suspense>
