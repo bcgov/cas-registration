@@ -71,6 +71,7 @@ export default async function UserOperator({
 }: Readonly<{
   params?: { id?: number; readonly?: boolean };
 }>) {
+  const userOperatorId = params?.id;
   const businessStructures: BusinessStructure[] | { error: string } =
     await getBusinessStructures();
 
@@ -79,7 +80,7 @@ export default async function UserOperator({
 
   // TODO: define schema of data returned from endpoint
   const userOperatorData: any | { error: string } =
-    await getUserOperatorFormData(params.id);
+    await getUserOperatorFormData(userOperatorId);
 
 
   if (
@@ -95,15 +96,7 @@ export default async function UserOperator({
       label: businessStructure.name,
     }),
   );
-
-  userOperatorData.is_senior_officer = "true";
-  userOperatorData.operator_has_parent_company = "no";
-  console.log(userOperatorData);
-
-  // If operator has an admin, use the single page form to show the user information
-  return params?.id ? (
-    <UserOperatorForm schema={userOperatorPage2} formData={userData} />
-  ) : (
+  return (
     <UserOperatorMultiStepForm
       schema={createUserOperatorSchema(businessStructuresList)}
       formData={userOperatorData}
