@@ -6,7 +6,7 @@ import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { userOperatorUiSchema } from "@/app/utils/jsonSchema/userOperator";
 import { actionHandler } from "@/app/utils/actions";
 import { useSession } from "next-auth/react";
-import Review from "@/app/components/routes/access-requests/form/Review";
+import UserOperatorReview from "@/app/components/routes/access-requests/form/UserOperatorReview";
 import MultiStepFormBase from "@/app/components/form/MultiStepFormBase";
 import {
   UserOperatorFormData,
@@ -88,7 +88,7 @@ export default function UserOperatorMultiStepForm({
   return (
     <>
       {isAdmin && (
-        <Review
+        <UserOperatorReview
           userOperator={userOperatorData}
           userOperatorId={Number(userOperatorId)}
         />
