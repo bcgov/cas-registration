@@ -93,7 +93,7 @@ export default function UserOperatorMultiStepForm({
         baseUrl={"/dashboard/select-operator/user-operator/create"}
         cancelUrl="/dashboard/select-operator"
         schema={schema}
-        disabled={disabled}
+        disabled={isAdmin || disabled}
         error={error}
         formData={formData}
         submitEveryStep
