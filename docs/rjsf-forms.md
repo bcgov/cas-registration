@@ -13,6 +13,24 @@ number_field {
 }
 ```
 
+## Custom validation
+
+To create custom validation for a field, in `FormBase`, add your format to the `customFormats` object. e.g.:
+
+```
+const customFormats = {
+  bc_corporate_registry_number: "^[A-Za-z]{1,3}\\d{7}$",
+};
+```
+
+Then, in the form schema, add `format: <customFormats key`> to the relevant field. e.g.
+
+```
+bc_corporate_registry_number: { type: "string", title: "title", format: "bc_corporate_registry_number" }
+```
+
+See below for validation of specific widgets.
+
 ## Custom widgets
 
 The `defaultTheme` includes many custom widgets which can be set in the forms `uiSchema` using the `ui:widget` option.

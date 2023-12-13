@@ -3,6 +3,7 @@ from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
 from localflavor.ca.models import CAPostalCodeField, CAProvinceField
 from simple_history.models import HistoricalRecords
+from django.core.validators import RegexValidator
 
 
 class AppRole(models.Model):
@@ -232,7 +233,15 @@ class Operator(models.Model):
     legal_name = models.CharField(max_length=1000, db_comment="The legal name of an operator")
     trade_name = models.CharField(max_length=1000, blank=True, db_comment="The trade name of an operator")
     cra_business_number = models.IntegerField(db_comment="The CRA business number of an operator")
-    bc_corporate_registry_number = models.IntegerField(db_comment="The BC corporate registry number of an operator")
+    bc_corporate_registry_number = models.CharField(
+        db_comment="The BC corporate registry number of an operator",
+        validators=[
+            RegexValidator(
+                regex="^[A-Za-z]{1,3}\d{7}$",
+                message='"BC Corporate Registry Number should be 1-3 letters followed by 7 digits".',
+            )
+        ],
+    )
     business_structure = models.ForeignKey(
         BusinessStructure,
         on_delete=models.DO_NOTHING,
@@ -534,7 +543,15 @@ class MultipleOperator(models.Model):
     legal_name = models.CharField(max_length=1000, db_comment="The legal name of an operator")
     trade_name = models.CharField(max_length=1000, db_comment="The trade name of an operator")
     cra_business_number = models.IntegerField(db_comment="The CRA business number of an operator")
-    bc_corporate_registry_number = models.IntegerField(db_comment="The BC corporate registry number of an operator")
+    bc_corporate_registry_number = models.CharField(
+        db_comment="The BC corporate registry number of an operator",
+        validators=[
+            RegexValidator(
+                regex="^[A-Za-z]{1,3}\d{7}$",
+                message='"BC Corporate Registry Number should be 1-3 letters followed by 7 digits".',
+            )
+        ],
+    )
     business_structure = models.ForeignKey(
         BusinessStructure,
         on_delete=models.DO_NOTHING,

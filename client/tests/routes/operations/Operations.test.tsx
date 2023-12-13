@@ -18,7 +18,7 @@ describe("Operations component", () => {
           naics_code: 1,
           previous_year_attributable_emissions: "100",
           swrs_facility_id: "1001",
-          bcghg_id: "546",
+          bcghg_id: "123",
           opt_in: false,
           operator: 1,
           verified_at: "2023-10-13",
