@@ -2,9 +2,9 @@ from typing import Optional
 from registration.utils import check_users_admin_request_eligibility
 from .api_base import router
 from django.shortcuts import get_object_or_404
-from registration.models import Operator
+from registration.models import Operator, UserOperator
 from ninja.responses import codes_4xx, codes_5xx
-from registration.schema import Message, OperatorOut
+from registration.schema import Message, OperatorOut, SelectUserOperatorStatus
 
 
 ##### GET #####
@@ -41,6 +41,12 @@ def get_operator(request, operator_id: int):
     except Exception as e:
         return 404, {"message": "No matching operator found"}
     return 200, operator
+
+
+@router.get("/operators/{operator_id}/user-operators", response=list[SelectUserOperatorStatus])
+def list_user_operators_status_of_operator(request, operator_id: int):
+    qs = UserOperator.objects.filter(operator=operator_id)
+    return qs
 
 
 ##### POST #####
