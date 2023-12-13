@@ -60,6 +60,7 @@ const MultiStepFormBase = ({
       >
         {error && <Alert severity="error">{error}</Alert>}
         <MultiStepButtons
+          disabled={disabled}
           step={formSection}
           steps={formSectionList}
           submitEveryStep={submitEveryStep}
