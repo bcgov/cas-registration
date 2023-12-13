@@ -38,7 +38,7 @@ export default function UserOperatorMultiStepForm({
       ...formState,
       ...data.formData,
     } as UserOperatorFormData;
-
+    console.log("newFormData", newFormData);
     // to prevent resetting the form state when errors occur
     setFormState(newFormData);
 
@@ -56,7 +56,7 @@ export default function UserOperatorMultiStepForm({
       `/dashboard/select-operator/user-operator/create/${params?.formSection}`,
       {
         body: JSON.stringify(newFormData),
-      }
+      },
     );
 
     if (response.error) {
@@ -66,7 +66,7 @@ export default function UserOperatorMultiStepForm({
 
     if (isFinalStep) {
       push(
-        `/dashboard/select-operator/received/add-operator/${response.operator_id}`
+        `/dashboard/select-operator/received/add-operator/${response.operator_id}`,
       );
       return;
     }
@@ -74,10 +74,10 @@ export default function UserOperatorMultiStepForm({
     push(
       `/dashboard/select-operator/user-operator/create/${
         formSection + 2
-      }?user-operator-id=${response.user_operator_id}`
+      }?user-operator-id=${response.user_operator_id}`,
     );
   };
-
+  console.log("formstate", formState);
   return (
     <>
       IM USEROPERATORMULTISTEPFORM
@@ -91,7 +91,7 @@ export default function UserOperatorMultiStepForm({
         onSubmit={submitHandler}
         uiSchema={userOperatorUiSchema}
         readonly={session?.user.app_role?.includes(
-          "cas"
+          "cas",
         )
         // ||
         // formData?.status === Status.PENDING
