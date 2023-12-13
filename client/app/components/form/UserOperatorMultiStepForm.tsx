@@ -6,6 +6,8 @@ import { useParams, useRouter } from "next/navigation";
 import { userOperatorUiSchema } from "@/app/utils/jsonSchema/userOperator";
 import { actionHandler } from "@/app/utils/actions";
 import { useSession } from "next-auth/react";
+import UserOperatorForm from "./UserOperatorForm";
+import { userOperatorPage2 } from "@/app/utils/jsonSchema/userOperator";
 import UserOperatorReview from "@/app/components/routes/access-requests/form/UserOperatorReview";
 import MultiStepFormBase from "@/app/components/form/MultiStepFormBase";
 import {
@@ -80,26 +82,32 @@ export default function UserOperatorMultiStepForm({
     );
   };
 
+  // If the user is an admin or ifno operator exists show the entire multistep form
   const isAdmin = session?.user.app_role?.includes("cas");
-  return (
-    <>
-      {isAdmin && (
-        <UserOperatorReview
-          userOperator={formData}
-          userOperatorId={Number(userOperatorId)}
+  if (isAdmin || !userOperatorId) {
+    return (
+      <>
+        {isAdmin && (
+          <UserOperatorReview
+            userOperator={formData}
+            userOperatorId={Number(userOperatorId)}
+          />
+        )}
+        <MultiStepFormBase
+          baseUrl={`/dashboard/operators/user-operator/${userOperatorId}`}
+          cancelUrl="/dashboard/operators"
+          schema={schema}
+          disabled={isAdmin || disabled}
+          error={error}
+          formData={formData}
+          submitEveryStep={!isAdmin}
+          onSubmit={submitHandler}
+          uiSchema={userOperatorUiSchema}
         />
-      )}
-      <MultiStepFormBase
-        baseUrl={`/dashboard/operators/user-operator/${userOperatorId}`}
-        cancelUrl="/dashboard/operators"
-        schema={schema}
-        disabled={isAdmin || disabled}
-        error={error}
-        formData={formData}
-        submitEveryStep={!isAdmin}
-        onSubmit={submitHandler}
-        uiSchema={userOperatorUiSchema}
-      />
-    </>
-  );
+      </>
+    );
+  }
+
+  // If the operator exists then show the form from the second page
+  return <UserOperatorForm formData={formData} schema={userOperatorPage2} />;
 }
