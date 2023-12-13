@@ -165,7 +165,7 @@ class ReportingActivity(models.Model):
         db_table = 'erc"."reporting_activity'
 
 
-class UserAndContactCommonInfo(TimeStampedModel):
+class UserAndContactCommonInfo(models.Model):
     """User and contact common information abstract base class"""
 
     first_name = models.CharField(max_length=1000, db_comment="A user or contact's first name")
@@ -238,7 +238,7 @@ class BusinessRole(models.Model):
         db_table = 'erc"."business_role'
 
 
-class Contact(UserAndContactCommonInfo):
+class Contact(UserAndContactCommonInfo, TimeStampedModel):
     """Contact model"""
 
     documents = models.ManyToManyField(
