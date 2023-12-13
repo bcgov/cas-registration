@@ -17,14 +17,12 @@ interface UserOperatorFormProps {
   readonly schema: RJSFSchema;
   readonly formData: Partial<UserFormData>;
   readonly disabled?: boolean;
-  readonly userOperatorData?: any;
 }
 
 export default function UserOperatorMultiStepForm({
   disabled,
   schema,
   formData,
-  userOperatorData,
 }: UserOperatorFormProps) {
   const { data: session } = useSession();
   const { push } = useRouter();
@@ -60,7 +58,7 @@ export default function UserOperatorMultiStepForm({
       `/dashboard/select-operator/user-operator/create/${params?.formSection}`,
       {
         body: JSON.stringify(newFormData),
-      }
+      },
     );
 
     if (response.error) {
@@ -70,7 +68,7 @@ export default function UserOperatorMultiStepForm({
 
     if (isFinalStep) {
       push(
-        `/dashboard/select-operator/received/add-operator/${response.operator_id}`
+        `/dashboard/select-operator/received/add-operator/${response.operator_id}`,
       );
       return;
     }
@@ -78,17 +76,16 @@ export default function UserOperatorMultiStepForm({
     push(
       `/dashboard/select-operator/user-operator/create/${
         formSection + 2
-      }?user-operator-id=${response.user_operator_id}`
+      }?user-operator-id=${response.user_operator_id}`,
     );
   };
 
   const isAdmin = session?.user.app_role?.includes("cas");
-
   return (
     <>
       {isAdmin && (
         <UserOperatorReview
-          userOperator={userOperatorData}
+          userOperator={formData}
           userOperatorId={Number(userOperatorId)}
         />
       )}
@@ -98,7 +95,7 @@ export default function UserOperatorMultiStepForm({
         schema={schema}
         disabled={disabled}
         error={error}
-        formData={formState}
+        formData={formData}
         submitEveryStep
         onSubmit={submitHandler}
         uiSchema={userOperatorUiSchema}
