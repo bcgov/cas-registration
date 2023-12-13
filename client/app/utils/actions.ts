@@ -10,7 +10,7 @@ import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 
 // 🔒 App API route to get the encrypted JWT
-async function getToken() {
+export async function getToken() {
   try {
     const res = await fetch(`${process.env.NEXTAUTH_URL}/api/auth/token`, {
       method: "GET",
@@ -100,36 +100,6 @@ export async function actionHandler(
       console.error(`An unknown error occurred while fetching ${endpoint}`);
       return {
         error: `An unknown error occurred while fetching ${endpoint}`,
-      };
-    }
-  }
-}
-
-/**
- * Returns the user's GUID for comparison purposes.
- * @returns A Promise that resolves to the string equalling the user's GUID.
- */
-export async function getCurrentUserGuid() {
-  try {
-    // 🔒 Get the encrypted JWT
-    const token = await getToken();
-    // get the user_guid from the JWT
-    return token?.user_guid ?? "";
-  } catch (error: unknown) {
-    // Handle any errors, including network issues
-    if (error instanceof Error) {
-      // eslint-disable-next-line no-console
-      return {
-        // eslint-disable-next-line no-console
-        error: `An error occurred while fetching current users GUID: ${error.message}`,
-      };
-    } else {
-      // eslint-disable-next-line no-console
-      console.error(
-        `An unknown error occurred while fetching current users GUID`,
-      );
-      return {
-        error: `An unknown error occurred while fetching current users GUID`,
       };
     }
   }
