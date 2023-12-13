@@ -18,7 +18,7 @@ const customFormatsErrorMessages = {
   "postal-code": "Format should be A1A 1A1",
   phone: "Format should be ###-###-####",
   email: "Please enter a valid email address, e.g. mail@example.com",
-  website: "Please enter a valid website, e.g. www.website.com",
+  uri: "Please enter a valid website link, e.g. http://www.website.com, https://www.website.com",
 };
 
 const transformErrors = (errors: RJSFValidationError[]) => {
