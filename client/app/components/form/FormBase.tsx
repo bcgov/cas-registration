@@ -42,6 +42,7 @@ const FormBase: React.FC<FormPropsWithTheme<any>> = (props) => {
       formData={formData ?? {}}
       noHtml5Validate
       omitExtraData={omitExtraData ?? true}
+      // set showErrorList to false after PR 316 is in
       showErrorList={"top"}
       validator={validator}
       transformErrors={transformErrors}
