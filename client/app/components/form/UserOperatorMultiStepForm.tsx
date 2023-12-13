@@ -10,6 +10,7 @@ import {
   UserOperatorFormData,
   UserFormData,
 } from "@/app/components/form/formDataTypes";
+import { useSession } from "next-auth/react";
 
 interface UserOperatorFormProps {
   readonly schema: RJSFSchema;
@@ -20,6 +21,7 @@ export default function UserOperatorMultiStepForm({
   schema,
   formData,
 }: UserOperatorFormProps) {
+  const { data: session } = useSession();
   const { push } = useRouter();
   const params = useParams();
   const searchParams = useSearchParams();
@@ -86,6 +88,7 @@ export default function UserOperatorMultiStepForm({
       submitEveryStep
       onSubmit={submitHandler}
       uiSchema={userOperatorUiSchema}
+      readonly={session?.user.app_role?.includes("cas")}
     />
   );
 }
