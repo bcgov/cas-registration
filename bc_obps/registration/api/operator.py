@@ -42,16 +42,6 @@ def get_operator_by_legal_name_or_cra(
     return 200, operator
 
 
-# FIXME: renamed this endpoint during rebasing to resolve conflict; will still need this endpoint in some places, will need to refactor where /operators endpoint is used to determine whether it needs to be replaced with /all-operators
-@router.get("/all-operators", response={200: List[OperatorOut], codes_4xx: Message})
-def list_operators(request):
-    try:
-        operators = Operator.objects.all()
-    except Exception as e:
-        return 404, {"message": "No matching operator found"}
-    return 200, operators
-
-
 @router.get("/operators/legal-name", response={200: List[OperatorOut], codes_4xx: Message, codes_5xx: Message})
 def get_operator_by_legal_name_or_cra(request, search_value: Optional[str] = None):
     try:
