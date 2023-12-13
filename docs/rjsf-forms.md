@@ -29,7 +29,18 @@ Then, in the form schema, add `format: <customFormats key`> to the relevant fiel
 bc_corporate_registry_number: { type: "string", title: "title", format: "bc_corporate_registry_number" }
 ```
 
-See below for validation of specific widgets.
+#### List of formats
+
+##### Custom
+
+- `phone` - Canadian/US formatted phone number: `+12345678901`
+- `bc_corporate_registry_number` - 3 letters, 7 numbers: `abc1234567`
+- `postal-code` - Canadian postal code format: A1A 1A1
+
+##### RJSF defaults
+
+- `uri` - URL format: http://www.website.com, https://www.website.com
+- `email` - Standard email format: email@address.com
 
 ## Custom widgets
 
@@ -99,11 +110,3 @@ To enable validation of the postal code widget the format must be set to `format
     title: 'Postal codefield'
   }
 ```
-
-## Custom validation with formats
-
-- `url` - accepts a URL with or without `http://`, `https://` or `www`
-- `email` - built in RJSF format to verify an email address is valid
-- `postal-code` - accepts a Canadian postal code in `A1A 1A1
-` format
-- `phone` - accepts a phone number in `+11234567890` format
