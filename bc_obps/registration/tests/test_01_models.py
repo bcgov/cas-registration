@@ -1,7 +1,6 @@
 from django.db import IntegrityError
 from django.test import TestCase
 from django.utils import timezone
-
 from registration.models import (
     BusinessRole,
     BusinessStructure,
@@ -33,7 +32,19 @@ APP_ROLE_FIXTURE = ("real/appRole.json",)
 BUSINESS_STRUCTURE_FIXTURE = ("real/businessStructure.json",)
 
 
+timestamp_common_fields = [
+    ("created_at", "created at", None, None),
+    ("created_by", "created by", None, None),
+    ("updated_at", "updated at", None, None),
+    ("updated_by", "updated by", None, None),
+    ("archived_at", "archived at", None, None),
+    ("archived_by", "archived by", None, None),
+]
+
+
 class BaseTestCase(TestCase):
+    field_data = []  # Override this in the child class
+
     def assertFieldLabel(self, instance, field_name, expected_label):
         field = instance._meta.get_field(field_name)
         self.assertEqual(field.verbose_name, expected_label)
@@ -46,26 +57,31 @@ class BaseTestCase(TestCase):
         field = instance.__getattribute__(field_name)
         self.assertEqual(field.count(), expected_relations_count)
 
+    def test_field_labels_and_max_lengths(self):
+        for (
+            field_name,
+            expected_label,
+            expected_max_length,
+            expected_relations_count,
+        ) in self.field_data:
+            with self.subTest(field_name=field_name):
+                if expected_label:
+                    self.assertFieldLabel(self.test_object, field_name, expected_label)
+                if expected_max_length is not None:
+                    self.assertFieldMaxLength(self.test_object, field_name, expected_max_length)
+                if expected_relations_count is not None:
+                    self.assertHasMultipleRelationsInField(self.test_object, field_name, expected_relations_count)
+
 
 class DocumentTypeModelTest(BaseTestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.test_document_type = DocumentType.objects.create(
+        cls.field_data = [
+            ("name", "name", 1000, None),
+        ]
+        cls.test_object = DocumentType.objects.create(
             name="test",
         )
-
-    def test_field_labels_and_max_lengths(self):
-        # (field_name, expected_label, expected_max_length)
-        field_data = [
-            ("name", "name", 1000),
-        ]
-
-        for field_name, expected_label, expected_max_length in field_data:
-            with self.subTest(field_name=field_name):
-                if expected_label:
-                    self.assertFieldLabel(self.test_document_type, field_name, expected_label)
-                if expected_max_length is not None:
-                    self.assertFieldMaxLength(self.test_document_type, field_name, expected_max_length)
 
 
 class DocumentModelTest(BaseTestCase):
@@ -73,85 +89,46 @@ class DocumentModelTest(BaseTestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.test_document = Document.objects.get(id=1)
-
-    def test_field_labels_and_max_lengths(self):
-        # (field_name, expected_label, expected_max_length)
-        field_data = [
-            ("file", "file", None),
-            ("type", "type", None),
-            ("description", "description", 1000),
+        cls.field_data = [
+            *timestamp_common_fields,
+            ("file", "file", None, None),
+            ("type", "type", None, None),
+            ("description", "description", 1000, None),
         ]
-
-        for field_name, expected_label, expected_max_length in field_data:
-            with self.subTest(field_name=field_name):
-                if expected_label:
-                    self.assertFieldLabel(self.test_document, field_name, expected_label)
-                if expected_max_length is not None:
-                    self.assertFieldMaxLength(self.test_document, field_name, expected_max_length)
+        cls.test_object = Document.objects.get(id=1)
 
 
 class NaicsCodeModelTest(BaseTestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.test_naics_code = NaicsCode.objects.create(
+        cls.test_object = NaicsCode.objects.create(
             naics_code="1",
             naics_description="test",
         )
-
-    def test_field_labels_and_max_lengths(self):
-        # (field_name, expected_label, expected_max_length)
-        field_data = [
-            ("naics_code", "naics code", 1000),
-            ("naics_description", "naics description", 1000),
+        cls.field_data = [
+            ("naics_code", "naics code", 1000, None),
+            ("naics_description", "naics description", 1000, None),
         ]
-
-        for field_name, expected_label, expected_max_length in field_data:
-            with self.subTest(field_name=field_name):
-                if expected_label:
-                    self.assertFieldLabel(self.test_naics_code, field_name, expected_label)
-                if expected_max_length is not None:
-                    self.assertFieldMaxLength(self.test_naics_code, field_name, expected_max_length)
 
 
 class RegulatedProductModelTest(BaseTestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.test_regulated_product = RegulatedProduct.objects.create(
+        cls.field_data = [
+            ("name", "name", 1000, None),
+        ]
+        cls.test_object = RegulatedProduct.objects.create(
             name="test product",
         )
-
-    def test_field_labels_and_max_lengths(self):
-        # (field_name, expected_label, expected_max_length)
-        field_data = [
-            ("name", "name", 1000),
-        ]
-
-        for field_name, expected_label, expected_max_length in field_data:
-            with self.subTest(field_name=field_name):
-                if expected_label:
-                    self.assertFieldLabel(self.test_regulated_product, field_name, expected_label)
-                if expected_max_length is not None:
-                    self.assertFieldMaxLength(self.test_regulated_product, field_name, expected_max_length)
 
 
 class ReportingActivityModelTest(BaseTestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.test_reporting_activity = ReportingActivity.objects.create(
+        cls.field_data = [("name", "name", 1000, None), ("applicable_to", "applicable to", None, None)]
+        cls.test_object = ReportingActivity.objects.create(
             name="test activity",
         )
-
-    def test_field_labels_and_max_lengths(self):
-        # (field_name, expected_label, expected_max_length)
-        field_data = [("name", "name", 1000), ("applicable_to", "applicable to", None)]
-
-        for field_name, expected_label, expected_max_length in field_data:
-            with self.subTest(field_name=field_name):
-                if expected_label:
-                    self.assertFieldLabel(self.test_reporting_activity, field_name, expected_label)
-                if expected_max_length is not None:
-                    self.assertFieldMaxLength(self.test_reporting_activity, field_name, expected_max_length)
 
 
 class UserModelTest(BaseTestCase):
@@ -164,13 +141,10 @@ class UserModelTest(BaseTestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.test_user = User.objects.get(user_guid="3fa85f64-5717-4562-b3fc-2c963f66afa6")
-
-        cls.test_user.documents.set([Document.objects.get(id=1), Document.objects.get(id=2)])
-
-    def test_field_labels_and_max_lengths(self):
-        # (field_name, expected_label, expected_max_length, expected_relations_count)
-        field_data = [
+        cls.test_object = User.objects.get(user_guid="3fa85f64-5717-4562-b3fc-2c963f66afa6")
+        cls.test_object.documents.set([Document.objects.get(id=1), Document.objects.get(id=2)])
+        cls.field_data = [
+            *timestamp_common_fields,
             ("first_name", "first name", 1000, None),
             ("last_name", "last name", 1000, None),
             ("position_title", "position title", 1000, None),
@@ -191,20 +165,6 @@ class UserModelTest(BaseTestCase):
             ("app_role", "app role", None, None),
         ]
 
-        for (
-            field_name,
-            expected_label,
-            expected_max_length,
-            expected_relations_count,
-        ) in field_data:
-            with self.subTest(field_name=field_name):
-                if expected_label:
-                    self.assertFieldLabel(self.test_user, field_name, expected_label)
-                if expected_max_length is not None:
-                    self.assertFieldMaxLength(self.test_user, field_name, expected_max_length)
-                if expected_relations_count is not None:
-                    self.assertHasMultipleRelationsInField(self.test_user, field_name, expected_relations_count)
-
     def test_unique_user_guid_and_business_guid_constraint(self):
         # First user is `cls.test_user` from the fixture, attempt to create another user with the same user_guid and business_guid
         user2 = User(
@@ -222,21 +182,25 @@ class UserModelTest(BaseTestCase):
         )
 
         with self.assertRaises(IntegrityError):
-            user2.save()
+            user2.save(modifier=self.test_object)
 
 
 class ContactModelTest(BaseTestCase):
-    fixtures = [CONTACT_FIXTURE, DOCUMENT_FIXTURE, DOCUMENT_TYPE_FIXTURE, BUSINESS_ROLE_FIXTURE]
+    fixtures = [
+        APP_ROLE_FIXTURE,
+        USER_FIXTURE,
+        CONTACT_FIXTURE,
+        DOCUMENT_FIXTURE,
+        DOCUMENT_TYPE_FIXTURE,
+        BUSINESS_ROLE_FIXTURE,
+    ]
 
     @classmethod
     def setUpTestData(cls):
-        cls.test_contact = Contact.objects.get(id=1)
-
-        cls.test_contact.documents.set([Document.objects.get(id=1), Document.objects.get(id=2)])
-
-    def test_field_labels_and_max_lengths(self):
-        # (field_name, expected_label, expected_max_length, expected_relations_count)
-        field_data = [
+        cls.test_object = Contact.objects.get(id=1)
+        cls.test_object.documents.set([Document.objects.get(id=1), Document.objects.get(id=2)])
+        cls.field_data = [
+            *timestamp_common_fields,
             ("first_name", "first name", 1000, None),
             ("last_name", "last name", 1000, None),
             ("position_title", "position title", 1000, None),
@@ -254,20 +218,6 @@ class ContactModelTest(BaseTestCase):
             ("business_role", "business role", None, None),
         ]
 
-        for (
-            field_name,
-            expected_label,
-            expected_max_length,
-            expected_relations_count,
-        ) in field_data:
-            with self.subTest(field_name=field_name):
-                if expected_label:
-                    self.assertFieldLabel(self.test_contact, field_name, expected_label)
-                if expected_max_length is not None:
-                    self.assertFieldMaxLength(self.test_contact, field_name, expected_max_length)
-                if expected_relations_count is not None:
-                    self.assertHasMultipleRelationsInField(self.test_contact, field_name, expected_relations_count)
-
     def test_unique_email_constraint(self):
         # First user is `cls.test_user` from the fixture, attempt to create a second contact with the same email address
         contact2 = Contact(
@@ -283,7 +233,7 @@ class ContactModelTest(BaseTestCase):
         )
 
         with self.assertRaises(IntegrityError):
-            contact2.save()
+            contact2.save(modifier=User.objects.first())
 
 
 class OperatorModelTest(BaseTestCase):
@@ -300,30 +250,29 @@ class OperatorModelTest(BaseTestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.test_operator = Operator.objects.get(id=1)
-
-        cls.test_operator.documents.set(
+        cls.test_object = Operator.objects.get(id=1)
+        cls.test_object.documents.set(
             [
                 Document.objects.get(id=1),
                 Document.objects.get(id=2),
             ]
         )
 
-        cls.test_operator.contacts.set([Contact.objects.get(id=1), Contact.objects.get(id=2)])
-
+        cls.test_object.contacts.set([Contact.objects.get(id=1), Contact.objects.get(id=2)])
         # Create multiple UserOperators connected with the test Operator
+        user_operators_user = User.objects.get(user_guid="3fa85f64-5717-4562-b3fc-2c963f66afa6")
         for _ in range(2):
             UserOperator.objects.create(
-                user=User.objects.get(user_guid="3fa85f64-5717-4562-b3fc-2c963f66afa6"),
+                user=user_operators_user,
                 operator=Operator.objects.get(id=1),
                 role=UserOperator.Roles.ADMIN,
                 verified_at=timezone.now(),
                 verified_by=User.objects.get(user_guid="00000000-0000-0000-0000-000000000001"),
+                modifier=user_operators_user,
             )
 
-    def test_field_labels_and_max_lengths_and_multiple_relations(self):
-        # (field_name, expected_label, expected_max_length, expected_relations_count)
-        field_data = [
+        cls.field_data = [
+            *timestamp_common_fields,
             ("legal_name", "legal name", 1000, None),
             ("trade_name", "trade name", 1000, None),
             ("cra_business_number", "cra business number", None, None),
@@ -350,50 +299,22 @@ class OperatorModelTest(BaseTestCase):
             ("verified_at", "verified at", None, None),
         ]
 
-        for (
-            field_name,
-            expected_label,
-            expected_max_length,
-            expected_relations_count,
-        ) in field_data:
-            with self.subTest(field_name=field_name):
-                if expected_label:
-                    self.assertFieldLabel(self.test_operator, field_name, expected_label)
-                if expected_max_length is not None:
-                    self.assertFieldMaxLength(self.test_operator, field_name, expected_max_length)
-                if expected_relations_count is not None:
-                    self.assertHasMultipleRelationsInField(self.test_operator, field_name, expected_relations_count)
-
 
 class ParentChildOperatorModelTest(BaseTestCase):
     fixtures = [OPERATOR_FIXTURE, BUSINESS_STRUCTURE_FIXTURE]
 
     @classmethod
     def setUpTestData(cls):
-        cls.test_parent_child_operator = ParentChildOperator.objects.create(
+        cls.test_object = ParentChildOperator.objects.create(
             parent_operator=Operator.objects.get(id=1),
             child_operator=Operator.objects.get(id=2),
             percentage_owned_by_parent_company=55.6,
         )
-
-    def test_field_labels_and_max_lengths(self):
-        # (field_name, expected_label, expected_max_length)
-        field_data = [
-            ("parent_operator", "parent operator", None),
-            ("child_operator", "child operator", None),
-            (
-                "percentage_owned_by_parent_company",
-                "percentage owned by parent company",
-                None,
-            ),
+        cls.field_data = [
+            ("parent_operator", "parent operator", None, None),
+            ("child_operator", "child operator", None, None),
+            ("percentage_owned_by_parent_company", "percentage owned by parent company", None, None),
         ]
-
-        for field_name, expected_label, expected_max_length in field_data:
-            with self.subTest(field_name=field_name):
-                if expected_label:
-                    self.assertFieldLabel(self.test_parent_child_operator, field_name, expected_label)
-                if expected_max_length is not None:
-                    self.assertFieldMaxLength(self.test_parent_child_operator, field_name, expected_max_length)
 
 
 class UserOperatorModelTest(BaseTestCase):
@@ -401,32 +322,25 @@ class UserOperatorModelTest(BaseTestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.test_user_operator = UserOperator.objects.create(
-            user=User.objects.get(user_guid="3fa85f64-5717-4562-b3fc-2c963f66afa6"),
+        user_operators_user = User.objects.get(user_guid="3fa85f64-5717-4562-b3fc-2c963f66afa6")
+        cls.test_object = UserOperator.objects.create(
+            user=user_operators_user,
             operator=Operator.objects.get(id=1),
             role=UserOperator.Roles.ADMIN,
             status=UserOperator.Statuses.PENDING,
             verified_at=timezone.now(),
             verified_by=User.objects.get(user_guid="00000000-0000-0000-0000-000000000001"),
+            modifier=user_operators_user,
         )
-
-    def test_field_labels_and_max_lengths(self):
-        # (field_name, expected_label, expected_max_length)
-        field_data = [
-            ("user", "user", None),
-            ("operator", "operator", None),
-            ("role", "role", 1000),
-            ("status", "status", 1000),
-            ("verified_by", "verified by", None),
-            ("verified_at", "verified at", None),
+        cls.field_data = [
+            *timestamp_common_fields,
+            ("user", "user", None, None),
+            ("operator", "operator", None, None),
+            ("role", "role", 1000, None),
+            ("status", "status", 1000, None),
+            ("verified_by", "verified by", None, None),
+            ("verified_at", "verified at", None, None),
         ]
-
-        for field_name, expected_label, expected_max_length in field_data:
-            with self.subTest(field_name=field_name):
-                if expected_label:
-                    self.assertFieldLabel(self.test_user_operator, field_name, expected_label)
-                if expected_max_length is not None:
-                    self.assertFieldMaxLength(self.test_user_operator, field_name, expected_max_length)
 
 
 class OperationModelTest(BaseTestCase):
@@ -445,34 +359,28 @@ class OperationModelTest(BaseTestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.test_operation = Operation.objects.all().first()
-        cls.test_operation.documents.set(
+        cls.test_object = Operation.objects.first()
+        cls.test_object.documents.set(
             [
                 Document.objects.get(id=1),
                 Document.objects.get(id=2),
             ]
         )
 
-        cls.test_operation.reporting_activities.set(
+        cls.test_object.reporting_activities.set(
             [
                 ReportingActivity.objects.create(name="test"),
                 ReportingActivity.objects.create(name="test2"),
             ]
         )
-        cls.test_operation.regulated_products.set(
+        cls.test_object.regulated_products.set(
             [
                 RegulatedProduct.objects.create(name="test"),
                 RegulatedProduct.objects.create(name="test2"),
             ]
         )
-
-    def assertHasMultipleRelationsInField(self, field_name, expected_relations_count):
-        field = self.test_operation.__getattribute__(field_name)
-        self.assertEqual(field.count(), expected_relations_count)
-
-    def test_field_labels_and_max_lengths_and_multiple_relations(self):
-        # (field_name, expected_label, expected_max_length, expected_relations_count)
-        field_data = [
+        cls.field_data = [
+            *timestamp_common_fields,
             ("name", "name", 1000, None),
             ("type", "type", 1000, None),
             ("naics_code", "naics code", None, None),
@@ -493,45 +401,14 @@ class OperationModelTest(BaseTestCase):
             ("documents", "documents", None, 2),
         ]
 
-        for (
-            field_name,
-            expected_label,
-            expected_max_length,
-            expected_relations_count,
-        ) in field_data:
-            with self.subTest(field_name=field_name):
-                if expected_label:
-                    self.assertFieldLabel(self.test_operation, field_name, expected_label)
-                if expected_max_length is not None:
-                    self.assertFieldMaxLength(self.test_operation, field_name, expected_max_length)
-                if expected_relations_count is not None:
-                    self.assertHasMultipleRelationsInField(field_name, expected_relations_count)
-
 
 class AppRoleModelTest(BaseTestCase):
     fixtures = [APP_ROLE_FIXTURE]
 
     @classmethod
     def setUpTestData(cls):
-        cls.test_app_role = AppRole.objects.first()
-
-    def test_field_labels_and_max_lengths(self):
-        # (field_name, expected_label, expected_max_length, expected_relations_count)
-        field_data = [("role_name", "role name", 100, None), ("role_description", "role description", 1000, None)]
-
-        for (
-            field_name,
-            expected_label,
-            expected_max_length,
-            expected_relations_count,
-        ) in field_data:
-            with self.subTest(field_name=field_name):
-                if expected_label:
-                    self.assertFieldLabel(self.test_app_role, field_name, expected_label)
-                if expected_max_length is not None:
-                    self.assertFieldMaxLength(self.test_app_role, field_name, expected_max_length)
-                if expected_relations_count is not None:
-                    self.assertHasMultipleRelationsInField(self.test_app_role, field_name, expected_relations_count)
+        cls.test_object = AppRole.objects.first()
+        cls.field_data = [("role_name", "role name", 100, None), ("role_description", "role description", 1000, None)]
 
     def test_initial_data(self):
         expected_roles = sorted(['cas_admin', 'cas_analyst', 'cas_pending', 'industry_user'])
@@ -546,27 +423,8 @@ class BusinessRoleModelTest(BaseTestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.test_business_role = BusinessRole.objects.first()
-
-    def test_field_labels_and_max_lengths(self):
-        # (field_name, expected_label, expected_max_length, expected_relations_count)
-        field_data = [("role_name", "role name", 100, None), ("role_description", "role description", 1000, None)]
-
-        for (
-            field_name,
-            expected_label,
-            expected_max_length,
-            expected_relations_count,
-        ) in field_data:
-            with self.subTest(field_name=field_name):
-                if expected_label:
-                    self.assertFieldLabel(self.test_business_role, field_name, expected_label)
-                if expected_max_length is not None:
-                    self.assertFieldMaxLength(self.test_business_role, field_name, expected_max_length)
-                if expected_relations_count is not None:
-                    self.assertHasMultipleRelationsInField(
-                        self.test_business_role, field_name, expected_relations_count
-                    )
+        cls.test_object = BusinessRole.objects.first()
+        cls.field_data = [("role_name", "role name", 100, None), ("role_description", "role description", 1000, None)]
 
     def test_initial_data(self):
         expected_roles = sorted(
@@ -593,27 +451,27 @@ class MultipleOperatorModelTest(BaseTestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.test_multiple_operator = MultipleOperator.objects.create(
+        cls.test_object = MultipleOperator.objects.create(
             operation=Operation.objects.create(
                 name="test",
                 type="test",
-                naics_code=NaicsCode.objects.all().first(),
-                operator=Operator.objects.all().first(),
+                naics_code=NaicsCode.objects.first(),
+                operator=Operator.objects.first(),
                 previous_year_attributable_emissions=1,
                 swrs_facility_id=1,
                 bcghg_id=1,
                 opt_in=True,
                 verified_at=timezone.now(),
                 verified_by=User.objects.get(user_guid="00000000-0000-0000-0000-000000000001"),
-                application_lead=Contact.objects.all().first(),
+                application_lead=Contact.objects.first(),
+                modifier=User.objects.first(),
             ),
-            operation_id=Operation.objects.all().first().id,
             operator_index=1,
             legal_name="test",
             trade_name="test",
             cra_business_number=123456789,
             bc_corporate_registry_number='abc1234567',
-            business_structure=BusinessStructure.objects.all().first(),
+            business_structure=BusinessStructure.objects.first(),
             website="test",
             percentage_ownership=100,
             physical_street_address="test",
@@ -625,33 +483,25 @@ class MultipleOperatorModelTest(BaseTestCase):
             mailing_municipality="test",
             mailing_province="BC",
             mailing_postal_code="V7W 3R4",
+            modifier=User.objects.first(),
         )
-
-    def test_field_labels_and_max_lengths(self):
-        # (field_name, expected_label, expected_max_length)
-        field_data = [
-            ("operator_index", "operator index", None),
-            ("legal_name", "legal name", 1000),
-            ("trade_name", "trade name", 1000),
-            ("cra_business_number", "cra business number", None),
-            ("bc_corporate_registry_number", "bc corporate registry number", None),
-            ("business_structure", "business structure", None),
-            ("website", "website", 200),
-            ("percentage_ownership", "percentage ownership", None),
-            ("physical_street_address", "physical street address", 1000),
-            ("physical_municipality", "physical municipality", 1000),
-            ("physical_province", "physical province", 2),
-            ("physical_postal_code", "physical postal code", 7),
-            ("mailing_address_same_as_physical", "mailing address same as physical", None),
-            ("mailing_street_address", "mailing street address", 1000),
-            ("mailing_municipality", "mailing municipality", 1000),
-            ("mailing_province", "mailing province", 2),
-            ("mailing_postal_code", "mailing postal code", 7),
+        cls.field_data = [
+            *timestamp_common_fields,
+            ("operator_index", "operator index", None, None),
+            ("legal_name", "legal name", 1000, None),
+            ("trade_name", "trade name", 1000, None),
+            ("cra_business_number", "cra business number", None, None),
+            ("bc_corporate_registry_number", "bc corporate registry number", None, None),
+            ("business_structure", "business structure", None, None),
+            ("website", "website", 200, None),
+            ("percentage_ownership", "percentage ownership", None, None),
+            ("physical_street_address", "physical street address", 1000, None),
+            ("physical_municipality", "physical municipality", 1000, None),
+            ("physical_province", "physical province", 2, None),
+            ("physical_postal_code", "physical postal code", 7, None),
+            ("mailing_address_same_as_physical", "mailing address same as physical", None, None),
+            ("mailing_street_address", "mailing street address", 1000, None),
+            ("mailing_municipality", "mailing municipality", 1000, None),
+            ("mailing_province", "mailing province", 2, None),
+            ("mailing_postal_code", "mailing postal code", 7, None),
         ]
-
-        for field_name, expected_label, expected_max_length in field_data:
-            with self.subTest(field_name=field_name):
-                if expected_label:
-                    self.assertFieldLabel(self.test_multiple_operator, field_name, expected_label)
-                if expected_max_length is not None:
-                    self.assertFieldMaxLength(self.test_multiple_operator, field_name, expected_max_length)
