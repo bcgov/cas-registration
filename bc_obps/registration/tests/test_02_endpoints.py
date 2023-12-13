@@ -624,7 +624,7 @@ class TestUserOperatorEndpoint:
         response = client.put(
             f"{base_endpoint}select-operator/user-operator/{user_operator.user_id}/update-status",
             content_type=content_type_json,
-            data={"status": "approved"},
+            data={"status": UserOperator.Statuses.APPROVED},
             HTTP_AUTHORIZATION=self.auth_header_dumps,
         )
 
