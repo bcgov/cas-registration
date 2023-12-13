@@ -90,13 +90,13 @@ export default function UserOperatorMultiStepForm({
         />
       )}
       <MultiStepFormBase
-        baseUrl={"/dashboard/select-operator/user-operator/create"}
-        cancelUrl="/dashboard/select-operator"
+        baseUrl={`/dashboard/operators/user-operator/${userOperatorId}`}
+        cancelUrl="/dashboard/operators"
         schema={schema}
         disabled={isAdmin || disabled}
         error={error}
         formData={formData}
-        submitEveryStep
+        submitEveryStep={!isAdmin}
         onSubmit={submitHandler}
         uiSchema={userOperatorUiSchema}
       />
