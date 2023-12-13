@@ -103,6 +103,17 @@ class ReportingActivity(models.Model):
 class UserAndContactCommonInfo(models.Model):
     """User and contact common information abstract base class"""
 
+    class Roles(models.TextChoices):
+        CAS_ADMIN = "cas_admin"
+        CAS_ANALYST = "cas_analyst"
+        CAS_PENDING = "cas_pending"
+        INDUSTRY_USER = "industry_user"
+        INDUSTRY_USER_ADMIN = "industry_user_admin"
+
+    class IdPs(models.TextChoices):
+        IDIR = "idir"
+        BCEIDBUSINESS = "bceidbusiness"
+
     first_name = models.CharField(max_length=1000, db_comment="A user or contact's first name")
     last_name = models.CharField(max_length=1000, db_comment="A user or contact's last name")
     position_title = models.CharField(max_length=1000, db_comment="A user or contact's position title")
