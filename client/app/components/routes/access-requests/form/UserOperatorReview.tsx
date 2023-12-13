@@ -40,14 +40,13 @@ export default function UserOperatorReview({
     );
     return response;
   }
-  console.log(userOperator);
   return (
     <Review
       approvedMessage="You have approved the request for prime admin access."
       rejectedMessage="You have rejected the request for prime admin access."
       confirmApproveMessage="Are you sure you want to approve this request for prime admin access?"
       confirmRejectMessage="Are you sure you want to reject this request for prime admin access?"
-      isStatusPending={userOperator.status === Status.PENDING}
+      isStatusPending={userOperator.user_operator_status === Status.PENDING}
       onApprove={approveRequest}
       onReject={rejectRequest}
     />
