@@ -22,7 +22,8 @@ async function getBusinessStructures() {
   );
 }
 
-export async function getUserOperatorFormData(id: number) {
+export async function getUserOperatorFormData(id: number | undefined) {
+  if (!id) return {};
   return actionHandler(
     `registration/select-operator/user-operator/${id}`,
     "GET",
@@ -67,6 +68,7 @@ export default async function UserOperator({
 }: Readonly<{
   params?: { id?: number; readonly?: boolean };
 }>) {
+  const userOperatorId = params?.id;
   const businessStructures: BusinessStructure[] | { error: string } =
     await getBusinessStructures();
 
@@ -75,7 +77,7 @@ export default async function UserOperator({
 
   // TODO: define schema of data returned from endpoint
   const userOperatorData: any | { error: string } =
-    await getUserOperatorFormData(params.id);
+    await getUserOperatorFormData(userOperatorId);
 
   if (
     "error" in userData ||
@@ -90,11 +92,6 @@ export default async function UserOperator({
       label: businessStructure.name,
     }),
   );
-  // FIXME: this data is bogus. Replace with genuine data.
-  userOperatorData.is_senior_officer = "true";
-  userOperatorData.operator_has_parent_company = "no";
-  // If operator has an admin, use the single page form to show the user information
-  // TODO: is there a better/smarter way to distinguish between what form component should be displayed?
   return (
     <UserOperatorMultiStepForm
       schema={createUserOperatorSchema(businessStructuresList)}
