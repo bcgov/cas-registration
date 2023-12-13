@@ -1,9 +1,73 @@
+from typing import Any
 import uuid
 from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
 from localflavor.ca.models import CAPostalCodeField, CAProvinceField
 from simple_history.models import HistoricalRecords
 from django.core.validators import RegexValidator
+from django.utils import timezone
+
+
+class CustomManager(models.Manager):
+    def create(self, **kwargs: Any) -> Any:
+        """Override create method to set created_by field"""
+        if "modifier" not in kwargs:
+            # Raise an exception or handle the scenario where user information is missing
+            raise ValueError("User information is required to create this instance.")
+        modifier = kwargs.pop("modifier")
+        instance = self.model(**kwargs)
+        instance.save(modifier=modifier)
+        return instance
+
+
+class TimeStampedModel(models.Model):
+    created_by = models.ForeignKey(
+        'User', null=True, blank=True, on_delete=models.PROTECT, related_name='%(class)s_created'
+    )
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    updated_by = models.ForeignKey(
+        'User', on_delete=models.PROTECT, null=True, blank=True, related_name='%(class)s_updated'
+    )
+    updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
+    archived_by = models.ForeignKey(
+        'User', on_delete=models.PROTECT, null=True, blank=True, related_name='%(class)s_archived'
+    )
+    archived_at = models.DateTimeField(null=True, blank=True)
+
+    objects = CustomManager()
+
+    class Meta:
+        abstract = True
+
+    def save(self, *args, **kwargs):
+        """
+        Override save method to set created_by and updated_by fields
+        """
+        modifier = kwargs.pop("modifier", None)
+        if not modifier:
+            # Raise an exception or handle the scenario where user information is missing
+            raise ValueError("User information is required to save this instance.")
+
+        is_new = not self.pk
+        if is_new:  # If object is being created
+            # Set created_by if not set
+            if not self.created_by:
+                self.created_by = modifier
+        else:
+            # Set updated_by if not set
+            if not self.updated_by:
+                self.updated_by = modifier
+        super().save(*args, **kwargs)
+
+    def archive(self, *args, **kwargs):
+        """Archive this instance"""
+        modifier = kwargs.pop("modifier", None)
+        if not modifier:
+            # Raise an exception or handle the scenario where user information is missing
+            raise ValueError("User information is required to archive this instance.")
+        self.archived_by = modifier
+        self.archived_at = timezone.now()
+        self.save(*args, **kwargs)
 
 
 class AppRole(models.Model):
@@ -37,7 +101,7 @@ class DocumentType(models.Model):
         db_table = 'erc"."document_type'
 
 
-class Document(models.Model):
+class Document(TimeStampedModel):
     """Document model"""
 
     file = models.FileField(upload_to="documents", db_comment="The file format, metadata, etc.")
@@ -101,7 +165,7 @@ class ReportingActivity(models.Model):
         db_table = 'erc"."reporting_activity'
 
 
-class UserAndContactCommonInfo(models.Model):
+class UserAndContactCommonInfo(TimeStampedModel):
     """User and contact common information abstract base class"""
 
     first_name = models.CharField(max_length=1000, db_comment="A user or contact's first name")
@@ -209,7 +273,7 @@ class BusinessStructure(models.Model):
         db_table = 'erc"."business_structure'
 
 
-class Operator(models.Model):
+class Operator(TimeStampedModel):
     """Operator model"""
 
     class Statuses(models.TextChoices):
@@ -334,7 +398,7 @@ class ParentChildOperator(models.Model):
         ]
 
 
-class UserOperator(models.Model):
+class UserOperator(TimeStampedModel):
     """User operator model"""
 
     class Roles(models.TextChoices):
@@ -394,7 +458,7 @@ class UserOperator(models.Model):
         ]
 
 
-class OperationAndFacilityCommonInfo(models.Model):
+class OperationAndFacilityCommonInfo(TimeStampedModel):
     """Operation and facility common information abstract base class"""
 
     name = models.CharField(max_length=1000, db_comment="An operation or facility's name")
@@ -516,7 +580,7 @@ class Operation(OperationAndFacilityCommonInfo):
         ]
 
 
-class MultipleOperator(models.Model):
+class MultipleOperator(TimeStampedModel):
     """def here"""
 
     operation = models.ForeignKey(
