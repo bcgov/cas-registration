@@ -27,7 +27,7 @@ export default function UserOperatorMultiStepForm({
   const searchParams = useSearchParams();
   const [error, setError] = useState(undefined);
   const [formState, setFormState] = useState(formData);
-
+  console.log("formdata", formData);
   const formSection = parseInt(params?.formSection as string) - 1;
 
   const formSectionList = Object.keys(schema.properties as RJSFSchema);
@@ -56,7 +56,7 @@ export default function UserOperatorMultiStepForm({
       `/dashboard/select-operator/user-operator/create/${params?.formSection}`,
       {
         body: JSON.stringify(newFormData),
-      },
+      }
     );
 
     if (response.error) {
@@ -66,7 +66,7 @@ export default function UserOperatorMultiStepForm({
 
     if (isFinalStep) {
       push(
-        `/dashboard/select-operator/received/add-operator/${response.operator_id}`,
+        `/dashboard/select-operator/received/add-operator/${response.operator_id}`
       );
       return;
     }
@@ -74,21 +74,29 @@ export default function UserOperatorMultiStepForm({
     push(
       `/dashboard/select-operator/user-operator/create/${
         formSection + 2
-      }?user-operator-id=${response.user_operator_id}`,
+      }?user-operator-id=${response.user_operator_id}`
     );
   };
 
   return (
-    <MultiStepFormBase
-      baseUrl={"/dashboard/select-operator/user-operator/create"}
-      cancelUrl="/dashboard/select-operator"
-      schema={schema}
-      error={error}
-      formData={formState}
-      submitEveryStep
-      onSubmit={submitHandler}
-      uiSchema={userOperatorUiSchema}
-      readonly={session?.user.app_role?.includes("cas")}
-    />
+    <>
+      IM USEROPERATORMULTISTEPFORM
+      <MultiStepFormBase
+        baseUrl={"/dashboard/select-operator/user-operator/create"}
+        cancelUrl="/dashboard/select-operator"
+        schema={schema}
+        error={error}
+        formData={formState}
+        submitEveryStep
+        onSubmit={submitHandler}
+        uiSchema={userOperatorUiSchema}
+        readonly={session?.user.app_role?.includes(
+          "cas"
+        )
+        // ||
+        // formData?.status === Status.PENDING
+        }
+      />
+    </>
   );
 }

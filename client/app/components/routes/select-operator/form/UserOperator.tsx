@@ -13,7 +13,7 @@ async function getCurrentUser() {
   return actionHandler(
     `registration/user`,
     "GET",
-    `/dashboard/select-operator/user-operator`,
+    `/dashboard/select-operator/user-operator`
   );
 }
 
@@ -21,13 +21,13 @@ async function getBusinessStructures() {
   return actionHandler(
     `registration/business_structures`,
     "GET",
-    `/dashboard/select-operator/user-operator`,
+    `/dashboard/select-operator/user-operator`
   );
 }
 
 // To populate the options for the business structure select field
 const createUserOperatorSchema = (
-  businessStructureList: { id: string; label: string }[],
+  businessStructureList: { id: string; label: string }[]
 ): RJSFSchema => {
   const localSchema = JSON.parse(JSON.stringify(userOperatorSchema));
 
@@ -37,7 +37,7 @@ const createUserOperatorSchema = (
       title: businessStructure.label,
       enum: [businessStructure.id],
       value: businessStructure.id,
-    }),
+    })
   );
 
   // for operator
@@ -75,9 +75,9 @@ export default async function UserOperator({
     (businessStructure: BusinessStructure) => ({
       id: businessStructure.name,
       label: businessStructure.name,
-    }),
+    })
   );
-
+  console.log("userData", userData);
   // If operator has an admin, use the single page form to show the user information
   return params?.id ? (
     <UserOperatorForm schema={userOperatorPage2} formData={userData} />
