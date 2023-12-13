@@ -44,10 +44,8 @@ def get_user_role(request, user_guid: str):
 def create_user_profile(request, identity_provider: str, payload: UserIn):
     try:
         # Determine the role based on the identity provider
-        if identity_provider == "idir":
-            role = "cas_pending"
-        else:
-            role = "industry_user"
+        role_mapping = {User.IdPs.IDIR: User.Roles.CAS_PENDING, User.IdPs.BCEIDBUSINESS: User.Roles.INDUSTRY_USER}
+        role = role_mapping.get(identity_provider, None)
 
         new_user = User.objects.create(
             user_guid=json.loads(request.headers.get('Authorization')).get('user_guid'),
