@@ -47,7 +47,7 @@ const userOperatorPage1: RJSFSchema = {
       title: "Business Structure",
       anyOf: [],
     },
-    website: { type: "string", title: "Website (optional)", format: "url" },
+    website: { type: "string", title: "Website (optional)", format: "uri" },
     operator_has_parent_company: {
       title: "Does the operator have a parent company?",
       type: "boolean",
@@ -137,7 +137,7 @@ const userOperatorPage1: RJSFSchema = {
             title: "Business Structure",
             anyOf: [],
           },
-          pc_website: { type: "string", title: "Website", format: "url" },
+          pc_website: { type: "string", title: "Website", format: "uri" },
           percentage_owned_by_parent_company: {
             type: "number",
             title: "Percentage of ownership of operator (%)",
