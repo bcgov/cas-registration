@@ -144,7 +144,6 @@ class UserModelTest(BaseTestCase):
         cls.test_object = User.objects.get(user_guid="3fa85f64-5717-4562-b3fc-2c963f66afa6")
         cls.test_object.documents.set([Document.objects.get(id=1), Document.objects.get(id=2)])
         cls.field_data = [
-            *timestamp_common_fields,
             ("first_name", "first name", 1000, None),
             ("last_name", "last name", 1000, None),
             ("position_title", "position title", 1000, None),
@@ -182,7 +181,7 @@ class UserModelTest(BaseTestCase):
         )
 
         with self.assertRaises(IntegrityError):
-            user2.save(modifier=self.test_object)
+            user2.save()
 
 
 class ContactModelTest(BaseTestCase):
