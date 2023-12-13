@@ -455,6 +455,24 @@ class TestOperatorsEndpoint:
         assert response.status_code == 404
         assert response.json() == {"message": "No matching operator found. Retry or add operator."}
 
+    def test_get_list_user_operators_status(self):
+        operator = baker.make(Operator)
+        user = baker.make(User)
+        userOperatorPrime = baker.make(
+            UserOperator,
+            user=user,
+            operator=operator,
+            role=UserOperator.Roles.ADMIN,
+            status=UserOperator.Statuses.APPROVED,
+        )
+        baker.make(UserOperator, operator=operator, _quantity=1)
+
+        response = client.get(
+            f"{self.endpoint}/{operator.id}/user-operators",
+        )
+
+        assert len(json.loads(response.content)) == 2
+
 
 class TestUserOperatorEndpoint:
     select_endpoint = base_endpoint + "select-operator"
@@ -574,6 +592,51 @@ class TestUserOperatorEndpoint:
 
         has_history_record = HistoricalUserOperator.objects.all()
         assert has_history_record.count() > 0, "History record was not created"
+
+    def test_get_users_operators_list(self):
+        operators = baker.make(Operator, _quantity=2)
+        baker.make(
+            UserOperator,
+            user=self.user,
+            operator=operators[0],
+            role=UserOperator.Roles.ADMIN,
+            status=UserOperator.Statuses.APPROVED,
+        )
+        baker.make(
+            UserOperator,
+            user=self.user,
+            operator=operators[1],
+            role=UserOperator.Roles.ADMIN,
+            status=UserOperator.Statuses.APPROVED,
+        )
+
+        response = client.get(
+            f"{base_endpoint}get-current-users-operators",
+            HTTP_AUTHORIZATION=self.auth_header_dumps,
+        )
+
+        assert len(json.loads(response.content)) == 2
+
+    def test_put_update_user_status(self):
+        user = baker.make(User)
+        user_operator = baker.make(UserOperator, status=UserOperator.Statuses.PENDING, user_id=user.user_guid)
+
+        response = client.put(
+            f"{base_endpoint}select-operator/user-operator/{user_operator.user_id}/update-status",
+            content_type=content_type_json,
+            data={"status": UserOperator.Statuses.APPROVED},
+            HTTP_AUTHORIZATION=self.auth_header_dumps,
+        )
+
+        assert response.status_code == 200
+
+        response_content = json.loads(response.content.decode("utf-8"))
+        parsed_list = json.loads(response_content)
+        # the put_response content is returned as a list but there's only ever one object in the list
+        parsed_object = parsed_list[0]
+
+        assert parsed_object.get("fields").get("status") == UserOperator.Statuses.APPROVED
+        assert parsed_object.get("fields").get("verified_by") == str(self.user.user_guid)
 
 
 class TestUserEndpoint:
