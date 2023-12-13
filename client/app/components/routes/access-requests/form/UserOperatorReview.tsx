@@ -7,7 +7,7 @@ import { UserOperatorFormData } from "@/app/components/form/formDataTypes";
 
 interface Props {
   // TODO: fix schema of userOperator data
-  userOperator: UserOperatorFormData;
+  userOperator: Partial<UserOperatorFormData>;
   userOperatorId: number;
 }
 

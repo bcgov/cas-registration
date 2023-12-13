@@ -82,7 +82,7 @@ export default async function UserOperator({
     "error" in businessStructures ||
     "error" in userOperatorData
   )
-    return serverError;
+    return;
 
   const businessStructuresList = businessStructures?.map(
     (businessStructure: BusinessStructure) => ({
@@ -90,7 +90,6 @@ export default async function UserOperator({
       label: businessStructure.name,
     }),
   );
-
   // FIXME: this data is bogus. Replace with genuine data.
   userOperatorData.is_senior_officer = "true";
   userOperatorData.operator_has_parent_company = "no";
@@ -99,8 +98,7 @@ export default async function UserOperator({
   return (
     <UserOperatorMultiStepForm
       schema={createUserOperatorSchema(businessStructuresList)}
-      formData={userData}
-      userOperatorData={userOperatorData}
+      formData={userOperatorData}
     />
   );
 }
