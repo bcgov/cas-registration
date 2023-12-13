@@ -418,6 +418,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='HistoricalUser',
             fields=[
+                ('created_at', models.DateTimeField(blank=True, editable=False, null=True)),
+                ('updated_at', models.DateTimeField(blank=True, editable=False, null=True)),
+                ('archived_at', models.DateTimeField(blank=True, null=True)),
                 ('first_name', models.CharField(db_comment="A user or contact's first name", max_length=1000)),
                 ('last_name', models.CharField(db_comment="A user or contact's last name", max_length=1000)),
                 ('position_title', models.CharField(db_comment="A user or contact's position title", max_length=1000)),
@@ -472,15 +475,6 @@ class Migration(migrations.Migration):
                         on_delete=django.db.models.deletion.DO_NOTHING,
                         related_name='+',
                         to='registration.approle',
-                    ),
-                ),
-                (
-                    'history_user',
-                    models.ForeignKey(
-                        null=True,
-                        on_delete=django.db.models.deletion.SET_NULL,
-                        related_name='+',
-                        to=settings.AUTH_USER_MODEL,
                     ),
                 ),
             ],
@@ -637,6 +631,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='User',
             fields=[
+                ('created_at', models.DateTimeField(auto_now_add=True, null=True)),
+                ('updated_at', models.DateTimeField(auto_now=True, null=True)),
+                ('archived_at', models.DateTimeField(blank=True, null=True)),
                 ('first_name', models.CharField(db_comment="A user or contact's first name", max_length=1000)),
                 ('last_name', models.CharField(db_comment="A user or contact's last name", max_length=1000)),
                 ('position_title', models.CharField(db_comment="A user or contact's position title", max_length=1000)),
@@ -685,7 +682,37 @@ class Migration(migrations.Migration):
                         to='registration.approle',
                     ),
                 ),
+                (
+                    'archived_by',
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name='%(class)s_archived',
+                        to='registration.user',
+                    ),
+                ),
+                (
+                    'created_by',
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name='%(class)s_created',
+                        to='registration.user',
+                    ),
+                ),
                 ('documents', models.ManyToManyField(blank=True, related_name='users', to='registration.document')),
+                (
+                    'updated_by',
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name='%(class)s_updated',
+                        to='registration.user',
+                    ),
+                ),
             ],
             options={
                 'db_table': 'erc"."user',
@@ -1276,6 +1303,49 @@ class Migration(migrations.Migration):
                 'verbose_name': 'HistoricalUser_documents',
             },
             bases=(simple_history.models.HistoricalChanges, models.Model),
+        ),
+        migrations.AddField(
+            model_name='historicaluser',
+            name='archived_by',
+            field=models.ForeignKey(
+                blank=True,
+                db_constraint=False,
+                null=True,
+                on_delete=django.db.models.deletion.DO_NOTHING,
+                related_name='+',
+                to='registration.user',
+            ),
+        ),
+        migrations.AddField(
+            model_name='historicaluser',
+            name='created_by',
+            field=models.ForeignKey(
+                blank=True,
+                db_constraint=False,
+                null=True,
+                on_delete=django.db.models.deletion.DO_NOTHING,
+                related_name='+',
+                to='registration.user',
+            ),
+        ),
+        migrations.AddField(
+            model_name='historicaluser',
+            name='history_user',
+            field=models.ForeignKey(
+                null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to=settings.AUTH_USER_MODEL
+            ),
+        ),
+        migrations.AddField(
+            model_name='historicaluser',
+            name='updated_by',
+            field=models.ForeignKey(
+                blank=True,
+                db_constraint=False,
+                null=True,
+                on_delete=django.db.models.deletion.DO_NOTHING,
+                related_name='+',
+                to='registration.user',
+            ),
         ),
         migrations.CreateModel(
             name='HistoricalReportingActivity',
