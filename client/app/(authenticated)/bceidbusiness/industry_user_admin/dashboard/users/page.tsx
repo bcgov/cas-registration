@@ -1,7 +1,7 @@
 import { GridColDef, GridRowsProp } from "@mui/x-data-grid";
 import DataGrid from "@/app/components/datagrid/DataGrid";
 
-import { actionHandler, getCurrentUserGuid } from "@/app/utils/actions";
+import { actionHandler, getToken } from "@/app/utils/actions";
 import { ChangeUserOperatorStatusColumnCell } from "@/app/components/datagrid/ChangeUserOperatorStatusColumnCell";
 import { statusStyle } from "@/app/components/datagrid/userPageHelpers";
 import { Status } from "@/app/types/types";
@@ -72,7 +72,8 @@ export default async function Page() {
   const approvedOperators = await getAdminsApprovedUserOperators();
 
   if (approvedOperators) {
-    const uid = await getCurrentUserGuid();
+    const token = await getToken();
+    const uid = token?.user_guid ?? "";
     userOperatorStatuses = (
       await Promise.all(
         approvedOperators.flatMap((associatedOperator) =>
