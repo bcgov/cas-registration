@@ -1,99 +1,15 @@
 import { GridColDef, GridRowsProp } from "@mui/x-data-grid";
 import DataGrid from "@/app/components/datagrid/DataGrid";
-
-import { actionHandler, getToken } from "@/app/utils/actions";
+import {
+  processAdminUserOperators,
+  UserOperatorStatus,
+} from "@/app/utils/users/adminUserOperators";
 import { ChangeUserOperatorStatusColumnCell } from "@/app/components/datagrid/ChangeUserOperatorStatusColumnCell";
 import { statusStyle } from "@/app/components/datagrid/userPageHelpers";
-import { Status } from "@/app/types/types";
-
-type BusinessUserOperator = {
-  operator: string;
-};
-
-interface UserOperatorStatus {
-  user_id: string;
-  first_name: string;
-  last_name: string;
-  position_title: string;
-  business_name: string;
-  email: string;
-  role: string;
-  status: string | Status;
-}
-
-// 🛠️ Function to fetch userOperators
-async function getUserOperatorsForOperator(
-  operator_id: string,
-): Promise<UserOperatorStatus[]> {
-  try {
-    return await actionHandler(
-      `registration/operators/${operator_id}/user-operators`,
-      "GET",
-      "/dashboard/users",
-    );
-  } catch (error) {
-    throw error;
-  }
-}
-
-// 🛠️ Function to fetch a user's approved UserOperators, returning the business id as `obj.operator`
-async function getAdminsApprovedUserOperators(): Promise<
-  BusinessUserOperator[]
-> {
-  try {
-    return await actionHandler(
-      `registration/get-current-users-operators`,
-      "GET",
-      "/dashboard/users",
-    );
-  } catch (error) {
-    throw error;
-  }
-}
-
-const statusStringToEnum = (status: string): Status => {
-  switch (status.toUpperCase()) {
-    case "MYSELF":
-      return Status.MYSELF;
-    case "APPROVED":
-      return Status.APPROVED;
-    case "REJECTED":
-      return Status.REJECTED;
-    case "PENDING":
-      return Status.PENDING;
-    case "DRAFT":
-    default:
-      return Status.DRAFT;
-  }
-};
 
 export default async function Page() {
-  let userOperatorStatuses: UserOperatorStatus[] = [];
-  const approvedOperators = await getAdminsApprovedUserOperators();
-
-  if (approvedOperators) {
-    const token = await getToken();
-    const uid = token?.user_guid ?? "";
-    userOperatorStatuses = (
-      await Promise.all(
-        approvedOperators.flatMap((associatedOperator) =>
-          getUserOperatorsForOperator(associatedOperator.operator),
-        ),
-      )
-    )
-      .flat()
-      .map((uo) => {
-        uo.status = statusStringToEnum(uo.status);
-        return uo;
-      });
-
-    // 🤳Identify current admin user in the list
-    const selfIndex = userOperatorStatuses.findIndex(
-      (userOperator) => userOperator.user_id.replace(/-/g, "") === uid,
-    );
-    userOperatorStatuses[selfIndex].status = Status.MYSELF;
-  }
-
+  const userOperatorStatuses: UserOperatorStatus[] =
+    await processAdminUserOperators();
   const columns: GridColDef[] = [
     {
       field: "id",
