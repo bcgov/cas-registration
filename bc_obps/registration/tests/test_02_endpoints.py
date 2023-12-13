@@ -154,7 +154,7 @@ class TestOperationsEndpoint:
                     "mo_legal_name": "test",
                     "mo_trade_name": "test",
                     "mo_cra_business_number": 123,
-                    "mo_bc_corporate_registry_number": 123,
+                    "mo_bc_corporate_registry_number": 'abc1234567',
                     "mo_business_structure": "BC Corporation",
                     "mo_website": "test",
                     "mo_physical_street_address": "test",
@@ -171,7 +171,7 @@ class TestOperationsEndpoint:
                     "mo_legal_name": "test2",
                     "mo_trade_name": "test2",
                     "mo_cra_business_number": 123,
-                    "mo_bc_corporate_registry_number": 123,
+                    "mo_bc_corporate_registry_number": 'abc1234567',
                     "mo_business_structure": "BC Corporation",
                     "mo_website": "test",
                     "mo_physical_street_address": "test",
@@ -212,7 +212,7 @@ class TestOperationsEndpoint:
         assert response.status_code == 422
 
     def test_post_existing_operation(self, client):
-        baker.make(Operation, bcghg_id=123)
+        baker.make(Operation, bcghg_id='123')
         naics_code = baker.make(NaicsCode)
         document = baker.make(Document)
         reporting_activities = baker.make(ReportingActivity, _quantity=2)
@@ -228,7 +228,7 @@ class TestOperationsEndpoint:
             documents=[document.id],
             application_lead=application_lead.id,
             operator_id=operator.id,
-            bcghg_id=123,
+            bcghg_id='123',
         )
         post_response = client.post(self.endpoint, content_type=content_type_json, data=mock_operation2.json())
         assert post_response.status_code == 400

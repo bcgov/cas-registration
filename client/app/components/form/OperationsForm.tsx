@@ -51,7 +51,6 @@ export default function OperationsForm({ formData, schema }: Props) {
       Number(formData?.previous_year_attributable_emissions),
     swrs_facility_id:
       formData?.swrs_facility_id && Number(formData?.swrs_facility_id),
-    bcghg_id: formData?.bcghg_id && Number(formData?.bcghg_id),
     operator_percent_of_ownership:
       formData?.operator_percent_of_ownership &&
       Number(formData?.operator_percent_of_ownership),
@@ -98,7 +97,10 @@ export default function OperationsForm({ formData, schema }: Props) {
           baseUrl={`/dashboard/operations/${operationId}`}
           cancelUrl="/dashboard/operations"
           formData={transformedFormData}
-          readonly={formData?.status === Status.PENDING}
+          readonly={
+            session?.user.app_role?.includes("cas") ||
+            formData?.status === Status.PENDING
+          }
           error={error}
           schema={schema}
           allowBackNavigation

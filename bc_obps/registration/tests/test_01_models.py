@@ -612,7 +612,7 @@ class MultipleOperatorModelTest(BaseTestCase):
             legal_name="test",
             trade_name="test",
             cra_business_number=123456789,
-            bc_corporate_registry_number=123456789,
+            bc_corporate_registry_number='abc1234567',
             business_structure=BusinessStructure.objects.all().first(),
             website="test",
             percentage_ownership=100,

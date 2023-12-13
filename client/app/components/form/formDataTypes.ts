@@ -14,7 +14,7 @@ export interface UserOperatorFormData extends UserFormData {
   legal_name: string;
   trade_name?: string;
   cra_business_number?: number;
-  bc_corporate_registry_number?: number;
+  bc_corporate_registry_number?: string;
   business_structure: string;
   physical_street_address: string;
   physical_municipality: string;
@@ -40,7 +40,7 @@ export interface UserOperatorFormData extends UserFormData {
   // PC = Parent Company
   pc_legal_name?: string;
   pc_cra_business_number?: number;
-  pc_bc_corporate_registry_number?: number;
+  pc_bc_corporate_registry_number?: string;
   pc_business_structure?: string;
   pc_physical_street_address?: string;
   pc_physical_municipality?: string;
