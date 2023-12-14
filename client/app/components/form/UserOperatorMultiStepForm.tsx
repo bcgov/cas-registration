@@ -82,12 +82,14 @@ export default function UserOperatorMultiStepForm({
     );
   };
 
-  // If the user is an admin or ifno operator exists show the entire multistep form
-  const isAdmin = session?.user.app_role?.includes("cas");
-  if (isAdmin || !userOperatorId) {
+  // If the user is an approved cas internal user or if no operator exists show the entire multistep form
+  const isCasInternal =
+    session?.user.app_role?.includes("cas") &&
+    !session?.user.app_role?.includes("pending");
+  if (isCasInternal || !userOperatorId) {
     return (
       <>
-        {isAdmin && (
+        {isCasInternal && (
           <UserOperatorReview
             userOperator={formData}
             userOperatorId={Number(userOperatorId)}
@@ -97,10 +99,10 @@ export default function UserOperatorMultiStepForm({
           baseUrl={`/dashboard/operators/user-operator/${userOperatorId}`}
           cancelUrl="/dashboard/operators"
           schema={schema}
-          disabled={isAdmin || disabled}
+          disabled={isCasInternal || disabled}
           error={error}
           formData={formData}
-          submitEveryStep={!isAdmin}
+          submitEveryStep={!isCasInternal}
           onSubmit={submitHandler}
           uiSchema={userOperatorUiSchema}
         />
