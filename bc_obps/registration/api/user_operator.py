@@ -126,7 +126,7 @@ def request_access(request, payload: SelectOperatorIn):
 
     # Making a draft UserOperator instance if one doesn't exist
     user_operator, _ = UserOperator.objects.get_or_create(
-        user=user, operator=operator, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.DRAFT
+        user=user, operator=operator, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.DRAFT, modifier=user
     )
     return 201, {"user_operator_id": user_operator.id}
 
@@ -142,7 +142,7 @@ def request_access(request, payload: SelectOperatorIn):
 
     # Making a draft UserOperator instance if one doesn't exist
     user_operator, _ = UserOperator.objects.get_or_create(
-        user=user, operator=operator, status=UserOperator.Statuses.PENDING
+        user=user, operator=operator, status=UserOperator.Statuses.PENDING, modifier=user
     )
     return 201, {"user_operator_id": user_operator.id}
 
