@@ -1,6 +1,8 @@
 from typing import Optional
-from ninja import ModelSchema, Schema
-from registration.models import Contact, User
+import uuid
+from django.forms import UUIDField
+from ninja import ModelSchema, Schema, Field
+from registration.models import Contact, User, UserOperator
 from pydantic import Field
 
 
@@ -119,3 +121,28 @@ class UserOperatorUserOut(ModelSchema):
     class Config:
         model = User
         model_fields = ["phone_number", "email"]
+
+
+class SelectUserOperatorStatus(Schema):
+    """
+    Schema for a User Operator model
+    """
+
+    first_name: str = Field(..., alias="user.first_name")
+    last_name: str = Field(..., alias="user.last_name")
+    email: str = Field(..., alias="user.email")
+    position_title: str = Field(..., alias="user.position_title")
+    business_name: str = Field(..., alias="operator.legal_name")
+    user_id: uuid.UUID = Field(..., alias="user.user_guid")
+    role: str
+    status: str
+
+
+class SelectUserOperatorOperatorsOut(ModelSchema):
+    """
+    Schema for returning User's Business Operator
+    """
+
+    class Config:
+        model = UserOperator
+        model_fields = ["operator"]

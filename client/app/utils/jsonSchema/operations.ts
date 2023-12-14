@@ -232,6 +232,7 @@ const operationPage1: RJSFSchema = {
                 mo_physical_postal_code: {
                   type: "string",
                   title: "Postal Code",
+                  format: "postal-code",
                 },
                 mo_mailing_address_section: {
                   //Not an actual field in the db - this is just to make the form look like the wireframes
@@ -280,6 +281,7 @@ const operationPage1: RJSFSchema = {
                       mo_mailing_postal_code: {
                         type: "string",
                         title: "Postal Code",
+                        format: "postal-code",
                       },
                     },
                   },

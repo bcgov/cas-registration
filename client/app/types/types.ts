@@ -1,4 +1,5 @@
 export enum Status {
+  MYSELF = "Myself",
   APPROVED = "Approved",
   REJECTED = "Rejected",
   PENDING = "Pending",
