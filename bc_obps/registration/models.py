@@ -128,18 +128,7 @@ class UserAndContactCommonInfo(models.Model):
 
 class User(UserAndContactCommonInfo):
     """User model"""
-
-    class Roles(models.TextChoices):
-        CAS_ADMIN = "cas_admin"
-        CAS_ANALYST = "cas_analyst"
-        CAS_PENDING = "cas_pending"
-        INDUSTRY_USER = "industry_user"
-        INDUSTRY_USER_ADMIN = "industry_user_admin"
-
-    class IdPs(models.TextChoices):
-        IDIR = "idir"
-        BCEIDBUSINESS = "bceidbusiness"
-        
+       
     user_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, db_comment="A GUID to identify the user")
     business_guid = models.UUIDField(default=uuid.uuid4, db_comment="A GUID to identify the business")
     documents = models.ManyToManyField(

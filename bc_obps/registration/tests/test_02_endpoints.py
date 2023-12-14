@@ -24,7 +24,7 @@ from registration.schema import OperationCreateIn, OperationUpdateIn, UserIn
 
 import uuid
 from django.core.management import call_command
-
+from registration.enums.enums import IdPs
 
 @pytest.fixture(scope='function')
 def app_role_fixture():
@@ -757,7 +757,7 @@ class TestUserEndpoint:
         # Act
         # Construct the endpoint URL for identity_provider "bceidbusiness"
         response = client.post(
-            f"{self.endpoint_profile}/{User.IdPs.BCEIDBUSINESS.value}",
+            f"{self.endpoint_profile}/{IdPs.BCEIDBUSINESS.value}",
             content_type=content_type_json,
             data=mock_payload.json(),
             HTTP_AUTHORIZATION=json.dumps({'user_guid': str(uuid.uuid4())}),
@@ -797,7 +797,7 @@ class TestUserEndpoint:
         # Act
         # Construct the endpoint URL for identity_provider "idir"
         response = client.post(
-            f"{self.endpoint_profile}/{User.IdPs.IDIR.value}",
+            f"{self.endpoint_profile}/{IdPs.IDIR.value}",
             content_type=content_type_json,
             data=mock_payload.json(),
             HTTP_AUTHORIZATION=json.dumps({'user_guid': str(uuid.uuid4())}),
