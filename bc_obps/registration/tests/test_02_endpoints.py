@@ -26,6 +26,7 @@ import uuid
 from django.core.management import call_command
 from registration.enums.enums import IdPs
 
+
 @pytest.fixture(scope='function')
 def app_role_fixture():
     # Load the fixture data into the test database
@@ -593,7 +594,6 @@ class TestUserOperatorEndpoint:
         has_history_record = HistoricalUserOperator.objects.all()
         assert has_history_record.count() > 0, "History record was not created"
 
-
     def test_get_users_operators_list(self):
         operators = baker.make(Operator, _quantity=2)
         baker.make(
@@ -639,14 +639,12 @@ class TestUserOperatorEndpoint:
         assert parsed_object.get("fields").get("status") == UserOperator.Statuses.APPROVED
         assert parsed_object.get("fields").get("verified_by") == str(self.user.user_guid)
 
-        
-
     # GET USER OPERATOR ID 200
     def test_get_user_operator_operator_id(self):
 
         # Act
         mock_user = baker.make(User)
-        baker.make(UserOperator, status="approved", user_id=mock_user.user_guid)
+        baker.make(UserOperator, status=UserOperator.Statuses.APPROVED, user_id=mock_user.user_guid)
         response = client.get(
             f"{base_endpoint}user-operator-operator-id",
             HTTP_AUTHORIZATION=json.dumps({'user_guid': str(mock_user.user_guid)}),
@@ -677,6 +675,7 @@ class TestUserOperatorEndpoint:
         assert response_json == {"detail": "Not Found"}
 
 
+# TESTS FOR bc_obps/registration/api/user.py
 class TestUserEndpoint:
     endpoint = base_endpoint + "user"
     endpoint_profile = endpoint + "-profile"

@@ -45,9 +45,8 @@ def get_user_role(request, user_guid: str):
 def create_user_profile(request, identity_provider: str, payload: UserIn):
     try:
         # Determine the role based on the identity provider
-        role_mapping = {IdPs.IDIR.value: Roles.CAS_PENDING.value, IdPs.BCEIDBUSINESS.value: User.Roles.INDUSTRY_USER.value}
+        role_mapping = {IdPs.IDIR.value: Roles.CAS_PENDING.value, IdPs.BCEIDBUSINESS.value: Roles.INDUSTRY_USER.value}
         role = role_mapping.get(identity_provider, None)
-
         new_user = User.objects.create(
             user_guid=json.loads(request.headers.get('Authorization')).get('user_guid'),
             app_role=AppRole.objects.get(role_name=role),
