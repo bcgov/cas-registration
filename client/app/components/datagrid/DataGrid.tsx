@@ -12,7 +12,7 @@ import { Button } from "@mui/material";
 interface Props {
   rows: GridRowsProp;
   columns: GridColDef[];
-  cntxt: string;
+  cntxt?: string;
 }
 
 const DataGrid: React.FC<Props> = ({ rows, columns, cntxt }) => {

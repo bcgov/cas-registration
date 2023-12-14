@@ -12,10 +12,13 @@ from registration.schema import (
     IsApprovedUserOperator,
     UserOperatorIdOut,
 )
+from registration.schema.user_operator import SelectUserOperatorOperatorsOut
+from typing import List
 from .api_base import router
 from typing import Optional
 from django.shortcuts import get_object_or_404
 from django.core.exceptions import ValidationError
+from django.core import serializers
 from registration.models import (
     BusinessRole,
     BusinessStructure,
@@ -32,6 +35,9 @@ from registration.utils import (
     check_access_request_matches_business_guid,
 )
 from ninja.responses import codes_4xx
+import json
+from datetime import datetime
+import pytz
 
 
 ##### GET #####
@@ -69,6 +75,14 @@ def get_user_operator_admin_exists(request, operator_id: int):
         operator_id=operator_id, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.APPROVED
     ).exists()
     return 200, has_admin
+
+
+@router.get("/get-current-users-operators", response=List[SelectUserOperatorOperatorsOut])
+def get_user(request):
+    UserOperatorList = UserOperator.objects.filter(
+        user_id=request.current_user.user_guid, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.APPROVED
+    )
+    return UserOperatorList
 
 
 ##### POST #####
@@ -271,6 +285,32 @@ def create_user_operator_contact(request, payload: UserOperatorContactIn):
 
 
 ##### PUT #####
+
+
+@router.put("/select-operator/user-operator/{user_id}/update-status")
+def update_user_operator_status(request, user_id: str):
+    current_admin_user: User = request.current_user
+    payload = json.loads(request.body.decode())
+    status = getattr(UserOperator.Statuses, payload.get("status").upper())
+    user_operator = get_object_or_404(UserOperator, user=user_id)
+    user_operator.status = status
+
+    if user_operator.status in [UserOperator.Statuses.APPROVED, UserOperator.Statuses.REJECTED]:
+        user_operator.verified_at = datetime.now(pytz.utc)
+        user_operator.verified_by_id = current_admin_user.user_guid
+    if user_operator.status in [UserOperator.Statuses.PENDING]:
+        user_operator.verified_at = None
+        user_operator.verified_by_id = None
+
+    data = serializers.serialize(
+        "json",
+        [
+            user_operator,
+        ],
+    )
+
+    user_operator.save()
+    return data
 
 
 ##### DELETE #####
