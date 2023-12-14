@@ -37,7 +37,7 @@ from django.forms.models import model_to_dict
 
 
 # Function to save multiple operators so we can reuse it in put/post routes
-def save_multiple_operators(multiple_operators_array, operation):
+def save_multiple_operators(multiple_operators_array, operation, modifier: User):
     multiple_operator_fields_mapping = {
         "mo_legal_name": "legal_name",
         "mo_trade_name": "trade_name",
@@ -82,7 +82,7 @@ def save_multiple_operators(multiple_operators_array, operation):
         if MultipleOperator.objects.filter(operation_id=operation.id, operator_index=idx + 1).exists():
             MultipleOperator.objects.filter(operation_id=operation.id, operator_index=idx + 1).update(**new_operator)
         else:
-            MultipleOperator.objects.create(**new_operator)
+            MultipleOperator.objects.create(**new_operator, modifier=modifier)
 
 
 ##### GET #####
@@ -170,13 +170,13 @@ def create_operation(request, payload: OperationCreateIn):
     operation_has_multiple_operators: bool = payload_dict.get("operation_has_multiple_operators")
     multiple_operators_array: list = payload_dict.get("multiple_operators_array")
 
-    operation = Operation.objects.create(**operation_related_fields)
+    operation = Operation.objects.create(**operation_related_fields, modifier=request.current_user)
     operation.regulated_products.set(payload.regulated_products)
     operation.reporting_activities.set(payload.reporting_activities)
     operation.documents.set(payload.documents)
 
     if operation_has_multiple_operators:
-        save_multiple_operators(multiple_operators_array, operation)
+        save_multiple_operators(multiple_operators_array, operation, modifier=request.current_user)
 
     return 201, {"name": operation.name, "id": operation.id}
 
@@ -278,10 +278,10 @@ def update_operation(request, operation_id: int, submit, payload: OperationUpdat
     for activity_id in payload.reporting_activities:
         operation.reporting_activities.add(activity_id)  # Adds each activity
 
-    operation.save()
+    operation.save(modifier=request.current_user)
 
     if operation_has_multiple_operators:
-        save_multiple_operators(multiple_operators_array, operation)
+        save_multiple_operators(multiple_operators_array, operation, modifier=request.current_user)
 
     return 200, {"name": operation.name}
 
@@ -303,5 +303,5 @@ def update_operation_status(request, operation_id: int):
             operation,
         ],
     )
-    operation.save()
+    operation.save(modifier=request.current_user)
     return data
