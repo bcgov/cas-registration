@@ -10,7 +10,7 @@ from registration.schema import (
     RequestAccessOut,
     UserOperatorContactIn,
     IsApprovedUserOperator,
-    UserOperatorIdOut,
+    UserOperatorOperatorIdOut,
 )
 from registration.schema.user_operator import SelectUserOperatorOperatorsOut
 from typing import List
@@ -50,7 +50,7 @@ def is_approved_admin_user_operator(request, user_guid: str):
     return 200, {"approved": approved_user_operator}
 
 
-@router.get("/user-operator-operator-id", response={200: UserOperatorIdOut, codes_4xx: Message})
+@router.get("/user-operator-operator-id", response={200: UserOperatorOperatorIdOut, codes_4xx: Message})
 def get_user_operator_operator_id(request):
     current_user_guid = json.loads(request.headers.get('Authorization'))["user_guid"]
     user_operator = get_object_or_404(UserOperator, user_id=current_user_guid, status=UserOperator.Statuses.APPROVED)
