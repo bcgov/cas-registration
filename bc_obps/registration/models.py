@@ -19,6 +19,22 @@ class CustomManager(models.Manager):
         instance.save(modifier=modifier)
         return instance
 
+    def get_or_create(self, defaults=None, **kwargs):
+        """Override get_or_create method to set created_by field"""
+        if "modifier" not in kwargs:
+            raise ValueError("User information is required to create or get this instance.")
+        modifier = kwargs.pop("modifier")
+        defaults = defaults or {}
+        defaults.update(kwargs)
+        try:
+            obj = self.get(**kwargs)
+            created = False
+        except self.model.DoesNotExist:
+            obj = self.create(**defaults, modifier=modifier)
+            created = True
+
+        return obj, created
+
 
 class TimeStampedModel(models.Model):
     created_by = models.ForeignKey(
