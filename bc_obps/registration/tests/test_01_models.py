@@ -1,4 +1,5 @@
-from django.db import IntegrityError
+from typing import List, Tuple, Type
+from django.db import IntegrityError, models
 from django.test import TestCase
 from django.utils import timezone
 from registration.models import (
@@ -18,6 +19,23 @@ from registration.models import (
     MultipleOperator,
     AppRole,
 )
+import pytest
+from model_bakery import baker
+
+
+# below imports are needed to be used by usefixtures
+from registration.tests.utils.bakers import (
+    user_baker,
+    naics_code_baker,
+    document_baker,
+    contact_baker,
+    operator_baker,
+    operation_baker,
+    user_operator_baker,
+    multiple_operator_baker,
+)
+
+pytestmark = pytest.mark.django_db
 
 
 OPERATOR_FIXTURE = ("mock/operator.json",)
@@ -504,3 +522,104 @@ class MultipleOperatorModelTest(BaseTestCase):
             ("mailing_province", "mailing province", 2, None),
             ("mailing_postal_code", "mailing postal code", 7, None),
         ]
+
+
+@pytest.mark.usefixtures('document_baker', 'operation_baker', 'user_operator_baker', 'multiple_operator_baker')
+class TestModelsWithAuditColumns(TestCase):
+    models_with_audit_columns_and_field_to_update: List[Tuple[Type[models.Model], str]] = [
+        (Document, 'description'),
+        (Contact, 'first_name'),
+        (Operator, 'legal_name'),
+        (Operation, 'name'),
+        (UserOperator, 'role'),
+        (MultipleOperator, 'legal_name'),
+    ]
+
+    def setUp(self):
+        [self.user_1, self.user_2] = baker.make(User, _quantity=2)
+
+    def test_create_model_with_audit_columns(self):
+        """
+        Test that the model has the correct audit columns when created.
+        """
+        for data_model, _ in self.models_with_audit_columns_and_field_to_update:
+            instance = data_model.objects.first()
+            # check created_at and created_by are set
+            self.assertIsNotNone(instance.created_at)
+            self.assertIsNotNone(instance.created_by)
+            # check updated_at and updated_by are set
+            self.assertIsNotNone(
+                instance.updated_at
+            )  # when an object is created for the first time, updated_at is the same as created_at
+            self.assertIsNone(instance.updated_by)
+            # check archived_at and archived_by are None
+            self.assertIsNone(instance.archived_at)
+            self.assertIsNone(instance.archived_by)
+
+    def test_update_model_with_audit_columns(self):
+        """
+        Test that the model has the correct audit columns when updated.
+        """
+        for data_model, field_to_update in self.models_with_audit_columns_and_field_to_update:
+            instance = data_model.objects.first()
+            created_at_before_update: timezone.datetime = instance.created_at
+
+            # UPDATE
+            setattr(instance, field_to_update, 'test')
+            instance.save(modifier=self.user_1)
+
+            # check created_at and created_by are not changed
+            self.assertIsNotNone(instance.created_at)
+            # make sure created_at is not changed
+            self.assertEqual(instance.created_at, created_at_before_update)
+            self.assertIsNotNone(instance.created_by)
+
+            # check updated_at and updated_by are set
+            self.assertIsNotNone(instance.updated_at)
+            self.assertEqual(instance.updated_by, self.user_1)
+            # make sure updated_at is changed and is not the same as created_at
+            self.assertNotEqual(instance.updated_at, instance.created_at)
+            # make sure updated_at is greater than created_at
+            self.assertGreater(instance.updated_at, instance.created_at)
+
+            # check archived_at and archived_by are None
+            self.assertIsNone(instance.archived_at)
+            self.assertIsNone(instance.archived_by)
+
+    def test_archive_model_with_audit_columns(self):
+        """
+        Test that the model has the correct audit columns when archived.
+        """
+        for data_model, _ in self.models_with_audit_columns_and_field_to_update:
+            instance = data_model.objects.first()
+            created_at_before_archive: timezone.datetime = instance.created_at
+            updated_at_before_archive: timezone.datetime = instance.updated_at
+            updated_by_before_archive: timezone.datetime = instance.updated_by
+
+            # ARCHIVE (soft delete by a different user)
+            instance.archive(modifier=self.user_2)
+
+            # check created_at and created_by are not changed
+            self.assertIsNotNone(instance.created_at)
+            self.assertIsNotNone(instance.created_by)
+            # make sure created_at is not changed
+            self.assertEqual(instance.created_at, created_at_before_archive)
+
+            # check updated_at and updated_by are not changed
+            self.assertIsNotNone(instance.updated_at)
+            self.assertIsNotNone(instance.updated_by)
+            # after archiving, updated_at is the same as archived_at
+            self.assertNotEqual(instance.updated_at, updated_at_before_archive)
+            self.assertNotEqual(instance.updated_by, updated_by_before_archive)
+
+            # check archived_at and archived_by are set
+            self.assertIsNotNone(instance.archived_at)
+            self.assertEqual(instance.archived_by, self.user_2)
+            # make sure archived_at is changed and is not the same as created_at
+            self.assertNotEqual(instance.archived_at, instance.created_at)
+            # make sure archived_at is greater than created_at
+            self.assertGreater(instance.archived_at, instance.created_at)
+            # updated_at and archived_at are the same (there is a small time difference between the two so we exclude the milliseconds)
+            self.assertEqual(
+                instance.updated_at.strftime('%Y-%m-%d %H:%M:%S'), instance.archived_at.strftime('%Y-%m-%d %H:%M:%S')
+            )
