@@ -128,7 +128,7 @@ class UserAndContactCommonInfo(models.Model):
 
 class User(UserAndContactCommonInfo):
     """User model"""
-       
+
     user_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, db_comment="A GUID to identify the user")
     business_guid = models.UUIDField(default=uuid.uuid4, db_comment="A GUID to identify the business")
     documents = models.ManyToManyField(
