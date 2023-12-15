@@ -3,7 +3,10 @@ import { userOperatorSchema } from "@/app/utils/jsonSchema/userOperator";
 
 import { BusinessStructure } from "@/app/components/routes/select-operator/form/types";
 import { RJSFSchema } from "@rjsf/utils";
-import { UserInformationInitialFormData } from "@/app/components/form/formDataTypes";
+import {
+  UserInformationInitialFormData,
+  UserOperatorFormData,
+} from "@/app/components/form/formDataTypes";
 import UserOperatorMultiStepForm from "@/app/components/form/UserOperatorMultiStepForm";
 
 async function getCurrentUser() {
@@ -75,8 +78,7 @@ export default async function UserOperator({
   const userData: UserInformationInitialFormData | { error: string } =
     await getCurrentUser();
 
-  // TODO: define schema of data returned from endpoint
-  const userOperatorData: any | { error: string } =
+  const userOperatorData: UserOperatorFormData | { error: string } =
     await getUserOperatorFormData(userOperatorId);
 
   if (
