@@ -135,7 +135,8 @@ export default async function Operation({ numRow }: { numRow?: number }) {
 
   let operation: any;
 
-  if (numRow) {
+  // Check that numRow is a number so we don't try to fetch an operation with a string eg: "create"
+  if (numRow && !isNaN(Number(numRow))) {
     operation = await getOperation(numRow);
   }
 

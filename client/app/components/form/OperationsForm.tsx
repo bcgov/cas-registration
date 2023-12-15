@@ -29,7 +29,7 @@ export default function OperationsForm({ formData, schema }: Props) {
   const params = useParams();
   const formSection = parseInt(params?.formSection as string);
   const operationId = params?.operation;
-  const isCreate = params?.operation === "0";
+  const isCreate = params?.operation === "create";
 
   const isApplicationLeadExternal =
     userEmail !== formData?.application_lead?.email;
