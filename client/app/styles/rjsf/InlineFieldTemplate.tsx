@@ -1,11 +1,11 @@
 "use client";
 
 import Grid from "@mui/material/Grid";
+import Box from "@mui/material/Box";
 import { FieldTemplateProps } from "@rjsf/utils";
 
-export const AlertIcon = ({ classNames }) => (
+export const AlertIcon = () => (
   <svg
-    className={classNames}
     width="26"
     height="26"
     viewBox="0 0 26 26"
@@ -45,12 +45,12 @@ function InlineFieldTemplate({
       sx={{
         marginBottom: {
           xs: "16px",
-          sm: "8px",
+          md: "8px",
         },
         display: "flex",
         alignItems: {
           xs: "flex-start",
-          sm: "center",
+          md: "center",
         },
       }}
       className={classNames}
@@ -92,7 +92,17 @@ function InlineFieldTemplate({
             },
           }}
         >
-          <AlertIcon classNames="hidden md:block mr-4" />
+          <Box
+            sx={{
+              display: {
+                xs: "none",
+                md: "block",
+              },
+              marginRight: "12px",
+            }}
+          >
+            <AlertIcon />
+          </Box>
           <span>{error}</span>
         </Grid>
       )}
