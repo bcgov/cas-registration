@@ -6,7 +6,6 @@ import { Status } from "@/app/types/types";
 import { UserOperatorFormData } from "@/app/components/form/formDataTypes";
 
 interface Props {
-  // TODO: fix schema of userOperator data
   userOperator: Partial<UserOperatorFormData>;
   userOperatorId: number;
 }
