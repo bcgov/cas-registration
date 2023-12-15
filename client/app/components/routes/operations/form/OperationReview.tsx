@@ -36,6 +36,8 @@ const OperationReview = ({ operation }: Props) => {
     return response;
   };
 
+  if (!operation) return null;
+
   return (
     <Review
       approvedMessage="You have approved the request for carbon tax exemption."
