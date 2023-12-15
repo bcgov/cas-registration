@@ -198,6 +198,7 @@ const operationPage1: RJSFSchema = {
                 mo_website: {
                   type: "string",
                   title: "Website (optional)",
+                  format: "uri",
                 },
                 mo_percentage_ownership: {
                   type: "number",
@@ -361,6 +362,7 @@ const operationPage2: RJSFSchema = {
           email: {
             type: "string",
             title: "Email Address",
+            format: "email",
           },
           phone_number: {
             type: "string",
@@ -457,9 +459,7 @@ export const operationUiSchema = {
     "ui:widget": "RadioWidget",
   },
   is_application_lead_external: {
-    "Would you like to add an exemption ID application lead?": {
-      "ui:widget": "RadioWidget",
-    },
+    "ui:widget": "RadioWidget",
   },
   opt_in: {
     "ui:widget": "RadioWidget",
