@@ -1,6 +1,6 @@
-from typing import Any
 import uuid
 from django.db import models
+from registration.managers import CustomManager
 from phonenumber_field.modelfields import PhoneNumberField
 from localflavor.ca.models import CAPostalCodeField, CAProvinceField
 from simple_history.models import HistoricalRecords
@@ -12,23 +12,6 @@ class TimeStampedModelManager(models.Manager):
     def get_queryset(self):
         """Return only objects that have not been archived"""
         return super().get_queryset().filter(archived_at__isnull=True)
-
-    def get_or_create(self, defaults=None, **kwargs):
-        """Override get_or_create method to set created_by field"""
-        if "modifier" not in kwargs:
-            raise ValueError("User information is required to create or get this instance.")
-        modifier = kwargs.pop("modifier")
-        defaults = defaults or {}
-        defaults.update(kwargs)
-        try:
-            obj = self.get(**kwargs)
-            created = False
-        except self.model.DoesNotExist:
-            obj = self.create(**defaults, modifier=modifier)
-            created = True
-
-        return obj, created
-
 
 class TimeStampedModel(models.Model):
     created_by = models.ForeignKey(
