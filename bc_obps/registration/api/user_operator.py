@@ -57,15 +57,17 @@ def is_approved_admin_user_operator(request, user_guid: str):
     # brianna refactor this to get user_guid from current user
     raise_401_if_role_not_authorized(request, ["industry_user", "industry_user_admin"])
 
-    approved_user_operator:bool = UserOperator.objects.filter(
+    approved_user_operator: bool = UserOperator.objects.filter(
         user_id=user_guid, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.APPROVED
     ).exists()
 
     return 200, {"approved": approved_user_operator}
 
 
+# Andrea new
 @router.get("/user-operator-operator-id", response={200: UserOperatorOperatorIdOut, codes_4xx: Message})
 def get_user_operator_operator_id(request):
+    raise_401_if_role_not_authorized(request, ["cas_admin", "cas_analyst", "industry_user", "industry_user_admin"])
     current_user_guid = json.loads(request.headers.get('Authorization'))["user_guid"]
     user_operator = get_object_or_404(UserOperator, user_id=current_user_guid, status=UserOperator.Statuses.APPROVED)
     return 200, {"operator_id": user_operator.operator_id}
@@ -314,9 +316,10 @@ def create_user_operator_contact(request, payload: UserOperatorContactIn):
 
 ##### PUT #####
 
-
+# Andrea
 @router.put("/select-operator/user-operator/{user_id}/update-status")
 def update_user_operator_status(request, user_id: str):
+    raise_401_if_role_not_authorized(request, ["cas_admin", "cas_analyst"])
     current_admin_user: User = request.current_user
     payload = json.loads(request.body.decode())
     status = getattr(UserOperator.Statuses, payload.get("status").upper())
