@@ -6,6 +6,7 @@ import Link from "@mui/material/Link";
 import Typography from "@mui/material/Typography";
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
+import { Roles } from "@/app/types/types";
 
 /*
 📚
@@ -32,22 +33,22 @@ export default function Page() {
       const fetchData = async () => {
         let contentsModule;
         switch (role) {
-          case "cas_admin":
+          case Roles.CAS_ADMIN:
             contentsModule = await import(
               "@/app/data/dashboard/cas_admin.json"
             );
             break;
-          case "cas_analyst":
+          case Roles.CAS_ANALYST:
             contentsModule = await import(
               "@/app/data/dashboard/cas_analyst.json"
             );
             break;
-          case "industry_user_admin":
+          case Roles.INDUSTRY_USER_ADMIN:
             contentsModule = await import(
               "@/app/data/dashboard/industry_user_admin.json"
             );
             break;
-          case "industry_user":
+          case Roles.INDUSTRY_USER:
             contentsModule = await import(
               "@/app/data/dashboard/industry_user.json"
             );

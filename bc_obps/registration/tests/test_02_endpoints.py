@@ -24,6 +24,7 @@ from registration.schema import OperationCreateIn, OperationUpdateIn, UserIn
 
 import uuid
 from django.core.management import call_command
+from registration.enums.enums import IdPs
 
 
 @pytest.fixture(scope='function')
@@ -638,7 +639,43 @@ class TestUserOperatorEndpoint:
         assert parsed_object.get("fields").get("status") == UserOperator.Statuses.APPROVED
         assert parsed_object.get("fields").get("verified_by") == str(self.user.user_guid)
 
+    # GET USER OPERATOR ID 200
+    def test_get_user_operator_operator_id(self):
 
+        # Act
+        mock_user = baker.make(User)
+        baker.make(UserOperator, status=UserOperator.Statuses.APPROVED, user_id=mock_user.user_guid)
+        response = client.get(
+            f"{base_endpoint}user-operator-operator-id",
+            HTTP_AUTHORIZATION=json.dumps({'user_guid': str(mock_user.user_guid)}),
+        )
+        response_json = response.json()
+
+        # Assert
+        assert response.status_code == 200
+
+        # Additional Assertions
+        assert "operator_id" in response_json
+
+    # GET USER OPERATOR ID 404
+    def test_get_user_operator_operator_id_with_invalid_user(self):
+
+        # Act
+        invalid_user = "98f255ed8d4644eeb2fe9f8d3d92c689"
+        response = client.get(
+            f"{base_endpoint}user-operator-operator-id",
+            HTTP_AUTHORIZATION=json.dumps({'user_guid': invalid_user}),
+        )
+        response_json = response.json()
+
+        # Assert
+        assert response.status_code == 404
+
+        # Additional Assertions
+        assert response_json == {"detail": "Not Found"}
+
+
+# TESTS FOR bc_obps/registration/api/user.py
 class TestUserEndpoint:
     endpoint = base_endpoint + "user"
     endpoint_profile = endpoint + "-profile"
@@ -704,7 +741,7 @@ class TestUserEndpoint:
         # Additional Assertion for user_guid
         assert 'user_guid' not in content
 
-    # POST USER PROFILE BCEID
+    # POST USER PROFILE BCEIDBUSINESS
     @pytest.mark.usefixtures('app_role_fixture')
     def test_create_user_profile_bceidbusiness(self):
         # Arrange
@@ -719,7 +756,7 @@ class TestUserEndpoint:
         # Act
         # Construct the endpoint URL for identity_provider "bceidbusiness"
         response = client.post(
-            f"{self.endpoint_profile}/bceidbusiness",
+            f"{self.endpoint_profile}/{IdPs.BCEIDBUSINESS.value}",
             content_type=content_type_json,
             data=mock_payload.json(),
             HTTP_AUTHORIZATION=json.dumps({'user_guid': str(uuid.uuid4())}),
@@ -759,7 +796,7 @@ class TestUserEndpoint:
         # Act
         # Construct the endpoint URL for identity_provider "idir"
         response = client.post(
-            f"{self.endpoint_profile}/idir",
+            f"{self.endpoint_profile}/{IdPs.IDIR.value}",
             content_type=content_type_json,
             data=mock_payload.json(),
             HTTP_AUTHORIZATION=json.dumps({'user_guid': str(uuid.uuid4())}),
