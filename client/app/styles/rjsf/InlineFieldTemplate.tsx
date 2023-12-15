@@ -1,6 +1,7 @@
 "use client";
 
 import Grid from "@mui/material/Grid";
+import Box from "@mui/material/Box";
 import { FieldTemplateProps } from "@rjsf/utils";
 
 export const AlertIcon = () => (
@@ -33,6 +34,7 @@ function InlineFieldTemplate({
   if (isHidden) return null;
 
   const isErrors = rawErrors && rawErrors.length > 0;
+  const error = rawErrors && rawErrors[0];
 
   // UI Schema options
   const isLabel = uiSchema?.["ui:options"]?.label !== false;
@@ -43,12 +45,12 @@ function InlineFieldTemplate({
       sx={{
         marginBottom: {
           xs: "16px",
-          sm: "8px",
+          md: "8px",
         },
         display: "flex",
         alignItems: {
           xs: "flex-start",
-          sm: "center",
+          md: "center",
         },
       }}
       className={classNames}
@@ -73,15 +75,37 @@ function InlineFieldTemplate({
         }}
       >
         {children}
-        {isErrors && (
-          <div
-            className="text-red-500 absolute right-[-40px] pt-2"
-            role="alert"
+      </Grid>
+      {isErrors && (
+        <Grid
+          item
+          xs={12}
+          md={4}
+          role="alert"
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            color: "error.main",
+            marginLeft: {
+              xs: "0",
+              md: "16px",
+            },
+          }}
+        >
+          <Box
+            sx={{
+              display: {
+                xs: "none",
+                md: "block",
+              },
+              marginRight: "12px",
+            }}
           >
             <AlertIcon />
-          </div>
-        )}
-      </Grid>
+          </Box>
+          <span>{error}</span>
+        </Grid>
+      )}
 
       {description}
       {help}

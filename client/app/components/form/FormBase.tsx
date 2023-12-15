@@ -16,9 +16,9 @@ const customFormatsErrorMessages = {
   bc_corporate_registry_number:
     "BC Corporate Registry number should be 1-3 letters followed by 7 digits",
   "postal-code": "Format should be A1A 1A1",
-  phone: "Format should be ###-###-####",
+  phone: "Format should be ### ### ####",
   email: "Please enter a valid email address, e.g. mail@example.com",
-  website: "Please enter a valid website, e.g. www.website.com",
+  uri: "Please enter a valid website link, e.g. http://www.website.com, https://www.website.com",
 };
 
 const transformErrors = (errors: RJSFValidationError[]) => {
@@ -42,10 +42,9 @@ const FormBase: React.FC<FormPropsWithTheme<any>> = (props) => {
       formData={formData ?? {}}
       noHtml5Validate
       omitExtraData={omitExtraData ?? true}
-      // set showErrorList to false after PR 316 is in
-      showErrorList={"top"}
-      validator={validator}
+      showErrorList={false}
       transformErrors={transformErrors}
+      validator={validator}
     />
   );
 };
