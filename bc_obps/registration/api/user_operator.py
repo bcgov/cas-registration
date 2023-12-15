@@ -248,9 +248,9 @@ def create_operator_and_user_operator(request, payload: UserOperatorOperatorIn):
     except Exception as e:
         return 400, {"message": str(e)}
 
-    created_operator_instance.save()
+    created_operator_instance.save(modifier=user)
     if parent_operator_instance:
-        parent_operator_instance.save()
+        parent_operator_instance.save(modifier=user)
         if parent_child_operator_instance:
             parent_child_operator_instance.save()
 
@@ -292,7 +292,7 @@ def create_user_operator_contact(request, payload: UserOperatorContactIn):
             senior_officer_contact.email = payload.so_email
             senior_officer_contact.phone_number = payload.so_phone_number
 
-        senior_officer_contact.save()
+        senior_officer_contact.save(modifier=user)
 
     except ValidationError as e:
         return 400, {"message": generate_useful_error(e)}
@@ -303,7 +303,7 @@ def create_user_operator_contact(request, payload: UserOperatorContactIn):
         return 400, {"message": str(e)}
 
     user_operator_instance.status = UserOperator.Statuses.PENDING
-    user_operator_instance.save(update_fields=["status"])
+    user_operator_instance.save(update_fields=["status"], modifier=user)
 
     # Add the Senior Officer contact to the Operator instance
     operator: Operator = user_operator_instance.operator

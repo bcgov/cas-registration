@@ -79,10 +79,12 @@ def save_multiple_operators(multiple_operators_array, operation, modifier: User)
 
         # check if there is a multiple_operator with that operation id and number
         # if there is, update it, if not, create it
-        if MultipleOperator.objects.filter(operation_id=operation.id, operator_index=idx + 1).exists():
-            MultipleOperator.objects.filter(operation_id=operation.id, operator_index=idx + 1).update(**new_operator)
-        else:
-            MultipleOperator.objects.create(**new_operator, modifier=modifier)
+        MultipleOperator.objects.update_or_create(
+            operation_id=operation.id,
+            operator_index=idx + 1,
+            defaults=new_operator,
+            modifier=modifier,
+        )
 
 
 ##### GET #####
