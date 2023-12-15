@@ -10,14 +10,11 @@ import UserOperatorForm from "./UserOperatorForm";
 import { userOperatorPage2 } from "@/app/utils/jsonSchema/userOperator";
 import UserOperatorReview from "@/app/components/routes/access-requests/form/UserOperatorReview";
 import MultiStepFormBase from "@/app/components/form/MultiStepFormBase";
-import {
-  UserOperatorFormData,
-  UserFormData,
-} from "@/app/components/form/formDataTypes";
+import { UserOperatorFormData } from "@/app/components/form/formDataTypes";
 
 interface UserOperatorFormProps {
   readonly schema: RJSFSchema;
-  readonly formData: Partial<UserFormData>;
+  readonly formData: UserOperatorFormData;
   readonly disabled?: boolean;
 }
 
