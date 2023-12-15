@@ -1,6 +1,8 @@
 from typing import List, Type, Union, Iterable, Dict, Any, Tuple, Optional
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError, models
+
+from registration.schema.user_operator import UserOperatorOperatorIn, UserOperatorContactIn
 from .models import User, Operator, UserOperator, AppRole
 from django.shortcuts import get_object_or_404
 from ninja.errors import HttpError
@@ -183,7 +185,7 @@ class TestUtils:
     def mock_postal_code():
         return "v8v3g1"
 
-    def created_mock_operation(operator: Operator = None):
+    def mock_OperationCreateIn(operator: Operator = None):
         naics_code = baker.make(NaicsCode)
         document = baker.make(Document)
         reporting_activities = baker.make(ReportingActivity, _quantity=2)
@@ -201,7 +203,7 @@ class TestUtils:
             operator_id=operator.id,
         )
 
-    def updated_mock_operation():
+    def mock_OperationUpdateIn():
         naics_code = baker.make(NaicsCode)
         document = baker.make(Document)
         application_lead = baker.make(Contact)
@@ -228,4 +230,31 @@ class TestUtils:
             documents=[document.id],
             application_lead=application_lead.id,
             operator_id=operator.id,
+        )
+
+    def mock_UserOperatorOperatorIn():
+        return UserOperatorOperatorIn(
+            legal_name='test',
+            cra_business_number=123,
+            bc_corporate_registry_number='adh1234321',
+            business_structure='test',
+            physical_street_address='test',
+            physical_municipality='test',
+            physical_province='test',
+            physical_postal_code='test',
+            mailing_address_same_as_physical=True,
+            operator_has_parent_company=False,
+        )
+
+    def mock_UserOperatorContactIn():
+        user_operator = baker.make(UserOperator)
+        return UserOperatorContactIn(
+            is_senior_officer=True,
+            user_operator_id=user_operator.id,
+            position_title='test',
+            street_address='test',
+            municipality='test',
+            province='BC',
+            postal_code='h0h 0h0',
+            email='test@email.com',
         )
