@@ -1,5 +1,6 @@
 from typing import List, Tuple, Type
 from django.db import IntegrityError, models
+from django.forms import model_to_dict
 from django.test import TestCase
 from django.utils import timezone
 from registration.models import (
@@ -623,3 +624,130 @@ class TestModelsWithAuditColumns(TestCase):
             self.assertEqual(
                 instance.updated_at.strftime('%Y-%m-%d %H:%M:%S'), instance.archived_at.strftime('%Y-%m-%d %H:%M:%S')
             )
+
+
+class GetOrCreateTests(TestCase):  # using TestCase since pytest has some issues with bakers/fixtures
+    fixtures = [APP_ROLE_FIXTURE, USER_FIXTURE]
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = User.objects.first()
+        Document.objects.create(
+            file="test",
+            type=DocumentType.objects.create(name="test"),
+            description="test",
+            modifier=cls.user,
+        )
+
+    def test_get_or_create_method_with_get(self):
+        _, created = Document.objects.get_or_create(
+            file="test",
+            type=DocumentType.objects.get(name="test"),
+            modifier=self.user,
+            defaults={"description": "test"},
+        )
+        self.assertFalse(created)
+        self.assertEqual(Document.objects.count(), 1)
+
+    def test_get_or_create_method_with_create(self):
+        _, created = Document.objects.get_or_create(
+            file="test2",
+            type=DocumentType.objects.get(name="test"),
+            modifier=self.user,
+            defaults={"description": "test 2"},
+        )
+        self.assertTrue(created)
+        self.assertEqual(Document.objects.count(), 2)
+
+    def test_get_or_create_redundant_instance(self):
+        """
+        If we execute the exact same statement twice, the second time,
+        it won't create a Person.
+        """
+        Document.objects.get_or_create(
+            file="test 2",
+            type=DocumentType.objects.get(name="test"),
+            modifier=self.user,
+            defaults={"description": "test 2"},
+        )
+
+        _, created = Document.objects.get_or_create(
+            file="test 2",
+            type=DocumentType.objects.get(name="test"),
+            modifier=self.user,
+            defaults={"description": "test 2"},
+        )
+        self.assertFalse(created)
+        self.assertEqual(Document.objects.count(), 2)
+
+    def test_get_or_create_invalid_params(self):
+        """
+        If you don't specify a value or default value for all required
+        fields, you will get an error.
+        """
+        with self.assertRaises(IntegrityError):
+            Document.objects.get_or_create(file="test 2", modifier=self.user)
+
+
+class UpdateOrCreateTests(TestCase):  # using TestCase since pytest has some issues with bakers/fixtures
+    fixtures = [APP_ROLE_FIXTURE, USER_FIXTURE]
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = User.objects.first()
+        Document.objects.create(
+            file="test",
+            type=DocumentType.objects.create(name="test"),
+            description="test",
+            modifier=cls.user,
+        )
+
+    def test_update_or_create_method_with_update(self):
+        _, created = Document.objects.update_or_create(
+            file="test",
+            type=DocumentType.objects.get(name="test"),
+            modifier=self.user,
+            defaults={"description": "test 2"},
+        )
+        self.assertFalse(created)
+        self.assertEqual(Document.objects.count(), 1)
+        self.assertEqual(Document.objects.first().description, "test 2")
+
+    def test_update_or_create_method_with_create(self):
+        _, created = Document.objects.update_or_create(
+            file="test2",
+            type=DocumentType.objects.get(name="test"),
+            modifier=self.user,
+            defaults={"description": "test 2"},
+        )
+        self.assertTrue(created)
+        self.assertEqual(Document.objects.count(), 2)
+
+    def test_update_or_create_redundant_instance(self):
+        """
+        If we execute the exact same statement twice, the second time,
+        it won't create a Person.
+        """
+        Document.objects.update_or_create(
+            file="test 2",
+            type=DocumentType.objects.get(name="test"),
+            modifier=self.user,
+            defaults={"description": "test 2"},
+        )
+
+        _, created = Document.objects.update_or_create(
+            file="test 2",
+            type=DocumentType.objects.get(name="test"),
+            modifier=self.user,
+            defaults={"description": "test 2"},
+        )
+        self.assertFalse(created)
+        self.assertEqual(Document.objects.count(), 2)
+
+    def test_update_or_create_invalid_params(self):
+        """
+        If you don't specify a value or default value for all required
+        fields, you will get an error.
+        """
+        with self.assertRaises(IntegrityError):
+            Document.objects.update_or_create(file="test 2", modifier=self.user)
