@@ -235,6 +235,32 @@ class TestOperationsEndpoint:
         assert post_response.status_code == 400
         assert post_response.json().get('message') == "Operation with this BCGHG ID already exists."
 
+    def test_put_operation_with_application_lead(self, client):
+        contact1 = baker.make(Contact)
+        contact2 = baker.make(Contact, email=contact1.email)
+        operation = baker.make(Operation)
+
+        operator = baker.make(Operator)
+        update = OperationUpdateIn(
+            name='Springfield Nuclear Power Plant',
+            type='Single Facility Operation',
+            naics_code_id=operation.naics_code_id,
+            reporting_activities=[],
+            regulated_products=[],
+            operation_has_multiple_operators=False,
+            documents=[],
+            application_lead=contact2.id,
+            operator_id=operator.id,
+        )
+
+        put_response = client.put(
+            self.endpoint + '/' + str(operation.id) + "?submit=true", content_type=content_type_json, data=update.json()
+        )
+        assert put_response.status_code == 200
+
+        # this checks that we added a new contact instead of updating the existing one even though they have the same email
+        assert len(Contact.objects.all()) == 2
+
     def test_put_operation_update_status_approved(self, client):
         operation = baker.make(Operation)
         assert operation.status == Operation.Statuses.NOT_REGISTERED
