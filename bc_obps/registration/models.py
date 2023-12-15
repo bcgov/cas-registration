@@ -1,39 +1,11 @@
-from typing import Any
 import uuid
 from django.db import models
+from registration.managers import CustomManager
 from phonenumber_field.modelfields import PhoneNumberField
 from localflavor.ca.models import CAPostalCodeField, CAProvinceField
 from simple_history.models import HistoricalRecords
 from django.core.validators import RegexValidator
 from django.utils import timezone
-
-
-class CustomManager(models.Manager):
-    def create(self, **kwargs: Any) -> Any:
-        """Override create method to set created_by field"""
-        if "modifier" not in kwargs:
-            # Raise an exception or handle the scenario where user information is missing
-            raise ValueError("User information is required to create this instance.")
-        modifier = kwargs.pop("modifier")
-        instance = self.model(**kwargs)
-        instance.save(modifier=modifier)
-        return instance
-
-    def get_or_create(self, defaults=None, **kwargs):
-        """Override get_or_create method to set created_by field"""
-        if "modifier" not in kwargs:
-            raise ValueError("User information is required to create or get this instance.")
-        modifier = kwargs.pop("modifier")
-        defaults = defaults or {}
-        defaults.update(kwargs)
-        try:
-            obj = self.get(**kwargs)
-            created = False
-        except self.model.DoesNotExist:
-            obj = self.create(**defaults, modifier=modifier)
-            created = True
-
-        return obj, created
 
 
 class TimeStampedModel(models.Model):
@@ -77,7 +49,7 @@ class TimeStampedModel(models.Model):
 
     def archive(self, *args, **kwargs):
         """Archive this instance"""
-        modifier = kwargs.pop("modifier", None)
+        modifier = kwargs.get("modifier", None)
         if not modifier:
             # Raise an exception or handle the scenario where user information is missing
             raise ValueError("User information is required to archive this instance.")
