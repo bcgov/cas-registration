@@ -1,6 +1,6 @@
 "use client";
 import React, { ReactNode } from "react";
-import { usePathname } from "next/navigation";
+import { useParams, usePathname } from "next/navigation";
 import Box from "@mui/material/Box";
 import Link from "@mui/material/Link";
 import Breadcrumbs from "@mui/material/Breadcrumbs/Breadcrumbs";
@@ -35,7 +35,6 @@ function isValidLink(segment: string): boolean {
     "confirm",
     "received",
     "user-operator",
-    "create",
     "add-operator",
     "request-access",
   ];
@@ -86,9 +85,15 @@ export default function Bread({
 }: TBreadCrumbProps) {
   // 🛸 Routing: use the `usePathname` hook from next/navigation to access the current route information
   const paths = usePathname();
-
+  // 🔍 useParams, returns an object containing the current route's filled in dynamic parameters
+  // The properties name is the segment's name, i.e. formSection
+  const params = useParams();
   // 🔗 Links: We split the route path into segments and map over them to generate breadcrumb links.
   const pathNames = paths.split("/").filter((path) => path);
+  // 🧹 Check if params contain formSection and remove the last index if true
+  if (params && params.formSection) {
+    pathNames.pop();
+  }
 
   return (
     <Box
