@@ -169,10 +169,10 @@ def update_operation(request, operation_id: int, submit, payload: OperationUpdat
         operation.naics_code = nc
     # if is_application_lead_external is null, the user hasn't filled out that part of the form. If it's true, the user has assigned a contact; if it's false, the lead is the user
     if "is_application_lead_external" in payload_dict:
+        application_lead = payload_dict["application_lead"]
         if payload_dict["is_application_lead_external"]:
-            external_application_lead = payload_dict["application_lead"]
             eal, created = Contact.objects.update_or_create(
-                id=external_application_lead,
+                id=application_lead,
                 defaults={
                     "first_name": payload.first_name,
                     "last_name": payload.last_name,
@@ -191,7 +191,7 @@ def update_operation(request, operation_id: int, submit, payload: OperationUpdat
             current_user_guid = json.loads(request.headers.get('Authorization'))["user_guid"]
             user: User = get_object_or_404(User, user_guid=current_user_guid)
             al, created = Contact.objects.update_or_create(
-                email=user.email,
+                id=application_lead,
                 defaults={
                     "first_name": user.first_name,
                     "last_name": user.last_name,
