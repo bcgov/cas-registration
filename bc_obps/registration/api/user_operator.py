@@ -193,13 +193,8 @@ def request_access(request, payload: SelectOperatorIn):
         return status, message
 
     # Making a draft UserOperator instance if one doesn't exist
-<<<<<<< HEAD
     user_operator, created = UserOperator.objects.get_or_create(
         user=user, operator=operator, status=UserOperator.Statuses.PENDING
-=======
-    user_operator, _ = UserOperator.objects.get_or_create(
-        user=user, operator=operator, status=UserOperator.Statuses.PENDING, modifier=user
->>>>>>> d22728fd (chore: update endpoints to save audit columns - in progress)
     )
     if created:
         user_operator.set_create_or_update(modifier=user)
