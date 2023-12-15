@@ -196,7 +196,6 @@ class Contact(UserAndContactCommonInfo):
         indexes = [
             models.Index(fields=["business_role"], name="contact_role_idx"),
         ]
-        constraints = [models.UniqueConstraint(fields=["email"], name="contact_email_constraint")]
 
 
 class BusinessStructure(models.Model):
