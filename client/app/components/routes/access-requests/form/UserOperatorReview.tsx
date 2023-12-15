@@ -6,7 +6,7 @@ import { Status } from "@/app/types/types";
 import { UserOperatorFormData } from "@/app/components/form/formDataTypes";
 
 interface Props {
-  userOperator: Partial<UserOperatorFormData>;
+  userOperator: UserOperatorFormData;
   userOperatorId: number;
 }
 
