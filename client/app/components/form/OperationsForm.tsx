@@ -114,13 +114,22 @@ export default function OperationsForm({ formData, schema }: Props) {
               ? "dashboard/operations"
               : `dashboard/operations/${formData?.id}`;
 
+            // 🚀 API call: Get operator id associated with this user
+            const responseOpId = await actionHandler(
+              "registration/user-operator-operator-id",
+              "GET",
+              "",
+            );
+            if (responseOpId.error) {
+              setError(responseOpId.error);
+              return;
+            }
             const body = {
               ...formData,
               ...data.formData,
               //  temporary handling of documents, will be addressed in #332/325
               documents: [],
-              // temporarily mocking bceid login
-              operator_id: 1,
+              operator_id: responseOpId.operator_id,
               application_lead: formData?.application_lead?.id,
             };
 
