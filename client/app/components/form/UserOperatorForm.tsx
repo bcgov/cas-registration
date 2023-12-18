@@ -72,7 +72,7 @@ export default function UserOperatorMultiStepForm({
             {e.message}
           </Alert>
         ))}
-      <div className={"flex mt-8 justify-between"}>
+      <div className={"flex my-8 justify-between"}>
         <Button variant="outlined" onClick={() => back()}>
           Cancel
         </Button>

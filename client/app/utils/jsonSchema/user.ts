@@ -12,11 +12,18 @@ export const userSchema: RJSFSchema = {
       title: "Phone Number",
       format: "phone",
     },
-    email: { type: "string", title: "Email Address", readOnly: true },
+    email: {
+      type: "string",
+      title: "Email Address",
+      readOnly: true,
+    },
     position_title: { type: "string", title: "Position Title" },
   },
 };
 
 export const userUiSchema = {
   "ui:FieldTemplate": FieldTemplate,
+  phone_number: {
+    "ui:widget": "PhoneWidget",
+  },
 };
