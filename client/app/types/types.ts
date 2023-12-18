@@ -13,3 +13,8 @@ export enum Roles {
   INDUSTRY_USER = "industry_user",
   INDUSTRY_USER_ADMIN = "industry_user_admin",
 }
+
+export enum IDP {
+  IDIR = "idir",
+  BCEIDBUSINESS = "bceidbusiness",
+}
