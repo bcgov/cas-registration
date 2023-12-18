@@ -510,6 +510,15 @@ class TestUserOperatorEndpoint:
         self.auth_header = {'user_guid': str(self.user.user_guid)}
         self.auth_header_dumps = json.dumps(self.auth_header)
 
+    def test_get_user_operator_status(self):
+        user_operator = baker.make(UserOperator, user_id=self.user.user_guid, status=UserOperator.Statuses.APPROVED)
+        response = client.get(
+            f"{base_endpoint}user-operator-status-from-user", HTTP_AUTHORIZATION=self.auth_header_dumps
+        )
+
+        assert response.status_code == 200
+        assert response.json()['status'] == user_operator.status
+
     def test_select_operator_with_valid_id(self):
         operators = baker.make(Operator, _quantity=1)
         response = client.get(f"{self.operator_endpoint}/{operators[0].id}", HTTP_AUTHORIZATION=self.auth_header_dumps)
