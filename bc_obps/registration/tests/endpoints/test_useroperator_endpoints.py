@@ -101,10 +101,45 @@ class TestUserOperatorEndpoint:
             f"{base_endpoint}select-operator/request-access",
         )
         assert response.status_code == 401
+
+        # /select-operator/request-admin-access
+        response = TestUtils.mock_post_with_auth_role(
+            self,
+            'cas_pending',
+            content_type_json,
+            {'operator_id': operator.id},
+            f"{base_endpoint}select-operator/request-access",
+        )
+        assert response.status_code == 401
+        response = TestUtils.mock_post_with_auth_role(
+            self,
+            'cas_analyst',
+            content_type_json,
+            {'operator_id': operator.id},
+            f"{base_endpoint}select-operator/request-access",
+        )
+        assert response.status_code == 401
+        response = TestUtils.mock_post_with_auth_role(
+            self,
+            'cas_admin',
+            content_type_json,
+            {'operator_id': operator.id},
+            f"{base_endpoint}select-operator/request-access",
+        )
+        assert response.status_code == 401
+
         # user-operator/operator
         mock_data = TestUtils.mock_UserOperatorOperatorIn()
         response = TestUtils.mock_post_with_auth_role(
             self, 'cas_pending', content_type_json, mock_data.json(), f"{base_endpoint}user-operator/operator"
+        )
+        assert response.status_code == 401
+        response = TestUtils.mock_post_with_auth_role(
+            self, 'cas_analyst', content_type_json, mock_data.json(), f"{base_endpoint}user-operator/operator"
+        )
+        assert response.status_code == 401
+        response = TestUtils.mock_post_with_auth_role(
+            self, 'cas_admin', content_type_json, mock_data.json(), f"{base_endpoint}user-operator/operator"
         )
         assert response.status_code == 401
 
@@ -154,23 +189,12 @@ class TestUserOperatorEndpoint:
             {'status': 'Approved'},
             f"{base_endpoint}select-operator/user-operator/{user.user_guid}/update-status",
         )
-        assert response.status_code == 401
-        user = baker.make(User)
-        response = TestUtils.mock_put_with_auth_role(
-            self,
-            'industry_user_admin',
-            content_type_json,
-            {'status': 'Approved'},
-            f"{base_endpoint}select-operator/user-operator/{user.user_guid}/update-status",
-        )
-        assert response.status_code == 401
 
     def test_get_user_operator_status(self):
         user_operator = baker.make(UserOperator, user_id=self.user.user_guid, status=UserOperator.Statuses.APPROVED)
-        response = client.get(
-            f"{base_endpoint}user-operator-status-from-user", HTTP_AUTHORIZATION=self.auth_header_dumps
+        response = TestUtils.mock_get_with_auth_role(
+            self, 'industry_user', f"{base_endpoint}user-operator-status-from-user"
         )
-
         assert response.status_code == 200
         assert response.json()['status'] == user_operator.status
 
@@ -306,11 +330,8 @@ class TestUserOperatorEndpoint:
         # Act
         operator = baker.make(Operator)
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
-        response = TestUtils.mock_get_with_auth_role(self, 'cas_analyst', f"{base_endpoint}user-operator-operator-id")
+        response = TestUtils.mock_get_with_auth_role(self, 'industry_user', f"{base_endpoint}user-operator-operator-id")
 
-        # client.get(
-        #     f"{base_endpoint}user-operator-operator-id",
-        # )
         response_json = response.json()
 
         # Assert
@@ -324,7 +345,9 @@ class TestUserOperatorEndpoint:
 
         # Act
         invalid_user = "98f255ed8d4644eeb2fe9f8d3d92c689"
-        response = TestUtils.mock_get_with_auth_role(self, 'cas_admin', f"{base_endpoint}user-operator-operator-id")
+        response = TestUtils.mock_get_with_auth_role(
+            self, 'industry_user_admin', f"{base_endpoint}user-operator-operator-id"
+        )
 
         # client.get(
         #     f"{base_endpoint}user-operator-operator-id",
