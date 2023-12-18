@@ -110,3 +110,18 @@ To enable validation of the postal code widget the format must be set to `format
     title: 'Postal codefield'
   }
 ```
+
+### Checkbox widget
+
+A checkbox widget for `boolean` type fields. Set the `ui:widget` to `CheckboxWidget` in the fields `uiSchema`
+
+To ensure the label doesn't display twice using the default `InlineFieldTemplate` set `label: false` in `ui:options`.
+
+```
+checkbox_field {
+  "ui:widget": "CheckboxWidget",
+  "ui:options": {
+      label: false,
+  }
+}
+```
