@@ -6,6 +6,10 @@ from registration.models import Contact, User, UserOperator
 from pydantic import Field
 
 
+class UserOperatorStatus(Schema):
+    status: UserOperator.Statuses
+
+
 class IsApprovedUserOperator(Schema):
     approved: bool
 
