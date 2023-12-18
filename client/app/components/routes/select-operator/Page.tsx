@@ -5,10 +5,28 @@ import { BC_GOV_LINKS_COLOR } from "@/app/styles/colors";
 import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { actionHandler } from "@/app/utils/actions";
+import { Status } from "@/app/types/types";
 
-export default async function SelectOperatorPage() {
+const getUserOperatorStatus = async () => {
+  try {
+    return await actionHandler(
+      `registration/user-operator-status-from-user`,
+      "GET",
+      "",
+    );
+  } catch (error) {
+    throw error;
+  }
+};
+
+export default async function MyOperatorPage() {
   const session = await getServerSession(authOptions);
   const userName = session?.user?.name?.split(" ")?.[0];
+  const { status } = await getUserOperatorStatus();
+  if (status === Status.PENDING.toLowerCase()) {
+    return <div>Your request is pending.</div>;
+  }
   return (
     <>
       {/* Streaming to render UI parts in a client incrementally, as soon as possible */}
