@@ -34,7 +34,7 @@ from registration.utils import (
     update_model_instance,
     check_users_admin_request_eligibility,
     check_access_request_matches_business_guid,
-    get_an_operators_users,
+    get_an_operators_approved_users,
     raise_401_if_role_not_authorized,
 )
 from ninja.responses import codes_4xx
@@ -84,7 +84,7 @@ def get_user_operator(request, user_operator_id: int):
     user_operator = get_object_or_404(UserOperator, id=user_operator_id)
     operator = get_object_or_404(Operator, id=user_operator.operator_id)
 
-    authorized_users = get_an_operators_users(operator)
+    authorized_users = get_an_operators_approved_users(operator)
     if request.current_user.user_guid not in authorized_users:
         raise HttpError(401, "Unauthorized.")
 
@@ -116,7 +116,7 @@ def get_user(request):
 
 @router.post("/select-operator/request-admin-access", response={201: RequestAccessOut, codes_4xx: Message})
 def request_access(request, payload: SelectOperatorIn):
-    raise_401_if_role_not_authorized(request, ["industry_user", "industry_user_admin", "cas_admin", "cas_analyst"])
+    raise_401_if_role_not_authorized(request, ["industry_user", "industry_user_admin"])
     user: User = request.current_user
     operator: Operator = get_object_or_404(Operator, id=payload.operator_id)
 
@@ -151,9 +151,7 @@ def request_access(request, payload: SelectOperatorIn):
 @router.post("/user-operator/operator", response={200: RequestAccessOut, codes_4xx: Message})
 def create_operator_and_user_operator(request, payload: UserOperatorOperatorIn):
     user: User = request.current_user
-    raise_401_if_role_not_authorized(
-        user.app_role, ["industry_user", "industry_user_admin", "cas_admin", "cas_analyst"]
-    )
+    raise_401_if_role_not_authorized(user.app_role, ["industry_user", "industry_user_admin"])
     try:
         payload_dict = payload.dict()
         operator_has_parent_company: bool = payload_dict.get("operator_has_parent_company")
@@ -320,7 +318,7 @@ def create_user_operator_contact(request, payload: UserOperatorContactIn):
 # Andrea
 @router.put("/select-operator/user-operator/{user_id}/update-status")
 def update_user_operator_status(request, user_id: str):
-    raise_401_if_role_not_authorized(request, ["cas_admin", "cas_analyst"])
+    raise_401_if_role_not_authorized(request, ["cas_admin", "cas_analyst", "industry_user_admin"])
     current_admin_user: User = request.current_user
     payload = json.loads(request.body.decode())
     status = getattr(UserOperator.Statuses, payload.get("status").upper())

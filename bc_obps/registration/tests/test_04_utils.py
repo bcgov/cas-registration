@@ -7,7 +7,7 @@ from registration.utils import (
     generate_useful_error,
     check_access_request_matches_business_guid,
     raise_401_if_role_not_authorized,
-    get_an_operators_users,
+    get_an_operators_approved_users,
 )
 from localflavor.ca.models import CAPostalCodeField
 from django.core.exceptions import ValidationError
@@ -310,7 +310,7 @@ class TestGetAnOperatorsUsers:
             operator=operator2,
             status=UserOperator.Statuses.APPROVED,
         )
-        get_an_operators_users(operator1)
+        get_an_operators_approved_users(operator1)
 
         result = User.objects.filter(user_guid=approved_user.user_guid)
         assert result.exists() and result.count() == 1

@@ -145,7 +145,7 @@ def raise_401_if_role_not_authorized(request, authorized_roles) -> Tuple[int, Op
         raise HttpError(401, "Unauthorized.")
 
 
-def get_an_operators_users(operator: Operator) -> List[User]:
+def get_an_operators_approved_users(operator: Operator) -> List[User]:
     # get a list of all the operator's approved user ids
     user_ids = UserOperator.objects.filter(operator_id=operator.id, status=UserOperator.Statuses.APPROVED).values_list(
         'user_id', flat=True
