@@ -92,10 +92,10 @@ def save_multiple_operators(multiple_operators_array, operation):
 def list_operations(request):
     raise_401_if_role_not_authorized(request, ["industry_user", "industry_user_admin", "cas_admin", "cas_analyst"])
     user = request.current_user
-    # IRC users can see all operations
+    # IRC users can see all operations except ones that are not registered yet
     if user.app_role.role_name in ['cas_admin', 'cas_analyst']:
-        qs = Operation.objects.all()
-        return 200, qs
+        qs = Operation.objects.exclude(status__in=[Operation.Statuses.NOT_REGISTERED])
+        return qs
     # Industry users can only see their companies' operations (if there's no user_operator or operator, then the user hasn't requested access to the operator)
     user_operator = UserOperator.objects.filter(user_id=user.user_guid).first()
     if not user_operator:
