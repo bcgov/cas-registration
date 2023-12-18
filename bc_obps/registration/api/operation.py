@@ -28,7 +28,7 @@ from registration.schema import (
 from registration.utils import (
     raise_401_if_role_not_authorized,
     extract_fields_from_dict,
-    get_an_operators_users,
+    get_an_operators_approved_users,
 )
 from ninja.responses import codes_4xx
 from ninja.errors import HttpError
@@ -95,14 +95,13 @@ def list_operations(request):
     if user.app_role.role_name in ['cas_admin', 'cas_analyst']:
         qs = Operation.objects.all()
         return 200, qs
-    # Industry users can only see their companies' operations (if there's no user_operator, then the user isn't approved to make any changes)
+    # Industry users can only see their companies' operations (if there's no user_operator or operator, then the user hasn't requested access to the operator)
     user_operator = UserOperator.objects.filter(user_id=user.user_guid).first()
     if not user_operator:
         raise HttpError(401, "Unauthorized.")
     operator = get_object_or_404(Operator, id=user_operator.operator_id)
-
-    authorized_users = get_an_operators_users(operator)
-    if request.current_user.user_guid not in authorized_users:
+    approved_users = get_an_operators_approved_users(operator)
+    if request.current_user.user_guid not in approved_users:
         raise HttpError(401, "Unauthorized.")
 
     authorized_operations = Operation.objects.filter(operator_id=user_operator.operator_id)
@@ -112,13 +111,12 @@ def list_operations(request):
 @router.get("/operations/{operation_id}", response={200: OperationOut, codes_4xx: Message})
 def get_operation(request, operation_id: int):
     raise_401_if_role_not_authorized(request, ["industry_user", "industry_user_admin", "cas_admin", "cas_analyst"])
-    operation = get_object_or_404(Operation, id=operation_id)
-    if request.current_user.app_role.role_name not in ["cas_admin", 'cas_analyst']:
+    if request.current_user.app_role.role_name in ["industry_user", "industry_user_admin"]:
         user_operator = get_object_or_404(UserOperator, user_id=request.current_user.user_guid)
         operator = get_object_or_404(Operator, id=user_operator.operator_id)
 
-        authorized_users = get_an_operators_users(operator)
-        if request.current_user.user_guid not in authorized_users:
+        approved_users = get_an_operators_approved_users(operator)
+        if request.current_user.user_guid not in approved_users:
             raise HttpError(401, "Unauthorized.")
 
     operation = get_object_or_404(Operation, id=operation_id)
@@ -190,13 +188,13 @@ def update_operation(request, operation_id: int, submit, payload: OperationUpdat
     raise_401_if_role_not_authorized(request, ["industry_user", "industry_user_admin", "cas_admin", "cas_analyst"])
     user = request.current_user
     user_operator = UserOperator.objects.filter(user_id=user.user_guid).first()
-    # if there's no user_operator or operator, then the user isn't approved to make any changes
+    # if there's no user_operator or operator, then the user hasn't requested access to the operator
     if not user_operator:
         raise HttpError(401, "Unauthorized.")
     operator = Operator.objects.get(id=user_operator.operator_id)
 
-    authorized_users = get_an_operators_users(operator)
-    if request.current_user.user_guid not in authorized_users:
+    approved_users = get_an_operators_approved_users(operator)
+    if request.current_user.user_guid not in approved_users:
         raise HttpError(401, "Unauthorized.")
 
     payload_dict: dict = payload.dict()
