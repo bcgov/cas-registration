@@ -1,6 +1,7 @@
 "use client";
 
 import { actionHandler } from "@/app/utils/actions";
+import { useSession } from "next-auth/react";
 import Review from "app/components/button/Review";
 import { Status } from "@/app/types/types";
 
@@ -9,6 +10,8 @@ interface Props {
 }
 
 const OperationReview = ({ operation }: Props) => {
+  const { data: session } = useSession();
+
   const approveRequest = async () => {
     operation.status = Status.APPROVED;
     const response = await actionHandler(
@@ -36,7 +39,11 @@ const OperationReview = ({ operation }: Props) => {
     return response;
   };
 
-  if (!operation) return null;
+  const isCasInternal =
+    session?.user.app_role?.includes("cas") &&
+    !session?.user.app_role?.includes("pending");
+
+  if (!operation || !isCasInternal) return null;
 
   return (
     <Review
