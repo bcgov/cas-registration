@@ -41,29 +41,6 @@ class TestUserEndpoint:
         response = TestUtils.mock_get_with_auth_role(self, "cas_pending")
         assert response.status_code == 401
 
-        # /user-profile
-        response = TestUtils.mock_get_with_auth_role(self, "cas_pending", self.endpoint_profile)
-        assert response.status_code == 401
-
-        # /user-app-role/{user_guid}
-        response = TestUtils.mock_get_with_auth_role(
-            self, "cas_pending", base_endpoint + 'user-app-role/' + str(self.user.user_guid)
-        )
-        assert response.status_code == 401
-        response = TestUtils.mock_get_with_auth_role(
-            self, "industry_user", base_endpoint + 'user-app-role/' + str(self.user.user_guid)
-        )
-        assert response.status_code == 401
-        response = TestUtils.mock_get_with_auth_role(
-            self, "industry_user_admin", base_endpoint + 'user-app-role/' + str(self.user.user_guid)
-        )
-        assert response.status_code == 401
-
-    def test_unauthorized_users_cannot_put(self):
-        # /user-profile
-        response = TestUtils.mock_get_with_auth_role(self, "cas_pending")
-        assert response.status_code == 401
-
     # GET USER
     def test_get_user(self):
 

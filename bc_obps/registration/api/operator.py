@@ -53,7 +53,6 @@ def get_operator(request, operator_id: int):
     return 200, operator
 
 
-# Andrea new endpoint
 @router.get("/operators/{operator_id}/user-operators", response=list[SelectUserOperatorStatus])
 def list_user_operators_status_of_operator(request, operator_id: int):
     raise_401_if_role_not_authorized(request, ["industry_user", "industry_user_admin", "cas_admin", "cas_analyst"])
