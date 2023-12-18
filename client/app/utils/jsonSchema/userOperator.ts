@@ -445,6 +445,7 @@ export const userOperatorUiSchema = {
     "ui:widget": "EmailWidget",
   },
   is_senior_officer: {
+    "ui:widget": "CheckboxWidget",
     "ui:options": {
       label: false,
     },
