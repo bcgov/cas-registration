@@ -155,7 +155,6 @@ def get_an_operators_approved_users(operator: Operator) -> List[User]:
 
     return User.objects.filter(pk__in=user_ids).values_list('user_guid', flat=True)
 
-
 class TestUtils:
     # initialize the APIClient app
     client = Client()
