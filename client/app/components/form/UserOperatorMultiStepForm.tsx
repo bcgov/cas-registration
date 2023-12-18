@@ -27,7 +27,7 @@ export default function UserOperatorMultiStepForm({
   const searchParams = useSearchParams();
   const [error, setError] = useState(undefined);
   const [formState, setFormState] = useState(formData);
-
+  console.log("formdata", formData);
   const formSection = parseInt(params?.formSection as string) - 1;
 
   const formSectionList = Object.keys(schema.properties as RJSFSchema);
@@ -38,7 +38,7 @@ export default function UserOperatorMultiStepForm({
       ...formState,
       ...data.formData,
     } as UserOperatorFormData;
-
+    console.log("newFormData", newFormData);
     // to prevent resetting the form state when errors occur
     setFormState(newFormData);
 
@@ -77,18 +77,26 @@ export default function UserOperatorMultiStepForm({
       }?user-operator-id=${response.user_operator_id}`,
     );
   };
-
+  console.log("formstate", formState);
   return (
-    <MultiStepFormBase
-      baseUrl={"/dashboard/select-operator/user-operator/create"}
-      cancelUrl="/dashboard/select-operator"
-      schema={schema}
-      error={error}
-      formData={formState}
-      submitEveryStep
-      onSubmit={submitHandler}
-      uiSchema={userOperatorUiSchema}
-      readonly={session?.user.app_role?.includes("cas")}
-    />
+    <>
+      IM USEROPERATORMULTISTEPFORM
+      <MultiStepFormBase
+        baseUrl={"/dashboard/select-operator/user-operator/create"}
+        cancelUrl="/dashboard/select-operator"
+        schema={schema}
+        error={error}
+        formData={formState}
+        submitEveryStep
+        onSubmit={submitHandler}
+        uiSchema={userOperatorUiSchema}
+        readonly={session?.user.app_role?.includes(
+          "cas",
+        )
+        // ||
+        // formData?.status === Status.PENDING
+        }
+      />
+    </>
   );
 }

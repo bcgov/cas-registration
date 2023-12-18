@@ -77,13 +77,18 @@ export default async function UserOperator({
       label: businessStructure.name,
     }),
   );
-
+  // can make schema conditional on params.id
+  console.log("userData", userData);
   // If operator has an admin, use the single page form to show the user information
   return params?.id ? (
+    // for industry users when the operator already exists, cas users would never need to see this
     <UserOperatorForm schema={userOperatorPage2} formData={userData} />
   ) : (
+    // we don't actually have a readonly version displayed anywhere until the Joshs' PRs are in
+
     <UserOperatorMultiStepForm
       schema={createUserOperatorSchema(businessStructuresList)}
+      // need to pass useroperator info here too, fetch it above like we're doing with the userDataa
       formData={userData}
     />
   );

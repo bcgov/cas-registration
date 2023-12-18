@@ -12,6 +12,7 @@ import {
 } from "@/app/components/form/formDataTypes";
 import { Alert, Button } from "@mui/material";
 import SubmitButton from "@/app/components/form/SubmitButton";
+import { useSession } from "next-auth/react";
 
 interface UserOperatorFormProps {
   schema: RJSFSchema;
@@ -23,11 +24,11 @@ export default function UserOperatorMultiStepForm({
   formData,
 }: Readonly<UserOperatorFormProps>) {
   const { push, back } = useRouter();
+  const { data: session } = useSession();
   const params = useParams();
   const [errorList, setErrorList] = useState([] as any[]);
   const [formState, setFormState] = useState(formData);
   const userOperatorId: string = params.id.toString();
-
   const submitHandler = async (data: { formData?: UserOperatorFormData }) => {
     const newFormData = {
       ...formState,
@@ -46,7 +47,7 @@ export default function UserOperatorMultiStepForm({
       `/dashboard/select-operator/user-operator/${userOperatorId}`,
       {
         body: JSON.stringify(newFormData),
-      },
+      }
     );
 
     if (response.error) {
@@ -55,29 +56,36 @@ export default function UserOperatorMultiStepForm({
     }
 
     push(
-      `/dashboard/select-operator/received/request-access/${response.operator_id}`,
+      `/dashboard/select-operator/received/request-access/${response.operator_id}`
     );
   };
 
   return (
-    <Form
-      schema={schema}
-      formData={formState}
-      onSubmit={submitHandler}
-      uiSchema={userOperatorUiSchema}
-    >
-      {errorList.length > 0 &&
-        errorList.map((e: any) => (
-          <Alert key={e.message} severity="error">
-            {e.message}
-          </Alert>
-        ))}
-      <div className={"flex mt-8 justify-between"}>
-        <Button variant="outlined" onClick={() => back()}>
-          Cancel
-        </Button>
-        <SubmitButton label="Submit" />
-      </div>
-    </Form>
+    <>
+      IM USEROPERATORFORM
+      <Form
+        schema={schema}
+        formData={formState}
+        onSubmit={submitHandler}
+        uiSchema={userOperatorUiSchema}
+        readonly={
+          session?.user.app_role?.includes("cas") ||
+          formData?.status === Status.PENDING
+        }
+      >
+        {errorList.length > 0 &&
+          errorList.map((e: any) => (
+            <Alert key={e.message} severity="error">
+              {e.message}
+            </Alert>
+          ))}
+        <div className={"flex mt-8 justify-between"}>
+          <Button variant="outlined" onClick={() => back()}>
+            Cancel
+          </Button>
+          <SubmitButton label="Submit" />
+        </div>
+      </Form>
+    </>
   );
 }
