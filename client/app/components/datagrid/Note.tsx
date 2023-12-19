@@ -7,10 +7,10 @@ interface Props {
 
 const Note = ({ message }: Props) => {
   return (
-    <>
+    <div>
       <strong>Note: </strong>
       {message}
-    </>
+    </div>
   );
 };
 
