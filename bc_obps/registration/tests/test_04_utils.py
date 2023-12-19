@@ -287,7 +287,8 @@ class TestGetAnOperatorsUsers:
         approved_user = baker.make(User)
         unapproved_user = baker.make(User)
         other_operator_user = baker.make(User)
-        not_in_user_operator_table_user = baker.make(User)
+        # creating a user that's not in the user operator table
+        baker.make(User)
 
         operator1 = baker.make(Operator)
         operator2 = baker.make(Operator)

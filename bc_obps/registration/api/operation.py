@@ -26,6 +26,7 @@ from registration.schema import (
     Message,
 )
 from registration.utils import (
+    UNAUTHORIZED_MESSAGE,
     raise_401_if_role_not_authorized,
     extract_fields_from_dict,
     get_an_operators_approved_users,
@@ -98,11 +99,11 @@ def list_operations(request):
     # Industry users can only see their companies' operations (if there's no user_operator or operator, then the user hasn't requested access to the operator)
     user_operator = UserOperator.objects.filter(user_id=user.user_guid).first()
     if not user_operator:
-        raise HttpError(401, "Unauthorized.")
+        raise HttpError(401, UNAUTHORIZED_MESSAGE)
     operator = get_object_or_404(Operator, id=user_operator.operator_id)
     approved_users = get_an_operators_approved_users(operator)
     if request.current_user.user_guid not in approved_users:
-        raise HttpError(401, "Unauthorized.")
+        raise HttpError(401, UNAUTHORIZED_MESSAGE)
 
     authorized_operations = Operation.objects.filter(operator_id=user_operator.operator_id)
     return 200, authorized_operations
@@ -117,7 +118,7 @@ def get_operation(request, operation_id: int):
 
         approved_users = get_an_operators_approved_users(operator)
         if request.current_user.user_guid not in approved_users:
-            raise HttpError(401, "Unauthorized.")
+            raise HttpError(401, UNAUTHORIZED_MESSAGE)
 
     operation = get_object_or_404(Operation, id=operation_id)
     return 200, operation
@@ -190,12 +191,12 @@ def update_operation(request, operation_id: int, submit, payload: OperationUpdat
     user_operator = UserOperator.objects.filter(user_id=user.user_guid).first()
     # if there's no user_operator or operator, then the user hasn't requested access to the operator
     if not user_operator:
-        raise HttpError(401, "Unauthorized.")
+        raise HttpError(401, UNAUTHORIZED_MESSAGE)
     operator = Operator.objects.get(id=user_operator.operator_id)
 
     approved_users = get_an_operators_approved_users(operator)
     if request.current_user.user_guid not in approved_users:
-        raise HttpError(401, "Unauthorized.")
+        raise HttpError(401, UNAUTHORIZED_MESSAGE)
 
     payload_dict: dict = payload.dict()
     operation = get_object_or_404(Operation, id=operation_id)

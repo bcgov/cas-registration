@@ -74,7 +74,7 @@ class TestOperationsEndpoint:
         assert response.status_code == 401
 
     def test_unauthorized_roles_cannot_post(self, client):
-        mock_operation = TestUtils.mock_OperationCreateIn()
+        mock_operation = TestUtils.mock_OperationCreateIn(self)
         # IRC users can't post
         post_response = TestUtils.mock_post_with_auth_role(self, "cas_admin", content_type_json, mock_operation.json())
         assert post_response.status_code == 401
@@ -90,7 +90,7 @@ class TestOperationsEndpoint:
     def test_unauthorized_roles_cannot_put_operations(self, client):
 
         operation = baker.make(Operation)
-        mock_operation = TestUtils.mock_OperationUpdateIn()
+        mock_operation = TestUtils.mock_OperationUpdateIn(self)
         # IRC users can't put
         response = TestUtils.mock_put_with_auth_role(
             self,
@@ -187,7 +187,7 @@ class TestOperationsEndpoint:
     def test_authorized_roles_can_post_new_operation(self, client):
 
         operator = baker.make(Operator)
-        mock_operation = TestUtils.mock_OperationCreateIn(operator)
+        mock_operation = TestUtils.mock_OperationCreateIn(self, operator)
         post_response = TestUtils.mock_post_with_auth_role(
             self, "industry_user", content_type_json, mock_operation.json()
         )
@@ -281,7 +281,7 @@ class TestOperationsEndpoint:
 
     def test_post_existing_operation(self, client):
         baker.make(Operation, bcghg_id=123)
-        mock_operation2 = TestUtils.mock_OperationCreateIn()
+        mock_operation2 = TestUtils.mock_OperationCreateIn(self)
         mock_operation2.bcghg_id = 123
         post_response = TestUtils.mock_post_with_auth_role(
             self, "industry_user", content_type_json, data=mock_operation2.json()
@@ -381,7 +381,7 @@ class TestOperationsEndpoint:
     def test_put_operation_without_submit(self, client):
         operator = baker.make(Operator)
         operation = baker.make(Operation)
-        mock_operation = TestUtils.mock_OperationUpdateIn()
+        mock_operation = TestUtils.mock_OperationUpdateIn(self)
         # approve the user
         baker.make(
             UserOperator, user_id=self.user.user_guid, status=UserOperator.Statuses.APPROVED, operator_id=operator.id
@@ -405,7 +405,7 @@ class TestOperationsEndpoint:
         operator = baker.make(Operator)
         operation = baker.make(Operation, id=5)
 
-        mock_operation = TestUtils.mock_OperationUpdateIn()
+        mock_operation = TestUtils.mock_OperationUpdateIn(self)
         baker.make(
             UserOperator, user_id=self.user.user_guid, status=UserOperator.Statuses.APPROVED, operator_id=operator.id
         )

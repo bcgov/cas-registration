@@ -129,7 +129,7 @@ class TestUserOperatorEndpoint:
         assert response.status_code == 401
 
         # user-operator/operator
-        mock_data = TestUtils.mock_UserOperatorOperatorIn()
+        mock_data = TestUtils.mock_UserOperatorOperatorIn(self)
         response = TestUtils.mock_post_with_auth_role(
             self, 'cas_pending', content_type_json, mock_data.json(), f"{base_endpoint}user-operator/operator"
         )
@@ -144,12 +144,12 @@ class TestUserOperatorEndpoint:
         assert response.status_code == 401
 
         # user-operator/contact
-        operator = baker.make(Operator)
+        baker.make(Operator)
         response = TestUtils.mock_post_with_auth_role(
             self,
             'cas_pending',
             content_type_json,
-            TestUtils.mock_UserOperatorContactIn().json(),
+            TestUtils.mock_UserOperatorContactIn(self).json(),
             f"{base_endpoint}user-operator/contact",
         )
         assert response.status_code == 401
@@ -157,7 +157,7 @@ class TestUserOperatorEndpoint:
             self,
             'cas_admin',
             content_type_json,
-            TestUtils.mock_UserOperatorContactIn().json(),
+            TestUtils.mock_UserOperatorContactIn(self).json(),
             f"{base_endpoint}user-operator/contact",
         )
         assert response.status_code == 401
@@ -165,7 +165,7 @@ class TestUserOperatorEndpoint:
             self,
             'cas_analyst',
             content_type_json,
-            TestUtils.mock_UserOperatorContactIn().json(),
+            TestUtils.mock_UserOperatorContactIn(self).json(),
             f"{base_endpoint}user-operator/contact",
         )
         assert response.status_code == 401
@@ -189,6 +189,7 @@ class TestUserOperatorEndpoint:
             {'status': 'Approved'},
             f"{base_endpoint}select-operator/user-operator/{user.user_guid}/update-status",
         )
+        assert response.status_code == 401
 
     def test_get_user_operator_status(self):
         user_operator = baker.make(UserOperator, user_id=self.user.user_guid, status=UserOperator.Statuses.APPROVED)
@@ -344,17 +345,14 @@ class TestUserOperatorEndpoint:
     def test_get_user_operator_operator_id_with_invalid_user(self):
 
         # Act
-        invalid_user = "98f255ed8d4644eeb2fe9f8d3d92c689"
         response = TestUtils.mock_get_with_auth_role(
             self, 'industry_user_admin', f"{base_endpoint}user-operator-operator-id"
         )
 
-        # client.get(
-        #     f"{base_endpoint}user-operator-operator-id",
-        # )
         response_json = response.json()
 
         # Assert
+        # user is invalid because they're not in the user operator table
         assert response.status_code == 404
 
         # Additional Assertions

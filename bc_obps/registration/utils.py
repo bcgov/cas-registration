@@ -21,6 +21,8 @@ from registration.models import (
 )
 from registration.schema import OperationCreateIn, OperationUpdateIn
 
+UNAUTHORIZED_MESSAGE = "Unauthorized."
+
 
 def check_users_admin_request_eligibility(user: User, operator: Operator) -> Union[None, tuple[int, dict]]:
     """
@@ -139,10 +141,10 @@ def extract_fields_from_dict(data_dict, fields_to_extract):
 
 def raise_401_if_role_not_authorized(request, authorized_roles) -> Tuple[int, Optional[Union[dict[str, str], None]]]:
     if not hasattr(request, 'current_user'):
-        raise HttpError(401, "Unauthorized.")
+        raise HttpError(401, UNAUTHORIZED_MESSAGE)
     role_name = getattr(request.current_user.app_role, "role_name")
     if role_name not in authorized_roles:
-        raise HttpError(401, "Unauthorized.")
+        raise HttpError(401, UNAUTHORIZED_MESSAGE)
 
 
 def get_an_operators_approved_users(operator: Operator) -> List[User]:
@@ -185,7 +187,7 @@ class TestUtils:
     def mock_postal_code():
         return "v8v3g1"
 
-    def mock_OperationCreateIn(operator: Operator = None):
+    def mock_OperationCreateIn(self, operator: Operator = None):
         naics_code = baker.make(NaicsCode)
         document = baker.make(Document)
         reporting_activities = baker.make(ReportingActivity, _quantity=2)
@@ -203,7 +205,7 @@ class TestUtils:
             operator_id=operator.id,
         )
 
-    def mock_OperationUpdateIn():
+    def mock_OperationUpdateIn(self):
         naics_code = baker.make(NaicsCode)
         document = baker.make(Document)
         application_lead = baker.make(Contact)
@@ -232,7 +234,7 @@ class TestUtils:
             operator_id=operator.id,
         )
 
-    def mock_UserOperatorOperatorIn():
+    def mock_UserOperatorOperatorIn(self):
         return UserOperatorOperatorIn(
             legal_name='test',
             cra_business_number=123,
@@ -246,7 +248,7 @@ class TestUtils:
             operator_has_parent_company=False,
         )
 
-    def mock_UserOperatorContactIn():
+    def mock_UserOperatorContactIn(self):
         user_operator = baker.make(UserOperator)
         return UserOperatorContactIn(
             is_senior_officer=True,

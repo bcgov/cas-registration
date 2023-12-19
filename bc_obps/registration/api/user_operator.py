@@ -30,6 +30,7 @@ from registration.models import (
     ParentChildOperator,
 )
 from registration.utils import (
+    UNAUTHORIZED_MESSAGE,
     generate_useful_error,
     update_model_instance,
     check_users_admin_request_eligibility,
@@ -84,7 +85,7 @@ def get_user_operator(request, user_operator_id: int):
 
     authorized_users = get_an_operators_approved_users(operator)
     if request.current_user.user_guid not in authorized_users:
-        raise HttpError(401, "Unauthorized.")
+        raise HttpError(401, UNAUTHORIZED_MESSAGE)
 
     user_dict = UserOut.from_orm(user_operator.user).dict()
     operator_dict = OperatorOut.from_orm(user_operator.operator).dict()
