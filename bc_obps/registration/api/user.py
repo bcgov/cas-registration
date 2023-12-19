@@ -1,6 +1,8 @@
 import json
 from registration.models import AppRole, User
 from registration.schema import UserAppRoleOut, UserOut, UserProfileOut, UserIn, Message
+from registration.utils import raise_401_if_role_not_authorized
+from registration.models import User
 from .api_base import router
 from django.shortcuts import get_object_or_404
 from .api_base import router
@@ -14,6 +16,7 @@ from registration.enums.enums import Roles
 
 @router.get("/user", response=UserOut)
 def get_user(request):
+    raise_401_if_role_not_authorized(request, ["industry_user", "industry_user_admin", "cas_admin", "cas_analyst"])
     user: User = request.current_user
     return user
 
@@ -21,6 +24,9 @@ def get_user(request):
 # endpoint to return user data if user exists in user table
 @router.get("/user-profile", response=UserProfileOut)
 def get_user_profile(request):
+    raise_401_if_role_not_authorized(
+        request, ["industry_user", "industry_user_admin", "cas_pending", "cas_admin", "cas_analyst"]
+    )
     user = get_object_or_404(User, user_guid=json.loads(request.headers.get('Authorization')).get('user_guid'))
     user_fields_dict = model_to_dict(user)
 
@@ -34,6 +40,9 @@ def get_user_profile(request):
 # endpoint to return user's role_name if user exists in user table
 @router.get("/user-app-role/{user_guid}", response=UserAppRoleOut)
 def get_user_role(request, user_guid: str):
+    raise_401_if_role_not_authorized(
+        request, ["cas_admin", "cas_analyst", "cas_pending", "industry_user", "industry_user_admin"]
+    )
     user: User = get_object_or_404(User, user_guid=user_guid)
     return user.app_role
 
@@ -68,6 +77,9 @@ def create_user_profile(request, identity_provider: str, payload: UserIn):
 # Endpoint to update a user
 @router.put("/user-profile", response={200: UserOut, codes_4xx: Message})
 def update_user_profile(request, payload: UserIn):
+    raise_401_if_role_not_authorized(
+        request, ["industry_user", "industry_user_admin", "cas_admin", "cas_analyst", "cas_pending"]
+    )
     user: User = request.current_user
     try:
         for attr, value in payload.dict().items():

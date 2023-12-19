@@ -152,6 +152,8 @@ React Testing Library isn't entirely compatible with Next 13 yet, so a few thing
 
 ### Backend unit tests (for API endpoints) with Pytest
 
+#### Running Tests
+
 The easiest way to run these tests locally is by using commands from the Makefile.
 
 ```shell
@@ -160,6 +162,23 @@ The easiest way to run these tests locally is by using commands from the Makefil
 > make pythontests_watch        # adds a watcher that can run pytest in the background; unit tests will re-run whenever changes to a Python file are detected
 > make pythontests_coverage     # run pytest with coverage report
 > make pythontests ARGS='registration/tests/<file_name.py>' # run pytest for a specific file
+> make pythontests ARGS='-k <TestClassname>' # run pytest for a specific class, e.g. make pythontests ARGS='-k TestNaicsCodeEndpoint'
+> make pythontests ARGS='-k <test_name>' # run pytest for a specific test, e.g. make pythontests ARGS='-k test_get_method_for_200_status' (note: if any tests have the same name, even if they're within different classes, this command will run them all)
+```
+
+#### Testing Helpers
+
+We have some testing helpers in utils.TestUtils:
+
+- mock user roles for get, post, and put requests
+- mock postal codes
+- authorize a user as belonging to an operator
+- create mock operations
+
+To use the helpers, import them from `utils` and use like this:
+
+```
+TestUtils.mock_postal_code()
 ```
 
 #### Detail directions

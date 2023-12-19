@@ -1,25 +1,25 @@
 import pytest
 from model_bakery import baker
-from registration.models import User, Operator, UserOperator
+from registration.models import User, Operator, UserOperator, AppRole
 from registration.utils import (
     check_users_admin_request_eligibility,
     update_model_instance,
     generate_useful_error,
     check_access_request_matches_business_guid,
+    raise_401_if_role_not_authorized,
+    get_an_operators_approved_users,
 )
 from localflavor.ca.models import CAPostalCodeField
 from django.core.exceptions import ValidationError
 from registration.utils import extract_fields_from_dict
+from ninja.errors import HttpError
+from django.test import RequestFactory, TestCase
+from registration.utils import TestUtils
 
 
 pytestmark = pytest.mark.django_db
 
-
-def mock_postal_code():
-    return "v8v3g1"
-
-
-baker.generators.add(CAPostalCodeField, mock_postal_code)
+baker.generators.add(CAPostalCodeField, TestUtils.mock_postal_code)
 
 
 class TestCheckUserAdminRequestEligibility:
@@ -248,3 +248,70 @@ class TestExtractFieldsFromDict:
         extracted_fields = extract_fields_from_dict(person_dict, fields_to_extract)
 
         assert extracted_fields == {'name': 'John Doe', 'is_student': False}
+
+
+class TestCheckIfRoleAuthorized(TestCase):
+    def setUp(self):
+        # Every test needs access to the request factory.
+        self.factory = RequestFactory()
+
+    def test_role_is_authorized(self):
+
+        request = self.factory.get("/not/important")
+        request.current_user = baker.make(User, app_role=baker.make(AppRole, role_name="cas_admin"))
+
+        no_error = raise_401_if_role_not_authorized(request, ['cas_admin', 'industry_user'])
+        assert no_error == None
+
+    def test_role_is_not_authorized(self):
+
+        request = self.factory.get("/not/important")
+        request.current_user = baker.make(User, app_role=baker.make(AppRole, role_name="cas_admin"))
+        with pytest.raises(HttpError):
+            raise_401_if_role_not_authorized(
+                request,
+                [
+                    'role_that_is_not_cas_admin',
+                ],
+            )
+
+    def test_current_user_does_not_exist(self):
+        request = self.factory.get("/not/important")
+        with pytest.raises(HttpError):
+            raise_401_if_role_not_authorized(request, ['no_permission_for_you', 'industry_user'])
+
+
+class TestGetAnOperatorsUsers:
+    @staticmethod
+    def test_operator_has_approved_users():
+        approved_user = baker.make(User)
+        unapproved_user = baker.make(User)
+        other_operator_user = baker.make(User)
+        # creating a user that's not in the user operator table
+        baker.make(User)
+
+        operator1 = baker.make(Operator)
+        operator2 = baker.make(Operator)
+
+        baker.make(
+            UserOperator,
+            user=approved_user,
+            operator=operator1,
+            status=UserOperator.Statuses.APPROVED,
+        )
+        baker.make(
+            UserOperator,
+            user=unapproved_user,
+            operator=operator1,
+            status=UserOperator.Statuses.PENDING,
+        )
+        baker.make(
+            UserOperator,
+            user=other_operator_user,
+            operator=operator2,
+            status=UserOperator.Statuses.APPROVED,
+        )
+        get_an_operators_approved_users(operator1)
+
+        result = User.objects.filter(user_guid=approved_user.user_guid)
+        assert result.exists() and result.count() == 1
