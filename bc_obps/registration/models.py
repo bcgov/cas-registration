@@ -1,6 +1,5 @@
 import uuid
 from django.db import models
-from registration.managers import CustomManager
 from phonenumber_field.modelfields import PhoneNumberField
 from localflavor.ca.models import CAPostalCodeField, CAProvinceField
 from simple_history.models import HistoricalRecords

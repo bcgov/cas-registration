@@ -1,6 +1,5 @@
 from typing import List, Tuple, Type
 from django.db import IntegrityError, models
-from django.forms import model_to_dict
 from django.test import TestCase
 from django.utils import timezone
 from registration.models import (
