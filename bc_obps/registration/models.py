@@ -1,11 +1,16 @@
 import uuid
 from django.db import models
-from registration.managers import CustomManager
 from phonenumber_field.modelfields import PhoneNumberField
 from localflavor.ca.models import CAPostalCodeField, CAProvinceField
 from simple_history.models import HistoricalRecords
 from django.core.validators import RegexValidator
 from django.utils import timezone
+
+
+class TimeStampedModelManager(models.Manager):
+    def get_queryset(self):
+        """Return only objects that have not been archived"""
+        return super().get_queryset().filter(archived_at__isnull=True)
 
 
 class TimeStampedModel(models.Model):
@@ -16,46 +21,37 @@ class TimeStampedModel(models.Model):
     updated_by = models.ForeignKey(
         'User', on_delete=models.PROTECT, null=True, blank=True, related_name='%(class)s_updated'
     )
-    updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
+    updated_at = models.DateTimeField(null=True, blank=True)
     archived_by = models.ForeignKey(
         'User', on_delete=models.PROTECT, null=True, blank=True, related_name='%(class)s_archived'
     )
     archived_at = models.DateTimeField(null=True, blank=True)
 
-    objects = CustomManager()
+    objects = TimeStampedModelManager()
 
     class Meta:
         abstract = True
 
-    def save(self, *args, **kwargs):
+    def set_create_or_update(self, modifier: 'User') -> None:
         """
-        Override save method to set created_by and updated_by fields
+        Set the created by field if it is not already set.
+        Otherwise, set the updated by field and updated at field.
         """
-        modifier = kwargs.pop("modifier", None)
-        if not modifier:
-            # Raise an exception or handle the scenario where user information is missing
-            raise ValueError("User information is required to save this instance.")
-
-        is_new = not self.pk
-        if is_new:  # If object is being created
-            # Set created_by if not set
-            if not self.created_by:
-                self.created_by = modifier
+        if not self.created_by:  # created_at is automatically set by auto_now_add
+            self.created_by = modifier
         else:
-            # Set updated_by if not set
-            if not self.updated_by:
-                self.updated_by = modifier
-        super().save(*args, **kwargs)
+            self.updated_by = modifier
+            self.updated_at = timezone.now()
 
-    def archive(self, *args, **kwargs):
-        """Archive this instance"""
-        modifier = kwargs.get("modifier", None)
-        if not modifier:
-            # Raise an exception or handle the scenario where user information is missing
-            raise ValueError("User information is required to archive this instance.")
-        self.archived_by = modifier
+        self.save(update_fields=['created_by', 'updated_by', 'updated_at'])
+
+    def set_archive(self, modifier: 'User') -> None:
+        """Set the archived by field and archived at field if they are not already set."""
+        if self.archived_by or self.archived_at:
+            raise ValueError("Archived by or archived at is already set.")
         self.archived_at = timezone.now()
-        self.save(*args, **kwargs)
+        self.archived_by = modifier
+        self.save(update_fields=['archived_by', 'archived_at'])
 
 
 class AppRole(models.Model):
