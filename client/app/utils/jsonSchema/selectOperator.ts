@@ -58,7 +58,7 @@ export const selectOperatorUiSchema = {
     "ui:FieldTemplate": FieldTemplate,
     "ui:widget": "RadioWidget",
     "ui:options": {
-      false: false,
+      label: false,
       inline: false,
     },
   },

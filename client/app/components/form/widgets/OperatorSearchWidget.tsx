@@ -31,7 +31,6 @@ const OperatorSearchWidget: React.FC<WidgetProps> = ({
     const response = await actionHandler(
       `registration/operators/legal-name${queryParam}`,
       "GET",
-      "/dashboard/select-operator",
     );
 
     if (response.error) {
