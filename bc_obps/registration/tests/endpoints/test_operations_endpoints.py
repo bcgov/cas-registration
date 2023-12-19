@@ -162,11 +162,12 @@ class TestOperationsEndpoint:
         assert response.status_code == 200
 
     def test_get_method_with_mock_data(self, client):
-        # IRC users can get all operations
+        # IRC users can get all operations except ones with a not registered status
         operator1 = baker.make(Operator)
         operator2 = baker.make(Operator)
-        baker.make(Operation, operator_id=operator1.id)
-        baker.make(Operation, operator_id=operator2.id)
+        baker.make(Operation, operator_id=operator1.id, status=Operation.Statuses.PENDING)
+        baker.make(Operation, operator_id=operator2.id, status=Operation.Statuses.APPROVED)
+        baker.make(Operation, operator_id=operator2.id, status=Operation.Statuses.NOT_REGISTERED)
         response = TestUtils.mock_get_with_auth_role(self, "cas_admin")
         assert response.status_code == 200
         assert len(json.loads(response.content)) == 2
