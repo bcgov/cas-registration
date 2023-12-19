@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { SyntheticEvent, useMemo, useState } from "react";
 import { Autocomplete, TextField } from "@mui/material";
 import { actionHandler } from "@/app/utils/actions";
 import debounce from "lodash.debounce";
@@ -13,12 +13,15 @@ const OperatorSearchWidget: React.FC<WidgetProps> = ({
   onChange,
   rawErrors,
   readonly,
-  value = "",
+  value,
   uiSchema,
 }) => {
-  const [options, setOptions] = useState([]);
+  const [options, setOptions] = useState([] as string[]);
 
-  const handleChange = (e: React.ChangeEvent<{}>, option: any) => {
+  const handleChange = (
+    e: SyntheticEvent<Element, Event>,
+    option: string | null,
+  ) => {
     onChange(option);
     setOptions([]);
   };
@@ -68,7 +71,7 @@ const OperatorSearchWidget: React.FC<WidgetProps> = ({
       autoHighlight
       options={options}
       sx={styles}
-      open={options.length > 0 && !options.includes(value)}
+      open={options.length > 0 && !options.includes(value as string)}
       onChange={handleChange}
       onInputChange={debouncedChangeHandler}
       renderInput={(params) => (
