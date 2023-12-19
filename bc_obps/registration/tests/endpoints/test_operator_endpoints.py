@@ -75,7 +75,8 @@ class TestOperatorsEndpoint:
     def test_get_list_user_operators_status(self):
         operator = baker.make(Operator)
         user = baker.make(User)
-        userOperatorPrime = baker.make(
+        # user operator prime
+        baker.make(
             UserOperator,
             user=user,
             operator=operator,

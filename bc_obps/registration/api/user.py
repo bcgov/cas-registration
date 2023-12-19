@@ -41,7 +41,7 @@ def get_user_profile(request):
 @router.get("/user-app-role/{user_guid}", response=UserAppRoleOut)
 def get_user_role(request, user_guid: str):
     raise_401_if_role_not_authorized(
-        request, ["cas_admin", "cas_analyst", "cas_pending" "industry_user", "industry_user_admin"]
+        request, ["cas_admin", "cas_analyst", "cas_pending", "industry_user", "industry_user_admin"]
     )
     user: User = get_object_or_404(User, user_guid=user_guid)
     return user.app_role
