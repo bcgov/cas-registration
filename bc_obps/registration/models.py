@@ -150,24 +150,37 @@ class ReportingActivity(models.Model):
         db_table = 'erc"."reporting_activity'
 
 
+class Address(models.Model):
+    """Address model"""
+
+    street_address = models.CharField(max_length=1000, db_comment="A contact's street address")
+    municipality = models.CharField(max_length=1000, db_comment="A contact's municipality")
+    province = CAProvinceField(
+        db_comment="A contact's province, restricted to two-letter province postal abbreviations"
+    )
+    postal_code = CAPostalCodeField(db_comment="A contact's postal code, limited to valid Canadian postal codes")
+    history = HistoricalRecords(table_name='erc_history"."address_history')
+
+    class Meta:
+        db_table_comment = "Adress"
+        db_table = 'erc"."address'
+
+
 class UserAndContactCommonInfo(models.Model):
     """User and contact common information abstract base class"""
 
     first_name = models.CharField(max_length=1000, db_comment="A user or contact's first name")
     last_name = models.CharField(max_length=1000, db_comment="A user or contact's last name")
     position_title = models.CharField(max_length=1000, db_comment="A user or contact's position title")
-    street_address = models.CharField(max_length=1000, db_comment="A user or contact's street address")
-    municipality = models.CharField(max_length=1000, db_comment="A user or contact's municipality")
-    province = CAProvinceField(
-        db_comment="A user or contact's province, restricted to two-letter province postal abbreviations"
-    )
-    postal_code = CAPostalCodeField(
-        db_comment="A user or contact's postal code, limited to valid Canadian postal codes"
-    )
     email = models.EmailField(max_length=254, db_comment="A user or contact's email, limited to valid emails")
     phone_number = PhoneNumberField(
         blank=True,
         db_comment="A user or contact's phone number, limited to valid phone numbers",
+    )
+    address = models.ForeignKey(
+        Address,
+        on_delete=models.DO_NOTHING,
+        db_comment="Foreign key to the contact's address.",
     )
 
     class Meta:
@@ -237,6 +250,7 @@ class Contact(UserAndContactCommonInfo, TimeStampedModel):
         related_name="contacts",
         db_comment="The role assigned to this contact which defines the permissions the contact has.",
     )
+
     history = HistoricalRecords(table_name='erc_history"."contact_history', m2m_fields=[documents])
 
     class Meta:
@@ -285,27 +299,19 @@ class Operator(TimeStampedModel):
         db_comment="The business structure of an operator",
         related_name="operators",
     )
-    physical_street_address = models.CharField(
-        max_length=1000,
-        db_comment="The physical street address of an operator (where the operator is physically located)",
+    physical_address = models.ForeignKey(
+        Address,
+        on_delete=models.DO_NOTHING,
+        db_comment="The physical address of an operator (where the operator is physically located)",
+        related_name="operators_physical",
     )
-    physical_municipality = models.CharField(
-        max_length=1000,
-        db_comment="The physical municipality of an operator ",
-    )
-    physical_province = CAProvinceField(
-        db_comment="The physical street address of an operator, restricted to two-letter province postal abbreviations"
-    )
-    physical_postal_code = CAPostalCodeField(
-        db_comment="The physical postal code address of an operator, limited to valid Canadian postal codes"
-    )
-    mailing_street_address = models.CharField(max_length=1000, db_comment="The mailing street address of an operator")
-    mailing_municipality = models.CharField(max_length=1000, db_comment="The mailing municipality of an operator")
-    mailing_province = CAProvinceField(
-        db_comment="The mailing province of an operator, restricted to two-letter province postal abbreviations"
-    )
-    mailing_postal_code = CAPostalCodeField(
-        db_comment="The mailing postal code of an operator, limited to valid Canadian postal codes"
+    mailing_address = models.ForeignKey(
+        Address,
+        on_delete=models.DO_NOTHING,
+        db_comment="The mailing address of an operator",
+        related_name="operators_mailing",
+        blank=True,
+        null=True,
     )
     website = models.URLField(
         max_length=200,
@@ -652,30 +658,22 @@ class MultipleOperator(TimeStampedModel):
     #     blank=True,
     #     null=True,
     # )
-    physical_street_address = models.CharField(
-        max_length=1000,
-        db_comment="The physical street address of an operator (where the operator is physically located)",
+    physical_address = models.ForeignKey(
+        Address,
+        on_delete=models.DO_NOTHING,
+        db_comment="The physical address of an operator (where the operator is physically located)",
+        related_name="multiple_operator_physical",
     )
-    physical_municipality = models.CharField(
-        max_length=1000,
-        db_comment="The physical municipality of an operator ",
-    )
-    physical_province = CAProvinceField(
-        db_comment="The physical street address of an operator, restricted to two-letter province postal abbreviations"
-    )
-    physical_postal_code = CAPostalCodeField(
-        db_comment="The physical postal code address of an operator, limited to valid Canadian postal codes"
+    mailing_address = models.ForeignKey(
+        Address,
+        on_delete=models.DO_NOTHING,
+        db_comment="The mailing address of an operator",
+        related_name="multiple_operator_mailing",
+        blank=True,
+        null=True,
     )
     mailing_address_same_as_physical = models.BooleanField(
         db_comment="Whether or not the mailing address is the same as the physical address", default=True
-    )
-    mailing_street_address = models.CharField(max_length=1000, db_comment="The mailing street address of an operator")
-    mailing_municipality = models.CharField(max_length=1000, db_comment="The mailing municipality of an operator")
-    mailing_province = CAProvinceField(
-        db_comment="The mailing province of an operator, restricted to two-letter province postal abbreviations"
-    )
-    mailing_postal_code = CAPostalCodeField(
-        db_comment="The mailing postal code of an operator, limited to valid Canadian postal codes"
     )
     history = HistoricalRecords(table_name='erc_history"."multiple_operator_history')
 
