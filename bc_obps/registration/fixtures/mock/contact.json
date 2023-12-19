@@ -7,10 +7,7 @@
       "first_name": "John",
       "last_name": "Doe",
       "position_title": "Senior Officer",
-      "street_address": "123 Main St",
-      "municipality": "Cityville",
-      "province": "ON",
-      "postal_code": "A1B 2C3",
+      "address": 1,
       "email": "john.doe@example.com",
       "phone_number": "123-456-7890"
     }
@@ -23,10 +20,7 @@
       "first_name": "Jane",
       "last_name": "Smith",
       "position_title": "Authorized Signing Officer",
-      "street_address": "456 Elm St",
-      "municipality": "Townsville",
-      "province": "BC",
-      "postal_code": "X0Y 1Z0",
+      "address": 2,
       "email": "jane.smith@example.com",
       "phone_number": "987-654-3210"
     }
