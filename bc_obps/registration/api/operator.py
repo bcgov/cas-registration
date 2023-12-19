@@ -24,7 +24,11 @@ def get_operator_by_legal_name_or_cra(
     )
     try:
         if legal_name:
-            operator = Operator.objects.get(legal_name=legal_name)
+            operators = Operator.objects.filter(legal_name__icontains=legal_name)
+            if (len(operators)) > 0:
+                operator = operators[0]
+            else:
+                return 404, {"message": "No matching operator found. Retry or add operator."}
         elif cra_business_number:
             operator = Operator.objects.get(cra_business_number=cra_business_number)
         else:
