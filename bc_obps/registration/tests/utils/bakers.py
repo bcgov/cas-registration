@@ -15,7 +15,8 @@ from registration.models import (
 )
 import uuid
 
-
+# We can import any of the below fixtures into our tests and they will be available by using the fixture name like:
+# @pytest.mark.usefixtures('app_role_baker')
 @pytest.fixture
 def app_role_baker():
     # Load the fixture data into the test database

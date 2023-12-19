@@ -1,4 +1,3 @@
-from django.forms import model_to_dict
 import pytest
 import json
 from model_bakery import baker
@@ -9,7 +8,7 @@ from registration.models import (
     User,
     UserOperator,
 )
-from registration.utils import TestUtils
+from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 
 pytestmark = pytest.mark.django_db
 
@@ -23,17 +22,12 @@ content_type_json = "application/json"
 baker.generators.add(CAPostalCodeField, TestUtils.mock_postal_code)
 
 
-class TestUserOperatorEndpoint:
+class TestUserOperatorEndpoint(CommonTestSetup):
 
     select_endpoint = base_endpoint + "select-operator"
     operator_endpoint = base_endpoint + "operators"
 
-    def setup(self):
-        self.user: User = baker.make(User)
-        self.auth_header = {'user_guid': str(self.user.user_guid)}
-        self.auth_header_dumps = json.dumps(self.auth_header)
-
-    def test_unauthorized_users_cannot_get(self, client):
+    def test_unauthorized_users_cannot_get(self):
         # /is-approved-admin-user-operator
         response = TestUtils.mock_get_with_auth_role(
             self, 'cas_pending', f"{base_endpoint}is-approved-admin-user-operator/{self.user.user_guid}"

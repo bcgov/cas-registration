@@ -1,4 +1,3 @@
-from django.forms import model_to_dict
 import pytest
 import json
 from datetime import datetime
@@ -13,13 +12,12 @@ from registration.models import (
     Operation,
     Operator,
     ReportingActivity,
-    User,
     UserOperator,
     RegulatedProduct,
     BusinessStructure,
 )
 from registration.schema import OperationCreateIn, OperationUpdateIn
-from registration.utils import TestUtils
+from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 
 pytestmark = pytest.mark.django_db
 
@@ -33,18 +31,13 @@ content_type_json = "application/json"
 baker.generators.add(CAPostalCodeField, TestUtils.mock_postal_code)
 
 
-class TestOperationsEndpoint:
+class TestOperationsEndpoint(CommonTestSetup):
     endpoint = base_endpoint + "operations"
-
-    def setup(self):
-        self.user: User = baker.make(User)
-        self.auth_header = {'user_guid': str(self.user.user_guid)}
-        self.auth_header_dumps = json.dumps(self.auth_header)
 
     def build_update_status_url(self, operation_id: int) -> str:
         return self.endpoint + "/" + str(operation_id) + "/update-status"
 
-    def test_unauthorized_users_cannot_get(self, client):
+    def test_unauthorized_users_cannot_get(self):
         operation2700 = baker.make(Operation, id=2700)
         # /operations
         # unauthorized roles can't get
@@ -73,7 +66,7 @@ class TestOperationsEndpoint:
         response = TestUtils.mock_get_with_auth_role(self, "industry_user", self.endpoint + "/" + str(operation3600.id))
         assert response.status_code == 401
 
-    def test_unauthorized_roles_cannot_post(self, client):
+    def test_unauthorized_roles_cannot_post(self):
         mock_operation = TestUtils.mock_OperationCreateIn(self)
         # IRC users can't post
         post_response = TestUtils.mock_post_with_auth_role(self, "cas_admin", content_type_json, mock_operation.json())
@@ -87,7 +80,7 @@ class TestOperationsEndpoint:
         )
         assert post_response.status_code == 401
 
-    def test_unauthorized_roles_cannot_put_operations(self, client):
+    def test_unauthorized_roles_cannot_put_operations(self):
 
         operation = baker.make(Operation)
         mock_operation = TestUtils.mock_OperationUpdateIn(self)
@@ -148,7 +141,7 @@ class TestOperationsEndpoint:
         )
         assert response.status_code == 401
 
-    def test_get_method_for_200_status(self, client):
+    def test_get_method_for_200_status(self):
         # IRC users can get all operations
         response = TestUtils.mock_get_with_auth_role(self, "cas_admin")
         assert response.status_code == 200
@@ -161,7 +154,7 @@ class TestOperationsEndpoint:
         response = TestUtils.mock_get_with_auth_role(self, "industry_user_admin")
         assert response.status_code == 200
 
-    def test_get_method_with_mock_data(self, client):
+    def test_get_method_with_mock_data(self):
         # IRC users can get all operations except ones with a not registered status
         operator1 = baker.make(Operator)
         operator2 = baker.make(Operator)
@@ -185,7 +178,7 @@ class TestOperationsEndpoint:
         assert response.status_code == 200
         assert len(json.loads(response.content)) == 1
 
-    def test_authorized_roles_can_post_new_operation(self, client):
+    def test_authorized_roles_can_post_new_operation(self):
 
         operator = baker.make(Operator)
         mock_operation = TestUtils.mock_OperationCreateIn(self, operator)
@@ -204,7 +197,7 @@ class TestOperationsEndpoint:
         )
         assert post_response.status_code == 201
 
-    def test_post_new_operation_with_multiple_operators(self, client):
+    def test_post_new_operation_with_multiple_operators(self):
         naics_code = baker.make(NaicsCode)
         document = baker.make(Document)
         contact = baker.make(Contact, postal_code='V1V 1V1')
@@ -274,13 +267,13 @@ class TestOperationsEndpoint:
         )
         assert 'multiple_operators_array' in get_response and len(get_response['multiple_operators_array']) == 2
 
-    def test_post_new_malformed_operation(self, client):
+    def test_post_new_malformed_operation(self):
         response = TestUtils.mock_post_with_auth_role(
             self, "industry_user", content_type_json, {"garbage": "i am bad data"}
         )
         assert response.status_code == 422
 
-    def test_post_existing_operation(self, client):
+    def test_post_existing_operation(self):
         baker.make(Operation, bcghg_id=123)
         mock_operation2 = TestUtils.mock_OperationCreateIn(self)
         mock_operation2.bcghg_id = 123
@@ -290,7 +283,7 @@ class TestOperationsEndpoint:
         assert post_response.status_code == 400
         assert post_response.json().get('message') == "Operation with this BCGHG ID already exists."
 
-    def test_put_operation_update_status_approved(self, client):
+    def test_put_operation_update_status_approved(self):
         operation = baker.make(Operation)
         assert operation.status == Operation.Statuses.NOT_REGISTERED
 
@@ -314,7 +307,7 @@ class TestOperationsEndpoint:
         now_as_string = now.strftime("%Y-%m-%d")
         assert get_response_dict.get("verified_at") == now_as_string
 
-    def test_put_operation_update_status_rejected(self, client):
+    def test_put_operation_update_status_rejected(self):
         operation = baker.make(Operation)
         assert operation.status == Operation.Statuses.NOT_REGISTERED
 
@@ -339,7 +332,7 @@ class TestOperationsEndpoint:
         now_as_string = now.strftime("%Y-%m-%d")
         assert get_response_dict.get("verified_at") == now_as_string
 
-    def test_put_operation_not_verified_when_not_registered(self, client):
+    def test_put_operation_not_verified_when_not_registered(self):
         operation = baker.make(Operation)
         assert operation.status == Operation.Statuses.NOT_REGISTERED
 
@@ -362,7 +355,7 @@ class TestOperationsEndpoint:
         assert get_response_dict.get("status") == "Not Registered"
         assert get_response_dict.get("verified_at") is None
 
-    def test_put_operation_update_status_invalid_data(self, client):
+    def test_put_operation_update_status_invalid_data(self):
         def send_put_invalid_data():
             operation = baker.make(Operation)
             assert operation.status == Operation.Statuses.NOT_REGISTERED
@@ -374,12 +367,12 @@ class TestOperationsEndpoint:
         with pytest.raises(AttributeError):
             send_put_invalid_data()
 
-    def test_put_nonexistant_operation(self, client):
+    def test_put_nonexistant_operation(self):
         response = TestUtils.mock_get_with_auth_role(self, 'industry_user', self.endpoint + "1")
         client.get(self.endpoint + "1")
         assert response.status_code == 404
 
-    def test_put_operation_without_submit(self, client):
+    def test_put_operation_without_submit(self):
         operator = baker.make(Operator)
         operation = baker.make(Operation)
         mock_operation = TestUtils.mock_OperationUpdateIn(self)
@@ -402,7 +395,7 @@ class TestOperationsEndpoint:
         ).json()
         assert get_response["status"] == Operation.Statuses.NOT_REGISTERED
 
-    def test_put_operation_with_submit(self, client):
+    def test_put_operation_with_submit(self):
         operator = baker.make(Operator)
         operation = baker.make(Operation, id=5)
 
@@ -426,7 +419,7 @@ class TestOperationsEndpoint:
         ).json()
         assert get_response["status"] == Operation.Statuses.PENDING
 
-    def test_put_malformed_operation(self, client):
+    def test_put_malformed_operation(self):
         operation = baker.make(Operation)
         response = TestUtils.mock_put_with_auth_role(
             self,
@@ -438,7 +431,7 @@ class TestOperationsEndpoint:
 
         assert response.status_code == 422
 
-    def test_put_operation_with_application_lead(self, client):
+    def test_put_operation_with_application_lead(self):
         contact1 = baker.make(Contact)
         contact2 = baker.make(Contact, email=contact1.email)
         operation = baker.make(Operation)
