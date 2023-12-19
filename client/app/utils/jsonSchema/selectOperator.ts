@@ -64,11 +64,11 @@ export const selectOperatorUiSchema = {
   },
   legal_name: {
     "ui:FieldTemplate": FieldTemplateWithSubmitButton,
-    "ui:widget": "TextWidget",
+    "ui:widget": "OperatorSearchWidget",
     "ui:placeholder": "Enter Business Legal Name",
     "ui:options": {
       label: false,
-      buttonLabel: "Search Operator",
+      buttonLabel: "Select Operator",
     },
   },
   cra_business_number: {
