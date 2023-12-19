@@ -118,8 +118,32 @@ test.describe("Test Dashboard", () => {
       await page.waitForLoadState("load");
 
       // Assert that the current URL ends with "/profile"
-      const currentUrl = page.url();
-      expect(currentUrl).toContain("/profile");
+      expect(page.url().toLocaleLowerCase()).toContain("/profile");
+
+      // Try and navigate to Dashboard
+      await page.getByRole("link", { name: "Dashboard" }).click();
+
+      // Wait for the navigation to complete
+      await page.waitForLoadState("load");
+
+      // Assert that the current URL ends with "/profile"
+      expect(page.url().toLocaleLowerCase()).toContain("/profile");
+
+      // Submit the user profile
+      await page.getByLabel("Phone Number*").click();
+      await page.getByLabel("Phone Number*").fill("1 234 567 8900");
+      await page.getByLabel("Position Title*").click();
+      await page.getByLabel("Position Title*").fill("Test");
+      await page.getByRole("button", { name: "Submit" }).click();
+
+      // Try and navigate to Dashboard
+      await page.getByRole("link", { name: "Dashboard" }).click();
+
+      // Wait for the navigation to complete
+      await page.waitForLoadState("load");
+
+      // Assert that the current URL ends with "/dashboard"
+      expect(page.url().toLocaleLowerCase()).toContain("/dashboard");
     });
   });
 });
