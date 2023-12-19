@@ -8,12 +8,9 @@
       "first_name": "Michael",
       "last_name": "Johnson",
       "position_title": "Manager",
-      "street_address": "123 Main St",
-      "municipality": "Cityville",
-      "province": "ON",
-      "postal_code": "A1B 2C3",
       "email": "michael@example.com",
       "phone_number": "+16044011234",
+      "address": 1,
       "app_role": "industry_user"
     }
   },
@@ -26,12 +23,9 @@
       "first_name": "Samantha",
       "last_name": "Garcia",
       "position_title": "CEO",
-      "street_address": "456 Elm St",
-      "municipality": "Townsville",
-      "province": "BC",
-      "postal_code": "X0Y 1Z0",
       "email": "samantha@example.com",
       "phone_number": "+16044015432",
+      "address": 1,
       "app_role": "industry_user"
     }
   },
@@ -44,30 +38,9 @@
       "first_name": "Shon",
       "last_name": "Hogan",
       "position_title": "Code Monkey",
-      "street_address": "1 Street",
-      "municipality": "Townsville",
-      "province": "QC",
-      "postal_code": "H0H 0H0",
       "email": "shon@button.is",
       "phone_number": "+16044015432",
-      "app_role": "cas_admin"
-    }
-  },
-  {
-    "model": "registration.user",
-    "pk": 4,
-    "fields": {
-      "user_guid": "4da70f3265fd413787c1111f2daba3dd",
-      "business_guid": "efb76d57-88b7-4eb6-9f26-ec12b49c14c1",
-      "first_name": "Brianna",
-      "last_name": "C",
-      "position_title": "Code Monkey",
-      "street_address": "1 Street",
-      "municipality": "Townsville",
-      "province": "QC",
-      "postal_code": "H0H 0H0",
-      "email": "brianna@button.is",
-      "phone_number": "+16044015432",
+      "address": 1,
       "app_role": "cas_admin"
     }
   },
@@ -80,12 +53,9 @@
       "first_name": "Bcgov",
       "last_name": "Cas",
       "position_title": "Code Monkey",
-      "street_address": "1 Street",
-      "municipality": "Townsville",
-      "province": "QC",
-      "postal_code": "H0H 0H0",
       "email": "email@email.com",
       "phone_number": "+16044015432",
+      "address": 1,
       "app_role": "industry_user"
     }
   },
@@ -98,31 +68,10 @@
       "first_name": "Bcgov",
       "last_name": "Cas SECONDARY",
       "position_title": "Code Monkey",
-      "street_address": "1 Street",
-      "municipality": "Townsville",
-      "province": "QC",
-      "postal_code": "H0H 0H0",
       "email": "email@email.com",
       "phone_number": "+16044015432",
+      "address": 1,
       "app_role": "industry_user"
-    }
-  },
-  {
-    "model": "registration.user",
-    "pk": 4,
-    "fields": {
-      "user_guid": "f79bc3e2fb3f46e08a3652a8015cb162",
-      "business_guid": "efb76d57-88b7-4eb6-9f26-ec12b49c14c1",
-      "first_name": "Brianna",
-      "last_name": "C",
-      "position_title": "Code Monkey",
-      "street_address": "1 Street",
-      "municipality": "Townsville",
-      "province": "QC",
-      "postal_code": "H0H 0H0",
-      "email": "brianna@button.is",
-      "phone_number": "+16044015432",
-      "app_role": "cas_admin"
     }
   }
 ]
