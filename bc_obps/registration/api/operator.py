@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import List, Optional
 from registration.utils import check_users_admin_request_eligibility
 from .api_base import router
 from django.shortcuts import get_object_or_404
@@ -40,6 +40,22 @@ def get_operator_by_legal_name_or_cra(
         return status, message
 
     return 200, operator
+
+
+@router.get("/operators/legal-name", response={200: List[OperatorOut], codes_4xx: Message, codes_5xx: Message})
+def get_operator_by_legal_name_or_cra(request, legal_name: Optional[str] = None):
+    print(legal_name)
+    try:
+        if legal_name:
+            operators = Operator.objects.filter(legal_name__icontains=legal_name)
+        else:
+            return 404, {"message": "No parameters provided"}
+    except Operator.DoesNotExist:
+        return 404, {"message": "No matching operator found. Retry or add operator."}
+    except Exception as e:
+        return 500, {"message": str(e)}
+
+    return 200, operators
 
 
 @router.get("/operators/{operator_id}", response={200: OperatorOut, codes_4xx: Message})
