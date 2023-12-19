@@ -120,6 +120,7 @@ def get_user(request):
     )
     return UserOperatorList
 
+
 @router.get("/user-operators", response=List[UserOperatorListOut])
 def list_user_operators(request):
     qs = UserOperator.objects.all()
