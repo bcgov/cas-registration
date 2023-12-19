@@ -58,17 +58,17 @@ export const selectOperatorUiSchema = {
     "ui:FieldTemplate": FieldTemplate,
     "ui:widget": "RadioWidget",
     "ui:options": {
-      false: false,
+      label: false,
       inline: false,
     },
   },
   legal_name: {
     "ui:FieldTemplate": FieldTemplateWithSubmitButton,
-    "ui:widget": "TextWidget",
+    "ui:widget": "OperatorSearchWidget",
     "ui:placeholder": "Enter Business Legal Name",
     "ui:options": {
       label: false,
-      buttonLabel: "Search Operator",
+      buttonLabel: "Select Operator",
     },
   },
   cra_business_number: {
