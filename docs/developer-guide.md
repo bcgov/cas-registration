@@ -168,7 +168,7 @@ The easiest way to run these tests locally is by using commands from the Makefil
 
 #### Testing Helpers
 
-We have some testing helpers in utils.TestUtils:
+We have some testing helpers in tests.utils.helpers.TestUtils:
 
 - mock user roles for get, post, and put requests
 - mock postal codes
