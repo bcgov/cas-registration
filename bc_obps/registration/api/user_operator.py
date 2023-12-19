@@ -60,7 +60,6 @@ def get_user_operator_operator_id(request):
 
 @router.get("/is-approved-admin-user-operator/{user_guid}", response={200: IsApprovedUserOperator, codes_4xx: Message})
 def is_approved_admin_user_operator(request, user_guid: str):
-
     raise_401_if_role_not_authorized(request, ["industry_user", "industry_user_admin"])
 
     approved_user_operator: bool = UserOperator.objects.filter(
@@ -83,18 +82,17 @@ def get_user_operator_operator_id(request):
     response=UserOperatorOut,
 )
 def get_user_operator(request, user_operator_id: int):
-
     raise_401_if_role_not_authorized(request, ["industry_user", "industry_user_admin", "cas_admin", "cas_analyst"])
     user_operator = get_object_or_404(UserOperator, id=user_operator_id)
     operator = get_object_or_404(Operator, id=user_operator.operator_id)
+    if "industry" in request.current_user.app_role.role_name:
+        authorized_users = get_an_operators_approved_users(operator)
+        if request.current_user.user_guid not in authorized_users:
+            raise HttpError(401, UNAUTHORIZED_MESSAGE)
 
-    authorized_users = get_an_operators_approved_users(operator)
-    if request.current_user.user_guid not in authorized_users:
-        raise HttpError(401, UNAUTHORIZED_MESSAGE)
-
-    user_operator_dict = UserOperatorOut.from_orm(user_operator, fields=["role", "status"])
+    # user_operator_dict = UserOperatorOut.from_orm(user_operator, fields=["role", "status"])
     user_operator_role_dict = UserOperatorRoleOut.from_orm(user_operator).dict()
-    # user_operator_fields_dict = model_to_dict(user_operator, fields=["role", "status"])
+    user_operator_dict = model_to_dict(user_operator, fields=["role", "status"])
 
     user_dict = UserOut.from_orm(user_operator.user).dict()
     operator_dict = OperatorOut.from_orm(user_operator.operator).dict()
@@ -379,8 +377,8 @@ def create_user_operator_contact(request, payload: UserOperatorContactIn):
 ##### PUT #####
 
 
-@router.put("/select-operator/user-operator/{user_id}/update-status")
-def update_user_operator_status(request, user_id: str):
+@router.put("/select-operator/user-operator/{user_operator_id}/update-status")
+def update_user_operator_status(request, user_operator_id: str):
     raise_401_if_role_not_authorized(request, ["cas_admin", "cas_analyst", "industry_user_admin"])
     current_admin_user: User = request.current_user
     # need to convert request.body (a bytes object) to a string, and convert the string to a JSON object
