@@ -34,11 +34,6 @@ export default function UserOperatorMultiStepForm({
   const formSectionList = Object.keys(schema.properties as RJSFSchema);
   const isFinalStep = formSection === formSectionList.length - 1;
 
-  const formSection = parseInt(params?.formSection as string);
-  const userOperatorId = params?.id as string;
-  const formSectionList = Object.keys(schema.properties as RJSFSchema);
-  const isFinalStep = formSection === formSectionList.length - 1;
-
   const submitHandler = async (data: { formData?: UserOperatorFormData }) => {
     const newFormData = {
       ...formState,
