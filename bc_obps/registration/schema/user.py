@@ -1,6 +1,4 @@
-from pyexpat import model
-from ninja import ModelSchema
-from ninja import Field, Schema
+from ninja import ModelSchema, Schema
 from registration.models import AppRole, User
 
 

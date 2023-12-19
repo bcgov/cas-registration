@@ -4,6 +4,54 @@ from phonenumber_field.modelfields import PhoneNumberField
 from localflavor.ca.models import CAPostalCodeField, CAProvinceField
 from simple_history.models import HistoricalRecords
 from django.core.validators import RegexValidator
+from django.utils import timezone
+
+
+class TimeStampedModelManager(models.Manager):
+    def get_queryset(self):
+        """Return only objects that have not been archived"""
+        return super().get_queryset().filter(archived_at__isnull=True)
+
+
+class TimeStampedModel(models.Model):
+    created_by = models.ForeignKey(
+        'User', null=True, blank=True, on_delete=models.PROTECT, related_name='%(class)s_created'
+    )
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    updated_by = models.ForeignKey(
+        'User', on_delete=models.PROTECT, null=True, blank=True, related_name='%(class)s_updated'
+    )
+    updated_at = models.DateTimeField(null=True, blank=True)
+    archived_by = models.ForeignKey(
+        'User', on_delete=models.PROTECT, null=True, blank=True, related_name='%(class)s_archived'
+    )
+    archived_at = models.DateTimeField(null=True, blank=True)
+
+    objects = TimeStampedModelManager()
+
+    class Meta:
+        abstract = True
+
+    def set_create_or_update(self, modifier: 'User') -> None:
+        """
+        Set the created by field if it is not already set.
+        Otherwise, set the updated by field and updated at field.
+        """
+        if not self.created_by:  # created_at is automatically set by auto_now_add
+            self.created_by = modifier
+        else:
+            self.updated_by = modifier
+            self.updated_at = timezone.now()
+
+        self.save(update_fields=['created_by', 'updated_by', 'updated_at'])
+
+    def set_archive(self, modifier: 'User') -> None:
+        """Set the archived by field and archived at field if they are not already set."""
+        if self.archived_by or self.archived_at:
+            raise ValueError("Archived by or archived at is already set.")
+        self.archived_at = timezone.now()
+        self.archived_by = modifier
+        self.save(update_fields=['archived_by', 'archived_at'])
 
 
 class AppRole(models.Model):
@@ -37,7 +85,7 @@ class DocumentType(models.Model):
         db_table = 'erc"."document_type'
 
 
-class Document(models.Model):
+class Document(TimeStampedModel):
     """Document model"""
 
     file = models.FileField(upload_to="documents", db_comment="The file format, metadata, etc.")
@@ -174,7 +222,7 @@ class BusinessRole(models.Model):
         db_table = 'erc"."business_role'
 
 
-class Contact(UserAndContactCommonInfo):
+class Contact(UserAndContactCommonInfo, TimeStampedModel):
     """Contact model"""
 
     documents = models.ManyToManyField(
@@ -209,7 +257,7 @@ class BusinessStructure(models.Model):
         db_table = 'erc"."business_structure'
 
 
-class Operator(models.Model):
+class Operator(TimeStampedModel):
     """Operator model"""
 
     class Statuses(models.TextChoices):
@@ -334,7 +382,7 @@ class ParentChildOperator(models.Model):
         ]
 
 
-class UserOperator(models.Model):
+class UserOperator(TimeStampedModel):
     """User operator model"""
 
     class Roles(models.TextChoices):
@@ -394,7 +442,7 @@ class UserOperator(models.Model):
         ]
 
 
-class OperationAndFacilityCommonInfo(models.Model):
+class OperationAndFacilityCommonInfo(TimeStampedModel):
     """Operation and facility common information abstract base class"""
 
     name = models.CharField(max_length=1000, db_comment="An operation or facility's name")
@@ -516,7 +564,7 @@ class Operation(OperationAndFacilityCommonInfo):
         ]
 
 
-class MultipleOperator(models.Model):
+class MultipleOperator(TimeStampedModel):
     """def here"""
 
     operation = models.ForeignKey(

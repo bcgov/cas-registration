@@ -5,7 +5,7 @@ from model_bakery import baker
 from django.test import Client
 from localflavor.ca.models import CAPostalCodeField
 from registration.models import Operator, User, UserOperator
-from registration.utils import TestUtils
+from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 
 pytestmark = pytest.mark.django_db
 
@@ -19,16 +19,14 @@ content_type_json = "application/json"
 baker.generators.add(CAPostalCodeField, TestUtils.mock_postal_code)
 
 
-class TestOperatorsEndpoint:
+class TestOperatorsEndpoint(CommonTestSetup):
     endpoint = base_endpoint + "operators"
 
     def setup(self):
+        super().setup()
         self.operator = baker.make(Operator, legal_name="Test Operator legal name", cra_business_number=123456789)
-        self.user: User = baker.make(User)
-        self.auth_header = {'user_guid': str(self.user.user_guid)}
-        self.auth_header_dumps = json.dumps(self.auth_header)
 
-    def test_unauthorized_users_cannot_get(self, client):
+    def test_unauthorized_users_cannot_get(self):
         # /operators
         # any logged in user regardless of role can access this endpoint, so they'll only be unauthorized if they're not logged in
         response = client.get(self.endpoint)
@@ -49,14 +47,22 @@ class TestOperatorsEndpoint:
             self, 'industry_user', self.endpoint + "?legal_name=Test Operator legal name"
         )
         assert response.status_code == 200
-        assert response.json() == model_to_dict(self.operator)
+        response_dict: dict = response.json()
+        for key in response_dict.keys():
+            # exclude audit fields
+            if key not in ["created_at", "created_by", "updated_at", "updated_by", "archived_at", "archived_by"]:
+                assert response_dict[key] == model_to_dict(self.operator)[key]
 
     def test_get_operators_by_cra_number(self):
         response = TestUtils.mock_get_with_auth_role(
             self, 'industry_user', self.endpoint + "?cra_business_number=123456789"
         )
         assert response.status_code == 200
-        assert response.json() == model_to_dict(self.operator)
+        response_dict: dict = response.json()
+        for key in response_dict.keys():
+            # exclude audit fields
+            if key not in ["created_at", "created_by", "updated_at", "updated_by", "archived_at", "archived_by"]:
+                assert response_dict[key] == model_to_dict(self.operator)[key]
 
     def test_get_operators_no_matching_operator_legal_name(self):
         response = TestUtils.mock_get_with_auth_role(
@@ -90,11 +96,15 @@ class TestOperatorsEndpoint:
         assert len(json.loads(response.content)) == 2
 
     # brianna this is moved from user_operator tests
-    def test_select_operator_with_valid_id(self, client):
+    def test_select_operator_with_valid_id(self):
         operator = baker.make(Operator)
         response = TestUtils.mock_get_with_auth_role(self, "cas_analyst", self.endpoint + "/" + str(operator.id))
         assert response.status_code == 200
-        assert response.json() == model_to_dict(operator)
+        response_dict: dict = response.json()
+        for key in response_dict.keys():
+            # exclude audit fields
+            if key not in ["created_at", "created_by", "updated_at", "updated_by", "archived_at", "archived_by"]:
+                assert response_dict[key] == model_to_dict(operator)[key]
 
     def test_select_operator_with_invalid_id(self):
         invalid_operator_id = 99999  # Invalid operator ID

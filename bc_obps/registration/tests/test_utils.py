@@ -14,7 +14,7 @@ from django.core.exceptions import ValidationError
 from registration.utils import extract_fields_from_dict
 from ninja.errors import HttpError
 from django.test import RequestFactory, TestCase
-from registration.utils import TestUtils
+from registration.tests.utils.helpers import TestUtils
 
 
 pytestmark = pytest.mark.django_db
@@ -191,7 +191,6 @@ class TestGenerateUsefulError:
 class TestCheckUserAdminRequestEligibility:
     @staticmethod
     def test_user_business_guid_matches_admin():
-
         admin_user = baker.make(User)
         user = baker.make(
             User,
