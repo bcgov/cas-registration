@@ -5,6 +5,11 @@ from django.shortcuts import get_object_or_404
 from registration.models import Operator, UserOperator
 from ninja.responses import codes_4xx, codes_5xx
 from registration.schema import Message, OperatorOut, SelectUserOperatorStatus
+from registration.schema import OperatorOut
+from registration.utils import (
+    raise_401_if_role_not_authorized,
+)
+from ninja.errors import HttpError
 
 
 ##### GET #####
@@ -14,6 +19,9 @@ from registration.schema import Message, OperatorOut, SelectUserOperatorStatus
 def get_operator_by_legal_name_or_cra(
     request, legal_name: Optional[str] = None, cra_business_number: Optional[int] = None
 ):
+    raise_401_if_role_not_authorized(
+        request, ["industry_user", "industry_user_admin", "cas_admin", "cas_analyst", "cas_pending"]
+    )
     try:
         if legal_name:
             operator = Operator.objects.get(legal_name=legal_name)
@@ -36,6 +44,8 @@ def get_operator_by_legal_name_or_cra(
 
 @router.get("/operators/{operator_id}", response={200: OperatorOut, codes_4xx: Message})
 def get_operator(request, operator_id: int):
+    raise_401_if_role_not_authorized(request, ["industry_user", "industry_user_admin", "cas_admin", "cas_analyst"])
+
     try:
         operator = get_object_or_404(Operator, id=operator_id)
     except Exception as e:
@@ -45,6 +55,7 @@ def get_operator(request, operator_id: int):
 
 @router.get("/operators/{operator_id}/user-operators", response=list[SelectUserOperatorStatus])
 def list_user_operators_status_of_operator(request, operator_id: int):
+    raise_401_if_role_not_authorized(request, ["industry_user", "industry_user_admin", "cas_admin", "cas_analyst"])
     qs = UserOperator.objects.filter(operator=operator_id)
     return qs
 
