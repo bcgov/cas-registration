@@ -27,7 +27,7 @@ const OperatorSearchWidget: React.FC<WidgetProps> = ({
   };
 
   const changeHandler = async (_event: React.ChangeEvent<{}>, val: string) => {
-    const queryParam = `?legal_name=${val}`;
+    const queryParam = `?search_value=${val}`;
     const response = await actionHandler(
       `registration/operators/legal-name${queryParam}`,
       "GET",
@@ -79,7 +79,6 @@ const OperatorSearchWidget: React.FC<WidgetProps> = ({
           placeholder={uiSchema?.["ui:placeholder"] ?? ""}
         />
       )}
-      // 👻 define how to render each option to bypass key warning
       renderOption={(renderProps, option: any) => {
         return (
           <li {...renderProps} key={option}>
