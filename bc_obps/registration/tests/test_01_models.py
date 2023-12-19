@@ -1,6 +1,5 @@
 from typing import List, Tuple, Type
 from django.db import IntegrityError, models
-from django.forms import model_to_dict
 from django.test import TestCase
 from django.utils import timezone
 from registration.models import (
@@ -20,23 +19,7 @@ from registration.models import (
     MultipleOperator,
     AppRole,
 )
-import pytest
 from model_bakery import baker
-
-
-# below imports are needed to be used by usefixtures
-from registration.tests.utils.bakers import (
-    user_baker,
-    naics_code_baker,
-    document_baker,
-    contact_baker,
-    operator_baker,
-    operation_baker,
-    user_operator_baker,
-    multiple_operator_baker,
-)
-
-pytestmark = pytest.mark.django_db
 
 
 OPERATOR_FIXTURE = ("mock/operator.json",)
@@ -251,7 +234,7 @@ class ContactModelTest(BaseTestCase):
         )
 
         with self.assertRaises(IntegrityError):
-            contact2.save(modifier=User.objects.first())
+            contact2.save()
 
 
 class OperatorModelTest(BaseTestCase):
@@ -286,7 +269,6 @@ class OperatorModelTest(BaseTestCase):
                 role=UserOperator.Roles.ADMIN,
                 verified_at=timezone.now(),
                 verified_by=User.objects.get(user_guid="00000000-0000-0000-0000-000000000001"),
-                modifier=user_operators_user,
             )
 
         cls.field_data = [
@@ -348,7 +330,6 @@ class UserOperatorModelTest(BaseTestCase):
             status=UserOperator.Statuses.PENDING,
             verified_at=timezone.now(),
             verified_by=User.objects.get(user_guid="00000000-0000-0000-0000-000000000001"),
-            modifier=user_operators_user,
         )
         cls.field_data = [
             *timestamp_common_fields,
@@ -482,7 +463,6 @@ class MultipleOperatorModelTest(BaseTestCase):
                 verified_at=timezone.now(),
                 verified_by=User.objects.get(user_guid="00000000-0000-0000-0000-000000000001"),
                 application_lead=Contact.objects.first(),
-                modifier=User.objects.first(),
             ),
             operator_index=1,
             legal_name="test",
@@ -501,7 +481,6 @@ class MultipleOperatorModelTest(BaseTestCase):
             mailing_municipality="test",
             mailing_province="BC",
             mailing_postal_code="V7W 3R4",
-            modifier=User.objects.first(),
         )
         cls.field_data = [
             *timestamp_common_fields,
@@ -525,7 +504,6 @@ class MultipleOperatorModelTest(BaseTestCase):
         ]
 
 
-@pytest.mark.usefixtures('document_baker', 'operation_baker', 'user_operator_baker', 'multiple_operator_baker')
 class TestModelsWithAuditColumns(TestCase):
     models_with_audit_columns_and_field_to_update: List[Tuple[Type[models.Model], str]] = [
         (Document, 'description'),
@@ -539,215 +517,74 @@ class TestModelsWithAuditColumns(TestCase):
     def setUp(self):
         [self.user_1, self.user_2] = baker.make(User, _quantity=2)
 
-    def test_create_model_with_audit_columns(self):
-        """
-        Test that the model has the correct audit columns when created.
-        """
-        for data_model, _ in self.models_with_audit_columns_and_field_to_update:
-            instance = data_model.objects.first()
-            # check created_at and created_by are set
+    def test_set_audit_columns(self):
+        for model, field_to_update in self.models_with_audit_columns_and_field_to_update:
+            instance = baker.make(model)
+
+            # CREATE
+            instance.set_create_or_update(modifier=self.user_1)
             self.assertIsNotNone(instance.created_at)
-            self.assertIsNotNone(instance.created_by)
-            # check updated_at and updated_by are set
-            self.assertIsNotNone(
-                instance.updated_at
-            )  # when an object is created for the first time, updated_at is the same as created_at
+            self.assertEqual(instance.created_by, self.user_1)
+
+            self.assertIsNone(instance.updated_at)
             self.assertIsNone(instance.updated_by)
-            # check archived_at and archived_by are None
             self.assertIsNone(instance.archived_at)
             self.assertIsNone(instance.archived_by)
-
-    def test_update_model_with_audit_columns(self):
-        """
-        Test that the model has the correct audit columns when updated.
-        """
-        for data_model, field_to_update in self.models_with_audit_columns_and_field_to_update:
-            instance = data_model.objects.first()
-            created_at_before_update: timezone.datetime = instance.created_at
 
             # UPDATE
-            setattr(instance, field_to_update, 'test')
-            instance.save(modifier=self.user_1)
-
-            # check created_at and created_by are not changed
+            model.objects.filter(id=instance.id).update(**{field_to_update: 'updated'})
+            instance.set_create_or_update(modifier=self.user_2)
+            instance.refresh_from_db()
             self.assertIsNotNone(instance.created_at)
-            # make sure created_at is not changed
-            self.assertEqual(instance.created_at, created_at_before_update)
-            self.assertIsNotNone(instance.created_by)
-
-            # check updated_at and updated_by are set
+            self.assertEqual(instance.created_by, self.user_1)
             self.assertIsNotNone(instance.updated_at)
-            self.assertEqual(instance.updated_by, self.user_1)
-            # make sure updated_at is changed and is not the same as created_at
-            self.assertNotEqual(instance.updated_at, instance.created_at)
-            # make sure updated_at is greater than created_at
             self.assertGreater(instance.updated_at, instance.created_at)
-
-            # check archived_at and archived_by are None
+            self.assertEqual(instance.updated_by, self.user_2)
             self.assertIsNone(instance.archived_at)
             self.assertIsNone(instance.archived_by)
 
-    def test_archive_model_with_audit_columns(self):
-        """
-        Test that the model has the correct audit columns when archived.
-        """
-        for data_model, _ in self.models_with_audit_columns_and_field_to_update:
-            instance = data_model.objects.first()
-            created_at_before_archive: timezone.datetime = instance.created_at
-            updated_at_before_archive: timezone.datetime = instance.updated_at
-            updated_by_before_archive: timezone.datetime = instance.updated_by
-
-            # ARCHIVE (soft delete by a different user)
-            instance.archive(modifier=self.user_2)
-
-            # check created_at and created_by are not changed
+            # ARCHIVE
+            instance.set_archive(modifier=self.user_1)
             self.assertIsNotNone(instance.created_at)
-            self.assertIsNotNone(instance.created_by)
-            # make sure created_at is not changed
-            self.assertEqual(instance.created_at, created_at_before_archive)
-
-            # check updated_at and updated_by are not changed
+            self.assertEqual(instance.created_by, self.user_1)
             self.assertIsNotNone(instance.updated_at)
-            self.assertIsNotNone(instance.updated_by)
-            # after archiving, updated_at is the same as archived_at
-            self.assertNotEqual(instance.updated_at, updated_at_before_archive)
-            self.assertNotEqual(instance.updated_by, updated_by_before_archive)
-
-            # check archived_at and archived_by are set
+            self.assertGreater(instance.updated_at, instance.created_at)
+            self.assertEqual(instance.updated_by, self.user_2)
             self.assertIsNotNone(instance.archived_at)
-            self.assertEqual(instance.archived_by, self.user_2)
-            # make sure archived_at is changed and is not the same as created_at
-            self.assertNotEqual(instance.archived_at, instance.created_at)
-            # make sure archived_at is greater than created_at
+            self.assertEqual(instance.archived_by, self.user_1)
             self.assertGreater(instance.archived_at, instance.created_at)
-            # updated_at and archived_at are the same (there is a small time difference between the two so we exclude the milliseconds)
-            self.assertEqual(
-                instance.updated_at.strftime('%Y-%m-%d %H:%M:%S'), instance.archived_at.strftime('%Y-%m-%d %H:%M:%S')
-            )
+            self.assertGreater(instance.archived_at, instance.updated_at)
 
+    def test_invalid_action_type_handling(self):
+        for model, _ in self.models_with_audit_columns_and_field_to_update:
+            instance = baker.make(model)
+            with self.assertRaises(AttributeError):
+                instance.set_delete(modifier=self.user_1)
 
-class GetOrCreateTests(TestCase):  # using TestCase since pytest has some issues with bakers/fixtures
-    fixtures = [APP_ROLE_FIXTURE, USER_FIXTURE]
+    def test_no_modifier_provided(self):
+        for model, _ in self.models_with_audit_columns_and_field_to_update:
+            instance = baker.make(model)
+            with self.assertRaises(TypeError):
+                instance.set_create_or_update()
 
-    @classmethod
-    def setUpTestData(cls):
-        cls.user = User.objects.first()
-        Document.objects.create(
-            file="test",
-            type=DocumentType.objects.create(name="test"),
-            description="test",
-            modifier=cls.user,
-        )
+    def test_existing_audit_columns_presence(self):
+        for model, field_to_update in self.models_with_audit_columns_and_field_to_update:
+            # Create an instance with existing audit columns set
+            instance = baker.make(model, created_by=self.user_1)
 
-    def test_get_or_create_method_with_get(self):
-        _, created = Document.objects.get_or_create(
-            file="test",
-            type=DocumentType.objects.get(name="test"),
-            modifier=self.user,
-            defaults={"description": "test"},
-        )
-        self.assertFalse(created)
-        self.assertEqual(Document.objects.count(), 1)
+            # Save the initial audit values for comparison
+            initial_created_at = instance.created_at
+            initial_created_by = instance.created_by
 
-    def test_get_or_create_method_with_create(self):
-        _, created = Document.objects.get_or_create(
-            file="test2",
-            type=DocumentType.objects.get(name="test"),
-            modifier=self.user,
-            defaults={"description": "test 2"},
-        )
-        self.assertTrue(created)
-        self.assertEqual(Document.objects.count(), 2)
+            # Perform an action
+            model.objects.filter(id=instance.id).update(**{field_to_update: 'updated'})
+            instance.set_create_or_update(modifier=self.user_2)
+            instance.refresh_from_db()
 
-    def test_get_or_create_redundant_instance(self):
-        """
-        If we execute the exact same statement twice, the second time,
-        it won't create a Person.
-        """
-        Document.objects.get_or_create(
-            file="test 2",
-            type=DocumentType.objects.get(name="test"),
-            modifier=self.user,
-            defaults={"description": "test 2"},
-        )
-
-        _, created = Document.objects.get_or_create(
-            file="test 2",
-            type=DocumentType.objects.get(name="test"),
-            modifier=self.user,
-            defaults={"description": "test 2"},
-        )
-        self.assertFalse(created)
-        self.assertEqual(Document.objects.count(), 2)
-
-    def test_get_or_create_invalid_params(self):
-        """
-        If you don't specify a value or default value for all required
-        fields, you will get an error.
-        """
-        with self.assertRaises(IntegrityError):
-            Document.objects.get_or_create(file="test 2", modifier=self.user)
-
-
-class UpdateOrCreateTests(TestCase):  # using TestCase since pytest has some issues with bakers/fixtures
-    fixtures = [APP_ROLE_FIXTURE, USER_FIXTURE]
-
-    @classmethod
-    def setUpTestData(cls):
-        cls.user = User.objects.first()
-        Document.objects.create(
-            file="test",
-            type=DocumentType.objects.create(name="test"),
-            description="test",
-            modifier=cls.user,
-        )
-
-    def test_update_or_create_method_with_update(self):
-        _, created = Document.objects.update_or_create(
-            file="test",
-            type=DocumentType.objects.get(name="test"),
-            modifier=self.user,
-            defaults={"description": "test 2"},
-        )
-        self.assertFalse(created)
-        self.assertEqual(Document.objects.count(), 1)
-        self.assertEqual(Document.objects.first().description, "test 2")
-
-    def test_update_or_create_method_with_create(self):
-        _, created = Document.objects.update_or_create(
-            file="test2",
-            type=DocumentType.objects.get(name="test"),
-            modifier=self.user,
-            defaults={"description": "test 2"},
-        )
-        self.assertTrue(created)
-        self.assertEqual(Document.objects.count(), 2)
-
-    def test_update_or_create_redundant_instance(self):
-        """
-        If we execute the exact same statement twice, the second time,
-        it won't create a Person.
-        """
-        Document.objects.update_or_create(
-            file="test 2",
-            type=DocumentType.objects.get(name="test"),
-            modifier=self.user,
-            defaults={"description": "test 2"},
-        )
-
-        _, created = Document.objects.update_or_create(
-            file="test 2",
-            type=DocumentType.objects.get(name="test"),
-            modifier=self.user,
-            defaults={"description": "test 2"},
-        )
-        self.assertFalse(created)
-        self.assertEqual(Document.objects.count(), 2)
-
-    def test_update_or_create_invalid_params(self):
-        """
-        If you don't specify a value or default value for all required
-        fields, you will get an error.
-        """
-        with self.assertRaises(IntegrityError):
-            Document.objects.update_or_create(file="test 2", modifier=self.user)
+            # Ensure existing audit columns remain unchanged
+            self.assertEqual(instance.created_at, initial_created_at)
+            self.assertEqual(instance.created_by, initial_created_by)
+            self.assertGreater(instance.updated_at, instance.created_at)
+            self.assertNotEqual(instance.updated_by, instance.created_by)
+            # Ensure updated audit columns are correctly set
+            self.assertEqual(instance.updated_by, self.user_2)

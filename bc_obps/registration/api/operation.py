@@ -37,7 +37,7 @@ from django.forms.models import model_to_dict
 
 
 # Function to save multiple operators so we can reuse it in put/post routes
-def save_multiple_operators(multiple_operators_array, operation, modifier: User):
+def save_multiple_operators(multiple_operators_array: List[MultipleOperator], operation: Operation, user: User):
     multiple_operator_fields_mapping = {
         "mo_legal_name": "legal_name",
         "mo_trade_name": "trade_name",
@@ -79,12 +79,15 @@ def save_multiple_operators(multiple_operators_array, operation, modifier: User)
 
         # check if there is a multiple_operator with that operation id and number
         # if there is, update it, if not, create it
-        MultipleOperator.objects.update_or_create(
-            operation_id=operation.id,
-            operator_index=idx + 1,
-            defaults=new_operator,
-            modifier=modifier,
-        )
+        existing_multiple_operator = MultipleOperator.objects.filter(
+            operation_id=operation.id, operator_index=idx + 1
+        ).first()
+        if existing_multiple_operator:
+            MultipleOperator.objects.filter(operation_id=operation.id, operator_index=idx + 1).update(**new_operator)
+            existing_multiple_operator.set_create_or_update(modifier=user)
+        else:
+            new_multiple_operator = MultipleOperator.objects.create(**new_operator)
+            new_multiple_operator.set_create_or_update(modifier=user)
 
 
 ##### GET #####
@@ -132,6 +135,7 @@ def get_operation(request, operation_id: int):
 @router.post("/operations", response={201: OperationCreateOut, codes_4xx: Message})
 def create_operation(request, payload: OperationCreateIn):
     raise_401_if_role_not_authorized(request, ["industry_user", "industry_user_admin"])
+    user: User = request.current_user
     payload_dict: dict = payload.dict()
 
     # check that the operation doesn't already exist
@@ -172,13 +176,14 @@ def create_operation(request, payload: OperationCreateIn):
     operation_has_multiple_operators: bool = payload_dict.get("operation_has_multiple_operators")
     multiple_operators_array: list = payload_dict.get("multiple_operators_array")
 
-    operation = Operation.objects.create(**operation_related_fields, modifier=request.current_user)
+    operation: Operation = Operation.objects.create(**operation_related_fields)
     operation.regulated_products.set(payload.regulated_products)
     operation.reporting_activities.set(payload.reporting_activities)
     operation.documents.set(payload.documents)
+    operation.set_create_or_update(modifier=user)
 
     if operation_has_multiple_operators:
-        save_multiple_operators(multiple_operators_array, operation, modifier=request.current_user)
+        save_multiple_operators(multiple_operators_array, operation, user)
 
     return 201, {"name": operation.name, "id": operation.id}
 
@@ -234,10 +239,9 @@ def update_operation(request, operation_id: int, submit, payload: OperationUpdat
                     "business_role": BusinessRole.objects.get(role_name="Operation Registration Lead"),
                 },
             )
+            eal.set_create_or_update(modifier=user)
             operation.application_lead = eal
         if payload_dict["is_application_lead_external"] is False:
-            current_user_guid = json.loads(request.headers.get('Authorization'))["user_guid"]
-            user: User = get_object_or_404(User, user_guid=current_user_guid)
             al, created = Contact.objects.update_or_create(
                 id=application_lead,
                 defaults={
@@ -253,6 +257,7 @@ def update_operation(request, operation_id: int, submit, payload: OperationUpdat
                     "business_role": BusinessRole.objects.get(role_name="Operation Registration Lead"),
                 },
             )
+            al.set_create_or_update(modifier=user)
             operation.application_lead = al
 
     # Update other attributes as needed
@@ -272,7 +277,6 @@ def update_operation(request, operation_id: int, submit, payload: OperationUpdat
             # set the operation status to 'pending' on update
         if submit == "true":
             operation.status = Operation.Statuses.PENDING
-
     operation.regulated_products.clear()  # Clear existing products
     for product_id in payload.regulated_products:
         operation.regulated_products.add(product_id)  # Adds each product
@@ -280,10 +284,11 @@ def update_operation(request, operation_id: int, submit, payload: OperationUpdat
     for activity_id in payload.reporting_activities:
         operation.reporting_activities.add(activity_id)  # Adds each activity
 
-    operation.save(modifier=request.current_user)
+    operation.save()
+    operation.set_create_or_update(modifier=user)
 
     if operation_has_multiple_operators:
-        save_multiple_operators(multiple_operators_array, operation, modifier=request.current_user)
+        save_multiple_operators(multiple_operators_array, operation, user)
 
     return 200, {"name": operation.name}
 
@@ -305,5 +310,6 @@ def update_operation_status(request, operation_id: int):
             operation,
         ],
     )
-    operation.save(modifier=request.current_user)
+    operation.save()
+    operation.set_create_or_update(modifier=request.current_user)
     return data

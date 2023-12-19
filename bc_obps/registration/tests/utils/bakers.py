@@ -44,17 +44,17 @@ def naics_code_baker():
 
 @pytest.fixture
 def document_baker(user_baker):
-    return baker.make(Document, _save_kwargs={"modifier": user_baker})
+    return baker.make(Document)
 
 
 @pytest.fixture
 def contact_baker(user_baker):
-    return baker.make(Contact, _save_kwargs={"modifier": user_baker})
+    return baker.make(Contact)
 
 
 @pytest.fixture
 def operator_baker(user_baker):
-    return baker.make(Operator, _save_kwargs={"modifier": user_baker})
+    return baker.make(Operator)
 
 
 @pytest.fixture
@@ -65,15 +65,14 @@ def operation_baker(user_baker, naics_code_baker, contact_baker, operator_baker)
         application_lead=contact_baker,
         naics_code=naics_code_baker,
         bcghg_id=uuid.uuid4(),
-        _save_kwargs={"modifier": user_baker},
     )
 
 
 @pytest.fixture
 def user_operator_baker(user_baker, operator_baker):
-    return baker.make(UserOperator, user=user_baker, operator=operator_baker, _save_kwargs={"modifier": user_baker})
+    return baker.make(UserOperator, user=user_baker, operator=operator_baker)
 
 
 @pytest.fixture
 def multiple_operator_baker(operation_baker, user_baker):
-    return baker.make(MultipleOperator, operation=operation_baker, _save_kwargs={"modifier": user_baker})
+    return baker.make(MultipleOperator, operation=operation_baker)

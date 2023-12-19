@@ -197,7 +197,7 @@ class TestCheckUserAdminRequestEligibility:
             business_guid=admin_user.business_guid,
         )
 
-        operator = baker.make(Operator, _save_kwargs={"modifier": admin_user})
+        operator = baker.make(Operator)
 
         baker.make(
             UserOperator,
@@ -205,7 +205,6 @@ class TestCheckUserAdminRequestEligibility:
             operator=operator,
             role=UserOperator.Roles.ADMIN,
             status=UserOperator.Statuses.APPROVED,
-            _save_kwargs={"modifier": admin_user},
         )
 
         status_code, message = check_access_request_matches_business_guid(user.user_guid, operator)
@@ -218,7 +217,7 @@ class TestCheckUserAdminRequestEligibility:
         admin_user = baker.make(User)
         user = baker.make(User)
 
-        operator = baker.make(Operator, _save_kwargs={"modifier": admin_user})
+        operator = baker.make(Operator)
 
         baker.make(
             UserOperator,
@@ -226,7 +225,6 @@ class TestCheckUserAdminRequestEligibility:
             operator=operator,
             role=UserOperator.Roles.ADMIN,
             status=UserOperator.Statuses.APPROVED,
-            _save_kwargs={"modifier": admin_user},
         )
 
         status_code, message = check_access_request_matches_business_guid(user.user_guid, operator)
