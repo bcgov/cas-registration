@@ -48,6 +48,10 @@ const OperatorSearchWidget: React.FC<WidgetProps> = ({
     [],
   );
 
+  const handleBlur = () => {
+    setOptions([]);
+  };
+
   const isError = rawErrors && rawErrors.length > 0;
   const borderColor = isError ? BC_GOV_SEMANTICS_RED : DARK_GREY_BG_COLOR;
 
@@ -72,6 +76,7 @@ const OperatorSearchWidget: React.FC<WidgetProps> = ({
       sx={styles}
       open={options.length > 0 && !options.includes(value as string)}
       onChange={handleChange}
+      onBlur={handleBlur}
       onInputChange={debouncedChangeHandler}
       renderInput={(params) => (
         <TextField
