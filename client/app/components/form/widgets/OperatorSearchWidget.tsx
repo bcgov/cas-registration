@@ -45,7 +45,7 @@ const OperatorSearchWidget: React.FC<WidgetProps> = ({
   };
 
   const debouncedChangeHandler = useMemo(
-    () => debounce(changeHandler, 400),
+    () => debounce(changeHandler, 200),
     [],
   );
 
