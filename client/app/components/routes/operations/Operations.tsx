@@ -62,7 +62,7 @@ export default async function Operations() {
       : [];
   // Render the DataGrid component
   return (
-    <>
+    <div className="mt-5">
       <DataGrid
         cntxt="operations"
         rows={rows}
@@ -93,6 +93,6 @@ export default async function Operations() {
           },
         ]}
       />
-    </>
+    </div>
   );
 }
