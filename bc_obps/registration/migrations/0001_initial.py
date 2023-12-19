@@ -19,6 +19,31 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
+            name='Address',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('street_address', models.CharField(db_comment="A contact's street address", max_length=1000)),
+                ('municipality', models.CharField(db_comment="A contact's municipality", max_length=1000)),
+                (
+                    'province',
+                    localflavor.ca.models.CAProvinceField(
+                        db_comment="A contact's province, restricted to two-letter province postal abbreviations",
+                        max_length=2,
+                    ),
+                ),
+                (
+                    'postal_code',
+                    localflavor.ca.models.CAPostalCodeField(
+                        db_comment="A contact's postal code, limited to valid Canadian postal codes", max_length=7
+                    ),
+                ),
+            ],
+            options={
+                'db_table': 'erc"."address',
+                'db_table_comment': 'Adress',
+            },
+        ),
+        migrations.CreateModel(
             name='AppRole',
             fields=[
                 (
@@ -116,22 +141,6 @@ class Migration(migrations.Migration):
                 ('first_name', models.CharField(db_comment="A user or contact's first name", max_length=1000)),
                 ('last_name', models.CharField(db_comment="A user or contact's last name", max_length=1000)),
                 ('position_title', models.CharField(db_comment="A user or contact's position title", max_length=1000)),
-                ('street_address', models.CharField(db_comment="A user or contact's street address", max_length=1000)),
-                ('municipality', models.CharField(db_comment="A user or contact's municipality", max_length=1000)),
-                (
-                    'province',
-                    localflavor.ca.models.CAProvinceField(
-                        db_comment="A user or contact's province, restricted to two-letter province postal abbreviations",
-                        max_length=2,
-                    ),
-                ),
-                (
-                    'postal_code',
-                    localflavor.ca.models.CAPostalCodeField(
-                        db_comment="A user or contact's postal code, limited to valid Canadian postal codes",
-                        max_length=7,
-                    ),
-                ),
                 (
                     'email',
                     models.EmailField(db_comment="A user or contact's email, limited to valid emails", max_length=254),
@@ -143,6 +152,14 @@ class Migration(migrations.Migration):
                         db_comment="A user or contact's phone number, limited to valid phone numbers",
                         max_length=128,
                         region=None,
+                    ),
+                ),
+                (
+                    'address',
+                    models.ForeignKey(
+                        db_comment="Foreign key to the contact's address.",
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        to='registration.address',
                     ),
                 ),
             ],
@@ -192,22 +209,6 @@ class Migration(migrations.Migration):
                 ('first_name', models.CharField(db_comment="A user or contact's first name", max_length=1000)),
                 ('last_name', models.CharField(db_comment="A user or contact's last name", max_length=1000)),
                 ('position_title', models.CharField(db_comment="A user or contact's position title", max_length=1000)),
-                ('street_address', models.CharField(db_comment="A user or contact's street address", max_length=1000)),
-                ('municipality', models.CharField(db_comment="A user or contact's municipality", max_length=1000)),
-                (
-                    'province',
-                    localflavor.ca.models.CAProvinceField(
-                        db_comment="A user or contact's province, restricted to two-letter province postal abbreviations",
-                        max_length=2,
-                    ),
-                ),
-                (
-                    'postal_code',
-                    localflavor.ca.models.CAPostalCodeField(
-                        db_comment="A user or contact's postal code, limited to valid Canadian postal codes",
-                        max_length=7,
-                    ),
-                ),
                 (
                     'email',
                     models.EmailField(db_comment="A user or contact's email, limited to valid emails", max_length=254),
@@ -227,6 +228,18 @@ class Migration(migrations.Migration):
                 (
                     'history_type',
                     models.CharField(choices=[('+', 'Created'), ('~', 'Changed'), ('-', 'Deleted')], max_length=1),
+                ),
+                (
+                    'address',
+                    models.ForeignKey(
+                        blank=True,
+                        db_comment="Foreign key to the contact's address.",
+                        db_constraint=False,
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name='+',
+                        to='registration.address',
+                    ),
                 ),
             ],
             options={
@@ -362,53 +375,6 @@ class Migration(migrations.Migration):
                         ],
                     ),
                 ),
-                (
-                    'physical_street_address',
-                    models.CharField(
-                        db_comment='The physical street address of an operator (where the operator is physically located)',
-                        max_length=1000,
-                    ),
-                ),
-                (
-                    'physical_municipality',
-                    models.CharField(db_comment='The physical municipality of an operator ', max_length=1000),
-                ),
-                (
-                    'physical_province',
-                    localflavor.ca.models.CAProvinceField(
-                        db_comment='The physical street address of an operator, restricted to two-letter province postal abbreviations',
-                        max_length=2,
-                    ),
-                ),
-                (
-                    'physical_postal_code',
-                    localflavor.ca.models.CAPostalCodeField(
-                        db_comment='The physical postal code address of an operator, limited to valid Canadian postal codes',
-                        max_length=7,
-                    ),
-                ),
-                (
-                    'mailing_street_address',
-                    models.CharField(db_comment='The mailing street address of an operator', max_length=1000),
-                ),
-                (
-                    'mailing_municipality',
-                    models.CharField(db_comment='The mailing municipality of an operator', max_length=1000),
-                ),
-                (
-                    'mailing_province',
-                    localflavor.ca.models.CAProvinceField(
-                        db_comment='The mailing province of an operator, restricted to two-letter province postal abbreviations',
-                        max_length=2,
-                    ),
-                ),
-                (
-                    'mailing_postal_code',
-                    localflavor.ca.models.CAPostalCodeField(
-                        db_comment='The mailing postal code of an operator, limited to valid Canadian postal codes',
-                        max_length=7,
-                    ),
-                ),
                 ('website', models.URLField(blank=True, db_comment='The website address of an operator', null=True)),
                 (
                     'status',
@@ -453,22 +419,6 @@ class Migration(migrations.Migration):
                 ('first_name', models.CharField(db_comment="A user or contact's first name", max_length=1000)),
                 ('last_name', models.CharField(db_comment="A user or contact's last name", max_length=1000)),
                 ('position_title', models.CharField(db_comment="A user or contact's position title", max_length=1000)),
-                ('street_address', models.CharField(db_comment="A user or contact's street address", max_length=1000)),
-                ('municipality', models.CharField(db_comment="A user or contact's municipality", max_length=1000)),
-                (
-                    'province',
-                    localflavor.ca.models.CAProvinceField(
-                        db_comment="A user or contact's province, restricted to two-letter province postal abbreviations",
-                        max_length=2,
-                    ),
-                ),
-                (
-                    'postal_code',
-                    localflavor.ca.models.CAPostalCodeField(
-                        db_comment="A user or contact's postal code, limited to valid Canadian postal codes",
-                        max_length=7,
-                    ),
-                ),
                 (
                     'email',
                     models.EmailField(db_comment="A user or contact's email, limited to valid emails", max_length=254),
@@ -493,6 +443,18 @@ class Migration(migrations.Migration):
                 (
                     'history_type',
                     models.CharField(choices=[('+', 'Created'), ('~', 'Changed'), ('-', 'Deleted')], max_length=1),
+                ),
+                (
+                    'address',
+                    models.ForeignKey(
+                        blank=True,
+                        db_comment="Foreign key to the contact's address.",
+                        db_constraint=False,
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name='+',
+                        to='registration.address',
+                    ),
                 ),
                 (
                     'app_role',
@@ -562,53 +524,6 @@ class Migration(migrations.Migration):
                         ],
                     ),
                 ),
-                (
-                    'physical_street_address',
-                    models.CharField(
-                        db_comment='The physical street address of an operator (where the operator is physically located)',
-                        max_length=1000,
-                    ),
-                ),
-                (
-                    'physical_municipality',
-                    models.CharField(db_comment='The physical municipality of an operator ', max_length=1000),
-                ),
-                (
-                    'physical_province',
-                    localflavor.ca.models.CAProvinceField(
-                        db_comment='The physical street address of an operator, restricted to two-letter province postal abbreviations',
-                        max_length=2,
-                    ),
-                ),
-                (
-                    'physical_postal_code',
-                    localflavor.ca.models.CAPostalCodeField(
-                        db_comment='The physical postal code address of an operator, limited to valid Canadian postal codes',
-                        max_length=7,
-                    ),
-                ),
-                (
-                    'mailing_street_address',
-                    models.CharField(db_comment='The mailing street address of an operator', max_length=1000),
-                ),
-                (
-                    'mailing_municipality',
-                    models.CharField(db_comment='The mailing municipality of an operator', max_length=1000),
-                ),
-                (
-                    'mailing_province',
-                    localflavor.ca.models.CAProvinceField(
-                        db_comment='The mailing province of an operator, restricted to two-letter province postal abbreviations',
-                        max_length=2,
-                    ),
-                ),
-                (
-                    'mailing_postal_code',
-                    localflavor.ca.models.CAPostalCodeField(
-                        db_comment='The mailing postal code of an operator, limited to valid Canadian postal codes',
-                        max_length=7,
-                    ),
-                ),
                 ('website', models.URLField(blank=True, db_comment='The website address of an operator', null=True)),
                 (
                     'status',
@@ -672,22 +587,6 @@ class Migration(migrations.Migration):
                 ('first_name', models.CharField(db_comment="A user or contact's first name", max_length=1000)),
                 ('last_name', models.CharField(db_comment="A user or contact's last name", max_length=1000)),
                 ('position_title', models.CharField(db_comment="A user or contact's position title", max_length=1000)),
-                ('street_address', models.CharField(db_comment="A user or contact's street address", max_length=1000)),
-                ('municipality', models.CharField(db_comment="A user or contact's municipality", max_length=1000)),
-                (
-                    'province',
-                    localflavor.ca.models.CAProvinceField(
-                        db_comment="A user or contact's province, restricted to two-letter province postal abbreviations",
-                        max_length=2,
-                    ),
-                ),
-                (
-                    'postal_code',
-                    localflavor.ca.models.CAPostalCodeField(
-                        db_comment="A user or contact's postal code, limited to valid Canadian postal codes",
-                        max_length=7,
-                    ),
-                ),
                 (
                     'email',
                     models.EmailField(db_comment="A user or contact's email, limited to valid emails", max_length=254),
@@ -708,6 +607,14 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 ('business_guid', models.UUIDField(db_comment='A GUID to identify the business', default=uuid.uuid4)),
+                (
+                    'address',
+                    models.ForeignKey(
+                        db_comment="Foreign key to the contact's address.",
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        to='registration.address',
+                    ),
+                ),
                 (
                     'app_role',
                     models.ForeignKey(
@@ -803,6 +710,28 @@ class Migration(migrations.Migration):
             model_name='operator',
             name='documents',
             field=models.ManyToManyField(blank=True, related_name='operators', to='registration.document'),
+        ),
+        migrations.AddField(
+            model_name='operator',
+            name='mailing_address',
+            field=models.ForeignKey(
+                blank=True,
+                db_comment='The mailing address of an operator',
+                null=True,
+                on_delete=django.db.models.deletion.DO_NOTHING,
+                related_name='operators_mailing',
+                to='registration.address',
+            ),
+        ),
+        migrations.AddField(
+            model_name='operator',
+            name='physical_address',
+            field=models.ForeignKey(
+                db_comment='The physical address of an operator (where the operator is physically located)',
+                on_delete=django.db.models.deletion.DO_NOTHING,
+                related_name='operators_physical',
+                to='registration.address',
+            ),
         ),
         migrations.AddField(
             model_name='operator',
@@ -1035,57 +964,10 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 (
-                    'physical_street_address',
-                    models.CharField(
-                        db_comment='The physical street address of an operator (where the operator is physically located)',
-                        max_length=1000,
-                    ),
-                ),
-                (
-                    'physical_municipality',
-                    models.CharField(db_comment='The physical municipality of an operator ', max_length=1000),
-                ),
-                (
-                    'physical_province',
-                    localflavor.ca.models.CAProvinceField(
-                        db_comment='The physical street address of an operator, restricted to two-letter province postal abbreviations',
-                        max_length=2,
-                    ),
-                ),
-                (
-                    'physical_postal_code',
-                    localflavor.ca.models.CAPostalCodeField(
-                        db_comment='The physical postal code address of an operator, limited to valid Canadian postal codes',
-                        max_length=7,
-                    ),
-                ),
-                (
                     'mailing_address_same_as_physical',
                     models.BooleanField(
                         db_comment='Whether or not the mailing address is the same as the physical address',
                         default=True,
-                    ),
-                ),
-                (
-                    'mailing_street_address',
-                    models.CharField(db_comment='The mailing street address of an operator', max_length=1000),
-                ),
-                (
-                    'mailing_municipality',
-                    models.CharField(db_comment='The mailing municipality of an operator', max_length=1000),
-                ),
-                (
-                    'mailing_province',
-                    localflavor.ca.models.CAProvinceField(
-                        db_comment='The mailing province of an operator, restricted to two-letter province postal abbreviations',
-                        max_length=2,
-                    ),
-                ),
-                (
-                    'mailing_postal_code',
-                    localflavor.ca.models.CAPostalCodeField(
-                        db_comment='The mailing postal code of an operator, limited to valid Canadian postal codes',
-                        max_length=7,
                     ),
                 ),
                 (
@@ -1118,12 +1000,32 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 (
+                    'mailing_address',
+                    models.ForeignKey(
+                        blank=True,
+                        db_comment='The mailing address of an operator',
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name='multiple_operator_mailing',
+                        to='registration.address',
+                    ),
+                ),
+                (
                     'operation',
                     models.ForeignKey(
                         db_comment='The operation that this multiple operator is associated with',
                         on_delete=django.db.models.deletion.DO_NOTHING,
                         related_name='multiple_operator',
                         to='registration.operation',
+                    ),
+                ),
+                (
+                    'physical_address',
+                    models.ForeignKey(
+                        db_comment='The physical address of an operator (where the operator is physically located)',
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name='multiple_operator_physical',
+                        to='registration.address',
                     ),
                 ),
                 (
@@ -1513,6 +1415,32 @@ class Migration(migrations.Migration):
             name='history_user',
             field=models.ForeignKey(
                 null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to=settings.AUTH_USER_MODEL
+            ),
+        ),
+        migrations.AddField(
+            model_name='historicaloperator',
+            name='mailing_address',
+            field=models.ForeignKey(
+                blank=True,
+                db_comment='The mailing address of an operator',
+                db_constraint=False,
+                null=True,
+                on_delete=django.db.models.deletion.DO_NOTHING,
+                related_name='+',
+                to='registration.address',
+            ),
+        ),
+        migrations.AddField(
+            model_name='historicaloperator',
+            name='physical_address',
+            field=models.ForeignKey(
+                blank=True,
+                db_comment='The physical address of an operator (where the operator is physically located)',
+                db_constraint=False,
+                null=True,
+                on_delete=django.db.models.deletion.DO_NOTHING,
+                related_name='+',
+                to='registration.address',
             ),
         ),
         migrations.AddField(
@@ -2343,6 +2271,51 @@ class Migration(migrations.Migration):
                 'verbose_name': 'historical app role',
                 'verbose_name_plural': 'historical app roles',
                 'db_table': 'erc_history"."app_role_history',
+                'ordering': ('-history_date', '-history_id'),
+                'get_latest_by': ('history_date', 'history_id'),
+            },
+            bases=(simple_history.models.HistoricalChanges, models.Model),
+        ),
+        migrations.CreateModel(
+            name='HistoricalAddress',
+            fields=[
+                ('id', models.BigIntegerField(auto_created=True, blank=True, db_index=True, verbose_name='ID')),
+                ('street_address', models.CharField(db_comment="A contact's street address", max_length=1000)),
+                ('municipality', models.CharField(db_comment="A contact's municipality", max_length=1000)),
+                (
+                    'province',
+                    localflavor.ca.models.CAProvinceField(
+                        db_comment="A contact's province, restricted to two-letter province postal abbreviations",
+                        max_length=2,
+                    ),
+                ),
+                (
+                    'postal_code',
+                    localflavor.ca.models.CAPostalCodeField(
+                        db_comment="A contact's postal code, limited to valid Canadian postal codes", max_length=7
+                    ),
+                ),
+                ('history_id', models.AutoField(primary_key=True, serialize=False)),
+                ('history_date', models.DateTimeField(db_index=True)),
+                ('history_change_reason', models.CharField(max_length=100, null=True)),
+                (
+                    'history_type',
+                    models.CharField(choices=[('+', 'Created'), ('~', 'Changed'), ('-', 'Deleted')], max_length=1),
+                ),
+                (
+                    'history_user',
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name='+',
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+            ],
+            options={
+                'verbose_name': 'historical address',
+                'verbose_name_plural': 'historical addresss',
+                'db_table': 'erc_history"."address_history',
                 'ordering': ('-history_date', '-history_id'),
                 'get_latest_by': ('history_date', 'history_id'),
             },
