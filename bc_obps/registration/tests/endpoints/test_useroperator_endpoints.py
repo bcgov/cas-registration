@@ -23,7 +23,6 @@ baker.generators.add(CAPostalCodeField, TestUtils.mock_postal_code)
 
 
 class TestUserOperatorEndpoint(CommonTestSetup):
-
     select_endpoint = base_endpoint + "select-operator"
     operator_endpoint = base_endpoint + "operators"
 
