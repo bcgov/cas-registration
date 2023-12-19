@@ -56,10 +56,15 @@ class TestOperatorsEndpoint(CommonTestSetup):
 
     def test_get_search_operators_by_legal_name(self):
         response = TestUtils.mock_get_with_auth_role(
-            self, 'industry_user', self.endpoint + "/legal-name?legal_name=Test Operator legal name"
+            self, 'industry_user', self.endpoint + "/legal-name?search_value=Test Operator legal name"
         )
         assert response.status_code == 200
-        assert response.json() == List[model_to_dict(self.operator)]
+        response_dict: dict = response.json()
+        assert len(response_dict) == 1
+        for key in response_dict[0].keys():
+            # exclude audit fields
+            if key not in ["created_at", "created_by", "updated_at", "updated_by", "archived_at", "archived_by"]:
+                assert response_dict[0][key] == model_to_dict(self.operator)[key]
 
     def test_get_operators_by_cra_number(self):
         response = TestUtils.mock_get_with_auth_role(
