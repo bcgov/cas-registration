@@ -66,6 +66,11 @@ class TestOperatorsEndpoint(CommonTestSetup):
             if key not in ["created_at", "created_by", "updated_at", "updated_by", "archived_at", "archived_by"]:
                 assert response_dict[0][key] == model_to_dict(self.operator)[key]
 
+    def test_get_search_operators_by_legal_name_no_value(self):
+        response = TestUtils.mock_get_with_auth_role(self, 'industry_user', self.endpoint + "/legal-name?search_value=")
+        assert response.status_code == 404
+        assert response.json() == {"message": "No parameters provided"}
+
     def test_get_operators_by_cra_number(self):
         response = TestUtils.mock_get_with_auth_role(
             self, 'industry_user', self.endpoint + "?cra_business_number=123456789"
