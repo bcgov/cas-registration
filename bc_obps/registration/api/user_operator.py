@@ -125,9 +125,11 @@ def request_access(request, payload: SelectOperatorIn):
         return status, message
 
     # Making a draft UserOperator instance if one doesn't exist
-    user_operator, _ = UserOperator.objects.get_or_create(
+    user_operator, created = UserOperator.objects.get_or_create(
         user=user, operator=operator, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.DRAFT
     )
+    if created:
+        user_operator.set_create_or_update(modifier=user)
     return 201, {"user_operator_id": user_operator.id}
 
 
@@ -141,9 +143,11 @@ def request_access(request, payload: SelectOperatorIn):
         return status, message
 
     # Making a draft UserOperator instance if one doesn't exist
-    user_operator, _ = UserOperator.objects.get_or_create(
+    user_operator, created = UserOperator.objects.get_or_create(
         user=user, operator=operator, status=UserOperator.Statuses.PENDING
     )
+    if created:
+        user_operator.set_create_or_update(modifier=user)
     return 201, {"user_operator_id": user_operator.id}
 
 
@@ -249,17 +253,21 @@ def create_operator_and_user_operator(request, payload: UserOperatorOperatorIn):
         return 400, {"message": str(e)}
 
     created_operator_instance.save()
+    created_operator_instance.set_create_or_update(modifier=user)
     if parent_operator_instance:
         parent_operator_instance.save()
+        parent_operator_instance.set_create_or_update(modifier=user)
         if parent_child_operator_instance:
             parent_child_operator_instance.save()
 
     # get or create a draft UserOperator instance
-    user_operator, _ = UserOperator.objects.get_or_create(
+    user_operator, created = UserOperator.objects.get_or_create(
         user=user,
         operator=created_operator_instance,
         role=UserOperator.Roles.ADMIN,
     )
+    if created:
+        user_operator.set_create_or_update(modifier=user)
 
     return 200, {"user_operator_id": user_operator.id}
 
@@ -293,6 +301,7 @@ def create_user_operator_contact(request, payload: UserOperatorContactIn):
             senior_officer_contact.phone_number = payload.so_phone_number
 
         senior_officer_contact.save()
+        senior_officer_contact.set_create_or_update(modifier=user)
 
     except ValidationError as e:
         return 400, {"message": generate_useful_error(e)}
@@ -303,11 +312,15 @@ def create_user_operator_contact(request, payload: UserOperatorContactIn):
         return 400, {"message": str(e)}
 
     user_operator_instance.status = UserOperator.Statuses.PENDING
-    user_operator_instance.save(update_fields=["status"])
+    user_operator_instance.save(
+        update_fields=["status"],
+    )
+    user_operator_instance.set_create_or_update(modifier=user)
 
     # Add the Senior Officer contact to the Operator instance
     operator: Operator = user_operator_instance.operator
     operator.contacts.add(senior_officer_contact)
+    operator.set_create_or_update(modifier=user)
 
     return 200, {"operator_id": operator.id}
 

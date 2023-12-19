@@ -168,7 +168,7 @@ The easiest way to run these tests locally is by using commands from the Makefil
 
 #### Testing Helpers
 
-We have some testing helpers in utils.TestUtils:
+We have some testing helpers in tests.utils.helpers.TestUtils:
 
 - mock user roles for get, post, and put requests
 - mock postal codes
@@ -180,11 +180,6 @@ To use the helpers, import them from `utils` and use like this:
 ```
 TestUtils.mock_postal_code()
 ```
-
-#### Detail directions
-
-1. Navigate to the `~/bc_obps` directory. Start Postgres with `make start_pg`. Start the Poetry shell with `poetry shell`.
-2. Run `python manage.py test`.
 
 ### End-to-end Tests with Playwright
 
@@ -262,3 +257,22 @@ To generate the most recent ERD diagram, navigate to the `bc_obps` directory (wh
 poetry run python -m django_diagram --app=registration --output=../erd.md --settings=bc_obps.settings
 
 ```
+
+### Audit Trail Implementation
+
+Within our Django application, we employ the `TimeStampedModel` abstract data model to integrate audit columns into our various models. This model resides in `bc_obps/registration/models.py` and serves as the foundation for all data models requiring audit trails. It incorporates the following columns:
+
+`created_at`: Captures the timestamp when an object is initially created.
+`created_by`: Records the creator of the object.
+`updated_at`: Indicates the timestamp of the object's last update.
+`updated_by`: Stores the user who last modified the object.
+`archived_at`: Documents the timestamp when an object is archived.
+`archived_by`: Registers the user who initiated the archiving process.
+
+This data model is equipped with two essential methods:
+
+`set_create_or_update`: This method sets the necessary audit columns when creating a new object or updating an existing one. It requires the user initiating the modification as a parameter.
+
+`set_archive`: Specifically designed for archiving objects, this method captures the archival details and requires the user initiating the archival process as a parameter.
+
+Furthermore, a custom manager is implemented to filter out archived objects, ensuring a streamlined retrieval process focused only on active data.
