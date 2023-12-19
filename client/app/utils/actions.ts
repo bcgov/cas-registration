@@ -43,7 +43,7 @@ export async function getToken() {
 export async function actionHandler(
   endpoint: string,
   method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH",
-  pathToRevalidate: string,
+  pathToRevalidate?: string,
   options: RequestInit = {},
 ) {
   try {
@@ -84,7 +84,8 @@ export async function actionHandler(
 
     const data = await response.json();
 
-    revalidatePath(pathToRevalidate);
+    if (pathToRevalidate) revalidatePath(pathToRevalidate);
+
     return data;
   } catch (error: unknown) {
     // Handle any errors, including network issues
