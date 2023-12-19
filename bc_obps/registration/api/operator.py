@@ -43,11 +43,10 @@ def get_operator_by_legal_name_or_cra(
 
 
 @router.get("/operators/legal-name", response={200: List[OperatorOut], codes_4xx: Message, codes_5xx: Message})
-def get_operator_by_legal_name_or_cra(request, legal_name: Optional[str] = None):
-    print(legal_name)
+def get_operator_by_legal_name_or_cra(request, search_value: Optional[str] = None):
     try:
-        if legal_name:
-            operators = Operator.objects.filter(legal_name__icontains=legal_name)
+        if search_value:
+            operators = Operator.objects.filter(legal_name__icontains=search_value)
         else:
             return 404, {"message": "No parameters provided"}
     except Operator.DoesNotExist:
