@@ -7,6 +7,7 @@ import Loading from "@/app/components/loading/SkeletonGrid";
 import { Roles } from "@/app/types/types";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import Note, { registrationRequestNote } from "../../datagrid/Note";
 
 export default async function OperationsPage() {
   // 👤 Use NextAuth.js hook to get information about the user's session
@@ -24,6 +25,9 @@ export default async function OperationsPage() {
         <Link href={"/dashboard/operations/create/1"}>
           <Button variant="contained">Add Operation</Button>
         </Link>
+      )}
+      {role && role.includes("cas") && (
+        <Note message={registrationRequestNote} />
       )}
       <Suspense fallback={<Loading />}>
         <Operations />
