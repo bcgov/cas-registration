@@ -71,6 +71,7 @@ export default async function UserOperator({
 }: Readonly<{
   params?: { id?: number; readonly?: boolean };
 }>) {
+  const serverError = <div>Server Error. Please try again later.</div>;
   const userOperatorId = params?.id;
   const businessStructures: BusinessStructure[] | { error: string } =
     await getBusinessStructures();
@@ -79,9 +80,8 @@ export default async function UserOperator({
     await getCurrentUser();
 
   // TODO: define schema of data returned from endpoint
-  const userOperatorData: any | { error: string } =
+  const userOperatorData: UserOperatorFormData | { error: string } =
     await getUserOperatorFormData(userOperatorId);
-
 
   if (
     "error" in userData ||
