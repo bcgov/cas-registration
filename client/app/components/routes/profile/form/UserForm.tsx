@@ -6,7 +6,7 @@ import SubmitButton from "@/app/components/form/SubmitButton";
 import { actionHandler } from "@/app/utils/actions";
 import { UserProfileFormData } from "@/app/components/form/formDataTypes";
 import { userSchema, userUiSchema } from "@/app/utils/jsonSchema/user";
-import { useSession, signOut } from "next-auth/react";
+import { useSession } from "next-auth/react";
 
 // 📐 Interface: expected properties and their types for UserForm component
 
@@ -25,13 +25,13 @@ export default function UserForm({ formData, isCreate }: Props) {
 
   // 👤 Use NextAuth.js hook to get information about the user's session
   //  Destructuring assignment from data property of the object returned by useSession()
-  const { data: session } = useSession();
+  const { data: session, update } = useSession();
   const idp = session?.identity_provider || "";
 
-  // 🛠️ Function to signout
-  const handleSignOut = async () => {
-    await fetch(`/api/auth/logout`, { method: "GET" });
-    await signOut();
+  // 🛠️ Function to update the session, without reloading the page
+  // With NextAuth strategy: "jwt" , update() method will trigger a jwt callback where app_role will be augmented to the jwt and session objects
+  const handleUpdate = async () => {
+    update();
   };
 
   // 🛠️ Function to submit user form data to API
@@ -60,7 +60,7 @@ export default function UserForm({ formData, isCreate }: Props) {
     }
     if (isCreate) {
       // 🛸 Routing: logout to re-login to apply new role to NextAuth JWT
-      await handleSignOut();
+      await handleUpdate();
     }
     // ✅ Set success state to true
     setIsSuccess(true);

@@ -31,7 +31,7 @@ export const authOptions: NextAuthOptions = {
      * @param  {object}  profile   Provider profile (only available on sign in)
      * @return {object}            JSON Web Token that will be saved
      */
-    // 👇️ called whenever a JSON Web Token is created
+    // 👇️ called whenever a JSON Web Token is created/updated
     async jwt({ token, account }) {
       try {
         //📌  Provider account (only available on sign in)
@@ -51,48 +51,48 @@ export const authOptions: NextAuthOptions = {
           token.user_guid = account.providerAccountId.split("@")[0];
 
           token.identity_provider = account.providerAccountId.split("@")[1];
+        }
+        // If no token.app_role, augment the keycloak token with cas registration user approle
+        if (!token.app_role) {
+          // 🚀 API call: Get user app_role by user_guid from user table
+          const responseRole = await actionHandler(
+            `registration/user-app-role/${token.user_guid}`,
+            "GET",
+            "",
+          );
+          if (responseRole?.role_name) {
+            // user found in table, assign role to token
+            token.app_role = responseRole.role_name;
 
-          if (!token.app_role) {
-            // 🚀 API call: Get user app_role by user_guid from user table
-            const responseRole = await actionHandler(
-              `registration/user-app-role/${token.user_guid}`,
-              "GET",
-              "",
-            );
-            if (responseRole?.role_name) {
-              // user found in table, assign role to token
-              token.app_role = responseRole.role_name;
-
-              //for bceid users, augment with admin based on operator-user table
-              if (token.identity_provider === "bceidbusiness") {
-                try {
-                  // 🚀 API call: check if user is admin approved
-                  const response = await actionHandler(
-                    `registration/is-approved-admin-user-operator/${token.user_guid}`,
-                    "GET",
-                    "",
-                  );
-                  if (response?.approved) {
-                    token.app_role = token.app_role + "_admin";
-                  } else {
-                    // Default app_role if the API call fails
-                  }
-                } catch (error) {
-                  // Default app_role if there's an error in the API call
+            //for bceid users, augment with admin based on operator-user table
+            if (token.identity_provider === "bceidbusiness") {
+              try {
+                // 🚀 API call: check if user is admin approved
+                const responseAdmin = await actionHandler(
+                  `registration/is-approved-admin-user-operator/${token.user_guid}`,
+                  "GET",
+                  "",
+                );
+                if (responseAdmin?.approved) {
+                  token.app_role = token.app_role + "_admin";
+                } else {
+                  // Default app_role if the API call fails
                 }
+              } catch (error) {
+                // Default app_role if there's an error in the API call
               }
-            } else {
-              // 🛸 Routing: no app_role users will be routed to dashboard\profile
             }
+          } else {
+            // 🛸 Routing: no app_role user found; so, user will be routed to dashboard\profile
           }
-        } else {
-          // check if token is expired
-          if (
-            (token.access_token_expires_at ?? 0) < Math.floor(Date.now() / 1000)
-          ) {
-            // 👇️ refresh token- returns a new token with updated properties
-            try {
-              /*
+        }
+        // 🕐 evaluate if the access_token_expires_at timestamp is less than the current timestamp, indicating an expired token
+        if (
+          (token.access_token_expires_at ?? 0) < Math.floor(Date.now() / 1000)
+        ) {
+          // 👇️ refresh token- returns a new token with updated properties
+          try {
+            /*
               Keycloak provides a REST API enables the creation of an access_token through a POST endpoint with application/x-www-form-urlencoded outcome
               Method: POST
                 URL: https://keycloak.example.com/auth/realms/myrealm/protocol/openid-connect/token
@@ -103,46 +103,45 @@ export const authOptions: NextAuthOptions = {
                 grant_type : refresh_token
                 refresh_token:
               */
-              const details = {
-                client_id: `${process.env.KEYCLOAK_CLIENT_ID}`,
-                client_secret: `${process.env.KEYCLOAK_CLIENT_SECRET}`,
-                grant_type: ["refresh_token"],
-                refresh_token: token.refresh_token,
-              };
-              const formBody: string[] = [];
-              Object.entries(details).forEach(([key, value]: [string, any]) => {
-                const encodedKey = encodeURIComponent(key);
-                const encodedValue = encodeURIComponent(value);
-                formBody.push(encodedKey + "=" + encodedValue);
-              });
-              const formData = formBody.join("&");
-              const url = `${process.env.KEYCLOAK_TOKEN_URL}`;
-              const response = await fetch(url, {
-                method: "POST",
-                headers: {
-                  "Content-Type":
-                    "application/x-www-form-urlencoded;charset=UTF-8",
-                },
-                body: formData,
-              });
-              const refreshedToken = await response.json();
-              if (!response.ok) throw refreshedToken;
-              return {
-                ...token,
-                error: refreshedToken.error,
-                access_token: refreshedToken.access_token,
-                access_token_expires_at:
-                  Math.floor(Date.now() / 1000) +
-                  (refreshedToken.refresh_expires_in ?? 0),
-                refresh_token:
-                  refreshedToken.refresh_token ?? token.refresh_token, // Fall back to old refresh token
-              };
-            } catch (error) {
-              token.error = "ErrorAccessToken";
-            }
-          } else {
-            // The token is still valid; no need to refresh
+            const details = {
+              client_id: `${process.env.KEYCLOAK_CLIENT_ID}`,
+              client_secret: `${process.env.KEYCLOAK_CLIENT_SECRET}`,
+              grant_type: ["refresh_token"],
+              refresh_token: token.refresh_token,
+            };
+            const formBody: string[] = [];
+            Object.entries(details).forEach(([key, value]: [string, any]) => {
+              const encodedKey = encodeURIComponent(key);
+              const encodedValue = encodeURIComponent(value);
+              formBody.push(encodedKey + "=" + encodedValue);
+            });
+            const formData = formBody.join("&");
+            const url = `${process.env.KEYCLOAK_TOKEN_URL}`;
+            const response = await fetch(url, {
+              method: "POST",
+              headers: {
+                "Content-Type":
+                  "application/x-www-form-urlencoded;charset=UTF-8",
+              },
+              body: formData,
+            });
+            const refreshedToken = await response.json();
+            if (!response.ok) throw refreshedToken;
+            return {
+              ...token,
+              error: refreshedToken.error,
+              access_token: refreshedToken.access_token,
+              access_token_expires_at:
+                Math.floor(Date.now() / 1000) +
+                (refreshedToken.refresh_expires_in ?? 0),
+              refresh_token:
+                refreshedToken.refresh_token ?? token.refresh_token, // Fall back to old refresh token
+            };
+          } catch (error) {
+            token.error = "ErrorAccessToken";
           }
+        } else {
+          // The token is still valid; no need to refresh
         }
       } catch (error) {
         token.error = "ErrorAccessToken";
