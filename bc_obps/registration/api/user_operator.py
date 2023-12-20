@@ -114,10 +114,10 @@ def get_user_operator_admin_exists(request, operator_id: int):
 @router.get("/get-current-users-operators", response=List[SelectUserOperatorOperatorsOut])
 def get_user(request):
     raise_401_if_role_not_authorized(request, ["industry_user_admin"])
-    UserOperatorList = UserOperator.objects.filter(
+    user_operator_list = UserOperator.objects.filter(
         user_id=request.current_user.user_guid, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.APPROVED
     )
-    return UserOperatorList
+    return user_operator_list
 
 
 @router.get("/user-operators", response=List[UserOperatorListOut])
@@ -379,18 +379,21 @@ def create_user_operator_contact(request, payload: UserOperatorContactIn):
 ##### PUT #####
 
 
-@router.put("/select-operator/user-operator/{user_id}/update-status")
-def update_user_operator_user_status(request, user_id: str):
-    raise_401_if_role_not_authorized(request, ["cas_admin", "cas_analyst", "industry_user_admin", "industry_user"])
+@router.put("/select-operator/user-operator/{user_guid}/update-status")
+def update_user_operator_user_status(request, user_guid: str):
+    raise_401_if_role_not_authorized(request, ["cas_admin", "cas_analyst", "industry_user_admin"])
     current_admin_user: User = request.current_user
     # need to convert request.body (a bytes object) to a string, and convert the string to a JSON object
     payload = json.loads(request.body.decode())
     status = getattr(UserOperator.Statuses, payload.get("status").upper())
-    user_operator = get_object_or_404(UserOperator, id=user_id)
-    # TODO later: add data to verified_by once user authentication in place
+    user_operator = get_object_or_404(UserOperator, user=user_guid)
     user_operator.status = status
     if user_operator.status in [UserOperator.Statuses.APPROVED, UserOperator.Statuses.REJECTED]:
         user_operator.verified_at = datetime.now(pytz.utc)
+        user_operator.verified_by_id = current_admin_user.user_guid
+    if user_operator.status in [UserOperator.Statuses.PENDING]:
+        user_operator.verified_at = None
+        user_operator.verified_by_id = None
     data = serializers.serialize(
         "json",
         [
@@ -409,7 +412,6 @@ def update_user_operator_status(request, user_operator_id: str):
     payload = json.loads(request.body.decode())
     status = getattr(UserOperator.Statuses, payload.get("status").upper())
     user_operator = get_object_or_404(UserOperator, id=user_operator_id)
-    # TODO later: add data to verified_by once user authentication in place
     user_operator.status = status
     if user_operator.status in [UserOperator.Statuses.APPROVED, UserOperator.Statuses.REJECTED]:
         user_operator.verified_at = datetime.now(pytz.utc)

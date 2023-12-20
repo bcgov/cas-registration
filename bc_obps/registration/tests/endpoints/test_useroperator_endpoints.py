@@ -165,8 +165,9 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         assert response.status_code == 401
 
     def test_unauthorized_users_cannot_put(self):
-        # /select-operator/user-operator/{user_id}/update-status
+        # /select-operator/user-operator/{user_guid}/update-status
         user = baker.make(User)
+        print(user.user_guid)
         response = TestUtils.mock_put_with_auth_role(
             self,
             'cas_pending',
@@ -175,7 +176,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
             f"{base_endpoint}select-operator/user-operator/{user.user_guid}/update-status",
         )
         assert response.status_code == 401
-        user = baker.make(User)
+        # user = baker.make(User)
         response = TestUtils.mock_put_with_auth_role(
             self,
             'industry_user',
@@ -210,7 +211,9 @@ class TestUserOperatorEndpoint(CommonTestSetup):
             status=UserOperator.Statuses.APPROVED,
         )
 
-        response = TestUtils.mock_get_with_auth_role(self, 'cas_admin', f"{base_endpoint}get-current-users-operators")
+        response = TestUtils.mock_get_with_auth_role(
+            self, 'industry_user_admin', f"{base_endpoint}get-current-users-operators"
+        )
 
         assert len(json.loads(response.content)) == 2
 
@@ -321,7 +324,6 @@ class TestUserOperatorEndpoint(CommonTestSetup):
 
     # GET USER OPERATOR ID 200
     def test_get_user_operator_operator_id(self):
-
         # Act
         operator = baker.make(Operator)
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
@@ -337,7 +339,6 @@ class TestUserOperatorEndpoint(CommonTestSetup):
 
     # GET USER OPERATOR ID 404
     def test_get_user_operator_operator_id_with_invalid_user(self):
-
         # Act
         response = TestUtils.mock_get_with_auth_role(
             self, 'industry_user_admin', f"{base_endpoint}user-operator-operator-id"
