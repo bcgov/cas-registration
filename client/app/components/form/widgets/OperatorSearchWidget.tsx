@@ -45,11 +45,13 @@ const OperatorSearchWidget: React.FC<WidgetProps> = ({
     setOptions(results);
   };
 
+  // 200ms debounce to prevent excessive API calls
   const debouncedChangeHandler = useMemo(
     () => debounce(changeHandler, 200),
     [],
   );
 
+  // Clear options when the field loses focus as the dropdown will remain open otherwise
   const handleBlur = () => {
     setOptions([]);
   };
