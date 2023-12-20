@@ -17,7 +17,7 @@ export default function UserOperatorReview({
   async function approveRequest() {
     userOperator.status = Status.APPROVED;
     const response = await actionHandler(
-      `registration/select-operator/user-operator/${userOperatorId}/update-status`,
+      `registration/select-operator/user-operator/operator/${userOperatorId}/update-status`,
       "PUT",
       `dashboard/operators/user-operators/${userOperatorId}`,
       {
@@ -30,7 +30,7 @@ export default function UserOperatorReview({
   async function rejectRequest() {
     userOperator.status = Status.REJECTED;
     const response = await actionHandler(
-      `registration/select-operator/user-operator/${userOperatorId}/update-status`,
+      `registration/select-operator/user-operator/operator/${userOperatorId}/update-status`,
       "PUT",
       `dashboard/operators/user-operators/${userOperatorId}`,
       {
