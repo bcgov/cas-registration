@@ -96,8 +96,6 @@ def get_user_operator(request, user_operator_id: int):
 
     result = {**user_operator_role_dict, **user_dict, **operator_dict}
 
-    print(result)
-
     return result
 
 
