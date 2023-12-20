@@ -6,7 +6,7 @@ import Link from "next/link";
 
 interface SubmitButtonProps {
   baseUrl: string;
-  disabled: boolean;
+  disabled?: boolean;
   cancelUrl: string;
   classNames?: string;
   step: number;

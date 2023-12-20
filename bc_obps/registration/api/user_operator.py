@@ -113,6 +113,7 @@ def get_user_operator_admin_exists(request, operator_id: int):
 
 @router.get("/get-current-users-operators", response=List[SelectUserOperatorOperatorsOut])
 def get_user(request):
+    raise_401_if_role_not_authorized(request, ["industry_user_admin"])
     UserOperatorList = UserOperator.objects.filter(
         user_id=request.current_user.user_guid, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.APPROVED
     )
@@ -121,6 +122,7 @@ def get_user(request):
 
 @router.get("/user-operators", response=List[UserOperatorListOut])
 def list_user_operators(request):
+    raise_401_if_role_not_authorized(request, ["cas_admin", "cas_analyst"])
     qs = UserOperator.objects.all()
     user_operator_list = []
 
