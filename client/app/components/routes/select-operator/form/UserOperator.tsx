@@ -79,7 +79,6 @@ export default async function UserOperator({
   const userData: UserInformationInitialFormData | { error: string } =
     await getCurrentUser();
 
-  // TODO: define schema of data returned from endpoint
   const userOperatorData: UserOperatorFormData | { error: string } =
     await getUserOperatorFormData(userOperatorId);
 

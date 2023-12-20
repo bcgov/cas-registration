@@ -166,7 +166,6 @@ class TestUserOperatorEndpoint(CommonTestSetup):
     def test_unauthorized_users_cannot_put(self):
         # /select-operator/user-operator/{user_guid}/update-status
         user = baker.make(User)
-        print(user.user_guid)
         response = TestUtils.mock_put_with_auth_role(
             self,
             'cas_pending',
@@ -175,7 +174,6 @@ class TestUserOperatorEndpoint(CommonTestSetup):
             f"{base_endpoint}select-operator/user-operator/{user.user_guid}/update-status",
         )
         assert response.status_code == 401
-        # user = baker.make(User)
         response = TestUtils.mock_put_with_auth_role(
             self,
             'industry_user',
