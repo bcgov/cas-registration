@@ -209,7 +209,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         )
 
         response = TestUtils.mock_get_with_auth_role(
-            self, 'industry_user_admin', f"{base_endpoint}get-current-users-operators"
+            self, 'industry_user_admin', f"{base_endpoint}get-current-user-user-operators"
         )
 
         assert len(json.loads(response.content)) == 2
