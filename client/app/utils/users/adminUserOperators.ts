@@ -20,7 +20,7 @@ type UserOperator = {
 async function getAdminsApprovedUserOperators(): Promise<UserOperator[]> {
   try {
     return await actionHandler(
-      `registration/get-current-users-operators`,
+      `registration/get-current-user-user-operators`,
       "GET",
       "/dashboard/users",
     );

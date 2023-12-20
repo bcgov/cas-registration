@@ -108,7 +108,7 @@ def get_user_operator_admin_exists(request, operator_id: int):
     return 200, has_admin
 
 
-@router.get("/get-current-users-operators", response=List[SelectUserOperatorOperatorsOut])
+@router.get("/get-current-user-user-operators", response=List[SelectUserOperatorOperatorsOut])
 def get_user(request):
     raise_401_if_role_not_authorized(request, ["industry_user_admin"])
     user_operator_list = UserOperator.objects.filter(
@@ -202,7 +202,6 @@ def request_access(request, payload: SelectOperatorIn):
 @router.post("/user-operator/operator", response={200: RequestAccessOut, codes_4xx: Message})
 def create_operator_and_user_operator(request, payload: UserOperatorOperatorIn):
     user: User = request.current_user
-    raise_401_if_role_not_authorized(user.app_role, ["industry_user", "industry_user_admin"])
     try:
         payload_dict = payload.dict()
         operator_has_parent_company: bool = payload_dict.get("operator_has_parent_company")
@@ -403,7 +402,7 @@ def update_user_operator_user_status(request, user_guid: str):
 
 @router.put("/select-operator/user-operator/operator/{user_operator_id}/update-status")
 def update_user_operator_status(request, user_operator_id: str):
-    raise_401_if_role_not_authorized(request, ["cas_admin", "cas_analyst", "industry_user_admin"])
+    raise_401_if_role_not_authorized(request, ["cas_admin", "cas_analyst"])
     current_admin_user: User = request.current_user
     # need to convert request.body (a bytes object) to a string, and convert the string to a JSON object
     payload = json.loads(request.body.decode())
@@ -413,6 +412,9 @@ def update_user_operator_status(request, user_operator_id: str):
     if user_operator.status in [UserOperator.Statuses.APPROVED, UserOperator.Statuses.REJECTED]:
         user_operator.verified_at = datetime.now(pytz.utc)
         user_operator.verified_by = current_admin_user
+    if user_operator.status in [UserOperator.Statuses.PENDING]:
+        user_operator.verified_at = None
+        user_operator.verified_by_id = None
     data = serializers.serialize(
         "json",
         [
