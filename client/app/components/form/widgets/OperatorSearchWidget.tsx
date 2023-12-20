@@ -12,6 +12,7 @@ const OperatorSearchWidget: React.FC<WidgetProps> = ({
   id,
   onChange,
   rawErrors,
+  value,
   readonly,
   uiSchema,
 }) => {
@@ -24,6 +25,7 @@ const OperatorSearchWidget: React.FC<WidgetProps> = ({
   ) => {
     onChange(option);
     setOptions([]);
+    setIsSearchAttempted(false);
   };
 
   const changeHandler = async (_event: React.ChangeEvent<{}>, val: string) => {
@@ -89,7 +91,12 @@ const OperatorSearchWidget: React.FC<WidgetProps> = ({
       options={options}
       sx={styles}
       noOptionsText="No results found. Retry or create an operator."
-      open={options.length > 0 || isSearchAttempted}
+      open={
+        // open the dropdown if there are options and no value
+        // or if the user has attempted a search so we can show the "no results" message
+        (options.length > 0 && !options.includes(value as string)) ||
+        (options.length === 0 && isSearchAttempted)
+      }
       onChange={handleChange}
       onBlur={handleBlur}
       onInputChange={debouncedChangeHandler}
