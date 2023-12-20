@@ -2,6 +2,7 @@ import { GridRowsProp } from "@mui/x-data-grid";
 
 import { actionHandler } from "@/app/utils/actions";
 import DataGrid from "@/app/components/datagrid/DataGrid";
+import { UserOperator } from "./types";
 
 // 🛠️ Function to fetch user-operators
 async function getUserOperators() {
@@ -24,7 +25,7 @@ function capitalizeString(value: string): string {
 // 🧩 Main component
 export default async function AccessRequests() {
   // Fetch userOperator data
-  const userOperators: any = await getUserOperators();
+  const userOperators: [UserOperator] = await getUserOperators();
   if (!userOperators) {
     return (
       <div>
