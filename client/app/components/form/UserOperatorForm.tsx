@@ -53,23 +53,20 @@ export default function UserOperatorMultiStepForm({
       isFinalStep ? "contact" : "operator"
     }`;
 
-    let response: any;
-    if (readonly) {
-      response = await actionHandler(
-        apiUrl,
-        "GET",
-        `/dashboard/select-operator/user-operator/create/${params?.formSection}`,
-      );
-    } else {
-      response = await actionHandler(
-        apiUrl,
-        "POST",
-        `/dashboard/select-operator/user-operator/create/${params?.formSection}`,
-        {
-          body: JSON.stringify(newFormData),
-        },
-      );
-    }
+    const response = readonly
+      ? await actionHandler(
+          apiUrl,
+          "GET",
+          `/dashboard/select-operator/user-operator/create/${params?.formSection}`,
+        )
+      : await actionHandler(
+          apiUrl,
+          "POST",
+          `/dashboard/select-operator/user-operator/create/${params?.formSection}`,
+          {
+            body: JSON.stringify(newFormData),
+          },
+        );
 
     if (response.error) {
       setErrorList([{ message: response.error }]);
@@ -84,7 +81,6 @@ export default function UserOperatorMultiStepForm({
   return (
     <FormBase
       schema={schema}
-      error={errorList}
       readonly={readonly}
       formData={formState}
       onSubmit={submitHandler}
