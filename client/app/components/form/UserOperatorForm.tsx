@@ -53,7 +53,7 @@ export default function UserOperatorMultiStepForm({
       isFinalStep ? "contact" : "operator"
     }`;
 
-    let response: Promise<any>;
+    let response: any;
     if (readonly) {
       response = await actionHandler(
         apiUrl,
