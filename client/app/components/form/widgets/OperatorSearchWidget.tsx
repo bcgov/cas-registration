@@ -13,10 +13,10 @@ const OperatorSearchWidget: React.FC<WidgetProps> = ({
   onChange,
   rawErrors,
   readonly,
-  value,
   uiSchema,
 }) => {
   const [options, setOptions] = useState([] as string[]);
+  const [isSearchAttempted, setIsSearchAttempted] = useState(false);
 
   const handleChange = (
     e: SyntheticEvent<Element, Event>,
@@ -27,7 +27,11 @@ const OperatorSearchWidget: React.FC<WidgetProps> = ({
   };
 
   const changeHandler = async (_event: React.ChangeEvent<{}>, val: string) => {
-    if (!val) return;
+    if (!val) {
+      setIsSearchAttempted(false);
+      setOptions([]);
+      return;
+    }
 
     const queryParam = `?search_value=${val}`;
     const response = await actionHandler(
@@ -42,7 +46,9 @@ const OperatorSearchWidget: React.FC<WidgetProps> = ({
     const results = response.map(
       (item: { legal_name: any }) => item.legal_name,
     );
+
     setOptions(results);
+    setIsSearchAttempted(true);
   };
 
   // 200ms debounce to prevent excessive API calls
@@ -54,6 +60,7 @@ const OperatorSearchWidget: React.FC<WidgetProps> = ({
   // Clear options when the field loses focus as the dropdown will remain open otherwise
   const handleBlur = () => {
     setOptions([]);
+    setIsSearchAttempted(false);
   };
 
   const isError = rawErrors && rawErrors.length > 0;
@@ -67,6 +74,9 @@ const OperatorSearchWidget: React.FC<WidgetProps> = ({
     "& .MuiOutlinedInput-notchedOutline": {
       borderColor: borderColor,
     },
+    "& .MuiAutocomplete-noOptions": {
+      color: "red!important",
+    },
   };
 
   return (
@@ -78,7 +88,8 @@ const OperatorSearchWidget: React.FC<WidgetProps> = ({
       autoHighlight
       options={options}
       sx={styles}
-      open={options.length > 0 && !options.includes(value as string)}
+      noOptionsText="No results found. Retry or create an operator."
+      open={options.length > 0 || isSearchAttempted}
       onChange={handleChange}
       onBlur={handleBlur}
       onInputChange={debouncedChangeHandler}
