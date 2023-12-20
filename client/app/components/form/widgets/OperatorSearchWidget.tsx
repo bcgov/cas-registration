@@ -27,6 +27,7 @@ const OperatorSearchWidget: React.FC<WidgetProps> = ({
   };
 
   const changeHandler = async (_event: React.ChangeEvent<{}>, val: string) => {
+    if (!val) return;
     const queryParam = `?search_value=${val}`;
     const response = await actionHandler(
       `registration/operators/legal-name${queryParam}`,
@@ -73,6 +74,7 @@ const OperatorSearchWidget: React.FC<WidgetProps> = ({
       disabled={disabled || readonly}
       autoHighlight
       options={options}
+      clearOnBlur={false}
       sx={styles}
       open={options.length > 0 && !options.includes(value as string)}
       onChange={handleChange}
