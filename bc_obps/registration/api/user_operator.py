@@ -90,14 +90,13 @@ def get_user_operator(request, user_operator_id: int):
         if request.current_user.user_guid not in authorized_users:
             raise HttpError(401, UNAUTHORIZED_MESSAGE)
 
-    # user_operator_dict = UserOperatorOut.from_orm(user_operator, fields=["role", "status"])
     user_operator_role_dict = UserOperatorRoleOut.from_orm(user_operator).dict()
-    user_operator_dict = model_to_dict(user_operator, fields=["role", "status"])
-
     user_dict = UserOut.from_orm(user_operator.user).dict()
     operator_dict = OperatorOut.from_orm(user_operator.operator).dict()
 
     result = {**user_operator_role_dict, **user_dict, **operator_dict}
+
+    print(result)
 
     return result
 
@@ -415,7 +414,7 @@ def update_user_operator_status(request, user_operator_id: str):
     user_operator.status = status
     if user_operator.status in [UserOperator.Statuses.APPROVED, UserOperator.Statuses.REJECTED]:
         user_operator.verified_at = datetime.now(pytz.utc)
-        user_operator.verified_by = current_admin_user.user_guid
+        user_operator.verified_by = current_admin_user
     data = serializers.serialize(
         "json",
         [
