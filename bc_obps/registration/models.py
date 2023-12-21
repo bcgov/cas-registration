@@ -1,10 +1,11 @@
-import uuid
+import uuid, re
 from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
 from localflavor.ca.models import CAPostalCodeField, CAProvinceField
 from simple_history.models import HistoricalRecords
 from django.core.validators import RegexValidator
 from django.utils import timezone
+from django.core.exceptions import ValidationError
 
 
 class TimeStampedModelManager(models.Manager):
@@ -451,7 +452,7 @@ class OperationAndFacilityCommonInfo(TimeStampedModel):
         NaicsCode,
         on_delete=models.DO_NOTHING,
         db_comment="An operation or facility's NAICS code",
-        related_name="operations_and_facilities",
+        related_name='%(class)ss',
     )
 
     previous_year_attributable_emissions = models.IntegerField(
@@ -481,6 +482,9 @@ class OperationAndFacilityCommonInfo(TimeStampedModel):
         abstract = True
         db_table_comment = "An abstract base class (used for putting common information into a number of other models) containing fields for operations and facilities"
         db_table = 'erc"."operation'
+
+
+boro_id_pattern = r'^\d{2}-\d{4}$'
 
 
 class Operation(OperationAndFacilityCommonInfo):
@@ -533,22 +537,23 @@ class Operation(OperationAndFacilityCommonInfo):
         default=Statuses.NOT_REGISTERED,
         db_comment="The status of an operation in the app (e.g. pending review)",
     )
-    # temporary handling, many-to-many handled in #138
-    # operators = models.ForeignKey(
-    #     Operator,
-    #     on_delete=models.DO_NOTHING,
-    #     db_comment="The operator(s) that owns the operation",
-    #     related_name="user_operators",
-    # )
+    # Setting this to OneToOneField instead of ForeignKey because we want to enforce that there is only one BORO ID per operation
+    bc_obps_regulated_operation = models.OneToOneField(
+        "BcObpsRegulatedOperation",
+        on_delete=models.DO_NOTHING,
+        blank=True,
+        null=True,
+        db_comment="The BC OBPS regulated operation ID of an operation when operation is approved",
+    )
     regulated_products = models.ManyToManyField(
         RegulatedProduct,
         blank=True,
-        related_name="operations_and_facilities",
+        related_name='%(class)ss',
     )
     reporting_activities = models.ManyToManyField(
         ReportingActivity,
         blank=True,
-        related_name="operations_and_facilities",
+        related_name='%(class)ss',
     )
     history = HistoricalRecords(
         table_name='erc_history"."operation_history', m2m_fields=[regulated_products, reporting_activities, documents]
@@ -562,6 +567,38 @@ class Operation(OperationAndFacilityCommonInfo):
             models.Index(fields=["naics_code"], name="naics_code_idx"),
             models.Index(fields=["verified_by"], name="operation_verified_by_idx"),
         ]
+
+    def generate_unique_boro_id(self) -> None:
+        """
+        Generate a unique BC OBPS regulated operation ID based on the current year and the latest BORO ID.
+        """
+
+        # if the operation already has a BORO ID, return it
+        if self.bc_obps_regulated_operation:
+            return self.bc_obps_regulated_operation
+
+        current_year_last_digits = timezone.now().year % 100  # Get the last two digits of the current year
+
+        latest_boro_id = BcObpsRegulatedOperation.objects.order_by('-id').values_list('id', flat=True).first()
+
+        latest_number = 1
+        if latest_boro_id:
+            latest_latest_boro_id_year, latest_boro_id_number = map(int, latest_boro_id.split('-'))
+            # Check if the latest BORO ID is from the current year
+            if latest_latest_boro_id_year == current_year_last_digits:
+                latest_number = latest_boro_id_number + 1
+
+        new_boro_id = (
+            f"{current_year_last_digits}-{latest_number:04d}"  # Pad the number with zeros to make it 4 digits long
+        )
+
+        if not re.match(boro_id_pattern, new_boro_id):
+            raise ValidationError("Generated BORO ID is not in the correct format.")
+        if Operation.objects.filter(bc_obps_regulated_operation__pk=new_boro_id).exists():
+            raise ValidationError("Generated BORO ID is not unique.")
+
+        new_boro_id_instance = BcObpsRegulatedOperation.objects.create(id=new_boro_id)
+        self.bc_obps_regulated_operation = new_boro_id_instance
 
 
 class MultipleOperator(TimeStampedModel):
@@ -640,7 +677,41 @@ class MultipleOperator(TimeStampedModel):
     mailing_postal_code = CAPostalCodeField(
         db_comment="The mailing postal code of an operator, limited to valid Canadian postal codes"
     )
+    history = HistoricalRecords(table_name='erc_history"."multiple_operator_history')
 
     class Meta:
         db_table_comment = "Table to store multiple operator metadata"
         db_table = 'erc"."multiple_operator'
+
+
+class BcObpsRegulatedOperation(models.Model):
+    """BC OBPS Regulated Operation model"""
+
+    id = models.CharField(
+        primary_key=True,
+        max_length=255,
+        db_comment="The BC OBPS regulated operation ID of an operation when operation is approved",
+    )
+    issued_at = models.DateTimeField(
+        auto_now_add=True,
+        db_comment="The time the BC OBPS Regulated Operation ID was issued by an IRC user",
+    )
+    comments = models.TextField(
+        blank=True,
+        db_comment="Comments from admins in the case that a BC OBPS Regulated Operation ID is revoked",
+    )
+    history = HistoricalRecords(table_name='erc_history"."bc_obps_regulated_operation_history')
+
+    class Meta:
+        db_table_comment = "Table to store BC OBPS Regulated Operation metadata"
+        db_table = 'erc"."bc_obps_regulated_operation'
+
+    def save(self, *args, **kwargs):
+        """
+        Override the save method to set the issued_at field if it is not already set.
+        """
+        if not re.match(boro_id_pattern, self.id):
+            raise ValidationError("Generated BORO ID is not in the correct format.")
+        if not self.issued_at:
+            self.issued_at = timezone.now()
+        super().save(*args, **kwargs)
