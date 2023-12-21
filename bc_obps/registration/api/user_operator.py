@@ -202,6 +202,15 @@ def request_access(request, payload: SelectOperatorIn):
 @router.post("/user-operator/operator", response={200: RequestAccessOut, codes_4xx: Message})
 def create_operator_and_user_operator(request, payload: UserOperatorOperatorIn):
     user: User = request.current_user
+    raise_401_if_role_not_authorized(
+        request,
+        [
+            "industry_user",
+            "industry_user_admin",
+            "cas_admin",
+            "cas_analyst",
+        ],
+    )
     try:
         payload_dict = payload.dict()
         operator_has_parent_company: bool = payload_dict.get("operator_has_parent_company")
