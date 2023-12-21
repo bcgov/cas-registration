@@ -6,6 +6,7 @@ import Link from "next/link";
 
 interface SubmitButtonProps {
   baseUrl: string;
+  disabled?: boolean;
   cancelUrl: string;
   classNames?: string;
   step: number;
@@ -16,6 +17,7 @@ interface SubmitButtonProps {
 
 const SubmitButton: React.FunctionComponent<SubmitButtonProps> = ({
   baseUrl,
+  disabled,
   step,
   steps,
   cancelUrl,
@@ -25,6 +27,8 @@ const SubmitButton: React.FunctionComponent<SubmitButtonProps> = ({
 }) => {
   const { pending } = useFormStatus();
   const isFinalStep = step === steps.length - 1;
+  const isDisabled = disabled || pending;
+
   return (
     <div className={`flex w-full mt-8 justify-between ${classNames}`}>
       {cancelUrl && (
@@ -58,12 +62,22 @@ const SubmitButton: React.FunctionComponent<SubmitButtonProps> = ({
           </Link>
         )}
         {isFinalStep && !submitEveryStep && (
-          <Button type="submit" aria-disabled={pending} variant="contained">
+          <Button
+            type="submit"
+            aria-disabled={isDisabled}
+            disabled={isDisabled}
+            variant="contained"
+          >
             Submit
           </Button>
         )}
         {submitEveryStep && (
-          <Button type="submit" aria-disabled={pending} variant="contained">
+          <Button
+            type="submit"
+            aria-disabled={isDisabled}
+            disabled={isDisabled}
+            variant="contained"
+          >
             {!isFinalStep ? "Next" : "Submit"}
           </Button>
         )}

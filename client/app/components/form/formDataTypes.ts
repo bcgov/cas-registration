@@ -8,6 +8,8 @@ export interface UserFormData {
   email: string;
   phone_number: string;
   province: string;
+  role: string;
+  status: string;
 }
 export interface UserOperatorFormData extends UserFormData {
   is_senior_officer: string;
@@ -54,6 +56,7 @@ export interface UserOperatorFormData extends UserFormData {
   percentage_owned_by_parent_company?: number;
   // Not in form, but needed for API to create a contact based on the existing user-operator
   user_operator_id?: string;
+  user_operator_status?: string;
 }
 export interface UserProfileFormData {
   first_name: string;

@@ -12,6 +12,8 @@ from registration.schema import (
     IsApprovedUserOperator,
     UserOperatorOperatorIdOut,
     UserOperatorStatus,
+    UserOperatorListOut,
+    UserOperatorRoleOut,
 )
 from registration.schema.user_operator import SelectUserOperatorOperatorsOut
 from typing import List
@@ -39,10 +41,13 @@ from registration.utils import (
     raise_401_if_role_not_authorized,
 )
 from ninja.responses import codes_4xx
+from typing import List
 import json
 from datetime import datetime
 import pytz
 from ninja.errors import HttpError
+from django.core import serializers
+from django.forms import model_to_dict
 
 
 ##### GET #####
@@ -55,7 +60,6 @@ def get_user_operator_operator_id(request):
 
 @router.get("/is-approved-admin-user-operator/{user_guid}", response={200: IsApprovedUserOperator, codes_4xx: Message})
 def is_approved_admin_user_operator(request, user_guid: str):
-
     raise_401_if_role_not_authorized(request, ["industry_user", "industry_user_admin"])
 
     approved_user_operator: bool = UserOperator.objects.filter(
@@ -78,19 +82,21 @@ def get_user_operator_operator_id(request):
     response=UserOperatorOut,
 )
 def get_user_operator(request, user_operator_id: int):
-
     raise_401_if_role_not_authorized(request, ["industry_user", "industry_user_admin", "cas_admin", "cas_analyst"])
     user_operator = get_object_or_404(UserOperator, id=user_operator_id)
     operator = get_object_or_404(Operator, id=user_operator.operator_id)
+    if "industry" in request.current_user.app_role.role_name:
+        authorized_users = get_an_operators_approved_users(operator)
+        if request.current_user.user_guid not in authorized_users:
+            raise HttpError(401, UNAUTHORIZED_MESSAGE)
 
-    authorized_users = get_an_operators_approved_users(operator)
-    if request.current_user.user_guid not in authorized_users:
-        raise HttpError(401, UNAUTHORIZED_MESSAGE)
-
+    user_operator_role_dict = UserOperatorRoleOut.from_orm(user_operator).dict()
     user_dict = UserOut.from_orm(user_operator.user).dict()
     operator_dict = OperatorOut.from_orm(user_operator.operator).dict()
 
-    return {**user_dict, **operator_dict}
+    result = {**user_operator_role_dict, **user_dict, **operator_dict}
+
+    return result
 
 
 @router.get("/operator-has-admin/{operator_id}", response={200: bool, codes_4xx: Message})
@@ -102,12 +108,54 @@ def get_user_operator_admin_exists(request, operator_id: int):
     return 200, has_admin
 
 
-@router.get("/get-current-users-operators", response=List[SelectUserOperatorOperatorsOut])
+@router.get("/get-current-user-user-operators", response=List[SelectUserOperatorOperatorsOut])
 def get_user(request):
-    UserOperatorList = UserOperator.objects.filter(
+    raise_401_if_role_not_authorized(request, ["industry_user_admin"])
+    user_operator_list = UserOperator.objects.filter(
         user_id=request.current_user.user_guid, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.APPROVED
     )
-    return UserOperatorList
+    return user_operator_list
+
+
+@router.get("/user-operators", response=List[UserOperatorListOut])
+def list_user_operators(request):
+    raise_401_if_role_not_authorized(request, ["cas_admin", "cas_analyst"])
+    qs = UserOperator.objects.all()
+    user_operator_list = []
+
+    for user_operator in qs:
+        user_operator_related_fields_dict = model_to_dict(
+            user_operator,
+            fields=[
+                "id",
+                "status",
+            ],
+        )
+        user = user_operator.user
+        user_related_fields_dict = model_to_dict(
+            user,
+            fields=[
+                "first_name",
+                "last_name",
+                "email",
+            ],
+        )
+        operator = user_operator.operator
+        operator_related_fields_dict = model_to_dict(
+            operator,
+            fields=[
+                "legal_name",
+            ],
+        )
+
+        user_operator_list.append(
+            {
+                **user_operator_related_fields_dict,
+                **user_related_fields_dict,
+                **operator_related_fields_dict,
+            }
+        )
+    return user_operator_list
 
 
 ##### POST #####
@@ -154,7 +202,13 @@ def request_access(request, payload: SelectOperatorIn):
 @router.post("/user-operator/operator", response={200: RequestAccessOut, codes_4xx: Message})
 def create_operator_and_user_operator(request, payload: UserOperatorOperatorIn):
     user: User = request.current_user
-    raise_401_if_role_not_authorized(user.app_role, ["industry_user", "industry_user_admin"])
+    raise_401_if_role_not_authorized(
+        request,
+        [
+            "industry_user",
+            "industry_user_admin",
+        ],
+    )
     try:
         payload_dict = payload.dict()
         operator_has_parent_company: bool = payload_dict.get("operator_has_parent_company")
@@ -328,29 +382,52 @@ def create_user_operator_contact(request, payload: UserOperatorContactIn):
 ##### PUT #####
 
 
-@router.put("/select-operator/user-operator/{user_id}/update-status")
-def update_user_operator_status(request, user_id: str):
+@router.put("/select-operator/user-operator/{user_guid}/update-status")
+def update_user_operator_user_status(request, user_guid: str):
     raise_401_if_role_not_authorized(request, ["cas_admin", "cas_analyst", "industry_user_admin"])
     current_admin_user: User = request.current_user
+    # need to convert request.body (a bytes object) to a string, and convert the string to a JSON object
     payload = json.loads(request.body.decode())
     status = getattr(UserOperator.Statuses, payload.get("status").upper())
-    user_operator = get_object_or_404(UserOperator, user=user_id)
+    user_operator = get_object_or_404(UserOperator, user=user_guid)
     user_operator.status = status
-
     if user_operator.status in [UserOperator.Statuses.APPROVED, UserOperator.Statuses.REJECTED]:
         user_operator.verified_at = datetime.now(pytz.utc)
         user_operator.verified_by_id = current_admin_user.user_guid
     if user_operator.status in [UserOperator.Statuses.PENDING]:
         user_operator.verified_at = None
         user_operator.verified_by_id = None
-
     data = serializers.serialize(
         "json",
         [
             user_operator,
         ],
     )
+    user_operator.save()
+    return data
 
+
+@router.put("/select-operator/user-operator/operator/{user_operator_id}/update-status")
+def update_user_operator_status(request, user_operator_id: str):
+    raise_401_if_role_not_authorized(request, ["cas_admin", "cas_analyst"])
+    current_cas_internal_user: User = request.current_user
+    # need to convert request.body (a bytes object) to a string, and convert the string to a JSON object
+    payload = json.loads(request.body.decode())
+    status = getattr(UserOperator.Statuses, payload.get("status").upper())
+    user_operator = get_object_or_404(UserOperator, id=user_operator_id)
+    user_operator.status = status
+    if user_operator.status in [UserOperator.Statuses.APPROVED, UserOperator.Statuses.REJECTED]:
+        user_operator.verified_at = datetime.now(pytz.utc)
+        user_operator.verified_by = current_cas_internal_user
+    if user_operator.status in [UserOperator.Statuses.PENDING]:
+        user_operator.verified_at = None
+        user_operator.verified_by_id = None
+    data = serializers.serialize(
+        "json",
+        [
+            user_operator,
+        ],
+    )
     user_operator.save()
     return data
 
