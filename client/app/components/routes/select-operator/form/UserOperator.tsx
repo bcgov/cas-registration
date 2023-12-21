@@ -95,10 +95,16 @@ export default async function UserOperator({
       label: businessStructure.name,
     }),
   );
+
+  const formData = {
+    ...userData,
+    ...userOperatorData,
+  };
+
   return (
     <UserOperatorMultiStepForm
       schema={createUserOperatorSchema(businessStructuresList)}
-      formData={userData}
+      formData={formData}
     />
   );
 }
