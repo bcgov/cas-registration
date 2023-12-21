@@ -157,13 +157,12 @@ export default async function Operation({ numRow }: { numRow?: number }) {
       <CheckCircleIcon fontSize="large" color="success" />
       <div>
         <p className="mt-0">
-          <b>Exemption ID: </b>
+          This operation registration request was approved. <b>BORO ID: </b>{" "}
           {operation?.bc_obps_regulated_operation}
         </p>
         <p>
-          This operation is registered and you can use the Exemption ID above to
-          apply for carbon tax exemption with the British Columbia&apos;s
-          Ministry of Finance.
+          You can use the BC OBPS Regulated Operation (BORO) ID above to apply
+          for carbon tax exemption with the BC Ministry of Finance.
         </p>
       </div>
     </div>
