@@ -4,6 +4,7 @@ from django.forms import UUIDField
 from ninja import ModelSchema, Schema, Field
 from registration.models import Contact, User, UserOperator
 from pydantic import Field
+from ninja import ModelSchema, Schema, Field
 
 
 class UserOperatorStatus(Schema):
@@ -51,6 +52,9 @@ class UserOperatorOut(Schema):
     mailing_province: Optional[str]
     mailing_postal_code: Optional[str]
     website: Optional[str]
+    status: str
+    user_operator_status: str
+    role: str
 
 
 class UserOperatorOperatorIn(Schema):
@@ -150,3 +154,20 @@ class SelectUserOperatorOperatorsOut(ModelSchema):
     class Config:
         model = UserOperator
         model_fields = ["operator"]
+
+
+class UserOperatorRoleOut(ModelSchema):
+    user_operator_status: str = Field("", alias="status")
+
+    class Config:
+        model = UserOperator
+        model_fields = ["role"]
+
+
+class UserOperatorListOut(Schema):
+    id: int
+    status: str
+    first_name: str
+    last_name: str
+    email: str
+    legal_name: str

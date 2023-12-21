@@ -9,9 +9,9 @@ interface MultiStepFormProps {
   baseUrl: string;
   cancelUrl: string;
   error?: any;
+  disabled?: boolean;
   formData?: any;
   onSubmit: any;
-  readonly?: boolean;
   schema: any;
   showSubmissionStep?: boolean;
   submitEveryStep?: boolean;
@@ -22,10 +22,10 @@ interface MultiStepFormProps {
 const MultiStepFormBase = ({
   baseUrl,
   cancelUrl,
+  disabled,
   error,
   formData,
   onSubmit,
-  readonly,
   schema,
   showSubmissionStep,
   submitEveryStep,
@@ -51,12 +51,14 @@ const MultiStepFormBase = ({
         className="[&>div>fieldset]:min-h-[40vh]"
         schema={schema.properties[formSectionList[formSection]] as RJSFSchema}
         uiSchema={uiSchema}
-        readonly={readonly}
+        disabled={disabled}
+        readonly={disabled}
         onSubmit={onSubmit}
         formData={formData}
       >
         {error && <Alert severity="error">{error}</Alert>}
         <MultiStepButtons
+          disabled={disabled}
           step={formSection}
           steps={formSectionList}
           submitEveryStep={submitEveryStep}

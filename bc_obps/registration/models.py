@@ -390,10 +390,10 @@ class UserOperator(TimeStampedModel):
         REPORTER = "reporter", "Reporter"
 
     class Statuses(models.TextChoices):
-        DRAFT = "draft", "Draft"
-        PENDING = "pending", "Pending"
-        APPROVED = "approved", "Approved"
-        REJECTED = "rejected", "Rejected"
+        DRAFT = "Draft"
+        PENDING = "Pending"
+        APPROVED = "Approved"
+        REJECTED = "Rejected"
 
     user = models.ForeignKey(
         User,

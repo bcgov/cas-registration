@@ -30,6 +30,7 @@ class UserOut(ModelSchema):
             "postal_code",
             "email",
             "phone_number",
+            "app_role",
         ]
 
 

@@ -1,13 +1,13 @@
 import { actionHandler } from "@/app/utils/actions";
-import {
-  userOperatorSchema,
-  userOperatorPage2,
-} from "@/app/utils/jsonSchema/userOperator";
-import UserOperatorMultiStepForm from "@/app/components/form/UserOperatorMultiStepForm";
+import { userOperatorSchema } from "@/app/utils/jsonSchema/userOperator";
+
 import { BusinessStructure } from "@/app/components/routes/select-operator/form/types";
 import { RJSFSchema } from "@rjsf/utils";
-import { UserInformationInitialFormData } from "@/app/components/form/formDataTypes";
-import UserOperatorForm from "@/app/components/form/UserOperatorForm";
+import {
+  UserInformationInitialFormData,
+  UserOperatorFormData,
+} from "@/app/components/form/formDataTypes";
+import UserOperatorMultiStepForm from "@/app/components/form/UserOperatorMultiStepForm";
 
 async function getCurrentUser() {
   return actionHandler(
@@ -22,6 +22,15 @@ async function getBusinessStructures() {
     `registration/business_structures`,
     "GET",
     `/dashboard/select-operator/user-operator`,
+  );
+}
+
+export async function getUserOperatorFormData(id: number | undefined) {
+  if (!id) return {};
+  return actionHandler(
+    `registration/select-operator/user-operator/${id}`,
+    "GET",
+    `/user-operator/${id}`,
   );
 }
 
@@ -53,23 +62,32 @@ const createUserOperatorSchema = (
         .pc_business_structure,
       anyOf: businessStructureOptions,
     };
+
   return localSchema;
 };
 
 export default async function UserOperator({
   params,
 }: Readonly<{
-  params?: { id?: number };
+  params?: { id?: number; readonly?: boolean };
 }>) {
   const serverError = <div>Server Error. Please try again later.</div>;
-
+  const userOperatorId = params?.id;
   const businessStructures: BusinessStructure[] | { error: string } =
     await getBusinessStructures();
 
   const userData: UserInformationInitialFormData | { error: string } =
     await getCurrentUser();
 
-  if ("error" in userData || "error" in businessStructures) return serverError;
+  const userOperatorData: UserOperatorFormData | { error: string } =
+    await getUserOperatorFormData(userOperatorId);
+
+  if (
+    "error" in userData ||
+    "error" in businessStructures ||
+    "error" in userOperatorData
+  )
+    return serverError;
 
   const businessStructuresList = businessStructures?.map(
     (businessStructure: BusinessStructure) => ({
@@ -78,13 +96,15 @@ export default async function UserOperator({
     }),
   );
 
-  // If operator has an admin, use the single page form to show the user information
-  return params?.id ? (
-    <UserOperatorForm schema={userOperatorPage2} formData={userData} />
-  ) : (
+  const formData = {
+    ...userData,
+    ...userOperatorData,
+  };
+
+  return (
     <UserOperatorMultiStepForm
       schema={createUserOperatorSchema(businessStructuresList)}
-      formData={userData}
+      formData={formData}
     />
   );
 }
