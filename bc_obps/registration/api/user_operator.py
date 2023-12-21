@@ -207,8 +207,6 @@ def create_operator_and_user_operator(request, payload: UserOperatorOperatorIn):
         [
             "industry_user",
             "industry_user_admin",
-            "cas_admin",
-            "cas_analyst",
         ],
     )
     try:
