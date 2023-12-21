@@ -30,6 +30,9 @@ spec:
             - name: tf-cache
               mountPath: /working
               readOnly: False
+            - name: terraform-modules
+              mountPath: /terraform
+              readOnly: False
           env:
             - name: TF_VAR_project
               valueFrom:
@@ -72,3 +75,6 @@ spec:
                 path: gcs.tfbackend
         - name: tf-cache
           emptyDir: {}
+        - name: terraform-modules
+          configMap:
+            name: terraform-modules
