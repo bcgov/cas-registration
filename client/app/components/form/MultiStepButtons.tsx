@@ -75,7 +75,7 @@ const SubmitButton: React.FunctionComponent<SubmitButtonProps> = ({
           <Button
             type="submit"
             aria-disabled={isDisabled}
-            disabled={isDisabled}
+            disabled={isFinalStep && isDisabled}
             variant="contained"
           >
             {!isFinalStep ? "Next" : "Submit"}
