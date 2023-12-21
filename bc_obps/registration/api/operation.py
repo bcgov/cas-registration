@@ -14,6 +14,7 @@ from registration.models import (
     User,
     UserOperator,
     MultipleOperator,
+    Address,
 )
 from registration.schema import (
     OperationCreateIn,
@@ -44,35 +45,38 @@ def save_multiple_operators(multiple_operators_array: List[MultipleOperator], op
         "mo_business_structure": "business_structure",
         "mo_website": "website",
         "mo_percentage_ownership": "percentage_ownership",
-        "mo_physical_street_address": "physical_street_address",
-        "mo_physical_municipality": "physical_municipality",
-        "mo_physical_province": "physical_province",
-        "mo_physical_postal_code": "physical_postal_code",
         "mo_mailing_address_same_as_physical": "mailing_address_same_as_physical",
-        "mo_mailing_street_address": "mailing_street_address",
-        "mo_mailing_municipality": "mailing_municipality",
-        "mo_mailing_province": "mailing_province",
-        "mo_mailing_postal_code": "mailing_postal_code",
     }
-
     for idx, operator in enumerate(multiple_operators_array):
         new_operator = {}
         new_operator["operation_id"] = operation.id
         new_operator["operator_index"] = idx + 1
+        # handle addresses--if there's no mailing address given, it's the same as the physical address
+        physical_address = Address.objects.create(
+            street_address=operator.get("mo_physical_street_address"),
+            municipality=operator.get("mo_physical_municipality"),
+            province=operator.get("mo_physical_province"),
+            postal_code=operator.get("mo_physical_postal_code"),
+        )
 
-        # use physical address as mailing address if mo_mailing_address_same_as_physical is true
-        if operator["mo_mailing_address_same_as_physical"]:
-            operator["mo_mailing_street_address"] = operator["mo_physical_street_address"]
-            operator["mo_mailing_municipality"] = operator["mo_physical_municipality"]
-            operator["mo_mailing_province"] = operator["mo_physical_province"]
-            operator["mo_mailing_postal_code"] = operator["mo_physical_postal_code"]
+        new_operator["physical_address_id"] = physical_address.id
+
+        if not operator.get("mo_mailing_street_address"):
+            new_operator["mailing_address_id"] = physical_address.id
+        else:
+            mailing_address = Address.objects.create(
+                street_address=operator.get("mo_mailing_street_address") or operator.get("mo_physical_street_address"),
+                municipality=operator.get("mo_mailing_municipality") or operator.get("mo_physical_municipality"),
+                province=operator.get("mo_mailing_province") or operator.get("mo_physical_province"),
+                postal_code=operator.get("mo_mailing_postal_code") or operator.get("mo_physical_postal_code"),
+            )
+            new_operator["mailing_address_id"] = mailing_address.id
 
         for field in operator:
             if field in multiple_operator_fields_mapping:
                 new_operator[multiple_operator_fields_mapping[field]] = operator[field]
 
         new_operator["business_structure"] = BusinessStructure.objects.get(name=operator["mo_business_structure"])
-
         # TODO: archive multiple operators in #361 that are not in the array anymore once #326 is done
 
         # check if there is a multiple_operator with that operation id and number
@@ -86,6 +90,10 @@ def save_multiple_operators(multiple_operators_array: List[MultipleOperator], op
         else:
             new_multiple_operator = MultipleOperator.objects.create(**new_operator)
             new_multiple_operator.set_create_or_update(modifier=user)
+        # brianna can you still do this with the set_create_or_update
+        # MultipleOperator.objects.update_or_create(
+        #     operation_id=operation.id, operator_index=idx + 1, defaults={**new_operator}
+        # )
 
 
 ##### GET #####
@@ -98,7 +106,7 @@ def list_operations(request):
     # IRC users can see all operations except ones that are not registered yet
     if user.app_role.role_name in ['cas_admin', 'cas_analyst']:
         qs = Operation.objects.exclude(status__in=[Operation.Statuses.NOT_REGISTERED])
-        return qs
+        return 200, qs
     # Industry users can only see their companies' operations (if there's no user_operator or operator, then the user hasn't requested access to the operator)
     user_operator = UserOperator.objects.filter(user_id=user.user_guid).first()
     if not user_operator:
@@ -219,40 +227,56 @@ def update_operation(request, operation_id: int, submit, payload: OperationUpdat
         # Assign the naics_code instance to the operation
         operation.naics_code = nc
     # if is_application_lead_external is null, the user hasn't filled out that part of the form. If it's true, the user has assigned a contact; if it's false, the lead is the user
+
+    application_lead_address_id = None
+    application_lead_id = payload_dict["application_lead"]
+
+    if application_lead_id:
+        application_lead = Contact.objects.get(id=application_lead_id)
+        application_lead_address_id = Contact.objects.get(id=application_lead.address)
+
     if "is_application_lead_external" in payload_dict:
-        application_lead = payload_dict["application_lead"]
         if payload_dict["is_application_lead_external"]:
-            eal, created = Contact.objects.update_or_create(
-                id=application_lead,
+            address, created = Address.objects.update_or_create(
+                # brianna the address comes direct in the payload, maybe you want to rename like the mo to al_street_address etc
+                id=application_lead_address_id,
                 defaults={
-                    "first_name": payload.first_name,
-                    "last_name": payload.last_name,
-                    "position_title": payload.position_title,
                     "street_address": payload.street_address,
                     "municipality": payload.municipality,
                     "province": payload.province,
                     "postal_code": payload.postal_code,
+                },
+            )
+            eal, created = Contact.objects.update_or_create(
+                id=application_lead_id,
+                defaults={
+                    "first_name": payload.first_name,
+                    "last_name": payload.last_name,
+                    "position_title": payload.position_title,
                     "email": payload.email,
                     "phone_number": payload.phone_number,
                     "business_role": BusinessRole.objects.get(role_name="Operation Registration Lead"),
+                    "address": address,
                 },
             )
             eal.set_create_or_update(modifier=user)
             operation.application_lead = eal
         if payload_dict["is_application_lead_external"] is False:
+            user = request.current_user
             al, created = Contact.objects.update_or_create(
-                id=application_lead,
+                id=application_lead_id,
                 defaults={
                     "first_name": user.first_name,
                     "last_name": user.last_name,
                     "position_title": user.position_title,
-                    "street_address": user.street_address,
-                    "municipality": user.municipality,
-                    "province": user.province,
-                    "postal_code": user.postal_code,
+                    # "street_address": user.street_address,
+                    # "municipality": user.municipality,
+                    # "province": user.province,
+                    # "postal_code": user.postal_code,
                     "email": user.email,
                     "phone_number": user.phone_number,
                     "business_role": BusinessRole.objects.get(role_name="Operation Registration Lead"),
+                    "address": Address.objects.get(id=User.objects.get(user_guid=user.user_guid).address.id),
                 },
             )
             al.set_create_or_update(modifier=user)
@@ -281,7 +305,6 @@ def update_operation(request, operation_id: int, submit, payload: OperationUpdat
     operation.reporting_activities.clear()  # Clear existing activities
     for activity_id in payload.reporting_activities:
         operation.reporting_activities.add(activity_id)  # Adds each activity
-
     operation.save()
     operation.set_create_or_update(modifier=user)
 

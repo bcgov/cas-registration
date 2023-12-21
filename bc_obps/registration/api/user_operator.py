@@ -30,6 +30,7 @@ from registration.models import (
     UserOperator,
     Contact,
     ParentChildOperator,
+    Address,
 )
 from registration.utils import (
     UNAUTHORIZED_MESSAGE,
@@ -202,14 +203,9 @@ def request_access(request, payload: SelectOperatorIn):
 @router.post("/user-operator/operator", response={200: RequestAccessOut, codes_4xx: Message})
 def create_operator_and_user_operator(request, payload: UserOperatorOperatorIn):
     user: User = request.current_user
-    raise_401_if_role_not_authorized(
-        request,
-        [
-            "industry_user",
-            "industry_user_admin",
-        ],
-    )
+    raise_401_if_role_not_authorized(request, ["industry_user", "industry_user_admin"])
     try:
+        # brianna can we replace payload_dict with just payload?
         payload_dict = payload.dict()
         operator_has_parent_company: bool = payload_dict.get("operator_has_parent_company")
 
@@ -226,32 +222,34 @@ def create_operator_and_user_operator(request, payload: UserOperatorOperatorIn):
             business_structure=BusinessStructure.objects.get(name=payload_dict.get("business_structure")),
         )
 
-        # Consolidate mailing address if indicated
-        if payload_dict.get("mailing_address_same_as_physical"):
-            payload_dict.update(
-                {
-                    "mailing_street_address": payload_dict["physical_street_address"],
-                    "mailing_municipality": payload_dict["physical_municipality"],
-                    "mailing_province": payload_dict["physical_province"],
-                    "mailing_postal_code": payload_dict["physical_postal_code"],
-                }
+        # create physical address record
+        physical_address = Address.objects.create(
+            street_address=payload.physical_street_address,
+            municipality=payload.physical_municipality,
+            province=payload.physical_province,
+            postal_code=payload.physical_postal_code,
+        )
+        operator_instance.physical_address_id = physical_address
+
+        # create mailing address record (if mailing address is not in the payload, then it's the same as the physical address)
+        if not payload.mailing_street_address:
+            operator_instance.mailing_address_id = physical_address
+        else:
+            mailing_address = Address.objects.create(
+                street_address=payload.mailing_street_address or payload.physical_street_address,
+                municipality=payload.mailing_municipality or payload.physical_municipality,
+                province=payload.mailing_province or payload.physical_province,
+                postal_code=payload.mailing_postal_code or payload.physical_postal_code,
             )
+        operator_instance.mailing_address_id = mailing_address
 
         # fields to update on the Operator model
         operator_related_fields = [
             "legal_name",
             "trade_name",
-            "physical_street_address",
-            "physical_municipality",
-            "physical_province",
-            "physical_postal_code",
-            "mailing_street_address",
-            "mailing_municipality",
-            "mailing_province",
-            "mailing_postal_code",
-            "website",
+            "physical_address_id",
+            "mailing_address_id," "website",
         ]
-
         created_operator_instance: Operator = update_model_instance(
             operator_instance, operator_related_fields, payload_dict
         )
@@ -265,30 +263,34 @@ def create_operator_and_user_operator(request, payload: UserOperatorOperatorIn):
                 "pc_trade_name": "trade_name",
                 "pc_cra_business_number": "cra_business_number",
                 "pc_bc_corporate_registry_number": "bc_corporate_registry_number",
-                "pc_physical_street_address": "physical_street_address",
-                "pc_physical_municipality": "physical_municipality",
-                "pc_physical_province": "physical_province",
-                "pc_physical_postal_code": "physical_postal_code",
-                "pc_mailing_street_address": "mailing_street_address",
-                "pc_mailing_municipality": "mailing_municipality",
-                "pc_mailing_province": "mailing_province",
-                "pc_mailing_postal_code": "mailing_postal_code",
                 "pc_website": "website",
             }
-
-            if payload_dict.get("pc_mailing_address_same_as_physical"):
-                payload_dict.update(
-                    {
-                        "pc_mailing_street_address": payload_dict["pc_physical_street_address"],
-                        "pc_mailing_municipality": payload_dict["pc_physical_municipality"],
-                        "pc_mailing_province": payload_dict["pc_physical_province"],
-                        "pc_mailing_postal_code": payload_dict["pc_physical_postal_code"],
-                    }
-                )
 
             parent_operator_instance: Operator = Operator(
                 business_structure=BusinessStructure.objects.get(name=payload_dict.get("pc_business_structure"))
             )
+
+            # create physical address record
+            pc_physical_address = Address.objects.create(
+                street_address=payload.pc_physical_street_address,
+                municipality=payload.pc_physical_municipality,
+                province=payload.pc_physical_province,
+                postal_code=payload.pc_physical_postal_code,
+            )
+            parent_operator_instance.pc_physical_address_id = pc_physical_address
+
+            if not payload.pc_mailing_street_address:
+                parent_operator_instance.pc_mailing_address_id = pc_physical_address
+            else:
+                # create mailing address record (if mailing address is not in the payload, then it's the same as the physical address)
+                pc_mailing_address = Address.objects.create(
+                    street_address=payload.pc_mailing_street_address or payload.pc_physical_street_address,
+                    municipality=payload.pc_mailing_municipality or payload.pc_physical_municipality,
+                    province=payload.pc_mailing_province or payload.pc_physical_province,
+                    postal_code=payload.pc_mailing_postal_code or payload.pc_physical_postal_code,
+                )
+            parent_operator_instance.pc_mailing_address_id = pc_mailing_address
+
             parent_operator_instance = update_model_instance(
                 parent_operator_instance, parent_operator_fields_mapping, payload_dict
             )
@@ -334,13 +336,17 @@ def create_user_operator_contact(request, payload: UserOperatorContactIn):
         user: User = request.current_user
         is_senior_officer: bool = payload.is_senior_officer
 
-        senior_officer_contact: Contact = Contact(
-            business_role=BusinessRole.objects.get(role_name='Senior Officer'),
-            position_title=payload.position_title,
+        address = Address.objects.create(
             street_address=payload.street_address,
             municipality=payload.municipality,
             province=payload.province,
             postal_code=payload.postal_code,
+        )
+
+        senior_officer_contact: Contact = Contact(
+            business_role=BusinessRole.objects.get(role_name='Senior Officer'),
+            position_title=payload.position_title,
+            address=address,
         )
 
         if is_senior_officer:

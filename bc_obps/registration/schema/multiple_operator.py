@@ -1,11 +1,12 @@
 from typing import Optional
-from ninja import Field, Schema
+from registration.schema.address import AddressSchema
+from ninja import Field, Schema, ModelSchema
 from registration.models import MultipleOperator
 
 ### Multiple Operator schemas
 
 
-class MultipleOperatorIn(Schema):
+class MultipleOperatorIn(ModelSchema):
     operation_id: int
     mo_legal_name: str
     mo_trade_name: str
@@ -23,8 +24,12 @@ class MultipleOperatorIn(Schema):
     mo_mailing_province: Optional[str]
     mo_mailing_postal_code: Optional[str]
 
+    class Config:
+        model = MultipleOperator
+        model_fields = "__all__"
 
-class MultipleOperatorOut(Schema):
+
+class MultipleOperatorOut(ModelSchema):
     """
     Schema for the MultipleOperator model
     """
@@ -38,16 +43,12 @@ class MultipleOperatorOut(Schema):
     mo_business_structure: str = Field(..., alias="business_structure")
     mo_website: Optional[str] = Field(None, alias="website")
     mo_percentage_ownership: int = Field(None, alias="percentage_ownership")
-    mo_physical_street_address: str = Field(..., alias="physical_street_address")
-    mo_physical_municipality: str = Field(..., alias="physical_municipality")
-    mo_physical_province: str = Field(..., alias="physical_province")
-    mo_physical_postal_code: str = Field(..., alias="physical_postal_code")
     mo_mailing_address_same_as_physical: Optional[bool] = Field(False, alias="mailing_address_same_as_physical")
-    mo_mailing_street_address: Optional[str] = Field(None, alias="mailing_street_address")
-    mo_mailing_municipality: Optional[str] = Field(None, alias="mailing_municipality")
-    mo_mailing_province: Optional[str] = Field(None, alias="mailing_province")
-    mo_mailing_postal_code: Optional[str] = Field(None, alias="mailing_postal_code")
 
     @staticmethod
     def resolve_business_structure(mo: MultipleOperator):
         return mo.business_structure.name
+
+    class Config:
+        model = MultipleOperator
+        model_fields = "__all__"

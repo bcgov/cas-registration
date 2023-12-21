@@ -1,3 +1,4 @@
+from registration.schema.address import AddressSchema
 from ninja import ModelSchema
 from registration.models import Contact
 
@@ -6,6 +7,8 @@ class ContactSchema(ModelSchema):
     """
     Schema for the Contact model
     """
+
+    address: AddressSchema
 
     @staticmethod
     def resolve_phone_number(obj):
@@ -16,4 +19,13 @@ class ContactSchema(ModelSchema):
 
     class Config:
         model = Contact
-        model_fields = "__all__"
+        model_fields = [
+            "address",
+            "first_name",
+            "last_name",
+            "business_role",
+            "email",
+            "business_role",
+            "phone_number",
+            "position_title",
+        ]
