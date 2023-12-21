@@ -104,6 +104,10 @@ class UserOperatorContactIn(ModelSchema):
     is_senior_officer: bool
     so_phone_number: Optional[str] = None
     so_email: Optional[str] = None
+    street_address: str
+    municipality: str
+    province: str
+    postal_code: str
     # these fields are optional because we might use the user's info as the contact info
     first_name: Optional[str] = None
     last_name: Optional[str] = None
@@ -111,7 +115,7 @@ class UserOperatorContactIn(ModelSchema):
 
     class Config:
         model = Contact
-        model_exclude = ["id", "documents", "business_role"]
+        model_exclude = ["id", "documents", "business_role", "address"]
 
 
 class UserOperatorUserOut(ModelSchema):
