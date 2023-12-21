@@ -98,7 +98,7 @@ export default async function UserOperator({
   return (
     <UserOperatorMultiStepForm
       schema={createUserOperatorSchema(businessStructuresList)}
-      formData={userOperatorData}
+      formData={userData}
     />
   );
 }
