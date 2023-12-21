@@ -1,8 +1,10 @@
+from datetime import datetime
 from typing import List, Tuple, Type
 from django.db import IntegrityError, models
 from django.test import TestCase
 from django.utils import timezone
 from registration.models import (
+    BcObpsRegulatedOperation,
     BusinessRole,
     BusinessStructure,
     DocumentType,
@@ -20,6 +22,7 @@ from registration.models import (
     AppRole,
 )
 from model_bakery import baker
+from django.core.exceptions import ValidationError
 
 
 OPERATOR_FIXTURE = ("mock/operator.json",)
@@ -49,7 +52,11 @@ class BaseTestCase(TestCase):
 
     def assertFieldLabel(self, instance, field_name, expected_label):
         field = instance._meta.get_field(field_name)
-        self.assertEqual(field.verbose_name, expected_label)
+        if isinstance(field, models.ManyToOneRel) or isinstance(field, models.ManyToManyRel):
+            # If the field is a ManyToOneRel or ManyToManyRel, get the field from the related model
+            self.assertEqual(field.related_model._meta.verbose_name, expected_label)
+        else:
+            self.assertEqual(field.verbose_name, expected_label)
 
     def assertFieldMaxLength(self, instance, field_name, expected_max_length):
         field = instance._meta.get_field(field_name)
@@ -74,13 +81,16 @@ class BaseTestCase(TestCase):
                 if expected_relations_count is not None:
                     self.assertHasMultipleRelationsInField(self.test_object, field_name, expected_relations_count)
 
+    def test_field_data_length(self):
+        if hasattr(self, "test_object") and hasattr(self, "field_data"):
+            # check that the number of fields in the model is the same as the number of fields in the field_data list
+            self.assertEqual(len(self.field_data), len(self.test_object._meta.get_fields()))
+
 
 class DocumentTypeModelTest(BaseTestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.field_data = [
-            ("name", "name", 1000, None),
-        ]
+        cls.field_data = [("id", "ID", None, None), ("name", "name", 1000, None), ("documents", "document", None, None)]
         cls.test_object = DocumentType.objects.create(
             name="test",
         )
@@ -93,9 +103,14 @@ class DocumentModelTest(BaseTestCase):
     def setUpTestData(cls):
         cls.field_data = [
             *timestamp_common_fields,
+            ("id", "ID", None, None),
             ("file", "file", None, None),
             ("type", "type", None, None),
             ("description", "description", 1000, None),
+            ("users", "user", None, None),
+            ("operators", "operator", None, None),
+            ("operations", "operation", None, None),
+            ("contacts", "contact", None, None),
         ]
         cls.test_object = Document.objects.get(id=1)
 
@@ -108,8 +123,10 @@ class NaicsCodeModelTest(BaseTestCase):
             naics_description="test",
         )
         cls.field_data = [
+            ("id", "ID", None, None),
             ("naics_code", "naics code", 1000, None),
             ("naics_description", "naics description", 1000, None),
+            ("operations", "operation", None, None),
         ]
 
 
@@ -117,7 +134,9 @@ class RegulatedProductModelTest(BaseTestCase):
     @classmethod
     def setUpTestData(cls):
         cls.field_data = [
+            ("id", "ID", None, None),
             ("name", "name", 1000, None),
+            ("operations", "operation", None, None),
         ]
         cls.test_object = RegulatedProduct.objects.create(
             name="test product",
@@ -127,7 +146,12 @@ class RegulatedProductModelTest(BaseTestCase):
 class ReportingActivityModelTest(BaseTestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.field_data = [("name", "name", 1000, None), ("applicable_to", "applicable to", None, None)]
+        cls.field_data = [
+            ("id", "ID", None, None),
+            ("name", "name", 1000, None),
+            ("applicable_to", "applicable to", None, None),
+            ("operations", "operation", None, None),
+        ]
         cls.test_object = ReportingActivity.objects.create(
             name="test activity",
         )
@@ -164,6 +188,29 @@ class UserModelTest(BaseTestCase):
             ("business_guid", "business guid", None, None),
             ("documents", "documents", None, 2),
             ("app_role", "app role", None, None),
+            ("operators_verified_by", "operator", None, None),
+            ("user_operators", "user operator", None, None),
+            ("user_operators_verified_by", "user operator", None, None),
+            ("operation_verified_by", "operation", None, None),
+            # related models by TimestampedModel
+            ("document_created", "document", None, None),
+            ("document_updated", "document", None, None),
+            ("document_archived", "document", None, None),
+            ("contact_created", "contact", None, None),
+            ("contact_updated", "contact", None, None),
+            ("contact_archived", "contact", None, None),
+            ("operator_created", "operator", None, None),
+            ("operator_updated", "operator", None, None),
+            ("operator_archived", "operator", None, None),
+            ("useroperator_created", "user operator", None, None),
+            ("useroperator_updated", "user operator", None, None),
+            ("useroperator_archived", "user operator", None, None),
+            ("operation_created", "operation", None, None),
+            ("operation_updated", "operation", None, None),
+            ("operation_archived", "operation", None, None),
+            ("multipleoperator_created", "multiple operator", None, None),
+            ("multipleoperator_updated", "multiple operator", None, None),
+            ("multipleoperator_archived", "multiple operator", None, None),
         ]
 
     def test_unique_user_guid_and_business_guid_constraint(self):
@@ -202,6 +249,7 @@ class ContactModelTest(BaseTestCase):
         cls.test_object.documents.set([Document.objects.get(id=1), Document.objects.get(id=2)])
         cls.field_data = [
             *timestamp_common_fields,
+            ("id", "ID", None, None),
             ("first_name", "first name", 1000, None),
             ("last_name", "last name", 1000, None),
             ("position_title", "position title", 1000, None),
@@ -217,6 +265,9 @@ class ContactModelTest(BaseTestCase):
                 None,
             ),  # Replace None with the actual max length if available
             ("business_role", "business role", None, None),
+            ("documents", "documents", None, None),
+            ("operators", "operator", None, None),
+            ("operations", "operation", None, None),
         ]
 
     def test_unique_email_constraint(self):
@@ -273,6 +324,7 @@ class OperatorModelTest(BaseTestCase):
 
         cls.field_data = [
             *timestamp_common_fields,
+            ("id", "ID", None, None),
             ("legal_name", "legal name", 1000, None),
             ("trade_name", "trade name", 1000, None),
             ("cra_business_number", "cra business number", None, None),
@@ -297,6 +349,10 @@ class OperatorModelTest(BaseTestCase):
             ("status", "status", 1000, None),
             ("verified_by", "verified by", None, None),
             ("verified_at", "verified at", None, None),
+            ("operations", "operation", None, None),
+            ("user_operators", "user operator", None, 2),
+            ("parent_child_operator_parent_operators", "parent child operator", None, None),
+            ("parent_child_operator_child_operators", "parent child operator", None, None),
         ]
 
 
@@ -311,6 +367,7 @@ class ParentChildOperatorModelTest(BaseTestCase):
             percentage_owned_by_parent_company=55.6,
         )
         cls.field_data = [
+            ("id", "ID", None, None),
             ("parent_operator", "parent operator", None, None),
             ("child_operator", "child operator", None, None),
             ("percentage_owned_by_parent_company", "percentage owned by parent company", None, None),
@@ -333,6 +390,7 @@ class UserOperatorModelTest(BaseTestCase):
         )
         cls.field_data = [
             *timestamp_common_fields,
+            ("id", "ID", None, None),
             ("user", "user", None, None),
             ("operator", "operator", None, None),
             ("role", "role", 1000, None),
@@ -380,6 +438,7 @@ class OperationModelTest(BaseTestCase):
         )
         cls.field_data = [
             *timestamp_common_fields,
+            ("id", "ID", None, None),
             ("name", "name", 1000, None),
             ("type", "type", 1000, None),
             ("naics_code", "naics code", None, None),
@@ -398,7 +457,97 @@ class OperationModelTest(BaseTestCase):
             ("verified_by", "verified by", None, None),
             ("application_lead", "application lead", None, None),
             ("documents", "documents", None, 2),
+            ("bc_obps_regulated_operation", "bc obps regulated operation", None, None),
+            ("operation_has_multiple_operators", "operation has multiple operators", None, None),
+            ("operator", "operator", None, None),
+            ("status", "status", 1000, None),
+            ("multiple_operator", "multiple operator", None, None),
         ]
+
+    def test_unique_boro_id_per_operation(self):
+        boro_id_instance = baker.make(BcObpsRegulatedOperation, id='23-0001')
+        baker.make(Operation, bc_obps_regulated_operation=boro_id_instance)
+
+        with self.assertRaises(IntegrityError):
+            baker.make(
+                Operation,
+                bc_obps_regulated_operation=boro_id_instance,
+                name='test',
+                type='test',
+                naics_code=NaicsCode.objects.first(),
+                operator=Operator.objects.first(),
+            )
+
+    def test_generate_unique_boro_id_existing_id(self):
+        # Case: Operation already has a BORO ID
+        existing_id = baker.make(BcObpsRegulatedOperation, id='23-0001')  # Example existing ID for the current year
+        self.test_object.bc_obps_regulated_operation = existing_id
+        generated_id = self.test_object.generate_unique_boro_id()
+        self.assertEqual(generated_id, existing_id, "Should return the existing ID.")
+
+    def test_generate_unique_boro_id_no_existing_id(self):
+        # Case: No existing BORO ID
+        self.test_object.bc_obps_regulated_operation = None
+        self.test_object.generate_unique_boro_id()
+        current_year = datetime.now().year % 100
+        expected_id = f"{current_year:02d}-0001"  # Assuming the first ID for the year
+        self.assertEqual(
+            self.test_object.bc_obps_regulated_operation.pk,
+            expected_id,
+            "Should generate a new ID for the current year.",
+        )
+
+    def test_generate_unique_boro_id_multiple_existing_ids_same_year(self):
+        # Case: Multiple existing BORO IDs for the current year
+        existing_ids = ["23-0002", "23-0003", "23-0001"]
+        Operation.objects.bulk_create(
+            [
+                Operation(
+                    name="test",
+                    type="test",
+                    naics_code=NaicsCode.objects.first(),
+                    operator=Operator.objects.first(),
+                    bc_obps_regulated_operation=baker.make(BcObpsRegulatedOperation, id=existing_id),
+                )
+                for existing_id in existing_ids
+            ]
+        )
+
+        self.test_object.bc_obps_regulated_operation = None
+        self.test_object.generate_unique_boro_id()
+        current_year = datetime.now().year % 100
+        expected_id = f"{current_year:02d}-0004"
+        self.assertEqual(
+            self.test_object.bc_obps_regulated_operation.pk,
+            expected_id,
+            "Should generate a new ID for the current year.",
+        )
+
+    def test_generate_unique_boro_id_multiple_existing_ids_different_year(self):
+        # Case: Multiple existing BORO IDs for the current year
+        existing_ids = ["22-0001", "22-0002", "22-0003"]
+        Operation.objects.bulk_create(
+            [
+                Operation(
+                    name="test",
+                    type="test",
+                    naics_code=NaicsCode.objects.first(),
+                    operator=Operator.objects.first(),
+                    bc_obps_regulated_operation=baker.make(BcObpsRegulatedOperation, id=existing_id),
+                )
+                for existing_id in existing_ids
+            ]
+        )
+
+        self.test_object.bc_obps_regulated_operation = None
+        self.test_object.generate_unique_boro_id()
+        current_year = datetime.now().year % 100
+        expected_id = f"{current_year:02d}-0001"
+        self.assertEqual(
+            self.test_object.bc_obps_regulated_operation.pk,
+            expected_id,
+            "Should generate a new ID for the current year.",
+        )
 
 
 class AppRoleModelTest(BaseTestCase):
@@ -407,10 +556,14 @@ class AppRoleModelTest(BaseTestCase):
     @classmethod
     def setUpTestData(cls):
         cls.test_object = AppRole.objects.first()
-        cls.field_data = [("role_name", "role name", 100, None), ("role_description", "role description", 1000, None)]
+        cls.field_data = [
+            ("role_name", "role name", 100, None),
+            ("role_description", "role description", 1000, None),
+            ("users", "user", None, None),
+        ]
 
     def test_initial_data(self):
-        expected_roles = sorted(['cas_admin', 'cas_analyst', 'cas_pending', 'industry_user'])
+        expected_roles = sorted(['cas_admin', 'cas_analyst', 'cas_pending', 'industry_user', 'industry_user_admin'])
         existing_roles = sorted(list(AppRole.objects.values_list('role_name', flat=True)))
 
         self.assertEqual(len(existing_roles), len(expected_roles))
@@ -423,7 +576,11 @@ class BusinessRoleModelTest(BaseTestCase):
     @classmethod
     def setUpTestData(cls):
         cls.test_object = BusinessRole.objects.first()
-        cls.field_data = [("role_name", "role name", 100, None), ("role_description", "role description", 1000, None)]
+        cls.field_data = [
+            ("role_name", "role name", 100, None),
+            ("role_description", "role description", 1000, None),
+            ("contacts", "contact", None, None),
+        ]
 
     def test_initial_data(self):
         expected_roles = sorted(
@@ -484,6 +641,7 @@ class MultipleOperatorModelTest(BaseTestCase):
         )
         cls.field_data = [
             *timestamp_common_fields,
+            ("id", "ID", None, None),
             ("operator_index", "operator index", None, None),
             ("legal_name", "legal name", 1000, None),
             ("trade_name", "trade name", 1000, None),
@@ -501,7 +659,39 @@ class MultipleOperatorModelTest(BaseTestCase):
             ("mailing_municipality", "mailing municipality", 1000, None),
             ("mailing_province", "mailing province", 2, None),
             ("mailing_postal_code", "mailing postal code", 7, None),
+            ("operation", "operation", None, None),
         ]
+
+
+class TestBcObpsRegulatedOperationModel(BaseTestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.test_object = BcObpsRegulatedOperation.objects.create(
+            id='23-0001', issued_at=timezone.now(), comments='test'
+        )
+        cls.field_data = [
+            ("id", "id", None, None),  # this is not ID because we override the default ID field
+            ("issued_at", "issued at", None, None),
+            ("comments", "comments", None, None),
+            ("operation", "operation", None, None),
+        ]
+
+    def test_check_id_format(self):
+        valid_ids = ['24-0001', '20-1234', '18-5678']
+        for id in valid_ids:
+            self.test_object.id = id
+            self.test_object.save()
+
+        invalid_ids = ['240001', '24-ABCD', '24_0001', '24-']
+        for id in invalid_ids:
+            self.test_object.id = id
+            with self.assertRaises(ValidationError):
+                self.test_object.save()
+
+    def test_id_should_be_unique(self):
+        # not using baker.make because it doesn't raise an error when the id is not unique
+        with self.assertRaises(IntegrityError):
+            BcObpsRegulatedOperation.objects.create(id='23-0001', comments='test')  # already created in setUpTestData
 
 
 class TestModelsWithAuditColumns(TestCase):
