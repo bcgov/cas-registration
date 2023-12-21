@@ -18,21 +18,12 @@ async function getUserOperators() {
   }
 }
 
-function capitalizeString(value: string): string {
-  return value.slice(0, 1).toUpperCase() + value.slice(1);
-}
-
 // 🧩 Main component
 export default async function AccessRequests() {
   // Fetch userOperator data
   const userOperators: [UserOperator] = await getUserOperators();
   if (!userOperators) {
-    return (
-      <div>
-        No user-operators data in database (did you forget to run `make
-        loadfixtures`?)
-      </div>
-    );
+    return <div>No access requests yet.</div>;
   }
 
   // Transform the fetched data into rows for the DataGrid component
@@ -42,7 +33,7 @@ export default async function AccessRequests() {
           ({ id, status, first_name, last_name, email, legal_name }) => {
             return {
               id,
-              status: capitalizeString(status),
+              status,
               first_name,
               last_name,
               email,

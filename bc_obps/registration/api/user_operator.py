@@ -403,7 +403,7 @@ def update_user_operator_user_status(request, user_guid: str):
 @router.put("/select-operator/user-operator/operator/{user_operator_id}/update-status")
 def update_user_operator_status(request, user_operator_id: str):
     raise_401_if_role_not_authorized(request, ["cas_admin", "cas_analyst"])
-    current_admin_user: User = request.current_user
+    current_cas_internal_user: User = request.current_user
     # need to convert request.body (a bytes object) to a string, and convert the string to a JSON object
     payload = json.loads(request.body.decode())
     status = getattr(UserOperator.Statuses, payload.get("status").upper())
@@ -411,7 +411,7 @@ def update_user_operator_status(request, user_operator_id: str):
     user_operator.status = status
     if user_operator.status in [UserOperator.Statuses.APPROVED, UserOperator.Statuses.REJECTED]:
         user_operator.verified_at = datetime.now(pytz.utc)
-        user_operator.verified_by = current_admin_user
+        user_operator.verified_by = current_cas_internal_user
     if user_operator.status in [UserOperator.Statuses.PENDING]:
         user_operator.verified_at = None
         user_operator.verified_by_id = None
