@@ -2,7 +2,7 @@
 
 import { RJSFSchema } from "@rjsf/utils";
 import { useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { userOperatorUiSchema } from "@/app/utils/jsonSchema/userOperator";
 import { actionHandler } from "@/app/utils/actions";
 import { useSession } from "next-auth/react";
@@ -26,6 +26,7 @@ export default function UserOperatorMultiStepForm({
   const { data: session } = useSession();
   const { push } = useRouter();
   const params = useParams();
+  const searchParams = useSearchParams();
   const [error, setError] = useState(undefined);
   const [formState, setFormState] = useState(formData);
 
@@ -33,8 +34,8 @@ export default function UserOperatorMultiStepForm({
 
   const formSectionList = Object.keys(schema.properties as RJSFSchema);
   const isFinalStep = formSection === formSectionList.length - 1;
-  const userOperatorId = parseInt(params.id as string);
 
+  const userOperatorId = searchParams.get("user-operator-id");
   const submitHandler = async (data: { formData?: UserOperatorFormData }) => {
     const newFormData = {
       ...formState,
@@ -45,7 +46,7 @@ export default function UserOperatorMultiStepForm({
     setFormState(newFormData);
 
     // add user operator id to form data if it exists (to be used in senior officer creation)
-    if (userOperatorId) newFormData.user_operator_id = params.id as string;
+    if (userOperatorId) newFormData.user_operator_id = userOperatorId;
 
     const apiUrl = `registration/user-operator/${
       isFinalStep ? "contact" : "operator"
@@ -77,13 +78,11 @@ export default function UserOperatorMultiStepForm({
         formSection + 2
       }?user-operator-id=${response.user_operator_id}`,
     );
-  };
-
-  // If the user is an approved cas internal user or if no operator exists show the entire multistep form
+  }; // If the user is an approved cas internal user or if no operator exists show the entire multistep form
   const isCasInternal =
     session?.user.app_role?.includes("cas") &&
     !session?.user.app_role?.includes("pending");
-  if (isCasInternal || !userOperatorId) {
+  if (isCasInternal || !userOperatorId || formSection) {
     return (
       <>
         {isCasInternal && (
