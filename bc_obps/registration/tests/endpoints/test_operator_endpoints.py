@@ -1,11 +1,13 @@
 from django.forms import model_to_dict
 import pytest
 import json
+from typing import List
 from model_bakery import baker
 from django.test import Client
 from localflavor.ca.models import CAPostalCodeField
 from registration.models import Operator, User, UserOperator
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
+from registration.enums.enums import Roles
 
 pytestmark = pytest.mark.django_db
 
@@ -52,6 +54,23 @@ class TestOperatorsEndpoint(CommonTestSetup):
             # exclude audit fields
             if key not in ["created_at", "created_by", "updated_at", "updated_by", "archived_at", "archived_by"]:
                 assert response_dict[key] == model_to_dict(self.operator)[key]
+
+    def test_get_search_operators_by_legal_name(self):
+        response = TestUtils.mock_get_with_auth_role(
+            self, Roles.INDUSTRY_USER.value, self.endpoint + "/legal-name?search_value=Test Operator legal name"
+        )
+        assert response.status_code == 200
+        response_dict: dict = response.json()
+        assert len(response_dict) == 1
+        for key in response_dict[0].keys():
+            # exclude audit fields
+            if key not in ["created_at", "created_by", "updated_at", "updated_by", "archived_at", "archived_by"]:
+                assert response_dict[0][key] == model_to_dict(self.operator)[key]
+
+    def test_get_search_operators_by_legal_name_no_value(self):
+        response = TestUtils.mock_get_with_auth_role(self, 'industry_user', self.endpoint + "/legal-name?search_value=")
+        assert response.status_code == 404
+        assert response.json() == {"message": "No parameters provided"}
 
     def test_get_operators_by_cra_number(self):
         response = TestUtils.mock_get_with_auth_role(
