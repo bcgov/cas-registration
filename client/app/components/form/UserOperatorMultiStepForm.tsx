@@ -14,7 +14,7 @@ import { UserOperatorFormData } from "@/app/components/form/formDataTypes";
 
 interface UserOperatorFormProps {
   readonly schema: RJSFSchema;
-  readonly formData: UserOperatorFormData;
+  readonly formData: Partial<UserOperatorFormData>;
   readonly disabled?: boolean;
 }
 
@@ -88,7 +88,7 @@ export default function UserOperatorMultiStepForm({
       <>
         {isCasInternal && (
           <UserOperatorReview
-            userOperator={formData}
+            userOperator={formData as UserOperatorFormData}
             userOperatorId={Number(userOperatorId)}
           />
         )}
