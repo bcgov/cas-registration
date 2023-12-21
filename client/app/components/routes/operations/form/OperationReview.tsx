@@ -13,13 +13,12 @@ const OperationReview = ({ operation }: Props) => {
   const { data: session } = useSession();
 
   const approveRequest = async () => {
-    operation.status = Status.APPROVED;
     const response = await actionHandler(
       `registration/operations/${operation.id}/update-status`,
       "PUT",
       `dashboard/operations/${operation.id}`,
       {
-        body: JSON.stringify(operation),
+        body: JSON.stringify({ status: Status.APPROVED }),
       },
     );
 
@@ -27,13 +26,12 @@ const OperationReview = ({ operation }: Props) => {
   };
 
   const rejectRequest = async () => {
-    operation.status = Status.REJECTED;
     const response = await actionHandler(
       `registration/operations/${operation.id}/update-status`,
       "PUT",
       `dashboard/operations/${operation.id}`,
       {
-        body: JSON.stringify(operation),
+        body: JSON.stringify({ status: Status.REJECTED }),
       },
     );
     return response;
