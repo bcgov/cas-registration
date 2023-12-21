@@ -153,14 +153,18 @@ export default async function Operation({ numRow }: { numRow?: number }) {
   );
 
   const exemptionIdJSX: JSX.Element = (
-    <div className="flex items-start gap-3 mt-4">
-      <CheckCircleIcon fontSize="large" color="success" />
+    <div className="flex items-center gap-3 mt-4">
+      <CheckCircleIcon
+        fontSize="large"
+        color="success"
+        sx={{ width: "3rem", height: "3rem" }}
+      />
       <div>
-        <p className="mt-0">
+        <p className="my-0">
           This operation registration request was approved. <b>BORO ID: </b>{" "}
           {operation?.bc_obps_regulated_operation}
         </p>
-        <p>
+        <p className="my-0">
           You can use the BC OBPS Regulated Operation (BORO) ID above to apply
           for carbon tax exemption with the BC Ministry of Finance.
         </p>
