@@ -62,7 +62,6 @@ class OperationOut(ModelSchema):
     previous_year_attributable_emissions: Optional[str] = None
     swrs_facility_id: Optional[str] = None
     bcghg_id: Optional[str] = None
-    current_year_estimated_emissions: Optional[str] = None
     opt_in: Optional[bool] = None
     verified_at: Optional[date] = None
     is_application_lead_external: Optional[bool] = None
@@ -78,3 +77,9 @@ class OperationOut(ModelSchema):
 from .multiple_operator import MultipleOperatorOut
 
 OperationOut.update_forward_refs()
+
+
+class OperationUpdateStatusIn(ModelSchema):
+    class Config:
+        model = Operation
+        model_fields = ["status"]
