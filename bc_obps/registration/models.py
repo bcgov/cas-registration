@@ -12,6 +12,7 @@ class TimeStampedModelManager(models.Manager):
         """Return only objects that have not been archived"""
         return super().get_queryset().filter(archived_at__isnull=True)
 
+
 class TimeStampedModel(models.Model):
     created_by = models.ForeignKey(
         'User', null=True, blank=True, on_delete=models.PROTECT, related_name='%(class)s_created'
