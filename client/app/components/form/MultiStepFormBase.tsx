@@ -12,7 +12,6 @@ interface MultiStepFormProps {
   disabled?: boolean;
   formData?: any;
   onSubmit: any;
-  readonly?: boolean;
   schema: any;
   showSubmissionStep?: boolean;
   submitEveryStep?: boolean;
@@ -27,7 +26,6 @@ const MultiStepFormBase = ({
   error,
   formData,
   onSubmit,
-  readonly,
   schema,
   showSubmissionStep,
   submitEveryStep,
@@ -54,7 +52,7 @@ const MultiStepFormBase = ({
         schema={schema.properties[formSectionList[formSection]] as RJSFSchema}
         uiSchema={uiSchema}
         disabled={disabled}
-        readonly={readonly}
+        readonly={disabled}
         onSubmit={onSubmit}
         formData={formData}
       >
