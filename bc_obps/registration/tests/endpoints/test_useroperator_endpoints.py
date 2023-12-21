@@ -272,7 +272,12 @@ class TestUserOperatorEndpoint(CommonTestSetup):
 
     def test_is_approved_admin_user_operator_with_approved_user(self):
         mock_user = baker.make(User)
-        mock_user_operator = baker.make(UserOperator, role="admin", status="approved", user_id=mock_user.user_guid)
+        mock_user_operator = baker.make(
+            UserOperator,
+            role=UserOperator.Roles.ADMIN,
+            status=UserOperator.Statuses.APPROVED,
+            user_id=mock_user.user_guid,
+        )
         response = TestUtils.mock_get_with_auth_role(
             self, 'industry_user_admin', f"{base_endpoint}is-approved-admin-user-operator/{mock_user_operator.user_id}"
         )
