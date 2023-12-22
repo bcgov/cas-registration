@@ -7,7 +7,7 @@ import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import DoNotDisturbIcon from "@mui/icons-material/DoNotDisturb";
 import { ReactNode } from "react";
 import { Stack } from "@mui/system";
-import { Status } from "@/app/types/types";
+import { Status } from "@/app/utils/enums";
 
 interface UserOperatorStatusAction {
   statusTo: Status;

@@ -2,7 +2,7 @@
 
 import { actionHandler } from "@/app/utils/actions";
 import Review from "app/components/button/Review";
-import { Status } from "@/app/types/types";
+import { Status } from "@/app/utils/enums";
 import { UserOperatorFormData } from "@/app/components/form/formDataTypes";
 
 interface Props {

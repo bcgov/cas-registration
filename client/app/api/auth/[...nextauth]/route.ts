@@ -1,5 +1,6 @@
 import NextAuth, { NextAuthOptions } from "next-auth";
 import KeycloakProvider from "next-auth/providers/keycloak";
+import { Errors, IDP, Roles } from "@/app/utils/enums";
 import { actionHandler } from "@/app/utils/actions";
 
 /**
@@ -58,23 +59,21 @@ export const authOptions: NextAuthOptions = {
           const responseRole = await actionHandler(
             `registration/user-app-role/${token.user_guid}`,
             "GET",
-            "",
           );
           if (responseRole?.role_name) {
             // user found in table, assign role to token
             token.app_role = responseRole.role_name;
 
             //for bceid users, augment with admin based on operator-user table
-            if (token.identity_provider === "bceidbusiness") {
+            if (token.identity_provider === IDP.BCEIDBUSINESS) {
               try {
                 // 🚀 API call: check if user is admin approved
                 const responseAdmin = await actionHandler(
                   `registration/is-approved-admin-user-operator/${token.user_guid}`,
                   "GET",
-                  "",
                 );
                 if (responseAdmin?.approved) {
-                  token.app_role = token.app_role + "_admin";
+                  token.app_role = Roles.INDUSTRY_USER_ADMIN;
                 } else {
                   // Default app_role if the API call fails
                 }
@@ -138,13 +137,13 @@ export const authOptions: NextAuthOptions = {
                 refreshedToken.refresh_token ?? token.refresh_token, // Fall back to old refresh token
             };
           } catch (error) {
-            token.error = "ErrorAccessToken";
+            token.error = Errors.ACCESS_TOKEN;
           }
         } else {
           // The token is still valid; no need to refresh
         }
       } catch (error) {
-        token.error = "ErrorAccessToken";
+        token.error = Errors.ACCESS_TOKEN;
       }
       // 🔒 return encrypted nextauth JWT
       return token;

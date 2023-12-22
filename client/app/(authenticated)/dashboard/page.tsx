@@ -6,8 +6,7 @@ import Link from "@mui/material/Link";
 import Typography from "@mui/material/Typography";
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import { Roles } from "@/app/types/types";
-
+import { Roles } from "@/app/utils/enums";
 /*
 📚
 In the app directory, nested folders are normally mapped to URL paths.
@@ -29,9 +28,11 @@ export default function Page() {
 
   const [contents, setContents] = useState<ContentItem[]>([]);
   useEffect(() => {
-    if (typeof window !== "undefined") {
+    if (typeof window !== "undefined" && role) {
+      // 🛠️ Function to import the dashboard tiles basd on user's app_role
       const fetchData = async () => {
         let contentsModule;
+        // Note: using a dynamic import path, i.e. dynamicPath = `@/app/data/dashboard/${role}.json`;, returns Error: Cannot find module '@/app/data/dashboard/*.json'
         switch (role) {
           case Roles.CAS_ADMIN:
             contentsModule = await import(
@@ -53,7 +54,6 @@ export default function Page() {
               "@/app/data/dashboard/industry_user.json"
             );
             break;
-
           default:
             contentsModule = null;
             break;
@@ -62,13 +62,12 @@ export default function Page() {
           setContents(contentsModule.default);
         }
       };
-
       fetchData();
     }
   }, [role]); // dependencies array
   return (
     <div>
-      {role === "cas_pending" ? (
+      {role === Roles.CAS_PENDING ? (
         // Display pending message
         <Card
           data-testid="dashboard-pending-message"

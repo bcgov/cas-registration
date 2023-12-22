@@ -8,7 +8,7 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { actionHandler } from "@/app/utils/actions";
 import { useSession } from "next-auth/react";
-import { Status } from "@/app/types/types";
+import { Status } from "@/app/utils/enums";
 
 export interface OperationsFormData {
   [key: string]: any;

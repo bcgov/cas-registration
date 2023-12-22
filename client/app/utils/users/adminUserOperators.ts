@@ -1,4 +1,4 @@
-import { Status } from "@/app/types/types";
+import { Status } from "@/app/utils/enums";
 import { actionHandler, getToken } from "@/app/utils/actions";
 
 export interface UserOperatorStatus {
