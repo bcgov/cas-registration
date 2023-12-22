@@ -49,7 +49,7 @@ export default function UserForm({ formData, isCreate }: Props) {
       "/dashboard/profile",
       {
         body: JSON.stringify(data.formData),
-      }
+      },
     );
     // 🛑 Set loading to false after the API call is completed
     setIsLoading(false);
