@@ -6,6 +6,11 @@ import { BusinessStructure } from "@/app/components/routes/select-operator/form/
 import { RJSFSchema } from "@rjsf/utils";
 import { actionHandler } from "@/app/utils/actions";
 import OperationReview from "./OperationReview";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import CancelIcon from "@mui/icons-material/Cancel";
+import { Fade } from "@mui/material";
+import { Status } from "@/app/utils/enums";
+import { Operation as OperationInt } from "@/app/components/routes/operations/types";
 
 // 🛠️ Function to fetch NAICS codes
 async function getNaicsCodes() {
@@ -133,7 +138,7 @@ export default async function Operation({ numRow }: { numRow?: number }) {
   const activities = await getReportingActivities();
   const businessStructures: BusinessStructure[] = await getBusinessStructures();
 
-  let operation: any;
+  let operation: OperationInt | undefined;
 
   // Check that numRow is a number so we don't try to fetch an operation with a string eg: "create"
   if (numRow && !isNaN(Number(numRow))) {
@@ -146,10 +151,57 @@ export default async function Operation({ numRow }: { numRow?: number }) {
       label: businessStructure.name,
     }),
   );
+
+  const exemptionIdJSX: JSX.Element = (
+    <div className="flex items-center gap-3 mt-4">
+      <CheckCircleIcon
+        fontSize="large"
+        color="success"
+        sx={{ width: "3rem", height: "3rem" }}
+      />
+      <div>
+        <p className="my-0">
+          This operation registration request was approved. <b>BORO ID: </b>{" "}
+          {operation?.bc_obps_regulated_operation}
+        </p>
+        <p className="my-0">
+          You can use the BC OBPS Regulated Operation (BORO) ID above to apply
+          for carbon tax exemption with the BC Ministry of Finance.
+        </p>
+      </div>
+    </div>
+  );
+
+  const operationRegistrationRejectedJSX: JSX.Element = (
+    <div className="flex items-start gap-3 mt-4">
+      <CancelIcon fontSize="large" color="error" />
+      <div>
+        <p className="mt-0">
+          This operation registration request was rejected.
+        </p>
+        <p className="mb-0">
+          <b>Reason for rejection from Program Area:</b>
+        </p>
+        <em>Check your email</em>
+      </div>
+    </div>
+  );
+
+  const showRegistrationRequestResult: boolean | undefined =
+    operation &&
+    [Status.REJECTED, Status.APPROVED].includes(operation?.status as Status);
+
   // Render the OperationsForm component with schema and formData if the operation already exists
   return (
     <>
       <OperationReview operation={operation} />
+      {showRegistrationRequestResult && (
+        <Fade in={showRegistrationRequestResult}>
+          {operation?.bc_obps_regulated_operation
+            ? exemptionIdJSX
+            : operationRegistrationRejectedJSX}
+        </Fade>
+      )}
       <OperationsForm
         schema={createOperationSchema(
           operationSchema,

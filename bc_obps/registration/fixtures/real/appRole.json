@@ -24,7 +24,14 @@
     "model": "registration.appRole",
     "fields": {
       "role_name": "industry_user",
-      "role_description": "External user from industry. All industry_users have the same initial privileges. Their privileges for individual operators are further defined and applied in the user_operator through table."
+      "role_description": "External user from industry. All industry_users have the same initial privileges. Their privileges for individual operators are further defined and applied by Industry Admins."
+    }
+  },
+  {
+    "model": "registration.appRole",
+    "fields": {
+      "role_name": "industry_user_admin",
+      "role_description": "External user from industry with admin privileges. All industry_users have the same initial privileges. Their privileges for individual operators are further defined and applied by Industry Admins."
     }
   }
 ]
