@@ -38,7 +38,7 @@ test.describe.configure({ mode: "serial" });
 // 🛠️ function: navigate to dashboard and validate section titles align with auth session role
 const assertDashboardNavigation = async (
   page: any,
-  dashboardData: DashboardSection[]
+  dashboardData: DashboardSection[],
 ) => {
   // Navigate to the dashboard
   await page.goto("http://localhost:3000/dashboard");
@@ -156,7 +156,7 @@ test.describe("Test Dashboard", () => {
         port: 5432,
       });
       await pool.query(
-        "DELETE FROM erc.user where user_guid='c3cd84a8-e261-4814-93e1-5bd4a7ccd638'"
+        "DELETE FROM erc.user where user_guid='c3cd84a8-e261-4814-93e1-5bd4a7ccd638'",
       );
       await pool.end();
 
