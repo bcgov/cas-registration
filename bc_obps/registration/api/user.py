@@ -1,6 +1,6 @@
 import json
 from registration.models import AppRole, User
-from registration.schema import UserAppRoleOut, UserOut, UserProfileOut, UserIn, Message
+from registration.schema import UserAppRoleOut, UserOut, UserIn, Message
 from registration.utils import raise_401_if_role_not_authorized
 from registration.models import User
 from .api_base import router
@@ -22,7 +22,7 @@ def get_user(request):
 
 
 # endpoint to return user data if user exists in user table
-@router.get("/user-profile", response=UserProfileOut)
+@router.get("/user-profile", response=UserOut)
 def get_user_profile(request):
     user = get_object_or_404(User, user_guid=json.loads(request.headers.get('Authorization')).get('user_guid'))
     user_fields_dict = model_to_dict(user)
@@ -43,7 +43,7 @@ def get_user_role(request, user_guid: str):
 ##### POST #####
 
 # Endpoint to create a new user
-@router.post("/user-profile/{identity_provider}", response={200: UserProfileOut, codes_4xx: Message})
+@router.post("/user-profile/{identity_provider}", response={200: UserOut, codes_4xx: Message})
 def create_user_profile(request, identity_provider: str, payload: UserIn):
     try:
         # Determine the role based on the identity provider
