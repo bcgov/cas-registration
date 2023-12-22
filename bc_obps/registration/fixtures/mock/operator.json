@@ -8,8 +8,8 @@
       "cra_business_number": 123456789,
       "bc_corporate_registry_number": "abc1234567",
       "business_structure": "Sole Proprietorship",
-
-      "physical_address_id": 3,
+      "physical_address": 3,
+      "mailing_address": 4,
       "website": "http://www.example.com",
       "documents": [],
       "contacts": [],
@@ -27,8 +27,8 @@
       "cra_business_number": 987654321,
       "bc_corporate_registry_number": "abc1234567",
       "business_structure": "BC Corporation",
-      "physical_address_id": 4,
-
+      "physical_address": 4,
+      "mailing_address": 3,
       "website": "http://www.example2.com",
       "documents": [],
       "contacts": [],
