@@ -22,7 +22,7 @@ async function getAdminsApprovedUserOperators(): Promise<UserOperator[]> {
     return await actionHandler(
       `registration/get-current-user-user-operators`,
       "GET",
-      "/dashboard/users"
+      "/dashboard/users",
     );
   } catch (error) {
     throw error;
@@ -31,13 +31,13 @@ async function getAdminsApprovedUserOperators(): Promise<UserOperator[]> {
 
 // 🛠️ Function to fetch userOperators
 async function getUserOperatorsForOperator(
-  operator_id: string
+  operator_id: string,
 ): Promise<UserOperatorStatus[]> {
   try {
     return await actionHandler(
       `registration/operators/${operator_id}/user-operators`,
       "GET",
-      "/dashboard/users"
+      "/dashboard/users",
     );
   } catch (error) {
     throw error;
@@ -56,8 +56,8 @@ export async function processAdminUserOperators(): Promise<
     userOperatorStatuses = (
       await Promise.all(
         approvedOperators.flatMap((associatedOperator) =>
-          getUserOperatorsForOperator(associatedOperator.operator)
-        )
+          getUserOperatorsForOperator(associatedOperator.operator),
+        ),
       )
     )
       .flat()
@@ -70,7 +70,7 @@ export async function processAdminUserOperators(): Promise<
 
     // 🤳Identify current admin user in the list
     const selfIndex = userOperatorStatuses.findIndex(
-      (userOperator) => userOperator.user_id.replace(/-/g, "") === uid
+      (userOperator) => userOperator.user_id.replace(/-/g, "") === uid,
     );
     userOperatorStatuses[selfIndex].status = Status.MYSELF;
   }
