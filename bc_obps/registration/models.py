@@ -180,7 +180,8 @@ class UserAndContactCommonInfo(models.Model):
     address = models.ForeignKey(
         Address,
         on_delete=models.DO_NOTHING,
-        db_comment="Foreign key to the contact's address.",
+        db_comment="Foreign key to the address of a user or contact",
+        related_name="%(class)ss",
     )
 
     class Meta:
