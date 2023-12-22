@@ -11,15 +11,14 @@ import { userOperatorPage2 } from "@/app/utils/jsonSchema/userOperator";
 import UserOperatorReview from "@/app/components/routes/access-requests/form/UserOperatorReview";
 import MultiStepFormBase from "@/app/components/form/MultiStepFormBase";
 import { UserOperatorFormData } from "@/app/components/form/formDataTypes";
+import { Status } from "@/app/types/types";
 
 interface UserOperatorFormProps {
   readonly schema: RJSFSchema;
   readonly formData: Partial<UserOperatorFormData>;
-  readonly disabled?: boolean;
 }
 
 export default function UserOperatorMultiStepForm({
-  disabled,
   schema,
   formData,
 }: UserOperatorFormProps) {
@@ -79,11 +78,15 @@ export default function UserOperatorMultiStepForm({
         formSection + 2
       }?user-operator-id=${response.user_operator_id}`,
     );
-  }; // If the user is an approved cas internal user or if no operator exists show the entire multistep form
+  };
+
   const isCasInternal =
     session?.user.app_role?.includes("cas") &&
     !session?.user.app_role?.includes("pending");
 
+  const isFormStatusPending = formData?.status === Status.PENDING;
+
+  // If the user is an approved cas internal user or if no operator exists show the entire multistep form
   if (isCasInternal || !userOperatorId || formSection) {
     return (
       <>
@@ -95,9 +98,12 @@ export default function UserOperatorMultiStepForm({
         )}
         <MultiStepFormBase
           baseUrl={`/dashboard/operators/user-operator/${userOperatorId}`}
-          cancelUrl="/dashboard/operators"
+          // TODO: change cancelUrl for industry user depending on if they are creating or editing an operator
+          cancelUrl={`/dashboard/${
+            isCasInternal ? "operators" : "select-operator"
+          }`}
           schema={schema}
-          disabled={isCasInternal || disabled}
+          disabled={isCasInternal || isFormStatusPending}
           error={error}
           formData={formData}
           onSubmit={submitHandler}
