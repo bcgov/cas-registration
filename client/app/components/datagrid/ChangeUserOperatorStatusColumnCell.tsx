@@ -7,7 +7,7 @@ import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import DoNotDisturbIcon from "@mui/icons-material/DoNotDisturb";
 import { ReactNode } from "react";
 import { Stack } from "@mui/system";
-import { Status } from "@/app/types/types";
+import { Status } from "@/app/utils/enums";
 
 interface UserOperatorStatusAction {
   statusTo: Status;
@@ -30,7 +30,7 @@ interface ButtonRenderCellParams extends GridRenderCellParams {
 
 const handleUpdateStatus = async (
   userOperatorId: string,
-  statusUpdate: Status,
+  statusUpdate: Status
 ) => {
   try {
     return await actionHandler(
@@ -41,7 +41,7 @@ const handleUpdateStatus = async (
         body: JSON.stringify({
           status: statusUpdate,
         }),
-      },
+      }
     );
   } catch (error) {
     throw error;
@@ -49,7 +49,7 @@ const handleUpdateStatus = async (
 };
 
 export async function ChangeUserOperatorStatusColumnCell(
-  params: ButtonRenderCellParams,
+  params: ButtonRenderCellParams
 ) {
   const userOperatorStatus = params.row.status;
   const userOperatorId = params.row.id;
