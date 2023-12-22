@@ -32,7 +32,7 @@ provider "kubernetes" {
 ## ---------------------------------------------------------------------------------------------------------------------
 
 resource "google_storage_bucket" "database_backups" {
-  name = "${var.openshift_nameplate}-${var.openshift_environment}-obps-postgres-backups"
+  name = "${var.openshift_namespace}-obps-postgres-backups"
   location = var.region
 
   public_access_prevention = "enforced"
@@ -40,8 +40,8 @@ resource "google_storage_bucket" "database_backups" {
 }
 
 resource "google_service_account" "backups_sa" {
-  account_id = "${var.openshift_nameplate}-${var.openshift_environment}-obps-backups-sa"
-  display_name = "${var.openshift_nameplate}-${var.openshift_environment}-obps-backups-sa"
+  account_id = "${var.openshift_namespace}-obps-backups-sa"
+  display_name = "${var.openshift_namespace}-obps-backups-sa"
   depends_on = [ google_storage_bucket.database_backups ]
 }
 
@@ -63,7 +63,7 @@ resource "google_service_account_key" "backups_sa_key" {
 resource "kubernetes_secret" "storage_secret" {
   metadata {
     name = "gcp-${google_service_account.backups_sa.display_name}-key"
-    namespace = "${var.openshift_nameplate}-${var.openshift_environment}"
+    namespace = "${var.openshift_namespace}"
     labels = {
       created-by = "Terraform"
     }
@@ -82,7 +82,7 @@ resource "kubernetes_secret" "storage_secret" {
 ## ---------------------------------------------------------------------------------------------------------------------
 
 resource "google_storage_bucket" "reg_attachments" {
-  name = "${var.openshift_nameplate}-${var.openshift_environment}-reg-attachments"
+  name = "${var.openshift_namespace}-reg-attachments"
   location = var.region
 
   public_access_prevention = "enforced"
@@ -90,8 +90,8 @@ resource "google_storage_bucket" "reg_attachments" {
 }
 
 resource "google_service_account" "reg_attachments_sa" {
-  account_id = "${var.openshift_nameplate}-${var.openshift_environment}-reg-attachments-sa"
-  display_name = "${var.openshift_nameplate}-${var.openshift_environment}-reg-attachments-service-account"
+  account_id = "${var.openshift_namespace}-reg-attachments-sa"
+  display_name = "${var.openshift_namespace}-reg-attachments-service-account"
   depends_on = [ google_storage_bucket.reg_attachments ]
 }
 
@@ -113,7 +113,7 @@ resource "google_service_account_key" "reg_attachments_key" {
 resource "kubernetes_secret" "reg_attachments_storage_secret" {
   metadata {
     name = "gcp-${google_service_account.reg_attachments_sa.display_name}-key"
-    namespace = "${var.openshift_nameplate}-${var.openshift_environment}"
+    namespace = "${var.openshift_namespace}"
     labels = {
       created-by = "Terraform"
     }

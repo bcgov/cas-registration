@@ -39,16 +39,8 @@ spec:
                 secretKeyRef:
                   name: gcp-credentials-secret
                   key: gcp_project_id
-            - name: TF_VAR_openshift_nameplate
-              valueFrom:
-                secretKeyRef:
-                  name: gcp-credentials-secret
-                  key: openshift_nameplate
-            - name: TF_VAR_openshift_environment
-              valueFrom:
-                secretKeyRef:
-                  name: gcp-credentials-secret
-                  key: openshift_environment
+            - name: TF_VAR_openshift_namespace
+              value: {{ .Release.Namespace | quote }}
             - name: TF_VAR_kubernetes_host
               value: "https://api.silver.devops.gov.bc.ca:6443"
             - name: GOOGLE_APPLICATION_CREDENTIALS
