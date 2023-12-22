@@ -7,6 +7,7 @@ import { actionHandler } from "@/app/utils/actions";
 import { UserProfileFormData } from "@/app/components/form/formDataTypes";
 import { userSchema, userUiSchema } from "@/app/utils/jsonSchema/user";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 // 📐 Interface: expected properties and their types for UserForm component
 
@@ -27,11 +28,13 @@ export default function UserForm({ formData, isCreate }: Props) {
   //  Destructuring assignment from data property of the object returned by useSession()
   const { data: session, update } = useSession();
   const idp = session?.identity_provider || "";
-
+  const router = useRouter();
   // 🛠️ Function to update the session, without reloading the page
-  // With NextAuth strategy: "jwt" , update() method will trigger a jwt callback where app_role will be augmented to the jwt and session objects
   const handleUpdate = async () => {
-    update();
+    // With NextAuth strategy: "jwt" , update() method will trigger a jwt callback where app_role will be augmented to the jwt and session objects
+    await update();
+    // After the update is complete, navigate to the dashboard
+    router.push("/dashboard");
   };
 
   // 🛠️ Function to submit user form data to API
@@ -46,7 +49,7 @@ export default function UserForm({ formData, isCreate }: Props) {
         ? `registration/user-profile/${idp}`
         : `registration/user-profile`,
       isCreate ? "POST" : "PUT",
-      "",
+      "/dashboard/profile",
       {
         body: JSON.stringify(data.formData),
       },
