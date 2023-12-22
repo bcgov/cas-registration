@@ -153,16 +153,16 @@ class ReportingActivity(models.Model):
 class Address(models.Model):
     """Address model"""
 
-    street_address = models.CharField(max_length=1000, db_comment="A contact's street address")
-    municipality = models.CharField(max_length=1000, db_comment="A contact's municipality")
-    province = CAProvinceField(
-        db_comment="A contact's province, restricted to two-letter province postal abbreviations"
+    street_address = models.CharField(max_length=1000, db_comment="Street address of relevant location)")
+    municipality = models.CharField(max_length=1000, db_comment="Municipality of relevant location")
+    province = CAProvinceField(db_comment="A restricted to two-letter province postal abbreviations")
+    postal_code = CAPostalCodeField(
+        db_comment="Postal code of relevant location, limited to valid Canadian postal codes"
     )
-    postal_code = CAPostalCodeField(db_comment="A contact's postal code, limited to valid Canadian postal codes")
     history = HistoricalRecords(table_name='erc_history"."address_history')
 
     class Meta:
-        db_table_comment = "Adress"
+        db_table_comment = "Address"
         db_table = 'erc"."address'
 
 
