@@ -61,6 +61,12 @@ export default function OperationsForm({ formData, schema }: Readonly<Props>) {
   const isNotFinalStep = formSection !== formSectionList.length;
   const isFinalStep = formSection === formSectionList.length;
 
+  const isCasInternal =
+    session?.user.app_role?.includes("cas") &&
+    !session?.user.app_role?.includes("pending");
+
+  const isFormStatusPending = formData?.status === Status.PENDING;
+
   return (
     <>
       {operationName ? (
@@ -89,10 +95,7 @@ export default function OperationsForm({ formData, schema }: Readonly<Props>) {
           cancelUrl="/dashboard/operations"
           formData={transformedFormData}
           setErrorReset={setError}
-          disabled={
-            session?.user.app_role?.includes("cas") ||
-            formData?.status === Status.PENDING
-          }
+          disabled={isCasInternal || isFormStatusPending}
           error={error}
           schema={schema}
           allowBackNavigation
@@ -109,7 +112,7 @@ export default function OperationsForm({ formData, schema }: Readonly<Props>) {
             const responseOpId = await actionHandler(
               "registration/user-operator-operator-id",
               "GET",
-              "",
+              ""
             );
             if (responseOpId.error) {
               setError(responseOpId.error);
@@ -130,7 +133,7 @@ export default function OperationsForm({ formData, schema }: Readonly<Props>) {
               pathToRevalidate,
               {
                 body: JSON.stringify(body),
-              },
+              }
             );
 
             const operation = response?.id || operationId;
@@ -143,7 +146,7 @@ export default function OperationsForm({ formData, schema }: Readonly<Props>) {
             router.replace(`/dashboard/operations/${operation}/${formSection}`);
             if (isNotFinalStep) {
               router.push(
-                `/dashboard/operations/${operation}/${formSection + 1}`,
+                `/dashboard/operations/${operation}/${formSection + 1}`
               );
               return;
             }
