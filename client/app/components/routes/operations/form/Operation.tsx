@@ -9,7 +9,7 @@ import OperationReview from "./OperationReview";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 import { Fade } from "@mui/material";
-import { Status } from "@/app/types/types";
+import { Status } from "@/app/utils/enums";
 import { Operation as OperationInt } from "@/app/components/routes/operations/types";
 
 // 🛠️ Function to fetch NAICS codes
