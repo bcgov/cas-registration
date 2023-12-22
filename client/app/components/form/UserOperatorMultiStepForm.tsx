@@ -9,8 +9,12 @@ import { useSession } from "next-auth/react";
 import UserOperatorReview from "@/app/components/routes/access-requests/form/UserOperatorReview";
 import MultiStepFormBase from "@/app/components/form/MultiStepFormBase";
 import { UserOperatorFormData } from "@/app/components/form/formDataTypes";
+<<<<<<< HEAD
 import Note from "../datagrid/Note";
 import { Status } from "@/app/types/types";
+=======
+import { Status } from "@/app/utils/enums";
+>>>>>>> 149a9d22 (fix: status enum import)
 
 interface UserOperatorFormProps {
   readonly schema: RJSFSchema;
@@ -108,19 +112,11 @@ export default function UserOperatorMultiStepForm({
         )}
         <MultiStepFormBase
           baseUrl={`/dashboard/operators/user-operator/${userOperatorId}`}
-<<<<<<< HEAD
           cancelUrl={
             isCasInternal
               ? "/dashboard/operators"
               : "/dashboard/select-operator"
           }
-=======
-          // TODO: change cancelUrl for industry user depending on if they are creating or editing an operator
-          // as in #441 they will be taken directly to the form view if they have already created an operator
-          cancelUrl={`/dashboard/${
-            isCasInternal ? "operators" : "select-operator"
-          }`}
->>>>>>> 008665cc (refactor: operation form disabled logic)
           schema={schema}
           disabled={isCasInternal || isFormStatusPending}
           error={error}
