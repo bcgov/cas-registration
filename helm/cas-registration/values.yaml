@@ -74,10 +74,9 @@ frontend:
 
 devops:
   image:
-    repository: ghcr.io/bcgov/cas-reg-devops
+    repository: hashicorp/terraform
     pullPolicy: Always
-    # Overrides the image tag whose default is the chart appVersion.
-    tag: "latest"
+    tag: "1.4.6"
 
   resources:
     limits:
