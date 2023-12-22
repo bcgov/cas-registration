@@ -6,14 +6,14 @@ import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { actionHandler } from "@/app/utils/actions";
-import { Status } from "@/app/types/types";
+import { Status } from "@/app/utils/enums";
 
 const getUserOperatorStatus = async () => {
   try {
     return await actionHandler(
       `registration/user-operator-status-from-user`,
       "GET",
-      "",
+      ""
     );
   } catch (error) {
     throw error;
