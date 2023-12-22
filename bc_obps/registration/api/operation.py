@@ -237,7 +237,7 @@ def update_operation(request, operation_id: int, submit, payload: OperationUpdat
 
     if "is_application_lead_external" in payload_dict:
         if payload_dict["is_application_lead_external"]:
-            address, created = Address.objects.update_or_create(
+            address, _ = Address.objects.update_or_create(
                 # brianna the address comes direct in the payload, maybe you want to rename like the mo to al_street_address etc
                 id=application_lead_address_id,
                 defaults={
@@ -247,7 +247,7 @@ def update_operation(request, operation_id: int, submit, payload: OperationUpdat
                     "postal_code": payload.postal_code,
                 },
             )
-            eal, created = Contact.objects.update_or_create(
+            eal, _ = Contact.objects.update_or_create(
                 id=application_lead_id,
                 defaults={
                     "first_name": payload.first_name,
@@ -263,7 +263,7 @@ def update_operation(request, operation_id: int, submit, payload: OperationUpdat
             operation.application_lead = eal
         if payload_dict["is_application_lead_external"] is False:
             user = request.current_user
-            al, created = Contact.objects.update_or_create(
+            al, _ = Contact.objects.update_or_create(
                 id=application_lead_id,
                 defaults={
                     "first_name": user.first_name,

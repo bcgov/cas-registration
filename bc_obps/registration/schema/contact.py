@@ -25,7 +25,6 @@ class ContactSchema(ModelSchema):
             "last_name",
             "business_role",
             "email",
-            "business_role",
             "phone_number",
             "position_title",
         ]
