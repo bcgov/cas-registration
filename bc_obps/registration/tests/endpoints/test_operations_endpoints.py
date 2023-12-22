@@ -37,6 +37,7 @@ class TestOperationsEndpoint(CommonTestSetup):
     def build_update_status_url(self, operation_id: int) -> str:
         return self.endpoint + "/" + str(operation_id) + "/update-status"
 
+    # AUTHORIZATION
     def test_unauthorized_users_cannot_get(self):
         operation2700 = baker.make(Operation, id=2700)
         # /operations
@@ -85,62 +86,28 @@ class TestOperationsEndpoint(CommonTestSetup):
         operation = baker.make(Operation)
         mock_operation = TestUtils.mock_OperationUpdateIn(self)
         # IRC users can't put
-        response = TestUtils.mock_put_with_auth_role(
-            self,
-            'cas_pending',
-            content_type_json,
-            mock_operation.json(),
-            self.endpoint + "/" + str(operation.id) + "?submit=false",
-        )
-        assert response.status_code == 401
-        response = TestUtils.mock_put_with_auth_role(
-            self,
-            'cas_admin',
-            content_type_json,
-            mock_operation.json(),
-            self.endpoint + "/" + str(operation.id) + "?submit=false",
-        )
-        assert response.status_code == 401
-        response = TestUtils.mock_put_with_auth_role(
-            self,
-            'cas_analyst',
-            content_type_json,
-            mock_operation.json(),
-            self.endpoint + "/" + str(operation.id) + "?submit=false",
-        )
-        assert response.status_code == 401
+        roles = ['cas_pending', 'cas_admin', 'cas_analyst', 'industry_user', 'industry_user_admin']
         # unapproved industry users cannot put
-        response = TestUtils.mock_put_with_auth_role(
-            self,
-            'industry_user',
-            content_type_json,
-            mock_operation.json(),
-            self.endpoint + "/" + str(operation.id) + "?submit=false",
-        )
-        assert response.status_code == 401
-        response = TestUtils.mock_put_with_auth_role(
-            self,
-            'industry_user_admin',
-            content_type_json,
-            mock_operation.json(),
-            self.endpoint + "/" + str(operation.id) + "?submit=false",
-        )
-        assert response.status_code == 401
+        for role in roles:
+            response = TestUtils.mock_put_with_auth_role(
+                self,
+                role,
+                content_type_json,
+                mock_operation.json(),
+                self.endpoint + "/" + str(operation.id) + "?submit=false",
+            )
+            assert response.status_code == 401
 
     def test_unauthorized_users_cannot_update_status(self):
         operation = baker.make(Operation)
 
         url = self.build_update_status_url(operation_id=operation.id)
 
-        response = TestUtils.mock_put_with_auth_role(
-            self, "industry_user", content_type_json, {"status": "approved"}, url
-        )
-        assert response.status_code == 401
-        response = TestUtils.mock_put_with_auth_role(
-            self, "industry_user_admin", content_type_json, {"status": "approved"}, url
-        )
-        assert response.status_code == 401
+        for role in ["industry_user", "industry_user_admin"]:
+            response = TestUtils.mock_put_with_auth_role(self, role, content_type_json, {"status": "approved"}, url)
+            assert response.status_code == 401
 
+    # GET
     def test_get_method_for_200_status(self):
         # IRC users can get all operations
         response = TestUtils.mock_get_with_auth_role(self, "cas_admin")
@@ -153,6 +120,11 @@ class TestOperationsEndpoint(CommonTestSetup):
         assert response.status_code == 200
         response = TestUtils.mock_get_with_auth_role(self, "industry_user_admin")
         assert response.status_code == 200
+
+    def test_get_method_for_invalid_operation_id(self):
+        response = TestUtils.mock_get_with_auth_role(self, endpoint=self.endpoint + "/99999", role_name="cas_admin")
+        assert response.status_code == 404
+        assert response.json().get('detail') == "Not Found"
 
     def test_get_method_with_mock_data(self):
         # IRC users can get all operations except ones with a not registered status
@@ -178,6 +150,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         assert response.status_code == 200
         assert len(json.loads(response.content)) == 1
 
+    # POST
     def test_authorized_roles_can_post_new_operation(self):
 
         operator = baker.make(Operator)
@@ -283,6 +256,15 @@ class TestOperationsEndpoint(CommonTestSetup):
         assert post_response.status_code == 400
         assert post_response.json().get('message') == "Operation with this BCGHG ID already exists."
 
+    # PUT
+    def test_put_operation_update_invalid_operation_id(self):
+        url = self.build_update_status_url(operation_id=99999999999)
+        put_response = TestUtils.mock_put_with_auth_role(
+            self, "cas_admin", content_type_json, {"status": "approved"}, url
+        )
+        assert put_response.status_code == 404
+        assert put_response.json().get('detail') == "Not Found"
+
     def test_put_operation_update_status_approved(self):
         operation = baker.make(Operation)
         assert operation.status == Operation.Statuses.NOT_REGISTERED
@@ -291,15 +273,15 @@ class TestOperationsEndpoint(CommonTestSetup):
 
         now = datetime.now(pytz.utc)
         put_response = TestUtils.mock_put_with_auth_role(
-            self, "cas_admin", content_type_json, {"status": "approved"}, url
+            self, "cas_admin", content_type_json, {"status": "Approved"}, url
         )
         assert put_response.status_code == 200
-        put_response_content = json.loads(put_response.content.decode("utf-8"))
-        parsed_list = json.loads(put_response_content)
-        # the put_response content is returned as a list but there's only ever one object in the list
-        parsed_object = parsed_list[0]
-        assert parsed_object.get("pk") == operation.id
-        assert parsed_object.get("fields").get("status") == "Approved"
+        put_response_dict = put_response.json()
+        assert put_response_dict.get("id") == operation.id
+        assert put_response_dict.get("status") == "Approved"
+        assert put_response_dict.get("verified_by") == str(self.user.user_guid)
+        assert put_response_dict.get("bc_obps_regulated_operation") is not None
+
         get_response = TestUtils.mock_get_with_auth_role(self, "cas_admin", self.endpoint + "/" + str(operation.id))
         assert get_response.status_code == 200
         get_response_dict = get_response.json()
@@ -315,15 +297,14 @@ class TestOperationsEndpoint(CommonTestSetup):
 
         now = datetime.now(pytz.utc)
         put_response = TestUtils.mock_put_with_auth_role(
-            self, "cas_admin", content_type_json, {"status": "rejected"}, url
+            self, "cas_admin", content_type_json, {"status": "Rejected"}, url
         )
         assert put_response.status_code == 200
-        put_response_content = json.loads(put_response.content.decode("utf-8"))
-        parsed_list = json.loads(put_response_content)
-        # the put_response content is returned as a list but there's only ever one object in the list
-        parsed_object = parsed_list[0]
-        assert parsed_object.get("pk") == operation.id
-        assert parsed_object.get("fields").get("status") == "Rejected"
+        put_response_dict = put_response.json()
+        assert put_response_dict.get("id") == operation.id
+        assert put_response_dict.get("status") == "Rejected"
+        assert put_response_dict.get("verified_by") == str(self.user.user_guid)
+        assert put_response_dict.get("bc_obps_regulated_operation") is None
 
         get_response = TestUtils.mock_get_with_auth_role(self, "cas_admin", self.endpoint + "/" + str(operation.id))
         assert get_response.status_code == 200
@@ -339,15 +320,14 @@ class TestOperationsEndpoint(CommonTestSetup):
         url = self.build_update_status_url(operation_id=operation.id)
 
         put_response = TestUtils.mock_put_with_auth_role(
-            self, "cas_admin", content_type_json, {"status": "not_registered"}, url
+            self, "cas_admin", content_type_json, {"status": "Not Registered"}, url
         )
         assert put_response.status_code == 200
-        put_response_content = json.loads(put_response.content.decode("utf-8"))
-        parsed_list = json.loads(put_response_content)
-        # the put_response content is returned as a list but there's only ever one object in the list
-        parsed_object = parsed_list[0]
-        assert parsed_object.get("pk") == operation.id
-        assert parsed_object.get("fields").get("status") == "Not Registered"
+        put_response_dict = put_response.json()
+        assert put_response_dict.get("id") == operation.id
+        assert put_response_dict.get("status") == "Not Registered"
+        assert put_response_dict.get("verified_by") is None
+        assert put_response_dict.get("bc_obps_regulated_operation") is None
 
         get_response = TestUtils.mock_get_with_auth_role(self, "cas_admin", self.endpoint + "/" + str(operation.id))
         assert get_response.status_code == 200
@@ -356,21 +336,13 @@ class TestOperationsEndpoint(CommonTestSetup):
         assert get_response_dict.get("verified_at") is None
 
     def test_put_operation_update_status_invalid_data(self):
-        def send_put_invalid_data():
-            operation = baker.make(Operation)
-            assert operation.status == Operation.Statuses.NOT_REGISTERED
+        operation = baker.make(Operation)
+        assert operation.status == Operation.Statuses.NOT_REGISTERED
 
-            url = self.build_update_status_url(operation_id=operation.id)
+        url = self.build_update_status_url(operation_id=operation.id)
 
+        with pytest.raises(ValueError):
             TestUtils.mock_put_with_auth_role(self, "cas_admin", content_type_json, {"status": "nonsense"}, url)
-
-        with pytest.raises(AttributeError):
-            send_put_invalid_data()
-
-    def test_put_nonexistant_operation(self):
-        response = TestUtils.mock_get_with_auth_role(self, 'industry_user', self.endpoint + "1")
-        client.get(self.endpoint + "1")
-        assert response.status_code == 404
 
     def test_put_operation_without_submit(self):
         operator = baker.make(Operator)
@@ -459,4 +431,4 @@ class TestOperationsEndpoint(CommonTestSetup):
         assert put_response.status_code == 200
 
         # this checks that we added a new contact instead of updating the existing one even though they have the same email
-        assert len(Contact.objects.all()) == 2
+        assert Contact.objects.count() == 2

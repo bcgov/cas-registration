@@ -102,7 +102,8 @@ const Review = ({
   return (
     <Box
       sx={{
-        minHeight: "48px",
+        // 🛠️ to prevent leaving extra space when there is no content
+        minHeight: "auto",
       }}
     >
       <Modal

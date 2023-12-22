@@ -400,7 +400,6 @@ export const operationUiSchema = {
     "previous_year_attributable_emissions",
     "swrs_facility_id",
     "bcghg_id",
-    "current_year_estimated_emissions",
     "opt_in",
     "opt_in_signed_statuatory_declaration",
     "Does the operation have multiple operators?",
