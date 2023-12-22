@@ -20,7 +20,7 @@ const OperationReview = ({ operation }: Props) => {
       `dashboard/operations/${operation.id}`,
       {
         body: JSON.stringify(operation),
-      }
+      },
     );
 
     return response;
@@ -34,7 +34,7 @@ const OperationReview = ({ operation }: Props) => {
       `dashboard/operations/${operation.id}`,
       {
         body: JSON.stringify(operation),
-      }
+      },
     );
     return response;
   };

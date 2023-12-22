@@ -30,7 +30,7 @@ interface ButtonRenderCellParams extends GridRenderCellParams {
 
 const handleUpdateStatus = async (
   userOperatorId: string,
-  statusUpdate: Status
+  statusUpdate: Status,
 ) => {
   try {
     return await actionHandler(
@@ -41,7 +41,7 @@ const handleUpdateStatus = async (
         body: JSON.stringify({
           status: statusUpdate,
         }),
-      }
+      },
     );
   } catch (error) {
     throw error;
@@ -49,7 +49,7 @@ const handleUpdateStatus = async (
 };
 
 export async function ChangeUserOperatorStatusColumnCell(
-  params: ButtonRenderCellParams
+  params: ButtonRenderCellParams,
 ) {
   const userOperatorStatus = params.row.status;
   const userOperatorId = params.row.id;
