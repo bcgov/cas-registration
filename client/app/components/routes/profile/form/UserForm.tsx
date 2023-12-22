@@ -46,10 +46,10 @@ export default function UserForm({ formData, isCreate }: Props) {
         ? `registration/user-profile/${idp}`
         : `registration/user-profile`,
       isCreate ? "POST" : "PUT",
-      "",
+      "/dashboard/profile",
       {
         body: JSON.stringify(data.formData),
-      },
+      }
     );
     // 🛑 Set loading to false after the API call is completed
     setIsLoading(false);

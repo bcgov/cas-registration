@@ -8,7 +8,7 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { actionHandler } from "@/app/utils/actions";
 import { useSession } from "next-auth/react";
-import { Status } from "@/app/types/types";
+import { Status } from "@/app/utils/enums";
 
 export interface OperationsFormData {
   [key: string]: any;
@@ -118,7 +118,7 @@ export default function OperationsForm({ formData, schema }: Props) {
             const responseOpId = await actionHandler(
               "registration/user-operator-operator-id",
               "GET",
-              "",
+              ""
             );
             if (responseOpId.error) {
               setError(responseOpId.error);
@@ -139,7 +139,7 @@ export default function OperationsForm({ formData, schema }: Props) {
               pathToRevalidate,
               {
                 body: JSON.stringify(body),
-              },
+              }
             );
 
             const operation = response?.id || operationId;
@@ -152,7 +152,7 @@ export default function OperationsForm({ formData, schema }: Props) {
             router.replace(`/dashboard/operations/${operation}/${formSection}`);
             if (isNotFinalStep) {
               router.push(
-                `/dashboard/operations/${operation}/${formSection + 1}`,
+                `/dashboard/operations/${operation}/${formSection + 1}`
               );
               return;
             }
