@@ -2,7 +2,7 @@
 
 import { actionHandler } from "@/app/utils/actions";
 import Review from "app/components/button/Review";
-import { Status } from "@/app/types/types";
+import { Status } from "@/app/utils/enums";
 import { UserOperatorFormData } from "@/app/components/form/formDataTypes";
 
 interface Props {
@@ -22,7 +22,7 @@ export default function UserOperatorReview({
       `dashboard/operators/user-operators/${userOperatorId}`,
       {
         body: JSON.stringify(userOperator),
-      },
+      }
     );
     return response;
   }
@@ -35,7 +35,7 @@ export default function UserOperatorReview({
       `dashboard/operators/user-operators/${userOperatorId}`,
       {
         body: JSON.stringify(userOperator),
-      },
+      }
     );
     return response;
   }
