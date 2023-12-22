@@ -108,11 +108,19 @@ export default function UserOperatorMultiStepForm({
         )}
         <MultiStepFormBase
           baseUrl={`/dashboard/operators/user-operator/${userOperatorId}`}
+<<<<<<< HEAD
           cancelUrl={
             isCasInternal
               ? "/dashboard/operators"
               : "/dashboard/select-operator"
           }
+=======
+          // TODO: change cancelUrl for industry user depending on if they are creating or editing an operator
+          // as in #441 they will be taken directly to the form view if they have already created an operator
+          cancelUrl={`/dashboard/${
+            isCasInternal ? "operators" : "select-operator"
+          }`}
+>>>>>>> 008665cc (refactor: operation form disabled logic)
           schema={schema}
           disabled={isCasInternal || isFormStatusPending}
           error={error}
