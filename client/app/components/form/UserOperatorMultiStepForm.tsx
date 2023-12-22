@@ -10,15 +10,14 @@ import UserOperatorReview from "@/app/components/routes/access-requests/form/Use
 import MultiStepFormBase from "@/app/components/form/MultiStepFormBase";
 import { UserOperatorFormData } from "@/app/components/form/formDataTypes";
 import Note from "../datagrid/Note";
+import { Status } from "@/app/types/types";
 
 interface UserOperatorFormProps {
   readonly schema: RJSFSchema;
   readonly formData: Partial<UserOperatorFormData>;
-  readonly disabled?: boolean;
 }
 
 export default function UserOperatorMultiStepForm({
-  disabled,
   schema,
   formData,
 }: UserOperatorFormProps) {
@@ -51,7 +50,7 @@ export default function UserOperatorMultiStepForm({
       `/dashboard/select-operator/user-operator/create/${params?.formSection}`,
       {
         body: JSON.stringify(newFormData),
-      },
+      }
     );
 
     if (response.error) {
@@ -61,7 +60,7 @@ export default function UserOperatorMultiStepForm({
 
     if (isFinalStep) {
       push(
-        `/dashboard/select-operator/received/add-operator/${response.operator_id}`,
+        `/dashboard/select-operator/received/add-operator/${response.operator_id}`
       );
       return;
     }
@@ -69,12 +68,17 @@ export default function UserOperatorMultiStepForm({
     push(
       `/dashboard/select-operator/user-operator/create/${
         formSection + 2
-      }?user-operator-id=${response.user_operator_id}`,
+      }?user-operator-id=${response.user_operator_id}`
     );
-  }; // If the user is an approved cas internal user or if no operator exists show the entire multistep form
+  };
+
   const isCasInternal =
     session?.user.app_role?.includes("cas") &&
     !session?.user.app_role?.includes("pending");
+
+  const isFormStatusPending = formData?.status === Status.PENDING;
+
+  // If the user is an approved cas internal user or if no operator exists show the entire multistep form
   if (isCasInternal || !userOperatorId || formSection) {
     return (
       <>
@@ -105,7 +109,7 @@ export default function UserOperatorMultiStepForm({
               : "/dashboard/select-operator"
           }
           schema={schema}
-          disabled={isCasInternal ?? disabled}
+          disabled={isCasInternal || isFormStatusPending}
           error={error}
           setErrorReset={setError}
           formData={formData}
