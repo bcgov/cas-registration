@@ -61,6 +61,12 @@ export default function OperationsForm({ formData, schema }: Readonly<Props>) {
   const isNotFinalStep = formSection !== formSectionList.length;
   const isFinalStep = formSection === formSectionList.length;
 
+  const isCasInternal =
+    session?.user.app_role?.includes("cas") &&
+    !session?.user.app_role?.includes("pending");
+
+  const isFormStatusPending = formData?.status === Status.PENDING;
+
   return (
     <>
       {operationName ? (
@@ -88,10 +94,7 @@ export default function OperationsForm({ formData, schema }: Readonly<Props>) {
           baseUrl={`/dashboard/operations/${operationId}`}
           cancelUrl="/dashboard/operations"
           formData={transformedFormData}
-          disabled={
-            session?.user.app_role?.includes("cas") ||
-            formData?.status === Status.PENDING
-          }
+          disabled={isCasInternal || isFormStatusPending}
           error={error}
           schema={schema}
           allowBackNavigation
