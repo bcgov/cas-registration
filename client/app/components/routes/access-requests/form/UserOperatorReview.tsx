@@ -22,7 +22,7 @@ export default function UserOperatorReview({
       `dashboard/operators/user-operators/${userOperatorId}`,
       {
         body: JSON.stringify(userOperator),
-      }
+      },
     );
     return response;
   }
@@ -35,7 +35,7 @@ export default function UserOperatorReview({
       `dashboard/operators/user-operators/${userOperatorId}`,
       {
         body: JSON.stringify(userOperator),
-      }
+      },
     );
     return response;
   }
