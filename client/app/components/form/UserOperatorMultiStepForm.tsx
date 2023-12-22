@@ -9,7 +9,7 @@ import { useSession } from "next-auth/react";
 import UserOperatorReview from "@/app/components/routes/access-requests/form/UserOperatorReview";
 import MultiStepFormBase from "@/app/components/form/MultiStepFormBase";
 import { UserOperatorFormData } from "@/app/components/form/formDataTypes";
-import { Status } from "@/app/types/types";
+import { Status } from "@/app/utils/enums";
 
 interface UserOperatorFormProps {
   readonly schema: RJSFSchema;
