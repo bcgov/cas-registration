@@ -10,7 +10,7 @@ import UserOperatorReview from "@/app/components/routes/access-requests/form/Use
 import MultiStepFormBase from "@/app/components/form/MultiStepFormBase";
 import { UserOperatorFormData } from "@/app/components/form/formDataTypes";
 import Note from "../datagrid/Note";
-import { Status } from "@/app/types/types";
+import { Status } from "@/app/utils/enums";
 
 interface UserOperatorFormProps {
   readonly schema: RJSFSchema;
