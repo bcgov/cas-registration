@@ -1,6 +1,5 @@
 import { test, expect } from "@playwright/test";
-// Annotate entire file as serial.
-test.describe.configure({ mode: "serial" });
+const { Pool } = require("pg");
 // environment variables stored in client/e2e/.env.local
 import * as dotenv from "dotenv";
 dotenv.config({
@@ -33,10 +32,13 @@ type DashboardLink = {
   href: string;
 };
 
+// 🏷 Annotate entire file as serial.
+test.describe.configure({ mode: "serial" });
+
 // 🛠️ function: navigate to dashboard and validate section titles align with auth session role
 const assertDashboardNavigation = async (
   page: any,
-  dashboardData: DashboardSection[],
+  dashboardData: DashboardSection[]
 ) => {
   // Navigate to the dashboard
   await page.goto("http://localhost:3000/dashboard");
@@ -144,6 +146,25 @@ test.describe("Test Dashboard", () => {
 
       // Assert that the current URL ends with "/dashboard"
       expect(page.url().toLocaleLowerCase()).toContain("/dashboard");
+
+      // Delete the new user record from the database
+      const pool = new Pool({
+        user: process.env.DB_USER,
+        password: process.env.DB_USER_PASSWORD,
+        host: "localhost",
+        database: "registration",
+        port: 5432,
+      });
+      await pool.query(
+        "DELETE FROM erc.user where user_guid='c3cd84a8-e261-4814-93e1-5bd4a7ccd638'"
+      );
+      await pool.end();
+
+      // Wait for the navigation to complete
+      await page.waitForLoadState("load");
+
+      // Assert that the current URL ends with "/profile"
+      expect(page.url().toLocaleLowerCase()).toContain("/profile");
     });
   });
 });
