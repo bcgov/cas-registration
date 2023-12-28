@@ -2,7 +2,7 @@
 name: Bug template
 about: For documenting bugs as per our bug process
 title: ""
-labels: bug
+labels: ""
 assignees: ""
 ---
 
