@@ -1,11 +1,11 @@
 ---
 name: Task issue template
-about:
-  For cards that are not user stories, but may be technical, UX-related, or other
+about: For cards that are not user stories, but may be technical, UX-related, or other
   tasks.
-title: ""
+title: ''
 labels: Task
-assignees: ""
+assignees: ''
+
 ---
 
 #### Describe the task
