@@ -1,5 +1,5 @@
 from django.db import IntegrityError
-import json
+import json, pytz
 from registration.schema import (
     UserOperatorOut,
     SelectOperatorIn,
@@ -16,13 +16,13 @@ from registration.schema import (
     UserOperatorRoleOut,
 )
 from registration.schema.user_operator import SelectUserOperatorOperatorsOut
-from typing import List
+from typing import List, Optional
 from .api_base import router
-from typing import Optional
 from django.shortcuts import get_object_or_404
 from django.core.exceptions import ValidationError
 from django.core import serializers
 from registration.models import (
+    AppRole,
     BusinessRole,
     BusinessStructure,
     Operator,
@@ -42,26 +42,22 @@ from registration.utils import (
     raise_401_if_role_not_authorized,
 )
 from ninja.responses import codes_4xx
-from typing import List
-import json
 from datetime import datetime
-import pytz
 from ninja.errors import HttpError
-from django.core import serializers
 from django.forms import model_to_dict
 
 
 ##### GET #####
 @router.get("/user-operator-status-from-user", response={200: UserOperatorStatus, codes_4xx: Message})
 def get_user_operator_operator_id(request):
-    raise_401_if_role_not_authorized(request, ["industry_user", "industry_user_admin"])
+    raise_401_if_role_not_authorized(request, AppRole.get_industry_roles())
     user_operator = get_object_or_404(UserOperator, user_id=request.current_user.user_guid)
     return 200, {"status": user_operator.status}
 
 
 @router.get("/is-approved-admin-user-operator/{user_guid}", response={200: IsApprovedUserOperator, codes_4xx: Message})
 def is_approved_admin_user_operator(request, user_guid: str):
-    raise_401_if_role_not_authorized(request, ["industry_user", "industry_user_admin"])
+    raise_401_if_role_not_authorized(request, AppRole.get_industry_roles())
 
     approved_user_operator: bool = UserOperator.objects.filter(
         user_id=user_guid, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.APPROVED
@@ -72,9 +68,10 @@ def is_approved_admin_user_operator(request, user_guid: str):
 
 @router.get("/user-operator-operator-id", response={200: UserOperatorOperatorIdOut, codes_4xx: Message})
 def get_user_operator_operator_id(request):
-    raise_401_if_role_not_authorized(request, ["industry_user", "industry_user_admin"])
-    current_user_guid = json.loads(request.headers.get('Authorization'))["user_guid"]
-    user_operator = get_object_or_404(UserOperator, user_id=current_user_guid, status=UserOperator.Statuses.APPROVED)
+    raise_401_if_role_not_authorized(request, AppRole.get_industry_roles())
+    user_operator = get_object_or_404(
+        UserOperator, user_id=request.current_user.user_guid, status=UserOperator.Statuses.APPROVED
+    )
     return 200, {"operator_id": user_operator.operator_id}
 
 
@@ -83,12 +80,12 @@ def get_user_operator_operator_id(request):
     response=UserOperatorOut,
 )
 def get_user_operator(request, user_operator_id: int):
-    raise_401_if_role_not_authorized(request, ["industry_user", "industry_user_admin", "cas_admin", "cas_analyst"])
+    raise_401_if_role_not_authorized(request, AppRole.get_all_eligible_roles())
+    user: User = request.current_user
     user_operator = get_object_or_404(UserOperator, id=user_operator_id)
-    operator = get_object_or_404(Operator, id=user_operator.operator_id)
-    if "industry" in request.current_user.app_role.role_name:
-        authorized_users = get_an_operators_approved_users(operator)
-        if request.current_user.user_guid not in authorized_users:
+    if user.is_industry_user():
+        authorized_users = get_an_operators_approved_users(user_operator.operator)
+        if user.user_guid not in authorized_users:
             raise HttpError(401, UNAUTHORIZED_MESSAGE)
 
     user_operator_role_dict = UserOperatorRoleOut.from_orm(user_operator).dict()
@@ -102,7 +99,7 @@ def get_user_operator(request, user_operator_id: int):
 
 @router.get("/operator-has-admin/{operator_id}", response={200: bool, codes_4xx: Message})
 def get_user_operator_admin_exists(request, operator_id: int):
-    raise_401_if_role_not_authorized(request, ["industry_user", "industry_user_admin", "cas_admin", "cas_analyst"])
+    raise_401_if_role_not_authorized(request, AppRole.get_all_eligible_roles())
     has_admin = UserOperator.objects.filter(
         operator_id=operator_id, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.APPROVED
     ).exists()
@@ -120,7 +117,7 @@ def get_user(request):
 
 @router.get("/user-operators", response=List[UserOperatorListOut])
 def list_user_operators(request):
-    raise_401_if_role_not_authorized(request, ["cas_admin", "cas_analyst"])
+    raise_401_if_role_not_authorized(request, AppRole.get_cas_roles())
     qs = UserOperator.objects.all()
     user_operator_list = []
 
@@ -164,7 +161,7 @@ def list_user_operators(request):
 
 @router.post("/select-operator/request-admin-access", response={201: RequestAccessOut, codes_4xx: Message})
 def request_access(request, payload: SelectOperatorIn):
-    raise_401_if_role_not_authorized(request, ["industry_user", "industry_user_admin"])
+    raise_401_if_role_not_authorized(request, AppRole.get_industry_roles())
     user: User = request.current_user
     operator: Operator = get_object_or_404(Operator, id=payload.operator_id)
 
@@ -186,7 +183,7 @@ def request_access(request, payload: SelectOperatorIn):
 def request_access(request, payload: SelectOperatorIn):
     user: User = request.current_user
     operator: Operator = get_object_or_404(Operator, id=payload.operator_id)
-    raise_401_if_role_not_authorized(request, ["industry_user", "industry_user_admin"])
+    raise_401_if_role_not_authorized(request, AppRole.get_industry_roles())
     status, message = check_access_request_matches_business_guid(user.user_guid, operator)
     if status != 200:
         return status, message
@@ -203,23 +200,21 @@ def request_access(request, payload: SelectOperatorIn):
 @router.post("/user-operator/operator", response={200: RequestAccessOut, codes_4xx: Message})
 def create_operator_and_user_operator(request, payload: UserOperatorOperatorIn):
     user: User = request.current_user
-    raise_401_if_role_not_authorized(request, ["industry_user", "industry_user_admin"])
+    raise_401_if_role_not_authorized(request, AppRole.get_industry_roles())
     try:
-        # brianna can we replace payload_dict with just payload?
-        payload_dict = payload.dict()
-        operator_has_parent_company: bool = payload_dict.get("operator_has_parent_company")
+        operator_has_parent_company: bool = payload.get("operator_has_parent_company")
 
         # use an existing Operator instance if one exists, otherwise create a new one
-        cra_business_number: str = payload_dict.get("cra_business_number")
+        cra_business_number: str = payload.get("cra_business_number")
         existing_operator: Operator = Operator.objects.filter(cra_business_number=cra_business_number).first()
         if existing_operator:
             return 400, {"message": "Operator with this CRA Business Number already exists."}
 
         operator_instance: Operator = Operator(
             cra_business_number=cra_business_number,
-            bc_corporate_registry_number=payload_dict.get("bc_corporate_registry_number"),
+            bc_corporate_registry_number=payload.get("bc_corporate_registry_number"),
             # treating business_structure as a foreign key
-            business_structure=BusinessStructure.objects.get(name=payload_dict.get("business_structure")),
+            business_structure=BusinessStructure.objects.get(name=payload.get("business_structure")),
         )
 
         # create physical address record
@@ -229,7 +224,7 @@ def create_operator_and_user_operator(request, payload: UserOperatorOperatorIn):
             province=payload.physical_province,
             postal_code=payload.physical_postal_code,
         )
-        operator_instance.physical_address_id = physical_address
+        operator_instance.physical_address = physical_address
 
         # create mailing address record (if mailing address is not in the payload, then it's the same as the physical address)
         if not payload.mailing_street_address:
@@ -251,7 +246,7 @@ def create_operator_and_user_operator(request, payload: UserOperatorOperatorIn):
             "mailing_address_id," "website",
         ]
         created_operator_instance: Operator = update_model_instance(
-            operator_instance, operator_related_fields, payload_dict
+            operator_instance, operator_related_fields, payload.dict()
         )
 
         parent_operator_instance = None
@@ -267,7 +262,7 @@ def create_operator_and_user_operator(request, payload: UserOperatorOperatorIn):
             }
 
             parent_operator_instance: Operator = Operator(
-                business_structure=BusinessStructure.objects.get(name=payload_dict.get("pc_business_structure"))
+                business_structure=BusinessStructure.objects.get(name=payload.get("pc_business_structure"))
             )
 
             # create physical address record
@@ -292,10 +287,10 @@ def create_operator_and_user_operator(request, payload: UserOperatorOperatorIn):
             parent_operator_instance.pc_mailing_address_id = pc_mailing_address
 
             parent_operator_instance = update_model_instance(
-                parent_operator_instance, parent_operator_fields_mapping, payload_dict
+                parent_operator_instance, parent_operator_fields_mapping, payload.dict()
             )
 
-            percentage_owned_by_parent_company: Optional[int] = payload_dict.get('percentage_owned_by_parent_company')
+            percentage_owned_by_parent_company: Optional[int] = payload.get('percentage_owned_by_parent_company')
             if percentage_owned_by_parent_company:
                 parent_child_operator_instance = ParentChildOperator(
                     parent_operator=parent_operator_instance,
@@ -330,7 +325,7 @@ def create_operator_and_user_operator(request, payload: UserOperatorOperatorIn):
 
 @router.post("/user-operator/contact", response={200: SelectOperatorIn, codes_4xx: Message})
 def create_user_operator_contact(request, payload: UserOperatorContactIn):
-    raise_401_if_role_not_authorized(request, ["industry_user", "industry_user_admin"])
+    raise_401_if_role_not_authorized(request, AppRole.get_industry_roles())
     try:
         user_operator_instance: UserOperator = get_object_or_404(UserOperator, id=payload.user_operator_id)
         user: User = request.current_user
@@ -349,11 +344,13 @@ def create_user_operator_contact(request, payload: UserOperatorContactIn):
             address=address,
         )
 
+        # if the user is a senior officer, use their info as the contact info
         if is_senior_officer:
             senior_officer_contact.first_name = user.first_name
             senior_officer_contact.last_name = user.last_name
             senior_officer_contact.email = user.email
             senior_officer_contact.phone_number = user.phone_number
+        # otherwise, use the info from the form
         else:
             senior_officer_contact.first_name = payload.first_name
             senior_officer_contact.last_name = payload.last_name
@@ -415,7 +412,7 @@ def update_user_operator_user_status(request, user_guid: str):
 
 @router.put("/select-operator/user-operator/operator/{user_operator_id}/update-status")
 def update_user_operator_status(request, user_operator_id: str):
-    raise_401_if_role_not_authorized(request, ["cas_admin", "cas_analyst"])
+    raise_401_if_role_not_authorized(request, AppRole.get_cas_roles())
     current_cas_internal_user: User = request.current_user
     # need to convert request.body (a bytes object) to a string, and convert the string to a JSON object
     payload = json.loads(request.body.decode())

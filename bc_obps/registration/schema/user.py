@@ -1,14 +1,13 @@
-from ninja import ModelSchema, Schema
+from typing import Optional
+from ninja import ModelSchema
 from registration.models import AppRole, User
 from .address import AddressSchema
 
 
-class UserIn(Schema):
-    first_name: str
-    last_name: str
-    email: str
-    position_title: str
-    phone_number: str
+class UserIn(ModelSchema):
+    class Config:
+        model = User
+        model_fields = ["first_name", "last_name", "position_title", "email", "phone_number"]
 
 
 class UserAppRoleOut(ModelSchema):
@@ -19,15 +18,15 @@ class UserAppRoleOut(ModelSchema):
 
 class UserOut(ModelSchema):
     app_role: UserAppRoleOut  # Include AppRoleOut model as a field
-    address: AddressSchema
+    address: Optional[AddressSchema] = None
 
     @staticmethod
     def resolve_phone_number(obj):
         # PhoneNumberField returns a PhoneNumber object and we need a string
         if not obj.phone_number:
             return
-        return obj.phone_number.as_e164
+        return str(obj.phone_number)
 
     class Config:
         model = User
-        model_fields = ["first_name", "last_name", "position_title", "email", "phone_number", "app_role", "address"]
+        model_fields = ["first_name", "last_name", "position_title", "email", "phone_number", "app_role"]

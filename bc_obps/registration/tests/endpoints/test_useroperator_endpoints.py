@@ -1,5 +1,4 @@
-import pytest
-import json
+import pytest, json
 from model_bakery import baker
 from django.test import Client
 from localflavor.ca.models import CAPostalCodeField
@@ -122,7 +121,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         assert response.status_code == 401
 
         # user-operator/operator
-        mock_data = TestUtils.mock_UserOperatorOperatorIn(self)
+        mock_data = TestUtils.mock_UserOperatorOperatorIn()
         response = TestUtils.mock_post_with_auth_role(
             self, 'cas_pending', content_type_json, mock_data.json(), f"{base_endpoint}user-operator/operator"
         )
@@ -142,7 +141,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
             self,
             'cas_pending',
             content_type_json,
-            TestUtils.mock_UserOperatorContactIn(self).json(),
+            TestUtils.mock_UserOperatorContactIn().json(),
             f"{base_endpoint}user-operator/contact",
         )
         assert response.status_code == 401
@@ -150,7 +149,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
             self,
             'cas_admin',
             content_type_json,
-            TestUtils.mock_UserOperatorContactIn(self).json(),
+            TestUtils.mock_UserOperatorContactIn().json(),
             f"{base_endpoint}user-operator/contact",
         )
         assert response.status_code == 401
@@ -158,7 +157,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
             self,
             'cas_analyst',
             content_type_json,
-            TestUtils.mock_UserOperatorContactIn(self).json(),
+            TestUtils.mock_UserOperatorContactIn().json(),
             f"{base_endpoint}user-operator/contact",
         )
         assert response.status_code == 401
