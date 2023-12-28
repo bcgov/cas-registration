@@ -16,7 +16,7 @@ from registration.enums.enums import Roles
 
 @router.get("/user", response=UserOut)
 def get_user(request):
-    raise_401_if_role_not_authorized(request, ["industry_user", "industry_user_admin", "cas_admin", "cas_analyst"])
+    raise_401_if_role_not_authorized(request, AppRole.get_all_eligible_roles())
     user: User = request.current_user
     return user
 
@@ -70,9 +70,7 @@ def create_user_profile(request, identity_provider: str, payload: UserIn):
 # Endpoint to update a user
 @router.put("/user-profile", response={200: UserOut, codes_4xx: Message})
 def update_user_profile(request, payload: UserIn):
-    raise_401_if_role_not_authorized(
-        request, ["industry_user", "industry_user_admin", "cas_admin", "cas_analyst", "cas_pending"]
-    )
+    raise_401_if_role_not_authorized(request, AppRole.get_all_roles())
     user: User = request.current_user
     try:
         for attr, value in payload.dict().items():

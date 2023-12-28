@@ -2,7 +2,7 @@ from typing import List, Optional
 from registration.utils import check_users_admin_request_eligibility
 from .api_base import router
 from django.shortcuts import get_object_or_404
-from registration.models import Operator, UserOperator
+from registration.models import AppRole, Operator, UserOperator
 from ninja.responses import codes_4xx, codes_5xx
 from registration.schema import Message, OperatorOut, SelectUserOperatorStatus
 from registration.schema import OperatorOut
@@ -59,7 +59,7 @@ def get_operator_by_legal_name_or_cra(request, search_value: Optional[str] = Non
 
 @router.get("/operators/{operator_id}", response={200: OperatorOut, codes_4xx: Message})
 def get_operator(request, operator_id: int):
-    raise_401_if_role_not_authorized(request, ["industry_user", "industry_user_admin", "cas_admin", "cas_analyst"])
+    raise_401_if_role_not_authorized(request, AppRole.get_all_eligible_roles())
 
     try:
         operator = get_object_or_404(Operator, id=operator_id)
@@ -70,7 +70,7 @@ def get_operator(request, operator_id: int):
 
 @router.get("/operators/{operator_id}/user-operators", response=list[SelectUserOperatorStatus])
 def list_user_operators_status_of_operator(request, operator_id: int):
-    raise_401_if_role_not_authorized(request, ["industry_user", "industry_user_admin", "cas_admin", "cas_analyst"])
+    raise_401_if_role_not_authorized(request, AppRole.get_all_eligible_roles())
     qs = UserOperator.objects.filter(operator=operator_id)
     return qs
 

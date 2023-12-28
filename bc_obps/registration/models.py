@@ -1,3 +1,4 @@
+from typing import List
 import uuid, re
 from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
@@ -70,6 +71,40 @@ class AppRole(models.Model):
     class Meta:
         db_table_comment = "This table contains the definitions for roles within the app/database. These roles are used to define the permissions a user has within the app"
         db_table = 'erc"."app_role'
+
+    @staticmethod
+    def get_cas_roles() -> List[str]:
+        """
+        Return the roles that are considered as CAS users (excluding cas_pending).
+        """
+        return list(
+            AppRole.objects.filter(role_name__in=["cas_admin", "cas_analyst"]).values_list("role_name", flat=True)
+        )
+
+    @staticmethod
+    def get_industry_roles() -> List[str]:
+        """
+        Return the roles that are considered as industry users.
+        """
+        return list(
+            AppRole.objects.filter(role_name__in=["industry_user", "industry_user_admin"]).values_list(
+                "role_name", flat=True
+            )
+        )
+
+    @staticmethod
+    def get_all_roles() -> List[str]:
+        """
+        Return all the roles in the app.
+        """
+        return list(AppRole.objects.values_list("role_name", flat=True))
+
+    @staticmethod
+    def get_all_eligible_roles() -> List[str]:
+        """
+        Return all the roles in the app except cas_pending.
+        """
+        return list(AppRole.objects.exclude(role_name="cas_pending").values_list("role_name", flat=True))
 
 
 class DocumentType(models.Model):
@@ -216,6 +251,18 @@ class User(UserAndContactCommonInfo):
                 name="uuid_user_and_business_constraint",
             )
         ]
+
+    def is_irc_user(self) -> bool:
+        """
+        Return whether or not the user is an IRC user.
+        """
+        return self.app_role.role_name in AppRole.get_cas_roles()
+
+    def is_industry_user(self) -> bool:
+        """
+        Return whether or not the user is an industry user.
+        """
+        return self.app_role.role_name in AppRole.get_industry_roles()
 
 
 class BusinessRole(models.Model):
