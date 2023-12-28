@@ -1,10 +1,9 @@
 ---
 name: Bug template
 about: For documenting bugs as per our bug process
-title: ''
-labels: ''
-assignees: ''
-
+title: ""
+labels: ""
+assignees: ""
 ---
 
 Describe the Bug:
