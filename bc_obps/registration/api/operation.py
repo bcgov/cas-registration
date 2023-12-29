@@ -37,7 +37,19 @@ from ninja.errors import HttpError
 
 
 # Function to save multiple operators so we can reuse it in put/post routes
-def save_multiple_operators(multiple_operators_array: List[MultipleOperator], operation: Operation, user: User):
+def create_or_update_multiple_operators(
+    multiple_operators_array: List[MultipleOperator], operation: Operation, user: User
+) -> None:
+    """
+    Creates or updates multiple operators associated with a specific operation.
+
+    Description:
+    This function processes an array of MultipleOperator objects, associating them with a specific operation.
+    It creates new operators if they do not exist or updates existing ones if found, based on the provided details.
+
+    Note:
+    - Addresses are handled: If no mailing address is given, the physical address is considered the mailing address.
+    """
     multiple_operator_fields_mapping = {
         "mo_legal_name": "legal_name",
         "mo_trade_name": "trade_name",
@@ -49,9 +61,10 @@ def save_multiple_operators(multiple_operators_array: List[MultipleOperator], op
         "mo_mailing_address_same_as_physical": "mailing_address_same_as_physical",
     }
     for idx, operator in enumerate(multiple_operators_array):
-        new_operator = {}
-        new_operator["operation_id"] = operation.id
-        new_operator["operator_index"] = idx + 1
+        new_operator = {
+            "operation_id": operation.id,
+            "operator_index": idx + 1,
+        }
         # handle addresses--if there's no mailing address given, it's the same as the physical address
         physical_address = Address.objects.create(
             street_address=operator.get("mo_physical_street_address"),
@@ -62,14 +75,14 @@ def save_multiple_operators(multiple_operators_array: List[MultipleOperator], op
 
         new_operator["physical_address_id"] = physical_address.id
 
-        if not operator.get("mo_mailing_street_address"):
+        if operator.get("mo_mailing_address_same_as_physical"):
             new_operator["mailing_address_id"] = physical_address.id
         else:
             mailing_address = Address.objects.create(
-                street_address=operator.get("mo_mailing_street_address") or operator.get("mo_physical_street_address"),
-                municipality=operator.get("mo_mailing_municipality") or operator.get("mo_physical_municipality"),
-                province=operator.get("mo_mailing_province") or operator.get("mo_physical_province"),
-                postal_code=operator.get("mo_mailing_postal_code") or operator.get("mo_physical_postal_code"),
+                street_address=operator.get("mo_mailing_street_address"),
+                municipality=operator.get("mo_mailing_municipality"),
+                province=operator.get("mo_mailing_province"),
+                postal_code=operator.get("mo_mailing_postal_code"),
             )
             new_operator["mailing_address_id"] = mailing_address.id
 
@@ -82,19 +95,10 @@ def save_multiple_operators(multiple_operators_array: List[MultipleOperator], op
 
         # check if there is a multiple_operator with that operation id and number
         # if there is, update it, if not, create it
-        existing_multiple_operator = MultipleOperator.objects.filter(
-            operation_id=operation.id, operator_index=idx + 1
-        ).first()
-        if existing_multiple_operator:
-            MultipleOperator.objects.filter(operation_id=operation.id, operator_index=idx + 1).update(**new_operator)
-            existing_multiple_operator.set_create_or_update(modifier=user)
-        else:
-            new_multiple_operator = MultipleOperator.objects.create(**new_operator)
-            new_multiple_operator.set_create_or_update(modifier=user)
-        # brianna can you still do this with the set_create_or_update
-        # MultipleOperator.objects.update_or_create(
-        #     operation_id=operation.id, operator_index=idx + 1, defaults={**new_operator}
-        # )
+        multiple_operator, _ = MultipleOperator.objects.update_or_create(
+            operation_id=operation.id, operator_index=idx + 1, defaults={**new_operator}
+        )
+        multiple_operator.set_create_or_update(modifier=user)
 
 
 ##### GET #####
@@ -190,8 +194,8 @@ def create_operation(request, payload: OperationCreateIn):
     operation.documents.set(payload.documents)
     operation.set_create_or_update(modifier=user)
 
-    if operation_has_multiple_operators:
-        save_multiple_operators(multiple_operators_array, operation, user)
+    if payload.operation_has_multiple_operators:
+        create_or_update_multiple_operators(payload.multiple_operators_array, operation, user)
 
     return 201, {"name": operation.name, "id": operation.id}
 
@@ -310,8 +314,12 @@ def update_operation(request, operation_id: int, submit: str, payload: Operation
     operation.save()
     operation.set_create_or_update(modifier=user)
 
-    if operation_has_multiple_operators:
-        save_multiple_operators(multiple_operators_array, operation, user)
+    if payload.operation_has_multiple_operators:
+        create_or_update_multiple_operators(payload.multiple_operators_array, operation, user)
+    else:  # if the operation doesn't have multiple operators anymore, archive all existing ones
+        operation_multiple_operators = MultipleOperator.objects.filter(operation_id=operation.id)
+        for operator in operation_multiple_operators:
+            operator.set_archive(modifier=user)
 
     return 200, {"name": operation.name}
 
