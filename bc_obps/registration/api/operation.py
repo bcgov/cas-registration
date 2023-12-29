@@ -1,3 +1,4 @@
+from registration.decorators import authorize
 from .api_base import router
 from datetime import datetime
 import pytz
@@ -28,7 +29,6 @@ from registration.schema import (
 )
 from registration.utils import (
     UNAUTHORIZED_MESSAGE,
-    raise_401_if_role_not_authorized,
     extract_fields_from_dict,
     get_an_operators_approved_users,
 )
@@ -101,8 +101,8 @@ def save_multiple_operators(multiple_operators_array: List[MultipleOperator], op
 
 
 @router.get("/operations", response={200: List[OperationOut], codes_4xx: Message})
+@authorize(AppRole.get_all_eligible_roles())
 def list_operations(request):
-    raise_401_if_role_not_authorized(request, AppRole.get_all_eligible_roles())
     user: User = request.current_user
     # IRC users can see all operations except ones that are not registered yet
     if user.app_role.role_name in ['cas_admin', 'cas_analyst']:
@@ -122,8 +122,8 @@ def list_operations(request):
 
 
 @router.get("/operations/{operation_id}", response={200: OperationOut, codes_4xx: Message})
+@authorize(AppRole.get_all_eligible_roles())
 def get_operation(request, operation_id: int):
-    raise_401_if_role_not_authorized(request, AppRole.get_all_eligible_roles())
     user: User = request.current_user
     if user.is_industry_user():
         user_operator = get_object_or_404(UserOperator, user_id=user.user_guid)
@@ -141,8 +141,8 @@ def get_operation(request, operation_id: int):
 
 
 @router.post("/operations", response={201: OperationCreateOut, codes_4xx: Message})
+@authorize(AppRole.get_industry_roles())
 def create_operation(request, payload: OperationCreateIn):
-    raise_401_if_role_not_authorized(request, AppRole.get_industry_roles())
     user: User = request.current_user
     payload_dict: dict = payload.dict()
 
@@ -200,8 +200,8 @@ def create_operation(request, payload: OperationCreateIn):
 
 
 @router.put("/operations/{operation_id}", response={200: OperationUpdateOut, codes_4xx: Message})
-def update_operation(request, operation_id: int, submit, payload: OperationUpdateIn):
-    raise_401_if_role_not_authorized(request, AppRole.get_all_eligible_roles())
+@authorize(AppRole.get_all_eligible_roles())
+def update_operation(request, operation_id: int, submit: str, payload: OperationUpdateIn):
     user: User = request.current_user
     user_operator = UserOperator.objects.filter(user_id=user.user_guid).first()
     # if there's no user_operator or operator, then the user hasn't requested access to the operator
@@ -319,8 +319,8 @@ def update_operation(request, operation_id: int, submit, payload: OperationUpdat
 @router.put(
     "/operations/{operation_id}/update-status", response={200: OperationOut, codes_4xx: Message, codes_5xx: Message}
 )
+@authorize(AppRole.get_cas_roles())
 def update_operation_status(request, operation_id: int, payload: OperationUpdateStatusIn):
-    raise_401_if_role_not_authorized(request, AppRole.get_cas_roles())
     operation = get_object_or_404(Operation, id=operation_id)
     user: User = request.current_user
     status = Operation.Statuses(payload.status)

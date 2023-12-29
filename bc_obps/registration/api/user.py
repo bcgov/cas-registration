@@ -1,7 +1,7 @@
 import json
+from registration.decorators import authorize
 from registration.models import AppRole, User
 from registration.schema import UserAppRoleOut, UserOut, UserIn, Message
-from registration.utils import raise_401_if_role_not_authorized
 from registration.models import User
 from .api_base import router
 from django.shortcuts import get_object_or_404
@@ -15,8 +15,8 @@ from registration.enums.enums import Roles
 
 
 @router.get("/user", response=UserOut)
+@authorize(AppRole.get_all_eligible_roles())
 def get_user(request):
-    raise_401_if_role_not_authorized(request, AppRole.get_all_eligible_roles())
     user: User = request.current_user
     return user
 
@@ -69,8 +69,8 @@ def create_user_profile(request, identity_provider: str, payload: UserIn):
 
 # Endpoint to update a user
 @router.put("/user-profile", response={200: UserOut, codes_4xx: Message})
+@authorize(AppRole.get_all_roles())
 def update_user_profile(request, payload: UserIn):
-    raise_401_if_role_not_authorized(request, AppRole.get_all_roles())
     user: User = request.current_user
     try:
         for attr, value in payload.dict().items():
