@@ -29,13 +29,6 @@ export interface UserOperatorFormData extends UserFormData {
   mailing_postal_code: string;
   website?: string;
   // SO = Senior Officer
-  so_first_name?: string;
-  so_last_name?: string;
-  so_position_title?: string;
-  so_street_address?: string;
-  so_municipality?: string;
-  so_province?: string;
-  so_postal_code?: string;
   so_email?: string;
   so_phone_number?: string;
   operator_has_parent_company: boolean;
@@ -56,7 +49,6 @@ export interface UserOperatorFormData extends UserFormData {
   percentage_owned_by_parent_company?: number;
   // Not in form, but needed for API to create a contact based on the existing user-operator
   user_operator_id?: string;
-  user_operator_status?: string;
 }
 export interface UserProfileFormData {
   first_name: string;
