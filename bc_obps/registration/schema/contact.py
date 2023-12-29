@@ -21,6 +21,7 @@ class ContactSchema(ModelSchema):
     class Config:
         model = Contact
         model_fields = [
+            "id",
             "first_name",
             "last_name",
             "business_role",
