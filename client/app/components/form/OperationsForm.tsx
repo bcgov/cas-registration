@@ -49,11 +49,6 @@ export default function OperationsForm({ formData, schema }: Props) {
     ...(isApplicationLeadExternal && formData?.application_lead),
     // If you spread anything and it has the same keys as operation (e.g. id, created_by), watch out for accidentally overwriting things. In this case it's safe to spread because the address schema excludes fields
     ...formData?.application_lead?.address,
-    previous_year_attributable_emissions:
-      formData?.previous_year_attributable_emissions &&
-      Number(formData?.previous_year_attributable_emissions),
-    swrs_facility_id:
-      formData?.swrs_facility_id && Number(formData?.swrs_facility_id),
     operator_percent_of_ownership:
       formData?.operator_percent_of_ownership &&
       Number(formData?.operator_percent_of_ownership),
