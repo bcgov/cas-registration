@@ -104,10 +104,10 @@ class UserOperatorContactIn(ModelSchema):
     is_senior_officer: bool
     so_phone_number: Optional[str] = None
     so_email: Optional[str] = None
-    street_address: str
-    municipality: str
-    province: str
-    postal_code: str
+    street_address: str = Field(..., alias="address.street_address")
+    municipality: str = Field(..., alias="address.municipality")
+    province: str = Field(..., alias="address.province")
+    postal_code: str = Field(..., alias="address.postal_code")
     # these fields are optional because we might use the user's info as the contact info
     first_name: Optional[str] = None
     last_name: Optional[str] = None
@@ -115,7 +115,9 @@ class UserOperatorContactIn(ModelSchema):
 
     class Config:
         model = Contact
-        model_exclude = ["id", "documents", "business_role", "address"]
+        model_exclude = ["id", "documents", "business_role", "address", *AUDIT_FIELDS]
+        # whether an aliased field may be populated by its name as given by the model attribute, as well as the alias
+        allow_population_by_field_name = True
 
 
 class UserOperatorUserOut(ModelSchema):
@@ -128,7 +130,7 @@ class UserOperatorUserOut(ModelSchema):
         # PhoneNumberField returns a PhoneNumber object and we need a string
         if not obj.phone_number:
             return
-        return obj.phone_number.as_e164
+        return str(obj.phone_number)
 
     class Config:
         model = User
