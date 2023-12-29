@@ -59,8 +59,6 @@ class OperationOut(ModelSchema):
     # handling aliases and optional fields
     operator_id: int = Field(..., alias="operator.id")
     naics_code_id: int = Field(..., alias="naics_code.id")
-    previous_year_attributable_emissions: Optional[str] = None
-    swrs_facility_id: Optional[str] = None
     bcghg_id: Optional[str] = None
     opt_in: Optional[bool] = None
     verified_at: Optional[date] = None
