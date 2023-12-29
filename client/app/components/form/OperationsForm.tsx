@@ -19,8 +19,7 @@ interface Props {
   formData?: OperationsFormData;
 }
 
-export default function OperationsForm({ formData, schema }: Props) {
-  console.log("formdata NO TRANSFORMATION", formData);
+export default function OperationsForm({ formData, schema }: Readonly<Props>) {
   const { data: session } = useSession();
   const userEmail = session?.user?.email;
 
@@ -49,23 +48,18 @@ export default function OperationsForm({ formData, schema }: Props) {
     ...(isApplicationLeadExternal && formData?.application_lead),
     // If you spread anything and it has the same keys as operation (e.g. id, created_by), watch out for accidentally overwriting things. In this case it's safe to spread because the address schema excludes fields
     ...formData?.application_lead?.address,
-    operator_percent_of_ownership:
-      formData?.operator_percent_of_ownership &&
-      Number(formData?.operator_percent_of_ownership),
     "Did you submit a GHG emissions report for reporting year 2022?":
       formData?.previous_year_attributable_emissions ? true : false,
     is_application_lead_external: isApplicationLeadExternal,
     verified_at: formData?.verified_at?.toString(),
     verified_by: formData?.verified_by?.toString(),
 
-    // brianna TODO need to transform the multioperator part to get the values into the form data in the "mo_street_address" format rjsf is expecting
-
     // fix for null values not opening the multiple operators form if loading a previously saved form
     multiple_operators_array: isMultipleOperatorsArray
       ? formData?.multiple_operators_array
       : [{}],
   };
-  console.log("transformedFormData", transformedFormData);
+
   const formSectionList = Object.keys(schema.properties as any);
   const isNotFinalStep = formSection !== formSectionList.length;
   const isFinalStep = formSection === formSectionList.length;
@@ -129,7 +123,7 @@ export default function OperationsForm({ formData, schema }: Props) {
               //  temporary handling of documents, will be addressed in #332/325
               documents: [],
               operator_id: responseOpId.operator_id,
-              application_lead: formData?.application_lead?.id,
+              application_lead_id: formData?.application_lead?.id,
             };
 
             const response = await actionHandler(
