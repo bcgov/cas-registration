@@ -227,6 +227,8 @@ class UserAndContactCommonInfo(models.Model):
     )
     address = models.ForeignKey(
         Address,
+        null=True,  # not all users/contacts will have an address
+        blank=True,
         on_delete=models.DO_NOTHING,
         db_comment="Foreign key to the address of a user or contact",
         related_name="%(class)ss",
