@@ -1,9 +1,7 @@
-import pytest
-import json
+import pytest, json, uuid
 from registration.schema import UserIn
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.tests.utils.bakers import app_role_baker
-import uuid
 from django.test import Client
 from registration.enums.enums import IdPs
 
@@ -31,7 +29,6 @@ class TestUserEndpoint(CommonTestSetup):
         # Act
         response = TestUtils.mock_get_with_auth_role(self, 'industry_user', self.endpoint)
         content = response.json()
-
         # Assert
         assert response.status_code == 200
 
@@ -44,14 +41,27 @@ class TestUserEndpoint(CommonTestSetup):
             and content['position_title'] != ''
         )
         assert 'email' in content and isinstance(content['email'], str) and '@' in content['email']
+        assert 'address' in content and isinstance(content['address'], dict)
         assert (
-            'street_address' in content
-            and isinstance(content['street_address'], str)
-            and content['street_address'] != ''
+            'street_address' in content['address']
+            and isinstance(content['address']['street_address'], str)
+            and content['address']['street_address'] != ''
         )
-        assert 'municipality' in content and isinstance(content['municipality'], str) and content['municipality'] != ''
-        assert 'province' in content and isinstance(content['province'], str) and content['province'] != ''
-        assert 'postal_code' in content and isinstance(content['postal_code'], str) and content['postal_code'] != ''
+        assert (
+            'municipality' in content['address']
+            and isinstance(content['address']['municipality'], str)
+            and content['address']['municipality'] != ''
+        )
+        assert (
+            'province' in content['address']
+            and isinstance(content['address']['province'], str)
+            and content['address']['province'] != ''
+        )
+        assert (
+            'postal_code' in content['address']
+            and isinstance(content['address']['postal_code'], str)
+            and content['address']['postal_code'] != ''
+        )
 
         # Additional Assertion for user_guid
         assert 'user_guid' not in content
