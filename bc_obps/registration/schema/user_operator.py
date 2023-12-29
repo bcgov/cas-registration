@@ -160,14 +160,6 @@ class SelectUserOperatorOperatorsOut(ModelSchema):
         model_fields = ["operator"]
 
 
-class UserOperatorRoleOut(ModelSchema):
-    user_operator_status: str = Field("", alias="status")
-
-    class Config:
-        model = UserOperator
-        model_fields = ["role"]
-
-
 class UserOperatorListOut(Schema):
     id: int
     status: str
