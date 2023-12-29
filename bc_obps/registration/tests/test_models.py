@@ -4,6 +4,7 @@ from django.db import IntegrityError, models
 from django.test import TestCase
 from django.utils import timezone
 from registration.models import (
+    Address,
     BcObpsRegulatedOperation,
     BusinessRole,
     BusinessStructure,
@@ -27,10 +28,11 @@ from django.core.exceptions import ValidationError
 
 OPERATOR_FIXTURE = ("mock/operator.json",)
 USER_FIXTURE = ("mock/user.json",)
+ADDRESS_FIXTURE = ("mock/address.json",)
 OPERATION_FIXTURE = ("mock/operation.json",)
-NAICS_CODE_FIXTURE = ("real/naicsCode.json",)
 CONTACT_FIXTURE = ("mock/contact.json",)
 DOCUMENT_FIXTURE = ("mock/document.json",)
+NAICS_CODE_FIXTURE = ("real/naicsCode.json",)
 DOCUMENT_TYPE_FIXTURE = ("real/documentType.json",)
 BUSINESS_ROLE_FIXTURE = ("real/businessRole.json",)
 APP_ROLE_FIXTURE = ("real/appRole.json",)
@@ -159,6 +161,7 @@ class ReportingActivityModelTest(BaseTestCase):
 
 class UserModelTest(BaseTestCase):
     fixtures = [
+        ADDRESS_FIXTURE,
         USER_FIXTURE,
         DOCUMENT_FIXTURE,
         DOCUMENT_TYPE_FIXTURE,
@@ -173,11 +176,8 @@ class UserModelTest(BaseTestCase):
             ("first_name", "first name", 1000, None),
             ("last_name", "last name", 1000, None),
             ("position_title", "position title", 1000, None),
-            ("street_address", "street address", 1000, None),
-            ("municipality", "municipality", 1000, None),
-            ("province", "province", 2, None),
-            ("postal_code", "postal code", 7, None),
             ("email", "email", 254, None),
+            ("address", "address", None, None),
             (
                 "phone_number",
                 "phone number",
@@ -214,15 +214,11 @@ class UserModelTest(BaseTestCase):
         ]
 
     def test_unique_user_guid_and_business_guid_constraint(self):
-        # First user is `cls.test_user` from the fixture, attempt to create another user with the same user_guid and business_guid
+        # First user is `cls.test_object` from the fixture, attempt to create another user with the same user_guid and business_guid
         user2 = User(
             first_name="fname-test2",
             last_name="lname-test2",
             position_title="Manager",
-            street_address="456 Elm St",
-            municipality="Newville",
-            province="BC",
-            postal_code="X1Y 2Z3",
             email="alicesmith@example.com",
             phone_number="9876543210",
             user_guid="3fa85f64-5717-4562-b3fc-2c963f66afa6",
@@ -236,6 +232,7 @@ class UserModelTest(BaseTestCase):
 class ContactModelTest(BaseTestCase):
     fixtures = [
         APP_ROLE_FIXTURE,
+        ADDRESS_FIXTURE,
         USER_FIXTURE,
         CONTACT_FIXTURE,
         DOCUMENT_FIXTURE,
@@ -253,10 +250,7 @@ class ContactModelTest(BaseTestCase):
             ("first_name", "first name", 1000, None),
             ("last_name", "last name", 1000, None),
             ("position_title", "position title", 1000, None),
-            ("street_address", "street address", 1000, None),
-            ("municipality", "municipality", 1000, None),
-            ("province", "province", 2, None),
-            ("postal_code", "postal code", 7, None),
+            ("address", "address", None, None),
             ("email", "email", 254, None),
             (
                 "phone_number",
@@ -271,15 +265,11 @@ class ContactModelTest(BaseTestCase):
         ]
 
     def test_unique_email_constraint(self):
-        # First user is `cls.test_user` from the fixture, attempt to create a second contact with the same email address
+        # First contact is `cls.test_object` from the fixture, attempt to create a second contact with the same email address
         contact2 = Contact(
             first_name="Sarah",
             last_name="Smith",
             position_title="Sales Associate",
-            street_address="456 Elm St",
-            municipality="Greenville",
-            province="BC",
-            postal_code="V7W 3R4",
             email="john.doe@example.com",
             phone_number="9876543210",
         )
@@ -290,9 +280,10 @@ class ContactModelTest(BaseTestCase):
 
 class OperatorModelTest(BaseTestCase):
     fixtures = [
+        ADDRESS_FIXTURE,
+        CONTACT_FIXTURE,
         OPERATOR_FIXTURE,
         USER_FIXTURE,
-        CONTACT_FIXTURE,
         DOCUMENT_FIXTURE,
         DOCUMENT_TYPE_FIXTURE,
         BUSINESS_STRUCTURE_FIXTURE,
@@ -335,14 +326,8 @@ class OperatorModelTest(BaseTestCase):
                 None,
             ),
             ("business_structure", "business structure", None, None),
-            ("physical_street_address", "physical street address", 1000, None),
-            ("physical_municipality", "physical municipality", 1000, None),
-            ("physical_province", "physical province", 2, None),
-            ("physical_postal_code", "physical postal code", 7, None),
-            ("mailing_street_address", "mailing street address", 1000, None),
-            ("mailing_municipality", "mailing municipality", 1000, None),
-            ("mailing_province", "mailing province", 2, None),
-            ("mailing_postal_code", "mailing postal code", 7, None),
+            ("physical_address", "physical address", None, None),
+            ("mailing_address", "mailing address", None, None),
             ("website", "website", 200, None),
             ("documents", "documents", None, 2),
             ("contacts", "contacts", None, 2),
@@ -357,7 +342,7 @@ class OperatorModelTest(BaseTestCase):
 
 
 class ParentChildOperatorModelTest(BaseTestCase):
-    fixtures = [OPERATOR_FIXTURE, BUSINESS_STRUCTURE_FIXTURE]
+    fixtures = [ADDRESS_FIXTURE, BUSINESS_ROLE_FIXTURE, CONTACT_FIXTURE, OPERATOR_FIXTURE, BUSINESS_STRUCTURE_FIXTURE]
 
     @classmethod
     def setUpTestData(cls):
@@ -375,7 +360,15 @@ class ParentChildOperatorModelTest(BaseTestCase):
 
 
 class UserOperatorModelTest(BaseTestCase):
-    fixtures = [OPERATOR_FIXTURE, USER_FIXTURE, BUSINESS_STRUCTURE_FIXTURE, APP_ROLE_FIXTURE]
+    fixtures = [
+        ADDRESS_FIXTURE,
+        BUSINESS_ROLE_FIXTURE,
+        CONTACT_FIXTURE,
+        OPERATOR_FIXTURE,
+        USER_FIXTURE,
+        BUSINESS_STRUCTURE_FIXTURE,
+        APP_ROLE_FIXTURE,
+    ]
 
     @classmethod
     def setUpTestData(cls):
@@ -402,13 +395,14 @@ class UserOperatorModelTest(BaseTestCase):
 
 class OperationModelTest(BaseTestCase):
     fixtures = [
+        ADDRESS_FIXTURE,
         NAICS_CODE_FIXTURE,
         USER_FIXTURE,
         BUSINESS_ROLE_FIXTURE,
+        CONTACT_FIXTURE,
         OPERATOR_FIXTURE,
         APP_ROLE_FIXTURE,
         BUSINESS_STRUCTURE_FIXTURE,
-        CONTACT_FIXTURE,
         OPERATION_FIXTURE,
         DOCUMENT_FIXTURE,
         DOCUMENT_TYPE_FIXTURE,
@@ -569,6 +563,16 @@ class AppRoleModelTest(BaseTestCase):
         self.assertEqual(len(existing_roles), len(expected_roles))
         self.assertEqual(existing_roles, expected_roles)
 
+    def test_static_methods(self):
+        self.assertEqual(AppRole.get_cas_roles(), ['cas_admin', 'cas_analyst'])
+        self.assertEqual(
+            AppRole.get_all_eligible_roles(), ['cas_admin', 'cas_analyst', 'industry_user', 'industry_user_admin']
+        )
+        self.assertEqual(
+            AppRole.get_all_roles(), ['cas_admin', 'cas_analyst', 'cas_pending', 'industry_user', 'industry_user_admin']
+        )
+        self.assertEqual(AppRole.get_industry_roles(), ['industry_user', 'industry_user_admin'])
+
 
 class BusinessRoleModelTest(BaseTestCase):
     fixtures = [BUSINESS_ROLE_FIXTURE]
@@ -594,13 +598,14 @@ class BusinessRoleModelTest(BaseTestCase):
 
 class MultipleOperatorModelTest(BaseTestCase):
     fixtures = [
+        ADDRESS_FIXTURE,
         NAICS_CODE_FIXTURE,
         USER_FIXTURE,
         BUSINESS_ROLE_FIXTURE,
+        CONTACT_FIXTURE,
         OPERATOR_FIXTURE,
         APP_ROLE_FIXTURE,
         BUSINESS_STRUCTURE_FIXTURE,
-        CONTACT_FIXTURE,
         DOCUMENT_FIXTURE,
         DOCUMENT_TYPE_FIXTURE,
     ]
@@ -628,16 +633,10 @@ class MultipleOperatorModelTest(BaseTestCase):
             bc_corporate_registry_number='abc1234567',
             business_structure=BusinessStructure.objects.first(),
             website="test",
-            percentage_ownership=100,
-            physical_street_address="test",
-            physical_municipality="test",
-            physical_province="BC",
-            physical_postal_code="V7W 3R4",
+            percentage_ownership=12.5,
+            physical_address=Address.objects.first(),
             mailing_address_same_as_physical=True,
-            mailing_street_address="test",
-            mailing_municipality="test",
-            mailing_province="BC",
-            mailing_postal_code="V7W 3R4",
+            mailing_address=Address.objects.first(),
         )
         cls.field_data = [
             *timestamp_common_fields,
@@ -650,15 +649,9 @@ class MultipleOperatorModelTest(BaseTestCase):
             ("business_structure", "business structure", None, None),
             ("website", "website", 200, None),
             ("percentage_ownership", "percentage ownership", None, None),
-            ("physical_street_address", "physical street address", 1000, None),
-            ("physical_municipality", "physical municipality", 1000, None),
-            ("physical_province", "physical province", 2, None),
-            ("physical_postal_code", "physical postal code", 7, None),
+            ("physical_address", "physical address", None, None),
             ("mailing_address_same_as_physical", "mailing address same as physical", None, None),
-            ("mailing_street_address", "mailing street address", 1000, None),
-            ("mailing_municipality", "mailing municipality", 1000, None),
-            ("mailing_province", "mailing province", 2, None),
-            ("mailing_postal_code", "mailing postal code", 7, None),
+            ("mailing_address", "mailing address", None, None),
             ("operation", "operation", None, None),
         ]
 
@@ -692,6 +685,25 @@ class TestBcObpsRegulatedOperationModel(BaseTestCase):
         # not using baker.make because it doesn't raise an error when the id is not unique
         with self.assertRaises(IntegrityError):
             BcObpsRegulatedOperation.objects.create(id='23-0001', comments='test')  # already created in setUpTestData
+
+
+class TestAddressModel(BaseTestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.test_object = baker.make(Address)
+        cls.field_data = [
+            ("id", "ID", None, None),
+            ("street_address", "street address", 1000, None),
+            ("municipality", "municipality", 1000, None),
+            ("province", "province", 2, None),
+            ("postal_code", "postal code", 7, None),
+            ("users", "user", None, None),
+            ("contacts", "contact", None, None),
+            ("operators_physical", "operator", None, None),
+            ("operators_mailing", "operator", None, None),
+            ("multiple_operator_physical", "multiple operator", None, None),
+            ("multiple_operator_mailing", "multiple operator", None, None),
+        ]
 
 
 class TestModelsWithAuditColumns(TestCase):
