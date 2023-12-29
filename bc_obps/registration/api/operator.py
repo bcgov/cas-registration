@@ -6,8 +6,6 @@ from django.shortcuts import get_object_or_404
 from registration.models import AppRole, Operator, UserOperator
 from ninja.responses import codes_4xx, codes_5xx
 from registration.schema import Message, OperatorOut, SelectUserOperatorStatus
-from registration.schema import OperatorOut
-from ninja.errors import HttpError
 
 
 ##### GET #####
