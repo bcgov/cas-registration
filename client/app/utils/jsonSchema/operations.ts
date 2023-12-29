@@ -512,6 +512,12 @@ export const operationUiSchema = {
           jsxTitle: OperatorMailingAddressTitle,
         },
       },
+      mo_physical_postal_code: {
+        "ui:widget": "PostalCodeWidget",
+      },
+      mo_mailing_postal_code: {
+        "ui:widget": "PostalCodeWidget",
+      },
     },
   },
   regulated_products: {
