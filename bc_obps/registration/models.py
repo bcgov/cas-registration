@@ -511,6 +511,27 @@ class UserOperator(TimeStampedModel):
             models.Index(fields=["operator"], name="user_operator_operator_idx"),
         ]
 
+    def get_senior_officer(self) -> Optional[Contact]:
+        """
+        Returns the senior officer associated with the useroperator's operator.
+        Assuming that there is only one senior officer per operator.
+        """
+        return self.operator.contacts.filter(business_role=BusinessRole.objects.get(role_name='Senior Officer')).first()
+
+    def user_is_senior_officer(self) -> bool:
+        """
+        Verifies whether the useroperator's user is present in the contacts associated with the operator.
+        """
+        senior_officer = self.get_senior_officer()
+        if not senior_officer:
+            return False  # if there is no senior officer, then the user is not a senior officer
+        user = self.user
+        return (
+            senior_officer.first_name == user.first_name
+            and senior_officer.last_name == user.last_name
+            and senior_officer.email == user.email
+        )
+
 
 class OperationAndFacilityCommonInfo(TimeStampedModel):
     """Operation and facility common information abstract base class"""
