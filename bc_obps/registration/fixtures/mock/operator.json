@@ -31,7 +31,7 @@
       "mailing_address": 3,
       "website": "http://www.example2.com",
       "documents": [],
-      "contacts": [],
+      "contacts": [1],
       "status": "Approved",
       "verified_at": null,
       "verified_by": null
