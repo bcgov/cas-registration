@@ -426,7 +426,6 @@ export const operationUiSchema = {
     "mo_mailing_province",
     "mo_mailing_postal_code",
     "Would you like to add an exemption ID application lead?",
-    "application_lead",
     "verified_by",
     "verified_at",
   ],
