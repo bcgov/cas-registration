@@ -3,14 +3,15 @@ import json
 from model_bakery import baker
 from registration.models import NaicsCode
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
+from registration.tests.utils.bakers import app_role_baker
 
 pytestmark = pytest.mark.django_db
 
 base_endpoint = "/api/registration/"
 
-content_type_json = "application/json"
-
-
+# NOTE: We need to use the app_role_baker fixture to create the app roles and we don't need to add it to any other tests after this
+# If we create any other endpoint test file that comes before this one, we will need to add the app_role_baker fixture to the top of that file
+@pytest.mark.usefixtures('app_role_baker')
 class TestNaicsCodeEndpoint(CommonTestSetup):
 
     endpoint = base_endpoint + "naics_codes"
