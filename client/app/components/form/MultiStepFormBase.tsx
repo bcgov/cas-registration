@@ -1,4 +1,8 @@
+"use client";
+
+import { useState } from "react";
 import { useParams, useSearchParams } from "next/navigation";
+import { Button } from "@mui/material";
 import { RJSFSchema } from "@rjsf/utils";
 import { Alert } from "@mui/material";
 import FormBase from "./FormBase";
@@ -6,6 +10,8 @@ import MultiStepHeader from "./MultiStepHeader";
 import MultiStepButtons from "./MultiStepButtons";
 
 interface MultiStepFormProps {
+  allowBackNavigation?: boolean;
+  allowEdit?: boolean;
   baseUrl: string;
   cancelUrl: string;
   error?: any;
@@ -14,11 +20,12 @@ interface MultiStepFormProps {
   onSubmit: any;
   schema: any;
   showSubmissionStep?: boolean;
-  allowBackNavigation?: boolean;
   uiSchema: any;
 }
 
 const MultiStepFormBase = ({
+  allowBackNavigation,
+  allowEdit = false,
   baseUrl,
   cancelUrl,
   disabled,
@@ -27,9 +34,10 @@ const MultiStepFormBase = ({
   onSubmit,
   schema,
   showSubmissionStep,
-  allowBackNavigation,
   uiSchema,
 }: MultiStepFormProps) => {
+  const [isEditMode, setIsEditMode] = useState(false);
+
   const params = useParams();
   const formSection =
     parseInt(useSearchParams().get("form-section") as string) ||
@@ -38,15 +46,33 @@ const MultiStepFormBase = ({
 
   const formSectionList = Object.keys(schema.properties as any);
   const mapSectionTitles = formSectionList.map(
-    (section) => schema.properties[section].title,
+    (section) => schema.properties[section].title
   );
 
   const formSectionTitles = showSubmissionStep
     ? [...mapSectionTitles, "Submission"]
     : mapSectionTitles;
 
+  const isFormDisabled = disabled && !isEditMode;
+
+  const handleEditClick = () => {
+    setIsEditMode(true);
+  };
+
   return (
     <>
+      {allowEdit && (
+        <div className="w-full flex justify-end">
+          <Button
+            variant="contained"
+            color="primary"
+            disabled={isEditMode}
+            onClick={handleEditClick}
+          >
+            Edit information
+          </Button>
+        </div>
+      )}
       <MultiStepHeader step={formSectionIndex} steps={formSectionTitles} />
       <FormBase
         className="[&>div>fieldset]:min-h-[40vh]"
@@ -54,14 +80,14 @@ const MultiStepFormBase = ({
           schema.properties[formSectionList[formSectionIndex]] as RJSFSchema
         }
         uiSchema={uiSchema}
-        disabled={disabled}
-        readonly={disabled}
+        disabled={isFormDisabled}
+        readonly={isFormDisabled}
         onSubmit={onSubmit}
         formData={formData}
       >
         {error && <Alert severity="error">{error}</Alert>}
         <MultiStepButtons
-          disabled={disabled}
+          disabled={isFormDisabled}
           step={formSectionIndex}
           steps={formSectionList}
           baseUrl={baseUrl}
