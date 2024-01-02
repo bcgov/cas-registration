@@ -45,9 +45,10 @@ export default async function MyOperatorPage() {
 
   const isRedirectToForm =
     status === Status.PENDING || status === Status.APPROVED;
+
   if (isRedirectToForm) {
     redirect(
-      `/dashboard/select-operator/user-operator/${userOperatorId}?form-section=1`,
+      `/dashboard/select-operator/user-operator/${userOperatorId}?form-section=1`
     );
   }
 
