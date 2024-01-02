@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useParams, useSearchParams } from "next/navigation";
+import { Button } from "@mui/material";
 import { RJSFSchema } from "@rjsf/utils";
 import { Alert } from "@mui/material";
 import FormBase from "./FormBase";
@@ -9,6 +10,8 @@ import MultiStepHeader from "./MultiStepHeader";
 import MultiStepButtons from "./MultiStepButtons";
 
 interface MultiStepFormProps {
+  allowBackNavigation?: boolean;
+  allowEdit?: boolean;
   baseUrl: string;
   cancelUrl: string;
   // Optional array to override the default header titles
@@ -20,11 +23,12 @@ interface MultiStepFormProps {
   schema: any;
   setErrorReset?: (error: undefined) => void;
   showSubmissionStep?: boolean;
-  allowBackNavigation?: boolean;
   uiSchema: any;
 }
 
 const MultiStepFormBase = ({
+  allowBackNavigation,
+  allowEdit = false,
   baseUrl,
   cancelUrl,
   customStepNames,
@@ -35,10 +39,11 @@ const MultiStepFormBase = ({
   schema,
   setErrorReset,
   showSubmissionStep,
-  allowBackNavigation,
   uiSchema,
 }: MultiStepFormProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+
   const params = useParams();
   const formSection =
     parseInt(useSearchParams().get("form-section") as string) ||
@@ -66,7 +71,12 @@ const MultiStepFormBase = ({
     }
   };
 
-  const isDisabled = disabled || isSubmitting;
+  const isDisabled = (disabled && !isEditMode) || isSubmitting;
+
+  const handleEditClick = () => {
+    setIsEditMode(true);
+  };
+
   const isCustomStepNames = customStepNames && customStepNames.length > 0;
 
   if (
@@ -80,8 +90,20 @@ const MultiStepFormBase = ({
 
   return (
     <>
+      {allowEdit && (
+        <div className="w-full flex justify-end">
+          <Button
+            variant="contained"
+            color="primary"
+            disabled={isEditMode}
+            onClick={handleEditClick}
+          >
+            Edit information
+          </Button>
+        </div>
+      )}
       <MultiStepHeader
-        step={formSection}
+        step={formSectionIndex}
         steps={isCustomStepNames ? customStepNames : formSectionTitles}
       />
       <FormBase

@@ -29,7 +29,7 @@ export default function UserOperatorMultiStepForm({
 
   const formSection =
     parseInt(params?.formSection as string) ||
-    parseInt(searchParams.get("formSection") as string);
+    parseInt(searchParams.get("form-section") as string);
 
   const formSectionIndex = formSection - 1;
 
@@ -84,7 +84,8 @@ export default function UserOperatorMultiStepForm({
     session?.user.app_role?.includes("cas") &&
     !session?.user.app_role?.includes("pending");
 
-  const isFormStatusPending = formData?.status === Status.PENDING;
+  const isFormStatusDisabled =
+    formData?.status === Status.PENDING || formData?.status === Status.APPROVED;
 
   // If the user is an approved cas internal user or if no operator exists show the entire multistep form
   if (isCasInternal || !userOperatorId || formSection) {
@@ -113,6 +114,7 @@ export default function UserOperatorMultiStepForm({
           />
         )}
         <MultiStepFormBase
+          allowEdit={isFormStatusDisabled}
           baseUrl={`/dashboard/operators/user-operator/${userOperatorId}`}
           cancelUrl={
             isCasInternal
@@ -120,7 +122,7 @@ export default function UserOperatorMultiStepForm({
               : "/dashboard/select-operator"
           }
           schema={schema}
-          disabled={isCasInternal || isFormStatusPending}
+          disabled={isCasInternal || isFormStatusDisabled}
           error={error}
           setErrorReset={setError}
           formData={formData}
