@@ -41,8 +41,12 @@ export default async function MyOperatorPage() {
   const userOperatorId = userOperatorIdResponse?.operator_id;
 
   const { status } = await getUserOperatorStatus();
-  const isRedirectToForm =
-    status === Status.PENDING || status === Status.APPROVED;
+  const isRedirectToForm = status === Status.APPROVED;
+
+  if (status === Status.PENDING) {
+    return <div>Your request is pending.</div>;
+  }
+
   if (isRedirectToForm) {
     redirect(
       `/dashboard/select-operator/user-operator/${userOperatorId}?form-section=1`,
