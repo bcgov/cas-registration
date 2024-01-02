@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import { RJSFSchema } from "@rjsf/utils";
 import { Alert } from "@mui/material";
 import FormBase from "./FormBase";
@@ -40,11 +40,14 @@ const MultiStepFormBase = ({
 }: MultiStepFormProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const params = useParams();
-  const formSection = parseInt(params?.formSection as string) - 1;
+  const formSection =
+    parseInt(useSearchParams().get("form-section") as string) ||
+    parseInt(params?.formSection as string);
+  const formSectionIndex = formSection - 1;
 
   const formSectionList = Object.keys(schema.properties as any);
   const mapSectionTitles = formSectionList.map(
-    (section) => schema.properties[section].title,
+    (section) => schema.properties[section].title
   );
 
   const formSectionTitles = showSubmissionStep
@@ -71,7 +74,7 @@ const MultiStepFormBase = ({
     formSectionTitles.length !== customStepNames.length
   ) {
     throw new Error(
-      "The number of custom header titles must match the number of form sections",
+      "The number of custom header titles must match the number of form sections"
     );
   }
 
@@ -83,7 +86,9 @@ const MultiStepFormBase = ({
       />
       <FormBase
         className="[&>div>fieldset]:min-h-[40vh]"
-        schema={schema.properties[formSectionList[formSection]] as RJSFSchema}
+        schema={
+          schema.properties[formSectionList[formSectionIndex]] as RJSFSchema
+        }
         uiSchema={uiSchema}
         disabled={isDisabled}
         readonly={isDisabled}
@@ -95,7 +100,7 @@ const MultiStepFormBase = ({
         <MultiStepButtons
           disabled={isDisabled}
           isSubmitting={isSubmitting}
-          step={formSection}
+          step={formSectionIndex}
           steps={formSectionList}
           baseUrl={baseUrl}
           cancelUrl={cancelUrl}
