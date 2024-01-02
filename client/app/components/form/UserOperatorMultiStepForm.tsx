@@ -9,12 +9,8 @@ import { useSession } from "next-auth/react";
 import UserOperatorReview from "@/app/components/routes/access-requests/form/UserOperatorReview";
 import MultiStepFormBase from "@/app/components/form/MultiStepFormBase";
 import { UserOperatorFormData } from "@/app/components/form/formDataTypes";
-<<<<<<< HEAD
 import Note from "../datagrid/Note";
-import { Status } from "@/app/types/types";
-=======
 import { Status } from "@/app/utils/enums";
->>>>>>> 149a9d22 (fix: status enum import)
 
 interface UserOperatorFormProps {
   readonly schema: RJSFSchema;
@@ -30,9 +26,15 @@ export default function UserOperatorMultiStepForm({
   const params = useParams();
   const searchParams = useSearchParams();
   const [error, setError] = useState(undefined);
-  const formSection = parseInt(params?.formSection as string) - 1;
+
+  const formSection =
+    parseInt(params?.formSection as string) ||
+    parseInt(searchParams.get("form-section") as string);
+
+  const formSectionIndex = formSection - 1;
+
   const formSectionList = Object.keys(schema.properties as RJSFSchema);
-  const isFinalStep = formSection === formSectionList.length - 1;
+  const isFinalStep = formSectionIndex === formSectionList.length - 1;
 
   const userOperatorId =
     searchParams.get("user-operator-id") || (params?.id as string);
@@ -73,7 +75,7 @@ export default function UserOperatorMultiStepForm({
 
     push(
       `/dashboard/select-operator/user-operator/create/${
-        formSection + 2
+        formSection + 1
       }?user-operator-id=${response.user_operator_id}`
     );
   };
