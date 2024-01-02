@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import { redirect } from "next/navigation";
 import Loading from "@/app/components/loading/SkeletonField";
 import SelectOperator from "@/app/components/routes/select-operator/form/SelectOperator";
 import { BC_GOV_LINKS_COLOR } from "@/app/styles/colors";
@@ -14,7 +15,19 @@ const getUserOperatorStatus = async () => {
     return await actionHandler(
       `registration/user-operator-status-from-user`,
       "GET",
-      "",
+      ""
+    );
+  } catch (error) {
+    throw error;
+  }
+};
+
+const getUserOperatorId = async () => {
+  try {
+    return await actionHandler(
+      `registration/user-operator-operator-id`,
+      "GET",
+      ""
     );
   } catch (error) {
     throw error;
@@ -24,10 +37,18 @@ const getUserOperatorStatus = async () => {
 export default async function MyOperatorPage() {
   const session = await getServerSession(authOptions);
   const userName = getUserFullName(session);
+
+  const userOperatorIdResponse = await getUserOperatorId();
+  const userOperatorId = userOperatorIdResponse?.operator_id;
+
   const { status } = await getUserOperatorStatus();
-  if (status === Status.PENDING) {
-    return <div>Your request is pending.</div>;
+
+  const isRedirectToForm =
+    status === Status.PENDING || status === Status.APPROVED;
+  if (isRedirectToForm) {
+    redirect(`/dashboard/select-operator/user-operator/${userOperatorId}`);
   }
+
   return (
     <>
       {/* Streaming to render UI parts in a client incrementally, as soon as possible */}
