@@ -29,7 +29,7 @@ export default function UserOperatorMultiStepForm({
 
   const formSection =
     parseInt(params?.formSection as string) ||
-    parseInt(searchParams.get("form-section") as string);
+    parseInt(searchParams.get("formSection") as string);
 
   const formSectionIndex = formSection - 1;
 
