@@ -27,10 +27,14 @@ export default function UserOperatorMultiStepForm({
   const [error, setError] = useState(undefined);
   const [formState, setFormState] = useState(formData);
 
-  const formSection = parseInt(params?.formSection as string) - 1;
+  const formSection =
+    parseInt(params?.formSection as string) ||
+    parseInt(searchParams.get("form-section") as string);
+
+  const formSectionIndex = formSection - 1;
 
   const formSectionList = Object.keys(schema.properties as RJSFSchema);
-  const isFinalStep = formSection === formSectionList.length - 1;
+  const isFinalStep = formSectionIndex === formSectionList.length - 1;
 
   const userOperatorId =
     searchParams.get("user-operator-id") || (params?.id as string);
@@ -73,8 +77,8 @@ export default function UserOperatorMultiStepForm({
 
     push(
       `/dashboard/select-operator/user-operator/create/${
-        formSection + 2
-      }?user-operator-id=${response.user_operator_id}`
+        formSection + 1
+      }?user-operator-id=${response.user_operator_id}`,
     );
   };
 

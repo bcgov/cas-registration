@@ -1,4 +1,4 @@
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import { RJSFSchema } from "@rjsf/utils";
 import { Alert } from "@mui/material";
 import FormBase from "./FormBase";
@@ -31,7 +31,10 @@ const MultiStepFormBase = ({
   uiSchema,
 }: MultiStepFormProps) => {
   const params = useParams();
-  const formSection = parseInt(params?.formSection as string) - 1;
+  const formSection =
+    parseInt(useSearchParams().get("form-section") as string) ||
+    parseInt(params?.formSection as string);
+  const formSectionIndex = formSection - 1;
 
   const formSectionList = Object.keys(schema.properties as any);
   const mapSectionTitles = formSectionList.map(
@@ -44,10 +47,12 @@ const MultiStepFormBase = ({
 
   return (
     <>
-      <MultiStepHeader step={formSection} steps={formSectionTitles} />
+      <MultiStepHeader step={formSectionIndex} steps={formSectionTitles} />
       <FormBase
         className="[&>div>fieldset]:min-h-[40vh]"
-        schema={schema.properties[formSectionList[formSection]] as RJSFSchema}
+        schema={
+          schema.properties[formSectionList[formSectionIndex]] as RJSFSchema
+        }
         uiSchema={uiSchema}
         disabled={disabled}
         readonly={disabled}
@@ -57,7 +62,7 @@ const MultiStepFormBase = ({
         {error && <Alert severity="error">{error}</Alert>}
         <MultiStepButtons
           disabled={disabled}
-          step={formSection}
+          step={formSectionIndex}
           steps={formSectionList}
           baseUrl={baseUrl}
           cancelUrl={cancelUrl}
