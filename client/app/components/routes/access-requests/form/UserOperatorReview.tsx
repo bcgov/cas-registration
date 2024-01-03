@@ -8,13 +8,49 @@ import { UserOperatorFormData } from "@/app/components/form/formDataTypes";
 interface Props {
   userOperator: UserOperatorFormData;
   userOperatorId: number;
+  operatorId?: number;
+  isOperatorNew?: boolean;
 }
 
 export default function UserOperatorReview({
   userOperator,
   userOperatorId,
+  operatorId,
+  isOperatorNew,
 }: Props) {
-  async function approveRequest() {
+  async function approveOperatorRequest() {
+    try {
+      const response = await actionHandler(
+        `registration/operators/${operatorId}`,
+        "PUT",
+        "",
+        {
+          body: JSON.stringify({ status: Status.APPROVED }),
+        }
+      );
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async function rejectOperatorRequest() {
+    try {
+      const response = await actionHandler(
+        `registration/operators/${operatorId}`,
+        "PUT",
+        "",
+        {
+          body: JSON.stringify({ status: Status.REJECTED }),
+        }
+      );
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async function approvePrimeAdminRequst() {
     userOperator.status = Status.APPROVED;
     const response = await actionHandler(
       `registration/select-operator/user-operator/operator/${userOperatorId}/update-status`,
@@ -22,12 +58,12 @@ export default function UserOperatorReview({
       `dashboard/operators/user-operators/${userOperatorId}`,
       {
         body: JSON.stringify(userOperator),
-      },
+      }
     );
     return response;
   }
 
-  async function rejectRequest() {
+  async function rejectPrimeAdminRequest() {
     userOperator.status = Status.REJECTED;
     const response = await actionHandler(
       `registration/select-operator/user-operator/operator/${userOperatorId}/update-status`,
@@ -35,19 +71,24 @@ export default function UserOperatorReview({
       `dashboard/operators/user-operators/${userOperatorId}`,
       {
         body: JSON.stringify(userOperator),
-      },
+      }
     );
     return response;
   }
+  const requestText = isOperatorNew
+    ? "creation of the new operator"
+    : "prime admin request";
   return (
     <Review
-      approvedMessage="You have approved the request for prime admin access."
-      rejectedMessage="You have rejected the request for prime admin access."
-      confirmApproveMessage="Are you sure you want to approve this request for prime admin access?"
-      confirmRejectMessage="Are you sure you want to reject this request for prime admin access?"
-      isStatusPending={userOperator.status === Status.PENDING}
-      onApprove={approveRequest}
-      onReject={rejectRequest}
+      approvedMessage={`You have approved the ${requestText}.`}
+      rejectedMessage={`You have rejected the ${requestText}.`}
+      confirmApproveMessage={`Are you sure you want to approve the ${requestText}?`}
+      confirmRejectMessage={`Are you sure you want to reject the ${requestText}?`}
+      isStatusPending={userOperator.user_operator_status === Status.PENDING}
+      onApprove={
+        isOperatorNew ? approveOperatorRequest : approvePrimeAdminRequst
+      }
+      onReject={isOperatorNew ? rejectOperatorRequest : rejectPrimeAdminRequest}
     />
   );
 }
