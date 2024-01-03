@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useParams, useSearchParams } from "next/navigation";
+import { useParams } from "next/navigation";
 import { Button } from "@mui/material";
 import { RJSFSchema } from "@rjsf/utils";
 import { Alert } from "@mui/material";
@@ -45,9 +45,7 @@ const MultiStepFormBase = ({
   const [isEditMode, setIsEditMode] = useState(false);
 
   const params = useParams();
-  const formSection =
-    parseInt(useSearchParams().get("form-section") as string) ||
-    parseInt(params?.formSection as string);
+  const formSection = parseInt(params?.formSection as string);
   const formSectionIndex = formSection - 1;
 
   const formSectionList = Object.keys(schema.properties as any);

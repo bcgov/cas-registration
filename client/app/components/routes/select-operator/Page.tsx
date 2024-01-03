@@ -47,9 +47,7 @@ export default async function MyOperatorPage() {
     status === Status.PENDING || status === Status.APPROVED;
 
   if (isRedirectToForm) {
-    redirect(
-      `/dashboard/select-operator/user-operator/${userOperatorId}?form-section=1`
-    );
+    redirect(`/dashboard/select-operator/user-operator/${userOperatorId}/1`);
   }
 
   return (
