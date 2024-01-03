@@ -2,7 +2,12 @@
 
 import { RJSFSchema } from "@rjsf/utils";
 import { useState } from "react";
-import { useParams, useRouter, useSearchParams } from "next/navigation";
+import {
+  useParams,
+  usePathname,
+  useRouter,
+  useSearchParams,
+} from "next/navigation";
 import { userOperatorUiSchema } from "@/app/utils/jsonSchema/userOperator";
 import { actionHandler } from "@/app/utils/actions";
 import { useSession } from "next-auth/react";
@@ -22,14 +27,15 @@ export default function UserOperatorMultiStepForm({
 }: UserOperatorFormProps) {
   const { data: session } = useSession();
   const { push } = useRouter();
+  const pathname = usePathname();
   const params = useParams();
   const searchParams = useSearchParams();
   const [error, setError] = useState(undefined);
   const [formState, setFormState] = useState(formData);
-
   const formSection =
     parseInt(params?.formSection as string) ||
     parseInt(searchParams.get("form-section") as string);
+  const isCreate = pathname.includes("create");
 
   const formSectionIndex = formSection - 1;
 
@@ -51,12 +57,12 @@ export default function UserOperatorMultiStepForm({
     if (userOperatorId) newFormData.user_operator_id = userOperatorId;
 
     const apiUrl = `registration/user-operator/${
-      isFinalStep ? "contact" : "operator"
+      isFinalStep && isCreate ? "contact" : "operator"
     }`;
 
     const response = await actionHandler(
       apiUrl,
-      "POST",
+      isCreate ? "POST" : "PUT",
       `/dashboard/select-operator/user-operator/create/${params?.formSection}`,
       {
         body: JSON.stringify(newFormData),
@@ -74,11 +80,10 @@ export default function UserOperatorMultiStepForm({
       );
       return;
     }
-
-    push(
-      `/dashboard/select-operator/user-operator/create/${
-        formSection + 1
-      }?user-operator-id=${response.user_operator_id}`,
+    return push(
+      `/dashboard/select-operator/user-operator/${
+        isCreate ? "create" : userOperatorId
+      }/${formSection + 1}`
     );
   };
 
@@ -101,20 +106,15 @@ export default function UserOperatorMultiStepForm({
         )}
         <MultiStepFormBase
           allowEdit={isFormStatusDisabled}
-          baseUrl={`/dashboard/operators/user-operator/${userOperatorId}`}
-<<<<<<< HEAD
           cancelUrl={
             isCasInternal
               ? "/dashboard/operators"
               : "/dashboard/select-operator"
           }
-=======
-          // TODO: change cancelUrl for industry user depending on if they are creating or editing an operator
-          // as in #441 they will be taken directly to the form view if they have already created an operator
-          cancelUrl={`/dashboard/${
-            isCasInternal ? "operators" : "select-operator"
+          allowBackNavigation
+          baseUrl={`/dashboard/select-operator/user-operator/${
+            isCreate ? "create" : userOperatorId
           }`}
->>>>>>> 008665cc (refactor: operation form disabled logic)
           schema={schema}
           disabled={isCasInternal || isFormStatusDisabled}
           error={error}
