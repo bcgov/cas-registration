@@ -75,7 +75,7 @@ def get_user_operator_operator_id(request):
     "/select-operator/user-operator/{int:user_operator_id}",
     response=UserOperatorOut,
 )
-@authorize(AppRole.get_all_eligible_roles())
+@authorize(AppRole.get_all_authorized_roles())
 def get_user_operator(request, user_operator_id: int):
     user: User = request.current_user
     user_operator = get_object_or_404(UserOperator, id=user_operator_id)
@@ -87,7 +87,7 @@ def get_user_operator(request, user_operator_id: int):
 
 
 @router.get("/operator-has-admin/{operator_id}", response={200: bool, codes_4xx: Message})
-@authorize(AppRole.get_all_eligible_roles())
+@authorize(AppRole.get_all_authorized_roles())
 def get_user_operator_admin_exists(request, operator_id: int):
     has_admin = UserOperator.objects.filter(
         operator_id=operator_id, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.APPROVED
@@ -105,7 +105,7 @@ def get_user(request):
 
 
 @router.get("/user-operators", response=List[UserOperatorListOut])
-@authorize(AppRole.get_cas_roles())
+@authorize(AppRole.get_authorized_irc_roles())
 def list_user_operators(request):
     qs = UserOperator.objects.all()
     user_operator_list = []
@@ -401,7 +401,7 @@ def update_user_operator_user_status(request, user_guid: str):
 
 
 @router.put("/select-operator/user-operator/operator/{user_operator_id}/update-status")
-@authorize(AppRole.get_cas_roles())
+@authorize(AppRole.get_authorized_irc_roles())
 def update_user_operator_status(request, user_operator_id: str):
     current_cas_internal_user: User = request.current_user
     # need to convert request.body (a bytes object) to a string, and convert the string to a JSON object

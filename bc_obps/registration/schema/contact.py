@@ -9,7 +9,7 @@ class ContactSchema(ModelSchema):
     Schema for the Contact model
     """
 
-    address: Optional[AddressSchema] = None
+    address: AddressSchema
 
     @staticmethod
     def resolve_phone_number(obj):

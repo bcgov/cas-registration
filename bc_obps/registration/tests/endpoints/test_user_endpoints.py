@@ -41,28 +41,6 @@ class TestUserEndpoint(CommonTestSetup):
             and content['position_title'] != ''
         )
         assert 'email' in content and isinstance(content['email'], str) and '@' in content['email']
-        assert 'address' in content and isinstance(content['address'], dict)
-        assert (
-            'street_address' in content['address']
-            and isinstance(content['address']['street_address'], str)
-            and content['address']['street_address'] != ''
-        )
-        assert (
-            'municipality' in content['address']
-            and isinstance(content['address']['municipality'], str)
-            and content['address']['municipality'] != ''
-        )
-        assert (
-            'province' in content['address']
-            and isinstance(content['address']['province'], str)
-            and content['address']['province'] != ''
-        )
-        assert (
-            'postal_code' in content['address']
-            and isinstance(content['address']['postal_code'], str)
-            and content['address']['postal_code'] != ''
-        )
-
         # Additional Assertion for user_guid
         assert 'user_guid' not in content
 

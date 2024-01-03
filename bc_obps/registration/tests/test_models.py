@@ -161,7 +161,6 @@ class ReportingActivityModelTest(BaseTestCase):
 
 class UserModelTest(BaseTestCase):
     fixtures = [
-        ADDRESS_FIXTURE,
         USER_FIXTURE,
         DOCUMENT_FIXTURE,
         DOCUMENT_TYPE_FIXTURE,
@@ -177,7 +176,6 @@ class UserModelTest(BaseTestCase):
             ("last_name", "last name", 1000, None),
             ("position_title", "position title", 1000, None),
             ("email", "email", 254, None),
-            ("address", "address", None, None),
             (
                 "phone_number",
                 "phone number",
@@ -492,6 +490,7 @@ class OperationModelTest(BaseTestCase):
         )
 
     def test_generate_unique_boro_id_multiple_existing_ids_same_year(self):
+        current_year = datetime.now().year % 100
         # Case: Multiple existing BORO IDs for the current year
         current_year = datetime.now().year % 100
         existing_ids = [f"{current_year:02d}-0002", f"{current_year:02d}-0003", f"{current_year:02d}-0001"]
@@ -564,9 +563,9 @@ class AppRoleModelTest(BaseTestCase):
         self.assertEqual(existing_roles, expected_roles)
 
     def test_static_methods(self):
-        self.assertEqual(AppRole.get_cas_roles(), ['cas_admin', 'cas_analyst'])
+        self.assertEqual(AppRole.get_authorized_irc_roles(), ['cas_admin', 'cas_analyst'])
         self.assertEqual(
-            AppRole.get_all_eligible_roles(), ['cas_admin', 'cas_analyst', 'industry_user', 'industry_user_admin']
+            AppRole.get_all_authorized_roles(), ['cas_admin', 'cas_analyst', 'industry_user', 'industry_user_admin']
         )
         self.assertEqual(
             AppRole.get_all_roles(), ['cas_admin', 'cas_analyst', 'cas_pending', 'industry_user', 'industry_user_admin']
@@ -697,7 +696,6 @@ class TestAddressModel(BaseTestCase):
             ("municipality", "municipality", 1000, None),
             ("province", "province", 2, None),
             ("postal_code", "postal code", 7, None),
-            ("users", "user", None, None),
             ("contacts", "contact", None, None),
             ("operators_physical", "operator", None, None),
             ("operators_mailing", "operator", None, None),
