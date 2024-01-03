@@ -39,6 +39,37 @@ class TestOperatorsEndpoint(CommonTestSetup):
         response = TestUtils.mock_get_with_auth_role(self, 'cas_pending', self.endpoint + "/" + str(operator.id))
         assert response.status_code == 401
 
+    def test_unauthorized_users_cannot_put(self):
+        # /operators/{operator_id}
+
+        operator = baker.make(Operator)
+        response = TestUtils.mock_put_with_auth_role(
+            self,
+            'cas_pending',
+            content_type_json,
+            {'status': Operator.Statuses.APPROVED},
+            self.endpoint + "/" + str(operator.id),
+        )
+        assert response.status_code == 401
+
+        response = TestUtils.mock_put_with_auth_role(
+            self,
+            'industry_user',
+            content_type_json,
+            {'status': Operator.Statuses.APPROVED},
+            self.endpoint + "/" + str(operator.id),
+        )
+        assert response.status_code == 401
+
+        response = TestUtils.mock_put_with_auth_role(
+            self,
+            'industry_user_admin',
+            content_type_json,
+            {'status': Operator.Statuses.APPROVED},
+            self.endpoint + "/" + str(operator.id),
+        )
+        assert response.status_code == 401
+
     def test_get_operators_no_parameters(self):
         response = TestUtils.mock_get_with_auth_role(self, 'industry_user')
         assert response.status_code == 404
@@ -132,3 +163,37 @@ class TestOperatorsEndpoint(CommonTestSetup):
         )
         assert response.status_code == 404
         assert response.json() == {'message': 'No matching operator found'}
+
+    def test_put_approve_operator(self):
+        operator = baker.make(Operator, status=Operator.Statuses.PENDING, is_new=True)
+
+        response = TestUtils.mock_put_with_auth_role(
+            self,
+            'cas_admin',
+            content_type_json,
+            {"status": Operator.Statuses.APPROVED},
+            self.endpoint + "/" + str(operator.id),
+        )
+
+        assert response.status_code == 200
+
+        assert response.json().get('status') == Operator.Statuses.APPROVED
+        assert response.json().get('is_new') == False
+        assert response.json().get("verified_by") == str(self.user.user_guid)
+
+    def test_put_request_changes_to_operator(self):
+        operator = baker.make(Operator, status=Operator.Statuses.PENDING)
+
+        response = TestUtils.mock_put_with_auth_role(
+            self,
+            'cas_admin',
+            content_type_json,
+            {"status": Operator.Statuses.CHANGES},
+            self.endpoint + "/" + str(operator.id),
+        )
+
+        assert response.status_code == 200
+
+        assert response.json().get('status') == Operator.Statuses.CHANGES
+        assert response.json().get('is_new') == True
+        assert response.json().get("verified_by") == None
