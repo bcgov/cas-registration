@@ -111,7 +111,7 @@ def list_operations(request):
         qs = Operation.objects.exclude(status__in=[Operation.Statuses.NOT_REGISTERED])
         return 200, qs
     # Industry users can only see their companies' operations (if there's no user_operator or operator, then the user hasn't requested access to the operator)
-    user_operator = UserOperator.objects.filter(user_id=user.user_guid).first()  # Why the first one??
+    user_operator = UserOperator.objects.filter(user_id=user.user_guid).first()
     if not user_operator:
         raise HttpError(401, UNAUTHORIZED_MESSAGE)
     approved_users = get_an_operators_approved_users(user_operator.operator)
@@ -128,13 +128,15 @@ def list_operations(request):
 def get_operation(request, operation_id: int):
     user: User = request.current_user
     if user.is_industry_user():
-        user_operator = UserOperator.objects.filter(user_id=user.user_guid).first()  # Why the first one??
+        user_operator = UserOperator.objects.filter(user_id=user.user_guid).first()
         if not user_operator:
             raise HttpError(401, UNAUTHORIZED_MESSAGE)
         approved_users = get_an_operators_approved_users(user_operator.operator)
         if user.user_guid not in approved_users:
             raise HttpError(401, UNAUTHORIZED_MESSAGE)
-    operation = get_object_or_404(Operation, id=operation_id, operator_id=user_operator.operator.id)
+        operation = get_object_or_404(Operation, id=operation_id, operator_id=user_operator.operator.id)
+    elif user.is_irc_user():
+        operation = get_object_or_404(Operation, id=operation_id)
     return 200, operation
 
 
