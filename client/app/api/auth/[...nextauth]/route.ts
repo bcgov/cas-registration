@@ -1,5 +1,5 @@
 import NextAuth, { NextAuthOptions } from "next-auth";
-import KeycloakProvider from "next-auth/providers/keycloak";
+import KeycloakProvider, { KeycloakProfile } from "next-auth/providers/keycloak";
 import { Errors, IDP, Roles } from "@/app/utils/enums";
 import { actionHandler } from "@/app/utils/actions";
 
@@ -18,7 +18,7 @@ export const authOptions: NextAuthOptions = {
       clientId: `${process.env.KEYCLOAK_CLIENT_ID}`,
       clientSecret: `${process.env.KEYCLOAK_CLIENT_SECRET}`,
       issuer: `${process.env.KEYCLOAK_LOGIN_URL}`,
-      profile(profile) {
+      profile(profile: KeycloakProfile) {
         return {
           ...profile,
           id: profile.sub

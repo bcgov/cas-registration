@@ -29,10 +29,14 @@ export default async function User() {
        * getServerSession requires passing the same object you would pass to NextAuth
        */
       const session = await getServerSession(authOptions);
+      const isIdir = session?.identity_provider === IDP.IDIR;
+      // IDIR users have a given_name and a family_name attribute in the jwt, so we can use that in the case of idir
+      // BCeID users use the name attribute and we split on the space if there is one
+      const names = isIdir ? [session?.user?.given_name, session?.user?.family_name] : session?.user?.name?.split(" ");
 
       formData = {
-        first_name: session?.user?.given_name ?? "", // Use nullish coalescing here
-        last_name: session?.user?.family_name ?? "", // Use nullish coalescing here
+        first_name: names?.[0] ?? "", // Use nullish coalescing here
+        last_name: names?.[1] ?? "", // Use nullish coalescing here
         email: session?.user?.email || "",
         phone_number: "",
         position_title: "",
