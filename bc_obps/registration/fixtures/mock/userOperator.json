@@ -1,6 +1,7 @@
 [
   {
     "model": "registration.useroperator",
+    "pk": 1,
     "fields": {
       "user": "00000000-0000-0000-0000-000000000001",
       "operator": 2,
@@ -12,6 +13,7 @@
   },
   {
     "model": "registration.useroperator",
+    "pk": 2,
     "fields": {
       "user": "ba2ba62a121842e0942aab9e92ce8822",
       "operator": 2,
@@ -23,6 +25,7 @@
   },
   {
     "model": "registration.useroperator",
+    "pk": 3,
     "fields": {
       "user": "279c80cf57814c28872740a133d17c0d",
       "operator": 2,
@@ -34,6 +37,7 @@
   },
   {
     "model": "registration.useroperator",
+    "pk": 4,
     "fields": {
       "user": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
       "operator": 3,
