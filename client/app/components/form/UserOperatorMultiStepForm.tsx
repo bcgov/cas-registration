@@ -32,9 +32,7 @@ export default function UserOperatorMultiStepForm({
   const searchParams = useSearchParams();
   const [error, setError] = useState(undefined);
   const [formState, setFormState] = useState(formData);
-  const formSection =
-    parseInt(params?.formSection as string) ||
-    parseInt(searchParams.get("form-section") as string);
+  const formSection = parseInt(params?.formSection as string);
   const isCreate = pathname.includes("create");
 
   const formSectionIndex = formSection - 1;
