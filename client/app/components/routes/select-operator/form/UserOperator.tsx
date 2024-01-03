@@ -18,7 +18,7 @@ async function getCurrentUser() {
   return actionHandler(
     `registration/user`,
     "GET",
-    `/dashboard/select-operator/user-operator`,
+    `/dashboard/select-operator/user-operator`
   );
 }
 
@@ -26,22 +26,22 @@ async function getBusinessStructures() {
   return actionHandler(
     `registration/business_structures`,
     "GET",
-    `/dashboard/select-operator/user-operator`,
+    `/dashboard/select-operator/user-operator`
   );
 }
 
-export async function getUserOperatorFormData(id: number | string | undefined) {
-  if (!id || id === "request-access") return {};
+export async function getUserOperatorFormData(id: number | string) {
+  if (!id || isNaN(Number(id))) return {};
   return actionHandler(
     `registration/select-operator/user-operator/${id}`,
     "GET",
-    `/user-operator/${id}`,
+    `/user-operator/${id}`
   );
 }
 
 // To populate the options for the business structure select field
 const createUserOperatorSchema = (
-  businessStructureList: { id: string; label: string }[],
+  businessStructureList: { id: string; label: string }[]
 ): RJSFSchema => {
   const localSchema = JSON.parse(JSON.stringify(userOperatorSchema));
 
@@ -51,7 +51,7 @@ const createUserOperatorSchema = (
       title: businessStructure.label,
       enum: [businessStructure.id],
       value: businessStructure.id,
-    }),
+    })
   );
 
   // for operator
@@ -94,7 +94,7 @@ export default async function UserOperator({
     (businessStructure: BusinessStructure) => ({
       id: businessStructure.name,
       label: businessStructure.name,
-    }),
+    })
   );
 
   const formData = {
