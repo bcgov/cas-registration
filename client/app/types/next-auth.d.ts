@@ -18,6 +18,8 @@ declare module "next-auth/jwt" {
     identity_provider: string | undefined;
     error?: string;
     app_role?: string;
+    given_name?: string;
+    family_name?: string;
   }
 }
 
@@ -28,6 +30,8 @@ declare module "next-auth" {
     user: {
       user_guid: string | undefined;
       app_role?: string;
+      given_name?: string;
+      family_name?: string;
     } & DefaultSession["user"];
   }
 }

@@ -29,17 +29,10 @@ export default async function User() {
        * getServerSession requires passing the same object you would pass to NextAuth
        */
       const session = await getServerSession(authOptions);
-      const isIdir = session?.identity_provider === IDP.IDIR;
-
-      // IDIR names come in the format "LASTNAME, FIRSTNAME" so we will split on the comma
-      // and reverse so they don't go into the wrong fields
-      const idirName = session?.user?.name?.split(", ").reverse();
-
-      const names = isIdir ? idirName : session?.user?.name?.split(" ");
 
       formData = {
-        first_name: names?.[0] ?? "", // Use nullish coalescing here
-        last_name: names?.[1] ?? "", // Use nullish coalescing here
+        first_name: session?.user?.given_name ?? "", // Use nullish coalescing here
+        last_name: session?.user?.family_name ?? "", // Use nullish coalescing here
         email: session?.user?.email || "",
         phone_number: "",
         position_title: "",
