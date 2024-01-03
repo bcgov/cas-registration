@@ -74,9 +74,9 @@ class AppRole(models.Model):
 
     # We need try/except blocks here because the app_role table may not exist yet when we run migrations
     @staticmethod
-    def get_cas_roles() -> List[str]:
+    def get_authorized_irc_roles() -> List[str]:
         """
-        Return the roles that are considered as CAS users (excluding cas_pending).
+        Return the roles that are considered as authorized CAS users (excluding cas_pending).
         """
         try:
             return list(
@@ -110,7 +110,7 @@ class AppRole(models.Model):
             return []
 
     @staticmethod
-    def get_all_eligible_roles() -> List[str]:
+    def get_all_authorized_roles() -> List[str]:
         """
         Return all the roles in the app except cas_pending.
         """
@@ -203,7 +203,9 @@ class Address(models.Model):
 
     street_address = models.CharField(max_length=1000, db_comment="Street address of relevant location)")
     municipality = models.CharField(max_length=1000, db_comment="Municipality of relevant location")
-    province = CAProvinceField(db_comment="A restricted to two-letter province postal abbreviations")
+    province = CAProvinceField(
+        db_comment="Province of the relevant location, restricted to two-letter province postal abbreviations"
+    )
     postal_code = CAPostalCodeField(
         db_comment="Postal code of relevant location, limited to valid Canadian postal codes"
     )
@@ -224,14 +226,6 @@ class UserAndContactCommonInfo(models.Model):
     phone_number = PhoneNumberField(
         blank=True,
         db_comment="A user or contact's phone number, limited to valid phone numbers",
-    )
-    address = models.ForeignKey(
-        Address,
-        null=True,  # not all users/contacts will have an address
-        blank=True,
-        on_delete=models.DO_NOTHING,
-        db_comment="Foreign key to the address of a user or contact",
-        related_name="%(class)ss",
     )
 
     class Meta:
@@ -271,7 +265,7 @@ class User(UserAndContactCommonInfo):
         """
         Return whether or not the user is an IRC user.
         """
-        return self.app_role.role_name in AppRole.get_cas_roles()
+        return self.app_role.role_name in AppRole.get_authorized_irc_roles()
 
     def is_industry_user(self) -> bool:
         """
@@ -312,6 +306,12 @@ class Contact(UserAndContactCommonInfo, TimeStampedModel):
         on_delete=models.DO_NOTHING,
         related_name="contacts",
         db_comment="The role assigned to this contact which defines the permissions the contact has.",
+    )
+    address = models.ForeignKey(
+        Address,
+        on_delete=models.DO_NOTHING,
+        db_comment="Foreign key to the address of a user or contact",
+        related_name="contacts",
     )
 
     history = HistoricalRecords(table_name='erc_history"."contact_history', m2m_fields=[documents])

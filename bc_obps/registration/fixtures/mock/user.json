@@ -10,7 +10,6 @@
       "position_title": "Manager",
       "email": "michael@example.com",
       "phone_number": "+16044011234",
-      "address": 1,
       "app_role": "industry_user"
     }
   },
@@ -25,7 +24,6 @@
       "position_title": "CEO",
       "email": "samantha@example.com",
       "phone_number": "+16044015432",
-      "address": 1,
       "app_role": "industry_user"
     }
   },
@@ -40,7 +38,6 @@
       "position_title": "Code Monkey",
       "email": "shon@button.is",
       "phone_number": "+16044015432",
-      "address": 1,
       "app_role": "cas_admin"
     }
   },
@@ -55,7 +52,6 @@
       "position_title": "Code Monkey",
       "email": "email@email.com",
       "phone_number": "+16044015432",
-      "address": 1,
       "app_role": "industry_user"
     }
   },
@@ -70,7 +66,6 @@
       "position_title": "Code Monkey",
       "email": "email@email.com",
       "phone_number": "+16044015432",
-      "address": 1,
       "app_role": "industry_user"
     }
   }

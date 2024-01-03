@@ -133,14 +133,6 @@ def check_access_request_matches_business_guid(
     return 200, None
 
 
-def extract_fields_from_dict(data_dict, fields_to_extract):
-    new_dict = dict()
-    for field in fields_to_extract:
-        if field in data_dict:
-            new_dict[field] = data_dict[field]
-    return new_dict
-
-
 def raise_401_if_role_not_authorized(request, authorized_roles) -> Tuple[int, Optional[Union[dict[str, str], None]]]:
     if not hasattr(request, 'current_user'):
         raise HttpError(401, UNAUTHORIZED_MESSAGE)

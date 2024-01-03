@@ -11,7 +11,7 @@ from registration.enums.enums import IdPs
 
 
 @router.get("/user", response=UserOut)
-@authorize(AppRole.get_all_eligible_roles())
+@authorize(AppRole.get_all_authorized_roles())
 def get_user(request):
     user: User = request.current_user
     return user

@@ -10,7 +10,7 @@ from registration.schema import (
 
 
 @router.get("/regulated_products", response=List[RegulatedProductSchema])
-@authorize(AppRole.get_all_eligible_roles())
+@authorize(AppRole.get_all_authorized_roles())
 def list_regulated_products(request):
     qs = RegulatedProduct.objects.all()
     return qs

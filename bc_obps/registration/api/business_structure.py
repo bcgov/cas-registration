@@ -7,7 +7,7 @@ from registration.schema import BusinessStructureOut
 
 ##### GET #####
 @router.get("/business_structures", response=List[BusinessStructureOut])
-@authorize(AppRole.get_all_eligible_roles())
+@authorize(AppRole.get_all_authorized_roles())
 def list_business_structures(request):
     qs = BusinessStructure.objects.all()
     return qs

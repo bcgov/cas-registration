@@ -103,7 +103,7 @@ def create_or_update_multiple_operators(
 
 
 @router.get("/operations", response={200: List[OperationOut], codes_4xx: Message})
-@authorize(AppRole.get_all_eligible_roles())
+@authorize(AppRole.get_all_authorized_roles())
 def list_operations(request):
     user: User = request.current_user
     # IRC users can see all operations except ones that are not registered yet
@@ -117,7 +117,6 @@ def list_operations(request):
     approved_users = get_an_operators_approved_users(user_operator.operator)
     if user.user_guid not in approved_users:
         raise HttpError(401, UNAUTHORIZED_MESSAGE)
-
     authorized_operations = Operation.objects.filter(operator_id=user_operator.operator.id).order_by(
         "-created_at"
     )  # order by created_at to get the latest one first
@@ -125,7 +124,7 @@ def list_operations(request):
 
 
 @router.get("/operations/{operation_id}", response={200: OperationOut, codes_4xx: Message})
-@authorize(AppRole.get_all_eligible_roles())
+@authorize(AppRole.get_all_authorized_roles())
 def get_operation(request, operation_id: int):
     user: User = request.current_user
     if user.is_industry_user():
@@ -135,8 +134,7 @@ def get_operation(request, operation_id: int):
         approved_users = get_an_operators_approved_users(user_operator.operator)
         if user.user_guid not in approved_users:
             raise HttpError(401, UNAUTHORIZED_MESSAGE)
-
-    operation = get_object_or_404(Operation, id=operation_id)
+    operation = get_object_or_404(Operation, id=operation_id, operator_id=user_operator.operator.id)
     return 200, operation
 
 
@@ -183,7 +181,7 @@ def create_operation(request, payload: OperationCreateIn):
 
 
 @router.put("/operations/{operation_id}", response={200: OperationUpdateOut, codes_4xx: Message})
-@authorize(AppRole.get_all_eligible_roles())
+@authorize(AppRole.get_all_authorized_roles())
 def update_operation(request, operation_id: int, submit: str, payload: OperationUpdateIn):
     user: User = request.current_user
     user_operator = UserOperator.objects.filter(user_id=user.user_guid).first()
@@ -229,7 +227,6 @@ def update_operation(request, operation_id: int, submit: str, payload: Operation
                 "email": payload.email,
                 "phone_number": payload.phone_number,
                 "business_role": BusinessRole.objects.get(role_name="Operation Registration Lead"),
-                # "business_role": operation_registration_lead_business_role,
                 "address": address,
             },
         )
@@ -246,7 +243,6 @@ def update_operation(request, operation_id: int, submit: str, payload: Operation
                 "email": user.email,
                 "phone_number": user.phone_number,
                 "business_role": BusinessRole.objects.get(role_name="Operation Registration Lead"),
-                # "business_role": operation_registration_lead_business_role,
                 "address": user.address,
             },
         )
@@ -292,7 +288,7 @@ def update_operation(request, operation_id: int, submit: str, payload: Operation
 @router.put(
     "/operations/{operation_id}/update-status", response={200: OperationOut, codes_4xx: Message, codes_5xx: Message}
 )
-@authorize(AppRole.get_cas_roles())
+@authorize(AppRole.get_authorized_irc_roles())
 def update_operation_status(request, operation_id: int, payload: OperationUpdateStatusIn):
     operation = get_object_or_404(Operation, id=operation_id)
     user: User = request.current_user
