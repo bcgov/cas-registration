@@ -92,6 +92,7 @@ export default function UserOperatorMultiStepForm({
   const isFormStatusDisabled =
     formData?.status === Status.PENDING || formData?.status === Status.APPROVED;
 
+  const operatorRoute = isCasInternal ? "operators" : "select-operator";
   // If the user is an approved cas internal user or if no operator exists show the entire multistep form
   if (isCasInternal || !userOperatorId || formSection) {
     return (
@@ -126,7 +127,7 @@ export default function UserOperatorMultiStepForm({
           }
           allowEdit={isFormStatusDisabled && !isCasInternal}
           allowBackNavigation
-          baseUrl={`/dashboard/select-operator/user-operator/${
+          baseUrl={`/dashboard/${operatorRoute}/user-operator/${
             isCreate ? "create" : userOperatorId
           }`}
           schema={schema}
