@@ -1,5 +1,7 @@
 import NextAuth, { NextAuthOptions } from "next-auth";
-import KeycloakProvider, {KeycloakProfile} from "next-auth/providers/keycloak";
+import KeycloakProvider, {
+  KeycloakProfile,
+} from "next-auth/providers/keycloak";
 import { Errors, IDP, Roles } from "@/app/utils/enums";
 import { actionHandler } from "@/app/utils/actions";
 
@@ -21,7 +23,7 @@ export const authOptions: NextAuthOptions = {
       profile(profile: KeycloakProfile) {
         return {
           ...profile,
-          id: profile.sub
+          id: profile.sub,
         };
       },
     }),
