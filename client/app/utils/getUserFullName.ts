@@ -1,7 +1,7 @@
 import { Session } from 'next-auth';
 
 export const getUserFullName = (
-  session: Session
+  session?: Session | null
 ) => {
 
   const givenName = session?.user?.given_name;
