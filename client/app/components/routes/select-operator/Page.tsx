@@ -7,6 +7,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { actionHandler } from "@/app/utils/actions";
 import { Status } from "@/app/utils/enums";
+import { getUserFullName } from "@/app/utils/getUserFullName";
 
 const getUserOperatorStatus = async () => {
   try {
@@ -22,7 +23,7 @@ const getUserOperatorStatus = async () => {
 
 export default async function MyOperatorPage() {
   const session = await getServerSession(authOptions);
-  const userName = session?.user?.name?.split(" ")?.[0];
+  const userName = getUserFullName(session);
   const { status } = await getUserOperatorStatus();
   if (status === Status.PENDING.toLowerCase()) {
     return <div>Your request is pending.</div>;
