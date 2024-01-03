@@ -1,6 +1,7 @@
 [
   {
     "model": "registration.operator",
+    "pk": 1,
     "fields": {
       "legal_name": "Operator 1 Legal Name",
       "trade_name": "Operator 1 Trade Name",
@@ -20,6 +21,7 @@
   },
   {
     "model": "registration.operator",
+    "pk": 2,
     "fields": {
       "legal_name": "Existing Operator 2 Legal Name",
       "trade_name": "Existing Operator 2 Trade Name",
@@ -39,6 +41,7 @@
   },
   {
     "model": "registration.operator",
+    "pk": 3,
     "fields": {
       "legal_name": "New Operator 3 Legal Name",
       "trade_name": "New Operator 3 Trade Name",
