@@ -1,5 +1,5 @@
 import NextAuth, { NextAuthOptions } from "next-auth";
-import KeycloakProvider, { KeycloakProfile } from "next-auth/providers/keycloak";
+import KeycloakProvider, {KeycloakProfile} from "next-auth/providers/keycloak";
 import { Errors, IDP, Roles } from "@/app/utils/enums";
 import { actionHandler } from "@/app/utils/actions";
 
@@ -42,8 +42,8 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, account, profile }) {
       try {
         if (profile) {
-          token.given_name = profile.given_name;
-          token.family_name = profile.family_name;
+          token.given_name = (profile as KeycloakProfile).given_name;
+          token.family_name = (profile as KeycloakProfile).family_name;
         }
         //📌  Provider account (only available on sign in)
         if (account) {
