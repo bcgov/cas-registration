@@ -51,9 +51,6 @@ export default function OperationsForm({ formData, schema }: Readonly<Props>) {
     "Did you submit a GHG emissions report for reporting year 2022?":
       formData?.previous_year_attributable_emissions ? true : false,
     is_application_lead_external: isApplicationLeadExternal,
-    verified_at: formData?.verified_at?.toString(),
-    verified_by: formData?.verified_by?.toString(),
-
     // fix for null values not opening the multiple operators form if loading a previously saved form
     multiple_operators_array: isMultipleOperatorsArray
       ? formData?.multiple_operators_array
