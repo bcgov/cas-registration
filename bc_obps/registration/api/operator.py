@@ -6,6 +6,13 @@ from django.shortcuts import get_object_or_404
 from registration.models import AppRole, Operator, UserOperator
 from ninja.responses import codes_4xx, codes_5xx
 from registration.schema import Message, OperatorOut, SelectUserOperatorStatus
+from registration.schema.operator import OperatorIn, OperatorOut
+from registration.utils import check_users_admin_request_eligibility
+from registration.schema import (
+    Message,
+)
+from datetime import datetime
+import pytz
 
 
 ##### GET #####
@@ -67,6 +74,23 @@ def list_user_operators_status_of_operator(request, operator_id: int):
 
 
 ##### PUT #####
+
+
+@router.put("/operators/{operator_id}", response={200: OperatorOut, codes_4xx: Message})
+def update_operator(request, operator_id: int, payload: OperatorIn):
+    raise_401_if_role_not_authorized(request, ["cas_admin", "cas_analyst"])
+    operator = get_object_or_404(Operator, id=operator_id)
+    user: User = request.current_user
+    operator.status = payload.status
+    if operator.status in [Operator.Statuses.APPROVED, Operator.Statuses.REJECTED]:
+        operator.is_new = False
+        operator.verified_at = datetime.now(pytz.utc)
+        operator.verified_by_id = user.user_guid
+
+    operator.save()
+    operator.set_create_or_update(modifier=user)
+
+    return 200, operator
 
 
 ##### DELETE #####
