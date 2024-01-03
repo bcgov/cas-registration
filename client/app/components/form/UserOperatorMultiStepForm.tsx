@@ -119,12 +119,12 @@ export default function UserOperatorMultiStepForm({
           />
         )}
         <MultiStepFormBase
-          allowEdit={isFormStatusDisabled}
           cancelUrl={
             isCasInternal
               ? "/dashboard/operators"
               : "/dashboard/select-operator"
           }
+          allowEdit={isFormStatusDisabled && !isCasInternal}
           allowBackNavigation
           baseUrl={`/dashboard/select-operator/user-operator/${
             isCreate ? "create" : userOperatorId
