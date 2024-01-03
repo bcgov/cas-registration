@@ -15,8 +15,6 @@ export interface Operation {
   opt_in?: boolean;
   operator: number;
   operation_has_multiple_operators: boolean;
-  verified_at?: string;
-  verified_by?: string;
   application_lead?: any; // Change this once we have the Contact type
   status: string;
   bc_obps_regulated_operation?: number;
