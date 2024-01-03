@@ -53,11 +53,11 @@ export default function UserOperatorMultiStepForm({
     if (userOperatorId) newFormData.user_operator_id = userOperatorId;
 
     const apiUrl = `registration/user-operator/${
-      isFinalStep && isCreate ? "contact" : "operator"
+      isFinalStep ? "contact" : "operator"
     }`;
 
     const response = await actionHandler(
-      apiUrl,
+      `${apiUrl}${!isCreate && !isFinalStep ? `/${userOperatorId}` : ""}`,
       isCreate ? "POST" : "PUT",
       `/dashboard/select-operator/user-operator/create/${params?.formSection}`,
       {
