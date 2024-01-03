@@ -344,12 +344,14 @@ class TestOperationsEndpoint(CommonTestSetup):
             TestUtils.mock_put_with_auth_role(self, "cas_admin", content_type_json, {"status": "nonsense"}, url)
 
     def test_put_operation_without_submit(self):
-        operator = baker.make(Operator)
         operation = baker.make(Operation)
         mock_operation = TestUtils.mock_OperationUpdateIn()
         # approve the user
         baker.make(
-            UserOperator, user_id=self.user.user_guid, status=UserOperator.Statuses.APPROVED, operator_id=operator.id
+            UserOperator,
+            user_id=self.user.user_guid,
+            status=UserOperator.Statuses.APPROVED,
+            operator_id=mock_operation.operator,
         )
         response = TestUtils.mock_put_with_auth_role(
             self,
@@ -367,12 +369,13 @@ class TestOperationsEndpoint(CommonTestSetup):
         assert get_response["status"] == Operation.Statuses.NOT_REGISTERED
 
     def test_put_operation_with_submit(self):
-        operator = baker.make(Operator)
         operation = baker.make(Operation, id=5)
-
         mock_operation = TestUtils.mock_OperationUpdateIn()
         baker.make(
-            UserOperator, user_id=self.user.user_guid, status=UserOperator.Statuses.APPROVED, operator_id=operator.id
+            UserOperator,
+            user_id=self.user.user_guid,
+            status=UserOperator.Statuses.APPROVED,
+            operator_id=mock_operation.operator,
         )
         response = TestUtils.mock_put_with_auth_role(
             self,
