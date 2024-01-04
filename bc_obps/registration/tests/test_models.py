@@ -499,7 +499,8 @@ class OperationModelTest(BaseTestCase):
 
     def test_generate_unique_boro_id_multiple_existing_ids_same_year(self):
         # Case: Multiple existing BORO IDs for the current year
-        existing_ids = ["23-0002", "23-0003", "23-0001"]
+        current_year = datetime.now().year % 100
+        existing_ids = [f"{current_year:02d}-0002", f"{current_year:02d}-0003", f"{current_year:02d}-0001"]
         Operation.objects.bulk_create(
             [
                 Operation(
@@ -515,7 +516,6 @@ class OperationModelTest(BaseTestCase):
 
         self.test_object.bc_obps_regulated_operation = None
         self.test_object.generate_unique_boro_id()
-        current_year = datetime.now().year % 100
         expected_id = f"{current_year:02d}-0004"
         self.assertEqual(
             self.test_object.bc_obps_regulated_operation.pk,
