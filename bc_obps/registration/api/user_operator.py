@@ -347,6 +347,7 @@ def create_operator_and_user_operator(request, payload: UserOperatorOperatorIn):
 def create_user_operator_contact(request, payload: UserOperatorContactIn):
     try:
         user_operator_instance: UserOperator = get_object_or_404(UserOperator, id=payload.user_operator_id)
+        operator: Operator = user_operator_instance.operator
         user: User = request.current_user
         is_senior_officer: bool = payload.is_senior_officer
 
@@ -392,7 +393,9 @@ def create_user_operator_contact(request, payload: UserOperatorContactIn):
     except Exception as e:
         return 400, {"message": str(e)}
 
-    user_operator_instance.status = UserOperator.Statuses.PENDING
+    # TODO: approved status may have to be changed to pending if the user is not an admin
+    if user_operator_instance.status != UserOperator.Statuses.APPROVED:
+        user_operator_instance.status = UserOperator.Statuses.PENDING
     user_operator_instance.save(
         update_fields=["status"],
     )
