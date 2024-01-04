@@ -104,7 +104,6 @@ export default function OperationsForm({ formData, schema }: Props) {
           error={error}
           schema={schema}
           allowBackNavigation
-          submitEveryStep
           onSubmit={async (data: { formData?: any }) => {
             const method = isCreate ? "POST" : "PUT";
             const endpoint = isCreate
