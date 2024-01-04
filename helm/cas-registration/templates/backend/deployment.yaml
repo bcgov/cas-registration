@@ -23,7 +23,7 @@ spec:
     spec:
       containers:
         - name: {{ .Release.Name }}-backend
-          image: "{{ .Values.backend.image.repository }}:{{ .Values.backend.sourceRepoImageTag | default .Values.backend.image.tag }}"
+          image: "{{ .Values.backend.image.repository }}:{{ .Values.defaultImageTag | default .Values.backend.image.tag }}"
           imagePullPolicy: {{ .Values.backend.image.pullPolicy }}
           env:
             - name: DJANGO_SECRET_KEY
