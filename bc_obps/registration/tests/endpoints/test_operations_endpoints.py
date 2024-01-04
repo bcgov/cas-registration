@@ -1,11 +1,10 @@
-import pytest
-import json
+import pytest, json, pytz
 from datetime import datetime
-import pytz
 from model_bakery import baker
 from django.test import Client
 from localflavor.ca.models import CAPostalCodeField
 from registration.models import (
+    AppRole,
     NaicsCode,
     Document,
     Contact,
@@ -68,7 +67,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         assert response.status_code == 401
 
     def test_unauthorized_roles_cannot_post(self):
-        mock_operation = TestUtils.mock_OperationCreateIn(self)
+        mock_operation = TestUtils.mock_OperationCreateIn()
         # IRC users can't post
         post_response = TestUtils.mock_post_with_auth_role(self, "cas_admin", content_type_json, mock_operation.json())
         assert post_response.status_code == 401
@@ -84,7 +83,7 @@ class TestOperationsEndpoint(CommonTestSetup):
     def test_unauthorized_roles_cannot_put_operations(self):
 
         operation = baker.make(Operation)
-        mock_operation = TestUtils.mock_OperationUpdateIn(self)
+        mock_operation = TestUtils.mock_OperationUpdateIn()
         # IRC users can't put
         roles = ['cas_pending', 'cas_admin', 'cas_analyst', 'industry_user', 'industry_user_admin']
         # unapproved industry users cannot put
@@ -103,7 +102,7 @@ class TestOperationsEndpoint(CommonTestSetup):
 
         url = self.build_update_status_url(operation_id=operation.id)
 
-        for role in ["industry_user", "industry_user_admin"]:
+        for role in AppRole.get_industry_roles():
             response = TestUtils.mock_put_with_auth_role(self, role, content_type_json, {"status": "approved"}, url)
             assert response.status_code == 401
 
@@ -154,7 +153,7 @@ class TestOperationsEndpoint(CommonTestSetup):
     def test_authorized_roles_can_post_new_operation(self):
 
         operator = baker.make(Operator)
-        mock_operation = TestUtils.mock_OperationCreateIn(self, operator)
+        mock_operation = TestUtils.mock_OperationCreateIn(operator)
         post_response = TestUtils.mock_post_with_auth_role(
             self, "industry_user", content_type_json, mock_operation.json()
         )
@@ -173,7 +172,7 @@ class TestOperationsEndpoint(CommonTestSetup):
     def test_post_new_operation_with_multiple_operators(self):
         naics_code = baker.make(NaicsCode)
         document = baker.make(Document)
-        contact = baker.make(Contact, postal_code='V1V 1V1')
+        contact = baker.make(Contact)
         regulated_products = baker.make(RegulatedProduct, _quantity=2)
         reporting_activities = baker.make(ReportingActivity, _quantity=2)
         baker.make(BusinessStructure, name='BC Corporation')
@@ -248,7 +247,7 @@ class TestOperationsEndpoint(CommonTestSetup):
 
     def test_post_existing_operation(self):
         baker.make(Operation, bcghg_id=123)
-        mock_operation2 = TestUtils.mock_OperationCreateIn(self)
+        mock_operation2 = TestUtils.mock_OperationCreateIn()
         mock_operation2.bcghg_id = 123
         post_response = TestUtils.mock_post_with_auth_role(
             self, "industry_user", content_type_json, data=mock_operation2.json()
@@ -345,12 +344,14 @@ class TestOperationsEndpoint(CommonTestSetup):
             TestUtils.mock_put_with_auth_role(self, "cas_admin", content_type_json, {"status": "nonsense"}, url)
 
     def test_put_operation_without_submit(self):
-        operator = baker.make(Operator)
         operation = baker.make(Operation)
-        mock_operation = TestUtils.mock_OperationUpdateIn(self)
+        mock_operation = TestUtils.mock_OperationUpdateIn()
         # approve the user
         baker.make(
-            UserOperator, user_id=self.user.user_guid, status=UserOperator.Statuses.APPROVED, operator_id=operator.id
+            UserOperator,
+            user_id=self.user.user_guid,
+            status=UserOperator.Statuses.APPROVED,
+            operator_id=mock_operation.operator,
         )
         response = TestUtils.mock_put_with_auth_role(
             self,
@@ -368,12 +369,13 @@ class TestOperationsEndpoint(CommonTestSetup):
         assert get_response["status"] == Operation.Statuses.NOT_REGISTERED
 
     def test_put_operation_with_submit(self):
-        operator = baker.make(Operator)
         operation = baker.make(Operation, id=5)
-
-        mock_operation = TestUtils.mock_OperationUpdateIn(self)
+        mock_operation = TestUtils.mock_OperationUpdateIn()
         baker.make(
-            UserOperator, user_id=self.user.user_guid, status=UserOperator.Statuses.APPROVED, operator_id=operator.id
+            UserOperator,
+            user_id=self.user.user_guid,
+            status=UserOperator.Statuses.APPROVED,
+            operator_id=mock_operation.operator,
         )
         response = TestUtils.mock_put_with_auth_role(
             self,

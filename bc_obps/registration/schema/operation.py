@@ -2,6 +2,7 @@ from typing import List, Optional
 from ninja import Field, ModelSchema, Schema
 from registration.models import Operation
 from datetime import date
+from registration.utils import AUDIT_FIELDS
 from .contact import ContactSchema
 
 
@@ -14,16 +15,18 @@ class OperationCreateOut(Schema):
 
 
 class OperationCreateIn(ModelSchema):
-    operator_id: int
     # Converting types
-    naics_code_id: int
     verified_at: Optional[date] = None
     operation_has_multiple_operators: Optional[bool] = False
     multiple_operators_array: Optional[list] = None
 
     class Config:
         model = Operation
-        model_exclude = ["id"]  # need to exclude id since it's auto generated and we don't want to pass it in
+        model_exclude = [
+            "id",
+            *AUDIT_FIELDS,
+        ]  # need to exclude id since it's auto generated and we don't want to pass it in
+        allow_population_by_field_name = True
 
 
 class OperationUpdateOut(Schema):
@@ -31,9 +34,7 @@ class OperationUpdateOut(Schema):
 
 
 class OperationUpdateIn(ModelSchema):
-    operator_id: int
     # Converting types
-    naics_code_id: int
     verified_at: Optional[date] = None
     # application lead details
     first_name: Optional[str] = None
@@ -45,22 +46,23 @@ class OperationUpdateIn(ModelSchema):
     postal_code: Optional[str] = None
     email: Optional[str] = None
     phone_number: Optional[str] = None
-    application_lead: Optional[int] = None
     is_application_lead_external: Optional[bool] = None
     operation_has_multiple_operators: Optional[bool] = False
     multiple_operators_array: Optional[list] = None
 
     class Config:
         model = Operation
-        model_exclude = ["id"]  # need to exclude id since it's auto generated and we don't want to pass it in
+        model_exclude = [
+            "id",
+            *AUDIT_FIELDS,
+        ]  # need to exclude id since it's auto generated and we don't want to pass it in
+        allow_population_by_field_name = True
 
 
 class OperationOut(ModelSchema):
     # handling aliases and optional fields
     operator_id: int = Field(..., alias="operator.id")
     naics_code_id: int = Field(..., alias="naics_code.id")
-    previous_year_attributable_emissions: Optional[str] = None
-    swrs_facility_id: Optional[str] = None
     bcghg_id: Optional[str] = None
     opt_in: Optional[bool] = None
     verified_at: Optional[date] = None
@@ -71,7 +73,7 @@ class OperationOut(ModelSchema):
 
     class Config:
         model = Operation
-        model_fields = "__all__"
+        model_exclude = [*AUDIT_FIELDS, "operator", "naics_code"]
 
 
 from .multiple_operator import MultipleOperatorOut

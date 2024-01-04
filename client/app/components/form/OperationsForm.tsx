@@ -19,7 +19,7 @@ interface Props {
   formData?: OperationsFormData;
 }
 
-export default function OperationsForm({ formData, schema }: Props) {
+export default function OperationsForm({ formData, schema }: Readonly<Props>) {
   const { data: session } = useSession();
   const userEmail = session?.user?.email;
 
@@ -41,31 +41,22 @@ export default function OperationsForm({ formData, schema }: Props) {
     Array.isArray(formData?.multiple_operators_array) &&
     formData.multiple_operators_array.length > 0;
 
-  // need to convert some of the information received from django into types RJSF can read
+  // We need to convert some of the information received from django into types RJSF can read.
   const transformedFormData = {
     ...formData,
     // we only add the application lead data to the formData (ie, show it in the form) if the application lead is external (ie, someone other than the user)
     ...(isApplicationLeadExternal && formData?.application_lead),
-    previous_year_attributable_emissions:
-      formData?.previous_year_attributable_emissions &&
-      Number(formData?.previous_year_attributable_emissions),
-    swrs_facility_id:
-      formData?.swrs_facility_id && Number(formData?.swrs_facility_id),
-    operator_percent_of_ownership:
-      formData?.operator_percent_of_ownership &&
-      Number(formData?.operator_percent_of_ownership),
+    // If you spread anything and it has the same keys as operation (e.g. id, created_by), watch out for accidentally overwriting things. In this case it's safe to spread because the address schema excludes fields
+    ...formData?.application_lead?.address,
     "Did you submit a GHG emissions report for reporting year 2022?":
       formData?.previous_year_attributable_emissions ? true : false,
-
     is_application_lead_external: isApplicationLeadExternal,
-    verified_at: formData?.verified_at?.toString(),
-    verified_by: formData?.verified_by?.toString(),
-
     // fix for null values not opening the multiple operators form if loading a previously saved form
     multiple_operators_array: isMultipleOperatorsArray
       ? formData?.multiple_operators_array
       : [{}],
   };
+
   const formSectionList = Object.keys(schema.properties as any);
   const isNotFinalStep = formSection !== formSectionList.length;
   const isFinalStep = formSection === formSectionList.length;
@@ -129,7 +120,7 @@ export default function OperationsForm({ formData, schema }: Props) {
               //  temporary handling of documents, will be addressed in #332/325
               documents: [],
               operator_id: responseOpId.operator_id,
-              application_lead: formData?.application_lead?.id,
+              application_lead_id: formData?.application_lead?.id,
             };
 
             const response = await actionHandler(

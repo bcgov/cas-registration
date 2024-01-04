@@ -45,7 +45,7 @@ export default function UserOperatorReview({
       rejectedMessage="You have rejected the request for prime admin access."
       confirmApproveMessage="Are you sure you want to approve this request for prime admin access?"
       confirmRejectMessage="Are you sure you want to reject this request for prime admin access?"
-      isStatusPending={userOperator.user_operator_status === Status.PENDING}
+      isStatusPending={userOperator.status === Status.PENDING}
       onApprove={approveRequest}
       onReject={rejectRequest}
     />

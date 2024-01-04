@@ -1,9 +1,7 @@
-import pytest
-import json
+import pytest, json, uuid
 from registration.schema import UserIn
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.tests.utils.bakers import app_role_baker
-import uuid
 from django.test import Client
 from registration.enums.enums import IdPs
 
@@ -31,7 +29,6 @@ class TestUserEndpoint(CommonTestSetup):
         # Act
         response = TestUtils.mock_get_with_auth_role(self, 'industry_user', self.endpoint)
         content = response.json()
-
         # Assert
         assert response.status_code == 200
 
@@ -44,15 +41,6 @@ class TestUserEndpoint(CommonTestSetup):
             and content['position_title'] != ''
         )
         assert 'email' in content and isinstance(content['email'], str) and '@' in content['email']
-        assert (
-            'street_address' in content
-            and isinstance(content['street_address'], str)
-            and content['street_address'] != ''
-        )
-        assert 'municipality' in content and isinstance(content['municipality'], str) and content['municipality'] != ''
-        assert 'province' in content and isinstance(content['province'], str) and content['province'] != ''
-        assert 'postal_code' in content and isinstance(content['postal_code'], str) and content['postal_code'] != ''
-
         # Additional Assertion for user_guid
         assert 'user_guid' not in content
 

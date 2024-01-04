@@ -1,6 +1,7 @@
 from ninja import Schema
 from ninja import ModelSchema
 from registration.models import Operator
+from registration.utils import AUDIT_FIELDS
 
 
 class OperatorOut(ModelSchema):
@@ -10,7 +11,7 @@ class OperatorOut(ModelSchema):
 
     class Config:
         model = Operator
-        model_fields = '__all__'
+        model_exclude = [*AUDIT_FIELDS]
 
 
 class SelectOperatorIn(Schema):

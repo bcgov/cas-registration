@@ -9,14 +9,12 @@ export interface Operation {
   archived_by?: string;
   archived_at?: string;
   naics_code: number;
-  previous_year_attributable_emissions?: string;
-  swrs_facility_id?: string;
+  previous_year_attributable_emissions?: number;
+  swrs_facility_id?: number;
   bcghg_id?: string;
   opt_in?: boolean;
   operator: number;
   operation_has_multiple_operators: boolean;
-  verified_at?: string;
-  verified_by?: string;
   application_lead?: any; // Change this once we have the Contact type
   status: string;
   bc_obps_regulated_operation?: number;

@@ -1,3 +1,4 @@
+from typing import List, Optional
 import uuid, re
 from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
@@ -70,6 +71,53 @@ class AppRole(models.Model):
     class Meta:
         db_table_comment = "This table contains the definitions for roles within the app/database. These roles are used to define the permissions a user has within the app"
         db_table = 'erc"."app_role'
+
+    # We need try/except blocks here because the app_role table may not exist yet when we run migrations
+    @staticmethod
+    def get_authorized_irc_roles() -> List[str]:
+        """
+        Return the roles that are considered as authorized CAS users (excluding cas_pending).
+        """
+        try:
+            return list(
+                AppRole.objects.filter(role_name__in=["cas_admin", "cas_analyst"]).values_list("role_name", flat=True)
+            )
+        except Exception:
+            return []
+
+    @staticmethod
+    def get_industry_roles() -> List[str]:
+        """
+        Return the roles that are considered as industry users.
+        """
+        try:
+            return list(
+                AppRole.objects.filter(role_name__in=["industry_user", "industry_user_admin"]).values_list(
+                    "role_name", flat=True
+                )
+            )
+        except Exception:
+            return []
+
+    @staticmethod
+    def get_all_roles() -> List[str]:
+        """
+        Return all the roles in the app.
+        """
+        try:
+            return list(AppRole.objects.values_list("role_name", flat=True))
+        except Exception:
+            return []
+
+    @staticmethod
+    def get_all_authorized_roles() -> List[str]:
+        """
+        Return all the roles in the app except cas_pending.
+        """
+        try:
+            return list(AppRole.objects.exclude(role_name="cas_pending").values_list("role_name", flat=True))
+        except Exception:
+            return []
 
 
 class DocumentType(models.Model):
@@ -150,20 +198,30 @@ class ReportingActivity(models.Model):
         db_table = 'erc"."reporting_activity'
 
 
+class Address(models.Model):
+    """Address model"""
+
+    street_address = models.CharField(max_length=1000, db_comment="Street address of relevant location)")
+    municipality = models.CharField(max_length=1000, db_comment="Municipality of relevant location")
+    province = CAProvinceField(
+        db_comment="Province of the relevant location, restricted to two-letter province postal abbreviations"
+    )
+    postal_code = CAPostalCodeField(
+        db_comment="Postal code of relevant location, limited to valid Canadian postal codes"
+    )
+    history = HistoricalRecords(table_name='erc_history"."address_history')
+
+    class Meta:
+        db_table_comment = "Address"
+        db_table = 'erc"."address'
+
+
 class UserAndContactCommonInfo(models.Model):
     """User and contact common information abstract base class"""
 
     first_name = models.CharField(max_length=1000, db_comment="A user or contact's first name")
     last_name = models.CharField(max_length=1000, db_comment="A user or contact's last name")
     position_title = models.CharField(max_length=1000, db_comment="A user or contact's position title")
-    street_address = models.CharField(max_length=1000, db_comment="A user or contact's street address")
-    municipality = models.CharField(max_length=1000, db_comment="A user or contact's municipality")
-    province = CAProvinceField(
-        db_comment="A user or contact's province, restricted to two-letter province postal abbreviations"
-    )
-    postal_code = CAPostalCodeField(
-        db_comment="A user or contact's postal code, limited to valid Canadian postal codes"
-    )
     email = models.EmailField(max_length=254, db_comment="A user or contact's email, limited to valid emails")
     phone_number = PhoneNumberField(
         blank=True,
@@ -203,6 +261,18 @@ class User(UserAndContactCommonInfo):
             )
         ]
 
+    def is_irc_user(self) -> bool:
+        """
+        Return whether or not the user is an IRC user.
+        """
+        return self.app_role.role_name in AppRole.get_authorized_irc_roles()
+
+    def is_industry_user(self) -> bool:
+        """
+        Return whether or not the user is an industry user.
+        """
+        return self.app_role.role_name in AppRole.get_industry_roles()
+
 
 class BusinessRole(models.Model):
     """
@@ -237,6 +307,13 @@ class Contact(UserAndContactCommonInfo, TimeStampedModel):
         related_name="contacts",
         db_comment="The role assigned to this contact which defines the permissions the contact has.",
     )
+    address = models.ForeignKey(
+        Address,
+        on_delete=models.DO_NOTHING,
+        db_comment="Foreign key to the address of a user or contact",
+        related_name="contacts",
+    )
+
     history = HistoricalRecords(table_name='erc_history"."contact_history', m2m_fields=[documents])
 
     class Meta:
@@ -285,27 +362,19 @@ class Operator(TimeStampedModel):
         db_comment="The business structure of an operator",
         related_name="operators",
     )
-    physical_street_address = models.CharField(
-        max_length=1000,
-        db_comment="The physical street address of an operator (where the operator is physically located)",
+    physical_address = models.ForeignKey(
+        Address,
+        on_delete=models.DO_NOTHING,
+        db_comment="The physical address of an operator (where the operator is physically located)",
+        related_name="operators_physical",
     )
-    physical_municipality = models.CharField(
-        max_length=1000,
-        db_comment="The physical municipality of an operator ",
-    )
-    physical_province = CAProvinceField(
-        db_comment="The physical street address of an operator, restricted to two-letter province postal abbreviations"
-    )
-    physical_postal_code = CAPostalCodeField(
-        db_comment="The physical postal code address of an operator, limited to valid Canadian postal codes"
-    )
-    mailing_street_address = models.CharField(max_length=1000, db_comment="The mailing street address of an operator")
-    mailing_municipality = models.CharField(max_length=1000, db_comment="The mailing municipality of an operator")
-    mailing_province = CAProvinceField(
-        db_comment="The mailing province of an operator, restricted to two-letter province postal abbreviations"
-    )
-    mailing_postal_code = CAPostalCodeField(
-        db_comment="The mailing postal code of an operator, limited to valid Canadian postal codes"
+    mailing_address = models.ForeignKey(
+        Address,
+        on_delete=models.DO_NOTHING,
+        db_comment="The mailing address of an operator",
+        related_name="operators_mailing",
+        blank=True,
+        null=True,
     )
     website = models.URLField(
         max_length=200,
@@ -441,6 +510,27 @@ class UserOperator(TimeStampedModel):
             models.Index(fields=["user"], name="user_operator_user_idx"),
             models.Index(fields=["operator"], name="user_operator_operator_idx"),
         ]
+
+    def get_senior_officer(self) -> Optional[Contact]:
+        """
+        Returns the senior officer associated with the useroperator's operator.
+        Assuming that there is only one senior officer per operator.
+        """
+        return self.operator.contacts.filter(business_role=BusinessRole.objects.get(role_name='Senior Officer')).first()
+
+    def user_is_senior_officer(self) -> bool:
+        """
+        Verifies whether the useroperator's user is present in the contacts associated with the operator.
+        """
+        senior_officer = self.get_senior_officer()
+        if not senior_officer:
+            return False  # if there is no senior officer, then the user is not a senior officer
+        user = self.user
+        return (
+            senior_officer.first_name == user.first_name
+            and senior_officer.last_name == user.last_name
+            and senior_officer.email == user.email
+        )
 
 
 class OperationAndFacilityCommonInfo(TimeStampedModel):
@@ -652,30 +742,22 @@ class MultipleOperator(TimeStampedModel):
     #     blank=True,
     #     null=True,
     # )
-    physical_street_address = models.CharField(
-        max_length=1000,
-        db_comment="The physical street address of an operator (where the operator is physically located)",
+    physical_address = models.ForeignKey(
+        Address,
+        on_delete=models.DO_NOTHING,
+        db_comment="The physical address of an operator (where the operator is physically located)",
+        related_name="multiple_operator_physical",
     )
-    physical_municipality = models.CharField(
-        max_length=1000,
-        db_comment="The physical municipality of an operator ",
-    )
-    physical_province = CAProvinceField(
-        db_comment="The physical street address of an operator, restricted to two-letter province postal abbreviations"
-    )
-    physical_postal_code = CAPostalCodeField(
-        db_comment="The physical postal code address of an operator, limited to valid Canadian postal codes"
+    mailing_address = models.ForeignKey(
+        Address,
+        on_delete=models.DO_NOTHING,
+        db_comment="The mailing address of an operator",
+        related_name="multiple_operator_mailing",
+        blank=True,
+        null=True,
     )
     mailing_address_same_as_physical = models.BooleanField(
         db_comment="Whether or not the mailing address is the same as the physical address", default=True
-    )
-    mailing_street_address = models.CharField(max_length=1000, db_comment="The mailing street address of an operator")
-    mailing_municipality = models.CharField(max_length=1000, db_comment="The mailing municipality of an operator")
-    mailing_province = CAProvinceField(
-        db_comment="The mailing province of an operator, restricted to two-letter province postal abbreviations"
-    )
-    mailing_postal_code = CAPostalCodeField(
-        db_comment="The mailing postal code of an operator, limited to valid Canadian postal codes"
     )
     history = HistoricalRecords(table_name='erc_history"."multiple_operator_history')
 

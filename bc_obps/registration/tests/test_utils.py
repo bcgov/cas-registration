@@ -11,7 +11,6 @@ from registration.utils import (
 )
 from localflavor.ca.models import CAPostalCodeField
 from django.core.exceptions import ValidationError
-from registration.utils import extract_fields_from_dict
 from ninja.errors import HttpError
 from django.test import RequestFactory, TestCase
 from registration.tests.utils.helpers import TestUtils
@@ -231,22 +230,6 @@ class TestCheckUserAdminRequestEligibility:
 
         assert status_code == 403
         assert message == {"message": "Your business bceid does not match that of the approved admin."}
-
-
-class TestExtractFieldsFromDict:
-    def test_extract_fields_from_dict(self):
-        person_dict = {
-            'name': 'John Doe',
-            'age': 30,
-            'city': 'Exampleville',
-            'email': 'john.doe@example.com',
-            'is_student': False,
-        }
-        fields_to_extract = ['name', 'is_student']
-
-        extracted_fields = extract_fields_from_dict(person_dict, fields_to_extract)
-
-        assert extracted_fields == {'name': 'John Doe', 'is_student': False}
 
 
 class TestCheckIfRoleAuthorized(TestCase):
