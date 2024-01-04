@@ -64,6 +64,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     'simple_history.middleware.HistoryRequestMiddleware',
+    "registration.middleware.file_upload_middleware.FileUploadMiddleware",
 ]
 
 ROOT_URLCONF = "bc_obps.urls"
