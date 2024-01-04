@@ -7,5 +7,5 @@ class Command(BaseCommand):
     help = 'Load all fixtures in app directories'
 
     def handle(self, *args, **kwargs):
-        cmd_args = list(pathlib.Path().glob('./registration/fixtures/*'))
+        cmd_args = list(pathlib.Path().glob('./registration/fixtures/*/*.json'))
         call_command('loaddata', *cmd_args)
