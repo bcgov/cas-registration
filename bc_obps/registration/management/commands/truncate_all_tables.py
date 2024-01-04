@@ -7,7 +7,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         with connection.cursor() as cursor:
-            cursor.execute("SELECT tablename FROM pg_tables WHERE schemaname in 'erc, erc_history';")
+            cursor.execute("SELECT tablename FROM pg_tables WHERE schemaname in ('erc, erc_history');")
             for row in cursor.fetchall():
                 table_name = row[0]
                 # Use Django's query building to create a safe parameterized query
