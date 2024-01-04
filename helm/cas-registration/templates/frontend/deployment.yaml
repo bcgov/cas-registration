@@ -54,7 +54,7 @@ spec:
                 secretKeyRef:
                   name: {{ template "cas-registration.fullname" . }}-nextauth
                   key: nextauth-secret
-          image: "{{ .Values.frontend.image.repository }}:{{ .Values.frontend.sourceRepoImageTag | default .Values.frontend.image.tag }}"
+          image: "{{ .Values.frontend.image.repository }}:{{ .Values.defaultImageTag | default .Values.frontend.image.tag }}"
           imagePullPolicy: {{ .Values.frontend.image.pullPolicy }}
           ports:
             - containerPort: {{ .Values.frontend.service.port }}
