@@ -433,6 +433,7 @@ class UserOperator(TimeStampedModel):
         PENDING = "Pending"
         APPROVED = "Approved"
         REJECTED = "Rejected"
+        CHANGES = "Changes Requested"
 
     user = models.ForeignKey(
         User,
@@ -551,6 +552,7 @@ class Operation(OperationAndFacilityCommonInfo):
         PENDING = "Pending"
         APPROVED = "Approved"
         REJECTED = "Rejected"
+        CHANGES = "Changes Requested"
 
     operator = models.ForeignKey(
         Operator,
