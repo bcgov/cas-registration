@@ -78,6 +78,7 @@ export default function UserOperatorMultiStepForm({
       );
       return;
     }
+
     return push(
       `/dashboard/select-operator/user-operator/${
         isCreate ? "create" : userOperatorId
