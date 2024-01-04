@@ -58,7 +58,7 @@ export default function UserOperatorMultiStepForm({
 
     const response = await actionHandler(
       `${apiUrl}${!isCreate && !isFinalStep ? `/${userOperatorId}` : ""}`,
-      isCreate ? "POST" : "PUT",
+      isCreate || isFinalStep ? "POST" : "PUT",
       `/dashboard/select-operator/user-operator/create/${params?.formSection}`,
       {
         body: JSON.stringify(newFormData),
