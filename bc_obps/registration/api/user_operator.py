@@ -439,56 +439,6 @@ def update_operator_and_user_operator(request, payload: UserOperatorOperatorIn, 
 
 
 
-@router.put("/user-operator/contact", response={200: SelectOperatorIn, codes_4xx: Message})
-def create_user_operator_contact(request, payload: UserOperatorContactIn):
-    try:
-        user_operator_instance: UserOperator = get_object_or_404(UserOperator, id=payload.user_operator_id)
-        operator: Operator = user_operator_instance.operator
-        user: User = request.current_user
-        is_senior_officer: bool = payload.is_senior_officer
-
-        senior_officer_contact: Contact = Contact(
-            business_role=BusinessRole.objects.get(role_name='Senior Officer'),
-            position_title=payload.position_title,
-            street_address=payload.street_address,
-            municipality=payload.municipality,
-            province=payload.province,
-            postal_code=payload.postal_code,
-        )
-
-        operator.contacts.filter(business_role=BusinessRole.objects.get(role_name='Senior Officer')).update(
-            archived_at=datetime.now(pytz.utc), archived_by_id=user.user_guid
-        )
-
-        if is_senior_officer:
-            senior_officer_contact.first_name = user.first_name
-            senior_officer_contact.last_name = user.last_name
-            senior_officer_contact.email = user.email
-            senior_officer_contact.phone_number = user.phone_number
-        else:
-            senior_officer_contact.first_name = payload.first_name
-            senior_officer_contact.last_name = payload.last_name
-            senior_officer_contact.email = payload.so_email
-            senior_officer_contact.phone_number = payload.so_phone_number
-
-        senior_officer_contact.save()
-        senior_officer_contact.set_create_or_update(modifier=user)
-
-    except ValidationError as e:
-        return 400, {"message": generate_useful_error(e)}
-    # error handling when an existing contact with the same email already exists
-    except IntegrityError as e:
-        return 400, {"message": "A contact with this email already exists."}
-    except Exception as e:
-        return 400, {"message": str(e)}
-
-    # Add the Senior Officer contact to the Operator instance
-    operator.contacts.add(senior_officer_contact)
-    operator.set_create_or_update(modifier=user)
-
-    return 200, {"operator_id": operator.id}
-
-
 @router.put("/select-operator/user-operator/{user_guid}/update-status")
 @authorize(AppRole.get_all_authorized_app_roles(), ["admin"])
 def update_user_operator_status(request, payload: UserOperatorStatusUpdate):
