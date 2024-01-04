@@ -44,6 +44,59 @@ from ninja.errors import HttpError
 from django.forms import model_to_dict
 
 
+# Function to save parent operator to reuse in POST/PUT methods
+def save_parent_operator(payload_dict: dict, created_operator_instance: Operator, user: User):
+    parent_operator_instance = None
+    parent_child_operator_instance = None
+
+    parent_operator_fields_mapping = {
+        "pc_legal_name": "legal_name",
+        "pc_trade_name": "trade_name",
+        "pc_cra_business_number": "cra_business_number",
+        "pc_bc_corporate_registry_number": "bc_corporate_registry_number",
+        "pc_physical_street_address": "physical_street_address",
+        "pc_physical_municipality": "physical_municipality",
+        "pc_physical_province": "physical_province",
+        "pc_physical_postal_code": "physical_postal_code",
+        "pc_mailing_street_address": "mailing_street_address",
+        "pc_mailing_municipality": "mailing_municipality",
+        "pc_mailing_province": "mailing_province",
+        "pc_mailing_postal_code": "mailing_postal_code",
+        "pc_website": "website",
+    }
+
+    if payload_dict.get("pc_mailing_address_same_as_physical"):
+        payload_dict.update(
+            {
+                "pc_mailing_street_address": payload_dict["pc_physical_street_address"],
+                "pc_mailing_municipality": payload_dict["pc_physical_municipality"],
+                "pc_mailing_province": payload_dict["pc_physical_province"],
+                "pc_mailing_postal_code": payload_dict["pc_physical_postal_code"],
+            }
+        )
+
+    parent_operator_instance: Operator = Operator(
+        business_structure=BusinessStructure.objects.get(name=payload_dict.get("pc_business_structure"))
+    )
+    parent_operator_instance = update_model_instance(
+        parent_operator_instance, parent_operator_fields_mapping, payload_dict
+    )
+
+    percentage_owned_by_parent_company: Optional[int] = payload_dict.get('percentage_owned_by_parent_company')
+    if percentage_owned_by_parent_company:
+        parent_child_operator_instance = ParentChildOperator(
+            parent_operator=parent_operator_instance,
+            child_operator=created_operator_instance,
+            percentage_owned_by_parent_company=percentage_owned_by_parent_company,
+        )
+
+    if parent_operator_instance:
+        parent_operator_instance.save()
+        parent_operator_instance.set_create_or_update(modifier=user)
+        if parent_child_operator_instance:
+            parent_child_operator_instance.save()
+
+
 ##### GET #####
 @router.get("/user-operator-status-from-user", response={200: UserOperatorStatus, codes_4xx: Message})
 @authorize(AppRole.get_industry_roles())
@@ -191,6 +244,7 @@ def request_access(request, payload: SelectOperatorIn):
 def create_operator_and_user_operator(request, payload: UserOperatorOperatorIn):
     user: User = request.current_user
     try:
+        payload_dict = payload.dict()
         operator_has_parent_company: bool = payload.operator_has_parent_company
 
         # use an existing Operator instance if one exists, otherwise create a new one
@@ -239,54 +293,8 @@ def create_operator_and_user_operator(request, payload: UserOperatorOperatorIn):
             operator_instance, operator_related_fields, payload.dict()
         )
 
-        parent_operator_instance = None
-        parent_child_operator_instance = None
-
         if operator_has_parent_company:
-            parent_operator_fields_mapping = {
-                "pc_legal_name": "legal_name",
-                "pc_trade_name": "trade_name",
-                "pc_cra_business_number": "cra_business_number",
-                "pc_bc_corporate_registry_number": "bc_corporate_registry_number",
-                "pc_website": "website",
-            }
-
-            parent_operator_instance: Operator = Operator(
-                business_structure=BusinessStructure.objects.get(name=payload.pc_business_structure)
-            )
-
-            # create physical address record
-            pc_physical_address = Address.objects.create(
-                street_address=payload.pc_physical_street_address,
-                municipality=payload.pc_physical_municipality,
-                province=payload.pc_physical_province,
-                postal_code=payload.pc_physical_postal_code,
-            )
-            parent_operator_instance.physical_address = pc_physical_address
-
-            if payload.pc_mailing_address_same_as_physical:
-                pc_mailing_address = pc_physical_address
-            else:
-                # create mailing address record if mailing address is not the same as the physical address
-                pc_mailing_address = Address.objects.create(
-                    street_address=payload.pc_mailing_street_address or payload.pc_physical_street_address,
-                    municipality=payload.pc_mailing_municipality or payload.pc_physical_municipality,
-                    province=payload.pc_mailing_province or payload.pc_physical_province,
-                    postal_code=payload.pc_mailing_postal_code or payload.pc_physical_postal_code,
-                )
-            parent_operator_instance.mailing_address = pc_mailing_address
-
-            parent_operator_instance = update_model_instance(
-                parent_operator_instance, parent_operator_fields_mapping, payload.dict()
-            )
-
-            percentage_owned_by_parent_company: Optional[int] = payload.percentage_owned_by_parent_company
-            if percentage_owned_by_parent_company:
-                parent_child_operator_instance = ParentChildOperator(
-                    parent_operator=parent_operator_instance,
-                    child_operator=created_operator_instance,
-                    percentage_owned_by_parent_company=percentage_owned_by_parent_company,
-                )
+            save_parent_operator(payload_dict, created_operator_instance, user)
 
     except ValidationError as e:
         return 400, {"message": generate_useful_error(e)}
@@ -295,11 +303,6 @@ def create_operator_and_user_operator(request, payload: UserOperatorOperatorIn):
 
     created_operator_instance.save()
     created_operator_instance.set_create_or_update(modifier=user)
-    if parent_operator_instance:
-        parent_operator_instance.save()
-        parent_operator_instance.set_create_or_update(modifier=user)
-        if parent_child_operator_instance:
-            parent_child_operator_instance.save()
 
     # get or create a draft UserOperator instance
     user_operator, created = UserOperator.objects.get_or_create(
@@ -426,50 +429,8 @@ def update_operator_and_user_operator(request, payload: UserOperatorOperatorIn, 
             operator_instance, operator_related_fields, payload_dict
         )
 
-        parent_operator_instance = None
-        parent_child_operator_instance = None
-
         if operator_has_parent_company:
-            parent_operator_fields_mapping = {
-                "pc_legal_name": "legal_name",
-                "pc_trade_name": "trade_name",
-                "pc_cra_business_number": "cra_business_number",
-                "pc_bc_corporate_registry_number": "bc_corporate_registry_number",
-                "pc_physical_street_address": "physical_street_address",
-                "pc_physical_municipality": "physical_municipality",
-                "pc_physical_province": "physical_province",
-                "pc_physical_postal_code": "physical_postal_code",
-                "pc_mailing_street_address": "mailing_street_address",
-                "pc_mailing_municipality": "mailing_municipality",
-                "pc_mailing_province": "mailing_province",
-                "pc_mailing_postal_code": "mailing_postal_code",
-                "pc_website": "website",
-            }
-
-            if payload_dict.get("pc_mailing_address_same_as_physical"):
-                payload_dict.update(
-                    {
-                        "pc_mailing_street_address": payload_dict["pc_physical_street_address"],
-                        "pc_mailing_municipality": payload_dict["pc_physical_municipality"],
-                        "pc_mailing_province": payload_dict["pc_physical_province"],
-                        "pc_mailing_postal_code": payload_dict["pc_physical_postal_code"],
-                    }
-                )
-
-            parent_operator_instance: Operator = Operator(
-                business_structure=BusinessStructure.objects.get(name=payload_dict.get("pc_business_structure"))
-            )
-            parent_operator_instance = update_model_instance(
-                parent_operator_instance, parent_operator_fields_mapping, payload_dict
-            )
-
-            percentage_owned_by_parent_company: Optional[int] = payload_dict.get('percentage_owned_by_parent_company')
-            if percentage_owned_by_parent_company:
-                parent_child_operator_instance = ParentChildOperator(
-                    parent_operator=parent_operator_instance,
-                    child_operator=created_operator_instance,
-                    percentage_owned_by_parent_company=percentage_owned_by_parent_company,
-                )
+            save_parent_operator(payload_dict, created_operator_instance, user)
 
     except ValidationError as e:
         return 400, {"message": generate_useful_error(e)}
@@ -478,11 +439,6 @@ def update_operator_and_user_operator(request, payload: UserOperatorOperatorIn, 
 
     created_operator_instance.save()
     created_operator_instance.set_create_or_update(modifier=user)
-    if parent_operator_instance:
-        parent_operator_instance.save()
-        parent_operator_instance.set_create_or_update(modifier=user)
-        if parent_child_operator_instance:
-            parent_child_operator_instance.save()
 
     # get or create a draft UserOperator instance
     user_operator, created = UserOperator.objects.get_or_create(
