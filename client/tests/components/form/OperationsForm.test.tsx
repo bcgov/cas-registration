@@ -21,8 +21,6 @@ const testFormData = {
   bcghg_id: "123",
   opt_in: null,
   operator: 1,
-  verified_at: "2023-10-13",
-  verified_by: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
   status: "Not Registered",
   regulated_products: [],
   reporting_activities: [],

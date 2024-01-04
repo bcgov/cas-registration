@@ -1,5 +1,6 @@
 from django.contrib import admin
 from registration.models import (
+    Address,
     RegulatedProduct,
     NaicsCode,
     Document,
@@ -12,6 +13,7 @@ from registration.models import (
     AppRole,
     ReportingActivity,
     MultipleOperator,
+    BcObpsRegulatedOperation,
 )
 
 admin.site.register(AppRole)
@@ -25,6 +27,8 @@ admin.site.register(ParentChildOperator)
 admin.site.register(RegulatedProduct)
 admin.site.register(ReportingActivity)
 admin.site.register(MultipleOperator)
+admin.site.register(Address)
+admin.site.register(BcObpsRegulatedOperation)
 
 
 @admin.register(Operation)

@@ -1,6 +1,6 @@
-import pytest
-import json
+import pytest, json
 from registration.models import (
+    Address,
     AppRole,
     Contact,
     Document,
@@ -13,19 +13,11 @@ from registration.models import (
     UserOperator,
 )
 from model_bakery import baker
-from registration.schema import OperationCreateIn, OperationUpdateIn
+from registration.schema import OperationCreateIn, OperationUpdateIn, UserOperatorContactIn, UserOperatorOperatorIn
 from django.test import Client
-from registration.schema.user_operator import UserOperatorContactIn, UserOperatorOperatorIn
-
+from phonenumber_field.modelfields import PhoneNumberField
 
 pytestmark = pytest.mark.django_db
-
-
-class CommonTestSetup:
-    def setup(self):
-        self.user = baker.make(User)
-        self.auth_header = {'user_guid': str(self.user.user_guid)}
-        self.auth_header_dumps = json.dumps(self.auth_header)
 
 
 class TestUtils:
@@ -33,8 +25,9 @@ class TestUtils:
     client = Client()
 
     def save_app_role(self, role_name):
-        baker.make(AppRole, role_name=role_name)
-        self.user.app_role = baker.make(AppRole, role_name=role_name)
+        self.user.app_role = AppRole.objects.filter(role_name=role_name).first() or baker.make(
+            AppRole, role_name=role_name
+        )
         self.user.save()
 
     def mock_get_with_auth_role(self, role_name, endpoint=None):
@@ -60,7 +53,12 @@ class TestUtils:
     def mock_postal_code():
         return "v8v3g1"
 
-    def mock_OperationCreateIn(self, operator: Operator = None):
+    @staticmethod
+    def mock_phone_number():
+        return "+17787777777"
+
+    @staticmethod
+    def mock_OperationCreateIn(operator: Operator = None):
         naics_code = baker.make(NaicsCode)
         document = baker.make(Document)
         reporting_activities = baker.make(ReportingActivity, _quantity=2)
@@ -70,15 +68,16 @@ class TestUtils:
         return OperationCreateIn(
             name='Springfield Nuclear Power Plant',
             type='Single Facility Operation',
-            naics_code_id=naics_code.id,
+            naics_code=naics_code.id,
             reporting_activities=reporting_activities,
             regulated_products=regulated_products,
             documents=[document.id],
             application_lead=application_lead.id,
-            operator_id=operator.id,
+            operator=operator.id,
         )
 
-    def mock_OperationUpdateIn(self):
+    @staticmethod
+    def mock_OperationUpdateIn():
         naics_code = baker.make(NaicsCode)
         document = baker.make(Document)
         application_lead = baker.make(Contact)
@@ -107,7 +106,8 @@ class TestUtils:
             operator_id=operator.id,
         )
 
-    def mock_UserOperatorOperatorIn(self):
+    @staticmethod
+    def mock_UserOperatorOperatorIn():
         return UserOperatorOperatorIn(
             legal_name='test',
             cra_business_number=123,
@@ -121,15 +121,27 @@ class TestUtils:
             operator_has_parent_company=False,
         )
 
-    def mock_UserOperatorContactIn(self):
+    @staticmethod
+    def mock_UserOperatorContactIn():
         user_operator = baker.make(UserOperator)
+        address = baker.make(Address)
         return UserOperatorContactIn(
             is_senior_officer=True,
             user_operator_id=user_operator.id,
             position_title='test',
-            street_address='test',
-            municipality='test',
-            province='BC',
-            postal_code='h0h 0h0',
+            street_address=address.street_address,
+            municipality=address.municipality,
+            province=address.province,
+            postal_code=address.postal_code,
             email='test@email.com',
         )
+
+
+baker.generators.add(PhoneNumberField, TestUtils.mock_phone_number)
+
+
+class CommonTestSetup:
+    def setup(self):
+        self.user = baker.make(User, _fill_optional=True)  # Passing _fill_optional to fill all fields with random data
+        self.auth_header = {'user_guid': str(self.user.user_guid)}
+        self.auth_header_dumps = json.dumps(self.auth_header)

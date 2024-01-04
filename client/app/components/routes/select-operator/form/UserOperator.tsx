@@ -97,7 +97,8 @@ export default async function UserOperator({
   );
 
   const formData = {
-    ...userData,
+    // We need to only pass the email and phone number to the user information page
+    ...{ email: userData?.email, phone_number: userData?.phone_number },
     ...userOperatorData,
   };
 

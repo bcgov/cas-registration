@@ -23,8 +23,6 @@ const operationPage1: RJSFSchema = {
     // keys that are questions aren't saved in the database
   ],
   properties: {
-    verified_by: { type: "string" },
-    verified_at: { type: "string" },
     name: { type: "string", title: "Operation Name" },
     type: {
       type: "string",
@@ -426,9 +424,6 @@ export const operationUiSchema = {
     "mo_mailing_province",
     "mo_mailing_postal_code",
     "Would you like to add an exemption ID application lead?",
-    "application_lead",
-    "verified_by",
-    "verified_at",
   ],
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
@@ -439,12 +434,6 @@ export const operationUiSchema = {
   type: {
     "ui:widget": "SelectWidget",
     "ui:placeholder": "Select operation type",
-  },
-  verified_by: {
-    "ui:widget": "hidden",
-  },
-  verified_at: {
-    "ui:widget": "hidden",
   },
   naics_code_id: {
     "ui:widget": "ComboBox",
@@ -512,6 +501,12 @@ export const operationUiSchema = {
         "ui:options": {
           jsxTitle: OperatorMailingAddressTitle,
         },
+      },
+      mo_physical_postal_code: {
+        "ui:widget": "PostalCodeWidget",
+      },
+      mo_mailing_postal_code: {
+        "ui:widget": "PostalCodeWidget",
       },
     },
   },

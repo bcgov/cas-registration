@@ -1,19 +1,21 @@
+from registration.decorators import authorize
 from .api_base import router
 from datetime import datetime
 import pytz
 from typing import List
 from django.shortcuts import get_object_or_404
 from registration.models import (
+    AppRole,
     MultipleOperator,
     Operation,
     Operator,
-    NaicsCode,
     Contact,
     BusinessRole,
     BusinessStructure,
     User,
     UserOperator,
     MultipleOperator,
+    Address,
 )
 from registration.schema import (
     OperationCreateIn,
@@ -26,8 +28,6 @@ from registration.schema import (
 )
 from registration.utils import (
     UNAUTHORIZED_MESSAGE,
-    raise_401_if_role_not_authorized,
-    extract_fields_from_dict,
     get_an_operators_approved_users,
 )
 from ninja.responses import codes_4xx, codes_5xx
@@ -35,7 +35,19 @@ from ninja.errors import HttpError
 
 
 # Function to save multiple operators so we can reuse it in put/post routes
-def save_multiple_operators(multiple_operators_array: List[MultipleOperator], operation: Operation, user: User):
+def create_or_update_multiple_operators(
+    multiple_operators_array: List[MultipleOperator], operation: Operation, user: User
+) -> None:
+    """
+    Creates or updates multiple operators associated with a specific operation.
+
+    Description:
+    This function processes an array of MultipleOperator objects, associating them with a specific operation.
+    It creates new operators if they do not exist or updates existing ones if found, based on the provided details.
+
+    Note:
+    - Addresses are handled: If no mailing address is given, the physical address is considered the mailing address.
+    """
     multiple_operator_fields_mapping = {
         "mo_legal_name": "legal_name",
         "mo_trade_name": "trade_name",
@@ -44,86 +56,87 @@ def save_multiple_operators(multiple_operators_array: List[MultipleOperator], op
         "mo_business_structure": "business_structure",
         "mo_website": "website",
         "mo_percentage_ownership": "percentage_ownership",
-        "mo_physical_street_address": "physical_street_address",
-        "mo_physical_municipality": "physical_municipality",
-        "mo_physical_province": "physical_province",
-        "mo_physical_postal_code": "physical_postal_code",
         "mo_mailing_address_same_as_physical": "mailing_address_same_as_physical",
-        "mo_mailing_street_address": "mailing_street_address",
-        "mo_mailing_municipality": "mailing_municipality",
-        "mo_mailing_province": "mailing_province",
-        "mo_mailing_postal_code": "mailing_postal_code",
     }
-
     for idx, operator in enumerate(multiple_operators_array):
-        new_operator = {}
-        new_operator["operation_id"] = operation.id
-        new_operator["operator_index"] = idx + 1
+        new_operator = {
+            "operation_id": operation.id,
+            "operator_index": idx + 1,
+        }
+        # handle addresses--if there's no mailing address given, it's the same as the physical address
+        physical_address = Address.objects.create(
+            street_address=operator.get("mo_physical_street_address"),
+            municipality=operator.get("mo_physical_municipality"),
+            province=operator.get("mo_physical_province"),
+            postal_code=operator.get("mo_physical_postal_code"),
+        )
 
-        # use physical address as mailing address if mo_mailing_address_same_as_physical is true
-        if operator["mo_mailing_address_same_as_physical"]:
-            operator["mo_mailing_street_address"] = operator["mo_physical_street_address"]
-            operator["mo_mailing_municipality"] = operator["mo_physical_municipality"]
-            operator["mo_mailing_province"] = operator["mo_physical_province"]
-            operator["mo_mailing_postal_code"] = operator["mo_physical_postal_code"]
+        new_operator["physical_address_id"] = physical_address.id
+
+        if operator.get("mo_mailing_address_same_as_physical"):
+            new_operator["mailing_address_id"] = physical_address.id
+        else:
+            mailing_address = Address.objects.create(
+                street_address=operator.get("mo_mailing_street_address"),
+                municipality=operator.get("mo_mailing_municipality"),
+                province=operator.get("mo_mailing_province"),
+                postal_code=operator.get("mo_mailing_postal_code"),
+            )
+            new_operator["mailing_address_id"] = mailing_address.id
 
         for field in operator:
             if field in multiple_operator_fields_mapping:
                 new_operator[multiple_operator_fields_mapping[field]] = operator[field]
 
         new_operator["business_structure"] = BusinessStructure.objects.get(name=operator["mo_business_structure"])
-
         # TODO: archive multiple operators in #361 that are not in the array anymore once #326 is done
 
         # check if there is a multiple_operator with that operation id and number
         # if there is, update it, if not, create it
-        existing_multiple_operator = MultipleOperator.objects.filter(
-            operation_id=operation.id, operator_index=idx + 1
-        ).first()
-        if existing_multiple_operator:
-            MultipleOperator.objects.filter(operation_id=operation.id, operator_index=idx + 1).update(**new_operator)
-            existing_multiple_operator.set_create_or_update(modifier=user)
-        else:
-            new_multiple_operator = MultipleOperator.objects.create(**new_operator)
-            new_multiple_operator.set_create_or_update(modifier=user)
+        multiple_operator, _ = MultipleOperator.objects.update_or_create(
+            operation_id=operation.id, operator_index=idx + 1, defaults={**new_operator}
+        )
+        multiple_operator.set_create_or_update(modifier=user)
 
 
 ##### GET #####
 
 
 @router.get("/operations", response={200: List[OperationOut], codes_4xx: Message})
+@authorize(AppRole.get_all_authorized_roles())
 def list_operations(request):
-    raise_401_if_role_not_authorized(request, ["industry_user", "industry_user_admin", "cas_admin", "cas_analyst"])
-    user = request.current_user
+    user: User = request.current_user
     # IRC users can see all operations except ones that are not registered yet
-    if user.app_role.role_name in ['cas_admin', 'cas_analyst']:
+    if user.is_irc_user():
         qs = Operation.objects.exclude(status__in=[Operation.Statuses.NOT_REGISTERED])
-        return qs
+        return 200, qs
     # Industry users can only see their companies' operations (if there's no user_operator or operator, then the user hasn't requested access to the operator)
     user_operator = UserOperator.objects.filter(user_id=user.user_guid).first()
     if not user_operator:
         raise HttpError(401, UNAUTHORIZED_MESSAGE)
-    operator = get_object_or_404(Operator, id=user_operator.operator_id)
-    approved_users = get_an_operators_approved_users(operator)
-    if request.current_user.user_guid not in approved_users:
+    approved_users = get_an_operators_approved_users(user_operator.operator)
+    if user.user_guid not in approved_users:
         raise HttpError(401, UNAUTHORIZED_MESSAGE)
-
-    authorized_operations = Operation.objects.filter(operator_id=user_operator.operator_id)
+    authorized_operations = Operation.objects.filter(operator_id=user_operator.operator.id).order_by(
+        "-created_at"
+    )  # order by created_at to get the latest one first
     return 200, authorized_operations
 
 
 @router.get("/operations/{operation_id}", response={200: OperationOut, codes_4xx: Message})
+@authorize(AppRole.get_all_authorized_roles())
 def get_operation(request, operation_id: int):
-    raise_401_if_role_not_authorized(request, ["industry_user", "industry_user_admin", "cas_admin", "cas_analyst"])
-    if request.current_user.app_role.role_name in ["industry_user", "industry_user_admin"]:
-        user_operator = get_object_or_404(UserOperator, user_id=request.current_user.user_guid)
-        operator = get_object_or_404(Operator, id=user_operator.operator_id)
-
-        approved_users = get_an_operators_approved_users(operator)
-        if request.current_user.user_guid not in approved_users:
+    user: User = request.current_user
+    if user.is_industry_user():
+        user_operator = UserOperator.objects.filter(user_id=user.user_guid).first()
+        if not user_operator:
             raise HttpError(401, UNAUTHORIZED_MESSAGE)
-
-    operation = get_object_or_404(Operation, id=operation_id)
+        approved_users = get_an_operators_approved_users(user_operator.operator)
+        if user.user_guid not in approved_users:
+            raise HttpError(401, UNAUTHORIZED_MESSAGE)
+        operation = get_object_or_404(Operation, id=operation_id, operator_id=user_operator.operator.id)
+    elif user.is_irc_user():
+        operation = get_object_or_404(Operation, id=operation_id)
     return 200, operation
 
 
@@ -131,57 +144,37 @@ def get_operation(request, operation_id: int):
 
 
 @router.post("/operations", response={201: OperationCreateOut, codes_4xx: Message})
+@authorize(AppRole.get_industry_roles())
 def create_operation(request, payload: OperationCreateIn):
-    raise_401_if_role_not_authorized(request, ["industry_user", "industry_user_admin"])
     user: User = request.current_user
-    payload_dict: dict = payload.dict()
+    # excluding the fields that have to be handled separately (We don't assign application lead to the operation here, we do it in the next/update step)
+    payload_dict: dict = payload.dict(
+        exclude={
+            "regulated_products",
+            "reporting_activities",
+            "operator",
+            "naics_code",
+            "documents",
+            "multiple_operators_array",
+            "application_lead",
+        }
+    )
 
     # check that the operation doesn't already exist
-    bcghg_id: str = payload_dict.get("bcghg_id")
+    bcghg_id: str = payload.bcghg_id
     if bcghg_id:
         existing_operation: Operation = Operation.objects.filter(bcghg_id=bcghg_id).first()
         if existing_operation:
             return 400, {"message": "Operation with this BCGHG ID already exists."}
-    operation_related_fields: OperationCreateIn = extract_fields_from_dict(
-        payload_dict,
-        [
-            "name",
-            "type",
-            "naics_code",
-            "previous_year_attributable_emissions",
-            "swrs_facility_id",
-            "bcghg_id",
-            "opt_in",
-            "operator",
-            "verified_at",
-            "verified_by",
-            "status",
-            "operation_has_multiple_operators",
-        ],
-    )
 
-    fields_to_assign = ["operator", "naics_code"]
-    for field_name in fields_to_assign:
-        if field_name in operation_related_fields:
-            field_value = operation_related_fields[field_name]
-            model_class = {
-                "operator": Operator,
-                "naics_code": NaicsCode,
-            }[field_name]
-            obj = get_object_or_404(model_class, id=field_value)
-            operation_related_fields[field_name] = obj
-
-    operation_has_multiple_operators: bool = payload_dict.get("operation_has_multiple_operators")
-    multiple_operators_array: list = payload_dict.get("multiple_operators_array")
-
-    operation: Operation = Operation.objects.create(**operation_related_fields)
+    operation = Operation.objects.create(**payload_dict, operator_id=payload.operator, naics_code_id=payload.naics_code)
     operation.regulated_products.set(payload.regulated_products)
     operation.reporting_activities.set(payload.reporting_activities)
     operation.documents.set(payload.documents)
     operation.set_create_or_update(modifier=user)
 
-    if operation_has_multiple_operators:
-        save_multiple_operators(multiple_operators_array, operation, user)
+    if payload.operation_has_multiple_operators:
+        create_or_update_multiple_operators(payload.multiple_operators_array, operation, user)
 
     return 201, {"name": operation.name, "id": operation.id}
 
@@ -190,9 +183,9 @@ def create_operation(request, payload: OperationCreateIn):
 
 
 @router.put("/operations/{operation_id}", response={200: OperationUpdateOut, codes_4xx: Message})
-def update_operation(request, operation_id: int, submit, payload: OperationUpdateIn):
-    raise_401_if_role_not_authorized(request, ["industry_user", "industry_user_admin", "cas_admin", "cas_analyst"])
-    user = request.current_user
+@authorize(AppRole.get_all_authorized_roles())
+def update_operation(request, operation_id: int, submit: str, payload: OperationUpdateIn):
+    user: User = request.current_user
     user_operator = UserOperator.objects.filter(user_id=user.user_guid).first()
     # if there's no user_operator or operator, then the user hasn't requested access to the operator
     if not user_operator:
@@ -200,93 +193,96 @@ def update_operation(request, operation_id: int, submit, payload: OperationUpdat
     operator = Operator.objects.get(id=user_operator.operator_id)
 
     approved_users = get_an_operators_approved_users(operator)
-    if request.current_user.user_guid not in approved_users:
+    if user.user_guid not in approved_users:
         raise HttpError(401, UNAUTHORIZED_MESSAGE)
 
-    payload_dict: dict = payload.dict()
     operation = get_object_or_404(Operation, id=operation_id)
-    operation_has_multiple_operators: bool = payload_dict.get("operation_has_multiple_operators")
-    multiple_operators_array: list = payload_dict.get("multiple_operators_array")
+    if payload.operator:
+        operation.operator_id = payload.operator
 
-    if "operator" in payload_dict:
-        operator = payload_dict["operator"]
-        op = get_object_or_404(Operator, id=operator)
-        # Assign the Operator instance to the operation
-        operation.operator = op
-    if "naics_code" in payload_dict:
-        naics_code = payload_dict["naics_code"]
-        nc = get_object_or_404(NaicsCode, id=naics_code)
-        # Assign the naics_code instance to the operation
-        operation.naics_code = nc
-    # if is_application_lead_external is null, the user hasn't filled out that part of the form. If it's true, the user has assigned a contact; if it's false, the lead is the user
-    if "is_application_lead_external" in payload_dict:
-        application_lead = payload_dict["application_lead"]
-        if payload_dict["is_application_lead_external"]:
-            eal, created = Contact.objects.update_or_create(
-                id=application_lead,
-                defaults={
-                    "first_name": payload.first_name,
-                    "last_name": payload.last_name,
-                    "position_title": payload.position_title,
-                    "street_address": payload.street_address,
-                    "municipality": payload.municipality,
-                    "province": payload.province,
-                    "postal_code": payload.postal_code,
-                    "email": payload.email,
-                    "phone_number": payload.phone_number,
-                    "business_role": BusinessRole.objects.get(role_name="Operation Registration Lead"),
-                },
-            )
-            eal.set_create_or_update(modifier=user)
-            operation.application_lead = eal
-        if payload_dict["is_application_lead_external"] is False:
-            al, created = Contact.objects.update_or_create(
-                id=application_lead,
-                defaults={
-                    "first_name": user.first_name,
-                    "last_name": user.last_name,
-                    "position_title": user.position_title,
-                    "street_address": user.street_address,
-                    "municipality": user.municipality,
-                    "province": user.province,
-                    "postal_code": user.postal_code,
-                    "email": user.email,
-                    "phone_number": user.phone_number,
-                    "business_role": BusinessRole.objects.get(role_name="Operation Registration Lead"),
-                },
-            )
-            al.set_create_or_update(modifier=user)
-            operation.application_lead = al
+    if payload.naics_code:
+        operation.naics_code_id = payload.naics_code
 
-    # Update other attributes as needed
-    excluded_fields = [
-        "operator",
-        "naics_code",
-        "documents",
-        "contacts",
-        "reporting_activities",
-        "regulated_products",
-        "application_lead",
-    ]
+    application_lead_address_id = None
+    application_lead_id = payload.application_lead
+    if application_lead_id:
+        application_lead = Contact.objects.get(id=application_lead_id)
+        application_lead_address_id = application_lead.address.id if application_lead.address else None
 
+    is_application_lead_external = payload.is_application_lead_external
+    if is_application_lead_external is True:  # the user has assigned a contact
+        address, _ = Address.objects.update_or_create(
+            id=application_lead_address_id,
+            defaults={
+                "street_address": payload.street_address,
+                "municipality": payload.municipality,
+                "province": payload.province,
+                "postal_code": payload.postal_code,
+            },
+        )
+        eal, _ = Contact.objects.update_or_create(
+            id=application_lead_id,
+            defaults={
+                "first_name": payload.first_name,
+                "last_name": payload.last_name,
+                "position_title": payload.position_title,
+                "email": payload.email,
+                "phone_number": payload.phone_number,
+                "business_role": BusinessRole.objects.get(role_name="Operation Registration Lead"),
+                "address": address,
+            },
+        )
+        eal.set_create_or_update(modifier=user)
+        operation.application_lead = eal
+
+    if is_application_lead_external is False:  # the lead is the user
+        al, _ = Contact.objects.update_or_create(
+            id=application_lead_id,
+            defaults={
+                "first_name": user.first_name,
+                "last_name": user.last_name,
+                "position_title": user.position_title,
+                "email": user.email,
+                "phone_number": user.phone_number,
+                "business_role": BusinessRole.objects.get(role_name="Operation Registration Lead"),
+                "address": user.address,
+            },
+        )
+        al.set_create_or_update(modifier=user)
+        operation.application_lead = al
+
+    # updating only a subset of fields (using all fields would overwrite the existing ones)
+    payload_dict: dict = payload.dict(
+        include={
+            "name",
+            "type",
+            "previous_year_attributable_emissions",
+            "swrs_facility_id",
+            "bcghg_id",
+            "opt_in",
+            "operation_has_multiple_operators",
+        }
+    )
     for attr, value in payload_dict.items():
-        if attr not in excluded_fields:
-            setattr(operation, attr, value)
-            # set the operation status to 'pending' on update
-        if submit == "true":
-            operation.status = Operation.Statuses.PENDING
-    operation.regulated_products.clear()  # Clear existing products
-    for product_id in payload.regulated_products:
-        operation.regulated_products.add(product_id)  # Adds each product
-    operation.reporting_activities.clear()  # Clear existing activities
-    for activity_id in payload.reporting_activities:
-        operation.reporting_activities.add(activity_id)  # Adds each activity
+        setattr(operation, attr, value)
+    # set the operation status to 'pending' on update
+    if submit == "true":
+        operation.status = Operation.Statuses.PENDING
+
+    operation.regulated_products.set(payload.regulated_products)  # set replaces all existing products with the new ones
+    operation.reporting_activities.set(
+        payload.reporting_activities
+    )  # set replaces all existing activities with the new ones
 
     operation.save()
     operation.set_create_or_update(modifier=user)
 
-    if operation_has_multiple_operators:
-        save_multiple_operators(multiple_operators_array, operation, user)
+    if payload.operation_has_multiple_operators:
+        create_or_update_multiple_operators(payload.multiple_operators_array, operation, user)
+    else:  # if the operation doesn't have multiple operators anymore, archive all existing ones
+        operation_multiple_operators = MultipleOperator.objects.filter(operation_id=operation.id)
+        for operator in operation_multiple_operators:
+            operator.set_archive(modifier=user)
 
     return 200, {"name": operation.name}
 
@@ -294,8 +290,8 @@ def update_operation(request, operation_id: int, submit, payload: OperationUpdat
 @router.put(
     "/operations/{operation_id}/update-status", response={200: OperationOut, codes_4xx: Message, codes_5xx: Message}
 )
+@authorize(AppRole.get_authorized_irc_roles())
 def update_operation_status(request, operation_id: int, payload: OperationUpdateStatusIn):
-    raise_401_if_role_not_authorized(request, ["cas_admin", "cas_analyst"])
     operation = get_object_or_404(Operation, id=operation_id)
     user: User = request.current_user
     status = Operation.Statuses(payload.status)

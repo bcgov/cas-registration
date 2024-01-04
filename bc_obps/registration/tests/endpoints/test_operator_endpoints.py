@@ -114,7 +114,6 @@ class TestOperatorsEndpoint(CommonTestSetup):
 
         assert len(json.loads(response.content)) == 2
 
-    # brianna this is moved from user_operator tests
     def test_select_operator_with_valid_id(self):
         operator = baker.make(Operator)
         response = TestUtils.mock_get_with_auth_role(self, "cas_analyst", self.endpoint + "/" + str(operator.id))

@@ -1,6 +1,8 @@
-from typing import List, Type, Union, Iterable, Dict, Any, Tuple, Optional
+from typing import Type, Union, Iterable, Dict, Any, Tuple, Optional
+from uuid import UUID
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError, models
+from django.db.models import QuerySet
 
 from .models import User, Operator, UserOperator
 from django.shortcuts import get_object_or_404
@@ -12,6 +14,16 @@ from registration.models import (
 )
 
 UNAUTHORIZED_MESSAGE = "Unauthorized."
+
+# Used to exclude audit fields from the schema
+AUDIT_FIELDS = [
+    "created_at",
+    "created_by",
+    "updated_at",
+    "updated_by",
+    "archived_at",
+    "archived_by",
+]
 
 
 def check_users_admin_request_eligibility(user: User, operator: Operator) -> Union[None, tuple[int, dict]]:
@@ -121,14 +133,6 @@ def check_access_request_matches_business_guid(
     return 200, None
 
 
-def extract_fields_from_dict(data_dict, fields_to_extract):
-    new_dict = dict()
-    for field in fields_to_extract:
-        if field in data_dict:
-            new_dict[field] = data_dict[field]
-    return new_dict
-
-
 def raise_401_if_role_not_authorized(request, authorized_roles) -> Tuple[int, Optional[Union[dict[str, str], None]]]:
     if not hasattr(request, 'current_user'):
         raise HttpError(401, UNAUTHORIZED_MESSAGE)
@@ -137,7 +141,7 @@ def raise_401_if_role_not_authorized(request, authorized_roles) -> Tuple[int, Op
         raise HttpError(401, UNAUTHORIZED_MESSAGE)
 
 
-def get_an_operators_approved_users(operator: Operator) -> List[User]:
+def get_an_operators_approved_users(operator: Operator) -> QuerySet[UUID]:
     # get a list of all the operator's approved user ids
     user_ids = UserOperator.objects.filter(operator_id=operator.id, status=UserOperator.Statuses.APPROVED).values_list(
         'user_id', flat=True
