@@ -137,6 +137,41 @@ def save_operator(payload: any, operator_instance: Operator, user: User):
             return 200, {"user_operator_id": user_operator.id}
 
 
+# Function to create/update Operator instance data to reuse in POST/PUT methods
+def create_operator_data(operator_instance: Operator, payload_dict: dict):
+    # Consolidate mailing address if indicated
+    if payload_dict.get("mailing_address_same_as_physical"):
+        payload_dict.update(
+            {
+                "mailing_street_address": payload_dict["physical_street_address"],
+                "mailing_municipality": payload_dict["physical_municipality"],
+                "mailing_province": payload_dict["physical_province"],
+                "mailing_postal_code": payload_dict["physical_postal_code"],
+            }
+        )
+
+    # fields to update on the Operator model
+    operator_related_fields = [
+        "legal_name",
+        "trade_name",
+        "physical_street_address",
+        "physical_municipality",
+        "physical_province",
+        "physical_postal_code",
+        "mailing_street_address",
+        "mailing_municipality",
+        "mailing_province",
+        "mailing_postal_code",
+        "website",
+    ]
+
+    created_operator_instance: Operator = update_model_instance(
+        operator_instance, operator_related_fields, payload_dict
+    )
+
+    return created_operator_instance
+
+
 ##### GET #####
 @router.get("/user-operator-status-from-user", response={200: UserOperatorStatus, codes_4xx: Message})
 @authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
