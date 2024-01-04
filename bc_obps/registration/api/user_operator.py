@@ -390,13 +390,6 @@ def create_user_operator_contact(request, payload: UserOperatorContactIn):
 @router.put("/user-operator/operator/{int:user_operator_id}", response={200: RequestAccessOut, codes_4xx: Message})
 def update_operator_and_user_operator(request, payload: UserOperatorOperatorIn, user_operator_id: int):
     user: User = request.current_user
-    raise_401_if_role_not_authorized(
-        request,
-        [
-            "industry_user",
-            "industry_user_admin",
-        ],
-    )
     try:
         payload_dict = payload.dict()
         operator_has_parent_company: bool = payload_dict.get("operator_has_parent_company")
@@ -430,7 +423,6 @@ def update_operator_and_user_operator(request, payload: UserOperatorOperatorIn, 
 
 @router.put("/user-operator/contact", response={200: SelectOperatorIn, codes_4xx: Message})
 def create_user_operator_contact(request, payload: UserOperatorContactIn):
-    raise_401_if_role_not_authorized(request, ["industry_user", "industry_user_admin"])
     try:
         user_operator_instance: UserOperator = get_object_or_404(UserOperator, id=payload.user_operator_id)
         operator: Operator = user_operator_instance.operator
