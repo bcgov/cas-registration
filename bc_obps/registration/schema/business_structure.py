@@ -3,6 +3,6 @@ from registration.models import BusinessStructure
 
 
 class BusinessStructureOut(ModelSchema):
-    class Config:
+    class Meta:
         model = BusinessStructure
-        model_fields = '__all__'
+        fields = '__all__'

@@ -7,6 +7,6 @@ class ReportingActivitySchema(ModelSchema):
     Schema for the ReportingActivity model
     """
 
-    class Config:
+    class Meta:
         model = ReportingActivity
-        model_fields = "__all__"
+        fields = "__all__"

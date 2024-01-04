@@ -14,6 +14,6 @@ class ContactSchema(ModelSchema):
             return
         return obj.phone_number.as_e164
 
-    class Config:
+    class Meta:
         model = Contact
-        model_fields = "__all__"
+        fields = "__all__"

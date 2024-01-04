@@ -8,9 +8,9 @@ class OperatorOut(ModelSchema):
     Schema for the Operator model
     """
 
-    class Config:
+    class Meta:
         model = Operator
-        model_fields = '__all__'
+        fields = '__all__'
 
 
 class SelectOperatorIn(Schema):

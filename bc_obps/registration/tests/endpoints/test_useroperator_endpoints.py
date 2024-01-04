@@ -124,15 +124,23 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         # user-operator/operator
         mock_data = TestUtils.mock_UserOperatorOperatorIn(self)
         response = TestUtils.mock_post_with_auth_role(
-            self, 'cas_pending', content_type_json, mock_data.json(), f"{base_endpoint}user-operator/operator"
+            self,
+            'cas_pending',
+            content_type_json,
+            mock_data.model_dump_json(),
+            f"{base_endpoint}user-operator/operator",
         )
         assert response.status_code == 401
         response = TestUtils.mock_post_with_auth_role(
-            self, 'cas_analyst', content_type_json, mock_data.json(), f"{base_endpoint}user-operator/operator"
+            self,
+            'cas_analyst',
+            content_type_json,
+            mock_data.model_dump_json(),
+            f"{base_endpoint}user-operator/operator",
         )
         assert response.status_code == 401
         response = TestUtils.mock_post_with_auth_role(
-            self, 'cas_admin', content_type_json, mock_data.json(), f"{base_endpoint}user-operator/operator"
+            self, 'cas_admin', content_type_json, mock_data.model_dump_json(), f"{base_endpoint}user-operator/operator"
         )
         assert response.status_code == 401
 
@@ -142,7 +150,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
             self,
             'cas_pending',
             content_type_json,
-            TestUtils.mock_UserOperatorContactIn(self).json(),
+            TestUtils.mock_UserOperatorContactIn(self).model_dump_json(),
             f"{base_endpoint}user-operator/contact",
         )
         assert response.status_code == 401
@@ -150,7 +158,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
             self,
             'cas_admin',
             content_type_json,
-            TestUtils.mock_UserOperatorContactIn(self).json(),
+            TestUtils.mock_UserOperatorContactIn(self).model_dump_json(),
             f"{base_endpoint}user-operator/contact",
         )
         assert response.status_code == 401
@@ -158,7 +166,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
             self,
             'cas_analyst',
             content_type_json,
-            TestUtils.mock_UserOperatorContactIn(self).json(),
+            TestUtils.mock_UserOperatorContactIn(self).model_dump_json(),
             f"{base_endpoint}user-operator/contact",
         )
         assert response.status_code == 401

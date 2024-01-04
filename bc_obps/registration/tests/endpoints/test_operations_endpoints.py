@@ -70,19 +70,20 @@ class TestOperationsEndpoint(CommonTestSetup):
     def test_unauthorized_roles_cannot_post(self):
         mock_operation = TestUtils.mock_OperationCreateIn(self)
         # IRC users can't post
-        post_response = TestUtils.mock_post_with_auth_role(self, "cas_admin", content_type_json, mock_operation.json())
-        assert post_response.status_code == 401
-        post_response = post_response = TestUtils.mock_post_with_auth_role(
-            self, "cas_analyst", content_type_json, mock_operation.json(), endpoint=None
+        post_response = TestUtils.mock_post_with_auth_role(
+            self, "cas_admin", content_type_json, mock_operation.model_dump_json()
         )
         assert post_response.status_code == 401
         post_response = post_response = TestUtils.mock_post_with_auth_role(
-            self, "cas_pending", content_type_json, mock_operation.json()
+            self, "cas_analyst", content_type_json, mock_operation.model_dump_json(), endpoint=None
+        )
+        assert post_response.status_code == 401
+        post_response = post_response = TestUtils.mock_post_with_auth_role(
+            self, "cas_pending", content_type_json, mock_operation.model_dump_json()
         )
         assert post_response.status_code == 401
 
     def test_unauthorized_roles_cannot_put_operations(self):
-
         operation = baker.make(Operation)
         mock_operation = TestUtils.mock_OperationUpdateIn(self)
         # IRC users can't put
@@ -93,7 +94,7 @@ class TestOperationsEndpoint(CommonTestSetup):
                 self,
                 role,
                 content_type_json,
-                mock_operation.json(),
+                mock_operation.model_dump_json(),
                 self.endpoint + "/" + str(operation.id) + "?submit=false",
             )
             assert response.status_code == 401
@@ -152,11 +153,10 @@ class TestOperationsEndpoint(CommonTestSetup):
 
     # POST
     def test_authorized_roles_can_post_new_operation(self):
-
         operator = baker.make(Operator)
         mock_operation = TestUtils.mock_OperationCreateIn(self, operator)
         post_response = TestUtils.mock_post_with_auth_role(
-            self, "industry_user", content_type_json, mock_operation.json()
+            self, "industry_user", content_type_json, mock_operation.model_dump_json()
         )
         assert post_response.status_code == 201
         assert post_response.json().get('name') == "Springfield Nuclear Power Plant"
@@ -166,7 +166,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         get_response = TestUtils.mock_get_with_auth_role(self, "industry_user").json()[0]
         assert 'status' in get_response and get_response['status'] == 'Not Registered'
         post_response = TestUtils.mock_post_with_auth_role(
-            self, "industry_user_admin", content_type_json, mock_operation.json(), endpoint=None
+            self, "industry_user_admin", content_type_json, mock_operation.model_dump_json(), endpoint=None
         )
         assert post_response.status_code == 201
 
@@ -226,7 +226,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             operator_id=operator.id,
         )
         post_response = TestUtils.mock_post_with_auth_role(
-            self, 'industry_user', content_type_json, mock_operation.json()
+            self, 'industry_user', content_type_json, mock_operation.model_dump_json()
         )
         assert post_response.status_code == 201
         assert post_response.json().get('id') is not None
@@ -247,11 +247,11 @@ class TestOperationsEndpoint(CommonTestSetup):
         assert response.status_code == 422
 
     def test_post_existing_operation(self):
-        baker.make(Operation, bcghg_id=123)
+        baker.make(Operation, bcghg_id='123')
         mock_operation2 = TestUtils.mock_OperationCreateIn(self)
-        mock_operation2.bcghg_id = 123
+        mock_operation2.bcghg_id = '123'
         post_response = TestUtils.mock_post_with_auth_role(
-            self, "industry_user", content_type_json, data=mock_operation2.json()
+            self, "industry_user", content_type_json, data=mock_operation2.model_dump_json()
         )
         assert post_response.status_code == 400
         assert post_response.json().get('message') == "Operation with this BCGHG ID already exists."
@@ -271,7 +271,6 @@ class TestOperationsEndpoint(CommonTestSetup):
 
         url = self.build_update_status_url(operation_id=operation.id)
 
-        now = datetime.now(pytz.utc)
         put_response = TestUtils.mock_put_with_auth_role(
             self, "cas_admin", content_type_json, {"status": "Approved"}, url
         )
@@ -286,8 +285,10 @@ class TestOperationsEndpoint(CommonTestSetup):
         assert get_response.status_code == 200
         get_response_dict = get_response.json()
         assert get_response_dict.get("status") == "Approved"
-        now_as_string = now.strftime("%Y-%m-%d")
-        assert get_response_dict.get("verified_at") == now_as_string
+        # converting verified_at string with timezone to datetime object and asserting that it's identical to the current time (except for the microseconds)
+        assert datetime.strptime(get_response_dict.get("verified_at"), "%Y-%m-%dT%H:%M:%S.%f%z").replace(
+            microsecond=0
+        ) == datetime.now(pytz.utc).replace(microsecond=0)
 
     def test_put_operation_update_status_rejected(self):
         operation = baker.make(Operation)
@@ -295,7 +296,6 @@ class TestOperationsEndpoint(CommonTestSetup):
 
         url = self.build_update_status_url(operation_id=operation.id)
 
-        now = datetime.now(pytz.utc)
         put_response = TestUtils.mock_put_with_auth_role(
             self, "cas_admin", content_type_json, {"status": "Rejected"}, url
         )
@@ -310,8 +310,10 @@ class TestOperationsEndpoint(CommonTestSetup):
         assert get_response.status_code == 200
         get_response_dict = get_response.json()
         assert get_response_dict.get("status") == "Rejected"
-        now_as_string = now.strftime("%Y-%m-%d")
-        assert get_response_dict.get("verified_at") == now_as_string
+        # converting verified_at string with timezone to datetime object and asserting that it's identical to the current time (except for the microseconds)
+        assert datetime.strptime(get_response_dict.get("verified_at"), "%Y-%m-%dT%H:%M:%S.%f%z").replace(
+            microsecond=0
+        ) == datetime.now(pytz.utc).replace(microsecond=0)
 
     def test_put_operation_not_verified_when_not_registered(self):
         operation = baker.make(Operation)
@@ -356,7 +358,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             self,
             'industry_user',
             content_type_json,
-            mock_operation.json(),
+            mock_operation.model_dump_json(),
             self.endpoint + "/" + str(operation.id) + "?submit=false",
         )
         assert response.status_code == 200
@@ -379,7 +381,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             self,
             'industry_user',
             content_type_json,
-            mock_operation.json(),
+            mock_operation.model_dump_json(),
             self.endpoint + "/" + str(operation.id) + "?submit=true",
         )
 
@@ -425,7 +427,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             self,
             'industry_user',
             content_type_json,
-            update.json(),
+            update.model_dump_json(),
             self.endpoint + '/' + str(operation.id) + "?submit=true",
         )
         assert put_response.status_code == 200

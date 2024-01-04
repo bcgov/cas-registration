@@ -101,7 +101,7 @@ class TestUserEndpoint(CommonTestSetup):
         response = client.post(
             f"{self.endpoint_profile}/{IdPs.BCEIDBUSINESS.value}",
             content_type=content_type_json,
-            data=mock_payload.json(),
+            data=mock_payload.model_dump_json(),
             HTTP_AUTHORIZATION=json.dumps({'user_guid': str(uuid.uuid4())}),
         )
         content = response.json()
@@ -142,7 +142,7 @@ class TestUserEndpoint(CommonTestSetup):
         response = client.post(
             f"{self.endpoint_profile}/{IdPs.IDIR.value}",
             content_type=content_type_json,
-            data=mock_payload.json(),
+            data=mock_payload.model_dump_json(),
             HTTP_AUTHORIZATION=json.dumps({'user_guid': str(uuid.uuid4())}),
         )
         content = response.json()
@@ -178,7 +178,7 @@ class TestUserEndpoint(CommonTestSetup):
 
         # Act
         response = TestUtils.mock_put_with_auth_role(
-            self, 'industry_user', content_type_json, mock_payload.json(), f"{self.endpoint_profile}"
+            self, 'industry_user', content_type_json, mock_payload.model_dump_json(), f"{self.endpoint_profile}"
         )
         content = response.json()
 

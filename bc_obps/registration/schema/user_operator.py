@@ -40,7 +40,7 @@ class UserOperatorOut(Schema):
     legal_name: str
     trade_name: Optional[str]
     cra_business_number: Optional[int]
-    bc_corporate_registry_number: Optional[str] = Field(regex=r"^[A-Za-z]{1,3}\d{7}$")
+    bc_corporate_registry_number: Optional[str] = Field(pattern=r"^[A-Za-z]{1,3}\d{7}$")
     business_structure: str
     physical_street_address: str
     physical_municipality: str
@@ -65,35 +65,35 @@ class UserOperatorOperatorIn(Schema):
     legal_name: str
     trade_name: Optional[str] = ""
     cra_business_number: int
-    bc_corporate_registry_number: str = Field(regex=r"^[A-Za-z]{1,3}\d{7}$")
+    bc_corporate_registry_number: str = Field(pattern=r"^[A-Za-z]{1,3}\d{7}$")
     business_structure: str
     physical_street_address: str
     physical_municipality: str
     physical_province: str
     physical_postal_code: str
     # below are optional fields because we might use physical address as mailing address
-    mailing_street_address: Optional[str]
-    mailing_municipality: Optional[str]
-    mailing_province: Optional[str]
-    mailing_postal_code: Optional[str]
-    website: Optional[str]
+    mailing_street_address: Optional[str] = None
+    mailing_municipality: Optional[str] = None
+    mailing_province: Optional[str] = None
+    mailing_postal_code: Optional[str] = None
+    website: Optional[str] = None
     mailing_address_same_as_physical: bool
     operator_has_parent_company: bool
     # pc => parent company
-    pc_legal_name: Optional[str]
-    pc_cra_business_number: Optional[int]
-    pc_bc_corporate_registry_number: Optional[str] = Field(regex=r"^[A-Za-z]{1,3}\d{7}$")
-    pc_business_structure: Optional[str]
-    pc_physical_street_address: Optional[str]
-    pc_physical_municipality: Optional[str]
-    pc_physical_province: Optional[str]
-    pc_physical_postal_code: Optional[str]
-    pc_mailing_address_same_as_physical: Optional[bool]
-    pc_mailing_street_address: Optional[str]
-    pc_mailing_municipality: Optional[str]
-    pc_mailing_province: Optional[str]
-    pc_mailing_postal_code: Optional[str]
-    percentage_owned_by_parent_company: Optional[int]
+    pc_legal_name: Optional[str] = None
+    pc_cra_business_number: Optional[int] = None
+    pc_bc_corporate_registry_number: Optional[str] = Field(None, pattern=r"^[A-Za-z]{1,3}\d{7}$")
+    pc_business_structure: Optional[str] = None
+    pc_physical_street_address: Optional[str] = None
+    pc_physical_municipality: Optional[str] = None
+    pc_physical_province: Optional[str] = None
+    pc_physical_postal_code: Optional[str] = None
+    pc_mailing_address_same_as_physical: Optional[bool] = None
+    pc_mailing_street_address: Optional[str] = None
+    pc_mailing_municipality: Optional[str] = None
+    pc_mailing_province: Optional[str] = None
+    pc_mailing_postal_code: Optional[str] = None
+    percentage_owned_by_parent_company: Optional[int] = None
 
 
 class UserOperatorContactIn(ModelSchema):
@@ -109,9 +109,9 @@ class UserOperatorContactIn(ModelSchema):
     last_name: Optional[str] = None
     user_operator_id: int
 
-    class Config:
+    class Meta:
         model = Contact
-        model_exclude = ["id", "documents", "business_role"]
+        exclude = ["id", "documents", "business_role"]
 
 
 class UserOperatorUserOut(ModelSchema):
@@ -126,9 +126,9 @@ class UserOperatorUserOut(ModelSchema):
             return
         return obj.phone_number.as_e164
 
-    class Config:
+    class Meta:
         model = User
-        model_fields = ["phone_number", "email"]
+        fields = ["phone_number", "email"]
 
 
 class SelectUserOperatorStatus(Schema):
@@ -151,17 +151,17 @@ class SelectUserOperatorOperatorsOut(ModelSchema):
     Schema for returning User's Business Operator
     """
 
-    class Config:
+    class Meta:
         model = UserOperator
-        model_fields = ["operator"]
+        fields = ["operator"]
 
 
 class UserOperatorRoleOut(ModelSchema):
     user_operator_status: str = Field("", alias="status")
 
-    class Config:
+    class Meta:
         model = UserOperator
-        model_fields = ["role"]
+        fields = ["role"]
 
 
 class UserOperatorListOut(Schema):

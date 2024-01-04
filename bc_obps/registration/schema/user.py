@@ -18,9 +18,9 @@ class UserOut(ModelSchema):
             return
         return obj.phone_number.as_e164
 
-    class Config:
+    class Meta:
         model = User
-        model_fields = [
+        fields = [
             "first_name",
             "last_name",
             "position_title",
@@ -35,17 +35,17 @@ class UserOut(ModelSchema):
 
 
 class UserAppRoleOut(ModelSchema):
-    class Config:
+    class Meta:
         model = AppRole
-        model_fields = ['role_name']
+        fields = ['role_name']
 
 
 class UserProfileOut(UserOut):
     app_role: UserAppRoleOut  # Include AppRoleOut model as a field
 
-    class Config:
+    class Meta:
         model = User
-        model_fields = [
+        fields = [
             "first_name",
             "last_name",
             "position_title",

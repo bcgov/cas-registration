@@ -7,6 +7,6 @@ class RegulatedProductSchema(ModelSchema):
     Schema for the RegulatedProduct model
     """
 
-    class Config:
+    class Meta:
         model = RegulatedProduct
-        model_fields = "__all__"
+        fields = "__all__"

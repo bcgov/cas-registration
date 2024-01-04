@@ -7,6 +7,6 @@ class NaicsCodeSchema(ModelSchema):
     Schema for the NaicsCode model
     """
 
-    class Config:
+    class Meta:
         model = NaicsCode
-        model_fields = "__all__"
+        fields = "__all__"
