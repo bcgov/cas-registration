@@ -1,6 +1,3 @@
-from glob import glob
-import os
-from bc_obps.settings import BASE_DIR
 from ninja import Router
 from django.core.management import call_command
 from django.conf import settings
