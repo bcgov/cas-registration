@@ -11,7 +11,6 @@ interface SubmitButtonProps {
   classNames?: string;
   step: number;
   steps: string[];
-  submitEveryStep?: boolean;
   allowBackNavigation?: boolean;
 }
 
@@ -22,13 +21,11 @@ const SubmitButton: React.FunctionComponent<SubmitButtonProps> = ({
   steps,
   cancelUrl,
   classNames,
-  submitEveryStep,
   allowBackNavigation,
 }) => {
   const { pending } = useFormStatus();
   const isFinalStep = step === steps.length - 1;
   const isDisabled = disabled || pending;
-
   return (
     <div className={`flex w-full mt-8 justify-between ${classNames}`}>
       {cancelUrl && (
@@ -54,32 +51,24 @@ const SubmitButton: React.FunctionComponent<SubmitButtonProps> = ({
               Back
             </Button>
           ))}
-        {!isFinalStep && !submitEveryStep && (
-          <Link href={`${baseUrl}/${step + 2}`}>
-            <Button variant="contained" type="button" disabled={isFinalStep}>
-              Next
-            </Button>
-          </Link>
-        )}
-        {isFinalStep && !submitEveryStep && (
+        {/* When the form is editable, the form should be submitted when navigating between steps */}
+        {!disabled && (
           <Button
             type="submit"
             aria-disabled={isDisabled}
             disabled={isDisabled}
             variant="contained"
           >
-            Submit
-          </Button>
-        )}
-        {submitEveryStep && (
-          <Button
-            type="submit"
-            aria-disabled={isDisabled}
-            disabled={isFinalStep && isDisabled}
-            variant="contained"
-          >
             {!isFinalStep ? "Next" : "Submit"}
           </Button>
+        )}
+        {/* When the form is not editable (e.g., IRC staff is reviewing an operation), the form should not be submitted when navigating between steps */}
+        {!isFinalStep && disabled && (
+          <Link href={`${baseUrl}/${step + 2}`}>
+            <Button variant="contained" type="button" disabled={isFinalStep}>
+              Next
+            </Button>
+          </Link>
         )}
       </div>
     </div>

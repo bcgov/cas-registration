@@ -100,7 +100,6 @@ export default function UserOperatorMultiStepForm({
           disabled={isCasInternal || disabled}
           error={error}
           formData={formData}
-          submitEveryStep={!isCasInternal}
           onSubmit={submitHandler}
           uiSchema={userOperatorUiSchema}
         />
