@@ -98,7 +98,7 @@ export default function UserOperatorMultiStepForm({
             userOperator={formData as UserOperatorFormData}
             userOperatorId={Number(userOperatorId)}
             isOperatorNew={formData?.is_new}
-            operatorId={formData?.id}
+            operatorId={formData?.operator_id}
           />
         )}
         <MultiStepFormBase
