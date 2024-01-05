@@ -30,12 +30,11 @@ export default async function User() {
        */
       const session = await getServerSession(authOptions);
       const isIdir = session?.identity_provider === IDP.IDIR;
-
-      // IDIR names come in the format "LASTNAME, FIRSTNAME" so we will split on the comma
-      // and reverse so they don't go into the wrong fields
-      const idirName = session?.user?.name?.split(", ").reverse();
-
-      const names = isIdir ? idirName : session?.user?.name?.split(" ");
+      // IDIR users have a given_name and a family_name attribute in the jwt, so we can use that in the case of idir
+      // BCeID users use the name attribute and we split on the space if there is one
+      const names = isIdir
+        ? [session?.user?.given_name, session?.user?.family_name]
+        : session?.user?.name?.split(" ");
 
       formData = {
         first_name: names?.[0] ?? "", // Use nullish coalescing here
