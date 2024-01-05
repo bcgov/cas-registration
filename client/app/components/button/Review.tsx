@@ -18,6 +18,7 @@ interface Props {
   showRequestChanges?: boolean;
   onApprove: () => Promise<any>;
   onReject: () => Promise<any>;
+  onRequestChanges: () => Promise<any>;
 }
 
 interface CloseProps {
@@ -48,6 +49,7 @@ const Review = ({
   showRequestChanges = true,
   onApprove,
   onReject,
+  onRequestChanges,
 }: Readonly<Props>) => {
   const [errorList, setErrorList] = useState([] as any[]);
   const [successMessageList, setSuccessMessageList] = useState([] as any[]);
@@ -184,6 +186,7 @@ const Review = ({
             <RequestChanges
               onCancelRequestChange={handleCancelRequestChange}
               onRequestChange={handleRequestChange}
+              onRequestChangeConfirm={onRequestChanges}
             />
           )}
           {!showChangeConfirmation && (

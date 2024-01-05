@@ -26,7 +26,7 @@ export default function UserOperatorReview({
         "",
         {
           body: JSON.stringify({ status: Status.APPROVED }),
-        },
+        }
       );
       return response;
     } catch (error) {
@@ -42,7 +42,7 @@ export default function UserOperatorReview({
         "",
         {
           body: JSON.stringify({ status: Status.REJECTED }),
-        },
+        }
       );
       return response;
     } catch (error) {
@@ -58,8 +58,9 @@ export default function UserOperatorReview({
       `dashboard/operators/user-operators/${userOperatorId}`,
       {
         body: JSON.stringify(userOperator),
-      },
+      }
     );
+
     return response;
   }
 
@@ -71,13 +72,44 @@ export default function UserOperatorReview({
       `dashboard/operators/user-operators/${userOperatorId}`,
       {
         body: JSON.stringify(userOperator),
-      },
+      }
     );
     return response;
   }
+
   const requestText = isOperatorNew
     ? "creation of the new operator"
     : "prime admin request";
+
+  const approveRequest = async () => {
+    const response = await changeStatus(
+      Status.APPROVED,
+      userOperator,
+      userOperatorId
+    );
+
+    return response;
+  };
+
+  const rejectRequest = async () => {
+    const response = await changeStatus(
+      Status.REJECTED,
+      userOperator,
+      userOperatorId
+    );
+
+    return response;
+  };
+
+  const requestChanges = async () => {
+    const response = await changeStatus(
+      Status.CHANGES,
+      userOperator,
+      userOperatorId
+    );
+
+    return response;
+  };
 
   return (
     <Review
@@ -90,6 +122,7 @@ export default function UserOperatorReview({
         isOperatorNew ? approveOperatorRequest : approvePrimeAdminRequst
       }
       onReject={isOperatorNew ? rejectOperatorRequest : rejectPrimeAdminRequest}
+      onRequestChanges={requestChanges}
     />
   );
 }
