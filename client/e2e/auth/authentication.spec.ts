@@ -13,6 +13,7 @@ const casPendingAuthFile = process.env.CAS_PENDING_STORAGE || "";
 const industryUserAuthFile = process.env.INDUSTRY_USER_STORAGE || "";
 const industryUserAdminAuthFile = process.env.INDUSTRY_USER_ADMIN_STORAGE || "";
 const newUserAuthFile = process.env.NEW_USER_STORAGE || "";
+const newUserUserID = process.env.NEW_USER_USERID || "";
 
 // Import role based dashboard navigation
 import casAdminDashboard from "@/app/data/dashboard/cas_admin.json";
@@ -156,7 +157,7 @@ test.describe("Test Dashboard", () => {
         port: 5432,
       });
       await pool.query(
-        "DELETE FROM erc.user where user_guid='c3cd84a8-e261-4814-93e1-5bd4a7ccd638'",
+        "DELETE FROM erc.user where user_guid='" + newUserUserID + "'",
       );
       await pool.end();
 
