@@ -33,7 +33,7 @@ export default function Page({ params }: { readonly params: { id: number } }) {
         type: "object",
 
         properties: {
-          file: {
+          boundary_map: {
             type: "string",
             format: "data-url",
             title: "Single file",
@@ -49,13 +49,13 @@ export default function Page({ params }: { readonly params: { id: number } }) {
         console.log("data.formdata", data.formData);
 
         const response = await actionHandler(
-          `registration/upload`,
+          `registration/handle-file`,
           "POST",
           "",
           // can't do this, can't pass a class to a server action
           // b might need to write a new handler for files --oh nooooo, it's probably middleware
           // dataURLtoFile(data.formData.file, "bri")
-          { body: JSON.stringify(data.formData) },
+          { body: JSON.stringify(data.formData) }
         );
 
         // const response = await fetch(
