@@ -341,7 +341,15 @@ class OperatorModelTest(BaseTestCase):
 
 
 class ParentChildOperatorModelTest(BaseTestCase):
-    fixtures = [APP_ROLE_FIXTURE, USER_FIXTURE, ADDRESS_FIXTURE, BUSINESS_ROLE_FIXTURE, CONTACT_FIXTURE, OPERATOR_FIXTURE, BUSINESS_STRUCTURE_FIXTURE]
+    fixtures = [
+        APP_ROLE_FIXTURE,
+        USER_FIXTURE,
+        ADDRESS_FIXTURE,
+        BUSINESS_ROLE_FIXTURE,
+        CONTACT_FIXTURE,
+        OPERATOR_FIXTURE,
+        BUSINESS_STRUCTURE_FIXTURE,
+    ]
 
     @classmethod
     def setUpTestData(cls):
