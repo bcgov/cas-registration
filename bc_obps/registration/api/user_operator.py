@@ -164,7 +164,6 @@ def create_operator_data(operator_instance: Operator, payload_dict: dict):
         "mailing_postal_code",
         "website",
     ]
-
     created_operator_instance: Operator = update_model_instance(
         operator_instance, operator_related_fields, payload_dict
     )
@@ -421,12 +420,15 @@ def check_status(status: str):
     return False
 
 
-# this endpoint is for updating the status of a user
-@router.put("/user-operator/operator/{int:user_operator_id}", response={200: RequestAccessOut, codes_4xx: Message})
-def update_operator_and_user_operator(request, payload: UserOperatorOperatorIn, user_operator_id: int):
+
+@router.put(
+    "/user-operator/operator/{int:user_operator_operator_id}", response={200: RequestAccessOut, codes_4xx: Message}
+)
+@authorize(AppRole.get_industry_roles())
+def update_operator_and_user_operator(request, payload: UserOperatorOperatorIn, user_operator_operator_id: int):
     user: User = request.current_user
     try:
-        operator_instance: Operator = get_object_or_404(Operator, id=user_operator_id)
+        operator_instance: Operator = get_object_or_404(Operator, id=user_operator_operator_id)
 
         # save operator data
         save_operator(payload, operator_instance, user)
