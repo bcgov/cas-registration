@@ -42,15 +42,17 @@ export default function UserOperatorMultiStepForm({
   const formSectionList = Object.keys(schema.properties as RJSFSchema);
   const isFinalStep = formSectionIndex === formSectionList.length - 1;
 
-  const userOperatorId =
-    searchParams.get("user-operator-id") || (params?.id as string);
+  const userOperatorId = params?.id as string;
+
+  const userOperatorIdParam = searchParams?.get("user-operator-id");
   const submitHandler = async (data: { formData?: UserOperatorFormData }) => {
     const newFormData = {
       ...data.formData,
     } as UserOperatorFormData;
 
     // add user operator id to form data if it exists (to be used in senior officer creation)
-    if (userOperatorId) newFormData.user_operator_id = userOperatorId;
+    if (userOperatorId)
+      newFormData.user_operator_id = userOperatorIdParam || userOperatorId;
 
     const apiUrl = `registration/user-operator/${
       isFinalStep ? "contact" : "operator"
@@ -79,10 +81,14 @@ export default function UserOperatorMultiStepForm({
       return;
     }
 
+    // continue to use user-operator-id search param for create route since database will error if sending a user operator id
+    // in the /[id] route as the user doesn't exist yet
     return push(
       `/dashboard/select-operator/user-operator/${
         isCreate ? "create" : userOperatorId
-      }/${formSection + 1}`
+      }/${formSection + 1}${
+        isCreate ? `?user-operator-id=${response.user_operator_id}` : ""
+      }`
     );
   };
 
