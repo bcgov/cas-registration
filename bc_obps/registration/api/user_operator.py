@@ -374,7 +374,7 @@ def create_user_operator_contact(request, payload: UserOperatorContactIn):
 
 ##### PUT #####
 
-
+# this endpoint is for updating the status of a user
 @router.put("/select-operator/user-operator/{user_guid}/update-status")
 @authorize(["cas_admin", "cas_analyst", "industry_user_admin"])
 def update_user_operator_user_status(request, user_guid: str):
@@ -400,16 +400,13 @@ def update_user_operator_user_status(request, user_guid: str):
     return data
 
 
+# this endpoint is for updating the status of a user_operator
 @router.put("/select-operator/user-operator/operator/{user_operator_id}/update-status")
 @authorize(AppRole.get_authorized_irc_roles())
 def update_user_operator_status(request, user_operator_id: str):
     current_cas_internal_user: User = request.current_user
     # need to convert request.body (a bytes object) to a string, and convert the string to a JSON object
     payload = json.loads(request.body.decode())
-    is_new = getattr(UserOperator.Statuses, payload.get("is_new").upper())
-    # If the operator is new, it must be approved separately before the user_operator can be approved
-    if is_new:
-        return HttpError(401, UNAUTHORIZED_MESSAGE)
     status = getattr(UserOperator.Statuses, payload.get("status").upper())
     user_operator = get_object_or_404(UserOperator, id=user_operator_id)
     user_operator.status = status
