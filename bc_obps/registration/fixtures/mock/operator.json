@@ -36,7 +36,7 @@
       "status": "Approved",
       "is_new": false,
       "verified_at": "2024-01-03 08:09:51.133556-08",
-      "verified_by": "f79bc3e2fb3f46e08a3652a8015cb162"
+      "verified_by": "00000000-0000-0000-0000-000000000002"
     }
   },
   {
@@ -48,10 +48,8 @@
       "cra_business_number": 987654321,
       "bc_corporate_registry_number": "abc1234567",
       "business_structure": "BC Corporation",
-      "physical_street_address": "789 Oak St",
-      "physical_municipality": "Village",
-      "physical_province": "BC",
-      "physical_postal_code": "M2N 3P4",
+      "physical_address": 3,
+      "mailing_address": 4,
       "website": "http://www.example2.com",
       "documents": [],
       "contacts": [],

@@ -188,12 +188,12 @@ class TestOperatorsEndpoint(CommonTestSetup):
             self,
             'cas_admin',
             content_type_json,
-            {"status": Operator.Statuses.CHANGES},
+            {"status": Operator.Statuses.CHANGES_REQUESTED},
             self.endpoint + "/" + str(operator.id),
         )
 
         assert response.status_code == 200
 
-        assert response.json().get('status') == Operator.Statuses.CHANGES
+        assert response.json().get('status') == Operator.Statuses.CHANGES_REQUESTED
         assert response.json().get('is_new') == True
         assert response.json().get("verified_by") == None
