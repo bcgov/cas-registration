@@ -55,7 +55,7 @@ export default function Page({ params }: { readonly params: { id: number } }) {
           // can't do this, can't pass a class to a server action
           // b might need to write a new handler for files --oh nooooo, it's probably middleware
           // dataURLtoFile(data.formData.file, "bri")
-          { body: JSON.stringify(data.formData) }
+          { body: JSON.stringify(data.formData) },
         );
 
         // const response = await fetch(
