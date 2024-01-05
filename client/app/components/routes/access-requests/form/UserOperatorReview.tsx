@@ -18,6 +18,7 @@ export default function UserOperatorReview({
   operatorId,
   isOperatorNew,
 }: Props) {
+  console.log("where are my buttons");
   async function approveOperatorRequest() {
     try {
       const response = await actionHandler(
@@ -26,7 +27,7 @@ export default function UserOperatorReview({
         "",
         {
           body: JSON.stringify({ status: Status.APPROVED }),
-        }
+        },
       );
       return response;
     } catch (error) {
@@ -42,7 +43,7 @@ export default function UserOperatorReview({
         "",
         {
           body: JSON.stringify({ status: Status.REJECTED }),
-        }
+        },
       );
       return response;
     } catch (error) {
@@ -58,7 +59,7 @@ export default function UserOperatorReview({
       `dashboard/operators/user-operators/${userOperatorId}`,
       {
         body: JSON.stringify(userOperator),
-      }
+      },
     );
     return response;
   }
@@ -71,20 +72,21 @@ export default function UserOperatorReview({
       `dashboard/operators/user-operators/${userOperatorId}`,
       {
         body: JSON.stringify(userOperator),
-      }
+      },
     );
     return response;
   }
   const requestText = isOperatorNew
     ? "creation of the new operator"
     : "prime admin request";
+
   return (
     <Review
       approvedMessage={`You have approved the ${requestText}.`}
       rejectedMessage={`You have rejected the ${requestText}.`}
       confirmApproveMessage={`Are you sure you want to approve the ${requestText}?`}
       confirmRejectMessage={`Are you sure you want to reject the ${requestText}?`}
-      isStatusPending={userOperator.user_operator_status === Status.PENDING}
+      isStatusPending={userOperator.status === Status.PENDING}
       onApprove={
         isOperatorNew ? approveOperatorRequest : approvePrimeAdminRequst
       }
