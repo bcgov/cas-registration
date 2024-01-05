@@ -25,7 +25,7 @@ class DocumentOut(ModelSchema):
         model = Document
         model_fields = '__all__'
 
-# could use middleware for the transformation too? harder when it's part of a form
+
 class DocumentSchema(Schema):
     boundary_map: str
 

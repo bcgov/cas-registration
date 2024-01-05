@@ -4,19 +4,6 @@ import { actionHandler } from "@/app/utils/actions";
 import Form from "@rjsf/core";
 import { customizeValidator } from "@rjsf/validator-ajv8";
 
-function dataURLtoFile(dataurl: string, filename: string) {
-  console.log("dataurl", dataurl);
-  var arr = dataurl.split(","),
-    mime = arr[0].match(/:(.*?);/)[1],
-    bstr = atob(arr[arr.length - 1]),
-    n = bstr.length,
-    u8arr = new Uint8Array(n);
-  while (n--) {
-    u8arr[n] = bstr.charCodeAt(n);
-  }
-  return new File([u8arr], filename, { type: mime });
-}
-
 export default function Page({ params }: { readonly params: { id: number } }) {
   const customFormats = {
     phone: /\(?\d{3}\)?[\s-]?\d{3}[\s-]?\d{4}$/,
@@ -40,7 +27,7 @@ export default function Page({ params }: { readonly params: { id: number } }) {
           },
           randomfield: {
             type: "string",
-            title: "random filed",
+            title: "random extra field for testing what happens",
           },
         },
       }}
@@ -52,20 +39,9 @@ export default function Page({ params }: { readonly params: { id: number } }) {
           `registration/handle-file`,
           "POST",
           "",
-          // can't do this, can't pass a class to a server action
-          // b might need to write a new handler for files --oh nooooo, it's probably middleware
-          // dataURLtoFile(data.formData.file, "bri")
+          // can't pass a File class to a server action so any dataURL transformation will have to happen middleware or backend
           { body: JSON.stringify(data.formData) }
         );
-
-        // const response = await fetch(
-        //   `${process.env.API_URL}registration/upload`,
-        //   {
-        //     method: "POST",
-
-        //     body: data.formData,
-        //   }
-        // );
 
         if (response.error) {
           console.log("bad things happened");
