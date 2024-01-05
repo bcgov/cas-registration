@@ -20,13 +20,15 @@ const ChangeIcon = () => (
 );
 
 interface Props {
-  onRequestChange: () => void;
   onCancelRequestChange: () => void;
+  onRequestChange: () => void;
+  onRequestChangeConfirm: () => void;
 }
 
 const RequestChanges: React.FC<Props> = ({
   onCancelRequestChange,
   onRequestChange,
+  onRequestChangeConfirm,
 }) => {
   const [showConfirmation, setShowConfirmation] = useState(false);
 
@@ -57,6 +59,7 @@ const RequestChanges: React.FC<Props> = ({
               variant="contained"
               color="primary"
               aria-label="Request Changes"
+              onClick={onRequestChangeConfirm}
             >
               Confirm change request
             </Button>
