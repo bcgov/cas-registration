@@ -5,6 +5,7 @@ import { Alert, Button, Box } from "@mui/material";
 import RecommendIcon from "@mui/icons-material/Recommend";
 import DoNotDisturbIcon from "@mui/icons-material/DoNotDisturb";
 import Modal from "@/app/components/modal/Modal";
+import RequestChanges from "./RequestChanges";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 
@@ -14,6 +15,7 @@ interface Props {
   approvedMessage: string;
   rejectedMessage: string;
   isStatusPending: boolean;
+  showRequestChanges?: boolean;
   onApprove: () => Promise<any>;
   onReject: () => Promise<any>;
 }
@@ -43,6 +45,7 @@ const Review = ({
   confirmRejectMessage,
   isStatusPending,
   rejectedMessage,
+  showRequestChanges = true,
   onApprove,
   onReject,
 }: Readonly<Props>) => {
@@ -50,6 +53,7 @@ const Review = ({
   const [successMessageList, setSuccessMessageList] = useState([] as any[]);
   const [modalState, setModalState] = useState("" as string);
   const [dismissAlert, setDismissAlert] = useState(false);
+  const [showChangeConfirmation, setShowChangeConfirmation] = useState(false);
 
   const handleApprove = () => {
     setModalState("approve");
@@ -89,6 +93,14 @@ const Review = ({
     setDismissAlert(true);
   };
 
+  const handleCancelRequestChange = () => {
+    setShowChangeConfirmation(false);
+  };
+
+  const handleRequestChange = () => {
+    setShowChangeConfirmation(true);
+  };
+
   const isReviewButtons =
     isStatusPending &&
     errorList.length === 0 &&
@@ -104,6 +116,7 @@ const Review = ({
       sx={{
         // 🛠️ to prevent leaving extra space when there is no content
         minHeight: "auto",
+        width: "100%",
       }}
     >
       <Modal
@@ -161,38 +174,52 @@ const Review = ({
         <Box
           sx={{
             display: "flex",
-            flexDirection: "column",
-            alignItems: "flex-end",
+            flexDirection: "row",
+            width: "100%",
+            alignItems: "center",
+            justifyContent: showRequestChanges ? "space-between" : "flex-end",
           }}
         >
-          <Box>
-            <Button
-              onClick={handleApprove}
-              className="mr-2"
-              color="success"
-              variant="outlined"
-              aria-label="Approve application"
+          {showRequestChanges && (
+            <RequestChanges
+              onCancelRequestChange={handleCancelRequestChange}
+              onRequestChange={handleRequestChange}
+            />
+          )}
+          {!showChangeConfirmation && (
+            <Box
               sx={{
-                marginRight: "12px",
-                border: "1px solid",
-                fontWeight: "bold",
+                width: "fit-content",
               }}
             >
-              Approve <RecommendIcon />
-            </Button>
-            <Button
-              onClick={handleReject}
-              color="error"
-              variant="outlined"
-              aria-label="Reject application"
-              sx={{
-                border: "1px solid",
-                fontWeight: "bold",
-              }}
-            >
-              Reject <DoNotDisturbIcon />
-            </Button>
-          </Box>
+              <Button
+                onClick={handleApprove}
+                className="mr-2"
+                color="success"
+                variant="outlined"
+                aria-label="Approve application"
+                sx={{
+                  marginRight: "12px",
+                  border: "1px solid",
+                  fontWeight: "bold",
+                }}
+              >
+                Approve <RecommendIcon />
+              </Button>
+              <Button
+                onClick={handleReject}
+                color="error"
+                variant="outlined"
+                aria-label="Reject application"
+                sx={{
+                  border: "1px solid",
+                  fontWeight: "bold",
+                }}
+              >
+                Reject <DoNotDisturbIcon />
+              </Button>
+            </Box>
+          )}
         </Box>
       )}
       {errorList.length > 0 &&
