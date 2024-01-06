@@ -7,6 +7,7 @@ You should not manually add <head> tags such as <title> and <meta> to root layou
 
 import "@/app/styles/globals.css";
 import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import SessionProvider from "@/app/components/auth/SessionProvider";
 import ThemeRegistry from "@/app/components/theme/ThemeRegistry";
 import type { Metadata, Viewport } from "next";
@@ -29,9 +30,10 @@ export default async function RootLayout({
 }: {
   readonly children: React.ReactNode;
 }) {
-  // Invoke the nextauth server side session fetcher fucntion getServerSessio
-  // Wrap the returned auth session in SessionProvider to expose the useSession function in client components
-  const session = await getServerSession();
+  // Invoke the nextauth server side session fetcher function getServerSession
+  // Wrap the returned auth session in the "use client" version of NextAuth SessionProvider
+  // to expose the useSession hook in client components
+  const session = await getServerSession(authOptions);
 
   return (
     <html lang="en">
