@@ -46,6 +46,7 @@ const Review = ({
   onApprove,
   onReject,
 }: Readonly<Props>) => {
+  console.log("am i in review");
   const [errorList, setErrorList] = useState([] as any[]);
   const [successMessageList, setSuccessMessageList] = useState([] as any[]);
   const [modalState, setModalState] = useState("" as string);
@@ -89,11 +90,13 @@ const Review = ({
     setDismissAlert(true);
   };
 
+  console.log("isStatusPending", isStatusPending);
   const isReviewButtons =
     isStatusPending &&
     errorList.length === 0 &&
     successMessageList.length === 0;
 
+  console.log("isReviewButtons", isReviewButtons);
   const isApprove = modalState === "approve";
   const confirmMessage = isApprove
     ? confirmApproveMessage

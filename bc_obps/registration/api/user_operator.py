@@ -374,7 +374,7 @@ def create_user_operator_contact(request, payload: UserOperatorContactIn):
 
 ##### PUT #####
 
-
+# this endpoint is for updating the status of a user
 @router.put("/select-operator/user-operator/{user_guid}/update-status")
 @authorize(["cas_admin", "cas_analyst", "industry_user_admin"])
 def update_user_operator_user_status(request, user_guid: str):
@@ -400,6 +400,7 @@ def update_user_operator_user_status(request, user_guid: str):
     return data
 
 
+# this endpoint is for updating the status of a user_operator
 @router.put("/select-operator/user-operator/operator/{user_operator_id}/update-status")
 @authorize(AppRole.get_authorized_irc_roles())
 def update_user_operator_status(request, user_operator_id: str):

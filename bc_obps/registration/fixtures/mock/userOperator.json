@@ -34,5 +34,17 @@
       "verified_at": null,
       "verified_by": null
     }
+  },
+  {
+    "model": "registration.useroperator",
+    "pk": 4,
+    "fields": {
+      "user": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "operator": 3,
+      "role": "reporter",
+      "status": "Pending",
+      "verified_at": null,
+      "verified_by": null
+    }
   }
 ]

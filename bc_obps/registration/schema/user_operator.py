@@ -55,6 +55,8 @@ class UserOperatorOut(ModelSchema):
     website: Optional[str] = Field("", alias="operator.website")
     is_senior_officer: bool
     mailing_address_same_as_physical: bool
+    operator_id: int = Field(..., alias="operator.id")
+    is_new: bool = Field(..., alias="operator.is_new")
 
     @staticmethod
     def resolve_is_senior_officer(obj: UserOperator):

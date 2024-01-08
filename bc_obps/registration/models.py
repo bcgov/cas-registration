@@ -343,6 +343,7 @@ class Operator(TimeStampedModel):
         PENDING = "Pending"
         APPROVED = "Approved"
         REJECTED = "Rejected"
+        CHANGES_REQUESTED = ("Changes Requested",)
 
     legal_name = models.CharField(max_length=1000, db_comment="The legal name of an operator")
     trade_name = models.CharField(max_length=1000, blank=True, db_comment="The trade name of an operator")
@@ -411,6 +412,10 @@ class Operator(TimeStampedModel):
         blank=True,
         null=True,
         related_name="operators_verified_by",
+    )
+    is_new = models.BooleanField(
+        db_comment="Flag to indicate whether CAS internal staff need to explicitly approve the Operator at the same time that they're approving the request for prime admin access. (If a prime admin is requesting access to an existing operator, then the operator is not new and does need to be approved.)",
+        default=True,
     )
     history = HistoricalRecords(table_name='erc_history"."operator_history', m2m_fields=[documents, contacts])
 
