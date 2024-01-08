@@ -101,9 +101,19 @@ export default function UserOperatorReview({
     return response;
   };
 
-  const requestChanges = async () => {
+  const requestChange = async () => {
     const response = await changeStatus(
-      Status.CHANGES,
+      Status.CHANGES_REQUESTED,
+      userOperator,
+      userOperatorId
+    );
+
+    return response;
+  };
+
+  const undoRequestChange = async () => {
+    const response = await changeStatus(
+      Status.PENDING,
       userOperator,
       userOperatorId
     );
@@ -122,7 +132,8 @@ export default function UserOperatorReview({
         isOperatorNew ? approveOperatorRequest : approvePrimeAdminRequst
       }
       onReject={isOperatorNew ? rejectOperatorRequest : rejectPrimeAdminRequest}
-      onRequestChanges={requestChanges}
+      onRequestChange={requestChange}
+      onUndoRequestChange={undoRequestChange}
     />
   );
 }

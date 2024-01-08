@@ -49,9 +49,19 @@ const OperationReview = ({ operation }: Props) => {
     return response;
   };
 
-  const requestChanges = async () => {
+  const requestChange = async () => {
     const response = await changeStatus(
-      Status.CHANGES,
+      Status.CHANGES_REQUESTED,
+      operation,
+      operation.id,
+    );
+
+    return response;
+  };
+
+  const undoRequestChange = async () => {
+    const response = await changeStatus(
+      Status.PENDING,
       operation,
       operation.id,
     );
@@ -74,7 +84,8 @@ const OperationReview = ({ operation }: Props) => {
       isStatusPending={operation.status === Status.PENDING}
       onApprove={approveRequest}
       onReject={rejectRequest}
-      onRequestChanges={requestChanges}
+      onRequestChange={requestChange}
+      onUndoRequestChange={undoRequestChange}
     />
   );
 };

@@ -18,7 +18,8 @@ interface Props {
   showRequestChanges?: boolean;
   onApprove: () => Promise<any>;
   onReject: () => Promise<any>;
-  onRequestChanges: () => Promise<any>;
+  onRequestChange: () => Promise<any>;
+  onUndoRequestChange: () => Promise<any>;
 }
 
 interface CloseProps {
@@ -49,13 +50,15 @@ const Review = ({
   showRequestChanges = true,
   onApprove,
   onReject,
-  onRequestChanges,
+  onRequestChange,
+  onUndoRequestChange,
 }: Readonly<Props>) => {
   const [errorList, setErrorList] = useState([] as any[]);
   const [successMessageList, setSuccessMessageList] = useState([] as any[]);
   const [modalState, setModalState] = useState("" as string);
   const [dismissAlert, setDismissAlert] = useState(false);
   const [showChangeConfirmation, setShowChangeConfirmation] = useState(false);
+  const [showRequestChangesUndo, setShowRequestChangesUndo] = useState(false);
 
   const handleApprove = () => {
     setModalState("approve");
@@ -103,10 +106,21 @@ const Review = ({
     setShowChangeConfirmation(true);
   };
 
+  const handleChangeRequestConfirm = () => {
+    onRequestChange();
+    setShowRequestChangesUndo(true);
+  };
+
+  const handleUndoRequestChanges = async () => {
+    onUndoRequestChange();
+    setShowChangeConfirmation(false);
+    setShowRequestChangesUndo(false);
+  };
   const isReviewButtons =
-    isStatusPending &&
-    errorList.length === 0 &&
-    successMessageList.length === 0;
+    (isStatusPending &&
+      errorList.length === 0 &&
+      successMessageList.length === 0) ||
+    showRequestChangesUndo;
 
   const isApprove = modalState === "approve";
   const confirmMessage = isApprove
@@ -186,10 +200,12 @@ const Review = ({
             <RequestChanges
               onCancelRequestChange={handleCancelRequestChange}
               onRequestChange={handleRequestChange}
-              onRequestChangeConfirm={onRequestChanges}
+              onRequestChangeConfirm={handleChangeRequestConfirm}
+              onUndoRequestChanges={handleUndoRequestChanges}
+              showUndo={showRequestChangesUndo}
             />
           )}
-          {!showChangeConfirmation && (
+          {!showChangeConfirmation && !showRequestChangesUndo && (
             <Box
               sx={{
                 width: "fit-content",
