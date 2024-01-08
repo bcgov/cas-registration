@@ -21,6 +21,52 @@ spec:
 {{- include "cas-registration.selectorLabels" . | nindent 8 }}
         component: backend
     spec:
+{{- if not (hasSuffix "-prod" .Release.Namespace)}}
+      initContainers:
+      - env:
+          - name: DJANGO_SECRET_KEY
+            valueFrom:
+              secretKeyRef:
+                key: django-secret-key
+                name: {{ .Release.Name }}-backend
+          - name: DB_USER
+            valueFrom:
+              secretKeyRef:
+                key: user
+                name: cas-obps-postgres-pguser-registration
+          - name: DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: password
+                name: cas-obps-postgres-pguser-registration
+          - name: DB_NAME
+            valueFrom:
+              secretKeyRef:
+                key: dbname
+                name: cas-obps-postgres-pguser-registration
+          - name: DB_PORT
+            valueFrom:
+              secretKeyRef:
+                key: port
+                name: cas-obps-postgres-pguser-registration
+          - name: DB_HOST
+            valueFrom:
+              secretKeyRef:
+                key: host
+                name: cas-obps-postgres-pguser-registration
+          - name: ALLOWED_HOSTS
+            value: {{ .Values.backend.route.host }}
+        name: {{ .Release.Name }}-backend-reset-migrations
+        image: "{{ .Values.backend.image.repository }}:{{ .Values.defaultImageTag | default .Values.backend.image.tag }}"
+        imagePullPolicy: {{ .Values.backend.image.pullPolicy }}
+        resources: {{ toYaml .Values.backend.resources | nindent 12 }}
+        command:
+          - /usr/bin/env
+          - bash
+          - -c
+          - |
+            poetry run python manage.py migrate registration zero
+{{ end }}
       containers:
         - name: {{ .Release.Name }}-backend
           image: "{{ .Values.backend.image.repository }}:{{ .Values.defaultImageTag | default .Values.backend.image.tag }}"
