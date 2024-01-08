@@ -28,11 +28,6 @@ def get_operator_by_legal_name_or_cra(
     except Exception as e:
         return 500, {"message": str(e)}
 
-    # check if user is eligible to request access(mainly to prevent duplicate requests for the same operator and user)
-    status, message = check_users_admin_request_eligibility(request.current_user, operator)
-    if status != 200:
-        return status, message
-
     return 200, operator
 
 
