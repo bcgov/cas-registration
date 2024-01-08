@@ -45,7 +45,7 @@ export default function RequestAccessButton({
     // if user is requesting access as an admin, redirect to user operator form
     if (isAdminRequest)
       push(
-        `/dashboard/select-operator/user-operator/${response.user_operator_id}`,
+        `/dashboard/select-operator/user-operator/create/2?user-operator-id=${response.user_operator_id}`,
       );
     else
       push(`/dashboard/select-operator/received/request-access/${operatorId}`);
