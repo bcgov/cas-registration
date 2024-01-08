@@ -3,11 +3,13 @@
 import { RJSFSchema } from "@rjsf/utils";
 import { useState } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
-import { userOperatorUiSchema } from "@/app/utils/jsonSchema/userOperator";
+import {
+  userOperatorUiSchema,
+  userOperatorPage2,
+} from "@/app/utils/jsonSchema/userOperator";
 import { actionHandler } from "@/app/utils/actions";
 import { useSession } from "next-auth/react";
-import UserOperatorForm from "./UserOperatorForm";
-import { userOperatorPage2 } from "@/app/utils/jsonSchema/userOperator";
+import UserOperatorContactForm from "./UserOperatorForm";
 import UserOperatorReview from "@/app/components/routes/access-requests/form/UserOperatorReview";
 import MultiStepFormBase from "@/app/components/form/MultiStepFormBase";
 import { UserOperatorFormData } from "@/app/components/form/formDataTypes";
@@ -84,7 +86,7 @@ export default function UserOperatorMultiStepForm({
     session?.user.app_role?.includes("cas") &&
     !session?.user.app_role?.includes("pending");
 
-  if (isCasInternal || !userOperatorId || formSection) {
+  if (isCasInternal || !userOperatorId) {
     return (
       <>
         {isCasInternal && (
@@ -97,7 +99,7 @@ export default function UserOperatorMultiStepForm({
           baseUrl={`/dashboard/operators/user-operator/${userOperatorId}`}
           cancelUrl="/dashboard/operators"
           schema={schema}
-          disabled={isCasInternal || disabled}
+          disabled={isCasInternal ?? disabled}
           error={error}
           formData={formData}
           onSubmit={submitHandler}
@@ -108,5 +110,11 @@ export default function UserOperatorMultiStepForm({
   }
 
   // If the operator exists then show the form from the second page
-  return <UserOperatorForm formData={formData} schema={userOperatorPage2} />;
+  return (
+    <UserOperatorContactForm
+      userOperatorId={userOperatorId}
+      formData={formData}
+      schema={userOperatorPage2}
+    />
+  );
 }

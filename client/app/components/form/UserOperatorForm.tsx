@@ -2,7 +2,7 @@
 
 import { RJSFSchema } from "@rjsf/utils";
 import { useState } from "react";
-import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { userOperatorUiSchema } from "@/app/utils/jsonSchema/userOperator";
 import { actionHandler } from "@/app/utils/actions";
 import {
@@ -17,23 +17,19 @@ interface UserOperatorFormProps {
   schema: RJSFSchema;
   formData: Partial<UserFormData>;
   readonly?: boolean;
+  userOperatorId?: string;
 }
 
-export default function UserOperatorMultiStepForm({
+export default function UserOperatorContactForm({
   schema,
   formData,
   readonly = false,
+  userOperatorId,
 }: Readonly<UserOperatorFormProps>) {
   const { push, back } = useRouter();
   const params = useParams();
-  const searchParams = useSearchParams();
   const [errorList, setErrorList] = useState([] as any[]);
   const [formState, setFormState] = useState(formData);
-
-  const formSection = parseInt(params?.formSection as string);
-  const userOperatorId = searchParams.get("user-operator-id");
-  const formSectionList = Object.keys(schema.properties as RJSFSchema);
-  const isFinalStep = formSection === formSectionList.length - 1;
 
   const submitHandler = async (data: { formData?: UserOperatorFormData }) => {
     const newFormData = {
@@ -41,18 +37,13 @@ export default function UserOperatorMultiStepForm({
       ...data.formData,
     } as UserOperatorFormData;
 
-    // add user operator id to form data if it exists (to be used in senior officer creation)
-    newFormData.user_operator_id = String(userOperatorId);
-
     // to prevent resetting the form state when errors occur
     setFormState(newFormData);
 
     // add user operator id to form data if it exists (to be used in senior officer creation)
     if (userOperatorId) newFormData.user_operator_id = userOperatorId;
 
-    const apiUrl = `registration/user-operator/${
-      isFinalStep ? "contact" : "operator"
-    }`;
+    const apiUrl = "registration/user-operator/contact";
 
     const response = readonly
       ? await actionHandler(
