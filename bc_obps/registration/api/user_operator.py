@@ -359,14 +359,28 @@ def create_user_operator_contact(request, payload: UserOperatorContactIn):
 
 ##### PUT #####
 
+<<<<<<< HEAD
 # this endpoint is for updating the status of a user
+=======
+# Function to check if the status is valid. This was required because the previous check only worked for
+# statuses that didn't have two words (e.g. "Pending" and "Approved" worked, but "Changes Requested" didn't)
+def check_status(status: str):
+    for status in UserOperator.Statuses:
+        if status == status:
+            return True
+    return False
+
+
+>>>>>>> 477e9bfb (feat: update status enums)
 @router.put("/select-operator/user-operator/{user_guid}/update-status")
 @authorize(["cas_admin", "cas_analyst", "industry_user_admin"])
 def update_user_operator_user_status(request, user_guid: str):
     current_admin_user: User = request.current_user
     # need to convert request.body (a bytes object) to a string, and convert the string to a JSON object
     payload = json.loads(request.body.decode())
-    status = getattr(UserOperator.Statuses, payload.get("status").upper())
+    status = payload.get("status")
+    if not check_status(status):
+        return 400, {"message": "Invalid status."}
     user_operator = get_object_or_404(UserOperator, user=user_guid)
     user_operator.status = status
     if user_operator.status in [UserOperator.Statuses.APPROVED, UserOperator.Statuses.REJECTED]:
@@ -392,7 +406,9 @@ def update_user_operator_status(request, user_operator_id: str):
     current_cas_internal_user: User = request.current_user
     # need to convert request.body (a bytes object) to a string, and convert the string to a JSON object
     payload = json.loads(request.body.decode())
-    status = getattr(UserOperator.Statuses, payload.get("status").upper())
+    status = payload.get("status")
+    if not check_status(status):
+        return 400, {"message": "Invalid status."}
     user_operator = get_object_or_404(UserOperator, id=user_operator_id)
     user_operator.status = status
     if user_operator.status in [UserOperator.Statuses.APPROVED, UserOperator.Statuses.REJECTED]:
