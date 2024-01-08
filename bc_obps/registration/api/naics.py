@@ -15,12 +15,40 @@ from ninja import Schema
 import base64
 import io
 import json
+from ninja import NinjaAPI, File
+from ninja.files import UploadedFile
 import re
+import requests
 class DocumentOut(ModelSchema):
+
+
     """
     Schema for the Operator model
     """
+    boundary_map: str = None
 
+    # static method, start with resolve, name of field
+    @staticmethod
+    def resolve_boundary_map(obj: Document):
+        # if obj.file.file:
+        #     breakpoint()
+        #     file_content = obj.file.file
+        #     encoded_content = base64.b64encode(file_content).decode("utf-8")
+
+        #     return "data:application/pdf;base64," + encoded_content
+        
+
+        response = requests.get(obj.file.url)
+        if response.status_code == 200:
+            # The file content is in response.content
+            file_content = response.content
+            encoded_content = base64.b64encode(file_content).decode("utf-8")
+            # data:image/jpeg;name=IMG-20231228-WA0000.jpg;base64 data:application/pdf;base64
+            var = "data:application/pdf;name=" + obj.file.name.split("/")[-1] + ";base64," + encoded_content
+            print(var)
+            return var
+        return 'i dont work yet'
+        
     class Config:
         model = Document
         model_fields = '__all__'
@@ -42,6 +70,11 @@ class DocumentSchema(Schema):
 
 
 #     return 201, document
+
+@router.get("/handle-file", response=DocumentOut)
+def get_file(request):
+    qs = Document.objects.last()
+    return qs
 
 @router.post("/handle-file", response={201: DocumentOut, codes_4xx: Message})
 def create_document(request, payload: DocumentSchema):
