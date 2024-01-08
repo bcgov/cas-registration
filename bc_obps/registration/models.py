@@ -343,7 +343,7 @@ class Operator(TimeStampedModel):
         PENDING = "Pending"
         APPROVED = "Approved"
         REJECTED = "Rejected"
-        CHANGES = "Changes Requested"
+        CHANGES_REQUESTED = "Changes Requested"
 
     legal_name = models.CharField(max_length=1000, db_comment="The legal name of an operator")
     trade_name = models.CharField(max_length=1000, blank=True, db_comment="The trade name of an operator")
@@ -465,7 +465,7 @@ class UserOperator(TimeStampedModel):
         PENDING = "Pending"
         APPROVED = "Approved"
         REJECTED = "Rejected"
-        CHANGES = "Changes Requested"
+        CHANGES_REQUESTED = "Changes Requested"
 
     user = models.ForeignKey(
         User,
@@ -587,7 +587,7 @@ class Operation(OperationAndFacilityCommonInfo):
         PENDING = "Pending"
         APPROVED = "Approved"
         REJECTED = "Rejected"
-        CHANGES = "Changes Requested"
+        CHANGES_REQUESTED = "Changes Requested"
 
     operator = models.ForeignKey(
         Operator,
