@@ -2,7 +2,7 @@
 
 import { RJSFSchema } from "@rjsf/utils";
 import { useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { userOperatorUiSchema } from "@/app/utils/jsonSchema/userOperator";
 import { actionHandler } from "@/app/utils/actions";
 import {
@@ -17,17 +17,16 @@ interface UserOperatorFormProps {
   schema: RJSFSchema;
   formData: Partial<UserFormData>;
   readonly?: boolean;
-  userOperatorId?: string;
 }
 
 export default function UserOperatorContactForm({
   schema,
   formData,
   readonly = false,
-  userOperatorId,
 }: Readonly<UserOperatorFormProps>) {
   const { push, back } = useRouter();
   const params = useParams();
+  const searchParams = useSearchParams();
   const [errorList, setErrorList] = useState([] as any[]);
   const [formState, setFormState] = useState(formData);
 
@@ -41,7 +40,8 @@ export default function UserOperatorContactForm({
     setFormState(newFormData);
 
     // add user operator id to form data if it exists (to be used in senior officer creation)
-    if (userOperatorId) newFormData.user_operator_id = userOperatorId;
+    newFormData.user_operator_id =
+      searchParams.get("user-operator-id") ?? undefined;
 
     const apiUrl = "registration/user-operator/contact";
 
