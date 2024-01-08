@@ -374,11 +374,12 @@ def create_user_operator_contact(request, payload: UserOperatorContactIn):
 
 ##### PUT #####
 
+
 # Function to check if the status is valid. This was required because the previous check only worked for
 # statuses that didn't have two words (e.g. "Pending" and "Approved" worked, but "Changes Requested" didn't)
 def check_status(status: str):
-    for status in UserOperator.Statuses:
-        if status == status:
+    for statusEnum in UserOperator.Statuses:
+        if statusEnum == status:
             return True
     return False
 
