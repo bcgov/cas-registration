@@ -25,3 +25,4 @@ frontend:
 
   auth:
     keycloakAuthUrl: https://loginproxy.gov.bc.ca/auth
+    siteminderAuthUrl: https://logon7.gov.bc.ca

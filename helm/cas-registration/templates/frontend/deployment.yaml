@@ -45,10 +45,14 @@ spec:
               value: {{ .Values.frontend.auth.keycloakAuthUrl}}{{ .Values.frontend.auth.keycloakRealms }}/token
             - name: NEXTAUTH_URL
               value: https://{{ .Values.frontend.route.host }}
+            - name: SITEMINDER_LOGOUT_URL
+              value: {{ .Values.frontend.auth.siteminderAuthUrl }}/clp-cgi/logoff.cgi
             - name: NEXT_PUBLIC_KEYCLOAK_LOGOUT_URL
-              value: {{ .Values.frontend.auth.keycloakAuthUrl}}{{ .Values.frontend.auth.keycloakRealms }}/logout
+              value: {{ .Values.frontend.auth.siteminderAuthUrl }}/clp-cgi/logoff.cgi?retnow=1&returl={{ .Values.frontend.auth.keycloakAuthUrl}}{{ .Values.frontend.auth.keycloakRealms }}/logout
             - name: KEYCLOAK_CLIENT_ID
               value: {{ .Values.frontend.auth.keycloakClientId }}
+            - name: POST_LOGOUT_REDIRECT_URI
+              value: https://{{ .Values.frontend.route.host }}
             - name: NEXTAUTH_SECRET
               valueFrom:
                 secretKeyRef:
