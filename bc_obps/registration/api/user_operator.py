@@ -45,7 +45,7 @@ from django.forms import model_to_dict
 
 
 # Function to save parent operator to reuse in POST/PUT methods
-def save_parent_operator(payload_dict: dict, created_operator_instance: Operator, user: User):
+def save_parent_operator(payload, operator_instance: Operator, user: User):
     parent_operator_instance = None
     parent_child_operator_instance = None
     parent_operator_fields_mapping = {
@@ -89,7 +89,7 @@ def save_parent_operator(payload_dict: dict, created_operator_instance: Operator
     if percentage_owned_by_parent_company:
         parent_child_operator_instance = ParentChildOperator(
             parent_operator=parent_operator_instance,
-            child_operator=created_operator_instance,
+            child_operator=operator_instance,
             percentage_owned_by_parent_company=percentage_owned_by_parent_company,
         )
 
@@ -101,7 +101,7 @@ def save_parent_operator(payload_dict: dict, created_operator_instance: Operator
 
 
 # Function to create/update Operator instance data to reuse in POST/PUT methods
-def create_operator_data(operator_instance: Operator, payload):
+def process_operator_data(operator_instance: Operator, payload):
     # create physical address record
     physical_address = Address.objects.create(
         street_address=payload.physical_street_address,
@@ -300,7 +300,7 @@ def create_operator_and_user_operator(request, payload: UserOperatorOperatorIn):
             business_structure=BusinessStructure.objects.get(name=payload.business_structure),
         )
 
-        created_operator_instance: Operator = create_operator_data(operator_instance, payload)
+        created_operator_instance: Operator = process_operator_data(operator_instance, payload)
 
         if operator_has_parent_company:
             save_parent_operator(payload, created_operator_instance, user)
@@ -406,7 +406,7 @@ def update_operator_and_user_operator(request, payload: UserOperatorOperatorIn, 
 
         operator_instance: Operator = get_object_or_404(Operator, id=user_operator_operator_id)
 
-        created_operator_instance: Operator = create_operator_data(operator_instance, payload)
+        created_operator_instance: Operator = process_operator_data(operator_instance, payload)
 
         if operator_has_parent_company:
             save_parent_operator(payload, created_operator_instance, user)

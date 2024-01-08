@@ -61,7 +61,7 @@ export default function UserOperatorMultiStepForm({
     }`;
 
     const response = await actionHandler(
-      `${apiUrl}${!isCreate && !isFinalStep ? `/${userOperatorId}` : ""}`,
+      `${apiUrl}${isCreate && isFinalStep ? "" : `/${userOperatorId}`}`,
       isCreate || isFinalStep ? "POST" : "PUT",
       "",
       {
