@@ -359,19 +359,17 @@ def create_user_operator_contact(request, payload: UserOperatorContactIn):
 
 ##### PUT #####
 
-<<<<<<< HEAD
-# this endpoint is for updating the status of a user
-=======
+
+
 # Function to check if the status is valid. This was required because the previous check only worked for
 # statuses that didn't have two words (e.g. "Pending" and "Approved" worked, but "Changes Requested" didn't)
 def check_status(status: str):
-    for status in UserOperator.Statuses:
-        if status == status:
+    for statusEnum in UserOperator.Statuses:
+        if statusEnum == status:
             return True
     return False
 
-
->>>>>>> 477e9bfb (feat: update status enums)
+# this endpoint is for updating the status of a user
 @router.put("/select-operator/user-operator/{user_guid}/update-status")
 @authorize(["cas_admin", "cas_analyst", "industry_user_admin"])
 def update_user_operator_user_status(request, user_guid: str):
