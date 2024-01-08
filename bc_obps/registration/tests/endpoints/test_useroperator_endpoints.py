@@ -182,6 +182,8 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         )
         assert response.status_code == 401
 
+        # /select-operator/user-operator/operator/{user_operator_id}/update-status
+
     def test_get_user_operator_status(self):
         user_operator = baker.make(UserOperator, user_id=self.user.user_guid, status=UserOperator.Statuses.APPROVED)
         response = TestUtils.mock_get_with_auth_role(
@@ -234,6 +236,8 @@ class TestUserOperatorEndpoint(CommonTestSetup):
 
         assert parsed_object.get("fields").get("status") == UserOperator.Statuses.APPROVED
         assert parsed_object.get("fields").get("verified_by") == str(self.user.user_guid)
+
+        
 
     def test_request_admin_access_with_valid_payload(self):
         operator = baker.make(Operator)
