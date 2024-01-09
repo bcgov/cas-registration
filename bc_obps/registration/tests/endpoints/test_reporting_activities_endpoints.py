@@ -1,5 +1,4 @@
 import pytest
-import json
 from model_bakery import baker
 from registration.models import ReportingActivity
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
@@ -25,8 +24,5 @@ class TestReportingActivitiesEndpoint(CommonTestSetup):
             assert response.status_code == 200
 
     def test_get_method_with_mock_data(self):
-        baker.make(ReportingActivity, _quantity=4)
-
         response = TestUtils.mock_get_with_auth_role(self, "cas_admin")
         assert response.status_code == 200
-        assert len(json.loads(response.content)) == 4

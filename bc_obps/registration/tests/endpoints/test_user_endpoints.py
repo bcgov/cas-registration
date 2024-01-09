@@ -1,7 +1,6 @@
 import pytest, json, uuid
 from registration.schema import UserIn
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
-from registration.tests.utils.bakers import app_role_baker
 from django.test import Client
 from registration.enums.enums import IdPs
 
@@ -25,7 +24,6 @@ class TestUserEndpoint(CommonTestSetup):
 
     # GET USER
     def test_get_user(self):
-
         # Act
         response = TestUtils.mock_get_with_auth_role(self, 'industry_user', self.endpoint)
         content = response.json()
@@ -46,7 +44,6 @@ class TestUserEndpoint(CommonTestSetup):
 
     # GET USER PROFILE
     def test_get_user_profile(self):
-
         # Arrange
         url = f"{self.endpoint_profile}"
 
@@ -72,9 +69,7 @@ class TestUserEndpoint(CommonTestSetup):
         assert 'user_guid' not in content
 
     # # POST USER PROFILE BCEIDBUSINESS
-    @pytest.mark.usefixtures('app_role_baker')
     def test_create_user_profile_bceidbusiness(self):
-
         # Arrange
         mock_payload = UserIn(
             first_name='Bceid',
@@ -113,9 +108,7 @@ class TestUserEndpoint(CommonTestSetup):
         assert 'user_guid' not in content
 
     # POST USER PROFILE IDIR
-    @pytest.mark.usefixtures('app_role_baker')
     def test_create_user_profile_idir(self):
-
         # Arrange
         mock_payload = UserIn(
             first_name='Idir',
@@ -154,7 +147,6 @@ class TestUserEndpoint(CommonTestSetup):
         assert 'user_guid' not in content  # PUT USER PROFILE
 
     def test_update_user_profile(self):
-
         # Arrange
         mock_payload = UserIn(
             first_name='Test',
