@@ -62,9 +62,15 @@ class OperationCreateIn(ModelSchema):
     operation_has_multiple_operators: Optional[bool] = False
     multiple_operators_array: Optional[list] = None
     boundary_map: Optional[str] = None
+    name: str
 
     @staticmethod
-    def resolve_boundary_map(obj: str):
+    def resolve_name(obj):
+        breakpoint()
+        return 'zooooo'
+
+    @staticmethod
+    def resolve_boundary_map(obj: Document):
         breakpoint()
         return data_url_to_file(obj)
 
