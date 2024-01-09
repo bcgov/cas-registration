@@ -18,7 +18,6 @@ export default function UserOperatorReview({
   operatorId,
   isOperatorNew,
 }: Props) {
-  console.log("where are my buttons");
   async function approveOperatorRequest() {
     try {
       const response = await actionHandler(
