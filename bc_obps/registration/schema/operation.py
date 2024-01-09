@@ -39,6 +39,7 @@ def data_url_to_file(data_url: str):
     """
     Transforms a data url into a ContentFile that Django can insert into the db and add to google cloud storage
     """
+    breakpoint()
     file_name = re.search(r'name=([^;]+)', data_url).group(1)
     _, encoded_data = data_url.split(',')
 
@@ -60,6 +61,12 @@ class OperationCreateIn(ModelSchema):
     verified_at: Optional[date] = None
     operation_has_multiple_operators: Optional[bool] = False
     multiple_operators_array: Optional[list] = None
+    boundary_map: Optional[str] = None
+
+    @staticmethod
+    def resolve_boundary_map(obj: str):
+        breakpoint()
+        return data_url_to_file(obj)
 
     class Config:
         model = Operation
@@ -111,6 +118,14 @@ class OperationOut(ModelSchema):
     application_lead: Optional[ContactSchema]
     operation_has_multiple_operators: Optional[bool] = Field(False, alias="operation_has_multiple_operators")
     multiple_operators_array: Optional["List[MultipleOperatorOut]"] = Field(None, alias="multiple_operator")
+    boundary_map: str = None
+
+    @staticmethod
+    def resolve_boundary_map(obj: Document):
+        boundary_map = obj.get_boundary_map()
+        if boundary_map:
+            return file_to_data_url(boundary_map)
+        return None
 
     class Config:
         model = Operation
