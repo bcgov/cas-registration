@@ -1,5 +1,8 @@
 import { actionHandler } from "@/app/utils/actions";
-import { userOperatorSchema } from "@/app/utils/jsonSchema/userOperator";
+import {
+  userOperatorPage2,
+  userOperatorSchema,
+} from "@/app/utils/jsonSchema/userOperator";
 
 import { BusinessStructure } from "@/app/components/routes/select-operator/form/types";
 import { RJSFSchema } from "@rjsf/utils";
@@ -8,6 +11,7 @@ import {
   UserOperatorFormData,
 } from "@/app/components/form/formDataTypes";
 import UserOperatorMultiStepForm from "@/app/components/form/UserOperatorMultiStepForm";
+import UserOperatorContactForm from "@/app/components/form/UserOperatorContactForm";
 
 async function getCurrentUser() {
   return actionHandler(
@@ -25,8 +29,8 @@ async function getBusinessStructures() {
   );
 }
 
-export async function getUserOperatorFormData(id: number | undefined) {
-  if (!id) return {};
+export async function getUserOperatorFormData(id: number | string | undefined) {
+  if (!id || id === "request-access") return {};
   return actionHandler(
     `registration/select-operator/user-operator/${id}`,
     "GET",
@@ -69,7 +73,7 @@ const createUserOperatorSchema = (
 export default async function UserOperator({
   params,
 }: Readonly<{
-  params?: { id?: number; readonly?: boolean };
+  params?: { id?: number | string; readonly?: boolean };
 }>) {
   const serverError = <div>Server Error. Please try again later.</div>;
   const userOperatorId = params?.id;
@@ -102,7 +106,10 @@ export default async function UserOperator({
     ...userOperatorData,
   };
 
-  return (
+  return params?.id === "request-access" ? (
+    // If the operator exists then show the form from the second page
+    <UserOperatorContactForm formData={formData} schema={userOperatorPage2} />
+  ) : (
     <UserOperatorMultiStepForm
       schema={createUserOperatorSchema(businessStructuresList)}
       formData={formData}

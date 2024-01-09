@@ -6,8 +6,6 @@ import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { userOperatorUiSchema } from "@/app/utils/jsonSchema/userOperator";
 import { actionHandler } from "@/app/utils/actions";
 import { useSession } from "next-auth/react";
-import UserOperatorForm from "./UserOperatorForm";
-import { userOperatorPage2 } from "@/app/utils/jsonSchema/userOperator";
 import UserOperatorReview from "@/app/components/routes/access-requests/form/UserOperatorReview";
 import MultiStepFormBase from "@/app/components/form/MultiStepFormBase";
 import { UserOperatorFormData } from "@/app/components/form/formDataTypes";
@@ -95,9 +93,13 @@ export default function UserOperatorMultiStepForm({
         )}
         <MultiStepFormBase
           baseUrl={`/dashboard/operators/user-operator/${userOperatorId}`}
-          cancelUrl="/dashboard/operators"
+          cancelUrl={
+            isCasInternal
+              ? "/dashboard/operators"
+              : "/dashboard/select-operator"
+          }
           schema={schema}
-          disabled={isCasInternal || disabled}
+          disabled={isCasInternal ?? disabled}
           error={error}
           formData={formData}
           onSubmit={submitHandler}
@@ -106,7 +108,4 @@ export default function UserOperatorMultiStepForm({
       </>
     );
   }
-
-  // If the operator exists then show the form from the second page
-  return <UserOperatorForm formData={formData} schema={userOperatorPage2} />;
 }
