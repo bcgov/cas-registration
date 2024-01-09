@@ -32,11 +32,6 @@ ADDRESS_FIXTURE = ("mock/address.json",)
 OPERATION_FIXTURE = ("mock/operation.json",)
 CONTACT_FIXTURE = ("mock/contact.json",)
 DOCUMENT_FIXTURE = ("mock/document.json",)
-NAICS_CODE_FIXTURE = ("real/naicsCode.json",)
-DOCUMENT_TYPE_FIXTURE = ("real/documentType.json",)
-BUSINESS_ROLE_FIXTURE = ("real/businessRole.json",)
-APP_ROLE_FIXTURE = ("real/appRole.json",)
-BUSINESS_STRUCTURE_FIXTURE = ("real/businessStructure.json",)
 
 
 timestamp_common_fields = [
@@ -47,6 +42,187 @@ timestamp_common_fields = [
     ("archived_at", "archived at", None, None),
     ("archived_by", "archived by", None, None),
 ]
+
+
+class TestInitialData(TestCase):
+    def test_app_role_initial_data(self):
+        expected_roles = sorted(['cas_admin', 'cas_analyst', 'cas_pending', 'industry_user', 'industry_user_admin'])
+        existing_roles = sorted(list(AppRole.objects.values_list('role_name', flat=True)))
+
+        self.assertEqual(len(existing_roles), len(expected_roles))
+        self.assertEqual(existing_roles, expected_roles)
+
+    def test_business_role_initial_data(self):
+        expected_roles = sorted(
+            ['Senior Officer', 'Operation Representative', 'Authorized Signing Officer', 'Operation Registration Lead']
+        )
+        existing_roles = sorted(list(BusinessRole.objects.values_list('role_name', flat=True)))
+
+        self.assertEqual(len(existing_roles), len(expected_roles))
+        self.assertEqual(existing_roles, expected_roles)
+
+    def test_business_structure_initial_data(self):
+        expected_structures = sorted(
+            [
+                'General Partnership',
+                'BC Corporation',
+                'Extra Provincially Registered Company',
+                'Sole Proprietorship',
+                'Limited Liability Partnership',
+                'BC Incorporated Society',
+                'Extraprovincial Non-Share Corporation',
+            ]
+        )
+        existing_structures = sorted(list(BusinessStructure.objects.values_list('name', flat=True)))
+
+        self.assertEqual(len(existing_structures), len(expected_structures))
+        self.assertEqual(existing_structures, expected_structures)
+
+    def test_document_type_initial_data(self):
+        expected_types = sorted(
+            [
+                'boundary_map',
+                'signed_statutory_declaration',
+                'process_flow_diagram',
+                'proof_of_authority_of_partner_company',
+                'senior_officer_proof_of_authority',
+                'operation_representative_proof_of_authority',
+                'soce_senior_officer_proof_of_authority',
+                'proof_of_start',
+                'opt_in_signed_statutory_declaration',
+            ]
+        )
+        existing_types = sorted(list(DocumentType.objects.values_list('name', flat=True)))
+
+        self.assertEqual(len(existing_types), len(expected_types))
+        self.assertEqual(existing_types, expected_types)
+
+    def test_naics_code_initial_data(self):
+        expected_codes = sorted(
+            [
+                ('211110', 'Oil and gas extraction (except oil sands)'),
+                ('212114', 'Bituminous coal mining'),
+                ('212220', 'Gold and silver ore mining'),
+                ('212231', 'Lead-zinc ore mining'),
+                ('212233', 'Copper-zinc ore mining'),
+                ('212299', 'All other metal ore mining'),
+                ('213118', 'Services to oil and gas extraction'),
+                ('311119', 'Other animal food manufacturing'),
+                ('311310', 'Sugar manufacturing'),
+                ('311614', 'Rendering and meat processing from carcasses'),
+                ('321111', 'Sawmills (except shingle and shake mills)'),
+                ('321212', 'Softwood veneer and plywood mills'),
+                ('321216', 'Particle board and fibreboard mills'),
+                ('321999', 'All other miscellaneous wood product manufacturing'),
+                ('322111', 'Mechanical pulp mills'),
+                ('322112', 'Chemical pulp mills'),
+                ('322121', 'Paper (except newsprint) mills'),
+                ('322122', 'Newsprint mills'),
+                ('324110', 'Petroleum refineries'),
+                ('325120', 'Industrial gas manufacturing'),
+                ('325181', 'Alkali and chlorine manufacturing'),
+                ('325189', 'All other basic inorganic chemical manufacturing'),
+                ('327310', 'Cement manufacturing'),
+                ('327410', 'Lime manufacturing'),
+                ('327420', 'Gypsum product manufacturing'),
+                ('327990', 'All other non-metallic mineral product manufacturing'),
+                ('331222', 'Steel wire drawing'),
+                ('331313', 'Primary production of alumina and aluminum'),
+                ('331410', 'Non-ferrous metal (except aluminum) smelting and refining'),
+                ('331511', 'Iron foundries'),
+                ('412110', 'Petroleum, petroleum products, and other hydrocarbons merchant wholesalers'),
+                ('486210', 'Pipeline transportation of natural gas'),
+            ]
+        )
+        existing_codes = sorted(list(NaicsCode.objects.values_list('naics_code', 'naics_description')))
+        self.assertEqual(len(existing_codes), len(expected_codes))
+        self.assertEqual(existing_codes, expected_codes)
+
+    def test_regulated_product_initial_data(self):
+        expected_products = sorted(
+            [
+                'Baked anodes',
+                'BC-specific refinery complexity throughput',
+                'Cement equivalent',
+                'Chemicals: pure hydrogen peroxide',
+                'Compression, centrifugal - consumed energy',
+                'Compression, positive displacement - consumed energy',
+                'Calcined green coke',
+                'Gypsum wallboard',
+                'HDG-process (hot dip galvanization) steel wire',
+                'Lime at 94.5% calcium oxide (CaO) and lime kiln dust (LKD)',
+                'Limestone for sale',
+                'Liquid sugar',
+                'Solid Sugar',
+                'Mining: co',
+                'Mining: copper equivalent, open pit',
+                'Mining: copper equivalent, underground',
+                'Mining: gold equivalent',
+                'Non-HDG steel wire',
+                'Pulp and paper: paper (except newsprint)',
+                'Processing sour gas - oil equivalent',
+                'Processing sweet gas - oil equivalent',
+                'Pulp and paper: chemical pulp',
+                'Pulp and paper: non-chemical pulp',
+                'Rendering and meat processing: protein and fat',
+                'Smelting: aluminum',
+                'Smelting: lead-zinc',
+                'Sold electricity',
+                'Sold heat',
+                'Wood products: lumber',
+                'Wood products: medium density fibreboard',
+                'Wood products: plywood',
+                'Wood products: veneer',
+                'Wood products: wood chips (including hog fuel)',
+                'Wood products: wood pellets',
+            ]
+        )
+        existing_products = sorted(list(RegulatedProduct.objects.values_list('name', flat=True)))
+        self.assertEqual(len(existing_products), len(expected_products))
+        self.assertEqual(existing_products, expected_products)
+
+    def test_reporting_activity_initial_data(self):
+        expected_activities = sorted(
+            [
+                ('General stationary combustion', 'all'),
+                ('Fuel combustion by mobile equipment', 'sfo'),
+                ('Aluminum or alumina production', 'sfo'),
+                ('Ammonia production', 'sfo'),
+                ('Cement production', 'sfo'),
+                ('Underground coal mining', 'sfo'),
+                ('Coal storage at facilities that combust coal', 'sfo'),
+                ('Copper or nickel smelting or refining', 'sfo'),
+                ('Electricity generation', 'sfo'),
+                ('Electronics manufacturing', 'sfo'),
+                ('Ferroalloy production', 'sfo'),
+                ('Glass manufacturing', 'sfo'),
+                ('Hydrogen production', 'sfo'),
+                ('Industrial wastewater processing', 'sfo'),
+                ('Lead production', 'sfo'),
+                ('Lime manufacturing', 'sfo'),
+                ('Magnesium production', 'sfo'),
+                ('Nitric acid manufacturing', 'sfo'),
+                ('Petrochemical production', 'sfo'),
+                ('Petroleum refining', 'sfo'),
+                ('Phosphoric acid production', 'sfo'),
+                ('Pulp and paper production', 'sfo'),
+                ('Refinery fuel gas combustion', 'sfo'),
+                ('Zinc production', 'sfo'),
+                ('Open pit coal mining', 'sfo'),
+                ('Storage of petroleum products', 'sfo'),
+                ('Carbonate use', 'sfo'),
+                ('Oil and gas extraction and gas processing activities', 'lfo'),
+                ('Carbon dioxide transportation and oil transmission', 'lfo'),
+                ('Electricity transmission', 'lfo'),
+                ('Natural gas transmission', 'lfo'),
+                ('Natural gas distribution', 'lfo'),
+                ('Natural gas storage', 'lfo'),
+                ('LNG activities', 'lfo'),
+            ]
+        )
+        existing_activities = sorted(list(ReportingActivity.objects.values_list('name', 'applicable_to')))
+        self.assertEqual(len(existing_activities), len(expected_activities))
+        self.assertEqual(existing_activities, expected_activities)
 
 
 class BaseTestCase(TestCase):
@@ -99,7 +275,7 @@ class DocumentTypeModelTest(BaseTestCase):
 
 
 class DocumentModelTest(BaseTestCase):
-    fixtures = [DOCUMENT_FIXTURE, DOCUMENT_TYPE_FIXTURE]
+    fixtures = [DOCUMENT_FIXTURE]
 
     @classmethod
     def setUpTestData(cls):
@@ -160,12 +336,7 @@ class ReportingActivityModelTest(BaseTestCase):
 
 
 class UserModelTest(BaseTestCase):
-    fixtures = [
-        USER_FIXTURE,
-        DOCUMENT_FIXTURE,
-        DOCUMENT_TYPE_FIXTURE,
-        APP_ROLE_FIXTURE,
-    ]
+    fixtures = [USER_FIXTURE, DOCUMENT_FIXTURE]
 
     @classmethod
     def setUpTestData(cls):
@@ -228,15 +399,7 @@ class UserModelTest(BaseTestCase):
 
 
 class ContactModelTest(BaseTestCase):
-    fixtures = [
-        APP_ROLE_FIXTURE,
-        ADDRESS_FIXTURE,
-        USER_FIXTURE,
-        CONTACT_FIXTURE,
-        DOCUMENT_FIXTURE,
-        DOCUMENT_TYPE_FIXTURE,
-        BUSINESS_ROLE_FIXTURE,
-    ]
+    fixtures = [ADDRESS_FIXTURE, USER_FIXTURE, CONTACT_FIXTURE, DOCUMENT_FIXTURE]
 
     @classmethod
     def setUpTestData(cls):
@@ -277,17 +440,7 @@ class ContactModelTest(BaseTestCase):
 
 
 class OperatorModelTest(BaseTestCase):
-    fixtures = [
-        ADDRESS_FIXTURE,
-        CONTACT_FIXTURE,
-        OPERATOR_FIXTURE,
-        USER_FIXTURE,
-        DOCUMENT_FIXTURE,
-        DOCUMENT_TYPE_FIXTURE,
-        BUSINESS_STRUCTURE_FIXTURE,
-        APP_ROLE_FIXTURE,
-        BUSINESS_ROLE_FIXTURE,
-    ]
+    fixtures = [ADDRESS_FIXTURE, CONTACT_FIXTURE, OPERATOR_FIXTURE, USER_FIXTURE, DOCUMENT_FIXTURE]
 
     @classmethod
     def setUpTestData(cls):
@@ -341,15 +494,7 @@ class OperatorModelTest(BaseTestCase):
 
 
 class ParentChildOperatorModelTest(BaseTestCase):
-    fixtures = [
-        APP_ROLE_FIXTURE,
-        USER_FIXTURE,
-        ADDRESS_FIXTURE,
-        BUSINESS_ROLE_FIXTURE,
-        CONTACT_FIXTURE,
-        OPERATOR_FIXTURE,
-        BUSINESS_STRUCTURE_FIXTURE,
-    ]
+    fixtures = [USER_FIXTURE, ADDRESS_FIXTURE, CONTACT_FIXTURE, OPERATOR_FIXTURE]
 
     @classmethod
     def setUpTestData(cls):
@@ -367,15 +512,7 @@ class ParentChildOperatorModelTest(BaseTestCase):
 
 
 class UserOperatorModelTest(BaseTestCase):
-    fixtures = [
-        ADDRESS_FIXTURE,
-        BUSINESS_ROLE_FIXTURE,
-        CONTACT_FIXTURE,
-        OPERATOR_FIXTURE,
-        USER_FIXTURE,
-        BUSINESS_STRUCTURE_FIXTURE,
-        APP_ROLE_FIXTURE,
-    ]
+    fixtures = [ADDRESS_FIXTURE, CONTACT_FIXTURE, OPERATOR_FIXTURE, USER_FIXTURE]
 
     @classmethod
     def setUpTestData(cls):
@@ -401,19 +538,7 @@ class UserOperatorModelTest(BaseTestCase):
 
 
 class OperationModelTest(BaseTestCase):
-    fixtures = [
-        ADDRESS_FIXTURE,
-        NAICS_CODE_FIXTURE,
-        USER_FIXTURE,
-        BUSINESS_ROLE_FIXTURE,
-        CONTACT_FIXTURE,
-        OPERATOR_FIXTURE,
-        APP_ROLE_FIXTURE,
-        BUSINESS_STRUCTURE_FIXTURE,
-        OPERATION_FIXTURE,
-        DOCUMENT_FIXTURE,
-        DOCUMENT_TYPE_FIXTURE,
-    ]
+    fixtures = [ADDRESS_FIXTURE, USER_FIXTURE, CONTACT_FIXTURE, OPERATOR_FIXTURE, OPERATION_FIXTURE, DOCUMENT_FIXTURE]
 
     @classmethod
     def setUpTestData(cls):
@@ -553,8 +678,6 @@ class OperationModelTest(BaseTestCase):
 
 
 class AppRoleModelTest(BaseTestCase):
-    fixtures = [APP_ROLE_FIXTURE]
-
     @classmethod
     def setUpTestData(cls):
         cls.test_object = AppRole.objects.first()
@@ -583,8 +706,6 @@ class AppRoleModelTest(BaseTestCase):
 
 
 class BusinessRoleModelTest(BaseTestCase):
-    fixtures = [BUSINESS_ROLE_FIXTURE]
-
     @classmethod
     def setUpTestData(cls):
         cls.test_object = BusinessRole.objects.first()
@@ -605,18 +726,7 @@ class BusinessRoleModelTest(BaseTestCase):
 
 
 class MultipleOperatorModelTest(BaseTestCase):
-    fixtures = [
-        ADDRESS_FIXTURE,
-        NAICS_CODE_FIXTURE,
-        USER_FIXTURE,
-        BUSINESS_ROLE_FIXTURE,
-        CONTACT_FIXTURE,
-        OPERATOR_FIXTURE,
-        APP_ROLE_FIXTURE,
-        BUSINESS_STRUCTURE_FIXTURE,
-        DOCUMENT_FIXTURE,
-        DOCUMENT_TYPE_FIXTURE,
-    ]
+    fixtures = [ADDRESS_FIXTURE, USER_FIXTURE, CONTACT_FIXTURE, OPERATOR_FIXTURE, DOCUMENT_FIXTURE]
 
     @classmethod
     def setUpTestData(cls):
