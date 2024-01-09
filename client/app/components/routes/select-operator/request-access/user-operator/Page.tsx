@@ -5,7 +5,7 @@ import UserOperator from "@/app/components/routes/select-operator/form/UserOpera
 export default async function SelectOperatorRequestAccessReceivedUserOperatorPage({
   params,
 }: {
-  readonly params?: Readonly<{ id?: number | string }>;
+  readonly params?: Readonly<{ id: number | string; formSection: number }>;
 }) {
   return (
     <Suspense fallback={<Loading />}>

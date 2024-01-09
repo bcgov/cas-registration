@@ -3,10 +3,12 @@ from model_bakery import baker
 from django.test import Client
 from localflavor.ca.models import CAPostalCodeField
 from registration.models import (
+    BusinessStructure,
     Operator,
     User,
     UserOperator,
 )
+from registration.schema import UserOperatorOperatorIn
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 
 pytestmark = pytest.mark.django_db
@@ -182,6 +184,33 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         )
         assert response.status_code == 401
 
+        # user-operator/operator/{user_operator_operator_id}
+        mock_data = TestUtils.mock_UserOperatorOperatorIn()
+        response = TestUtils.mock_put_with_auth_role(
+            self,
+            'cas_pending',
+            content_type_json,
+            mock_data.json(),
+            f"{base_endpoint}user-operator/operator/1",
+        )
+        assert response.status_code == 401
+        response = TestUtils.mock_put_with_auth_role(
+            self,
+            'cas_analyst',
+            content_type_json,
+            mock_data.json(),
+            f"{base_endpoint}user-operator/operator/1",
+        )
+        assert response.status_code == 401
+        response = TestUtils.mock_put_with_auth_role(
+            self,
+            'cas_admin',
+            content_type_json,
+            mock_data.json(),
+            f"{base_endpoint}user-operator/operator/1",
+        )
+        assert response.status_code == 401
+
     def test_get_user_operator_status(self):
         user_operator = baker.make(UserOperator, user_id=self.user.user_guid, status=UserOperator.Statuses.APPROVED)
         response = TestUtils.mock_get_with_auth_role(
@@ -353,3 +382,60 @@ class TestUserOperatorEndpoint(CommonTestSetup):
 
         # Additional Assertions
         assert response_json == {"detail": "Not Found"}
+
+    def test_put_user_operator_operator(self):
+        operator = baker.make(Operator, bc_corporate_registry_number="abc1234567")
+        business_structure = baker.make(BusinessStructure, name='BC Corporation')
+        mock_operation = UserOperatorOperatorIn(
+            bc_corporate_registry_number="abc1234567",
+            business_structure=business_structure.name,
+            cra_business_number=987654321,
+            email="email@email.com",
+            first_name="Bcgov",
+            is_senior_officer=False,
+            last_name="Cas",
+            legal_name="Operator 2 Legal Name",
+            mailing_address_same_as_physical=False,
+            mailing_municipality="City",
+            mailing_postal_code="A1B 2C3",
+            mailing_province="ON",
+            mailing_street_address="123 Main St",
+            municipality="Cityville",
+            operator_has_parent_company=False,
+            phone_number="+16044015432",
+            physical_municipality="Village",
+            physical_postal_code="M2N 3P4",
+            physical_province="BC",
+            physical_street_address="789 Oak St",
+            position_title="Senior Officer2123",
+            postal_code="A1B 2C3",
+            province="ON",
+            so_email="email@email.com",
+            so_phone_number="+16044015432",
+            street_address="123 Main St",
+            trade_name="Operator 2 Trade Name",
+            website="http://www.example2.com",
+        )
+        put_response = TestUtils.mock_put_with_auth_role(
+            self,
+            'industry_user',
+            content_type_json,
+            mock_operation.json(),
+            f"{base_endpoint}user-operator/operator/{operator.id}",
+        )
+
+        response_json = put_response.json()
+        assert put_response.status_code == 200
+        assert "user_operator_id" in response_json
+
+    def test_put_user_operator_operator_malformed_data(self):
+        operator = baker.make(Operator, bc_corporate_registry_number="abc1234567")
+        put_response = TestUtils.mock_put_with_auth_role(
+            self,
+            'industry_user',
+            content_type_json,
+            {"junk_data": "junk"},
+            f"{base_endpoint}user-operator/operator/{operator.id}",
+        )
+
+        assert put_response.status_code == 422
