@@ -52,7 +52,7 @@
       "mailing_address": 4,
       "website": "http://www.example2.com",
       "documents": [],
-      "contacts": [],
+      "contacts": [1],
       "status": "Pending",
       "is_new": true,
       "verified_at": null,
