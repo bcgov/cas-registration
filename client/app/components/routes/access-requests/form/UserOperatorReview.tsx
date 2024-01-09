@@ -14,31 +14,64 @@ export default function UserOperatorReview({
   userOperator,
   userOperatorId,
 }: Props) {
-  async function approveRequest() {
-    userOperator.status = Status.APPROVED;
+  const changeStatus = async (
+    status: Status,
+    userOperatorData: UserOperatorFormData,
+    id: number,
+  ) => {
+    userOperatorData.status = status;
     const response = await actionHandler(
-      `registration/select-operator/user-operator/operator/${userOperatorId}/update-status`,
+      `registration/select-operator/user-operator/operator/${id}/update-status`,
       "PUT",
-      `dashboard/operators/user-operators/${userOperatorId}`,
+      `dashboard/operators/user-operators/${id}`,
       {
-        body: JSON.stringify(userOperator),
+        body: JSON.stringify(userOperatorData),
       },
     );
-    return response;
-  }
 
-  async function rejectRequest() {
-    userOperator.status = Status.REJECTED;
-    const response = await actionHandler(
-      `registration/select-operator/user-operator/operator/${userOperatorId}/update-status`,
-      "PUT",
-      `dashboard/operators/user-operators/${userOperatorId}`,
-      {
-        body: JSON.stringify(userOperator),
-      },
-    );
     return response;
-  }
+  };
+
+  const approveRequest = async () => {
+    const response = await changeStatus(
+      Status.APPROVED,
+      userOperator,
+      userOperatorId,
+    );
+
+    return response;
+  };
+
+  const rejectRequest = async () => {
+    const response = await changeStatus(
+      Status.REJECTED,
+      userOperator,
+      userOperatorId,
+    );
+
+    return response;
+  };
+
+  const requestChange = async () => {
+    const response = await changeStatus(
+      Status.CHANGES_REQUESTED,
+      userOperator,
+      userOperatorId,
+    );
+
+    return response;
+  };
+
+  const undoRequestChange = async () => {
+    const response = await changeStatus(
+      Status.PENDING,
+      userOperator,
+      userOperatorId,
+    );
+
+    return response;
+  };
+
   return (
     <Review
       approvedMessage="You have approved the request for prime admin access."
@@ -48,6 +81,8 @@ export default function UserOperatorReview({
       isStatusPending={userOperator.status === Status.PENDING}
       onApprove={approveRequest}
       onReject={rejectRequest}
+      onRequestChange={requestChange}
+      onUndoRequestChange={undoRequestChange}
     />
   );
 }

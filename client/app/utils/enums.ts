@@ -21,5 +21,5 @@ export enum Status {
   REJECTED = "Rejected",
   PENDING = "Pending",
   DRAFT = "Draft",
-  CHANGES = "Changes Requested",
+  CHANGES_REQUESTED = "Changes Requested",
 }
