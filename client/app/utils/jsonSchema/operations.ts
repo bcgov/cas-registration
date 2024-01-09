@@ -454,9 +454,11 @@ export const operationUiSchema = {
   },
   data_flow_diagram: {
     "ui:widget": "FileWidget",
+    "ui:options": { filePreview: true, accept: ".pdf" },
   },
   boundary_map: {
     "ui:widget": "FileWidget",
+    "ui:options": { filePreview: true, accept: ".pdf" },
   },
   province: {
     "ui:widget": "ComboBox",
