@@ -573,6 +573,13 @@ class OperationAndFacilityCommonInfo(TimeStampedModel):
         db_table_comment = "An abstract base class (used for putting common information into a number of other models) containing fields for operations and facilities"
         db_table = 'erc"."operation'
 
+    # brianna will need to do this for all attachments
+    def get_boundary_map(self) -> Optional[Document]:
+        """
+        Returns the boundary map associated with the operation.
+        """
+        return self.documents.filter(type=DocumentType.objects.get(name="boundary_map"))
+
 
 boro_id_pattern = r'^\d{2}-\d{4}$'
 
