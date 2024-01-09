@@ -59,12 +59,12 @@ export default function UserOperatorMultiStepForm({
     }`;
 
     const response = await actionHandler(
-      `${apiUrl}${isCreate && isFinalStep ? "" : `/${userOperatorId}`}`,
+      `${apiUrl}${!isCreate && !isFinalStep ? `/${userOperatorId}` : ""}`,
       isCreate || isFinalStep ? "POST" : "PUT",
       "",
       {
         body: JSON.stringify(newFormData),
-      }
+      },
     );
 
     if (response.error) {
@@ -76,7 +76,7 @@ export default function UserOperatorMultiStepForm({
 
     if (isFinalStep) {
       push(
-        `/dashboard/select-operator/received/add-operator/${response.operator_id}`
+        `/dashboard/select-operator/received/add-operator/${response.operator_id}`,
       );
       return;
     }
@@ -88,7 +88,7 @@ export default function UserOperatorMultiStepForm({
         isCreate ? "create" : userOperatorId
       }/${formSection + 1}${
         isCreate ? `?user-operator-id=${response.user_operator_id}` : ""
-      }`
+      }`,
     );
   };
 
