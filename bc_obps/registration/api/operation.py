@@ -16,6 +16,8 @@ from registration.models import (
     UserOperator,
     MultipleOperator,
     Address,
+    Document,
+    DocumentType,
 )
 from registration.schema import (
     OperationCreateIn,
@@ -28,6 +30,7 @@ from registration.schema import (
 )
 from registration.utils import (
     UNAUTHORIZED_MESSAGE,
+    data_url_to_file,
     get_an_operators_approved_users,
 )
 from ninja.responses import codes_4xx, codes_5xx
@@ -157,7 +160,7 @@ def create_operation(request, payload: OperationCreateIn):
             "documents",
             "multiple_operators_array",
             "application_lead",
-            "boundary_map"
+            "boundary_map",
         }
     )
 
@@ -172,8 +175,22 @@ def create_operation(request, payload: OperationCreateIn):
     operation.regulated_products.set(payload.regulated_products)
     operation.reporting_activities.set(payload.reporting_activities)
     breakpoint()
-    # brianna this is the untransformed one
-    operation.documents.set(payload.boundary_map)
+
+    # def save_documents(document_array):
+    #     for idx, document in enumerate(document_array):
+
+    # don't like 'parent_record' variable name
+    def save_document(data_url, document_type, parent_record):
+        document = Document.objects.create(
+            file=data_url_to_file(data_url),
+            type=DocumentType.objects.get(name=document_type),
+            description='what was this meant to be? maybe it would make more sense to put the description in the DocumentType table?',
+        )
+        # if we add we could end up with more than one, but if we set we overwrite, so need the full list to write this properly to overwrite
+        parent_record.documents.add(document)
+
+    save_document(payload.boundary_map, 'boundary_map', operation)
+
     operation.set_create_or_update(modifier=user)
 
     if payload.operation_has_multiple_operators:

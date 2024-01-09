@@ -578,7 +578,10 @@ class OperationAndFacilityCommonInfo(TimeStampedModel):
         """
         Returns the boundary map associated with the operation.
         """
-        return self.documents.filter(type=DocumentType.objects.get(name="boundary_map"))
+
+        return self.documents.filter(
+            type=DocumentType.objects.get(name="boundary_map")
+        ).first()  # filter returns a queryset, so we use .first() to get the single record (there will only ever be one boundary map per operation)
 
 
 boro_id_pattern = r'^\d{2}-\d{4}$'

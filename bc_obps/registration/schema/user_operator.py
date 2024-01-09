@@ -56,6 +56,7 @@ class UserOperatorOut(ModelSchema):
     is_senior_officer: bool
     mailing_address_same_as_physical: bool
 
+    # static method, start with resolve, name of field
     @staticmethod
     def resolve_is_senior_officer(obj: UserOperator):
         return obj.user_is_senior_officer()

@@ -4,7 +4,7 @@ from django.core.exceptions import ValidationError
 from django.db import IntegrityError, models
 from django.db.models import QuerySet
 
-from .models import User, Operator, UserOperator
+from .models import User, Operator, UserOperator, Document
 from django.shortcuts import get_object_or_404
 from ninja.errors import HttpError
 from registration.models import (
@@ -12,6 +12,10 @@ from registration.models import (
     User,
     UserOperator,
 )
+import requests
+import base64
+from django.core.files.base import ContentFile
+import re
 
 UNAUTHORIZED_MESSAGE = "Unauthorized."
 
@@ -148,3 +152,38 @@ def get_an_operators_approved_users(operator: Operator) -> QuerySet[UUID]:
     )
 
     return User.objects.filter(pk__in=user_ids).values_list('user_guid', flat=True)
+
+
+def file_to_data_url(document: Document):
+    """
+    Transforms a Django FieldField record into a data url that RJSF can process.
+    """
+    timeout_seconds = 10
+    try:
+        response = requests.get(document.file.url, timeout=timeout_seconds)
+        if response.status_code == 200:
+            document_content = response.content
+            encoded_content = base64.b64encode(document_content).decode("utf-8")
+            # only pdf format is allowed
+            return "data:application/pdf;name=" + document.file.name.split("/")[-1] + ";base64," + encoded_content
+        else:
+            print(f"Request to retrieve file failed with status code {response.status_code}")
+    except requests.exceptions.Timeout:
+        # Handle the timeout exception
+        print(f"Request timed out after {timeout_seconds} seconds")
+
+    except requests.exceptions.RequestException as e:
+        # Handle other types of exceptions (e.g., connection error)
+        print(f"An error occurred: {e}")
+
+
+def data_url_to_file(data_url: str):
+    """
+    Transforms a data url into a ContentFile that Django can insert into the db and add to google cloud storage
+    """
+    file_name = re.search(r'name=([^;]+)', data_url).group(1)
+    _, encoded_data = data_url.split(',')
+
+    # Decode the base64-encoded data
+    file_data = base64.b64decode(encoded_data)
+    return ContentFile(file_data, file_name)
