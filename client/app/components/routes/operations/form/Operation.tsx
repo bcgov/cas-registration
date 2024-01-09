@@ -77,7 +77,7 @@ async function getOperation(id: number) {
 // 🛠️ Function to create an operation schema with updated enum values
 export const createOperationSchema = (
   schema: RJSFSchema,
-  naicsCodes: { id: number; naics_code: string }[],
+  naicsCodes: { id: number; naics_code: string, naics_description: string }[],
   regulatedProducts: {
     id: number;
     name: string;
@@ -94,7 +94,7 @@ export const createOperationSchema = (
     // add to nested operation page1 schema
     localSchema.properties.operationPage1.properties.naics_code_id.anyOf =
       naicsCodes.map((code) => {
-        return { const: code?.id, title: code?.naics_code };
+        return { const: code?.id, title: `${code?.naics_code} - ${code?.naics_description}` };
       });
   }
   // regulated products
