@@ -243,7 +243,6 @@ def update_operation(request, operation_id: int, submit: str, payload: Operation
                 "email": user.email,
                 "phone_number": user.phone_number,
                 "business_role": BusinessRole.objects.get(role_name="Operation Registration Lead"),
-                "address": user.address,
             },
         )
         al.set_create_or_update(modifier=user)
