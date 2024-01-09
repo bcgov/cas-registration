@@ -157,6 +157,7 @@ def create_operation(request, payload: OperationCreateIn):
             "documents",
             "multiple_operators_array",
             "application_lead",
+            "boundary_map"
         }
     )
 
@@ -170,7 +171,9 @@ def create_operation(request, payload: OperationCreateIn):
     operation = Operation.objects.create(**payload_dict, operator_id=payload.operator, naics_code_id=payload.naics_code)
     operation.regulated_products.set(payload.regulated_products)
     operation.reporting_activities.set(payload.reporting_activities)
-    operation.documents.set(payload.documents)
+    breakpoint()
+    # brianna this is the untransformed one
+    operation.documents.set(payload.boundary_map)
     operation.set_create_or_update(modifier=user)
 
     if payload.operation_has_multiple_operators:
