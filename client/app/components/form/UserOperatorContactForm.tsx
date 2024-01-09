@@ -19,7 +19,7 @@ interface UserOperatorFormProps {
   readonly?: boolean;
 }
 
-export default function UserOperatorMultiStepForm({
+export default function UserOperatorContactForm({
   schema,
   formData,
   readonly = false,
@@ -30,29 +30,20 @@ export default function UserOperatorMultiStepForm({
   const [errorList, setErrorList] = useState([] as any[]);
   const [formState, setFormState] = useState(formData);
 
-  const formSection = parseInt(params?.formSection as string);
-  const userOperatorId = searchParams.get("user-operator-id");
-  const formSectionList = Object.keys(schema.properties as RJSFSchema);
-  const isFinalStep = formSection === formSectionList.length - 1;
-
   const submitHandler = async (data: { formData?: UserOperatorFormData }) => {
     const newFormData = {
       ...formState,
       ...data.formData,
     } as UserOperatorFormData;
 
-    // add user operator id to form data if it exists (to be used in senior officer creation)
-    newFormData.user_operator_id = String(userOperatorId);
-
     // to prevent resetting the form state when errors occur
     setFormState(newFormData);
 
     // add user operator id to form data if it exists (to be used in senior officer creation)
-    if (userOperatorId) newFormData.user_operator_id = userOperatorId;
+    newFormData.user_operator_id =
+      searchParams.get("user-operator-id") ?? undefined;
 
-    const apiUrl = `registration/user-operator/${
-      isFinalStep ? "contact" : "operator"
-    }`;
+    const apiUrl = "registration/user-operator/contact";
 
     const response = readonly
       ? await actionHandler(
