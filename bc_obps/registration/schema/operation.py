@@ -17,7 +17,7 @@ def file_to_data_url(document: Document):
     Transforms a Django FieldField record into a data url that RJSF can process.
     """
     timeout_seconds = 10
-    try: 
+    try:
         response = requests.get(document.file.url, timeout=timeout_seconds)
         if response.status_code == 200:
             document_content = response.content
@@ -27,7 +27,7 @@ def file_to_data_url(document: Document):
         else:
             print(f"Request to retrieve file failed with status code {response.status_code}")
     except requests.exceptions.Timeout:
-    # Handle the timeout exception
+        # Handle the timeout exception
         print(f"Request timed out after {timeout_seconds} seconds")
 
     except requests.exceptions.RequestException as e:
