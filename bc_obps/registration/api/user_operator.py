@@ -137,6 +137,18 @@ def save_operator(payload: any, operator_instance: Operator, user: User):
             return 200, {"user_operator_id": user_operator.id}
 
 
+# Function to get or create a UserOperator instance to reuse in POST/PUT methods
+def get_or_create_user_operator(user: User, operator: Operator):
+    user_operator, created = UserOperator.objects.get_or_create(
+        user=user,
+        operator=operator,
+        role=UserOperator.Roles.ADMIN,
+    )
+    if created:
+        user_operator.set_create_or_update(modifier=user)
+    return user_operator
+
+
 ##### GET #####
 @router.get("/user-operator-status-from-user", response={200: UserOperatorStatus, codes_4xx: Message})
 @authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
