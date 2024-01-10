@@ -70,7 +70,7 @@ const createUserOperatorSchema = (
 export default async function UserOperator({
   params,
 }: Readonly<{
-  params: { id: number | string; readonly?: boolean };
+  params?: { id?: number | string; readonly?: boolean };
 }>) {
   const serverError = <div>Server Error. Please try again later.</div>;
   const userOperatorId = params?.id;
@@ -81,7 +81,7 @@ export default async function UserOperator({
     await getCurrentUser();
 
   const userOperatorData: UserOperatorFormData | { error: string } =
-    await getUserOperatorFormData(userOperatorId);
+    await getUserOperatorFormData(userOperatorId as string | number);
 
   if (
     "error" in userData ||
