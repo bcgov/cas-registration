@@ -663,7 +663,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
             so_phone_number="+16044015432",
             street_address="123 Main St",
             trade_name="Operator 2 Trade Name",
-            website="http://www.example2.com",
+            website="https://www.example2.com",
         )
         put_response = TestUtils.mock_put_with_auth_role(
             self,
