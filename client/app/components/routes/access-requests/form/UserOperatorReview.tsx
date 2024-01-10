@@ -18,6 +18,7 @@ export default function UserOperatorReview({
   operatorId,
   isOperatorNew,
 }: Props) {
+  // Reusable function to change the status of the operator
   const changeOperatorStatus = async (status: Status, id: number) => {
     try {
       const response = await actionHandler(
@@ -34,6 +35,7 @@ export default function UserOperatorReview({
     }
   };
 
+  // Reusable function to change the status of the prime admin
   const changePrimeAdminStatus = async (status: Status, id: number) => {
     try {
       const response = await actionHandler(

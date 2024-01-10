@@ -12,19 +12,14 @@ interface Props {
 const OperationReview = ({ operation }: Props) => {
   const { data: session } = useSession();
 
-  const changeStatus = async (
-    status: Status,
-    operationData: any,
-    id: number,
-  ) => {
-    operationData.status = status;
+  const changeStatus = async (status: Status, id: number) => {
     try {
       const response = await actionHandler(
         `registration/operations/${id}/update-status`,
         "PUT",
         `dashboard/operations/${id}`,
         {
-          body: JSON.stringify(operationData),
+          body: JSON.stringify({ status }),
         },
       );
       return response;
@@ -34,41 +29,25 @@ const OperationReview = ({ operation }: Props) => {
   };
 
   const approveRequest = async () => {
-    const response = await changeStatus(
-      Status.APPROVED,
-      operation,
-      operation.id,
-    );
+    const response = await changeStatus(Status.APPROVED, operation.id);
 
     return response;
   };
 
   const rejectRequest = async () => {
-    const response = await changeStatus(
-      Status.REJECTED,
-      operation,
-      operation.id,
-    );
+    const response = await changeStatus(Status.REJECTED, operation.id);
 
     return response;
   };
 
   const requestChange = async () => {
-    const response = await changeStatus(
-      Status.CHANGES_REQUESTED,
-      operation,
-      operation.id,
-    );
+    const response = await changeStatus(Status.CHANGES_REQUESTED, operation.id);
 
     return response;
   };
 
   const undoRequestChange = async () => {
-    const response = await changeStatus(
-      Status.PENDING,
-      operation,
-      operation.id,
-    );
+    const response = await changeStatus(Status.PENDING, operation.id);
 
     return response;
   };
