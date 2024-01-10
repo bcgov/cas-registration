@@ -18,15 +18,19 @@ const OperationReview = ({ operation }: Props) => {
     id: number,
   ) => {
     operationData.status = status;
-    const response = await actionHandler(
-      `registration/operations/${id}/update-status`,
-      "PUT",
-      `dashboard/operations/${id}`,
-      {
-        body: JSON.stringify(operationData),
-      },
-    );
-    return response;
+    try {
+      const response = await actionHandler(
+        `registration/operations/${id}/update-status`,
+        "PUT",
+        `dashboard/operations/${id}`,
+        {
+          body: JSON.stringify(operationData),
+        },
+      );
+      return response;
+    } catch (error) {
+      throw error;
+    }
   };
 
   const approveRequest = async () => {
