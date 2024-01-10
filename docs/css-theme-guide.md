@@ -4,7 +4,7 @@
 
 Colour variables are stored in the `colors.ts` file located in [`/client/app/styles/colors.ts`](/client/app/styles/colors.ts)
 
-Global CSS resets as well as custom Tailwind classes using `@apply`can be set in the `globals.css` file located in [`/client/app/styles/globals.css`](/client/app/styles/globals.css)
+Global CSS resets as well as custom Tailwind classes using `@apply` can be set in the `globals.css` file located in [`/client/app/styles/globals.css`](/client/app/styles/globals.css)
 
 ## Tailwind
 
