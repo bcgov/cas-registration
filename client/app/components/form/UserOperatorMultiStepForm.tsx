@@ -9,6 +9,7 @@ import { useSession } from "next-auth/react";
 import UserOperatorReview from "@/app/components/routes/access-requests/form/UserOperatorReview";
 import MultiStepFormBase from "@/app/components/form/MultiStepFormBase";
 import { UserOperatorFormData } from "@/app/components/form/formDataTypes";
+import Note from "../datagrid/Note";
 
 interface UserOperatorFormProps {
   readonly schema: RJSFSchema;
@@ -27,9 +28,7 @@ export default function UserOperatorMultiStepForm({
   const searchParams = useSearchParams();
   const [error, setError] = useState(undefined);
   const [formState, setFormState] = useState(formData);
-
   const formSection = parseInt(params?.formSection as string) - 1;
-
   const formSectionList = Object.keys(schema.properties as RJSFSchema);
   const isFinalStep = formSection === formSectionList.length - 1;
 
@@ -40,7 +39,6 @@ export default function UserOperatorMultiStepForm({
       ...formState,
       ...data.formData,
     } as UserOperatorFormData;
-
     // to prevent resetting the form state when errors occur
     setFormState(newFormData);
 
@@ -81,14 +79,26 @@ export default function UserOperatorMultiStepForm({
   const isCasInternal =
     session?.user.app_role?.includes("cas") &&
     !session?.user.app_role?.includes("pending");
-
   if (isCasInternal || !userOperatorId || formSection) {
     return (
       <>
-        {isCasInternal && (
+        {isCasInternal && formData.is_new && formSection === 0 && (
+          <>
+            <Note message="This is a new operator. You must approve this operator before approving its admin." />
+            <UserOperatorReview
+              userOperator={formData as UserOperatorFormData}
+              userOperatorId={Number(userOperatorId)}
+              isOperatorNew={formData?.is_new}
+              operatorId={formData?.operator_id}
+            />
+          </>
+        )}
+        {isCasInternal && formSection === 1 && (
           <UserOperatorReview
             userOperator={formData as UserOperatorFormData}
             userOperatorId={Number(userOperatorId)}
+            isOperatorNew={formData?.is_new}
+            operatorId={formData?.operator_id}
           />
         )}
         <MultiStepFormBase
