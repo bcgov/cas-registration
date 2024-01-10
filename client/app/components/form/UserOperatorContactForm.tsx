@@ -28,16 +28,11 @@ export default function UserOperatorContactForm({
   const params = useParams();
   const searchParams = useSearchParams();
   const [errorList, setErrorList] = useState([] as any[]);
-  const [formState, setFormState] = useState(formData);
 
   const submitHandler = async (data: { formData?: UserOperatorFormData }) => {
     const newFormData = {
-      ...formState,
       ...data.formData,
     } as UserOperatorFormData;
-
-    // to prevent resetting the form state when errors occur
-    setFormState(newFormData);
 
     // add user operator id to form data if it exists (to be used in senior officer creation)
     newFormData.user_operator_id =
@@ -74,7 +69,7 @@ export default function UserOperatorContactForm({
     <FormBase
       schema={schema}
       readonly={readonly}
-      formData={formState}
+      formData={formData}
       onSubmit={submitHandler}
       uiSchema={userOperatorUiSchema}
     >
