@@ -234,7 +234,7 @@ await page.click('[data-testid="my-button"]');
 To find locators, leverage Playwright's code generation feature. Use the following command to record user actions and generate test code:
 
 ```bash
-npx playwright codegen http://localhost:3000
+cd client && npx playwright codegen http://localhost:3000
 ```
 
 ### Best Practices
@@ -292,7 +292,7 @@ SELECT first_name,last_name,app_role_id FROM erc.user;
 - Ensure the the erc.user_operator table **includes** `bc-cas-dev` with role `admin` and status `Approved`, as below below:
 
 ```
- SELECT  role, status. user_id FROM erc.user_operator;
+ SELECT  role, status. user_id FROM erc.user_operator;cd client &&
 ```
 
 | role  | status   | user_id   |
@@ -311,21 +311,13 @@ cd bc_obps && make run
 
 2.0 Ensure the client app is running:
 
-Start client app from new terminal command:
-
-```bash
-cd client && yarn dev
-```
-
-2.1 Or, for faster performance:
-
-Build and start client app from new terminal command:
+To simulate how the application will behave in a production environment locally, start client app from new terminal command:
 
 ```bash
 cd client && yarn build && yarn start
 ```
 
-Alternatively, you can uncomment the `webServer` array in `playwright.config.ts` to run the tests without running client and server separately.
+Note: you can uncomment the `webServer` array in `playwright.config.ts` to run the tests without running client and server separately.
 
 3.0 Run the tests:
 
