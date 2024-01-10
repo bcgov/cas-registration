@@ -50,7 +50,7 @@ const MultiStepFormBase = ({
 
   const formSectionList = Object.keys(schema.properties as any);
   const mapSectionTitles = formSectionList.map(
-    (section) => schema.properties[section].title
+    (section) => schema.properties[section].title,
   );
 
   const formSectionTitles = showSubmissionStep
