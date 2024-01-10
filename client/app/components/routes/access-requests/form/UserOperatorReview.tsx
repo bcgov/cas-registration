@@ -18,104 +18,91 @@ export default function UserOperatorReview({
   operatorId,
   isOperatorNew,
 }: Props) {
-  async function approveOperatorRequest() {
+  const changeOperatorStatus = async (status: Status, id: number) => {
     try {
       const response = await actionHandler(
-        `registration/operators/${operatorId}`,
+        `registration/operators/${id}`,
         "PUT",
         "",
         {
-          body: JSON.stringify({ status: Status.APPROVED }),
-        }
+          body: JSON.stringify({ status }),
+        },
       );
       return response;
     } catch (error) {
       throw error;
     }
-  }
+  };
 
-  async function rejectOperatorRequest() {
+  const changePrimeAdminStatus = async (status: Status, id: number) => {
     try {
       const response = await actionHandler(
-        `registration/operators/${operatorId}`,
+        `registration/select-operator/user-operator/operator/${id}/update-status`,
         "PUT",
         "",
         {
-          body: JSON.stringify({ status: Status.REJECTED }),
-        }
+          body: JSON.stringify({ status }),
+        },
       );
       return response;
     } catch (error) {
       throw error;
     }
-  }
+  };
 
-  async function approvePrimeAdminRequst() {
-    userOperator.status = Status.APPROVED;
-    const response = await actionHandler(
-      `registration/select-operator/user-operator/operator/${userOperatorId}/update-status`,
-      "PUT",
-      `dashboard/operators/user-operators/${userOperatorId}`,
-      {
-        body: JSON.stringify(userOperator),
-      }
+  const approvePrimeAdminRequst = async () => {
+    const response = await changePrimeAdminStatus(
+      Status.APPROVED,
+      userOperatorId as number,
     );
 
     return response;
-  }
+  };
 
-  async function rejectPrimeAdminRequest() {
-    userOperator.status = Status.REJECTED;
-    const response = await actionHandler(
-      `registration/select-operator/user-operator/operator/${userOperatorId}/update-status`,
-      "PUT",
-      `dashboard/operators/user-operators/${userOperatorId}`,
-      {
-        body: JSON.stringify(userOperator),
-      }
+  const rejectPrimeAdminRequest = async () => {
+    const response = await changePrimeAdminStatus(
+      Status.REJECTED,
+      userOperatorId as number,
     );
+
     return response;
-  }
+  };
 
   const requestText = isOperatorNew
     ? "creation of the new operator"
     : "prime admin request";
 
-  const approveRequest = async () => {
-    const response = await changeStatus(
+  const approveOperatorRequest = async () => {
+    const response = await changeOperatorStatus(
       Status.APPROVED,
-      userOperator,
-      userOperatorId
+      operatorId as number,
     );
 
     return response;
   };
 
-  const rejectRequest = async () => {
-    const response = await changeStatus(
+  const rejectOperatorRequest = async () => {
+    const response = await changeOperatorStatus(
       Status.REJECTED,
-      userOperator,
-      userOperatorId
+      operatorId as number,
     );
 
     return response;
   };
 
-  const requestChange = async () => {
-    const response = await changeStatus(
+  const requestOperatorChange = async () => {
+    const response = await changeOperatorStatus(
       Status.CHANGES_REQUESTED,
-      userOperator,
-      userOperatorId
+      operatorId as number,
     );
 
     return response;
   };
 
-  const undoRequestChange = async () => {
-    const response = await changeStatus(
+  const undoRequestOperatorChange = async () => {
+    const response = await changeOperatorStatus(
       Status.PENDING,
-      userOperator,
-      userOperatorId
+      operatorId as number,
     );
 
     return response;
@@ -132,8 +119,9 @@ export default function UserOperatorReview({
         isOperatorNew ? approveOperatorRequest : approvePrimeAdminRequst
       }
       onReject={isOperatorNew ? rejectOperatorRequest : rejectPrimeAdminRequest}
-      onRequestChange={requestChange}
-      onUndoRequestChange={undoRequestChange}
+      showRequestChanges={isOperatorNew}
+      onRequestChange={requestOperatorChange}
+      onUndoRequestChange={undoRequestOperatorChange}
     />
   );
 }
