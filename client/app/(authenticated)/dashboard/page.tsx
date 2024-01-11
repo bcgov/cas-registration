@@ -33,6 +33,7 @@ export default function Page() {
       const fetchData = async () => {
         let contentsModule;
         // Note: using a dynamic import path, i.e. dynamicPath = `@/app/data/dashboard/${role}.json`;, returns Error: Cannot find module '@/app/data/dashboard/*.json'
+        console.log("!!!!!!!!!!1role", role);
         switch (role) {
           case AppRoles.CAS_ADMIN:
             contentsModule = await import(

@@ -62,7 +62,7 @@ export const authOptions: NextAuthOptions = {
           );
           if (responseRole?.role_name) {
             // user found in table, assign role to token
-            token.app_role = responseRole.role_name;
+            token.app_role = UserOperatorRoles.INDUSTRY_USER_REPORTER;
 
             //for bceid users, augment with admin based on operator-user table
             if (token.identity_provider === IDP.BCEIDBUSINESS) {
