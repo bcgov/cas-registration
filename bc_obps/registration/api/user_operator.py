@@ -150,7 +150,7 @@ def list_user_operators(request):
 
 
 @router.post("/select-operator/request-admin-access", response={201: RequestAccessOut, codes_4xx: Message})
-@authorize(["industry_user"])
+@authorize(["industry_user"], AppRole.get_all_industry_user_operator_roles())
 def request_access(request, payload: SelectOperatorIn):
     user: User = request.current_user
     operator: Operator = get_object_or_404(Operator, id=payload.operator_id)
@@ -170,7 +170,7 @@ def request_access(request, payload: SelectOperatorIn):
 
 
 @router.post("/select-operator/request-access", response={201: RequestAccessOut, codes_4xx: Message})
-@authorize(["industry_user"])
+@authorize(["industry_user"], AppRole.get_all_industry_user_operator_roles())
 def request_access(request, payload: SelectOperatorIn):
     user: User = request.current_user
     operator: Operator = get_object_or_404(Operator, id=payload.operator_id)
