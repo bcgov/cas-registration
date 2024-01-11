@@ -11,7 +11,7 @@ from registration.enums.enums import IdPs
 
 
 @router.get("/user", response=UserOut)
-@authorize(AppRole.get_all_authorized_roles())
+@authorize(AppRole.get_all_authorized_app_roles(), AppRole.get_all_industry_user_operator_roles())
 def get_user(request):
     user: User = request.current_user
     return user
@@ -65,7 +65,7 @@ def create_user_profile(request, identity_provider: str, payload: UserIn):
 
 # Endpoint to update a user
 @router.put("/user-profile", response={200: UserOut, codes_4xx: Message})
-@authorize(AppRole.get_all_roles())
+@authorize(AppRole.get_all_app_roles(), AppRole.get_all_industry_user_operator_roles())
 def update_user_profile(request, payload: UserIn):
     user: User = request.current_user
     try:
