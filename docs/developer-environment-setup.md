@@ -78,11 +78,6 @@ In the `client` directory:
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
-
-- To run jest unit tests: `yarn test`
-- To run playwright end-to-end tests: `yarn e2e` (For the first time, you may need to run `yarn playwright install --with-deps` to install the browsers)
-
 ## Pre-Commit
 
 [pre-commit](https://pre-commit.com/) runs a variety of formatting and lint checks configured in [`.pre-commit-config.yaml`](../.pre-commit-config.yaml) which are required for a pull request to pass CI.

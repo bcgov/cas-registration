@@ -2,7 +2,7 @@
 /*
 📚 Nextauth provider:
 Import NextAuth.js SessionProvider as a client component because it uses context
-Then export the client SessionProvider to be used in server component client\layout.tsx
+Then export the client SessionProvider to be used in server component client\app\layout.tsx
 This enables sharing session state as context throughout the application
 */
 "use client";
