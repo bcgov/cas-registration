@@ -1,9 +1,4 @@
 import { defineConfig, devices } from "@playwright/test";
-// 👌 Best Practice:
-// prefer user-facing attributes to XPath or CSS selectors
-// this verifies that the application code works for the end users
-// find locators using codegen to record user actions, e.g.: npx playwright codegen http://localhost:3000
-
 /**
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
@@ -34,20 +29,20 @@ export default defineConfig({
     trace: "on-first-retry",
   },
 
-  /* Configure projects for major browsers */
+  globalSetup: require.resolve("e2e/setup/global.ts"),
+  /* Project dependencies are a list of projects that need to run before the tests in another project run. They can be useful for configuring the global setup actions so that one project depends on this running first. Using dependencies allows global setup to produce traces and other artifacts. */
   projects: [
     {
       name: "setup",
-      // define which file to be execute for test auth setup
-      testMatch: "e2e/auth/auth-setup.ts",
+      use: {
+        baseURL: "http://localhost:3000/",
+      },
     },
     {
       name: "chromium",
       use: {
         ...devices["Desktop Chrome"],
       },
-      // add a dependency to the setup project
-      dependencies: ["setup"],
     },
 
     {
@@ -55,7 +50,6 @@ export default defineConfig({
       use: {
         ...devices["Desktop Firefox"],
       },
-      dependencies: ["setup"],
     },
 
     {
@@ -63,7 +57,6 @@ export default defineConfig({
       use: {
         ...devices["Desktop Safari"],
       },
-      dependencies: ["setup"],
     },
 
     /* Test against mobile viewports. */
