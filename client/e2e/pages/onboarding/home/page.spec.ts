@@ -15,17 +15,15 @@ import { LoginLink } from "@/e2e/utils/enums";
 // ⛏️ Helpers
 import { navigateAndWaitForLoad } from "@/e2e/utils/helpers";
 
-// Access the baseURL made available to proces.env from `client/e2e/setup/global.ts`
-const { BASEURL } = process.env;
 // set the test url
-const url = BASEURL || "";
+const url = process.env.BASEURL || "";
 
 // 🛠️ Function: log in to Keycloak
 const login = async (
   page: any,
   userName: string,
   password: string,
-  role: string,
+  role: string
 ) => {
   try {
     let loginButton = LoginLink.INDUSTRY_USER;
@@ -38,7 +36,7 @@ const login = async (
     }
 
     // 🛸 Navigate to the home page
-    navigateAndWaitForLoad(page, url);
+    await navigateAndWaitForLoad(page, url);
 
     // Click the login button
     await page.getByRole("button", { name: loginButton }).click();
