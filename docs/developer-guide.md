@@ -183,7 +183,123 @@ TestUtils.mock_postal_code()
 
 ### End-to-end Tests with Playwright
 
-#### Run Playwright Specs
+Certainly! Below is a simple template for documentation on writing Playwright tests, including best practices and tips. Feel free to customize it based on your specific needs:
+
+---
+
+# Playwright Testing Documentation
+
+## Introduction
+
+Playwright is a powerful end-to-end testing library for web applications. It provides a simple API to automate browser actions, allowing developers to create robust and maintainable tests.
+
+## Getting Started
+
+To get started with Playwright, you'll need to install it as a dependency in your project:
+
+```bash
+npm install @playwright/test
+```
+
+## Writing Tests
+
+### Basic Test Structure
+
+Playwright tests follow a simple structure. Each test case is a JavaScript or TypeScript function with Playwright APIs for interacting with the browser.
+
+```javascript
+const { test } = require("@playwright/test");
+
+test("Example Test", async ({ page }) => {
+  // Your test logic goes here
+});
+```
+
+### Locators
+
+#### Prefer User-Facing Attributes
+
+When selecting elements, prefer using user-facing attributes over XPath or CSS selectors. This ensures that the tests are tied to the actual user experience and are less prone to breakage when the underlying structure changes.
+
+```javascript
+// Bad: Using XPath
+await page.click('//div[@class="my-button"]');
+
+// Good: Using User-Facing Attribute
+await page.click('[data-testid="my-button"]');
+```
+
+#### Code Generation
+
+To find locators, leverage Playwright's code generation feature. Use the following command to record user actions and generate test code:
+
+```bash
+cd client && npx playwright codegen http://localhost:3000
+```
+
+### Best Practices
+
+#### Test Isolation
+
+Ensure that each test is independent and does not rely on the state or outcome of other tests. This helps in maintaining a clean and predictable test suite.
+
+#### Use `expect` Assertions
+
+Use `expect` assertions to verify the expected behavior of the application. This makes your tests more readable and clearly defines the criteria for success.
+
+```javascript
+expect(await page.isVisible('[data-testid="success-message"]')).toBe(true);
+```
+
+#### Headless Mode for CI/CD
+
+When running tests in a Continuous Integration (CI) or Continuous Deployment (CD) pipeline, consider using headless mode to improve performance and resource consumption.
+
+```javascript
+// Launch browser in headless mode
+const browser = await chromium.launch({ headless: true });
+```
+
+#### Playwright Testing Prerequisites
+
+- To run playwright end-to-end tests for the first time, you may need to run `yarn playwright install --with-deps` to install the browsers
+
+**Ensure you have the following configuration**
+
+1. From file `client/e2e/.env.local.example` create `client/e2e/.env.local` with values reflecting instructions in file `client/e2e/.env.local.example`
+2. Ensure the DB tables are configured with appropriate users and roles:
+
+```
+cd bc_obps && psql
+```
+
+```
+ \c registration
+```
+
+- Ensure the the erc.user table includes rows below **without** `bc-cas-dev-three`
+
+```
+SELECT first_name,last_name,app_role_id FROM erc.user;
+
+```
+
+| first_name | last_name     | app_role_id   |
+| ---------- | ------------- | ------------- |
+| Bcgov      | Cas           | industry_user |
+| Bcgov      | Cas SECONDARY | industry_user |
+
+- Ensure the the erc.user_operator table **includes** `bc-cas-dev` with role `admin` and status `Approved`, as below below:
+
+```
+ SELECT  role, status. user_id FROM erc.user_operator;cd client &&
+```
+
+| role  | status   | user_id   |
+| ----- | -------- | --------- |
+| admin | Approved | ba2ba6... |
+
+##### e2e Testing
 
 1.0 Ensure the server is running:
 
@@ -195,25 +311,23 @@ cd bc_obps && make run
 
 2.0 Ensure the client app is running:
 
-Start client app from new terminal command:
-
-```bash
-cd client && yarn dev
-```
-
-2.1 Or, for faster performance:
-
-Build and start client app from new terminal command:
+To simulate how the application will behave in a production environment locally, start client app from new terminal command:
 
 ```bash
 cd client && yarn build && yarn start
 ```
 
-Alternatively, you can uncomment the `webServer` array in `playwright.config.ts` to run the tests without running client and server separately.
+Note: you can uncomment the `webServer` array in `playwright.config.ts` to run the tests without running client and server separately.
 
 3.0 Run the tests:
 
-Run tests from new terminal command:
+Run tests in the background using terminal command:
+
+```bash
+cd client && yarn e2e
+```
+
+Run tests iwith the Playwright GUI using terminal command:
 
 ```bash
 cd client && yarn e2e:ui

@@ -30,9 +30,15 @@ export default async function RootLayout({
 }: {
   readonly children: React.ReactNode;
 }) {
-  // Invoke the nextauth server side session fetcher function getServerSession
-  // Wrap the returned auth session in the "use client" version of NextAuth SessionProvider
-  // to expose the useSession hook in client components
+  // 👤 Use NextAuth.js server side session fetcher function getServerSession to get information about the user's session
+
+  /* 🚨
+    When calling from the server-side i.e., in Route Handlers, React Server Components, API routes,
+   getServerSession() requires passing the same object you would pass to NextAuth
+   Note: This may\has change with NextAuth v.5 +
+   */
+
+  //🪝 Wrap the returned auth session in the "use client" version of NextAuth SessionProvider so to expose the useSession() hook in client components
   const session = await getServerSession(authOptions);
 
   return (
