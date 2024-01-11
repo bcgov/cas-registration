@@ -9,7 +9,7 @@ from registration.models import (
     Operator,
     UserOperator,
     Operation,
-    ParentChildOperator,
+    ParentOperator,
     AppRole,
     ReportingActivity,
     MultipleOperator,
@@ -23,7 +23,7 @@ admin.site.register(User)
 admin.site.register(Contact)
 admin.site.register(Operator)
 admin.site.register(UserOperator)
-admin.site.register(ParentChildOperator)
+admin.site.register(ParentOperator)
 admin.site.register(RegulatedProduct)
 admin.site.register(ReportingActivity)
 admin.site.register(MultipleOperator)
