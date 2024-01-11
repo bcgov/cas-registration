@@ -95,6 +95,7 @@ export default function UserOperatorMultiStepForm({
             userOperatorId={Number(userOperatorId)}
             isOperatorNew={formData?.is_new}
             operatorId={formData?.operator_id}
+            isPrimeAdminReview
           />
         )}
         <MultiStepFormBase
