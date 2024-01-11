@@ -13,6 +13,7 @@ interface MultiStepFormProps {
   formData?: any;
   onSubmit: any;
   schema: any;
+  setErrorReset?: (error: undefined) => void;
   showSubmissionStep?: boolean;
   allowBackNavigation?: boolean;
   uiSchema: any;
@@ -26,6 +27,7 @@ const MultiStepFormBase = ({
   formData,
   onSubmit,
   schema,
+  setErrorReset,
   showSubmissionStep,
   allowBackNavigation,
   uiSchema,
@@ -53,6 +55,7 @@ const MultiStepFormBase = ({
         readonly={disabled}
         onSubmit={onSubmit}
         formData={formData}
+        setErrorReset={setErrorReset}
       >
         {error && <Alert severity="error">{error}</Alert>}
         <MultiStepButtons

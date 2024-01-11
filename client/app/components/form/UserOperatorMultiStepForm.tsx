@@ -27,7 +27,6 @@ export default function UserOperatorMultiStepForm({
   const params = useParams();
   const searchParams = useSearchParams();
   const [error, setError] = useState(undefined);
-  const [formState, setFormState] = useState(formData);
   const formSection = parseInt(params?.formSection as string) - 1;
   const formSectionList = Object.keys(schema.properties as RJSFSchema);
   const isFinalStep = formSection === formSectionList.length - 1;
@@ -36,11 +35,8 @@ export default function UserOperatorMultiStepForm({
     searchParams.get("user-operator-id") || (params?.id as string);
   const submitHandler = async (data: { formData?: UserOperatorFormData }) => {
     const newFormData = {
-      ...formState,
       ...data.formData,
     } as UserOperatorFormData;
-    // to prevent resetting the form state when errors occur
-    setFormState(newFormData);
 
     // add user operator id to form data if it exists (to be used in senior officer creation)
     if (userOperatorId) newFormData.user_operator_id = userOperatorId;
@@ -111,6 +107,7 @@ export default function UserOperatorMultiStepForm({
           schema={schema}
           disabled={isCasInternal ?? disabled}
           error={error}
+          setErrorReset={setError}
           formData={formData}
           onSubmit={submitHandler}
           uiSchema={userOperatorUiSchema}
