@@ -13,6 +13,7 @@ export const userSchema: RJSFSchema = {
       title: "Phone Number",
       format: "phone",
     },
+    position_title: { type: "string", title: "Position Title" },
     email: {
       type: "string",
       title: "Email Address",
