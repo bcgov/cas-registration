@@ -24,6 +24,7 @@ type ContentItem = {
 
 export default function Page() {
   const { data: session } = useSession();
+  // brianna this comes in as industry_user_admin even though the role is actually industry_user in db
   const role = session?.user?.app_role;
 
   const [contents, setContents] = useState<ContentItem[]>([]);
@@ -33,6 +34,7 @@ export default function Page() {
       const fetchData = async () => {
         let contentsModule;
         // Note: using a dynamic import path, i.e. dynamicPath = `@/app/data/dashboard/${role}.json`;, returns Error: Cannot find module '@/app/data/dashboard/*.json'
+        console.log("role", role);
         switch (role) {
           case Roles.CAS_ADMIN:
             contentsModule = await import(

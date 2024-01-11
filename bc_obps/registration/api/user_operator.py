@@ -51,7 +51,7 @@ def get_user_operator_operator_id(request):
     user_operator = get_object_or_404(UserOperator, user_id=request.current_user.user_guid)
     return 200, {"status": user_operator.status}
 
-
+# brianna
 @router.get("/is-approved-admin-user-operator/{user_guid}", response={200: IsApprovedUserOperator, codes_4xx: Message})
 @authorize(AppRole.get_industry_roles())
 def is_approved_admin_user_operator(request, user_guid: str):
