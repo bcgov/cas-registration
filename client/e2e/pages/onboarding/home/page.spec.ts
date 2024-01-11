@@ -23,7 +23,7 @@ const login = async (
   page: any,
   userName: string,
   password: string,
-  role: string
+  role: string,
 ) => {
   try {
     let loginButton = LoginLink.INDUSTRY_USER;
