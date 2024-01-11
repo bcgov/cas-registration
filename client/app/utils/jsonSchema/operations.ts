@@ -186,7 +186,7 @@ const operationPage1: RJSFSchema = {
                 },
                 mo_bc_corporate_registry_number: {
                   type: "string",
-                  title: "BC Corporate Registries Number",
+                  title: "BC Corporate Registry Number",
                   format: "bc_corporate_registry_number",
                 },
                 mo_business_structure: {
