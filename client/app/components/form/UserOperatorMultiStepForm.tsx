@@ -86,6 +86,7 @@ export default function UserOperatorMultiStepForm({
               userOperatorId={Number(userOperatorId)}
               isOperatorNew={formData?.is_new}
               operatorId={formData?.operator_id}
+              showRequestChanges
             />
           </>
         )}
@@ -95,7 +96,8 @@ export default function UserOperatorMultiStepForm({
             userOperatorId={Number(userOperatorId)}
             isOperatorNew={formData?.is_new}
             operatorId={formData?.operator_id}
-            isPrimeAdminReview
+            // We don't want to show the request changes button for Prime Admin approval
+            showRequestChanges={false}
           />
         )}
         <MultiStepFormBase

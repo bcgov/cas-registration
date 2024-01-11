@@ -10,7 +10,7 @@ interface Props {
   userOperatorId: number;
   operatorId?: number;
   isOperatorNew?: boolean;
-  isPrimeAdminReview?: boolean;
+  showRequestChanges?: boolean;
 }
 
 export default function UserOperatorReview({
@@ -18,7 +18,7 @@ export default function UserOperatorReview({
   userOperatorId,
   operatorId,
   isOperatorNew,
-  isPrimeAdminReview,
+  showRequestChanges,
 }: Props) {
   // Reusable function to change the status of the operator
   const changeOperatorStatus = async (status: Status, id: number) => {
@@ -123,7 +123,7 @@ export default function UserOperatorReview({
         isOperatorNew ? approveOperatorRequest : approvePrimeAdminRequst
       }
       onReject={isOperatorNew ? rejectOperatorRequest : rejectPrimeAdminRequest}
-      showRequestChanges={isOperatorNew && !isPrimeAdminReview}
+      showRequestChanges={showRequestChanges}
       onRequestChange={requestOperatorChange}
       onUndoRequestChange={undoRequestOperatorChange}
     />
