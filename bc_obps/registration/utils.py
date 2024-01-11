@@ -143,10 +143,6 @@ def raise_401_if_user_not_authorized(
         - have an authorized app_role
         - if the user's app_role is industry_user, then they must additionally have an authorized UserOperator.role
 
-    Args:
-        request: The request object. It will have a property called 'current_user' if the user is logged in
-        authorized_app_roles: A list of the app roles that are allowed access.
-        authorized_user_operator_roles: A list of the UserOperator.role that are allowed access. If this argument is not provided, no UserOperator.role will be allowed access and therefore no one with an 'industry_user' app_role will be allowed access. (This is to prevent accidentally giving access if we forget that the industry_user has additional permissions in UserOperator.)
 
     """
     if not hasattr(request, 'current_user'):

@@ -102,7 +102,7 @@ class TestOperationsEndpoint(CommonTestSetup):
 
         url = self.build_update_status_url(operation_id=operation.id)
 
-        for role in AppRole.get_industry_roles():
+        for role in ["industry_user"]:
             response = TestUtils.mock_put_with_auth_role(self, role, content_type_json, {"status": "approved"}, url)
             assert response.status_code == 401
 

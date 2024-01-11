@@ -573,13 +573,9 @@ class AppRoleModelTest(BaseTestCase):
 
     def test_static_methods(self):
         self.assertEqual(AppRole.get_authorized_irc_roles(), ['cas_admin', 'cas_analyst'])
-        self.assertEqual(
-            AppRole.get_all_authorized_roles(), ['cas_admin', 'cas_analyst', 'industry_user', 'industry_user_admin']
-        )
-        self.assertEqual(
-            AppRole.get_all_roles(), ['cas_admin', 'cas_analyst', 'cas_pending', 'industry_user', 'industry_user_admin']
-        )
-        self.assertEqual(AppRole.get_industry_roles(), ['industry_user', 'industry_user_admin'])
+        self.assertEqual(AppRole.get_all_authorized_app_roles(), ['cas_admin', 'cas_analyst', 'industry_user'])
+        self.assertEqual(AppRole.get_all_app_roles(), ['cas_admin', 'cas_analyst', 'cas_pending', 'industry_user'])
+        self.assertEqual(AppRole.get_all_industry_user_operator_roles(), ['admin', 'reporter', None])
 
 
 class BusinessRoleModelTest(BaseTestCase):
