@@ -1,9 +1,7 @@
-// 🧪 Suite to test the Profile page  `http://localhost:3000/dashboard/profile`
-// 🔍 Asserts the form create and update functionality
+// 🧪 Suite to test the Profile page `http://localhost:3000/dashboard/profile`
+// 🔍 Asserts the form required fields, create, and update functionality
 
 import { test, expect } from "@playwright/test";
-const { Pool } = require("pg");
-
 import * as dotenv from "dotenv";
 dotenv.config({
   path: "./e2e/.env.local",
@@ -12,68 +10,81 @@ dotenv.config({
 // 👤 User Roles
 import { UserRole } from "@/e2e/utils/enums";
 // ⛏️ Helpers
-import { navigateAndWaitForLoad } from "@/e2e/utils/helpers";
+import {
+  navigateAndWaitForLoad,
+  getFieldRequired,
+  getFieldAlerts,
+} from "@/e2e/utils/helpers";
+// 🥞 Connection pool to postgres DB
+import { pool } from "@/e2e/utils/pool";
 
-// Access the baseURL made available to proces.env from `client/e2e/setup/global.ts`
-const { BASEURL } = process.env;
-// set the test url
-const url = BASEURL + "dashboard/profile";
+// Set the test url
+const url = process.env.BASEURL + "dashboard/profile";
 
 // 🛠️ Function: performs the submit success test
 const submitSuccessTest = async (page: any) => {
   // 🛸 Navigate to the profile page
-  navigateAndWaitForLoad(page, url);
-  //  💾 Submit the user profile
-  await page.getByLabel("First Name*").click();
-  await page.getByLabel("First Name*").fill("TEST FIRST NAME");
-  await page.getByLabel("Last Name*").click();
-  await page.getByLabel("Last Name*").fill("TEST LAST NAME");
-  await page.getByLabel("Phone Number*").click();
-  await page.getByLabel("Phone Number*").fill("123 456 7890");
-  await page.getByLabel("Position Title*").click();
-  await page.getByLabel("Position Title*").fill("TEST POSITION");
+  await navigateAndWaitForLoad(page, url);
+  // Locate all required fields within the fieldset
+  const requiredFields = await getFieldRequired(page);
+  if (requiredFields) {
+    //  💾 Set required input fields
+    for (const input of requiredFields) {
+      const labelText = await input.textContent();
+      const inputField = await page.getByLabel(labelText);
+      // Click the field to focus it
+      await inputField.click();
+      if (labelText === "Phone Number*") {
+        await page.getByLabel(labelText).fill("987 654 3210"); //Format should be ### ### ####
+      } else {
+        await inputField.fill(`E2E TEST + ${labelText}`);
+      }
+    }
+  }
+  // Click the Submit button
   await page.getByRole("button", { name: "Submit" }).click();
-
-  // 🕒 Wait for the submit to complete
-  await page.waitForLoadState("load");
-
-  // 🔍 Assert that the user profile is in DB and has role allowing access to Dashboard
-  expect(page.url().toLocaleLowerCase()).toContain("/dashboard");
+  // Wait for the success message to appear
+  await page.waitForSelector("text=Success");
+  // Assert that the success message is visible
+  const isSuccessVisible = await page.isVisible("text=Success");
+  expect(isSuccessVisible).toBe(true);
 };
 
 // 🛠️ Function: performs the Submit Fail test
 const submitFailTest = async (page: any) => {
   // 🛸 Navigate to the profile page
-  navigateAndWaitForLoad(page, url);
-  // 📛 Submit the user profile with errors
-  await page.getByLabel("Phone Number*").click();
-  await page.getByLabel("Phone Number*").fill("123 456 789"); // Error: phone format
-  await page.getByRole("button", { name: "Submit" }).click();
-
-  // 🕒 Wait for the error text to appear on the page after Submit click
-  const formatErrorText = await page.textContent(
-    "text=Format should be ### ### ####",
-  );
-  // 🔍 Assert that the phone format error message displays
-  expect(formatErrorText).toContain("Format should be ### ### ####");
+  await navigateAndWaitForLoad(page, url);
+  // Locate all required fields within the fieldset
+  const requiredFields = await getFieldRequired(page);
+  if (requiredFields) {
+    // 📛 Clear the required input fields to trigger alerts
+    for (const input of requiredFields) {
+      const labelText = await input.textContent();
+      const inputField = await page.getByLabel(labelText);
+      // Click the field to focus it
+      await inputField.click();
+      if (labelText === "Phone Number*") {
+        await page.getByLabel(labelText).fill("987 654 321"); //Format should be ### ### ####
+      } else {
+        await inputField.clear();
+      }
+    }
+    // Click the Submit button
+    await page.getByRole("button", { name: "Submit" }).click();
+    // Locate all alert elements within the fieldset
+    const alertElements = await getFieldAlerts(page);
+    // 🔍 Assert there to be exactly the same number of required fields and alert elements
+    expect(requiredFields.length).toBe(alertElements.length);
+  }
 };
 
 // 🛠️ Function: deletes the new user record from the database
 const deleteNewUserRecord = async () => {
   try {
-    const pool = new Pool({
-      user: process.env.DB_USER,
-      password: process.env.DB_USER_PASSWORD,
-      host: "localhost",
-      database: "registration",
-      port: 5432,
-    });
-
     const query = {
       text: "DELETE FROM erc.user WHERE user_guid = $1",
       values: [process.env.NEW_USER_USERID],
     };
-
     await pool.query(query);
     await pool.end();
   } catch (error) {
@@ -99,7 +110,6 @@ test.describe("Test Page - Profile", () => {
           });
           break;
       }
-
       test("Test Submit Success", async ({ page }) => {
         await submitSuccessTest(page);
       });

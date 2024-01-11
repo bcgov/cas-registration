@@ -13,20 +13,13 @@ import * as dotenv from "dotenv";
 dotenv.config({
   path: "./e2e/.env.local",
 });
-// connection to postgres DB
-const { Pool } = require("pg");
-const pool = new Pool({
-  user: process.env.DB_USER,
-  password: process.env.DB_USER_PASSWORD,
-  host: "localhost",
-  database: "registration",
-  port: 5432,
-});
 
 // 👤 User Roles
 import { UserRole } from "@/e2e/utils/enums";
 // 🛸 Login Links
 import { LoginLink } from "@/e2e/utils/enums";
+// 🥞 Connection pool to postgres DB
+import { pool } from "@/e2e/utils/pool";
 
 // 🛠️ function: login with Keycloak credetials and store authenticated user by role session's state
 /**
@@ -39,7 +32,7 @@ const setupAuth = async (
   user: string,
   password: string,
   storageState: string,
-  role: string,
+  role: string
 ) => {
   try {
     const url = "http://localhost:3000/home";
@@ -102,7 +95,7 @@ const setupAuth = async (
 
     // eslint-disable-next-line no-console
     console.log(
-      `Successful authentication setup for ${user} captured in storageState ${storageState}`,
+      `Successful authentication setup for ${user} captured in storageState ${storageState}`
     );
   } catch (error) {
     // Handle any errors that occurred during the authentication process
@@ -116,16 +109,9 @@ const setupAuth = async (
 export default async function globalSetup(config: FullConfig) {
   // 🌍 Perform global setup tasks here...
 
-  // ℹ️ You can make data available to the tests from this global setup file by setting them as environment variables via process.env.
-  // 🛸 Routing - make the baseUrl available
-  const projectName = "setup";
-  const { baseURL } =
-    config.projects.find((project) => project.name === projectName)?.use || {};
-  process.env.BASEURL = baseURL;
-
   // 👤 Set storageState for Authenticated IDIR and BCeid credentials using NextAuth and Keycloak to be used in subsequent test suites
   console.log(
-    "Global setup to authenticate all user roles and store each role session in storageState to be used in test suites to mock user by role.",
+    "Global setup to authenticate all user roles and store each role session in storageState to be used in test suites to mock user by role."
   );
 
   // ➰ Loop through the entries of UserRole enum
@@ -145,7 +131,7 @@ export default async function globalSetup(config: FullConfig) {
       user || "",
       pw || "",
       process.env[role + "_STORAGE"] || "",
-      value,
+      value
     );
   }
 }
