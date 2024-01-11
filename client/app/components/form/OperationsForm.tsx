@@ -88,6 +88,7 @@ export default function OperationsForm({ formData, schema }: Readonly<Props>) {
           baseUrl={`/dashboard/operations/${operationId}`}
           cancelUrl="/dashboard/operations"
           formData={transformedFormData}
+          setErrorReset={setError}
           disabled={
             session?.user.app_role?.includes("cas") ||
             formData?.status === Status.PENDING
