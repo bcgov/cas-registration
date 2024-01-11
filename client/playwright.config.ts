@@ -28,16 +28,9 @@ export default defineConfig({
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: "on-first-retry",
   },
-
+  // The globalSetup option in playwright.config.js allows you to specify a JavaScript file that will be executed ONCE before all test suites.
   globalSetup: require.resolve("e2e/setup/global.ts"),
-  /* Project dependencies are a list of projects that need to run before the tests in another project run. They can be useful for configuring the global setup actions so that one project depends on this running first. Using dependencies allows global setup to produce traces and other artifacts. */
   projects: [
-    {
-      name: "setup",
-      use: {
-        baseURL: "http://localhost:3000/",
-      },
-    },
     {
       name: "chromium",
       use: {

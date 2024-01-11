@@ -7,12 +7,12 @@ export const userSchema: RJSFSchema = {
   properties: {
     first_name: { type: "string", title: "First Name" },
     last_name: { type: "string", title: "Last Name" },
+    position_title: { type: "string", title: "Position Title" },
     phone_number: {
       type: "string",
       title: "Phone Number",
       format: "phone",
     },
-    position_title: { type: "string", title: "Position Title" },
     email: {
       type: "string",
       title: "Email Address",

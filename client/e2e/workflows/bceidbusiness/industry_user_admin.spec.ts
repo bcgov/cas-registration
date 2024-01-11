@@ -1,4 +1,4 @@
-// 🧪 Suite to test the industry_user_admin workflow
+// 🧪 Suite to test the bceidbusiness industry_user_admin workflow
 
 import { test, expect } from "@playwright/test";
 
@@ -10,10 +10,8 @@ dotenv.config({
 // ⛏️ Helpers
 import { navigateAndWaitForLoad } from "@/e2e/utils/helpers";
 
-// Access the baseURL made available to proces.env from `client/e2e/setup/global.ts`
-const { BASEURL } = process.env;
 // set the test url
-const url = BASEURL || "";
+const url = process.env.BASEURL || "";
 
 // 🏷 Annotate test suite as serial
 test.describe.configure({ mode: "serial" });
