@@ -27,7 +27,7 @@ const dashboardDataMap = getDashboardDataMap();
 // 🛠️ Function: navigates to dashboard and validates navigation titles align with the user's role dashboard json import
 const assertDashboardNavigation = async (
   page: any,
-  dashboardData: DashboardSection[],
+  dashboardData: DashboardSection[]
 ) => {
   // 🛸 Navigate to the dashboard page
   await navigateAndWaitForLoad(page, url);
