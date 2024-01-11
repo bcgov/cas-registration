@@ -51,7 +51,7 @@ export default function UserOperatorMultiStepForm({
       `/dashboard/select-operator/user-operator/create/${params?.formSection}`,
       {
         body: JSON.stringify(newFormData),
-      }
+      },
     );
 
     if (response.error) {
@@ -61,7 +61,7 @@ export default function UserOperatorMultiStepForm({
 
     if (isFinalStep) {
       push(
-        `/dashboard/select-operator/received/add-operator/${response.operator_id}`
+        `/dashboard/select-operator/received/add-operator/${response.operator_id}`,
       );
       return;
     }
@@ -69,7 +69,7 @@ export default function UserOperatorMultiStepForm({
     push(
       `/dashboard/select-operator/user-operator/create/${
         formSection + 2
-      }?user-operator-id=${response.user_operator_id}`
+      }?user-operator-id=${response.user_operator_id}`,
     );
   }; // If the user is an approved cas internal user or if no operator exists show the entire multistep form
   const isCasInternal =
@@ -107,6 +107,7 @@ export default function UserOperatorMultiStepForm({
           schema={schema}
           disabled={isCasInternal ?? disabled}
           error={error}
+          setErrorReset={setError}
           formData={formData}
           onSubmit={submitHandler}
           uiSchema={userOperatorUiSchema}

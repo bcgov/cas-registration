@@ -31,16 +31,18 @@ const validator = customizeValidator({ customFormats });
 interface FormPropsWithTheme<T> extends Omit<FormProps<T>, "validator"> {
   theme?: ThemeProps;
   validator?: any;
+  setErrorReset?: (error: undefined) => void;
 }
 
 const FormBase: React.FC<FormPropsWithTheme<any>> = (props) => {
-  const { theme, formData, omitExtraData } = props;
+  const { theme, formData, omitExtraData, setErrorReset } = props;
   const Form = useMemo(() => withTheme(theme ?? defaultTheme), [theme]);
   const [formState, setFormState] = useState(formData ?? {});
 
   // Handling form state externally as RJSF was resetting the form data on submission and
   // creating buggy behaviour if there was an API error and the user attempted to resubmit
   const handleChange = (e: IChangeEvent) => {
+    if (setErrorReset) setErrorReset(undefined);
     setFormState(e.formData);
   };
 
