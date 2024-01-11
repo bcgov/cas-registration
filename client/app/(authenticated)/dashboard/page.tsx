@@ -6,7 +6,7 @@ import Link from "@mui/material/Link";
 import Typography from "@mui/material/Typography";
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import { Roles } from "@/app/utils/enums";
+import { AppRoles, UserOperatorRoles } from "@/app/utils/enums";
 /*
 📚
 In the app directory, nested folders are normally mapped to URL paths.
@@ -24,7 +24,6 @@ type ContentItem = {
 
 export default function Page() {
   const { data: session } = useSession();
-  // brianna this comes in as industry_user_admin even though the role is actually industry_user in db
   const role = session?.user?.app_role;
 
   const [contents, setContents] = useState<ContentItem[]>([]);
@@ -34,24 +33,23 @@ export default function Page() {
       const fetchData = async () => {
         let contentsModule;
         // Note: using a dynamic import path, i.e. dynamicPath = `@/app/data/dashboard/${role}.json`;, returns Error: Cannot find module '@/app/data/dashboard/*.json'
-        console.log("role", role);
         switch (role) {
-          case Roles.CAS_ADMIN:
+          case AppRoles.CAS_ADMIN:
             contentsModule = await import(
               "@/app/data/dashboard/cas_admin.json"
             );
             break;
-          case Roles.CAS_ANALYST:
+          case AppRoles.CAS_ANALYST:
             contentsModule = await import(
               "@/app/data/dashboard/cas_analyst.json"
             );
             break;
-          case Roles.INDUSTRY_USER_ADMIN:
+          case UserOperatorRoles.INDUSTRY_USER_ADMIN:
             contentsModule = await import(
               "@/app/data/dashboard/industry_user_admin.json"
             );
             break;
-          case Roles.INDUSTRY_USER:
+          case UserOperatorRoles.INDUSTRY_USER_REPORTER:
             contentsModule = await import(
               "@/app/data/dashboard/industry_user.json"
             );
@@ -69,7 +67,7 @@ export default function Page() {
   }, [role]); // dependencies array
   return (
     <div>
-      {role === Roles.CAS_PENDING ? (
+      {role === AppRoles.CAS_PENDING ? (
         // Display pending message
         <Card
           data-testid="dashboard-pending-message"

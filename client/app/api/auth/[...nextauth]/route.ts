@@ -1,6 +1,6 @@
 import NextAuth, { NextAuthOptions } from "next-auth";
 import KeycloakProvider from "next-auth/providers/keycloak";
-import { Errors, IDP, Roles } from "@/app/utils/enums";
+import { Errors, IDP, UserOperatorRoles } from "@/app/utils/enums";
 import { actionHandler } from "@/app/utils/actions";
 
 /**
@@ -58,7 +58,7 @@ export const authOptions: NextAuthOptions = {
           // 🚀 API call: Get user app_role by user_guid from user table
           const responseRole = await actionHandler(
             `registration/user-app-role/${token.user_guid}`,
-            "GET"
+            "GET",
           );
           if (responseRole?.role_name) {
             // user found in table, assign role to token
@@ -70,12 +70,10 @@ export const authOptions: NextAuthOptions = {
                 // 🚀 API call: check if user is admin approved
                 const responseAdmin = await actionHandler(
                   `registration/is-approved-admin-user-operator/${token.user_guid}`,
-                  "GET"
+                  "GET",
                 );
-                console.log("!!!!!!!!!!!responseAdmin", responseAdmin);
-                // brianna here the check is for approved, not for app_role
                 if (responseAdmin?.approved) {
-                  token.app_role = Roles.INDUSTRY_USER_ADMIN;
+                  token.app_role = UserOperatorRoles.INDUSTRY_USER_ADMIN;
                 } else {
                   // Default app_role if the API call fails
                 }

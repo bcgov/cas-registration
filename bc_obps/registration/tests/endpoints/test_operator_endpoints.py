@@ -7,7 +7,7 @@ from django.test import Client
 from localflavor.ca.models import CAPostalCodeField
 from registration.models import Operator, User, UserOperator
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
-from registration.enums.enums import Roles
+from registration.enums.enums import UserOperatorRoles
 
 pytestmark = pytest.mark.django_db
 
@@ -88,7 +88,9 @@ class TestOperatorsEndpoint(CommonTestSetup):
 
     def test_get_search_operators_by_legal_name(self):
         response = TestUtils.mock_get_with_auth_role(
-            self, Roles.INDUSTRY_USER.value, self.endpoint + "/legal-name?search_value=Test Operator legal name"
+            self,
+            UserOperatorRoles.INDUSTRY_USER_REPORTER.value,
+            self.endpoint + "/legal-name?search_value=Test Operator legal name",
         )
         assert response.status_code == 200
         response_dict: dict = response.json()
