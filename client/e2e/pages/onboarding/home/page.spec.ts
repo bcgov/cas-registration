@@ -5,7 +5,7 @@ import { test, expect } from "@playwright/test";
 
 import * as dotenv from "dotenv";
 dotenv.config({
-  path: "../e2e/.env.local",
+  path: "./e2e/.env.local",
 });
 
 // 👤 User Roles
@@ -25,7 +25,7 @@ const login = async (
   page: any,
   userName: string,
   password: string,
-  role: string
+  role: string,
 ) => {
   try {
     let loginButton = LoginLink.INDUSTRY_USER;
@@ -82,13 +82,14 @@ const login = async (
 // 🛠️ Function: logout
 const logout = async (page: any) => {
   try {
-    // Wait for the "Log out" button to appear
+    // 🕒 Wait for the "Log out" button to appear
     await page.waitForSelector('button:has-text("Log out")');
-
+    // Used in scenarios where trigger opens a new browser
     const page1Promise = page.waitForEvent("popup");
+    // Click and fill the password field
     await page.getByRole("button", { name: "Log out" }).click();
     const page1 = await page1Promise;
-    // 🕒 Wait for the error text to appear on the page after Submit click
+    // 🕒 Wait for the logged out text
     const textLogout = await page1.textContent("text=You are logged out");
     // 🔍 Assert that the logged out message displays
     expect(textLogout).toContain("You are logged out");
@@ -99,7 +100,7 @@ const logout = async (page: any) => {
 // 🏷 Annotate test suite as serial
 test.describe.configure({ mode: "serial" });
 
-test.describe("Test Home Page", () => {
+test.describe("Test Page - Home", () => {
   // ➰ Loop through the entries of UserRole enum
   for (const [role, value] of Object.entries(UserRole)) {
     test.describe(`Test User Role - ${value}`, () => {
@@ -113,7 +114,6 @@ test.describe("Test Home Page", () => {
           pw = process.env[role + "_PASSWORD"];
           break;
       }
-      // Use the helper function for Login test
       test("Test Login Logout Login", async ({ page }) => {
         // Use the helper function for login test
         await login(page, user || "", pw || "", value);

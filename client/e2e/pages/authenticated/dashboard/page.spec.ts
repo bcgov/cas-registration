@@ -48,10 +48,10 @@ const url = BASEURL + "dashboard";
 // 🛠️ Function: navigates to dashboard and validates navigation titles align with the user's role dashboard json import
 const assertDashboardNavigation = async (
   page: any,
-  dashboardData: DashboardSection[]
+  dashboardData: DashboardSection[],
 ) => {
   // 🛸 Navigate to the dashboard page
-  navigateAndWaitForLoad(page, url);
+  await navigateAndWaitForLoad(page, url);
   // 🔍 Assert authenticated user's dashboard tiles title reflect role based dashboard json titles
   for (const section of dashboardData) {
     // Use Playwright selectors to find and validate section titles
@@ -68,11 +68,12 @@ const assertDashboardNavigation = async (
 // 🏷 Annotate test suite as serial
 test.describe.configure({ mode: "serial" });
 
-test.describe("Test Dashboard Page", () => {
+test.describe("Test Page - Dashboard", () => {
   // ➰ Loop through the entries of UserRole enum
   for (const [role, value] of Object.entries(UserRole)) {
-    const storageState = process.env[role + "_STORAGE"] || "";
     test.describe(`Test User Role - ${value}`, () => {
+      // 👤 run test as this role
+      const storageState = process.env[role + "_STORAGE"] || "";
       test.use({ storageState: storageState });
       switch (value) {
         case UserRole.CAS_ADMIN:
@@ -86,12 +87,7 @@ test.describe("Test Dashboard Page", () => {
           break;
         case UserRole.CAS_PENDING:
           test("Test Pending Message", async ({ page }) => {
-            //  🐜 navigateAndWaitForLoad(page, url); 🤔
-            // 🛸 Navigate to the dashboard page
-            await page.goto(url);
-            // 🕒 Wait for the navigation to complete
-            await page.waitForLoadState("domcontentloaded");
-
+            await navigateAndWaitForLoad(page, url);
             // 🕒 Wait for the pending message to be present
             const pendingMessageSelector =
               '[data-testid="dashboard-pending-message"]';
@@ -102,11 +98,7 @@ test.describe("Test Dashboard Page", () => {
           break;
         case UserRole.NEW_USER:
           test("Test New User Profile", async ({ page }) => {
-            //  🐜 navigateAndWaitForLoad(page, url); 🤔
-            // 🛸 Navigate to the dashboard page
-            await page.goto(url);
-            // 🕒 Wait for the navigation to complete
-            await page.waitForLoadState("domcontentloaded");
+            await navigateAndWaitForLoad(page, url);
             // New user has no role; so, redirected to: http://localhost:3000/dashboard/profile in `client/middlewares/withAuthorization.tsx`
             // 🔍 Assert that the current URL ends with "/profile"
             expect(page.url().toLocaleLowerCase()).toContain("/profile");

@@ -10,5 +10,5 @@ export enum UserRole {
   CAS_ADMIN = "cas_admin",
   INDUSTRY_USER = "industry_user",
   INDUSTRY_USER_ADMIN = "industry_user_admin",
-  NEW_USER = "",
+  NEW_USER = "none",
 }

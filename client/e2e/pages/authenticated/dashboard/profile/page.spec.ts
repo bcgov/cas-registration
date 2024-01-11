@@ -6,7 +6,7 @@ const { Pool } = require("pg");
 
 import * as dotenv from "dotenv";
 dotenv.config({
-  path: "../e2e/.env.local",
+  path: "./e2e/.env.local",
 });
 
 // 👤 User Roles
@@ -52,7 +52,7 @@ const submitFailTest = async (page: any) => {
 
   // 🕒 Wait for the error text to appear on the page after Submit click
   const formatErrorText = await page.textContent(
-    "text=Format should be ### ### ####"
+    "text=Format should be ### ### ####",
   );
   // 🔍 Assert that the phone format error message displays
   expect(formatErrorText).toContain("Format should be ### ### ####");
@@ -84,11 +84,12 @@ const deleteNewUserRecord = async () => {
 // 🏷 Annotate test suite as serial
 test.describe.configure({ mode: "serial" });
 
-test.describe("Test Profile Page", () => {
+test.describe("Test Page - Profile", () => {
   // ➰ Loop through the entries of UserRole enum
   for (const [role, value] of Object.entries(UserRole)) {
-    const storageState = process.env[role + "_STORAGE"] || "";
     test.describe(`Test User Role - ${value}`, () => {
+      // 👤 run test as this role
+      const storageState = process.env[role + "_STORAGE"] || "";
       test.use({ storageState: storageState });
       switch (value) {
         case UserRole.NEW_USER:

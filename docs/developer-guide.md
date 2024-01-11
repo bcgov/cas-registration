@@ -203,7 +203,21 @@ npm install @playwright/test
 
 ## Writing Tests
 
-### Basic Test Structure
+### Test Structure
+
+#### Test Folder Structure
+
+- **`e2e/`**: This is the main folder for your Playwright end-to-end tests.
+
+- **`pages/`**: This folder contains page objects tested across all user roles.
+
+- **`workflows/`**: This folder contains higher-level workflows or series of actions a user with a specific role would perform.
+
+- **`utils/`**: This folder contains common objects and helper functions.
+
+- **`setup/`**: Contains setup files for global configurations, environment variables, and storageState tasks that should be executed before running the tests.
+
+#### Basic Test Structure
 
 Playwright tests follow a simple structure. Each test case is a JavaScript or TypeScript function with Playwright APIs for interacting with the browser.
 
