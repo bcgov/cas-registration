@@ -18,6 +18,9 @@ export const authOptions: NextAuthOptions = {
       clientId: `${process.env.KEYCLOAK_CLIENT_ID}`,
       clientSecret: `${process.env.KEYCLOAK_CLIENT_SECRET}`,
       issuer: `${process.env.KEYCLOAK_LOGIN_URL}`,
+      httpOptions: {
+        timeout: 10000,
+      },
     }),
   ],
   //https://next-auth.js.org/configuration/pages
