@@ -1,8 +1,11 @@
-from typing import Optional
+from typing import List, Optional
 import uuid
 from ninja import ModelSchema, Schema, Field
-from registration.models import Contact, User, UserOperator
+from pydantic import validator
+from registration.models import BusinessStructure, Contact, UserOperator
 from registration.utils import AUDIT_FIELDS
+from .parent_operator import ParentOperatorIn, ParentOperatorOut
+from .business_structure import validate_business_structure
 
 
 class UserOperatorStatus(Schema):
@@ -57,6 +60,8 @@ class UserOperatorOut(ModelSchema):
     mailing_address_same_as_physical: bool
     operator_id: int = Field(..., alias="operator.id")
     is_new: bool = Field(..., alias="operator.is_new")
+    operator_has_parent_operators: bool
+    parent_operators_array: Optional[List[ParentOperatorOut]] = Field(None, alias="operator.parent_operators")
 
     @staticmethod
     def resolve_is_senior_officer(obj: UserOperator):
@@ -106,6 +111,10 @@ class UserOperatorOut(ModelSchema):
     def resolve_so_phone_number(obj: UserOperator):
         return str(obj.get_senior_officer().phone_number) if obj.get_senior_officer() else ""
 
+    @staticmethod
+    def resolve_operator_has_parent_operators(obj: UserOperator) -> bool:
+        return obj.operator.parent_operators.exists()
+
     class Config:
         model = UserOperator
         model_fields = ["role", "status"]
@@ -132,22 +141,13 @@ class UserOperatorOperatorIn(Schema):
     mailing_postal_code: Optional[str]
     website: Optional[str]
     mailing_address_same_as_physical: bool
-    operator_has_parent_company: bool
-    # pc => parent company
-    pc_legal_name: Optional[str]
-    pc_cra_business_number: Optional[int]
-    pc_bc_corporate_registry_number: Optional[str] = Field(regex=r"^[A-Za-z]{1,3}\d{7}$")
-    pc_business_structure: Optional[str]
-    pc_physical_street_address: Optional[str]
-    pc_physical_municipality: Optional[str]
-    pc_physical_province: Optional[str]
-    pc_physical_postal_code: Optional[str]
-    pc_mailing_address_same_as_physical: Optional[bool]
-    pc_mailing_street_address: Optional[str]
-    pc_mailing_municipality: Optional[str]
-    pc_mailing_province: Optional[str]
-    pc_mailing_postal_code: Optional[str]
-    percentage_owned_by_parent_company: Optional[int]
+    operator_has_parent_operators: bool
+    parent_operators_array: Optional[List[ParentOperatorIn]] = None
+
+    @validator("business_structure")
+    @classmethod
+    def validate_business_structure(cls, value: str) -> BusinessStructure:
+        return validate_business_structure(value)
 
 
 class UserOperatorContactIn(ModelSchema):
@@ -172,23 +172,6 @@ class UserOperatorContactIn(ModelSchema):
         model_exclude = ["id", "documents", "business_role", "address", *AUDIT_FIELDS]
         # whether an aliased field may be populated by its name as given by the model attribute, as well as the alias
         allow_population_by_field_name = True
-
-
-class UserOperatorUserOut(ModelSchema):
-    """
-    Custom schema for the user operator user form
-    """
-
-    @staticmethod
-    def resolve_phone_number(obj):
-        # PhoneNumberField returns a PhoneNumber object and we need a string
-        if not obj.phone_number:
-            return
-        return str(obj.phone_number)
-
-    class Config:
-        model = User
-        model_fields = ["phone_number", "email"]
 
 
 class SelectUserOperatorStatus(Schema):
