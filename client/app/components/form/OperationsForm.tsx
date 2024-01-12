@@ -31,8 +31,9 @@ export default function OperationsForm({ formData, schema }: Readonly<Props>) {
   const operationId = params?.operation;
   const isCreate = params?.operation === "create";
 
+  const applicationLeadEmail = formData?.application_lead?.email;
   const isApplicationLeadExternal =
-    userEmail !== formData?.application_lead?.email;
+    userEmail !== applicationLeadEmail && applicationLeadEmail !== undefined;
 
   // empty array is not a valid value for multiple_operators_array as empty default should be [{}]
   // to avoid buggy behaviour opening

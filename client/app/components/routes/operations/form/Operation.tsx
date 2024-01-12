@@ -3,6 +3,7 @@ import OperationsForm, {
 } from "@/app/components/form/OperationsForm";
 import { operationSchema } from "@/app/utils/jsonSchema/operations";
 import { BusinessStructure } from "@/app/components/routes/select-operator/form/types";
+import { UserProfileFormData } from "@/app/components/form/formDataTypes";
 import { RJSFSchema } from "@rjsf/utils";
 import { actionHandler } from "@/app/utils/actions";
 import OperationReview from "./OperationReview";
@@ -11,6 +12,13 @@ import CancelIcon from "@mui/icons-material/Cancel";
 import { Fade } from "@mui/material";
 import { Status } from "@/app/utils/enums";
 import { Operation as OperationInt } from "@/app/components/routes/operations/types";
+
+// 🚀 API call: GET user's data
+async function getUserFormData(): Promise<
+  UserProfileFormData | { error: string }
+> {
+  return actionHandler(`registration/user-profile`, "GET", "");
+}
 
 // 🛠️ Function to fetch NAICS codes
 async function getNaicsCodes() {
@@ -194,6 +202,14 @@ export default async function Operation({ numRow }: { numRow?: number }) {
     operation &&
     [Status.REJECTED, Status.APPROVED].includes(operation?.status as Status);
 
+  let userProfileFormData: UserProfileFormData | { error: string } =
+    await getUserFormData();
+
+  const formData = {
+    ...userProfileFormData,
+    ...operation,
+  };
+
   // Render the OperationsForm component with schema and formData if the operation already exists
   return (
     <>
@@ -213,7 +229,7 @@ export default async function Operation({ numRow }: { numRow?: number }) {
           activities,
           businessStructuresList,
         )}
-        formData={operation as OperationsFormData}
+        formData={formData as OperationsFormData}
       />
     </>
   );
