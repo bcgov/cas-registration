@@ -19,7 +19,7 @@ import pytz
 
 
 @router.get("/operators", response={200: OperatorOut, codes_4xx: Message, codes_5xx: Message})
-@authorize(AppRole.get_all_app_roles(), AppRole.get_all_industry_user_operator_roles())
+@authorize(AppRole.get_all_app_roles())
 def get_operator_by_legal_name_or_cra(
     request, legal_name: Optional[str] = None, cra_business_number: Optional[int] = None
 ):
@@ -54,7 +54,7 @@ def get_operator_by_legal_name_or_cra(request, search_value: Optional[str] = Non
 
 
 @router.get("/operators/{operator_id}", response={200: OperatorOut, codes_4xx: Message})
-@authorize(AppRole.get_all_authorized_app_roles(), AppRole.get_all_industry_user_operator_roles())
+@authorize(AppRole.get_all_authorized_app_roles())
 def get_operator(request, operator_id: int):
     try:
         operator = get_object_or_404(Operator, id=operator_id)
@@ -64,7 +64,7 @@ def get_operator(request, operator_id: int):
 
 
 @router.get("/operators/{operator_id}/user-operators", response=list[SelectUserOperatorStatus])
-@authorize(AppRole.get_all_authorized_app_roles(), AppRole.get_all_industry_user_operator_roles())
+@authorize(AppRole.get_all_authorized_app_roles())
 def list_user_operators_status_of_operator(request, operator_id: int):
     qs = UserOperator.objects.filter(operator=operator_id)
     return qs

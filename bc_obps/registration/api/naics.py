@@ -10,7 +10,7 @@ from registration.schema import (
 
 
 @router.get("/naics_codes", response=List[NaicsCodeSchema])
-@authorize(AppRole.get_all_authorized_app_roles(), AppRole.get_all_industry_user_operator_roles())
+@authorize(AppRole.get_all_authorized_app_roles())
 def list_naics_codes(request):
     qs = NaicsCode.objects.all()
     return qs

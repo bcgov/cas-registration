@@ -18,6 +18,7 @@ type UserOperator = {
 
 // 🛠️ Function to fetch a user's approved UserOperators, returning the business id as `obj.operator`
 async function getAdminsApprovedUserOperators(): Promise<UserOperator[]> {
+  // brianna why do we need this? doesn't getUserOperatorsForOperator cover everything?
   try {
     return await actionHandler(
       `registration/get-current-user-user-operators`,
@@ -50,9 +51,11 @@ export async function processAdminUserOperators(): Promise<
 > {
   let userOperatorStatuses: UserOperatorStatus[] = [];
   const approvedOperators = await getAdminsApprovedUserOperators();
+  console.log("approvedOperators");
   if (approvedOperators) {
     const token = await getToken();
     const uid = token?.user_guid ?? "";
+    // so this is getting all the operators that an admin user could approve
     userOperatorStatuses = (
       await Promise.all(
         approvedOperators.flatMap((associatedOperator) =>

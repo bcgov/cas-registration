@@ -46,7 +46,7 @@ from django.forms import model_to_dict
 
 ##### GET #####
 @router.get("/user-operator-status-from-user", response={200: UserOperatorStatus, codes_4xx: Message})
-@authorize(["industry_user"], AppRole.get_all_industry_user_operator_roles())
+@authorize(["industry_user"])
 def get_user_operator_operator_id(request):
     user_operator = get_object_or_404(UserOperator, user_id=request.current_user.user_guid)
     return 200, {"status": user_operator.status}
@@ -54,7 +54,7 @@ def get_user_operator_operator_id(request):
 
 # brianna
 @router.get("/is-approved-admin-user-operator/{user_guid}", response={200: IsApprovedUserOperator, codes_4xx: Message})
-@authorize(["industry_user"], AppRole.get_all_industry_user_operator_roles())
+@authorize(["industry_user"])
 def is_approved_admin_user_operator(request, user_guid: str):
     approved_user_operator: bool = UserOperator.objects.filter(
         user_id=user_guid, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.APPROVED
@@ -64,7 +64,7 @@ def is_approved_admin_user_operator(request, user_guid: str):
 
 
 @router.get("/user-operator-operator-id", response={200: UserOperatorOperatorIdOut, codes_4xx: Message})
-@authorize(["industry_user"], AppRole.get_all_industry_user_operator_roles())
+@authorize(["industry_user"])
 def get_user_operator_operator_id(request):
     user_operator = get_object_or_404(
         UserOperator, user_id=request.current_user.user_guid, status=UserOperator.Statuses.APPROVED
@@ -76,7 +76,7 @@ def get_user_operator_operator_id(request):
     "/select-operator/user-operator/{int:user_operator_id}",
     response=UserOperatorOut,
 )
-@authorize(AppRole.get_all_authorized_app_roles(), AppRole.get_all_industry_user_operator_roles())
+@authorize(AppRole.get_all_authorized_app_roles())
 def get_user_operator(request, user_operator_id: int):
     user: User = request.current_user
     user_operator = get_object_or_404(UserOperator, id=user_operator_id)
@@ -88,7 +88,7 @@ def get_user_operator(request, user_operator_id: int):
 
 
 @router.get("/operator-has-admin/{operator_id}", response={200: bool, codes_4xx: Message})
-@authorize(AppRole.get_all_authorized_app_roles(), AppRole.get_all_industry_user_operator_roles())
+@authorize(AppRole.get_all_authorized_app_roles())
 def get_user_operator_admin_exists(request, operator_id: int):
     has_admin = UserOperator.objects.filter(
         operator_id=operator_id, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.APPROVED
@@ -97,11 +97,15 @@ def get_user_operator_admin_exists(request, operator_id: int):
 
 
 @router.get("/get-current-user-user-operators", response=List[SelectUserOperatorOperatorsOut])
-@authorize(["industry_user"], "admin")
+@authorize(["industry_user"])
 def get_user(request):
     user_operator_list = UserOperator.objects.filter(
         user_id=request.current_user.user_guid, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.APPROVED
     )
+    # an industry_user must have UserOperator.role == 'admin' and UserOperator.status == "approved" to access information about other user_operators in their operation
+    if not user_operator_list:
+        raise HttpError(401, UNAUTHORIZED_MESSAGE)
+
     return user_operator_list
 
 
@@ -150,7 +154,7 @@ def list_user_operators(request):
 
 
 @router.post("/select-operator/request-admin-access", response={201: RequestAccessOut, codes_4xx: Message})
-@authorize(["industry_user"], AppRole.get_all_industry_user_operator_roles())
+@authorize(["industry_user"])
 def request_access(request, payload: SelectOperatorIn):
     user: User = request.current_user
     operator: Operator = get_object_or_404(Operator, id=payload.operator_id)
@@ -170,7 +174,7 @@ def request_access(request, payload: SelectOperatorIn):
 
 
 @router.post("/select-operator/request-access", response={201: RequestAccessOut, codes_4xx: Message})
-@authorize(["industry_user"], AppRole.get_all_industry_user_operator_roles())
+@authorize(["industry_user"])
 def request_access(request, payload: SelectOperatorIn):
     user: User = request.current_user
     operator: Operator = get_object_or_404(Operator, id=payload.operator_id)
@@ -188,7 +192,7 @@ def request_access(request, payload: SelectOperatorIn):
 
 
 @router.post("/user-operator/operator", response={200: RequestAccessOut, codes_4xx: Message})
-@authorize(["industry_user"], AppRole.get_all_industry_user_operator_roles())
+@authorize(["industry_user"])
 def create_operator_and_user_operator(request, payload: UserOperatorOperatorIn):
     user: User = request.current_user
     try:
@@ -315,7 +319,7 @@ def create_operator_and_user_operator(request, payload: UserOperatorOperatorIn):
 
 
 @router.post("/user-operator/contact", response={200: SelectOperatorIn, codes_4xx: Message})
-@authorize(["industry_user"], AppRole.get_all_industry_user_operator_roles())
+@authorize(["industry_user"])
 def create_user_operator_contact(request, payload: UserOperatorContactIn):
     try:
         user_operator_instance: UserOperator = get_object_or_404(UserOperator, id=payload.user_operator_id)
@@ -377,14 +381,25 @@ def create_user_operator_contact(request, payload: UserOperatorContactIn):
 
 # this endpoint is for updating the status of a user
 @router.put("/select-operator/user-operator/{user_guid}/update-status")
-@authorize(AppRole.get_all_authorized_app_roles(), ["admin"])
+@authorize(AppRole.get_all_authorized_app_roles())
 def update_user_operator_user_status(request, user_guid: str):
     current_admin_user: User = request.current_user
+
+    # figure out which user operator the userguid is requesting access for to see if the current user is an admin for that operator
+    # can't look up the operator in the user operator table if there's more than one
+    # a param with the id of the relevant one?
+    # user approval is the only part of the app that correctly handles a user having multiple user_operators. everywhere else (?) assumes just one and does a lookup on the user_operator table
+    # maybe we keep that flexibility in the db but not in the endpoints? if it changes, it's going to require a lot of rethinking and refactoring (e.g., the operator tile design assumes one operator, all the lookups already in the code, most of the auth) so maybe it makes sense to only deal with that if it happens
+
+
+    breakpoint()
     # need to convert request.body (a bytes object) to a string, and convert the string to a JSON object
     payload = json.loads(request.body.decode())
     status = getattr(UserOperator.Statuses, payload.get("status").upper())
     user_operator = get_object_or_404(UserOperator, user=user_guid)
     user_operator.status = status
+
+
     if user_operator.status in [UserOperator.Statuses.APPROVED, UserOperator.Statuses.REJECTED]:
         user_operator.verified_at = datetime.now(pytz.utc)
         user_operator.verified_by_id = current_admin_user.user_guid
