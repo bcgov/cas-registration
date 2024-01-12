@@ -29,13 +29,19 @@ const ArrayFieldTemplate = ({
   const arrayAddLabel =
     (uiSchema?.["ui:options"]?.arrayAddLabel as string) || "Add";
 
+  const customTitleName = uiSchema?.["ui:options"]?.title as string;
+
   return (
     <div className="flex min-w-full flex-col">
       {items?.map((item, i: number) => {
         return (
           <div key={item.key} className="min-w-full">
             <div className="form-heading flex justify-between m-w-full my-10">
-              <span>Multiple Operator(s) information - Operator {i + 1}</span>
+              {customTitleName && (
+                <span>
+                  {customTitleName} {i + 1}
+                </span>
+              )}
               {i !== 0 && (
                 <button
                   onClick={item.onDropIndexClick(item.index)}

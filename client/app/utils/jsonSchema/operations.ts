@@ -470,6 +470,7 @@ export const operationUiSchema = {
     "ui:options": {
       label: false,
       arrayAddLabel: "Add another operator",
+      title: "Multiple Operator(s) information - Operator",
     },
     items: {
       mo_physical_address_section: {
