@@ -1,4 +1,4 @@
-# CIIP - SWRS Import to obps
+# CIIP - SWRS Import to OBPS
 
 This directory contains all the files necessary to import data from ciip/swrs into the obps database in openshift. This is intended to be a one-time import, but can be run again if necessary. Some of this code could be useful for future imports or as part of the data warehouse.
 
