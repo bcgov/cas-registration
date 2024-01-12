@@ -21,7 +21,6 @@ interface Props {
 
 export default function OperationsForm({ formData, schema }: Readonly<Props>) {
   const { data: session } = useSession();
-  const userEmail = session?.user?.email;
 
   const [operationName, setOperationName] = useState("");
   const [error, setError] = useState(undefined);
@@ -30,33 +29,6 @@ export default function OperationsForm({ formData, schema }: Readonly<Props>) {
   const formSection = parseInt(params?.formSection as string);
   const operationId = params?.operation;
   const isCreate = params?.operation === "create";
-
-  const applicationLeadEmail = formData?.application_lead?.email;
-  const isApplicationLeadExternal =
-    userEmail !== applicationLeadEmail && applicationLeadEmail !== undefined;
-
-  // empty array is not a valid value for multiple_operators_array as empty default should be [{}]
-  // to avoid buggy behaviour opening
-  const isMultipleOperatorsArray =
-    formData &&
-    Array.isArray(formData?.multiple_operators_array) &&
-    formData.multiple_operators_array.length > 0;
-
-  // We need to convert some of the information received from django into types RJSF can read.
-  const transformedFormData = {
-    ...formData,
-    // we only add the application lead data to the formData (ie, show it in the form) if the application lead is external (ie, someone other than the user)
-    ...(isApplicationLeadExternal && formData?.application_lead),
-    // If you spread anything and it has the same keys as operation (e.g. id, created_by), watch out for accidentally overwriting things. In this case it's safe to spread because the address schema excludes fields
-    ...formData?.application_lead?.address,
-    "Did you submit a GHG emissions report for reporting year 2022?":
-      formData?.previous_year_attributable_emissions ? true : false,
-    is_user_application_lead: isApplicationLeadExternal,
-    // fix for null values not opening the multiple operators form if loading a previously saved form
-    multiple_operators_array: isMultipleOperatorsArray
-      ? formData?.multiple_operators_array
-      : [{}],
-  };
 
   const formSectionList = Object.keys(schema.properties as any);
   const isNotFinalStep = formSection !== formSectionList.length;
@@ -88,7 +60,7 @@ export default function OperationsForm({ formData, schema }: Readonly<Props>) {
         <MultiStepFormBase
           baseUrl={`/dashboard/operations/${operationId}`}
           cancelUrl="/dashboard/operations"
-          formData={transformedFormData}
+          formData={formData}
           setErrorReset={setError}
           disabled={
             session?.user.app_role?.includes("cas") ||
