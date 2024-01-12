@@ -3,6 +3,7 @@ import uuid, re
 from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
 from localflavor.ca.models import CAPostalCodeField, CAProvinceField
+from registration.constants import BC_CORPORATE_REGISTRY_REGEX, BC_CORPORATE_REGISTRY_REGEX_MESSAGE, BORO_ID_REGEX
 from simple_history.models import HistoricalRecords
 from django.core.validators import RegexValidator
 from django.utils import timezone
@@ -350,12 +351,7 @@ class Operator(TimeStampedModel):
     cra_business_number = models.IntegerField(db_comment="The CRA business number of an operator")
     bc_corporate_registry_number = models.CharField(
         db_comment="The BC corporate registry number of an operator",
-        validators=[
-            RegexValidator(
-                regex="^[A-Za-z]{1,3}\d{7}$",
-                message='"BC Corporate Registry Number should be 1-3 letters followed by 7 digits".',
-            )
-        ],
+        validators=[RegexValidator(regex=BC_CORPORATE_REGISTRY_REGEX, message=BC_CORPORATE_REGISTRY_REGEX_MESSAGE)],
     )
     business_structure = models.ForeignKey(
         BusinessStructure,
@@ -547,9 +543,6 @@ class OperationAndFacilityCommonInfo(TimeStampedModel):
         db_table = 'erc"."operation'
 
 
-boro_id_pattern = r'^\d{2}-\d{4}$'
-
-
 class Operation(OperationAndFacilityCommonInfo):
     """Operation model"""
 
@@ -655,7 +648,7 @@ class Operation(OperationAndFacilityCommonInfo):
             f"{current_year_last_digits}-{latest_number:04d}"  # Pad the number with zeros to make it 4 digits long
         )
 
-        if not re.match(boro_id_pattern, new_boro_id):
+        if not re.match(BORO_ID_REGEX, new_boro_id):
             raise ValidationError("Generated BORO ID is not in the correct format.")
         if Operation.objects.filter(bc_obps_regulated_operation__pk=new_boro_id).exists():
             raise ValidationError("Generated BORO ID is not unique.")
@@ -681,12 +674,7 @@ class MultipleOperator(TimeStampedModel):
     cra_business_number = models.IntegerField(db_comment="The CRA business number of an operator")
     bc_corporate_registry_number = models.CharField(
         db_comment="The BC corporate registry number of an operator",
-        validators=[
-            RegexValidator(
-                regex="^[A-Za-z]{1,3}\d{7}$",
-                message='"BC Corporate Registry Number should be 1-3 letters followed by 7 digits".',
-            )
-        ],
+        validators=[RegexValidator(regex=BC_CORPORATE_REGISTRY_REGEX, message=BC_CORPORATE_REGISTRY_REGEX_MESSAGE)],
     )
     business_structure = models.ForeignKey(
         BusinessStructure,
@@ -765,7 +753,7 @@ class BcObpsRegulatedOperation(models.Model):
         """
         Override the save method to set the issued_at field if it is not already set.
         """
-        if not re.match(boro_id_pattern, self.id):
+        if not re.match(BORO_ID_REGEX, self.id):
             raise ValidationError("Generated BORO ID is not in the correct format.")
         if not self.issued_at:
             self.issued_at = timezone.now()
@@ -789,12 +777,7 @@ class ParentOperator(TimeStampedModel):
     cra_business_number = models.IntegerField(db_comment="The CRA business number of an operator")
     bc_corporate_registry_number = models.CharField(
         db_comment="The BC corporate registry number of an operator",
-        validators=[
-            RegexValidator(
-                regex="^[A-Za-z]{1,3}\d{7}$",
-                message='"BC Corporate Registry Number should be 1-3 letters followed by 7 digits".',
-            )
-        ],
+        validators=[RegexValidator(regex=BC_CORPORATE_REGISTRY_REGEX, message=BC_CORPORATE_REGISTRY_REGEX_MESSAGE)],
     )
     business_structure = models.ForeignKey(
         BusinessStructure,

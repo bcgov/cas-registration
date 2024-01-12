@@ -3,6 +3,7 @@ from uuid import UUID
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError, models
 from django.db.models import QuerySet
+from registration.constants import UNAUTHORIZED_MESSAGE
 
 from .models import User, Operator, UserOperator
 from django.shortcuts import get_object_or_404
@@ -12,18 +13,6 @@ from registration.models import (
     User,
     UserOperator,
 )
-
-UNAUTHORIZED_MESSAGE = "Unauthorized."
-
-# Used to exclude audit fields from the schema
-AUDIT_FIELDS = [
-    "created_at",
-    "created_by",
-    "updated_at",
-    "updated_by",
-    "archived_at",
-    "archived_by",
-]
 
 
 def check_users_admin_request_eligibility(user: User, operator: Operator) -> Union[None, tuple[int, dict]]:
