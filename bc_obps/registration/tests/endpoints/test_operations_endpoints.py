@@ -117,7 +117,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         baker.make(UserOperator, user_id=self.user.user_guid, status=UserOperator.Statuses.APPROVED)
         response = TestUtils.mock_get_with_auth_role(self, "industry_user")
         assert response.status_code == 200
-        response = TestUtils.mock_get_with_auth_role(self, "industry_user_admin")
+        response = TestUtils.mock_get_with_auth_role(self, "industry_user")
         assert response.status_code == 200
 
     def test_get_method_for_invalid_operation_id(self):
@@ -145,7 +145,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         response = TestUtils.mock_get_with_auth_role(self, "industry_user")
         assert response.status_code == 200
         assert len(json.loads(response.content)) == 1
-        response = TestUtils.mock_get_with_auth_role(self, "industry_user_admin")
+        response = TestUtils.mock_get_with_auth_role(self, "industry_user")
         assert response.status_code == 200
         assert len(json.loads(response.content)) == 1
 
@@ -165,7 +165,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         get_response = TestUtils.mock_get_with_auth_role(self, "industry_user").json()[0]
         assert 'status' in get_response and get_response['status'] == 'Not Registered'
         post_response = TestUtils.mock_post_with_auth_role(
-            self, "industry_user_admin", content_type_json, mock_operation.json(), endpoint=None
+            self, "industry_user", content_type_json, mock_operation.json(), endpoint=None
         )
         assert post_response.status_code == 201
 
