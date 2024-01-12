@@ -1,8 +1,8 @@
 from typing import Optional
 from ninja import ModelSchema, Schema, Field
 from pydantic import validator
+from registration.constants import AUDIT_FIELDS, BC_CORPORATE_REGISTRY_REGEX
 from registration.models import BusinessStructure, ParentOperator
-from registration.utils import AUDIT_FIELDS
 from .business_structure import validate_business_structure
 
 
@@ -14,7 +14,7 @@ class ParentOperatorIn(Schema):
     po_legal_name: str
     po_trade_name: Optional[str] = ""
     po_cra_business_number: int
-    po_bc_corporate_registry_number: str = Field(regex=r"^[A-Za-z]{1,3}\d{7}$")
+    po_bc_corporate_registry_number: str = Field(regex=BC_CORPORATE_REGISTRY_REGEX)
     po_business_structure: str
     po_website: Optional[
         str

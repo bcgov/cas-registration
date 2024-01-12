@@ -1,7 +1,7 @@
 from typing import Optional
 from ninja import Field, ModelSchema
+from registration.constants import AUDIT_FIELDS, BC_CORPORATE_REGISTRY_REGEX
 from registration.models import MultipleOperator
-from registration.utils import AUDIT_FIELDS
 
 
 class MultipleOperatorOut(ModelSchema):
@@ -13,7 +13,7 @@ class MultipleOperatorOut(ModelSchema):
     mo_trade_name: str = Field(..., alias="trade_name")
     mo_cra_business_number: int = Field(..., alias="cra_business_number")
     mo_bc_corporate_registry_number: str = Field(
-        ..., alias="bc_corporate_registry_number", regex=r"^[A-Za-z]{1,3}\d{7}$"
+        ..., alias="bc_corporate_registry_number", regex=BC_CORPORATE_REGISTRY_REGEX
     )
     mo_business_structure: str = Field(..., alias="business_structure")
     mo_website: Optional[str] = Field(None, alias="website")

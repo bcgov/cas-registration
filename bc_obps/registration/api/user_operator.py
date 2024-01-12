@@ -1,5 +1,6 @@
 from django.db import IntegrityError, transaction
 import json, pytz
+from registration.constants import UNAUTHORIZED_MESSAGE
 from registration.decorators import authorize
 from registration.schema import (
     UserOperatorOut,
@@ -30,7 +31,6 @@ from registration.models import (
     Address,
 )
 from registration.utils import (
-    UNAUTHORIZED_MESSAGE,
     generate_useful_error,
     update_model_instance,
     check_users_admin_request_eligibility,

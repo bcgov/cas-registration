@@ -1,8 +1,8 @@
 from typing import List, Optional
 from ninja import Field, ModelSchema, Schema
+from registration.constants import AUDIT_FIELDS
 from registration.models import Operation
 from datetime import date
-from registration.utils import AUDIT_FIELDS
 from .contact import ContactSchema
 
 

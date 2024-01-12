@@ -2,8 +2,8 @@ from typing import List, Optional
 import uuid
 from ninja import ModelSchema, Schema, Field
 from pydantic import validator
+from registration.constants import AUDIT_FIELDS, BC_CORPORATE_REGISTRY_REGEX
 from registration.models import BusinessStructure, Contact, UserOperator
-from registration.utils import AUDIT_FIELDS
 from .parent_operator import ParentOperatorIn, ParentOperatorOut
 from .business_structure import validate_business_structure
 
@@ -44,7 +44,7 @@ class UserOperatorOut(ModelSchema):
     trade_name: Optional[str] = Field("", alias="operator.trade_name")
     cra_business_number: Optional[int] = Field(None, alias="operator.cra_business_number")
     bc_corporate_registry_number: str = Field(
-        ..., regex=r"^[A-Za-z]{1,3}\d{7}$", alias="operator.bc_corporate_registry_number"
+        ..., regex=BC_CORPORATE_REGISTRY_REGEX, alias="operator.bc_corporate_registry_number"
     )
     business_structure: str = Field(..., alias="operator.business_structure.name")
     physical_street_address: str = Field(..., alias="operator.physical_address.street_address")
@@ -128,7 +128,7 @@ class UserOperatorOperatorIn(Schema):
     legal_name: str
     trade_name: Optional[str] = ""
     cra_business_number: int
-    bc_corporate_registry_number: str = Field(regex=r"^[A-Za-z]{1,3}\d{7}$")
+    bc_corporate_registry_number: str = Field(regex=BC_CORPORATE_REGISTRY_REGEX)
     business_structure: str
     physical_street_address: str
     physical_municipality: str
