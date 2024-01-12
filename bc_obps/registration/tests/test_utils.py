@@ -6,7 +6,7 @@ from registration.utils import (
     update_model_instance,
     generate_useful_error,
     check_access_request_matches_business_guid,
-    raise_401_if_app_role_not_authorized,
+    raise_401_if_user_not_authorized,
     get_an_operators_approved_users,
 )
 from localflavor.ca.models import CAPostalCodeField
@@ -242,14 +242,14 @@ class TestCheckIfRoleAuthorized(TestCase):
         request = self.factory.get("/not/important")
         request.current_user = baker.make(User, app_role=baker.make(AppRole, role_name="cas_admin"))
 
-        assert raise_401_if_app_role_not_authorized(request, ['cas_admin']) == None
+        assert raise_401_if_user_not_authorized(request, ['cas_admin']) == None
 
     def test_app_role_is_not_authorized(self):
 
         request = self.factory.get("/not/important")
         request.current_user = baker.make(User, app_role=baker.make(AppRole, role_name="cas_admin"))
         with pytest.raises(HttpError):
-            raise_401_if_app_role_not_authorized(
+            raise_401_if_user_not_authorized(
                 request,
                 [
                     'role_that_is_not_cas_admin',
@@ -263,7 +263,7 @@ class TestCheckIfRoleAuthorized(TestCase):
         # note: I haven't added baker.make(UserOperator) because when a user first logs in, they haven't selected an operator yet and and they don't have a UserOperator record
 
         assert (
-            raise_401_if_app_role_not_authorized(request, ['cas_admin', 'industry_user'], [None, 'reporter', 'admin'])
+            raise_401_if_user_not_authorized(request, ['cas_admin', 'industry_user'], [None, 'reporter', 'admin'])
             == None
         )
 
@@ -273,7 +273,7 @@ class TestCheckIfRoleAuthorized(TestCase):
         request.current_user = baker.make(User, app_role=baker.make(AppRole, role_name="industry_user"))
         baker.make(UserOperator, user=request.current_user, role='reporter')
 
-        assert raise_401_if_app_role_not_authorized(request, ['industry_user'], ['reporter', 'admin']) == None
+        assert raise_401_if_user_not_authorized(request, ['industry_user'], ['reporter', 'admin']) == None
 
     def test_user_operator_role_is_not_authorized(self):
 
@@ -281,7 +281,7 @@ class TestCheckIfRoleAuthorized(TestCase):
         request.current_user = baker.make(User, app_role=baker.make(AppRole, role_name="industry_user"))
         baker.make(UserOperator, user=request.current_user, role='reporter')
         with pytest.raises(HttpError):
-            raise_401_if_app_role_not_authorized(request, ['industry_user'], ['admin'])
+            raise_401_if_user_not_authorized(request, ['industry_user'], ['admin'])
 
     def test_no_authorized_role_argument_is_provided(self):
 
@@ -289,13 +289,13 @@ class TestCheckIfRoleAuthorized(TestCase):
         request.current_user = baker.make(User, app_role=baker.make(AppRole, role_name="industry_user"))
         baker.make(UserOperator, user=request.current_user)
         with pytest.raises(HttpError):
-            raise_401_if_app_role_not_authorized(request, ['industry_user'])
+            raise_401_if_user_not_authorized(request, ['industry_user'])
 
     def test_current_user_does_not_exist(self):
         request = self.factory.get("/not/important")
         # note there is no baker.make(User) here
         with pytest.raises(HttpError):
-            raise_401_if_app_role_not_authorized(request, ['industry_user'])
+            raise_401_if_user_not_authorized(request, ['industry_user'])
 
 
 class TestGetAnOperatorsUsers:
