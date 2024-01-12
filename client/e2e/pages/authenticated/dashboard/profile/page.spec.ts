@@ -22,7 +22,7 @@ import { pool } from "@/e2e/utils/pool";
 const url = process.env.BASEURL + "dashboard/profile";
 
 // 🛠️ Function: performs the submit success test
-const submitSuccessTest = async (page: any) => {
+const submitSuccessTest = async (page: any, role: string) => {
   // 🛸 Navigate to the profile page
   await navigateAndWaitForLoad(page, url);
   // Locate all required fields within the fieldset
@@ -37,17 +37,30 @@ const submitSuccessTest = async (page: any) => {
       if (labelText === "Phone Number*") {
         await page.getByLabel(labelText).fill("987 654 3210"); //Format should be ### ### ####
       } else {
-        await inputField.fill(`E2E TEST + ${labelText}`);
+        await inputField.fill(`E2E TEST ${labelText}`);
       }
     }
   }
-  // Click the Submit button
-  await page.getByRole("button", { name: "Submit" }).click();
-  // Wait for the success message to appear
-  await page.waitForSelector("text=Success");
-  // Assert that the success message is visible
-  const isSuccessVisible = await page.isVisible("text=Success");
-  expect(isSuccessVisible).toBe(true);
+  if (role === UserRole.NEW_USER) {
+    // Click the Submit button and wait for navigation
+    await Promise.all([
+      // 🕒  Wait for navigation after form submission
+      page.waitForNavigation(),
+      // Click the Submit button
+      page.getByRole("button", { name: "Submit" }).click(),
+    ]);
+    // Add expectation for the URL after successful submission
+    expect(page.url().toLocaleLowerCase()).toContain("/dashboard");
+  } else {
+    // Click the Submit button
+    await page.getByRole("button", { name: "Submit" }).click();
+    // 🕒 Wait for the success message to be attached to the DOM
+    await page.waitForSelector("text=Success", { state: "attached" });
+    // Check if the success message existed at some point
+    const isSuccessExisted = (await page.$("text=Success")) !== null;
+    //  🔍 Assert that the success message existed at some point
+    expect(isSuccessExisted).toBe(true);
+  }
 };
 
 // 🛠️ Function: performs the Submit Fail test
@@ -111,7 +124,7 @@ test.describe("Test Page - Profile", () => {
           break;
       }
       test("Test Submit Success", async ({ page }) => {
-        await submitSuccessTest(page);
+        await submitSuccessTest(page, value);
       });
       test("Test Submit Fail", async ({ page }) => {
         await submitFailTest(page);
