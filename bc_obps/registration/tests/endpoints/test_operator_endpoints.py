@@ -63,7 +63,7 @@ class TestOperatorsEndpoint(CommonTestSetup):
 
         response = TestUtils.mock_put_with_auth_role(
             self,
-            'industry_user_admin',
+            'industry_user',
             content_type_json,
             {'status': Operator.Statuses.APPROVED},
             self.endpoint + "/" + str(operator.id),
