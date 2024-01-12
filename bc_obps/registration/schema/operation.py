@@ -73,7 +73,6 @@ class OperationOut(ModelSchema):
     bcghg_id: Optional[str] = None
     opt_in: Optional[bool] = None
     verified_at: Optional[date] = None
-    is_user_application_lead: Optional[bool] = None
     application_lead: Optional[ContactSchema]
     operation_has_multiple_operators: Optional[bool] = Field(False, alias="operation_has_multiple_operators")
     multiple_operators_array: Optional["List[MultipleOperatorOut]"] = Field(None, alias="multiple_operator")

@@ -210,6 +210,46 @@ export default async function Operation({ numRow }: { numRow?: number }) {
     ...operation,
   };
 
+  const userEmail = (userProfileFormData as UserProfileFormData)?.email;
+  const applicationLeadEmail = formData?.application_lead?.email;
+  // If the current user is the application lead, we want to show the application lead fields
+  const isUserApplicationLead =
+    userEmail === applicationLeadEmail && applicationLeadEmail !== undefined;
+
+  // empty array is not a valid value for multiple_operators_array as empty default should be [{}]
+  // to avoid buggy behaviour opening
+  const isMultipleOperatorsArray =
+    formData &&
+    Array.isArray(formData?.multiple_operators_array) &&
+    formData.multiple_operators_array.length > 0;
+
+  // We need to convert some of the information received from django into types RJSF can read.
+  const transformedFormData = {
+    ...formData,
+    // Add the correct application lead data
+    ...(isUserApplicationLead
+      ? {
+          ...formData?.application_lead,
+        }
+      : {
+          external_lead_first_name: formData?.application_lead?.first_name,
+          external_lead_last_name: formData?.application_lead?.last_name,
+          external_lead_email: formData?.application_lead?.email,
+          external_lead_phone_number: formData?.application_lead?.phone_number,
+          external_lead_position_title:
+            formData?.application_lead?.position_title,
+        }),
+    // If you spread anything and it has the same keys as operation (e.g. id, created_by), watch out for accidentally overwriting things. In this case it's safe to spread because the address schema excludes fields
+    ...formData?.application_lead?.address,
+    "Did you submit a GHG emissions report for reporting year 2022?":
+      formData?.previous_year_attributable_emissions ? true : false,
+    is_user_application_lead: isUserApplicationLead,
+    // fix for null values not opening the multiple operators form if loading a previously saved form
+    multiple_operators_array: isMultipleOperatorsArray
+      ? formData?.multiple_operators_array
+      : [{}],
+  };
+
   // Render the OperationsForm component with schema and formData if the operation already exists
   return (
     <>
@@ -229,7 +269,7 @@ export default async function Operation({ numRow }: { numRow?: number }) {
           activities,
           businessStructuresList,
         )}
-        formData={formData as OperationsFormData}
+        formData={transformedFormData as OperationsFormData}
       />
     </>
   );
