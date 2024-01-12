@@ -1,37 +1,19 @@
-import { getToken } from "next-auth/jwt";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
-// 🛠️ Function for federated logout: Single Sign-Out (SSO) from keycloak
-// https://www.keycloak.org/docs/latest/securing_apps/index.html#logout
-export async function GET(request: NextRequest) {
-  // Chained logout of SiteMinder and Keycloak, per https://stackoverflow.developer.gov.bc.ca/a/84/262
-  let siteminderUrl = `${process.env.SITEMINDER_LOGOUT_URL}`;
-  // Keycloak Logout
-  let keycloakUrl = `${process.env.KEYCLOAK_LOGOUT_URL}`;
-
-  // Include parameters post_logout_redirect_uri so that logout does not need to be explicitly confirmed by the user
-  const token = await getToken({
-    req: request,
-    secret: process.env.NEXTAUTH_SECRET,
-  });
-  if (token) {
-    // set parameters
-    keycloakUrl =
-      keycloakUrl +
-      `post_logout_redirect_uri=${encodeURIComponent(
-        process.env.NEXTAUTH_URL as string,
-      )}`;
-  } else {
-    // Respond with error
-    return NextResponse.json(
-      { message: "Missing JWT token." },
-      { status: 500 },
-    );
-  }
+/*
+API route that facilitates federated logout, performing Single Sign-Out (SSO) from SiteMinder and Keycloak. 
+ https://www.keycloak.org/docs/latest/securing_apps/index.html#logout
+ https://stackoverflow.developer.gov.bc.ca/a/84/262
+ */
+export async function GET() {
   try {
-    const url = `${siteminderUrl}?retnow=1&returl=${keycloakUrl}`;
-    // log out from Keycloak
-    const response = await fetch(url, { method: "GET" });
+    // Keycloak Logout Url
+    const keycloakLogoutUrl = process.env.KEYCLOAK_LOGOUT_URL + "X";
+    // SiteMinder Logout Url returl to initiate Keycloak Logout
+    const siteminderLogoutUrl = `${process.env.SITEMINDER_LOGOUT_URL}?retnow=1&returl=${keycloakLogoutUrl}`;
+
+    // Attempt Single Sign-Out (SSO) from SiteMinder and Keycloak...
+    const response = await fetch(siteminderLogoutUrl, { method: "GET" });
     if (!response.ok) {
       return NextResponse.json({ message: "Logout error" }, { status: 500 });
     } else {
@@ -40,7 +22,7 @@ export async function GET(request: NextRequest) {
   } catch (err) {
     return NextResponse.json(
       { message: "Internal Server Error" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
