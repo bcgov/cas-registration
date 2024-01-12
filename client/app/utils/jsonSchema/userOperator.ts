@@ -10,6 +10,7 @@ import {
   ParentCompanyPhysicalAddressTitle,
   SeniorOfficerTitle,
 } from "@/app/components/form/titles/userOperatorTitles";
+import ArrayFieldTemplate from "@/app/styles/rjsf/ArrayFieldTemplate";
 
 const subheading = {
   "ui:classNames": "text-bc-bg-blue text-start text-lg",
@@ -28,7 +29,7 @@ const userOperatorPage1: RJSFSchema = {
     "physical_municipality",
     "physical_province",
     "physical_postal_code",
-    "operator_has_parent_company",
+    "parent_operators_section",
   ],
   properties: {
     legal_name: { type: "string", title: "Legal Name" },
@@ -48,14 +49,18 @@ const userOperatorPage1: RJSFSchema = {
       anyOf: [],
     },
     website: { type: "string", title: "Website (optional)", format: "uri" },
-    operator_has_parent_company: {
-      title: "Does the operator have a parent company?",
+    parent_operators_section: {
+      //Not an actual field in the db - this is just to make the form look like the wireframes
+      title: "Parent Company Information",
+      type: "object",
+      readOnly: true,
+    },
+    operator_has_parent_operators: {
+      title: "Does this operator have multiple parent companies?",
       type: "boolean",
       default: false,
     },
     physical_address_section: {
-      title:
-        "Please provide information about the physical address of this operator:",
       type: "object",
     },
     physical_street_address: {
@@ -77,8 +82,6 @@ const userOperatorPage1: RJSFSchema = {
       format: "postal-code",
     },
     mailing_address_section: {
-      title:
-        "Please provide information about the mailing address of this operator:",
       type: "object",
     },
     mailing_address_same_as_physical: {
@@ -91,134 +94,132 @@ const userOperatorPage1: RJSFSchema = {
     {
       if: {
         properties: {
-          operator_has_parent_company: {
+          operator_has_parent_operators: {
             const: true,
           },
         },
       },
       then: {
-        type: "object",
-        required: [
-          "pc_legal_name",
-          "pc_cra_business_number",
-          "pc_bc_corporate_registry_number",
-          "pc_business_structure",
-          "pc_physical_street_address",
-          "pc_physical_municipality",
-          "pc_physical_province",
-          "pc_physical_postal_code",
-          "pc_mailing_address_same_as_physical",
-        ],
         properties: {
-          has_parent_company_section: {
-            //Not an actual field in the db - this is just to make the form look like the wireframes
-            title: "Parent Company Information",
-            type: "object",
-          },
-          pc_legal_name: {
-            type: "string",
-            title: "Legal Name",
-          },
-          pc_trade_name: {
-            type: "string",
-            title: "Trade Name",
-          },
-          pc_cra_business_number: {
-            type: "number",
-            title: "CRA Business Number",
-          },
-          pc_bc_corporate_registry_number: {
-            type: "string",
-            title: "BC Corporate Registry Number",
-            format: "bc_corporate_registry_number",
-          },
-          pc_business_structure: {
-            type: "string",
-            title: "Business Structure",
-            anyOf: [],
-          },
-          pc_website: { type: "string", title: "Website", format: "uri" },
-          percentage_owned_by_parent_company: {
-            type: "number",
-            title: "Percentage of ownership of operator (%)",
-          },
-          pc_physical_address_section: {
-            //Not an actual field in the db - this is just to make the form look like the wireframes
-            title:
-              "Please provide information about the physical address of the parent company:",
-            type: "object",
-          },
-          pc_physical_street_address: {
-            type: "string",
-            title: "Physical Address",
-          },
-          pc_physical_municipality: {
-            type: "string",
-            title: "PA Municipality",
-          },
-          pc_physical_province: {
-            type: "string",
-            title: "PA Province",
-            anyOf: provinceOptions,
-          },
-          pc_physical_postal_code: {
-            type: "string",
-            title: "PA Postal Code",
-            format: "postal-code",
-          },
-          pc_mailing_address_section: {
-            //Not an actual field in the db - this is just to make the form look like the wireframes
-            title:
-              "Please provide information about the mailing address of the parent company:",
-            type: "object",
-            readOnly: true,
-          },
-          pc_mailing_address_same_as_physical: {
-            title: "Is the mailing address the same as the physical address?",
-            type: "boolean",
-            default: true,
-          },
-        },
-        allOf: [
-          {
-            if: {
-              properties: {
-                pc_mailing_address_same_as_physical: {
-                  const: false,
-                },
-              },
-            },
-            then: {
+          parent_operators_array: {
+            type: "array",
+            default: [{}],
+            items: {
               type: "object",
               required: [
-                "pc_mailing_street_address",
-                "pc_mailing_municipality",
-                "pc_mailing_province",
-                "pc_mailing_postal_code",
+                // po = parent operator
+                "po_legal_name",
+                "po_cra_business_number",
+                "po_bc_corporate_registry_number",
+                "po_business_structure",
+                "po_physical_street_address",
+                "po_physical_municipality",
+                "po_physical_province",
+                "po_physical_postal_code",
               ],
               properties: {
-                pc_mailing_street_address: {
+                po_legal_name: {
                   type: "string",
-                  title: "Mailing Address",
+                  title: "Legal Name",
                 },
-                pc_mailing_municipality: {
+                po_trade_name: {
+                  type: "string",
+                  title: "Trade Name",
+                },
+                po_cra_business_number: {
+                  type: "number",
+                  title: "CRA Business Number",
+                },
+                po_bc_corporate_registry_number: {
+                  type: "string",
+                  title: "BC Corporate Registry Number",
+                  format: "bc_corporate_registry_number",
+                },
+                po_business_structure: {
+                  type: "string",
+                  title: "Business Structure",
+                },
+                po_website: {
+                  type: "string",
+                  title: "Website (optional)",
+                  format: "uri",
+                },
+                po_physical_address_section: {
+                  //Not an actual field in the db - this is just to make the form look like the wireframes
+                  type: "object",
+                  readOnly: true,
+                },
+                po_physical_street_address: {
+                  type: "string",
+                  title: "Physical Address",
+                },
+                po_physical_municipality: {
                   type: "string",
                   title: "Municipality",
                 },
-                pc_mailing_province: {
+                po_physical_province: {
                   type: "string",
                   title: "Province",
                   anyOf: provinceOptions,
                 },
-                pc_mailing_postal_code: {
+                po_physical_postal_code: {
                   type: "string",
                   title: "Postal Code",
                   format: "postal-code",
                 },
+                po_mailing_address_section: {
+                  type: "object",
+                  readOnly: true,
+                },
+                po_mailing_address_same_as_physical: {
+                  title:
+                    "Is the mailing address the same as the physical address?",
+                  type: "boolean",
+                  default: true,
+                },
               },
+              allOf: [
+                {
+                  if: {
+                    properties: {
+                      po_mailing_address_same_as_physical: {
+                        const: false,
+                      },
+                    },
+                  },
+                  then: {
+                    required: [
+                      "po_mailing_street_address",
+                      "po_mailing_municipality",
+                      "po_mailing_province",
+                      "po_mailing_postal_code",
+                    ],
+                    properties: {
+                      po_mailing_street_address: {
+                        type: "string",
+                        title: "Mailing Address",
+                      },
+                      po_mailing_municipality: {
+                        type: "string",
+                        title: "Municipality",
+                      },
+                      po_mailing_province: {
+                        type: "string",
+                        title: "Province",
+                        anyOf: provinceOptions,
+                      },
+                      po_mailing_postal_code: {
+                        type: "string",
+                        title: "Postal Code",
+                        format: "postal-code",
+                      },
+                    },
+                  },
+                },
+              ],
             },
           },
-        ],
+        },
       },
     },
     {
@@ -240,7 +241,6 @@ const userOperatorPage1: RJSFSchema = {
         properties: {
           mailing_address_section: {
             //Not an actual field in the db - this is just to make the form look like the wireframes
-            title: "Mailing Address",
             type: "object",
             readOnly: true,
           },
@@ -381,6 +381,7 @@ export const userOperatorSchema: RJSFSchema = {
 
 export const userOperatorUiSchema = {
   "ui:order": [
+    // contact info
     "is_senior_officer",
     "senior_officer_section",
     "first_name",
@@ -395,13 +396,13 @@ export const userOperatorUiSchema = {
     // so = senior officer
     "so_email",
     "so_phone_number",
+    // operator info
     "legal_name",
     "trade_name",
     "cra_business_number",
     "bc_corporate_registry_number",
     "business_structure",
     "website",
-    "operator_has_parent_company",
     "physical_address_section",
     "physical_street_address",
     "physical_municipality",
@@ -413,27 +414,27 @@ export const userOperatorUiSchema = {
     "mailing_municipality",
     "mailing_province",
     "mailing_postal_code",
-    "has_parent_company_section",
-
-    // pc = parent company
-    "pc_legal_name",
-    "pc_trade_name",
-    "pc_cra_business_number",
-    "pc_bc_corporate_registry_number",
-    "pc_business_structure",
-    "pc_website",
-    "percentage_owned_by_parent_company",
-    "pc_physical_address_section",
-    "pc_physical_street_address",
-    "pc_physical_municipality",
-    "pc_physical_province",
-    "pc_physical_postal_code",
-    "pc_mailing_address_section",
-    "pc_mailing_address_same_as_physical",
-    "pc_mailing_street_address",
-    "pc_mailing_municipality",
-    "pc_mailing_province",
-    "pc_mailing_postal_code",
+    // po = parent operator
+    "parent_operators_section",
+    "operator_has_parent_operators",
+    "parent_operators_array",
+    "po_legal_name",
+    "po_trade_name",
+    "po_cra_business_number",
+    "po_bc_corporate_registry_number",
+    "po_business_structure",
+    "po_website",
+    "po_physical_address_section",
+    "po_physical_street_address",
+    "po_physical_municipality",
+    "po_physical_province",
+    "po_physical_postal_code",
+    "po_mailing_address_same_as_physical",
+    "po_mailing_address_section",
+    "po_mailing_street_address",
+    "po_mailing_municipality",
+    "po_mailing_province",
+    "po_mailing_postal_code",
   ],
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
@@ -441,8 +442,13 @@ export const userOperatorUiSchema = {
   "ui:options": {
     label: false,
   },
+  // CONTACT INFO SECTION
   email: {
     "ui:widget": "EmailWidget",
+  },
+  province: {
+    "ui:widget": "ComboBox",
+    "ui:placeholder": "Select a province",
   },
   is_senior_officer: {
     "ui:widget": "CheckboxWidget",
@@ -459,6 +465,16 @@ export const userOperatorUiSchema = {
   so_email: {
     "ui:widget": "EmailWidget",
   },
+  phone_number: {
+    "ui:widget": "PhoneWidget",
+  },
+  so_phone_number: {
+    "ui:widget": "PhoneWidget",
+  },
+  postal_code: {
+    "ui:widget": "PostalCodeWidget",
+  },
+  // OPERATOR INFO SECTION
   mailing_address_section: {
     ...subheading,
     "ui:options": {
@@ -471,55 +487,13 @@ export const userOperatorUiSchema = {
       jsxTitle: OperatorPhysicalAddressTitle,
     },
   },
-  operator_has_parent_company: {
-    "ui:widget": "RadioWidget",
-  },
-  has_parent_company_section: {
-    "ui:classNames": "form-heading",
-    "ui:FieldTemplate": TitleOnlyFieldTemplate,
-  },
-  percentage_owned_by_parent_company: {
-    "ui:options": {
-      max: 100,
-    },
-  },
-  pc_mailing_address_section: {
-    ...subheading,
-    "ui:options": {
-      jsxTitle: ParentCompanyMailingAddressTitle,
-    },
-  },
-  pc_physical_address_section: {
-    ...subheading,
-    "ui:options": {
-      jsxTitle: ParentCompanyPhysicalAddressTitle,
-    },
-  },
   mailing_address_same_as_physical: {
-    "ui:widget": "RadioWidget",
-  },
-  pc_mailing_address_same_as_physical: {
     "ui:widget": "RadioWidget",
   },
   website: {
     "ui:widget": "URLWidget",
   },
-  pc_website: {
-    "ui:widget": "URLWidget",
-  },
-  pc_mailing_province: {
-    "ui:widget": "ComboBox",
-    "ui:placeholder": "Select a province",
-  },
   physical_province: {
-    "ui:widget": "ComboBox",
-    "ui:placeholder": "Select a province",
-  },
-  pc_physical_province: {
-    "ui:widget": "ComboBox",
-    "ui:placeholder": "Select a province",
-  },
-  province: {
     "ui:widget": "ComboBox",
     "ui:placeholder": "Select a province",
   },
@@ -531,29 +505,62 @@ export const userOperatorUiSchema = {
     "ui:widget": "ComboBox",
     "ui:placeholder": "Select a business structure",
   },
-  pc_business_structure: {
-    "ui:widget": "ComboBox",
-    "ui:placeholder": "Select a business structure",
-  },
-  phone_number: {
-    "ui:widget": "PhoneWidget",
-  },
-  so_phone_number: {
-    "ui:widget": "PhoneWidget",
-  },
-  postal_code: {
-    "ui:widget": "PostalCodeWidget",
-  },
-  pc_physical_postal_code: {
-    "ui:widget": "PostalCodeWidget",
-  },
   physical_postal_code: {
-    "ui:widget": "PostalCodeWidget",
-  },
-  pc_mailing_postal_code: {
     "ui:widget": "PostalCodeWidget",
   },
   mailing_postal_code: {
     "ui:widget": "PostalCodeWidget",
+  },
+  // PARENT OPERATORS SECTION
+  parent_operators_section: {
+    ...subheading,
+  },
+  operator_has_parent_operators: {
+    "ui:FieldTemplate": FieldTemplate,
+    "ui:widget": "RadioWidget",
+  },
+  parent_operators_array: {
+    "ui:FieldTemplate": FieldTemplate,
+    "ui:ArrayFieldTemplate": ArrayFieldTemplate,
+    "ui:options": {
+      label: false,
+      arrayAddLabel: "Add another parent company",
+      title: "Parent Company Information - Parent Company",
+    },
+    items: {
+      po_physical_address_section: {
+        ...subheading,
+        "ui:options": {
+          jsxTitle: ParentCompanyPhysicalAddressTitle,
+        },
+      },
+      po_mailing_address_same_as_physical: {
+        "ui:widget": "RadioWidget",
+      },
+      po_business_structure: {
+        "ui:widget": "ComboBox",
+        "ui:placeholder": "Select a business structure",
+      },
+      po_physical_province: {
+        "ui:widget": "ComboBox",
+        "ui:placeholder": "Select a province",
+      },
+      po_mailing_province: {
+        "ui:widget": "ComboBox",
+        "ui:placeholder": "Select a province",
+      },
+      po_mailing_address_section: {
+        ...subheading,
+        "ui:options": {
+          jsxTitle: ParentCompanyMailingAddressTitle,
+        },
+      },
+      po_physical_postal_code: {
+        "ui:widget": "PostalCodeWidget",
+      },
+      po_mailing_postal_code: {
+        "ui:widget": "PostalCodeWidget",
+      },
+    },
   },
 };
