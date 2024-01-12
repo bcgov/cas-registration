@@ -2,6 +2,7 @@ import pytest, json
 from registration.models import (
     Address,
     AppRole,
+    BusinessStructure,
     Contact,
     Document,
     NaicsCode,
@@ -112,13 +113,13 @@ class TestUtils:
             legal_name='test',
             cra_business_number=123,
             bc_corporate_registry_number='adh1234321',
-            business_structure='test',
+            business_structure=BusinessStructure.objects.first().pk,
             physical_street_address='test',
             physical_municipality='test',
             physical_province='test',
             physical_postal_code='test',
             mailing_address_same_as_physical=True,
-            operator_has_parent_company=False,
+            operator_has_parent_operators=False,
         )
 
     @staticmethod
