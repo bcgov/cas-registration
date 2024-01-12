@@ -298,14 +298,14 @@ const operationPage2: RJSFSchema = {
   type: "object",
   title: "Application Lead",
   required: [
-    "is_application_lead_external",
+    "is_user_application_lead",
     "street_address",
     "municipality",
     "province",
     "postal_code",
   ],
   properties: {
-    is_application_lead_external: {
+    is_user_application_lead: {
       type: "boolean",
       title: "Are you the application lead?",
       default: false,
@@ -333,46 +333,12 @@ const operationPage2: RJSFSchema = {
     {
       if: {
         properties: {
-          is_application_lead_external: {
-            const: false,
+          is_user_application_lead: {
+            const: true,
           },
         },
       },
       then: {
-        type: "object",
-        required: [
-          "al_first_name",
-          "al_last_name",
-          "al_position_title",
-          "al_email",
-          "al_phone_number",
-        ],
-        properties: {
-          al_first_name: {
-            type: "string",
-            title: "First Name",
-          },
-          al_last_name: {
-            type: "string",
-            title: "Last Name",
-          },
-          al_position_title: {
-            type: "string",
-            title: "Position Title",
-          },
-          al_email: {
-            type: "string",
-            title: "Email Address",
-            format: "email",
-          },
-          al_phone_number: {
-            type: "string",
-            title: "Phone Number",
-            format: "phone",
-          },
-        },
-      },
-      else: {
         type: "object",
         required: [
           "email",
@@ -411,6 +377,40 @@ const operationPage2: RJSFSchema = {
           },
         },
       },
+      else: {
+        type: "object",
+        required: [
+          "external_lead_first_name",
+          "external_lead_last_name",
+          "external_lead_position_title",
+          "external_lead_email",
+          "external_lead_phone_number",
+        ],
+        properties: {
+          external_lead_first_name: {
+            type: "string",
+            title: "First Name",
+          },
+          external_lead_last_name: {
+            type: "string",
+            title: "Last Name",
+          },
+          external_lead_position_title: {
+            type: "string",
+            title: "Position Title",
+          },
+          external_lead_email: {
+            type: "string",
+            title: "Email Address",
+            format: "email",
+          },
+          external_lead_phone_number: {
+            type: "string",
+            title: "Phone Number",
+            format: "phone",
+          },
+        },
+      },
     },
   ],
 };
@@ -445,20 +445,20 @@ export const operationUiSchema = {
     "Does the operation have multiple operators?",
     "operators",
     "percentage_ownership",
-    "is_application_lead_external",
-    "al_first_name",
+    "is_user_application_lead",
+    "external_lead_first_name",
     "first_name",
-    "al_last_name",
+    "external_lead_last_name",
     "last_name",
-    "al_position_title",
+    "external_lead_position_title",
     "position_title",
     "street_address",
     "municipality",
     "province",
     "postal_code",
-    "al_email",
+    "external_lead_email",
     "email",
-    "al_phone_number",
+    "external_lead_phone_number",
     "phone_number",
     "multiple_operators_section",
     "operation_has_multiple_operators",
@@ -493,7 +493,7 @@ export const operationUiSchema = {
     "ui:FieldTemplate": FieldTemplate,
     "ui:widget": "RadioWidget",
   },
-  is_application_lead_external: {
+  is_user_application_lead: {
     "ui:widget": "CheckboxWidget",
     "ui:options": {
       label: false,
@@ -575,10 +575,10 @@ export const operationUiSchema = {
   phone_number: {
     "ui:widget": "PhoneWidget",
   },
-  al_phone_number: {
+  external_lead_phone_number: {
     "ui:widget": "PhoneWidget",
   },
-  al_email: {
+  external_lead_email: {
     "ui:widget": "EmailWidget",
   },
 };
