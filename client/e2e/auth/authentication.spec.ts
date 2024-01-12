@@ -18,7 +18,7 @@ const newUserUserID = process.env.NEW_USER_USERID || "";
 // Import role based dashboard navigation
 import casAdminDashboard from "@/app/data/dashboard/cas_admin.json";
 import casAnalystDashboard from "@/app/data/dashboard/cas_analyst.json";
-import industryUserDashboard from "@/app/data/dashboard/industry_user.json";
+import industryUserDashboard from "@/app/data/dashboard/industry_user_reporter.json";
 import industryUserAdminDashboard from "@/app/data/dashboard/industry_user_admin.json";
 
 // 📐 Type: Dashboard Tiles JSON structure

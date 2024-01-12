@@ -52,7 +52,7 @@ export default function Page() {
             break;
           case UserOperatorRoles.INDUSTRY_USER_REPORTER:
             contentsModule = await import(
-              "@/app/data/dashboard/industry_user.json"
+              "@/app/data/dashboard/industry_user_reporter.json"
             );
             break;
           default:
