@@ -207,18 +207,21 @@ def update_operation(request, operation_id: int, submit: str, payload: Operation
         application_lead = Contact.objects.get(id=application_lead_id)
         application_lead_address_id = application_lead.address.id if application_lead.address else None
 
-    is_application_lead_external = payload.is_application_lead_external
-    if is_application_lead_external is True:  # the user has assigned a contact
-        address, _ = Address.objects.update_or_create(
-            id=application_lead_address_id,
-            defaults={
-                "street_address": payload.street_address,
-                "municipality": payload.municipality,
-                "province": payload.province,
-                "postal_code": payload.postal_code,
-            },
-        )
-        eal, _ = Contact.objects.update_or_create(
+    is_user_application_lead = payload.is_user_application_lead
+
+    # create or update the address for either user or external application lead
+    address, _ = Address.objects.update_or_create(
+        id=application_lead_address_id,
+        defaults={
+            "street_address": payload.street_address,
+            "municipality": payload.municipality,
+            "province": payload.province,
+            "postal_code": payload.postal_code,
+        },
+    )
+
+    if is_user_application_lead is True:  # the application lead is the user
+        al, _ = Contact.objects.update_or_create(
             id=application_lead_id,
             defaults={
                 "first_name": payload.first_name,
@@ -230,23 +233,24 @@ def update_operation(request, operation_id: int, submit: str, payload: Operation
                 "address": address,
             },
         )
-        eal.set_create_or_update(modifier=user)
-        operation.application_lead = eal
-
-    if is_application_lead_external is False:  # the lead is the user
-        al, _ = Contact.objects.update_or_create(
-            id=application_lead_id,
-            defaults={
-                "first_name": user.first_name,
-                "last_name": user.last_name,
-                "position_title": user.position_title,
-                "email": user.email,
-                "phone_number": user.phone_number,
-                "business_role": BusinessRole.objects.get(role_name="Operation Registration Lead"),
-            },
-        )
         al.set_create_or_update(modifier=user)
         operation.application_lead = al
+
+    if is_user_application_lead is False:  # the application lead is an external user
+        eal, _ = Contact.objects.update_or_create(
+            id=application_lead_id,
+            defaults={
+                "first_name": payload.external_lead_first_name,
+                "last_name": payload.external_lead_last_name,
+                "position_title": payload.external_lead_position_title,
+                "email": payload.external_lead_email,
+                "phone_number": payload.external_lead_phone_number,
+                "business_role": BusinessRole.objects.get(role_name="Operation Registration Lead"),
+                "address": address,
+            },
+        )
+        eal.set_create_or_update(modifier=user)
+        operation.application_lead = eal
 
     # updating only a subset of fields (using all fields would overwrite the existing ones)
     payload_dict: dict = payload.dict(

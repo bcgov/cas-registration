@@ -40,13 +40,20 @@ class OperationUpdateIn(ModelSchema):
     first_name: Optional[str] = None
     last_name: Optional[str] = None
     position_title: Optional[str] = None
+    email: Optional[str] = None
+    phone_number: Optional[str] = None
+    # external application lead details
+    external_lead_first_name: Optional[str] = None
+    external_lead_last_name: Optional[str] = None
+    external_lead_position_title: Optional[str] = None
+    external_lead_email: Optional[str] = None
+    external_lead_phone_number: Optional[str] = None
+    # shared application lead details
     street_address: Optional[str] = None
     municipality: Optional[str] = None
     province: Optional[str] = None
     postal_code: Optional[str] = None
-    email: Optional[str] = None
-    phone_number: Optional[str] = None
-    is_application_lead_external: Optional[bool] = None
+    is_user_application_lead: Optional[bool] = None
     operation_has_multiple_operators: Optional[bool] = False
     multiple_operators_array: Optional[list] = None
 
@@ -66,7 +73,7 @@ class OperationOut(ModelSchema):
     bcghg_id: Optional[str] = None
     opt_in: Optional[bool] = None
     verified_at: Optional[date] = None
-    is_application_lead_external: Optional[bool] = None
+    is_user_application_lead: Optional[bool] = None
     application_lead: Optional[ContactSchema]
     operation_has_multiple_operators: Optional[bool] = Field(False, alias="operation_has_multiple_operators")
     multiple_operators_array: Optional["List[MultipleOperatorOut]"] = Field(None, alias="multiple_operator")
