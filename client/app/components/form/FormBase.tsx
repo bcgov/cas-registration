@@ -1,10 +1,9 @@
 import defaultTheme from "./defaultTheme";
 import { useMemo, useState } from "react";
 import { customizeValidator } from "@rjsf/validator-ajv8";
-import { FormProps, withTheme, ThemeProps } from "@rjsf/core";
+import { FormProps, IChangeEvent, withTheme, ThemeProps } from "@rjsf/core";
 import { customTransformErrors } from "@/app/utils/customTransformErrors";
 import { RJSFValidationError } from "@rjsf/utils";
-import { IChangeEvent } from "@rjsf/core";
 
 const customFormats = {
   phone: /\(?\d{3}\)?[\s-]?\d{3}[\s-]?\d{4}$/,
@@ -35,15 +34,20 @@ interface FormPropsWithTheme<T> extends Omit<FormProps<T>, "validator"> {
 }
 
 const FormBase: React.FC<FormPropsWithTheme<any>> = (props) => {
-  const { theme, formData, omitExtraData, setErrorReset } = props;
+  const { theme, formData, omitExtraData, onSubmit, setErrorReset } = props;
   const Form = useMemo(() => withTheme(theme ?? defaultTheme), [theme]);
   const [formState, setFormState] = useState(formData ?? {});
 
+  const handleChange = () => {
+    if (setErrorReset) setErrorReset(undefined);
+  };
+
   // Handling form state externally as RJSF was resetting the form data on submission and
   // creating buggy behaviour if there was an API error and the user attempted to resubmit
-  const handleChange = (e: IChangeEvent) => {
-    if (setErrorReset) setErrorReset(undefined);
+  const handleSubmit = (e: IChangeEvent) => {
     setFormState(e.formData);
+
+    if (onSubmit) onSubmit(e, formState);
   };
 
   return (
@@ -53,6 +57,7 @@ const FormBase: React.FC<FormPropsWithTheme<any>> = (props) => {
       noHtml5Validate
       omitExtraData={omitExtraData ?? true}
       onChange={handleChange}
+      onSubmit={handleSubmit}
       showErrorList={false}
       transformErrors={transformErrors}
       validator={validator}
