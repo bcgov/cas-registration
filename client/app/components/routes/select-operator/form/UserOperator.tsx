@@ -60,12 +60,8 @@ const createUserOperatorSchema = (
   };
 
   // for parent company
-  localSchema.properties.userOperatorPage1.allOf[0].then.properties.pc_business_structure =
-    {
-      ...localSchema.properties.userOperatorPage1.allOf[0].then.properties
-        .pc_business_structure,
-      anyOf: businessStructureOptions,
-    };
+  localSchema.properties.userOperatorPage1.allOf[0].then.properties.parent_operators_array.items.properties.po_business_structure.anyOf =
+    businessStructureOptions;
 
   return localSchema;
 };

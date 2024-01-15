@@ -186,7 +186,7 @@ const operationPage1: RJSFSchema = {
                 },
                 mo_bc_corporate_registry_number: {
                   type: "string",
-                  title: "BC Corporate Registries Number",
+                  title: "BC Corporate Registry Number",
                   format: "bc_corporate_registry_number",
                 },
                 mo_business_structure: {
@@ -470,6 +470,7 @@ export const operationUiSchema = {
     "ui:options": {
       label: false,
       arrayAddLabel: "Add another operator",
+      title: "Multiple Operator(s) information - Operator",
     },
     items: {
       mo_physical_address_section: {

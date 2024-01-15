@@ -11,6 +11,25 @@ export interface UserFormData {
   role: string;
   status: string;
 }
+
+interface ParentOperator {
+  // PO = Parent Operator(Company)
+  po_legal_name?: string;
+  po_trade_name?: string;
+  po_cra_business_number?: number;
+  po_bc_corporate_registry_number?: string;
+  po_business_structure?: string;
+  po_website?: string;
+  po_physical_street_address?: string;
+  po_physical_municipality?: string;
+  po_physical_province?: string;
+  po_physical_postal_code?: string;
+  po_mailing_address_same_as_physical: boolean;
+  po_mailing_street_address?: string;
+  po_mailing_municipality?: string;
+  po_mailing_province?: string;
+  po_mailing_postal_code?: string;
+}
 export interface UserOperatorFormData extends UserFormData {
   is_senior_officer: string;
   legal_name: string;
@@ -31,22 +50,8 @@ export interface UserOperatorFormData extends UserFormData {
   // SO = Senior Officer
   so_email?: string;
   so_phone_number?: string;
-  operator_has_parent_company: boolean;
-  // PC = Parent Company
-  pc_legal_name?: string;
-  pc_cra_business_number?: number;
-  pc_bc_corporate_registry_number?: string;
-  pc_business_structure?: string;
-  pc_physical_street_address?: string;
-  pc_physical_municipality?: string;
-  pc_physical_province?: string;
-  pc_physical_postal_code?: string;
-  pc_mailing_address_same_as_physical: boolean;
-  pc_mailing_street_address?: string;
-  pc_mailing_municipality?: string;
-  pc_mailing_province?: string;
-  pc_mailing_postal_code?: string;
-  percentage_owned_by_parent_company?: number;
+  operator_has_parent_operators: boolean;
+  parent_operators_array?: Array<ParentOperator>;
   // Not in form, but needed for API to create a contact based on the existing user-operator
   user_operator_id?: string;
   is_new: boolean;
