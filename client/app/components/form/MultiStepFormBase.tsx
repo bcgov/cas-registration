@@ -48,10 +48,13 @@ const MultiStepFormBase = ({
     ? [...mapSectionTitles, "Submission"]
     : mapSectionTitles;
 
+  // Set isSubmitting to true to disable submit buttons and prevent multiple form submissions
   const submitHandler = async (data: any) => {
     setIsSubmitting(true);
     const response = await onSubmit(data);
 
+    // If there is an error, set isSubmitting to false to re-enable submit buttons
+    // and allow user to attempt to re-submit the form
     if (response?.error) {
       setIsSubmitting(false);
     }
