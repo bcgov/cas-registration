@@ -50,8 +50,11 @@ const MultiStepFormBase = ({
 
   const submitHandler = async (data: any) => {
     setIsSubmitting(true);
-    await onSubmit(data);
-    setIsSubmitting(false);
+    const response = await onSubmit(data);
+
+    if (response?.error) {
+      setIsSubmitting(false);
+    }
   };
 
   const isDisabled = disabled || isSubmitting;
