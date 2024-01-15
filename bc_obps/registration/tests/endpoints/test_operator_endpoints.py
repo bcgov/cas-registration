@@ -1,7 +1,6 @@
 from django.forms import model_to_dict
 import pytest
 import json
-from typing import List
 from model_bakery import baker
 from django.test import Client
 from localflavor.ca.models import CAPostalCodeField

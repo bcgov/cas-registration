@@ -1,3 +1,4 @@
+from registration.constants import UNAUTHORIZED_MESSAGE
 from registration.decorators import authorize
 from .api_base import router
 from datetime import datetime
@@ -26,10 +27,7 @@ from registration.schema import (
     Message,
     OperationUpdateStatusIn,
 )
-from registration.utils import (
-    UNAUTHORIZED_MESSAGE,
-    get_an_operators_approved_users,
-)
+from registration.utils import get_an_operators_approved_users
 from ninja.responses import codes_4xx, codes_5xx
 from ninja.errors import HttpError
 

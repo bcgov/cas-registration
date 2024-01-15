@@ -1,9 +1,12 @@
+from typing import List
 import pytest, json
 from model_bakery import baker
 from django.test import Client
 from localflavor.ca.models import CAPostalCodeField
 from registration.models import (
+    BusinessStructure,
     Operator,
+    ParentOperator,
     User,
     UserOperator,
 )
@@ -24,6 +27,7 @@ baker.generators.add(CAPostalCodeField, TestUtils.mock_postal_code)
 class TestUserOperatorEndpoint(CommonTestSetup):
     select_endpoint = base_endpoint + "select-operator"
     operator_endpoint = base_endpoint + "operators"
+    user_operator_endpoint = base_endpoint + "user-operator"
 
     def test_unauthorized_users_cannot_get(self):
         # /is-approved-admin-user-operator
@@ -74,7 +78,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
             'cas_pending',
             content_type_json,
             {'operator_id': operator.id},
-            f"{base_endpoint}select-operator/request-access",
+            f"{self.select_endpoint}/request-access",
         )
         assert response.status_code == 401
         response = TestUtils.mock_post_with_auth_role(
@@ -82,7 +86,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
             'cas_admin',
             content_type_json,
             {'operator_id': operator.id},
-            f"{base_endpoint}select-operator/request-access",
+            f"{self.select_endpoint}/request-access",
         )
         assert response.status_code == 401
         response = TestUtils.mock_post_with_auth_role(
@@ -90,7 +94,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
             'cas_analyst',
             content_type_json,
             {'operator_id': operator.id},
-            f"{base_endpoint}select-operator/request-access",
+            f"{self.select_endpoint}/request-access",
         )
         assert response.status_code == 401
 
@@ -100,7 +104,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
             'cas_pending',
             content_type_json,
             {'operator_id': operator.id},
-            f"{base_endpoint}select-operator/request-access",
+            f"{self.select_endpoint}/request-access",
         )
         assert response.status_code == 401
         response = TestUtils.mock_post_with_auth_role(
@@ -108,7 +112,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
             'cas_analyst',
             content_type_json,
             {'operator_id': operator.id},
-            f"{base_endpoint}select-operator/request-access",
+            f"{self.select_endpoint}/request-access",
         )
         assert response.status_code == 401
         response = TestUtils.mock_post_with_auth_role(
@@ -116,12 +120,13 @@ class TestUserOperatorEndpoint(CommonTestSetup):
             'cas_admin',
             content_type_json,
             {'operator_id': operator.id},
-            f"{base_endpoint}select-operator/request-access",
+            f"{self.select_endpoint}/request-access",
         )
         assert response.status_code == 401
 
         # user-operator/operator
         mock_data = TestUtils.mock_UserOperatorOperatorIn()
+        mock_data.business_structure = mock_data.business_structure.pk  # a to bypass double validation by the schema
         response = TestUtils.mock_post_with_auth_role(
             self, 'cas_pending', content_type_json, mock_data.json(), f"{base_endpoint}user-operator/operator"
         )
@@ -353,3 +358,199 @@ class TestUserOperatorEndpoint(CommonTestSetup):
 
         # Additional Assertions
         assert response_json == {"detail": "Not Found"}
+
+    def test_create_operator_and_user_operator_with_parent_operators(self):
+        baker.make(BusinessStructure, name="BC Corporation")
+
+        # Fails if there is an existing operator with the same cra_business_number
+        mock_payload_1 = {
+            "legal_name": "test legal name",
+            "cra_business_number": 123456789,
+            "bc_corporate_registry_number": "adh1234321",
+            "business_structure": BusinessStructure.objects.first().pk,
+            "physical_street_address": "test physical street address",
+            "physical_municipality": "test physical municipality",
+            "physical_province": "test physical province",
+            "physical_postal_code": "test physical postal code",
+            "mailing_address_same_as_physical": True,
+            "operator_has_parent_operators": False,
+            "parent_operators_array": [],
+        }
+        baker.make(Operator, cra_business_number="123456789")
+        post_response_1 = TestUtils.mock_post_with_auth_role(
+            self,
+            'industry_user',
+            content_type_json,
+            mock_payload_1,
+            f"{self.user_operator_endpoint}/operator",
+        )
+        assert post_response_1.status_code == 400
+
+        mock_payload_2 = {
+            "legal_name": "New Operator",
+            "cra_business_number": 963852741,
+            "bc_corporate_registry_number": "adh1234321",
+            "business_structure": BusinessStructure.objects.first().pk,
+            "physical_street_address": "test physical street address",
+            "physical_municipality": "test physical municipality",
+            "physical_province": "BC",
+            "physical_postal_code": "H0H0H0",
+            "mailing_address_same_as_physical": False,
+            "mailing_street_address": "test mailing street address",
+            "mailing_municipality": "test mailing municipality",
+            "mailing_province": "BC",
+            "mailing_postal_code": "H0H0H0",
+            "operator_has_parent_operators": True,
+            "parent_operators_array": [
+                {
+                    "po_legal_name": "test po legal name",
+                    "po_trade_name": "test po trade name",
+                    "po_cra_business_number": 123456789,
+                    "po_bc_corporate_registry_number": "poo7654321",
+                    "po_business_structure": BusinessStructure.objects.first().pk,
+                    "po_website": "https://testpo.com",
+                    "po_physical_street_address": "test po physical street address",
+                    "po_physical_municipality": "test po physical municipality",
+                    "po_physical_province": "ON",
+                    "po_physical_postal_code": "H0H0H0",
+                    "po_mailing_address_same_as_physical": True,
+                },
+                {
+                    "po_legal_name": "test po legal name 2",
+                    "po_trade_name": "test po trade name 2",
+                    "po_cra_business_number": 123456789,
+                    "po_bc_corporate_registry_number": "opo7654321",
+                    "po_business_structure": BusinessStructure.objects.first().pk,
+                    "po_physical_street_address": "test po physical street address 2",
+                    "po_physical_municipality": "test po physical municipality 2",
+                    "po_physical_province": "ON",
+                    "po_physical_postal_code": "H0H0H0",
+                    "po_mailing_address_same_as_physical": False,
+                    "po_mailing_street_address": "test po mailing street address 2",
+                    "po_mailing_municipality": "test po mailing municipality 2",
+                    "po_mailing_province": "ON",
+                    "po_mailing_postal_code": "H0H0H0",
+                },
+            ],
+        }
+
+        post_response_2 = TestUtils.mock_post_with_auth_role(
+            self,
+            'industry_user',
+            content_type_json,
+            mock_payload_2,
+            f"{self.user_operator_endpoint}/operator",
+        )
+        assert post_response_2.status_code == 200
+
+        user_operator_id = post_response_2.json().get("user_operator_id")
+        assert user_operator_id is not None
+
+        user_operator = UserOperator.objects.get(id=user_operator_id)
+        assert user_operator.operator is not None
+        assert user_operator.user == self.user
+        assert user_operator.role == UserOperator.Roles.ADMIN
+        assert user_operator.status == UserOperator.Statuses.DRAFT
+
+        operator: Operator = user_operator.operator
+        assert {
+            "legal_name": operator.legal_name,
+            "cra_business_number": operator.cra_business_number,
+            "bc_corporate_registry_number": operator.bc_corporate_registry_number,
+            "business_structure": operator.business_structure.pk,
+            "website": None,
+            "physical_street_address": operator.physical_address.street_address,
+            "physical_municipality": operator.physical_address.municipality,
+            "physical_province": operator.physical_address.province,
+            "physical_postal_code": operator.physical_address.postal_code,
+            "mailing_street_address": operator.mailing_address.street_address,
+            "mailing_municipality": operator.mailing_address.municipality,
+            "mailing_province": operator.mailing_address.province,
+            "mailing_postal_code": operator.mailing_address.postal_code,
+        } == {
+            "legal_name": "New Operator",
+            "cra_business_number": 963852741,
+            "bc_corporate_registry_number": "adh1234321",
+            "business_structure": BusinessStructure.objects.first().pk,
+            "website": None,
+            "physical_street_address": "test physical street address",
+            "physical_municipality": "test physical municipality",
+            "physical_province": "BC",
+            "physical_postal_code": "H0H0H0",
+            "mailing_street_address": "test mailing street address",
+            "mailing_municipality": "test mailing municipality",
+            "mailing_province": "BC",
+            "mailing_postal_code": "H0H0H0",
+        }
+
+        parent_operators: List[ParentOperator] = operator.parent_operators.all()
+        assert len(parent_operators) == 2
+        # Assert that the parent operator 1 is the same as the first object in the parent_operators_array
+        assert {
+            "legal_name": parent_operators[0].legal_name,
+            "trade_name": parent_operators[0].trade_name,
+            "cra_business_number": parent_operators[0].cra_business_number,
+            "bc_corporate_registry_number": parent_operators[0].bc_corporate_registry_number,
+            "business_structure": parent_operators[0].business_structure.pk,
+            "website": parent_operators[0].website,
+            "physical_street_address": parent_operators[0].physical_address.street_address,
+            "physical_municipality": parent_operators[0].physical_address.municipality,
+            "physical_province": parent_operators[0].physical_address.province,
+            "physical_postal_code": parent_operators[0].physical_address.postal_code,
+            "mailing_street_address": parent_operators[0].mailing_address.street_address,
+            "mailing_municipality": parent_operators[0].mailing_address.municipality,
+            "mailing_province": parent_operators[0].mailing_address.province,
+            "mailing_postal_code": parent_operators[0].mailing_address.postal_code,
+        } == {
+            "legal_name": "test po legal name",
+            "trade_name": "test po trade name",
+            "cra_business_number": 123456789,
+            "bc_corporate_registry_number": "poo7654321",
+            "business_structure": BusinessStructure.objects.first().pk,
+            "website": "https://testpo.com",
+            "physical_street_address": "test po physical street address",
+            "physical_municipality": "test po physical municipality",
+            "physical_province": "ON",
+            "physical_postal_code": "H0H0H0",
+            "mailing_street_address": "test po physical street address",
+            "mailing_municipality": "test po physical municipality",
+            "mailing_province": "ON",
+            "mailing_postal_code": "H0H0H0",
+        }
+
+        # Assert that the parent operator 2 is the same as the second object in the parent_operators_array
+        assert {
+            "legal_name": parent_operators[1].legal_name,
+            "trade_name": parent_operators[1].trade_name,
+            "cra_business_number": parent_operators[1].cra_business_number,
+            "bc_corporate_registry_number": parent_operators[1].bc_corporate_registry_number,
+            "business_structure": parent_operators[1].business_structure.pk,
+            "website": None,
+            "physical_street_address": parent_operators[1].physical_address.street_address,
+            "physical_municipality": parent_operators[1].physical_address.municipality,
+            "physical_province": parent_operators[1].physical_address.province,
+            "physical_postal_code": parent_operators[1].physical_address.postal_code,
+            "mailing_street_address": parent_operators[1].mailing_address.street_address,
+            "mailing_municipality": parent_operators[1].mailing_address.municipality,
+            "mailing_province": parent_operators[1].mailing_address.province,
+            "mailing_postal_code": parent_operators[1].mailing_address.postal_code,
+        } == {
+            "legal_name": "test po legal name 2",
+            "trade_name": "test po trade name 2",
+            "cra_business_number": 123456789,
+            "bc_corporate_registry_number": "opo7654321",
+            "business_structure": BusinessStructure.objects.first().pk,
+            "website": None,
+            "physical_street_address": "test po physical street address 2",
+            "physical_municipality": "test po physical municipality 2",
+            "physical_province": "ON",
+            "physical_postal_code": "H0H0H0",
+            "mailing_street_address": "test po mailing street address 2",
+            "mailing_municipality": "test po mailing municipality 2",
+            "mailing_province": "ON",
+            "mailing_postal_code": "H0H0H0",
+        }
+
+        # Assert that the parent operator 1 and 2 have the correct operator index
+        assert parent_operators[0].operator_index == 1
+        assert parent_operators[1].operator_index == 2

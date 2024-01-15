@@ -1,7 +1,7 @@
 from ninja import Schema
 from ninja import ModelSchema
+from registration.constants import AUDIT_FIELDS
 from registration.models import Operator
-from registration.utils import AUDIT_FIELDS
 
 
 class OperatorOut(ModelSchema):

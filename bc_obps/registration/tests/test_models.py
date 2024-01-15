@@ -17,7 +17,7 @@ from registration.models import (
     Contact,
     Operator,
     UserOperator,
-    ParentChildOperator,
+    ParentOperator,
     Operation,
     MultipleOperator,
     AppRole,
@@ -380,6 +380,9 @@ class UserModelTest(BaseTestCase):
             ("multipleoperator_created", "multiple operator", None, None),
             ("multipleoperator_updated", "multiple operator", None, None),
             ("multipleoperator_archived", "multiple operator", None, None),
+            ("parentoperator_created", "parent operator", None, None),
+            ("parentoperator_updated", "parent operator", None, None),
+            ("parentoperator_archived", "parent operator", None, None),
         ]
 
     def test_unique_user_guid_and_business_guid_constraint(self):
@@ -488,26 +491,45 @@ class OperatorModelTest(BaseTestCase):
             ("is_new", "is new", None, None),
             ("operations", "operation", None, None),
             ("user_operators", "user operator", None, 2),
-            ("parent_child_operator_parent_operators", "parent child operator", None, None),
-            ("parent_child_operator_child_operators", "parent child operator", None, None),
+            ("parent_operators", "parent operator", None, None),
         ]
 
 
-class ParentChildOperatorModelTest(BaseTestCase):
-    fixtures = [USER_FIXTURE, ADDRESS_FIXTURE, CONTACT_FIXTURE, OPERATOR_FIXTURE]
+class ParentOperatorModelTest(BaseTestCase):
+    fixtures = [
+        USER_FIXTURE,
+        ADDRESS_FIXTURE,
+        CONTACT_FIXTURE,
+        OPERATOR_FIXTURE,
+    ]
 
     @classmethod
     def setUpTestData(cls):
-        cls.test_object = ParentChildOperator.objects.create(
-            parent_operator=Operator.objects.get(id=1),
-            child_operator=Operator.objects.get(id=2),
-            percentage_owned_by_parent_company=55.6,
+        cls.test_object = ParentOperator.objects.create(
+            child_operator=Operator.objects.get(id=1),
+            operator_index=1,
+            legal_name="test parent legal name",
+            trade_name="test parent trade name",
+            cra_business_number=147852369,
+            bc_corporate_registry_number='asd7654321',
+            business_structure=BusinessStructure.objects.first(),
+            website="test parent website",
+            physical_address=Address.objects.first(),
+            mailing_address=Address.objects.first(),
         )
         cls.field_data = [
+            *timestamp_common_fields,
             ("id", "ID", None, None),
-            ("parent_operator", "parent operator", None, None),
             ("child_operator", "child operator", None, None),
-            ("percentage_owned_by_parent_company", "percentage owned by parent company", None, None),
+            ("operator_index", "operator index", None, None),
+            ("legal_name", "legal name", 1000, None),
+            ("trade_name", "trade name", 1000, None),
+            ("cra_business_number", "cra business number", None, None),
+            ("bc_corporate_registry_number", "bc corporate registry number", None, None),
+            ("business_structure", "business structure", None, None),
+            ("website", "website", 200, None),
+            ("physical_address", "physical address", None, None),
+            ("mailing_address", "mailing address", None, None),
         ]
 
 
@@ -820,6 +842,8 @@ class TestAddressModel(BaseTestCase):
             ("operators_mailing", "operator", None, None),
             ("multiple_operator_physical", "multiple operator", None, None),
             ("multiple_operator_mailing", "multiple operator", None, None),
+            ("parent_operators_physical", "parent operator", None, None),
+            ("parent_operators_mailing", "parent operator", None, None),
         ]
 
 

@@ -3,6 +3,7 @@ import uuid, re
 from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
 from localflavor.ca.models import CAPostalCodeField, CAProvinceField
+from registration.constants import BC_CORPORATE_REGISTRY_REGEX, BC_CORPORATE_REGISTRY_REGEX_MESSAGE, BORO_ID_REGEX
 from simple_history.models import HistoricalRecords
 from django.core.validators import RegexValidator
 from django.utils import timezone
@@ -350,12 +351,7 @@ class Operator(TimeStampedModel):
     cra_business_number = models.IntegerField(db_comment="The CRA business number of an operator")
     bc_corporate_registry_number = models.CharField(
         db_comment="The BC corporate registry number of an operator",
-        validators=[
-            RegexValidator(
-                regex="^[A-Za-z]{1,3}\d{7}$",
-                message='"BC Corporate Registry Number should be 1-3 letters followed by 7 digits".',
-            )
-        ],
+        validators=[RegexValidator(regex=BC_CORPORATE_REGISTRY_REGEX, message=BC_CORPORATE_REGISTRY_REGEX_MESSAGE)],
     )
     business_structure = models.ForeignKey(
         BusinessStructure,
@@ -423,38 +419,6 @@ class Operator(TimeStampedModel):
         db_table_comment = "Operators (also called organizations)"
         # don't need indexes if we end up using `unique`
         db_table = 'erc"."operator'
-
-
-class ParentChildOperator(models.Model):
-    """Parent child operator model"""
-
-    parent_operator = models.ForeignKey(
-        Operator,
-        on_delete=models.DO_NOTHING,
-        related_name="parent_child_operator_parent_operators",
-        db_comment="The parent operator of an operator in a parent-child relationship",
-    )
-    child_operator = models.ForeignKey(
-        Operator,
-        on_delete=models.DO_NOTHING,
-        related_name="parent_child_operator_child_operators",
-        db_comment="The child operator of an operator in a parent-child relationship",
-    )
-    percentage_owned_by_parent_company = models.DecimalField(
-        decimal_places=5,
-        max_digits=10,
-        db_comment="The percentage of an operator owned by the parent company",
-        blank=True,
-        null=True,
-    )
-
-    class Meta:
-        db_table_comment = "Through table to connect parent and child operators"
-        db_table = 'erc"."parent_child_operator'
-        indexes = [
-            models.Index(fields=["parent_operator"], name="parent_operator_idx"),
-            models.Index(fields=["child_operator"], name="child_operator_idx"),
-        ]
 
 
 class UserOperator(TimeStampedModel):
@@ -579,9 +543,6 @@ class OperationAndFacilityCommonInfo(TimeStampedModel):
         db_table = 'erc"."operation'
 
 
-boro_id_pattern = r'^\d{2}-\d{4}$'
-
-
 class Operation(OperationAndFacilityCommonInfo):
     """Operation model"""
 
@@ -687,7 +648,7 @@ class Operation(OperationAndFacilityCommonInfo):
             f"{current_year_last_digits}-{latest_number:04d}"  # Pad the number with zeros to make it 4 digits long
         )
 
-        if not re.match(boro_id_pattern, new_boro_id):
+        if not re.match(BORO_ID_REGEX, new_boro_id):
             raise ValidationError("Generated BORO ID is not in the correct format.")
         if Operation.objects.filter(bc_obps_regulated_operation__pk=new_boro_id).exists():
             raise ValidationError("Generated BORO ID is not unique.")
@@ -713,12 +674,7 @@ class MultipleOperator(TimeStampedModel):
     cra_business_number = models.IntegerField(db_comment="The CRA business number of an operator")
     bc_corporate_registry_number = models.CharField(
         db_comment="The BC corporate registry number of an operator",
-        validators=[
-            RegexValidator(
-                regex="^[A-Za-z]{1,3}\d{7}$",
-                message='"BC Corporate Registry Number should be 1-3 letters followed by 7 digits".',
-            )
-        ],
+        validators=[RegexValidator(regex=BC_CORPORATE_REGISTRY_REGEX, message=BC_CORPORATE_REGISTRY_REGEX_MESSAGE)],
     )
     business_structure = models.ForeignKey(
         BusinessStructure,
@@ -797,8 +753,61 @@ class BcObpsRegulatedOperation(models.Model):
         """
         Override the save method to set the issued_at field if it is not already set.
         """
-        if not re.match(boro_id_pattern, self.id):
+        if not re.match(BORO_ID_REGEX, self.id):
             raise ValidationError("Generated BORO ID is not in the correct format.")
         if not self.issued_at:
             self.issued_at = timezone.now()
         super().save(*args, **kwargs)
+
+
+class ParentOperator(TimeStampedModel):
+    """Metadata for parent operators associated with a child operator"""
+
+    child_operator = models.ForeignKey(
+        Operator,
+        db_comment="The operator that this parent operator is associated with",
+        on_delete=models.DO_NOTHING,
+        related_name="parent_operators",
+    )
+    operator_index = models.IntegerField(
+        db_comment="Index used to differentiate parent operators for the child operator for saving/updating purposes"
+    )
+    legal_name = models.CharField(max_length=1000, db_comment="The legal name of an operator")
+    trade_name = models.CharField(max_length=1000, blank=True, db_comment="The trade name of an operator")
+    cra_business_number = models.IntegerField(db_comment="The CRA business number of an operator")
+    bc_corporate_registry_number = models.CharField(
+        db_comment="The BC corporate registry number of an operator",
+        validators=[RegexValidator(regex=BC_CORPORATE_REGISTRY_REGEX, message=BC_CORPORATE_REGISTRY_REGEX_MESSAGE)],
+    )
+    business_structure = models.ForeignKey(
+        BusinessStructure,
+        on_delete=models.DO_NOTHING,
+        db_comment="The business structure of an operator",
+        related_name="parent_operators",
+    )
+    website = models.URLField(
+        max_length=200,
+        db_comment="The website address of an operator",
+        blank=True,
+        # default blank since optional fields returning null will trigger RJSF validation the next time the form is saved
+        default="",
+    )
+    physical_address = models.ForeignKey(
+        Address,
+        on_delete=models.DO_NOTHING,
+        db_comment="The physical address of an operator (where the operator is physically located)",
+        related_name="parent_operators_physical",
+    )
+    mailing_address = models.ForeignKey(
+        Address,
+        on_delete=models.DO_NOTHING,
+        db_comment="The mailing address of an operator",
+        related_name="parent_operators_mailing",
+        blank=True,
+        null=True,
+    )
+    history = HistoricalRecords(table_name='erc_history"."parent_operator_history')
+
+    class Meta:
+        db_table_comment = "Table to store parent operator metadata"
+        db_table = 'erc"."parent_operator'
