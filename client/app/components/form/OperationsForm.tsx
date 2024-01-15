@@ -111,7 +111,7 @@ export default function OperationsForm({ formData, schema }: Readonly<Props>) {
             if (response.error) {
               setError(response.error);
               // return error so MultiStepFormBase can re-enable the submit button
-              // so user can attempt to submit again
+              // and user can attempt to submit again
               return { error: response.error };
             }
 
