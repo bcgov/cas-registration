@@ -204,19 +204,12 @@ class TestUserOperatorEndpoint(CommonTestSetup):
             role=UserOperator.Roles.ADMIN,
             status=UserOperator.Statuses.APPROVED,
         )
-        baker.make(
-            UserOperator,
-            user=self.user,
-            operator=operators[1],
-            role=UserOperator.Roles.ADMIN,
-            status=UserOperator.Statuses.APPROVED,
-        )
 
         response = TestUtils.mock_get_with_auth_role(
-            self, 'industry_user_admin', f"{base_endpoint}get-current-user-user-operators"
+            self, 'industry_user', f"{base_endpoint}user-operator-list-from-user"
         )
 
-        assert len(json.loads(response.content)) == 2
+        assert len(json.loads(response.content)) == 1
 
     def test_put_update_user_status(self):
         user = baker.make(User)
@@ -283,7 +276,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
             user_id=mock_user.user_guid,
         )
         response = TestUtils.mock_get_with_auth_role(
-            self, 'industry_user_admin', f"{base_endpoint}is-approved-admin-user-operator/{mock_user_operator.user_id}"
+            self, 'industry_user', f"{base_endpoint}is-approved-admin-user-operator/{mock_user_operator.user_id}"
         )
         assert response.status_code == 200
         assert response.json() == {"approved": True}
@@ -346,9 +339,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
     # GET USER OPERATOR ID 404
     def test_get_user_operator_operator_id_with_invalid_user(self):
         # Act
-        response = TestUtils.mock_get_with_auth_role(
-            self, 'industry_user_admin', f"{base_endpoint}user-operator-operator-id"
-        )
+        response = TestUtils.mock_get_with_auth_role(self, 'industry_user', f"{base_endpoint}user-operator-operator-id")
 
         response_json = response.json()
 
