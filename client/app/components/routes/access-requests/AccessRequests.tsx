@@ -62,22 +62,27 @@ export default async function AccessRequests() {
         cntxt="user-operators"
         rows={rows}
         columns={[
-          { field: "id", headerName: "Request ID", width: 150 },
-          { field: "first_name", headerName: "First Name", width: 150 },
-          { field: "last_name", headerName: "Last Name", width: 150 },
+          {
+            field: "id",
+            headerName: "Request\n ID",
+            width: 100,
+            headerClassName: "table-heading",
+          },
+          { field: "first_name", headerName: "First\n Name", width: 180 },
+          { field: "last_name", headerName: "Last\n Name", width: 180 },
           { field: "email", headerName: "Email", width: 300 },
-          { field: "legal_name", headerName: "Operator", width: 300 },
+          { field: "legal_name", headerName: "Operator", width: 380 },
           {
             field: "status",
             headerName: "Status",
-            width: 150,
+            width: 130,
             renderCell: statusStyle,
           },
           {
             field: "action",
             headerName: "Action",
             sortable: false,
-            width: 200,
+            width: 140,
           },
         ]}
       />
