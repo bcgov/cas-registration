@@ -84,7 +84,7 @@ export default async function Operations() {
             headerName: "Registration ID",
             width: 150,
           },
-          { field: "status", headerName: "Status", width: 150 },
+          { field: "status", headerName: "Status", width: 180 },
           {
             field: "action",
             headerName: "Action",
