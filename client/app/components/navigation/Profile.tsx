@@ -3,17 +3,14 @@ import Link from "@mui/material/Link";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { useEffect } from "react";
 
-// 🛠️ Function for keycloak session logout
+// 🛠️ Function for nextauth and keycloak session logouts
 async function keycloakSessionLogOut() {
   try {
-    // call keycloak
-    const response = await fetch(`/api/auth/logout`, { method: "GET" });
-    if (!response.ok) {
-      // redirect to keycloak basic logout SSO page
-      window.open(process.env.NEXT_PUBLIC_KEYCLOAK_LOGOUT_URL, "_blank");
-    }
     // call nextauth logout
-    signOut();
+    await signOut();
+    // redirect to Keycloak logout
+    open(process.env.NEXT_PUBLIC_KEYCLOAK_LOGOUT_URL, "_self");
+    return false;
   } catch (err) {
     console.error(err);
   }
