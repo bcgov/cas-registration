@@ -297,18 +297,43 @@ const operationPage1: RJSFSchema = {
 const operationPage2: RJSFSchema = {
   type: "object",
   title: "Application Lead",
+  required: [
+    "is_user_application_lead",
+    "street_address",
+    "municipality",
+    "province",
+    "postal_code",
+  ],
   properties: {
-    is_application_lead_external: {
+    is_user_application_lead: {
       type: "boolean",
-      title: "Would you like to add an exemption ID application lead?",
+      title: "Are you the application lead?",
       default: false,
+    },
+    street_address: {
+      type: "string",
+      title: "Mailing Address",
+    },
+    municipality: {
+      type: "string",
+      title: "Municipality",
+    },
+    province: {
+      type: "string",
+      title: "Province",
+      anyOf: provinceOptions,
+    },
+    postal_code: {
+      type: "string",
+      title: "Postal Code",
+      format: "postal-code",
     },
   },
   allOf: [
     {
       if: {
         properties: {
-          is_application_lead_external: {
+          is_user_application_lead: {
             const: true,
           },
         },
@@ -316,53 +341,70 @@ const operationPage2: RJSFSchema = {
       then: {
         type: "object",
         required: [
+          "email",
+          "phone_number",
           "first_name",
           "last_name",
           "position_title",
-          "street_address",
-          "municipality",
-          "province",
-          "postal_code",
-          "email",
-          "phone_number",
         ],
         properties: {
           first_name: {
             type: "string",
             title: "First Name",
+            readOnly: true,
           },
           last_name: {
             type: "string",
             title: "Last Name",
+            readOnly: true,
           },
           position_title: {
             type: "string",
             title: "Position Title",
-          },
-          street_address: {
-            type: "string",
-            title: "Mailing Address",
-          },
-          municipality: {
-            type: "string",
-            title: "Municipality",
-          },
-          province: {
-            type: "string",
-            title: "Province",
-            anyOf: provinceOptions,
-          },
-          postal_code: {
-            type: "string",
-            title: "Postal Code",
-            format: "postal-code",
+            readOnly: true,
           },
           email: {
             type: "string",
             title: "Email Address",
             format: "email",
+            readOnly: true,
           },
           phone_number: {
+            type: "string",
+            title: "Phone Number",
+            format: "phone",
+            readOnly: true,
+          },
+        },
+      },
+      else: {
+        type: "object",
+        required: [
+          "external_lead_first_name",
+          "external_lead_last_name",
+          "external_lead_position_title",
+          "external_lead_email",
+          "external_lead_phone_number",
+        ],
+        properties: {
+          external_lead_first_name: {
+            type: "string",
+            title: "First Name",
+          },
+          external_lead_last_name: {
+            type: "string",
+            title: "Last Name",
+          },
+          external_lead_position_title: {
+            type: "string",
+            title: "Position Title",
+          },
+          external_lead_email: {
+            type: "string",
+            title: "Email Address",
+            format: "email",
+          },
+          external_lead_phone_number: {
             type: "string",
             title: "Phone Number",
             format: "phone",
@@ -403,15 +445,20 @@ export const operationUiSchema = {
     "Does the operation have multiple operators?",
     "operators",
     "percentage_ownership",
-    "is_application_lead_external",
+    "is_user_application_lead",
+    "external_lead_first_name",
     "first_name",
+    "external_lead_last_name",
     "last_name",
+    "external_lead_position_title",
     "position_title",
     "street_address",
     "municipality",
     "province",
     "postal_code",
+    "external_lead_email",
     "email",
+    "external_lead_phone_number",
     "phone_number",
     "multiple_operators_section",
     "operation_has_multiple_operators",
@@ -446,8 +493,11 @@ export const operationUiSchema = {
     "ui:FieldTemplate": FieldTemplate,
     "ui:widget": "RadioWidget",
   },
-  is_application_lead_external: {
-    "ui:widget": "RadioWidget",
+  is_user_application_lead: {
+    "ui:widget": "CheckboxWidget",
+    "ui:options": {
+      label: false,
+    },
   },
   opt_in: {
     "ui:widget": "RadioWidget",
@@ -524,5 +574,11 @@ export const operationUiSchema = {
   },
   phone_number: {
     "ui:widget": "PhoneWidget",
+  },
+  external_lead_phone_number: {
+    "ui:widget": "PhoneWidget",
+  },
+  external_lead_email: {
+    "ui:widget": "EmailWidget",
   },
 };
