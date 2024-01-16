@@ -30,9 +30,6 @@ export default async function User() {
        * getServerSession requires passing the same object you would pass to NextAuth
        */
       const session = await getServerSession(authOptions);
-      const isIdir = session?.identity_provider === IDP.IDIR;
-      // IDIR users have a given_name and a family_name attribute in the jwt, so we can use that in the case of idir
-      // BCeID users use the name attribute and we split on the space if there is one
       const names = getUserFullName(session)?.split(" ");
 
       formData = {
