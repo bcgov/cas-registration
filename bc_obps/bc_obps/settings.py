@@ -48,8 +48,10 @@ INSTALLED_APPS = [
     "corsheaders",
     "localflavor",
     "registration.apps.RegistrationConfig",
-    "django_extensions",
 ]
+
+if DEBUG and ENVIRONMENT == "develop":
+    INSTALLED_APPS.append("django_extensions")
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",

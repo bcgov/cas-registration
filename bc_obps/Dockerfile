@@ -47,6 +47,6 @@ RUN chown -R bc_obps:0 ${HOME} && \
 EXPOSE 8000
 
 # Install project dependencies using Poetry
-RUN poetry install
+RUN poetry install --without dev
 USER ${USER_ID}
 CMD ["/usr/bin/env", "bash", "-c", "poetry run python manage.py collectstatic --noinput && poetry run python manage.py migrate && poetry run gunicorn bc_obps.wsgi:application --timeout 200 --workers 2 --bind '0.0.0.0:8000'"]
