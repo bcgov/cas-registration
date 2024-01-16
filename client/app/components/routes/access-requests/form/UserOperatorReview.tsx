@@ -10,6 +10,7 @@ interface Props {
   userOperatorId: number;
   operatorId?: number;
   isOperatorNew?: boolean;
+  showRequestChanges?: boolean;
 }
 
 export default function UserOperatorReview({
@@ -17,67 +18,99 @@ export default function UserOperatorReview({
   userOperatorId,
   operatorId,
   isOperatorNew,
+  showRequestChanges,
 }: Props) {
-  async function approveOperatorRequest() {
+  // Reusable function to change the status of the operator
+  const changeOperatorStatus = async (status: Status, id: number) => {
     try {
       const response = await actionHandler(
-        `registration/operators/${operatorId}`,
+        `registration/operators/${id}`,
         "PUT",
         "",
         {
-          body: JSON.stringify({ status: Status.APPROVED }),
+          body: JSON.stringify({ status }),
         },
       );
       return response;
     } catch (error) {
       throw error;
     }
-  }
+  };
 
-  async function rejectOperatorRequest() {
+  // Reusable function to change the status of the prime admin
+  const changePrimeAdminStatus = async (status: Status, id: number) => {
     try {
       const response = await actionHandler(
-        `registration/operators/${operatorId}`,
+        `registration/select-operator/user-operator/operator/${id}/update-status`,
         "PUT",
         "",
         {
-          body: JSON.stringify({ status: Status.REJECTED }),
+          body: JSON.stringify({ status }),
         },
       );
       return response;
     } catch (error) {
       throw error;
     }
-  }
+  };
 
-  async function approvePrimeAdminRequst() {
-    userOperator.status = Status.APPROVED;
-    const response = await actionHandler(
-      `registration/select-operator/user-operator/operator/${userOperatorId}/update-status`,
-      "PUT",
-      `dashboard/operators/user-operators/${userOperatorId}`,
-      {
-        body: JSON.stringify(userOperator),
-      },
+  const approvePrimeAdminRequst = async () => {
+    const response = await changePrimeAdminStatus(
+      Status.APPROVED,
+      userOperatorId as number,
     );
-    return response;
-  }
 
-  async function rejectPrimeAdminRequest() {
-    userOperator.status = Status.REJECTED;
-    const response = await actionHandler(
-      `registration/select-operator/user-operator/operator/${userOperatorId}/update-status`,
-      "PUT",
-      `dashboard/operators/user-operators/${userOperatorId}`,
-      {
-        body: JSON.stringify(userOperator),
-      },
-    );
     return response;
-  }
+  };
+
+  const rejectPrimeAdminRequest = async () => {
+    const response = await changePrimeAdminStatus(
+      Status.REJECTED,
+      userOperatorId as number,
+    );
+
+    return response;
+  };
+
   const requestText = isOperatorNew
     ? "creation of the new operator"
     : "prime admin request";
+
+  const approveOperatorRequest = async () => {
+    const response = await changeOperatorStatus(
+      Status.APPROVED,
+      operatorId as number,
+    );
+
+    return response;
+  };
+
+  const rejectOperatorRequest = async () => {
+    const response = await changeOperatorStatus(
+      Status.REJECTED,
+      operatorId as number,
+    );
+
+    return response;
+  };
+
+  const requestOperatorChange = async () => {
+    const response = await changeOperatorStatus(
+      Status.CHANGES_REQUESTED,
+      operatorId as number,
+    );
+
+    return response;
+  };
+
+  const undoRequestOperatorChange = async () => {
+    const response = await changeOperatorStatus(
+      Status.PENDING,
+      operatorId as number,
+    );
+
+    return response;
+  };
 
   return (
     <Review
@@ -90,6 +123,9 @@ export default function UserOperatorReview({
         isOperatorNew ? approveOperatorRequest : approvePrimeAdminRequst
       }
       onReject={isOperatorNew ? rejectOperatorRequest : rejectPrimeAdminRequest}
+      showRequestChanges={showRequestChanges}
+      onRequestChange={requestOperatorChange}
+      onUndoRequestChange={undoRequestOperatorChange}
     />
   );
 }

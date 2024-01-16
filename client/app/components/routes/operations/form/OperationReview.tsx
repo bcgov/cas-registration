@@ -12,28 +12,43 @@ interface Props {
 const OperationReview = ({ operation }: Props) => {
   const { data: session } = useSession();
 
+  const changeStatus = async (status: Status, id: number) => {
+    try {
+      const response = await actionHandler(
+        `registration/operations/${id}/update-status`,
+        "PUT",
+        `dashboard/operations/${id}`,
+        {
+          body: JSON.stringify({ status }),
+        },
+      );
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  };
+
   const approveRequest = async () => {
-    const response = await actionHandler(
-      `registration/operations/${operation.id}/update-status`,
-      "PUT",
-      `dashboard/operations/${operation.id}`,
-      {
-        body: JSON.stringify({ status: Status.APPROVED }),
-      },
-    );
+    const response = await changeStatus(Status.APPROVED, operation.id);
 
     return response;
   };
 
   const rejectRequest = async () => {
-    const response = await actionHandler(
-      `registration/operations/${operation.id}/update-status`,
-      "PUT",
-      `dashboard/operations/${operation.id}`,
-      {
-        body: JSON.stringify({ status: Status.REJECTED }),
-      },
-    );
+    const response = await changeStatus(Status.REJECTED, operation.id);
+
+    return response;
+  };
+
+  const requestChange = async () => {
+    const response = await changeStatus(Status.CHANGES_REQUESTED, operation.id);
+
+    return response;
+  };
+
+  const undoRequestChange = async () => {
+    const response = await changeStatus(Status.PENDING, operation.id);
+
     return response;
   };
 
@@ -52,6 +67,8 @@ const OperationReview = ({ operation }: Props) => {
       isStatusPending={operation.status === Status.PENDING}
       onApprove={approveRequest}
       onReject={rejectRequest}
+      onRequestChange={requestChange}
+      onUndoRequestChange={undoRequestChange}
     />
   );
 };
