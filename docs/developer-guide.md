@@ -195,10 +195,10 @@ Playwright is a powerful end-to-end testing library for web applications. It pro
 
 ## Getting Started
 
-To get started with Playwright, you'll need to install it as a dependency in your project:
+To get started with Playwright, you'll need to install it as a dependency in your project using:
 
 ```bash
-npm install @playwright/test
+cd client && yarn
 ```
 
 ## Writing Tests
