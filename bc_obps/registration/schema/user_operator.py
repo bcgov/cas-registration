@@ -3,7 +3,7 @@ import uuid
 from ninja import ModelSchema, Schema, Field
 from pydantic import validator
 from registration.constants import AUDIT_FIELDS, BC_CORPORATE_REGISTRY_REGEX
-from registration.models import BusinessStructure, Contact, UserOperator
+from registration.models import BusinessStructure, Contact, User, UserOperator, Operator
 from .parent_operator import ParentOperatorIn, ParentOperatorOut
 from .business_structure import validate_business_structure
 
@@ -189,14 +189,38 @@ class SelectUserOperatorStatus(Schema):
     status: str
 
 
-class SelectUserOperatorOperatorsOut(ModelSchema):
+class UserExternalDashboardUsersTileData(ModelSchema):
     """
-    Schema for returning User's Business Operator
+    Schema for fields from the User model that are needed in ExternalDashboardUsersTileData
     """
 
     class Config:
+        model = User
+        model_fields = ["first_name", "last_name", "email", "user_guid"]
+
+
+class OperatorExternalDashboardUsersTileData(ModelSchema):
+
+    """
+    Schema for fields from the Operator model that are needed in ExternalDashboardUsersTileData
+    """
+
+    class Config:
+        model = Operator
+        model_fields = ["legal_name"]
+
+
+class ExternalDashboardUsersTileData(ModelSchema):
+    """
+    Schema for the data that will be shown in an industry_user's User Access Management tile.
+    """
+
+    user: UserExternalDashboardUsersTileData
+    operator: OperatorExternalDashboardUsersTileData
+
+    class Config:
         model = UserOperator
-        model_fields = ["operator"]
+        model_fields = ["role", "status"]
 
 
 class UserOperatorListOut(Schema):
