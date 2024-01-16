@@ -6,7 +6,7 @@ import Link from "@mui/material/Link";
 import Typography from "@mui/material/Typography";
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import { Roles } from "@/app/utils/enums";
+import { AppRoles } from "@/app/utils/enums";
 /*
 📚
 In the app directory, nested folders are normally mapped to URL paths.
@@ -34,22 +34,22 @@ export default function Page() {
         let contentsModule;
         // Note: using a dynamic import path, i.e. dynamicPath = `@/app/data/dashboard/${role}.json`;, returns Error: Cannot find module '@/app/data/dashboard/*.json'
         switch (role) {
-          case Roles.CAS_ADMIN:
+          case AppRoles.CAS_ADMIN:
             contentsModule = await import(
               "@/app/data/dashboard/cas_admin.json"
             );
             break;
-          case Roles.CAS_ANALYST:
+          case AppRoles.CAS_ANALYST:
             contentsModule = await import(
               "@/app/data/dashboard/cas_analyst.json"
             );
             break;
-          case Roles.INDUSTRY_USER_ADMIN:
+          case "industry_user_admin":
             contentsModule = await import(
               "@/app/data/dashboard/industry_user_admin.json"
             );
             break;
-          case Roles.INDUSTRY_USER:
+          case AppRoles.INDUSTRY_USER:
             contentsModule = await import(
               "@/app/data/dashboard/industry_user.json"
             );
@@ -67,7 +67,7 @@ export default function Page() {
   }, [role]); // dependencies array
   return (
     <div>
-      {role === Roles.CAS_PENDING ? (
+      {role === AppRoles.CAS_PENDING ? (
         // Display pending message
         <Card
           data-testid="dashboard-pending-message"
