@@ -174,7 +174,8 @@ const DataGrid: React.FC<Props> = ({ rows, columns, cntxt }) => {
           "& .MuiDataGrid-sortIcon": {
             opacity: "inherit !important",
           },
-          // We may want tor eenable this functionality though it's not in the design
+          // This hides the 3 dots menu that had additional options for each row
+          // We may want to renable this menu though it's not in the design
           ".MuiDataGrid-menuIcon": {
             display: "none",
           },

@@ -66,7 +66,6 @@ export default async function AccessRequests() {
             field: "id",
             headerName: "Request\n ID",
             width: 100,
-            headerClassName: "table-heading",
           },
           { field: "first_name", headerName: "First\n Name", width: 180 },
           { field: "last_name", headerName: "Last\n Name", width: 180 },
