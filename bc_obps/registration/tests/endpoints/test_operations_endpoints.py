@@ -344,7 +344,6 @@ class TestOperationsEndpoint(CommonTestSetup):
 
     def test_put_operation_without_submit(self):
         operation = baker.make(Operation)
-        BusinessRole.objects.create(role_name='Operation Registration Lead')
         mock_operation = TestUtils.mock_OperationUpdateIn()
 
         # approve the user
@@ -371,7 +370,6 @@ class TestOperationsEndpoint(CommonTestSetup):
 
     def test_put_operation_with_submit(self):
         operation = baker.make(Operation, id=5)
-        BusinessRole.objects.create(role_name='Operation Registration Lead')
         mock_operation = TestUtils.mock_OperationUpdateIn()
         baker.make(
             UserOperator,
@@ -411,7 +409,6 @@ class TestOperationsEndpoint(CommonTestSetup):
         contact1 = baker.make(Contact)
         contact2 = baker.make(Contact, email=contact1.email)
         operation = baker.make(Operation)
-        BusinessRole.objects.create(role_name='Operation Registration Lead')
 
         operator = baker.make(Operator)
         update = OperationUpdateIn(
