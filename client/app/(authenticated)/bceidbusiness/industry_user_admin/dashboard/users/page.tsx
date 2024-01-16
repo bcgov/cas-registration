@@ -1,15 +1,15 @@
 import { GridColDef, GridRowsProp } from "@mui/x-data-grid";
 import DataGrid from "@/app/components/datagrid/DataGrid";
 import {
-  processAdminUserOperators,
-  UserOperatorStatus,
+  ExternalDashboardUsersTile,
+  processExternaldashboardUsersTileData,
 } from "@/app/utils/users/adminUserOperators";
 import { ChangeUserOperatorStatusColumnCell } from "@/app/components/datagrid/ChangeUserOperatorStatusColumnCell";
 import { statusStyle } from "@/app/components/datagrid/helpers";
 
 export default async function Page() {
-  const userOperatorStatuses: UserOperatorStatus[] =
-    await processAdminUserOperators();
+  const userOperatorStatuses: ExternalDashboardUsersTile[] =
+    await processExternaldashboardUsersTileData();
   const columns: GridColDef[] = [
     {
       field: "id",
@@ -64,12 +64,11 @@ export default async function Page() {
       headerAlign: "center",
     },
   ];
-
   const statusRows: GridRowsProp = userOperatorStatuses.map((uOS) => ({
-    id: uOS.user_id,
-    name: `${uOS.first_name} ${uOS.last_name.slice(0, 1)}`,
-    email: uOS.email,
-    business: uOS.business_name,
+    id: uOS.user.user_guid,
+    name: `${uOS.user.first_name} ${uOS.user.last_name.slice(0, 1)}`,
+    email: uOS.user.email,
+    business: uOS.operator.legal_name,
     userRole: uOS.role,
     status: uOS.status,
   }));

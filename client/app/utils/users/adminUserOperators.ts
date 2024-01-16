@@ -1,8 +1,9 @@
 import { Status } from "@/app/utils/enums";
 import { actionHandler, getToken } from "@/app/utils/actions";
 
-export interface UserOperatorStatus {
-  user_id: string;
+export interface ExternalDashboardUsersTile {
+  user: { [key: string]: any };
+  operator: { [key: string]: any };
   first_name: string;
   last_name: string;
   position_title: string;
@@ -12,67 +13,38 @@ export interface UserOperatorStatus {
   status: string | Status;
 }
 
-type UserOperator = {
-  operator: string;
-};
-
-// 🛠️ Function to fetch a user's approved UserOperators, returning the business id as `obj.operator`
-async function getAdminsApprovedUserOperators(): Promise<UserOperator[]> {
-  try {
-    return await actionHandler(
-      `registration/get-current-user-user-operators`,
-      "GET",
-      "/dashboard/users",
-    );
-  } catch (error) {
-    throw error;
-  }
-}
-
-// 🛠️ Function to fetch userOperators
-async function getUserOperatorsForOperator(
-  operator_id: string,
-): Promise<UserOperatorStatus[]> {
-  try {
-    return await actionHandler(
-      `registration/operators/${operator_id}/user-operators`,
-      "GET",
-      "/dashboard/users",
-    );
-  } catch (error) {
-    throw error;
-  }
-}
-
-// 🛠️ Function to fetch approved operators for admins, processes the associated user operators, and updates their statuses.
-export async function processAdminUserOperators(): Promise<
-  UserOperatorStatus[]
+export async function getExternalDashboardUsersTileData(): Promise<
+  ExternalDashboardUsersTile[]
 > {
-  let userOperatorStatuses: UserOperatorStatus[] = [];
-  const approvedOperators = await getAdminsApprovedUserOperators();
-  if (approvedOperators) {
-    const token = await getToken();
-    const uid = token?.user_guid ?? "";
-    userOperatorStatuses = (
-      await Promise.all(
-        approvedOperators.flatMap((associatedOperator) =>
-          getUserOperatorsForOperator(associatedOperator.operator),
-        ),
-      )
-    )
-      .flat()
-      .map((uo) => {
-        uo.status = uo.status
-          ? Status[uo.status.toUpperCase() as keyof typeof Status]
-          : Status.DRAFT;
-        return uo;
-      });
-
-    // 🤳Identify current admin user in the list
-    const selfIndex = userOperatorStatuses.findIndex(
-      (userOperator) => userOperator.user_id.replace(/-/g, "") === uid,
+  try {
+    return await actionHandler(
+      `registration/user-operator-list-from-user`,
+      "GET",
+      "/dashboard/users",
     );
-    userOperatorStatuses[selfIndex].status = Status.MYSELF;
+  } catch (error) {
+    throw error;
   }
-  return userOperatorStatuses;
+}
+
+export async function processExternaldashboardUsersTileData() {
+  const tileData = await getExternalDashboardUsersTileData();
+
+  const transformedTileData = tileData.map((userOperator) => {
+    userOperator.status = userOperator.status
+      ? Status[userOperator.status.toUpperCase() as keyof typeof Status]
+      : Status.DRAFT;
+
+    return userOperator;
+  });
+
+  // 🤳Identify current admin user in the list
+  const token = await getToken();
+  const uid = token?.user_guid ?? "";
+  const selfIndex = transformedTileData.findIndex((userOperator) => {
+    return userOperator.user.user_guid.replace(/-/g, "") === uid;
+  });
+  transformedTileData[selfIndex].status = Status.MYSELF;
+
+  return transformedTileData;
 }
