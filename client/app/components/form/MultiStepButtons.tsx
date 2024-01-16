@@ -55,18 +55,8 @@ const SubmitButton: React.FunctionComponent<SubmitButtonProps> = ({
             </Button>
           ))}
         {/* When the form is editable, the form should be submitted when navigating between steps */}
-        {!disabled && (
-          <Button
-            type="submit"
-            aria-disabled={isDisabled}
-            disabled={isDisabled}
-            variant="contained"
-          >
-            {!isFinalStep ? "Next" : "Submit"}
-          </Button>
-        )}
         {/* When the form is not editable (e.g., IRC staff is reviewing an operation), the form should not be submitted when navigating between steps */}
-        {!isFinalStep && disabled && (
+        {!isFinalStep && disabled ? (
           <Link href={`${baseUrl}/${step + 2}`}>
             <Button
               variant="contained"
@@ -76,6 +66,15 @@ const SubmitButton: React.FunctionComponent<SubmitButtonProps> = ({
               Next
             </Button>
           </Link>
+        ) : (
+          <Button
+            type="submit"
+            aria-disabled={isDisabled}
+            disabled={isDisabled}
+            variant="contained"
+          >
+            {!isFinalStep ? "Next" : "Submit"}
+          </Button>
         )}
       </div>
     </div>
