@@ -50,7 +50,7 @@ INSTALLED_APPS = [
     "registration.apps.RegistrationConfig",
 ]
 
-if DEBUG and ENVIRONMENT == "develop":
+if DEBUG:
     INSTALLED_APPS.append("django_extensions")
 
 MIDDLEWARE = [
