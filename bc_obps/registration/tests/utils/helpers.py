@@ -75,6 +75,11 @@ class TestUtils:
             documents=[document.id],
             application_lead=application_lead.id,
             operator=operator.id,
+            is_user_application_lead=True,
+            street_address='19 Evergreen Terrace',
+            municipality='Springfield',
+            province='BC',
+            postal_code='V1V 1V1',
         )
 
     @staticmethod
@@ -105,6 +110,16 @@ class TestUtils:
             documents=[document.id],
             application_lead=application_lead.id,
             operator_id=operator.id,
+            is_user_application_lead=True,
+            first_name="Homer",
+            last_name="Simpson",
+            email="homer@email.com",
+            phone_number="+17787777777",
+            street_address="19 Evergreen Terrace",
+            position_title="Nuclear Safety Inspector",
+            municipality="Springfield",
+            province="BC",
+            postal_code="V1V 1V1",
         )
 
     @staticmethod

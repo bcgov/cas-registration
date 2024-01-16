@@ -14,6 +14,7 @@ from registration.models import (
     UserOperator,
     RegulatedProduct,
     BusinessStructure,
+    BusinessRole,
 )
 from registration.schema import OperationCreateIn, OperationUpdateIn
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
@@ -81,7 +82,6 @@ class TestOperationsEndpoint(CommonTestSetup):
         assert post_response.status_code == 401
 
     def test_unauthorized_roles_cannot_put_operations(self):
-
         operation = baker.make(Operation)
         mock_operation = TestUtils.mock_OperationUpdateIn()
         # IRC users can't put
@@ -151,7 +151,6 @@ class TestOperationsEndpoint(CommonTestSetup):
 
     # POST
     def test_authorized_roles_can_post_new_operation(self):
-
         operator = baker.make(Operator)
         mock_operation = TestUtils.mock_OperationCreateIn(operator)
         post_response = TestUtils.mock_post_with_auth_role(
@@ -346,6 +345,7 @@ class TestOperationsEndpoint(CommonTestSetup):
     def test_put_operation_without_submit(self):
         operation = baker.make(Operation)
         mock_operation = TestUtils.mock_OperationUpdateIn()
+
         # approve the user
         baker.make(
             UserOperator,
@@ -421,6 +421,16 @@ class TestOperationsEndpoint(CommonTestSetup):
             documents=[],
             application_lead=contact2.id,
             operator_id=operator.id,
+            is_user_application_lead=True,
+            street_address='19 Evergreen Terrace',
+            municipality='Springfield',
+            province='BC',
+            postal_code='V1V 1V1',
+            first_name='Homer',
+            last_name='Simpson',
+            email="homer@email.com",
+            position_title='Nuclear Safety Inspector',
+            phone_number='+17787777777',
         )
         TestUtils.authorize_current_user_as_operator_user(self, operator)
         put_response = TestUtils.mock_put_with_auth_role(
