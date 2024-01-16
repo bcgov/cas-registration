@@ -1,8 +1,10 @@
 import { GridRowsProp } from "@mui/x-data-grid";
+import Note from "@/app/components/datagrid/Note";
 
 import { actionHandler } from "@/app/utils/actions";
 import DataGrid from "@/app/components/datagrid/DataGrid";
 import { UserOperator } from "./types";
+import { statusStyle } from "@/app/components/datagrid/helpers";
 
 // 🛠️ Function to fetch user-operators
 async function getUserOperators() {
@@ -50,6 +52,12 @@ export default async function AccessRequests() {
   // Render the DataGrid component
   return (
     <>
+      <Note
+        classNames="mb-4 mt-6"
+        message="Once “Approved”, the user will have access to their
+      operator dashboard with full admin permissions, and can grant access and
+      designate permissions to other Business BCeID holders there."
+      />
       <DataGrid
         cntxt="user-operators"
         rows={rows}
@@ -59,7 +67,12 @@ export default async function AccessRequests() {
           { field: "last_name", headerName: "Last Name", width: 150 },
           { field: "email", headerName: "Email", width: 300 },
           { field: "legal_name", headerName: "Operator", width: 300 },
-          { field: "status", headerName: "Status", width: 150 },
+          {
+            field: "status",
+            headerName: "Status",
+            width: 150,
+            renderCell: statusStyle,
+          },
           {
             field: "action",
             headerName: "Action",
