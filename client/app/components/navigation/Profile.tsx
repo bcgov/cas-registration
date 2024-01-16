@@ -10,7 +10,6 @@ async function keycloakSessionLogOut() {
     await signOut();
     // redirect to Keycloak logout
     open(process.env.NEXT_PUBLIC_KEYCLOAK_LOGOUT_URL, "_self");
-    return false;
   } catch (err) {
     console.error(err);
   }
