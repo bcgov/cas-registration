@@ -84,6 +84,9 @@ const DataGrid: React.FC<Props> = ({ rows, columns, cntxt }) => {
           "& .MuiSvgIcon-root": {
             color: "white",
           },
+          "& .MuiDataGrid-columnHeaderDraggableContainer": {
+            flex: 0,
+          },
           "& .MuiDataGrid-columnHeader": {
             border: "1px white solid",
             borderBottom: "none",
@@ -91,7 +94,9 @@ const DataGrid: React.FC<Props> = ({ rows, columns, cntxt }) => {
             color: "white",
             backgroundColor: BC_GOV_BACKGROUND_COLOR_BLUE,
             fontWeight: "bold",
+            justifyContent: "center",
           },
+
           "& .MuiDataGrid-columnHeader:first-child": {
             borderLeft: "none",
           },
@@ -100,9 +105,16 @@ const DataGrid: React.FC<Props> = ({ rows, columns, cntxt }) => {
           },
           "& .MuiDataGrid-columnHeaderTitle": {
             fontWeight: "bold",
+            whiteSpace: "pre-line",
+            lineHeight: "normal",
+            textAlign: "center",
           },
           "& .MuiDataGrid-columnSeparator": {
             display: "none",
+          },
+          "& .MuiDataGrid-cell": {
+            justifyContent: "center",
+            textAlign: "center",
           },
         }}
         disableVirtualization
