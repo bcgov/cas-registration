@@ -63,13 +63,6 @@ def get_operator(request, operator_id: int):
     return 200, operator
 
 
-# @router.get("/operators/{operator_id}/user-operators", response=list[SelectUserOperatorStatus])
-# @authorize(AppRole.get_all_authorized_app_roles(), AppRole.get_all_industry_user_operator_roles())
-# def list_user_operators_status_of_operator(request, operator_id: int):
-#     qs = UserOperator.objects.filter(operator=operator_id)
-#     return qs
-
-
 ##### POST #####
 
 
