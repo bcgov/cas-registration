@@ -68,7 +68,7 @@ const DataGrid: React.FC<Props> = ({ rows, columns, cntxt }) => {
                 <div>
                   {/* 🔗 Add reg or details link */}
                   <Link href={`operations/${params.row.id}/1`}>
-                    <Button variant="contained">
+                    <Button variant="contained" className="text-bc-links-color">
                       {params.row.status === "Not Registered"
                         ? "Start Registration"
                         : "View Details"}
@@ -92,8 +92,11 @@ const DataGrid: React.FC<Props> = ({ rows, columns, cntxt }) => {
               renderCell: (params: GridRenderCellParams) => (
                 <div>
                   {/* Link to the first page of the multistep form for a specific user-operator. The '1' represents the first formSection of the form. */}
-                  <Link href={`operators/user-operator/${params.row.id}/1`}>
-                    <Button variant="contained">View Details</Button>
+                  <Link
+                    className="no-underline text-bc-link-blue"
+                    href={`operators/user-operator/${params.row.id}/1`}
+                  >
+                    View Details
                   </Link>
                 </div>
               ),
