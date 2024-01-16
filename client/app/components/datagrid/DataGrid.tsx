@@ -8,6 +8,7 @@ import {
 } from "@mui/x-data-grid";
 import Link from "next/link";
 import { Button } from "@mui/material";
+import { BC_GOV_BACKGROUND_COLOR_BLUE } from "@/app/styles/colors";
 
 interface Props {
   rows: GridRowsProp;
@@ -76,7 +77,36 @@ const DataGrid: React.FC<Props> = ({ rows, columns, cntxt }) => {
 
   return (
     <div style={{ height: "auto", width: "100%" }}>
-      <MuiGrid rows={rows} columns={customColumns} disableVirtualization />
+      <MuiGrid
+        rows={rows}
+        columns={customColumns}
+        sx={{
+          "& .MuiSvgIcon-root": {
+            color: "white",
+          },
+          "& .MuiDataGrid-columnHeader": {
+            border: "1px white solid",
+            borderBottom: "none",
+            borderTop: "none",
+            color: "white",
+            backgroundColor: BC_GOV_BACKGROUND_COLOR_BLUE,
+            fontWeight: "bold",
+          },
+          "& .MuiDataGrid-columnHeader:first-child": {
+            borderLeft: "none",
+          },
+          "& .MuiDataGrid-columnHeader:last-child": {
+            borderRight: "none",
+          },
+          "& .MuiDataGrid-columnHeaderTitle": {
+            fontWeight: "bold",
+          },
+          "& .MuiDataGrid-columnSeparator": {
+            display: "none",
+          },
+        }}
+        disableVirtualization
+      />
     </div>
   );
 };
