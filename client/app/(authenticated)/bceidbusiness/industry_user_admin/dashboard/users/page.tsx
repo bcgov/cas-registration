@@ -5,7 +5,7 @@ import {
   UserOperatorStatus,
 } from "@/app/utils/users/adminUserOperators";
 import { ChangeUserOperatorStatusColumnCell } from "@/app/components/datagrid/ChangeUserOperatorStatusColumnCell";
-import { statusStyle } from "@/app/components/datagrid/userPageHelpers";
+import { statusStyle } from "@/app/components/datagrid/helpers";
 
 export default async function Page() {
   const userOperatorStatuses: UserOperatorStatus[] =
