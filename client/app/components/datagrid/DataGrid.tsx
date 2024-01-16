@@ -117,6 +117,7 @@ const DataGrid: React.FC<Props> = ({ rows, columns, cntxt }) => {
       <MuiGrid
         rows={rows}
         columns={customColumns}
+        showCellVerticalBorder
         components={{
           ColumnSortedAscendingIcon: AscendingIcon,
           ColumnSortedDescendingIcon: DescendingIcon,
