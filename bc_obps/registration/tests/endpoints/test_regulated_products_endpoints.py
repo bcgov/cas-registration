@@ -19,11 +19,13 @@ class TestRegulatedProductsEndpoint(CommonTestSetup):
         assert response.status_code == 401
 
     def test_get_method_for_200_status(self):
-        roles = ["cas_analyst", "cas_admin", "industry_user", "industry_user_admin"]
+        roles = ["cas_analyst", "cas_admin", "industry_user"]
         for role in roles:
             response = TestUtils.mock_get_with_auth_role(self, role)
             assert response.status_code == 200
 
     def test_get_method_with_mock_data(self):
-        response = TestUtils.mock_get_with_auth_role(self, "industry_user_admin")
+        baker.make(RegulatedProduct, _quantity=4)
+
+        response = TestUtils.mock_get_with_auth_role(self, "industry_user")
         assert response.status_code == 200
