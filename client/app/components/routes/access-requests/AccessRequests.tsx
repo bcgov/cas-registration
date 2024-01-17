@@ -1,8 +1,10 @@
 import { GridRowsProp } from "@mui/x-data-grid";
+import Note from "@/app/components/datagrid/Note";
 
 import { actionHandler } from "@/app/utils/actions";
 import DataGrid from "@/app/components/datagrid/DataGrid";
 import { UserOperator } from "./types";
+import { statusStyle } from "@/app/components/datagrid/helpers";
 
 // 🛠️ Function to fetch user-operators
 async function getUserOperators() {
@@ -50,21 +52,36 @@ export default async function AccessRequests() {
   // Render the DataGrid component
   return (
     <>
+      <Note
+        classNames="mb-4 mt-6"
+        message="Once “Approved”, the user will have access to their
+      operator dashboard with full admin permissions, and can grant access and
+      designate permissions to other Business BCeID holders there."
+      />
       <DataGrid
         cntxt="user-operators"
         rows={rows}
         columns={[
-          { field: "id", headerName: "Request ID", width: 150 },
-          { field: "first_name", headerName: "First Name", width: 150 },
-          { field: "last_name", headerName: "Last Name", width: 150 },
+          {
+            field: "id",
+            headerName: "Request\n ID",
+            width: 100,
+          },
+          { field: "first_name", headerName: "First\n Name", width: 180 },
+          { field: "last_name", headerName: "Last\n Name", width: 180 },
           { field: "email", headerName: "Email", width: 300 },
-          { field: "legal_name", headerName: "Operator", width: 300 },
-          { field: "status", headerName: "Status", width: 150 },
+          { field: "legal_name", headerName: "Operator", width: 380 },
+          {
+            field: "status",
+            headerName: "Status",
+            width: 130,
+            renderCell: statusStyle,
+          },
           {
             field: "action",
             headerName: "Action",
             sortable: false,
-            width: 200,
+            width: 140,
           },
         ]}
       />
