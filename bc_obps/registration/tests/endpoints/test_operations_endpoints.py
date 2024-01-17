@@ -408,6 +408,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             self, "industry_user", self.endpoint + "/" + str(operation.id)
         ).json()
         assert get_response["status"] == Operation.Statuses.PENDING
+        assert get_response["submission_date"] is not None
 
     def test_put_malformed_operation(self):
         operation = baker.make(Operation)
