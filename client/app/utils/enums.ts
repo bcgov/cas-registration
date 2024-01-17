@@ -15,6 +15,12 @@ export enum FrontEndRoles {
   INDUSTRY_USER_ADMIN = "industry_user_admin",
 }
 
+export enum UserOperatorRoles {
+  REPORTER = "reporter",
+  ADMIN = "admin",
+  N_A = "None",
+}
+
 export enum Status {
   MYSELF = "Myself",
   APPROVED = "Approved",

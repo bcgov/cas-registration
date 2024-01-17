@@ -6,6 +6,7 @@ import {
 } from "@/app/utils/users/adminUserOperators";
 import { ChangeUserOperatorStatusColumnCell } from "@/app/components/datagrid/ChangeUserOperatorStatusColumnCell";
 import { statusStyle } from "@/app/components/datagrid/helpers";
+import { ChangeUserOperatorRoleColumnCell } from "@/app/components/datagrid/ChangeUserOperatorRoleColumnCell";
 
 export default async function Page() {
   const userOperatorStatuses: ExternalDashboardUsersTile[] =
@@ -21,7 +22,7 @@ export default async function Page() {
     {
       field: "name",
       headerName: "Name",
-      flex: 2,
+      flex: 6,
       align: "center",
       headerAlign: "center",
     },
@@ -33,15 +34,9 @@ export default async function Page() {
       headerAlign: "center",
     },
     {
-      field: "business",
-      headerName: "BCeID Business",
-      flex: 6,
-      align: "center",
-      headerAlign: "center",
-    },
-    {
       field: "userRole",
       headerName: "User Role",
+      renderCell: ChangeUserOperatorRoleColumnCell,
       flex: 4,
       align: "center",
       headerAlign: "center",
