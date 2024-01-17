@@ -1,6 +1,4 @@
-create or replace function imp.import_operators_from_fdw(
-  swrs_operator_table_name text
-)
+create or replace function imp.import_swrs_data_from_fdw()
 returns void as
 $function$
 begin
@@ -11,6 +9,26 @@ begin
     join swrs_report r on r.id = o.report_id
     and r.reporting_period_duration=2022
     group by o.swrs_organisation_id
+  ),
+  y as (
+    select a.swrs_report_id, a.id, max(version_number) as latest_version
+    from ciip_application a
+    join ciip_application_revision ar
+    on a.id = ar.application_id
+    group by a.swrs_report_id, a.id
+  ), z as (
+      select * from ciip_admin ca
+      join y
+      on ca.application_id = y.id
+      and ca.version_number = y.latest_version
+  ), w as (
+      select distinct on (o.swrs_organisation_id) o.swrs_organisation_id, z.operator_name, z.bc_corporate_registry_number from z
+      join ciip_application a
+      on a.id = z.application_id
+      join ciip_facility f
+      on f.id = a.facility_id
+      join ciip_organisation o
+      on f.organisation_id = o.id
   )
     insert into imp.operator(
       swrs_organisation_id,
@@ -18,6 +36,7 @@ begin
       business_legal_name,
       english_trade_name,
       cra_business_number,
+      bc_corporate_registry_number,
       physical_street_address,
       physical_address_municipality,
       physical_address_province,
@@ -29,9 +48,10 @@ begin
     select
     o.swrs_organisation_id,
     o.report_id,
-    o.business_legal_name,
+    coalesce(w.operator_name, o.business_legal_name),
     o.english_trade_name,
     o.cra_business_number,
+    w.bc_corporate_registry_number,
     concat_ws(' ',a.physical_address_unit_number, a.physical_address_street_number, a.physical_address_street_number_suffix, a.physical_address_street_name, a.physical_address_street_type, a.physical_address_street_direction) as physical_street_address,
     a.physical_address_municipality,
     a.physical_address_prov_terr_state,
@@ -48,6 +68,8 @@ begin
     left join swrs_address a
     on a.organisation_id = o.id
     and a.path_context = 'RegistrationData'
+    left join w
+    on w.swrs_organisation_id = o.swrs_organisation_id
     order by swrs_organisation_id;
 
   with y as (

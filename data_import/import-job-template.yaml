@@ -42,7 +42,8 @@ spec:
             - bash
             - -c
             - >
-              psql -f ./obps_operator_import_fdw.sql;
-              psql -f ./obps_import_operators_from_fdw.sql;
-              psql -c "select imp.import_operators('$(CIIP_HOST)', '$(CIIP_DB)', '$(PGPORT)', '$(CIIP_USER)', '$(CIIP_PASSWORD)');";
+              psql -c "create extension if not exists postgres_fdw;";
+              psql -f ./obps_swrs_import_fdw.sql;
+              psql -f ./obps_import_swrs_data_from_fdw.sql;
+              psql -c "select imp.import_swrs_data('$(CIIP_HOST)', '$(CIIP_DB)', '$(PGPORT)', '$(CIIP_USER)', '$(CIIP_PASSWORD)');";
       restartPolicy: Never
