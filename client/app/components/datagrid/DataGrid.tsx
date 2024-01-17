@@ -118,6 +118,7 @@ const DataGrid: React.FC<Props> = ({ rows, columns, cntxt }) => {
         rows={rows}
         columns={customColumns}
         showCellVerticalBorder
+        hideFooter
         components={{
           ColumnSortedAscendingIcon: AscendingIcon,
           ColumnSortedDescendingIcon: DescendingIcon,
