@@ -1,5 +1,7 @@
 import NextAuth, { NextAuthOptions } from "next-auth";
-import KeycloakProvider from "next-auth/providers/keycloak";
+import KeycloakProvider, {
+  KeycloakProfile,
+} from "next-auth/providers/keycloak";
 import { Errors, IDP, Roles } from "@/app/utils/enums";
 import { actionHandler } from "@/app/utils/actions";
 
@@ -18,6 +20,12 @@ export const authOptions: NextAuthOptions = {
       clientId: `${process.env.KEYCLOAK_CLIENT_ID}`,
       clientSecret: `${process.env.KEYCLOAK_CLIENT_SECRET}`,
       issuer: `${process.env.KEYCLOAK_LOGIN_URL}`,
+      profile(profile: KeycloakProfile) {
+        return {
+          ...profile,
+          id: profile.sub,
+        };
+      },
     }),
   ],
   //https://next-auth.js.org/configuration/pages
@@ -33,8 +41,12 @@ export const authOptions: NextAuthOptions = {
      * @return {object}            JSON Web Token that will be saved
      */
     // 👇️ called whenever a JSON Web Token is created/updated
-    async jwt({ token, account }) {
+    async jwt({ token, account, profile }) {
       try {
+        if (profile) {
+          token.given_name = (profile as KeycloakProfile).given_name;
+          token.family_name = (profile as KeycloakProfile).family_name;
+        }
         //📌  Provider account (only available on sign in)
         if (account) {
           // ✨  On a new sessions, you can add information to the next-auth created token...
@@ -166,6 +178,8 @@ export const authOptions: NextAuthOptions = {
         identity_provider: token.identity_provider,
         user: {
           ...session.user,
+          given_name: token.given_name,
+          family_name: token.family_name,
           app_role: token.app_role,
         },
       };
