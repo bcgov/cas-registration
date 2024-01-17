@@ -22,6 +22,7 @@ export default async function Operations() {
   // Fetch operations data
   const operations: {
     id: number;
+    bc_obps_regulated_operation: string;
     registration_year: string;
     submission_date: string;
     registration_id: string;
@@ -42,6 +43,7 @@ export default async function Operations() {
       ? operations.map(
           ({
             id,
+            bc_obps_regulated_operation,
             registration_year,
             submission_date,
             registration_id,
@@ -50,6 +52,7 @@ export default async function Operations() {
           }) => {
             return {
               id,
+              bc_obps_regulated_operation,
               name,
               operation_id: id,
               registration_year,
@@ -67,21 +70,26 @@ export default async function Operations() {
         cntxt="operations"
         rows={rows}
         columns={[
-          { field: "operation_id", headerName: "Operation ID", width: 150 },
+          { field: "operation_id", headerName: "Operation\n ID", width: 150 },
           { field: "name", headerName: "Operation", width: 150 },
           {
             field: "registration_year",
-            headerName: "Registration Year",
+            headerName: "Registration\n Year",
             width: 150,
           },
           {
             field: "submission_date",
-            headerName: "Submission Date",
+            headerName: "Submission\n Date",
             width: 150,
           },
           {
             field: "registration_id",
-            headerName: "Registration ID",
+            headerName: "Registration\n ID",
+            width: 150,
+          },
+          {
+            field: "bc_obps_regulated_operation",
+            headerName: "BORO\n ID",
             width: 150,
           },
           { field: "status", headerName: "Status", width: 180 },
@@ -90,7 +98,7 @@ export default async function Operations() {
             headerName: "Action",
             sortable: false,
             // Temporary width, will be reduced in follow up PR #468 operations table
-            width: 500,
+            width: 350,
           },
         ]}
       />
