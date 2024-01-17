@@ -6,8 +6,8 @@ import { useEffect } from "react";
 // 🛠️ Function for nextauth and keycloak session logouts
 async function keycloakSessionLogOut() {
   try {
-    // call nextauth logout
-    await signOut();
+    // call nextauth logout preventing redirect
+    await signOut({ redirect: false });
     // redirect to Keycloak logout
     open(process.env.NEXT_PUBLIC_KEYCLOAK_LOGOUT_URL, "_self");
   } catch (err) {
