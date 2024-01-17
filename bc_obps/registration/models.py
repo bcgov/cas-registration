@@ -188,13 +188,15 @@ class ReportingActivity(models.Model):
 class Address(models.Model):
     """Address model"""
 
-    street_address = models.CharField(max_length=1000, db_comment="Street address of relevant location)")
-    municipality = models.CharField(max_length=1000, db_comment="Municipality of relevant location")
+    street_address = models.CharField(max_length=1000, null=True, db_comment="Street address of relevant location)")
+    municipality = models.CharField(max_length=1000, null=True, db_comment="Municipality of relevant location")
     province = CAProvinceField(
-        db_comment="Province of the relevant location, restricted to two-letter province postal abbreviations"
+        db_comment="Province of the relevant location, restricted to two-letter province postal abbreviations",
+        null=True
     )
     postal_code = CAPostalCodeField(
-        db_comment="Postal code of relevant location, limited to valid Canadian postal codes"
+        db_comment="Postal code of relevant location, limited to valid Canadian postal codes",
+        null=True
     )
     history = HistoricalRecords(table_name='erc_history"."address_history')
 
@@ -337,17 +339,20 @@ class Operator(TimeStampedModel):
     cra_business_number = models.IntegerField(db_comment="The CRA business number of an operator")
     bc_corporate_registry_number = models.CharField(
         db_comment="The BC corporate registry number of an operator",
+        null=True,
         validators=[RegexValidator(regex=BC_CORPORATE_REGISTRY_REGEX, message=BC_CORPORATE_REGISTRY_REGEX_MESSAGE)],
     )
     business_structure = models.ForeignKey(
         BusinessStructure,
         on_delete=models.DO_NOTHING,
+        null=True,
         db_comment="The business structure of an operator",
         related_name="operators",
     )
     physical_address = models.ForeignKey(
         Address,
         on_delete=models.DO_NOTHING,
+        null=True,
         db_comment="The physical address of an operator (where the operator is physically located)",
         related_name="operators_physical",
     )
@@ -402,6 +407,12 @@ class Operator(TimeStampedModel):
     history = HistoricalRecords(table_name='erc_history"."operator_history', m2m_fields=[documents, contacts])
 
     class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["cra_business_number"],
+                name="cra_business_number_unique_constraint",
+            )
+        ]
         db_table_comment = "Operators (also called organizations)"
         # don't need indexes if we end up using `unique`
         db_table = 'erc"."operator'
@@ -505,6 +516,7 @@ class OperationAndFacilityCommonInfo(TimeStampedModel):
     naics_code = models.ForeignKey(
         NaicsCode,
         on_delete=models.DO_NOTHING,
+        null=True,
         db_comment="An operation or facility's NAICS code",
         related_name='%(class)ss',
     )
@@ -614,6 +626,12 @@ class Operation(OperationAndFacilityCommonInfo):
     class Meta:
         db_table_comment = "Operations (also called facilities)"
         db_table = 'erc"."operation'
+        constraints = [
+            models.UniqueConstraint(
+                fields=["swrs_facility_id"],
+                name="swrs_facility_id_unique_constraint",
+            )
+        ]
         indexes = [
             models.Index(fields=["operator"], name="operator_idx"),
             models.Index(fields=["naics_code"], name="naics_code_idx"),
@@ -675,6 +693,7 @@ class MultipleOperator(TimeStampedModel):
     business_structure = models.ForeignKey(
         BusinessStructure,
         on_delete=models.DO_NOTHING,
+        null=True,
         db_comment="The business structure of an operator",
         related_name="multiple_operator",
     )
