@@ -119,6 +119,8 @@ const DataGrid: React.FC<Props> = ({ rows, columns, cntxt }) => {
         columns={customColumns}
         showCellVerticalBorder
         hideFooter
+        // Set the row height to "auto" so that the row height will adjust to the content
+        getRowHeight={() => "auto"}
         components={{
           ColumnSortedAscendingIcon: AscendingIcon,
           ColumnSortedDescendingIcon: DescendingIcon,
@@ -130,6 +132,10 @@ const DataGrid: React.FC<Props> = ({ rows, columns, cntxt }) => {
           },
           "& .MuiDataGrid-columnHeaderDraggableContainer": {
             minWidth: "100%",
+          },
+          "& .MuiDataGrid-row": {
+            // TODO: find a way to set minHeight without using !important
+            minHeight: "60px!important",
           },
           "& .MuiDataGrid-columnHeader": {
             border: "1px white solid",
