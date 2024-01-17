@@ -1,7 +1,6 @@
 "use client";
 
 import { Button } from "@mui/material";
-import { useFormStatus } from "react-dom";
 import Link from "next/link";
 
 interface SubmitButtonProps {
@@ -25,9 +24,8 @@ const SubmitButton: React.FunctionComponent<SubmitButtonProps> = ({
   step,
   steps,
 }) => {
-  const { pending } = useFormStatus();
   const isFinalStep = step === steps.length - 1;
-  const isDisabled = disabled || pending || isSubmitting;
+  const isDisabled = disabled || isSubmitting;
 
   return (
     <div className={`flex w-full mt-8 justify-between ${classNames}`}>
