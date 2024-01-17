@@ -25,6 +25,7 @@ const theme = createTheme({
     primary: {
       main: BC_GOV_PRIMARY_BRAND_COLOR_BLUE,
       light: BC_GOV_BACKGROUND_COLOR_BLUE,
+      dark: BC_GOV_LINKS_COLOR,
       // light: will be calculated from palette.primary.main,
       // dark: will be calculated from palette.primary.main,
       // contrastText: will be calculated to contrast with palette.primary.main
