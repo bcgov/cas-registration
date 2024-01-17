@@ -10,6 +10,7 @@ export const statusStyle = (params: GridRenderCellParams) => {
     [Status.PENDING, "primary"],
     [Status.APPROVED, "success"],
     [Status.REJECTED, "error"],
+    [Status.CHANGES_REQUESTED, "error"],
   ]);
 
   const statusColor = colorMap.get(params.value) || "primary";
@@ -19,7 +20,7 @@ export const statusStyle = (params: GridRenderCellParams) => {
       label={params.value}
       variant="outlined"
       color={statusColor}
-      sx={{ width: 90 }}
+      sx={{ width: "fit-content", minWidth: 90 }}
     ></Chip>
   );
 };

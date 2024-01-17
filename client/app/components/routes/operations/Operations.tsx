@@ -2,6 +2,7 @@ import { GridRowsProp } from "@mui/x-data-grid";
 
 import { actionHandler } from "@/app/utils/actions";
 import DataGrid from "@/app/components/datagrid/DataGrid";
+import { statusStyle } from "@/app/components/datagrid/helpers";
 
 // 🛠️ Function to fetch operations
 async function getOperations() {
@@ -71,31 +72,36 @@ export default async function Operations() {
         cntxt="operations"
         rows={rows}
         columns={[
-          { field: "operation_id", headerName: "Operation ID", width: 150 },
-          { field: "operator_name", headerName: "Operator", width: 150 },
-          { field: "operation_name", headerName: "Operation", width: 150 },
+          { field: "operation_id", headerName: "Operation ID", width: 120 },
+          { field: "operator_name", headerName: "Operator", width: 280 },
+          { field: "operation_name", headerName: "Operation", width: 280 },
           {
             field: "submission_date",
-            headerName: "Submission Date",
+            headerName: "Submission\n Date",
             width: 150,
           },
           {
             field: "registration_id",
-            headerName: "Registration ID",
-            width: 150,
+            headerName: "Registration\n ID",
+            width: 130,
           },
           {
             field: "bc_obps_regulated_operation",
-            headerName: "BORO ID",
-            width: 150,
+            headerName: "BORO\n ID",
+            width: 120,
           },
-          { field: "status", headerName: "Status", width: 180 },
+          {
+            field: "status",
+            headerName: "Status",
+            width: 180,
+            renderCell: statusStyle,
+          },
           {
             field: "action",
             headerName: "Action",
             sortable: false,
             // Temporary width, will be reduced in follow up PR #468 operations table
-            width: 350,
+            width: 150,
           },
         ]}
       />
