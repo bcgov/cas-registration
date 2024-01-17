@@ -28,8 +28,10 @@ export default function UserOperatorContactForm({
   const params = useParams();
   const searchParams = useSearchParams();
   const [error, setError] = useState(undefined);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const submitHandler = async (data: { formData?: UserOperatorFormData }) => {
+    setIsSubmitting(true);
     const newFormData = {
       ...data.formData,
     } as UserOperatorFormData;
@@ -57,6 +59,7 @@ export default function UserOperatorContactForm({
 
     if (response.error) {
       setError(response.error);
+      setIsSubmitting(false);
       return;
     }
 
@@ -79,7 +82,7 @@ export default function UserOperatorContactForm({
         <Button variant="outlined" onClick={() => back()}>
           Cancel
         </Button>
-        <SubmitButton label="Submit" />
+        <SubmitButton disabled={isSubmitting} label="Submit" />
       </div>
     </FormBase>
   );

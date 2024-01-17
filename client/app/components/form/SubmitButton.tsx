@@ -1,7 +1,6 @@
 "use client";
 
 import { Button } from "@mui/material";
-import { useFormStatus } from "react-dom";
 
 interface SubmitButtonProps {
   label: string;
@@ -12,12 +11,12 @@ const SubmitButton: React.FunctionComponent<SubmitButtonProps> = ({
   label,
   disabled,
 }) => {
-  const { pending } = useFormStatus();
   return (
     <Button
       variant="contained"
       type="submit"
-      aria-disabled={disabled || pending}
+      aria-disabled={disabled}
+      disabled={disabled}
     >
       {label}
     </Button>
