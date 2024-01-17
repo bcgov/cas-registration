@@ -27,7 +27,6 @@ export default async function Operations() {
     name: string;
     operator: string;
     submission_date: string;
-    registration_id: string;
     status: string;
   }[] = await getOperations();
 
@@ -48,7 +47,6 @@ export default async function Operations() {
             bc_obps_regulated_operation,
             operator,
             submission_date,
-            registration_id,
             status,
             name,
           }) => {
@@ -59,7 +57,6 @@ export default async function Operations() {
               operation_id: id,
               operator_name: operator,
               submission_date,
-              registration_id,
               status: status,
             };
           },
@@ -72,23 +69,18 @@ export default async function Operations() {
         cntxt="operations"
         rows={rows}
         columns={[
-          { field: "operation_id", headerName: "Operation ID", width: 120 },
-          { field: "operator_name", headerName: "Operator", width: 280 },
-          { field: "operation_name", headerName: "Operation", width: 280 },
+          { field: "operation_id", headerName: "Operation ID", width: 160 },
+          { field: "operator_name", headerName: "Operator", width: 320 },
+          { field: "operation_name", headerName: "Operation", width: 320 },
           {
             field: "submission_date",
             headerName: "Submission\n Date",
             width: 200,
           },
           {
-            field: "registration_id",
-            headerName: "Registration\n ID",
-            width: 140,
-          },
-          {
             field: "bc_obps_regulated_operation",
             headerName: "BORO\n ID",
-            width: 150,
+            width: 170,
           },
           {
             field: "status",
