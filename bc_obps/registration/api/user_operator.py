@@ -1,6 +1,5 @@
 from django.db import IntegrityError, transaction
 import json, pytz
-from registration.schema.user_operator import ExternalDashboardUsersTileData
 from registration.constants import UNAUTHORIZED_MESSAGE
 from registration.decorators import authorize
 from registration.schema import (
@@ -14,12 +13,13 @@ from registration.schema import (
     UserOperatorOperatorIdOut,
     UserOperatorStatus,
     UserOperatorListOut,
+    UserOperatorStatusUpdate,
+    ExternalDashboardUsersTileData,
 )
 from typing import List
 from .api_base import router
 from django.shortcuts import get_object_or_404
 from django.core.exceptions import ValidationError
-from django.core import serializers
 from registration.models import (
     AppRole,
     BusinessRole,
@@ -358,71 +358,38 @@ def create_user_operator_contact(request, payload: UserOperatorContactIn):
 
 
 ##### PUT #####
-
-
-# Function to check if the status is valid. This was required because the previous check only worked for
-# statuses that didn't have two words (e.g. "Pending" and "Approved" worked, but "Changes Requested" didn't)
-def check_status(status: str):
-    for statusEnum in UserOperator.Statuses:
-        if statusEnum == status:
-            return True
-    return False
-
-
-# this endpoint is for updating the status of a user
-@router.put("/select-operator/user-operator/{user_guid}/update-status")
+@router.put("/select-operator/user-operator/update-status", response={200: UserOperatorOut, codes_4xx: Message})
 @authorize(AppRole.get_all_authorized_app_roles(), ["admin"])
-def update_user_operator_user_status(request, user_guid: str):
-    current_admin_user: User = request.current_user
-    # need to convert request.body (a bytes object) to a string, and convert the string to a JSON object
-    payload = json.loads(request.body.decode())
-    status = payload.get("status")
-    if not check_status(status):
-        return 400, {"message": "Invalid status."}
-    user_operator = get_object_or_404(UserOperator, user=user_guid)
-    user_operator.status = status
+def update_user_operator_status(request, payload: UserOperatorStatusUpdate):
+    current_user: User = request.current_user  # irc user or industry user admin
+    if payload.user_guid:  # to update the status of a user_operator by user_guid
+        user_operator = get_object_or_404(UserOperator, user_id=payload.user_guid)
+    elif payload.user_operator_id:  # to update the status of a user_operator by user_operator_id
+        user_operator = get_object_or_404(UserOperator, id=payload.user_operator_id)
+    else:
+        return 404, {"message": "No parameters provided"}
+
+    # We can't update the status of a user_operator if the operator is not approved
+    if user_operator.operator.status in [Operator.Statuses.PENDING, Operator.Statuses.DECLINED]:
+        return 400, {"message": "Operator must be approved before approving users."}
+    user_operator.status = payload.status
     if user_operator.status in [UserOperator.Statuses.APPROVED, UserOperator.Statuses.DECLINED]:
         user_operator.verified_at = datetime.now(pytz.utc)
-        user_operator.verified_by_id = current_admin_user.user_guid
-    if user_operator.status in [UserOperator.Statuses.PENDING]:
+        user_operator.verified_by_id = current_user.user_guid
+
+    elif user_operator.status == UserOperator.Statuses.PENDING:
         user_operator.verified_at = None
         user_operator.verified_by_id = None
-    data = serializers.serialize(
-        "json",
-        [
-            user_operator,
-        ],
-    )
-    user_operator.save()
-    return data
 
+    user_operator.save(update_fields=["status", "verified_at", "verified_by_id"])
+    user_operator.set_create_or_update(modifier=current_user)
 
-# this endpoint is for updating the status of a user_operator
-@router.put("/select-operator/user-operator/operator/{user_operator_id}/update-status")
-@authorize(AppRole.get_authorized_irc_roles())
-def update_user_operator_status(request, user_operator_id: str):
-    current_cas_internal_user: User = request.current_user
-    # need to convert request.body (a bytes object) to a string, and convert the string to a JSON object
-    payload = json.loads(request.body.decode())
-    status = payload.get("status")
-    if not check_status(status):
-        return 400, {"message": "Invalid status."}
-    user_operator = get_object_or_404(UserOperator, id=user_operator_id)
-    user_operator.status = status
-    if user_operator.status in [UserOperator.Statuses.APPROVED, UserOperator.Statuses.DECLINED]:
-        user_operator.verified_at = datetime.now(pytz.utc)
-        user_operator.verified_by = current_cas_internal_user
-    if user_operator.status in [UserOperator.Statuses.PENDING]:
-        user_operator.verified_at = None
-        user_operator.verified_by_id = None
-    data = serializers.serialize(
-        "json",
-        [
-            user_operator,
-        ],
-    )
-    user_operator.save()
-    return data
+    if user_operator.status == UserOperator.Statuses.DECLINED:
+        # hard delete contacts (Senior Officers) associated with the operator and the user who requested access
+        user_operator.operator.contacts.filter(
+            created_by=user_operator.user, business_role=BusinessRole.objects.get(role_name='Senior Officer')
+        ).delete()
+    return UserOperatorOut.from_orm(user_operator)
 
 
 ##### DELETE #####
