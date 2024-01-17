@@ -1,6 +1,4 @@
 import pytest
-import json
-from model_bakery import baker
 from registration.models import RegulatedProduct
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 
@@ -25,7 +23,5 @@ class TestRegulatedProductsEndpoint(CommonTestSetup):
             assert response.status_code == 200
 
     def test_get_method_with_mock_data(self):
-        baker.make(RegulatedProduct, _quantity=4)
-
         response = TestUtils.mock_get_with_auth_role(self, "industry_user")
         assert response.status_code == 200

@@ -2,14 +2,14 @@ import { GridColDef, GridRowsProp } from "@mui/x-data-grid";
 import DataGrid from "@/app/components/datagrid/DataGrid";
 import {
   ExternalDashboardUsersTile,
-  processExternaldashboardUsersTileData,
+  processExternalDashboardUsersTileData,
 } from "@/app/utils/users/adminUserOperators";
 import { ChangeUserOperatorStatusColumnCell } from "@/app/components/datagrid/ChangeUserOperatorStatusColumnCell";
 import { statusStyle } from "@/app/components/datagrid/helpers";
 
 export default async function Page() {
   const userOperatorStatuses: ExternalDashboardUsersTile[] =
-    await processExternaldashboardUsersTileData();
+    await processExternalDashboardUsersTileData();
   const columns: GridColDef[] = [
     {
       field: "id",

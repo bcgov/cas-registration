@@ -142,13 +142,13 @@ def raise_401_if_user_not_authorized(
         raise HttpError(401, UNAUTHORIZED_MESSAGE)
 
     if user.is_industry_user():
-        user_operator: UserOperator = None
-        user_operator_role: str = None
+        user_operator_role = None
         try:
             user_operator = UserOperator.objects.get(user=user.user_guid)
             user_operator_role = user_operator.role
         except UserOperator.DoesNotExist:
             pass
+
         # We don't assign a UserOperator role on create. This means user_operator_role can be None in two cases: 1) the role hasn't been assigned yet and 2) no user operator record has been created yet
         if user_operator_role not in authorized_user_operator_roles:
             raise HttpError(401, UNAUTHORIZED_MESSAGE)

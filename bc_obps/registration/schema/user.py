@@ -30,3 +30,13 @@ class UserOut(ModelSchema):
     class Config:
         model = User
         model_fields = ["first_name", "last_name", "position_title", "email", "phone_number"]
+
+
+class UserExternalDashboardUsersTileData(ModelSchema):
+    """
+    Schema for fields from the User model that are needed in ExternalDashboardUsersTileData
+    """
+
+    class Config:
+        model = User
+        model_fields = ["first_name", "last_name", "email", "user_guid"]

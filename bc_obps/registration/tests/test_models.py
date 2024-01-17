@@ -720,7 +720,7 @@ class AppRoleModelTest(BaseTestCase):
         self.assertEqual(AppRole.get_authorized_irc_roles(), ['cas_admin', 'cas_analyst'])
         self.assertEqual(AppRole.get_all_authorized_app_roles(), ['cas_admin', 'cas_analyst', 'industry_user'])
         self.assertEqual(AppRole.get_all_app_roles(), ['cas_admin', 'cas_analyst', 'cas_pending', 'industry_user'])
-        self.assertEqual(AppRole.get_all_industry_user_operator_roles(), ['admin', 'reporter', None])
+        self.assertEqual(UserOperator.get_all_industry_user_operator_roles(), ['admin', 'reporter', None])
 
 
 class BusinessRoleModelTest(BaseTestCase):

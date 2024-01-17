@@ -7,11 +7,12 @@ export enum IDP {
   BCEIDBUSINESS = "bceidbusiness",
 }
 
-export enum AppRoles {
+export enum FrontEndRoles {
   CAS_ADMIN = "cas_admin",
   CAS_ANALYST = "cas_analyst",
   CAS_PENDING = "cas_pending",
   INDUSTRY_USER = "industry_user",
+  INDUSTRY_USER_ADMIN = "industry_user_admin",
 }
 
 export enum Status {
