@@ -25,7 +25,7 @@ export default async function MyOperatorPage() {
   const session = await getServerSession(authOptions);
   const userName = getUserFullName(session);
   const { status } = await getUserOperatorStatus();
-  if (status === Status.PENDING.toLowerCase()) {
+  if (status === Status.PENDING) {
     return <div>Your request is pending.</div>;
   }
   return (
