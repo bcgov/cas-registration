@@ -58,4 +58,4 @@ This directory contains all the files necessary to import data from ciip/swrs in
   select swrs_organisation_id, swrs_facility_id from operation f join operator o on f.operator_id = o.id;
   --END DESTINATION QUERY
   ```
-  The number of results did not differ after applying the union operator on the two queries. So there are no extraneous rows between the two queries where a facility / operation's swrs_facility_id has been associated incorrecty with a different organisation / operation's swrs_organisation_id.
+  The number of results did not differ after applying the union operator on the two queries. So there are no extraneous rows between the two queries where a facility / operation's swrs_facility_id has been associated incorrecty with a different organisation / operator's swrs_organisation_id.
