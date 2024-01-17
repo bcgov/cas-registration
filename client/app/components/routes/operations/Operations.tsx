@@ -2,7 +2,7 @@ import { GridRowsProp } from "@mui/x-data-grid";
 
 import { actionHandler } from "@/app/utils/actions";
 import DataGrid from "@/app/components/datagrid/DataGrid";
-import { statusStyle } from "@/app/components/datagrid/helpers";
+import { lineBreakStyle, statusStyle } from "@/app/components/datagrid/helpers";
 
 // 🛠️ Function to fetch operations
 async function getOperations() {
@@ -17,6 +17,27 @@ async function getOperations() {
     throw error;
   }
 }
+
+const formatTimestamp = (timestamp: string) => {
+  if (!timestamp) return undefined;
+
+  const date = new Date(timestamp).toLocaleString("en-CA", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+
+  const timeWithTimeZone = new Date(timestamp).toLocaleString("en-CA", {
+    hour: "numeric",
+    minute: "numeric",
+    second: "numeric",
+    timeZoneName: "short",
+  });
+
+  // Return with a line break so we can display date and time on separate lines
+  // in the DataGrid cell using whiteSpace: "pre-line" CSS
+  return `${date}\n${timeWithTimeZone}`;
+};
 
 // 🧩 Main component
 export default async function Operations() {
@@ -56,7 +77,7 @@ export default async function Operations() {
               operation_name: name,
               operation_id: id,
               operator_name: operator,
-              submission_date,
+              submission_date: formatTimestamp(submission_date),
               status: status,
             };
           },
@@ -76,6 +97,7 @@ export default async function Operations() {
             field: "submission_date",
             headerName: "Submission\n Date",
             width: 200,
+            renderCell: lineBreakStyle,
           },
           {
             field: "bc_obps_regulated_operation",
