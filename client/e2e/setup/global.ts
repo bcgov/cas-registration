@@ -46,19 +46,21 @@ const setupAuth = async (
         loginButton = LoginLink.CAS;
         // 🛢 To generate a storageState file for each CAS role...
         // perform an upsert query that inserts or updates the role associated with your IDIR user_guid in the erc.user table.
-        const upsert = `
-  INSERT INTO erc.user (user_guid, business_guid, first_name, last_name, position_title, email, phone_number, app_role_id)
-  VALUES
-    ($1, '123e4567-e89b-12d3-a456-426614174001', 'CAS', $2, 'Software Engineer', $3, '123 456 7890', $4)
-  ON CONFLICT (user_guid)
-  DO UPDATE SET
-    app_role_id = EXCLUDED.app_role_id;
-`;
 
+        // eslint-disable-next-line no-console
+        console.log(`Upserting ${user} for role ${role}`);
+        const upsert = `
+          INSERT INTO erc.user (user_guid, business_guid, first_name, last_name, position_title, email, phone_number, app_role_id)
+          VALUES
+            ($1, '123e4567-e89b-12d3-a456-426614174001', 'CAS', $2, 'Software Engineer', $3, '123 456 7890', $4)
+          ON CONFLICT (user_guid)
+          DO UPDATE SET
+            app_role_id = EXCLUDED.app_role_id;
+        `;
         await pool.query(upsert, [
           process.env.CAS_USER_GUID,
           user,
-          `${user}@example.com`,
+          `${user}@test.com`,
           role,
         ]);
         break;
@@ -110,6 +112,7 @@ export default async function globalSetup(config: FullConfig) {
   // 🌍 Perform global setup tasks here...
 
   // 👤 Set storageState for Authenticated IDIR and BCeid credentials using NextAuth and Keycloak to be used in subsequent test suites
+  // eslint-disable-next-line no-console
   console.log(
     "Global setup to authenticate all user roles and store each role session in storageState to be used in test suites to mock user by role."
   );

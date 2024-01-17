@@ -99,7 +99,6 @@ const deleteNewUserRecord = async () => {
       values: [process.env.NEW_USER_USERID],
     };
     await pool.query(query);
-    await pool.end();
   } catch (error) {
     console.error("Error deleting new user record:", error);
   }

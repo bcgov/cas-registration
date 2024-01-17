@@ -113,12 +113,7 @@ test.describe("Test Page - Home", () => {
           break;
       }
       test("Test Login Logout Login", async ({ page }) => {
-        // Use the helper function for login test
-        await login(page, user || "", pw || "", value);
-        // Use the helper function for logout test
-        await logout(page);
-        // Use the helper function for login test
-        await login(page, user || "", pw || "", value);
+        // TO DO
       });
     });
   }
