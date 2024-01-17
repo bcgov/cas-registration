@@ -59,3 +59,38 @@ This directory contains all the files necessary to import data from ciip/swrs in
   --END DESTINATION QUERY
   ```
   The number of results did not differ after applying the union operator on the two queries. So there are no extraneous rows between the two queries where a facility / operation's swrs_facility_id has been associated incorrecty with a different organisation / operator's swrs_organisation_id.
+
+  - The following similar query was run to ensure that no addresses were incorrectly associated with an operator after import:
+  ``` sql
+  with x as (
+  select max(o.report_id) as max_report_id, o.swrs_organisation_id from swrs.organisation o
+  join swrs.report r on r.id = o.report_id
+  and r.reporting_period_duration=2022
+  group by o.swrs_organisation_id
+  ) select
+  o.swrs_organisation_id,
+  concat_ws(' ',a.physical_address_unit_number, a.physical_address_street_number, a.physical_address_street_number_suffix, a.physical_address_street_name, a.physical_address_street_type, a.physical_address_street_direction) as physical_street_address,
+  a.physical_address_municipality,
+  a.physical_address_prov_terr_state,
+  a.physical_address_postal_code_zip_code,
+  concat_ws(' ',a.mailing_address_unit_number, a.mailing_address_street_number, a.mailing_address_street_number_suffix, a.mailing_address_street_name, a.mailing_address_street_type, a.mailing_address_street_direction) as mailing_street_address,
+  a.mailing_address_municipality,
+  a.mailing_address_prov_terr_state,
+  a.mailing_address_postal_code_zip_code
+  from swrs.organisation o
+  join x on o.swrs_organisation_id = x.swrs_organisation_id
+  and o.report_id = x.max_report_id
+  join swrs.report r
+  on r.id = o.report_id
+  left join swrs.address a
+  on a.organisation_id = o.id
+  and a.path_context = 'RegistrationData'
+
+  union
+
+  select swrs_organisation_id, pa.street_address, pa.municipality, pa.province, pa.postal_code, ma.street_address, ma.municipality, ma.province, ma.postal_code
+  from imp.final_operator o
+  join imp.address pa on o.physical_address_id = pa.id
+  join imp.address ma on o.mailing_address_id = ma.id;
+  ```
+  Again, the results did not differ after applying the union operator on the two queries. So there are no extraneous rows between the two queries where an address was incorrectly associated with an operator.
