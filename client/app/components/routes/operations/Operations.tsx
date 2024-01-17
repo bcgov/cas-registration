@@ -23,12 +23,13 @@ export default async function Operations() {
   const operations: {
     id: number;
     bc_obps_regulated_operation: string;
-    registration_year: string;
+    name: string;
+    operator: string;
     submission_date: string;
     registration_id: string;
     status: string;
-    name: string;
   }[] = await getOperations();
+
   if (!operations) {
     return (
       <div>
@@ -44,7 +45,7 @@ export default async function Operations() {
           ({
             id,
             bc_obps_regulated_operation,
-            registration_year,
+            operator,
             submission_date,
             registration_id,
             status,
@@ -53,9 +54,9 @@ export default async function Operations() {
             return {
               id,
               bc_obps_regulated_operation,
-              name,
+              operation_name: name,
               operation_id: id,
-              registration_year,
+              operator_name: operator,
               submission_date,
               registration_id,
               status: status,
@@ -70,26 +71,22 @@ export default async function Operations() {
         cntxt="operations"
         rows={rows}
         columns={[
-          { field: "operation_id", headerName: "Operation\n ID", width: 150 },
-          { field: "name", headerName: "Operation", width: 150 },
-          {
-            field: "registration_year",
-            headerName: "Registration\n Year",
-            width: 150,
-          },
+          { field: "operation_id", headerName: "Operation ID", width: 150 },
+          { field: "operator_name", headerName: "Operator", width: 150 },
+          { field: "operation_name", headerName: "Operation", width: 150 },
           {
             field: "submission_date",
-            headerName: "Submission\n Date",
+            headerName: "Submission Date",
             width: 150,
           },
           {
             field: "registration_id",
-            headerName: "Registration\n ID",
+            headerName: "Registration ID",
             width: 150,
           },
           {
             field: "bc_obps_regulated_operation",
-            headerName: "BORO\n ID",
+            headerName: "BORO ID",
             width: 150,
           },
           { field: "status", headerName: "Status", width: 180 },
