@@ -10,8 +10,19 @@ from .parent_operator import ParentOperatorIn, ParentOperatorOut
 from .business_structure import validate_business_structure
 
 
-class UserOperatorStatus(Schema):
-    status: UserOperator.Statuses
+class UserOperatorStatus(ModelSchema):
+    class Config:
+        model = UserOperator
+        model_fields = ["status"]
+
+
+class UserOperatorStatusUpdate(ModelSchema):
+    user_guid: Optional[uuid.UUID] = None
+    user_operator_id: Optional[int] = None
+
+    class Config:
+        model = UserOperator
+        model_fields = ["status"]
 
 
 class IsApprovedUserOperator(Schema):
@@ -171,7 +182,7 @@ class UserOperatorContactIn(ModelSchema):
 
     class Config:
         model = Contact
-        model_exclude = ["id", "documents", "business_role", "address", *AUDIT_FIELDS]
+        model_exclude = ["id", "documents", "business_role", "address", "email", "phone_number", *AUDIT_FIELDS]
         # whether an aliased field may be populated by its name as given by the model attribute, as well as the alias
         allow_population_by_field_name = True
 
