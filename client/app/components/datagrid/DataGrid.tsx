@@ -7,7 +7,6 @@ import {
   GridRenderCellParams,
 } from "@mui/x-data-grid";
 import Link from "next/link";
-import { Button } from "@mui/material";
 import { BC_GOV_BACKGROUND_COLOR_BLUE } from "@/app/styles/colors";
 
 interface Props {
@@ -67,12 +66,13 @@ const DataGrid: React.FC<Props> = ({ rows, columns, cntxt }) => {
               renderCell: (params: GridRenderCellParams) => (
                 <div>
                   {/* 🔗 Add reg or details link */}
-                  <Link href={`operations/${params.row.id}/1`}>
-                    <Button variant="contained" className="text-bc-links-color">
-                      {params.row.status === "Not Registered"
-                        ? "Start Registration"
-                        : "View Details"}
-                    </Button>
+                  <Link
+                    className="no-underline text-bc-link-blue"
+                    href={`operations/${params.row.id}/1`}
+                  >
+                    {params.row.status === "Not Registered"
+                      ? "Start Registration"
+                      : "View Details"}
                   </Link>
                 </div>
               ),
