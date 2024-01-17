@@ -3,7 +3,8 @@ create or replace function imp.import_swrs_data(
   ciip_dbname text,
   ciip_port text,
   ciip_user text,
-  ciip_pword text
+  ciip_pword text,
+  import_addresses boolean
 )
 returns void as
 $function$
@@ -117,7 +118,7 @@ $function$
       bc_corporate_registry_number varchar(1000)
     ) server import_server options (schema_name 'ggircs_portal', table_name 'ciip_admin');
 
-    perform imp.import_swrs_data_from_fdw();
+    perform imp.import_swrs_data_from_fdw(import_addresses);
 
     drop server import_server cascade;
 
