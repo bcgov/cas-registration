@@ -78,29 +78,29 @@ export default async function Operations() {
           {
             field: "submission_date",
             headerName: "Submission\n Date",
-            width: 150,
+            width: 200,
           },
           {
             field: "registration_id",
             headerName: "Registration\n ID",
-            width: 130,
+            width: 140,
           },
           {
             field: "bc_obps_regulated_operation",
             headerName: "BORO\n ID",
-            width: 120,
+            width: 150,
           },
           {
             field: "status",
             headerName: "Status",
-            width: 180,
+            width: 120,
             renderCell: statusStyle,
           },
           {
             field: "action",
             headerName: "Action",
             sortable: false,
-            width: 150,
+            width: 120,
           },
         ]}
       />
