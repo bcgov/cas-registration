@@ -101,7 +101,7 @@ def create_or_update_multiple_operators(
 
 
 @router.get("/operations", response={200: List[OperationOut], codes_4xx: Message})
-@authorize(AppRole.get_all_authorized_roles())
+@authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles())
 def list_operations(request):
     user: User = request.current_user
     # IRC users can see all operations except ones that are not registered yet
@@ -122,7 +122,7 @@ def list_operations(request):
 
 
 @router.get("/operations/{operation_id}", response={200: OperationOut, codes_4xx: Message})
-@authorize(AppRole.get_all_authorized_roles())
+@authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles())
 def get_operation(request, operation_id: int):
     user: User = request.current_user
     if user.is_industry_user():
@@ -142,7 +142,7 @@ def get_operation(request, operation_id: int):
 
 
 @router.post("/operations", response={201: OperationCreateOut, codes_4xx: Message})
-@authorize(AppRole.get_industry_roles())
+@authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
 def create_operation(request, payload: OperationCreateIn):
     user: User = request.current_user
     # excluding the fields that have to be handled separately (We don't assign application lead to the operation here, we do it in the next/update step)
@@ -181,7 +181,7 @@ def create_operation(request, payload: OperationCreateIn):
 
 
 @router.put("/operations/{operation_id}", response={200: OperationUpdateOut, codes_4xx: Message})
-@authorize(AppRole.get_all_authorized_roles())
+@authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles())
 def update_operation(request, operation_id: int, submit: str, payload: OperationUpdateIn):
     user: User = request.current_user
     user_operator = UserOperator.objects.filter(user_id=user.user_guid).first()

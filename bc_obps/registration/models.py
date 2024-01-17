@@ -87,21 +87,7 @@ class AppRole(models.Model):
             return []
 
     @staticmethod
-    def get_industry_roles() -> List[str]:
-        """
-        Return the roles that are considered as industry users.
-        """
-        try:
-            return list(
-                AppRole.objects.filter(role_name__in=["industry_user", "industry_user_admin"]).values_list(
-                    "role_name", flat=True
-                )
-            )
-        except Exception:
-            return []
-
-    @staticmethod
-    def get_all_roles() -> List[str]:
+    def get_all_app_roles() -> List[str]:
         """
         Return all the roles in the app.
         """
@@ -111,7 +97,7 @@ class AppRole(models.Model):
             return []
 
     @staticmethod
-    def get_all_authorized_roles() -> List[str]:
+    def get_all_authorized_app_roles() -> List[str]:
         """
         Return all the roles in the app except cas_pending.
         """
@@ -272,7 +258,7 @@ class User(UserAndContactCommonInfo):
         """
         Return whether or not the user is an industry user.
         """
-        return self.app_role.role_name in AppRole.get_industry_roles()
+        return self.app_role.role_name == "industry_user"
 
 
 class BusinessRole(models.Model):
@@ -500,6 +486,15 @@ class UserOperator(TimeStampedModel):
             and senior_officer.last_name == user.last_name
             and senior_officer.email == user.email
         )
+
+    @staticmethod
+    def get_all_industry_user_operator_roles() -> List[str]:
+        """
+        Return all UserOperator.role options (including None).
+        """
+        roles = [choice.value for choice in UserOperator.Roles]
+        roles.append(None)
+        return roles
 
 
 class OperationAndFacilityCommonInfo(TimeStampedModel):
