@@ -87,15 +87,6 @@ class AppRole(models.Model):
             return []
 
     @staticmethod
-    def get_all_industry_user_operator_roles() -> List[str]:
-        """
-        Return all UserOperator.role options (including None).
-        """
-        roles = [choice.value for choice in UserOperator.Roles]
-        roles.append(None)
-        return roles
-
-    @staticmethod
     def get_all_app_roles() -> List[str]:
         """
         Return all the roles in the app.
@@ -495,6 +486,15 @@ class UserOperator(TimeStampedModel):
             and senior_officer.last_name == user.last_name
             and senior_officer.email == user.email
         )
+
+    @staticmethod
+    def get_all_industry_user_operator_roles() -> List[str]:
+        """
+        Return all UserOperator.role options (including None).
+        """
+        roles = [choice.value for choice in UserOperator.Roles]
+        roles.append(None)
+        return roles
 
 
 class OperationAndFacilityCommonInfo(TimeStampedModel):

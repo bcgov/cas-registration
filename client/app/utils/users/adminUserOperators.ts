@@ -27,7 +27,7 @@ export async function getExternalDashboardUsersTileData(): Promise<
   }
 }
 
-export async function processExternaldashboardUsersTileData() {
+export async function processExternalDashboardUsersTileData() {
   const tileData = await getExternalDashboardUsersTileData();
 
   const transformedTileData = tileData.map((userOperator) => {

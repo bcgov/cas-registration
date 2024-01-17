@@ -70,19 +70,18 @@ export const authOptions: NextAuthOptions = {
           // 🚀 API call: Get user app_role by user_guid from user table
           const responseRole = await actionHandler(
             `registration/user-app-role/${token.user_guid}`,
-            "GET"
+            "GET",
           );
           if (responseRole?.role_name) {
             // user found in table, assign role to token (note: all industry users have the same app role of `industry_user`, and their permissions are further defined by their role in the UserOperator model)
             token.app_role = responseRole.role_name;
-            console.log("responseRole.role_name", responseRole.role_name);
             //for bceid users, augment with admin based on operator-user table
             if (token.identity_provider === IDP.BCEIDBUSINESS) {
               try {
                 // 🚀 API call: check if user is admin approved
                 const responseAdmin = await actionHandler(
                   `registration/is-approved-admin-user-operator/${token.user_guid}`,
-                  "GET"
+                  "GET",
                 );
                 if (responseAdmin?.approved) {
                   token.app_role = "industry_user_admin"; // note: industry_user_admin a front-end only role. In the db, all industry users have an industry_user app_role, and their permissions are further defined by UserOperator.role

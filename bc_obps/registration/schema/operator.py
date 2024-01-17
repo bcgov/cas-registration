@@ -26,3 +26,14 @@ class OperatorIn(ModelSchema):
 
 class SelectOperatorIn(Schema):
     operator_id: int
+
+
+class OperatorExternalDashboardUsersTileData(ModelSchema):
+
+    """
+    Schema for fields from the Operator model that are needed in ExternalDashboardUsersTileData
+    """
+
+    class Config:
+        model = Operator
+        model_fields = ["legal_name"]

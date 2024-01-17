@@ -5,7 +5,7 @@ from .api_base import router
 from django.shortcuts import get_object_or_404
 from registration.models import AppRole, Operator, UserOperator, User
 from ninja.responses import codes_4xx, codes_5xx
-from registration.schema import Message, OperatorOut, SelectUserOperatorStatus
+from registration.schema import Message, OperatorOut
 from registration.schema.operator import OperatorIn, OperatorOut
 from registration.utils import check_users_admin_request_eligibility
 from registration.schema import (
@@ -19,7 +19,7 @@ import pytz
 
 
 @router.get("/operators", response={200: OperatorOut, codes_4xx: Message, codes_5xx: Message})
-@authorize(AppRole.get_all_app_roles(), AppRole.get_all_industry_user_operator_roles())
+@authorize(AppRole.get_all_app_roles(), UserOperator.get_all_industry_user_operator_roles())
 def get_operator_by_legal_name_or_cra(
     request, legal_name: Optional[str] = None, cra_business_number: Optional[int] = None
 ):
@@ -54,7 +54,7 @@ def get_operator_by_legal_name_or_cra(request, search_value: Optional[str] = Non
 
 
 @router.get("/operators/{operator_id}", response={200: OperatorOut, codes_4xx: Message})
-@authorize(AppRole.get_all_authorized_app_roles(), AppRole.get_all_industry_user_operator_roles())
+@authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles())
 def get_operator(request, operator_id: int):
     try:
         operator = get_object_or_404(Operator, id=operator_id)
