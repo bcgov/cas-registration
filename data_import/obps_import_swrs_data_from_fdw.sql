@@ -10,6 +10,23 @@ mailing_province_code varchar(2);
 
 begin
 
+  create temporary table temp_operator(
+    id integer generated always as identity primary key,
+    swrs_organisation_id integer unique,
+    legal_name text,
+    trade_name text,
+    cra_business_number integer,
+    bc_corporate_registry_number text,
+    physical_street_address text,
+    physical_address_municipality text,
+    physical_address_province text,
+    physical_address_postal_code text,
+    mailing_street_address text,
+    mailing_address_municipality text,
+    mailing_address_province text,
+    mailing_address_postal_code text
+  );
+
   -- Operator data
   with x as (
     select max(o.report_id) as max_report_id, o.swrs_organisation_id from swrs_operator o
@@ -37,7 +54,7 @@ begin
       join ciip_organisation o
       on f.organisation_id = o.id
   )
-    insert into imp.operator(
+    insert into temp_operator(
       swrs_organisation_id,
       legal_name,
       trade_name,
@@ -92,7 +109,7 @@ begin
     mailing_address_province = excluded.mailing_address_municipality,
     mailing_address_postal_code = excluded.mailing_address_postal_code;
 
-  for temp_row in select * from imp.operator loop
+  for temp_row in select * from temp_operator loop
     if import_addresses then
       -- only handling known provinces in the swrs dataset (BC, AB, ON, QC & Null)
       physical_province_code = (
@@ -140,24 +157,20 @@ begin
         returning id into mailing_addr_id;
 
       insert into erc.operator(
-        swrs_organisation_id,
         legal_name,
         trade_name,
         cra_business_number,
         bc_corporate_registry_number,
-        business_structure_id,
         created_at,
         status,
         is_new,
         physical_address_id,
         mailing_address_id
       ) values (
-        temp_row.swrs_organisation_id,
         temp_row.legal_name,
         temp_row.trade_name,
         temp_row.cra_business_number,
         temp_row.bc_corporate_registry_number,
-        1,
         now(),
         'Draft',
         false,
@@ -172,22 +185,36 @@ begin
         mailing_address_id = mailing_addr_id;
     else
       insert into erc.operator(
-        swrs_organisation_id,
         legal_name,
         trade_name,
         cra_business_number,
-        bc_corporate_registry_number
+        bc_corporate_registry_number,
+        created_at,
+        status,
+        is_new,
+        physical_address_id,
+        mailing_address_id
       ) values (
-        temp_row.swrs_organisation_id,
         temp_row.legal_name,
         temp_row.trade_name,
         temp_row.cra_business_number,
-        temp_row.bc_corporate_registry_number
+        temp_row.bc_corporate_registry_number,
+        now(),
+        'Draft',
+        false,
+        null,
+        null
       ) on conflict (cra_business_number)
         do update set
         legal_name = excluded.legal_name,
         trade_name = excluded.trade_name,
-        bc_corporate_registry_number = excluded.bc_corporate_registry_number;
+        cra_business_number = operator.cra_business_number,
+        bc_corporate_registry_number = excluded.bc_corporate_registry_number,
+        created_at = operator.created_at,
+        status = operator.status,
+        is_new = operator.is_new,
+        physical_address_id = operator.physical_address_id,
+        mailing_address_id = operator.mailing_address_id;
     end if;
 
   end loop;
@@ -204,14 +231,18 @@ begin
     operator_id,
     name,
     type,
-    bcghgid
+    bcghg_id,
+    operation_has_multiple_operators,
+    status
   )
   select
     sf.swrs_facility_id,
-    (select id from erc,operator where operator.cra_business_number = o.cra_business_number),
+    (select id from erc.operator where operator.cra_business_number = o.cra_business_number::integer),
     coalesce(f.facility_name, sf.facility_name) as facility_name,
     sf.facility_type,
-    coalesce(f.bcghgid, sf.facility_bc_ghg_id) as bcghgid
+    coalesce(f.bcghgid, sf.facility_bc_ghg_id) as bcghg_id,
+    false,
+    'Not Registered'
     from y
     join swrs_facility sf
     on sf.swrs_facility_id = y.swrs_facility_id
@@ -230,7 +261,7 @@ begin
     do update set
     name = excluded.name,
     type = excluded.type,
-    bcghgid = excluded.bcghgid;
+    bcghg_id = excluded.bcghg_id;
 
 end;
 $function$ language plpgsql;

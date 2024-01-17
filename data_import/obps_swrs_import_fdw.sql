@@ -121,6 +121,8 @@ $function$
     perform imp.import_swrs_data_from_fdw(import_addresses);
 
     drop server import_server cascade;
+    drop schema imp cascade;
+    drop table temp_operator;
 
   end;
 
