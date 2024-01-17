@@ -76,10 +76,11 @@ class OperationOut(ModelSchema):
     application_lead: Optional[ContactSchema]
     operation_has_multiple_operators: Optional[bool] = Field(False, alias="operation_has_multiple_operators")
     multiple_operators_array: Optional["List[MultipleOperatorOut]"] = Field(None, alias="multiple_operator")
+    operator: str = Field(..., alias="operator.legal_name")
 
     class Config:
         model = Operation
-        model_exclude = [*AUDIT_FIELDS, "operator", "naics_code"]
+        model_exclude = [*AUDIT_FIELDS, "naics_code"]
 
 
 from .multiple_operator import MultipleOperatorOut
