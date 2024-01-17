@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import { useParams } from "next/navigation";
 import { RJSFSchema } from "@rjsf/utils";
 import { Alert } from "@mui/material";
@@ -32,6 +35,7 @@ const MultiStepFormBase = ({
   allowBackNavigation,
   uiSchema,
 }: MultiStepFormProps) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const params = useParams();
   const formSection = parseInt(params?.formSection as string) - 1;
 
@@ -44,6 +48,20 @@ const MultiStepFormBase = ({
     ? [...mapSectionTitles, "Submission"]
     : mapSectionTitles;
 
+  // Set isSubmitting to true to disable submit buttons and prevent multiple form submissions
+  const submitHandler = async (data: any) => {
+    setIsSubmitting(true);
+    const response = await onSubmit(data);
+
+    // If there is an error, set isSubmitting to false to re-enable submit buttons
+    // and allow user to attempt to re-submit the form
+    if (response?.error) {
+      setIsSubmitting(false);
+    }
+  };
+
+  const isDisabled = disabled || isSubmitting;
+
   return (
     <>
       <MultiStepHeader step={formSection} steps={formSectionTitles} />
@@ -51,15 +69,16 @@ const MultiStepFormBase = ({
         className="[&>div>fieldset]:min-h-[40vh]"
         schema={schema.properties[formSectionList[formSection]] as RJSFSchema}
         uiSchema={uiSchema}
-        disabled={disabled}
-        readonly={disabled}
-        onSubmit={onSubmit}
+        disabled={isDisabled}
+        readonly={isDisabled}
+        onSubmit={submitHandler}
         formData={formData}
         setErrorReset={setErrorReset}
       >
         {error && <Alert severity="error">{error}</Alert>}
         <MultiStepButtons
-          disabled={disabled}
+          disabled={isDisabled}
+          isSubmitting={isSubmitting}
           step={formSection}
           steps={formSectionList}
           baseUrl={baseUrl}
