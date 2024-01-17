@@ -9,6 +9,10 @@ This directory contains all the files necessary to import data from ciip/swrs in
 - **Dockerfile**: A dockerfile with using the postgres-14.6 image to enable us to psql into the OBPS database & create/run the above files.
 - **import-job-template.yaml**: An example job template that can be manually created in openshift to run the import job.
 
+## Notes
+
+- In the initial query to retrieve the set of operators who reported to swrs in 2022, there is one duplicate operator who reported to swrs in 2022 under two different swrs_organisation_ids. Their data is otherwise the same (including the cra_business_number). This operator's data is normalized during the import to resolve to one operator in the obps database.
+
 ## First Run Steps:
 
 - Retrieve the secrets necessary to replace the example values in the ENV section of the import-job-template.yaml. These secrets can be retrieved from the OBPS namespace & the CIIP namespace in openshift.
