@@ -1,6 +1,13 @@
-create or replace function imp.import_swrs_data_from_fdw()
+create or replace function imp.import_swrs_data_from_fdw(import_addresses boolean)
 returns void as
 $function$
+declare
+temp_row record;
+physical_addr_id integer;
+mailing_addr_id integer;
+physical_province_code varchar(2);
+mailing_province_code varchar(2);
+
 begin
 
   -- Operator data
@@ -48,7 +55,7 @@ begin
     o.swrs_organisation_id,
     coalesce(w.operator_name, o.business_legal_name) as legal_name,
     o.english_trade_name,
-    o.cra_business_number,
+    o.cra_business_number::integer,
     w.bc_corporate_registry_number,
     concat_ws(' ',a.physical_address_unit_number, a.physical_address_street_number, a.physical_address_street_number_suffix, a.physical_address_street_name, a.physical_address_street_type, a.physical_address_street_direction) as physical_street_address,
     a.physical_address_municipality,
@@ -85,12 +92,114 @@ begin
     mailing_address_province = excluded.mailing_address_municipality,
     mailing_address_postal_code = excluded.mailing_address_postal_code;
 
+  for temp_row in select * from imp.operator loop
+    if import_addresses then
+      -- only handling known provinces in the swrs dataset (BC, AB, ON, QC & Null)
+      physical_province_code = (
+        select case
+          when temp_row.physical_address_province ilike 'British Columbia' then 'BC'
+          when temp_row.physical_address_province ilike 'Alberta' then 'AB'
+          when temp_row.physical_address_province ilike 'Ontario' then 'ON'
+          when temp_row.physical_address_province ilike 'Quebec' then 'QC'
+          else null
+        end
+      );
+      mailing_province_code = (
+        select case
+          when temp_row.mailing_address_province ilike 'British Columbia' then 'BC'
+          when temp_row.mailing_address_province ilike 'Alberta' then 'AB'
+          when temp_row.mailing_address_province ilike 'Ontario' then 'ON'
+          when temp_row.mailing_address_province ilike 'Quebec' then 'QC'
+          else null
+        end
+      );
+      insert into erc.address(
+        street_address,
+        municipality,
+        province,
+        postal_code
+      ) values (
+        temp_row.physical_street_address,
+        temp_row.physical_address_municipality,
+        physical_province_code,
+        temp_row.physical_address_postal_code
+      )
+      returning id into physical_addr_id;
+
+      insert into erc.address(
+        street_address,
+        municipality,
+        province,
+        postal_code
+      ) values (
+        temp_row.mailing_street_address,
+        temp_row.mailing_address_municipality,
+        mailing_province_code,
+        temp_row.mailing_address_postal_code
+      )
+        returning id into mailing_addr_id;
+
+      insert into erc.operator(
+        swrs_organisation_id,
+        legal_name,
+        trade_name,
+        cra_business_number,
+        bc_corporate_registry_number,
+        business_structure_id,
+        created_at,
+        status,
+        is_new,
+        physical_address_id,
+        mailing_address_id
+      ) values (
+        temp_row.swrs_organisation_id,
+        temp_row.legal_name,
+        temp_row.trade_name,
+        temp_row.cra_business_number,
+        temp_row.bc_corporate_registry_number,
+        1,
+        now(),
+        'Draft',
+        false,
+        physical_addr_id,
+        mailing_addr_id
+      ) on conflict (cra_business_number)
+        do update set
+        legal_name = excluded.legal_name,
+        trade_name = excluded.trade_name,
+        bc_corporate_registry_number = excluded.bc_corporate_registry_number,
+        physical_address_id = physical_addr_id,
+        mailing_address_id = mailing_addr_id;
+    else
+      insert into erc.operator(
+        swrs_organisation_id,
+        legal_name,
+        trade_name,
+        cra_business_number,
+        bc_corporate_registry_number
+      ) values (
+        temp_row.swrs_organisation_id,
+        temp_row.legal_name,
+        temp_row.trade_name,
+        temp_row.cra_business_number,
+        temp_row.bc_corporate_registry_number
+      ) on conflict (cra_business_number)
+        do update set
+        legal_name = excluded.legal_name,
+        trade_name = excluded.trade_name,
+        bc_corporate_registry_number = excluded.bc_corporate_registry_number;
+    end if;
+
+  end loop;
+
+
+  -- Operation data
   with y as (
     select swrs_facility_id, max(report_id) as latest_report from swrs_facility where facility_type in ('SFO', 'LFO')
     group by swrs_facility_id
     order by swrs_facility_id
   )
-  insert into imp.operation(
+  insert into erc.operation(
     swrs_facility_id,
     operator_id,
     name,
@@ -99,7 +208,7 @@ begin
   )
   select
     sf.swrs_facility_id,
-    (select id from imp.operator where operator.swrs_organisation_id = r.swrs_organisation_id),
+    (select id from erc,operator where operator.cra_business_number = o.cra_business_number),
     coalesce(f.facility_name, sf.facility_name) as facility_name,
     sf.facility_type,
     coalesce(f.bcghgid, sf.facility_bc_ghg_id) as bcghgid
