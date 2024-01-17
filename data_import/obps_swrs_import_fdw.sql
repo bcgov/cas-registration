@@ -1,4 +1,4 @@
-create or replace function imp.import_operators(
+create or replace function imp.import_swrs_data(
   ciip_host text,
   ciip_dbname text,
   ciip_port text,
@@ -82,6 +82,11 @@ $function$
       facility_bc_ghg_id        varchar(1000)
     ) server import_server options (schema_name 'swrs', table_name 'facility');
 
+    create foreign table ciip_organisation (
+      id integer,
+      swrs_organisation_id integer
+    ) server import_server options (schema_name 'ggircs_portal', table_name 'organisation');
+
     create foreign table ciip_facility (
       id integer,
       organisation_id integer,
@@ -94,7 +99,25 @@ $function$
       bcghgid varchar(1000)
     ) server import_server options (schema_name 'ggircs_portal', table_name 'facility');
 
-    perform imp.import_operators_from_fdw('swrs_operator');
+    create foreign table ciip_application (
+      id integer,
+      swrs_report_id integer,
+      facility_id integer
+    ) server import_server options (schema_name 'ggircs_portal', table_name 'application');
+
+    create foreign table ciip_application_revision (
+      application_id integer,
+      version_number integer
+    ) server import_server options (schema_name 'ggircs_portal', table_name 'application_revision');
+
+    create foreign table ciip_admin (
+      application_id integer,
+      version_number integer,
+      operator_name varchar(1000),
+      bc_corporate_registry_number varchar(1000)
+    ) server import_server options (schema_name 'ggircs_portal', table_name 'ciip_admin');
+
+    perform imp.import_swrs_data_from_fdw();
 
     drop server import_server cascade;
 
