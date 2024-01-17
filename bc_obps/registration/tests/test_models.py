@@ -610,6 +610,7 @@ class OperationModelTest(BaseTestCase):
             ("opt_in", "opt in", None, None),
             ("verified_at", "verified at", None, None),
             ("verified_by", "verified by", None, None),
+            ("submission_date", "submission date", None, None),
             ("application_lead", "application lead", None, None),
             ("documents", "documents", None, 2),
             ("bc_obps_regulated_operation", "bc obps regulated operation", None, None),
