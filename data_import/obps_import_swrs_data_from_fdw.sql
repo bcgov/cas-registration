@@ -32,9 +32,8 @@ begin
   )
     insert into imp.operator(
       swrs_organisation_id,
-      report_id,
-      business_legal_name,
-      english_trade_name,
+      legal_name,
+      trade_name,
       cra_business_number,
       bc_corporate_registry_number,
       physical_street_address,
@@ -47,8 +46,7 @@ begin
       mailing_address_postal_code)
     select
     o.swrs_organisation_id,
-    o.report_id,
-    coalesce(w.operator_name, o.business_legal_name),
+    coalesce(w.operator_name, o.business_legal_name) as legal_name,
     o.english_trade_name,
     o.cra_business_number,
     w.bc_corporate_registry_number,
@@ -70,7 +68,22 @@ begin
     and a.path_context = 'RegistrationData'
     left join w
     on w.swrs_organisation_id = o.swrs_organisation_id
-    order by swrs_organisation_id;
+    order by swrs_organisation_id
+
+    on conflict (swrs_organisation_id)
+    do update set
+    legal_name = excluded.legal_name,
+    trade_name = excluded.trade_name,
+    cra_business_number = excluded.cra_business_number,
+    bc_corporate_registry_number = excluded.bc_corporate_registry_number,
+    physical_street_address = excluded.physical_street_address,
+    physical_address_municipality = excluded.physical_address_municipality,
+    physical_address_province = excluded.physical_address_province,
+    physical_address_postal_code = excluded.physical_address_postal_code,
+    mailing_street_address = excluded.mailing_street_address,
+    mailing_address_municipality = excluded.mailing_address_municipality,
+    mailing_address_province = excluded.mailing_address_municipality,
+    mailing_address_postal_code = excluded.mailing_address_postal_code;
 
   with y as (
     select swrs_facility_id, max(report_id) as latest_report from swrs_facility where facility_type in ('SFO', 'LFO')
@@ -80,8 +93,8 @@ begin
   insert into imp.operation(
     swrs_facility_id,
     operator_id,
-    facility_name,
-    facility_type,
+    name,
+    type,
     bcghgid
   )
   select
@@ -89,7 +102,7 @@ begin
     (select id from imp.operator where operator.swrs_organisation_id = r.swrs_organisation_id),
     coalesce(f.facility_name, sf.facility_name) as facility_name,
     sf.facility_type,
-    coalesce(f.bcghgid, sf.facility_bc_ghg_id)
+    coalesce(f.bcghgid, sf.facility_bc_ghg_id) as bcghgid
     from y
     join swrs_facility sf
     on sf.swrs_facility_id = y.swrs_facility_id
@@ -102,7 +115,13 @@ begin
     join swrs_report r
     on r.id = sf.report_id
     and r.reporting_period_duration=2022
-    order by r.swrs_organisation_id;
+    order by r.swrs_organisation_id
+
+    on conflict (swrs_facility_id)
+    do update set
+    name = excluded.name,
+    type = excluded.type,
+    bcghgid = excluded.bcghgid;
 
 end;
 $function$ language plpgsql;
