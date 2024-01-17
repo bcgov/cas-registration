@@ -1,5 +1,5 @@
 from django.db import IntegrityError, transaction
-import json, pytz
+import pytz
 from registration.constants import UNAUTHORIZED_MESSAGE
 from registration.decorators import authorize
 from registration.schema import (

@@ -1,16 +1,12 @@
 from typing import List, Optional
 from registration.decorators import authorize
-from registration.utils import check_users_admin_request_eligibility
 from .api_base import router
 from django.shortcuts import get_object_or_404
 from registration.models import AppRole, Operator, UserOperator, User
 from ninja.responses import codes_4xx, codes_5xx
 from registration.schema import Message, OperatorOut
 from registration.schema.operator import OperatorIn, OperatorOut
-from registration.utils import check_users_admin_request_eligibility
-from registration.schema import (
-    Message,
-)
+from registration.schema import Message
 from datetime import datetime
 import pytz
 
