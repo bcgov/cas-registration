@@ -1,5 +1,7 @@
 from typing import List, Optional
 import uuid
+from registration.schema.operator import OperatorExternalDashboardUsersTileData
+from registration.schema.user import UserExternalDashboardUsersTileData
 from ninja import ModelSchema, Schema, Field
 from pydantic import validator
 from registration.constants import AUDIT_FIELDS, BC_CORPORATE_REGISTRY_REGEX
@@ -189,14 +191,17 @@ class SelectUserOperatorStatus(Schema):
     status: str
 
 
-class SelectUserOperatorOperatorsOut(ModelSchema):
+class ExternalDashboardUsersTileData(ModelSchema):
     """
-    Schema for returning User's Business Operator
+    Schema for the data that will be shown in an industry_user's User Access Management tile.
     """
+
+    user: UserExternalDashboardUsersTileData
+    operator: OperatorExternalDashboardUsersTileData
 
     class Config:
         model = UserOperator
-        model_fields = ["operator"]
+        model_fields = ["role", "status"]
 
 
 class UserOperatorListOut(Schema):

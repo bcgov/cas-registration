@@ -122,12 +122,36 @@ def check_access_request_matches_business_guid(
     return 200, None
 
 
-def raise_401_if_role_not_authorized(request, authorized_roles) -> Tuple[int, Optional[Union[dict[str, str], None]]]:
+def raise_401_if_user_not_authorized(
+    request, authorized_app_roles, authorized_user_operator_roles=[]
+) -> Tuple[int, Optional[Union[dict[str, str], None]]]:
+    """
+    Raise a 401 error if a user is not authorized. To be authorized the user must:
+        - be logged in (request.current_user exists)
+        - have an authorized app_role
+        - if the user's app_role is industry_user, then they must additionally have an authorized UserOperator.role
+
+
+    """
     if not hasattr(request, 'current_user'):
         raise HttpError(401, UNAUTHORIZED_MESSAGE)
-    role_name = getattr(request.current_user.app_role, "role_name")
-    if role_name not in authorized_roles:
+
+    user: User = request.current_user
+    role_name = getattr(user.app_role, "role_name")
+    if role_name not in authorized_app_roles:
         raise HttpError(401, UNAUTHORIZED_MESSAGE)
+
+    if user.is_industry_user():
+        user_operator_role = None
+        try:
+            user_operator = UserOperator.objects.get(user=user.user_guid)
+            user_operator_role = user_operator.role
+        except UserOperator.DoesNotExist:
+            pass
+
+        # We don't assign a UserOperator role on create. This means user_operator_role can be None in two cases: 1) the role hasn't been assigned yet and 2) no user operator record has been created yet
+        if user_operator_role not in authorized_user_operator_roles:
+            raise HttpError(401, UNAUTHORIZED_MESSAGE)
 
 
 def get_an_operators_approved_users(operator: Operator) -> QuerySet[UUID]:

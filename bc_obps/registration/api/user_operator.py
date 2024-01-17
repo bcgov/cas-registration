@@ -1,5 +1,6 @@
 from django.db import IntegrityError, transaction
 import json, pytz
+from registration.schema.user_operator import ExternalDashboardUsersTileData
 from registration.constants import UNAUTHORIZED_MESSAGE
 from registration.decorators import authorize
 from registration.schema import (
@@ -14,7 +15,6 @@ from registration.schema import (
     UserOperatorStatus,
     UserOperatorListOut,
 )
-from registration.schema.user_operator import SelectUserOperatorOperatorsOut
 from typing import List
 from .api_base import router
 from django.shortcuts import get_object_or_404
@@ -45,14 +45,14 @@ from django.forms import model_to_dict
 
 ##### GET #####
 @router.get("/user-operator-status-from-user", response={200: UserOperatorStatus, codes_4xx: Message})
-@authorize(AppRole.get_industry_roles())
+@authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
 def get_user_operator_operator_id(request):
     user_operator = get_object_or_404(UserOperator, user_id=request.current_user.user_guid)
     return 200, {"status": user_operator.status}
 
 
 @router.get("/is-approved-admin-user-operator/{user_guid}", response={200: IsApprovedUserOperator, codes_4xx: Message})
-@authorize(AppRole.get_industry_roles())
+@authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
 def is_approved_admin_user_operator(request, user_guid: str):
     approved_user_operator: bool = UserOperator.objects.filter(
         user_id=user_guid, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.APPROVED
@@ -62,7 +62,7 @@ def is_approved_admin_user_operator(request, user_guid: str):
 
 
 @router.get("/user-operator-operator-id", response={200: UserOperatorOperatorIdOut, codes_4xx: Message})
-@authorize(AppRole.get_industry_roles())
+@authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
 def get_user_operator_operator_id(request):
     user_operator = get_object_or_404(
         UserOperator, user_id=request.current_user.user_guid, status=UserOperator.Statuses.APPROVED
@@ -74,7 +74,7 @@ def get_user_operator_operator_id(request):
     "/select-operator/user-operator/{int:user_operator_id}",
     response=UserOperatorOut,
 )
-@authorize(AppRole.get_all_authorized_roles())
+@authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles())
 def get_user_operator(request, user_operator_id: int):
     user: User = request.current_user
     user_operator = get_object_or_404(UserOperator, id=user_operator_id)
@@ -86,7 +86,7 @@ def get_user_operator(request, user_operator_id: int):
 
 
 @router.get("/operator-has-admin/{operator_id}", response={200: bool, codes_4xx: Message})
-@authorize(AppRole.get_all_authorized_roles())
+@authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles())
 def get_user_operator_admin_exists(request, operator_id: int):
     has_admin = UserOperator.objects.filter(
         operator_id=operator_id, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.APPROVED
@@ -94,12 +94,12 @@ def get_user_operator_admin_exists(request, operator_id: int):
     return 200, has_admin
 
 
-@router.get("/get-current-user-user-operators", response=List[SelectUserOperatorOperatorsOut])
-@authorize(["industry_user_admin"])
+@router.get("/user-operator-list-from-user", response=List[ExternalDashboardUsersTileData])
+@authorize(["industry_user"], ["admin"])
 def get_user(request):
-    user_operator_list = UserOperator.objects.filter(
-        user_id=request.current_user.user_guid, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.APPROVED
-    )
+    user: User = request.current_user
+    operator = UserOperator.objects.get(user=user.user_guid).operator
+    user_operator_list = UserOperator.objects.filter(operator_id=operator)
     return user_operator_list
 
 
@@ -148,7 +148,7 @@ def list_user_operators(request):
 
 
 @router.post("/select-operator/request-admin-access", response={201: RequestAccessOut, codes_4xx: Message})
-@authorize(AppRole.get_industry_roles())
+@authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
 def request_access(request, payload: SelectOperatorIn):
     user: User = request.current_user
     operator: Operator = get_object_or_404(Operator, id=payload.operator_id)
@@ -168,7 +168,7 @@ def request_access(request, payload: SelectOperatorIn):
 
 
 @router.post("/select-operator/request-access", response={201: RequestAccessOut, codes_4xx: Message})
-@authorize(AppRole.get_industry_roles())
+@authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
 def request_access(request, payload: SelectOperatorIn):
     user: User = request.current_user
     operator: Operator = get_object_or_404(Operator, id=payload.operator_id)
@@ -186,7 +186,7 @@ def request_access(request, payload: SelectOperatorIn):
 
 
 @router.post("/user-operator/operator", response={200: RequestAccessOut, codes_4xx: Message})
-@authorize(AppRole.get_industry_roles())
+@authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
 def create_operator_and_user_operator(request, payload: UserOperatorOperatorIn):
     user: User = request.current_user
     try:
@@ -299,7 +299,7 @@ def create_operator_and_user_operator(request, payload: UserOperatorOperatorIn):
 
 
 @router.post("/user-operator/contact", response={200: SelectOperatorIn, codes_4xx: Message})
-@authorize(AppRole.get_industry_roles())
+@authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
 def create_user_operator_contact(request, payload: UserOperatorContactIn):
     try:
         user_operator_instance: UserOperator = get_object_or_404(UserOperator, id=payload.user_operator_id)
@@ -371,7 +371,7 @@ def check_status(status: str):
 
 # this endpoint is for updating the status of a user
 @router.put("/select-operator/user-operator/{user_guid}/update-status")
-@authorize(["cas_admin", "cas_analyst", "industry_user_admin"])
+@authorize(AppRole.get_all_authorized_app_roles(), ["admin"])
 def update_user_operator_user_status(request, user_guid: str):
     current_admin_user: User = request.current_user
     # need to convert request.body (a bytes object) to a string, and convert the string to a JSON object

@@ -85,7 +85,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         operation = baker.make(Operation)
         mock_operation = TestUtils.mock_OperationUpdateIn()
         # IRC users can't put
-        roles = ['cas_pending', 'cas_admin', 'cas_analyst', 'industry_user', 'industry_user_admin']
+        roles = ['cas_pending', 'cas_admin', 'cas_analyst', 'industry_user']
         # unapproved industry users cannot put
         for role in roles:
             response = TestUtils.mock_put_with_auth_role(
@@ -102,9 +102,10 @@ class TestOperationsEndpoint(CommonTestSetup):
 
         url = self.build_update_status_url(operation_id=operation.id)
 
-        for role in AppRole.get_industry_roles():
-            response = TestUtils.mock_put_with_auth_role(self, role, content_type_json, {"status": "approved"}, url)
-            assert response.status_code == 401
+        response = TestUtils.mock_put_with_auth_role(
+            self, "industry_user", content_type_json, {"status": "approved"}, url
+        )
+        assert response.status_code == 401
 
     # GET
     def test_get_method_for_200_status(self):
@@ -117,7 +118,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         baker.make(UserOperator, user_id=self.user.user_guid, status=UserOperator.Statuses.APPROVED)
         response = TestUtils.mock_get_with_auth_role(self, "industry_user")
         assert response.status_code == 200
-        response = TestUtils.mock_get_with_auth_role(self, "industry_user_admin")
+        response = TestUtils.mock_get_with_auth_role(self, "industry_user")
         assert response.status_code == 200
 
     def test_get_method_for_invalid_operation_id(self):
@@ -145,7 +146,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         response = TestUtils.mock_get_with_auth_role(self, "industry_user")
         assert response.status_code == 200
         assert len(json.loads(response.content)) == 1
-        response = TestUtils.mock_get_with_auth_role(self, "industry_user_admin")
+        response = TestUtils.mock_get_with_auth_role(self, "industry_user")
         assert response.status_code == 200
         assert len(json.loads(response.content)) == 1
 
@@ -164,7 +165,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         get_response = TestUtils.mock_get_with_auth_role(self, "industry_user").json()[0]
         assert 'status' in get_response and get_response['status'] == 'Not Registered'
         post_response = TestUtils.mock_post_with_auth_role(
-            self, "industry_user_admin", content_type_json, mock_operation.json(), endpoint=None
+            self, "industry_user", content_type_json, mock_operation.json(), endpoint=None
         )
         assert post_response.status_code == 201
 

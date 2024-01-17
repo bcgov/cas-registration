@@ -28,10 +28,6 @@ def init_app_role_data(apps, schema_monitor):
                 role_name='industry_user',
                 role_description='External user from industry. All industry_users have the same initial privileges. Their privileges for individual operators are further defined and applied in the user_operator through table.',
             ),
-            AppRole(
-                role_name='industry_user_admin',
-                role_description='External user from industry with admin privileges. All industry_users have the same initial privileges. Their privileges for individual operators are further defined and applied by Industry Admins.',
-            ),
         ]
     )
 
@@ -41,9 +37,7 @@ def reverse_init_app_role_data(apps, schema_monitor):
     Remove initial data from erc.app_role
     '''
     AppRole = apps.get_model('registration', 'AppRole')
-    AppRole.objects.filter(
-        role_name__in=['cas_admin', 'cas_analyst', 'cas_pending', 'industry_user', 'industry_user_admin']
-    ).delete()
+    AppRole.objects.filter(role_name__in=['cas_admin', 'cas_analyst', 'cas_pending', 'industry_user']).delete()
 
 
 def init_business_role_data(apps, schema_monitor):

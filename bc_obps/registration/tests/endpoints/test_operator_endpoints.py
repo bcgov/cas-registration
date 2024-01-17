@@ -6,7 +6,6 @@ from django.test import Client
 from localflavor.ca.models import CAPostalCodeField
 from registration.models import Operator, User, UserOperator
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
-from registration.enums.enums import Roles
 
 pytestmark = pytest.mark.django_db
 
@@ -62,7 +61,7 @@ class TestOperatorsEndpoint(CommonTestSetup):
 
         response = TestUtils.mock_put_with_auth_role(
             self,
-            'industry_user_admin',
+            'industry_user',
             content_type_json,
             {'status': Operator.Statuses.APPROVED},
             self.endpoint + "/" + str(operator.id),
@@ -87,7 +86,9 @@ class TestOperatorsEndpoint(CommonTestSetup):
 
     def test_get_search_operators_by_legal_name(self):
         response = TestUtils.mock_get_with_auth_role(
-            self, Roles.INDUSTRY_USER.value, self.endpoint + "/legal-name?search_value=Test Operator legal name"
+            self,
+            "industry_user",
+            self.endpoint + "/legal-name?search_value=Test Operator legal name",
         )
         assert response.status_code == 200
         response_dict: dict = response.json()
@@ -126,23 +127,6 @@ class TestOperatorsEndpoint(CommonTestSetup):
         )
         assert response.status_code == 404
         assert response.json() == {"message": "No matching operator found. Retry or add operator."}
-
-    def test_get_list_user_operators_status(self):
-        operator = baker.make(Operator)
-        user = baker.make(User)
-        # user operator prime
-        baker.make(
-            UserOperator,
-            user=user,
-            operator=operator,
-            role=UserOperator.Roles.ADMIN,
-            status=UserOperator.Statuses.APPROVED,
-        )
-        baker.make(UserOperator, operator=operator, _quantity=1)
-
-        response = TestUtils.mock_get_with_auth_role(self, 'cas_admin', f"{self.endpoint}/{operator.id}/user-operators")
-
-        assert len(json.loads(response.content)) == 2
 
     def test_select_operator_with_valid_id(self):
         operator = baker.make(Operator)
