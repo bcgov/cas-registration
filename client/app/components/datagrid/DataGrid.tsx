@@ -140,7 +140,9 @@ const DataGrid: React.FC<Props> = ({ rows, columns, cntxt }) => {
             fontWeight: "bold",
             justifyContent: "center",
           },
-
+          "& .MuiDataGrid-columnHeaders": {
+            backgroundColor: BC_GOV_BACKGROUND_COLOR_BLUE,
+          },
           "& .MuiDataGrid-columnHeader:first-child": {
             borderLeft: "none",
           },

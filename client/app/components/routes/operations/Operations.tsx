@@ -89,7 +89,8 @@ export default async function Operations() {
             field: "action",
             headerName: "Action",
             sortable: false,
-            width: 200,
+            // Temporary width, will be reduced in follow up PR #468 operations table
+            width: 500,
           },
         ]}
       />
