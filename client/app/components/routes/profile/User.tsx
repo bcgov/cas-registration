@@ -3,7 +3,6 @@ import UserForm from "@/app/components/routes/profile/form/UserForm";
 import { UserProfileFormData } from "@/app/components/form/formDataTypes";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { IDP } from "@/app/utils/enums";
 import { getUserFullName } from "@/app/utils/getUserFullName";
 
 // 🚀 API call: GET user's data
