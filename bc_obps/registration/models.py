@@ -581,6 +581,11 @@ class Operation(OperationAndFacilityCommonInfo):
         null=True,
         related_name="operation_verified_by",
     )
+    submission_date = models.DateTimeField(
+        db_comment="The time the user submitted the operation registration request",
+        blank=True,
+        null=True,
+    )
     documents = models.ManyToManyField(
         Document,
         blank=True,
