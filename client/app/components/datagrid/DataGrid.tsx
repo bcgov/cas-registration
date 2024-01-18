@@ -121,10 +121,10 @@ const DataGrid: React.FC<Props> = ({ rows, columns, cntxt }) => {
         hideFooter
         // Set the row height to "auto" so that the row height will adjust to the content
         getRowHeight={() => "auto"}
-        components={{
-          ColumnSortedAscendingIcon: AscendingIcon,
-          ColumnSortedDescendingIcon: DescendingIcon,
-          ColumnUnsortedIcon: SortIcon,
+        slots={{
+          columnSortedAscendingIcon: AscendingIcon,
+          columnSortedDescendingIcon: DescendingIcon,
+          columnUnsortedIcon: SortIcon,
         }}
         sx={{
           "& .MuiSvgIcon-root": {
