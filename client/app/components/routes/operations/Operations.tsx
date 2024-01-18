@@ -2,7 +2,7 @@ import { GridRowsProp } from "@mui/x-data-grid";
 
 import { actionHandler } from "@/app/utils/actions";
 import DataGrid from "@/app/components/datagrid/DataGrid";
-import { lineBreakStyle, statusStyle } from "@/app/components/datagrid/helpers";
+import { statusStyle } from "@/app/components/datagrid/helpers";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
@@ -101,18 +101,17 @@ export default async function Operations() {
     },
     {
       field: "submission_date",
-      headerName: "Submission\n Date",
+      headerName: "Submission Date",
       width: isOperatorColumn ? 200 : 280,
-      renderCell: lineBreakStyle,
     },
     {
       field: "bc_obps_regulated_operation",
-      headerName: "BORO\n ID",
+      headerName: "BORO ID",
       width: 160,
     },
     {
       field: "status",
-      headerName: "Application\nStatus",
+      headerName: "Application Status",
       width: 130,
       renderCell: statusStyle,
     },

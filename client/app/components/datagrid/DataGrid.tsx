@@ -175,6 +175,7 @@ const DataGrid: React.FC<Props> = ({ rows, columns, cntxt }) => {
           "& .MuiDataGrid-cell": {
             justifyContent: "center",
             textAlign: "center",
+            whiteSpace: "pre-line",
           },
           ".MuiDataGrid-iconButtonContainer": {
             visibility: "visible !important",

@@ -36,8 +36,3 @@ export const statusStyle = (params: GridRenderCellParams) => {
     />
   );
 };
-
-// Use this to display text with "\n" line breaks in a DataGrid cell
-export const lineBreakStyle = (params: GridRenderCellParams) => {
-  return <div style={{ whiteSpace: "pre-line" }}>{params.value}</div>;
-};
