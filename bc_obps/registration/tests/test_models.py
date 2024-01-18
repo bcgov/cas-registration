@@ -32,6 +32,7 @@ ADDRESS_FIXTURE = ("mock/address.json",)
 OPERATION_FIXTURE = ("mock/operation.json",)
 CONTACT_FIXTURE = ("mock/contact.json",)
 DOCUMENT_FIXTURE = ("mock/document.json",)
+BC_OBPS_REGULATED_OPERATION_FIXTURE = ("mock/bc_obps_regulated_operation.json",)
 
 
 timestamp_common_fields = [
@@ -567,7 +568,15 @@ class UserOperatorModelTest(BaseTestCase):
 
 
 class OperationModelTest(BaseTestCase):
-    fixtures = [ADDRESS_FIXTURE, USER_FIXTURE, CONTACT_FIXTURE, OPERATOR_FIXTURE, OPERATION_FIXTURE, DOCUMENT_FIXTURE]
+    fixtures = [
+        ADDRESS_FIXTURE,
+        USER_FIXTURE,
+        CONTACT_FIXTURE,
+        OPERATOR_FIXTURE,
+        OPERATION_FIXTURE,
+        DOCUMENT_FIXTURE,
+        BC_OBPS_REGULATED_OPERATION_FIXTURE,
+    ]
 
     @classmethod
     def setUpTestData(cls):

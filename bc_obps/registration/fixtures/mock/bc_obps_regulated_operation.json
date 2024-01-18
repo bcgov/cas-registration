@@ -2,7 +2,7 @@
   {
     "model": "registration.bcobpsregulatedoperation",
     "fields": {
-      "id": "24-0001",
+      "id": "21-0001",
       "issued_at": "2023-10-13T15:27:00.000Z",
       "comments": "Test comment"
     }
