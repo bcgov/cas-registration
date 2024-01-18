@@ -45,7 +45,7 @@
     "fields": {
       "legal_name": "New Operator 3 Legal Name",
       "trade_name": "New Operator 3 Trade Name",
-      "cra_business_number": 987654321,
+      "cra_business_number": 987654322,
       "bc_corporate_registry_number": "abc1234567",
       "business_structure": "BC Corporation",
       "physical_address": 3,

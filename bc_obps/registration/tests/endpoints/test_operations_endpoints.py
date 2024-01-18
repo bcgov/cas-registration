@@ -130,9 +130,24 @@ class TestOperationsEndpoint(CommonTestSetup):
         # IRC users can get all operations except ones with a not registered status
         operator1 = baker.make(Operator)
         operator2 = baker.make(Operator)
-        baker.make(Operation, operator_id=operator1.id, status=Operation.Statuses.PENDING)
-        baker.make(Operation, operator_id=operator2.id, status=Operation.Statuses.APPROVED)
-        baker.make(Operation, operator_id=operator2.id, status=Operation.Statuses.NOT_REGISTERED)
+        baker.make(
+            Operation,
+            operator_id=operator1.id,
+            status=Operation.Statuses.PENDING,
+            naics_code=baker.make(NaicsCode, naics_code=123456, naics_description='desc'),
+        )
+        baker.make(
+            Operation,
+            operator_id=operator2.id,
+            status=Operation.Statuses.APPROVED,
+            naics_code=baker.make(NaicsCode, naics_code=123456, naics_description='desc'),
+        )
+        baker.make(
+            Operation,
+            operator_id=operator2.id,
+            status=Operation.Statuses.NOT_REGISTERED,
+            naics_code=baker.make(NaicsCode, naics_code=123456, naics_description='desc'),
+        )
         response = TestUtils.mock_get_with_auth_role(self, "cas_admin")
         assert response.status_code == 200
         assert len(json.loads(response.content)) == 2
@@ -265,7 +280,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         assert put_response.json().get('detail') == "Not Found"
 
     def test_put_operation_update_status_approved(self):
-        operation = baker.make(Operation)
+        operation = baker.make(Operation, naics_code=baker.make(NaicsCode, naics_code=123456, naics_description='desc'))
         assert operation.status == Operation.Statuses.NOT_REGISTERED
 
         url = self.build_update_status_url(operation_id=operation.id)
@@ -289,7 +304,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         assert get_response_dict.get("verified_at") == now_as_string
 
     def test_put_operation_update_status_rejected(self):
-        operation = baker.make(Operation)
+        operation = baker.make(Operation, naics_code=baker.make(NaicsCode, naics_code=123456, naics_description='desc'))
         assert operation.status == Operation.Statuses.NOT_REGISTERED
 
         url = self.build_update_status_url(operation_id=operation.id)
@@ -313,7 +328,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         assert get_response_dict.get("verified_at") == now_as_string
 
     def test_put_operation_not_verified_when_not_registered(self):
-        operation = baker.make(Operation)
+        operation = baker.make(Operation, naics_code=baker.make(NaicsCode, naics_code=123456, naics_description='desc'))
         assert operation.status == Operation.Statuses.NOT_REGISTERED
 
         url = self.build_update_status_url(operation_id=operation.id)

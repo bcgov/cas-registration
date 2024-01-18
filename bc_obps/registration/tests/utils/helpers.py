@@ -60,7 +60,7 @@ class TestUtils:
 
     @staticmethod
     def mock_OperationCreateIn(operator: Operator = None):
-        naics_code = baker.make(NaicsCode)
+        naics_code = baker.make(NaicsCode, id=1, naics_code=123456, naics_description='desc')
         document = baker.make(Document)
         reporting_activities = baker.make(ReportingActivity, _quantity=2)
         regulated_products = baker.make(RegulatedProduct, _quantity=2)
@@ -69,7 +69,7 @@ class TestUtils:
         return OperationCreateIn(
             name='Springfield Nuclear Power Plant',
             type='Single Facility Operation',
-            naics_code=naics_code.id,
+            naics_code=1,
             reporting_activities=reporting_activities,
             regulated_products=regulated_products,
             documents=[document.id],
@@ -84,7 +84,7 @@ class TestUtils:
 
     @staticmethod
     def mock_OperationUpdateIn():
-        naics_code = baker.make(NaicsCode)
+        naics_code = baker.make(NaicsCode, naics_code=123456, naics_description='desc')
         document = baker.make(Document)
         application_lead = baker.make(Contact)
         operator = baker.make(Operator)
@@ -140,7 +140,9 @@ class TestUtils:
     @staticmethod
     def mock_UserOperatorContactIn():
         user_operator = baker.make(UserOperator)
-        address = baker.make(Address)
+        address = baker.make(
+            Address, street_address='123 st st', municipality='victoria', province='BC', postal_code='h0h0h0'
+        )
         return UserOperatorContactIn(
             is_senior_officer=True,
             user_operator_id=user_operator.id,
