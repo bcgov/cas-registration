@@ -11,10 +11,13 @@ export const statusStyle = (params: GridRenderCellParams) => {
     [Status.APPROVED, "success"],
     [Status.REJECTED, "error"],
     [Status.CHANGES_REQUESTED, "info"],
+    [Status.NOT_REGISTERED, "secondary"],
   ]);
-
+  const status = params.value as string;
   const statusColor = colorMap.get(params.value) || "primary";
-  const isMultiLineStatus = params.value === Status.CHANGES_REQUESTED;
+  const isMultiLineStatus =
+    status === Status.CHANGES_REQUESTED || status === Status.NOT_REGISTERED;
+
   // Adjust the font size for multi-line statuses so it will fit in the chip
   const fontSize = isMultiLineStatus ? "14px" : "16px";
 
@@ -23,7 +26,7 @@ export const statusStyle = (params: GridRenderCellParams) => {
       label={
         // whiteSpace: "normal" is needed to wrap the text in the chip for multi-line statuses like "Changes Requested"
         <div style={{ whiteSpace: "normal", color: statusColor, fontSize }}>
-          {params.value}
+          {status}
         </div>
       }
       variant="outlined"
