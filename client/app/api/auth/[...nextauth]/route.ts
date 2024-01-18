@@ -183,6 +183,18 @@ export const authOptions: NextAuthOptions = {
         },
       };
     },
+    // 👇️ called anytime the user is redirected to a callback URL (e.g. on signin or signout).
+    // by default only URLs on the same URL as the site are allowed, you can use the redirect callback to customise that behaviour.
+    async redirect({ url, baseUrl }) {
+      // Allows relative callback URLs
+      if (url.startsWith("/")) return `${baseUrl}${url}`;
+      // Allows callback URLs on the same origin
+      else if (new URL(url).origin === baseUrl) return url;
+      // 🛸 Allow callbacks to identity server
+      else if (new URL(url).origin === process.env.SITEMINDER_AUTH_URL)
+        return url;
+      return baseUrl;
+    },
   },
 };
 

@@ -3,18 +3,6 @@ import Link from "@mui/material/Link";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { useEffect } from "react";
 
-// 🛠️ Function for nextauth and keycloak session logouts
-async function keycloakSessionLogOut() {
-  try {
-    // call nextauth logout preventing redirect
-    await signOut({ redirect: false });
-    // redirect to Keycloak logout
-    open(process.env.NEXT_PUBLIC_KEYCLOAK_LOGOUT_URL, "_self");
-  } catch (err) {
-    console.error(err);
-  }
-}
-
 export default function Profile({ name }: { readonly name: string }) {
   /* use the NextAuth useSession hook to get session data, and if a specific error condition is met,
      triggers a forced sign-in using the "keycloak" provider to potentially resolve the error related to refreshing access tokens.*/
@@ -41,8 +29,9 @@ export default function Profile({ name }: { readonly name: string }) {
           variant="text"
           className="text-lg"
           onClick={() => {
-            //keycloak logout then nextauth logout
-            keycloakSessionLogOut();
+            signOut({
+              callbackUrl: process.env.NEXT_PUBLIC_KEYCLOAK_LOGOUT_URL,
+            });
           }}
         >
           Log Out
