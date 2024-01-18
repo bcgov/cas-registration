@@ -134,7 +134,8 @@ const DataGrid: React.FC<Props> = ({ rows, columns, cntxt }) => {
             minWidth: "100%",
           },
           "& .MuiDataGrid-row": {
-            // TODO: find a way to set minHeight without using !important
+            // Couldn't find a way to set minHeight without using !important
+            // This was needed to use getRowHeight={() => "auto"} prop to break long text into multiple lines
             minHeight: "60px!important",
           },
           "& .MuiDataGrid-columnHeader": {
