@@ -494,6 +494,13 @@ class OperatorModelTest(BaseTestCase):
             ("parent_operators", "parent operator", None, None),
         ]
 
+    def test_unique_cra_business_number_constraint(self):
+        # First operator is `cls.test_object` from the fixture, attempt to create another operator with matching cra_business_number
+        invalid_operator = Operator(cra_business_number=self.test_object.cra_business_number)
+
+        with self.assertRaises(IntegrityError):
+            invalid_operator.save()
+
 
 class ParentOperatorModelTest(BaseTestCase):
     fixtures = [
@@ -697,6 +704,13 @@ class OperationModelTest(BaseTestCase):
             expected_id,
             "Should generate a new ID for the current year.",
         )
+
+    def test_unique_swrs_facility_id_constraint(self):
+        # First operation is `cls.test_object` from the fixture, attempt to create another operation with matching swrs_facility_id
+        invalid_operation = Operation(swrs_facility_id=self.test_object.swrs_facility_id)
+
+        with self.assertRaises(IntegrityError):
+            invalid_operation.save()
 
 
 class AppRoleModelTest(BaseTestCase):

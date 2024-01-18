@@ -3,13 +3,7 @@ import pytest, json
 from model_bakery import baker
 from django.test import Client
 from localflavor.ca.models import CAPostalCodeField
-from registration.models import (
-    BusinessStructure,
-    Operator,
-    ParentOperator,
-    User,
-    UserOperator,
-)
+from registration.models import BusinessStructure, Operator, ParentOperator, User, UserOperator, Address
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 
 pytestmark = pytest.mark.django_db
@@ -72,7 +66,15 @@ class TestUserOperatorEndpoint(CommonTestSetup):
 
     def test_unauthorized_users_cannot_post(self):
         # select-operator/request-access
-        operator = baker.make(Operator)
+        operator = baker.make(
+            Operator,
+            physical_address=baker.make(
+                Address, street_address='123 st', municipality='victoria', province='BC', postal_code='h0h0h0'
+            ),
+            mailing_address=baker.make(
+                Address, street_address='123 st', municipality='victoria', province='BC', postal_code='h0h0h0'
+            ),
+        )
         response = TestUtils.mock_post_with_auth_role(
             self,
             'cas_pending',
@@ -141,7 +143,15 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         assert response.status_code == 401
 
         # user-operator/contact
-        baker.make(Operator)
+        operator = baker.make(
+            Operator,
+            physical_address=baker.make(
+                Address, street_address='123 st', municipality='victoria', province='BC', postal_code='h0h0h0'
+            ),
+            mailing_address=baker.make(
+                Address, street_address='123 st', municipality='victoria', province='BC', postal_code='h0h0h0'
+            ),
+        )
         response = TestUtils.mock_post_with_auth_role(
             self,
             'cas_pending',
