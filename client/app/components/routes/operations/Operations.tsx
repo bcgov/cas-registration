@@ -103,6 +103,8 @@ export default async function Operations() {
       field: "submission_date",
       headerName: "Submission Date",
       width: isOperatorColumn ? 200 : 220,
+      // Set flex to 1 to make the column take up all the remaining width if user zooms out
+      flex: 1,
     },
     {
       field: "bc_obps_regulated_operation",

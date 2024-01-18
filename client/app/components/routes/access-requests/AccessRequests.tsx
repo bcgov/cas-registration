@@ -66,7 +66,14 @@ export default async function AccessRequests() {
           { field: "first_name", headerName: "First\n Name", width: 180 },
           { field: "last_name", headerName: "Last\n Name", width: 180 },
           { field: "email", headerName: "Email", width: 300 },
-          { field: "legal_name", headerName: "Operator", width: 380 },
+          {
+            field: "legal_name",
+            headerName: "Operator",
+            width: 380,
+            // Set flex to 1 to make the column take up all the remaining width if user zooms out
+            flex: 1,
+          },
+
           {
             field: "status",
             headerName: "Status",
