@@ -26,7 +26,6 @@ const theme = createTheme({
     primary: {
       main: BC_GOV_PRIMARY_BRAND_COLOR_BLUE,
       light: BC_GOV_BACKGROUND_COLOR_BLUE,
-      dark: BC_GOV_LINKS_COLOR,
       // light: will be calculated from palette.primary.main,
       // dark: will be calculated from palette.primary.main,
       // contrastText: will be calculated to contrast with palette.primary.main
@@ -34,7 +33,6 @@ const theme = createTheme({
     secondary: {
       main: DARK_GREY_BG_COLOR,
       light: LIGHT_GREY_BG_COLOR,
-      dark: BC_GOV_COMPONENTS_GREY,
     },
     error: {
       main: BC_GOV_SEMANTICS_RED,
@@ -117,6 +115,10 @@ const theme = createTheme({
         colorSecondary: {
           color: BC_GOV_COMPONENTS_GREY,
           borderColor: BC_GOV_COMPONENTS_GREY,
+        },
+        colorInfo: {
+          color: BC_GOV_LINKS_COLOR,
+          borderColor: BC_GOV_LINKS_COLOR,
         },
       },
     },
