@@ -76,11 +76,11 @@ export default async function Operations() {
           }) => {
             return {
               id,
-              bc_obps_regulated_operation,
+              bc_obps_regulated_operation: bc_obps_regulated_operation ?? "N/A",
               operation_name: name,
               operation_id: id,
               operator_name: operator,
-              submission_date: formatTimestamp(submission_date),
+              submission_date: formatTimestamp(submission_date) ?? status,
               status: status,
             };
           },
