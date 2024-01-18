@@ -35,7 +35,7 @@ function FieldTemplateWithSubmitButton(props: Readonly<FieldTemplateProps>) {
           >
             <span>{error}</span>
             <span className="ml-3">
-              <AlertIcon />
+              <AlertIcon width={"26"} height={"26"} />
             </span>
           </div>
         )}

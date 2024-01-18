@@ -12,6 +12,7 @@ import CancelIcon from "@mui/icons-material/Cancel";
 import { Fade } from "@mui/material";
 import { Status } from "@/app/utils/enums";
 import { Operation as OperationInt } from "@/app/components/routes/operations/types";
+import Link from "next/link";
 
 // 🚀 API call: GET user's data
 async function getUserFormData(): Promise<
@@ -163,7 +164,7 @@ export default async function Operation({ numRow }: { numRow?: number }) {
     }),
   );
 
-  const exemptionIdJSX: JSX.Element = (
+  const boroId: JSX.Element = (
     <div className="flex items-center gap-3 mt-4">
       <CheckCircleIcon
         fontSize="large"
@@ -172,35 +173,37 @@ export default async function Operation({ numRow }: { numRow?: number }) {
       />
       <div>
         <p className="my-0">
-          This operation registration request was approved. <b>BORO ID: </b>{" "}
+          <b>B.C. OBPS Regulated Operation ID: </b>{" "}
           {operation?.bc_obps_regulated_operation}
         </p>
         <p className="my-0">
-          You can use the BC OBPS Regulated Operation (BORO) ID above to apply
-          for carbon tax exemption with the BC Ministry of Finance.
+          You will need this B.C. OBPS Regulated Operation ID to claim an
+          exemption from carbon tax. For information about the exemption and how
+          to claim it, please see the{" "}
+          <Link href="https://www2.gov.bc.ca/gov/content?id=3EAC7D1EBBDA41F6937BA1F1A8A202F3">
+            carbon tax exemption page
+          </Link>
+          .
         </p>
       </div>
     </div>
   );
 
-  const operationRegistrationRejectedJSX: JSX.Element = (
+  const operationRegistrationDeclinedJSX: JSX.Element = (
     <div className="flex items-start gap-3 mt-4">
       <CancelIcon fontSize="large" color="error" />
       <div>
         <p className="mt-0">
-          This operation registration request was rejected.
+          This operation’s application for a B.C. OBPS Regulated Operation ID
+          was declined.
         </p>
-        <p className="mb-0">
-          <b>Reason for rejection from Program Area:</b>
-        </p>
-        <em>Check your email</em>
       </div>
     </div>
   );
 
   const showRegistrationRequestResult: boolean | undefined =
     operation &&
-    [Status.REJECTED, Status.APPROVED].includes(operation?.status as Status);
+    [Status.DECLINED, Status.APPROVED].includes(operation?.status as Status);
 
   let userProfileFormData: UserProfileFormData | { error: string } =
     await getUserFormData();
@@ -211,10 +214,10 @@ export default async function Operation({ numRow }: { numRow?: number }) {
   };
 
   const userEmail = (userProfileFormData as UserProfileFormData)?.email;
-  const applicationLeadEmail = formData?.application_lead?.email;
-  // If the current user is the application lead, we want to show the application lead fields
-  const isUserApplicationLead =
-    userEmail === applicationLeadEmail && applicationLeadEmail !== undefined;
+  const pointOfContactEmail = formData?.point_of_contact?.email;
+  // If the current user is the point of contact, we want to show the point of contact fields
+  const isUserPointOfContact =
+    userEmail === pointOfContactEmail && pointOfContactEmail !== undefined;
 
   // empty array is not a valid value for multiple_operators_array as empty default should be [{}]
   // to avoid buggy behaviour opening
@@ -226,24 +229,27 @@ export default async function Operation({ numRow }: { numRow?: number }) {
   // We need to convert some of the information received from django into types RJSF can read.
   const transformedFormData = {
     ...formData,
-    // Add the correct application lead data
-    ...(isUserApplicationLead
+    // Add the correct point of contact data
+    ...(isUserPointOfContact
       ? {
-          ...formData?.application_lead,
+          ...formData?.point_of_contact,
         }
       : {
-          external_lead_first_name: formData?.application_lead?.first_name,
-          external_lead_last_name: formData?.application_lead?.last_name,
-          external_lead_email: formData?.application_lead?.email,
-          external_lead_phone_number: formData?.application_lead?.phone_number,
-          external_lead_position_title:
-            formData?.application_lead?.position_title,
+          external_point_of_contact_first_name:
+            formData?.point_of_contact?.first_name,
+          external_point_of_contact_last_name:
+            formData?.point_of_contact?.last_name,
+          external_point_of_contact_email: formData?.point_of_contact?.email,
+          external_point_of_contact_phone_number:
+            formData?.point_of_contact?.phone_number,
+          external_point_of_contact_position_title:
+            formData?.point_of_contact?.position_title,
         }),
     // If you spread anything and it has the same keys as operation (e.g. id, created_by), watch out for accidentally overwriting things. In this case it's safe to spread because the address schema excludes fields
-    ...formData?.application_lead?.address,
+    ...formData?.point_of_contact?.address,
     "Did you submit a GHG emissions report for reporting year 2022?":
       formData?.previous_year_attributable_emissions ? true : false,
-    is_user_application_lead: isUserApplicationLead,
+    is_user_point_of_contact: isUserPointOfContact,
     // fix for null values not opening the multiple operators form if loading a previously saved form
     multiple_operators_array: isMultipleOperatorsArray
       ? formData?.multiple_operators_array
@@ -257,8 +263,8 @@ export default async function Operation({ numRow }: { numRow?: number }) {
       {showRegistrationRequestResult && (
         <Fade in={showRegistrationRequestResult}>
           {operation?.bc_obps_regulated_operation
-            ? exemptionIdJSX
-            : operationRegistrationRejectedJSX}
+            ? boroId
+            : operationRegistrationDeclinedJSX}
         </Fade>
       )}
       <OperationsForm

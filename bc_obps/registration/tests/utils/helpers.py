@@ -64,7 +64,7 @@ class TestUtils:
         document = baker.make(Document)
         reporting_activities = baker.make(ReportingActivity, _quantity=2)
         regulated_products = baker.make(RegulatedProduct, _quantity=2)
-        application_lead = baker.make(Contact)
+        point_of_contact = baker.make(Contact)
         operator = operator or baker.make(Operator)
         return OperationCreateIn(
             name='Springfield Nuclear Power Plant',
@@ -73,9 +73,9 @@ class TestUtils:
             reporting_activities=reporting_activities,
             regulated_products=regulated_products,
             documents=[document.id],
-            application_lead=application_lead.id,
+            point_of_contact=point_of_contact.id,
             operator=operator.id,
-            is_user_application_lead=True,
+            is_user_point_of_contact=True,
             street_address='19 Evergreen Terrace',
             municipality='Springfield',
             province='BC',
@@ -86,7 +86,7 @@ class TestUtils:
     def mock_OperationUpdateIn():
         naics_code = baker.make(NaicsCode, naics_code=123456, naics_description='desc')
         document = baker.make(Document)
-        application_lead = baker.make(Contact)
+        point_of_contact = baker.make(Contact)
         operator = baker.make(Operator)
         activity = baker.make(ReportingActivity)
         product = baker.make(RegulatedProduct)
@@ -108,9 +108,9 @@ class TestUtils:
             longitude=-120,
             regulated_products=[product.id],
             documents=[document.id],
-            application_lead=application_lead.id,
+            point_of_contact=point_of_contact.id,
             operator_id=operator.id,
-            is_user_application_lead=True,
+            is_user_point_of_contact=True,
             first_name="Homer",
             last_name="Simpson",
             email="homer@email.com",

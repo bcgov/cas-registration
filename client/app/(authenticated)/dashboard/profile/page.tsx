@@ -8,7 +8,8 @@ export default function Page() {
     <>
       <div className="w-full form-group field field-object form-heading-label">
         <div className="form-heading">
-          Please update or verify your information
+          Please update or verify your information as the Operation
+          Representative
         </div>
       </div>
       <Suspense fallback={<Loading />}>

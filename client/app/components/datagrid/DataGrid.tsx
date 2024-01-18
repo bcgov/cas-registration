@@ -70,8 +70,8 @@ const DataGrid: React.FC<Props> = ({ rows, columns, cntxt }) => {
                     className="no-underline text-bc-link-blue whitespace-normal"
                     href={`operations/${params.row.id}/1`}
                   >
-                    {params.row.status === "Not Registered"
-                      ? "Start Registration"
+                    {params.row.status === "Not Started"
+                      ? "Start Application"
                       : "View Details"}
                   </Link>
                 </div>

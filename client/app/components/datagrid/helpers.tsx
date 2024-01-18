@@ -9,9 +9,9 @@ export const statusStyle = (params: GridRenderCellParams) => {
     [Status.MYSELF, "primary"],
     [Status.PENDING, "primary"],
     [Status.APPROVED, "success"],
-    [Status.REJECTED, "error"],
     [Status.CHANGES_REQUESTED, "info"],
     [Status.NOT_REGISTERED, "secondary"],
+    [Status.DECLINED, "error"],
   ]);
   const status = params.value as string;
   const statusColor = colorMap.get(params.value) || "primary";

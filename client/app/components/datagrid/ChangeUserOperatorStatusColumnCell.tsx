@@ -63,13 +63,13 @@ export async function ChangeUserOperatorStatusColumnCell(
           icon: <ThumbUpIcon />,
         },
         {
-          statusTo: Status.REJECTED,
+          statusTo: Status.DECLINED,
           title: "Deny",
           color: "error",
           icon: <DoNotDisturbIcon />,
         },
       ];
-    } else if (status === Status.APPROVED || status === Status.REJECTED) {
+    } else if (status === Status.APPROVED || status === Status.DECLINED) {
       return [
         {
           statusTo: Status.PENDING,

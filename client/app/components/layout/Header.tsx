@@ -93,7 +93,7 @@ export default function Header() {
               cursor: "default",
             }}
           >
-            BC OBPS
+            B.C. Industrial Emissions Reporting System (BCIERS)
           </Typography>
           {/* 👇️ Authentication content for laptop & desktop */}
           <ButtonsRight>

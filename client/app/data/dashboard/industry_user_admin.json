@@ -1,22 +1,22 @@
 [
   {
     "title": "My Operator",
-    "content": "View or update your operator information.",
+    "content": "View or update your operator information, which needs to be complete before applying for BORO IDs",
     "links": [{ "title": "Operator ➤", "href": "/dashboard/select-operator" }]
   },
   {
-    "title": "Operations Registration",
-    "content": "Apply to qualify for carbon tax exemption.",
+    "title": "My Operations",
+    "content": "Apply for a B.C. OBPS Regulated Operation ID",
     "links": [{ "title": "Operations ➤", "href": "/dashboard/operations" }]
   },
   {
     "title": "User Access Management",
-    "content": " For managing user access for your operators.",
+    "content": " For managing user access to your operator profile",
     "links": [{ "title": "Users ➤", "href": "/dashboard/users" }]
   },
   {
     "title": "Report a Problem",
-    "content": "Something wrong?",
+    "content": "Something wrong? Report a problem to the team",
     "links": [{ "title": "Tell the team ➤", "href": "/dashboard/problem" }]
   }
 ]

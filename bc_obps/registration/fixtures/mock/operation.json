@@ -6,7 +6,7 @@
       "verified_at": "2023-10-13T15:27:00.000Z",
       "verified_by": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
       "documents": [],
-      "application_lead": 1,
+      "point_of_contact": 1,
       "name": "Operation 1",
       "type": "Single Facility Operation",
       "naics_code": 19,
@@ -14,7 +14,7 @@
       "swrs_facility_id": 1001,
       "bcghg_id": "123",
       "regulated_products": [],
-      "status": "Not Registered"
+      "status": "Not Started"
     }
   },
   {
@@ -22,13 +22,13 @@
     "fields": {
       "operator": 2,
       "documents": [],
-      "application_lead": 1,
+      "point_of_contact": 1,
       "name": "Operation 2",
       "type": "Single Facility Operation",
       "naics_code": 20,
       "opt_in": false,
       "regulated_products": [],
-      "status": "Not Registered"
+      "status": "Not Started"
     }
   },
   {
@@ -36,7 +36,7 @@
     "fields": {
       "operator": 2,
       "documents": [],
-      "application_lead": 1,
+      "point_of_contact": 1,
       "name": "Operation 3",
       "submission_date": "2023-12-16T15:27:00.000Z",
       "type": "Single Facility Operation",

@@ -1,12 +1,12 @@
 [
   {
     "title": "My Operator",
-    "content": "View or update your operator information.",
+    "content": "View or update your operator information, which needs to be complete before applying for BORO IDs",
     "links": [{ "title": "Operator ➤", "href": "/dashboard/select-operator" }]
   },
   {
     "title": "Report a Problem",
-    "content": "Something wrong?",
+    "content": "Something wrong? Report a problem to the team",
     "links": [{ "title": "Tell the team ➤", "href": "/dashboard/tbd" }]
   }
 ]
