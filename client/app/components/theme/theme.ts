@@ -2,6 +2,7 @@ import { createTheme } from "@mui/material/styles";
 import {
   BC_GOV_PRIMARY_BRAND_COLOR_BLUE,
   BC_GOV_BACKGROUND_COLOR_BLUE,
+  BC_GOV_COMPONENTS_GREY,
   BC_GOV_LINKS_COLOR,
   BC_GOV_YELLOW,
   BC_GOV_TEXT,
@@ -33,6 +34,7 @@ const theme = createTheme({
     secondary: {
       main: DARK_GREY_BG_COLOR,
       light: LIGHT_GREY_BG_COLOR,
+      dark: BC_GOV_COMPONENTS_GREY,
     },
     error: {
       main: BC_GOV_SEMANTICS_RED,
@@ -107,6 +109,14 @@ const theme = createTheme({
               borderColor: BC_GOV_LINKS_COLOR,
             },
           },
+        },
+      },
+    },
+    MuiChip: {
+      styleOverrides: {
+        colorSecondary: {
+          color: BC_GOV_COMPONENTS_GREY,
+          borderColor: BC_GOV_COMPONENTS_GREY,
         },
       },
     },

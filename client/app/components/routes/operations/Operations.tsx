@@ -123,9 +123,11 @@ export default async function Operations() {
     },
   ];
 
-  // Add the operator column if the user is CAS internal
+  const operatorColumnIndex = 1;
+
   if (isOperatorColumn) {
-    columns.splice(1, 0, {
+    // Add the operator column if the user is CAS internal
+    columns.splice(operatorColumnIndex, 0, {
       field: "operator_name",
       headerName: "Operator",
       width: 320,
