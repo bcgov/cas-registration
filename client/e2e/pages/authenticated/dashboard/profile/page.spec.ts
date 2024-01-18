@@ -76,11 +76,8 @@ const submitFailTest = async (page: any) => {
       const inputField = await page.getByLabel(labelText);
       // Click the field to focus it
       await inputField.click();
-      if (labelText === "Phone Number*") {
-        await page.getByLabel(labelText).fill("987 654 321"); //Format should be ### ### ####
-      } else {
-        await inputField.clear();
-      }
+      // Clear the field
+      await inputField.clear();
     }
     // Click the Submit button
     await page.getByRole("button", { name: "Submit" }).click();
@@ -96,8 +93,9 @@ const deleteNewUserRecord = async () => {
   try {
     const query = {
       text: "DELETE FROM erc.user WHERE user_guid = $1",
-      values: [process.env.NEW_USER_USERID],
+      values: [process.env.NEW_USER_GUID],
     };
+    // Execute the deletion query
     await pool.query(query);
   } catch (error) {
     console.error("Error deleting new user record:", error);
