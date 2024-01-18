@@ -130,9 +130,24 @@ class TestOperationsEndpoint(CommonTestSetup):
         # IRC users can get all operations except ones with a not registered status
         operator1 = baker.make(Operator)
         operator2 = baker.make(Operator)
-        baker.make(Operation, operator_id=operator1.id, status=Operation.Statuses.PENDING, naics_code=baker.make(NaicsCode, naics_code=123456, naics_description='desc'))
-        baker.make(Operation, operator_id=operator2.id, status=Operation.Statuses.APPROVED, naics_code=baker.make(NaicsCode, naics_code=123456, naics_description='desc'))
-        baker.make(Operation, operator_id=operator2.id, status=Operation.Statuses.NOT_REGISTERED, naics_code=baker.make(NaicsCode, naics_code=123456, naics_description='desc'))
+        baker.make(
+            Operation,
+            operator_id=operator1.id,
+            status=Operation.Statuses.PENDING,
+            naics_code=baker.make(NaicsCode, naics_code=123456, naics_description='desc'),
+        )
+        baker.make(
+            Operation,
+            operator_id=operator2.id,
+            status=Operation.Statuses.APPROVED,
+            naics_code=baker.make(NaicsCode, naics_code=123456, naics_description='desc'),
+        )
+        baker.make(
+            Operation,
+            operator_id=operator2.id,
+            status=Operation.Statuses.NOT_REGISTERED,
+            naics_code=baker.make(NaicsCode, naics_code=123456, naics_description='desc'),
+        )
         response = TestUtils.mock_get_with_auth_role(self, "cas_admin")
         assert response.status_code == 200
         assert len(json.loads(response.content)) == 2

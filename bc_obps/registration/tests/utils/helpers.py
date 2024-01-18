@@ -140,7 +140,9 @@ class TestUtils:
     @staticmethod
     def mock_UserOperatorContactIn():
         user_operator = baker.make(UserOperator)
-        address = baker.make(Address, street_address='123 st st', municipality='victoria', province='BC', postal_code='h0h0h0')
+        address = baker.make(
+            Address, street_address='123 st st', municipality='victoria', province='BC', postal_code='h0h0h0'
+        )
         return UserOperatorContactIn(
             is_senior_officer=True,
             user_operator_id=user_operator.id,
