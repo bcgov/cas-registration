@@ -28,7 +28,7 @@ export default async function OperationsPage() {
         <Note classNames="mb-4 mt-6" message={registrationRequestNote} />
       )}
       <Suspense fallback={<Loading />}>
-        <Operations session={session} />
+        <Operations />
       </Suspense>
     </>
   );
