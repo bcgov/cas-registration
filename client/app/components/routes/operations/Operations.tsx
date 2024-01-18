@@ -3,6 +3,7 @@ import { GridRowsProp } from "@mui/x-data-grid";
 import { actionHandler } from "@/app/utils/actions";
 import DataGrid from "@/app/components/datagrid/DataGrid";
 import { lineBreakStyle, statusStyle } from "@/app/components/datagrid/helpers";
+import { Session } from "next-auth";
 
 // 🛠️ Function to fetch operations
 async function getOperations() {
@@ -39,8 +40,12 @@ const formatTimestamp = (timestamp: string) => {
   return `${date}\n${timeWithTimeZone}`;
 };
 
+interface OperationsProps {
+  session: Session;
+}
+
 // 🧩 Main component
-export default async function Operations() {
+export default async function Operations({ session }: OperationsProps) {
   // Fetch operations data
   const operations: {
     id: number;
@@ -83,41 +88,57 @@ export default async function Operations() {
           },
         )
       : [];
+
+  // Show the operator column if the user is CAS internal
+  const isOperatorColumn =
+    session?.user.app_role?.includes("cas") &&
+    !session?.user.app_role?.includes("pending");
+
+  const columns = [
+    { field: "operation_id", headerName: "Operation ID", width: 160 },
+    {
+      field: "operation_name",
+      headerName: "Operation",
+      width: isOperatorColumn ? 320 : 560,
+    },
+    {
+      field: "submission_date",
+      headerName: "Submission\n Date",
+      width: isOperatorColumn ? 200 : 280,
+      renderCell: lineBreakStyle,
+    },
+    {
+      field: "bc_obps_regulated_operation",
+      headerName: "BORO\n ID",
+      width: 160,
+    },
+    {
+      field: "status",
+      headerName: "Application\nStatus",
+      width: 130,
+      renderCell: statusStyle,
+    },
+    {
+      field: "action",
+      headerName: "Action",
+      sortable: false,
+      width: 120,
+    },
+  ];
+
+  // Add the operator column if the user is CAS internal
+  if (isOperatorColumn) {
+    columns.splice(1, 0, {
+      field: "operator_name",
+      headerName: "Operator",
+      width: 320,
+    });
+  }
+
   // Render the DataGrid component
   return (
     <div className="mt-5">
-      <DataGrid
-        cntxt="operations"
-        rows={rows}
-        columns={[
-          { field: "operation_id", headerName: "Operation ID", width: 160 },
-          { field: "operator_name", headerName: "Operator", width: 320 },
-          { field: "operation_name", headerName: "Operation", width: 320 },
-          {
-            field: "submission_date",
-            headerName: "Submission\n Date",
-            width: 200,
-            renderCell: lineBreakStyle,
-          },
-          {
-            field: "bc_obps_regulated_operation",
-            headerName: "BORO\n ID",
-            width: 170,
-          },
-          {
-            field: "status",
-            headerName: "Status",
-            width: 120,
-            renderCell: statusStyle,
-          },
-          {
-            field: "action",
-            headerName: "Action",
-            sortable: false,
-            width: 120,
-          },
-        ]}
-      />
+      <DataGrid cntxt="operations" rows={rows} columns={columns} />
     </div>
   );
 }
