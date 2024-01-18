@@ -102,12 +102,12 @@ export default async function Operations() {
     {
       field: "submission_date",
       headerName: "Submission Date",
-      width: isOperatorColumn ? 200 : 280,
+      width: isOperatorColumn ? 200 : 220,
     },
     {
       field: "bc_obps_regulated_operation",
       headerName: "BORO ID",
-      width: 160,
+      width: isOperatorColumn ? 160 : 220,
     },
     {
       field: "status",
