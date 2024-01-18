@@ -13,7 +13,7 @@ interface Props {
   confirmApproveMessage: string;
   confirmRejectMessage: string;
   approvedMessage: string;
-  rejectedMessage: string;
+  declinedMessage: string;
   isStatusPending: boolean;
   showRequestChanges?: boolean;
   onApprove: () => Promise<any>;
@@ -46,7 +46,7 @@ const Review = ({
   confirmApproveMessage,
   confirmRejectMessage,
   isStatusPending,
-  rejectedMessage,
+  declinedMessage,
   showRequestChanges = true,
   onApprove,
   onReject,
@@ -91,7 +91,7 @@ const Review = ({
     }
 
     setModalState("");
-    return setSuccessMessageList([{ message: rejectedMessage }]);
+    return setSuccessMessageList([{ message: declinedMessage }]);
   };
 
   const handleCloseAlert = () => {

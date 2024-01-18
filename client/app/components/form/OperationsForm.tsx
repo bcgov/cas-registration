@@ -39,15 +39,13 @@ export default function OperationsForm({ formData, schema }: Readonly<Props>) {
       {operationName ? (
         <section className="w-full text-center text-2xl mt-20">
           <p>
-            Your request to register <b>{operationName}</b> has been received.
+            Your application for the B.C. OBPS Regulated Operation ID for{" "}
+            <b>{operationName}</b> has been received.
           </p>
+          <p>Once approved, you will receive a confirmation email.</p>
           <p>
-            We will review your request as soon as possible! Once approved, you
-            will receive a confirmation email.
-          </p>
-          <p>
-            You can then log back and download the declaration form for carbon
-            tax exemption for the operation.
+            You can then log back in and view the B.C. OBPS Regulated Operation
+            ID for <b>{operationName}</b>.
           </p>
           <p>
             <Link href="#">Have not received the confirmation email yet?</Link>
@@ -101,7 +99,7 @@ export default function OperationsForm({ formData, schema }: Readonly<Props>) {
               //  temporary handling of documents, will be addressed in #332/325
               documents: [],
               operator_id: responseOpId.operator_id,
-              application_lead_id: formData?.application_lead?.id,
+              point_of_contact_id: formData?.point_of_contact?.id,
             };
 
             const response = await actionHandler(

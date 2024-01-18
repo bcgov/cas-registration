@@ -145,7 +145,7 @@ def get_operation(request, operation_id: int):
 @authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
 def create_operation(request, payload: OperationCreateIn):
     user: User = request.current_user
-    # excluding the fields that have to be handled separately (We don't assign application lead to the operation here, we do it in the next/update step)
+    # excluding the fields that have to be handled separately (We don't assign point of contact to the operation here, we do it in the next/update step)
     payload_dict: dict = payload.dict(
         exclude={
             "regulated_products",
@@ -154,7 +154,7 @@ def create_operation(request, payload: OperationCreateIn):
             "naics_code",
             "documents",
             "multiple_operators_array",
-            "application_lead",
+            "point_of_contact",
         }
     )
 
@@ -201,17 +201,17 @@ def update_operation(request, operation_id: int, submit: str, payload: Operation
     if payload.naics_code:
         operation.naics_code_id = payload.naics_code
 
-    application_lead_address_id = None
-    application_lead_id = payload.application_lead
-    if application_lead_id:
-        application_lead = Contact.objects.get(id=application_lead_id)
-        application_lead_address_id = application_lead.address.id if application_lead.address else None
+    point_of_contact_address_id = None
+    point_of_contact_id = payload.point_of_contact
+    if point_of_contact_id:
+        point_of_contact = Contact.objects.get(id=point_of_contact_id)
+        point_of_contact_address_id = point_of_contact.address.id if point_of_contact.address else None
 
-    is_user_application_lead = payload.is_user_application_lead
+    is_user_point_of_contact = payload.is_user_point_of_contact
 
-    # create or update the address for either user or external application lead
+    # create or update the address for either user or external point of contact
     address, _ = Address.objects.update_or_create(
-        id=application_lead_address_id,
+        id=point_of_contact_address_id,
         defaults={
             "street_address": payload.street_address,
             "municipality": payload.municipality,
@@ -220,9 +220,9 @@ def update_operation(request, operation_id: int, submit: str, payload: Operation
         },
     )
 
-    if is_user_application_lead is True:  # the application lead is the user
+    if is_user_point_of_contact is True:  # the point of contact is the user
         al, _ = Contact.objects.update_or_create(
-            id=application_lead_id,
+            id=point_of_contact_id,
             defaults={
                 "first_name": payload.first_name,
                 "last_name": payload.last_name,
@@ -234,23 +234,23 @@ def update_operation(request, operation_id: int, submit: str, payload: Operation
             },
         )
         al.set_create_or_update(modifier=user)
-        operation.application_lead = al
+        operation.point_of_contact = al
 
-    if is_user_application_lead is False:  # the application lead is an external user
+    if is_user_point_of_contact is False:  # the point of contact is an external user
         eal, _ = Contact.objects.update_or_create(
-            id=application_lead_id,
+            id=point_of_contact_id,
             defaults={
-                "first_name": payload.external_lead_first_name,
-                "last_name": payload.external_lead_last_name,
-                "position_title": payload.external_lead_position_title,
-                "email": payload.external_lead_email,
-                "phone_number": payload.external_lead_phone_number,
+                "first_name": payload.point_of_contact_first_name,
+                "last_name": payload.point_of_contact_last_name,
+                "position_title": payload.point_of_contact_position_title,
+                "email": payload.point_of_contact_email,
+                "phone_number": payload.point_of_contact_phone_number,
                 "business_role": BusinessRole.objects.get(role_name="Operation Registration Lead"),
                 "address": address,
             },
         )
         eal.set_create_or_update(modifier=user)
-        operation.application_lead = eal
+        operation.point_of_contact = eal
 
     # updating only a subset of fields (using all fields would overwrite the existing ones)
     payload_dict: dict = payload.dict(
@@ -298,7 +298,7 @@ def update_operation_status(request, operation_id: int, payload: OperationUpdate
     user: User = request.current_user
     status = Operation.Statuses(payload.status)
     operation.status = status
-    if status in [Operation.Statuses.APPROVED, Operation.Statuses.REJECTED]:
+    if status in [Operation.Statuses.APPROVED, Operation.Statuses.DECLINED]:
         operation.verified_at = datetime.now(pytz.utc)
         operation.verified_by = user
         if status == Operation.Statuses.APPROVED:

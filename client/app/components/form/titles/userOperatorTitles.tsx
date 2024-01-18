@@ -9,14 +9,14 @@ export const SeniorOfficerTitle = (
 
 export const OperatorPhysicalAddressTitle = (
   <>
-    Please provide information about the <b>physical address</b> of this
+    Please provide information about the <b>physical address</b> of the
     operator:
   </>
 );
 
 export const OperatorMailingAddressTitle = (
   <>
-    Please provide information about the <b>mailing address</b> of this
+    Please provide information about the <b>business mailing address</b> of the
     operator:
   </>
 );
@@ -30,7 +30,7 @@ export const ParentCompanyPhysicalAddressTitle = (
 
 export const ParentCompanyMailingAddressTitle = (
   <>
-    Please provide information about the <b>mailing address</b> of the parent
-    company:
+    Please provide information about the <b>business mailing address</b> of the
+    parent company:
   </>
 );

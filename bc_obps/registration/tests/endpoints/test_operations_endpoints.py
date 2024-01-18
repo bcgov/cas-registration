@@ -127,7 +127,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         assert response.json().get('detail') == "Not Found"
 
     def test_get_method_with_mock_data(self):
-        # IRC users can get all operations except ones with a not registered status
+        # IRC users can get all operations except ones with a not Started status
         operator1 = baker.make(Operator)
         operator2 = baker.make(Operator)
         baker.make(
@@ -178,7 +178,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         baker.make(UserOperator, user_id=self.user.user_guid, status=UserOperator.Statuses.APPROVED, operator=operator)
         # check that the default status of pending was applied
         get_response = TestUtils.mock_get_with_auth_role(self, "industry_user").json()[0]
-        assert 'status' in get_response and get_response['status'] == 'Not Registered'
+        assert 'status' in get_response and get_response['status'] == 'Not Started'
         post_response = TestUtils.mock_post_with_auth_role(
             self, "industry_user", content_type_json, mock_operation.json(), endpoint=None
         )
@@ -311,19 +311,19 @@ class TestOperationsEndpoint(CommonTestSetup):
 
         now = datetime.now(pytz.utc)
         put_response = TestUtils.mock_put_with_auth_role(
-            self, "cas_admin", content_type_json, {"status": "Rejected"}, url
+            self, "cas_admin", content_type_json, {"status": "Declined"}, url
         )
         assert put_response.status_code == 200
         put_response_dict = put_response.json()
         assert put_response_dict.get("id") == operation.id
-        assert put_response_dict.get("status") == "Rejected"
+        assert put_response_dict.get("status") == "Declined"
         assert put_response_dict.get("verified_by") == str(self.user.user_guid)
         assert put_response_dict.get("bc_obps_regulated_operation") is None
 
         get_response = TestUtils.mock_get_with_auth_role(self, "cas_admin", self.endpoint + "/" + str(operation.id))
         assert get_response.status_code == 200
         get_response_dict = get_response.json()
-        assert get_response_dict.get("status") == "Rejected"
+        assert get_response_dict.get("status") == "Declined"
         now_as_string = now.strftime("%Y-%m-%d")
         assert get_response_dict.get("verified_at") == now_as_string
 
@@ -334,19 +334,19 @@ class TestOperationsEndpoint(CommonTestSetup):
         url = self.build_update_status_url(operation_id=operation.id)
 
         put_response = TestUtils.mock_put_with_auth_role(
-            self, "cas_admin", content_type_json, {"status": "Not Registered"}, url
+            self, "cas_admin", content_type_json, {"status": "Not Started"}, url
         )
         assert put_response.status_code == 200
         put_response_dict = put_response.json()
         assert put_response_dict.get("id") == operation.id
-        assert put_response_dict.get("status") == "Not Registered"
+        assert put_response_dict.get("status") == "Not Started"
         assert put_response_dict.get("verified_by") is None
         assert put_response_dict.get("bc_obps_regulated_operation") is None
 
         get_response = TestUtils.mock_get_with_auth_role(self, "cas_admin", self.endpoint + "/" + str(operation.id))
         assert get_response.status_code == 200
         get_response_dict = get_response.json()
-        assert get_response_dict.get("status") == "Not Registered"
+        assert get_response_dict.get("status") == "Not Started"
         assert get_response_dict.get("verified_at") is None
 
     def test_put_operation_update_status_invalid_data(self):
@@ -422,7 +422,7 @@ class TestOperationsEndpoint(CommonTestSetup):
 
         assert response.status_code == 422
 
-    def test_put_operation_with_application_lead(self):
+    def test_put_operation_with_point_of_contact(self):
         contact1 = baker.make(Contact)
         contact2 = baker.make(Contact, email=contact1.email)
         operation = baker.make(Operation)
@@ -436,9 +436,9 @@ class TestOperationsEndpoint(CommonTestSetup):
             regulated_products=[],
             operation_has_multiple_operators=False,
             documents=[],
-            application_lead=contact2.id,
+            point_of_contact=contact2.id,
             operator_id=operator.id,
-            is_user_application_lead=True,
+            is_user_point_of_contact=True,
             street_address='19 Evergreen Terrace',
             municipality='Springfield',
             province='BC',

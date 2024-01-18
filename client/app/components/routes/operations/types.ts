@@ -15,7 +15,7 @@ export interface Operation {
   opt_in?: boolean;
   operator: number;
   operation_has_multiple_operators: boolean;
-  application_lead?: any; // Change this once we have the Contact type
+  point_of_contact?: any; // Change this once we have the Contact type
   status: string;
   bc_obps_regulated_operation?: number;
   documents: Array<any>; // Change this once we have the Document type
@@ -23,6 +23,6 @@ export interface Operation {
   reporting_activities: Array<any>; // Change this once we have the ReportingActivity type
   operator_id: number;
   naics_code_id: number;
-  is_user_application_lead?: boolean;
+  is_user_point_of_contact?: boolean;
   multiple_operators_array?: Array<any>; // Change this once we have the MultipleOperator type
 }

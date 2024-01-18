@@ -4,10 +4,15 @@ import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import { FieldTemplateProps } from "@rjsf/utils";
 
-export const AlertIcon = () => (
+interface Props {
+  width: string;
+  height: string;
+}
+
+export const AlertIcon = ({ width, height }: Props) => (
   <svg
-    width="26"
-    height="26"
+    width={width}
+    height={height}
     viewBox="0 0 26 26"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
