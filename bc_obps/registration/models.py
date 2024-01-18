@@ -192,11 +192,10 @@ class Address(models.Model):
     municipality = models.CharField(max_length=1000, null=True, db_comment="Municipality of relevant location")
     province = CAProvinceField(
         db_comment="Province of the relevant location, restricted to two-letter province postal abbreviations",
-        null=True
+        null=True,
     )
     postal_code = CAPostalCodeField(
-        db_comment="Postal code of relevant location, limited to valid Canadian postal codes",
-        null=True
+        db_comment="Postal code of relevant location, limited to valid Canadian postal codes", null=True
     )
     history = HistoricalRecords(table_name='erc_history"."address_history')
 
