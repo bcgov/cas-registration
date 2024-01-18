@@ -1,3 +1,40 @@
+## [0.1.1-beta-3](https://github.com/bcgov/cas-registration/compare/0.1.1-beta-2...0.1.1-beta-3) (2024-01-18)
+
+### Bug Fixes
+
+- adjust operator dashboard column widths ([963528b](https://github.com/bcgov/cas-registration/commit/963528b197ed978bccb35b89fed9efff7d90da8a))
+- correct User Access Management tile permissions ([28af616](https://github.com/bcgov/cas-registration/commit/28af616dc35d854135a526008821223b91f16b1a))
+- disable change request for prime admin request ([cc21801](https://github.com/bcgov/cas-registration/commit/cc218015603bd4a2e91726931da7ef876121e0d6))
+- disable multistep form base submit button while submitting ([e0a7858](https://github.com/bcgov/cas-registration/commit/e0a78582414d1b617864bbecf86d28ee876a5328))
+- disable user operator conact form submit button while submitting ([794af30](https://github.com/bcgov/cas-registration/commit/794af30278798e5c2c8a0ebbb3089d9b76c33a54))
+- display & save correct user names ([ac9a411](https://github.com/bcgov/cas-registration/commit/ac9a41172b905c8ad138e9ebeb05648361db1b2e))
+- duplicate variable names ([93cfd0c](https://github.com/bcgov/cas-registration/commit/93cfd0cac9234d4b77c80f0f05f71d93edf50307))
+- handle form state externally to prevent data loss on error ([52e2c30](https://github.com/bcgov/cas-registration/commit/52e2c30aeb8485d5d1178580bf170f96b84cedfc))
+- is_application_lead_external 'no' error ([b254ee8](https://github.com/bcgov/cas-registration/commit/b254ee8cb206ca9313d1926e46331f698c1958f8))
+- logout- redirect self to keycloak logout ([70fd4b2](https://github.com/bcgov/cas-registration/commit/70fd4b282ff96dae288fb7a008f1d1419d480827))
+- logout- redirect self to keycloak logout ([f969697](https://github.com/bcgov/cas-registration/commit/f9696973c8fea4bf85ebf8f5229313b953e8cbb5))
+- logout- redirect self to keycloak logout ([40fa8ca](https://github.com/bcgov/cas-registration/commit/40fa8ca5b595507537ca752a31c7b7030d501138))
+- operations status column width ([df2ccfc](https://github.com/bcgov/cas-registration/commit/df2ccfcda48b353d9282128754adc88c3f1fa693))
+- operations table column width update ([9d4d2ba](https://github.com/bcgov/cas-registration/commit/9d4d2ba8ba399cd419818dacda739d5e1608b62a))
+- prevent redirect on signout ([749f49f](https://github.com/bcgov/cas-registration/commit/749f49f509afb4ec66a92df0ff84624970994a3e))
+- prevent redirect on signout ([2f14cf5](https://github.com/bcgov/cas-registration/commit/2f14cf571dacea493f16ec7fe50570e292aa7eec))
+- save application lead data in database ([20fe802](https://github.com/bcgov/cas-registration/commit/20fe80218cd2e1e134ffa9543d801b1f4a0e8096))
+- set external form state on submit ([57bf285](https://github.com/bcgov/cas-registration/commit/57bf285f4f58860927ca3a1e82e4d3876cbbf447))
+- show cell border in mui datagrid ([cc35d83](https://github.com/bcgov/cas-registration/commit/cc35d836ab5898344945227c79a88beef821c967))
+- transform application lead data for operations form ([4eca5b8](https://github.com/bcgov/cas-registration/commit/4eca5b8d69d16ba971fff8caf016446f7a624e0b))
+
+### Features
+
+- add change request status ([569dfca](https://github.com/bcgov/cas-registration/commit/569dfcab699c5c5176b076902238d31e4dd20ec4))
+- add request change component ([21bc68e](https://github.com/bcgov/cas-registration/commit/21bc68e9af9c06eb6c755943a31d97db04eccd5c))
+- add reset error prop to form base ([97dc590](https://github.com/bcgov/cas-registration/commit/97dc590c83bcd8feac114edfaf9160aceba666f5))
+- add undo request change ([46e3a25](https://github.com/bcgov/cas-registration/commit/46e3a2527d3f49922ce4dabf22701cc629af25bd))
+- change action style for operator dashboard ([79363ca](https://github.com/bcgov/cas-registration/commit/79363cad6a0cafd3472ff0672a637d6c43878c22))
+- redo operations application lead form ([b7f8032](https://github.com/bcgov/cas-registration/commit/b7f8032f0c77424f26b4393ac2de1e032644ee06))
+- style mui datagrid header ([0befd84](https://github.com/bcgov/cas-registration/commit/0befd84ac3787551fc4d12a51b5d318d3b13530b))
+- style mui datagrid header icon ([224c90d](https://github.com/bcgov/cas-registration/commit/224c90dad0d87293cf53a8f070b23f4de0eefa85))
+- update status enums ([5fe5c04](https://github.com/bcgov/cas-registration/commit/5fe5c040d21f04588b6912d780f208098a81b3c3))
+
 ## [0.1.1-beta-2](https://github.com/bcgov/cas-registration/compare/0.1.0-beta-1...0.1.1-beta-2) (2024-01-10)
 
 ### Bug Fixes
