@@ -3,7 +3,8 @@ import { GridRowsProp } from "@mui/x-data-grid";
 import { actionHandler } from "@/app/utils/actions";
 import DataGrid from "@/app/components/datagrid/DataGrid";
 import { lineBreakStyle, statusStyle } from "@/app/components/datagrid/helpers";
-import { Session } from "next-auth";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 // 🛠️ Function to fetch operations
 async function getOperations() {
@@ -40,12 +41,9 @@ const formatTimestamp = (timestamp: string) => {
   return `${date}\n${timeWithTimeZone}`;
 };
 
-interface OperationsProps {
-  session: Session;
-}
-
 // 🧩 Main component
-export default async function Operations({ session }: OperationsProps) {
+export default async function Operations() {
+  const session = await getServerSession(authOptions);
   // Fetch operations data
   const operations: {
     id: number;
