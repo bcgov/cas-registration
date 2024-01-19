@@ -415,12 +415,27 @@ const operationPage2: RJSFSchema = {
   ],
 };
 
+const operationPage3: RJSFSchema = {
+  type: "object",
+  title: "Statutory Declaration and Disclaimer",
+  // Uncomment this once documents are implemented
+  /*   required: ["statutory_declaration"], */
+  properties: {
+    statutory_declaration: {
+      type: "string",
+      title: "Are you the application lead?",
+      format: "data-url",
+    },
+  },
+};
+
 export const operationSchema: RJSFSchema = {
   type: "object",
   title: "Operation",
   properties: {
     operationPage1,
     operationPage2,
+    operationPage3,
   },
 };
 
@@ -471,10 +486,10 @@ export const operationUiSchema = {
     "mo_mailing_province",
     "mo_mailing_postal_code",
     "Would you like to add an exemption ID application lead?",
+    "statutory_declaration",
   ],
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
-  "ui:options": { label: false },
   id: {
     "ui:widget": "hidden",
   },
