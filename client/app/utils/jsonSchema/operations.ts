@@ -7,6 +7,7 @@ import {
   OperatorMailingAddressTitle,
   OperatorPhysicalAddressTitle,
 } from "@/app/components/form/titles/userOperatorTitles";
+import { StatutoryDeclarationTitle } from "@/app/components/form/titles/operationsTitles";
 
 const subheading = {
   "ui:classNames": "text-bc-bg-blue text-start text-lg",
@@ -595,5 +596,11 @@ export const operationUiSchema = {
   },
   external_lead_email: {
     "ui:widget": "EmailWidget",
+  },
+  statutory_declaration: {
+    "ui:widget": "FileWidget",
+    "ui:options": {
+      jsxTitle: StatutoryDeclarationTitle,
+    },
   },
 };
