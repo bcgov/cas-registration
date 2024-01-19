@@ -145,7 +145,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         baker.make(
             Operation,
             operator_id=operator2.id,
-            status=Operation.Statuses.NOT_REGISTERED,
+            status=Operation.Statuses.NOT_STARTED,
             naics_code=baker.make(NaicsCode, naics_code=123456, naics_description='desc'),
         )
         response = TestUtils.mock_get_with_auth_role(self, "cas_admin")
@@ -281,7 +281,7 @@ class TestOperationsEndpoint(CommonTestSetup):
 
     def test_put_operation_update_status_approved(self):
         operation = baker.make(Operation, naics_code=baker.make(NaicsCode, naics_code=123456, naics_description='desc'))
-        assert operation.status == Operation.Statuses.NOT_REGISTERED
+        assert operation.status == Operation.Statuses.NOT_STARTED
 
         url = self.build_update_status_url(operation_id=operation.id)
 
@@ -305,7 +305,7 @@ class TestOperationsEndpoint(CommonTestSetup):
 
     def test_put_operation_update_status_rejected(self):
         operation = baker.make(Operation, naics_code=baker.make(NaicsCode, naics_code=123456, naics_description='desc'))
-        assert operation.status == Operation.Statuses.NOT_REGISTERED
+        assert operation.status == Operation.Statuses.NOT_STARTED
 
         url = self.build_update_status_url(operation_id=operation.id)
 
@@ -329,7 +329,7 @@ class TestOperationsEndpoint(CommonTestSetup):
 
     def test_put_operation_not_verified_when_not_registered(self):
         operation = baker.make(Operation, naics_code=baker.make(NaicsCode, naics_code=123456, naics_description='desc'))
-        assert operation.status == Operation.Statuses.NOT_REGISTERED
+        assert operation.status == Operation.Statuses.NOT_STARTED
 
         url = self.build_update_status_url(operation_id=operation.id)
 
@@ -351,7 +351,7 @@ class TestOperationsEndpoint(CommonTestSetup):
 
     def test_put_operation_update_status_invalid_data(self):
         operation = baker.make(Operation)
-        assert operation.status == Operation.Statuses.NOT_REGISTERED
+        assert operation.status == Operation.Statuses.NOT_STARTED
 
         url = self.build_update_status_url(operation_id=operation.id)
 
@@ -382,7 +382,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         get_response = TestUtils.mock_get_with_auth_role(
             self, "industry_user", self.endpoint + "/" + str(operation.id)
         ).json()
-        assert get_response["status"] == Operation.Statuses.NOT_REGISTERED
+        assert get_response["status"] == Operation.Statuses.NOT_STARTED
 
     def test_put_operation_with_submit(self):
         operation = baker.make(Operation, id=5)

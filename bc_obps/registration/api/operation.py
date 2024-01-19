@@ -104,9 +104,9 @@ def create_or_update_multiple_operators(
 @authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles())
 def list_operations(request):
     user: User = request.current_user
-    # IRC users can see all operations except ones that are not registered yet
+    # IRC users can see all operations except ones that are not started yet
     if user.is_irc_user():
-        qs = Operation.objects.exclude(status__in=[Operation.Statuses.NOT_REGISTERED])
+        qs = Operation.objects.exclude(status__in=[Operation.Statuses.NOT_STARTED])
         return 200, qs
     # Industry users can only see their companies' operations (if there's no user_operator or operator, then the user hasn't requested access to the operator)
     user_operator = UserOperator.objects.filter(user_id=user.user_guid).first()
@@ -240,11 +240,11 @@ def update_operation(request, operation_id: int, submit: str, payload: Operation
         eal, _ = Contact.objects.update_or_create(
             id=point_of_contact_id,
             defaults={
-                "first_name": payload.point_of_contact_first_name,
-                "last_name": payload.point_of_contact_last_name,
-                "position_title": payload.point_of_contact_position_title,
-                "email": payload.point_of_contact_email,
-                "phone_number": payload.point_of_contact_phone_number,
+                "first_name": payload.external_point_of_contact_first_name,
+                "last_name": payload.external_point_of_contact_last_name,
+                "position_title": payload.external_point_of_contact_position_title,
+                "email": payload.external_point_of_contact_email,
+                "phone_number": payload.external_point_of_contact_phone_number,
                 "business_role": BusinessRole.objects.get(role_name="Operation Registration Lead"),
                 "address": address,
             },

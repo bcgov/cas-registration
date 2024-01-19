@@ -110,7 +110,6 @@ export default async function UserOperator({
     </>
   ) : (
     <>
-      {/* brianna add an icon and remve "note" to the note component */}
       <Note
         classNames={"mb-4 mt-6"}
         showNotePrefix={false}
