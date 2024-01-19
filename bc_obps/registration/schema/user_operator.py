@@ -46,17 +46,17 @@ class UserOperatorOut(ModelSchema):
     trade_name: Optional[str] = Field("", alias="operator.trade_name")
     cra_business_number: Optional[int] = Field(None, alias="operator.cra_business_number")
     bc_corporate_registry_number: str = Field(
-        ..., regex=BC_CORPORATE_REGISTRY_REGEX, alias="operator.bc_corporate_registry_number"
+        None, regex=BC_CORPORATE_REGISTRY_REGEX, alias="operator.bc_corporate_registry_number"
     )
-    business_structure: str = Field(..., alias="operator.business_structure.name")
-    physical_street_address: str = Field(..., alias="operator.physical_address.street_address")
-    physical_municipality: str = Field(..., alias="operator.physical_address.municipality")
-    physical_province: str = Field(..., alias="operator.physical_address.province")
-    physical_postal_code: str = Field(..., alias="operator.physical_address.postal_code")
-    mailing_street_address: str = Field(..., alias="operator.mailing_address.street_address")
-    mailing_municipality: str = Field(..., alias="operator.mailing_address.municipality")
-    mailing_province: str = Field(..., alias="operator.mailing_address.province")
-    mailing_postal_code: str = Field(..., alias="operator.mailing_address.postal_code")
+    business_structure: str = Field(None, alias="operator.business_structure.name")
+    physical_street_address: str = Field(None, alias="operator.physical_address.street_address")
+    physical_municipality: str = Field(None, alias="operator.physical_address.municipality")
+    physical_province: str = Field(None, alias="operator.physical_address.province")
+    physical_postal_code: str = Field(None, alias="operator.physical_address.postal_code")
+    mailing_street_address: str = Field(None, alias="operator.mailing_address.street_address")
+    mailing_municipality: str = Field(None, alias="operator.mailing_address.municipality")
+    mailing_province: str = Field(None, alias="operator.mailing_address.province")
+    mailing_postal_code: str = Field(None, alias="operator.mailing_address.postal_code")
     website: Optional[str] = Field("", alias="operator.website")
     is_senior_officer: bool
     mailing_address_same_as_physical: bool
