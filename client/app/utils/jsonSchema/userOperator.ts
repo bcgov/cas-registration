@@ -1,7 +1,6 @@
 import { RJSFSchema } from "@rjsf/utils";
 import provinceOptions from "@/app/data/provinces.json";
 import FieldTemplate from "@/app/styles/rjsf/FieldTemplate";
-import GroupTitleFieldTemplate from "@/app/styles/rjsf/GroupTitleFieldTemplate";
 import TitleOnlyFieldTemplate from "@/app/styles/rjsf/TitleOnlyFieldTemplate";
 import {
   OperatorMailingAddressTitle,
@@ -438,10 +437,6 @@ export const userOperatorUiSchema = {
   ],
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
-  "ui:TitleFieldTemplate": GroupTitleFieldTemplate,
-  "ui:options": {
-    label: false,
-  },
   // CONTACT INFO SECTION
   email: {
     "ui:widget": "EmailWidget",
