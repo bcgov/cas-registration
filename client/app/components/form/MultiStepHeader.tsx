@@ -4,6 +4,9 @@ interface MultiStepHeaderProps {
 }
 
 const MultiStepHeader = ({ step, steps }: MultiStepHeaderProps) => {
+  // Reduce the width of the title if there are more than 2 steps
+  // so it will break onto a new line
+  const titleWidth = steps.length > 2 ? "lg:w-36" : "";
   return (
     <div className="block md:flex flex-row mt-10 mb-6 justify-between w-full">
       {steps.map((s, i) => {
@@ -23,7 +26,8 @@ const MultiStepHeader = ({ step, steps }: MultiStepHeaderProps) => {
             >
               {i + 1}
             </div>
-            <div className={`ml-4 h-min `}>{steps[i]}</div>
+            <div className={`ml-4 h-min w-full ${titleWidth}`}>{steps[i]}</div>
+
             {!isLastStep && (
               <div className="hidden lg:block mx-4 grow">
                 <hr className="border-black" />
