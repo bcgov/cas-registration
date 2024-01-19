@@ -36,7 +36,6 @@ from registration.utils import (
     check_users_admin_request_eligibility,
     check_access_request_matches_business_guid,
     get_an_operators_approved_users,
-    raise_401_if_role_not_authorized,
 )
 from ninja.responses import codes_4xx
 from datetime import datetime
@@ -396,11 +395,10 @@ def check_status(status: str):
     return False
 
 
-
 @router.put(
     "/user-operator/operator/{int:user_operator_operator_id}", response={200: RequestAccessOut, codes_4xx: Message}
 )
-@authorize(AppRole.get_industry_roles())
+@authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
 def update_operator_and_user_operator(request, payload: UserOperatorOperatorIn, user_operator_operator_id: int):
     user: User = request.current_user
     try:
