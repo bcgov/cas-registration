@@ -62,7 +62,7 @@ export default function OperationsForm({ formData, schema }: Readonly<Props>) {
           cancelUrl="/dashboard/operations"
           // Add custom titles since "Statutory Declaration" is different than the
           // title in the schema "Statutory Declaration and Disclaimer"
-          customHeaderTitles={[
+          customStepNames={[
             "Operation General Information",
             "Application Lead",
             "Statutory Declaration",
