@@ -422,8 +422,7 @@ const operationPage2: RJSFSchema = {
 const operationPage3: RJSFSchema = {
   type: "object",
   title: "Statutory Declaration and Disclaimer",
-  // Uncomment this once documents are implemented
-  /*   required: ["statutory_declaration"], */
+  required: ["statutory_declaration"],
   properties: {
     statutory_declaration_disclaimer_section: {
       //Not an actual field in the db - this is just to make the form look like the wireframes
