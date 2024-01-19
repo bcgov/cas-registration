@@ -16,7 +16,11 @@ function FieldTemplate({
   const isLabel = uiSchema?.["ui:options"]?.label !== false;
 
   return (
-    <div style={style} className={`w-full ${classNames}`}>
+    <div
+      style={style}
+      // hide duplicate title <legend>
+      className={`w-full [&>fieldset>legend]:hidden ${classNames} `}
+    >
       {isLabel && label && (
         <label htmlFor={id} className="inline-block">
           {label}
