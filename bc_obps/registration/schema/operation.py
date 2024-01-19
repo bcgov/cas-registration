@@ -69,7 +69,7 @@ class OperationUpdateIn(ModelSchema):
 class OperationOut(ModelSchema):
     # handling aliases and optional fields
     operator_id: int = Field(..., alias="operator.id")
-    naics_code_id: int = Field(..., alias="naics_code.id")
+    naics_code_id: int = Field(None, alias="naics_code.id")
     bcghg_id: Optional[str] = None
     opt_in: Optional[bool] = None
     verified_at: Optional[date] = None
