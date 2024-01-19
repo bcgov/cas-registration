@@ -20,10 +20,6 @@ async function getUserOperators() {
   }
 }
 
-function capitalizeString(value: string): string {
-  return value.slice(0, 1).toUpperCase() + value.slice(1);
-}
-
 // 🧩 Main component
 export default async function AccessRequests() {
   // Fetch userOperator data
@@ -39,7 +35,7 @@ export default async function AccessRequests() {
           ({ id, status, first_name, last_name, email, legal_name }) => {
             return {
               id,
-              status: capitalizeString(status),
+              status,
               first_name,
               last_name,
               email,
@@ -70,7 +66,12 @@ export default async function AccessRequests() {
           { field: "first_name", headerName: "First\n Name", width: 180 },
           { field: "last_name", headerName: "Last\n Name", width: 180 },
           { field: "email", headerName: "Email", width: 300 },
-          { field: "legal_name", headerName: "Operator", width: 380 },
+          {
+            field: "legal_name",
+            headerName: "Operator",
+            width: 380,
+          },
+
           {
             field: "status",
             headerName: "Status",
@@ -82,6 +83,8 @@ export default async function AccessRequests() {
             headerName: "Action",
             sortable: false,
             width: 140,
+            // Set flex to 1 to make the column take up all the remaining width if user zooms out
+            flex: 1,
           },
         ]}
       />

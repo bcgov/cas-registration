@@ -38,11 +38,28 @@
       "documents": [],
       "application_lead": 1,
       "name": "Operation 3",
+      "submission_date": "2023-12-16T15:27:00.000Z",
       "type": "Single Facility Operation",
       "naics_code": 21,
       "opt_in": false,
       "regulated_products": [],
       "status": "Pending"
+    }
+  },
+  {
+    "model": "registration.operation",
+    "fields": {
+      "operator": 1,
+      "documents": [],
+      "submission_date": "2024-01-12T15:27:00.000Z",
+      "bc_obps_regulated_operation": "21-0001",
+      "application_lead": 1,
+      "name": "Operation 4",
+      "type": "Single Facility Operation",
+      "naics_code": 21,
+      "opt_in": false,
+      "regulated_products": [],
+      "status": "Approved"
     }
   }
 ]

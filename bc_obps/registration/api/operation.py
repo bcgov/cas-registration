@@ -269,6 +269,7 @@ def update_operation(request, operation_id: int, submit: str, payload: Operation
     # set the operation status to 'pending' on update
     if submit == "true":
         operation.status = Operation.Statuses.PENDING
+        operation.submission_date = datetime.now(pytz.utc)
 
     operation.regulated_products.set(payload.regulated_products)  # set replaces all existing products with the new ones
     operation.reporting_activities.set(
