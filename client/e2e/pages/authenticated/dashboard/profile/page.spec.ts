@@ -98,6 +98,7 @@ const deleteNewUserRecord = async () => {
     // Execute the deletion query
     await pool.query(query);
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("Error deleting new user record:", error);
   }
 };

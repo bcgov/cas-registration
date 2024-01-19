@@ -7,7 +7,7 @@
  - create storageState files for authenticated user by role for use in test suites
  */
 
-import { chromium, type FullConfig } from "@playwright/test";
+import { chromium } from "@playwright/test";
 // environment variables stored in client/e2e/.env.local
 import * as dotenv from "dotenv";
 dotenv.config({
@@ -108,7 +108,7 @@ const setupAuth = async (
   }
 };
 
-export default async function globalSetup(config: FullConfig) {
+export default async function globalSetup() {
   // 🌍 Perform global setup tasks here...
 
   // 👤 Set storageState for Authenticated IDIR and BCeid credentials using NextAuth and Keycloak to be used in subsequent test suites
