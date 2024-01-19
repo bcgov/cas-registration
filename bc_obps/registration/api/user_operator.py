@@ -358,7 +358,6 @@ def create_user_operator_contact(request, payload: UserOperatorContactIn):
     except Exception as e:
         return 400, {"message": str(e)}
 
-    # TODO: approved status may have to be changed to pending if the user is not an admin
     if user_operator_instance.status != UserOperator.Statuses.APPROVED:
         user_operator_instance.status = UserOperator.Statuses.PENDING
     user_operator_instance.save(
