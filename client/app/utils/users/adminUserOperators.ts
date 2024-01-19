@@ -4,6 +4,7 @@ import { actionHandler, getToken } from "@/app/utils/actions";
 export interface ExternalDashboardUsersTile {
   user: { [key: string]: any };
   operator: { [key: string]: any };
+}
 
 export interface UserOperatorStatus {
   user_id: string;
