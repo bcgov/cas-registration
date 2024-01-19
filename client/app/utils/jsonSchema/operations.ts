@@ -7,7 +7,7 @@ import {
   OperatorMailingAddressTitle,
   OperatorPhysicalAddressTitle,
 } from "@/app/components/form/titles/userOperatorTitles";
-import { StatutoryDeclarationTitle } from "@/app/components/form/titles/operationsTitles";
+import { StatutoryDeclarationUploadFieldTitle } from "@/app/components/form/titles/operationsTitles";
 
 const subheading = {
   "ui:classNames": "text-bc-bg-blue text-start text-lg",
@@ -424,7 +424,7 @@ const operationPage3: RJSFSchema = {
   properties: {
     statutory_declaration: {
       type: "string",
-      title: "Are you the application lead?",
+      title: "Statutory Declaration",
       format: "data-url",
     },
   },
@@ -600,7 +600,7 @@ export const operationUiSchema = {
   statutory_declaration: {
     "ui:widget": "FileWidget",
     "ui:options": {
-      jsxTitle: StatutoryDeclarationTitle,
+      jsxTitle: StatutoryDeclarationUploadFieldTitle,
     },
   },
 };
