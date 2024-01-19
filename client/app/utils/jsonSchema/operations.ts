@@ -7,7 +7,10 @@ import {
   OperatorMailingAddressTitle,
   OperatorPhysicalAddressTitle,
 } from "@/app/components/form/titles/userOperatorTitles";
-import { StatutoryDeclarationUploadFieldTitle } from "@/app/components/form/titles/operationsTitles";
+import {
+  StatutoryDeclarationDisclaimerTitle,
+  StatutoryDeclarationUploadFieldTitle,
+} from "@/app/components/form/titles/operationsTitles";
 
 const subheading = {
   "ui:classNames": "text-bc-bg-blue text-start text-lg",
@@ -422,6 +425,12 @@ const operationPage3: RJSFSchema = {
   // Uncomment this once documents are implemented
   /*   required: ["statutory_declaration"], */
   properties: {
+    statutory_declaration_disclaimer_section: {
+      //Not an actual field in the db - this is just to make the form look like the wireframes
+      title: "Statutory Declaration and Disclaimer",
+      type: "object",
+      readOnly: true,
+    },
     statutory_declaration: {
       type: "string",
       title: "Statutory Declaration",
@@ -487,6 +496,7 @@ export const operationUiSchema = {
     "mo_mailing_province",
     "mo_mailing_postal_code",
     "Would you like to add an exemption ID application lead?",
+    "statutory_declaration_disclaimer_section",
     "statutory_declaration",
   ],
   "ui:FieldTemplate": FieldTemplate,
@@ -596,6 +606,12 @@ export const operationUiSchema = {
   },
   external_lead_email: {
     "ui:widget": "EmailWidget",
+  },
+  statutory_declaration_disclaimer_section: {
+    "ui:FieldTemplate": TitleOnlyFieldTemplate,
+    "ui:options": {
+      jsxTitle: StatutoryDeclarationDisclaimerTitle,
+    },
   },
   statutory_declaration: {
     "ui:widget": "FileWidget",
