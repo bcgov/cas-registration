@@ -12,7 +12,7 @@ interface MultiStepFormProps {
   baseUrl: string;
   cancelUrl: string;
   // Optional array to override the default header titles
-  customHeaderTitles?: string[];
+  customStepNames?: string[];
   error?: any;
   disabled?: boolean;
   formData?: any;
@@ -27,7 +27,7 @@ interface MultiStepFormProps {
 const MultiStepFormBase = ({
   baseUrl,
   cancelUrl,
-  customHeaderTitles,
+  customStepNames,
   disabled,
   error,
   formData,
@@ -64,11 +64,11 @@ const MultiStepFormBase = ({
   };
 
   const isDisabled = disabled || isSubmitting;
-  const isCustomTitles = customHeaderTitles && customHeaderTitles.length > 0;
+  const isCustomStepNames = customStepNames && customStepNames.length > 0;
 
   if (
-    isCustomTitles &&
-    formSectionTitles.length !== customHeaderTitles.length
+    isCustomStepNames &&
+    formSectionTitles.length !== customStepNames.length
   ) {
     throw new Error(
       "The number of custom header titles must match the number of form sections",
@@ -79,7 +79,7 @@ const MultiStepFormBase = ({
     <>
       <MultiStepHeader
         step={formSection}
-        steps={isCustomTitles ? customHeaderTitles : formSectionTitles}
+        steps={isCustomStepNames ? customStepNames : formSectionTitles}
       />
       <FormBase
         className="[&>div>fieldset]:min-h-[40vh]"
