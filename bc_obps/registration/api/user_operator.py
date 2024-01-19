@@ -76,11 +76,11 @@ def save_operator(payload: any, operator_instance: UserOperatorOperatorIn, user:
             "mailing_address_id",
             "website",
         ]
-        created_operator_instance: Operator = update_model_instance(
+        created_or_updated_operator_instance: Operator = update_model_instance(
             operator_instance, operator_related_fields, payload.dict()
         )
-        created_operator_instance.save()
-        created_operator_instance.set_create_or_update(modifier=user)
+        created_or_updated_operator_instance.save()
+        created_or_updated_operator_instance.set_create_or_update(modifier=user)
 
         # create parent operator records
         operator_has_parent_operators: bool = payload.operator_has_parent_operators
@@ -94,7 +94,7 @@ def save_operator(payload: any, operator_instance: UserOperatorOperatorIn, user:
             }
             for idx, po_operator in enumerate(payload.parent_operators_array):
                 new_po_operator_instance: ParentOperator = ParentOperator(
-                    child_operator=created_operator_instance,
+                    child_operator=created_or_updated_operator_instance,
                     operator_index=idx + 1,
                 )
                 # handle addresses--if there's no mailing address given, it's the same as the physical address
@@ -127,7 +127,7 @@ def save_operator(payload: any, operator_instance: UserOperatorOperatorIn, user:
         # get or create a draft UserOperator instance
         user_operator, created = UserOperator.objects.get_or_create(
             user=user,
-            operator=created_operator_instance,
+            operator=created_or_updated_operator_instance,
             role=UserOperator.Roles.ADMIN,
         )
         if created:
@@ -163,15 +163,6 @@ def is_approved_admin_user_operator(request, user_guid: str):
     ).exists()
 
     return 200, {"approved": approved_user_operator}
-
-
-@router.get("/user-operator-operator-id", response={200: UserOperatorOperatorIdOut, codes_4xx: Message})
-@authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
-def get_user_operator_operator_id(request):
-    user_operator = get_object_or_404(
-        UserOperator, user_id=request.current_user.user_guid, status=UserOperator.Statuses.APPROVED
-    )
-    return 200, {"operator_id": user_operator.operator_id}
 
 
 @router.get(
