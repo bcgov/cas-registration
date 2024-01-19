@@ -360,13 +360,27 @@ def create_user_operator_contact(request, payload: UserOperatorContactIn):
 ##### PUT #####
 
 
-# Function to check if the status is valid. This was required because the previous check only worked for
-# statuses that didn't have two words (e.g. "Pending" and "Approved" worked, but "Changes Requested" didn't)
 def check_status(status: str):
-    for statusEnum in UserOperator.Statuses:
-        if statusEnum == status:
-            return True
-    return False
+    """
+    Function to check if the status is valid. This was required because the previous check only worked for
+    statuses that didn't have two words (e.g. "Pending" and "Approved" worked, but "Changes Requested" didn't)
+    """
+    try:
+        status_as_enum = UserOperator.Statuses[status]
+        return status_as_enum is not None
+    except KeyError:
+        return False
+
+
+def check_role(role: str):
+    """
+    Helper function to check that the app role provided in a request body is valid.
+    """
+    try:
+        role_as_enum = UserOperator.Roles[role]
+        return role_as_enum is not None
+    except KeyError:
+        return False
 
 
 # this endpoint is for updating the status of a user
@@ -397,6 +411,12 @@ def update_user_operator_user_status(request, user_guid: str):
     return data
 
 
+"""
+TODO: investigate whether there's a need for both this endpoint and the one above ("/select-operator/user-operator/{user_guid}/update-status")
+ - they seem to be duplicates
+"""
+
+
 # this endpoint is for updating the status of a user_operator
 @router.put("/select-operator/user-operator/operator/{user_operator_id}/update-status")
 @authorize(AppRole.get_authorized_irc_roles())
@@ -423,6 +443,48 @@ def update_user_operator_status(request, user_operator_id: str):
     )
     user_operator.save()
     return data
+
+
+@router.put("/select-operator/user-operator/{user_operator_id}", response={204: RequestAccessOut, codes_4xx: Message})
+@authorize(["industry_user_admin"])
+def update_user_role_for_operator(request, user_operator_id: int):
+    print("HERE")
+    payload = json.loads(request.body.decode())
+    print(payload)
+    try:
+        current_user: User = request.current_user
+        # need to convert request.body (a bytes object) to a string, and convert the string to a JSON object
+        payload = json.loads(request.body.decode())
+        print(payload)
+        status = payload.get("status")
+        updated_role = payload.get("role")
+        if not check_status(status):
+            return 400, {"message": "Invalid status."}
+        if not check_role(updated_role):
+            return 400, {"message": "Invalid user role."}
+        user_operator = get_object_or_404(UserOperator, id=user_operator_id)
+        operator: Operator = user_operator.operator
+        # confirm that the current_user has appropriate permissions for the same operator as the user_operator
+        current_user_user_operator = get_object_or_404(UserOperator, user=current_user)
+        if current_user_user_operator.operator != operator or current_user_user_operator.role != 'admin':
+            return 400, {"message": "Invalid permissions."}
+
+        user_to_update: User = user_operator.user
+        user_to_update.app_role = updated_role
+        # update audit columns with appropriate metadata
+        if user_operator.status in [UserOperator.Statuses.APPROVED, UserOperator.Statuses.REJECTED]:
+            user_operator.verified_at = datetime.now(pytz.utc)
+            user_operator.verified_by = current_user
+        if user_operator.status in [UserOperator.Statuses.PENDING]:
+            user_operator.verified_at = None
+            user_operator.verified_by = None
+
+        user_operator.save()
+        return 204, {"user_operator_id": user_operator.id}
+    except ValidationError as e:
+        return 400, {"message": generate_useful_error(e)}
+    except Exception as e:
+        return 400, {"message": str(e)}
 
 
 ##### DELETE #####

@@ -13,7 +13,7 @@ export default async function Page() {
     await processExternalDashboardUsersTileData();
   const columns: GridColDef[] = [
     {
-      field: "id",
+      field: "userId",
       headerName: "User ID",
       flex: 2,
       align: "center",
@@ -60,7 +60,8 @@ export default async function Page() {
     },
   ];
   const statusRows: GridRowsProp = userOperatorStatuses.map((uOS) => ({
-    id: uOS.user.user_guid,
+    userId: uOS.user.user_guid,
+    id: uOS.id,
     name: `${uOS.user.first_name} ${uOS.user.last_name.slice(0, 1)}`,
     email: uOS.user.email,
     business: uOS.operator.legal_name,

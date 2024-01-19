@@ -189,6 +189,7 @@ class SelectUserOperatorStatus(Schema):
     user_id: uuid.UUID = Field(..., alias="user.user_guid")
     role: str
     status: str
+    id: int
 
 
 class ExternalDashboardUsersTileData(ModelSchema):
