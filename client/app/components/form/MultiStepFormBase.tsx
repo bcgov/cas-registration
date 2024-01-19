@@ -66,6 +66,15 @@ const MultiStepFormBase = ({
   const isDisabled = disabled || isSubmitting;
   const isCustomTitles = customHeaderTitles && customHeaderTitles.length > 0;
 
+  if (
+    isCustomTitles &&
+    formSectionTitles.length !== customHeaderTitles.length
+  ) {
+    throw new Error(
+      "The number of custom header titles must match the number of form sections",
+    );
+  }
+
   return (
     <>
       <MultiStepHeader
