@@ -37,7 +37,10 @@ function InlineFieldTemplate({
   const error = rawErrors && rawErrors[0];
 
   // UI Schema options
-  const isLabel = uiSchema?.["ui:options"]?.label !== false;
+  const options = uiSchema?.["ui:options"] || {};
+  const jsxTitle = options?.jsxTitle as any;
+  const fieldLabel = jsxTitle ?? label;
+  const isLabel = options?.label !== false && fieldLabel;
 
   return (
     <Grid
@@ -55,10 +58,10 @@ function InlineFieldTemplate({
       }}
       className={classNames}
     >
-      {isLabel && label && (
+      {isLabel && (
         <Grid item xs={12} md={3} className="w-10">
           <label htmlFor={id} className="font-bold">
-            {label}
+            {fieldLabel}
             {required ? "*" : null}
           </label>
         </Grid>
