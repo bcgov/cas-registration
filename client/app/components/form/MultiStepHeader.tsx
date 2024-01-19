@@ -26,7 +26,7 @@ const MultiStepHeader = ({ step, steps }: MultiStepHeaderProps) => {
             >
               {i + 1}
             </div>
-            <div className={`ml-4 h-min w-full ${titleWidth}`}>{steps[i]}</div>
+            <div className={`ml-4 h-min ${titleWidth}`}>{steps[i]}</div>
 
             {!isLastStep && (
               <div className="hidden lg:block mx-4 grow">
