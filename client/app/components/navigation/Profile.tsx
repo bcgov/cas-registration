@@ -28,8 +28,8 @@ export default function Profile({ name }: { readonly name: string }) {
           color="inherit"
           variant="text"
           className="text-lg"
-          onClick={() => {
-            signOut({
+          onClick={async () => {
+            await signOut({
               callbackUrl: process.env.NEXT_PUBLIC_KEYCLOAK_LOGOUT_URL,
             });
           }}
