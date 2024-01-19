@@ -1,5 +1,5 @@
 export const StatutoryDeclarationUploadFieldTitle = (
-  // Uncomment and replace the URL with the correct one when the template is ready
+  // Uncomment and replace the URL with the correct one when the template is ready in #645
   // <>
   //   Statutory Declaration
   //   <br />
