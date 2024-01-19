@@ -22,4 +22,5 @@ export enum Status {
   PENDING = "Pending",
   DRAFT = "Draft",
   CHANGES_REQUESTED = "Changes Requested",
+  NOT_REGISTERED = "Not Registered",
 }

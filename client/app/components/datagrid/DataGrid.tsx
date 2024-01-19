@@ -7,7 +7,6 @@ import {
   GridRenderCellParams,
 } from "@mui/x-data-grid";
 import Link from "next/link";
-import { Button } from "@mui/material";
 import { BC_GOV_BACKGROUND_COLOR_BLUE } from "@/app/styles/colors";
 
 interface Props {
@@ -67,12 +66,13 @@ const DataGrid: React.FC<Props> = ({ rows, columns, cntxt }) => {
               renderCell: (params: GridRenderCellParams) => (
                 <div>
                   {/* 🔗 Add reg or details link */}
-                  <Link href={`operations/${params.row.id}/1`}>
-                    <Button variant="contained" className="text-bc-links-color">
-                      {params.row.status === "Not Registered"
-                        ? "Start Registration"
-                        : "View Details"}
-                    </Button>
+                  <Link
+                    className="no-underline text-bc-link-blue whitespace-normal"
+                    href={`operations/${params.row.id}/1`}
+                  >
+                    {params.row.status === "Not Registered"
+                      ? "Start Registration"
+                      : "View Details"}
                   </Link>
                 </div>
               ),
@@ -119,10 +119,12 @@ const DataGrid: React.FC<Props> = ({ rows, columns, cntxt }) => {
         columns={customColumns}
         showCellVerticalBorder
         hideFooter
-        components={{
-          ColumnSortedAscendingIcon: AscendingIcon,
-          ColumnSortedDescendingIcon: DescendingIcon,
-          ColumnUnsortedIcon: SortIcon,
+        // Set the row height to "auto" so that the row height will adjust to the content
+        getRowHeight={() => "auto"}
+        slots={{
+          columnSortedAscendingIcon: AscendingIcon,
+          columnSortedDescendingIcon: DescendingIcon,
+          columnUnsortedIcon: SortIcon,
         }}
         sx={{
           "& .MuiSvgIcon-root": {
@@ -130,6 +132,11 @@ const DataGrid: React.FC<Props> = ({ rows, columns, cntxt }) => {
           },
           "& .MuiDataGrid-columnHeaderDraggableContainer": {
             minWidth: "100%",
+          },
+          "& .MuiDataGrid-row": {
+            // Couldn't find a way to set minHeight without using !important
+            // This was needed to use getRowHeight={() => "auto"} prop to break long text into multiple lines
+            minHeight: "60px!important",
           },
           "& .MuiDataGrid-columnHeader": {
             border: "1px white solid",
@@ -169,6 +176,7 @@ const DataGrid: React.FC<Props> = ({ rows, columns, cntxt }) => {
           "& .MuiDataGrid-cell": {
             justifyContent: "center",
             textAlign: "center",
+            whiteSpace: "pre-line",
           },
           ".MuiDataGrid-iconButtonContainer": {
             visibility: "visible !important",

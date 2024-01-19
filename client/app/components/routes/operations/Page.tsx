@@ -18,7 +18,6 @@ export default async function OperationsPage() {
 
   return (
     <>
-      <h1>Operations List</h1>
       {/* Conditionally render the button based on user's role */}
       {role === "industry_user_admin" && (
         <Link href={"/dashboard/operations/create/1"}>
@@ -26,7 +25,7 @@ export default async function OperationsPage() {
         </Link>
       )}
       {role && role.includes("cas") && (
-        <Note message={registrationRequestNote} />
+        <Note classNames="mb-4 mt-6" message={registrationRequestNote} />
       )}
       <Suspense fallback={<Loading />}>
         <Operations />
