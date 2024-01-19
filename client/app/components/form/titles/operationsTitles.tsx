@@ -5,9 +5,7 @@ export const StatutoryDeclarationDisclaimerTitle = (
     <ul className="mt-0">
       <li>
         Information in this application will be shared with the Minister of
-        Finance and the name of the Operator and BORO ID may be disclosed [for
-        the purposes of administering the Carbon Tax Act][fuel
-        suppliers][publicly].
+        Finance and the name of the Operator and BORO ID may be disclosed.
       </li>
       <li>
         The Operator is responsible for determining their eligibility for an
