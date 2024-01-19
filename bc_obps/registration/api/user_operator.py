@@ -44,7 +44,7 @@ from django.forms import model_to_dict
 
 
 # Function to save operator data to reuse in POST/PUT methods
-def save_operator(payload: any, operator_instance: Operator, user: User):
+def save_operator(payload: any, operator_instance: UserOperatorOperatorIn, user: User):
     # rollback the transaction if any of the following fails (mostly to prevent orphaned addresses)
     with transaction.atomic():
         # create physical address record
