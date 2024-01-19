@@ -20,9 +20,6 @@ RUN useradd -ms /bin/bash -d ${HOME} --uid ${USER_ID} -g root bc_obps
 
 COPY ./ ${HOME}/
 
-# Copy the pyproject.toml and poetry.lock files into the container
-COPY pyproject.toml poetry.lock ${HOME}/
-
 # Install asdf
 RUN git clone https://github.com/asdf-vm/asdf.git ${HOME}/asdf --depth 1 --branch v0.11.2
 
@@ -30,7 +27,6 @@ ENV BASH_ENV="${HOME}/asdf/asdf.sh"
 # Because asdf is loaded via BASH_ENV, all commands using adsf need to be executed using /usr/bin/env bash -c
 SHELL ["/usr/bin/env", "bash", "-c"]
 
-COPY .tool-versions ${HOME}/.tool-versions
 RUN sed -i -nr '/python|poetry/p' ${HOME}/.tool-versions && \
     cat ${HOME}/.tool-versions | cut -f 1 -d ' ' | xargs -n 1 asdf plugin-add && \
     asdf plugin-update --all && \
@@ -51,6 +47,6 @@ RUN chown -R bc_obps:0 ${HOME} && \
 EXPOSE 8000
 
 # Install project dependencies using Poetry
-RUN poetry install
+RUN poetry install --without dev
 USER ${USER_ID}
-CMD ["/usr/bin/env", "bash", "-c", "poetry run python manage.py collectstatic --noinput && poetry run python manage.py migrate && poetry run python manage.py runserver 0.0.0.0:8000"]
+CMD ["/usr/bin/env", "bash", "-c", "poetry run python manage.py collectstatic --noinput && poetry run python manage.py migrate && poetry run gunicorn bc_obps.wsgi:application --timeout 200 --workers 8 --bind '0.0.0.0:8000'"]
