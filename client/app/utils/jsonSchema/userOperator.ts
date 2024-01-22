@@ -84,7 +84,8 @@ const userOperatorPage1: RJSFSchema = {
       type: "object",
     },
     mailing_address_same_as_physical: {
-      title: "Is the mailing address the same as the physical address?",
+      title:
+        "Is the business mailing address the same as the physical address?",
       type: "boolean",
       default: true,
     },
@@ -172,7 +173,7 @@ const userOperatorPage1: RJSFSchema = {
                 },
                 po_mailing_address_same_as_physical: {
                   title:
-                    "Is the mailing address the same as the physical address?",
+                    "Is the business mailing address the same as the physical address?",
                   type: "boolean",
                   default: true,
                 },
@@ -196,7 +197,7 @@ const userOperatorPage1: RJSFSchema = {
                     properties: {
                       po_mailing_street_address: {
                         type: "string",
-                        title: "Mailing Address",
+                        title: "Business Mailing Address",
                       },
                       po_mailing_municipality: {
                         type: "string",
@@ -245,7 +246,7 @@ const userOperatorPage1: RJSFSchema = {
           },
           mailing_street_address: {
             type: "string",
-            title: "Mailing Address",
+            title: "Business Mailing Address",
           },
           mailing_municipality: {
             type: "string",
@@ -296,7 +297,7 @@ export const userOperatorPage2: RJSFSchema = {
     },
     street_address: {
       type: "string",
-      title: "Mailing Address",
+      title: "Business Mailing Address",
     },
     municipality: {
       type: "string",

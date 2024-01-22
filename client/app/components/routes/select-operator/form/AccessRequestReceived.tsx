@@ -41,7 +41,7 @@ export default async function AccessRequestReceived({
     <>
       <p>
         Your request to add <b>{operator.legal_name}</b> and become its
-        administrator has been received and will be reviewed.
+        Operation Representative has been received and will be reviewed.
       </p>
       {adminRequestJSX}
     </>
@@ -50,7 +50,7 @@ export default async function AccessRequestReceived({
   const requestSubsequentAccessJSX: JSX.Element = (
     <>
       <p>
-        Your access request has been sent to the administrator of{" "}
+        Your access request has been sent to the Operation Representative of{" "}
         <b>{operator.legal_name}</b> for review.
         <br />
       </p>
@@ -68,8 +68,8 @@ export default async function AccessRequestReceived({
     content = (
       <>
         <p>
-          Your access request for <b>{operator.legal_name}</b> as its
-          administrator has been received and will be reviewed.
+          Your access request for <b>{operator.legal_name}</b> as its Operation
+          Representative has been received and will be reviewed.
         </p>
         {adminRequestJSX}
       </>

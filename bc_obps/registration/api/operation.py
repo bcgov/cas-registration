@@ -104,9 +104,10 @@ def create_or_update_multiple_operators(
 @authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles())
 def list_operations(request):
     user: User = request.current_user
-    # IRC users can see all operations except ones that are not registered yet
+    # IRC users can see all operations except ones that are not started yet
     if user.is_irc_user():
-        qs = Operation.objects.exclude(status__in=[Operation.Statuses.NOT_REGISTERED])
+
+        qs = Operation.objects.exclude(status=Operation.Statuses.NOT_STARTED)
         return 200, qs
     # Industry users can only see their companies' operations (if there's no user_operator or operator, then the user hasn't requested access to the operator)
     user_operator = UserOperator.objects.filter(user_id=user.user_guid).first()
@@ -145,7 +146,7 @@ def get_operation(request, operation_id: int):
 @authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
 def create_operation(request, payload: OperationCreateIn):
     user: User = request.current_user
-    # excluding the fields that have to be handled separately (We don't assign application lead to the operation here, we do it in the next/update step)
+    # excluding the fields that have to be handled separately (We don't assign point of contact to the operation here, we do it in the next/update step)
     payload_dict: dict = payload.dict(
         exclude={
             "regulated_products",
@@ -154,7 +155,7 @@ def create_operation(request, payload: OperationCreateIn):
             "naics_code",
             "documents",
             "multiple_operators_array",
-            "application_lead",
+            "point_of_contact",
         }
     )
 
@@ -201,17 +202,17 @@ def update_operation(request, operation_id: int, submit: str, payload: Operation
     if payload.naics_code:
         operation.naics_code_id = payload.naics_code
 
-    application_lead_address_id = None
-    application_lead_id = payload.application_lead
-    if application_lead_id:
-        application_lead = Contact.objects.get(id=application_lead_id)
-        application_lead_address_id = application_lead.address.id if application_lead.address else None
+    point_of_contact_address_id = None
+    point_of_contact_id = payload.point_of_contact
+    if point_of_contact_id:
+        point_of_contact = Contact.objects.get(id=point_of_contact_id)
+        point_of_contact_address_id = point_of_contact.address.id if point_of_contact.address else None
 
-    is_user_application_lead = payload.is_user_application_lead
+    is_user_point_of_contact = payload.is_user_point_of_contact
 
-    # create or update the address for either user or external application lead
+    # create or update the address for either user or external point of contact
     address, _ = Address.objects.update_or_create(
-        id=application_lead_address_id,
+        id=point_of_contact_address_id,
         defaults={
             "street_address": payload.street_address,
             "municipality": payload.municipality,
@@ -220,9 +221,9 @@ def update_operation(request, operation_id: int, submit: str, payload: Operation
         },
     )
 
-    if is_user_application_lead is True:  # the application lead is the user
-        al, _ = Contact.objects.update_or_create(
-            id=application_lead_id,
+    if is_user_point_of_contact is True:  # the point of contact is the user
+        poc, _ = Contact.objects.update_or_create(
+            id=point_of_contact_id,
             defaults={
                 "first_name": payload.first_name,
                 "last_name": payload.last_name,
@@ -233,24 +234,24 @@ def update_operation(request, operation_id: int, submit: str, payload: Operation
                 "address": address,
             },
         )
-        al.set_create_or_update(modifier=user)
-        operation.application_lead = al
+        poc.set_create_or_update(modifier=user)
+        operation.point_of_contact = poc
 
-    if is_user_application_lead is False:  # the application lead is an external user
-        eal, _ = Contact.objects.update_or_create(
-            id=application_lead_id,
+    if is_user_point_of_contact is False:  # the point of contact is an external user
+        external_poc, _ = Contact.objects.update_or_create(
+            id=point_of_contact_id,
             defaults={
-                "first_name": payload.external_lead_first_name,
-                "last_name": payload.external_lead_last_name,
-                "position_title": payload.external_lead_position_title,
-                "email": payload.external_lead_email,
-                "phone_number": payload.external_lead_phone_number,
+                "first_name": payload.external_point_of_contact_first_name,
+                "last_name": payload.external_point_of_contact_last_name,
+                "position_title": payload.external_point_of_contact_position_title,
+                "email": payload.external_point_of_contact_email,
+                "phone_number": payload.external_point_of_contact_phone_number,
                 "business_role": BusinessRole.objects.get(role_name="Operation Registration Lead"),
                 "address": address,
             },
         )
-        eal.set_create_or_update(modifier=user)
-        operation.application_lead = eal
+        external_poc.set_create_or_update(modifier=user)
+        operation.point_of_contact = external_poc
 
     # updating only a subset of fields (using all fields would overwrite the existing ones)
     payload_dict: dict = payload.dict(
@@ -298,7 +299,7 @@ def update_operation_status(request, operation_id: int, payload: OperationUpdate
     user: User = request.current_user
     status = Operation.Statuses(payload.status)
     operation.status = status
-    if status in [Operation.Statuses.APPROVED, Operation.Statuses.REJECTED]:
+    if status in [Operation.Statuses.APPROVED, Operation.Statuses.DECLINED]:
         operation.verified_at = datetime.now(pytz.utc)
         operation.verified_by = user
         if status == Operation.Statuses.APPROVED:

@@ -35,7 +35,7 @@ const OperationReview = ({ operation }: Props) => {
   };
 
   const rejectRequest = async () => {
-    const response = await changeStatus(Status.REJECTED, operation.id);
+    const response = await changeStatus(Status.DECLINED, operation.id);
 
     return response;
   };
@@ -61,7 +61,7 @@ const OperationReview = ({ operation }: Props) => {
   return (
     <Review
       approvedMessage="You have approved the request for carbon tax exemption."
-      rejectedMessage="You have rejected the request for carbon tax exemption."
+      declinedMessage="You have rejected the request for carbon tax exemption."
       confirmApproveMessage="Are you sure you want to approve this request for carbon tax exemption?"
       confirmRejectMessage="Are you sure you want to reject this request for carbon tax exemption?"
       isStatusPending={operation.status === Status.PENDING}

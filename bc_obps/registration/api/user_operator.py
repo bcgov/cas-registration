@@ -381,7 +381,7 @@ def update_user_operator_user_status(request, user_guid: str):
         return 400, {"message": "Invalid status."}
     user_operator = get_object_or_404(UserOperator, user=user_guid)
     user_operator.status = status
-    if user_operator.status in [UserOperator.Statuses.APPROVED, UserOperator.Statuses.REJECTED]:
+    if user_operator.status in [UserOperator.Statuses.APPROVED, UserOperator.Statuses.DECLINED]:
         user_operator.verified_at = datetime.now(pytz.utc)
         user_operator.verified_by_id = current_admin_user.user_guid
     if user_operator.status in [UserOperator.Statuses.PENDING]:
@@ -409,7 +409,7 @@ def update_user_operator_status(request, user_operator_id: str):
         return 400, {"message": "Invalid status."}
     user_operator = get_object_or_404(UserOperator, id=user_operator_id)
     user_operator.status = status
-    if user_operator.status in [UserOperator.Statuses.APPROVED, UserOperator.Statuses.REJECTED]:
+    if user_operator.status in [UserOperator.Statuses.APPROVED, UserOperator.Statuses.DECLINED]:
         user_operator.verified_at = datetime.now(pytz.utc)
         user_operator.verified_by = current_cas_internal_user
     if user_operator.status in [UserOperator.Statuses.PENDING]:

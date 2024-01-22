@@ -330,7 +330,7 @@ class Operator(TimeStampedModel):
         DRAFT = "Draft"
         PENDING = "Pending"
         APPROVED = "Approved"
-        REJECTED = "Rejected"
+        DECLINED = "Declined"
         CHANGES_REQUESTED = "Changes Requested"
 
     legal_name = models.CharField(max_length=1000, db_comment="The legal name of an operator")
@@ -428,7 +428,7 @@ class UserOperator(TimeStampedModel):
         DRAFT = "Draft"
         PENDING = "Pending"
         APPROVED = "Approved"
-        REJECTED = "Rejected"
+        DECLINED = "Declined"
 
     user = models.ForeignKey(
         User,
@@ -553,10 +553,10 @@ class Operation(OperationAndFacilityCommonInfo):
     """Operation model"""
 
     class Statuses(models.TextChoices):
-        NOT_REGISTERED = "Not Registered"
+        NOT_STARTED = "Not Started"
         PENDING = "Pending"
         APPROVED = "Approved"
-        REJECTED = "Rejected"
+        DECLINED = "Declined"
         CHANGES_REQUESTED = "Changes Requested"
 
     operator = models.ForeignKey(
@@ -591,18 +591,18 @@ class Operation(OperationAndFacilityCommonInfo):
         blank=True,
         related_name="operations",
     )
-    application_lead = models.ForeignKey(
+    point_of_contact = models.ForeignKey(
         Contact,
         on_delete=models.DO_NOTHING,
         related_name="operations",
         blank=True,
         null=True,
-        db_comment="Foreign key to the contact that is the application lead",
+        db_comment="Foreign key to the contact that is the point of contact",
     )
     status = models.CharField(
         max_length=1000,
         choices=Statuses.choices,
-        default=Statuses.NOT_REGISTERED,
+        default=Statuses.NOT_STARTED,
         db_comment="The status of an operation in the app (e.g. pending review)",
     )
     # Setting this to OneToOneField instead of ForeignKey because we want to enforce that there is only one BORO ID per operation

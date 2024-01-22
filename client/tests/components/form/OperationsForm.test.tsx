@@ -21,7 +21,7 @@ const testFormData = {
   bcghg_id: "123",
   opt_in: null,
   operator: 1,
-  status: "Not Registered",
+  status: "Not Started",
   regulated_products: [],
   reporting_activities: [],
   documents: [],
@@ -40,7 +40,7 @@ describe("Operations component", () => {
 
     // Test for Legend elements
     expect(
-      screen.getByText(/Step 1: Operation General Information/i),
+      screen.getByText(/Step 1: Operation Information/i),
     ).toBeInTheDocument();
     expect(
       screen.getByText(
@@ -95,10 +95,10 @@ describe("Operations component", () => {
       screen.getByLabelText(/Does the operation have multiple operators\?+/i),
     ).toBeInTheDocument();
 
-    // Would you like to add an exemption ID application lead?
+    // Would you like to add an exemption ID point of contact?
     expect(
       screen.getByLabelText(
-        /Would you like to add an exemption ID application lead\?+/i,
+        /Would you like to add an exemption ID point of contact\?+/i,
       ),
     ).toBeInTheDocument();
 
@@ -164,10 +164,10 @@ describe("Operations component", () => {
       screen.getByLabelText(/Does the operation have multiple operators\?+/i),
     ).toHaveValue("1");
 
-    // Would you like to add an exemption ID application lead?
+    // Would you like to add an exemption ID point of contact?
     expect(
       screen.getByLabelText(
-        /Would you like to add an exemption ID application lead\?+/i,
+        /Would you like to add an exemption ID point of contact\?+/i,
       ),
     ).toHaveValue("1");
 

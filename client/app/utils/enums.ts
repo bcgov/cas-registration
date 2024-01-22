@@ -18,9 +18,9 @@ export enum FrontEndRoles {
 export enum Status {
   MYSELF = "Myself",
   APPROVED = "Approved",
-  REJECTED = "Rejected",
+  DECLINED = "Declined",
   PENDING = "Pending",
   DRAFT = "Draft",
   CHANGES_REQUESTED = "Changes Requested",
-  NOT_REGISTERED = "Not Registered",
+  NOT_STARTED = "Not Started",
 }
