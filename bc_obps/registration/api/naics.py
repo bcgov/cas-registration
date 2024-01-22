@@ -2,9 +2,7 @@ from registration.decorators import authorize
 from .api_base import router
 from typing import List
 from registration.models import NaicsCode, AppRole, UserOperator
-from registration.schema import (
-    NaicsCodeSchema,
-)
+from registration.schema import NaicsCodeSchema
 
 ##### GET #####
 

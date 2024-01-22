@@ -31,12 +31,13 @@ interface ButtonRenderCellParams extends GridRenderCellParams {
 const handleUpdateStatus = async (userGuid: string, statusUpdate: Status) => {
   try {
     return await actionHandler(
-      `registration/select-operator/user-operator/${userGuid}/update-status`,
+      `registration/select-operator/user-operator/update-status`,
       "PUT",
       "/dashboard/users",
       {
         body: JSON.stringify({
           status: statusUpdate,
+          user_guid: userGuid,
         }),
       },
     );
@@ -46,7 +47,7 @@ const handleUpdateStatus = async (userGuid: string, statusUpdate: Status) => {
 };
 
 export async function ChangeUserOperatorStatusColumnCell(
-  params: ButtonRenderCellParams,
+  params: Readonly<ButtonRenderCellParams>,
 ) {
   const userOperatorStatus = params.row.status;
   const userGuid = params.row.id;

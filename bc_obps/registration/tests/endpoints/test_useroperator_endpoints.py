@@ -3,7 +3,16 @@ import pytest, json
 from model_bakery import baker
 from django.test import Client
 from localflavor.ca.models import CAPostalCodeField
-from registration.models import BusinessStructure, Operator, ParentOperator, User, UserOperator, Address
+from registration.models import (
+    BusinessRole,
+    BusinessStructure,
+    Contact,
+    Operator,
+    ParentOperator,
+    User,
+    UserOperator,
+    Address,
+)
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 
 pytestmark = pytest.mark.django_db
@@ -143,7 +152,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         assert response.status_code == 401
 
         # user-operator/contact
-        operator = baker.make(
+        baker.make(
             Operator,
             physical_address=baker.make(
                 Address, street_address='123 st', municipality='victoria', province='BC', postal_code='h0h0h0'
@@ -178,22 +187,22 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         assert response.status_code == 401
 
     def test_unauthorized_users_cannot_put(self):
-        # /select-operator/user-operator/{user_guid}/update-status
+        # /select-operator/user-operator/update-status
         user = baker.make(User)
         response = TestUtils.mock_put_with_auth_role(
             self,
             'cas_pending',
             content_type_json,
-            {'status': 'Approved'},
-            f"{base_endpoint}select-operator/user-operator/{user.user_guid}/update-status",
+            {'status': 'Approved', 'user_guid': user.user_guid},
+            f"{base_endpoint}select-operator/user-operator/update-status",
         )
         assert response.status_code == 401
         response = TestUtils.mock_put_with_auth_role(
             self,
             'industry_user',
             content_type_json,
-            {'status': 'Approved'},
-            f"{base_endpoint}select-operator/user-operator/{user.user_guid}/update-status",
+            {'status': 'Approved', 'user_guid': user.user_guid},
+            f"{base_endpoint}select-operator/user-operator/update-status",
         )
         assert response.status_code == 401
 
@@ -221,27 +230,67 @@ class TestUserOperatorEndpoint(CommonTestSetup):
 
         assert len(json.loads(response.content)) == 1
 
-    def test_put_update_user_status(self):
+    def test_put_update_user_operator_status(self):
         user = baker.make(User)
         user_operator = baker.make(UserOperator, status=UserOperator.Statuses.PENDING, user_id=user.user_guid)
+        # Change operator status to approved
+        user_operator.operator = baker.make(
+            Operator, status=Operator.Statuses.PENDING, bc_corporate_registry_number="abc1234567", _fill_optional=True
+        )
+        user_operator.save()
 
-        response = TestUtils.mock_put_with_auth_role(
+        response_1 = TestUtils.mock_put_with_auth_role(
             self,
             'cas_admin',
             content_type_json,
-            {"status": UserOperator.Statuses.APPROVED},
-            f"{base_endpoint}select-operator/user-operator/{user_operator.user_id}/update-status",
+            {"status": UserOperator.Statuses.APPROVED, "user_operator_id": user_operator.id},
+            f"{base_endpoint}select-operator/user-operator/update-status",
         )
 
-        assert response.status_code == 200
+        # make sure user can't change the status of a user_operator when operator is not approved
+        assert response_1.status_code == 400
+        response_1_json = response_1.json()
+        assert response_1_json == {'message': 'Operator must be approved before approving users.'}
 
-        response_content = json.loads(response.content.decode("utf-8"))
-        parsed_list = json.loads(response_content)
-        # the put_response content is returned as a list but there's only ever one object in the list
-        parsed_object = parsed_list[0]
+        # Change operator status to approved
+        user_operator.operator = baker.make(
+            Operator, status=Operator.Statuses.APPROVED, bc_corporate_registry_number="abc1234567", _fill_optional=True
+        )
+        user_operator.save()
+        response_2 = TestUtils.mock_put_with_auth_role(
+            self,
+            'cas_admin',
+            content_type_json,
+            {"status": UserOperator.Statuses.APPROVED, "user_operator_id": user_operator.id},
+            f"{base_endpoint}select-operator/user-operator/update-status",
+        )
+        assert response_2.status_code == 200
+        user_operator.refresh_from_db()  # refresh the user_operator object to get the updated status
+        assert user_operator.status == UserOperator.Statuses.APPROVED
+        assert user_operator.verified_by == self.user
 
-        assert parsed_object.get("fields").get("status") == UserOperator.Statuses.APPROVED
-        assert parsed_object.get("fields").get("verified_by") == str(self.user.user_guid)
+        # Assigning contacts to the operator of the user_operator
+        contacts = baker.make(
+            Contact,
+            _quantity=2,
+            created_by=user_operator.user,
+            business_role=BusinessRole.objects.get(role_name='Senior Officer'),
+        )
+        user_operator.operator.contacts.set(contacts)
+        # Now reject the user_operator and make sure the contacts are deleted
+        response_3 = TestUtils.mock_put_with_auth_role(
+            self,
+            'cas_admin',
+            content_type_json,
+            {"status": UserOperator.Statuses.DECLINED, "user_operator_id": user_operator.id},
+            f"{base_endpoint}select-operator/user-operator/update-status",
+        )
+        assert response_3.status_code == 200
+        user_operator.refresh_from_db()  # refresh the user_operator object to get the updated status
+        assert user_operator.status == UserOperator.Statuses.DECLINED
+        assert user_operator.verified_by == self.user
+        assert user_operator.operator.contacts.count() == 0
+        assert Contact.objects.count() == 0
 
     def test_request_admin_access_with_valid_payload(self):
         operator = baker.make(Operator)

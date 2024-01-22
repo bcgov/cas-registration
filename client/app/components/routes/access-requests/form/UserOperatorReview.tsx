@@ -38,14 +38,14 @@ export default function UserOperatorReview({
   };
 
   // Reusable function to change the status of the prime admin
-  const changePrimeAdminStatus = async (status: Status, id: number) => {
+  const changePrimeAdminStatus = async (status: Status) => {
     try {
       const response = await actionHandler(
-        `registration/select-operator/user-operator/operator/${id}/update-status`,
+        `registration/select-operator/user-operator/update-status`,
         "PUT",
         "",
         {
-          body: JSON.stringify({ status }),
+          body: JSON.stringify({ status, user_operator_id: userOperatorId }),
         },
       );
       return response;
@@ -54,20 +54,14 @@ export default function UserOperatorReview({
     }
   };
 
-  const approvePrimeAdminRequst = async () => {
-    const response = await changePrimeAdminStatus(
-      Status.APPROVED,
-      userOperatorId as number,
-    );
+  const approvePrimeAdminRequest = async () => {
+    const response = await changePrimeAdminStatus(Status.APPROVED);
 
     return response;
   };
 
   const rejectPrimeAdminRequest = async () => {
-    const response = await changePrimeAdminStatus(
-      Status.DECLINED,
-      userOperatorId as number,
-    );
+    const response = await changePrimeAdminStatus(Status.DECLINED);
 
     return response;
   };
@@ -120,7 +114,7 @@ export default function UserOperatorReview({
       confirmRejectMessage={`Are you sure you want to reject the ${requestText}?`}
       isStatusPending={userOperator.status === Status.PENDING}
       onApprove={
-        isOperatorNew ? approveOperatorRequest : approvePrimeAdminRequst
+        isOperatorNew ? approveOperatorRequest : approvePrimeAdminRequest
       }
       onReject={isOperatorNew ? rejectOperatorRequest : rejectPrimeAdminRequest}
       showRequestChanges={showRequestChanges}
