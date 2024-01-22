@@ -647,7 +647,8 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         assert parent_operators[1].operator_index == 2
 
     def test_put_user_operator_operator(self):
-        operator = baker.make(Operator, bc_corporate_registry_number="abc1234567")
+        operator = baker.make(Operator, bc_corporate_registry_number="abc1234567", created_by=self.user)
+        baker.make(UserOperator, user=self.user, operator=operator, role=UserOperator.Roles.ADMIN, created_by=self.user)
         baker.make(BusinessStructure, name='BC Corporation')
 
         mock_payload = {
@@ -678,6 +679,16 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         response_json = put_response.json()
         assert put_response.status_code == 200
         assert "user_operator_id" in response_json
+        user_operator_id = response_json["user_operator_id"]
+        user_operator = UserOperator.objects.get(id=user_operator_id)
+        assert user_operator.user == self.user
+        assert user_operator.updated_by == self.user
+        assert user_operator.updated_at is not None
+
+        operator: Operator = user_operator.operator
+        assert operator is not None
+        assert operator.updated_by == self.user
+        assert operator.updated_at is not None
 
     def test_put_user_operator_operator_malformed_data(self):
         operator = baker.make(Operator, bc_corporate_registry_number="abc1234567")
