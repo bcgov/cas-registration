@@ -1,8 +1,13 @@
 import { ThemeProps, getDefaultRegistry } from "@rjsf/core";
 import * as widgets from "./widgets";
 import InlineFieldTemplate from "@/app/styles/rjsf/InlineFieldTemplate";
+import TitleFieldTemplate from "@/app/styles/rjsf/TitleFieldTemplate";
 
-const { fields, widgets: defaultWidgets } = getDefaultRegistry();
+const {
+  fields,
+  templates: defaultTemplates,
+  widgets: defaultWidgets,
+} = getDefaultRegistry();
 
 const formTheme: ThemeProps = {
   fields: {
@@ -13,8 +18,9 @@ const formTheme: ThemeProps = {
     ...widgets,
   },
   templates: {
-    ...getDefaultRegistry().templates,
+    ...defaultTemplates,
     FieldTemplate: InlineFieldTemplate,
+    TitleFieldTemplate,
   },
 };
 
