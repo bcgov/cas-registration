@@ -45,6 +45,8 @@ spec:
               value: {{ .Values.frontend.auth.keycloakAuthUrl}}{{ .Values.frontend.auth.keycloakRealms }}{{ .Values.frontend.auth.keycloakOidc}}/token
             - name: NEXTAUTH_URL
               value: https://{{ .Values.frontend.route.host }}
+            - name: SITEMINDER_AUTH_URL
+              value: {{ .Values.frontend.auth.siteminderAuthUrl }}
             - name: SITEMINDER_LOGOUT_URL
               value: {{ .Values.frontend.auth.siteminderAuthUrl }}/clp-cgi/logoff.cgi
             - name: NEXT_PUBLIC_KEYCLOAK_LOGOUT_URL
