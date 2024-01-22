@@ -52,7 +52,7 @@ export default function UserOperatorMultiStepForm({
 
     // add user operator id to form data if it exists (to be used in senior officer creation)
     if (userOperatorId)
-      newFormData.user_operator_id = userOperatorIdParam || userOperatorId;
+      newFormData.user_operator_id = userOperatorIdParam ?? userOperatorId;
 
     const apiUrl = `registration/user-operator/${
       isFinalStep ? "contact" : "operator"
