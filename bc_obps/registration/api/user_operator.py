@@ -369,7 +369,7 @@ def update_user_operator_status(request, payload: UserOperatorStatusUpdate):
     else:
         return 404, {"message": "No parameters provided"}
 
-    # We can't update the status of a user_operator if the operator is not approved
+    # We can't update the status of a user_operator if the operator has been declined or is awaiting review
     if user_operator.operator.status in [Operator.Statuses.PENDING, Operator.Statuses.DECLINED]:
         return 400, {"message": "Operator must be approved before approving users."}
     user_operator.status = payload.status
