@@ -75,6 +75,7 @@ def save_operator(payload: any, operator_instance: UserOperatorOperatorIn, user:
             "physical_address_id",
             "mailing_address_id",
             "website",
+            "business_structure",
         ]
         created_or_updated_operator_instance: Operator = update_model_instance(
             operator_instance, operator_related_fields, payload.dict()
