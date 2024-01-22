@@ -453,9 +453,7 @@ export const userOperatorUiSchema = {
   },
   senior_officer_section: {
     ...subheading,
-    "ui:options": {
-      jsxTitle: SeniorOfficerTitle,
-    },
+    "ui:title": SeniorOfficerTitle,
   },
   so_email: {
     "ui:widget": "EmailWidget",
@@ -472,15 +470,11 @@ export const userOperatorUiSchema = {
   // OPERATOR INFO SECTION
   mailing_address_section: {
     ...subheading,
-    "ui:options": {
-      jsxTitle: OperatorMailingAddressTitle,
-    },
+    "ui:title": OperatorMailingAddressTitle,
   },
   physical_address_section: {
     ...subheading,
-    "ui:options": {
-      jsxTitle: OperatorPhysicalAddressTitle,
-    },
+    "ui:title": OperatorPhysicalAddressTitle,
   },
   mailing_address_same_as_physical: {
     "ui:widget": "RadioWidget",
@@ -525,9 +519,7 @@ export const userOperatorUiSchema = {
     items: {
       po_physical_address_section: {
         ...subheading,
-        "ui:options": {
-          jsxTitle: ParentCompanyPhysicalAddressTitle,
-        },
+        "ui:title": ParentCompanyPhysicalAddressTitle,
       },
       po_mailing_address_same_as_physical: {
         "ui:widget": "RadioWidget",
@@ -546,9 +538,7 @@ export const userOperatorUiSchema = {
       },
       po_mailing_address_section: {
         ...subheading,
-        "ui:options": {
-          jsxTitle: ParentCompanyMailingAddressTitle,
-        },
+        "ui:title": ParentCompanyMailingAddressTitle,
       },
       po_physical_postal_code: {
         "ui:widget": "PostalCodeWidget",
