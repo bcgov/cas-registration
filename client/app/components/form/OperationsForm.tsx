@@ -61,7 +61,7 @@ export default function OperationsForm({ formData, schema }: Readonly<Props>) {
           // Add custom titles since "Statutory Declaration" is different than the
           // title in the schema "Statutory Declaration and Disclaimer"
           customStepNames={[
-            "Operation General Information",
+            "Operation Information",
             "Application Lead",
             "Statutory Declaration",
           ]}

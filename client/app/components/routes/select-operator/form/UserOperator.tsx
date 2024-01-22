@@ -105,11 +105,10 @@ export default async function UserOperator({
 
   return params?.id === "request-access" ? (
     // If the operator exists then show the form from the second page
-    <>
-      <UserOperatorContactForm formData={formData} schema={userOperatorPage2} />
-    </>
+    <UserOperatorContactForm formData={formData} schema={userOperatorPage2} />
   ) : (
     <>
+      {/* This note should only show up when a user is editing an existing operation. However, that page isn't built yet, so for now I'm showing it here so that designers can check. A conditional will be added once the page exists. */}
       <Note
         classNames={"mb-4 mt-6"}
         showNotePrefix={false}

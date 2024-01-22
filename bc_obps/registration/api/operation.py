@@ -106,7 +106,8 @@ def list_operations(request):
     user: User = request.current_user
     # IRC users can see all operations except ones that are not started yet
     if user.is_irc_user():
-        qs = Operation.objects.exclude(status__in=[Operation.Statuses.NOT_STARTED])
+
+        qs = Operation.objects.exclude(status=Operation.Statuses.NOT_STARTED)
         return 200, qs
     # Industry users can only see their companies' operations (if there's no user_operator or operator, then the user hasn't requested access to the operator)
     user_operator = UserOperator.objects.filter(user_id=user.user_guid).first()
@@ -221,7 +222,7 @@ def update_operation(request, operation_id: int, submit: str, payload: Operation
     )
 
     if is_user_point_of_contact is True:  # the point of contact is the user
-        al, _ = Contact.objects.update_or_create(
+        poc, _ = Contact.objects.update_or_create(
             id=point_of_contact_id,
             defaults={
                 "first_name": payload.first_name,
@@ -233,11 +234,11 @@ def update_operation(request, operation_id: int, submit: str, payload: Operation
                 "address": address,
             },
         )
-        al.set_create_or_update(modifier=user)
-        operation.point_of_contact = al
+        poc.set_create_or_update(modifier=user)
+        operation.point_of_contact = poc
 
     if is_user_point_of_contact is False:  # the point of contact is an external user
-        eal, _ = Contact.objects.update_or_create(
+        external_poc, _ = Contact.objects.update_or_create(
             id=point_of_contact_id,
             defaults={
                 "first_name": payload.external_point_of_contact_first_name,
@@ -249,8 +250,8 @@ def update_operation(request, operation_id: int, submit: str, payload: Operation
                 "address": address,
             },
         )
-        eal.set_create_or_update(modifier=user)
-        operation.point_of_contact = eal
+        external_poc.set_create_or_update(modifier=user)
+        operation.point_of_contact = external_poc
 
     # updating only a subset of fields (using all fields would overwrite the existing ones)
     payload_dict: dict = payload.dict(
