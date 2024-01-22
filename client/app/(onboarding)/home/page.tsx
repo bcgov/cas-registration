@@ -3,7 +3,6 @@
 // 🏷 import {named} can be significantly slower than import default
 import Button from "@mui/material/Button";
 import Grid from "@mui/material/Grid/Grid";
-
 import events from "@/app/data/home/events.json";
 import { signIn } from "next-auth/react";
 /*
@@ -102,11 +101,22 @@ export default function Page() {
           </p>
           <p>
             To check eligibility, and for further information about the B.C.
-            OBPS, please visit the <a>program website.</a>
+            OBPS, please visit the{" "}
+            <a href="ADD LINK HERE" target="_blank" rel="noopener noreferrer">
+              program website.
+            </a>
           </p>
           <p>
-            Please visit the <a>carbon tax exemption</a> webpage to learn more
-            about claiming an exemption from the carbon tax.
+            Please visit the{" "}
+            <a
+              href="https://www2.gov.bc.ca/gov/content?id=3EAC7D1EBBDA41F6937BA1F1A8A202F3"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              carbon tax exemption
+            </a>{" "}
+            webpage to learn more about claiming an exemption from the carbon
+            tax.
           </p>
         </Grid>
         <Grid item xs={12} md={5} order={{ xs: 1, md: 2 }}>
