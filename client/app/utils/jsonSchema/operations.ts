@@ -550,9 +550,7 @@ export const operationUiSchema = {
     items: {
       mo_physical_address_section: {
         ...subheading,
-        "ui:options": {
-          jsxTitle: OperatorPhysicalAddressTitle,
-        },
+        "ui:title": OperatorPhysicalAddressTitle,
       },
       mo_percentage_ownership: {
         "ui:options": {
@@ -574,9 +572,7 @@ export const operationUiSchema = {
       },
       mo_mailing_address_section: {
         ...subheading,
-        "ui:options": {
-          jsxTitle: OperatorMailingAddressTitle,
-        },
+        "ui:title": OperatorMailingAddressTitle,
       },
       mo_physical_postal_code: {
         "ui:widget": "PostalCodeWidget",
