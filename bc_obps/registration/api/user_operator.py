@@ -412,7 +412,8 @@ def update_operator_and_user_operator(request, payload: UserOperatorOperatorIn, 
         return 400, {"message": str(e)}
 
 
-@router.put("/select-operator/user-operator/{user_guid}/update-status")
+##### PUT #####
+@router.put("/select-operator/user-operator/update-status", response={200: UserOperatorOut, codes_4xx: Message})
 @authorize(AppRole.get_all_authorized_app_roles(), ["admin"])
 def update_user_operator_status(request, payload: UserOperatorStatusUpdate):
     current_user: User = request.current_user  # irc user or industry user admin
