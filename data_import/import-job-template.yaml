@@ -17,7 +17,7 @@ spec:
       activeDeadlineSeconds: 300
       containers:
         - name:  import-ciip-swrs-data
-          image: ghcr.io/dleard/data-import-image-test:v1
+          image: ghcr.io/bcgov/cas-obps-data-import:latest
           env:
             - name: PGHOST
               value: <GET FROM REG NAMESPACE>
