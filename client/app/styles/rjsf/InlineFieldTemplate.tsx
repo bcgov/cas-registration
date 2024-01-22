@@ -5,11 +5,11 @@ import Box from "@mui/material/Box";
 import { FieldTemplateProps } from "@rjsf/utils";
 
 interface Props {
-  width: string;
-  height: string;
+  width?: string;
+  height?: string;
 }
 
-export const AlertIcon = ({ width, height }: Props) => (
+export const AlertIcon = ({ width = "26", height = "26" }: Props) => (
   <svg
     width={width}
     height={height}
