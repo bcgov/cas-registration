@@ -303,7 +303,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         now_as_string = now.strftime("%Y-%m-%d")
         assert get_response_dict.get("verified_at") == now_as_string
 
-    def test_put_operation_update_status_rejected(self):
+    def test_put_operation_update_status_declined(self):
         operation = baker.make(Operation, naics_code=baker.make(NaicsCode, naics_code=123456, naics_description='desc'))
         assert operation.status == Operation.Statuses.NOT_STARTED
 

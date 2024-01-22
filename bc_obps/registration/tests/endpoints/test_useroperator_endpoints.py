@@ -233,6 +233,11 @@ class TestUserOperatorEndpoint(CommonTestSetup):
     def test_put_update_user_operator_status(self):
         user = baker.make(User)
         user_operator = baker.make(UserOperator, status=UserOperator.Statuses.PENDING, user_id=user.user_guid)
+        # Change operator status to approved
+        user_operator.operator = baker.make(
+            Operator, status=Operator.Statuses.PENDING, bc_corporate_registry_number="abc1234567", _fill_optional=True
+        )
+        user_operator.save()
 
         response_1 = TestUtils.mock_put_with_auth_role(
             self,
@@ -277,12 +282,12 @@ class TestUserOperatorEndpoint(CommonTestSetup):
             self,
             'cas_admin',
             content_type_json,
-            {"status": UserOperator.Statuses.REJECTED, "user_operator_id": user_operator.id},
+            {"status": UserOperator.Statuses.DECLINED, "user_operator_id": user_operator.id},
             f"{base_endpoint}select-operator/user-operator/update-status",
         )
         assert response_3.status_code == 200
         user_operator.refresh_from_db()  # refresh the user_operator object to get the updated status
-        assert user_operator.status == UserOperator.Statuses.REJECTED
+        assert user_operator.status == UserOperator.Statuses.DECLINED
         assert user_operator.verified_by == self.user
         assert user_operator.operator.contacts.count() == 0
         assert Contact.objects.count() == 0
