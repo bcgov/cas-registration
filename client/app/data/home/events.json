@@ -1,5 +1,8 @@
 [
-  { "date": "2024-01-15", "event": "Event 1" },
-  { "date": "2024-02-20", "event": "Event 2" },
-  { "date": "2024-03-10", "event": "Event 3" }
+  { "date": "February 1,\n2024", "event": "BCIERS opens" },
+  {
+    "date": "February 28,\n2024",
+    "event": "Deadline to apply to receive a BORO ID before April 1"
+  },
+  { "date": "April 1,\n2024", "event": "Carbon tax exemption can be claimed" }
 ]
