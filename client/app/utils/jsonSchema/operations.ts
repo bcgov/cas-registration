@@ -608,14 +608,10 @@ export const operationUiSchema = {
   },
   statutory_declaration_disclaimer_section: {
     "ui:FieldTemplate": TitleOnlyFieldTemplate,
-    "ui:options": {
-      jsxTitle: StatutoryDeclarationDisclaimerTitle,
-    },
+    "ui:title": StatutoryDeclarationDisclaimerTitle,
   },
   statutory_declaration: {
     "ui:widget": "FileWidget",
-    "ui:options": {
-      jsxTitle: StatutoryDeclarationUploadFieldTitle,
-    },
+    "ui:title": StatutoryDeclarationUploadFieldTitle,
   },
 };
