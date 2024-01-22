@@ -15,7 +15,7 @@ const getUserOperatorStatus = async () => {
     return await actionHandler(
       `registration/user-operator-status-from-user`,
       "GET",
-      ""
+      "",
     );
   } catch (error) {
     throw error;
@@ -27,7 +27,7 @@ const getUserOperatorId = async () => {
     return await actionHandler(
       `registration/user-operator-operator-id`,
       "GET",
-      ""
+      "",
     );
   } catch (error) {
     throw error;

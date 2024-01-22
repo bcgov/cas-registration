@@ -44,7 +44,7 @@ from django.forms import model_to_dict
 
 
 # Function to save operator data to reuse in POST/PUT methods
-def save_operator(payload: any, operator_instance: UserOperatorOperatorIn, user: User):
+def save_operator(payload: UserOperatorOperatorIn, operator_instance: Operator, user: User):
     # rollback the transaction if any of the following fails (mostly to prevent orphaned addresses)
     with transaction.atomic():
         # create physical address record
@@ -383,15 +383,6 @@ def create_user_operator_contact(request, payload: UserOperatorContactIn):
 
 
 ##### PUT #####
-
-
-# Function to check if the status is valid. This was required because the previous check only worked for
-# statuses that didn't have two words (e.g. "Pending" and "Approved" worked, but "Changes Requested" didn't)
-def check_status(status: str):
-    for statusEnum in UserOperator.Statuses:
-        if statusEnum == status:
-            return True
-    return False
 
 
 @router.put(
