@@ -17,7 +17,7 @@ class MultipleOperatorOut(ModelSchema):
     )
     mo_business_structure: str = Field(..., alias="business_structure")
     mo_website: Optional[str] = Field(None, alias="website")
-    mo_percentage_ownership: float = Field(None, alias="percentage_ownership")
+    mo_percentage_ownership: Optional[float] = Field(None, alias="percentage_ownership")
     mo_physical_street_address: str = Field(..., alias="physical_address.street_address")
     mo_physical_municipality: str = Field(..., alias="physical_address.municipality")
     mo_physical_province: str = Field(..., alias="physical_address.province")
