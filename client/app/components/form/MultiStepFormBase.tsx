@@ -82,7 +82,7 @@ const MultiStepFormBase = ({
     formSectionTitles.length !== customStepNames.length
   ) {
     throw new Error(
-      "The number of custom header titles must match the number of form sections"
+      "The number of custom header titles must match the number of form sections",
     );
   }
 
