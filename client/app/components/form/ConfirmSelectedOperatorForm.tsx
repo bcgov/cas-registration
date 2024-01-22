@@ -33,8 +33,8 @@ export default function ConfirmSelectedOperatorForm({
       <p>
         Looks like you do not have access to <b>{operator.legal_name}</b>
         <br />
-        You will need the administrator of <b>{operator.legal_name}</b> to grant
-        you the access.
+        You will need the Operation Representative of{" "}
+        <b>{operator.legal_name}</b> to grant your access.
       </p>
       <p>Please confirm below if you would like to request access.</p>
       <RequestAccessButton operatorId={operator.id} />
@@ -45,9 +45,9 @@ export default function ConfirmSelectedOperatorForm({
     <>
       <p>
         Looks like the operator <b>{operator.legal_name}</b> does not have an
-        administrator.
+        Operation Representative.
       </p>
-      <p>Would you like to request access as its administrator?</p>
+      <p>Would you like to request access as its Operation Representative?</p>
       <RequestAccessButton operatorId={operator.id} isAdminRequest={true} />
     </>
   );
@@ -126,14 +126,17 @@ export default function ConfirmSelectedOperatorForm({
             >
               Yes this is my operator
             </Button>
-            <Link
-              href="/dashboard/select-operator"
-              className="underline hover:no-underline text-sm"
-              style={{ color: BC_GOV_LINKS_COLOR }}
-              onClick={() => setHasConfirmedOperator(false)}
-            >
-              This is not my operator. Return to the operator selector
-            </Link>
+            <span className="text-sm">
+              This is not my operator.{" "}
+              <Link
+                href="/dashboard/select-operator"
+                className="underline hover:no-underline text-sm"
+                style={{ color: BC_GOV_LINKS_COLOR }}
+                onClick={() => setHasConfirmedOperator(false)}
+              >
+                Return
+              </Link>
+            </span>
           </div>
         </>
       )}

@@ -12,6 +12,7 @@ import {
 } from "@/app/components/form/formDataTypes";
 import UserOperatorMultiStepForm from "@/app/components/form/UserOperatorMultiStepForm";
 import UserOperatorContactForm from "@/app/components/form/UserOperatorContactForm";
+import Note from "@/app/components/datagrid/Note";
 
 async function getCurrentUser() {
   return actionHandler(
@@ -106,9 +107,19 @@ export default async function UserOperator({
     // If the operator exists then show the form from the second page
     <UserOperatorContactForm formData={formData} schema={userOperatorPage2} />
   ) : (
-    <UserOperatorMultiStepForm
-      schema={createUserOperatorSchema(businessStructuresList)}
-      formData={formData}
-    />
+    <>
+      {/* This note should only show up when a user is editing an existing operation. However, that page isn't built yet, so for now I'm showing it here so that designers can check. A conditional will be added once the page exists. */}
+      <Note
+        classNames={"mb-4 mt-6"}
+        showNotePrefix={false}
+        showAlertIcon={true}
+        message="Please fill out missing information or update incorrect information about your operator to continue with your application.
+Some fields cannot be edited. If you need to change those fields, please contact us via email at GHGRegulator@gov.bc.ca."
+      />
+      <UserOperatorMultiStepForm
+        schema={createUserOperatorSchema(businessStructuresList)}
+        formData={formData}
+      />
+    </>
   );
 }

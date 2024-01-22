@@ -19,8 +19,6 @@ Ensure the following are installed:
 
 In both the `client` and `bc_obps` directories, create a `.env` file and copy the contents of `.env.example` file of the respective directory into it. See the 1Password vault for the values.
 
-<!--brianna may have a conflict with Josh G's PR here -->
-
 ## Backend Environment Setup
 
 1. Navigate to folder: `cas-registration/bc_obps`.

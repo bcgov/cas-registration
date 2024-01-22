@@ -65,7 +65,7 @@ export default function UserOperatorReview({
 
   const rejectPrimeAdminRequest = async () => {
     const response = await changePrimeAdminStatus(
-      Status.REJECTED,
+      Status.DECLINED,
       userOperatorId as number,
     );
 
@@ -87,7 +87,7 @@ export default function UserOperatorReview({
 
   const rejectOperatorRequest = async () => {
     const response = await changeOperatorStatus(
-      Status.REJECTED,
+      Status.DECLINED,
       operatorId as number,
     );
 
@@ -115,7 +115,7 @@ export default function UserOperatorReview({
   return (
     <Review
       approvedMessage={`You have approved the ${requestText}.`}
-      rejectedMessage={`You have rejected the ${requestText}.`}
+      declinedMessage={`You have rejected the ${requestText}.`}
       confirmApproveMessage={`Are you sure you want to approve the ${requestText}?`}
       confirmRejectMessage={`Are you sure you want to reject the ${requestText}?`}
       isStatusPending={userOperator.status === Status.PENDING}

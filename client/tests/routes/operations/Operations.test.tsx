@@ -21,7 +21,7 @@ describe("Operations component", () => {
           bcghg_id: "123",
           opt_in: false,
           operator: 1,
-          status: "Not Registered",
+          status: "Not Started",
           reporting_activities: [],
           regulated_products: [],
           documents: [],
@@ -41,7 +41,7 @@ describe("Operations component", () => {
           bcghg_id: null,
           opt_in: false,
           operator: 2,
-          status: "Not Registered",
+          status: "Not Started",
           reporting_activities: [],
           regulated_products: [],
           documents: [],
@@ -56,7 +56,7 @@ describe("Operations component", () => {
     await expect(screen.getByText(/Operation 1/i)).toBeVisible();
     await expect(screen.getByText(/Operation 2/i)).toBeVisible();
     // temporarily commented out because render only renders half the grid
-    await expect(screen.getAllByText(/not registered/i)).toHaveLength(2);
+    await expect(screen.getAllByText(/not Started/i)).toHaveLength(2);
     await expect(
       screen.getAllByRole("button", { name: /start registration/i }),
     ).toHaveLength(2);

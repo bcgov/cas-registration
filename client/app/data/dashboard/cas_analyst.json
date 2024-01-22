@@ -5,13 +5,13 @@
     "links": [{ "title": "Operators ➤", "href": "/dashboard/access-requests" }]
   },
   {
-    "title": "Operation Registration",
-    "content": "For managing operation registration and carbon tax exemption requests.",
+    "title": "Operations",
+    "content": "For managing applications for a B.C. OBPS Regulated Operation ID.",
     "links": [{ "title": "Operations ➤", "href": "/dashboard/operations" }]
   },
   {
     "title": "Report a Problem",
-    "content": "Something wrong?",
+    "content": "Something wrong? Report a problem to the team",
     "links": [{ "title": "Tell the team ➤", "href": "/dashboard/problem" }]
   }
 ]

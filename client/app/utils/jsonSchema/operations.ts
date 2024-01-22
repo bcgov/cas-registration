@@ -19,7 +19,7 @@ const subheading = {
 
 const operationPage1: RJSFSchema = {
   type: "object",
-  title: "Operation General Information",
+  title: "Operation Information",
   required: [
     "name",
     "type",
@@ -61,7 +61,6 @@ const operationPage1: RJSFSchema = {
       title: "Boundary Map",
       format: "data-url",
     },
-
     "Did you submit a GHG emissions report for reporting year 2022?": {
       type: "boolean",
       default: false,
@@ -120,7 +119,7 @@ const operationPage1: RJSFSchema = {
         properties: {
           opt_in: {
             type: "boolean",
-            title: "Is the operation an opt-in operation?",
+            title: "Are you applying to be an opted-in operation?",
             default: false,
           },
         },
@@ -240,13 +239,13 @@ const operationPage1: RJSFSchema = {
                 mo_mailing_address_section: {
                   //Not an actual field in the db - this is just to make the form look like the wireframes
                   title:
-                    "Please provide information about the mailing address of this operator:",
+                    "Please provide information about the business mailing address of this operator:",
                   type: "object",
                   readOnly: true,
                 },
                 mo_mailing_address_same_as_physical: {
                   title:
-                    "Is the mailing address the same as the physical address?",
+                    "Is the business mailing address the same as the physical address?",
                   type: "boolean",
                   default: true,
                 },
@@ -270,7 +269,7 @@ const operationPage1: RJSFSchema = {
                     properties: {
                       mo_mailing_street_address: {
                         type: "string",
-                        title: "Mailing Address",
+                        title: "Business Mailing Address",
                       },
                       mo_mailing_municipality: {
                         type: "string",
@@ -300,23 +299,24 @@ const operationPage1: RJSFSchema = {
 
 const operationPage2: RJSFSchema = {
   type: "object",
-  title: "Application Lead",
+  title: "Point of Contact",
   required: [
-    "is_user_application_lead",
+    "is_user_point_of_contact",
     "street_address",
     "municipality",
     "province",
     "postal_code",
   ],
   properties: {
-    is_user_application_lead: {
+    is_user_point_of_contact: {
       type: "boolean",
-      title: "Are you the application lead?",
+      title:
+        "Would you like to designate another person to be a point of contact for this application? If approved, this person will receive the BORO ID.",
       default: false,
     },
     street_address: {
       type: "string",
-      title: "Mailing Address",
+      title: "Business Mailing Address",
     },
     municipality: {
       type: "string",
@@ -337,7 +337,7 @@ const operationPage2: RJSFSchema = {
     {
       if: {
         properties: {
-          is_user_application_lead: {
+          is_user_point_of_contact: {
             const: true,
           },
         },
@@ -384,31 +384,31 @@ const operationPage2: RJSFSchema = {
       else: {
         type: "object",
         required: [
-          "external_lead_first_name",
-          "external_lead_last_name",
-          "external_lead_position_title",
-          "external_lead_email",
-          "external_lead_phone_number",
+          "external_point_of_contact_first_name",
+          "external_point_of_contact_last_name",
+          "external_point_of_contact_position_title",
+          "external_point_of_contact_email",
+          "external_point_of_contact_phone_number",
         ],
         properties: {
-          external_lead_first_name: {
+          external_point_of_contact_first_name: {
             type: "string",
             title: "First Name",
           },
-          external_lead_last_name: {
+          external_point_of_contact_last_name: {
             type: "string",
             title: "Last Name",
           },
-          external_lead_position_title: {
+          external_point_of_contact_position_title: {
             type: "string",
             title: "Position Title",
           },
-          external_lead_email: {
+          external_point_of_contact_email: {
             type: "string",
             title: "Email Address",
             format: "email",
           },
-          external_lead_phone_number: {
+          external_point_of_contact_phone_number: {
             type: "string",
             title: "Phone Number",
             format: "phone",
@@ -469,20 +469,20 @@ export const operationUiSchema = {
     "Does the operation have multiple operators?",
     "operators",
     "percentage_ownership",
-    "is_user_application_lead",
-    "external_lead_first_name",
+    "is_user_point_of_contact",
+    "external_point_of_contact_first_name",
     "first_name",
-    "external_lead_last_name",
+    "external_point_of_contact_last_name",
     "last_name",
-    "external_lead_position_title",
+    "external_point_of_contact_position_title",
     "position_title",
     "street_address",
     "municipality",
     "province",
     "postal_code",
-    "external_lead_email",
+    "external_point_of_contact_email",
     "email",
-    "external_lead_phone_number",
+    "external_point_of_contact_phone_number",
     "phone_number",
     "multiple_operators_section",
     "operation_has_multiple_operators",
@@ -494,7 +494,6 @@ export const operationUiSchema = {
     "mo_mailing_municipality",
     "mo_mailing_province",
     "mo_mailing_postal_code",
-    "Would you like to add an exemption ID application lead?",
     "statutory_declaration_disclaimer_section",
     "statutory_declaration",
   ],
@@ -518,7 +517,7 @@ export const operationUiSchema = {
     "ui:FieldTemplate": FieldTemplate,
     "ui:widget": "RadioWidget",
   },
-  is_user_application_lead: {
+  is_user_point_of_contact: {
     "ui:widget": "CheckboxWidget",
     "ui:options": {
       label: false,
@@ -596,10 +595,10 @@ export const operationUiSchema = {
   phone_number: {
     "ui:widget": "PhoneWidget",
   },
-  external_lead_phone_number: {
+  external_point_of_contact_phone_number: {
     "ui:widget": "PhoneWidget",
   },
-  external_lead_email: {
+  external_point_of_contact_email: {
     "ui:widget": "EmailWidget",
   },
   statutory_declaration_disclaimer_section: {

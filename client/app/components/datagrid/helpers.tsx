@@ -9,14 +9,14 @@ export const statusStyle = (params: GridRenderCellParams) => {
     [Status.MYSELF, "primary"],
     [Status.PENDING, "primary"],
     [Status.APPROVED, "success"],
-    [Status.REJECTED, "error"],
     [Status.CHANGES_REQUESTED, "info"],
-    [Status.NOT_REGISTERED, "secondary"],
+    [Status.NOT_STARTED, "secondary"],
+    [Status.DECLINED, "error"],
   ]);
   const status = params.value as string;
   const statusColor = colorMap.get(params.value) || "primary";
   const isMultiLineStatus =
-    status === Status.CHANGES_REQUESTED || status === Status.NOT_REGISTERED;
+    status === Status.CHANGES_REQUESTED || status === Status.NOT_STARTED;
 
   // Adjust the font size for multi-line statuses so it will fit in the chip
   const fontSize = isMultiLineStatus ? "14px" : "16px";

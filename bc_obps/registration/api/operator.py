@@ -75,7 +75,7 @@ def update_operator(request, operator_id: int, payload: OperatorIn):
     operator = get_object_or_404(Operator, id=operator_id)
     user: User = request.current_user
     operator.status = payload.status
-    if operator.status in [Operator.Statuses.APPROVED, Operator.Statuses.REJECTED]:
+    if operator.status in [Operator.Statuses.APPROVED, Operator.Statuses.DECLINED]:
         operator.is_new = False
         operator.verified_at = datetime.now(pytz.utc)
         operator.verified_by_id = user.user_guid
