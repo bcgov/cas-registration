@@ -7,6 +7,10 @@ import {
   OperatorMailingAddressTitle,
   OperatorPhysicalAddressTitle,
 } from "@/app/components/form/titles/userOperatorTitles";
+import {
+  StatutoryDeclarationDisclaimerTitle,
+  StatutoryDeclarationUploadFieldTitle,
+} from "@/app/components/form/titles/operationsTitles";
 
 const subheading = {
   "ui:classNames": "text-bc-bg-blue text-start text-lg",
@@ -415,12 +419,32 @@ const operationPage2: RJSFSchema = {
   ],
 };
 
+const operationPage3: RJSFSchema = {
+  type: "object",
+  title: "Statutory Declaration and Disclaimer",
+  required: ["statutory_declaration"],
+  properties: {
+    statutory_declaration_disclaimer_section: {
+      //Not an actual field in the db - this is just to make the form look like the wireframes
+      title: "Statutory Declaration and Disclaimer",
+      type: "object",
+      readOnly: true,
+    },
+    statutory_declaration: {
+      type: "string",
+      title: "Statutory Declaration",
+      format: "data-url",
+    },
+  },
+};
+
 export const operationSchema: RJSFSchema = {
   type: "object",
   title: "Operation",
   properties: {
     operationPage1,
     operationPage2,
+    operationPage3,
   },
 };
 
@@ -471,10 +495,11 @@ export const operationUiSchema = {
     "mo_mailing_province",
     "mo_mailing_postal_code",
     "Would you like to add an exemption ID application lead?",
+    "statutory_declaration_disclaimer_section",
+    "statutory_declaration",
   ],
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
-  "ui:options": { label: false },
   id: {
     "ui:widget": "hidden",
   },
@@ -525,9 +550,7 @@ export const operationUiSchema = {
     items: {
       mo_physical_address_section: {
         ...subheading,
-        "ui:options": {
-          jsxTitle: OperatorPhysicalAddressTitle,
-        },
+        "ui:title": OperatorPhysicalAddressTitle,
       },
       mo_percentage_ownership: {
         "ui:options": {
@@ -549,9 +572,7 @@ export const operationUiSchema = {
       },
       mo_mailing_address_section: {
         ...subheading,
-        "ui:options": {
-          jsxTitle: OperatorMailingAddressTitle,
-        },
+        "ui:title": OperatorMailingAddressTitle,
       },
       mo_physical_postal_code: {
         "ui:widget": "PostalCodeWidget",
@@ -580,5 +601,13 @@ export const operationUiSchema = {
   },
   external_lead_email: {
     "ui:widget": "EmailWidget",
+  },
+  statutory_declaration_disclaimer_section: {
+    "ui:FieldTemplate": TitleOnlyFieldTemplate,
+    "ui:title": StatutoryDeclarationDisclaimerTitle,
+  },
+  statutory_declaration: {
+    "ui:widget": "FileWidget",
+    "ui:title": StatutoryDeclarationUploadFieldTitle,
   },
 };

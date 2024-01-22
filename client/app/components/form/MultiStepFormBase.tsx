@@ -11,6 +11,8 @@ import MultiStepButtons from "./MultiStepButtons";
 interface MultiStepFormProps {
   baseUrl: string;
   cancelUrl: string;
+  // Optional array to override the default header titles
+  customStepNames?: string[];
   error?: any;
   disabled?: boolean;
   formData?: any;
@@ -25,6 +27,7 @@ interface MultiStepFormProps {
 const MultiStepFormBase = ({
   baseUrl,
   cancelUrl,
+  customStepNames,
   disabled,
   error,
   formData,
@@ -61,10 +64,23 @@ const MultiStepFormBase = ({
   };
 
   const isDisabled = disabled || isSubmitting;
+  const isCustomStepNames = customStepNames && customStepNames.length > 0;
+
+  if (
+    isCustomStepNames &&
+    formSectionTitles.length !== customStepNames.length
+  ) {
+    throw new Error(
+      "The number of custom header titles must match the number of form sections",
+    );
+  }
 
   return (
     <>
-      <MultiStepHeader step={formSection} steps={formSectionTitles} />
+      <MultiStepHeader
+        step={formSection}
+        steps={isCustomStepNames ? customStepNames : formSectionTitles}
+      />
       <FormBase
         className="[&>div>fieldset]:min-h-[40vh]"
         schema={schema.properties[formSectionList[formSection]] as RJSFSchema}

@@ -60,6 +60,13 @@ export default function OperationsForm({ formData, schema }: Readonly<Props>) {
         <MultiStepFormBase
           baseUrl={`/dashboard/operations/${operationId}`}
           cancelUrl="/dashboard/operations"
+          // Add custom titles since "Statutory Declaration" is different than the
+          // title in the schema "Statutory Declaration and Disclaimer"
+          customStepNames={[
+            "Operation General Information",
+            "Application Lead",
+            "Statutory Declaration",
+          ]}
           formData={formData}
           setErrorReset={setError}
           disabled={

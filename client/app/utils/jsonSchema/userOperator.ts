@@ -1,7 +1,6 @@
 import { RJSFSchema } from "@rjsf/utils";
 import provinceOptions from "@/app/data/provinces.json";
 import FieldTemplate from "@/app/styles/rjsf/FieldTemplate";
-import GroupTitleFieldTemplate from "@/app/styles/rjsf/GroupTitleFieldTemplate";
 import TitleOnlyFieldTemplate from "@/app/styles/rjsf/TitleOnlyFieldTemplate";
 import {
   OperatorMailingAddressTitle,
@@ -438,10 +437,6 @@ export const userOperatorUiSchema = {
   ],
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
-  "ui:TitleFieldTemplate": GroupTitleFieldTemplate,
-  "ui:options": {
-    label: false,
-  },
   // CONTACT INFO SECTION
   email: {
     "ui:widget": "EmailWidget",
@@ -458,9 +453,7 @@ export const userOperatorUiSchema = {
   },
   senior_officer_section: {
     ...subheading,
-    "ui:options": {
-      jsxTitle: SeniorOfficerTitle,
-    },
+    "ui:title": SeniorOfficerTitle,
   },
   so_email: {
     "ui:widget": "EmailWidget",
@@ -477,15 +470,11 @@ export const userOperatorUiSchema = {
   // OPERATOR INFO SECTION
   mailing_address_section: {
     ...subheading,
-    "ui:options": {
-      jsxTitle: OperatorMailingAddressTitle,
-    },
+    "ui:title": OperatorMailingAddressTitle,
   },
   physical_address_section: {
     ...subheading,
-    "ui:options": {
-      jsxTitle: OperatorPhysicalAddressTitle,
-    },
+    "ui:title": OperatorPhysicalAddressTitle,
   },
   mailing_address_same_as_physical: {
     "ui:widget": "RadioWidget",
@@ -530,9 +519,7 @@ export const userOperatorUiSchema = {
     items: {
       po_physical_address_section: {
         ...subheading,
-        "ui:options": {
-          jsxTitle: ParentCompanyPhysicalAddressTitle,
-        },
+        "ui:title": ParentCompanyPhysicalAddressTitle,
       },
       po_mailing_address_same_as_physical: {
         "ui:widget": "RadioWidget",
@@ -551,9 +538,7 @@ export const userOperatorUiSchema = {
       },
       po_mailing_address_section: {
         ...subheading,
-        "ui:options": {
-          jsxTitle: ParentCompanyMailingAddressTitle,
-        },
+        "ui:title": ParentCompanyMailingAddressTitle,
       },
       po_physical_postal_code: {
         "ui:widget": "PostalCodeWidget",
