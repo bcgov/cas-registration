@@ -14,5 +14,3 @@ BC_CORPORATE_REGISTRY_REGEX = r"^[A-Za-z]{1,3}[0-9]{7}$"
 BC_CORPORATE_REGISTRY_REGEX_MESSAGE = "BC Corporate Registry Number should be 1-3 letters followed by 7 digits."
 
 BORO_ID_REGEX = r"^\d{2}-\d{4}$"
-
-ALL_INDUSTRY_USERS = []
