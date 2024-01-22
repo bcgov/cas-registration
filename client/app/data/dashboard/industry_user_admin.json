@@ -16,7 +16,12 @@
   },
   {
     "title": "Report a Problem",
-    "content": "Something wrong? Report a problem to the team",
-    "links": [{ "title": "Tell the team ➤", "href": "/dashboard/problem" }]
+    "content": "Something wrong?",
+    "links": [
+      {
+        "title": "Report a problem to the team ➤",
+        "href": "mailto:GHGRegulator@gov.bc.ca"
+      }
+    ]
   }
 ]
