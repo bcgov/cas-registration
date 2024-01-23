@@ -1,3 +1,11 @@
+export const OptInOperationTitle = (
+  <div className="max-w-2xl">
+    <b>Note:</b> Operators of industrial operations that intend to apply to be
+    an opted-in operation must submit an application form by email which is
+    available on our website.
+  </div>
+);
+
 export const StatutoryDeclarationDisclaimerTitle = (
   <>
     <b>Please note:</b>
