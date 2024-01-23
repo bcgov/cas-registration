@@ -4,7 +4,6 @@ from model_bakery import baker
 from django.test import Client
 from localflavor.ca.models import CAPostalCodeField
 from registration.models import (
-    AppRole,
     NaicsCode,
     Document,
     Contact,
@@ -186,7 +185,7 @@ class TestOperationsEndpoint(CommonTestSetup):
 
     def test_post_new_operation_with_multiple_operators(self):
         naics_code = baker.make(NaicsCode)
-        document = baker.make(Document)
+        statutory_declaration = baker.make(Document, name='signed_statutory_declaration')
         contact = baker.make(Contact)
         regulated_products = baker.make(RegulatedProduct, _quantity=2)
         reporting_activities = baker.make(ReportingActivity, _quantity=2)
@@ -196,6 +195,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             name='Springfield Nuclear Power Plant',
             type='Single Facility Operation',
             naics_code_id=naics_code.id,
+            statutory_declaration=statutory_declaration,
             operation_has_multiple_operators=True,
             multiple_operators_array=[
                 {
@@ -235,7 +235,6 @@ class TestOperationsEndpoint(CommonTestSetup):
             ],
             reporting_activities=reporting_activities,
             regulated_products=regulated_products,
-            documents=[document.id],
             contacts=[contact.id],
             operator_id=operator.id,
         )
@@ -484,7 +483,6 @@ class TestOperationsEndpoint(CommonTestSetup):
             reporting_activities=[],
             regulated_products=[],
             operation_has_multiple_operators=False,
-            documents=[],
             point_of_contact=contact2.id,
             operator_id=operator.id,
             add_another_user_for_point_of_contact=False,

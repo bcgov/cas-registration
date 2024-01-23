@@ -14,7 +14,6 @@ export interface Operator {
   mailing_province: string;
   mailing_postal_code: string;
   website: string;
-  documents: Array<number>;
   contacts: Array<number>;
 }
 

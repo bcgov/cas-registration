@@ -66,10 +66,6 @@ const operationPage1: RJSFSchema = {
       title: "Does the operation have multiple operators?",
       default: false,
     },
-    // temp handling of many to many, will be addressed in #138
-    // petrinex_ids: { type: "number", title: "Petrinex IDs" },
-
-    // documents: { type: "string", title: "documents" },
   },
   allOf: [
     {
