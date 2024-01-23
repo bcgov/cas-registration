@@ -53,6 +53,8 @@ spec:
               value: {{ .Values.frontend.auth.siteminderAuthUrl }}/clp-cgi/logoff.cgi?retnow=1&returl={{ .Values.frontend.auth.keycloakAuthUrl}}{{ .Values.frontend.auth.keycloakRealms }}{{ .Values.frontend.auth.keycloakOidc}}/logout
             - name: KEYCLOAK_CLIENT_ID
               value: {{ .Values.frontend.auth.keycloakClientId }}
+            - name: SITEMINDER_KEYCLOAK_LOGOUT_URL
+              value: {{ .Values.frontend.auth.siteminderAuthUrl }}/clp-cgi/logoff.cgi?retnow=1&returl={{ .Values.frontend.auth.keycloakAuthUrl}}{{ .Values.frontend.auth.keycloakRealms }}{{ .Values.frontend.auth.keycloakOidc}}/logout
             - name: NEXTAUTH_SECRET
               valueFrom:
                 secretKeyRef:
