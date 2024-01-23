@@ -270,6 +270,17 @@ jobs:
         working-directory: ./client
       - name: Run Playwright tests
         run: DEBUG=pw:browser npx playwright test --workers=1 client/e2e/*
+        env:
+          CAS_USERNAME: bc-cas-dev
+          CAS_PASSWORD: ${{ secrets.CAS_PASSWORD }}
+          CAS_USER_GUID: ${{ secrets.CAS_USER_GUID }}
+          INDUSTRY_USER_ADMIN_USERNAME: bc-cas-dev
+          INDUSTRY_USER_ADMIN_PASSWORD: ${{ secrets.INDUSTRY_USER_ADMIN_PASSWORD }}
+          INDUSTRY_USER_USERNAME: bc-cas-dev-secondary
+          INDUSTRY_USER_PASSWORD: ${{ secrets.INDUSTRY_USER_PASSWORD }}
+          NEW_USER_USERNAME: bc-cas-dev-three
+          NEW_USER_PASSWORD: ${{ secrets.NEW_USER_PASSWORD }}
+          NEW_USER_GUID: ${{ secrets.NEW_USER_GUID }}
         working-directory: ./client
       - uses: actions/upload-artifact@v3
         if: always()
