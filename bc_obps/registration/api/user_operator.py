@@ -281,7 +281,7 @@ def request_access(request, payload: SelectOperatorIn):
 
     # Making a draft UserOperator instance if one doesn't exist
     user_operator, created = UserOperator.objects.get_or_create(
-        user=user, operator=operator, status=UserOperator.Statuses.PENDING
+        user=user, operator=operator, status=UserOperator.Statuses.PENDING, role=UserOperator.Roles.REPORTER
     )
     if created:
         user_operator.set_create_or_update(modifier=user)
