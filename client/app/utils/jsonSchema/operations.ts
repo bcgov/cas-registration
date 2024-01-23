@@ -119,153 +119,153 @@ const operationPage1: RJSFSchema = {
         required: ["opt_in"],
       },
     },
-    {
-      if: {
-        properties: {
-          operation_has_multiple_operators: {
-            const: true,
-          },
-        },
-      },
-      then: {
-        properties: {
-          multiple_operators_array: {
-            type: "array",
-            default: [{}],
-            items: {
-              type: "object",
-              required: [
-                "mo_legal_name",
-                "mo_trade_name",
-                "mo_cra_business_number",
-                "mo_bc_corporate_registry_number",
-                "mo_business_structure",
-                "mo_percentage_ownership",
-                "mo_physical_street_address",
-                "mo_physical_municipality",
-                "mo_physical_province",
-                "mo_physical_postal_code",
-              ],
-              properties: {
-                mo_legal_name: {
-                  type: "string",
-                  title: "Legal Name",
-                },
-                mo_trade_name: {
-                  type: "string",
-                  title: "Trade Name",
-                },
-                mo_cra_business_number: {
-                  type: "number",
-                  title: "CRA Business Number",
-                },
-                mo_bc_corporate_registry_number: {
-                  type: "string",
-                  title: "BC Corporate Registry Number",
-                  format: "bc_corporate_registry_number",
-                },
-                mo_business_structure: {
-                  type: "string",
-                  title: "Business Structure",
-                },
-                mo_website: {
-                  type: "string",
-                  title: "Website (optional)",
-                  format: "uri",
-                },
-                mo_percentage_ownership: {
-                  type: "number",
-                  title: "Percentage of ownership of operation (%)",
-                },
-                mo_proof_of_authority: {
-                  type: "string",
-                  title:
-                    "Proof of authority of designated operator from partner company",
-                  format: "data-url",
-                },
-                mo_physical_address_section: {
-                  //Not an actual field in the db - this is just to make the form look like the wireframes
-                  title:
-                    "Please provide information about the physical address of this operator:",
-                  type: "object",
-                  readOnly: true,
-                },
-                mo_physical_street_address: {
-                  type: "string",
-                  title: "Physical Address",
-                },
-                mo_physical_municipality: {
-                  type: "string",
-                  title: "Municipality",
-                },
-                mo_physical_province: {
-                  type: "string",
-                  title: "Province",
-                  anyOf: provinceOptions,
-                },
-                mo_physical_postal_code: {
-                  type: "string",
-                  title: "Postal Code",
-                  format: "postal-code",
-                },
-                mo_mailing_address_section: {
-                  //Not an actual field in the db - this is just to make the form look like the wireframes
-                  title:
-                    "Please provide information about the business mailing address of this operator:",
-                  type: "object",
-                  readOnly: true,
-                },
-                mo_mailing_address_same_as_physical: {
-                  title:
-                    "Is the business mailing address the same as the physical address?",
-                  type: "boolean",
-                  default: true,
-                },
-              },
-              allOf: [
-                {
-                  if: {
-                    properties: {
-                      mo_mailing_address_same_as_physical: {
-                        const: false,
-                      },
-                    },
-                  },
-                  then: {
-                    required: [
-                      "mo_mailing_street_address",
-                      "mo_mailing_municipality",
-                      "mo_mailing_province",
-                      "mo_mailing_postal_code",
-                    ],
-                    properties: {
-                      mo_mailing_street_address: {
-                        type: "string",
-                        title: "Business Mailing Address",
-                      },
-                      mo_mailing_municipality: {
-                        type: "string",
-                        title: "Municipality",
-                      },
-                      mo_mailing_province: {
-                        type: "string",
-                        title: "Province",
-                        anyOf: provinceOptions,
-                      },
-                      mo_mailing_postal_code: {
-                        type: "string",
-                        title: "Postal Code",
-                        format: "postal-code",
-                      },
-                    },
-                  },
-                },
-              ],
-            },
-          },
-        },
-      },
-    },
+    // {
+    //   if: {
+    //     properties: {
+    //       operation_has_multiple_operators: {
+    //         const: true,
+    //       },
+    //     },
+    //   },
+    //   then: {
+    //     properties: {
+    //       multiple_operators_array: {
+    //         type: "array",
+    //         default: [{}],
+    //         items: {
+    //           type: "object",
+    //           required: [
+    //             "mo_legal_name",
+    //             "mo_trade_name",
+    //             "mo_cra_business_number",
+    //             "mo_bc_corporate_registry_number",
+    //             "mo_business_structure",
+    //             "mo_percentage_ownership",
+    //             "mo_physical_street_address",
+    //             "mo_physical_municipality",
+    //             "mo_physical_province",
+    //             "mo_physical_postal_code",
+    //           ],
+    //           properties: {
+    //             mo_legal_name: {
+    //               type: "string",
+    //               title: "Legal Name",
+    //             },
+    //             mo_trade_name: {
+    //               type: "string",
+    //               title: "Trade Name",
+    //             },
+    //             mo_cra_business_number: {
+    //               type: "number",
+    //               title: "CRA Business Number",
+    //             },
+    //             mo_bc_corporate_registry_number: {
+    //               type: "string",
+    //               title: "BC Corporate Registry Number",
+    //               format: "bc_corporate_registry_number",
+    //             },
+    //             mo_business_structure: {
+    //               type: "string",
+    //               title: "Business Structure",
+    //             },
+    //             mo_website: {
+    //               type: "string",
+    //               title: "Website (optional)",
+    //               format: "uri",
+    //             },
+    //             mo_percentage_ownership: {
+    //               type: "number",
+    //               title: "Percentage of ownership of operation (%)",
+    //             },
+    //             mo_proof_of_authority: {
+    //               type: "string",
+    //               title:
+    //                 "Proof of authority of designated operator from partner company",
+    //               format: "data-url",
+    //             },
+    //             mo_physical_address_section: {
+    //               //Not an actual field in the db - this is just to make the form look like the wireframes
+    //               title:
+    //                 "Please provide information about the physical address of this operator:",
+    //               type: "object",
+    //               readOnly: true,
+    //             },
+    //             mo_physical_street_address: {
+    //               type: "string",
+    //               title: "Physical Address",
+    //             },
+    //             mo_physical_municipality: {
+    //               type: "string",
+    //               title: "Municipality",
+    //             },
+    //             mo_physical_province: {
+    //               type: "string",
+    //               title: "Province",
+    //               anyOf: provinceOptions,
+    //             },
+    //             mo_physical_postal_code: {
+    //               type: "string",
+    //               title: "Postal Code",
+    //               format: "postal-code",
+    //             },
+    //             mo_mailing_address_section: {
+    //               //Not an actual field in the db - this is just to make the form look like the wireframes
+    //               title:
+    //                 "Please provide information about the business mailing address of this operator:",
+    //               type: "object",
+    //               readOnly: true,
+    //             },
+    //             mo_mailing_address_same_as_physical: {
+    //               title:
+    //                 "Is the business mailing address the same as the physical address?",
+    //               type: "boolean",
+    //               default: true,
+    //             },
+    //           },
+    //           allOf: [
+    //             {
+    //               if: {
+    //                 properties: {
+    //                   mo_mailing_address_same_as_physical: {
+    //                     const: false,
+    //                   },
+    //                 },
+    //               },
+    //               then: {
+    //                 required: [
+    //                   "mo_mailing_street_address",
+    //                   "mo_mailing_municipality",
+    //                   "mo_mailing_province",
+    //                   "mo_mailing_postal_code",
+    //                 ],
+    //                 properties: {
+    //                   mo_mailing_street_address: {
+    //                     type: "string",
+    //                     title: "Business Mailing Address",
+    //                   },
+    //                   mo_mailing_municipality: {
+    //                     type: "string",
+    //                     title: "Municipality",
+    //                   },
+    //                   mo_mailing_province: {
+    //                     type: "string",
+    //                     title: "Province",
+    //                     anyOf: provinceOptions,
+    //                   },
+    //                   mo_mailing_postal_code: {
+    //                     type: "string",
+    //                     title: "Postal Code",
+    //                     format: "postal-code",
+    //                   },
+    //                 },
+    //               },
+    //             },
+    //           ],
+    //         },
+    //       },
+    //     },
+    //   },
+    // },
   ],
 };
 
