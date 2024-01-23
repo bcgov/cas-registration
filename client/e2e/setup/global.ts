@@ -50,7 +50,6 @@ const setupAuth = async (
         // log DB connection info
         console.log("DB connection info:", {
           user: process.env.DB_USER,
-          password: process.env.DB_PASSWORD,
           host: process.env.DB_HOST,
           database: process.env.DB_NAME,
           port: process.env.DB_PORT,
@@ -60,6 +59,9 @@ const setupAuth = async (
           "SELECT * FROM information_schema.schemata",
         );
         console.log("Schemas:", schemas.rows);
+
+        // show pool connection config
+        console.log("Pool connection config:", pool.options);
 
         // eslint-disable-next-line no-console
         console.log(`Upserting ${user} for role ${role}`);
