@@ -197,11 +197,8 @@ def update_operation(request, operation_id: int, submit: str, payload: Operation
 
     operation = get_object_or_404(Operation, id=operation_id)
 
-    if payload.operator:
-        operation.operator_id = payload.operator
-
-    if payload.naics_code:
-        operation.naics_code_id = payload.naics_code
+    operation.operator_id = payload.operator
+    operation.naics_code_id = payload.naics_code
 
     point_of_contact_address_id = None
     point_of_contact_id = payload.point_of_contact_id or None

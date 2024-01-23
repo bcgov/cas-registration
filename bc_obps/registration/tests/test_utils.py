@@ -342,6 +342,7 @@ class TestFileHelpers:
         assert isinstance(result, str)
         assert result.startswith('data:application/pdf;name=')
 
+    @staticmethod
     def data_url_to_file_returns_file():
         result = data_url_to_file(MOCK_DATA_URL)
         assert result.exists() and result.is_file()

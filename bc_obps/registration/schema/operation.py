@@ -92,7 +92,7 @@ class OperationOut(ModelSchema):
     operation_has_multiple_operators: Optional[bool] = Field(False, alias="operation_has_multiple_operators")
     multiple_operators_array: Optional["List[MultipleOperatorOut]"] = Field(None, alias="multiple_operator")
     operator: str = Field(..., alias="operator.legal_name")
-    statutory_declaration: str = None
+    statutory_declaration: Optional[str] = None
 
     @staticmethod
     def resolve_statutory_declaration(obj: Document):
