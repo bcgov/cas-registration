@@ -2,7 +2,7 @@ import OperationsForm, {
   OperationsFormData,
 } from "@/app/components/form/OperationsForm";
 import { operationSchema } from "@/app/utils/jsonSchema/operations";
-import { BusinessStructure } from "@/app/components/routes/select-operator/form/types";
+/* import { BusinessStructure } from "@/app/components/routes/select-operator/form/types"; */
 import { UserProfileFormData } from "@/app/components/form/formDataTypes";
 import { RJSFSchema } from "@rjsf/utils";
 import { actionHandler } from "@/app/utils/actions";
@@ -61,13 +61,14 @@ export async function getReportingActivities() {
 }
 
 // 🛠️ Function to fetch the business structures
-async function getBusinessStructures() {
-  return actionHandler(
-    `registration/business_structures`,
-    "GET",
-    `/dashboard/select-operator/user-operator`,
-  );
-}
+// Commenting out as we are disabling the multiple operators feature
+// async function getBusinessStructures() {
+//   return actionHandler(
+//     `registration/business_structures`,
+//     "GET",
+//     `/dashboard/select-operator/user-operator`,
+//   );
+// }
 
 // 🛠️ Function to fetch an operation by ID
 async function getOperation(id: number) {
@@ -95,7 +96,7 @@ export const createOperationSchema = (
     id: number;
     name: string;
   }[],
-  businessStructureList: { id: string; label: string }[],
+  /*   businessStructureList: { id: string; label: string }[], */
 ) => {
   const localSchema = JSON.parse(JSON.stringify(schema));
   // naics codes
@@ -126,19 +127,20 @@ export const createOperationSchema = (
       reportingActivities.map((activity) => activity?.name);
   }
   // business structures
-  const businessStructureOptions = businessStructureList?.map(
-    (businessStructure) => ({
-      type: "string",
-      title: businessStructure.label,
-      enum: [businessStructure.id],
-      value: businessStructure.id,
-    }),
-  );
-
-  if (Array.isArray(businessStructureOptions)) {
-    localSchema.properties.operationPage1.allOf[2].then.properties.multiple_operators_array.items.properties.mo_business_structure.anyOf =
-      businessStructureOptions;
-  }
+  // Commenting out as we are disabling the multiple operators feature
+  // const businessStructureOptions = businessStructureList?.map(
+  //   (businessStructure) => ({
+  //     type: "string",
+  //     title: businessStructure.label,
+  //     enum: [businessStructure.id],
+  //     value: businessStructure.id,
+  //   }),
+  // );
+  //
+  // if (Array.isArray(businessStructureOptions)) {
+  //   localSchema.properties.operationPage1.allOf[2].then.properties.multiple_operators_array.items.properties.mo_business_structure.anyOf =
+  //     businessStructureOptions;
+  // }
 
   return localSchema;
 };
@@ -148,7 +150,8 @@ export default async function Operation({ numRow }: { numRow?: number }) {
   const codes = await getNaicsCodes();
   const products = await getRegulatedProducts();
   const activities = await getReportingActivities();
-  const businessStructures: BusinessStructure[] = await getBusinessStructures();
+  // Commenting out as we are disabling the multiple operators feature
+  // const businessStructures: BusinessStructure[] = await getBusinessStructures();
 
   let operation: OperationInt | undefined;
 
@@ -157,12 +160,13 @@ export default async function Operation({ numRow }: { numRow?: number }) {
     operation = await getOperation(numRow);
   }
 
-  const businessStructuresList = businessStructures?.map(
-    (businessStructure: BusinessStructure) => ({
-      id: businessStructure.name,
-      label: businessStructure.name,
-    }),
-  );
+  // Commenting out as we are disabling the multiple operators feature
+  // const businessStructuresList = businessStructures?.map(
+  //   (businessStructure: BusinessStructure) => ({
+  //     id: businessStructure.name,
+  //     label: businessStructure.name,
+  //   }),
+  // );
 
   let userProfileFormData: UserProfileFormData | { error: string } =
     await getUserFormData();
@@ -293,7 +297,7 @@ export default async function Operation({ numRow }: { numRow?: number }) {
           codes,
           products,
           activities,
-          businessStructuresList,
+          // businessStructuresList,
         )}
         formData={transformedFormData as OperationsFormData}
       />
