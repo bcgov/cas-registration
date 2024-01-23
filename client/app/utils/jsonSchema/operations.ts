@@ -2,11 +2,6 @@ import FieldTemplate from "@/app/styles/rjsf/FieldTemplate";
 import { RJSFSchema } from "@rjsf/utils";
 import provinceOptions from "@/app/data/provinces.json";
 import TitleOnlyFieldTemplate from "@/app/styles/rjsf/TitleOnlyFieldTemplate";
-import ArrayFieldTemplate from "@/app/styles/rjsf/ArrayFieldTemplate";
-import {
-  OperatorMailingAddressTitle,
-  OperatorPhysicalAddressTitle,
-} from "@/app/components/form/titles/userOperatorTitles";
 import {
   StatutoryDeclarationDisclaimerTitle,
   StatutoryDeclarationUploadFieldTitle,
@@ -44,13 +39,13 @@ const operationPage1: RJSFSchema = {
       },
       title: "Regulated Product Name(s)",
     },
-    reporting_activities: {
-      type: "array",
-      items: {
-        type: "number",
-      },
-      title: "Reporting Activities",
-    },
+    // reporting_activities: {
+    //   type: "array",
+    //   items: {
+    //     type: "number",
+    //   },
+    //   title: "Reporting Activities",
+    // },
     ghg_emissions_section: {
       //Not an actual field in the db - this is just to make the form look like the wireframes
       title:
@@ -435,7 +430,7 @@ export const operationUiSchema = {
     "type",
     "naics_code_id",
     "regulated_products",
-    "reporting_activities",
+    /*     "reporting_activities", */
     "ghg_emissions_section",
     "Did you submit a GHG emissions report for reporting year 2022?",
     "previous_year_attributable_emissions",
@@ -461,9 +456,9 @@ export const operationUiSchema = {
     "email",
     "external_point_of_contact_phone_number",
     "phone_number",
-    "multiple_operators_section",
-    "operation_has_multiple_operators",
-    "multiple_operators_array",
+    // "multiple_operators_section",
+    // "operation_has_multiple_operators",
+    // "multiple_operators_array",
     "mo_percentage_ownership",
     "mo_mailing_address_same_as_physical",
     "mo_mailing_address_section",
@@ -513,60 +508,60 @@ export const operationUiSchema = {
   province: {
     "ui:widget": "ComboBox",
   },
-  multiple_operators_section: {
-    ...subheading,
-  },
-  multiple_operators_array: {
-    "ui:FieldTemplate": FieldTemplate,
-    "ui:ArrayFieldTemplate": ArrayFieldTemplate,
-    "ui:options": {
-      label: false,
-      arrayAddLabel: "Add another operator",
-      title: "Multiple Operator(s) information - Operator",
-    },
-    items: {
-      mo_physical_address_section: {
-        ...subheading,
-        "ui:title": OperatorPhysicalAddressTitle,
-      },
-      mo_percentage_ownership: {
-        "ui:options": {
-          max: 100,
-        },
-      },
-      mo_mailing_address_same_as_physical: {
-        "ui:widget": "RadioWidget",
-      },
-      mo_business_structure: {
-        "ui:widget": "ComboBox",
-        "ui:placeholder": "Select a business structure",
-      },
-      mo_physical_province: {
-        "ui:widget": "ComboBox",
-      },
-      mo_mailing_province: {
-        "ui:widget": "ComboBox",
-      },
-      mo_mailing_address_section: {
-        ...subheading,
-        "ui:title": OperatorMailingAddressTitle,
-      },
-      mo_physical_postal_code: {
-        "ui:widget": "PostalCodeWidget",
-      },
-      mo_mailing_postal_code: {
-        "ui:widget": "PostalCodeWidget",
-      },
-    },
-  },
+  // multiple_operators_section: {
+  //   ...subheading,
+  // },
+  // multiple_operators_array: {
+  //   "ui:FieldTemplate": FieldTemplate,
+  //   "ui:ArrayFieldTemplate": ArrayFieldTemplate,
+  //   "ui:options": {
+  //     label: false,
+  //     arrayAddLabel: "Add another operator",
+  //     title: "Multiple Operator(s) information - Operator",
+  //   },
+  //   items: {
+  //     mo_physical_address_section: {
+  //       ...subheading,
+  //       "ui:title": OperatorPhysicalAddressTitle,
+  //     },
+  //     mo_percentage_ownership: {
+  //       "ui:options": {
+  //         max: 100,
+  //       },
+  //     },
+  //     mo_mailing_address_same_as_physical: {
+  //       "ui:widget": "RadioWidget",
+  //     },
+  //     mo_business_structure: {
+  //       "ui:widget": "ComboBox",
+  //       "ui:placeholder": "Select a business structure",
+  //     },
+  //     mo_physical_province: {
+  //       "ui:widget": "ComboBox",
+  //     },
+  //     mo_mailing_province: {
+  //       "ui:widget": "ComboBox",
+  //     },
+  //     mo_mailing_address_section: {
+  //       ...subheading,
+  //       "ui:title": OperatorMailingAddressTitle,
+  //     },
+  //     mo_physical_postal_code: {
+  //       "ui:widget": "PostalCodeWidget",
+  //     },
+  //     mo_mailing_postal_code: {
+  //       "ui:widget": "PostalCodeWidget",
+  //     },
+  //   },
+  // },
   regulated_products: {
     "ui:widget": "MultiSelectWidget",
     "ui:placeholder": "Select regulated products",
   },
-  reporting_activities: {
-    "ui:widget": "MultiSelectWidget",
-    "ui:placeholder": "Select reporting activities",
-  },
+  // reporting_activities: {
+  //   "ui:widget": "MultiSelectWidget",
+  //   "ui:placeholder": "Select reporting activities",
+  // },
   postal_code: {
     "ui:widget": "PostalCodeWidget",
   },
