@@ -1,3 +1,10 @@
+export const PointOfContactTitle = (
+  <>
+    Please provide information about the <b>point of contact</b> of the B.C.
+    OBPS Regulated Operation ID application.
+  </>
+);
+
 export const OptInOperationTitle = (
   <div className="max-w-2xl">
     <b>Note:</b> Operators of industrial operations that intend to apply to be
