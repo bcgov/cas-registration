@@ -76,7 +76,7 @@ export default function Page() {
           item
           xs={12}
           md={6}
-          order={{ xs: 2, md: 1 }}
+          order={{ xs: 1, md: 1 }}
           sx={{
             fontSize: "24px",
             marginRight: {
@@ -119,7 +119,7 @@ export default function Page() {
             tax.
           </p>
         </Grid>
-        <Grid item xs={12} md={5} order={{ xs: 1, md: 2 }}>
+        <Grid item xs={12} md={5} order={{ xs: 2, md: 2 }}>
           <section className="flex flex-col items-center">
             <h2 className={`${headerStyle} w-full text-center`}>
               Log in as Industrial Operator
