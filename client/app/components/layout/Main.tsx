@@ -4,9 +4,12 @@ import { ReactNode } from "react";
 
 type MainProps = {
   children: ReactNode;
+  sx?: {
+    [key: string]: any;
+  };
 };
 
-const Main = ({ children }: MainProps) => {
+const Main = ({ children, sx }: MainProps) => {
   return (
     <Box
       component="main"
@@ -20,6 +23,7 @@ const Main = ({ children }: MainProps) => {
           md: "180px auto 80px auto",
         },
         padding: "0 12px",
+        ...sx,
       }}
     >
       {children}
