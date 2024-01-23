@@ -3,6 +3,7 @@ import { RJSFSchema } from "@rjsf/utils";
 import provinceOptions from "@/app/data/provinces.json";
 import TitleOnlyFieldTemplate from "@/app/styles/rjsf/TitleOnlyFieldTemplate";
 import {
+  PointOfContactTitle,
   OptInOperationTitle,
   StatutoryDeclarationDisclaimerTitle,
   StatutoryDeclarationUploadFieldTitle,
@@ -296,6 +297,12 @@ const operationPage2: RJSFSchema = {
         "Would you like to designate another person to be a point of contact for this application? If approved, this person will receive the BORO ID.",
       default: false,
     },
+    point_of_contact_section: {
+      //Not an actual field in the db - this is just to make the form look like the wireframes
+      title: "Point of Contact Information",
+      type: "object",
+      readOnly: true,
+    },
     street_address: {
       type: "string",
       title: "Business Mailing Address",
@@ -452,7 +459,8 @@ export const operationUiSchema = {
     "Does the operation have multiple operators?",
     "operators",
     "percentage_ownership",
-    "add_another_user_for_point_of_contact",
+    "is_external_point_of_contact",
+    "point_of_contact_section",
     "external_point_of_contact_first_name",
     "first_name",
     "external_point_of_contact_last_name",
@@ -504,11 +512,20 @@ export const operationUiSchema = {
     "ui:FieldTemplate": FieldTemplate,
     "ui:widget": "RadioWidget",
   },
+<<<<<<< HEAD
   add_another_user_for_point_of_contact: {
     "ui:widget": "CheckboxWidget",
     "ui:options": {
       label: false,
     },
+=======
+  is_user_point_of_contact: {
+    "ui:widget": "RadioWidget",
+  },
+  point_of_contact_section: {
+    ...subheading,
+    "ui:title": PointOfContactTitle,
+>>>>>>> 16758a50 (feat: add point of contact section title)
   },
   opt_in_section: {
     ...subheading,
