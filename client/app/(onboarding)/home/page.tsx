@@ -5,6 +5,7 @@ import Button from "@mui/material/Button";
 import Grid from "@mui/material/Grid/Grid";
 import events from "@/app/data/home/events.json";
 import { signIn } from "next-auth/react";
+import { getEnvValue } from "@/app/utils/actions";
 /*
 📚
 In the app directory, nested folders are normally mapped to URL paths.
@@ -26,8 +27,14 @@ export default function Page() {
     signIn("keycloak", undefined, { kc_idp_hint: "bceidbusiness" });
   };
 
-  const businessBceidSignupUrl =
-    process.env.NEXT_PUBLIC_BCEID_BUSINESS_SIGNUP_URL;
+  const handleBceidSignupClick = async () => {
+    const env = await getEnvValue("NODE_ENV");
+    if (env === "production") {
+      window.open("https://www.bceid.ca/register/business/", "_blank");
+    } else {
+      window.open(`https://www.${env}.bceid.ca/register/business/`, "_blank");
+    }
+  };
 
   return (
     <>
@@ -147,13 +154,12 @@ export default function Page() {
             </Button>
             <p>
               Don’t have a Business BCeID?{" "}
-              <a
-                href={businessBceidSignupUrl}
-                target="_blank"
-                rel="noopener noreferrer"
+              <button
+                className="border-none bg-transparent text-lg text-bc-link-blue"
+                onClick={handleBceidSignupClick}
               >
                 Create one here
-              </a>
+              </button>
             </p>
           </section>
           <h2 className={headerStyle}>Key Dates</h2>
