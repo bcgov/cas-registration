@@ -47,6 +47,20 @@ const setupAuth = async (
         // 🛢 To generate a storageState file for each CAS role...
         // perform an upsert query that inserts or updates the role associated with your IDIR user_guid in the erc.user table.
 
+        // log DB connection info
+        console.log("DB connection info:", {
+          user: process.env.DB_USER,
+          password: process.env.DB_PASSWORD,
+          host: process.env.DB_HOST,
+          database: process.env.DB_NAME,
+          port: process.env.DB_PORT,
+        });
+        // show all schemas
+        const schemas = await pool.query(
+          "SELECT * FROM information_schema.schemata",
+        );
+        console.log("Schemas:", schemas.rows);
+
         // eslint-disable-next-line no-console
         console.log(`Upserting ${user} for role ${role}`);
         const upsert = `
