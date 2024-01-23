@@ -19,7 +19,7 @@ const login = async (
   page: any,
   userName: string,
   password: string,
-  role: string
+  role: string,
 ) => {
   try {
     // 🛸 Navigate to the home page
@@ -54,7 +54,7 @@ const login = async (
 
     // 🕒Wait for the "Continue" button to be present
     const continueButton = await page.waitForSelector(
-      'input[type="submit"][name="btnSubmit"].btn.btn-primary'
+      'input[type="submit"][name="btnSubmit"].btn.btn-primary',
     );
     // 🔍 Assert that the button is available
     expect(continueButton).not.toBeNull();
@@ -88,7 +88,7 @@ const logout = async (page: any) => {
   try {
     // 🕒 Wait for the "Log out" button to appear
     const logoutButton = await page.waitForSelector(
-      'button:has-text("Log out")'
+      'button:has-text("Log out")',
     );
     // 🔍 Assert that the button is available
     expect(logoutButton).not.toBeNull();
