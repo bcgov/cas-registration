@@ -55,17 +55,17 @@ const operationPage1: RJSFSchema = {
       type: "boolean",
       default: false,
     },
-    multiple_operators_section: {
-      //Not an actual field in the db - this is just to make the form look like the wireframes
-      title: "Multiple operators information",
-      type: "object",
-      readOnly: true,
-    },
-    operation_has_multiple_operators: {
-      type: "boolean",
-      title: "Does the operation have multiple operators?",
-      default: false,
-    },
+    // multiple_operators_section: {
+    //   //Not an actual field in the db - this is just to make the form look like the wireframes
+    //   title: "Multiple operators information",
+    //   type: "object",
+    //   readOnly: true,
+    // },
+    // operation_has_multiple_operators: {
+    //   type: "boolean",
+    //   title: "Does the operation have multiple operators?",
+    //   default: false,
+    // },
   },
   allOf: [
     {
