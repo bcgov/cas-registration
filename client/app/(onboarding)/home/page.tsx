@@ -164,7 +164,7 @@ export default function Page() {
             <p>
               Don’t have a Business BCeID?{" "}
               <button
-                className="border-none bg-transparent text-lg text-bc-link-blue"
+                className="border-none bg-transparent text-lg text-bc-link-blue cursor-pointer"
                 onClick={handleBceidSignupClick}
               >
                 Create one here
