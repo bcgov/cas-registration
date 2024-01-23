@@ -11,13 +11,27 @@ from django.core.exceptions import ValidationError
 from django.core.files.storage import default_storage
 
 
+class BaseModel(models.Model):
+    """
+    Abstract base class for all models in the app.
+    This class adds a save method that calls full_clean before saving.
+    """
+
+    class Meta:
+        abstract = True
+
+    def save(self, *args, **kwargs):
+        self.full_clean()  # validate the model before saving
+        super().save(*args, **kwargs)
+
+
 class TimeStampedModelManager(models.Manager):
     def get_queryset(self):
         """Return only objects that have not been archived"""
         return super().get_queryset().filter(archived_at__isnull=True)
 
 
-class TimeStampedModel(models.Model):
+class TimeStampedModel(BaseModel):
     created_by = models.ForeignKey(
         'User', null=True, blank=True, on_delete=models.PROTECT, related_name='%(class)s_created'
     )
@@ -58,7 +72,7 @@ class TimeStampedModel(models.Model):
         self.save(update_fields=['archived_by', 'archived_at'])
 
 
-class AppRole(models.Model):
+class AppRole(BaseModel):
     """AppRole model"""
 
     role_name = models.CharField(
@@ -108,7 +122,7 @@ class AppRole(models.Model):
             return []
 
 
-class DocumentType(models.Model):
+class DocumentType(BaseModel):
     """Document type model"""
 
     name = models.CharField(
@@ -151,7 +165,7 @@ class Document(TimeStampedModel):
         super().delete(*args, **kwargs)
 
 
-class NaicsCode(models.Model):
+class NaicsCode(BaseModel):
     """NAICS code model"""
 
     naics_code = models.CharField(max_length=1000, db_comment="NAICS code")
@@ -163,7 +177,7 @@ class NaicsCode(models.Model):
         db_table = 'erc"."naics_code'
 
 
-class RegulatedProduct(models.Model):
+class RegulatedProduct(BaseModel):
     """Regulated products model"""
 
     name = models.CharField(max_length=1000, db_comment="The name of a regulated product")
@@ -174,7 +188,7 @@ class RegulatedProduct(models.Model):
         db_table = 'erc"."regulated_product'
 
 
-class ReportingActivity(models.Model):
+class ReportingActivity(BaseModel):
     """Reporting activity model"""
 
     class Applicablity(models.TextChoices):
@@ -193,17 +207,22 @@ class ReportingActivity(models.Model):
         db_table = 'erc"."reporting_activity'
 
 
-class Address(models.Model):
+class Address(BaseModel):
     """Address model"""
 
-    street_address = models.CharField(max_length=1000, null=True, db_comment="Street address of relevant location)")
-    municipality = models.CharField(max_length=1000, null=True, db_comment="Municipality of relevant location")
+    street_address = models.CharField(
+        max_length=1000, null=True, blank=True, db_comment="Street address of relevant location)"
+    )
+    municipality = models.CharField(
+        max_length=1000, null=True, blank=True, db_comment="Municipality of relevant location"
+    )
     province = CAProvinceField(
         db_comment="Province of the relevant location, restricted to two-letter province postal abbreviations",
         null=True,
+        blank=True,
     )
     postal_code = CAPostalCodeField(
-        db_comment="Postal code of relevant location, limited to valid Canadian postal codes", null=True
+        db_comment="Postal code of relevant location, limited to valid Canadian postal codes", null=True, blank=True
     )
     history = HistoricalRecords(table_name='erc_history"."address_history')
 
@@ -212,7 +231,7 @@ class Address(models.Model):
         db_table = 'erc"."address'
 
 
-class UserAndContactCommonInfo(models.Model):
+class UserAndContactCommonInfo(BaseModel):
     """User and contact common information abstract base class"""
 
     first_name = models.CharField(max_length=1000, db_comment="A user or contact's first name")
@@ -270,7 +289,7 @@ class User(UserAndContactCommonInfo):
         return self.app_role.role_name == "industry_user"
 
 
-class BusinessRole(models.Model):
+class BusinessRole(BaseModel):
     """
     Roles that a Contact can have within an operator/operation
     """
@@ -324,7 +343,7 @@ class Contact(UserAndContactCommonInfo, TimeStampedModel):
         return ' - '.join(fields)
 
 
-class BusinessStructure(models.Model):
+class BusinessStructure(BaseModel):
     """The business structure of an operator"""
 
     name = models.CharField(primary_key=True, max_length=1000, db_comment="The name of a business structure")
@@ -380,7 +399,8 @@ class Operator(TimeStampedModel):
         max_length=200,
         db_comment="The website address of an operator",
         blank=True,
-        null=True,
+        # default blank since optional fields returning null will trigger RJSF validation the next time the form is saved
+        default="",
     )
 
     documents = models.ManyToManyField(
@@ -780,7 +800,7 @@ class MultipleOperator(TimeStampedModel):
         db_table = 'erc"."multiple_operator'
 
 
-class BcObpsRegulatedOperation(models.Model):
+class BcObpsRegulatedOperation(BaseModel):
     """BC OBPS Regulated Operation model"""
 
     id = models.CharField(
