@@ -2,7 +2,6 @@ import OperationsForm, {
   OperationsFormData,
 } from "@/app/components/form/OperationsForm";
 import { operationSchema } from "@/app/utils/jsonSchema/operations";
-/* import { BusinessStructure } from "@/app/components/routes/select-operator/form/types"; */
 import { UserProfileFormData } from "@/app/components/form/formDataTypes";
 import { RJSFSchema } from "@rjsf/utils";
 import { actionHandler } from "@/app/utils/actions";
@@ -47,19 +46,22 @@ export async function getRegulatedProducts() {
     throw error;
   }
 }
-export async function getReportingActivities() {
-  try {
-    return await actionHandler(
-      "registration/reporting_activities",
-      "GET",
-      "/operations",
-    );
-  } catch (error) {
-    // Handle the error here or rethrow it to handle it at a higher level
-    throw error;
-  }
-}
 
+// Commenting out this field for MVP
+// export async function getReportingActivities() {
+//   try {
+//     return await actionHandler(
+//       "registration/reporting_activities",
+//       "GET",
+//       "/operations",
+//     );
+//   } catch (error) {
+//     // Handle the error here or rethrow it to handle it at a higher level
+//     throw error;
+//   }
+// }
+
+// Commenting out as we are disabling the multiple operators feature
 // 🛠️ Function to fetch the business structures
 // Commenting out as we are disabling the multiple operators feature
 // async function getBusinessStructures() {
@@ -92,10 +94,10 @@ export const createOperationSchema = (
     id: number;
     name: string;
   }[],
-  reportingActivities: {
-    id: number;
-    name: string;
-  }[],
+  // reportingActivities: {
+  //   id: number;
+  //   name: string;
+  // }[],
   /*   businessStructureList: { id: string; label: string }[], */
 ) => {
   const localSchema = JSON.parse(JSON.stringify(schema));
@@ -119,13 +121,13 @@ export const createOperationSchema = (
       regulatedProducts.map((product) => product?.name);
   }
   // reporting activities
-  if (Array.isArray(reportingActivities)) {
-    localSchema.properties.operationPage1.properties.reporting_activities.items.enum =
-      reportingActivities.map((activity) => activity?.id);
-
-    localSchema.properties.operationPage1.properties.reporting_activities.items.enumNames =
-      reportingActivities.map((activity) => activity?.name);
-  }
+  // if (Array.isArray(reportingActivities)) {
+  //   localSchema.properties.operationPage1.properties.reporting_activities.items.enum =
+  //     reportingActivities.map((activity) => activity?.id);
+  //
+  //   localSchema.properties.operationPage1.properties.reporting_activities.items.enumNames =
+  //     reportingActivities.map((activity) => activity?.name);
+  // }
   // business structures
   // Commenting out as we are disabling the multiple operators feature
   // const businessStructureOptions = businessStructureList?.map(
@@ -149,7 +151,7 @@ export const createOperationSchema = (
 export default async function Operation({ numRow }: { numRow?: number }) {
   const codes = await getNaicsCodes();
   const products = await getRegulatedProducts();
-  const activities = await getReportingActivities();
+  /*   const activities = await getReportingActivities(); */
   // Commenting out as we are disabling the multiple operators feature
   // const businessStructures: BusinessStructure[] = await getBusinessStructures();
 
@@ -296,7 +298,7 @@ export default async function Operation({ numRow }: { numRow?: number }) {
           operationSchema,
           codes,
           products,
-          activities,
+          // activities,
           // businessStructuresList,
         )}
         formData={transformedFormData as OperationsFormData}
