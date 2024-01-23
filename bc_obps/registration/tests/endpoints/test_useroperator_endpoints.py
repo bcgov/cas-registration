@@ -13,6 +13,7 @@ from registration.models import (
     UserOperator,
     Address,
 )
+from registration.schema import UserOperatorOperatorIn
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 
 pytestmark = pytest.mark.django_db
@@ -203,6 +204,46 @@ class TestUserOperatorEndpoint(CommonTestSetup):
             content_type_json,
             {'status': 'Approved', 'user_guid': user.user_guid},
             f"{base_endpoint}select-operator/user-operator/update-status",
+        )
+        assert response.status_code == 401
+
+        # user-operator/operator/{user_operator_operator_id}
+
+        mock_payload = {
+            "legal_name": "Operation 1 Legal Name",
+            "cra_business_number": 987654321,
+            "bc_corporate_registry_number": "abc1234321",
+            "business_structure": BusinessStructure.objects.first().pk,
+            "physical_street_address": "test physical street address",
+            "physical_municipality": "test physical municipality",
+            "physical_province": "test physical province",
+            "physical_postal_code": "test physical postal code",
+            "mailing_address_same_as_physical": True,
+            "operator_has_parent_operators": False,
+            "parent_operators_array": [],
+        }
+        response = TestUtils.mock_put_with_auth_role(
+            self,
+            'cas_pending',
+            content_type_json,
+            mock_payload,
+            f"{base_endpoint}user-operator/operator/1",
+        )
+        assert response.status_code == 401
+        response = TestUtils.mock_put_with_auth_role(
+            self,
+            'cas_analyst',
+            content_type_json,
+            mock_payload,
+            f"{base_endpoint}user-operator/operator/1",
+        )
+        assert response.status_code == 401
+        response = TestUtils.mock_put_with_auth_role(
+            self,
+            'cas_admin',
+            content_type_json,
+            mock_payload,
+            f"{base_endpoint}user-operator/operator/1",
         )
         assert response.status_code == 401
 
@@ -604,3 +645,59 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         # Assert that the parent operator 1 and 2 have the correct operator index
         assert parent_operators[0].operator_index == 1
         assert parent_operators[1].operator_index == 2
+
+    def test_put_user_operator_operator(self):
+        operator = baker.make(Operator, bc_corporate_registry_number="abc1234567", created_by=self.user)
+        baker.make(UserOperator, user=self.user, operator=operator, role=UserOperator.Roles.ADMIN, created_by=self.user)
+        baker.make(BusinessStructure, name='BC Corporation')
+
+        mock_payload = {
+            "legal_name": "Put Operator Legal Name",
+            "cra_business_number": 963852741,
+            "bc_corporate_registry_number": "abc1234321",
+            "business_structure": BusinessStructure.objects.first().pk,
+            "physical_street_address": "test physical street address",
+            "physical_municipality": "test physical municipality",
+            "physical_province": "BC",
+            "physical_postal_code": "H0H0H0",
+            "mailing_address_same_as_physical": False,
+            "mailing_street_address": "test mailing street address",
+            "mailing_municipality": "test mailing municipality",
+            "mailing_province": "BC",
+            "mailing_postal_code": "V0V0V0",
+            "operator_has_parent_operators": True,
+            "parent_operators_array": [],
+        }
+        put_response = TestUtils.mock_put_with_auth_role(
+            self,
+            'industry_user',
+            content_type_json,
+            mock_payload,
+            f"{base_endpoint}user-operator/operator/{operator.id}",
+        )
+
+        response_json = put_response.json()
+        assert put_response.status_code == 200
+        assert "user_operator_id" in response_json
+        user_operator_id = response_json["user_operator_id"]
+        user_operator = UserOperator.objects.get(id=user_operator_id)
+        assert user_operator.user == self.user
+        assert user_operator.updated_by == self.user
+        assert user_operator.updated_at is not None
+
+        operator: Operator = user_operator.operator
+        assert operator is not None
+        assert operator.updated_by == self.user
+        assert operator.updated_at is not None
+
+    def test_put_user_operator_operator_malformed_data(self):
+        operator = baker.make(Operator, bc_corporate_registry_number="abc1234567")
+        put_response = TestUtils.mock_put_with_auth_role(
+            self,
+            'industry_user',
+            content_type_json,
+            {"junk_data": "junk"},
+            f"{base_endpoint}user-operator/operator/{operator.id}",
+        )
+
+        assert put_response.status_code == 422
