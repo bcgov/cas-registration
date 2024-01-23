@@ -1,6 +1,6 @@
 from datetime import datetime
-from typing import List, Tuple, Type
-from django.db import IntegrityError, models
+from typing import Callable, List, Tuple, Type
+from django.db import models
 from django.test import TestCase
 from django.utils import timezone
 from registration.models import (
@@ -13,6 +13,7 @@ from registration.models import (
     NaicsCode,
     ReportingActivity,
     RegulatedProduct,
+    TimeStampedModel,
     User,
     Contact,
     Operator,
@@ -24,6 +25,15 @@ from registration.models import (
 )
 from model_bakery import baker
 from django.core.exceptions import ValidationError
+from registration.tests.utils.bakers import (
+    contact_baker,
+    document_baker,
+    multiple_operator_baker,
+    operator_baker,
+    operation_baker,
+    parent_operator_baker,
+    user_operator_baker,
+)
 
 
 OPERATOR_FIXTURE = ("mock/operator.json",)
@@ -333,6 +343,7 @@ class ReportingActivityModelTest(BaseTestCase):
         ]
         cls.test_object = ReportingActivity.objects.create(
             name="test activity",
+            applicable_to=ReportingActivity.Applicablity.ALL,
         )
 
 
@@ -393,12 +404,13 @@ class UserModelTest(BaseTestCase):
             last_name="lname-test2",
             position_title="Manager",
             email="alicesmith@example.com",
-            phone_number="9876543210",
+            phone_number="+16044011234",
             user_guid="3fa85f64-5717-4562-b3fc-2c963f66afa6",
             business_guid="11111111-1111-1111-1111-111111111111",
+            app_role=AppRole.objects.get(role_name="cas_admin"),
         )
 
-        with self.assertRaises(IntegrityError):
+        with self.assertRaises(ValidationError, msg="User with this User guid already exists."):
             user2.save()
 
 
@@ -428,19 +440,6 @@ class ContactModelTest(BaseTestCase):
             ("operators", "operator", None, None),
             ("operations", "operation", None, None),
         ]
-
-    def test_unique_email_constraint(self):
-        # First contact is `cls.test_object` from the fixture, attempt to create a second contact with the same email address
-        contact2 = Contact(
-            first_name="Sarah",
-            last_name="Smith",
-            position_title="Sales Associate",
-            email="john.doe@example.com",
-            phone_number="9876543210",
-        )
-
-        with self.assertRaises(IntegrityError):
-            contact2.save()
 
 
 class OperatorModelTest(BaseTestCase):
@@ -497,9 +496,17 @@ class OperatorModelTest(BaseTestCase):
 
     def test_unique_cra_business_number_constraint(self):
         # First operator is `cls.test_object` from the fixture, attempt to create another operator with matching cra_business_number
-        invalid_operator = Operator(cra_business_number=self.test_object.cra_business_number)
+        invalid_operator = Operator(
+            legal_name="test",
+            trade_name="test",
+            cra_business_number=self.test_object.cra_business_number,
+            bc_corporate_registry_number='abc1234567',
+            business_structure=BusinessStructure.objects.first(),
+            physical_address=Address.objects.first(),
+            mailing_address=Address.objects.first(),
+        )
 
-        with self.assertRaises(IntegrityError):
+        with self.assertRaises(ValidationError, msg="Operator with this Cra business number already exists."):
             invalid_operator.save()
 
 
@@ -513,18 +520,7 @@ class ParentOperatorModelTest(BaseTestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.test_object = ParentOperator.objects.create(
-            child_operator=Operator.objects.get(id=1),
-            operator_index=1,
-            legal_name="test parent legal name",
-            trade_name="test parent trade name",
-            cra_business_number=147852369,
-            bc_corporate_registry_number='asd7654321',
-            business_structure=BusinessStructure.objects.first(),
-            website="test parent website",
-            physical_address=Address.objects.first(),
-            mailing_address=Address.objects.first(),
-        )
+        cls.test_object = parent_operator_baker()
         cls.field_data = [
             *timestamp_common_fields,
             ("id", "ID", None, None),
@@ -590,8 +586,8 @@ class OperationModelTest(BaseTestCase):
 
         cls.test_object.reporting_activities.set(
             [
-                ReportingActivity.objects.create(name="test"),
-                ReportingActivity.objects.create(name="test2"),
+                ReportingActivity.objects.create(name="test", applicable_to=ReportingActivity.Applicablity.ALL),
+                ReportingActivity.objects.create(name="test2", applicable_to=ReportingActivity.Applicablity.LFO),
             ]
         )
         cls.test_object.regulated_products.set(
@@ -631,9 +627,11 @@ class OperationModelTest(BaseTestCase):
 
     def test_unique_boro_id_per_operation(self):
         boro_id_instance = baker.make(BcObpsRegulatedOperation, id='23-0001')
-        baker.make(Operation, bc_obps_regulated_operation=boro_id_instance)
+        operation_instance: Operation = operation_baker()
+        operation_instance.bc_obps_regulated_operation = boro_id_instance
+        operation_instance.save(update_fields=['bc_obps_regulated_operation'])
 
-        with self.assertRaises(IntegrityError):
+        with self.assertRaises(ValidationError, msg="Operation with this Bc obps regulated operation already exists."):
             baker.make(
                 Operation,
                 bc_obps_regulated_operation=boro_id_instance,
@@ -717,9 +715,10 @@ class OperationModelTest(BaseTestCase):
 
     def test_unique_swrs_facility_id_constraint(self):
         # First operation is `cls.test_object` from the fixture, attempt to create another operation with matching swrs_facility_id
-        invalid_operation = Operation(swrs_facility_id=self.test_object.swrs_facility_id)
+        invalid_operation = operation_baker()
+        invalid_operation.swrs_facility_id = self.test_object.swrs_facility_id
 
-        with self.assertRaises(IntegrityError):
+        with self.assertRaises(ValidationError, msg="Operation with this Swrs facility id already exists."):
             invalid_operation.save()
 
 
@@ -772,32 +771,7 @@ class MultipleOperatorModelTest(BaseTestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.test_object = MultipleOperator.objects.create(
-            operation=Operation.objects.create(
-                name="test",
-                type="test",
-                naics_code=NaicsCode.objects.first(),
-                operator=Operator.objects.first(),
-                previous_year_attributable_emissions=1,
-                swrs_facility_id=1,
-                bcghg_id=1,
-                opt_in=True,
-                verified_at=timezone.now(),
-                verified_by=User.objects.get(user_guid="00000000-0000-0000-0000-000000000001"),
-                point_of_contact=Contact.objects.first(),
-            ),
-            operator_index=1,
-            legal_name="test",
-            trade_name="test",
-            cra_business_number=123456789,
-            bc_corporate_registry_number='abc1234567',
-            business_structure=BusinessStructure.objects.first(),
-            website="test",
-            percentage_ownership=12.5,
-            physical_address=Address.objects.first(),
-            mailing_address_same_as_physical=True,
-            mailing_address=Address.objects.first(),
-        )
+        cls.test_object = multiple_operator_baker()
         cls.field_data = [
             *timestamp_common_fields,
             ("id", "ID", None, None),
@@ -843,7 +817,7 @@ class TestBcObpsRegulatedOperationModel(BaseTestCase):
 
     def test_id_should_be_unique(self):
         # not using baker.make because it doesn't raise an error when the id is not unique
-        with self.assertRaises(IntegrityError):
+        with self.assertRaises(ValidationError, msg='Bc obps regulated operation with this Id already exists.'):
             BcObpsRegulatedOperation.objects.create(id='23-0001', comments='test')  # already created in setUpTestData
 
 
@@ -868,22 +842,22 @@ class TestAddressModel(BaseTestCase):
 
 
 class TestModelsWithAuditColumns(TestCase):
-    models_with_audit_columns_and_field_to_update: List[Tuple[Type[models.Model], str]] = [
-        (Document, 'description'),
-        (Contact, 'first_name'),
-        (Operator, 'legal_name'),
-        (Operation, 'name'),
-        (UserOperator, 'role'),
-        (MultipleOperator, 'legal_name'),
+    models_with_audit_columns_and_field_to_update: List[Tuple[Type[models.Model], str, Callable]] = [
+        (Document, 'description', document_baker),
+        (Contact, 'first_name', contact_baker),
+        (Operator, 'legal_name', operator_baker),
+        (Operation, 'name', operation_baker),
+        (UserOperator, 'role', user_operator_baker),
+        (MultipleOperator, 'legal_name', multiple_operator_baker),
+        (ParentOperator, 'legal_name', parent_operator_baker),
     ]
 
     def setUp(self):
         [self.user_1, self.user_2] = baker.make(User, _quantity=2)
 
     def test_set_audit_columns(self):
-        for model, field_to_update in self.models_with_audit_columns_and_field_to_update:
-            instance = baker.make(model)
-
+        for model, field_to_update, model_baker in self.models_with_audit_columns_and_field_to_update:
+            instance: Type[TimeStampedModel] = model_baker()
             # CREATE
             instance.set_create_or_update(modifier=self.user_1)
             self.assertIsNotNone(instance.created_at)
@@ -895,7 +869,10 @@ class TestModelsWithAuditColumns(TestCase):
             self.assertIsNone(instance.archived_by)
 
             # UPDATE
-            model.objects.filter(id=instance.id).update(**{field_to_update: 'updated'})
+            model_data_field_has_choices = model._meta.get_field(field_to_update).choices
+            model.objects.filter(id=instance.id).update(
+                **{field_to_update: model_data_field_has_choices[0][0] if model_data_field_has_choices else 'updated'}
+            )
             instance.set_create_or_update(modifier=self.user_2)
             instance.refresh_from_db()
             self.assertIsNotNone(instance.created_at)
@@ -919,28 +896,31 @@ class TestModelsWithAuditColumns(TestCase):
             self.assertGreater(instance.archived_at, instance.updated_at)
 
     def test_invalid_action_type_handling(self):
-        for model, _ in self.models_with_audit_columns_and_field_to_update:
-            instance = baker.make(model)
+        for _, _, model_baker in self.models_with_audit_columns_and_field_to_update:
+            instance: Type[TimeStampedModel] = model_baker()
             with self.assertRaises(AttributeError):
                 instance.set_delete(modifier=self.user_1)
 
     def test_no_modifier_provided(self):
-        for model, _ in self.models_with_audit_columns_and_field_to_update:
-            instance = baker.make(model)
+        for _, _, model_baker in self.models_with_audit_columns_and_field_to_update:
+            instance: Type[TimeStampedModel] = model_baker()
             with self.assertRaises(TypeError):
                 instance.set_create_or_update()
 
     def test_existing_audit_columns_presence(self):
-        for model, field_to_update in self.models_with_audit_columns_and_field_to_update:
-            # Create an instance with existing audit columns set
-            instance = baker.make(model, created_by=self.user_1)
+        for model, field_to_update, model_baker in self.models_with_audit_columns_and_field_to_update:
+            instance: Type[TimeStampedModel] = model_baker()
+            instance.set_create_or_update(modifier=self.user_1)
 
             # Save the initial audit values for comparison
             initial_created_at = instance.created_at
             initial_created_by = instance.created_by
 
             # Perform an action
-            model.objects.filter(id=instance.id).update(**{field_to_update: 'updated'})
+            model_data_field_has_choices = model._meta.get_field(field_to_update).choices
+            model.objects.filter(id=instance.id).update(
+                **{field_to_update: model_data_field_has_choices[0][0] if model_data_field_has_choices else 'updated'}
+            )
             instance.set_create_or_update(modifier=self.user_2)
             instance.refresh_from_db()
 

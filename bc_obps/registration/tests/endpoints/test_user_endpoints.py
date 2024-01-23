@@ -75,7 +75,7 @@ class TestUserEndpoint(CommonTestSetup):
             first_name='Bceid',
             last_name='User',
             email='bceid.user@email.com',
-            phone_number='123456789',
+            phone_number='+16044011234',
             position_title='Tester',
         )
 
@@ -114,7 +114,7 @@ class TestUserEndpoint(CommonTestSetup):
             first_name='Idir',
             last_name='User',
             email='idir.user@email.com',
-            phone_number='987654321',
+            phone_number='+16044011234',
             position_title='Tester',
         )
 
@@ -152,7 +152,7 @@ class TestUserEndpoint(CommonTestSetup):
             first_name='Test',
             last_name='User',
             email='test.user@email.com',
-            phone_number='123459876',
+            phone_number='+16044011234',
             position_title='Boss',
         )
 

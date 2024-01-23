@@ -1,7 +1,7 @@
 import pytest
 import tempfile
 from model_bakery import baker
-from registration.models import User, Operator, UserOperator, AppRole
+from registration.models import User, UserOperator, AppRole
 from registration.utils import (
     check_users_admin_request_eligibility,
     file_to_data_url,
@@ -22,69 +22,7 @@ from registration.tests.utils.helpers import TestUtils, MOCK_DATA_URL
 pytestmark = pytest.mark.django_db
 
 baker.generators.add(CAPostalCodeField, TestUtils.mock_postal_code)
-
-
-class TestCheckUserAdminRequestEligibility:
-    @staticmethod
-    def test_user_eligible_for_admin_request():
-        user = baker.make(User)
-        operator = baker.make(Operator)
-
-        status_code, message = check_users_admin_request_eligibility(user, operator)
-
-        assert status_code == 200
-        assert message is None
-
-    @staticmethod
-    def test_user_already_admin_for_operator():
-        user = baker.make(User)
-        operator = baker.make(Operator)
-        baker.make(
-            UserOperator,
-            user=user,
-            operator=operator,
-            role=UserOperator.Roles.ADMIN,
-            status=UserOperator.Statuses.APPROVED,
-        )
-
-        status_code, message = check_users_admin_request_eligibility(user, operator)
-
-        assert status_code == 400
-        assert message == {"message": "You are already an admin for this Operator!"}
-
-    @staticmethod
-    def test_operator_already_has_admin():
-        user = baker.make(User)
-        operator = baker.make(Operator)
-        baker.make(
-            UserOperator,
-            user=user,
-            operator=operator,
-            role=UserOperator.Roles.ADMIN,
-            status=UserOperator.Statuses.APPROVED,
-        )
-
-        status_code, message = check_users_admin_request_eligibility(None, operator)
-
-        assert status_code == 400
-        assert message == {"message": "This Operator already has an admin user!"}
-
-    @staticmethod
-    def test_user_already_has_pending_request():
-        user = baker.make(User)
-        operator = baker.make(Operator)
-        baker.make(
-            UserOperator,
-            user=user,
-            operator=operator,
-            role=UserOperator.Roles.ADMIN,
-            status=UserOperator.Statuses.PENDING,
-        )
-
-        status_code, message = check_users_admin_request_eligibility(user, operator)
-
-        assert status_code == 400
-        assert message == {"message": "You already have a pending request for this Operator!"}
+from registration.tests.utils.bakers import operator_baker, user_operator_baker
 
 
 class TestUpdateModelInstance:
@@ -192,14 +130,73 @@ class TestGenerateUsefulError:
 
 class TestCheckUserAdminRequestEligibility:
     @staticmethod
+    def test_user_eligible_for_admin_request():
+        user = baker.make(User)
+        operator = operator_baker()
+        status_code, message = check_users_admin_request_eligibility(user, operator)
+
+        assert status_code == 200
+        assert message is None
+
+    @staticmethod
+    def test_user_already_admin_for_operator():
+        user = baker.make(User)
+        operator = operator_baker()
+        baker.make(
+            UserOperator,
+            user=user,
+            operator=operator,
+            role=UserOperator.Roles.ADMIN,
+            status=UserOperator.Statuses.APPROVED,
+        )
+
+        status_code, message = check_users_admin_request_eligibility(user, operator)
+
+        assert status_code == 400
+        assert message == {"message": "You are already an admin for this Operator!"}
+
+    @staticmethod
+    def test_operator_already_has_admin():
+        user = baker.make(User)
+        operator = operator_baker()
+        baker.make(
+            UserOperator,
+            user=user,
+            operator=operator,
+            role=UserOperator.Roles.ADMIN,
+            status=UserOperator.Statuses.APPROVED,
+        )
+
+        status_code, message = check_users_admin_request_eligibility(None, operator)
+
+        assert status_code == 400
+        assert message == {"message": "This Operator already has an admin user!"}
+
+    @staticmethod
+    def test_user_already_has_pending_request():
+        user = baker.make(User)
+        operator = operator_baker()
+        baker.make(
+            UserOperator,
+            user=user,
+            operator=operator,
+            role=UserOperator.Roles.ADMIN,
+            status=UserOperator.Statuses.PENDING,
+        )
+
+        status_code, message = check_users_admin_request_eligibility(user, operator)
+
+        assert status_code == 400
+        assert message == {"message": "You already have a pending request for this Operator!"}
+
+    @staticmethod
     def test_user_business_guid_matches_admin():
         admin_user = baker.make(User)
         user = baker.make(
             User,
             business_guid=admin_user.business_guid,
         )
-
-        operator = baker.make(Operator)
+        operator = operator_baker()
 
         baker.make(
             UserOperator,
@@ -218,8 +215,7 @@ class TestCheckUserAdminRequestEligibility:
     def test_user_business_guid_not_match_admin():
         admin_user = baker.make(User)
         user = baker.make(User)
-
-        operator = baker.make(Operator)
+        operator = operator_baker()
 
         baker.make(
             UserOperator,
@@ -242,14 +238,12 @@ class TestCheckIfRoleAuthorized(TestCase):
         self.request = self.factory.get("/not/important")
 
     def test_app_role_is_authorized(self):
-
-        self.request.current_user = baker.make(User, app_role=baker.make(AppRole, role_name="cas_admin"))
+        self.request.current_user = baker.make(User, app_role=AppRole.objects.get(role_name="cas_admin"))
 
         assert raise_401_if_user_not_authorized(self.request, ['cas_admin']) == None
 
     def test_app_role_is_not_authorized(self):
-
-        self.request.current_user = baker.make(User, app_role=baker.make(AppRole, role_name="cas_admin"))
+        self.request.current_user = baker.make(User, app_role=AppRole.objects.get(role_name="cas_admin"))
         with pytest.raises(HttpError):
             raise_401_if_user_not_authorized(
                 self.request,
@@ -259,8 +253,7 @@ class TestCheckIfRoleAuthorized(TestCase):
             )
 
     def test_all_user_operator_roles_are_authorized(self):
-
-        self.request.current_user = baker.make(User, app_role=baker.make(AppRole, role_name="industry_user"))
+        self.request.current_user = baker.make(User, app_role=AppRole.objects.get(role_name="industry_user"))
         # note: I haven't added baker.make(UserOperator) because when a user first logs in, they haven't selected an operator yet and and they don't have a UserOperator record
 
         assert (
@@ -269,23 +262,28 @@ class TestCheckIfRoleAuthorized(TestCase):
         )
 
     def test_some_user_operator_roles_are_authorized(self):
-
-        self.request.current_user = baker.make(User, app_role=baker.make(AppRole, role_name="industry_user"))
-        baker.make(UserOperator, user=self.request.current_user, role='reporter')
+        self.request.current_user = baker.make(User, app_role=AppRole.objects.get(role_name="industry_user"))
+        user_operator_instance = user_operator_baker()
+        user_operator_instance.user = self.request.current_user
+        user_operator_instance.role = 'reporter'
+        user_operator_instance.save(update_fields=['user', 'role'])
 
         assert raise_401_if_user_not_authorized(self.request, ['industry_user'], ['reporter', 'admin']) == None
 
     def test_user_operator_role_is_not_authorized(self):
-
-        self.request.current_user = baker.make(User, app_role=baker.make(AppRole, role_name="industry_user"))
-        baker.make(UserOperator, user=self.request.current_user, role='reporter')
+        self.request.current_user = baker.make(User, app_role=AppRole.objects.get(role_name="industry_user"))
+        user_operator_instance = user_operator_baker()
+        user_operator_instance.user = self.request.current_user
+        user_operator_instance.role = 'reporter'
+        user_operator_instance.save(update_fields=['user', 'role'])
         with pytest.raises(HttpError):
             raise_401_if_user_not_authorized(self.request, ['industry_user'], ['admin'])
 
     def test_no_authorized_role_argument_is_provided(self):
-
-        self.request.current_user = baker.make(User, app_role=baker.make(AppRole, role_name="industry_user"))
-        baker.make(UserOperator, user=self.request.current_user)
+        self.request.current_user = baker.make(User, app_role=AppRole.objects.get(role_name="industry_user"))
+        user_operator_instance = user_operator_baker()
+        user_operator_instance.user = self.request.current_user
+        user_operator_instance.save(update_fields=['user'])
         with pytest.raises(HttpError):
             raise_401_if_user_not_authorized(self.request, ['industry_user'])
 
@@ -304,8 +302,8 @@ class TestGetAnOperatorsUsers:
         # creating a user that's not in the user operator table
         baker.make(User)
 
-        operator1 = baker.make(Operator)
-        operator2 = baker.make(Operator)
+        operator1 = operator_baker()
+        operator2 = operator_baker()
 
         baker.make(
             UserOperator,
