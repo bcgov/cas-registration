@@ -143,7 +143,7 @@ class UserOperatorOperatorIn(Schema):
     """
 
     legal_name: str
-    trade_name: Optional[str] = ""
+    trade_name: Optional[str] = None
     cra_business_number: int
     bc_corporate_registry_number: str = Field(regex=BC_CORPORATE_REGISTRY_REGEX)
     business_structure: str
@@ -152,11 +152,11 @@ class UserOperatorOperatorIn(Schema):
     physical_province: str
     physical_postal_code: str
     # below are optional fields because we might use physical address as mailing address
-    mailing_street_address: Optional[str]
-    mailing_municipality: Optional[str]
-    mailing_province: Optional[str]
-    mailing_postal_code: Optional[str]
-    website: Optional[str]
+    mailing_street_address: Optional[str] = None
+    mailing_municipality: Optional[str] = None
+    mailing_province: Optional[str] = None
+    mailing_postal_code: Optional[str] = None
+    website: Optional[str] = ""
     mailing_address_same_as_physical: bool
     operator_has_parent_operators: bool
     parent_operators_array: Optional[List[ParentOperatorIn]] = None
