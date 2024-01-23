@@ -3,6 +3,7 @@ import Link from "@mui/material/Link";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { useEffect } from "react";
 
+import { getEnvValue } from "@/app/utils/actions";
 export default function Profile({ name }: { readonly name: string }) {
   /* use the NextAuth useSession hook to get session data, and if a specific error condition is met,
      triggers a forced sign-in using the "keycloak" provider to potentially resolve the error related to refreshing access tokens.*/
@@ -29,8 +30,9 @@ export default function Profile({ name }: { readonly name: string }) {
           variant="text"
           className="text-lg"
           onClick={async () => {
+            const url = await getEnvValue("SITEMINDER_KEYCLOAK_LOGOUT_URL");
             await signOut({
-              callbackUrl: process.env.NEXT_PUBLIC_KEYCLOAK_LOGOUT_URL,
+              callbackUrl: url,
             });
           }}
         >

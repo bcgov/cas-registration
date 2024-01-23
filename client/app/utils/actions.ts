@@ -126,3 +126,8 @@ export async function actionHandler(
     }
   }
 }
+
+// 🛠️ Function to get .env vars from server-side
+export async function getEnvValue(key: string) {
+  return process.env[key];
+}
