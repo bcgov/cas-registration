@@ -4,6 +4,7 @@ from model_bakery import baker
 from django.test import Client
 from localflavor.ca.models import CAPostalCodeField
 from registration.models import (
+    Address,
     BusinessRole,
     BusinessStructure,
     Contact,
@@ -11,9 +12,8 @@ from registration.models import (
     ParentOperator,
     User,
     UserOperator,
-    Address,
 )
-from registration.schema import UserOperatorOperatorIn
+from registration.tests.utils.bakers import operator_baker, user_operator_baker
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 
 pytestmark = pytest.mark.django_db
@@ -33,7 +33,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
     operator_endpoint = base_endpoint + "operators"
     user_operator_endpoint = base_endpoint + "user-operator"
 
-    def test_unauthorized_users_cannot_get(self):
+    def test_user_operator_unauthorized_users_cannot_get(self):
         # /is-approved-admin-user-operator
         response = TestUtils.mock_get_with_auth_role(
             self, 'cas_pending', f"{base_endpoint}is-approved-admin-user-operator/{self.user.user_guid}"
@@ -49,14 +49,14 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         assert response.status_code == 401
 
         # /select-operator/user-operator/{user_operator_id}
-        user_operator = baker.make(UserOperator)
+        user_operator = user_operator_baker()
         response = TestUtils.mock_get_with_auth_role(
             self, 'cas_pending', f"{self.select_endpoint}/user-operator/{user_operator.id}"
         )
         assert response.status_code == 401
 
         # /operator-has-admin/{operator_id}
-        operator = baker.make(Operator)
+        operator = operator_baker()
         response = TestUtils.mock_get_with_auth_role(
             self, 'cas_pending', f"{base_endpoint}operator-has-admin/{operator.id}"
         )
@@ -82,67 +82,28 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         response = TestUtils.mock_get_with_auth_role(self, 'cas_analyst', f"{base_endpoint}user-operator-operator-id")
         assert response.status_code == 401
 
-    def test_unauthorized_users_cannot_post(self):
+    def test_user_operator_unauthorized_users_cannot_post(self):
         # select-operator/request-access
-        operator = baker.make(
-            Operator,
-            physical_address=baker.make(
-                Address, street_address='123 st', municipality='victoria', province='BC', postal_code='h0h0h0'
-            ),
-            mailing_address=baker.make(
-                Address, street_address='123 st', municipality='victoria', province='BC', postal_code='h0h0h0'
-            ),
-        )
-        response = TestUtils.mock_post_with_auth_role(
-            self,
-            'cas_pending',
-            content_type_json,
-            {'operator_id': operator.id},
-            f"{self.select_endpoint}/request-access",
-        )
-        assert response.status_code == 401
-        response = TestUtils.mock_post_with_auth_role(
-            self,
-            'cas_admin',
-            content_type_json,
-            {'operator_id': operator.id},
-            f"{self.select_endpoint}/request-access",
-        )
-        assert response.status_code == 401
-        response = TestUtils.mock_post_with_auth_role(
-            self,
-            'cas_analyst',
-            content_type_json,
-            {'operator_id': operator.id},
-            f"{self.select_endpoint}/request-access",
-        )
-        assert response.status_code == 401
-
+        operator = operator_baker()
+        for role in ['cas_pending', 'cas_admin', 'cas_analyst']:
+            response = TestUtils.mock_post_with_auth_role(
+                self,
+                role,
+                content_type_json,
+                {'operator_id': operator.id},
+                f"{self.select_endpoint}/request-access",
+            )
+            assert response.status_code == 401
         # /select-operator/request-admin-access
-        response = TestUtils.mock_post_with_auth_role(
-            self,
-            'cas_pending',
-            content_type_json,
-            {'operator_id': operator.id},
-            f"{self.select_endpoint}/request-access",
-        )
-        assert response.status_code == 401
-        response = TestUtils.mock_post_with_auth_role(
-            self,
-            'cas_analyst',
-            content_type_json,
-            {'operator_id': operator.id},
-            f"{self.select_endpoint}/request-access",
-        )
-        assert response.status_code == 401
-        response = TestUtils.mock_post_with_auth_role(
-            self,
-            'cas_admin',
-            content_type_json,
-            {'operator_id': operator.id},
-            f"{self.select_endpoint}/request-access",
-        )
-        assert response.status_code == 401
+        for role in ['cas_pending', 'cas_admin', 'cas_analyst']:
+            response = TestUtils.mock_post_with_auth_role(
+                self,
+                role,
+                content_type_json,
+                {'operator_id': operator.id},
+                f"{self.select_endpoint}/request-admin-access",
+            )
+            assert response.status_code == 401
 
         # user-operator/operator
         mock_data = TestUtils.mock_UserOperatorOperatorIn()
@@ -161,39 +122,15 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         assert response.status_code == 401
 
         # user-operator/contact
-        baker.make(
-            Operator,
-            physical_address=baker.make(
-                Address, street_address='123 st', municipality='victoria', province='BC', postal_code='h0h0h0'
-            ),
-            mailing_address=baker.make(
-                Address, street_address='123 st', municipality='victoria', province='BC', postal_code='h0h0h0'
-            ),
-        )
-        response = TestUtils.mock_post_with_auth_role(
-            self,
-            'cas_pending',
-            content_type_json,
-            TestUtils.mock_UserOperatorContactIn().json(),
-            f"{base_endpoint}user-operator/contact",
-        )
-        assert response.status_code == 401
-        response = TestUtils.mock_post_with_auth_role(
-            self,
-            'cas_admin',
-            content_type_json,
-            TestUtils.mock_UserOperatorContactIn().json(),
-            f"{base_endpoint}user-operator/contact",
-        )
-        assert response.status_code == 401
-        response = TestUtils.mock_post_with_auth_role(
-            self,
-            'cas_analyst',
-            content_type_json,
-            TestUtils.mock_UserOperatorContactIn().json(),
-            f"{base_endpoint}user-operator/contact",
-        )
-        assert response.status_code == 401
+        for role in ['cas_pending', 'cas_admin', 'cas_analyst']:
+            response = TestUtils.mock_post_with_auth_role(
+                self,
+                role,
+                content_type_json,
+                TestUtils.mock_UserOperatorContactIn().json(),
+                f"{base_endpoint}user-operator/contact",
+            )
+            assert response.status_code == 401
 
     def test_unauthorized_users_cannot_put(self):
         # /select-operator/user-operator/update-status
@@ -230,33 +167,20 @@ class TestUserOperatorEndpoint(CommonTestSetup):
             "operator_has_parent_operators": False,
             "parent_operators_array": [],
         }
-        response = TestUtils.mock_put_with_auth_role(
-            self,
-            'cas_pending',
-            content_type_json,
-            mock_payload,
-            f"{base_endpoint}user-operator/operator/1",
-        )
-        assert response.status_code == 401
-        response = TestUtils.mock_put_with_auth_role(
-            self,
-            'cas_analyst',
-            content_type_json,
-            mock_payload,
-            f"{base_endpoint}user-operator/operator/1",
-        )
-        assert response.status_code == 401
-        response = TestUtils.mock_put_with_auth_role(
-            self,
-            'cas_admin',
-            content_type_json,
-            mock_payload,
-            f"{base_endpoint}user-operator/operator/1",
-        )
-        assert response.status_code == 401
+        for role in ['cas_pending', 'cas_admin', 'cas_analyst']:
+            response = TestUtils.mock_put_with_auth_role(
+                self,
+                role,
+                content_type_json,
+                mock_payload,
+                f"{base_endpoint}user-operator/operator/1",
+            )
+            assert response.status_code == 401
 
     def test_get_user_operator_status(self):
-        user_operator = baker.make(UserOperator, user_id=self.user.user_guid, status=UserOperator.Statuses.APPROVED)
+        user_operator = user_operator_baker()
+        user_operator.user_id = self.user.user_guid
+        user_operator.save(update_fields=['user_id'])
         response = TestUtils.mock_get_with_auth_role(
             self, 'industry_user', f"{base_endpoint}user-operator-status-from-user"
         )
@@ -300,11 +224,10 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         assert response.json()['operator_id'] == operator.id
 
     def test_get_users_operators_list(self):
-        operators = baker.make(Operator, _quantity=2)
         baker.make(
             UserOperator,
             user=self.user,
-            operator=operators[0],
+            operator=operator_baker(),
             role=UserOperator.Roles.ADMIN,
             status=UserOperator.Statuses.APPROVED,
         )
@@ -315,14 +238,14 @@ class TestUserOperatorEndpoint(CommonTestSetup):
 
         assert len(json.loads(response.content)) == 1
 
-    def test_put_update_user_operator_status(self):
+    def test_user_operator_put_update_user_status(self):
         user = baker.make(User)
-        user_operator = baker.make(UserOperator, status=UserOperator.Statuses.PENDING, user_id=user.user_guid)
-        # Change operator status to approved
+        user_operator = user_operator_baker()
+        user_operator.user_id = user.user_guid
         user_operator.operator = baker.make(
             Operator, status=Operator.Statuses.PENDING, bc_corporate_registry_number="abc1234567", _fill_optional=True
         )
-        user_operator.save()
+        user_operator.save(update_fields=['user_id', 'operator'])
 
         response_1 = TestUtils.mock_put_with_auth_role(
             self,
@@ -378,7 +301,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         assert Contact.objects.count() == 0
 
     def test_request_admin_access_with_valid_payload(self):
-        operator = baker.make(Operator)
+        operator = operator_baker()
         response = TestUtils.mock_post_with_auth_role(
             self,
             'industry_user',
@@ -413,12 +336,11 @@ class TestUserOperatorEndpoint(CommonTestSetup):
 
     def test_is_approved_admin_user_operator_with_approved_user(self):
         mock_user = baker.make(User)
-        mock_user_operator = baker.make(
-            UserOperator,
-            role=UserOperator.Roles.ADMIN,
-            status=UserOperator.Statuses.APPROVED,
-            user_id=mock_user.user_guid,
-        )
+        mock_user_operator = user_operator_baker()
+        mock_user_operator.user_id = mock_user.user_guid
+        mock_user_operator.role = UserOperator.Roles.ADMIN
+        mock_user_operator.status = UserOperator.Statuses.APPROVED
+        mock_user_operator.save(update_fields=['user_id', 'role', 'status'])
         response = TestUtils.mock_get_with_auth_role(
             self, 'industry_user', f"{base_endpoint}is-approved-admin-user-operator/{mock_user_operator.user_id}"
         )
@@ -427,7 +349,11 @@ class TestUserOperatorEndpoint(CommonTestSetup):
 
     def test_is_approved_admin_user_operator_without_approved_user(self):
         mock_user = baker.make(User)
-        mock_user_operator = baker.make(UserOperator, role="admin", status="pending", user_id=mock_user.user_guid)
+        mock_user_operator = user_operator_baker()
+        mock_user_operator.user_id = mock_user.user_guid
+        mock_user_operator.role = UserOperator.Roles.ADMIN
+        mock_user_operator.status = UserOperator.Statuses.PENDING
+        mock_user_operator.save(update_fields=['user_id', 'role', 'status'])
         response = TestUtils.mock_get_with_auth_role(
             self, 'industry_user', f"{base_endpoint}is-approved-admin-user-operator/{mock_user_operator.user_id}"
         )
@@ -435,7 +361,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         assert response.json() == {"approved": False}
 
     def test_request_subsequent_access_with_valid_payload(self):
-        operator = baker.make(Operator)
+        operator = operator_baker()
         admin_user = baker.make(User, business_guid=self.user.business_guid)
         baker.make(
             UserOperator,
@@ -468,7 +394,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
     # GET USER OPERATOR ID 200
     def test_get_user_operator_operator_id(self):
         # Act
-        operator = baker.make(Operator)
+        operator = operator_baker()
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
         response = TestUtils.mock_get_with_auth_role(self, 'industry_user', f"{base_endpoint}user-operator-id")
 
@@ -531,6 +457,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         # duplicate CRA business number
         payload_with_duplicate_cra_business_number = {
             "legal_name": "a Legal Name",
+            "trade_name": "test trade name",
             "cra_business_number": 55555,
             "bc_corporate_registry_number": "adh1234321",
             "business_structure": BusinessStructure.objects.first().pk,
@@ -608,6 +535,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
 
         mock_payload_2 = {
             "legal_name": "New Operator",
+            "trade_name": "New Operator Trade Name",
             "cra_business_number": 963852741,
             "bc_corporate_registry_number": "adh1234321",
             "business_structure": BusinessStructure.objects.first().pk,

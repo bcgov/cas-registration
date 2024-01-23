@@ -5,6 +5,7 @@ from model_bakery import baker
 from django.test import Client
 from localflavor.ca.models import CAPostalCodeField
 from registration.models import Operator, User, UserOperator
+from registration.tests.utils.bakers import operator_baker
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 
 pytestmark = pytest.mark.django_db
@@ -24,23 +25,26 @@ class TestOperatorsEndpoint(CommonTestSetup):
 
     def setup(self):
         super().setup()
-        self.operator = baker.make(Operator, legal_name="Test Operator legal name", cra_business_number=123456789)
+        self.operator = operator_baker()
+        self.operator.legal_name = "Test Operator legal name"
+        self.operator.cra_business_number = "123456789"
+        self.operator.save(update_fields=["legal_name", "cra_business_number"])
 
-    def test_unauthorized_users_cannot_get(self):
+    def test_operator_unauthorized_users_cannot_get(self):
         # /operators
         # any logged in user regardless of role can access this endpoint, so they'll only be unauthorized if they're not logged in
         response = client.get(self.endpoint)
         assert response.status_code == 401
 
         # operators/operator_id
-        operator = baker.make(Operator)
+        operator = operator_baker()
         response = TestUtils.mock_get_with_auth_role(self, 'cas_pending', self.endpoint + "/" + str(operator.id))
         assert response.status_code == 401
 
-    def test_unauthorized_users_cannot_put(self):
+    def test_operator_unauthorized_users_cannot_put(self):
         # /operators/{operator_id}
 
-        operator = baker.make(Operator)
+        operator = operator_baker()
         response = TestUtils.mock_put_with_auth_role(
             self,
             'cas_pending',
@@ -129,7 +133,7 @@ class TestOperatorsEndpoint(CommonTestSetup):
         assert response.json() == {"message": "No matching operator found. Retry or add operator."}
 
     def test_select_operator_with_valid_id(self):
-        operator = baker.make(Operator)
+        operator = operator_baker()
         response = TestUtils.mock_get_with_auth_role(self, "cas_analyst", self.endpoint + "/" + str(operator.id))
         assert response.status_code == 200
         response_dict: dict = response.json()
@@ -148,7 +152,10 @@ class TestOperatorsEndpoint(CommonTestSetup):
         assert response.json() == {'message': 'No matching operator found'}
 
     def test_put_approve_operator(self):
-        operator = baker.make(Operator, status=Operator.Statuses.PENDING, is_new=True)
+        operator = operator_baker()
+        operator.status = Operator.Statuses.PENDING
+        operator.is_new = True
+        operator.save(update_fields=["status", "is_new"])
 
         response = TestUtils.mock_put_with_auth_role(
             self,
@@ -165,7 +172,9 @@ class TestOperatorsEndpoint(CommonTestSetup):
         assert response.json().get("verified_by") == str(self.user.user_guid)
 
     def test_put_request_changes_to_operator(self):
-        operator = baker.make(Operator, status=Operator.Statuses.PENDING)
+        operator = operator_baker()
+        operator.status = Operator.Statuses.PENDING
+        operator.save(update_fields=["status"])
 
         response = TestUtils.mock_put_with_auth_role(
             self,
