@@ -28,6 +28,8 @@ export default function Page() {
   };
 
   const handleBceidSignupClick = async () => {
+    // We don't have a build solution for the env variables in the frontend yet,
+    // so we need to get the env value from the backend
     const env = await getEnvValue("NODE_ENV");
     if (env === "production") {
       window.open("https://www.bceid.ca/register/business/", "_blank");
@@ -132,7 +134,7 @@ export default function Page() {
         <Grid
           item
           xs={12}
-          md={6}
+          md={5.5}
           order={{ xs: 2, md: 2 }}
           sx={{
             paddingLeft: {
