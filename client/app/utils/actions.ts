@@ -8,7 +8,6 @@ and can be called from server components or from client components.
 "use server";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
-import { signOut } from "next-auth/react";
 
 // 🛠️ Function to get the encrypted JWT from NextAuth getToken route function
 export async function getToken() {
@@ -66,7 +65,7 @@ export async function actionHandler(
   endpoint: string,
   method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH",
   pathToRevalidate?: string,
-  options: RequestInit = {}
+  options: RequestInit = {},
 ) {
   try {
     // 🔒 Get the encrypted JWT
@@ -92,7 +91,7 @@ export async function actionHandler(
 
     const response = await fetch(
       `${process.env.API_URL}${endpoint}`,
-      mergedOptions
+      mergedOptions,
     );
     if (!response.ok) {
       const res = await response.json();
