@@ -69,8 +69,8 @@ function FileInfoPreview<
   fileInfo,
   registry,
 }: {
-  fileInfo: FileInfoType;
-  registry: Registry<T, S, F>;
+  readonly fileInfo: FileInfoType;
+  readonly registry: Registry<T, S, F>;
 }) {
   const { translateString } = registry;
   const { dataURL, name } = fileInfo;
@@ -97,19 +97,19 @@ function FilesInfo<
   preview,
   registry,
 }: {
-  filesInfo: FileInfoType[];
-  preview?: boolean;
-  registry: Registry<T, S, F>;
+  readonly filesInfo: FileInfoType[];
+  readonly preview?: boolean;
+  readonly registry: Registry<T, S, F>;
 }) {
   if (filesInfo.length === 0) {
     return null;
   }
   return (
     <ul className="m-0 py-0 flex flex-col justify-start">
-      {filesInfo.map((fileInfo, key) => {
+      {filesInfo.map((fileInfo) => {
         const { name } = fileInfo;
         return (
-          <li key={key}>
+          <li key={name}>
             {name}
             {preview && (
               <FileInfoPreview<T, S, F>
