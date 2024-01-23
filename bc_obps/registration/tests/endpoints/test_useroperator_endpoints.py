@@ -704,14 +704,13 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         assert parent_operators[1].operator_index == 2
 
     def test_put_user_operator_operator(self):
-        operator = baker.make(Operator, bc_corporate_registry_number="hij1234567", created_by=self.user)
-        user_operator = baker.make(
-            UserOperator, user=self.user, operator=operator, role=UserOperator.Roles.ADMIN, created_by=self.user
-        )
-        baker.make(BusinessStructure, name='BC Corporation')
-
+        operator = operator_baker()
+        operator.created_by = self.user
+        operator.save(update_fields=["created_by"])
+        user_operator = baker.make(UserOperator, user=self.user, operator=operator, role=UserOperator.Roles.ADMIN, created_by=self.user)
         mock_payload = {
             "legal_name": "Put Operator Legal Name",
+            "trade_name": "Put Operator Trade Name",
             "cra_business_number": 963852741,
             "bc_corporate_registry_number": "abc1234321",
             "business_structure": BusinessStructure.objects.first().pk,
@@ -750,7 +749,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         assert operator.updated_at is not None
 
     def test_put_user_operator_operator_malformed_data(self):
-        operator = baker.make(Operator, bc_corporate_registry_number="lnm1234567")
+        operator = operator_baker()
         put_response = TestUtils.mock_put_with_auth_role(
             self,
             'industry_user',

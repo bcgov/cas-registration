@@ -127,7 +127,7 @@ def save_operator(payload: UserOperatorOperatorIn, operator_instance: Operator, 
                 new_po_operator_instance.set_create_or_update(modifier=user)
 
         # get or create a draft UserOperator instance
-        user_operator, created = UserOperator.objects.get_or_create(
+        user_operator, _ = UserOperator.objects.get_or_create(
             user=user,
             operator=created_or_updated_operator_instance,
         )

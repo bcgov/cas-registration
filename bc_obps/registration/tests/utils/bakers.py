@@ -45,7 +45,7 @@ def operation_baker():
     return baker.make(
         Operation,
         operator=operator_baker(),
-        application_lead=contact_baker(),
+        point_of_contact=contact_baker(),
         naics_code=NaicsCode.objects.first(),
         bcghg_id=uuid.uuid4(),
     )
