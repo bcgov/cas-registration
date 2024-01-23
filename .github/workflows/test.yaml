@@ -281,6 +281,10 @@ jobs:
           NEW_USER_USERNAME: bc-cas-dev-three
           NEW_USER_PASSWORD: ${{ secrets.NEW_USER_PASSWORD }}
           NEW_USER_GUID: ${{ secrets.NEW_USER_GUID }}
+          DB_USER: postgres
+          DB_NAME: registration
+          DB_PORT: 5432
+          DB_HOST: localhost
         working-directory: ./client
       - uses: actions/upload-artifact@v3
         if: always()
