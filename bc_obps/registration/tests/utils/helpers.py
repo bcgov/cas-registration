@@ -61,7 +61,6 @@ class TestUtils:
     @staticmethod
     def mock_OperationCreateIn(operator: Operator = None):
         naics_code = baker.make(NaicsCode, id=1, naics_code=123456, naics_description='desc')
-        document = baker.make(Document)
         reporting_activities = baker.make(ReportingActivity, _quantity=2)
         regulated_products = baker.make(RegulatedProduct, _quantity=2)
         point_of_contact = baker.make(Contact)
@@ -72,7 +71,6 @@ class TestUtils:
             naics_code=1,
             reporting_activities=reporting_activities,
             regulated_products=regulated_products,
-            documents=[document.id],
             point_of_contact=point_of_contact.id,
             operator=operator.id,
             add_another_user_for_point_of_contact=False,
@@ -108,7 +106,7 @@ class TestUtils:
             latitude=90,
             longitude=-120,
             regulated_products=[product.id],
-            documents=[document.id],
+            statutory_declaration=document,
             point_of_contact=point_of_contact.id,
             operator_id=operator.id,
             add_another_user_for_point_of_contact=False,

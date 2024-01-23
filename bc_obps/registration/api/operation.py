@@ -29,7 +29,7 @@ from registration.schema import (
     Message,
     OperationUpdateStatusIn,
 )
-from registration.utils import get_an_operators_approved_users, save_statutory_declaration
+from registration.utils import get_an_operators_approved_users
 from ninja.responses import codes_4xx, codes_5xx
 from ninja.errors import HttpError
 
@@ -154,7 +154,6 @@ def create_operation(request, payload: OperationCreateIn):
             "reporting_activities",
             "operator",
             "naics_code",
-            "documents",
             "multiple_operators_array",
             "point_of_contact",
             "statutory_declaration",
@@ -171,7 +170,6 @@ def create_operation(request, payload: OperationCreateIn):
     operation = Operation.objects.create(**payload_dict, operator_id=payload.operator, naics_code_id=payload.naics_code)
     operation.regulated_products.set(payload.regulated_products)
     operation.reporting_activities.set(payload.reporting_activities)
-    operation.documents.set(payload.documents)
     operation.set_create_or_update(modifier=user)
 
     if payload.operation_has_multiple_operators:

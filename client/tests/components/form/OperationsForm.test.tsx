@@ -24,7 +24,6 @@ const testFormData = {
   status: "Not Started",
   regulated_products: [],
   reporting_activities: [],
-  documents: [],
   contacts: [],
   operator_id: 1,
   naics_code_id: 1,

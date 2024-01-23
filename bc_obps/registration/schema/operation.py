@@ -21,15 +21,15 @@ class OperationCreateIn(ModelSchema):
     verified_at: Optional[date] = None
     operation_has_multiple_operators: Optional[bool] = False
     multiple_operators_array: Optional[list] = None
-    statutory_declaration: Optional[str] = None
-    # boundary_map: Optional[str] = None
 
     class Config:
         model = Operation
         model_exclude = [
-            "id",
+            "id",  # need to exclude id since it's auto generated and we don't want to pass it in
+            "documents",  # excluding documents because they are handled by individual form fields
             *AUDIT_FIELDS,
-        ]  # need to exclude id since it's auto generated and we don't want to pass it in
+        ]
+
         allow_population_by_field_name = True
 
 
@@ -72,9 +72,11 @@ class OperationUpdateIn(ModelSchema):
     class Config:
         model = Operation
         model_exclude = [
-            "id",
+            "id",  # need to exclude id since it's auto generated and we don't want to pass it in
+            "documents",  # excluding documents because they are handled by individual form fields
             *AUDIT_FIELDS,
-        ]  # need to exclude id since it's auto generated and we don't want to pass it in
+        ]
+
         allow_population_by_field_name = True
 
 
