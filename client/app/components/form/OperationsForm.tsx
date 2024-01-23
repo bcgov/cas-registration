@@ -39,6 +39,8 @@ export default function OperationsForm({ formData, schema }: Readonly<Props>) {
     !session?.user.app_role?.includes("pending");
 
   const isFormStatusPending = formData?.status === Status.PENDING;
+  console.log("OperationsForm formData");
+  console.log(formData);
 
   return (
     <>

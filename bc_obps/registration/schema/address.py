@@ -9,4 +9,6 @@ class AddressSchema(ModelSchema):
 
     class Config:
         model = Address
-        model_fields = '__all__'
+        model_exclude = [
+            "id",
+        ]

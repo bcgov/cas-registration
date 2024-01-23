@@ -301,14 +301,14 @@ const operationPage2: RJSFSchema = {
   type: "object",
   title: "Point of Contact",
   required: [
-    "is_user_point_of_contact",
+    "add_another_user_for_point_of_contact",
     "street_address",
     "municipality",
     "province",
     "postal_code",
   ],
   properties: {
-    is_user_point_of_contact: {
+    add_another_user_for_point_of_contact: {
       type: "boolean",
       title:
         "Would you like to designate another person to be a point of contact for this application? If approved, this person will receive the BORO ID.",
@@ -337,8 +337,8 @@ const operationPage2: RJSFSchema = {
     {
       if: {
         properties: {
-          is_user_point_of_contact: {
-            const: true,
+          add_another_user_for_point_of_contact: {
+            const: false,
           },
         },
       },
@@ -469,7 +469,7 @@ export const operationUiSchema = {
     "Does the operation have multiple operators?",
     "operators",
     "percentage_ownership",
-    "is_user_point_of_contact",
+    "add_another_user_for_point_of_contact",
     "external_point_of_contact_first_name",
     "first_name",
     "external_point_of_contact_last_name",
@@ -517,7 +517,7 @@ export const operationUiSchema = {
     "ui:FieldTemplate": FieldTemplate,
     "ui:widget": "RadioWidget",
   },
-  is_user_point_of_contact: {
+  add_another_user_for_point_of_contact: {
     "ui:widget": "CheckboxWidget",
     "ui:options": {
       label: false,

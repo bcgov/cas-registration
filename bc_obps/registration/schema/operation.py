@@ -53,7 +53,7 @@ class OperationUpdateIn(ModelSchema):
     municipality: Optional[str] = None
     province: Optional[str] = None
     postal_code: Optional[str] = None
-    is_user_point_of_contact: Optional[bool] = None
+    add_another_user_for_point_of_contact: Optional[bool] = None
     operation_has_multiple_operators: Optional[bool] = False
     multiple_operators_array: Optional[list] = None
 

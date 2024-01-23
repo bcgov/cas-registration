@@ -265,7 +265,7 @@ export default async function Operation({ numRow }: { numRow?: number }) {
     ...formData?.point_of_contact?.address,
     "Did you submit a GHG emissions report for reporting year 2022?":
       formData?.previous_year_attributable_emissions ? true : false,
-    is_user_point_of_contact: isUserPointOfContact,
+    add_another_user_for_point_of_contact: !isUserPointOfContact,
     // fix for null values not opening the multiple operators form if loading a previously saved form
     multiple_operators_array: isMultipleOperatorsArray
       ? formData?.multiple_operators_array
