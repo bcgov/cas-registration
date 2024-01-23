@@ -30,8 +30,8 @@ async function getBusinessStructures() {
   );
 }
 
-export async function getUserOperatorFormData(id: number | string | undefined) {
-  if (!id || id === "request-access") return {};
+export async function getUserOperatorFormData(id: number | string) {
+  if (!id || isNaN(Number(id))) return {};
   return actionHandler(
     `registration/select-operator/user-operator/${id}`,
     "GET",
@@ -81,7 +81,7 @@ export default async function UserOperator({
     await getCurrentUser();
 
   const userOperatorData: UserOperatorFormData | { error: string } =
-    await getUserOperatorFormData(userOperatorId);
+    await getUserOperatorFormData(userOperatorId as string | number);
 
   if (
     "error" in userData ||
