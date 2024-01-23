@@ -51,16 +51,6 @@ const operationPage1: RJSFSchema = {
       },
       title: "Reporting Activities",
     },
-    process_flow_diagram: {
-      type: "string",
-      title: "Process Flow Diagram",
-      format: "data-url",
-    },
-    boundary_map: {
-      type: "string",
-      title: "Boundary Map",
-      format: "data-url",
-    },
     "Did you submit a GHG emissions report for reporting year 2022?": {
       type: "boolean",
       default: false,
@@ -114,7 +104,6 @@ const operationPage1: RJSFSchema = {
           },
         },
       },
-
       then: {
         properties: {
           opt_in: {
@@ -123,27 +112,7 @@ const operationPage1: RJSFSchema = {
             default: false,
           },
         },
-        allOf: [
-          {
-            if: {
-              properties: {
-                opt_in: {
-                  const: true,
-                },
-              },
-            },
-            then: {
-              properties: {
-                opt_in_signed_statuatory_declaration: {
-                  type: "string",
-                  title: "Opt-in Signed Statuatory Declaration",
-                  format: "data-url",
-                  readOnly: true,
-                },
-              },
-            },
-          },
-        ],
+
         required: ["opt_in"],
       },
     },
@@ -458,14 +427,11 @@ export const operationUiSchema = {
     "naics_code_id",
     "regulated_products",
     "reporting_activities",
-    "process_flow_diagram",
-    "boundary_map",
     "Did you submit a GHG emissions report for reporting year 2022?",
     "previous_year_attributable_emissions",
     "swrs_facility_id",
     "bcghg_id",
     "opt_in",
-    "opt_in_signed_statuatory_declaration",
     "Does the operation have multiple operators?",
     "operators",
     "percentage_ownership",
@@ -496,6 +462,7 @@ export const operationUiSchema = {
     "mo_mailing_postal_code",
     "statutory_declaration_disclaimer_section",
     "statutory_declaration",
+    "random_file",
   ],
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
@@ -525,12 +492,6 @@ export const operationUiSchema = {
   },
   opt_in: {
     "ui:widget": "RadioWidget",
-  },
-  data_flow_diagram: {
-    "ui:widget": "FileWidget",
-  },
-  boundary_map: {
-    "ui:widget": "FileWidget",
   },
   province: {
     "ui:widget": "ComboBox",
@@ -607,6 +568,10 @@ export const operationUiSchema = {
   },
   statutory_declaration: {
     "ui:widget": "FileWidget",
+    "ui:options": {
+      filePreview: true,
+      accept: ".pdf",
+    },
     "ui:title": StatutoryDeclarationUploadFieldTitle,
   },
 };
