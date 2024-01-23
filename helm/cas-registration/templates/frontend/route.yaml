@@ -1,3 +1,15 @@
+{{- $keySecret := "Secret not found" }}
+{{- $certSecret := "Secret not found" }}
+{{- $CACertSecret := "Secret not found" }}
+
+{{- $existingSSLSecret := (lookup "v1" "Secret" .Release.Namespace "ssl-cert-registration" ) }}
+{{- if $existingSSLSecret }}
+{{- $keySecret = index $existingSSLSecret.data "private-key" | b64dec | quote}}
+{{- $certSecret = index $existingSSLSecret.data "certificate" | b64dec | quote}}
+{{- $CACertSecret = index $existingSSLSecret.data "CACert" | b64dec | quote}}
+{{- end -}}
+
+
 apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
@@ -14,6 +26,9 @@ spec:
   tls:
     insecureEdgeTerminationPolicy: Redirect
     termination: edge
+    key: {{ $keySecret }}
+    certificate: {{ $certSecret }}
+    caCertificate: {{ $CACertSecret }}
   to:
     kind: Service
     name:  {{ template "cas-registration.fullname" . }}-frontend
