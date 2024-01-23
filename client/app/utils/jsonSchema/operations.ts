@@ -3,6 +3,7 @@ import { RJSFSchema } from "@rjsf/utils";
 import provinceOptions from "@/app/data/provinces.json";
 import TitleOnlyFieldTemplate from "@/app/styles/rjsf/TitleOnlyFieldTemplate";
 import {
+  OptInOperationTitle,
   StatutoryDeclarationDisclaimerTitle,
   StatutoryDeclarationUploadFieldTitle,
 } from "@/app/components/form/titles/operationsTitles";
@@ -39,6 +40,7 @@ const operationPage1: RJSFSchema = {
       },
       title: "Regulated Product Name(s)",
     },
+    // Commenting this out as it is not needed for MVP
     // reporting_activities: {
     //   type: "array",
     //   items: {
@@ -80,11 +82,12 @@ const operationPage1: RJSFSchema = {
       },
       then: {
         properties: {
-          previous_year_attributable_emissions: {
-            type: "number",
-            title: "2022 attributable emissions",
-          },
-          swrs_facility_id: { type: "number", title: "SWRS Facility ID" },
+          // Commenting these out as they are not needed for MVP
+          // previous_year_attributable_emissions: {
+          //   type: "number",
+          //   title: "2022 attributable emissions",
+          // },
+          // swrs_facility_id: { type: "number", title: "SWRS Facility ID" },
           bcghg_id: { type: "string", title: "BCGHG ID" },
         },
         required: [
@@ -114,6 +117,12 @@ const operationPage1: RJSFSchema = {
             type: "boolean",
             title: "Are you applying to be an opted-in operation?",
             default: false,
+          },
+          opt_in_note_section: {
+            //Not an actual field in the db - this is just to make the form look like the wireframes
+            title: "Opt-in information Note",
+            type: "object",
+            readOnly: true,
           },
         },
 
@@ -430,14 +439,16 @@ export const operationUiSchema = {
     "type",
     "naics_code_id",
     "regulated_products",
-    /*     "reporting_activities", */
+    // "reporting_activities",
     "ghg_emissions_section",
     "Did you submit a GHG emissions report for reporting year 2022?",
-    "previous_year_attributable_emissions",
-    "swrs_facility_id",
+    // "previous_year_attributable_emissions",
+    // "swrs_facility_id",
     "bcghg_id",
     "opt_in_section",
     "opt_in",
+    "opt_in_note_section",
+    "opt_in_signed_statuatory_declaration",
     "Does the operation have multiple operators?",
     "operators",
     "percentage_ownership",
@@ -504,6 +515,10 @@ export const operationUiSchema = {
   },
   opt_in: {
     "ui:widget": "RadioWidget",
+  },
+  opt_in_note_section: {
+    "ui:FieldTemplate": TitleOnlyFieldTemplate,
+    "ui:title": OptInOperationTitle,
   },
   province: {
     "ui:widget": "ComboBox",
