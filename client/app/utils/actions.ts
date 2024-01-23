@@ -129,5 +129,9 @@ export async function actionHandler(
 
 // 🛠️ Function to get .env vars from server-side
 export async function getEnvValue(key: string) {
+  const publicEnvAllowList = ["NODE_ENV", "SITEMINDER_KEYCLOAK_LOGOUT_URL"];
+  // Check if the key is in the allow list so that we don't expose sensitive env vars
+  if (!publicEnvAllowList.includes(key)) throw new Error("Invalid env key");
+
   return process.env[key];
 }
