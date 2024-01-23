@@ -65,7 +65,7 @@ const Review = ({
   };
 
   const handleReject = () => {
-    setModalState("reject");
+    setModalState("decline");
   };
 
   const handleCloseModal = () => {
@@ -235,7 +235,7 @@ const Review = ({
                   fontWeight: "bold",
                 }}
               >
-                Reject <DoNotDisturbIcon />
+                Decline <DoNotDisturbIcon />
               </Button>
             </Box>
           )}

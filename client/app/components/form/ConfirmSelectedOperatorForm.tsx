@@ -45,9 +45,13 @@ export default function ConfirmSelectedOperatorForm({
     <>
       <p>
         Looks like the operator <b>{operator.legal_name}</b> does not have an
-        Operation Representative.
+        Operation Representative in our records.
       </p>
       <p>Would you like to request access as its Operation Representative?</p>
+      <p>
+        Please note that you will be the person responsible for approving any
+        additional Operation Representatives on behalf of the Operator.
+      </p>
       <RequestAccessButton operatorId={operator.id} isAdminRequest={true} />
     </>
   );

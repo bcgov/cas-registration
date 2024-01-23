@@ -318,7 +318,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
             business_role=BusinessRole.objects.get(role_name='Senior Officer'),
         )
         user_operator.operator.contacts.set(contacts)
-        # Now reject the user_operator and make sure the contacts are deleted
+        # Now decline the user_operator and make sure the contacts are deleted
         response_3 = TestUtils.mock_put_with_auth_role(
             self,
             'cas_admin',

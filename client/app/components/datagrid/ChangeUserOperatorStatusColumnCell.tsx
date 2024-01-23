@@ -65,7 +65,7 @@ export async function ChangeUserOperatorStatusColumnCell(
         },
         {
           statusTo: Status.DECLINED,
-          title: "Deny",
+          title: "Decline",
           color: "error",
           icon: <DoNotDisturbIcon />,
         },

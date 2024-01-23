@@ -63,6 +63,7 @@ export interface UserProfileFormData {
   position_title: string;
   email: string;
   phone_number: string;
+  app_role?: { role_name: string };
 }
 export interface SelectOperatorFormData {
   search_type: string;
@@ -73,4 +74,5 @@ export interface SelectOperatorFormData {
 export interface UserInformationInitialFormData {
   phone_number: string;
   email: string;
+  app_role: { role_name: string };
 }

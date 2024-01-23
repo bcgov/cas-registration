@@ -74,13 +74,13 @@ export default function Page() {
           sx={{ padding: 2, margin: 2, border: "none", boxShadow: "none" }}
         >
           <Typography variant="h5" component="div">
-            Welcome to CAS Registration App
+            Welcome to B.C. Industrial Emissions Reporting System
           </Typography>
           <Typography variant="body1" color="textSecondary" component="div">
-            Your current status is pending approval.
+            Your access request is pending approval.
           </Typography>
           <Typography variant="body1" color="textSecondary" component="div">
-            Once approved, you will have access to the application.
+            Once approved, you can log back in with access to the system.
           </Typography>
         </Card>
       ) : (
