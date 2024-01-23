@@ -106,7 +106,6 @@ def list_operations(request):
     user: User = request.current_user
     # IRC users can see all operations except ones that are not started yet
     if user.is_irc_user():
-
         qs = Operation.objects.exclude(status=Operation.Statuses.NOT_STARTED)
         return 200, qs
     # Industry users can only see their companies' operations (if there's no user_operator or operator, then the user hasn't requested access to the operator)
@@ -136,7 +135,9 @@ def get_operation(request, operation_id: int):
         operation = get_object_or_404(Operation, id=operation_id, operator_id=user_operator.operator.id)
     elif user.is_irc_user():
         operation = get_object_or_404(Operation, id=operation_id)
-    return 200, operation
+    print("\n\nGET OPERATION\n")
+    print(OperationOut.from_orm(operation))
+    return 200, OperationOut.from_orm(operation)
 
 
 ##### POST #####
@@ -196,62 +197,86 @@ def update_operation(request, operation_id: int, submit: str, payload: Operation
         raise HttpError(401, UNAUTHORIZED_MESSAGE)
 
     operation = get_object_or_404(Operation, id=operation_id)
+
+    print("\nPUT OPERATION\n")
+    print(operation.__str__)
+
     if payload.operator:
         operation.operator_id = payload.operator
 
     if payload.naics_code:
         operation.naics_code_id = payload.naics_code
 
-    point_of_contact_address_id = None
-    point_of_contact_id = payload.point_of_contact
-    if point_of_contact_id:
+    point_of_contact_id, point_of_contact_address_id = None, None
+    print("OPERATION PAYLOAD")
+    print(payload)
+
+    # if there's a pre-existing point_of_contact associated with the operation
+    if payload.point_of_contact:
+        point_of_contact_id = payload.point_of_contact
         point_of_contact = Contact.objects.get(id=point_of_contact_id)
         point_of_contact_address_id = point_of_contact.address.id if point_of_contact.address else None
 
-    is_user_point_of_contact = payload.is_user_point_of_contact
-
-    # create or update the address for either user or external point of contact
-    address, _ = Address.objects.update_or_create(
-        id=point_of_contact_address_id,
-        defaults={
-            "street_address": payload.street_address,
-            "municipality": payload.municipality,
-            "province": payload.province,
-            "postal_code": payload.postal_code,
-        },
-    )
-
-    if is_user_point_of_contact is True:  # the point of contact is the user
-        poc, _ = Contact.objects.update_or_create(
-            id=point_of_contact_id,
+        if payload.street_address is not None:
+            # create or update the Address for the point of contact
+            address, _ = Address.objects.update_or_create(
+                id=point_of_contact_address_id,
+                defaults={
+                    "street_address": payload.street_address,
+                    "municipality": payload.municipality,
+                    "province": payload.province,
+                    "postal_code": payload.postal_code,
+                },
+            )
+    # else if there's contact info included in the payload
+    # NOTE: this is a tacky way of checking to see if the Application Lead section of the form has been populated yet, but it's the
+    # best solution we have available at the moment. Once the user is on the second page of the form, street_address is a required field
+    # enforced on the frontend.
+    elif payload.street_address is not None:
+        # create or update the Address for the point of contact
+        address, _ = Address.objects.update_or_create(
+            id=point_of_contact_address_id,
             defaults={
-                "first_name": payload.first_name,
-                "last_name": payload.last_name,
-                "position_title": payload.position_title,
-                "email": payload.email,
-                "phone_number": payload.phone_number,
-                "business_role": BusinessRole.objects.get(role_name="Operation Registration Lead"),
-                "address": address,
+                "street_address": payload.street_address,
+                "municipality": payload.municipality,
+                "province": payload.province,
+                "postal_code": payload.postal_code,
             },
         )
-        poc.set_create_or_update(modifier=user)
-        operation.point_of_contact = poc
 
-    if is_user_point_of_contact is False:  # the point of contact is an external user
-        external_poc, _ = Contact.objects.update_or_create(
-            id=point_of_contact_id,
-            defaults={
-                "first_name": payload.external_point_of_contact_first_name,
-                "last_name": payload.external_point_of_contact_last_name,
-                "position_title": payload.external_point_of_contact_position_title,
-                "email": payload.external_point_of_contact_email,
-                "phone_number": payload.external_point_of_contact_phone_number,
-                "business_role": BusinessRole.objects.get(role_name="Operation Registration Lead"),
-                "address": address,
-            },
-        )
-        external_poc.set_create_or_update(modifier=user)
-        operation.point_of_contact = external_poc
+        add_another_user_for_point_of_contact = payload.add_another_user_for_point_of_contact
+
+        if add_another_user_for_point_of_contact is False:  # the point of contact is the user
+            poc, _ = Contact.objects.update_or_create(
+                id=point_of_contact_id,
+                defaults={
+                    "first_name": payload.first_name,
+                    "last_name": payload.last_name,
+                    "position_title": payload.position_title,
+                    "email": payload.email,
+                    "phone_number": payload.phone_number,
+                    "business_role": BusinessRole.objects.get(role_name="Operation Registration Lead"),
+                    "address": address,
+                },
+            )
+            poc.set_create_or_update(modifier=user)
+            operation.point_of_contact = poc
+
+        elif add_another_user_for_point_of_contact is True:  # the point of contact is an external user
+            external_poc, _ = Contact.objects.update_or_create(
+                id=point_of_contact_id,
+                defaults={
+                    "first_name": payload.external_point_of_contact_first_name,
+                    "last_name": payload.external_point_of_contact_last_name,
+                    "position_title": payload.external_point_of_contact_position_title,
+                    "email": payload.external_point_of_contact_email,
+                    "phone_number": payload.external_point_of_contact_phone_number,
+                    "business_role": BusinessRole.objects.get(role_name="Operation Registration Lead"),
+                    "address": address,
+                },
+            )
+            external_poc.set_create_or_update(modifier=user)
+            operation.point_of_contact = external_poc
 
     # updating only a subset of fields (using all fields would overwrite the existing ones)
     payload_dict: dict = payload.dict(
@@ -265,6 +290,10 @@ def update_operation(request, operation_id: int, submit: str, payload: Operation
             "operation_has_multiple_operators",
         }
     )
+
+    print(payload)
+    print(payload_dict)
+
     for attr, value in payload_dict.items():
         setattr(operation, attr, value)
     # set the operation status to 'pending' on update

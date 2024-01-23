@@ -438,7 +438,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             documents=[],
             point_of_contact=contact2.id,
             operator_id=operator.id,
-            is_user_point_of_contact=True,
+            add_another_user_for_point_of_contact=False,
             street_address='19 Evergreen Terrace',
             municipality='Springfield',
             province='BC',
