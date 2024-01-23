@@ -26,6 +26,9 @@ export default function Page() {
     signIn("keycloak", undefined, { kc_idp_hint: "bceidbusiness" });
   };
 
+  const businessBceidSignupUrl =
+    process.env.NEXT_PUBLIC_BCEID_BUSINESS_SIGNUP_URL;
+
   return (
     <>
       <section className={fontSize}>
@@ -133,7 +136,11 @@ export default function Page() {
             </Button>
             <p>
               Don’t have a Business BCeID?{" "}
-              <a href="ADD LINK HERE" target="_blank" rel="noopener noreferrer">
+              <a
+                href={businessBceidSignupUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 Create one here
               </a>
             </p>
