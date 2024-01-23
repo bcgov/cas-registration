@@ -109,6 +109,12 @@ const operationPage1: RJSFSchema = {
       },
       then: {
         properties: {
+          opt_in_section: {
+            //Not an actual field in the db - this is just to make the form look like the wireframes
+            title: "Opt-in information",
+            type: "object",
+            readOnly: true,
+          },
           opt_in: {
             type: "boolean",
             title: "Are you applying to be an opted-in operation?",
@@ -435,6 +441,7 @@ export const operationUiSchema = {
     "previous_year_attributable_emissions",
     "swrs_facility_id",
     "bcghg_id",
+    "opt_in_section",
     "opt_in",
     "Does the operation have multiple operators?",
     "operators",
@@ -496,6 +503,9 @@ export const operationUiSchema = {
     "ui:options": {
       label: false,
     },
+  },
+  opt_in_section: {
+    ...subheading,
   },
   opt_in: {
     "ui:widget": "RadioWidget",
