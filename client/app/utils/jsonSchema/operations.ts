@@ -1,6 +1,6 @@
 import FieldTemplate from "@/app/styles/rjsf/FieldTemplate";
 import { RJSFSchema } from "@rjsf/utils";
-import provinceOptions from "@/app/data/provinces.json";
+/* import provinceOptions from "@/app/data/provinces.json"; */
 import TitleOnlyFieldTemplate from "@/app/styles/rjsf/TitleOnlyFieldTemplate";
 import {
   PointOfContactTitle,
@@ -284,14 +284,14 @@ const operationPage2: RJSFSchema = {
   type: "object",
   title: "Point of Contact",
   required: [
-    "add_another_user_for_point_of_contact",
+    "is_external_point_of_contact",
     "street_address",
     "municipality",
     "province",
     "postal_code",
   ],
   properties: {
-    add_another_user_for_point_of_contact: {
+    is_external_point_of_contact: {
       type: "boolean",
       title:
         "Would you like to designate another person to be a point of contact for this application? If approved, this person will receive the BORO ID.",
@@ -303,31 +303,13 @@ const operationPage2: RJSFSchema = {
       type: "object",
       readOnly: true,
     },
-    street_address: {
-      type: "string",
-      title: "Business Mailing Address",
-    },
-    municipality: {
-      type: "string",
-      title: "Municipality",
-    },
-    province: {
-      type: "string",
-      title: "Province",
-      anyOf: provinceOptions,
-    },
-    postal_code: {
-      type: "string",
-      title: "Postal Code",
-      format: "postal-code",
-    },
   },
   allOf: [
     {
       if: {
         properties: {
-          add_another_user_for_point_of_contact: {
-            const: false,
+          is_external_point_of_contact: {
+            const: true,
           },
         },
       },
@@ -339,6 +321,40 @@ const operationPage2: RJSFSchema = {
           "first_name",
           "last_name",
           "position_title",
+        ],
+        properties: {
+          external_point_of_contact_first_name: {
+            type: "string",
+            title: "First Name",
+          },
+          external_point_of_contact_last_name: {
+            type: "string",
+            title: "Last Name",
+          },
+          external_point_of_contact_position_title: {
+            type: "string",
+            title: "Position Title",
+          },
+          external_point_of_contact_email: {
+            type: "string",
+            title: "Email Address",
+            format: "email",
+          },
+          external_point_of_contact_phone_number: {
+            type: "string",
+            title: "Phone Number",
+            format: "phone",
+          },
+        },
+      },
+      else: {
+        type: "object",
+        required: [
+          "external_point_of_contact_first_name",
+          "external_point_of_contact_last_name",
+          "external_point_of_contact_position_title",
+          "external_point_of_contact_email",
+          "external_point_of_contact_phone_number",
         ],
         properties: {
           first_name: {
@@ -367,40 +383,6 @@ const operationPage2: RJSFSchema = {
             title: "Phone Number",
             format: "phone",
             readOnly: true,
-          },
-        },
-      },
-      else: {
-        type: "object",
-        required: [
-          "external_point_of_contact_first_name",
-          "external_point_of_contact_last_name",
-          "external_point_of_contact_position_title",
-          "external_point_of_contact_email",
-          "external_point_of_contact_phone_number",
-        ],
-        properties: {
-          external_point_of_contact_first_name: {
-            type: "string",
-            title: "First Name",
-          },
-          external_point_of_contact_last_name: {
-            type: "string",
-            title: "Last Name",
-          },
-          external_point_of_contact_position_title: {
-            type: "string",
-            title: "Position Title",
-          },
-          external_point_of_contact_email: {
-            type: "string",
-            title: "Email Address",
-            format: "email",
-          },
-          external_point_of_contact_phone_number: {
-            type: "string",
-            title: "Phone Number",
-            format: "phone",
           },
         },
       },
@@ -513,6 +495,7 @@ export const operationUiSchema = {
     "ui:widget": "RadioWidget",
   },
 <<<<<<< HEAD
+<<<<<<< HEAD
   add_another_user_for_point_of_contact: {
     "ui:widget": "CheckboxWidget",
     "ui:options": {
@@ -520,6 +503,9 @@ export const operationUiSchema = {
     },
 =======
   is_user_point_of_contact: {
+=======
+  is_external_point_of_contact: {
+>>>>>>> 10b7a32c (chore: remove unneeded point of contact fields)
     "ui:widget": "RadioWidget",
   },
   point_of_contact_section: {
