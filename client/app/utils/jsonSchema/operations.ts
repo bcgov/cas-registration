@@ -51,6 +51,13 @@ const operationPage1: RJSFSchema = {
       },
       title: "Reporting Activities",
     },
+    ghg_emissions_section: {
+      //Not an actual field in the db - this is just to make the form look like the wireframes
+      title:
+        "Please provide information about the GHG emissions report for 2022",
+      type: "object",
+      readOnly: true,
+    },
     "Did you submit a GHG emissions report for reporting year 2022?": {
       type: "boolean",
       default: false,
@@ -423,6 +430,7 @@ export const operationUiSchema = {
     "naics_code_id",
     "regulated_products",
     "reporting_activities",
+    "ghg_emissions_section",
     "Did you submit a GHG emissions report for reporting year 2022?",
     "previous_year_attributable_emissions",
     "swrs_facility_id",
@@ -475,6 +483,9 @@ export const operationUiSchema = {
   },
   "Did you submit a GHG emissions report for reporting year 2022?": {
     "ui:widget": "RadioWidget",
+  },
+  ghg_emissions_section: {
+    ...subheading,
   },
   operation_has_multiple_operators: {
     "ui:FieldTemplate": FieldTemplate,
