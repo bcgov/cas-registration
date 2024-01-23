@@ -1,9 +1,11 @@
 from typing import List, Optional
+from registration.utils import file_to_data_url, data_url_to_file
 from ninja import Field, ModelSchema, Schema
 from registration.constants import AUDIT_FIELDS
-from registration.models import Operation
+from registration.models import Operation, Document
 from datetime import date
 from .contact import ContactSchema
+from pydantic import validator
 
 
 #### Operation schemas
@@ -19,6 +21,8 @@ class OperationCreateIn(ModelSchema):
     verified_at: Optional[date] = None
     operation_has_multiple_operators: Optional[bool] = False
     multiple_operators_array: Optional[list] = None
+    statutory_declaration: Optional[str] = None
+    # boundary_map: Optional[str] = None
 
     class Config:
         model = Operation
@@ -57,6 +61,13 @@ class OperationUpdateIn(ModelSchema):
     add_another_user_for_point_of_contact: Optional[bool] = None
     operation_has_multiple_operators: Optional[bool] = False
     multiple_operators_array: Optional[list] = None
+    statutory_declaration: Optional[str] = None
+
+    @validator("statutory_declaration")
+    @classmethod
+    def validate_statutory_declaration(cls, value: str):
+        if value:
+            return data_url_to_file(value)
 
     class Config:
         model = Operation
@@ -79,6 +90,14 @@ class OperationOut(ModelSchema):
     operation_has_multiple_operators: Optional[bool] = Field(False, alias="operation_has_multiple_operators")
     multiple_operators_array: Optional["List[MultipleOperatorOut]"] = Field(None, alias="multiple_operator")
     operator: str = Field(..., alias="operator.legal_name")
+    statutory_declaration: str = None
+
+    @staticmethod
+    def resolve_statutory_declaration(obj: Document):
+        statutory_declaration = obj.get_statutory_declaration()
+        if statutory_declaration:
+            return file_to_data_url(statutory_declaration)
+        return None
 
     class Config:
         model = Operation

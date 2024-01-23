@@ -17,6 +17,8 @@ from registration.models import (
     UserOperator,
     MultipleOperator,
     Address,
+    Document,
+    DocumentType,
 )
 from registration.schema import (
     OperationCreateIn,
@@ -27,7 +29,7 @@ from registration.schema import (
     Message,
     OperationUpdateStatusIn,
 )
-from registration.utils import get_an_operators_approved_users
+from registration.utils import get_an_operators_approved_users, save_statutory_declaration
 from ninja.responses import codes_4xx, codes_5xx
 from ninja.errors import HttpError
 
@@ -155,6 +157,7 @@ def create_operation(request, payload: OperationCreateIn):
             "documents",
             "multiple_operators_array",
             "point_of_contact",
+            "statutory_declaration",
         }
     )
 
@@ -289,6 +292,14 @@ def update_operation(request, operation_id: int, submit: str, payload: Operation
         operation_multiple_operators = MultipleOperator.objects.filter(operation_id=operation.id)
         for operator in operation_multiple_operators:
             operator.set_archive(modifier=user)
+
+    if payload.statutory_declaration:
+        document = Document.objects.create(
+            file=payload.statutory_declaration,
+            type=DocumentType.objects.get(name="signed_statutory_declaration"),
+            description='what was this meant to be? maybe it would make more sense to put the description in the DocumentType table?',
+        )
+        operation.documents.set([document])
 
     return 200, {"name": operation.name}
 
