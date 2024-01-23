@@ -143,7 +143,7 @@ class UserOperatorOperatorIn(Schema):
     """
 
     legal_name: str
-    trade_name: Optional[str] = None
+    trade_name: Optional[str] = ""
     cra_business_number: int
     bc_corporate_registry_number: str = Field(regex=BC_CORPORATE_REGISTRY_REGEX)
     business_structure: str
