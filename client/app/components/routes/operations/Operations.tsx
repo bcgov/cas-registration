@@ -47,20 +47,15 @@ export default async function Operations() {
   // Fetch operations data
   const operations: {
     id: number;
+    bcghg_id: string;
     bc_obps_regulated_operation: string;
     name: string;
     operator: string;
     submission_date: string;
     status: string;
   }[] = await getOperations();
-
   if (!operations) {
-    return (
-      <div>
-        No operations data in database (did you forget to run `make
-        loadfixtures`?)
-      </div>
-    );
+    return <div>No operations data in database.</div>;
   }
   // Transform the fetched data into rows for the DataGrid component
   const rows: GridRowsProp =
@@ -73,12 +68,13 @@ export default async function Operations() {
             submission_date,
             status,
             name,
+            bcghg_id,
           }) => {
             return {
               id,
               bc_obps_regulated_operation: bc_obps_regulated_operation ?? "N/A",
               operation_name: name,
-              operation_id: id,
+              bcghg_id: bcghg_id,
               operator_name: operator,
               submission_date: formatTimestamp(submission_date) ?? status,
               status: status,
@@ -93,7 +89,7 @@ export default async function Operations() {
     !session?.user.app_role?.includes("pending");
 
   const columns = [
-    { field: "operation_id", headerName: "Operation ID", width: 160 },
+    { field: "bcghg_id", headerName: "BC GHG ID", width: 160 },
     {
       field: "operation_name",
       headerName: "Operation",

@@ -164,6 +164,14 @@ export default async function Operation({ numRow }: { numRow?: number }) {
     }),
   );
 
+  let userProfileFormData: UserProfileFormData | { error: string } =
+    await getUserFormData();
+  const currentUserAppRole = (userProfileFormData as UserProfileFormData)
+    ?.app_role?.role_name;
+  const isCasInternal =
+    currentUserAppRole?.includes("cas") &&
+    !currentUserAppRole?.includes("pending");
+
   const boroId: JSX.Element = (
     <div className="flex items-center gap-3 mt-4">
       <CheckCircleIcon
@@ -172,19 +180,29 @@ export default async function Operation({ numRow }: { numRow?: number }) {
         sx={{ width: "3rem", height: "3rem" }}
       />
       <div>
-        <p className="my-0">
-          <b>B.C. OBPS Regulated Operation ID: </b>{" "}
-          {operation?.bc_obps_regulated_operation}
-        </p>
-        <p className="my-0">
-          You will need this B.C. OBPS Regulated Operation ID to claim an
-          exemption from carbon tax. For information about the exemption and how
-          to claim it, please see the{" "}
-          <Link href="https://www2.gov.bc.ca/gov/content?id=3EAC7D1EBBDA41F6937BA1F1A8A202F3">
-            carbon tax exemption page
-          </Link>
-          .
-        </p>
+        {isCasInternal ? (
+          <p>
+            This operation’s application for a B.C. OBPS Regulated Operation ID
+            was approved.
+          </p>
+        ) : (
+          <>
+            {" "}
+            <p className="my-0">
+              <b>B.C. OBPS Regulated Operation ID: </b>{" "}
+              {operation?.bc_obps_regulated_operation}
+            </p>
+            <p className="my-0">
+              You will need this B.C. OBPS Regulated Operation ID to claim an
+              exemption from carbon tax. For information about the exemption and
+              how to claim it, please see the{" "}
+              <Link href="https://www2.gov.bc.ca/gov/content?id=3EAC7D1EBBDA41F6937BA1F1A8A202F3">
+                carbon tax exemption page
+              </Link>
+              .
+            </p>
+          </>
+        )}
       </div>
     </div>
   );
@@ -205,15 +223,13 @@ export default async function Operation({ numRow }: { numRow?: number }) {
     operation &&
     [Status.DECLINED, Status.APPROVED].includes(operation?.status as Status);
 
-  let userProfileFormData: UserProfileFormData | { error: string } =
-    await getUserFormData();
-
   const formData = {
     ...userProfileFormData,
     ...operation,
   };
 
   const userEmail = (userProfileFormData as UserProfileFormData)?.email;
+
   const pointOfContactEmail = formData?.point_of_contact?.email;
   // If the current user is the point of contact, we want to show the point of contact fields
   const isUserPointOfContact =

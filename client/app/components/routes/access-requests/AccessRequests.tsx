@@ -50,9 +50,7 @@ export default async function AccessRequests() {
     <>
       <Note
         classNames="mb-4 mt-6"
-        message="Once “Approved”, the user will have access to their
-      operator dashboard with full admin permissions, and can grant access and
-      designate permissions to other Business BCeID holders there."
+        message="Once “Approved,” the user will have access to their operator dashboard with full admin permissions, and can grant access and designate permissions to other authorized users there."
       />
       <DataGrid
         cntxt="user-operators"
