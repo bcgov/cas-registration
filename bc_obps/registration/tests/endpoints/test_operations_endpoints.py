@@ -5,7 +5,6 @@ from django.test import Client
 from localflavor.ca.models import CAPostalCodeField
 from registration.models import (
     NaicsCode,
-    Document,
     Contact,
     Operation,
     Operator,
@@ -16,7 +15,7 @@ from registration.models import (
     BusinessStructure,
 )
 from registration.schema import OperationCreateIn, OperationUpdateIn
-from registration.tests.utils.helpers import CommonTestSetup, TestUtils
+from registration.tests.utils.helpers import MOCK_DATA_URL, CommonTestSetup, TestUtils
 
 pytestmark = pytest.mark.django_db
 
@@ -185,7 +184,6 @@ class TestOperationsEndpoint(CommonTestSetup):
 
     def test_post_new_operation_with_multiple_operators(self):
         naics_code = baker.make(NaicsCode)
-        statutory_declaration = baker.make(Document, name='signed_statutory_declaration')
         contact = baker.make(Contact)
         regulated_products = baker.make(RegulatedProduct, _quantity=2)
         reporting_activities = baker.make(ReportingActivity, _quantity=2)
@@ -195,7 +193,6 @@ class TestOperationsEndpoint(CommonTestSetup):
             name='Springfield Nuclear Power Plant',
             type='Single Facility Operation',
             naics_code_id=naics_code.id,
-            statutory_declaration=statutory_declaration,
             operation_has_multiple_operators=True,
             multiple_operators_array=[
                 {
@@ -432,12 +429,16 @@ class TestOperationsEndpoint(CommonTestSetup):
     def test_put_operation_with_submit(self):
         operation = baker.make(Operation, id=5)
         mock_operation = TestUtils.mock_OperationUpdateIn()
+
+        setattr(mock_operation, 'statutory_declaration', MOCK_DATA_URL)
+
         baker.make(
             UserOperator,
             user_id=self.user.user_guid,
             status=UserOperator.Statuses.APPROVED,
             operator_id=mock_operation.operator,
         )
+
         response = TestUtils.mock_put_with_auth_role(
             self,
             'industry_user',
