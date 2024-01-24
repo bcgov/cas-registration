@@ -188,8 +188,13 @@ def get_user_operator_id(request):
 @authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles())
 def get_user_operator(request, user_operator_id: int):
     user: User = request.current_user
-    user_operator = get_object_or_404(UserOperator, id=user_operator_id, user=user.user_guid)
-    return UserOperatorOut.from_orm(user_operator)
+    if user.is_industry_user():
+        # Industry users can only get their own UserOperator instance
+        user_operator = get_object_or_404(UserOperator, id=user_operator_id, user=user.user_guid)
+        return UserOperatorOut.from_orm(user_operator)
+    else:
+        user_operator = get_object_or_404(UserOperator, id=user_operator_id)
+        return UserOperatorOut.from_orm(user_operator)
 
 
 @router.get("/operator-has-admin/{operator_id}", response={200: bool, codes_4xx: Message})
