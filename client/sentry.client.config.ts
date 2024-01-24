@@ -4,13 +4,15 @@
 
 import * as Sentry from "@sentry/nextjs";
 
-const SENTRY_DSN = process.env.SENTRY_ENVIRONMENT
-  ? process.env.SENTRY_DSN
-  : undefined;
+const SENTRY_ENVIRONMENT = process.env.SENTRY_ENVIRONMENT;
+const SENTRY_DSN =
+  SENTRY_ENVIRONMENT === "prod"
+    ? "https://c097ce7d51760bab348fa0608eea9870@o646776.ingest.sentry.io/4506621387407360"
+    : undefined;
 
 Sentry.init({
   dsn: SENTRY_DSN,
-  environment: process.env.SENTRY_ENVIRONMENT,
+  environment: SENTRY_ENVIRONMENT,
   release: process.env.SENTRY_RELEASE,
   // Adjust this value in production, or use tracesSampler for greater control
   tracesSampleRate: 1,
