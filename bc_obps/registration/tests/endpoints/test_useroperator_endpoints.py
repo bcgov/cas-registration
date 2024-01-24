@@ -62,6 +62,14 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         )
         assert response.status_code == 401
 
+        # user-operator-id
+        response = TestUtils.mock_get_with_auth_role(self, 'cas_pending', f"{base_endpoint}user-operator-id")
+        assert response.status_code == 401
+        response = TestUtils.mock_get_with_auth_role(self, 'cas_admin', f"{base_endpoint}user-operator-id")
+        assert response.status_code == 401
+        response = TestUtils.mock_get_with_auth_role(self, 'cas_analyst', f"{base_endpoint}user-operator-id")
+        assert response.status_code == 401
+
         # /user-operator-operator-id
         response = TestUtils.mock_get_with_auth_role(self, 'cas_pending', f"{base_endpoint}user-operator-operator-id")
         assert response.status_code == 401
@@ -426,6 +434,35 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         # Act
         operator = baker.make(Operator)
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
+        response = TestUtils.mock_get_with_auth_role(self, 'industry_user', f"{base_endpoint}user-operator-id")
+
+        response_json = response.json()
+
+        # Assert
+        assert response.status_code == 200
+
+        # Additional Assertions
+        assert "user_operator_id" in response_json
+
+    # GET USER OPERATOR ID 404
+    def test_get_user_operator_operator_id_with_invalid_user(self):
+        # Act
+        response = TestUtils.mock_get_with_auth_role(self, 'industry_user', f"{base_endpoint}user-operator-id")
+
+        response_json = response.json()
+
+        # Assert
+        # user is invalid because they're not in the user operator table
+        assert response.status_code == 404
+
+        # Additional Assertions
+        assert response_json == {"detail": "Not Found"}
+
+    # GET USER OPERATOR OPERATOR ID 200
+    def test_get_user_operator_operator_id(self):
+        # Act
+        operator = baker.make(Operator)
+        TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
         response = TestUtils.mock_get_with_auth_role(self, 'industry_user', f"{base_endpoint}user-operator-operator-id")
 
         response_json = response.json()
@@ -436,7 +473,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         # Additional Assertions
         assert "operator_id" in response_json
 
-    # GET USER OPERATOR ID 404
+    # GET USER OPERATOR OPERATOR ID 404
     def test_get_user_operator_operator_id_with_invalid_user(self):
         # Act
         response = TestUtils.mock_get_with_auth_role(self, 'industry_user', f"{base_endpoint}user-operator-operator-id")
