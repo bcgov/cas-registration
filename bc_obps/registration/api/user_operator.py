@@ -168,9 +168,7 @@ def is_approved_admin_user_operator(request, user_guid: str):
 @router.get("/user-operator-operator-id", response={200: UserOperatorOperatorIdOut, codes_4xx: Message})
 @authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
 def get_user_operator_operator_id(request):
-    user_operator = get_object_or_404(
-        UserOperator, user_id=request.current_user.user_guid, status=UserOperator.Statuses.APPROVED
-    )
+    user_operator = get_object_or_404(UserOperator, user_id=request.current_user.user_guid)
     return 200, {"operator_id": user_operator.operator_id}
 
 
@@ -180,12 +178,7 @@ def get_user_operator_operator_id(request):
 )
 @authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles())
 def get_user_operator(request, user_operator_id: int):
-    user: User = request.current_user
     user_operator = get_object_or_404(UserOperator, id=user_operator_id)
-    if user.is_industry_user():
-        authorized_users = get_an_operators_approved_users(user_operator.operator)
-        if user.user_guid not in authorized_users:
-            raise HttpError(401, UNAUTHORIZED_MESSAGE)
     return UserOperatorOut.from_orm(user_operator)
 
 
