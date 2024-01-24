@@ -162,7 +162,7 @@ const FileWidget = ({
   const handleChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
       event.preventDefault();
-      const maxSize = 1024 * 1024; // 1 MB in bytes
+      const maxSize = 20000000;
       const files = event.target.files;
       if (!files) {
         return;
@@ -171,7 +171,7 @@ const FileWidget = ({
       processFiles(files).then((filesInfoEvent) => {
         const newValue = filesInfoEvent.map((fileInfo) => {
           if (fileInfo.size > maxSize) {
-            alert("File size must be less than 1MB");
+            alert("File size must be less than 20MB");
             return;
           }
           return fileInfo.dataURL;
