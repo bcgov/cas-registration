@@ -10,7 +10,16 @@ export default function OnboardingLayout({
   return (
     <>
       <Header />
-      <Main>{children}</Main>
+      <Main
+        sx={{
+          margin: {
+            xs: "160px auto 180px auto",
+            md: "100px auto 80px auto",
+          },
+        }}
+      >
+        {children}
+      </Main>
       <Footer />
     </>
   );

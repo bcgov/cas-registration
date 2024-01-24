@@ -82,12 +82,18 @@ export default function Header() {
               flexGrow: 1,
               fontWeight: 700,
               fontSize: {
-                xs: "20px", //mobile & tablet
+                // Reduce font size for mobile & tablet since lengthy title was breaking mobile views
+                xs: "12px", //mobile & tablet
+                sm: "20px", //mobile & tablet
                 md: "28px", //laptop & desktop
               },
               lineHeight: {
                 xs: "24.2px", //mobile & tablet
                 md: "33.89px", //laptop & desktop
+              },
+              padding: {
+                xs: "4px",
+                md: "0px",
               },
               marginLeft: "24px",
               cursor: "default",
