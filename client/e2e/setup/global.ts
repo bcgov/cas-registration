@@ -19,7 +19,7 @@ import { UserRole } from "@/e2e/utils/enums";
 // 🛸 Login Links
 import { LoginLink } from "@/e2e/utils/enums";
 // 🥞 Connection pool to postgres DB
-import { pool } from "@/e2e/utils/pool";
+// import { pool } from "@/e2e/utils/pool";
 
 // 🛠️ function: login with Keycloak credetials and store authenticated user by role session's state
 /**
@@ -32,45 +32,45 @@ const setupAuth = async (
   user: string,
   password: string,
   storageState: string,
-  role: string,
+  // role: string,
 ) => {
   try {
     const url = "http://localhost:3000/home";
     const browser = await chromium.launch();
     const page = await browser.newPage();
     let loginButton = LoginLink.INDUSTRY_USER;
-    switch (role) {
-      case UserRole.CAS_ADMIN:
-      case UserRole.CAS_ANALYST:
-      case UserRole.CAS_PENDING:
-        loginButton = LoginLink.CAS;
-        // 🛢 To generate a storageState file for each CAS role...
-        // perform an upsert query that inserts or updates the role associated with your IDIR user_guid in the erc.user table.
+    // switch (role) {
+    //   case UserRole.CAS_ADMIN:
+    //   case UserRole.CAS_ANALYST:
+    //   case UserRole.CAS_PENDING:
+    //     loginButton = LoginLink.CAS;
+    //     // 🛢 To generate a storageState file for each CAS role...
+    //     // perform an upsert query that inserts or updates the role associated with your IDIR user_guid in the erc.user table.
 
-        // eslint-disable-next-line no-console
-        console.log(`Upserting ${user} for role ${role}`);
-        const upsert = `
-          INSERT INTO erc.user (user_guid, business_guid, first_name, last_name, position_title, email, phone_number, app_role_id)
-          VALUES
-            ($1, '123e4567-e89b-12d3-a456-426614174001', 'CAS', $2, 'Software Engineer', $3, '123 456 7890', $4)
-          ON CONFLICT (user_guid)
-          DO UPDATE SET
-            app_role_id = EXCLUDED.app_role_id;
-        `;
-        await pool.query(upsert, [
-          process.env.CAS_USER_GUID,
-          user,
-          `${user}@test.com`,
-          role,
-        ]);
+    //     // eslint-disable-next-line no-console
+    //     console.log(`Upserting ${user} for role ${role}`);
+    //     const upsert = `
+    //       INSERT INTO erc.user (user_guid, business_guid, first_name, last_name, position_title, email, phone_number, app_role_id)
+    //       VALUES
+    //         ($1, '123e4567-e89b-12d3-a456-426614174001', 'CAS', $2, 'Software Engineer', $3, '123 456 7890', $4)
+    //       ON CONFLICT (user_guid)
+    //       DO UPDATE SET
+    //         app_role_id = EXCLUDED.app_role_id;
+    //     `;
+    //     await pool.query(upsert, [
+    //       process.env.CAS_USER_GUID,
+    //       user,
+    //       `${user}@test.com`,
+    //       role,
+    //     ]);
 
-        // select all users from erc.user table
-        const res = await pool.query("SELECT * FROM erc.user");
-        // eslint-disable-next-line no-console
-        console.log("All users in erc.user table:", res.rows);
+    //     // select all users from erc.user table
+    //     const res = await pool.query("SELECT * FROM erc.user");
+    //     // eslint-disable-next-line no-console
+    //     console.log("All users in erc.user table:", res.rows);
 
-        break;
-    }
+    //     break;
+    // }
 
     // 🔑 Login to get user's Keycloak information and user role set in `client/app/api/auth/[...nextauth]/route.ts` based on data from erc.user table
     await page.goto(url);
@@ -140,7 +140,7 @@ export default async function globalSetup() {
       user || "",
       pw || "",
       process.env[role + "_STORAGE"] || "",
-      value,
+      // value,
     );
   }
 }
