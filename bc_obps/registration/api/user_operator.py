@@ -178,7 +178,8 @@ def get_user_operator_operator_id(request):
 )
 @authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles())
 def get_user_operator(request, user_operator_id: int):
-    user_operator = get_object_or_404(UserOperator, id=user_operator_id)
+    user: User = request.current_user
+    user_operator = get_object_or_404(UserOperator, id=user_operator_id, user=user.user_guid)
     return UserOperatorOut.from_orm(user_operator)
 
 
