@@ -15,7 +15,7 @@ dotenv.config({
 });
 
 // 👤 User Roles
-import { UserRole } from "@/e2e/utils/enums";
+// import { UserRole } from "@/e2e/utils/enums";
 // 🛸 Login Links
 import { LoginLink } from "@/e2e/utils/enums";
 // 🥞 Connection pool to postgres DB
@@ -122,15 +122,19 @@ export default async function globalSetup() {
   console.log(
     "Global setup to authenticate all user roles and store each role session in storageState to be used in test suites to mock user by role.",
   );
-
+  enum UserRole1 {
+    INDUSTRY_USER = "industry_user",
+    INDUSTRY_USER_ADMIN = "industry_user_admin",
+    NEW_USER = "none",
+  }
   // ➰ Loop through the entries of UserRole enum
-  for (const [role, value] of Object.entries(UserRole)) {
+  for (const [role, value] of Object.entries(UserRole1)) {
     let user = process.env.CAS_USERNAME;
     let pw = process.env.CAS_PASSWORD;
     switch (value) {
-      case UserRole.INDUSTRY_USER_ADMIN:
-      case UserRole.INDUSTRY_USER:
-      case UserRole.NEW_USER:
+      case UserRole1.INDUSTRY_USER_ADMIN:
+      case UserRole1.INDUSTRY_USER:
+      case UserRole1.NEW_USER:
         user = process.env[role + "_USERNAME"];
         pw = process.env[role + "_PASSWORD"];
         break;
