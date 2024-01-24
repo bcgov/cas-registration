@@ -24,11 +24,7 @@ const getUserOperatorStatus = async () => {
 
 const getUserOperatorId = async () => {
   try {
-    return await actionHandler(
-      `registration/user-operator-operator-id`,
-      "GET",
-      "",
-    );
+    return await actionHandler(`registration/user-operator-id`, "GET", "");
   } catch (error) {
     throw error;
   }
@@ -39,7 +35,7 @@ export default async function MyOperatorPage() {
   const userName = getUserFullName(session);
 
   const userOperatorIdResponse = await getUserOperatorId();
-  const userOperatorId = userOperatorIdResponse?.operator_id;
+  const userOperatorId = userOperatorIdResponse?.user_operator_id;
 
   const { status } = await getUserOperatorStatus();
 

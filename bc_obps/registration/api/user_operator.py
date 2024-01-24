@@ -10,6 +10,7 @@ from registration.schema import (
     RequestAccessOut,
     UserOperatorContactIn,
     IsApprovedUserOperator,
+    UserOperatorIdOut,
     UserOperatorOperatorIdOut,
     UserOperatorStatus,
     UserOperatorListOut,
@@ -150,7 +151,7 @@ def get_or_create_user_operator(user: User, operator: Operator):
 ##### GET #####
 @router.get("/user-operator-status-from-user", response={200: UserOperatorStatus, codes_4xx: Message})
 @authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
-def get_user_operator_operator_id(request):
+def get_user_operator_status(request):
     user_operator = get_object_or_404(UserOperator, user_id=request.current_user.user_guid)
     return 200, {"status": user_operator.status}
 
@@ -170,6 +171,14 @@ def is_approved_admin_user_operator(request, user_guid: str):
 def get_user_operator_operator_id(request):
     user_operator = get_object_or_404(UserOperator, user_id=request.current_user.user_guid)
     return 200, {"operator_id": user_operator.operator_id}
+
+
+@router.get("/user-operator-id", response={200: UserOperatorIdOut, codes_4xx: Message})
+@authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
+def get_user_operator_id(request):
+    user_operator = get_object_or_404(UserOperator, user_id=request.current_user.user_guid)
+    print(user_operator)
+    return 200, {"user_operator_id": user_operator.id}
 
 
 @router.get(
