@@ -75,10 +75,9 @@ export default function UserOperatorMultiStepForm({
       // and user can attempt to submit again
       return { error: response.error };
     }
-
     if (isFinalStep) {
       push(
-        `/dashboard/select-operator/received/add-operator/${response.operator_id}`,
+        `/dashboard/select-operator/received/add-operator/${response.user_operator_id}`,
       );
       return;
     }
