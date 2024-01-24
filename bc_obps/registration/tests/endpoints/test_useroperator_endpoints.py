@@ -263,6 +263,42 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         assert response.status_code == 200
         assert response.json()['status'] == user_operator.status
 
+    def test_get_user_operator_data_industry_user(self):
+        operator = baker.make(Operator, mailing_address=baker.make(Address), physical_address=baker.make(Address))
+        TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
+        user_operator_id_response = TestUtils.mock_get_with_auth_role(
+            self, 'industry_user', f"{base_endpoint}user-operator-id"
+        )
+
+        response_json = user_operator_id_response.json()
+        user_operator_id = response_json.get("user_operator_id")
+
+        response = TestUtils.mock_get_with_auth_role(
+            self, 'industry_user', f"{base_endpoint}select-operator/user-operator/{user_operator_id}"
+        )
+        assert response.status_code == 200
+        assert response.json()['operator_id'] == operator.id
+
+    def test_get_user_operator_data_industry_user_invalid_request(self):
+        operator = baker.make(Operator, mailing_address=baker.make(Address), physical_address=baker.make(Address))
+        user_operator = baker.make(UserOperator, operator=operator)
+
+        response = TestUtils.mock_get_with_auth_role(
+            self, 'industry_user', f"{base_endpoint}select-operator/user-operator/{user_operator.id}"
+        )
+        # returns 404 because the user_operator does not belong to the current user
+        assert response.status_code == 404
+
+    def test_get_user_operator_data_internal_user(self):
+        operator = baker.make(Operator, mailing_address=baker.make(Address), physical_address=baker.make(Address))
+        user_operator = baker.make(UserOperator, operator=operator)
+
+        response = TestUtils.mock_get_with_auth_role(
+            self, 'cas_admin', f"{base_endpoint}select-operator/user-operator/{user_operator.id}"
+        )
+        assert response.status_code == 200
+        assert response.json()['operator_id'] == operator.id
+
     def test_get_users_operators_list(self):
         operators = baker.make(Operator, _quantity=2)
         baker.make(
