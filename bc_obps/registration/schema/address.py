@@ -9,5 +9,5 @@ class AddressSchema(ModelSchema):
 
     class Config:
         model = Address
-        address_id: int = Field(..., alias="address.id")
+        address_id: int = Field(..., alias="id")
         model_exclude = ["id"]

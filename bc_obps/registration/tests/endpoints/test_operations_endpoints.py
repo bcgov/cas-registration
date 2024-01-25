@@ -430,6 +430,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         operator = baker.make(Operator)
         update = OperationUpdateIn(
             name='Springfield Nuclear Power Plant',
+            point_of_contact_id=contact2.id,
             type='Single Facility Operation',
             naics_code_id=operation.naics_code_id,
             reporting_activities=[],
