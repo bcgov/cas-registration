@@ -8,6 +8,7 @@ from simple_history.models import HistoricalRecords
 from django.core.validators import RegexValidator
 from django.utils import timezone
 from django.core.exceptions import ValidationError
+from django.core.files.storage import default_storage
 
 
 class TimeStampedModelManager(models.Manager):
@@ -141,6 +142,13 @@ class Document(TimeStampedModel):
     indexes = [
         models.Index(fields=["type"], name="document_type_idx"),
     ]
+
+    def delete(self, *args, **kwargs):
+        # Delete the file from Google Cloud Storage before deleting the model instance
+        if self.file:
+            default_storage.delete(self.file.name)
+
+        super().delete(*args, **kwargs)
 
 
 class NaicsCode(models.Model):
