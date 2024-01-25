@@ -549,3 +549,32 @@ class TestOperationsEndpoint(CommonTestSetup):
                 homer_contact = c
                 break
         assert homer_contact is None
+
+    def test_put_operation_with_no_point_of_contact(self):
+        operator = baker.make(Operator)
+        operation = baker.make(Operation, point_of_contact=None, operator_id=operator.id)
+
+        update = OperationUpdateIn(
+            name='Updated Name',
+            type='Type',
+            operator_id=operator.id,
+            documents=[],
+            regulated_products=[],
+            reporting_activities=[],
+        )
+
+        TestUtils.authorize_current_user_as_operator_user(self, operator)
+        put_response = TestUtils.mock_put_with_auth_role(
+            self,
+            'industry_user',
+            content_type_json,
+            update.json(),
+            self.endpoint + '/' + str(operation.id) + "?submit=true",
+        )
+        assert put_response.status_code == 200
+        assert Operation.objects.count() == 1
+        assert Contact.objects.count() == 0
+        retrieved_operation = Operation.objects.first()
+        assert retrieved_operation.name == 'Updated Name'
+        assert retrieved_operation.point_of_contact_id is None
+        assert retrieved_operation.point_of_contact is None
