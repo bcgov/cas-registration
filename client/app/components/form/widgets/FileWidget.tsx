@@ -16,6 +16,7 @@ import {
   TranslatableString,
   WidgetProps,
 } from "@rjsf/utils";
+import { useSession } from "next-auth/react";
 
 const addNameToDataURL = (dataURL: string, name: string) => {
   if (dataURL === null) {
@@ -152,6 +153,10 @@ const FileWidget = ({
   const [filesInfo, setFilesInfo] = useState<FileInfoType[]>(
     Array.isArray(value) ? extractFileInfo(value) : extractFileInfo([value]),
   );
+  const { data: session } = useSession();
+  const isCasInternal =
+    session?.user.app_role?.includes("cas") &&
+    !session?.user.app_role?.includes("pending");
 
   const hiddenFileInput = useRef() as MutableRefObject<HTMLInputElement>;
 
@@ -194,13 +199,15 @@ const FileWidget = ({
   /*   File input styling options are limited so we are attaching a ref to it, hiding it and triggering it with a styled button. */
   return (
     <div className="py-4 flex">
-      <button
-        type="button"
-        onClick={handleClick}
-        className={`p-0 decoration-solid border-0 text-lg bg-transparent cursor-pointer underline ${disabledColour}`}
-      >
-        Upload attachment
-      </button>
+      {!isCasInternal && (
+        <button
+          type="button"
+          onClick={handleClick}
+          className={`p-0 decoration-solid border-0 text-lg bg-transparent cursor-pointer underline ${disabledColour}`}
+        >
+          {value ? "Reupload attachment" : "Upload attachment"}
+        </button>
+      )}
       <input
         name={id}
         ref={hiddenFileInput}
