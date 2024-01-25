@@ -9,15 +9,18 @@ metadata:
   name: {{ template "cas-registration.fullname" . }}-restore-test-users
   namespace: {{ .Release.Namespace }}
   annotations:
-    "helm.sh/hook": post-upgrade, post-install
+    "helm.sh/hook": post-upgrade
 spec:
   parallelism: 1
   completions: 1
   template:
     metadata:
       name: {{ template "cas-registration.fullname" . }}-restore-test-users
+      labels:
+{{- include "cas-registration.labels" . | nindent 8 }}
+        component: backend
     spec:
-      activeDeadlineSeconds: 300
+      activeDeadlineSeconds: 180
       containers:
         - name:  {{ template "cas-registration.fullname" . }}-restore-test-users
           image: postgres:14.6-alpine
