@@ -3,9 +3,9 @@ import http from "k6/http";
 import { check } from "k6";
 import { industryUserParams, internalUserParams } from "../setup/params.js";
 
-const queries = () => {
+const operators = () => {
   const HOST = __ENV.SERVER_HOST;
-  // GET routes
+  // ##### GET #####
 
   // operators?cra_business_number GET route
   check(
@@ -34,7 +34,7 @@ const queries = () => {
     "is status 200": (r) => r.status === 200,
   });
 
-  // PUT routes
+  // ##### PUT #####
 
   // operators/{operator_id} PUT route
   check(
@@ -52,4 +52,4 @@ const queries = () => {
   );
 };
 
-export default queries;
+export default operators;
