@@ -74,8 +74,8 @@ create_state_buckets:
 
 .PHONY: perf_test
 perf_test: ## run performance tests with k6
-perf_test: APP_HOST=http://localhost:3000
-perf_test: SERVER_HOST=http://127.0.0.1:8000
+perf_test: APP_HOST=http://localhost:3000/api
+perf_test: SERVER_HOST=http://127.0.0.1:8000/api/registration
 perf_test:
 	@k6 -e NUM_APPLICATIONS=100 -e APP_HOST=$(APP_HOST) -e SERVER_HOST=$(SERVER_HOST) run client/tests/performance/script.js --out csv=k6_results/test_results.csv
 

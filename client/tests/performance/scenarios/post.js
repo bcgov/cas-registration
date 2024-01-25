@@ -3,8 +3,6 @@ import http from "k6/http";
 import { check } from "k6";
 
 const mutations = () => {
-  const base_endpoint = "/api/registration";
-
   const postParams = {
     cookies: {
       "mocks.auth_role": "industry_user",
@@ -19,7 +17,7 @@ const mutations = () => {
   });
 
   const res = http.post(
-    __ENV.SERVER_HOST + base_endpoint + "/ROUTE HERE",
+    __ENV.SERVER_HOST + "/ROUTE HERE",
     payload,
     Object.assign({}, postParams, {
       tags: { name: "TAG NAME HERE" },
