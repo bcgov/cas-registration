@@ -25,7 +25,7 @@ spec:
         - name: {{ template "cas-registration.fullname" . }}-frontend
           env:
             - name: API_URL
-              value: {{ .Values.frontend.apiUrl }}
+              value: http://{{ include "cas-registration.fullname" . }}-backend.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.backend.service.port }}/api/
             - name: KEYCLOAK_CLIENT_SECRET
               valueFrom:
                 secretKeyRef:

@@ -19,8 +19,6 @@ frontend:
   route:
     host: cas-reg-frontend-test.apps.silver.devops.gov.bc.ca
 
-  apiUrl: https://cas-reg-backend-test.apps.silver.devops.gov.bc.ca/api/
-
   environment: test
 
   auth:
