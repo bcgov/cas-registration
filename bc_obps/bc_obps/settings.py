@@ -159,5 +159,4 @@ if os.environ.get("GOOGLE_APPLICATION_CREDENTIALS"):
 
 CORS_ALLOWED_ORIGINS = ["http://localhost:3000"]
 
-# brianna here
 DATA_UPLOAD_MAX_MEMORY_SIZE = 20000000
