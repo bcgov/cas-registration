@@ -2,7 +2,8 @@
 import exec from "k6/execution";
 import business_structures from "./scenarios/business_structures.js";
 import naics from "./scenarios/naics.js";
-import operators from "./scenarios/operators.js";
+import operation from "./scenarios/operation.js";
+import operator from "./scenarios/operator.js";
 
 const stages = [
   { duration: "5m", target: 60 }, // simulate ramp-up of traffic from 1 to 60 users over 5 minutes.
@@ -16,18 +17,22 @@ const stages = [
 
 export const options = {
   scenarios: {
-    business_structures: {
+    // business_structures: {
+    //   executor: "ramping-vus",
+    //   stages: stages,
+    // },
+    // naics: {
+    //   executor: "ramping-vus",
+    //   stages: stages,
+    // },
+    operation: {
       executor: "ramping-vus",
       stages: stages,
     },
-    naics: {
-      executor: "ramping-vus",
-      stages: stages,
-    },
-    operators: {
-      executor: "ramping-vus",
-      stages: stages,
-    },
+    // operator: {
+    //   executor: "ramping-vus",
+    //   stages: stages,
+    // },
     // post: {
     //   startTime: "5m",
     //   executor: "shared-iterations",
@@ -50,7 +55,11 @@ export default function () {
     naics();
   }
 
-  if (exec.scenario.name === "operators") {
-    operators();
+  if (exec.scenario.name === "operation") {
+    operation();
+  }
+
+  if (exec.scenario.name === "operator") {
+    operator();
   }
 }
