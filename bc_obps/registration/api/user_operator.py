@@ -10,6 +10,7 @@ from registration.schema import (
     RequestAccessOut,
     UserOperatorContactIn,
     IsApprovedUserOperator,
+    UserOperatorIdOut,
     UserOperatorOperatorIdOut,
     UserOperatorStatus,
     UserOperatorListOut,
@@ -129,28 +130,19 @@ def save_operator(payload: UserOperatorOperatorIn, operator_instance: Operator, 
         user_operator, created = UserOperator.objects.get_or_create(
             user=user,
             operator=created_or_updated_operator_instance,
-            role=UserOperator.Roles.ADMIN,
         )
+        # Only set role if created so that we don't create a new UserOperator instance if one already exists
+        if created:
+            user_operator.role = UserOperator.Roles.ADMIN
+            user_operator.save()
         user_operator.set_create_or_update(modifier=user)
         return 200, {"user_operator_id": user_operator.id}
-
-
-# Function to get or create a UserOperator instance to reuse in POST/PUT methods
-def get_or_create_user_operator(user: User, operator: Operator):
-    user_operator, created = UserOperator.objects.get_or_create(
-        user=user,
-        operator=operator,
-        role=UserOperator.Roles.ADMIN,
-    )
-    if created:
-        user_operator.set_create_or_update(modifier=user)
-    return user_operator
 
 
 ##### GET #####
 @router.get("/user-operator-status-from-user", response={200: UserOperatorStatus, codes_4xx: Message})
 @authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
-def get_user_operator_operator_id(request):
+def get_user_operator_status(request):
     user_operator = get_object_or_404(UserOperator, user_id=request.current_user.user_guid)
     return 200, {"status": user_operator.status}
 
@@ -168,10 +160,16 @@ def is_approved_admin_user_operator(request, user_guid: str):
 @router.get("/user-operator-operator-id", response={200: UserOperatorOperatorIdOut, codes_4xx: Message})
 @authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
 def get_user_operator_operator_id(request):
-    user_operator = get_object_or_404(
-        UserOperator, user_id=request.current_user.user_guid, status=UserOperator.Statuses.APPROVED
-    )
+    user_operator = get_object_or_404(UserOperator, user_id=request.current_user.user_guid)
     return 200, {"operator_id": user_operator.operator_id}
+
+
+@router.get("/user-operator-id", response={200: UserOperatorIdOut, codes_4xx: Message})
+@authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
+def get_user_operator_id(request):
+    user_operator = get_object_or_404(UserOperator, user_id=request.current_user.user_guid)
+    print(user_operator)
+    return 200, {"user_operator_id": user_operator.id}
 
 
 @router.get(
@@ -181,12 +179,13 @@ def get_user_operator_operator_id(request):
 @authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles())
 def get_user_operator(request, user_operator_id: int):
     user: User = request.current_user
-    user_operator = get_object_or_404(UserOperator, id=user_operator_id)
     if user.is_industry_user():
-        authorized_users = get_an_operators_approved_users(user_operator.operator)
-        if user.user_guid not in authorized_users:
-            raise HttpError(401, UNAUTHORIZED_MESSAGE)
-    return UserOperatorOut.from_orm(user_operator)
+        # Industry users can only get their own UserOperator instance
+        user_operator = get_object_or_404(UserOperator, id=user_operator_id, user=user.user_guid)
+        return UserOperatorOut.from_orm(user_operator)
+    else:
+        user_operator = get_object_or_404(UserOperator, id=user_operator_id)
+        return UserOperatorOut.from_orm(user_operator)
 
 
 @router.get("/operator-has-admin/{operator_id}", response={200: bool, codes_4xx: Message})
@@ -385,14 +384,13 @@ def create_user_operator_contact(request, payload: UserOperatorContactIn):
 ##### PUT #####
 
 
-@router.put(
-    "/user-operator/operator/{int:user_operator_operator_id}", response={200: RequestAccessOut, codes_4xx: Message}
-)
+@router.put("/user-operator/operator/{int:user_operator_id}", response={200: RequestAccessOut, codes_4xx: Message})
 @authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
-def update_operator_and_user_operator(request, payload: UserOperatorOperatorIn, user_operator_operator_id: int):
+def update_operator_and_user_operator(request, payload: UserOperatorOperatorIn, user_operator_id: int):
     user: User = request.current_user
     try:
-        operator_instance: Operator = get_object_or_404(Operator, id=user_operator_operator_id)
+        user_operator_instance: UserOperator = get_object_or_404(UserOperator, id=user_operator_id, user=user)
+        operator_instance: Operator = user_operator_instance.operator
 
         # save operator data
         return save_operator(payload, operator_instance, user)

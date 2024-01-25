@@ -29,6 +29,10 @@ class IsApprovedUserOperator(Schema):
     approved: bool
 
 
+class UserOperatorIdOut(Schema):
+    user_operator_id: int
+
+
 class UserOperatorOperatorIdOut(Schema):
     operator_id: int
 
