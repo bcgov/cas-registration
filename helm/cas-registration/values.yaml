@@ -11,6 +11,8 @@ backend:
     # Overrides the image tag whose default is the chart appVersion.
     tag: "latest"
 
+  deployRoute: false
+
   service:
     type: ClusterIP
     port: 8000
