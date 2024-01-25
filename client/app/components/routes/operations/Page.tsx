@@ -13,7 +13,6 @@ export default async function OperationsPage() {
   /* When calling from the server-side i.e., in Route Handlers, React Server Components, API routes,
    * getServerSession requires passing the same object you would pass to NextAuth
    */
-  // brianna coould do it like this too
   const session = await getServerSession(authOptions);
   const role = session?.user?.app_role;
 
