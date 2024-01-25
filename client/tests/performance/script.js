@@ -1,7 +1,6 @@
 /* eslint-disable */
 import exec from "k6/execution";
 import operators from "./scenarios/operators.js";
-import post from "./scenarios/post.js";
 
 const stages = [
   { duration: "5m", target: 60 }, // simulate ramp-up of traffic from 1 to 60 users over 5 minutes.
@@ -36,8 +35,4 @@ export default function () {
   if (exec.scenario.name === "operators") {
     operators();
   }
-
-  // if (exec.scenario.name === "post") {
-  //   post();
-  // }
 }
