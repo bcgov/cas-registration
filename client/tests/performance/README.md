@@ -10,11 +10,11 @@
 
 3. Choose which test you are going to run in `/app/tests/perf/script.js`.
 
-4. Test it is working correctly by running tests against your local dev server running at `http://localhost:3000/`.
+4. Test it is working correctly by running tests against your local backend server running at `http://127.0.0.1:8000/`.
 
 5. Deploy application to dev in load testing mode (INSTRUCTIONS NEEDED)
 
-6. Change variable `APP_HOST` value in Makefile to the route being tested eg: `https://cas-reg-frontend-dev.apps.silver.devops.gov.bc.ca/home/`
+6. Change variable `SERVER_HOST` value in Makefile to the route being tested eg: `https://cas-reg-frontend-dev.apps.silver.devops.gov.bc.ca/home/`
 
 7. Run `make perf_test`
 
