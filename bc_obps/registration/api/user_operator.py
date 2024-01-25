@@ -130,22 +130,12 @@ def save_operator(payload: UserOperatorOperatorIn, operator_instance: Operator, 
         user_operator, created = UserOperator.objects.get_or_create(
             user=user,
             operator=created_or_updated_operator_instance,
-            role=UserOperator.Roles.ADMIN,
         )
+        # Only set role if created so that we don't create a new UserOperator instance if one already exists
+        if created:
+            user_operator.role = UserOperator.Roles.ADMIN
         user_operator.set_create_or_update(modifier=user)
         return 200, {"user_operator_id": user_operator.id}
-
-
-# Function to get or create a UserOperator instance to reuse in POST/PUT methods
-def get_or_create_user_operator(user: User, operator: Operator):
-    user_operator, created = UserOperator.objects.get_or_create(
-        user=user,
-        operator=operator,
-        role=UserOperator.Roles.ADMIN,
-    )
-    if created:
-        user_operator.set_create_or_update(modifier=user)
-    return user_operator
 
 
 ##### GET #####
@@ -398,7 +388,8 @@ def create_user_operator_contact(request, payload: UserOperatorContactIn):
 def update_operator_and_user_operator(request, payload: UserOperatorOperatorIn, user_operator_id: int):
     user: User = request.current_user
     try:
-        operator_instance: Operator = get_object_or_404(Operator, id=user_operator_id)
+        user_operator_instance: UserOperator = get_object_or_404(UserOperator, id=user_operator_id, user=user)
+        operator_instance: Operator = user_operator_instance.operator
 
         # save operator data
         return save_operator(payload, operator_instance, user)
