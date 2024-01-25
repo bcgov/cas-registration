@@ -135,8 +135,6 @@ def get_operation(request, operation_id: int):
         operation = get_object_or_404(Operation, id=operation_id, operator_id=user_operator.operator.id)
     elif user.is_irc_user():
         operation = get_object_or_404(Operation, id=operation_id)
-    print("\n\nGET OPERATION\n")
-    print(OperationOut.from_orm(operation))
     return 200, OperationOut.from_orm(operation)
 
 
@@ -198,42 +196,21 @@ def update_operation(request, operation_id: int, submit: str, payload: Operation
 
     operation = get_object_or_404(Operation, id=operation_id)
 
-    print("\nPUT OPERATION\n")
-    print(operation.__str__)
-
     if payload.operator:
         operation.operator_id = payload.operator
 
     if payload.naics_code:
         operation.naics_code_id = payload.naics_code
 
-    point_of_contact_id, point_of_contact_address_id = None, None
-    print("OPERATION PAYLOAD")
-    print(payload)
+    point_of_contact_address_id = None
+    point_of_contact_id = payload.point_of_contact_id or None
 
-    # if there's a pre-existing point_of_contact associated with the operation
-    if payload.point_of_contact:
-        point_of_contact_id = payload.point_of_contact
-        point_of_contact = Contact.objects.get(id=point_of_contact_id)
-        point_of_contact_address_id = point_of_contact.address.id if point_of_contact.address else None
-
-        if payload.street_address is not None:
-            # create or update the Address for the point of contact
-            address, _ = Address.objects.update_or_create(
-                id=point_of_contact_address_id,
-                defaults={
-                    "street_address": payload.street_address,
-                    "municipality": payload.municipality,
-                    "province": payload.province,
-                    "postal_code": payload.postal_code,
-                },
-            )
-    # else if there's contact info included in the payload
+    # if there's contact info included in the payload
     # NOTE: this is a tacky way of checking to see if the Application Lead section of the form has been populated yet, but it's the
     # best solution we have available at the moment. Once the user is on the second page of the form, street_address is a required field
     # enforced on the frontend.
-    elif payload.street_address is not None:
-        # create or update the Address for the point of contact
+    if payload.street_address is not None:
+        # # create or update the Address for the point of contact
         address, _ = Address.objects.update_or_create(
             id=point_of_contact_address_id,
             defaults={
@@ -290,9 +267,6 @@ def update_operation(request, operation_id: int, submit: str, payload: Operation
             "operation_has_multiple_operators",
         }
     )
-
-    print(payload)
-    print(payload_dict)
 
     for attr, value in payload_dict.items():
         setattr(operation, attr, value)
