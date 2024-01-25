@@ -12,13 +12,12 @@ import {
 } from "@/app/components/form/formDataTypes";
 import UserOperatorMultiStepForm from "@/app/components/form/UserOperatorMultiStepForm";
 import UserOperatorContactForm from "@/app/components/form/UserOperatorContactForm";
-// import Note from "@/app/components/datagrid/Note";
 
 async function getCurrentUser() {
   return actionHandler(
     `registration/user`,
     "GET",
-    `/dashboard/select-operator/user-operator`,
+    `/dashboard/select-operator/user-operator`
   );
 }
 
@@ -26,7 +25,7 @@ async function getBusinessStructures() {
   return actionHandler(
     `registration/business_structures`,
     "GET",
-    `/dashboard/select-operator/user-operator`,
+    `/dashboard/select-operator/user-operator`
   );
 }
 
@@ -35,13 +34,13 @@ export async function getUserOperatorFormData(id: number | string) {
   return actionHandler(
     `registration/select-operator/user-operator/${id}`,
     "GET",
-    `/user-operator/${id}`,
+    `/user-operator/${id}`
   );
 }
 
 // To populate the options for the business structure select field
 const createUserOperatorSchema = (
-  businessStructureList: { id: string; label: string }[],
+  businessStructureList: { id: string; label: string }[]
 ): RJSFSchema => {
   const localSchema = JSON.parse(JSON.stringify(userOperatorSchema));
 
@@ -51,7 +50,7 @@ const createUserOperatorSchema = (
       title: businessStructure.label,
       enum: [businessStructure.id],
       value: businessStructure.id,
-    }),
+    })
   );
 
   // for operator
@@ -99,7 +98,7 @@ export default async function UserOperator({
     (businessStructure: BusinessStructure) => ({
       id: businessStructure.name,
       label: businessStructure.name,
-    }),
+    })
   );
 
   const formData = {
@@ -112,21 +111,9 @@ export default async function UserOperator({
     // If the operator exists then show the form from the second page
     <UserOperatorContactForm formData={formData} schema={userOperatorPage2} />
   ) : (
-    <>
-      {/* TODO: once bug is fixed, brianna. IF it's an existing operator and if it's an external user */}
-      {/* {!isCasInternal ?? (
-        <Note
-          classNames={"mb-4 mt-6"}
-          showNotePrefix={false}
-          showAlertIcon={true}
-          message="Please fill out missing information or update incorrect information about your operator to continue with your application.
-Some fields cannot be edited. If you need to change those fields, please contact us via email at GHGRegulator@gov.bc.ca."
-        />
-      )} */}
-      <UserOperatorMultiStepForm
-        schema={createUserOperatorSchema(businessStructuresList)}
-        formData={formData}
-      />
-    </>
+    <UserOperatorMultiStepForm
+      schema={createUserOperatorSchema(businessStructuresList)}
+      formData={formData}
+    />
   );
 }
