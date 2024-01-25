@@ -68,7 +68,7 @@ export default function OperationsForm({ formData, schema }: Readonly<Props>) {
           // title in the schema "Statutory Declaration and Disclaimer"
           customStepNames={[
             "Operation Information",
-            "Application Lead",
+            "Point of Contact",
             "Statutory Declaration",
           ]}
           formData={formData}

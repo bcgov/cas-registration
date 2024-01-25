@@ -1,7 +1,7 @@
 import { AlertIcon } from "@/app/styles/rjsf/InlineFieldTemplate";
 
 export const registrationRequestNote =
-  "Once “Approved”, the operation will be registered for the B.C. Output-Based Pricing System and exempted from the carbon tax.";
+  "Once “Approved,” a B.C. OBPS Regulated Operation ID will be issued for the operation.";
 
 interface Props {
   classNames?: string;
