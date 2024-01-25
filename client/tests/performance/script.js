@@ -1,5 +1,6 @@
 /* eslint-disable */
 import exec from "k6/execution";
+import business_structures from "./scenarios/business_structures.js";
 import operators from "./scenarios/operators.js";
 
 const stages = [
@@ -14,16 +15,20 @@ const stages = [
 
 export const options = {
   scenarios: {
+    business_structures: {
+      executor: "ramping-vus",
+      stages: stages,
+    },
     operators: {
       executor: "ramping-vus",
       stages: stages,
     },
-    post: {
-      startTime: "5m",
-      executor: "shared-iterations",
-      vus: 50, // 50 user looping for 1000 iterations
-      iterations: 1000,
-    },
+    // post: {
+    //   startTime: "5m",
+    //   executor: "shared-iterations",
+    //   vus: 50, // 50 user looping for 1000 iterations
+    //   iterations: 1000,
+    // },
   },
   thresholds: {
     http_req_duration: ["p(99)<1500"], // 99% of requests must complete below 1.5s
@@ -32,6 +37,10 @@ export const options = {
 };
 
 export default function () {
+  if (exec.scenario.name === "business_structures") {
+    business_structures();
+  }
+
   if (exec.scenario.name === "operators") {
     operators();
   }
