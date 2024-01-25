@@ -55,7 +55,7 @@ spec:
                 key: host
                 name: cas-obps-postgres-pguser-registration
           - name: ALLOWED_HOSTS
-            value: {{ .Values.backend.route.host }}
+            value: '*'
         name: {{ .Release.Name }}-backend-reset-migrations
         image: "{{ .Values.backend.image.repository }}:{{ .Values.defaultImageTag | default .Values.backend.image.tag }}"
         imagePullPolicy: {{ .Values.backend.image.pullPolicy }}
@@ -103,7 +103,7 @@ spec:
                   key: host
                   name: cas-obps-postgres-pguser-registration
             - name: ALLOWED_HOSTS
-              value: {{ .Values.backend.route.host }}
+              value: '*'
             - name: GS_BUCKET_NAME
               valueFrom:
                 secretKeyRef:

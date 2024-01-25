@@ -1,4 +1,4 @@
-{{- if not (hasSuffix "-prod" .Release.Namespace)}}
+{{- if (.Values.backend.deployRoute)}}
 
 apiVersion: route.openshift.io/v1
 kind: Route
