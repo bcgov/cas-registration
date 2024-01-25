@@ -308,6 +308,15 @@ def update_operation_status(request, operation_id: int, payload: OperationUpdate
         if status == Operation.Statuses.APPROVED:
             try:
                 operation.generate_unique_boro_id()
+                # approve the operator if it's not already approved (the case for imported operators)
+                operator: Operator = operation.operator
+                if operator.status != Operator.Statuses.APPROVED:
+                    operator.status = Operator.Statuses.APPROVED
+                    operator.is_new = False
+                    operator.verified_at = datetime.now(pytz.utc)
+                    operator.verified_by = user
+                    operator.save(update_fields=["status", "is_new", "verified_at", "verified_by"])
+                    operator.set_create_or_update(modifier=user)
             except Exception as e:
                 return 400, {"message": str(e)}
     try:
