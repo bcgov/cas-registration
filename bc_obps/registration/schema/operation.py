@@ -37,6 +37,7 @@ class OperationUpdateIn(ModelSchema):
     # Converting types
     verified_at: Optional[date] = None
     # point of contact details
+    point_of_contact_id: Optional[int] = None
     first_name: Optional[str] = None
     last_name: Optional[str] = None
     position_title: Optional[str] = None
@@ -74,6 +75,7 @@ class OperationOut(ModelSchema):
     opt_in: Optional[bool] = None
     verified_at: Optional[date] = None
     point_of_contact: Optional[ContactSchema]
+    point_of_contact_id: int = Field(None, alias="point_of_contact.id")
     operation_has_multiple_operators: Optional[bool] = Field(False, alias="operation_has_multiple_operators")
     multiple_operators_array: Optional["List[MultipleOperatorOut]"] = Field(None, alias="multiple_operator")
     operator: str = Field(..., alias="operator.legal_name")

@@ -1,7 +1,8 @@
 from typing import Optional
 from registration.schema.address import AddressSchema
-from ninja import ModelSchema
+from ninja import ModelSchema, Field
 from registration.models import Contact
+from registration.constants import AUDIT_FIELDS
 
 
 class ContactSchema(ModelSchema):
@@ -9,7 +10,7 @@ class ContactSchema(ModelSchema):
     Schema for the Contact model
     """
 
-    address: AddressSchema
+    address: Optional[AddressSchema]
 
     @staticmethod
     def resolve_phone_number(obj):
@@ -20,12 +21,12 @@ class ContactSchema(ModelSchema):
 
     class Config:
         model = Contact
-        model_fields = [
+        contact_id: int = Field(..., alias="id")
+        address_id: int = Field(None, alias="address.id")
+
+        model_exclude = [
+            # exclude fields that are included as aliases above
+            *AUDIT_FIELDS,
             "id",
-            "first_name",
-            "last_name",
-            "business_role",
-            "email",
-            "phone_number",
-            "position_title",
+            "address",
         ]

@@ -39,8 +39,6 @@ export default function OperationsForm({ formData, schema }: Readonly<Props>) {
     !session?.user.app_role?.includes("pending");
 
   const isFormStatusPending = formData?.status === Status.PENDING;
-  console.log("OperationsForm formData");
-  console.log(formData);
 
   return (
     <>
@@ -104,7 +102,6 @@ export default function OperationsForm({ formData, schema }: Readonly<Props>) {
               //  temporary handling of documents, will be addressed in #332/325
               documents: [],
               operator_id: responseOpId.operator_id,
-              point_of_contact_id: formData?.point_of_contact?.id,
             };
 
             const response = await actionHandler(
