@@ -1,6 +1,7 @@
 /* eslint-disable */
 import exec from "k6/execution";
 import business_structures from "./scenarios/business_structures.js";
+import naics from "./scenarios/naics.js";
 import operators from "./scenarios/operators.js";
 
 const stages = [
@@ -16,6 +17,10 @@ const stages = [
 export const options = {
   scenarios: {
     business_structures: {
+      executor: "ramping-vus",
+      stages: stages,
+    },
+    naics: {
       executor: "ramping-vus",
       stages: stages,
     },
@@ -39,6 +44,10 @@ export const options = {
 export default function () {
   if (exec.scenario.name === "business_structures") {
     business_structures();
+  }
+
+  if (exec.scenario.name === "naics") {
+    naics();
   }
 
   if (exec.scenario.name === "operators") {
