@@ -77,7 +77,7 @@ export default function UserOperatorMultiStepForm({
     }
     if (isFinalStep) {
       push(
-        `/dashboard/select-operator/received/add-operator/${response.user_operator_id}`,
+        `/dashboard/select-operator/received/add-operator/${response.operator_id}`,
       );
       return;
     }

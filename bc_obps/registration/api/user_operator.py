@@ -314,7 +314,7 @@ def create_operator_and_user_operator(request, payload: UserOperatorOperatorIn):
         return 400, {"message": str(e)}
 
 
-@router.post("/user-operator/contact", response={200: UserOperatorIdOut, codes_4xx: Message})
+@router.post("/user-operator/contact", response={200: SelectOperatorIn, codes_4xx: Message})
 @authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
 def create_user_operator_contact(request, payload: UserOperatorContactIn):
     try:
@@ -377,7 +377,7 @@ def create_user_operator_contact(request, payload: UserOperatorContactIn):
     operator.contacts.add(senior_officer_contact)
     operator.set_create_or_update(modifier=user)
 
-    return 200, {"user_operator_id": user_operator_instance.id}
+    return 200, {"operator_id": operator.id}
 
 
 ##### PUT #####
