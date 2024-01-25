@@ -101,7 +101,6 @@ export default function OperationsForm({ formData, schema }: Readonly<Props>) {
               ...data.formData,
               operator_id: responseOpId.operator_id,
             };
-
             const response = await actionHandler(
               endpoint,
               method,
