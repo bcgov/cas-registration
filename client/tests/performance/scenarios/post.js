@@ -19,7 +19,7 @@ const mutations = () => {
   });
 
   const res = http.post(
-    __ENV.APP_HOST + base_endpoint + "/ROUTE HERE",
+    __ENV.SERVER_HOST + base_endpoint + "/ROUTE HERE",
     payload,
     Object.assign({}, postParams, {
       tags: { name: "TAG NAME HERE" },
