@@ -75,7 +75,6 @@ export default function UserOperatorMultiStepForm({
       // and user can attempt to submit again
       return { error: response.error };
     }
-
     if (isFinalStep) {
       push(
         `/dashboard/select-operator/received/add-operator/${response.operator_id}`,
@@ -101,12 +100,27 @@ export default function UserOperatorMultiStepForm({
   const isFormStatusDisabled =
     formData?.status === Status.PENDING || formData?.status === Status.APPROVED;
 
+  const isReviewWithRequestChanges =
+    isCasInternal && formData.is_new && formSection === 1;
+  const isReviewWithoutRequestChanges = isCasInternal && formSection === 2;
+  const isNewOperatorMessage =
+    !isCasInternal && formData.is_new && formSection === 1;
+
   const operatorRoute = isCasInternal ? "operators" : "select-operator";
   // If the user is an approved cas internal user or if no operator exists show the entire multistep form
   if (isCasInternal || !userOperatorId || formSection) {
     return (
       <>
-        {isCasInternal && formData.is_new && formSection === 0 && (
+        {isNewOperatorMessage && (
+          <Note
+            classNames={"mb-4 mt-6"}
+            showNotePrefix={false}
+            showAlertIcon={true}
+            message="Please fill out missing information or update incorrect information about your operator to continue with your application.
+Some fields cannot be edited. If you need to change those fields, please contact us via email at GHGRegulator@gov.bc.ca."
+          />
+        )}
+        {isReviewWithRequestChanges && (
           <>
             <Note message="This is a new operator. You must approve this operator before approving its admin." />
             <UserOperatorReview
@@ -118,7 +132,7 @@ export default function UserOperatorMultiStepForm({
             />
           </>
         )}
-        {isCasInternal && formSection === 1 && (
+        {isReviewWithoutRequestChanges && (
           <UserOperatorReview
             userOperator={formData as UserOperatorFormData}
             userOperatorId={Number(userOperatorId)}

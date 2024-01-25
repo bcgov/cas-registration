@@ -62,6 +62,14 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         )
         assert response.status_code == 401
 
+        # user-operator-id
+        response = TestUtils.mock_get_with_auth_role(self, 'cas_pending', f"{base_endpoint}user-operator-id")
+        assert response.status_code == 401
+        response = TestUtils.mock_get_with_auth_role(self, 'cas_admin', f"{base_endpoint}user-operator-id")
+        assert response.status_code == 401
+        response = TestUtils.mock_get_with_auth_role(self, 'cas_analyst', f"{base_endpoint}user-operator-id")
+        assert response.status_code == 401
+
         # /user-operator-operator-id
         response = TestUtils.mock_get_with_auth_role(self, 'cas_pending', f"{base_endpoint}user-operator-operator-id")
         assert response.status_code == 401
@@ -255,6 +263,42 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         assert response.status_code == 200
         assert response.json()['status'] == user_operator.status
 
+    def test_get_user_operator_data_industry_user(self):
+        operator = baker.make(Operator, mailing_address=baker.make(Address), physical_address=baker.make(Address))
+        TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
+        user_operator_id_response = TestUtils.mock_get_with_auth_role(
+            self, 'industry_user', f"{base_endpoint}user-operator-id"
+        )
+
+        response_json = user_operator_id_response.json()
+        user_operator_id = response_json.get("user_operator_id")
+
+        response = TestUtils.mock_get_with_auth_role(
+            self, 'industry_user', f"{base_endpoint}select-operator/user-operator/{user_operator_id}"
+        )
+        assert response.status_code == 200
+        assert response.json()['operator_id'] == operator.id
+
+    def test_get_user_operator_data_industry_user_invalid_request(self):
+        operator = baker.make(Operator, mailing_address=baker.make(Address), physical_address=baker.make(Address))
+        user_operator = baker.make(UserOperator, operator=operator)
+
+        response = TestUtils.mock_get_with_auth_role(
+            self, 'industry_user', f"{base_endpoint}select-operator/user-operator/{user_operator.id}"
+        )
+        # returns 404 because the user_operator does not belong to the current user
+        assert response.status_code == 404
+
+    def test_get_user_operator_data_internal_user(self):
+        operator = baker.make(Operator, mailing_address=baker.make(Address), physical_address=baker.make(Address))
+        user_operator = baker.make(UserOperator, operator=operator)
+
+        response = TestUtils.mock_get_with_auth_role(
+            self, 'cas_admin', f"{base_endpoint}select-operator/user-operator/{user_operator.id}"
+        )
+        assert response.status_code == 200
+        assert response.json()['operator_id'] == operator.id
+
     def test_get_users_operators_list(self):
         operators = baker.make(Operator, _quantity=2)
         baker.make(
@@ -426,6 +470,35 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         # Act
         operator = baker.make(Operator)
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
+        response = TestUtils.mock_get_with_auth_role(self, 'industry_user', f"{base_endpoint}user-operator-id")
+
+        response_json = response.json()
+
+        # Assert
+        assert response.status_code == 200
+
+        # Additional Assertions
+        assert "user_operator_id" in response_json
+
+    # GET USER OPERATOR ID 404
+    def test_get_user_operator_operator_id_with_invalid_user(self):
+        # Act
+        response = TestUtils.mock_get_with_auth_role(self, 'industry_user', f"{base_endpoint}user-operator-id")
+
+        response_json = response.json()
+
+        # Assert
+        # user is invalid because they're not in the user operator table
+        assert response.status_code == 404
+
+        # Additional Assertions
+        assert response_json == {"detail": "Not Found"}
+
+    # GET USER OPERATOR OPERATOR ID 200
+    def test_get_user_operator_operator_id(self):
+        # Act
+        operator = baker.make(Operator)
+        TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
         response = TestUtils.mock_get_with_auth_role(self, 'industry_user', f"{base_endpoint}user-operator-operator-id")
 
         response_json = response.json()
@@ -436,7 +509,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         # Additional Assertions
         assert "operator_id" in response_json
 
-    # GET USER OPERATOR ID 404
+    # GET USER OPERATOR OPERATOR ID 404
     def test_get_user_operator_operator_id_with_invalid_user(self):
         # Act
         response = TestUtils.mock_get_with_auth_role(self, 'industry_user', f"{base_endpoint}user-operator-operator-id")
@@ -648,7 +721,9 @@ class TestUserOperatorEndpoint(CommonTestSetup):
 
     def test_put_user_operator_operator(self):
         operator = baker.make(Operator, bc_corporate_registry_number="abc1234567", created_by=self.user)
-        baker.make(UserOperator, user=self.user, operator=operator, role=UserOperator.Roles.ADMIN, created_by=self.user)
+        user_operator = baker.make(
+            UserOperator, user=self.user, operator=operator, role=UserOperator.Roles.ADMIN, created_by=self.user
+        )
         baker.make(BusinessStructure, name='BC Corporation')
 
         mock_payload = {
@@ -673,7 +748,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
             'industry_user',
             content_type_json,
             mock_payload,
-            f"{base_endpoint}user-operator/operator/{operator.id}",
+            f"{base_endpoint}user-operator/operator/{user_operator.id}",
         )
 
         response_json = put_response.json()
