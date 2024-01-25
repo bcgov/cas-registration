@@ -11,10 +11,10 @@ from registration.models import (
     Operation,
     Operator,
     ReportingActivity,
+    User,
     UserOperator,
     RegulatedProduct,
     BusinessStructure,
-    BusinessRole,
 )
 from registration.schema import OperationCreateIn, OperationUpdateIn
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
@@ -308,15 +308,20 @@ class TestOperationsEndpoint(CommonTestSetup):
         url = self.build_update_status_url(operation_id=operation.id)
 
         now = datetime.now(pytz.utc)
-        put_response = TestUtils.mock_put_with_auth_role(
+        put_response_1 = TestUtils.mock_put_with_auth_role(
             self, "cas_admin", content_type_json, {"status": "Approved"}, url
         )
-        assert put_response.status_code == 200
-        put_response_dict = put_response.json()
-        assert put_response_dict.get("id") == operation.id
-        assert put_response_dict.get("status") == "Approved"
-        assert put_response_dict.get("verified_by") == str(self.user.user_guid)
-        assert put_response_dict.get("bc_obps_regulated_operation") is not None
+        assert put_response_1.status_code == 200
+        put_response_1_dict = put_response_1.json()
+        assert put_response_1_dict.get("id") == operation.id
+        assert put_response_1_dict.get("status") == "Approved"
+        assert put_response_1_dict.get("verified_by") == str(self.user.user_guid)
+        assert put_response_1_dict.get("bc_obps_regulated_operation") is not None
+        operator = Operator.objects.get(id=operation.operator_id)
+        assert operator.status == Operator.Statuses.APPROVED
+        assert operator.is_new is False
+        assert operator.verified_by == self.user
+        assert operator.verified_at.strftime("%Y-%m-%d") == now.strftime("%Y-%m-%d")
 
         get_response = TestUtils.mock_get_with_auth_role(self, "cas_admin", self.endpoint + "/" + str(operation.id))
         assert get_response.status_code == 200
@@ -324,6 +329,25 @@ class TestOperationsEndpoint(CommonTestSetup):
         assert get_response_dict.get("status") == "Approved"
         now_as_string = now.strftime("%Y-%m-%d")
         assert get_response_dict.get("verified_at") == now_as_string
+
+        # Changing the operator of the operation to a different operator with approved status
+        # should not change other fields of the operator
+        random_time = datetime.now(pytz.utc)
+        random_user = baker.make(User)
+        new_operator = baker.make(
+            Operator, status=Operator.Statuses.APPROVED, verified_at=random_time, verified_by=random_user
+        )
+        operation.operator = new_operator
+        operation.save()
+
+        put_response_2 = TestUtils.mock_put_with_auth_role(
+            self, "cas_admin", content_type_json, {"status": "Approved"}, url
+        )
+        assert put_response_2.status_code == 200
+        assert new_operator.status == Operator.Statuses.APPROVED
+        assert new_operator.verified_at == random_time
+        assert new_operator.verified_by == random_user
+        assert new_operator.verified_by != self.user
 
     def test_put_operation_update_status_declined(self):
         operation = baker.make(Operation, naics_code=baker.make(NaicsCode, naics_code=123456, naics_description='desc'))
