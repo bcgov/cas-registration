@@ -7,7 +7,6 @@ const businessStructures = () => {
   const HOST = __ENV.SERVER_HOST;
   // ##### GET #####
 
-  // business_structures GET route
   check(http.get(HOST + "/business_structures", industryUserParams), {
     "is status 200": (r) => r.status === 200,
   });
