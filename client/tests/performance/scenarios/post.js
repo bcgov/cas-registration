@@ -3,7 +3,7 @@ import http from "k6/http";
 import { check } from "k6";
 
 const mutations = () => {
-  const base_endpoint = "/api/registration/";
+  const base_endpoint = "/api/registration";
 
   const postParams = {
     cookies: {
@@ -19,7 +19,7 @@ const mutations = () => {
   });
 
   const res = http.post(
-    __ENV.APP_HOST + base_endpoint + "ROUTE HERE",
+    __ENV.APP_HOST + base_endpoint + "/ROUTE HERE",
     payload,
     Object.assign({}, postParams, {
       tags: { name: "TAG NAME HERE" },

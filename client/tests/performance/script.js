@@ -5,7 +5,7 @@ import post from "./scenarios/post.js";
 
 export const options = {
   scenarios: {
-    get: {
+    queries: {
       executor: "ramping-vus",
       stages: [
         { duration: "5m", target: 60 }, // simulate ramp-up of traffic from 1 to 60 users over 5 minutes.
@@ -18,7 +18,7 @@ export const options = {
       ],
     },
     post: {
-      startTime: "35m",
+      startTime: "5m",
       executor: "shared-iterations",
       vus: 50, // 50 user looping for 1000 iterations
       iterations: 1000,
@@ -35,7 +35,7 @@ export default function () {
     queries();
   }
 
-  if (exec.scenario.name === "post") {
-    post();
-  }
+  // if (exec.scenario.name === "post") {
+  //   post();
+  // }
 }
