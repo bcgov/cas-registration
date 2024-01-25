@@ -23,9 +23,9 @@ type DashboardLink = {
 // 🛠️ Function: Maps user role to its respective dashboard section from json object import
 export const getDashboardDataMap = (): Record<string, DashboardSection[]> => {
   return {
-    [UserRole.CAS_ADMIN]: casAdminDashboard,
-    [UserRole.CAS_ANALYST]: casAnalystDashboard,
-    [UserRole.CAS_PENDING]: [],
+    //[UserRole.CAS_ADMIN]: casAdminDashboard,
+    //[UserRole.CAS_ANALYST]: casAnalystDashboard,
+    //[UserRole.CAS_PENDING]: [],
     [UserRole.INDUSTRY_USER_ADMIN]: industryUserAdminDashboard,
     [UserRole.INDUSTRY_USER]: industryUserDashboard,
     [UserRole.NEW_USER]: [],
@@ -35,7 +35,7 @@ export const getDashboardDataMap = (): Record<string, DashboardSection[]> => {
 // 🛠️ Function: Navigates to a given URL and waits for the page to load
 export const navigateAndWaitForLoad = async (
   page: Page,
-  url: string,
+  url: string
 ): Promise<void> => {
   if (!page) {
     throw new Error("Invalid Page object");

@@ -129,14 +129,14 @@ test.describe("Test Page - Home", () => {
       const storageState = process.env[role + "_STORAGE"] || "";
       test.use({ storageState: storageState });
       // Set user and password based on the user role
-      let user = process.env.CAS_USERNAME;
-      let pw = process.env.CAS_PASSWORD;
+      let user = "";
+      let pw = "";
       switch (value) {
         case UserRole.INDUSTRY_USER_ADMIN:
         case UserRole.INDUSTRY_USER:
         case UserRole.NEW_USER:
-          user = process.env[`${role}_USERNAME`];
-          pw = process.env[`${role}_PASSWORD`];
+          user = process.env[`${role}_USERNAME`] || "";
+          pw = process.env[`${role}_PASSWORD`] || "";
           break;
       }
       test("Test Logged-In, Logout, Login", async ({ page }) => {
@@ -144,7 +144,7 @@ test.describe("Test Page - Home", () => {
         await loggedIn(page);
         // test logout-login flow
         await logout(page);
-        await login(page, user || "", pw || "", value);
+        await login(page, user, pw, value);
       });
     });
   }
