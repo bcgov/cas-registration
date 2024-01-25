@@ -721,7 +721,9 @@ class TestUserOperatorEndpoint(CommonTestSetup):
 
     def test_put_user_operator_operator(self):
         operator = baker.make(Operator, bc_corporate_registry_number="abc1234567", created_by=self.user)
-        baker.make(UserOperator, user=self.user, operator=operator, role=UserOperator.Roles.ADMIN, created_by=self.user)
+        user_operator = baker.make(
+            UserOperator, user=self.user, operator=operator, role=UserOperator.Roles.ADMIN, created_by=self.user
+        )
         baker.make(BusinessStructure, name='BC Corporation')
 
         mock_payload = {
@@ -746,7 +748,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
             'industry_user',
             content_type_json,
             mock_payload,
-            f"{base_endpoint}user-operator/operator/{operator.id}",
+            f"{base_endpoint}user-operator/operator/{user_operator.id}",
         )
 
         response_json = put_response.json()
