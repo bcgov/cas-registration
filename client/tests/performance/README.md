@@ -20,4 +20,4 @@
 
 8. Monitor deployment
 
-9. Results will be in k6Results folder
+9. Results will be in `k6_results` folder
