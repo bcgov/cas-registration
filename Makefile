@@ -72,6 +72,13 @@ generate_credentials:
 create_state_buckets:
 	./scripts/create-state-buckets.sh $(openshift_nameplate) "ggl-cas-storage"
 
+.PHONY: perf_test
+perf_test: ## run performance tests with k6
+perf_test: APP_HOST=http://localhost:3000
+perf_test:
+	@k6 -e NUM_APPLICATIONS=100 -e APP_HOST=$(APP_HOST) run client/tests/performance/script.js --out csv=k6_results/test_results.csv
+
+
 # include .env.devops
 # .PHONY: bootstrap_terraform
 # bootstrap_terraform:
