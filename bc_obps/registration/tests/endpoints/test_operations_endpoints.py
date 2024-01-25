@@ -430,7 +430,8 @@ class TestOperationsEndpoint(CommonTestSetup):
         operation = baker.make(Operation, id=5)
         mock_operation = TestUtils.mock_OperationUpdateIn()
 
-        setattr(mock_operation, 'statutory_declaration', MOCK_DATA_URL)
+        # Upload testing requires Google cloud credentials to be set up in CI. Will be addressed in #718
+        # setattr(mock_operation, 'statutory_declaration', MOCK_DATA_URL)
 
         baker.make(
             UserOperator,
