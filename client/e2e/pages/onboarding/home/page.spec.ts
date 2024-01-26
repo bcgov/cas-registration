@@ -31,21 +31,18 @@ const login = async (
     expect(page.url().toLocaleLowerCase()).toContain("/home");
     // Determine the login button based on the user role
     let loginButton = LoginLink.INDUSTRY_USER;
-    // Debug log to check when the locator is found
     // eslint-disable-next-line no-console
     console.log("Waiting for the login button to be present...");
-    const loginButtonLocator = await page.locator(
-      `button:has-text("${loginButton}")`
-    );
-    const loginButtonElement = await loginButtonLocator.element();
+    // 🕒 Wait for login link to be present
+    const loginButtonSelector = '[data-testid="login-io"]';
+    await page.waitForSelector(loginButtonSelector);
+    // 🔍 Assert that the link is available
+    expect(loginButtonSelector).not.toBeNull();
     // eslint-disable-next-line no-console
-    console.log("Login button found:", loginButtonElement);
-    await loginButtonLocator.click();
-    // eslint-disable-next-line no-console
-    console.log(`Clicking the login button: ${loginButton}`);
-    // Click the login button
-    await loginButtonLocator.click();
+    console.log("Clicking Login...");
+    await page.getByRole("button", { name: loginButton }).click();
 
+    console.log("Completing login form...");
     // 🕒 Wait for the user field to be present
     const userField = await page.waitForSelector("#user");
     // 🔍 Assert that the field is available
@@ -66,9 +63,13 @@ const login = async (
     );
     // 🔍 Assert that the button is available
     expect(continueButton).not.toBeNull();
+    // eslint-disable-next-line no-console
+    console.log("Submiting login form...");
     // Click the "Continue" button
     await continueButton.click();
 
+    // eslint-disable-next-line no-console
+    console.log("Waiting for the profile button to be present...");
     // 🕒 Wait for the home page profile navigation link to be present
     const profileNavSelector = '[data-testid="nav-user-profile"]';
     await page.waitForSelector(profileNavSelector);

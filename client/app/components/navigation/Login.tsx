@@ -18,6 +18,7 @@ export default function Login() {
     <>
       <Link href="#" sx={{ color: "white" }}>
         <Button
+          data-testid="login-cas"
           sx={{ ...commonButtonConfig }}
           aria-label="Program Administrator Log In"
           color="inherit"
@@ -30,6 +31,7 @@ export default function Login() {
       </Link>
       <Link href="#" sx={{ color: "white" }}>
         <Button
+          data-testid="login-io"
           sx={{ ...commonButtonConfig, marginLeft: "20px" }}
           aria-label="Industrial Operator Log In"
           color="inherit"
