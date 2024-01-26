@@ -26,14 +26,22 @@ const login = async (
     console.log(`Navigating to: ${url}`);
     // 🛸 Navigate to the home page
     await navigateAndWaitForLoad(page, url);
-
     // Determine the login button based on the user role
     let loginButton = LoginLink.INDUSTRY_USER;
-
+    // Debug log to check when the locator is found
+    // eslint-disable-next-line no-console
+    console.log("Waiting for the login button to be present...");
+    const loginButtonLocator = await page.locator(
+      `button:has-text("${loginButton}")`
+    );
+    const loginButtonElement = await loginButtonLocator.element();
+    // eslint-disable-next-line no-console
+    console.log("Login button found:", loginButtonElement);
+    await loginButtonLocator.click();
     // eslint-disable-next-line no-console
     console.log(`Clicking the login button: ${loginButton}`);
     // Click the login button
-    await page.getByRole("button", { name: loginButton }).click();
+    await loginButtonLocator.click();
 
     // 🕒 Wait for the user field to be present
     const userField = await page.waitForSelector("#user");

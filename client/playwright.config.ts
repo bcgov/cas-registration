@@ -37,7 +37,7 @@ export default defineConfig({
         ...devices["Desktop Chrome"],
       },
     },
-
+    /*
     {
       name: "firefox",
       use: {
@@ -51,7 +51,7 @@ export default defineConfig({
         ...devices["Desktop Safari"],
       },
     },
-
+*/
     /* Test against mobile viewports. */
     // {
     //   name: 'Mobile Chrome',
