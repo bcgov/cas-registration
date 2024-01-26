@@ -136,29 +136,31 @@ const userOperator = () => {
     },
   );
 
+  const newUserParams = {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: JSON.stringify({
+        user_guid: newUserGuid,
+      }),
+    },
+  };
+
+  const userOperatorPayload = JSON.stringify({
+    legal_name: "Test Operator",
+    cra_business_number: Math.floor(Math.random() * 1000000000),
+    bc_corporate_registry_number: "adc1234321",
+    business_structure: "BC Corporation",
+    physical_street_address: "123 Test Street",
+    physical_municipality: "Victoria",
+    physical_province: "BC",
+    physical_postal_code: "V1V 1V1",
+    mailing_address_same_as_physical: true,
+    operator_has_parent_operators: false,
+  });
   const createUserOperator = http.post(
     HOST + "/user-operator/operator",
-    JSON.stringify({
-      legal_name: "Test Operator",
-      cra_business_number: Math.floor(Math.random() * 1000000000),
-      bc_corporate_registry_number: "adc1234321",
-      business_structure: "BC Corporation",
-      physical_street_address: "123 Test Street",
-      physical_municipality: "Victoria",
-      physical_province: "BC",
-      physical_postal_code: "V1V 1V1",
-      mailing_address_same_as_physical: true,
-      operator_has_parent_operators: false,
-    }),
-    {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: JSON.stringify({
-          // Use the new user guid to create a new user operator so we can repeat the test
-          user_guid: newUserGuid,
-        }),
-      },
-    },
+    userOperatorPayload,
+    newUserParams,
   );
 
   check(createUserOperator, {
@@ -184,15 +186,33 @@ const userOperator = () => {
         position_title: "Test Position",
         postal_code: "V1V 1V1",
       }),
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: JSON.stringify({
-            // Use the new user guid to create a new user operator so we can repeat the test
-            user_guid: newUserGuid,
-          }),
-        },
-      },
+      newUserParams,
+    ),
+    {
+      "is status 200": (r) => r.status === 200,
+    },
+  );
+  // ##### PUT #####
+
+  check(
+    http.put(
+      HOST + `/user-operator/operator/${newUserOperatorId}`,
+      userOperatorPayload,
+      newUserParams,
+    ),
+    {
+      "is status 200": (r) => r.status === 200,
+    },
+  );
+
+  check(
+    http.put(
+      HOST + "/select-operator/user-operator/update-status",
+      JSON.stringify({
+        user_guid: newUserGuid,
+        status: "Pending",
+      }),
+      internalUserParams,
     ),
     {
       "is status 200": (r) => r.status === 200,
