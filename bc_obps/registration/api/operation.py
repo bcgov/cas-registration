@@ -289,13 +289,8 @@ def update_operation(request, operation_id: int, submit: str, payload: Operation
             operator.set_archive(modifier=user)
 
     if payload.statutory_declaration:
-        operation_document = Operation.documents.through.objects.filter(
-            operation_id=operation.id
-        ).first()  # there will only ever be 1 statutory declaration
-        if operation_document:
-            Document.objects.get(
-                id=operation_document.document_id
-            ).delete()  # we delete here rather than update because delete removes the file from google cloud storage
+        operation.documents.filter(type=DocumentType.objects.get(name="signed_statutory_declaration")).delete()
+
         document = Document.objects.create(
             file=payload.statutory_declaration,
             type=DocumentType.objects.get(name="signed_statutory_declaration"),
