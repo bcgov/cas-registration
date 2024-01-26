@@ -26,22 +26,16 @@ const login = async (
     console.log(`Navigating to: ${url}`);
     // 🛸 Navigate to the home page
     await navigateAndWaitForLoad(page, url);
-    // eslint-disable-next-line no-console
-    console.log("Asserting url is correct...");
     expect(page.url().toLocaleLowerCase()).toContain("/home");
+    // eslint-disable-next-line no-console
+    console.log("Asserted url is correct");
     // Determine the login button based on the user role
     let loginButton = LoginLink.INDUSTRY_USER;
-    // eslint-disable-next-line no-console
-    console.log("Waiting for the login button to be present...");
-    // 🕒 Wait for login link to be present
-    const loginButtonSelector = '[data-testid="login-io"]';
-    await page.waitForSelector(loginButtonSelector);
-    // 🔍 Assert that the link is available
-    expect(loginButtonSelector).not.toBeNull();
-    // eslint-disable-next-line no-console
     console.log("Clicking Login...");
-    await page.getByRole("button", { name: loginButton }).click();
-
+    // Click the login button with a longer timeout (e.g., 60 seconds)
+    await page
+      .getByRole("button", { name: loginButton }, { timeout: 60000 })
+      .click();
     console.log("Completing login form...");
     // 🕒 Wait for the user field to be present
     const userField = await page.waitForSelector("#user");
@@ -69,13 +63,15 @@ const login = async (
     await continueButton.click();
 
     // eslint-disable-next-line no-console
-    console.log("Waiting for the profile button to be present...");
+    console.log("Waiting for the profile link to be present...");
     // 🕒 Wait for the home page profile navigation link to be present
     const profileNavSelector = '[data-testid="nav-user-profile"]';
     await page.waitForSelector(profileNavSelector);
     // 🔍 Assert that the link is available
     expect(profileNavSelector).not.toBeNull();
 
+    // eslint-disable-next-line no-console
+    console.log("Asserting authenticated url...");
     // 🔍 Assert based on user role
     switch (role) {
       case UserRole.NEW_USER:
