@@ -87,8 +87,17 @@ class OperationOut(ModelSchema):
     bcghg_id: Optional[str] = None
     opt_in: Optional[bool] = None
     verified_at: Optional[date] = None
-    point_of_contact: Optional[ContactSchema]
-    point_of_contact_id: int = Field(None, alias="point_of_contact.id")
+    # point of contact handling
+    first_name: Optional[str] = Field(None, alias="point_of_contact.first_name")
+    last_name: Optional[str] = Field(None, alias="point_of_contact.last_name")
+    email: Optional[str] = Field(None, alias="point_of_contact.email")
+    phone_number: Optional[str]  # can't use resolvers with aliases, so handling everything in the resolver
+    position_title: Optional[str] = Field(None, alias="point_of_contact.position_title")
+    street_address: Optional[str] = Field(None, alias="point_of_contact.address.street_address")
+    municipality: Optional[str] = Field(None, alias="point_of_contact.address.municipality")
+    province: Optional[str] = Field(None, alias="point_of_contact.address.province")
+    postal_code: Optional[str] = Field(None, alias="point_of_contact.address.postal_code")
+
     operation_has_multiple_operators: Optional[bool] = Field(False, alias="operation_has_multiple_operators")
     multiple_operators_array: Optional["List[MultipleOperatorOut]"] = Field(None, alias="multiple_operator")
     operator: str = Field(..., alias="operator.legal_name")
@@ -100,6 +109,13 @@ class OperationOut(ModelSchema):
         if statutory_declaration:
             return file_to_data_url(statutory_declaration)
         return None
+
+    @staticmethod
+    def resolve_phone_number(obj):
+        # PhoneNumberField returns a PhoneNumber object and we need a string
+        if not obj.point_of_contact:
+            return
+        return str(obj.point_of_contact.phone_number)
 
     class Config:
         model = Operation
