@@ -59,6 +59,18 @@ def get_operator(request, operator_id: int):
     return 200, operator
 
 
+@router.get("/operator-from-user", response={200: OperatorOut, codes_4xx: Message})
+@authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
+def get_operator_from_user(request):
+    user: User = request.current_user
+    try:
+        user_operator = get_object_or_404(UserOperator, user=user.user_guid)
+        operator = user_operator.operator
+    except Exception as e:
+        return 404, {"message": "User is not associated with any operator"}
+    return 200, operator
+
+
 ##### POST #####
 
 

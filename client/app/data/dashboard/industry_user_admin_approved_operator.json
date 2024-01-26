@@ -1,12 +1,16 @@
 [
   {
     "title": "My Operator",
-    "content": "View or update your operator information, which needs to be complete before applying for BORO ID's",
+    "content": "View or update your operator information",
     "links": [
       { "title": "My Operator ➤", "href": "/dashboard/select-operator" }
     ]
   },
-
+  {
+    "title": "My Operations",
+    "content": "Apply for a B.C. OBPS Regulated Operation ID",
+    "links": [{ "title": "My Operations ➤", "href": "/dashboard/operations" }]
+  },
   {
     "title": "User Access Management",
     "content": " For managing user access to your operator profile",
