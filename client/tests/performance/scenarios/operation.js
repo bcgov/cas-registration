@@ -1,7 +1,7 @@
 /* eslint-disable */
 import http from "k6/http";
 import { check } from "k6";
-import { internalUserParams } from "../setup/params.js";
+import { industryUserParams, internalUserParams } from "../setup/params.js";
 
 const operation = () => {
   const HOST = __ENV.SERVER_HOST;
@@ -26,8 +26,12 @@ const operation = () => {
         name: "Test Operation",
         operator_id: 1,
         status: "Pending",
+        documents: [],
+        regulated_products: [],
+        reporting_activities: [],
+        type: "Test Type",
       }),
-      internalUserParams,
+      industryUserParams,
     ),
     {
       "is status 200": (r) => r.status === 200,
