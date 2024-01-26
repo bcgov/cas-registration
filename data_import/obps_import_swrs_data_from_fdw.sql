@@ -263,5 +263,8 @@ begin
     type = excluded.type,
     bcghg_id = excluded.bcghg_id;
 
+  update erc.operation set type = 'Single Facility Operation' where type='SFO';
+  update erc.operation set type = 'Linear Facilities Operation' where type='LFO';
+
 end;
 $function$ language plpgsql;
