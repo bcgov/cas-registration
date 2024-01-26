@@ -30,7 +30,7 @@ const setupAuth = async (
   user: string,
   password: string,
   storageState: string,
-  role: string
+  role: string,
 ) => {
   try {
     const url = "http://localhost:3000/home";
@@ -69,7 +69,7 @@ const setupAuth = async (
 
     // eslint-disable-next-line no-console
     console.log(
-      `Successful authentication setup for ${user} captured in storageState ${storageState}`
+      `Successful authentication setup for ${user} captured in storageState ${storageState}`,
     );
   } catch (error) {
     // Handle any errors that occurred during the authentication process
@@ -86,7 +86,7 @@ export default async function globalSetup() {
   // 👤 Set storageState for Authenticated IDIR and BCeid credentials using NextAuth and Keycloak to be used in subsequent test suites
   // eslint-disable-next-line no-console
   console.log(
-    "Global setup to authenticate all user roles and store each role session in storageState to be used in test suites to mock user by role."
+    "Global setup to authenticate all user roles and store each role session in storageState to be used in test suites to mock user by role.",
   );
 
   // ➰ Loop through the entries of UserRole enum
@@ -106,7 +106,7 @@ export default async function globalSetup() {
       user || "",
       pw || "",
       process.env[role + "_STORAGE"] || "",
-      value
+      value,
     );
   }
 }
