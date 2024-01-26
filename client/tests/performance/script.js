@@ -21,35 +21,24 @@ const stages = [
 
 export const options = {
   scenarios: {
-    // business_structures: {
-    //   executor: "ramping-vus",
-    //   stages: stages,
-    // },
-    // naics: {
-    //   executor: "ramping-vus",
-    //   stages: stages,
-    // },
-    // operation: {
-    //   executor: "ramping-vus",
-    //   stages: stages,
-    // },
-    // operator: {
-    //   executor: "ramping-vus",
-    //   stages: stages,
-    // },
-    // regulated_products: {
-    //   executor: "ramping-vus",
-    //   stages: stages,
-    // },
-    // reporting_activities: {
-    //   executor: "ramping-vus",
-    //   stages: stages,
-    // },
-    // user: {
-    //   executor: "ramping-vus",
-    //   stages: stages,
-    // },
+    operation: {
+      executor: "ramping-vus",
+      stages: stages,
+    },
+    operator: {
+      executor: "ramping-vus",
+      stages: stages,
+    },
+    user: {
+      executor: "ramping-vus",
+      stages: stages,
+    },
     user_operator: {
+      executor: "ramping-vus",
+      stages: stages,
+    },
+    others: {
+      // Grouping together the smaller GET endpoints
       executor: "ramping-vus",
       stages: stages,
     },
@@ -67,14 +56,6 @@ export const options = {
 };
 
 export default function () {
-  if (exec.scenario.name === "business_structures") {
-    business_structures();
-  }
-
-  if (exec.scenario.name === "naics") {
-    naics();
-  }
-
   if (exec.scenario.name === "operation") {
     operation();
   }
@@ -83,19 +64,18 @@ export default function () {
     operator();
   }
 
-  if (exec.scenario.name === "regulated_products") {
-    regulated_products();
-  }
-
-  if (exec.scenario.name === "reporting_activities") {
-    reporting_activities();
-  }
-
   if (exec.scenario.name === "user") {
     user();
   }
 
   if (exec.scenario.name === "user_operator") {
     user_operator();
+  }
+
+  if (exec.scenario.name === "others") {
+    business_structures();
+    naics();
+    regulated_products();
+    reporting_activities();
   }
 }
