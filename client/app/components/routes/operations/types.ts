@@ -15,7 +15,15 @@ export interface Operation {
   opt_in?: boolean;
   operator: number;
   operation_has_multiple_operators: boolean;
-  point_of_contact?: any; // Change this once we have the Contact type
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone_number: string;
+  position_title: string;
+  street_address: string;
+  muncipality: string;
+  province: string;
+  postal_code: string;
   status: string;
   bc_obps_regulated_operation?: number;
   statutory_declaration: string;
