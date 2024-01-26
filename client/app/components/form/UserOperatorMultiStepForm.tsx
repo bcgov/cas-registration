@@ -103,15 +103,15 @@ export default function UserOperatorMultiStepForm({
   const isReviewWithRequestChanges =
     isCasInternal && formData.is_new && formSection === 1;
   const isReviewWithoutRequestChanges = isCasInternal && formSection === 2;
-  const isNewOperatorMessage =
-    !isCasInternal && formData.is_new && formSection === 1;
+  const isExistingOperatorMessage =
+    !isCasInternal && !formData.is_new && formSection === 1;
 
   const operatorRoute = isCasInternal ? "operators" : "select-operator";
   // If the user is an approved cas internal user or if no operator exists show the entire multistep form
   if (isCasInternal || !userOperatorId || formSection) {
     return (
       <>
-        {isNewOperatorMessage && (
+        {isExistingOperatorMessage && (
           <Note
             classNames={"mb-4 mt-6"}
             showNotePrefix={false}
