@@ -33,7 +33,7 @@ const operation = () => {
   );
 
   check(operation, {
-    "is status 200": (r) => r.status === 200,
+    "is status 201": (r) => r.status === 201,
   });
 
   // Get the operation id from the POST response so we can use it in PUT test
