@@ -18,20 +18,55 @@ const operation = () => {
 
   // ##### POST #####
 
+  const operation = http.post(
+    HOST + "/operations",
+    JSON.stringify({
+      operator_id: 1,
+      name: "Test Operation",
+      status: "Pending",
+      documents: [],
+      regulated_products: [],
+      reporting_activities: [],
+      type: "Test Type",
+    }),
+    industryUserParams,
+  );
+
+  check(operation, {
+    "is status 200": (r) => r.status === 200,
+  });
+
+  // Get the operation id from the POST response so we can use it in PUT test
+  const operationId = operation.json("id");
+
+  // ##### PUT #####
+
   check(
-    http.post(
-      HOST + "/operations",
+    http.put(
+      HOST + `/operations/${operationId}?submit=false`,
       JSON.stringify({
-        id: 1,
-        name: "Test Operation",
         operator_id: 1,
+        name: "Test Operation Updated",
         status: "Pending",
         documents: [],
         regulated_products: [],
         reporting_activities: [],
-        type: "Test Type",
+        type: "Test Type Updated",
       }),
       industryUserParams,
+    ),
+    {
+      "is status 200": (r) => r.status === 200,
+    },
+  );
+
+  check(
+    http.put(
+      HOST + `/operations/${operationId}/update-status`,
+      JSON.stringify({
+        status: "Approved",
+      }),
+      internalUserParams,
     ),
     {
       "is status 200": (r) => r.status === 200,
