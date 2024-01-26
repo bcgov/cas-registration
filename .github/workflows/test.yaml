@@ -271,6 +271,7 @@ jobs:
       - name: Run Playwright tests
         run: DEBUG=pw:browser npx playwright test --workers=1 client/e2e/*
         env:
+          BASEURL: http://localhost:3000/
           CAS_USERNAME: bc-cas-dev
           CAS_PASSWORD: ${{ secrets.CAS_PASSWORD }}
           CAS_USER_GUID: ${{ secrets.CAS_USER_GUID }}
