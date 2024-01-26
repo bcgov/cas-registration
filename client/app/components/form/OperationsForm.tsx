@@ -99,11 +99,8 @@ export default function OperationsForm({ formData, schema }: Readonly<Props>) {
             const body = {
               ...formData,
               ...data.formData,
-              //  temporary handling of documents, will be addressed in #332/325
-              documents: [],
               operator_id: responseOpId.operator_id,
             };
-
             const response = await actionHandler(
               endpoint,
               method,

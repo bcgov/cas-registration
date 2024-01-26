@@ -17,6 +17,8 @@ from registration.models import (
     UserOperator,
     MultipleOperator,
     Address,
+    Document,
+    DocumentType,
 )
 from registration.schema import (
     OperationCreateIn,
@@ -152,9 +154,9 @@ def create_operation(request, payload: OperationCreateIn):
             "reporting_activities",
             "operator",
             "naics_code",
-            "documents",
             "multiple_operators_array",
             "point_of_contact",
+            "statutory_declaration",
         }
     )
 
@@ -168,7 +170,6 @@ def create_operation(request, payload: OperationCreateIn):
     operation = Operation.objects.create(**payload_dict, operator_id=payload.operator, naics_code_id=payload.naics_code)
     operation.regulated_products.set(payload.regulated_products)
     operation.reporting_activities.set(payload.reporting_activities)
-    operation.documents.set(payload.documents)
     operation.set_create_or_update(modifier=user)
 
     if payload.operation_has_multiple_operators:
@@ -196,11 +197,8 @@ def update_operation(request, operation_id: int, submit: str, payload: Operation
 
     operation = get_object_or_404(Operation, id=operation_id)
 
-    if payload.operator:
-        operation.operator_id = payload.operator
-
-    if payload.naics_code:
-        operation.naics_code_id = payload.naics_code
+    operation.operator_id = payload.operator
+    operation.naics_code_id = payload.naics_code
 
     point_of_contact_address_id = None
     point_of_contact_id = payload.point_of_contact_id or None
@@ -289,6 +287,15 @@ def update_operation(request, operation_id: int, submit: str, payload: Operation
         operation_multiple_operators = MultipleOperator.objects.filter(operation_id=operation.id)
         for operator in operation_multiple_operators:
             operator.set_archive(modifier=user)
+
+    if payload.statutory_declaration:
+        operation.documents.filter(type=DocumentType.objects.get(name="signed_statutory_declaration")).delete()
+
+        document = Document.objects.create(
+            file=payload.statutory_declaration,
+            type=DocumentType.objects.get(name="signed_statutory_declaration"),
+        )
+        operation.documents.set([document])
 
     return 200, {"name": operation.name}
 

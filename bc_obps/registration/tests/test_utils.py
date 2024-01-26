@@ -1,8 +1,11 @@
 import pytest
+import tempfile
 from model_bakery import baker
 from registration.models import User, Operator, UserOperator, AppRole
 from registration.utils import (
     check_users_admin_request_eligibility,
+    file_to_data_url,
+    data_url_to_file,
     update_model_instance,
     generate_useful_error,
     check_access_request_matches_business_guid,
@@ -13,7 +16,7 @@ from localflavor.ca.models import CAPostalCodeField
 from django.core.exceptions import ValidationError
 from ninja.errors import HttpError
 from django.test import RequestFactory, TestCase
-from registration.tests.utils.helpers import TestUtils
+from registration.tests.utils.helpers import TestUtils, MOCK_DATA_URL
 
 
 pytestmark = pytest.mark.django_db
@@ -326,3 +329,20 @@ class TestGetAnOperatorsUsers:
 
         result = User.objects.filter(user_guid=approved_user.user_guid)
         assert result.exists() and result.count() == 1
+
+
+class TestFileHelpers:
+    @staticmethod
+    def file_to_data_url_returns_data_url():
+
+        # Create a temporary file
+        temp_pdf_file = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf")
+
+        result = file_to_data_url(temp_pdf_file)
+        assert isinstance(result, str)
+        assert result.startswith('data:application/pdf;name=')
+
+    @staticmethod
+    def data_url_to_file_returns_file():
+        result = data_url_to_file(MOCK_DATA_URL)
+        assert result.exists() and result.is_file()
