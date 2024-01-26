@@ -12,7 +12,7 @@ import { LoginLink } from "@/e2e/utils/enums";
 dotenv.config({ path: "./e2e/.env.local" });
 
 // Set the test URL
-const url = process.env.BASEURL || "";
+const url = process.env.BASEURL || "http://localhost:3000/";
 
 // 🛠️ Function: log in to Keycloak
 const login = async (
@@ -22,12 +22,16 @@ const login = async (
   role: string
 ) => {
   try {
+    // eslint-disable-next-line no-console
+    console.log(`Navigating to: ${url}`);
     // 🛸 Navigate to the home page
     await navigateAndWaitForLoad(page, url);
 
     // Determine the login button based on the user role
     let loginButton = LoginLink.INDUSTRY_USER;
 
+    // eslint-disable-next-line no-console
+    console.log(`Clicking the login button: ${loginButton}`);
     // Click the login button
     await page.getByRole("button", { name: loginButton }).click();
 
