@@ -276,7 +276,7 @@ jobs:
 
       - name: Run Playwright tests
         run: |
-          DEBUG=pw:browser npx playwright test --workers=1 client/e2e/*
+          DEBUG=pw:browser npx playwright test --trace on --workers=1 client/e2e/*
         env:
           BASEURL: http://localhost:3000/
           CAS_ADMIN_STORAGE: playwright/.auth/cas_admin.json
