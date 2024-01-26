@@ -37,7 +37,7 @@ const operation = () => {
   });
 
   // Get the operation id from the POST response so we can use it in PUT test
-  const operationId = operation.json("id");
+  const operationId = JSON.parse(operation.body).id;
 
   // ##### PUT #####
 
