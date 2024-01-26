@@ -241,7 +241,6 @@ export default async function Operation({ numRow }: { numRow?: number }) {
     formData &&
     Array.isArray(formData?.multiple_operators_array) &&
     formData.multiple_operators_array.length > 0;
-
   // We need to convert some of the information received from django into types RJSF can read.
   const transformedFormData = {
     ...formData,
@@ -271,7 +270,6 @@ export default async function Operation({ numRow }: { numRow?: number }) {
       ? formData?.multiple_operators_array
       : [{}],
   };
-
   // Render the OperationsForm component with schema and formData if the operation already exists
   return (
     <>

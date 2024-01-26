@@ -18,7 +18,7 @@ export interface Operation {
   point_of_contact?: any; // Change this once we have the Contact type
   status: string;
   bc_obps_regulated_operation?: number;
-  documents: Array<any>; // Change this once we have the Document type
+  statutory_declaration: string;
   regulated_products: Array<any>; // Change this once we have the RegulatedProduct type
   reporting_activities: Array<any>; // Change this once we have the ReportingActivity type
   operator_id: number;

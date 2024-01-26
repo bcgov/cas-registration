@@ -7,7 +7,16 @@ import {
   useRef,
   useState,
 } from "react";
-import { dataURItoBlob, WidgetProps } from "@rjsf/utils";
+import {
+  dataURItoBlob,
+  FormContextType,
+  Registry,
+  RJSFSchema,
+  StrictRJSFSchema,
+  TranslatableString,
+  WidgetProps,
+} from "@rjsf/utils";
+import { useSession } from "next-auth/react";
 
 const addNameToDataURL = (dataURL: string, name: string) => {
   if (dataURL === null) {
@@ -53,20 +62,64 @@ const processFiles = (files: FileList) => {
   return Promise.all(Array.from(files).map(processFile));
 };
 
-function FilesInfo({
-  filesInfo,
+function FileInfoPreview<
+  T = any,
+  S extends StrictRJSFSchema = RJSFSchema,
+  F extends FormContextType = any,
+>({
+  fileInfo,
+  registry,
 }: {
-  filesInfo: FileInfoType[];
-  preview?: boolean;
+  readonly fileInfo: FileInfoType;
+  readonly registry: Registry<T, S, F>;
+}) {
+  const { translateString } = registry;
+  const { dataURL, name } = fileInfo;
+  if (!dataURL) {
+    return null;
+  }
+
+  return (
+    <>
+      {" "}
+      <a download={`preview-${name}`} href={dataURL} className="file-download">
+        {translateString(TranslatableString.PreviewLabel)}
+      </a>
+    </>
+  );
+}
+
+function FilesInfo<
+  T = any,
+  S extends StrictRJSFSchema = RJSFSchema,
+  F extends FormContextType = any,
+>({
+  filesInfo,
+  preview,
+  registry,
+}: {
+  readonly filesInfo: FileInfoType[];
+  readonly preview?: boolean;
+  readonly registry: Registry<T, S, F>;
 }) {
   if (filesInfo.length === 0) {
     return null;
   }
   return (
     <ul className="m-0 py-0 flex flex-col justify-start">
-      {filesInfo.map((fileInfo, key) => {
+      {filesInfo.map((fileInfo) => {
         const { name } = fileInfo;
-        return <li key={key}>{name}</li>;
+        return (
+          <li key={name}>
+            {name}
+            {preview && (
+              <FileInfoPreview<T, S, F>
+                fileInfo={fileInfo}
+                registry={registry}
+              />
+            )}
+          </li>
+        );
       })}
     </ul>
   );
@@ -95,10 +148,15 @@ const FileWidget = ({
   onChange,
   value,
   options,
+  registry,
 }: WidgetProps) => {
   const [filesInfo, setFilesInfo] = useState<FileInfoType[]>(
     Array.isArray(value) ? extractFileInfo(value) : extractFileInfo([value]),
   );
+  const { data: session } = useSession();
+  const isCasInternal =
+    session?.user.app_role?.includes("cas") &&
+    !session?.user.app_role?.includes("pending");
 
   const hiddenFileInput = useRef() as MutableRefObject<HTMLInputElement>;
 
@@ -109,11 +167,20 @@ const FileWidget = ({
   const handleChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
       event.preventDefault();
-      if (!event.target.files) {
+      const maxSize = 20000000;
+      const files = event.target.files;
+      if (!files) {
         return;
       }
-      processFiles(event.target.files).then((filesInfoEvent) => {
-        const newValue = filesInfoEvent.map((fileInfo) => fileInfo.dataURL);
+
+      processFiles(files).then((filesInfoEvent) => {
+        const newValue = filesInfoEvent.map((fileInfo) => {
+          if (fileInfo.size > maxSize) {
+            alert("File size must be less than 20MB");
+            return;
+          }
+          return fileInfo.dataURL;
+        });
         if (multiple) {
           setFilesInfo(filesInfo.concat(filesInfoEvent[0]));
           onChange(value.concat(newValue[0]));
@@ -132,13 +199,15 @@ const FileWidget = ({
   /*   File input styling options are limited so we are attaching a ref to it, hiding it and triggering it with a styled button. */
   return (
     <div className="py-4 flex">
-      <button
-        type="button"
-        onClick={handleClick}
-        className={`p-0 decoration-solid border-0 text-lg bg-transparent cursor-pointer underline ${disabledColour}`}
-      >
-        Upload attachment
-      </button>
+      {!isCasInternal && (
+        <button
+          type="button"
+          onClick={handleClick}
+          className={`p-0 decoration-solid border-0 text-lg bg-transparent cursor-pointer underline ${disabledColour}`}
+        >
+          {value ? "Reupload attachment" : "Upload attachment"}
+        </button>
+      )}
       <input
         name={id}
         ref={hiddenFileInput}
@@ -152,7 +221,11 @@ const FileWidget = ({
         accept={options.accept ? String(options.accept) : undefined}
       />
       {value ? (
-        <FilesInfo filesInfo={filesInfo} preview={options.filePreview} />
+        <FilesInfo
+          registry={registry}
+          filesInfo={filesInfo}
+          preview={options.filePreview}
+        />
       ) : (
         <span className="ml-4 text-lg">No attachment was uploaded</span>
       )}

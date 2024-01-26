@@ -4,9 +4,7 @@ from model_bakery import baker
 from django.test import Client
 from localflavor.ca.models import CAPostalCodeField
 from registration.models import (
-    AppRole,
     NaicsCode,
-    Document,
     Contact,
     Operation,
     Operator,
@@ -17,7 +15,7 @@ from registration.models import (
     BusinessStructure,
 )
 from registration.schema import OperationCreateIn, OperationUpdateIn
-from registration.tests.utils.helpers import CommonTestSetup, TestUtils
+from registration.tests.utils.helpers import MOCK_DATA_URL, CommonTestSetup, TestUtils
 
 pytestmark = pytest.mark.django_db
 
@@ -186,7 +184,6 @@ class TestOperationsEndpoint(CommonTestSetup):
 
     def test_post_new_operation_with_multiple_operators(self):
         naics_code = baker.make(NaicsCode)
-        document = baker.make(Document)
         contact = baker.make(Contact)
         regulated_products = baker.make(RegulatedProduct, _quantity=2)
         reporting_activities = baker.make(ReportingActivity, _quantity=2)
@@ -235,7 +232,6 @@ class TestOperationsEndpoint(CommonTestSetup):
             ],
             reporting_activities=reporting_activities,
             regulated_products=regulated_products,
-            documents=[document.id],
             contacts=[contact.id],
             operator_id=operator.id,
         )
@@ -433,12 +429,17 @@ class TestOperationsEndpoint(CommonTestSetup):
     def test_put_operation_with_submit(self):
         operation = baker.make(Operation, id=5)
         mock_operation = TestUtils.mock_OperationUpdateIn()
+
+        # Upload testing requires Google cloud credentials to be set up in CI. Will be addressed in #718
+        # setattr(mock_operation, 'statutory_declaration', MOCK_DATA_URL)
+
         baker.make(
             UserOperator,
             user_id=self.user.user_guid,
             status=UserOperator.Statuses.APPROVED,
             operator_id=mock_operation.operator,
         )
+
         response = TestUtils.mock_put_with_auth_role(
             self,
             'industry_user',
@@ -484,7 +485,6 @@ class TestOperationsEndpoint(CommonTestSetup):
             reporting_activities=[],
             regulated_products=[],
             operation_has_multiple_operators=False,
-            documents=[],
             point_of_contact=contact2.id,
             operator_id=operator.id,
             add_another_user_for_point_of_contact=False,

@@ -8,6 +8,7 @@ from simple_history.models import HistoricalRecords
 from django.core.validators import RegexValidator
 from django.utils import timezone
 from django.core.exceptions import ValidationError
+from django.core.files.storage import default_storage
 
 
 class TimeStampedModelManager(models.Manager):
@@ -141,6 +142,13 @@ class Document(TimeStampedModel):
     indexes = [
         models.Index(fields=["type"], name="document_type_idx"),
     ]
+
+    def delete(self, *args, **kwargs):
+        # Delete the file from Google Cloud Storage before deleting the model instance
+        if self.file:
+            default_storage.delete(self.file.name)
+
+        super().delete(*args, **kwargs)
 
 
 class NaicsCode(models.Model):
@@ -559,6 +567,15 @@ class OperationAndFacilityCommonInfo(TimeStampedModel):
         abstract = True
         db_table_comment = "An abstract base class (used for putting common information into a number of other models) containing fields for operations and facilities"
         db_table = 'erc"."operation'
+
+    def get_statutory_declaration(self) -> Optional[Document]:
+        """
+        Returns the statutory declaration associated with the operation.
+        """
+
+        return self.documents.filter(
+            type=DocumentType.objects.get(name="signed_statutory_declaration")
+        ).first()  # filter returns a queryset, so we use .first() to get the single record (there will only ever be one statutory declaration per operation)
 
 
 class Operation(OperationAndFacilityCommonInfo):
