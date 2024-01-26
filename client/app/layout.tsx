@@ -8,11 +8,7 @@ You should not manually add <head> tags such as <title> and <meta> to root layou
 import "@/app/styles/globals.css";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import SessionProvider from "@/app/components/auth/SessionProvider";
-import ThemeRegistry from "@/app/components/theme/ThemeRegistry";
 import type { Metadata, Viewport } from "next";
-// 🏷 import {named} can be significantly slower than import default
-import Box from "@mui/material/Box";
 
 export const metadata: Metadata = {
   title: "CAS OBPS REGISTRATION",
@@ -40,38 +36,7 @@ export default async function RootLayout({
       {
         //👇️ Used to mark the root element where Next.js will mount the client-side React application
       }
-      <body id="__next">
-        {/* 👇️  NextAuth SessionProvider available to client children via useSession */}
-        <SessionProvider session={session}>
-          {
-            //👇️ provide MUI custom theme to the components within the layout
-          }
-          <ThemeRegistry>
-            {/*
-          MUI Box component is a versatile and essential building block in Material-UI v5.
-          It serves as a wrapper element that helps structure and organize the layout of your application.
-          One of the Box component's strengths is its ability to create responsive layouts easily...
-          utilizing Box component's sx prop to create a responsive layout...
-          You can use properties like display, flexDirection, alignItems, justifyContent and more to control the arrangement and alignment of elements within a flex container
-          */}
-            <Box
-              sx={{
-                display: "flex",
-                minHeight: "100vh",
-                flexDirection: "column",
-                justifyContent: "space-between",
-                alignItems: "center",
-                margin: "0 auto",
-                maxWidth: "1536px",
-                padding: "0 16px",
-              }}
-            >
-              {/* Content goes here */}
-              {children}
-            </Box>
-          </ThemeRegistry>
-        </SessionProvider>
-      </body>
+      <body id="__next">{children}</body>
     </html>
   );
 }
