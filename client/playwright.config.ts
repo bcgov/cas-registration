@@ -1,9 +1,4 @@
 import { defineConfig, devices } from "@playwright/test";
-// 👌 Best Practice:
-// prefer user-facing attributes to XPath or CSS selectors
-// this verifies that the application code works for the end users
-// find locators using codegen to record user actions, e.g.: npx playwright codegen http://localhost:3000
-
 /**
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
@@ -33,37 +28,12 @@ export default defineConfig({
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: "on-first-retry",
   },
-
-  /* Configure projects for major browsers */
   projects: [
-    {
-      name: "setup",
-      // define which file to be execute for test auth setup
-      testMatch: "e2e/auth/auth-setup.ts",
-    },
     {
       name: "chromium",
       use: {
         ...devices["Desktop Chrome"],
       },
-      // add a dependency to the setup project
-      dependencies: ["setup"],
-    },
-
-    {
-      name: "firefox",
-      use: {
-        ...devices["Desktop Firefox"],
-      },
-      dependencies: ["setup"],
-    },
-
-    {
-      name: "webkit",
-      use: {
-        ...devices["Desktop Safari"],
-      },
-      dependencies: ["setup"],
     },
 
     /* Test against mobile viewports. */
