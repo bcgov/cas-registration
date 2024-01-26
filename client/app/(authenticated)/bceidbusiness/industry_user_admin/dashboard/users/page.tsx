@@ -40,8 +40,8 @@ export default async function Page() {
       headerAlign: "center",
     },
     {
-      field: "userRole",
-      headerName: "User Role",
+      field: "accessType",
+      headerName: "Access Type",
       flex: 4,
       align: "center",
       headerAlign: "center",
@@ -69,13 +69,9 @@ export default async function Page() {
     name: `${uOS.user.first_name} ${uOS.user.last_name.slice(0, 1)}`,
     email: uOS.user.email,
     business: uOS.operator.legal_name,
-    userRole: uOS.role,
+    accessType: uOS.role.charAt(0).toLocaleUpperCase() + uOS.role.slice(1), // Capitalize first letter
     status: uOS.status,
   }));
 
-  return (
-    <>
-      <DataGrid rows={statusRows} columns={columns} />
-    </>
-  );
+  return <DataGrid rows={statusRows} columns={columns} />;
 }
