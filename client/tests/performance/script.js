@@ -4,6 +4,7 @@ import business_structures from "./scenarios/business_structures.js";
 import naics from "./scenarios/naics.js";
 import operation from "./scenarios/operation.js";
 import operator from "./scenarios/operator.js";
+import regulated_products from "./scenarios/regulated_products.js";
 
 const stages = [
   { duration: "5m", target: 60 }, // simulate ramp-up of traffic from 1 to 60 users over 5 minutes.
@@ -25,14 +26,18 @@ export const options = {
     //   executor: "ramping-vus",
     //   stages: stages,
     // },
-    operation: {
-      executor: "ramping-vus",
-      stages: stages,
-    },
+    // operation: {
+    //   executor: "ramping-vus",
+    //   stages: stages,
+    // },
     // operator: {
     //   executor: "ramping-vus",
     //   stages: stages,
     // },
+    regulated_products: {
+      executor: "ramping-vus",
+      stages: stages,
+    },
     // post: {
     //   startTime: "5m",
     //   executor: "shared-iterations",
@@ -61,5 +66,9 @@ export default function () {
 
   if (exec.scenario.name === "operator") {
     operator();
+  }
+
+  if (exec.scenario.name === "regulated_products") {
+    regulated_products();
   }
 }
