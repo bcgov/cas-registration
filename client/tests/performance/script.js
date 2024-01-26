@@ -7,6 +7,7 @@ import operator from "./scenarios/operator.js";
 import regulated_products from "./scenarios/regulated_products.js";
 import reporting_activities from "./scenarios/reporting_activities.js";
 import user from "./scenarios/user.js";
+import user_operator from "./scenarios/user_operator.js";
 
 const stages = [
   { duration: "5m", target: 60 }, // simulate ramp-up of traffic from 1 to 60 users over 5 minutes.
@@ -44,7 +45,11 @@ export const options = {
     //   executor: "ramping-vus",
     //   stages: stages,
     // },
-    user: {
+    // user: {
+    //   executor: "ramping-vus",
+    //   stages: stages,
+    // },
+    user_operator: {
       executor: "ramping-vus",
       stages: stages,
     },
@@ -88,5 +93,9 @@ export default function () {
 
   if (exec.scenario.name === "user") {
     user();
+  }
+
+  if (exec.scenario.name === "user_operator") {
+    user_operator();
   }
 }
