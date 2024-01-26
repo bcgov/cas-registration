@@ -66,7 +66,7 @@ export default function UserOperatorMultiStepForm({
       }/${formSection}`,
       {
         body: JSON.stringify(newFormData),
-      },
+      }
     );
 
     if (response.error) {
@@ -77,7 +77,7 @@ export default function UserOperatorMultiStepForm({
     }
     if (isFinalStep) {
       push(
-        `/dashboard/select-operator/received/add-operator/${response.operator_id}`,
+        `/dashboard/select-operator/received/add-operator/${response.operator_id}`
       );
       return;
     }
@@ -89,7 +89,7 @@ export default function UserOperatorMultiStepForm({
         isCreate ? "create" : userOperatorId
       }/${formSection + 1}${
         isCreate ? `?user-operator-id=${response.user_operator_id}` : ""
-      }`,
+      }`
     );
   };
 
@@ -102,6 +102,10 @@ export default function UserOperatorMultiStepForm({
   const isFormStatusDisabled =
     formData?.status === Status.PENDING || formData?.status === Status.APPROVED;
 
+  const isReviewWithRequestChanges =
+    isCasInternal && formData.is_new && formSection === 1;
+  const isReviewWithoutRequestChanges = isCasInternal && formSection === 2;
+  const isExistingOperator = !formData.is_new;
   const isExistingOperatorMessage =
     isIndustryUser && !formData.is_new && formSection === 1;
 
@@ -152,6 +156,9 @@ Some fields cannot be edited. If you need to change those fields, please contact
           setErrorReset={setError}
           formData={formData}
           onSubmit={submitHandler}
+          submitButtonText={
+            isExistingOperator ? "Save and Return to Dashboard" : ""
+          }
           uiSchema={userOperatorUiSchema}
         />
       </>
