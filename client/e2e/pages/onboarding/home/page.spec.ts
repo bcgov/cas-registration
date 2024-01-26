@@ -12,7 +12,7 @@ import { LoginLink } from "@/e2e/utils/enums";
 dotenv.config({ path: "./e2e/.env.local" });
 
 // Set the test URL
-const url = process.env.BASEURL || "http://localhost:3000/";
+const url = process.env.BASEURL + "home";
 
 // 🛠️ Function: log in to Keycloak
 const login = async (
@@ -26,6 +26,9 @@ const login = async (
     console.log(`Navigating to: ${url}`);
     // 🛸 Navigate to the home page
     await navigateAndWaitForLoad(page, url);
+    // eslint-disable-next-line no-console
+    console.log("Asserting url is correct...");
+    expect(page.url().toLocaleLowerCase()).toContain("/home");
     // Determine the login button based on the user role
     let loginButton = LoginLink.INDUSTRY_USER;
     // Debug log to check when the locator is found
