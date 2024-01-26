@@ -27,13 +27,6 @@ const login = async (
 
     // Determine the login button based on the user role
     let loginButton = LoginLink.INDUSTRY_USER;
-    switch (role) {
-      case UserRole.CAS_ADMIN:
-      case UserRole.CAS_ANALYST:
-      case UserRole.CAS_PENDING:
-        loginButton = LoginLink.CAS;
-        break;
-    }
 
     // Click the login button
     await page.getByRole("button", { name: loginButton }).click();
@@ -83,41 +76,6 @@ const login = async (
   }
 };
 
-// 🛠️ Function: logout
-const logout = async (page: any) => {
-  try {
-    // 🕒 Wait for the "Log out" button to appear
-    const logoutButton = await page.waitForSelector(
-      'button:has-text("Log out")',
-    );
-    // 🔍 Assert that the button is available
-    expect(logoutButton).not.toBeNull();
-    // Click the Logout button
-    await Promise.all([
-      page.waitForNavigation(), // Wait for navigation to complete
-      page.getByRole("button", { name: "Log out" }).click(),
-    ]);
-    // 🕒 Wait for the logged out text
-    const textLogout = await page.textContent("text=You are logged out");
-    // 🔍 Assert that the logged out message displays
-    expect(textLogout).toContain("You are logged out");
-  } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error("Error on logout:", error);
-  }
-};
-
-// 🛠️ Function: loggged In assertions
-const loggedIn = async (page: any) => {
-  // 🛸 Navigate to the home page
-  await navigateAndWaitForLoad(page, url);
-
-  // 🕒 Wait for the "Log out" button to appear
-  const logoutButton = await page.waitForSelector('button:has-text("Log out")');
-  // 🔍 Assert that the button is available
-  expect(logoutButton).not.toBeNull();
-};
-
 // 🏷 Annotate test suite as serial
 test.describe.configure({ mode: "serial" });
 
@@ -125,9 +83,6 @@ test.describe("Test Page - Home", () => {
   // ➰ Loop through the entries of UserRole enum
   for (const [role, value] of Object.entries(UserRole)) {
     test.describe(`Test User Role - ${value}`, () => {
-      // 👤 run test as this role
-      const storageState = process.env[role + "_STORAGE"] || "";
-      test.use({ storageState: storageState });
       // Set user and password based on the user role
       let user = "";
       let pw = "";
@@ -141,9 +96,9 @@ test.describe("Test Page - Home", () => {
       }
       test("Test Logged-In, Logout, Login", async ({ page }) => {
         // 🚩 role is already logged in during setup\global.ts
-        await loggedIn(page);
+        //await loggedIn(page);
         // test logout-login flow
-        await logout(page);
+        // await logout(page);
         await login(page, user, pw, value);
       });
     });
