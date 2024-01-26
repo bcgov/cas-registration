@@ -1,4 +1,4 @@
-from ninja import ModelSchema
+from ninja import ModelSchema, Field
 from registration.models import Address
 
 
@@ -9,4 +9,5 @@ class AddressSchema(ModelSchema):
 
     class Config:
         model = Address
-        model_fields = '__all__'
+        address_id: int = Field(..., alias="id")
+        model_exclude = ["id"]

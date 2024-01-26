@@ -270,6 +270,28 @@ class TestOperationsEndpoint(CommonTestSetup):
         assert post_response.status_code == 400
         assert post_response.json().get('message') == "Operation with this BCGHG ID already exists."
 
+    def test_post_new_operation_without_point_of_contact(self):
+        operator = baker.make(Operator)
+        new_operation = OperationCreateIn(
+            documents=[],
+            point_of_contact=None,
+            status=Operation.Statuses.NOT_STARTED,
+            name='My New Operation',
+            type='Type 1',
+            operator_id=operator.id,
+            regulated_products=[],
+            reporting_activities=[],
+        )
+        post_response = TestUtils.mock_post_with_auth_role(
+            self, "industry_user", content_type_json, data=new_operation.json()
+        )
+        assert post_response.status_code == 201
+        assert Operation.objects.count() == 1
+        operation = Operation.objects.first()
+        assert operation.name == 'My New Operation'
+        assert operation.point_of_contact is None
+        assert operation.point_of_contact_id is None
+
     # PUT
     def test_put_operation_update_invalid_operation_id(self):
         url = self.build_update_status_url(operation_id=99999999999)
@@ -422,14 +444,17 @@ class TestOperationsEndpoint(CommonTestSetup):
 
         assert response.status_code == 422
 
-    def test_put_operation_with_point_of_contact(self):
+    def test_put_operation_with_updated_point_of_contact(self):
         contact1 = baker.make(Contact)
+        # contact2 is a new contact, even though they have the same email as contact1
         contact2 = baker.make(Contact, email=contact1.email)
         operation = baker.make(Operation)
 
         operator = baker.make(Operator)
         update = OperationUpdateIn(
             name='Springfield Nuclear Power Plant',
+            # this updates the existing contact (contact2)
+            point_of_contact_id=contact2.id,
             type='Single Facility Operation',
             naics_code_id=operation.naics_code_id,
             reporting_activities=[],
@@ -438,7 +463,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             documents=[],
             point_of_contact=contact2.id,
             operator_id=operator.id,
-            is_user_point_of_contact=True,
+            add_another_user_for_point_of_contact=False,
             street_address='19 Evergreen Terrace',
             municipality='Springfield',
             province='BC',
@@ -459,5 +484,97 @@ class TestOperationsEndpoint(CommonTestSetup):
         )
         assert put_response.status_code == 200
 
-        # this checks that we added a new contact instead of updating the existing one even though they have the same email
+        # we should have 2 contacts in the db (contact1 and contact2), where contact2's info has been updated
+        # based on the data provided in update
         assert Contact.objects.count() == 2
+        updated_contact2 = Contact.objects.get(id=contact2.id)
+        assert updated_contact2.first_name == 'Homer'
+        assert updated_contact2.email == 'homer@email.com'
+
+    def test_put_operation_with_new_point_of_contact(self):
+        first_contact = baker.make(Contact)
+        operation = baker.make(Operation)
+
+        operator = baker.make(Operator)
+        update = OperationUpdateIn(
+            name='Springfield Nuclear Power Plant',
+            type='Single Facility Operation',
+            naics_code_id=operation.naics_code_id,
+            reporting_activities=[],
+            regulated_products=[],
+            operation_has_multiple_operators=False,
+            documents=[],
+            operator_id=operator.id,
+            add_another_user_for_point_of_contact=True,
+            external_point_of_contact_first_name='Bart',
+            external_point_of_contact_last_name='Simpson',
+            external_point_of_contact_position_title='Scoundrel',
+            external_point_of_contact_email='bart@email.com',
+            external_point_of_contact_phone_number='+16041001000',
+            street_address='19 Evergreen Terrace',
+            municipality='Springfield',
+            province='BC',
+            postal_code='V1V 1V1',
+            first_name='Homer',
+            last_name='Simpson',
+            email="homer@email.com",
+            position_title='Nuclear Safety Inspector',
+            phone_number='+17787777777',
+        )
+        TestUtils.authorize_current_user_as_operator_user(self, operator)
+        put_response = TestUtils.mock_put_with_auth_role(
+            self,
+            'industry_user',
+            content_type_json,
+            update.json(),
+            self.endpoint + '/' + str(operation.id) + "?submit=true",
+        )
+        assert put_response.status_code == 200
+
+        # expect 2 Contacts in the database -- the first_contact, and the external_point_of_contact
+        assert Contact.objects.count() == 2
+        contacts = Contact.objects.all()
+        assert first_contact in contacts
+        # assert that external_point_of_contact is one of the Contacts in the database
+        bart_contact = None
+        for c in contacts:
+            if hasattr(c, 'first_name') and getattr(c, 'first_name') == 'Bart':
+                bart_contact = c
+                break
+        assert bart_contact is not None
+        # 'Homer' was the user that registered the Operation, but shouldn't be created as a Contact. Assert that he isn't
+        homer_contact = None
+        for c in contacts:
+            if hasattr(c, 'first_name') and getattr(c, 'first_name') == 'Homer':
+                homer_contact = c
+                break
+        assert homer_contact is None
+
+    def test_put_operation_with_no_point_of_contact(self):
+        operator = baker.make(Operator)
+        operation = baker.make(Operation, point_of_contact=None, operator_id=operator.id)
+
+        update = OperationUpdateIn(
+            name='Updated Name',
+            type='Type',
+            operator_id=operator.id,
+            documents=[],
+            regulated_products=[],
+            reporting_activities=[],
+        )
+
+        TestUtils.authorize_current_user_as_operator_user(self, operator)
+        put_response = TestUtils.mock_put_with_auth_role(
+            self,
+            'industry_user',
+            content_type_json,
+            update.json(),
+            self.endpoint + '/' + str(operation.id) + "?submit=true",
+        )
+        assert put_response.status_code == 200
+        assert Operation.objects.count() == 1
+        assert Contact.objects.count() == 0
+        retrieved_operation = Operation.objects.first()
+        assert retrieved_operation.name == 'Updated Name'
+        assert retrieved_operation.point_of_contact_id is None
+        assert retrieved_operation.point_of_contact is None

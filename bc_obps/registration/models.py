@@ -311,6 +311,10 @@ class Contact(UserAndContactCommonInfo, TimeStampedModel):
             models.Index(fields=["business_role"], name="contact_role_idx"),
         ]
 
+    def __str__(self) -> str:
+        fields = [f"{field.name}={getattr(self, field.name)}" for field in self._meta.fields]
+        return ' - '.join(fields)
+
 
 class BusinessStructure(models.Model):
     """The legal name of an operator"""
@@ -416,6 +420,10 @@ class Operator(TimeStampedModel):
         # don't need indexes if we end up using `unique`
         db_table = 'erc"."operator'
 
+    def __str__(self) -> str:
+        fields = [f"{field.name}={getattr(self, field.name)}" for field in self._meta.fields]
+        return ' - '.join(fields)
+
 
 class UserOperator(TimeStampedModel):
     """User operator model"""
@@ -475,6 +483,10 @@ class UserOperator(TimeStampedModel):
             models.Index(fields=["user"], name="user_operator_user_idx"),
             models.Index(fields=["operator"], name="user_operator_operator_idx"),
         ]
+
+    def __str__(self) -> str:
+        fields = [f"{field.name}={getattr(self, field.name)}" for field in self._meta.fields]
+        return ' - '.join(fields)
 
     def get_senior_officer(self) -> Optional[Contact]:
         """
@@ -673,6 +685,10 @@ class Operation(OperationAndFacilityCommonInfo):
 
         new_boro_id_instance = BcObpsRegulatedOperation.objects.create(id=new_boro_id)
         self.bc_obps_regulated_operation = new_boro_id_instance
+
+    def __str__(self) -> str:
+        fields = [f"{field.name}={getattr(self, field.name)}" for field in self._meta.fields]
+        return ' - '.join(fields)
 
 
 class MultipleOperator(TimeStampedModel):
