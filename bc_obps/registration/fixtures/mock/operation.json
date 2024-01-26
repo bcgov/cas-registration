@@ -6,7 +6,6 @@
       "verified_at": "2023-10-13T15:27:00.000Z",
       "verified_by": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
       "documents": [],
-      "point_of_contact": 1,
       "name": "Operation 1",
       "type": "Single Facility Operation",
       "naics_code": 19,
@@ -22,7 +21,6 @@
     "fields": {
       "operator": 2,
       "documents": [],
-      "point_of_contact": 1,
       "name": "Operation 2",
       "type": "Single Facility Operation",
       "naics_code": 20,

@@ -75,7 +75,7 @@ class TestUtils:
             documents=[document.id],
             point_of_contact=point_of_contact.id,
             operator=operator.id,
-            is_user_point_of_contact=True,
+            add_another_user_for_point_of_contact=False,
             street_address='19 Evergreen Terrace',
             municipality='Springfield',
             province='BC',
@@ -96,6 +96,7 @@ class TestUtils:
 
         return OperationUpdateIn(
             name="New name",
+            point_of_contact_id=point_of_contact.id,
             type="Single Facility Operation",
             naics_code_id=naics_code.id,
             reporting_activities=[activity.id],
@@ -110,7 +111,7 @@ class TestUtils:
             documents=[document.id],
             point_of_contact=point_of_contact.id,
             operator_id=operator.id,
-            is_user_point_of_contact=True,
+            add_another_user_for_point_of_contact=False,
             first_name="Homer",
             last_name="Simpson",
             email="homer@email.com",
