@@ -227,10 +227,8 @@ export default async function Operation({ numRow }: { numRow?: number }) {
     ...userProfileFormData,
     ...operation,
   };
-
   const userEmail = (userProfileFormData as UserProfileFormData)?.email;
-
-  const pointOfContactEmail = formData?.point_of_contact?.email;
+  const pointOfContactEmail = formData?.email;
   // If the current user is the point of contact, we want to show the point of contact fields
   const isUserPointOfContact =
     userEmail === pointOfContactEmail && pointOfContactEmail !== undefined;
@@ -241,27 +239,35 @@ export default async function Operation({ numRow }: { numRow?: number }) {
     formData &&
     Array.isArray(formData?.multiple_operators_array) &&
     formData.multiple_operators_array.length > 0;
-  // We need to convert some of the information received from django into types RJSF can read.
+
+  // We need to convert some of the information received from django into types RJSF can read.  If you spread anything and it has the same keys as operation (e.g. id, created_by), watch out for accidentally overwriting things.
   const transformedFormData = {
     ...formData,
     // Add the correct point of contact data
     ...(isUserPointOfContact
       ? {
-          ...formData?.point_of_contact,
+          first_name: formData?.first_name,
+          last_name: formData?.last_name,
+          email: formData?.email,
+          phone_number: formData?.phone_number,
+          position_title: formData?.position_title,
+          street_address: formData?.street_address,
+          muncipality: formData?.muncipality,
+          province: formData?.province,
+          postal_code: formData?.postal_code,
         }
       : {
-          external_point_of_contact_first_name:
-            formData?.point_of_contact?.first_name,
-          external_point_of_contact_last_name:
-            formData?.point_of_contact?.last_name,
-          external_point_of_contact_email: formData?.point_of_contact?.email,
-          external_point_of_contact_phone_number:
-            formData?.point_of_contact?.phone_number,
-          external_point_of_contact_position_title:
-            formData?.point_of_contact?.position_title,
+          external_point_of_contact_first_name: formData?.first_name,
+          external_point_of_contact_last_name: formData?.last_name,
+          external_point_of_contact_email: formData?.email,
+          external_point_of_contact_phone_number: formData?.phone_number,
+          external_point_of_contact_position_title: formData?.position_title,
+          external_point_of_contact_street_address: formData?.street_address,
+          external_point_of_contact_muncipality: formData?.muncipality,
+          external_point_of_contact_province: formData?.province,
+          external_point_of_contact_postal_code: formData?.postal_code,
         }),
-    // If you spread anything and it has the same keys as operation (e.g. id, created_by), watch out for accidentally overwriting things. In this case it's safe to spread because the address schema excludes fields
-    ...formData?.point_of_contact?.address,
+
     "Did you submit a GHG emissions report for reporting year 2022?":
       formData?.previous_year_attributable_emissions ? true : false,
     add_another_user_for_point_of_contact: !isUserPointOfContact,
