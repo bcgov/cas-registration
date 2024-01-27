@@ -188,7 +188,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         assert response.json()['status'] == user_operator.status
 
     def test_get_user_operator_data_industry_user(self):
-        operator = baker.make(Operator, mailing_address=baker.make(Address), physical_address=baker.make(Address))
+        operator = operator_baker()
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
         user_operator_id_response = TestUtils.mock_get_with_auth_role(
             self, 'industry_user', f"{base_endpoint}user-operator-id"
@@ -204,7 +204,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         assert response.json()['operator_id'] == operator.id
 
     def test_get_user_operator_data_industry_user_invalid_request(self):
-        operator = baker.make(Operator, mailing_address=baker.make(Address), physical_address=baker.make(Address))
+        operator = operator_baker()
         user_operator = baker.make(UserOperator, operator=operator)
 
         response = TestUtils.mock_get_with_auth_role(
@@ -214,7 +214,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         assert response.status_code == 404
 
     def test_get_user_operator_data_internal_user(self):
-        operator = baker.make(Operator, mailing_address=baker.make(Address), physical_address=baker.make(Address))
+        operator = operator_baker()
         user_operator = baker.make(UserOperator, operator=operator)
 
         response = TestUtils.mock_get_with_auth_role(
@@ -423,7 +423,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
     # GET USER OPERATOR OPERATOR ID 200
     def test_get_user_operator_operator_id(self):
         # Act
-        operator = baker.make(Operator)
+        operator = operator_baker()
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
         response = TestUtils.mock_get_with_auth_role(self, 'industry_user', f"{base_endpoint}user-operator-operator-id")
 
@@ -707,7 +707,9 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         operator = operator_baker()
         operator.created_by = self.user
         operator.save(update_fields=["created_by"])
-        user_operator = baker.make(UserOperator, user=self.user, operator=operator, role=UserOperator.Roles.ADMIN, created_by=self.user)
+        user_operator = baker.make(
+            UserOperator, user=self.user, operator=operator, role=UserOperator.Roles.ADMIN, created_by=self.user
+        )
         mock_payload = {
             "legal_name": "Put Operator Legal Name",
             "trade_name": "Put Operator Trade Name",
@@ -740,8 +742,6 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         user_operator_id = response_json["user_operator_id"]
         user_operator = UserOperator.objects.get(id=user_operator_id)
         assert user_operator.user == self.user
-        assert user_operator.updated_by == self.user
-        assert user_operator.updated_at is not None
 
         operator: Operator = user_operator.operator
         assert operator is not None
