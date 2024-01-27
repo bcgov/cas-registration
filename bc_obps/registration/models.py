@@ -146,7 +146,7 @@ class Document(TimeStampedModel):
         related_name="documents",
         db_comment="Type of document, e.g., boundary map",
     )
-    description = models.CharField(max_length=1000, db_comment="Description of the document")
+    description = models.CharField(max_length=1000, blank=True, null=True, db_comment="Description of the document")
     history = HistoricalRecords(table_name='erc_history"."document_history')
 
     class Meta:
@@ -191,14 +191,14 @@ class RegulatedProduct(BaseModel):
 class ReportingActivity(BaseModel):
     """Reporting activity model"""
 
-    class Applicablity(models.TextChoices):
+    class Applicability(models.TextChoices):
         SFO = "sfo"
         LFO = "lfo"
         ALL = "all"
 
     name = models.CharField(max_length=1000, db_comment="The name of a reporting activity")
     applicable_to = models.CharField(
-        max_length=1000, choices=Applicablity.choices, db_comment="Which type of facility the activity applies to"
+        max_length=1000, choices=Applicability.choices, db_comment="Which type of facility the activity applies to"
     )
     history = HistoricalRecords(table_name='erc_history"."reporting_activity_history')
 
@@ -377,6 +377,7 @@ class Operator(TimeStampedModel):
         BusinessStructure,
         on_delete=models.DO_NOTHING,
         null=True,
+        blank=True,
         db_comment="The business structure of an operator",
         related_name="operators",
     )
@@ -399,8 +400,7 @@ class Operator(TimeStampedModel):
         max_length=200,
         db_comment="The website address of an operator",
         blank=True,
-        # default blank since optional fields returning null will trigger RJSF validation the next time the form is saved
-        default="",
+        null=True,
     )
 
     documents = models.ManyToManyField(
@@ -759,8 +759,7 @@ class MultipleOperator(TimeStampedModel):
         max_length=200,
         db_comment="The website address of an operator",
         blank=True,
-        # default blank since optional fields returning null will trigger RJSF validation the next time the form is saved
-        default="",
+        null=True,
     )
     percentage_ownership = models.DecimalField(
         decimal_places=5,
@@ -862,8 +861,7 @@ class ParentOperator(TimeStampedModel):
         max_length=200,
         db_comment="The website address of an operator",
         blank=True,
-        # default blank since optional fields returning null will trigger RJSF validation the next time the form is saved
-        default="",
+        null=True,
     )
     physical_address = models.ForeignKey(
         Address,
