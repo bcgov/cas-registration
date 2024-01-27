@@ -343,7 +343,7 @@ class ReportingActivityModelTest(BaseTestCase):
         ]
         cls.test_object = ReportingActivity.objects.create(
             name="test activity",
-            applicable_to=ReportingActivity.Applicablity.ALL,
+            applicable_to=ReportingActivity.Applicability.ALL,
         )
 
 
@@ -586,8 +586,8 @@ class OperationModelTest(BaseTestCase):
 
         cls.test_object.reporting_activities.set(
             [
-                ReportingActivity.objects.create(name="test", applicable_to=ReportingActivity.Applicablity.ALL),
-                ReportingActivity.objects.create(name="test2", applicable_to=ReportingActivity.Applicablity.LFO),
+                ReportingActivity.objects.create(name="test", applicable_to=ReportingActivity.Applicability.ALL),
+                ReportingActivity.objects.create(name="test2", applicable_to=ReportingActivity.Applicability.LFO),
             ]
         )
         cls.test_object.regulated_products.set(

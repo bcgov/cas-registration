@@ -12,7 +12,6 @@ from registration.models import (
     UserOperator,
     Operator,
     RegulatedProduct,
-    BusinessStructure,
 )
 from registration.schema import OperationCreateIn, OperationUpdateIn
 from registration.tests.utils.helpers import MOCK_DATA_URL, CommonTestSetup, TestUtils
@@ -51,7 +50,6 @@ class TestOperationsEndpoint(CommonTestSetup):
 
         # unapproved industry users can't get
         # operations
-        # baker.make(UserOperator, user_id=self.user.user_guid, status=UserOperator.Statuses.PENDING)
         user_operator_instance = user_operator_baker()
         user_operator_instance.status = UserOperator.Statuses.PENDING
         user_operator_instance.user_id = self.user.user_guid
@@ -284,11 +282,12 @@ class TestOperationsEndpoint(CommonTestSetup):
         assert post_response.json().get('message') == "Operation with this BCGHG ID already exists."
 
     def test_post_new_operation_without_point_of_contact(self):
-        operator = baker.make(Operator)
+        operator = operator_baker()
         new_operation = OperationCreateIn(
             documents=[],
             point_of_contact=None,
             status=Operation.Statuses.NOT_STARTED,
+            naics_code_id=NaicsCode.objects.first().id,
             name='My New Operation',
             type='Type 1',
             operator_id=operator.id,
@@ -347,9 +346,11 @@ class TestOperationsEndpoint(CommonTestSetup):
         # should not change other fields of the operator
         random_time = datetime.now(pytz.utc)
         random_user = baker.make(User)
-        new_operator = baker.make(
-            Operator, status=Operator.Statuses.APPROVED, verified_at=random_time, verified_by=random_user
-        )
+        new_operator = operator_baker()
+        new_operator.status = Operator.Statuses.APPROVED
+        new_operator.verified_at = random_time
+        new_operator.verified_by = random_user
+        new_operator.save(update_fields=['status', 'verified_at', 'verified_by'])
         operation.operator = new_operator
         operation.save()
 
@@ -527,18 +528,16 @@ class TestOperationsEndpoint(CommonTestSetup):
 
         # we should have 2 contacts in the db (contact1 and contact2), where contact2's info has been updated
         # based on the data provided in update
-        assert Contact.objects.count() == 2
+        assert Contact.objects.count() == 3  # 2 from baker.make, 1 from the update
+        # this checks that we added a new contact instead of updating the existing one even though they have the same email
         updated_contact2 = Contact.objects.get(id=contact2.id)
         assert updated_contact2.first_name == 'Homer'
         assert updated_contact2.email == 'homer@email.com'
-        # this checks that we added a new contact instead of updating the existing one even though they have the same email
-        assert Contact.objects.count() == 3  # 2 from baker.make, 1 from the update
 
     def test_put_operation_with_new_point_of_contact(self):
-        first_contact = baker.make(Contact)
-        operation = baker.make(Operation)
-
-        operator = baker.make(Operator)
+        operation = operation_baker()
+        first_contact = operation.point_of_contact
+        operator = operator_baker()
         update = OperationUpdateIn(
             name='Springfield Nuclear Power Plant',
             type='Single Facility Operation',
@@ -553,7 +552,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             external_point_of_contact_last_name='Simpson',
             external_point_of_contact_position_title='Scoundrel',
             external_point_of_contact_email='bart@email.com',
-            external_point_of_contact_phone_number='+16041001000',
+            external_point_of_contact_phone_number='+17787777777',
             street_address='19 Evergreen Terrace',
             municipality='Springfield',
             province='BC',
@@ -594,12 +593,16 @@ class TestOperationsEndpoint(CommonTestSetup):
         assert homer_contact is None
 
     def test_put_operation_with_no_point_of_contact(self):
-        operator = baker.make(Operator)
-        operation = baker.make(Operation, point_of_contact=None, operator_id=operator.id)
+        operator = operator_baker()
+        operation = operation_baker()
+        operation.point_of_contact = None
+        operation.operator_id = operator.id
+        operation.save(update_fields=['point_of_contact', 'operator_id'])
 
         update = OperationUpdateIn(
             name='Updated Name',
             type='Type',
+            naics_code_id=operation.naics_code_id,
             operator_id=operator.id,
             documents=[],
             regulated_products=[],
@@ -616,7 +619,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         )
         assert put_response.status_code == 200
         assert Operation.objects.count() == 1
-        assert Contact.objects.count() == 0
+        assert Contact.objects.count() == 1  # 1 from operation baker
         retrieved_operation = Operation.objects.first()
         assert retrieved_operation.name == 'Updated Name'
         assert retrieved_operation.point_of_contact_id is None
