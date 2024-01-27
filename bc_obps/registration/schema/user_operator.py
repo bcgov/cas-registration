@@ -86,6 +86,8 @@ class UserOperatorOut(ModelSchema):
 
     @staticmethod
     def resolve_mailing_address_same_as_physical(obj: UserOperator):
+        if not obj.operator.mailing_address or not obj.operator.physical_address:
+            return False
         return obj.operator.mailing_address.id == obj.operator.physical_address.id
 
     @staticmethod
