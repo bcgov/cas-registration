@@ -127,15 +127,17 @@ def save_operator(payload: UserOperatorOperatorIn, operator_instance: Operator, 
                 new_po_operator_instance.set_create_or_update(modifier=user)
 
         # get or create a draft UserOperator instance
-        user_operator, _ = UserOperator.objects.get_or_create(
-            user=user,
-            operator=created_or_updated_operator_instance,
-        )
-        # Only set role if created so that we don't create a new UserOperator instance if one already exists
-        if created:
-            user_operator.role = UserOperator.Roles.ADMIN
-            user_operator.save()
-        user_operator.set_create_or_update(modifier=user)
+        existing_user_operator = UserOperator.objects.filter(
+            user=user, operator=created_or_updated_operator_instance
+        ).first()
+        if existing_user_operator:
+            user_operator = existing_user_operator
+        else:
+            # Only set role if created so that we don't create a new UserOperator instance if one already exists
+            user_operator = UserOperator.objects.create(
+                user=user, operator=created_or_updated_operator_instance, role=UserOperator.Roles.ADMIN
+            )
+            user_operator.set_create_or_update(modifier=user)
         return 200, {"user_operator_id": user_operator.id}
 
 
@@ -380,8 +382,6 @@ def create_user_operator_contact(request, payload: UserOperatorContactIn):
 
 
 ##### PUT #####
-
-
 @router.put("/user-operator/operator/{int:user_operator_id}", response={200: RequestAccessOut, codes_4xx: Message})
 @authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
 def update_operator_and_user_operator(request, payload: UserOperatorOperatorIn, user_operator_id: int):
@@ -399,7 +399,6 @@ def update_operator_and_user_operator(request, payload: UserOperatorOperatorIn, 
         return 400, {"message": str(e)}
 
 
-##### PUT #####
 @router.put("/select-operator/user-operator/update-status", response={200: UserOperatorOut, codes_4xx: Message})
 @authorize(AppRole.get_all_authorized_app_roles(), ["admin"])
 def update_user_operator_status(request, payload: UserOperatorStatusUpdate):
