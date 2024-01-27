@@ -242,7 +242,7 @@ begin
     sf.facility_type,
     coalesce(f.bcghgid, sf.facility_bc_ghg_id) as bcghg_id,
     false,
-    'Not Registered'
+    'Not Started'
     from y
     join swrs_facility sf
     on sf.swrs_facility_id = y.swrs_facility_id
