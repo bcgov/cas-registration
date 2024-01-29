@@ -255,10 +255,22 @@ def update_operation(request, operation_id: int, submit: str, save_contact: str,
 
     for attr, value in payload_dict.items():
         setattr(operation, attr, value)
-    # set the operation status to 'pending' on update
     if submit == "true":
-        operation.status = Operation.Statuses.PENDING
-        operation.submission_date = datetime.now(pytz.utc)
+        """
+        if the PUT request has submit == "true" (i.e., user has clicked Submit button in UI form), the desired behaviour depends on
+        the Operation's status:
+            - if operation.status was already "Approved", it should remain Approved and the submission date should not be altered
+            - if operation.status was "Changes Requested", it should switch to Pending
+            - if operation.status was "Declined", it should switch to Pending
+            - if operation.status was "Pending", it should remain as Pending
+        """
+        if operation.status in [
+            Operation.Statuses.CHANGES_REQUESTED,
+            Operation.Statuses.DECLINED,
+            Operation.Statuses.PENDING,
+        ]:
+            operation.status = Operation.Statuses.PENDING
+            operation.submission_date = datetime.now(pytz.utc)
 
     operation.regulated_products.set(payload.regulated_products)  # set replaces all existing products with the new ones
     operation.reporting_activities.set(
