@@ -25,8 +25,14 @@ class OperationCreateIn(ModelSchema):
     class Config:
         model = Operation
         model_exclude = [
+<<<<<<< HEAD
             "id",  # need to exclude id since it's auto generated and we don't want to pass it in
             "documents",  # excluding documents because they are handled by individual form fields
+=======
+            "id",
+            # Reporting activities not needed for MVP
+            "reporting_activities",
+>>>>>>> 19ca6a9a (fix: don't save address when creating operations contact)
             *AUDIT_FIELDS,
         ]
 
@@ -58,7 +64,11 @@ class OperationUpdateIn(ModelSchema):
     municipality: Optional[str] = None
     province: Optional[str] = None
     postal_code: Optional[str] = None
+<<<<<<< HEAD
     add_another_user_for_point_of_contact: Optional[bool] = None
+=======
+    is_external_point_of_contact: Optional[bool] = None
+>>>>>>> 19ca6a9a (fix: don't save address when creating operations contact)
     operation_has_multiple_operators: Optional[bool] = False
     multiple_operators_array: Optional[list] = None
     statutory_declaration: Optional[str] = None
