@@ -1,4 +1,3 @@
-"use client";
 /*
 📚 Nextauth provider:
 Import NextAuth.js SessionProvider as a client component because it uses context

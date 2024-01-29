@@ -37,33 +37,10 @@ export default defineConfig({
   /* Configure projects for major browsers */
   projects: [
     {
-      name: "setup",
-      // define which file to be execute for test auth setup
-      testMatch: "e2e/auth/auth-setup.ts",
-    },
-    {
       name: "chromium",
       use: {
         ...devices["Desktop Chrome"],
       },
-      // add a dependency to the setup project
-      dependencies: ["setup"],
-    },
-
-    {
-      name: "firefox",
-      use: {
-        ...devices["Desktop Firefox"],
-      },
-      dependencies: ["setup"],
-    },
-
-    {
-      name: "webkit",
-      use: {
-        ...devices["Desktop Safari"],
-      },
-      dependencies: ["setup"],
     },
 
     /* Test against mobile viewports. */
