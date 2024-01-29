@@ -103,6 +103,18 @@ class Migration(migrations.Migration):
             field=models.CharField(blank=True, db_comment='Description of the document', max_length=1000, null=True),
         ),
         migrations.AlterField(
+            model_name='contact',
+            name='address',
+            field=models.ForeignKey(
+                blank=True,
+                db_comment='Foreign key to the address of a user or contact',
+                null=True,
+                on_delete=django.db.models.deletion.DO_NOTHING,
+                related_name='contacts',
+                to='registration.address',
+            ),
+        ),
+        migrations.AlterField(
             model_name='historicaladdress',
             name='municipality',
             field=models.CharField(
