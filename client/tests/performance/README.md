@@ -12,12 +12,10 @@
 
 4. Test it is working correctly by running tests against your local backend server running at `http://127.0.0.1:8000/`.
 
-5. Deploy application to dev in load testing mode (INSTRUCTIONS NEEDED)
+5. Change variable `SERVER_HOST` value in Makefile to the route being tested eg: `https://cas-reg-backend-dev.apps.silver.devops.gov.bc.ca/home/`
 
-6. Change variable `SERVER_HOST` value in Makefile to the route being tested eg: `https://cas-reg-frontend-dev.apps.silver.devops.gov.bc.ca/home/`
+6. Run `make perf_test`
 
-7. Run `make perf_test`
+7. Monitor deployment
 
-8. Monitor deployment
-
-9. Results will be in `k6_results` folder
+8. Results will be in `k6_results` folder in .csv format
