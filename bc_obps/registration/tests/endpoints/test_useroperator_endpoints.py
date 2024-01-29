@@ -339,7 +339,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
 
         # Change operator status to approved
         user_operator.operator = baker.make(
-            Operator, status=Operator.Statuses.APPROVED, bc_corporate_registry_number="abc1234567", _fill_optional=True
+            Operator, status=Operator.Statuses.APPROVED, bc_corporate_registry_number="efg1234567", _fill_optional=True
         )
         user_operator.save()
         response_2 = TestUtils.mock_put_with_auth_role(
@@ -720,7 +720,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         assert parent_operators[1].operator_index == 2
 
     def test_put_user_operator_operator(self):
-        operator = baker.make(Operator, bc_corporate_registry_number="abc1234567", created_by=self.user)
+        operator = baker.make(Operator, bc_corporate_registry_number="hij1234567", created_by=self.user)
         user_operator = baker.make(
             UserOperator, user=self.user, operator=operator, role=UserOperator.Roles.ADMIN, created_by=self.user
         )
@@ -766,7 +766,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         assert operator.updated_at is not None
 
     def test_put_user_operator_operator_malformed_data(self):
-        operator = baker.make(Operator, bc_corporate_registry_number="abc1234567")
+        operator = baker.make(Operator, bc_corporate_registry_number="lnm1234567")
         put_response = TestUtils.mock_put_with_auth_role(
             self,
             'industry_user',
