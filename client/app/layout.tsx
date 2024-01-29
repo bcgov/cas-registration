@@ -34,7 +34,8 @@ export default async function RootLayout({
   // Wrap the returned auth session in the "use client" version of NextAuth SessionProvider
   // to expose the useSession hook in client components
   const session = await getServerSession(authOptions);
-
+  // eslint-disable-next-line no-console
+  console.log(session);
   return (
     <html lang="en">
       {
