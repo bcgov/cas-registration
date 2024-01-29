@@ -49,6 +49,16 @@ const operationPage1: RJSFSchema = {
     //   },
     //   title: "Reporting Activities",
     // },
+    // process_flow_diagram: {
+    //   type: "string",
+    //   title: "Process Flow Diagram",
+    //   format: "data-url",
+    // },
+    // boundary_map: {
+    //   type: "string",
+    //   title: "Boundary Map",
+    //   format: "data-url",
+    // },
     ghg_emissions_section: {
       //Not an actual field in the db - this is just to make the form look like the wireframes
       title:
@@ -283,13 +293,7 @@ const operationPage1: RJSFSchema = {
 const operationPage2: RJSFSchema = {
   type: "object",
   title: "Point of Contact",
-  required: [
-    "is_external_point_of_contact",
-    "street_address",
-    "municipality",
-    "province",
-    "postal_code",
-  ],
+  required: ["is_external_point_of_contact"],
   properties: {
     is_external_point_of_contact: {
       type: "boolean",
@@ -316,11 +320,11 @@ const operationPage2: RJSFSchema = {
       then: {
         type: "object",
         required: [
-          "email",
-          "phone_number",
-          "first_name",
-          "last_name",
-          "position_title",
+          "external_point_of_contact_first_name",
+          "external_point_of_contact_last_name",
+          "external_point_of_contact_position_title",
+          "external_point_of_contact_email",
+          "external_point_of_contact_phone_number",
         ],
         properties: {
           external_point_of_contact_first_name: {
@@ -350,11 +354,11 @@ const operationPage2: RJSFSchema = {
       else: {
         type: "object",
         required: [
-          "external_point_of_contact_first_name",
-          "external_point_of_contact_last_name",
-          "external_point_of_contact_position_title",
-          "external_point_of_contact_email",
-          "external_point_of_contact_phone_number",
+          "email",
+          "phone_number",
+          "first_name",
+          "last_name",
+          "position_title",
         ],
         properties: {
           first_name: {
@@ -429,6 +433,8 @@ export const operationUiSchema = {
     "naics_code_id",
     "regulated_products",
     // "reporting_activities",
+    // "process_flow_diagram",
+    // "boundary_map",
     "ghg_emissions_section",
     "Did you submit a GHG emissions report for reporting year 2022?",
     // "previous_year_attributable_emissions",
@@ -494,25 +500,20 @@ export const operationUiSchema = {
     "ui:FieldTemplate": FieldTemplate,
     "ui:widget": "RadioWidget",
   },
-<<<<<<< HEAD
-<<<<<<< HEAD
-  add_another_user_for_point_of_contact: {
-    "ui:widget": "CheckboxWidget",
-    "ui:options": {
-      label: false,
-    },
-=======
-  is_user_point_of_contact: {
-=======
+
   is_external_point_of_contact: {
->>>>>>> 10b7a32c (chore: remove unneeded point of contact fields)
     "ui:widget": "RadioWidget",
   },
   point_of_contact_section: {
     ...subheading,
     "ui:title": PointOfContactTitle,
->>>>>>> 16758a50 (feat: add point of contact section title)
   },
+  // data_flow_diagram: {
+  //   "ui:widget": "FileWidget",
+  // },
+  // boundary_map: {
+  //   "ui:widget": "FileWidget",
+  // },
   opt_in_section: {
     ...subheading,
   },
