@@ -206,14 +206,12 @@ def update_operation(request, operation_id: int, submit: str, payload: Operation
 
     # if there's contact info included in the payload
     # NOTE: this is a tacky way of checking to see if the Application Lead section of the form has been populated yet, but it's the
-    # best solution we have available at the moment. Once the user is on the second page of the form, street_address is a required field
+    # best solution we have available at the moment. Once the user is on the second page of the form, first_name is a required field
     # enforced on the frontend.
     if payload.first_name is not None:
+        is_external_point_of_contact = payload.is_external_point_of_contact
 
-
-        add_another_user_for_point_of_contact = payload.add_another_user_for_point_of_contact
-
-        if add_another_user_for_point_of_contact is False:  # the point of contact is the user
+        if is_external_point_of_contact is False:  # the point of contact is the user
             poc, _ = Contact.objects.update_or_create(
                 id=point_of_contact_id,
                 defaults={
@@ -228,7 +226,7 @@ def update_operation(request, operation_id: int, submit: str, payload: Operation
             poc.set_create_or_update(modifier=user)
             operation.point_of_contact = poc
 
-        elif add_another_user_for_point_of_contact is True:  # the point of contact is an external user
+        elif is_external_point_of_contact is True:  # the point of contact is an external user
             external_poc, _ = Contact.objects.update_or_create(
                 id=point_of_contact_id,
                 defaults={
