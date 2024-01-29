@@ -7,14 +7,12 @@ import Loading from "@/app/components/loading/SkeletonGrid";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import Note, { registrationRequestNote } from "../../datagrid/Note";
-import { redirectIfOperatorStatusUnauthorized } from "../../auth/helpers";
 
 export default async function OperationsPage() {
   // 👤 Use NextAuth.js hook to get information about the user's session
   /* When calling from the server-side i.e., in Route Handlers, React Server Components, API routes,
    * getServerSession requires passing the same object you would pass to NextAuth
    */
-  await redirectIfOperatorStatusUnauthorized();
   const session = await getServerSession(authOptions);
   const role = session?.user?.app_role;
 

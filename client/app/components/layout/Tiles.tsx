@@ -15,11 +15,23 @@ This allows you to organize your route segments and project files into logical g
 e.g. app\(authenticated)\dashboard maps to route: http://localhost:3000/dashboard
 */
 
+type TileItem = {
+  default: ContentItem[];
+};
+
 // 📐 type for ContentItem used to build dashboard content tiles
 type ContentItem = {
   title: string;
   content: string;
   links?: { title: string; href: string }[];
+};
+
+const buildContentsModule = (tiles: TileItem[]) => {
+  const result: ContentItem[] = [];
+  tiles.map((tile) => {
+    result.push(...tile.default);
+  });
+  return result;
 };
 
 export default function Tiles({
@@ -35,39 +47,81 @@ export default function Tiles({
     if (typeof window !== "undefined" && role) {
       // 🛠️ Function to import the dashboard tiles basd on user's app_role
       const fetchData = async () => {
+        const reportAProblemTile = await import(
+          "@/app/data/dashboard/report_a_problem.json"
+        );
+
+        // bceid tiles
+        const bceidSelectOperatorTile = await import(
+          "@/app/data/dashboard/bceid/select_operator.json"
+        );
+        const bceidMyOperatorTile = await import(
+          "@/app/data/dashboard/bceid/my_operator.json"
+        );
+        const bceidOperationsTile = await import(
+          "@/app/data/dashboard/bceid/operations.json"
+        );
+        const bceidUsersTile = await import(
+          "@/app/data/dashboard/bceid/users.json"
+        );
+
+        // idir tiles
+        const idirOperatorsTile = await import(
+          "@/app/data/dashboard/idir/operators.json"
+        );
+        const idirOperationsTile = await import(
+          "@/app/data/dashboard/idir/operations.json"
+        );
+        const idirUsersTile = await import(
+          "@/app/data/dashboard/idir/users.json"
+        );
+
         let contentsModule;
         // Note: using a dynamic import path, i.e. dynamicPath = `@/app/data/dashboard/${role}.json`;, returns Error: Cannot find module '@/app/data/dashboard/*.json'
         switch (role) {
           case FrontEndRoles.CAS_ADMIN:
-            contentsModule = await import(
-              "@/app/data/dashboard/cas_admin.json"
-            );
+            contentsModule = buildContentsModule([
+              idirOperatorsTile,
+              idirOperationsTile,
+              idirUsersTile,
+              reportAProblemTile,
+            ]);
+
             break;
           case FrontEndRoles.CAS_ANALYST:
-            contentsModule = await import(
-              "@/app/data/dashboard/cas_analyst.json"
-            );
+            contentsModule = buildContentsModule([
+              idirOperatorsTile,
+              idirOperationsTile,
+              reportAProblemTile,
+            ]);
             break;
           case "industry_user_admin":
             if (operatorStatus === "Pending" || operatorStatus === "Approved") {
-              contentsModule = await import(
-                "@/app/data/dashboard/industry_user_admin_approved_operator.json"
-              );
+              contentsModule = buildContentsModule([
+                bceidMyOperatorTile,
+                bceidOperationsTile,
+                bceidUsersTile,
+                reportAProblemTile,
+              ]);
             } else {
-              contentsModule = await import(
-                "@/app/data/dashboard/industry_user_admin.json"
-              );
+              contentsModule = buildContentsModule([
+                bceidSelectOperatorTile,
+                reportAProblemTile,
+              ]);
             }
             break;
           case FrontEndRoles.INDUSTRY_USER:
             if (operatorStatus === "Pending" || operatorStatus === "Approved") {
-              contentsModule = await import(
-                "@/app/data/dashboard/industry_user_approved_operator.json"
-              );
+              contentsModule = buildContentsModule([
+                bceidMyOperatorTile,
+                bceidOperationsTile,
+                reportAProblemTile,
+              ]);
             } else {
-              contentsModule = await import(
-                "@/app/data/dashboard/industry_user.json"
-              );
+              contentsModule = buildContentsModule([
+                bceidSelectOperatorTile,
+                reportAProblemTile,
+              ]);
             }
             break;
           default:
@@ -75,7 +129,7 @@ export default function Tiles({
             break;
         }
         if (contentsModule) {
-          setContents(contentsModule.default);
+          setContents(contentsModule);
         }
       };
       fetchData();

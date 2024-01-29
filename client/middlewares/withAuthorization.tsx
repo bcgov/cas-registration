@@ -7,6 +7,8 @@ import {
 
 import { MiddlewareFactory } from "./types";
 import { getToken } from "next-auth/jwt";
+import { IDP } from "@/app/utils/enums";
+import { getOperatorFromUser } from "@/app/(authenticated)/dashboard/page";
 
 /*
 Access control logic is managed using Next.js middleware and NextAuth.js authentication JWT token.
@@ -50,6 +52,19 @@ const isAuthorizationRequiredPath = (
   );
 };
 
+const isAuthorizedIdirUser = (token: {
+  identity_provider?: string;
+  app_role?: string;
+}): boolean => {
+  if (!token) {
+    return false;
+  }
+
+  const idp = token.identity_provider;
+  const appRole = token.app_role;
+  return idp === IDP.IDIR && !appRole?.includes("pending") ? true : false;
+};
+
 // Middleware for authorization
 export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
   return async (request: NextRequest, _next: NextFetchEvent) => {
@@ -89,6 +104,18 @@ export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
 
       // Check if the path requires authorization
       if (isAuthorizationRequiredPath(pathname, token)) {
+        if (pathname.includes("operations")) {
+          // Industry users are only allowed to see their operations if their operator is pending/approved
+          if (!isAuthorizedIdirUser(token)) {
+            const operator = await getOperatorFromUser();
+            if (
+              operator.status !== "Pending" &&
+              operator.status !== "Approved"
+            ) {
+              return NextResponse.redirect(new URL(`/dashboard`, request.url));
+            }
+          }
+        }
         request.nextUrl.pathname = `${token.identity_provider}/${token.app_role}${pathname}`;
         return NextResponse.rewrite(request.nextUrl);
       }
