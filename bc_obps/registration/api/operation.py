@@ -171,7 +171,6 @@ def create_operation(request, payload: OperationCreateIn):
     operation.regulated_products.set(payload.regulated_products)
     # Not needed for MVP
     # operation.reporting_activities.set(payload.reporting_activities)
-    operation.documents.set(payload.documents)
     operation.set_create_or_update(modifier=user)
 
     if payload.operation_has_multiple_operators:
