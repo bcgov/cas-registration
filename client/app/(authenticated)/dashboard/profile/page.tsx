@@ -7,14 +7,13 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 // 🏗️ Sync server component: dashboard\profile
 export default async function Page() {
   const session = await getServerSession(authOptions);
-  const appRole = session?.user?.app_role;
-  const isCasInternal = appRole?.includes("cas");
+  const isIdirUser = session?.identity_provider?.includes("idir");
   return (
     <>
       <div className="w-full form-group field field-object form-heading-label">
         <div className="form-heading">
           Please update or verify your information{" "}
-          {!isCasInternal ? "as the Operation Representative" : ""}
+          {!isIdirUser ? "as the Operation Representative" : ""}
         </div>
       </div>
       <Suspense fallback={<Loading />}>
