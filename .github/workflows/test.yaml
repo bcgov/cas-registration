@@ -167,12 +167,7 @@ jobs:
 
   zap-owasp:
     needs:
-      [
-        "backend-docker-build",
-        "frontend-docker-build",
-        "devops-docker-build",
-        "install-dev-tools",
-      ]
+      ["backend-docker-build", "frontend-docker-build", "install-dev-tools"]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
