@@ -8,8 +8,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 export default async function Page() {
   const session = await getServerSession(authOptions);
   const appRole = session?.user?.app_role;
-  const isCasInternal =
-    appRole?.includes("cas") && !appRole?.includes("pending");
+  const isCasInternal = appRole?.includes("cas");
   return (
     <>
       <div className="w-full form-group field field-object form-heading-label">
