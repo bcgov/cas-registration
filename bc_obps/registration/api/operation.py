@@ -169,7 +169,9 @@ def create_operation(request, payload: OperationCreateIn):
 
     operation = Operation.objects.create(**payload_dict, operator_id=payload.operator, naics_code_id=payload.naics_code)
     operation.regulated_products.set(payload.regulated_products)
-    operation.reporting_activities.set(payload.reporting_activities)
+    # Not needed for MVP
+    # operation.reporting_activities.set(payload.reporting_activities)
+    operation.documents.set(payload.documents)
     operation.set_create_or_update(modifier=user)
 
     if payload.operation_has_multiple_operators:
@@ -200,24 +202,14 @@ def update_operation(request, operation_id: int, submit: str, payload: Operation
     operation.operator_id = payload.operator
     operation.naics_code_id = payload.naics_code
 
-    point_of_contact_address_id = None
     point_of_contact_id = payload.point_of_contact_id or None
 
     # if there's contact info included in the payload
     # NOTE: this is a tacky way of checking to see if the Application Lead section of the form has been populated yet, but it's the
     # best solution we have available at the moment. Once the user is on the second page of the form, street_address is a required field
     # enforced on the frontend.
-    if payload.street_address is not None:
-        # # create or update the Address for the point of contact
-        address, _ = Address.objects.update_or_create(
-            id=point_of_contact_address_id,
-            defaults={
-                "street_address": payload.street_address,
-                "municipality": payload.municipality,
-                "province": payload.province,
-                "postal_code": payload.postal_code,
-            },
-        )
+    if payload.first_name is not None:
+
 
         add_another_user_for_point_of_contact = payload.add_another_user_for_point_of_contact
 
@@ -231,7 +223,6 @@ def update_operation(request, operation_id: int, submit: str, payload: Operation
                     "email": payload.email,
                     "phone_number": payload.phone_number,
                     "business_role": BusinessRole.objects.get(role_name="Operation Registration Lead"),
-                    "address": address,
                 },
             )
             poc.set_create_or_update(modifier=user)
@@ -247,7 +238,6 @@ def update_operation(request, operation_id: int, submit: str, payload: Operation
                     "email": payload.external_point_of_contact_email,
                     "phone_number": payload.external_point_of_contact_phone_number,
                     "business_role": BusinessRole.objects.get(role_name="Operation Registration Lead"),
-                    "address": address,
                 },
             )
             external_poc.set_create_or_update(modifier=user)
