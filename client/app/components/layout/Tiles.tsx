@@ -60,7 +60,6 @@ export default function Tiles({
             }
             break;
           case FrontEndRoles.INDUSTRY_USER:
-            // brianna this does the tiles, you have to actually shut down the frontend route
             if (operatorStatus === "Pending" || operatorStatus === "Approved") {
               contentsModule = await import(
                 "@/app/data/dashboard/industry_user_approved_operator.json"

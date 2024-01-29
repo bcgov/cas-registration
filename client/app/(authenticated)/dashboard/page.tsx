@@ -8,7 +8,7 @@ This allows you to organize your route segments and project files into logical g
 e.g. app\(authenticated)\dashboard maps to route: http://localhost:3000/dashboard
 */
 
-async function getOperatorFromUser() {
+export async function getOperatorFromUser() {
   try {
     return await actionHandler("registration/operator-from-user", "GET", "");
   } catch (error) {

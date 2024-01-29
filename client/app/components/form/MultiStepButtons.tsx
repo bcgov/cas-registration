@@ -73,7 +73,6 @@ const SubmitButton: React.FunctionComponent<SubmitButtonProps> = ({
             disabled={isDisabled}
             variant="contained"
           >
-            {/* brianna here */}
             {!isFinalStep ? "Next" : submitButtonText ?? "Submit"}
           </Button>
         )}
