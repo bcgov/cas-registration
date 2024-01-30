@@ -252,24 +252,53 @@ jobs:
           cmd_options: "-a -d -T 5 -m 2"
           issue_title: OWASP Baseline - Backend
           fail_action: false
-  e2e:
+   e2e:
     needs:
-      ["backend-docker-build", "frontend-docker-build", "install-dev-tools"]
+      - backend-docker-build
+      - frontend-docker-build
+      - install-dev-tools
     timeout-minutes: 60
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+
       - name: dev env setup
         uses: ./.github/actions/dev-env-setup
+
       - name: run app locally
         uses: ./.github/actions/local-app-run
         with:
           django_secret_key: ${{ env.DJANGO_SECRET_KEY }}
+
       - name: Install Playwright Browsers
         run: yarn playwright install --with-deps
         working-directory: ./client
+
       - name: Run Playwright tests
-        run: DEBUG=pw:browser npx playwright test --trace=on --workers=1 client/e2e/*
+        run: |
+          DEBUG=pw:browser npx playwright test --trace on --workers=1 client/e2e/*
+        env:
+          BASEURL: http://localhost:3000/
+          CAS_ADMIN_STORAGE: playwright/.auth/cas_admin.json
+          CAS_ANALYST_STORAGE: playwright/.auth/cas_analyst.json
+          CAS_PENDING_STORAGE: playwright/.auth/cas_pending.json
+          INDUSTRY_USER_STORAGE: playwright/.auth/industry_user.json
+          INDUSTRY_USER_ADMIN_STORAGE: playwright/.auth/industry_user_admin.json
+          NEW_USER_STORAGE: playwright/.auth/new_user.json
+          CAS_USERNAME: ${{ secrets.CAS_USER }}
+          CAS_PASSWORD: ${{ secrets.CAS_PASSWORD }}
+          CAS_USER_GUID: ${{ secrets.CAS_USER_GUID }}
+          INDUSTRY_USER_ADMIN_USERNAME: bc-cas-dev
+          INDUSTRY_USER_ADMIN_PASSWORD: ${{ secrets.INDUSTRY_USER_ADMIN_PASSWORD }}
+          INDUSTRY_USER_USERNAME: bc-cas-dev-secondary
+          INDUSTRY_USER_PASSWORD: ${{ secrets.INDUSTRY_USER_PASSWORD }}
+          NEW_USER_USERNAME: bc-cas-dev-three
+          NEW_USER_PASSWORD: ${{ secrets.NEW_USER_PASSWORD }}
+          NEW_USER_GUID: ${{ secrets.NEW_USER_GUID }}
+          DB_USER: postgres
+          DB_NAME: registration
+          DB_PORT: 5432
+          DB_HOST: localhost
         working-directory: ./client
       - uses: actions/upload-artifact@v3
         if: always()
@@ -277,6 +306,36 @@ jobs:
           name: playwright-report
           path: client/playwright-report
           retention-days: 30
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: cas-admin-storage
+          path: client/.auth/cas_admin.json
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: cas-analyst-storage
+          path: client/.auth/cas_analyst.json
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: cas-pending-storage
+          path: client/.auth/cas_pending.json
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: industry-user-storage
+          path: client/.auth/industry_user.json
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: industry-user-admin-storage
+          path: client/.auth/industry_user_admin.json
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: new-user-storage
+          path: client/.auth/new_user.json
   backend-tests:
     needs:
       ["backend-docker-build", "frontend-docker-build", "install-dev-tools"]
