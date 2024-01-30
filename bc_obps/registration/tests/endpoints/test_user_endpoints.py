@@ -77,6 +77,8 @@ class TestUserEndpoint(CommonTestSetup):
             email='bceid.user@email.com',
             phone_number='+16044011234',
             position_title='Tester',
+            business_guid='00000000-0000-0000-0000-000000000001',
+            bceid_business_name='test business',
         )
 
         # Act
@@ -103,9 +105,15 @@ class TestUserEndpoint(CommonTestSetup):
         )
         assert 'email' in content and isinstance(content['email'], str) and content['email'] == 'bceid.user@email.com'
         assert 'phone_number' in content and isinstance(content['phone_number'], str)
+        assert (
+            'bceid_business_name' in content
+            and isinstance(content['bceid_business_name'], str)
+            and content['bceid_business_name'] == 'test business'
+        )
 
         # Additional Assertion for user_guid
         assert 'user_guid' not in content
+        assert 'business_guid' not in content
 
     # POST USER PROFILE IDIR
     def test_create_user_profile_idir(self):
@@ -116,6 +124,8 @@ class TestUserEndpoint(CommonTestSetup):
             email='idir.user@email.com',
             phone_number='+16044011234',
             position_title='Tester',
+            business_guid='00000000-0000-0000-0000-000000000000',
+            bceid_business_name='bcgov test',
         )
 
         # Act
@@ -142,9 +152,15 @@ class TestUserEndpoint(CommonTestSetup):
         )
         assert 'email' in content and isinstance(content['email'], str) and content['email'] == 'idir.user@email.com'
         assert 'phone_number' in content and isinstance(content['phone_number'], str)
+        assert (
+            'bceid_business_name' in content
+            and isinstance(content['bceid_business_name'], str)
+            and content['bceid_business_name'] == 'bcgov test'
+        )
 
         # Additional Assertion for user_guid
         assert 'user_guid' not in content  # PUT USER PROFILE
+        assert 'business_guid' not in content
 
     def test_update_user_profile(self):
         # Arrange
@@ -154,6 +170,8 @@ class TestUserEndpoint(CommonTestSetup):
             email='test.user@email.com',
             phone_number='+16044011234',
             position_title='Boss',
+            business_guid='00000000-0000-0000-0000-000000000001',
+            bceid_business_name='test business',
         )
 
         # Act
@@ -175,6 +193,12 @@ class TestUserEndpoint(CommonTestSetup):
         )
         assert 'email' in content and isinstance(content['email'], str) and content['email'] == 'test.user@email.com'
         assert 'phone_number' in content and isinstance(content['phone_number'], str)
+        assert (
+            'bceid_business_name' in content
+            and isinstance(content['bceid_business_name'], str)
+            and content['bceid_business_name'] == 'test business'
+        )
 
         # Additional Assertion for user_guid
         assert 'user_guid' not in content
+        assert 'business_guid' not in content
