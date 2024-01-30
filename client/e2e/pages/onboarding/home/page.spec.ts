@@ -35,26 +35,34 @@ const login = async (
     await navigateAndWaitForLoad(page, url);
 
     // Determine the login button based on the user role
-    // 🚩🚩🚩🚩 TODO 🚩🚩🚩🚩
     let loginButton = LoginLink.INDUSTRY_USER;
+    switch (role) {
+      case UserRole.CAS_ADMIN:
+      case UserRole.CAS_ANALYST:
+      case UserRole.CAS_PENDING:
+        loginButton = LoginLink.CAS;
+        break;
+    }
 
     // Click the login button
     await page.getByRole("button", { name: loginButton }).click();
 
-    // 🕒 Wait for the navigation to complete
-    await page.waitForNavigation();
-
+    // 🕒 Wait for the user field to be present
+    // 🚩 BP approach (?) seems to fail:   await page.locator("id=user").fill(userName);
     // eslint-disable-next-line no-console
-    console.log("Filling login form...");
+    console.log("Completing login form...");
+    const userField = await page.waitForSelector("#user");
+    // 🔍 Assert that the field is available
+    expect(userField).not.toBeNull();
     // Fill the user field
-    await page.locator("id=user").fill(userName);
+    await userField.fill(userName);
     // Fill the pw field
     await page.getByLabel("Password").fill(password);
     // Click Continue button
     await page.getByRole("button", { name: "Continue" }).click();
 
     // 🕒 Wait for the home page profile navigation link to be present
-    // 🚩 BP approach seems to fail: await expect(page.getByTestId("nav-user-profile")).toBeVisible();
+    // 🚩 BP approach (?) seems to fail: await expect(page.getByTestId("nav-user-profile")).toBeVisible();
     // eslint-disable-next-line no-console
     console.log("Waiting for the profile navigation link to be present...");
     const profileNavSelector = '[data-testid="nav-user-profile"]';
@@ -62,7 +70,7 @@ const login = async (
     // 🔍 Assert that the link is available
     expect(profileNavSelector).not.toBeNull();
 
-    // 🔍 Assert url path based on user role
+    // Get url path based on user role
     let path = "/dashboard";
     switch (role) {
       case UserRole.NEW_USER:
@@ -71,6 +79,7 @@ const login = async (
     }
     // eslint-disable-next-line no-console
     console.log(`Asserting url path ${path} for user role ${role}`);
+    // 🔍 Assert url path based on user role
     expect(page.url().toLocaleLowerCase()).toContain(path);
   } catch (error) {
     // eslint-disable-next-line no-console
