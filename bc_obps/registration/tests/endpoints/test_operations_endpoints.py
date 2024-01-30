@@ -7,17 +7,17 @@ from registration.models import (
     NaicsCode,
     Contact,
     Operation,
-    Operator,
     ReportingActivity,
     User,
     UserOperator,
+    Operator,
     RegulatedProduct,
-    BusinessStructure,
 )
 from registration.schema import OperationCreateIn, OperationUpdateIn
 from registration.tests.utils.helpers import MOCK_DATA_URL, CommonTestSetup, TestUtils
 
 pytestmark = pytest.mark.django_db
+from registration.tests.utils.bakers import document_baker, operation_baker, operator_baker, user_operator_baker
 
 # initialize the APIClient app
 client = Client()
@@ -36,33 +36,45 @@ class TestOperationsEndpoint(CommonTestSetup):
         return self.endpoint + "/" + str(operation_id) + "/update-status"
 
     # AUTHORIZATION
-    def test_unauthorized_users_cannot_get(self):
-        operation2700 = baker.make(Operation, id=2700)
+    def test_operations_endpoint_unauthorized_users_cannot_get(self):
+        operation_instance_1 = operation_baker()
         # /operations
         # unauthorized roles can't get
         response = TestUtils.mock_get_with_auth_role(self, "cas_pending")
         assert response.status_code == 401
         # /operations/{operation_id}
-        response = TestUtils.mock_get_with_auth_role(self, "cas_pending", self.endpoint + "/" + str(operation2700.id))
+        response = TestUtils.mock_get_with_auth_role(
+            self, "cas_pending", self.endpoint + "/" + str(operation_instance_1.id)
+        )
         assert response.status_code == 401
 
         # unapproved industry users can't get
         # operations
-        baker.make(UserOperator, user_id=self.user.user_guid, status=UserOperator.Statuses.PENDING)
+        user_operator_instance = user_operator_baker()
+        user_operator_instance.status = UserOperator.Statuses.PENDING
+        user_operator_instance.user_id = self.user.user_guid
+        user_operator_instance.save(update_fields=['user', 'status'])
+
         response = TestUtils.mock_get_with_auth_role(self, "industry_user")
         assert response.status_code == 401
         # /operations/{operation_id}
-        response = TestUtils.mock_get_with_auth_role(self, "industry_user", self.endpoint + "/2700")
+        response = TestUtils.mock_get_with_auth_role(
+            self, "industry_user", self.endpoint + "/" + str(operation_instance_1.id)
+        )
         assert response.status_code == 401
 
         # industry users that don't belong to the operator can't get
         # /operations
-        operation3600 = baker.make(Operation, id=3600)
-        response = TestUtils.mock_get_with_auth_role(self, "industry_user", self.endpoint + "/" + str(operation3600.id))
+        operation_instance_2 = operation_baker()
+        response = TestUtils.mock_get_with_auth_role(
+            self, "industry_user", self.endpoint + "/" + str(operation_instance_2.id)
+        )
         assert response.status_code == 401
 
         # /operations/{operation_id}
-        response = TestUtils.mock_get_with_auth_role(self, "industry_user", self.endpoint + "/" + str(operation3600.id))
+        response = TestUtils.mock_get_with_auth_role(
+            self, "industry_user", self.endpoint + "/" + str(operation_instance_2.id)
+        )
         assert response.status_code == 401
 
     def test_unauthorized_roles_cannot_post(self):
@@ -80,7 +92,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         assert post_response.status_code == 401
 
     def test_unauthorized_roles_cannot_put_operations(self):
-        operation = baker.make(Operation)
+        operation = operation_baker()
         mock_operation = TestUtils.mock_OperationUpdateIn()
         # IRC users can't put
         roles = ['cas_pending', 'cas_admin', 'cas_analyst', 'industry_user']
@@ -96,7 +108,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             assert response.status_code == 401
 
     def test_unauthorized_users_cannot_update_status(self):
-        operation = baker.make(Operation)
+        operation = operation_baker()
 
         url = self.build_update_status_url(operation_id=operation.id)
 
@@ -106,14 +118,17 @@ class TestOperationsEndpoint(CommonTestSetup):
         assert response.status_code == 401
 
     # GET
-    def test_get_method_for_200_status(self):
+    def test_operations_endpoint_get_method_for_200_status(self):
         # IRC users can get all operations
         response = TestUtils.mock_get_with_auth_role(self, "cas_admin")
         assert response.status_code == 200
         response = TestUtils.mock_get_with_auth_role(self, "cas_analyst")
         assert response.status_code == 200
         # industry users can only get their own company's operations, and only if they're approved
-        baker.make(UserOperator, user_id=self.user.user_guid, status=UserOperator.Statuses.APPROVED)
+        user_operator_instance = user_operator_baker()
+        user_operator_instance.status = UserOperator.Statuses.APPROVED
+        user_operator_instance.user_id = self.user.user_guid
+        user_operator_instance.save(update_fields=['user', 'status'])
         response = TestUtils.mock_get_with_auth_role(self, "industry_user")
         assert response.status_code == 200
         response = TestUtils.mock_get_with_auth_role(self, "industry_user")
@@ -124,10 +139,10 @@ class TestOperationsEndpoint(CommonTestSetup):
         assert response.status_code == 404
         assert response.json().get('detail') == "Not Found"
 
-    def test_get_method_with_mock_data(self):
+    def test_operations_endpoint_get_method_with_mock_data(self):
         # IRC users can get all operations except ones with a not Started status
-        operator1 = baker.make(Operator)
-        operator2 = baker.make(Operator)
+        operator1 = operator_baker()
+        operator2 = operator_baker()
         baker.make(
             Operation,
             operator_id=operator1.id,
@@ -165,7 +180,7 @@ class TestOperationsEndpoint(CommonTestSetup):
 
     # POST
     def test_authorized_roles_can_post_new_operation(self):
-        operator = baker.make(Operator)
+        operator = operator_baker()
         mock_operation = TestUtils.mock_OperationCreateIn(operator)
         post_response = TestUtils.mock_post_with_auth_role(
             self, "industry_user", content_type_json, mock_operation.json()
@@ -187,8 +202,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         contact = baker.make(Contact)
         regulated_products = baker.make(RegulatedProduct, _quantity=2)
         reporting_activities = baker.make(ReportingActivity, _quantity=2)
-        baker.make(BusinessStructure, name='BC Corporation')
-        operator = baker.make(Operator)
+        operator = operator_baker()
         mock_operation = OperationCreateIn(
             name='Springfield Nuclear Power Plant',
             type='Single Facility Operation',
@@ -201,7 +215,7 @@ class TestOperationsEndpoint(CommonTestSetup):
                     "mo_cra_business_number": 123,
                     "mo_bc_corporate_registry_number": 'abc1234567',
                     "mo_business_structure": "BC Corporation",
-                    "mo_website": "test",
+                    "mo_website": "https://www.test-mo.com",
                     "mo_physical_street_address": "test",
                     "mo_physical_municipality": "test",
                     "mo_physical_province": "BC",
@@ -218,7 +232,6 @@ class TestOperationsEndpoint(CommonTestSetup):
                     "mo_cra_business_number": 123,
                     "mo_bc_corporate_registry_number": 'wer1234567',
                     "mo_business_structure": "BC Corporation",
-                    "mo_website": "test",
                     "mo_physical_street_address": "test",
                     "mo_physical_municipality": "test",
                     "mo_physical_province": "BC",
@@ -257,7 +270,9 @@ class TestOperationsEndpoint(CommonTestSetup):
         assert response.status_code == 422
 
     def test_post_existing_operation(self):
-        baker.make(Operation, bcghg_id=123)
+        operation_instance = operation_baker()
+        operation_instance.bcghg_id = 123
+        operation_instance.save(update_fields=['bcghg_id'])
         mock_operation2 = TestUtils.mock_OperationCreateIn()
         mock_operation2.bcghg_id = 123
         post_response = TestUtils.mock_post_with_auth_role(
@@ -267,11 +282,12 @@ class TestOperationsEndpoint(CommonTestSetup):
         assert post_response.json().get('message') == "Operation with this BCGHG ID already exists."
 
     def test_post_new_operation_without_point_of_contact(self):
-        operator = baker.make(Operator)
+        operator = operator_baker()
         new_operation = OperationCreateIn(
             documents=[],
             point_of_contact=None,
             status=Operation.Statuses.NOT_STARTED,
+            naics_code_id=NaicsCode.objects.first().id,
             name='My New Operation',
             type='Type 1',
             operator_id=operator.id,
@@ -298,7 +314,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         assert put_response.json().get('detail') == "Not Found"
 
     def test_put_operation_update_status_approved(self):
-        operation = baker.make(Operation, naics_code=baker.make(NaicsCode, naics_code=123456, naics_description='desc'))
+        operation = operation_baker()
         assert operation.status == Operation.Statuses.NOT_STARTED
 
         url = self.build_update_status_url(operation_id=operation.id)
@@ -330,9 +346,11 @@ class TestOperationsEndpoint(CommonTestSetup):
         # should not change other fields of the operator
         random_time = datetime.now(pytz.utc)
         random_user = baker.make(User)
-        new_operator = baker.make(
-            Operator, status=Operator.Statuses.APPROVED, verified_at=random_time, verified_by=random_user
-        )
+        new_operator = operator_baker()
+        new_operator.status = Operator.Statuses.APPROVED
+        new_operator.verified_at = random_time
+        new_operator.verified_by = random_user
+        new_operator.save(update_fields=['status', 'verified_at', 'verified_by'])
         operation.operator = new_operator
         operation.save()
 
@@ -346,7 +364,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         assert new_operator.verified_by != self.user
 
     def test_put_operation_update_status_declined(self):
-        operation = baker.make(Operation, naics_code=baker.make(NaicsCode, naics_code=123456, naics_description='desc'))
+        operation = operation = operation_baker()
         assert operation.status == Operation.Statuses.NOT_STARTED
 
         url = self.build_update_status_url(operation_id=operation.id)
@@ -370,7 +388,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         assert get_response_dict.get("verified_at") == now_as_string
 
     def test_put_operation_not_verified_when_not_registered(self):
-        operation = baker.make(Operation, naics_code=baker.make(NaicsCode, naics_code=123456, naics_description='desc'))
+        operation = operation_baker()
         assert operation.status == Operation.Statuses.NOT_STARTED
 
         url = self.build_update_status_url(operation_id=operation.id)
@@ -392,7 +410,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         assert get_response_dict.get("verified_at") is None
 
     def test_put_operation_update_status_invalid_data(self):
-        operation = baker.make(Operation)
+        operation = operation_baker()
         assert operation.status == Operation.Statuses.NOT_STARTED
 
         url = self.build_update_status_url(operation_id=operation.id)
@@ -401,7 +419,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             TestUtils.mock_put_with_auth_role(self, "cas_admin", content_type_json, {"status": "nonsense"}, url)
 
     def test_put_operation_without_submit(self):
-        operation = baker.make(Operation)
+        operation = operation_baker()
         mock_operation = TestUtils.mock_OperationUpdateIn()
 
         # approve the user
@@ -427,7 +445,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         assert get_response["status"] == Operation.Statuses.NOT_STARTED
 
     def test_put_operation_with_submit(self):
-        operation = baker.make(Operation, id=5)
+        operation = operation_baker()
         mock_operation = TestUtils.mock_OperationUpdateIn()
 
         # Upload testing requires Google cloud credentials to be set up in CI. Will be addressed in #718
@@ -458,7 +476,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         assert get_response["submission_date"] is not None
 
     def test_put_malformed_operation(self):
-        operation = baker.make(Operation)
+        operation = operation_baker()
         response = TestUtils.mock_put_with_auth_role(
             self,
             'industry_user',
@@ -473,9 +491,9 @@ class TestOperationsEndpoint(CommonTestSetup):
         contact1 = baker.make(Contact)
         # contact2 is a new contact, even though they have the same email as contact1
         contact2 = baker.make(Contact, email=contact1.email)
-        operation = baker.make(Operation)
+        operation = operation_baker()
 
-        operator = baker.make(Operator)
+        operator = operator_baker()
         update = OperationUpdateIn(
             name='Springfield Nuclear Power Plant',
             # this updates the existing contact (contact2)
@@ -510,16 +528,16 @@ class TestOperationsEndpoint(CommonTestSetup):
 
         # we should have 2 contacts in the db (contact1 and contact2), where contact2's info has been updated
         # based on the data provided in update
-        assert Contact.objects.count() == 2
+        assert Contact.objects.count() == 3  # 2 from baker.make, 1 from the update
+        # this checks that we added a new contact instead of updating the existing one even though they have the same email
         updated_contact2 = Contact.objects.get(id=contact2.id)
         assert updated_contact2.first_name == 'Homer'
         assert updated_contact2.email == 'homer@email.com'
 
     def test_put_operation_with_new_point_of_contact(self):
-        first_contact = baker.make(Contact)
-        operation = baker.make(Operation)
-
-        operator = baker.make(Operator)
+        operation = operation_baker()
+        first_contact = operation.point_of_contact
+        operator = operator_baker()
         update = OperationUpdateIn(
             name='Springfield Nuclear Power Plant',
             type='Single Facility Operation',
@@ -534,7 +552,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             external_point_of_contact_last_name='Simpson',
             external_point_of_contact_position_title='Scoundrel',
             external_point_of_contact_email='bart@email.com',
-            external_point_of_contact_phone_number='+16041001000',
+            external_point_of_contact_phone_number='+17787777777',
             street_address='19 Evergreen Terrace',
             municipality='Springfield',
             province='BC',
@@ -575,12 +593,16 @@ class TestOperationsEndpoint(CommonTestSetup):
         assert homer_contact is None
 
     def test_put_operation_with_no_point_of_contact(self):
-        operator = baker.make(Operator)
-        operation = baker.make(Operation, point_of_contact=None, operator_id=operator.id)
+        operator = operator_baker()
+        operation = operation_baker()
+        operation.point_of_contact = None
+        operation.operator_id = operator.id
+        operation.save(update_fields=['point_of_contact', 'operator_id'])
 
         update = OperationUpdateIn(
             name='Updated Name',
             type='Type',
+            naics_code_id=operation.naics_code_id,
             operator_id=operator.id,
             documents=[],
             regulated_products=[],
@@ -597,7 +619,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         )
         assert put_response.status_code == 200
         assert Operation.objects.count() == 1
-        assert Contact.objects.count() == 0
+        assert Contact.objects.count() == 1  # 1 from operation baker
         retrieved_operation = Operation.objects.first()
         assert retrieved_operation.name == 'Updated Name'
         assert retrieved_operation.point_of_contact_id is None

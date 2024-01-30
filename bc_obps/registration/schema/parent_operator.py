@@ -42,7 +42,7 @@ class ParentOperatorOut(ModelSchema):
     """
 
     po_legal_name: str = Field(..., alias="legal_name")
-    po_trade_name: Optional[str] = Field(None, alias="trade_name")
+    po_trade_name: Optional[str] = Field("", alias="trade_name")
     po_cra_business_number: int = Field(..., alias="cra_business_number")
     po_bc_corporate_registry_number: str = Field(..., alias="bc_corporate_registry_number")
     po_business_structure: str = Field(..., alias="business_structure.name")
