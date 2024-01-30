@@ -339,7 +339,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
 
         # Change operator status to approved
         user_operator.operator = baker.make(
-            Operator, status=Operator.Statuses.APPROVED, bc_corporate_registry_number="abc1234567", _fill_optional=True
+            Operator, status=Operator.Statuses.APPROVED, bc_corporate_registry_number="efg1234567", _fill_optional=True
         )
         user_operator.save()
         response_2 = TestUtils.mock_put_with_auth_role(
@@ -523,32 +523,88 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         # Additional Assertions
         assert response_json == {"detail": "Not Found"}
 
-    def test_create_operator_and_user_operator_with_parent_operators(self):
-        baker.make(BusinessStructure, name="BC Corporation")
+    def test_duplicates_not_allowed(self):
+        baker.make(
+            Operator, legal_name='Legal Name', bc_corporate_registry_number="aaa1234321", cra_business_number=55555
+        )
 
-        # Fails if there is an existing operator with the same cra_business_number
-        mock_payload_1 = {
-            "legal_name": "test legal name",
-            "cra_business_number": 123456789,
+        # duplicate CRA business number
+        payload_with_duplicate_cra_business_number = {
+            "legal_name": "a Legal Name",
+            "cra_business_number": 55555,
             "bc_corporate_registry_number": "adh1234321",
             "business_structure": BusinessStructure.objects.first().pk,
             "physical_street_address": "test physical street address",
             "physical_municipality": "test physical municipality",
-            "physical_province": "test physical province",
-            "physical_postal_code": "test physical postal code",
+            "physical_province": "BC",
+            "physical_postal_code": "H0H0H0",
             "mailing_address_same_as_physical": True,
             "operator_has_parent_operators": False,
-            "parent_operators_array": [],
         }
-        baker.make(Operator, cra_business_number="123456789")
-        post_response_1 = TestUtils.mock_post_with_auth_role(
+        post_response_duplicate_cra_business_number = TestUtils.mock_post_with_auth_role(
             self,
             'industry_user',
             content_type_json,
-            mock_payload_1,
+            payload_with_duplicate_cra_business_number,
             f"{self.user_operator_endpoint}/operator",
         )
-        assert post_response_1.status_code == 400
+        assert post_response_duplicate_cra_business_number.status_code == 400
+        assert post_response_duplicate_cra_business_number.json() == {
+            'message': 'Operator with this CRA Business Number already exists.'
+        }
+
+        # duplicate legal name
+        payload_with_duplicate_legal_name = {
+            "legal_name": "Legal Name",
+            "cra_business_number": 963852741,
+            "bc_corporate_registry_number": "adh1234321",
+            "business_structure": BusinessStructure.objects.first().pk,
+            "physical_street_address": "test physical street address",
+            "physical_municipality": "test physical municipality",
+            "physical_province": "BC",
+            "physical_postal_code": "H0H0H0",
+            "mailing_address_same_as_physical": True,
+            "operator_has_parent_operators": False,
+        }
+        post_response_duplicate_legal_name = TestUtils.mock_post_with_auth_role(
+            self,
+            'industry_user',
+            content_type_json,
+            payload_with_duplicate_legal_name,
+            f"{self.user_operator_endpoint}/operator",
+        )
+        assert post_response_duplicate_legal_name.status_code == 400
+        assert post_response_duplicate_legal_name.json() == {
+            'message': 'Legal Name: Operator with this Legal name already exists.'
+        }
+
+        # duplicate BC corporate registry number
+        payload_with_duplicate_bc_corporate_registry_number = {
+            "legal_name": "a name",
+            "cra_business_number": 963852741,
+            "bc_corporate_registry_number": "aaa1234321",
+            "business_structure": BusinessStructure.objects.first().pk,
+            "physical_street_address": "test physical street address",
+            "physical_municipality": "test physical municipality",
+            "physical_province": "BC",
+            "physical_postal_code": "H0H0H0",
+            "mailing_address_same_as_physical": True,
+            "operator_has_parent_operators": False,
+        }
+        post_response_duplicate_bc_corporate_registry_number = TestUtils.mock_post_with_auth_role(
+            self,
+            'industry_user',
+            content_type_json,
+            payload_with_duplicate_bc_corporate_registry_number,
+            f"{self.user_operator_endpoint}/operator",
+        )
+        assert post_response_duplicate_bc_corporate_registry_number.status_code == 400
+        assert post_response_duplicate_bc_corporate_registry_number.json() == {
+            'message': 'Bc Corporate Registry Number: Operator with this Bc corporate registry number already exists.'
+        }
+
+    def test_create_operator_and_user_operator_with_parent_operators(self):
+        baker.make(BusinessStructure, name="BC Corporation")
 
         mock_payload_2 = {
             "legal_name": "New Operator",
@@ -720,7 +776,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         assert parent_operators[1].operator_index == 2
 
     def test_put_user_operator_operator(self):
-        operator = baker.make(Operator, bc_corporate_registry_number="abc1234567", created_by=self.user)
+        operator = baker.make(Operator, bc_corporate_registry_number="hij1234567", created_by=self.user)
         user_operator = baker.make(
             UserOperator, user=self.user, operator=operator, role=UserOperator.Roles.ADMIN, created_by=self.user
         )
@@ -766,7 +822,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         assert operator.updated_at is not None
 
     def test_put_user_operator_operator_malformed_data(self):
-        operator = baker.make(Operator, bc_corporate_registry_number="abc1234567")
+        operator = baker.make(Operator, bc_corporate_registry_number="lnm1234567")
         put_response = TestUtils.mock_put_with_auth_role(
             self,
             'industry_user',
@@ -776,3 +832,87 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         )
 
         assert put_response.status_code == 422
+
+    def test_put_duplicates_not_allowed(self):
+        baker.make(
+            Operator, legal_name='Legal Name', bc_corporate_registry_number="aaa1234321", cra_business_number=55555
+        )
+
+        operator = baker.make(Operator, bc_corporate_registry_number="yyy1234321")
+
+        user_operator = baker.make(UserOperator, user=self.user, operator=operator, role=UserOperator.Roles.ADMIN)
+
+        # duplicate CRA business number
+        # payload_with_duplicate_cra_business_number = {
+        #     "legal_name": "a Name",
+        #     "cra_business_number": 55555,
+        #     "bc_corporate_registry_number": "adh1234321",
+        #     "business_structure": BusinessStructure.objects.first().pk,
+        #     "physical_street_address": "test physical street address",
+        #     "physical_municipality": "test physical municipality",
+        #     "physical_province": "BC",
+        #     "physical_postal_code": "H0H0H0",
+        #     "mailing_address_same_as_physical": True,
+        #     "operator_has_parent_operators": False,
+        # }
+        # put_response_duplicate_cra_business_number = TestUtils.mock_put_with_auth_role(
+        #     self,
+        #     'industry_user',
+        #     content_type_json,
+        #     payload_with_duplicate_cra_business_number,
+        #     f"{base_endpoint}user-operator/operator/{user_operator.id}",
+        # )
+        # assert put_response_duplicate_cra_business_number.status_code == 400
+        # assert put_response_duplicate_cra_business_number.json() == {
+        #     'message': 'Operator with this CRA Business Number already exists.'
+        # }
+
+        # duplicate legal name
+        payload_with_duplicate_bc_corporate_registry_number = {
+            "legal_name": "Legal Name",
+            "cra_business_number": 963852741,
+            "bc_corporate_registry_number": "adh1234321",
+            "business_structure": BusinessStructure.objects.first().pk,
+            "physical_street_address": "test physical street address",
+            "physical_municipality": "test physical municipality",
+            "physical_province": "BC",
+            "physical_postal_code": "H0H0H0",
+            "mailing_address_same_as_physical": True,
+            "operator_has_parent_operators": False,
+        }
+        put_response_duplicate_legal_name = TestUtils.mock_put_with_auth_role(
+            self,
+            'industry_user',
+            content_type_json,
+            payload_with_duplicate_bc_corporate_registry_number,
+            f"{base_endpoint}user-operator/operator/{user_operator.id}",
+        )
+        assert put_response_duplicate_legal_name.status_code == 400
+        assert put_response_duplicate_legal_name.json() == {
+            'message': 'Legal Name: Operator with this Legal name already exists.'
+        }
+
+        # duplicate BC corporate registry number
+        # payload_with_duplicate_bc_corporate_registry_number = {
+        #     "legal_name": "a name",
+        #     "cra_business_number": 963852741,
+        #     "bc_corporate_registry_number": "aaa1234321",
+        #     "business_structure": BusinessStructure.objects.first().pk,
+        #     "physical_street_address": "test physical street address",
+        #     "physical_municipality": "test physical municipality",
+        #     "physical_province": "BC",
+        #     "physical_postal_code": "H0H0H0",
+        #     "mailing_address_same_as_physical": True,
+        #     "operator_has_parent_operators": False,
+        # }
+        # put_response_duplicate_bc_corporate_registry_number = TestUtils.mock_put_with_auth_role(
+        #     self,
+        #     'industry_user',
+        #     content_type_json,
+        #     payload_with_duplicate_bc_corporate_registry_number,
+        #     f"{base_endpoint}user-operator/operator/{user_operator.id}",
+        # )
+        # assert put_response_duplicate_bc_corporate_registry_number.status_code == 400
+        # assert put_response_duplicate_bc_corporate_registry_number.json() == {
+        #     'message': 'Bc Corporate Registry Number: Operator with this Bc corporate registry number already exists.'
+        # }

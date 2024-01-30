@@ -298,14 +298,12 @@ def create_operator_and_user_operator(request, payload: UserOperatorOperatorIn):
         # check if operator with this CRA Business Number already exists
         if existing_operator:
             return 400, {"message": "Operator with this CRA Business Number already exists."}
-
         operator_instance: Operator = Operator(
             cra_business_number=cra_business_number,
             bc_corporate_registry_number=payload.bc_corporate_registry_number,
             # treating business_structure as a foreign key
             business_structure=payload.business_structure,
         )
-
         # save operator data
         return save_operator(payload, operator_instance, user)
 
