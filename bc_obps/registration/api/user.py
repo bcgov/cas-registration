@@ -49,6 +49,8 @@ def create_user_profile(request, identity_provider: str, payload: UserIn):
         role: AppRole = role_mapping.get(identity_provider, None)
         new_user = User.objects.create(
             user_guid=json.loads(request.headers.get('Authorization')).get('user_guid'),
+            business_guid=payload.business_guid,
+            bceid_business_name=payload.bceid_business_name,
             app_role=role,
             first_name=payload.first_name,
             last_name=payload.last_name,
