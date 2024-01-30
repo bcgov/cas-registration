@@ -19,56 +19,44 @@ const login = async (
   page: any,
   userName: string,
   password: string,
-  role: string
+  role: string,
 ) => {
   try {
+    // 🕒 Log navigation details
+    page.on("request", (request: { url: () => any }) => {
+      // eslint-disable-next-line no-console
+      console.log(`Navigating to: ${request.url()}`);
+    });
     // 🛸 Navigate to the home page
-    // eslint-disable-next-line no-console
-    console.log(`Navigating to the home page...${url}`);
     await navigateAndWaitForLoad(page, url);
 
     // Determine the login button based on the user role
-    //TODO
+    // 🚩🚩🚩🚩 TODO 🚩🚩🚩🚩
     let loginButton = LoginLink.INDUSTRY_USER;
 
     // Click the login button
-    // eslint-disable-next-line no-console
-    console.log(`Clicking the login button: ${loginButton}`);
     await page.getByRole("button", { name: loginButton }).click();
 
+    // 🕒 Wait for the navigation to complete
+    await page.waitForNavigation();
+
     // 🕒 Wait for the user field to be present
-    // eslint-disable-next-line no-console
-    console.log("Waiting for the user field to be present...");
     const userField = await page.waitForSelector("#user");
-    // 🔍 Assert that the field is available
-    expect(userField).not.toBeNull();
-    // Fill the field
     // eslint-disable-next-line no-console
     console.log(`Filling user field with: ${userName}`);
+    // Fill the user field
     await userField.fill(userName);
-
-    // 🕒 Wait for the password field to be present
     // eslint-disable-next-line no-console
-    console.log("Waiting for the password field to be present...");
-    const pwField = await page.waitForSelector("#password");
-    // 🔍 Assert that the field is available
-    expect(pwField).not.toBeNull();
-    // Fill the field
     console.log("Filling password field...");
-    await pwField.fill(password);
+    // Fill the pw field
+    await page.getByLabel("Password").fill(password);
 
-    // 🕒 Wait for the "Continue" button to be present
     // eslint-disable-next-line no-console
-    console.log("Waiting for the 'Continue' button to be present...");
-    const continueButton = await page.waitForSelector(
-      'input[type="submit"][name="btnSubmit"].btn.btn-primary'
-    );
-    // 🔍 Assert that the button is available
-    expect(continueButton).not.toBeNull();
-    // Click the "Continue" button
-    // eslint-disable-next-line no-console
-    console.log("Clicking the 'Continue' button...");
-    await continueButton.click();
+    console.log("Clicking the Continue button");
+    await page.getByRole("button", { name: "Continue" }).click();
+
+    // 🕒 Wait for the navigation to complete
+    await page.waitForNavigation();
 
     // 🕒 Wait for the home page profile navigation link to be present
     // eslint-disable-next-line no-console

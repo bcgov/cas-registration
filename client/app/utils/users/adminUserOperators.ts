@@ -20,7 +20,7 @@ export async function getExternalDashboardUsersTileData(): Promise<
     return await actionHandler(
       `registration/user-operator-list-from-user`,
       "GET",
-      "/dashboard/users"
+      "/dashboard/users",
     );
   } catch (error) {
     throw error;
