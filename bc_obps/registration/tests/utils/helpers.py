@@ -17,6 +17,7 @@ from model_bakery import baker
 from registration.schema import OperationCreateIn, OperationUpdateIn, UserOperatorContactIn, UserOperatorOperatorIn
 from django.test import Client
 from phonenumber_field.modelfields import PhoneNumberField
+from registration.tests.utils.bakers import document_baker, operation_baker, operator_baker, user_operator_baker
 
 pytestmark = pytest.mark.django_db
 
@@ -62,11 +63,10 @@ class TestUtils:
 
     @staticmethod
     def mock_OperationCreateIn(operator: Operator = None):
-        naics_code = baker.make(NaicsCode, id=1, naics_code=123456, naics_description='desc')
         reporting_activities = baker.make(ReportingActivity, _quantity=2)
         regulated_products = baker.make(RegulatedProduct, _quantity=2)
         point_of_contact = baker.make(Contact)
-        operator = operator or baker.make(Operator)
+        operator = operator or operator_baker()
         return OperationCreateIn(
             name='Springfield Nuclear Power Plant',
             type='Single Facility Operation',
@@ -86,10 +86,10 @@ class TestUtils:
     def mock_OperationUpdateIn():
         naics_code = baker.make(NaicsCode, naics_code=123456, naics_description='desc')
         point_of_contact = baker.make(Contact)
-        operator = baker.make(Operator)
+        operator = operator_baker()
         activity = baker.make(ReportingActivity)
         product = baker.make(RegulatedProduct)
-        operation = baker.make(Operation)
+        operation = operation_baker()
         operation.reporting_activities.set([activity.id])
         operation.regulated_products.set([product.id])
 
@@ -138,7 +138,7 @@ class TestUtils:
 
     @staticmethod
     def mock_UserOperatorContactIn():
-        user_operator = baker.make(UserOperator)
+        user_operator = user_operator_baker()
         address = baker.make(
             Address, street_address='123 st st', municipality='victoria', province='BC', postal_code='h0h0h0'
         )
