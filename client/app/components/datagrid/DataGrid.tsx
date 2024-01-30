@@ -118,7 +118,9 @@ const DataGrid: React.FC<Props> = ({ rows, columns, cntxt }) => {
         rows={rows}
         columns={customColumns}
         showCellVerticalBorder
-        hideFooter
+        initialState={{
+          pagination: { paginationModel: { pageSize: 20 } },
+        }}
         // Set the row height to "auto" so that the row height will adjust to the content
         getRowHeight={() => "auto"}
         slots={{
@@ -127,9 +129,6 @@ const DataGrid: React.FC<Props> = ({ rows, columns, cntxt }) => {
           columnUnsortedIcon: SortIcon,
         }}
         sx={{
-          "& .MuiSvgIcon-root": {
-            color: "white",
-          },
           "& .MuiDataGrid-columnHeaderDraggableContainer": {
             minWidth: "100%",
           },
@@ -158,6 +157,10 @@ const DataGrid: React.FC<Props> = ({ rows, columns, cntxt }) => {
           },
           "& .MuiDataGrid-columnHeaderTitleContainer": {
             justifyContent: "space-between",
+            "& .MuiSvgIcon-root": {
+              // Make the sort icon white in the title containers
+              color: "white",
+            },
           },
           "& .MuiDataGrid-columnHeaderTitleContainerContent": {
             flex: 1,
