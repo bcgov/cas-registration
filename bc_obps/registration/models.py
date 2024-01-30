@@ -328,6 +328,8 @@ class Contact(UserAndContactCommonInfo, TimeStampedModel):
     )
     address = models.ForeignKey(
         Address,
+        blank=True,
+        null=True,
         on_delete=models.DO_NOTHING,
         db_comment="Foreign key to the address of a user or contact",
         related_name="contacts",

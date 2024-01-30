@@ -169,7 +169,8 @@ def create_operation(request, payload: OperationCreateIn):
 
     operation = Operation.objects.create(**payload_dict, operator_id=payload.operator, naics_code_id=payload.naics_code)
     operation.regulated_products.set(payload.regulated_products)
-    operation.reporting_activities.set(payload.reporting_activities)
+    # Not needed for MVP
+    # operation.reporting_activities.set(payload.reporting_activities)
     operation.set_create_or_update(modifier=user)
 
     if payload.operation_has_multiple_operators:
@@ -183,7 +184,7 @@ def create_operation(request, payload: OperationCreateIn):
 
 @router.put("/operations/{operation_id}", response={200: OperationUpdateOut, codes_4xx: Message})
 @authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles())
-def update_operation(request, operation_id: int, submit: str, payload: OperationUpdateIn):
+def update_operation(request, operation_id: int, submit: str, save_contact: str, payload: OperationUpdateIn):
     user: User = request.current_user
     user_operator = UserOperator.objects.filter(user_id=user.user_guid).first()
     # if there's no user_operator or operator, then the user hasn't requested access to the operator
@@ -200,28 +201,12 @@ def update_operation(request, operation_id: int, submit: str, payload: Operation
     operation.operator_id = payload.operator
     operation.naics_code_id = payload.naics_code
 
-    point_of_contact_address_id = None
     point_of_contact_id = payload.point_of_contact_id or None
 
-    # if there's contact info included in the payload
-    # NOTE: this is a tacky way of checking to see if the Application Lead section of the form has been populated yet, but it's the
-    # best solution we have available at the moment. Once the user is on the second page of the form, street_address is a required field
-    # enforced on the frontend.
-    if payload.street_address is not None:
-        # # create or update the Address for the point of contact
-        address, _ = Address.objects.update_or_create(
-            id=point_of_contact_address_id,
-            defaults={
-                "street_address": payload.street_address,
-                "municipality": payload.municipality,
-                "province": payload.province,
-                "postal_code": payload.postal_code,
-            },
-        )
+    if save_contact == "true":
+        is_external_point_of_contact = payload.is_external_point_of_contact
 
-        add_another_user_for_point_of_contact = payload.add_another_user_for_point_of_contact
-
-        if add_another_user_for_point_of_contact is False:  # the point of contact is the user
+        if is_external_point_of_contact is False:  # the point of contact is the user
             poc, _ = Contact.objects.update_or_create(
                 id=point_of_contact_id,
                 defaults={
@@ -231,13 +216,12 @@ def update_operation(request, operation_id: int, submit: str, payload: Operation
                     "email": payload.email,
                     "phone_number": payload.phone_number,
                     "business_role": BusinessRole.objects.get(role_name="Operation Registration Lead"),
-                    "address": address,
                 },
             )
             poc.set_create_or_update(modifier=user)
             operation.point_of_contact = poc
 
-        elif add_another_user_for_point_of_contact is True:  # the point of contact is an external user
+        elif is_external_point_of_contact is True:  # the point of contact is an external user
             external_poc, _ = Contact.objects.update_or_create(
                 id=point_of_contact_id,
                 defaults={
@@ -247,7 +231,6 @@ def update_operation(request, operation_id: int, submit: str, payload: Operation
                     "email": payload.external_point_of_contact_email,
                     "phone_number": payload.external_point_of_contact_phone_number,
                     "business_role": BusinessRole.objects.get(role_name="Operation Registration Lead"),
-                    "address": address,
                 },
             )
             external_poc.set_create_or_update(modifier=user)

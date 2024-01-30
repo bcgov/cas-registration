@@ -2,7 +2,6 @@ import OperationsForm, {
   OperationsFormData,
 } from "@/app/components/form/OperationsForm";
 import { operationSchema } from "@/app/utils/jsonSchema/operations";
-import { BusinessStructure } from "@/app/components/routes/select-operator/form/types";
 import { UserProfileFormData } from "@/app/components/form/formDataTypes";
 import { RJSFSchema } from "@rjsf/utils";
 import { actionHandler } from "@/app/utils/actions";
@@ -47,27 +46,31 @@ export async function getRegulatedProducts() {
     throw error;
   }
 }
-export async function getReportingActivities() {
-  try {
-    return await actionHandler(
-      "registration/reporting_activities",
-      "GET",
-      "/operations",
-    );
-  } catch (error) {
-    // Handle the error here or rethrow it to handle it at a higher level
-    throw error;
-  }
-}
 
+// Commenting out this field for MVP
+// export async function getReportingActivities() {
+//   try {
+//     return await actionHandler(
+//       "registration/reporting_activities",
+//       "GET",
+//       "/operations",
+//     );
+//   } catch (error) {
+//     // Handle the error here or rethrow it to handle it at a higher level
+//     throw error;
+//   }
+// }
+
+// Commenting out as we are disabling the multiple operators feature
 // 🛠️ Function to fetch the business structures
-async function getBusinessStructures() {
-  return actionHandler(
-    `registration/business_structures`,
-    "GET",
-    `/dashboard/select-operator/user-operator`,
-  );
-}
+// Commenting out as we are disabling the multiple operators feature
+// async function getBusinessStructures() {
+//   return actionHandler(
+//     `registration/business_structures`,
+//     "GET",
+//     `/dashboard/select-operator/user-operator`,
+//   );
+// }
 
 // 🛠️ Function to fetch an operation by ID
 async function getOperation(id: number) {
@@ -91,11 +94,11 @@ export const createOperationSchema = (
     id: number;
     name: string;
   }[],
-  reportingActivities: {
-    id: number;
-    name: string;
-  }[],
-  businessStructureList: { id: string; label: string }[],
+  // reportingActivities: {
+  //   id: number;
+  //   name: string;
+  // }[],
+  /*   businessStructureList: { id: string; label: string }[], */
 ) => {
   const localSchema = JSON.parse(JSON.stringify(schema));
   // naics codes
@@ -118,27 +121,28 @@ export const createOperationSchema = (
       regulatedProducts.map((product) => product?.name);
   }
   // reporting activities
-  if (Array.isArray(reportingActivities)) {
-    localSchema.properties.operationPage1.properties.reporting_activities.items.enum =
-      reportingActivities.map((activity) => activity?.id);
-
-    localSchema.properties.operationPage1.properties.reporting_activities.items.enumNames =
-      reportingActivities.map((activity) => activity?.name);
-  }
+  // if (Array.isArray(reportingActivities)) {
+  //   localSchema.properties.operationPage1.properties.reporting_activities.items.enum =
+  //     reportingActivities.map((activity) => activity?.id);
+  //
+  //   localSchema.properties.operationPage1.properties.reporting_activities.items.enumNames =
+  //     reportingActivities.map((activity) => activity?.name);
+  // }
   // business structures
-  const businessStructureOptions = businessStructureList?.map(
-    (businessStructure) => ({
-      type: "string",
-      title: businessStructure.label,
-      enum: [businessStructure.id],
-      value: businessStructure.id,
-    }),
-  );
-
-  if (Array.isArray(businessStructureOptions)) {
-    localSchema.properties.operationPage1.allOf[2].then.properties.multiple_operators_array.items.properties.mo_business_structure.anyOf =
-      businessStructureOptions;
-  }
+  // Commenting out as we are disabling the multiple operators feature
+  // const businessStructureOptions = businessStructureList?.map(
+  //   (businessStructure) => ({
+  //     type: "string",
+  //     title: businessStructure.label,
+  //     enum: [businessStructure.id],
+  //     value: businessStructure.id,
+  //   }),
+  // );
+  //
+  // if (Array.isArray(businessStructureOptions)) {
+  //   localSchema.properties.operationPage1.allOf[2].then.properties.multiple_operators_array.items.properties.mo_business_structure.anyOf =
+  //     businessStructureOptions;
+  // }
 
   return localSchema;
 };
@@ -147,8 +151,9 @@ export const createOperationSchema = (
 export default async function Operation({ numRow }: { numRow?: number }) {
   const codes = await getNaicsCodes();
   const products = await getRegulatedProducts();
-  const activities = await getReportingActivities();
-  const businessStructures: BusinessStructure[] = await getBusinessStructures();
+  /*   const activities = await getReportingActivities(); */
+  // Commenting out as we are disabling the multiple operators feature
+  // const businessStructures: BusinessStructure[] = await getBusinessStructures();
 
   let operation: OperationInt | undefined;
 
@@ -157,12 +162,13 @@ export default async function Operation({ numRow }: { numRow?: number }) {
     operation = await getOperation(numRow);
   }
 
-  const businessStructuresList = businessStructures?.map(
-    (businessStructure: BusinessStructure) => ({
-      id: businessStructure.name,
-      label: businessStructure.name,
-    }),
-  );
+  // Commenting out as we are disabling the multiple operators feature
+  // const businessStructuresList = businessStructures?.map(
+  //   (businessStructure: BusinessStructure) => ({
+  //     id: businessStructure.name,
+  //     label: businessStructure.name,
+  //   }),
+  // );
 
   let userProfileFormData: UserProfileFormData | { error: string } =
     await getUserFormData();
@@ -223,16 +229,19 @@ export default async function Operation({ numRow }: { numRow?: number }) {
     operation &&
     [Status.DECLINED, Status.APPROVED].includes(operation?.status as Status);
 
+  const pointOfContactEmail = operation?.email ?? undefined;
+
   const formData = {
-    ...userProfileFormData,
     ...operation,
+    // Add the correct point of contact data if there is no point of contact data
+    ...(!pointOfContactEmail && {
+      ...userProfileFormData,
+    }),
   };
   const userEmail = (userProfileFormData as UserProfileFormData)?.email;
-  const pointOfContactEmail = formData?.email;
-  // If the current user is the point of contact, we want to show the point of contact fields
-  const isUserPointOfContact =
-    userEmail === pointOfContactEmail && pointOfContactEmail !== undefined;
-
+  // If tpoint of contact data is an external user, we want to populate the external point of contact fields
+  const isExternalPointOfContact =
+    userEmail !== pointOfContactEmail && pointOfContactEmail !== undefined;
   // empty array is not a valid value for multiple_operators_array as empty default should be [{}]
   // to avoid buggy behaviour opening
   const isMultipleOperatorsArray =
@@ -244,33 +253,18 @@ export default async function Operation({ numRow }: { numRow?: number }) {
   const transformedFormData = {
     ...formData,
     // Add the correct point of contact data
-    ...(isUserPointOfContact
-      ? {
-          first_name: formData?.first_name,
-          last_name: formData?.last_name,
-          email: formData?.email,
-          phone_number: formData?.phone_number,
-          position_title: formData?.position_title,
-          street_address: formData?.street_address,
-          muncipality: formData?.muncipality,
-          province: formData?.province,
-          postal_code: formData?.postal_code,
-        }
-      : {
-          external_point_of_contact_first_name: formData?.first_name,
-          external_point_of_contact_last_name: formData?.last_name,
-          external_point_of_contact_email: formData?.email,
-          external_point_of_contact_phone_number: formData?.phone_number,
-          external_point_of_contact_position_title: formData?.position_title,
-          external_point_of_contact_street_address: formData?.street_address,
-          external_point_of_contact_muncipality: formData?.muncipality,
-          external_point_of_contact_province: formData?.province,
-          external_point_of_contact_postal_code: formData?.postal_code,
-        }),
+
+    ...(isExternalPointOfContact && {
+      external_point_of_contact_first_name: formData?.first_name,
+      external_point_of_contact_last_name: formData?.last_name,
+      external_point_of_contact_email: formData?.email,
+      external_point_of_contact_phone_number: formData?.phone_number,
+      external_point_of_contact_position_title: formData?.position_title,
+    }),
 
     "Did you submit a GHG emissions report for reporting year 2022?":
       formData?.previous_year_attributable_emissions ? true : false,
-    add_another_user_for_point_of_contact: !isUserPointOfContact,
+    is_external_point_of_contact: isExternalPointOfContact,
     // fix for null values not opening the multiple operators form if loading a previously saved form
     multiple_operators_array: isMultipleOperatorsArray
       ? formData?.multiple_operators_array
@@ -292,8 +286,8 @@ export default async function Operation({ numRow }: { numRow?: number }) {
           operationSchema,
           codes,
           products,
-          activities,
-          businessStructuresList,
+          // activities,
+          // businessStructuresList,
         )}
         formData={transformedFormData as OperationsFormData}
       />
