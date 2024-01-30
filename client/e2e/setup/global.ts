@@ -129,14 +129,14 @@ export default async function globalSetup(config: FullConfig) {
       case UserRole.NEW_USER:
         user = process.env[role + "_USERNAME"];
         pw = process.env[role + "_PASSWORD"];
+        // 🔑 Authenticate this user save session role to storageState
+        await setupAuth(
+          user || "",
+          pw || "",
+          process.env[role + "_STORAGE"] || "",
+          value
+        );
         break;
     }
-    // 🔑 Authenticate this user save session role to storageState
-    await setupAuth(
-      user || "",
-      pw || "",
-      process.env[role + "_STORAGE"] || "",
-      value
-    );
   }
 }
