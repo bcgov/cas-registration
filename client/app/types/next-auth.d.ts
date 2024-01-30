@@ -20,6 +20,8 @@ declare module "next-auth/jwt" {
     app_role?: string;
     given_name?: string;
     family_name?: string;
+    bceid_business_name: string | undefined;
+    bceid_business_guid: string | undefined;
   }
 }
 
@@ -29,6 +31,8 @@ declare module "next-auth" {
     identity_provider: string | undefined;
     user: {
       user_guid: string | undefined;
+      bceid_business_name: string | undefined;
+      bceid_business_guid: string | undefined;
       app_role?: string;
       given_name?: string;
       family_name?: string;
