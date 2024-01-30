@@ -450,15 +450,13 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         assert response_json == {"detail": "Not Found"}
 
     def test_duplicates_not_allowed(self):
-        baker.make(
-            Operator, legal_name='Legal Name', bc_corporate_registry_number="aaa1234321", cra_business_number=55555
-        )
+        operator = operator_baker()
 
         # duplicate CRA business number
         payload_with_duplicate_cra_business_number = {
             "legal_name": "a Legal Name",
             "trade_name": "test trade name",
-            "cra_business_number": 55555,
+            "cra_business_number": operator.cra_business_number,
             "bc_corporate_registry_number": "adh1234321",
             "business_structure": BusinessStructure.objects.first().pk,
             "physical_street_address": "test physical street address",
@@ -482,7 +480,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
 
         # duplicate legal name
         payload_with_duplicate_legal_name = {
-            "legal_name": "Legal Name",
+            "legal_name": operator.legal_name,
             "cra_business_number": 963852741,
             "bc_corporate_registry_number": "adh1234321",
             "business_structure": BusinessStructure.objects.first().pk,
@@ -509,7 +507,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         payload_with_duplicate_bc_corporate_registry_number = {
             "legal_name": "a name",
             "cra_business_number": 963852741,
-            "bc_corporate_registry_number": "aaa1234321",
+            "bc_corporate_registry_number": operator.bc_corporate_registry_number,
             "business_structure": BusinessStructure.objects.first().pk,
             "physical_street_address": "test physical street address",
             "physical_municipality": "test physical municipality",
@@ -531,8 +529,6 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         }
 
     def test_create_operator_and_user_operator_with_parent_operators(self):
-        baker.make(BusinessStructure, name="BC Corporation")
-
         mock_payload_2 = {
             "legal_name": "New Operator",
             "trade_name": "New Operator Trade Name",
@@ -761,18 +757,15 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         assert put_response.status_code == 422
 
     def test_put_duplicates_not_allowed(self):
-        baker.make(
-            Operator, legal_name='Legal Name', bc_corporate_registry_number="aaa1234321", cra_business_number=55555
-        )
+        operator_1 = operator_baker()
+        operator_2 = operator_baker()
 
-        operator = baker.make(Operator, bc_corporate_registry_number="yyy1234321")
-
-        user_operator = baker.make(UserOperator, user=self.user, operator=operator, role=UserOperator.Roles.ADMIN)
+        user_operator = baker.make(UserOperator, user=self.user, operator=operator_2, role=UserOperator.Roles.ADMIN)
 
         # duplicate CRA business number
         # payload_with_duplicate_cra_business_number = {
         #     "legal_name": "a Name",
-        #     "cra_business_number": 55555,
+        #     "cra_business_number": operator_1.cra_business_number,
         #     "bc_corporate_registry_number": "adh1234321",
         #     "business_structure": BusinessStructure.objects.first().pk,
         #     "physical_street_address": "test physical street address",
@@ -795,8 +788,8 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         # }
 
         # duplicate legal name
-        payload_with_duplicate_bc_corporate_registry_number = {
-            "legal_name": "Legal Name",
+        payload_with_duplicate_legal_name = {
+            "legal_name": operator_1.legal_name,
             "cra_business_number": 963852741,
             "bc_corporate_registry_number": "adh1234321",
             "business_structure": BusinessStructure.objects.first().pk,
@@ -811,7 +804,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
             self,
             'industry_user',
             content_type_json,
-            payload_with_duplicate_bc_corporate_registry_number,
+            payload_with_duplicate_legal_name,
             f"{base_endpoint}user-operator/operator/{user_operator.id}",
         )
         assert put_response_duplicate_legal_name.status_code == 400
@@ -823,7 +816,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         # payload_with_duplicate_bc_corporate_registry_number = {
         #     "legal_name": "a name",
         #     "cra_business_number": 963852741,
-        #     "bc_corporate_registry_number": "aaa1234321",
+        #     "bc_corporate_registry_number": operator_1.bc_corporate_registry_number,
         #     "business_structure": BusinessStructure.objects.first().pk,
         #     "physical_street_address": "test physical street address",
         #     "physical_municipality": "test physical municipality",
