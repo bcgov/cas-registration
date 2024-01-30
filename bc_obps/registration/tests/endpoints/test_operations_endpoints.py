@@ -103,7 +103,7 @@ class TestOperationsEndpoint(CommonTestSetup):
                 role,
                 content_type_json,
                 mock_operation.json(),
-                self.endpoint + "/" + str(operation.id) + "?submit=false",
+                self.endpoint + "/" + str(operation.id) + "?submit=false&save_contact=false",
             )
             assert response.status_code == 401
 
@@ -434,7 +434,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             'industry_user',
             content_type_json,
             mock_operation.json(),
-            self.endpoint + "/" + str(operation.id) + "?submit=false",
+            self.endpoint + "/" + str(operation.id) + "?submit=false&save_contact=false",
         )
         assert response.status_code == 200
         assert response.json() == {"name": "New name"}
@@ -463,7 +463,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             'industry_user',
             content_type_json,
             mock_operation.json(),
-            self.endpoint + "/" + str(operation.id) + "?submit=true",
+            self.endpoint + "/" + str(operation.id) + "?submit=true&save_contact=false",
         )
 
         assert response.status_code == 200
@@ -482,7 +482,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             'industry_user',
             content_type_json,
             {"garbage": "i am bad data"},
-            self.endpoint + "/" + str(operation.id) + "?submit=false",
+            self.endpoint + "/" + str(operation.id) + "?submit=false&save_contact=false",
         )
 
         assert response.status_code == 422
@@ -505,7 +505,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             operation_has_multiple_operators=False,
             point_of_contact=contact2.id,
             operator_id=operator.id,
-            add_another_user_for_point_of_contact=False,
+            is_external_point_of_contact=False,
             street_address='19 Evergreen Terrace',
             municipality='Springfield',
             province='BC',
@@ -522,7 +522,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             'industry_user',
             content_type_json,
             update.json(),
-            self.endpoint + '/' + str(operation.id) + "?submit=true",
+            self.endpoint + '/' + str(operation.id) + "?submit=true&save_contact=true",
         )
         assert put_response.status_code == 200
 
@@ -547,7 +547,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             operation_has_multiple_operators=False,
             documents=[],
             operator_id=operator.id,
-            add_another_user_for_point_of_contact=True,
+            is_external_point_of_contact=True,
             external_point_of_contact_first_name='Bart',
             external_point_of_contact_last_name='Simpson',
             external_point_of_contact_position_title='Scoundrel',
@@ -569,7 +569,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             'industry_user',
             content_type_json,
             update.json(),
-            self.endpoint + '/' + str(operation.id) + "?submit=true",
+            self.endpoint + '/' + str(operation.id) + "?submit=true&save_contact=true",
         )
         assert put_response.status_code == 200
 
@@ -615,7 +615,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             'industry_user',
             content_type_json,
             update.json(),
-            self.endpoint + '/' + str(operation.id) + "?submit=true",
+            self.endpoint + '/' + str(operation.id) + "?submit=true&save_contact=false",
         )
         assert put_response.status_code == 200
         assert Operation.objects.count() == 1
