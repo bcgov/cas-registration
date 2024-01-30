@@ -9,13 +9,9 @@ variable "region" {
   default = "NORTHAMERICA-NORTHEAST1"
 }
 
-variable "openshift_nameplate" {
-  description = "The nameplate of the OpenShift namespace"
+variable "openshift_namespace" {
+  description = "The namespace of the OpenShift cluster"
   type = string
-}
-
-variable "openshift_environment" {
-  description = "The environment of the OpenShift namepsace (dev, test, prod)"
 }
 
 variable "kubernetes_host" {
