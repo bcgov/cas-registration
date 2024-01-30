@@ -26,17 +26,19 @@ export async function getExternalDashboardUsersTileData(): Promise<
     throw error;
   }
 }
-
 export async function processExternalDashboardUsersTileData() {
   const tileData = await getExternalDashboardUsersTileData();
 
-  const transformedTileData = tileData.map((userOperator) => {
-    userOperator.status = userOperator.status
-      ? Status[userOperator.status.toUpperCase() as keyof typeof Status]
-      : Status.DRAFT;
+  // Ensure tileData is an array before using map
+  const transformedTileData = Array.isArray(tileData)
+    ? tileData.map((userOperator) => {
+        userOperator.status = userOperator.status
+          ? Status[userOperator.status.toUpperCase() as keyof typeof Status]
+          : Status.DRAFT;
 
-    return userOperator;
-  });
+        return userOperator;
+      })
+    : [];
 
   // 🤳Identify current admin user in the list
   const token = await getToken();
@@ -44,7 +46,11 @@ export async function processExternalDashboardUsersTileData() {
   const selfIndex = transformedTileData.findIndex((userOperator) => {
     return userOperator.user.user_guid.replace(/-/g, "") === uid;
   });
-  transformedTileData[selfIndex].status = Status.MYSELF;
+
+  // Ensure selfIndex is within the valid range before modifying the array
+  if (selfIndex !== -1 && selfIndex < transformedTileData.length) {
+    transformedTileData[selfIndex].status = Status.MYSELF;
+  }
 
   return transformedTileData;
 }
