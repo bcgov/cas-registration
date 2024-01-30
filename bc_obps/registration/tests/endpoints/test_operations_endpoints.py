@@ -671,6 +671,8 @@ class TestOperationsEndpoint(CommonTestSetup):
             submission_date=fake_timestamp_from_past,
         )
 
+        operation.save()
+
         print(operation.__dict__)
 
         update = OperationUpdateIn(
