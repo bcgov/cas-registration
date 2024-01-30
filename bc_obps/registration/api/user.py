@@ -1,4 +1,5 @@
 import json
+from django.conf import settings
 from registration.decorators import authorize
 from registration.models import AppRole, User
 from registration.schema import UserAppRoleOut, UserOut, UserIn, Message, UserOperator
@@ -40,7 +41,9 @@ def create_user_profile(request, identity_provider: str, payload: UserIn):
     try:
         # Determine the role based on the identity provider
         role_mapping = {
-            IdPs.IDIR.value: AppRole.objects.get(role_name="cas_pending"),
+            IdPs.IDIR.value: AppRole.objects.get(role_name="cas_admin")
+            if settings.BYPASS_ROLE_ASSIGNMENT
+            else AppRole.objects.get(role_name="cas_pending"),
             IdPs.BCEIDBUSINESS.value: AppRole.objects.get(role_name="industry_user"),
         }
         role: AppRole = role_mapping.get(identity_provider, None)
