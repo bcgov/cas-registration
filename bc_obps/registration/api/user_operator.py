@@ -135,7 +135,7 @@ def save_operator(payload: UserOperatorOperatorIn, operator_instance: Operator, 
         else:
             # Only set role if created so that we don't create a new UserOperator instance if one already exists
             user_operator = UserOperator.objects.create(
-                user=user, operator=created_or_updated_operator_instance, role=UserOperator.Roles.ADMIN
+                user=user, operator=created_or_updated_operator_instance, role=UserOperator.Roles.REPORTER
             )
             user_operator.set_create_or_update(modifier=user)
         return 200, {"user_operator_id": user_operator.id}
