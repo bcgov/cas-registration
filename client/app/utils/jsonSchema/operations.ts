@@ -83,7 +83,7 @@ const operationPage1: RJSFSchema = {
       },
       then: {
         properties: {
-          bcghg_id: { type: "string", title: "BCGHG ID" },
+          bcghg_id: { type: "string", title: "BCGHG ID", readOnly: true },
         },
         required: [
           "previous_year_attributable_emissions",
