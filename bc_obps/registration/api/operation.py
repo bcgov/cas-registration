@@ -184,7 +184,7 @@ def create_operation(request, payload: OperationCreateIn):
 
 @router.put("/operations/{operation_id}", response={200: OperationUpdateOut, codes_4xx: Message})
 @authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles())
-def update_operation(request, operation_id: int, submit: str, payload: OperationUpdateIn):
+def update_operation(request, operation_id: int, submit: str, save_contact: str, payload: OperationUpdateIn):
     user: User = request.current_user
     user_operator = UserOperator.objects.filter(user_id=user.user_guid).first()
     # if there's no user_operator or operator, then the user hasn't requested access to the operator
@@ -203,11 +203,7 @@ def update_operation(request, operation_id: int, submit: str, payload: Operation
 
     point_of_contact_id = payload.point_of_contact_id or None
 
-    # if there's contact info included in the payload
-    # NOTE: this is a tacky way of checking to see if the Application Lead section of the form has been populated yet, but it's the
-    # best solution we have available at the moment. Once the user is on the second page of the form, first_name is a required field
-    # enforced on the frontend.
-    if payload.first_name is not None:
+    if save_contact == "true":
         is_external_point_of_contact = payload.is_external_point_of_contact
 
         if is_external_point_of_contact is False:  # the point of contact is the user
