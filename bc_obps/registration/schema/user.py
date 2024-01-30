@@ -7,7 +7,15 @@ from .address import AddressSchema
 class UserIn(ModelSchema):
     class Config:
         model = User
-        model_fields = ["first_name", "last_name", "position_title", "email", "phone_number", "bceid_business_name", "business_guid"]
+        model_fields = [
+            "first_name",
+            "last_name",
+            "position_title",
+            "email",
+            "phone_number",
+            "bceid_business_name",
+            "business_guid",
+        ]
 
 
 class UserAppRoleOut(ModelSchema):

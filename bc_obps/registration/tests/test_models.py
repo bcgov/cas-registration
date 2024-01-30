@@ -423,7 +423,7 @@ class UserModelTest(BaseTestCase):
             email="alicesmith@example.com",
             phone_number="9876543210",
             user_guid="3fa85f64-5717-4562-b3fc-2c963f66afa6",
-            business_guid=None
+            business_guid=None,
         )
 
         with self.assertRaises(IntegrityError):
@@ -439,7 +439,7 @@ class UserModelTest(BaseTestCase):
             phone_number="9876543210",
             user_guid="3fa85f64-5717-4562-b3fc-2c963f66afa6",
             business_guid="11111111-1111-1111-1111-111111111111",
-            bceid_business_name=None
+            bceid_business_name=None,
         )
 
         with self.assertRaises(IntegrityError):

@@ -452,7 +452,13 @@ class Migration(migrations.Migration):
                     models.UUIDField(db_comment='A GUID to identify the user', db_index=True),
                 ),
                 ('business_guid', models.UUIDField(db_comment='A GUID to identify the business')),
-                ('bceid_business_name', models.CharField(db_comment="The name of the business the user is associated with as per their Business BCeID account", max_length=1000)),
+                (
+                    'bceid_business_name',
+                    models.CharField(
+                        db_comment="The name of the business the user is associated with as per their Business BCeID account",
+                        max_length=1000,
+                    ),
+                ),
                 ('history_id', models.AutoField(primary_key=True, serialize=False)),
                 ('history_date', models.DateTimeField(db_index=True)),
                 ('history_change_reason', models.CharField(max_length=100, null=True)),
@@ -614,12 +620,16 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'user_guid',
-                    models.UUIDField(
-                        db_comment='A GUID to identify the user', primary_key=True, serialize=False
-                    ),
+                    models.UUIDField(db_comment='A GUID to identify the user', primary_key=True, serialize=False),
                 ),
                 ('business_guid', models.UUIDField(db_comment='A GUID to identify the business')),
-                ('bceid_business_name', models.CharField(db_comment="The name of the business the user is associated with as per their Business BCeID account", max_length=1000)),
+                (
+                    'bceid_business_name',
+                    models.CharField(
+                        db_comment="The name of the business the user is associated with as per their Business BCeID account",
+                        max_length=1000,
+                    ),
+                ),
                 (
                     'app_role',
                     models.ForeignKey(

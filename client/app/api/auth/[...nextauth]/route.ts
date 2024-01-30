@@ -46,8 +46,12 @@ export const authOptions: NextAuthOptions = {
         if (profile) {
           token.given_name = (profile as KeycloakProfile).given_name;
           token.family_name = (profile as KeycloakProfile).family_name;
-          token.bceid_business_name = (profile as KeycloakProfile).bceid_business_name
-          token.bceid_business_guid = (profile as KeycloakProfile).bceid_business_guid
+          token.bceid_business_name = (
+            profile as KeycloakProfile
+          ).bceid_business_name;
+          token.bceid_business_guid = (
+            profile as KeycloakProfile
+          ).bceid_business_guid;
         }
         //📌  Provider account (only available on sign in)
         if (account) {
@@ -181,8 +185,14 @@ export const authOptions: NextAuthOptions = {
           ...session.user,
           // IDIR users will not have a bceid_business guid/name. We set default values here so that the model fields can be not null for all users.
           // Business BCeID users will have these values set by the token & these values cannot be null or empty in the database.
-          bceid_business_guid: token.identity_provider === 'idir' ? '00000000-0000-0000-0000-000000000000' : token.bceid_business_guid,
-          bceid_business_name: token.identity_provider === 'idir' ? 'BCGOV' : token.bceid_business_name,
+          bceid_business_guid:
+            token.identity_provider === "idir"
+              ? "00000000-0000-0000-0000-000000000000"
+              : token.bceid_business_guid,
+          bceid_business_name:
+            token.identity_provider === "idir"
+              ? "BCGOV"
+              : token.bceid_business_name,
           given_name: token.given_name,
           family_name: token.family_name,
           app_role: token.app_role,
