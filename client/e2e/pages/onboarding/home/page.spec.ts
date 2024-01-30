@@ -19,7 +19,7 @@ const login = async (
   page: any,
   userName: string,
   password: string,
-  role: string,
+  role: string
 ) => {
   try {
     // 🕒 Log navigation details
@@ -27,6 +27,10 @@ const login = async (
       // eslint-disable-next-line no-console
       console.log(`Navigating to: ${request.url()}`);
     });
+
+    // eslint-disable-next-line no-console
+    console.log(`LOGIN ${userName}`);
+
     // 🛸 Navigate to the home page
     await navigateAndWaitForLoad(page, url);
 
@@ -40,25 +44,17 @@ const login = async (
     // 🕒 Wait for the navigation to complete
     await page.waitForNavigation();
 
-    // 🕒 Wait for the user field to be present
-    const userField = await page.waitForSelector("#user");
     // eslint-disable-next-line no-console
-    console.log(`Filling user field with: ${userName}`);
+    console.log("Filling login form...");
     // Fill the user field
-    await userField.fill(userName);
-    // eslint-disable-next-line no-console
-    console.log("Filling password field...");
+    await page.locator("id=user").fill(userName);
     // Fill the pw field
     await page.getByLabel("Password").fill(password);
-
-    // eslint-disable-next-line no-console
-    console.log("Clicking the Continue button");
+    // Click Continue button
     await page.getByRole("button", { name: "Continue" }).click();
 
-    // 🕒 Wait for the navigation to complete
-    await page.waitForNavigation();
-
     // 🕒 Wait for the home page profile navigation link to be present
+    // 🚩 BP approach seems to fail: await expect(page.getByTestId("nav-user-profile")).toBeVisible();
     // eslint-disable-next-line no-console
     console.log("Waiting for the profile navigation link to be present...");
     const profileNavSelector = '[data-testid="nav-user-profile"]';

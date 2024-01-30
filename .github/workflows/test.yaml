@@ -272,6 +272,11 @@ jobs:
         run: |
           DEBUG=pw:browser npx playwright test --trace=on --workers=1 client/e2e/*
         env:
+          API_URL: http://127.0.0.1:8000/api/
+          DB_USER: postgres
+          DB_NAME: registration
+          DB_PORT: 5432
+          DB_HOST: localhost
           E2E_BASEURL: http://localhost:3000/
           E2E_CAS_ADMIN_STORAGE: playwright/.auth/cas_admin.json
           E2E_CAS_ANALYST_STORAGE: playwright/.auth/cas_analyst.json
@@ -291,17 +296,13 @@ jobs:
           E2E_NEW_USER_GUID: ${{ secrets.NEW_USER_GUID }}
           KEYCLOAK_CLIENT_ID: ${{ secrets.KEYCLOAK_CLIENT_ID }}
           KEYCLOAK_CLIENT_SECRET: ${{ secrets.KEYCLOAK_CLIENT_SECRET }}
-          NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
           KEYCLOAK_LOGIN_URL: https://dev.loginproxy.gov.bc.ca/auth/realms/standard
           KEYCLOAK_LOGOUT_URL: https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout
           KEYCLOAK_TOKEN_URL: https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/token
+          NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
+          NEXTAUTH_URL: http://localhost:3000
           SITEMINDER_AUTH_URL: https://logontest7.gov.bc.ca
           SITEMINDER_KEYCLOAK_LOGOUT_URL: https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout
-          API_URL: http://127.0.0.1:8000/api/
-          DB_USER: postgres
-          DB_NAME: registration
-          DB_PORT: 5432
-          DB_HOST: localhost
         working-directory: ./client
       - uses: actions/upload-artifact@v3
         if: always()
