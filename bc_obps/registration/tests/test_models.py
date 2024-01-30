@@ -1,4 +1,5 @@
 from datetime import datetime
+from sqlite3 import IntegrityError
 from typing import Callable, List, Tuple, Type
 from django.db import models
 from django.test import TestCase
@@ -421,12 +422,12 @@ class UserModelTest(BaseTestCase):
             last_name="lname-test2",
             position_title="Manager",
             email="alicesmith@example.com",
-            phone_number="9876543210",
+            phone_number="+16044011234",
             user_guid="3fa85f64-5717-4562-b3fc-2c963f66afa6",
             business_guid=None,
         )
 
-        with self.assertRaises(IntegrityError):
+        with self.assertRaises(ValidationError, msg="This field cannot be null."):
             user2.save()
 
     def test_bceid_business_name_not_null_constraint(self):
@@ -436,13 +437,13 @@ class UserModelTest(BaseTestCase):
             last_name="lname-test2",
             position_title="Manager",
             email="alicesmith@example.com",
-            phone_number="9876543210",
+            phone_number="+16044011234",
             user_guid="3fa85f64-5717-4562-b3fc-2c963f66afa6",
             business_guid="11111111-1111-1111-1111-111111111111",
             bceid_business_name=None,
         )
 
-        with self.assertRaises(IntegrityError):
+        with self.assertRaises(ValidationError, msg="This field cannot be blank."):
             user2.save()
 
 
