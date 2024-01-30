@@ -146,9 +146,12 @@ const userOperator = () => {
   };
 
   const userOperatorPayload = JSON.stringify({
-    legal_name: "Test Operator",
+    // Legal Name is unique now so generate a random one
+    legal_name: crypto.randomUUID(),
     cra_business_number: Math.floor(Math.random() * 1000000000),
-    bc_corporate_registry_number: "adc1234321",
+    // Business Registry Number is unique now so generate a random 8 digit number
+    // Format: abc + 7 digits
+    bc_corporate_registry_number: `abc${Math.floor(Math.random() * 10000000)}`,
     business_structure: "BC Corporation",
     physical_street_address: "123 Test Street",
     physical_municipality: "Victoria",
@@ -157,6 +160,7 @@ const userOperator = () => {
     mailing_address_same_as_physical: true,
     operator_has_parent_operators: false,
   });
+
   const createUserOperator = http.post(
     HOST + "/user-operator/operator",
     userOperatorPayload,
