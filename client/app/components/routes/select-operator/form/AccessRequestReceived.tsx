@@ -2,6 +2,8 @@ import { Operator } from "@/app/components/routes/select-operator/form/types";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import { getOperator } from "@/app/components/routes/select-operator/form/ConfirmSelectedOperator";
 import { actionHandler } from "@/app/utils/actions";
+import Link from "next/link";
+import Button from "@mui/material/Button";
 
 export async function getOperatorHasAdmin(id: number) {
   return actionHandler(
@@ -44,6 +46,16 @@ export default async function AccessRequestReceived({
         Operation Representative has been received and will be reviewed.
       </p>
       {adminRequestJSX}
+      <Link href="/dashboard/select-operator">
+        <Button
+          className="my-10"
+          aria-label={"View Submitted Information"}
+          color="primary"
+          variant="contained"
+        >
+          View Submitted Information
+        </Button>
+      </Link>
     </>
   );
 
@@ -82,7 +94,6 @@ export default async function AccessRequestReceived({
         <AccessTimeIcon sx={{ color: "#FFCC00", fontSize: 50 }} />
       </span>
       {content}
-      {/* brianna check if we need to add a view submitted info button */}
     </section>
   );
 }
