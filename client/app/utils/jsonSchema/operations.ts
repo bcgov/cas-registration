@@ -485,12 +485,6 @@ export const operationUiSchema = {
     ...subheading,
     "ui:title": PointOfContactTitle,
   },
-  // data_flow_diagram: {
-  //   "ui:widget": "FileWidget",
-  // },
-  // boundary_map: {
-  //   "ui:widget": "FileWidget",
-  // },
   opt_in_section: {
     ...subheading,
   },
