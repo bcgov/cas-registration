@@ -241,6 +241,9 @@ def update_operation(request, operation_id: int, submit: str, save_contact: str,
             operation.point_of_contact = external_poc
 
     # updating only a subset of fields (using all fields would overwrite the existing ones)
+    print("\n\npayload: ", payload.__dict__)
+    print("\n\n")
+
     payload_dict: dict = payload.dict(
         include={
             "name",
