@@ -229,16 +229,19 @@ export default async function Operation({ numRow }: { numRow?: number }) {
     operation &&
     [Status.DECLINED, Status.APPROVED].includes(operation?.status as Status);
 
+  const pointOfContactEmail = operation?.email ?? undefined;
+
   const formData = {
-    ...userProfileFormData,
     ...operation,
+    // Add the correct point of contact data if there is no point of contact data
+    ...(!pointOfContactEmail && {
+      ...userProfileFormData,
+    }),
   };
   const userEmail = (userProfileFormData as UserProfileFormData)?.email;
-  const pointOfContactEmail = formData?.email;
-  // If the current user is the point of contact, we want to show the point of contact fields
-  const isUserPointOfContact =
-    userEmail === pointOfContactEmail && pointOfContactEmail !== undefined;
-
+  // If tpoint of contact data is an external user, we want to populate the external point of contact fields
+  const isExternalPointOfContact =
+    userEmail !== pointOfContactEmail && pointOfContactEmail !== undefined;
   // empty array is not a valid value for multiple_operators_array as empty default should be [{}]
   // to avoid buggy behaviour opening
   const isMultipleOperatorsArray =
@@ -250,33 +253,18 @@ export default async function Operation({ numRow }: { numRow?: number }) {
   const transformedFormData = {
     ...formData,
     // Add the correct point of contact data
-    ...(isUserPointOfContact
-      ? {
-          first_name: formData?.first_name,
-          last_name: formData?.last_name,
-          email: formData?.email,
-          phone_number: formData?.phone_number,
-          position_title: formData?.position_title,
-          street_address: formData?.street_address,
-          muncipality: formData?.muncipality,
-          province: formData?.province,
-          postal_code: formData?.postal_code,
-        }
-      : {
-          external_point_of_contact_first_name: formData?.first_name,
-          external_point_of_contact_last_name: formData?.last_name,
-          external_point_of_contact_email: formData?.email,
-          external_point_of_contact_phone_number: formData?.phone_number,
-          external_point_of_contact_position_title: formData?.position_title,
-          external_point_of_contact_street_address: formData?.street_address,
-          external_point_of_contact_muncipality: formData?.muncipality,
-          external_point_of_contact_province: formData?.province,
-          external_point_of_contact_postal_code: formData?.postal_code,
-        }),
+
+    ...(isExternalPointOfContact && {
+      external_point_of_contact_first_name: formData?.first_name,
+      external_point_of_contact_last_name: formData?.last_name,
+      external_point_of_contact_email: formData?.email,
+      external_point_of_contact_phone_number: formData?.phone_number,
+      external_point_of_contact_position_title: formData?.position_title,
+    }),
 
     "Did you submit a GHG emissions report for reporting year 2022?":
       formData?.previous_year_attributable_emissions ? true : false,
-    add_another_user_for_point_of_contact: !isUserPointOfContact,
+    is_external_point_of_contact: isExternalPointOfContact,
     // fix for null values not opening the multiple operators form if loading a previously saved form
     multiple_operators_array: isMultipleOperatorsArray
       ? formData?.multiple_operators_array
