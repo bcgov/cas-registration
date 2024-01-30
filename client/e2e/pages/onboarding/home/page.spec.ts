@@ -22,10 +22,15 @@ const login = async (
   role: string
 ) => {
   try {
-    // 🕒 Log navigation details
+    // 🔍 Log navigation details
     page.on("request", (request: { url: () => any }) => {
       // eslint-disable-next-line no-console
       console.log(`Navigating to: ${request.url()}`);
+    });
+
+    // 🔍  Set up event listener for console messages
+    page.on("console", (message: { text: () => any }) => {
+      console.log(`[Page Console] ${message.text()}`);
     });
 
     // eslint-disable-next-line no-console

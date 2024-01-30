@@ -14,7 +14,21 @@ You can define authentication providers, callbacks, refreshtoken, and other sett
 // https://next-auth.js.org/configuration/options
 // Use authOptions when calling getServerSession(authOptions) from the server-side i.e. in React Server Components, Route Handlers, API routes
 export const authOptions: NextAuthOptions = {
-  debug: true,
+  logger: {
+    // Customize the logging function
+    error(code, ...message) {
+      // eslint-disable-next-line no-console
+      console.error(code, ...message);
+    },
+    warn(code, ...message) {
+      // eslint-disable-next-line no-console
+      console.warn(code, ...message);
+    },
+    debug(code, ...message) {
+      // eslint-disable-next-line no-console
+      console.debug(code, ...message);
+    },
+  },
   providers: [
     //https://next-auth.js.org/providers/keycloak
     KeycloakProvider({
