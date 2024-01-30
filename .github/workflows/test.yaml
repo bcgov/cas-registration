@@ -270,9 +270,9 @@ jobs:
         working-directory: ./client
       - name: Run Playwright tests
         run: |
-          DEBUG=pw:browser npx playwright test --trace on --workers=1 client/e2e/*
+          DEBUG=pw:browser npx playwright test --trace=on --workers=1 client/e2e/*
         env:
-          BASEURL: http://localhost:3000/
+          E2E_BASEURL: http://localhost:3000/
           E2E_CAS_ADMIN_STORAGE: playwright/.auth/cas_admin.json
           E2E_CAS_ANALYST_STORAGE: playwright/.auth/cas_analyst.json
           E2E_CAS_PENDING_STORAGE: playwright/.auth/cas_pending.json
