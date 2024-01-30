@@ -1,5 +1,5 @@
 import pytest, json, pytz
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from model_bakery import baker
 from django.test import Client
 from localflavor.ca.models import CAPostalCodeField
@@ -27,6 +27,9 @@ base_endpoint = "/api/registration/"
 content_type_json = "application/json"
 
 baker.generators.add(CAPostalCodeField, TestUtils.mock_postal_code)
+
+fake_timestamp_from_past = '2024-01-09 14:13:08.888903-0800'
+fake_timestamp_from_past_str_format = '%Y-%m-%d %H:%M:%S.%f%z'
 
 
 class TestOperationsEndpoint(CommonTestSetup):
@@ -657,3 +660,92 @@ class TestOperationsEndpoint(CommonTestSetup):
         assert retrieved_operation.name == 'Updated Name'
         assert retrieved_operation.point_of_contact_id is None
         assert retrieved_operation.point_of_contact is None
+
+    def test_put_operation_that_is_already_approved(self):
+        operator = baker.make(Operator, status=Operator.Statuses.APPROVED)
+
+        operation = baker.make(
+            Operation,
+            operator_id=operator.id,
+            status=Operation.Statuses.APPROVED,
+            submission_date=fake_timestamp_from_past,
+        )
+
+        print(operation.__dict__)
+
+        update = OperationUpdateIn(
+            name='Shorter legal Name',
+            type='Type',
+            operator_id=operator.id,
+            documents=[],
+            regulated_products=[],
+            reporting_activities=[],
+            status=operation.status,
+        )
+
+        TestUtils.authorize_current_user_as_operator_user(self, operator)
+        put_response = TestUtils.mock_put_with_auth_role(
+            self,
+            'industry_user',
+            content_type_json,
+            update.json(),
+            self.endpoint + '/' + str(operation.id) + "?submit=true",
+        )
+        print("update.json")
+        print(update.json())
+        assert put_response.status_code == 200
+        print("put response")
+        print(put_response.content)
+        assert Operation.objects.count() == 1
+        retrieved_operation = Operation.objects.first()
+
+        print("retrieved_operation")
+        print(retrieved_operation.status)
+        print(retrieved_operation)
+
+        assert retrieved_operation.name == 'Shorter legal Name'
+        assert retrieved_operation.submission_date == datetime.strptime(
+            fake_timestamp_from_past, fake_timestamp_from_past_str_format
+        )
+        assert retrieved_operation.status == Operation.Statuses.APPROVED
+
+    def test_put_operation_with_changes_requested(self):
+        operator = baker.make(Operator, status=Operator.Statuses.APPROVED)
+        operation = baker.make(
+            Operation,
+            operator_id=operator.id,
+            status=Operation.Statuses.CHANGES_REQUESTED,
+            submission_date=fake_timestamp_from_past,
+        )
+
+        update = OperationUpdateIn(
+            name='Updated Name',
+            type='Type',
+            operator_id=operator.id,
+            documents=[],
+            regulated_products=[],
+            reporting_activities=[],
+        )
+        TestUtils.authorize_current_user_as_operator_user(self, operator)
+        put_response = TestUtils.mock_put_with_auth_role(
+            self,
+            'industry_user',
+            content_type_json,
+            update.json(),
+            self.endpoint + '/' + str(operation.id) + "?submit=true",
+        )
+
+        assert put_response.status_code == 200
+        assert Operation.objects.count() == 1
+        retrieved_operation = Operation.objects.first()
+
+        print("retrieved_operation")
+        print(retrieved_operation.status)
+        print(retrieved_operation)
+
+        assert retrieved_operation.name == 'Updated Name'
+        assert retrieved_operation.submission_date > datetime.strptime(
+            fake_timestamp_from_past, fake_timestamp_from_past_str_format
+        )
+        assert retrieved_operation.submission_date - datetime.now(timezone.utc) < timedelta(minutes=2)
+        assert retrieved_operation.status == Operation.Statuses.PENDING
