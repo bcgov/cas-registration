@@ -2,6 +2,8 @@ import { Operator } from "@/app/components/routes/select-operator/form/types";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import { getOperator } from "@/app/components/routes/select-operator/form/ConfirmSelectedOperator";
 import { actionHandler } from "@/app/utils/actions";
+import Link from "next/link";
+import Button from "@mui/material/Button";
 
 export async function getOperatorHasAdmin(id: number) {
   return actionHandler(
@@ -31,8 +33,8 @@ export default async function AccessRequestReceived({
     <>
       <p>Once approved, you will receive a confirmation email.</p>
       <p>
-        You can then log back in using your Business BCeID with full
-        permissions.
+        You can then log back in using your Business BCeID with Administrator
+        access.
       </p>
     </>
   );
@@ -44,20 +46,29 @@ export default async function AccessRequestReceived({
         Operation Representative has been received and will be reviewed.
       </p>
       {adminRequestJSX}
+      <Link href="/dashboard/select-operator">
+        <Button
+          className="my-10"
+          aria-label={"View Submitted Information"}
+          color="primary"
+          variant="contained"
+        >
+          View Submitted Information
+        </Button>
+      </Link>
     </>
   );
 
   const requestSubsequentAccessJSX: JSX.Element = (
     <>
       <p>
-        Your access request has been sent to the Operation Representative of{" "}
+        Your access request has been send to Administrator(s) of{" "}
         <b>{operator.legal_name}</b> for review.
-        <br />
       </p>
       <p>Once approved, you will receive a confirmation email.</p>
       <p>
-        You can then log back in using your Business BCeID with designated
-        permissions.
+        You can then log back in using your Business BCeID with the designated
+        access type.
       </p>
     </>
   );
@@ -71,6 +82,7 @@ export default async function AccessRequestReceived({
           Your access request for <b>{operator.legal_name}</b> as its Operation
           Representative has been received and will be reviewed.
         </p>
+
         {adminRequestJSX}
       </>
     );
