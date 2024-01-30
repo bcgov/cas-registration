@@ -251,8 +251,9 @@ class UserAndContactCommonInfo(BaseModel):
 class User(UserAndContactCommonInfo):
     """User model"""
 
-    user_guid = models.UUIDField(primary_key=True, default=uuid.uuid4, db_comment="A GUID to identify the user")
-    business_guid = models.UUIDField(default=uuid.uuid4, db_comment="A GUID to identify the business")
+    user_guid = models.UUIDField(primary_key=True, db_comment="A GUID to identify the user")
+    business_guid = models.UUIDField(db_comment="A GUID to identify the business")
+    bceid_business_name = models.CharField(max_length=1000, db_comment="The name of the business the user is associated with as per their Business BCeID account")
     documents = models.ManyToManyField(
         Document,
         blank=True,
