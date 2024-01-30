@@ -20,6 +20,7 @@ import { UserRole } from "@/e2e/utils/enums";
 import { LoginLink } from "@/e2e/utils/enums";
 // 🥞 Connection pool to postgres DB
 import { pool } from "@/e2e/utils/pool";
+import { navigateAndWaitForLoad } from "../utils/helpers";
 
 // 🛠️ function: login with Keycloak credetials and store authenticated user by role session's state
 /**
@@ -32,21 +33,25 @@ const setupAuth = async (
   user: string,
   password: string,
   storageState: string,
-  role: string,
+  role: string
 ) => {
   try {
-    const url = "http://localhost:3000/home";
+    const url = process.env.E2E_BASEURL + "home";
     const browser = await chromium.launch();
     const page = await browser.newPage();
+
+    // 🛸 Navigate to the home page
+    await navigateAndWaitForLoad(page, url);
+
+    // Determine the login button based on the user role
     let loginButton = LoginLink.INDUSTRY_USER;
-    /* switch (role) {
+    switch (role) {
       case UserRole.CAS_ADMIN:
       case UserRole.CAS_ANALYST:
       case UserRole.CAS_PENDING:
         loginButton = LoginLink.CAS;
         // 🛢 To generate a storageState file for each CAS role...
         // perform an upsert query that inserts or updates the role associated with your IDIR user_guid in the erc.user table.
-
         // eslint-disable-next-line no-console
         console.log(`Upserting ${user} INTO erc.user app_role_id=${role}`);
         const upsert = `
@@ -65,24 +70,17 @@ const setupAuth = async (
         ]);
         break;
     }
-    */
 
     // 🔑 Login to get user's Keycloak information and user role set in `client/app/api/auth/[...nextauth]/route.ts` based on data from erc.user table
-    await page.goto(url);
-    // 🕒 Wait for the navigation to complete
-    await page.waitForLoadState("domcontentloaded");
-
     await page.getByRole("button", { name: loginButton }).click();
 
     // 🕒 Wait for the user field to be present
     await page.waitForSelector("#user");
 
-    // Click and fill the user field
-    await page.locator("#user").click();
+    // Fill the user field
     await page.locator("#user").fill(user);
 
-    // Click and fill the password field
-    await page.getByLabel("Password").click();
+    // Ffill the password field
     await page.getByLabel("Password").fill(password);
 
     // Click the Continue button
@@ -98,7 +96,7 @@ const setupAuth = async (
 
     // eslint-disable-next-line no-console
     console.log(
-      `Successful authentication setup for ${user} as role ${role} captured in storageState ${storageState}`,
+      `Successful authentication setup for ${user} as role ${role} captured in storageState ${storageState}`
     );
   } catch (error) {
     // Handle any errors that occurred during the authentication process
@@ -115,7 +113,7 @@ export default async function globalSetup(config: FullConfig) {
   // 👤 Set storageState for Authenticated IDIR and BCeid credentials using NextAuth and Keycloak to be used in subsequent test suites
   // eslint-disable-next-line no-console
   console.log(
-    "Global setup to authenticate all user roles and store each role session in storageState to be used in test suites to mock user by role.",
+    "Global setup to authenticate all user roles and store each role session in storageState to be used in test suites to mock user by role."
   );
 
   // ➰ Loop through the entries of UserRole enum
@@ -129,12 +127,12 @@ export default async function globalSetup(config: FullConfig) {
       case UserRole.NEW_USER:
         user = process.env[role + "_USERNAME"];
         pw = process.env[role + "_PASSWORD"];
-        // 🔑 Authenticate this user save session role to storageState
+        // 🔑 Authenticate this user and save session data to storageState
         await setupAuth(
           user || "",
           pw || "",
           process.env[role + "_STORAGE"] || "",
-          value,
+          value
         );
         break;
     }

@@ -47,15 +47,10 @@ const login = async (
     // Click the login button
     await page.getByRole("button", { name: loginButton }).click();
 
-    // 🕒 Wait for the user field to be present
-    // 🚩 BP approach (?) seems to fail:   await page.locator("id=user").fill(userName);
     // eslint-disable-next-line no-console
     console.log("Completing login form...");
-    const userField = await page.waitForSelector("#user");
-    // 🔍 Assert that the field is available
-    expect(userField).not.toBeNull();
     // Fill the user field
-    await userField.fill(userName);
+    await page.locator("id=user").fill(userName);
     // Fill the pw field
     await page.getByLabel("Password").fill(password);
     // Click Continue button
