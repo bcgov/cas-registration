@@ -117,10 +117,10 @@ def list_operations(request):
     approved_users = get_an_operators_approved_users(user_operator.operator)
     if user.user_guid not in approved_users:
         raise HttpError(401, UNAUTHORIZED_MESSAGE)
-    authorized_operations = Operation.objects.filter(operator_id=user_operator.operator.id).order_by(
+    operators_operations = Operation.objects.filter(operator_id=user_operator.operator.id).order_by(
         "-created_at"
     )  # order by created_at to get the latest one first
-    return 200, authorized_operations
+    return 200, operators_operations
 
 
 @router.get("/operations/{operation_id}", response={200: OperationOut, codes_4xx: Message})
@@ -197,6 +197,10 @@ def update_operation(request, operation_id: int, submit: str, save_contact: str,
         raise HttpError(401, UNAUTHORIZED_MESSAGE)
 
     operation = get_object_or_404(Operation, id=operation_id)
+
+    # industry users can only edit operations that belong to their operator
+    if operation.operator_id != user_operator.operator.id:
+        raise HttpError(401, UNAUTHORIZED_MESSAGE)
 
     operation.operator_id = payload.operator
     operation.naics_code_id = payload.naics_code
