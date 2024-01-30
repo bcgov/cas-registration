@@ -31,12 +31,13 @@ export default function ConfirmSelectedOperatorForm({
   const operatorHasAdminJSX: JSX.Element = (
     <>
       <p>
-        Looks like you do not have access to <b>{operator.legal_name}</b>
-        <br />
-        You will need the Operation Representative of{" "}
-        <b>{operator.legal_name}</b> to grant your access.
+        Looks like you do not have access to <b>{operator.legal_name}</b>.
       </p>
-      <p>Please confirm below if you would like to request access.</p>
+      <p>
+        An Operation Representative with Administrator access will need to
+        approve your access request.
+      </p>
+      <p>Please confirm below if you would like to submit an access request.</p>
       <RequestAccessButton operatorId={operator.id} />
     </>
   );
@@ -44,13 +45,16 @@ export default function ConfirmSelectedOperatorForm({
   const operatorHasNoAdmin: JSX.Element = (
     <>
       <p>
-        Looks like the operator <b>{operator.legal_name}</b> does not have an
-        Operation Representative in our records.
+        Looks like operator <b>{operator.legal_name}</b> does not have
+        Administrator access set up.
       </p>
-      <p>Would you like to request access as its Operation Representative?</p>
       <p>
-        Please note that you will be the person responsible for approving any
-        additional Operation Representatives on behalf of the Operator.
+        Would you like to request Administrator access as an Operation
+        Representative?
+      </p>
+      <p>
+        Please note that you will be responsible for approving any additional
+        users requesting access to the operator.
       </p>
       <RequestAccessButton operatorId={operator.id} isAdminRequest={true} />
     </>
