@@ -8,7 +8,6 @@ import {
 import { MiddlewareFactory } from "./types";
 import { getToken } from "next-auth/jwt";
 import { IDP } from "@/app/utils/enums";
-import { getOperatorFromUser } from "@/app/(authenticated)/dashboard/page";
 
 /*
 Access control logic is managed using Next.js middleware and NextAuth.js authentication JWT token.
@@ -107,12 +106,31 @@ export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
         if (pathname.includes("operations")) {
           // Industry users are only allowed to see their operations if their operator is pending/approved
           if (!isAuthorizedIdirUser(token)) {
-            const operator = await getOperatorFromUser();
-            if (
-              operator.status !== "Pending" &&
-              operator.status !== "Approved"
-            ) {
-              return NextResponse.redirect(new URL(`/dashboard`, request.url));
+            try {
+              const options: RequestInit = {
+                cache: "no-store", // Default cache option
+                method: "GET",
+                headers: new Headers({
+                  Authorization: JSON.stringify({
+                    user_guid: token.user_guid,
+                  }),
+                }),
+              };
+              const response = await fetch(
+                `registration/operator-from-user`,
+                options,
+              );
+              const operator = await response.json();
+              if (
+                operator.status !== "Pending" &&
+                operator.status !== "Approved"
+              ) {
+                return NextResponse.redirect(
+                  new URL(`/dashboard`, request.url),
+                );
+              }
+            } catch (error) {
+              throw error;
             }
           }
         }
