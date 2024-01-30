@@ -22,7 +22,7 @@ class ContactSchema(ModelSchema):
     class Config:
         model = Contact
         contact_id: int = Field(..., alias="id")
-        address_id: int = Field(None, alias="address.id")
+        address_id: Optional[int] = Field(None, alias="address.id")
 
         model_exclude = [
             # exclude fields that are included as aliases above

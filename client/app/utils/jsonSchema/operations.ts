@@ -93,12 +93,6 @@ const operationPage1: RJSFSchema = {
       },
       then: {
         properties: {
-          // Commenting these out as they are not needed for MVP
-          // previous_year_attributable_emissions: {
-          //   type: "number",
-          //   title: "2022 attributable emissions",
-          // },
-          // swrs_facility_id: { type: "number", title: "SWRS Facility ID" },
           bcghg_id: { type: "string", title: "BCGHG ID" },
         },
         required: [
@@ -437,8 +431,6 @@ export const operationUiSchema = {
     // "boundary_map",
     "ghg_emissions_section",
     "Did you submit a GHG emissions report for reporting year 2022?",
-    // "previous_year_attributable_emissions",
-    // "swrs_facility_id",
     "bcghg_id",
     "opt_in_section",
     "opt_in",
