@@ -245,7 +245,7 @@ jobs:
           KEYCLOAK_LOGOUT_URL: https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout
           KEYCLOAK_TOKEN_URL: https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/token
           NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
-          NEXTAUTH_URL_INTERNAL: http://localhost:3000
+          NEXTAUTH_URL_INTERNAL: http://127.0.0.1:3000
           NEXTAUTH_URL: https://cas-reg-frontend-dev.apps.silver.devops.gov.bc.ca/
           SITEMINDER_AUTH_URL: https://logontest7.gov.bc.ca
           SITEMINDER_KEYCLOAK_LOGOUT_URL: https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout
