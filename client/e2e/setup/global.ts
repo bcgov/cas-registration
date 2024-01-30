@@ -39,7 +39,7 @@ const setupAuth = async (
     const browser = await chromium.launch();
     const page = await browser.newPage();
     let loginButton = LoginLink.INDUSTRY_USER;
-    switch (role) {
+    /* switch (role) {
       case UserRole.CAS_ADMIN:
       case UserRole.CAS_ANALYST:
       case UserRole.CAS_PENDING:
@@ -65,6 +65,7 @@ const setupAuth = async (
         ]);
         break;
     }
+    */
 
     // 🔑 Login to get user's Keycloak information and user role set in `client/app/api/auth/[...nextauth]/route.ts` based on data from erc.user table
     await page.goto(url);
