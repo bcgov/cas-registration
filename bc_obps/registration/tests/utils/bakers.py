@@ -12,7 +12,20 @@ from registration.models import (
     User,
     UserOperator,
 )
-import uuid
+import uuid, random, string
+
+
+def generate_random_bc_corporate_registry_number():
+    # Generate a random string of 1 to 3 uppercase or lowercase letters
+    letters = random.choices(string.ascii_letters, k=random.randint(1, 3))
+
+    # Generate a random string of 7 digits
+    numbers = ''.join(random.choices(string.digits, k=7))
+
+    # Concatenate the letters and numbers
+    dummy_data = ''.join(letters) + numbers
+
+    return dummy_data
 
 
 def user_baker():
@@ -34,7 +47,7 @@ def contact_baker():
 def operator_baker():
     return baker.make(
         Operator,
-        bc_corporate_registry_number='abc1234567',
+        bc_corporate_registry_number=generate_random_bc_corporate_registry_number(),
         business_structure=BusinessStructure.objects.first(),
         physical_address=address_baker(),
         website='https://www.example-operator.com',
