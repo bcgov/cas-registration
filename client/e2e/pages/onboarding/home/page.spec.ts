@@ -13,20 +13,22 @@ test.describe.configure({ mode: "serial" });
 
 test.describe("Test Page - Home", () => {
   test("Test Login", async ({ page }) => {
-    await page.goto(url);
+    // 🛸 Navigate to the home page
+    await navigateAndWaitForLoad(page, url);
     await expect(page.url().toLocaleLowerCase()).toContain("/home");
     // eslint-disable-next-line no-console
     console.log("Asserted home url");
     // eslint-disable-next-line no-console
     console.log("Waiting for the Welcome text to be present...");
     await expect(page.getByText("Welcome")).toBeVisible();
-    // 🛸 Navigate to the home page
-    await navigateAndWaitForLoad(page, url);
-
     // Click the login button
     let loginButton = LoginLink.INDUSTRY_USER;
+    // eslint-disable-next-line no-console
+    console.log("Clicking login button...");
     await page.getByRole("button", { name: loginButton }).click();
 
+    // eslint-disable-next-line no-console
+    console.log("Waiting for login user field...");
     // 🕒 Wait for the user field to be present
     await page.waitForSelector("#user");
   });
