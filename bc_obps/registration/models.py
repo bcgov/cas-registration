@@ -325,13 +325,13 @@ class Contact(UserAndContactCommonInfo, TimeStampedModel):
 
 
 class BusinessStructure(models.Model):
-    """The legal name of an operator"""
+    """The business structure of an operator"""
 
     name = models.CharField(primary_key=True, max_length=1000, db_comment="The name of a business structure")
     history = HistoricalRecords(table_name='erc_history"."business_structure_history')
 
     class Meta:
-        db_table_comment = "The legal name of an operator"
+        db_table_comment = "The business structure of an operator"
         db_table = 'erc"."business_structure'
 
 
@@ -345,12 +345,13 @@ class Operator(TimeStampedModel):
         DECLINED = "Declined"
         CHANGES_REQUESTED = "Changes Requested"
 
-    legal_name = models.CharField(max_length=1000, db_comment="The legal name of an operator")
+    legal_name = models.CharField(max_length=1000, db_comment="The legal name of an operator", unique=True)
     trade_name = models.CharField(max_length=1000, blank=True, db_comment="The trade name of an operator")
     cra_business_number = models.IntegerField(db_comment="The CRA business number of an operator")
     bc_corporate_registry_number = models.CharField(
         db_comment="The BC corporate registry number of an operator",
         null=True,
+        unique=True,
         validators=[RegexValidator(regex=BC_CORPORATE_REGISTRY_REGEX, message=BC_CORPORATE_REGISTRY_REGEX_MESSAGE)],
     )
     business_structure = models.ForeignKey(
