@@ -49,16 +49,6 @@ const operationPage1: RJSFSchema = {
     //   },
     //   title: "Reporting Activities",
     // },
-    // process_flow_diagram: {
-    //   type: "string",
-    //   title: "Process Flow Diagram",
-    //   format: "data-url",
-    // },
-    // boundary_map: {
-    //   type: "string",
-    //   title: "Boundary Map",
-    //   format: "data-url",
-    // },
     ghg_emissions_section: {
       //Not an actual field in the db - this is just to make the form look like the wireframes
       title:
@@ -427,8 +417,6 @@ export const operationUiSchema = {
     "naics_code_id",
     "regulated_products",
     // "reporting_activities",
-    // "process_flow_diagram",
-    // "boundary_map",
     "ghg_emissions_section",
     "Did you submit a GHG emissions report for reporting year 2022?",
     "bcghg_id",
@@ -436,9 +424,6 @@ export const operationUiSchema = {
     "opt_in",
     "opt_in_note_section",
     "opt_in_signed_statuatory_declaration",
-    "Does the operation have multiple operators?",
-    "operators",
-    "percentage_ownership",
     "is_external_point_of_contact",
     "point_of_contact_section",
     "external_point_of_contact_first_name",
