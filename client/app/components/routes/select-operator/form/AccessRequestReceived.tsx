@@ -31,8 +31,8 @@ export default async function AccessRequestReceived({
     <>
       <p>Once approved, you will receive a confirmation email.</p>
       <p>
-        You can then log back in using your Business BCeID with full
-        permissions.
+        You can then log back in using your Business BCeID with Administrator
+        access.
       </p>
     </>
   );
@@ -50,14 +50,13 @@ export default async function AccessRequestReceived({
   const requestSubsequentAccessJSX: JSX.Element = (
     <>
       <p>
-        Your access request has been sent to the Operation Representative of{" "}
+        Your access request has been send to Administrator(s) of{" "}
         <b>{operator.legal_name}</b> for review.
-        <br />
       </p>
       <p>Once approved, you will receive a confirmation email.</p>
       <p>
-        You can then log back in using your Business BCeID with designated
-        permissions.
+        You can then log back in using your Business BCeID with the designated
+        access type.
       </p>
     </>
   );
@@ -71,6 +70,7 @@ export default async function AccessRequestReceived({
           Your access request for <b>{operator.legal_name}</b> as its Operation
           Representative has been received and will be reviewed.
         </p>
+
         {adminRequestJSX}
       </>
     );
@@ -82,6 +82,7 @@ export default async function AccessRequestReceived({
         <AccessTimeIcon sx={{ color: "#FFCC00", fontSize: 50 }} />
       </span>
       {content}
+      {/* brianna check if we need to add a view submitted info button */}
     </section>
   );
 }
