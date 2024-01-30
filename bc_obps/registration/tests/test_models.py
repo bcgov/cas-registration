@@ -367,6 +367,7 @@ class UserModelTest(BaseTestCase):
             ),  # Replace None with the actual max length if available
             ("user_guid", "user guid", None, None),
             ("business_guid", "business guid", None, None),
+            ("bceid_business_name", "bceid business name", None, None),
             ("documents", "documents", None, 2),
             ("app_role", "app role", None, None),
             ("operators_verified_by", "operator", None, None),
@@ -411,6 +412,37 @@ class UserModelTest(BaseTestCase):
         )
 
         with self.assertRaises(ValidationError, msg="User with this User guid already exists."):
+            user2.save()
+
+    def test_business_guid_not_null_constraint(self):
+        # First user is `cls.test_object` from the fixture, attempt to create another user with the same user_guid and business_guid
+        user2 = User(
+            first_name="fname-test2",
+            last_name="lname-test2",
+            position_title="Manager",
+            email="alicesmith@example.com",
+            phone_number="9876543210",
+            user_guid="3fa85f64-5717-4562-b3fc-2c963f66afa6",
+            business_guid=None
+        )
+
+        with self.assertRaises(IntegrityError):
+            user2.save()
+
+    def test_bceid_business_name_not_null_constraint(self):
+        # First user is `cls.test_object` from the fixture, attempt to create another user with the same user_guid and business_guid
+        user2 = User(
+            first_name="fname-test2",
+            last_name="lname-test2",
+            position_title="Manager",
+            email="alicesmith@example.com",
+            phone_number="9876543210",
+            user_guid="3fa85f64-5717-4562-b3fc-2c963f66afa6",
+            business_guid="11111111-1111-1111-1111-111111111111",
+            bceid_business_name=None
+        )
+
+        with self.assertRaises(IntegrityError):
             user2.save()
 
 
