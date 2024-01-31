@@ -459,9 +459,6 @@ class TestOperationsEndpoint(CommonTestSetup):
         payload = TestUtils.mock_OperationUpdateIn()
         operation = operation_baker(payload.operator)
 
-        operation.operator_id = operator.id
-        operation.save(update_fields=['operator_id'])
-
         # approve the user
         baker.make(
             UserOperator,
