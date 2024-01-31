@@ -466,6 +466,7 @@ class UserOperator(TimeStampedModel):
     class Roles(models.TextChoices):
         ADMIN = "admin", "Admin"
         REPORTER = "reporter", "Reporter"
+        PENDING = "pending", "Pending"
 
     class Statuses(models.TextChoices):
         DRAFT = "Draft"
@@ -488,6 +489,7 @@ class UserOperator(TimeStampedModel):
     role = models.CharField(
         max_length=1000,
         choices=Roles.choices,
+        default=Roles.PENDING,
         db_comment="The role of a user associated with an operator (e.g. admin)",
     )
     status = models.CharField(
@@ -547,11 +549,9 @@ class UserOperator(TimeStampedModel):
     @staticmethod
     def get_all_industry_user_operator_roles() -> List[str]:
         """
-        Return all UserOperator.role options (including None).
+        Return all UserOperator.role options
         """
-        roles = [choice.value for choice in UserOperator.Roles]
-        roles.append(None)
-        return roles
+        return UserOperator.Roles.values
 
 
 class OperationAndFacilityCommonInfo(TimeStampedModel):
