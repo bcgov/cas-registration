@@ -71,7 +71,7 @@ spec:
             - name: SENTRY_ENVIRONMENT
               value: {{ include "cas-registration.namespaceSuffix" . }}
             - name: SENTRY_RELEASE
-              value: {{ .Values.image.app.tag }}
+              value: {{ .Values.backend.image.tag }}
             {{- end }}
           ports:
             - containerPort: {{ .Values.backend.service.port }}

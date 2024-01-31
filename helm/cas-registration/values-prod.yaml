@@ -5,9 +5,6 @@ backend:
   image:
     tag: "latest"
 
-  route:
-    host: cas-reg-backend-dev.apps.silver.devops.gov.bc.ca
-
   environment: production
 
 frontend:
@@ -17,7 +14,7 @@ frontend:
     tag: "latest"
 
   route:
-    host: cas-reg-frontend-dev.apps.silver.devops.gov.bc.ca
+    host: registration.industrialemissions.gov.bc.ca
 
   environment: production
 
