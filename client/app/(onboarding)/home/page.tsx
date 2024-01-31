@@ -69,7 +69,7 @@ export default function Page() {
         sx={{
           marginRight: {
             xs: "0px",
-            md: "40px",
+            lg: "40px",
           },
         }}
       >
@@ -196,11 +196,11 @@ export default function Page() {
           </thead>
           <tbody>
             {events.map((row, index) => (
-              <tr key={index} className="[&>td]:p-4">
-                <td className={`px-2 py-4 ${tableBorder} whitespace-pre-line`}>
+              <tr key={index}>
+                <td className={`px-6 py-8 ${tableBorder} whitespace-pre-line`}>
                   {row.date}
                 </td>
-                <td className={`px-2 py-4 ${tableBorder}`}>{row.event}</td>
+                <td className={`px-6 py-8 ${tableBorder}`}>{row.event}</td>
               </tr>
             ))}
           </tbody>
