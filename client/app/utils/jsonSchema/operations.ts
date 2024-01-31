@@ -8,7 +8,7 @@ import {
   StatutoryDeclarationDisclaimerTitle,
   StatutoryDeclarationUploadFieldTitle,
 } from "@/app/components/form/titles/operationsTitles";
-import { userOperatorPage1 } from "./userOperator";
+import { userOperatorPage1, userOperatorUiSchema } from "./userOperator";
 
 const subheading = {
   "ui:classNames": "text-bc-bg-blue text-start text-lg",
@@ -586,4 +586,13 @@ export const operationUiSchema = {
     },
     "ui:title": StatutoryDeclarationUploadFieldTitle,
   },
+};
+
+export const operationInternalUserUiSchema = {
+  ...userOperatorUiSchema,
+  ...operationUiSchema,
+  "ui:order": [
+    ...userOperatorUiSchema["ui:order"],
+    ...operationUiSchema["ui:order"],
+  ],
 };
