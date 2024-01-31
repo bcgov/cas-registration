@@ -167,7 +167,7 @@ jobs:
       - name: Debug Environment Variables
         run: |
           echo "KEYCLOAK_CLIENT_ID: $KEYCLOAK_CLIENT_ID"
-          echo "KEYCLOAK_SECRET: $KEYCLOAK_SECRET"
+          echo "KEYCLOAK_CLIENT_SECRET: $KEYCLOAK_CLIENT_SECRET"
           echo "KEYCLOAK_LOGIN_URL: $KEYCLOAK_LOGIN_URL"
           echo "KEYCLOAK_LOGOUT_URL: $KEYCLOAK_LOGOUT_URL"
           echo "KEYCLOAK_TOKEN_URL: $KEYCLOAK_TOKEN_URL"
@@ -184,7 +184,7 @@ jobs:
           KEYCLOAK_TOKEN_URL: https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/token
           NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
           NEXTAUTH_URL: http://localhost:3000
-          NEXTAUTH_URL_INTERNAL: http://client:3000
+          NEXTAUTH_URL_INTERNAL: http://localhost:3000
           SITEMINDER_AUTH_URL: https://logontest7.gov.bc.ca
           SITEMINDER_KEYCLOAK_LOGOUT_URL: https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout
   e2e:
