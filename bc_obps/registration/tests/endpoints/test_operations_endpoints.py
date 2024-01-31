@@ -688,7 +688,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             'industry_user',
             content_type_json,
             update.json(),
-            self.endpoint + '/' + str(operation.id) + "?submit=true",
+            self.endpoint + '/' + str(operation.id) + "?submit=true&save_contact=false",
         )
         assert put_response.status_code == 200
         assert Operation.objects.count() == 1
@@ -722,7 +722,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             'industry_user',
             content_type_json,
             update.json(),
-            self.endpoint + '/' + str(operation.id) + "?submit=true",
+            self.endpoint + '/' + str(operation.id) + "?submit=true&save_contact=false",
         )
 
         assert put_response.status_code == 200
@@ -759,7 +759,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             'industry_user',
             content_type_json,
             update.json(),
-            self.endpoint + '/' + str(operation.id) + "?submit=true",
+            self.endpoint + '/' + str(operation.id) + "?submit=true&save_contact=false",
         )
 
         assert put_response.status_code == 200
@@ -796,7 +796,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             'industry_user',
             content_type_json,
             update.json(),
-            self.endpoint + '/' + str(operation.id) + "?submit=true",
+            self.endpoint + '/' + str(operation.id) + "?submit=true&save_contact=false",
         )
 
         assert put_response.status_code == 200
