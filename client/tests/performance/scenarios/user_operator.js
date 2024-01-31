@@ -7,8 +7,6 @@ import {
   industryUser3Params,
   internalUserParams,
   INDUSTRY_USER_GUID,
-  INDUSTRY_USER_2_GUID,
-  INDUSTRY_USER_3_GUID,
 } from "../setup/params.js";
 import { crypto } from "k6/experimental/webcrypto";
 
@@ -118,8 +116,10 @@ const userOperator = () => {
         first_name: "Test",
         last_name: "User",
         position_title: "Test Position",
-        email: "test.user@idir",
-        phone_number: "+1234567890",
+        email: "test.user@test.com",
+        phone_number: "+12345678901",
+        business_guid: "12345678-1234-1234-1234-123456789012",
+        bceid_business_name: "Test Business",
       }),
       {
         headers: {
@@ -151,7 +151,9 @@ const userOperator = () => {
     cra_business_number: Math.floor(Math.random() * 1000000000),
     // Business Registry Number is unique now so generate a random 8 digit number
     // Format: abc + 7 digits
-    bc_corporate_registry_number: `abc${Math.floor(Math.random() * 10000000)}`,
+    bc_corporate_registry_number: `abc${
+      Math.floor(Math.random() * 90000) + 1000000
+    }`,
     business_structure: "BC Corporation",
     physical_street_address: "123 Test Street",
     physical_municipality: "Victoria",
@@ -159,6 +161,7 @@ const userOperator = () => {
     physical_postal_code: "V1V 1V1",
     mailing_address_same_as_physical: true,
     operator_has_parent_operators: false,
+    user_operator_id: 1,
   });
 
   const createUserOperator = http.post(
