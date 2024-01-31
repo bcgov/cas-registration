@@ -1,7 +1,10 @@
 import OperationsForm, {
   OperationsFormData,
 } from "@/app/components/form/OperationsForm";
-import { operationSchema } from "@/app/utils/jsonSchema/operations";
+import {
+  operationSchema,
+  operationInternalUserSchema,
+} from "@/app/utils/jsonSchema/operations";
 import { UserProfileFormData } from "@/app/components/form/formDataTypes";
 import { RJSFSchema } from "@rjsf/utils";
 import { actionHandler } from "@/app/utils/actions";
@@ -12,6 +15,7 @@ import { Fade } from "@mui/material";
 import { Status } from "@/app/utils/enums";
 import { Operation as OperationInt } from "@/app/components/routes/operations/types";
 import Link from "next/link";
+import OperationReviewForm from "@/app/components/form/OperationReviewForm";
 
 // 🚀 API call: GET user's data
 async function getUserFormData(): Promise<
@@ -281,16 +285,27 @@ export default async function Operation({ numRow }: { numRow?: number }) {
             : operationRegistrationDeclinedJSX}
         </Fade>
       )}
-      <OperationsForm
-        schema={createOperationSchema(
-          operationSchema,
-          codes,
-          products,
-          // activities,
-          // businessStructuresList,
-        )}
-        formData={transformedFormData as OperationsFormData}
-      />
+      {isCasInternal ? (
+        <OperationReviewForm
+          schema={createOperationSchema(
+            operationInternalUserSchema,
+            codes,
+            products,
+          )}
+          formData={transformedFormData as OperationsFormData}
+        />
+      ) : (
+        <OperationsForm
+          schema={createOperationSchema(
+            operationSchema,
+            codes,
+            products,
+            // activities,
+            // businessStructuresList,
+          )}
+          formData={transformedFormData as OperationsFormData}
+        />
+      )}
     </>
   );
 }
