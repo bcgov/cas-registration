@@ -19,7 +19,7 @@ export const authOptions: NextAuthOptions = {
     KeycloakProvider({
       clientId: `${process.env.KEYCLOAK_CLIENT_ID}`,
       clientSecret: `${process.env.KEYCLOAK_CLIENT_SECRET}`,
-      issuer: `https://dev.loginproxy.gov.bc.ca/auth/realms/standards`,
+      issuer: `https://dev.loginproxy.gov.bc.ca/auth/realms/standard`,
       profile(profile: KeycloakProfile) {
         return {
           ...profile,
