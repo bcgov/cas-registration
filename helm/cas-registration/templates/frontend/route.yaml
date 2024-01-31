@@ -26,9 +26,11 @@ spec:
   tls:
     insecureEdgeTerminationPolicy: Redirect
     termination: edge
+{{- if hasSuffix "-prod" .Release.Namespace }}
     key: {{ $keySecret }}
     certificate: {{ $certSecret }}
     caCertificate: {{ $CACertSecret }}
+{{- end }}
   to:
     kind: Service
     name:  {{ template "cas-registration.fullname" . }}-frontend
