@@ -150,7 +150,6 @@ jobs:
         with:
           context: client
           build-args: |
-            KEYCLOAK_LOGIN_URL=https://dev.loginproxy.gov.bc.ca/auth/realms/standard
             KEYCLOAK_CLIENT_ID: ${{ secrets.KEYCLOAK_CLIENT_ID }}
             KEYCLOAK_CLIENT_SECRET: ${{ secrets.KEYCLOAK_CLIENT_SECRET }}
             KEYCLOAK_LOGIN_URL: https://dev.loginproxy.gov.bc.ca/auth/realms/standard
