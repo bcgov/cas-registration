@@ -8,6 +8,7 @@ import {
   StatutoryDeclarationDisclaimerTitle,
   StatutoryDeclarationUploadFieldTitle,
 } from "@/app/components/form/titles/operationsTitles";
+import { userOperatorPage1 } from "./userOperator";
 
 const subheading = {
   "ui:classNames": "text-bc-bg-blue text-start text-lg",
@@ -404,6 +405,15 @@ export const operationSchema: RJSFSchema = {
     operationPage1,
     operationPage2,
     operationPage3,
+  },
+};
+
+export const operationInternalUserSchema: RJSFSchema = {
+  ...operationSchema,
+  properties: {
+    // Show the Operator Information page for internal users
+    userOperatorPage1,
+    ...operationSchema.properties,
   },
 };
 

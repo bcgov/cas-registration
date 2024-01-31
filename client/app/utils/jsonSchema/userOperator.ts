@@ -16,7 +16,7 @@ const subheading = {
   "ui:FieldTemplate": TitleOnlyFieldTemplate,
 };
 
-const userOperatorPage1: RJSFSchema = {
+export const userOperatorPage1: RJSFSchema = {
   type: "object",
   title: "Operator Information",
   required: [
