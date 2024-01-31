@@ -241,9 +241,7 @@ def update_operation(request, operation_id: int, submit: str, save_contact: str,
             operation.point_of_contact = external_poc
 
     # updating only a subset of fields (using all fields would overwrite the existing ones)
-    print("\n\npayload: ", payload.__dict__)
-    print("\n\n")
-
+    # TODO: review the use of payload_dict. I'm suspicious of this logic....
     payload_dict: dict = payload.dict(
         include={
             "name",
@@ -253,12 +251,12 @@ def update_operation(request, operation_id: int, submit: str, save_contact: str,
             "bcghg_id",
             "opt_in",
             "operation_has_multiple_operators",
-            "status",
         }
     )
 
     for attr, value in payload_dict.items():
         setattr(operation, attr, value)
+
     if submit == "true":
         """
         if the PUT request has submit == "true" (i.e., user has clicked Submit button in UI form), the desired behaviour depends on
@@ -269,20 +267,13 @@ def update_operation(request, operation_id: int, submit: str, save_contact: str,
             - if operation.status was "Not Started", it should switch to Pending
             - if operation.status was "Pending", it should remain as Pending
         """
-        if operation.status is not Operation.Statuses.APPROVED:
+        if Operation.Statuses(operation.status) is not Operation.Statuses.APPROVED:
             operation.status = Operation.Statuses.PENDING
             operation.submission_date = datetime.now(pytz.utc)
+            operation.save(update_fields=['status', 'submission_date'])
 
-    operation.regulated_products.set(payload.regulated_products)  # set replaces all existing products with the new ones
-    operation.reporting_activities.set(
-        payload.reporting_activities
-    )  # set replaces all existing activities with the new ones
-
-    operation.save()
+    operation.save(update_fields=list(payload_dict.keys()))
     operation.set_create_or_update(modifier=user)
-
-    print("partway through - operation in db:")
-    print(operation.__dict__)
 
     if payload.operation_has_multiple_operators:
         create_or_update_multiple_operators(payload.multiple_operators_array, operation, user)

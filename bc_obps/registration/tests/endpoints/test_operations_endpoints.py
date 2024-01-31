@@ -458,6 +458,9 @@ class TestOperationsEndpoint(CommonTestSetup):
         payload = TestUtils.mock_OperationUpdateIn()
         operation = operation_baker(payload.operator)
 
+        operation.operator_id = operator.id
+        operation.save(update_fields=['operator_id'])
+
         # approve the user
         baker.make(
             UserOperator,
@@ -662,27 +665,21 @@ class TestOperationsEndpoint(CommonTestSetup):
         assert retrieved_operation.point_of_contact is None
 
     def test_put_operation_that_is_already_approved(self):
-        operator = baker.make(Operator, status=Operator.Statuses.APPROVED)
-
-        operation = baker.make(
-            Operation,
-            operator_id=operator.id,
-            status=Operation.Statuses.APPROVED,
-            submission_date=fake_timestamp_from_past,
-        )
-
-        operation.save()
-
-        print(operation.__dict__)
+        operator = operator_baker()
+        operation = operation_baker()
+        operation.operator_id = operator.id
+        operation.status = Operation.Statuses.APPROVED
+        operation.submission_date = fake_timestamp_from_past
+        operation.save(update_fields=['status', 'operator_id', 'submission_date'])
 
         update = OperationUpdateIn(
             name='Shorter legal Name',
             type='Type',
             operator_id=operator.id,
+            naics_code_id=operation.naics_code_id,
             documents=[],
             regulated_products=[],
             reporting_activities=[],
-            status=operation.status,
         )
 
         TestUtils.authorize_current_user_as_operator_user(self, operator)
@@ -693,18 +690,9 @@ class TestOperationsEndpoint(CommonTestSetup):
             update.json(),
             self.endpoint + '/' + str(operation.id) + "?submit=true",
         )
-        print("update.json")
-        print(update.json())
         assert put_response.status_code == 200
-        print("put response")
-        print(put_response.content)
         assert Operation.objects.count() == 1
         retrieved_operation = Operation.objects.first()
-
-        print("retrieved_operation")
-        print(retrieved_operation.status)
-        print(retrieved_operation)
-
         assert retrieved_operation.name == 'Shorter legal Name'
         assert retrieved_operation.submission_date == datetime.strptime(
             fake_timestamp_from_past, fake_timestamp_from_past_str_format
@@ -712,18 +700,18 @@ class TestOperationsEndpoint(CommonTestSetup):
         assert retrieved_operation.status == Operation.Statuses.APPROVED
 
     def test_put_operation_with_changes_requested(self):
-        operator = baker.make(Operator, status=Operator.Statuses.APPROVED)
-        operation = baker.make(
-            Operation,
-            operator_id=operator.id,
-            status=Operation.Statuses.CHANGES_REQUESTED,
-            submission_date=fake_timestamp_from_past,
-        )
+        operator = operator_baker()
+        operation = operation_baker()
+        operation.operator_id = operator.id
+        operation.status = Operation.Statuses.CHANGES_REQUESTED
+        operation.submission_date = fake_timestamp_from_past
+        operation.save(update_fields=['status', 'operator_id', 'submission_date'])
 
         update = OperationUpdateIn(
             name='Updated Name',
             type='Type',
             operator_id=operator.id,
+            naics_code_id=operation.naics_code_id,
             documents=[],
             regulated_products=[],
             reporting_activities=[],
@@ -740,14 +728,84 @@ class TestOperationsEndpoint(CommonTestSetup):
         assert put_response.status_code == 200
         assert Operation.objects.count() == 1
         retrieved_operation = Operation.objects.first()
-
-        print("retrieved_operation")
-        print(retrieved_operation.status)
-        print(retrieved_operation)
-
         assert retrieved_operation.name == 'Updated Name'
         assert retrieved_operation.submission_date > datetime.strptime(
             fake_timestamp_from_past, fake_timestamp_from_past_str_format
         )
-        assert retrieved_operation.submission_date - datetime.now(timezone.utc) < timedelta(minutes=2)
+        # assert that operation's submission_date has been updated to the current time (approximately)
+        assert retrieved_operation.submission_date - datetime.now(timezone.utc) < timedelta(seconds=10)
+        assert retrieved_operation.status == Operation.Statuses.PENDING
+
+    def test_put_operation_with_pending_status(self):
+        operator = operator_baker()
+        operation = operation_baker()
+        operation.operator_id = operator.id
+        operation.status = Operation.Statuses.PENDING
+        operation.submission_date = fake_timestamp_from_past
+        operation.save(update_fields=['status', 'operator_id', 'submission_date'])
+
+        update = OperationUpdateIn(
+            name='Pending Legal Name',
+            type='Type',
+            operator_id=operator.id,
+            naics_code_id=operation.naics_code_id,
+            documents=[],
+            regulated_products=[],
+            reporting_activities=[],
+        )
+        TestUtils.authorize_current_user_as_operator_user(self, operator)
+        put_response = TestUtils.mock_put_with_auth_role(
+            self,
+            'industry_user',
+            content_type_json,
+            update.json(),
+            self.endpoint + '/' + str(operation.id) + "?submit=true",
+        )
+
+        assert put_response.status_code == 200
+        assert Operation.objects.count() == 1
+        retrieved_operation = Operation.objects.first()
+        assert retrieved_operation.name == 'Pending Legal Name'
+        assert retrieved_operation.submission_date > datetime.strptime(
+            fake_timestamp_from_past, fake_timestamp_from_past_str_format
+        )
+        # assert that operation's submission_date has been updated to the current time (approximately)
+        assert retrieved_operation.submission_date - datetime.now(timezone.utc) < timedelta(seconds=10)
+        assert retrieved_operation.status == Operation.Statuses.PENDING
+
+    def test_put_operation_with_declined_status(self):
+        operator = operator_baker()
+        operation = operation_baker()
+        operation.operator_id = operator.id
+        operation.status = Operation.Statuses.DECLINED
+        operation.submission_date = fake_timestamp_from_past
+        operation.save(update_fields=['status', 'operator_id', 'submission_date'])
+
+        update = OperationUpdateIn(
+            name='Declined Operation Name',
+            type='Type',
+            operator_id=operator.id,
+            naics_code_id=operation.naics_code_id,
+            documents=[],
+            regulated_products=[],
+            reporting_activities=[],
+        )
+        TestUtils.authorize_current_user_as_operator_user(self, operator)
+        put_response = TestUtils.mock_put_with_auth_role(
+            self,
+            'industry_user',
+            content_type_json,
+            update.json(),
+            self.endpoint + '/' + str(operation.id) + "?submit=true",
+        )
+
+        assert put_response.status_code == 200
+        assert Operation.objects.count() == 1
+        retrieved_operation = Operation.objects.first()
+        assert retrieved_operation.name == 'Declined Operation Name'
+        assert retrieved_operation.submission_date > datetime.strptime(
+            fake_timestamp_from_past, fake_timestamp_from_past_str_format
+        )
+        # assert that operation's submission_date has been updated to the current time (approximately)
+        assert retrieved_operation.submission_date - datetime.now(timezone.utc) < timedelta(seconds=10)
         assert retrieved_operation.status == Operation.Statuses.PENDING
