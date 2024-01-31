@@ -30,15 +30,9 @@ RUN chmod +x /usr/local/bin/dumb-init
 ENTRYPOINT ["dumb-init", "--"]
 
 ENV NODE_ENV=production
-# The KEYCLOAK_LOGIN_URL is used to direct to Keycloak login
+# ARG from `.github/workflows/test.yaml\frontend-docker-build` 
 ARG KEYCLOAK_LOGIN_URL
 ENV KEYCLOAK_LOGIN_URL ${KEYCLOAK_LOGIN_URL}
-ARG KEYCLOAK_CLIENT_ID
-ENV KEYCLOAK_CLIENT_ID ${KEYCLOAK_CLIENT_ID}
-ARG KEYCLOAK_CLIENT_SECRET
-ENV KEYCLOAK_CLIENT_SECRET ${KEYCLOAK_CLIENT_SECRET}
-ARG NEXTAUTH_URL
-ENV NEXTAUTH_URL ${NEXTAUTH_URL}
 
 RUN yarn install --frozen-lockfile --production=false && \
     yarn build && \
