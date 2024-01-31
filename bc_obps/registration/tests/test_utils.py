@@ -257,7 +257,9 @@ class TestCheckIfRoleAuthorized(TestCase):
         # note: I haven't added baker.make(UserOperator) because when a user first logs in, they haven't selected an operator yet and and they don't have a UserOperator record
 
         assert (
-            raise_401_if_user_not_authorized(self.request, ['cas_admin', 'industry_user'], [None, 'reporter', 'admin'])
+            raise_401_if_user_not_authorized(
+                self.request, ['cas_admin', 'industry_user'], ['reporter', 'admin', 'pending']
+            )
             == None
         )
 
