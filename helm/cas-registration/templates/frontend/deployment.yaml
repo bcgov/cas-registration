@@ -64,7 +64,7 @@ spec:
             - name: SENTRY_ENVIRONMENT
               value: {{ include "cas-registration.namespaceSuffix" . }}
             - name: SENTRY_RELEASE
-              value: {{ .Values.image.app.tag }}
+              value: {{ .Values.frontend.image.tag }}
             {{- end }}
           image: "{{ .Values.frontend.image.repository }}:{{ .Values.defaultImageTag | default .Values.frontend.image.tag }}"
           imagePullPolicy: {{ .Values.frontend.image.pullPolicy }}
