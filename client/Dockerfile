@@ -30,6 +30,9 @@ RUN chmod +x /usr/local/bin/dumb-init
 ENTRYPOINT ["dumb-init", "--"]
 
 ENV NODE_ENV=production
+# The KEYCLOAK_LOGIN_URL is used to direct to Keycloak login
+ARG KEYCLOAK_LOGIN_URL
+ENV KEYCLOAK_LOGIN_URL ${KEYCLOAK_LOGIN_URL}
 
 RUN yarn install --frozen-lockfile --production=false && \
     yarn build && \

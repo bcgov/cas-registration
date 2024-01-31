@@ -149,6 +149,8 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: client
+          build-args: |
+            "KEYCLOAK_LOGIN_URL=https://dev.loginproxy.gov.bc.ca/auth/realms/standard"
           builder: ${{ steps.buildx.outputs.name }}
           push: true
           file: client/Dockerfile
@@ -163,37 +165,6 @@ jobs:
         run: |
           rm -rf /tmp/.buildx-cache
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
-      - name: Debug Environment Variables
-        run: |
-          echo "KEYCLOAK_CLIENT_ID: $KEYCLOAK_CLIENT_ID"
-          echo "KEYCLOAK_CLIENT_SECRET: $KEYCLOAK_CLIENT_SECRET"
-          echo "KEYCLOAK_LOGIN_URL: $KEYCLOAK_LOGIN_URL"
-          echo "KEYCLOAK_LOGOUT_URL: $KEYCLOAK_LOGOUT_URL"
-          echo "KEYCLOAK_TOKEN_URL: $KEYCLOAK_TOKEN_URL"
-          echo "NEXTAUTH_SECRET: $NEXTAUTH_SECRET"
-          echo "NEXTAUTH_URL: $NEXTAUTH_URL"
-          echo "SITEMINDER_AUTH_URL: $SITEMINDER_AUTH_URL"
-          echo "SITEMINDER_KEYCLOAK_LOGOUT_URL: $SITEMINDER_KEYCLOAK_LOGOUT_URL"
-
-      # Add a new step to pull the Docker image
-      - name: Pull Docker Image
-        run: docker pull ghcr.io/bcgov/cas-reg-frontend:latest
-
-      # Add a new step to test environment variables in the Docker container
-      - name: Test Environment Variables in Docker Container
-        run: |
-          docker run --rm \
-            -e KEYCLOAK_CLIENT_ID=${{ secrets.KEYCLOAK_CLIENT_ID }} \
-            -e KEYCLOAK_CLIENT_SECRET=${{ secrets.KEYCLOAK_CLIENT_SECRET }} \
-            -e KEYCLOAK_LOGIN_URL=https://dev.loginproxy.gov.bc.ca/auth/realms/standard \
-            -e KEYCLOAK_LOGOUT_URL=https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout \
-            -e KEYCLOAK_TOKEN_URL=https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/token \
-            -e NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }} \
-            -e NEXTAUTH_URL=http://localhost:3000/ \
-            -e SITEMINDER_AUTH_URL=https://logontest7.gov.bc.ca \
-            -e SITEMINDER_KEYCLOAK_LOGOUT_URL=https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout \
-            ghcr.io/bcgov/cas-reg-frontend:latest /bin/sh -c 'echo "Environment variables are set"'
-
   e2e:
     needs:
       ["backend-docker-build", "frontend-docker-build", "install-dev-tools"]
