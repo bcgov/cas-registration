@@ -63,17 +63,26 @@ class TestOperationsEndpoint(CommonTestSetup):
         )
         assert response.status_code == 401
 
-        # industry users that don't belong to the operator can't get
-        # /operations
-        operation_instance_2 = operation_baker()
-        response = TestUtils.mock_get_with_auth_role(
-            self, "industry_user", self.endpoint + "/" + str(operation_instance_2.id)
+    def industry_users_can_only_get_their_own_operations(self):
+        random_operator = operator_baker()
+        the_users_operator = operator_baker()
+        user_operator = baker.make(
+            UserOperator,
+            user_id=self.user.user_guid,
+            status=UserOperator.Statuses.APPROVED,
+            operator=the_users_operator,
         )
-        assert response.status_code == 401
+
+        random_operation = operation_baker(random_operator.id)
+        operation_baker(user_operator.operator.id)  # operation that belongs to the user's operator
+
+        # operations
+        response = TestUtils.mock_get_with_auth_role(self, "industry_user")
+        assert response.json().length() == 1
 
         # /operations/{operation_id}
         response = TestUtils.mock_get_with_auth_role(
-            self, "industry_user", self.endpoint + "/" + str(operation_instance_2.id)
+            self, "industry_user", self.endpoint + "/" + str(random_operation.id)
         )
         assert response.status_code == 401
 
@@ -106,6 +115,30 @@ class TestOperationsEndpoint(CommonTestSetup):
                 self.endpoint + "/" + str(operation.id) + "?submit=false&save_contact=false",
             )
             assert response.status_code == 401
+
+    def industry_users_can_only_put_their_own_operations(self):
+        mock_payload = TestUtils.mock_OperationUpdateIn()
+
+        random_operator = baker.make(Operator)
+        the_users_operator = baker.make(Operator)
+        user_operator = baker.make(
+            UserOperator,
+            user_id=self.user.user_guid,
+            status=UserOperator.Statuses.APPROVED,
+            operator=the_users_operator,
+        )
+
+        random_operation = baker.make(Operation, operator=random_operator)
+        baker.make(Operation, operator=user_operator.operator)  # operation that belongs to the user's operator
+
+        response = TestUtils.mock_put_with_auth_role(
+            self,
+            "industry_user",
+            content_type_json,
+            mock_payload.json(),
+            self.endpoint + "/" + str(random_operation.id) + "?submit=false",
+        )
+        assert response.status_code == 401
 
     def test_unauthorized_users_cannot_update_status(self):
         operation = operation_baker()
@@ -419,21 +452,21 @@ class TestOperationsEndpoint(CommonTestSetup):
             TestUtils.mock_put_with_auth_role(self, "cas_admin", content_type_json, {"status": "nonsense"}, url)
 
     def test_put_operation_without_submit(self):
-        operation = operation_baker()
-        mock_operation = TestUtils.mock_OperationUpdateIn()
+        payload = TestUtils.mock_OperationUpdateIn()
+        operation = operation_baker(payload.operator)
 
         # approve the user
         baker.make(
             UserOperator,
             user_id=self.user.user_guid,
             status=UserOperator.Statuses.APPROVED,
-            operator_id=mock_operation.operator,
+            operator_id=payload.operator,
         )
         response = TestUtils.mock_put_with_auth_role(
             self,
             'industry_user',
             content_type_json,
-            mock_operation.json(),
+            payload.json(),
             self.endpoint + "/" + str(operation.id) + "?submit=false&save_contact=false",
         )
         assert response.status_code == 200
@@ -445,24 +478,24 @@ class TestOperationsEndpoint(CommonTestSetup):
         assert get_response["status"] == Operation.Statuses.NOT_STARTED
 
     def test_put_operation_with_submit(self):
-        operation = operation_baker()
-        mock_operation = TestUtils.mock_OperationUpdateIn()
+        payload = TestUtils.mock_OperationUpdateIn()
+        operation = operation_baker(payload.operator)
 
         # Upload testing requires Google cloud credentials to be set up in CI. Will be addressed in #718
-        # setattr(mock_operation, 'statutory_declaration', MOCK_DATA_URL)
+        # setattr(payload, 'statutory_declaration', MOCK_DATA_URL)
 
         baker.make(
             UserOperator,
             user_id=self.user.user_guid,
             status=UserOperator.Statuses.APPROVED,
-            operator_id=mock_operation.operator,
+            operator_id=payload.operator,
         )
 
         response = TestUtils.mock_put_with_auth_role(
             self,
             'industry_user',
             content_type_json,
-            mock_operation.json(),
+            payload.json(),
             self.endpoint + "/" + str(operation.id) + "?submit=true&save_contact=false",
         )
 
@@ -491,9 +524,9 @@ class TestOperationsEndpoint(CommonTestSetup):
         contact1 = baker.make(Contact)
         # contact2 is a new contact, even though they have the same email as contact1
         contact2 = baker.make(Contact, email=contact1.email)
-        operation = operation_baker()
-
         operator = operator_baker()
+        operation = operation_baker(operator.id)
+
         update = OperationUpdateIn(
             name='Springfield Nuclear Power Plant',
             # this updates the existing contact (contact2)
@@ -535,9 +568,9 @@ class TestOperationsEndpoint(CommonTestSetup):
         assert updated_contact2.email == 'homer@email.com'
 
     def test_put_operation_with_new_point_of_contact(self):
-        operation = operation_baker()
-        first_contact = operation.point_of_contact
         operator = operator_baker()
+        operation = operation_baker(operator.id)
+        first_contact = operation.point_of_contact
         update = OperationUpdateIn(
             name='Springfield Nuclear Power Plant',
             type='Single Facility Operation',
