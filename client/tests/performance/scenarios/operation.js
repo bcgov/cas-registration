@@ -28,6 +28,7 @@ const operation = () => {
       regulated_products: [],
       reporting_activities: [],
       type: "Test Type",
+      naics_code: 21,
     }),
     industryUserParams,
   );
@@ -52,6 +53,7 @@ const operation = () => {
         regulated_products: [],
         reporting_activities: [],
         type: "Test Type Updated",
+        naics_code: 21,
       }),
       industryUserParams,
     ),
