@@ -25,7 +25,7 @@ const login = async (
     // 🔍 Log navigation details
     page.on("request", (request: { url: () => any }) => {
       // eslint-disable-next-line no-console
-      console.log(`Navigating to: ${request.url()}`);
+      console.log(`[Navigating to] ${request.url()}`);
     });
 
     // 🔍  Set up event listener for console messages
@@ -34,7 +34,7 @@ const login = async (
     });
 
     // eslint-disable-next-line no-console
-    console.log(`LOGIN ${userName}`);
+    console.log(`[LOGIN] ${userName}`);
 
     // 🛸 Navigate to the home page
     await navigateAndWaitForLoad(page, url);
