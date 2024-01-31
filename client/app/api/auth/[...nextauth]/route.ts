@@ -14,38 +14,42 @@ You can define authentication providers, callbacks, refreshtoken, and other sett
 // https://next-auth.js.org/configuration/options
 // Use authOptions when calling getServerSession(authOptions) from the server-side i.e. in React Server Components, Route Handlers, API routes
 export const authOptions: NextAuthOptions = {
+  debug: true,
   logger: {
     // Customize the logging function
     error(code, ...message) {
       // eslint-disable-next-line no-console
       console.error(code, ...message);
+
       // Log environment variables (replace with your actual environment variable names)
 
       // eslint-disable-next-line no-console
-      console.error(
+      console.log(
         "Environment Variable: KEYCLOAK_CLIENT_ID",
         process.env.KEYCLOAK_CLIENT_ID
       );
       // eslint-disable-next-line no-console
-      console.error(
+      console.log(
         "Environment Variable: KEYCLOAK_LOGIN_URL",
         process.env.KEYCLOAK_LOGIN_URL
       );
       // eslint-disable-next-line no-console
-      console.error(
+      console.log(
         "Environment Variable: NEXTAUTH_URL",
         process.env.NEXTAUTH_URL
       );
-
       // Test for empty or null values of NEXTAUTH_SECRET and KEYCLOAK_CLIENT_SECRET
       if (!process.env.NEXTAUTH_SECRET) {
         // eslint-disable-next-line no-console
-        console.error("Error: NEXTAUTH_SECRET is not defined or empty.");
+        console.log("Error: NEXTAUTH_SECRET is not defined or empty.");
+      } else {
+        console.log("Error: NEXTAUTH_SECRET has value");
       }
-
       if (!process.env.KEYCLOAK_CLIENT_SECRET) {
         // eslint-disable-next-line no-console
-        console.error("Error: KEYCLOAK_CLIENT_SECRET is not defined or empty.");
+        console.log("Error: KEYCLOAK_CLIENT_SECRET is not defined or empty.");
+      } else {
+        console.log("Error: NKEYCLOAK_CLIENT_SECRET has value");
       }
     },
     warn(code, ...message) {
@@ -55,6 +59,35 @@ export const authOptions: NextAuthOptions = {
     debug(code, ...message) {
       // eslint-disable-next-line no-console
       console.debug(code, ...message);
+
+      // eslint-disable-next-line no-console
+      console.log(
+        "Environment Variable: KEYCLOAK_CLIENT_ID",
+        process.env.KEYCLOAK_CLIENT_ID
+      );
+      // eslint-disable-next-line no-console
+      console.log(
+        "Environment Variable: KEYCLOAK_LOGIN_URL",
+        process.env.KEYCLOAK_LOGIN_URL
+      );
+      // eslint-disable-next-line no-console
+      console.log(
+        "Environment Variable: NEXTAUTH_URL",
+        process.env.NEXTAUTH_URL
+      );
+      // Test for empty or null values of NEXTAUTH_SECRET and KEYCLOAK_CLIENT_SECRET
+      if (!process.env.NEXTAUTH_SECRET) {
+        // eslint-disable-next-line no-console
+        console.log("Error: NEXTAUTH_SECRET is not defined or empty.");
+      } else {
+        console.log("Error: NEXTAUTH_SECRET has value");
+      }
+      if (!process.env.KEYCLOAK_CLIENT_SECRET) {
+        // eslint-disable-next-line no-console
+        console.log("Error: KEYCLOAK_CLIENT_SECRET is not defined or empty.");
+      } else {
+        console.log("Error: NKEYCLOAK_CLIENT_SECRET has value");
+      }
     },
   },
   providers: [
@@ -62,7 +95,7 @@ export const authOptions: NextAuthOptions = {
     KeycloakProvider({
       clientId: `${process.env.KEYCLOAK_CLIENT_ID}`,
       clientSecret: `${process.env.KEYCLOAK_CLIENT_SECRET}`,
-      issuer: `${process.env.KEYCLOAK_LOGIN_URL}`,
+      issuer: `https://dev.loginproxy.gov.bc.ca/auth/realms/standard`,
       profile(profile: KeycloakProfile) {
         return {
           ...profile,
