@@ -68,7 +68,7 @@ const DataGrid: React.FC<Props> = ({ rows, columns, cntxt }) => {
                   {/* 🔗 Add reg or details link */}
                   <Link
                     className="no-underline text-bc-link-blue whitespace-normal"
-                    href={`operations/${params.row.id}/1`}
+                    href={`operations/${params.row.id}`}
                   >
                     {params.row.status === "Not Started"
                       ? "Start Application"
