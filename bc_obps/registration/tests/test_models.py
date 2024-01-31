@@ -1,5 +1,4 @@
 from datetime import datetime
-from sqlite3 import IntegrityError
 from typing import Callable, List, Tuple, Type
 from django.db import models
 from django.test import TestCase
@@ -890,7 +889,7 @@ class TestModelsWithAuditColumns(TestCase):
 
     def test_set_audit_columns(self):
         for model, field_to_update, model_baker in self.models_with_audit_columns_and_field_to_update:
-            instance: Type[TimeStampedModel] = model_baker()
+            instance: Type[TimeStampedModel] = model_baker()  # at this point we have 2 history because of the baker
             # CREATE
             instance.set_create_or_update(self.user_1.pk)
             instance.refresh_from_db()
@@ -901,6 +900,15 @@ class TestModelsWithAuditColumns(TestCase):
             self.assertIsNone(instance.updated_by)
             self.assertIsNone(instance.archived_at)
             self.assertIsNone(instance.archived_by)
+
+            # CHECK HISTORY
+            history_1 = instance.history.most_recent()
+            self.assertEqual(history_1.created_at, instance.created_at)
+            self.assertEqual(history_1.created_by, instance.created_by)
+            self.assertIsNone(history_1.updated_at)
+            self.assertIsNone(history_1.updated_by)
+            self.assertIsNone(history_1.archived_at)
+            self.assertIsNone(history_1.archived_by)
 
             # UPDATE
             model_data_field_has_choices = model._meta.get_field(field_to_update).choices
@@ -917,6 +925,15 @@ class TestModelsWithAuditColumns(TestCase):
             self.assertIsNone(instance.archived_at)
             self.assertIsNone(instance.archived_by)
 
+            # CHECK HISTORY
+            history_2 = instance.history.most_recent()
+            self.assertEqual(history_2.created_at, instance.created_at)
+            self.assertEqual(history_2.created_by, instance.created_by)
+            self.assertEqual(history_2.updated_at, instance.updated_at)
+            self.assertEqual(history_2.updated_by, instance.updated_by)
+            self.assertIsNone(history_2.archived_at)
+            self.assertIsNone(history_2.archived_by)
+
             # ARCHIVE
             instance.set_archive(self.user_1.pk)
             instance.refresh_from_db()
@@ -929,6 +946,15 @@ class TestModelsWithAuditColumns(TestCase):
             self.assertEqual(instance.archived_by, self.user_1)
             self.assertGreater(instance.archived_at, instance.created_at)
             self.assertGreater(instance.archived_at, instance.updated_at)
+
+            # CHECK HISTORY
+            history_3 = instance.history.most_recent()
+            self.assertEqual(history_3.created_at, instance.created_at)
+            self.assertEqual(history_3.created_by, instance.created_by)
+            self.assertEqual(history_3.updated_at, instance.updated_at)
+            self.assertEqual(history_3.updated_by, instance.updated_by)
+            self.assertEqual(history_3.archived_at, instance.archived_at)
+            self.assertEqual(history_3.archived_by, instance.archived_by)
 
     def test_invalid_action_type_handling(self):
         for _, _, model_baker in self.models_with_audit_columns_and_field_to_update:
