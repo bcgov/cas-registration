@@ -13,8 +13,8 @@ export default function OnboardingLayout({
       <Main
         sx={{
           margin: {
-            xs: "160px auto 180px auto",
-            md: "100px auto 80px auto",
+            xs: "140px auto 180px auto",
+            md: "80px auto 80px auto",
           },
         }}
       >
