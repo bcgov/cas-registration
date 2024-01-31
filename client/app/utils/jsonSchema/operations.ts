@@ -591,6 +591,9 @@ export const operationUiSchema = {
 export const operationInternalUserUiSchema = {
   ...userOperatorUiSchema,
   ...operationUiSchema,
+  "ui:options": {
+    label: false,
+  },
   "ui:order": [
     ...userOperatorUiSchema["ui:order"],
     ...operationUiSchema["ui:order"],
