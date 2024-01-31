@@ -150,7 +150,7 @@ jobs:
         with:
           context: client
           build-args: |
-            "KEYCLOAK_LOGIN_URL=https://dev.loginproxy.gov.bc.ca/auth/realms/standards"
+            KEYCLOAK_LOGIN_URL=https://dev.loginproxy.gov.bc.ca/auth/realms/standards
           builder: ${{ steps.buildx.outputs.name }}
           push: true
           file: client/Dockerfile
