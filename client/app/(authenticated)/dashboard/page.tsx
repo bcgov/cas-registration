@@ -1,5 +1,5 @@
 import { actionHandler } from "@/app/utils/actions";
-import Tiles from "@/app/components/layout/Tiles";
+import Tiles from "@/app/components/navigation/Tiles";
 /*
 📚
 In the app directory, nested folders are normally mapped to URL paths.
