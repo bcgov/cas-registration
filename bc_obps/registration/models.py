@@ -60,7 +60,6 @@ class TimeStampedModel(BaseModel):
         'User', on_delete=models.PROTECT, null=True, blank=True, related_name='%(class)s_archived'
     )
     archived_at = models.DateTimeField(null=True, blank=True)
-
     objects = TimeStampedModelManager()
 
     class Meta:
@@ -82,6 +81,10 @@ class TimeStampedModel(BaseModel):
             raise ValueError("Archived by or archived at is already set.")
         self.__class__.objects.filter(pk=self.pk).update(archived_by_id=modifier_pk, archived_at=timezone.now())
 
+    @property
+    def _history_user(self):
+        return self.archived_by or self.updated_by or self.created_by
+
 
 class AppRole(BaseModel):
     """AppRole model"""
@@ -93,7 +96,10 @@ class AppRole(BaseModel):
         max_length=100,
     )
     role_description = models.CharField(db_comment='Description of the app role', max_length=1000)
-    history = HistoricalRecords(table_name='erc_history"."app_role_history')
+    history = HistoricalRecords(
+        table_name='erc_history"."app_role_history',
+        history_user_id_field=models.UUIDField(null=True, blank=True),
+    )
 
     class Meta:
         db_table_comment = "This table contains the definitions for roles within the app/database. These roles are used to define the permissions a user has within the app"
@@ -140,7 +146,10 @@ class DocumentType(BaseModel):
         max_length=1000,
         db_comment="Name of document type (e.g. opt in signed statutory declaration)",
     )
-    history = HistoricalRecords(table_name='erc_history"."document_type_history')
+    history = HistoricalRecords(
+        table_name='erc_history"."document_type_history',
+        history_user_id_field=models.UUIDField(null=True, blank=True),
+    )
 
     class Meta:
         db_table_comment = "Table that contains types of documents"
@@ -158,7 +167,10 @@ class Document(TimeStampedModel):
         db_comment="Type of document, e.g., boundary map",
     )
     description = models.CharField(max_length=1000, blank=True, null=True, db_comment="Description of the document")
-    history = HistoricalRecords(table_name='erc_history"."document_history')
+    history = HistoricalRecords(
+        table_name='erc_history"."document_history',
+        history_user_id_field=models.UUIDField(null=True, blank=True),
+    )
 
     class Meta:
         db_table_comment = "Documents"
@@ -180,7 +192,10 @@ class NaicsCode(BaseModel):
 
     naics_code = models.CharField(max_length=1000, db_comment="NAICS code")
     naics_description = models.CharField(max_length=1000, db_comment="Description of the NAICS code")
-    history = HistoricalRecords(table_name='erc_history"."naics_code_history')
+    history = HistoricalRecords(
+        table_name='erc_history"."naics_code_history',
+        history_user_id_field=models.UUIDField(null=True, blank=True),
+    )
 
     class Meta:
         db_table_comment = "Naics codes"
@@ -198,7 +213,10 @@ class RegulatedProduct(BaseModel):
     """Regulated products model"""
 
     name = models.CharField(max_length=1000, db_comment="The name of a regulated product")
-    history = HistoricalRecords(table_name='erc_history"."regulated_product_history')
+    history = HistoricalRecords(
+        table_name='erc_history"."regulated_product_history',
+        history_user_id_field=models.UUIDField(null=True, blank=True),
+    )
 
     class Meta:
         db_table_comment = "Regulated products"
@@ -224,7 +242,10 @@ class ReportingActivity(BaseModel):
     applicable_to = models.CharField(
         max_length=1000, choices=Applicability.choices, db_comment="Which type of facility the activity applies to"
     )
-    history = HistoricalRecords(table_name='erc_history"."reporting_activity_history')
+    history = HistoricalRecords(
+        table_name='erc_history"."reporting_activity_history',
+        history_user_id_field=models.UUIDField(null=True, blank=True),
+    )
 
     class Meta:
         db_table_comment = "Reporting activities"
@@ -248,7 +269,10 @@ class Address(BaseModel):
     postal_code = CAPostalCodeField(
         db_comment="Postal code of relevant location, limited to valid Canadian postal codes", null=True, blank=True
     )
-    history = HistoricalRecords(table_name='erc_history"."address_history')
+    history = HistoricalRecords(
+        table_name='erc_history"."address_history',
+        history_user_id_field=models.UUIDField(null=True, blank=True),
+    )
 
     class Meta:
         db_table_comment = "Address"
@@ -292,7 +316,11 @@ class User(UserAndContactCommonInfo):
         related_name="users",
         db_comment="The role assigned to this user which defines the permissions the use has.",
     )
-    history = HistoricalRecords(table_name='erc_history"."user_history', m2m_fields=[documents])
+    history = HistoricalRecords(
+        table_name='erc_history"."user_history',
+        m2m_fields=[documents],
+        history_user_id_field=models.UUIDField(null=True, blank=True),
+    )
 
     class Meta:
         db_table_comment = "App users"
@@ -340,7 +368,10 @@ class BusinessRole(BaseModel):
         max_length=100,
     )
     role_description = models.CharField(db_comment='Description of the business role', max_length=1000)
-    history = HistoricalRecords(table_name='erc_history"."business_role_history')
+    history = HistoricalRecords(
+        table_name='erc_history"."business_role_history',
+        history_user_id_field=models.UUIDField(null=True, blank=True),
+    )
 
     class Meta:
         db_table_comment = "This table contains the definitions for roles within the operator/operation. These roles are used to define the permissions a user has within the operator/operation"
@@ -370,7 +401,11 @@ class Contact(UserAndContactCommonInfo, TimeStampedModel):
         related_name="contacts",
     )
 
-    history = HistoricalRecords(table_name='erc_history"."contact_history', m2m_fields=[documents])
+    history = HistoricalRecords(
+        table_name='erc_history"."contact_history',
+        m2m_fields=[documents],
+        history_user_id_field=models.UUIDField(null=True, blank=True),
+    )
 
     class Meta:
         db_table_comment = "Contacts (people who don't use the app, e.g. authorized signing officers)"
@@ -388,7 +423,10 @@ class BusinessStructure(BaseModel):
     """The business structure of an operator"""
 
     name = models.CharField(primary_key=True, max_length=1000, db_comment="The name of a business structure")
-    history = HistoricalRecords(table_name='erc_history"."business_structure_history')
+    history = HistoricalRecords(
+        table_name='erc_history"."business_structure_history',
+        history_user_id_field=models.UUIDField(null=True, blank=True),
+    )
 
     class Meta:
         db_table_comment = "The business structure of an operator"
@@ -484,7 +522,11 @@ class Operator(TimeStampedModel):
         db_comment="Flag to indicate whether CAS internal staff need to explicitly approve the Operator at the same time that they're approving the request for prime admin access. (If a prime admin is requesting access to an existing operator, then the operator is not new and does need to be approved.)",
         default=True,
     )
-    history = HistoricalRecords(table_name='erc_history"."operator_history', m2m_fields=[documents, contacts])
+    history = HistoricalRecords(
+        table_name='erc_history"."operator_history',
+        m2m_fields=[documents, contacts],
+        history_user_id_field=models.UUIDField(null=True, blank=True),
+    )
 
     class Meta:
         constraints = [
@@ -552,7 +594,10 @@ class UserOperator(TimeStampedModel):
         null=True,
         related_name="user_operators_verified_by",
     )
-    history = HistoricalRecords(table_name='erc_history"."user_operator_history')
+    history = HistoricalRecords(
+        table_name='erc_history"."user_operator_history',
+        history_user_id_field=models.UUIDField(null=True, blank=True),
+    )
 
     class Meta:
         db_table_comment = "Through table to connect Users and Operators and track access requests"
@@ -712,7 +757,9 @@ class Operation(OperationAndFacilityCommonInfo):
         related_name='%(class)ss',
     )
     history = HistoricalRecords(
-        table_name='erc_history"."operation_history', m2m_fields=[regulated_products, reporting_activities, documents]
+        table_name='erc_history"."operation_history',
+        m2m_fields=[regulated_products, reporting_activities, documents],
+        history_user_id_field=models.UUIDField(null=True, blank=True),
     )
 
     class Meta:
@@ -854,7 +901,10 @@ class MultipleOperator(TimeStampedModel):
     mailing_address_same_as_physical = models.BooleanField(
         db_comment="Whether or not the mailing address is the same as the physical address", default=True
     )
-    history = HistoricalRecords(table_name='erc_history"."multiple_operator_history')
+    history = HistoricalRecords(
+        table_name='erc_history"."multiple_operator_history',
+        history_user_id_field=models.UUIDField(null=True, blank=True),
+    )
 
     class Meta:
         db_table_comment = "Table to store multiple operator metadata"
@@ -877,7 +927,10 @@ class BcObpsRegulatedOperation(BaseModel):
         blank=True,
         db_comment="Comments from admins in the case that a BC OBPS Regulated Operation ID is revoked",
     )
-    history = HistoricalRecords(table_name='erc_history"."bc_obps_regulated_operation_history')
+    history = HistoricalRecords(
+        table_name='erc_history"."bc_obps_regulated_operation_history',
+        history_user_id_field=models.UUIDField(null=True, blank=True),
+    )
 
     class Meta:
         db_table_comment = "Table to store BC OBPS Regulated Operation metadata"
@@ -939,7 +992,10 @@ class ParentOperator(TimeStampedModel):
         blank=True,
         null=True,
     )
-    history = HistoricalRecords(table_name='erc_history"."parent_operator_history')
+    history = HistoricalRecords(
+        table_name='erc_history"."parent_operator_history',
+        history_user_id_field=models.UUIDField(null=True, blank=True),
+    )
 
     class Meta:
         db_table_comment = "Table to store parent operator metadata"
