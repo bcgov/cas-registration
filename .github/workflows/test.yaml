@@ -113,7 +113,6 @@ jobs:
         run: |
           rm -rf /tmp/.buildx-cache
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
-
   frontend-docker-build:
     runs-on: ubuntu-latest
     needs: backend-docker-build # Necessary to ensure backend image is built first
@@ -164,39 +163,24 @@ jobs:
         run: |
           rm -rf /tmp/.buildx-cache
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
-
-  zap-owasp:
-    needs:
-      ["backend-docker-build", "frontend-docker-build", "install-dev-tools"]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: dev env setup
-        uses: ./.github/actions/dev-env-setup
-      - name: run app locally
-        uses: ./.github/actions/local-app-run
-        with:
-          django_secret_key: ${{ env.DJANGO_SECRET_KEY }}
-      - name: ZAP Frontend Scan
-        uses: zaproxy/action-baseline@v0.9.0
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          docker_name: "owasp/zap2docker-stable"
-          target: "http://localhost:3000/"
-          rules_file_name: ".zap/rules-frontend.tsv"
-          cmd_options: "-a -d -T 5 -m 2"
-          issue_title: OWASP Baseline - Frontend
-          fail_action: false
-      - name: ZAP Backend Scan
-        uses: zaproxy/action-baseline@v0.9.0
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          docker_name: "owasp/zap2docker-stable"
-          target: "http://0.0.0.0:8000/"
-          rules_file_name: ".zap/rules-backend.tsv"
-          cmd_options: "-a -d -T 5 -m 2"
-          issue_title: OWASP Baseline - Backend
-          fail_action: false
+        # Add a new step to print environment variables for debugging
+      - name: Debug Environment Variables
+        run: |
+          echo "KEYCLOAK_CLIENT_ID: $KEYCLOAK_CLIENT_ID"
+          echo "KEYCLOAK_LOGIN_URL: $KEYCLOAK_LOGIN_URL"
+          echo "KEYCLOAK_LOGOUT_URL: $KEYCLOAK_LOGOUT_URL"
+          echo "SITEMINDER_KEYCLOAK_LOGOUT_URL: $SITEMINDER_KEYCLOAK_LOGOUT_URL"
+          echo "NEXTAUTH_URL: $NEXTAUTH_URL"
+        env:
+          KEYCLOAK_CLIENT_ID: ${{ secrets.KEYCLOAK_CLIENT_ID }}
+          KEYCLOAK_CLIENT_SECRET: ${{ secrets.KEYCLOAK_CLIENT_SECRET }}
+          KEYCLOAK_LOGIN_URL: https://dev.loginproxy.gov.bc.ca/auth/realms/standard
+          KEYCLOAK_LOGOUT_URL: https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout
+          KEYCLOAK_TOKEN_URL: https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/token
+          NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
+          NEXTAUTH_URL: http://localhost:3000
+          SITEMINDER_AUTH_URL: https://logontest7.gov.bc.ca
+          SITEMINDER_KEYCLOAK_LOGOUT_URL: https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout
   e2e:
     needs:
       ["backend-docker-build", "frontend-docker-build", "install-dev-tools"]
@@ -239,15 +223,6 @@ jobs:
           E2E_NEW_USER_USERNAME: bc-cas-dev-three
           E2E_NEW_USER_PASSWORD: ${{ secrets.NEW_USER_PASSWORD }}
           E2E_NEW_USER_GUID: ${{ secrets.NEW_USER_GUID }}
-          KEYCLOAK_CLIENT_ID: ${{ secrets.KEYCLOAK_CLIENT_ID }}
-          KEYCLOAK_CLIENT_SECRET: ${{ secrets.KEYCLOAK_CLIENT_SECRET }}
-          KEYCLOAK_LOGIN_URL: https://dev.loginproxy.gov.bc.ca/auth/realms/standard
-          KEYCLOAK_LOGOUT_URL: https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout
-          KEYCLOAK_TOKEN_URL: https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/token
-          NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
-          NEXTAUTH_URL: http://localhost:3000
-          SITEMINDER_AUTH_URL: https://logontest7.gov.bc.ca
-          SITEMINDER_KEYCLOAK_LOGOUT_URL: https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout
         working-directory: ./client
       - uses: actions/upload-artifact@v3
         if: always()
@@ -285,6 +260,38 @@ jobs:
         with:
           name: new-user-storage
           path: client/.auth/new_user.json
+  zap-owasp:
+    needs:
+      ["backend-docker-build", "frontend-docker-build", "install-dev-tools"]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: dev env setup
+        uses: ./.github/actions/dev-env-setup
+      - name: run app locally
+        uses: ./.github/actions/local-app-run
+        with:
+          django_secret_key: ${{ env.DJANGO_SECRET_KEY }}
+      - name: ZAP Frontend Scan
+        uses: zaproxy/action-baseline@v0.9.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          docker_name: "owasp/zap2docker-stable"
+          target: "http://localhost:3000/"
+          rules_file_name: ".zap/rules-frontend.tsv"
+          cmd_options: "-a -d -T 5 -m 2"
+          issue_title: OWASP Baseline - Frontend
+          fail_action: false
+      - name: ZAP Backend Scan
+        uses: zaproxy/action-baseline@v0.9.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          docker_name: "owasp/zap2docker-stable"
+          target: "http://0.0.0.0:8000/"
+          rules_file_name: ".zap/rules-backend.tsv"
+          cmd_options: "-a -d -T 5 -m 2"
+          issue_title: OWASP Baseline - Backend
+          fail_action: false
   backend-tests:
     needs:
       ["backend-docker-build", "frontend-docker-build", "install-dev-tools"]
