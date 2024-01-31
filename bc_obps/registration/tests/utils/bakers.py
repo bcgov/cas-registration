@@ -58,7 +58,6 @@ def operation_baker(operator_id=None):
     if operator_id:
         return baker.make(
             Operation,
-            operator=operator_baker(),
             point_of_contact=contact_baker(),
             naics_code=NaicsCode.objects.first(),
             bcghg_id=uuid.uuid4(),
@@ -67,10 +66,10 @@ def operation_baker(operator_id=None):
 
     return baker.make(
         Operation,
-        operator=operator_baker(),
         point_of_contact=contact_baker(),
         naics_code=NaicsCode.objects.first(),
         bcghg_id=uuid.uuid4(),
+        operator=operator_baker(),
     )
 
 
