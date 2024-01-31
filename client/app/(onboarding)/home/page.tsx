@@ -205,7 +205,7 @@ export default function Page() {
             ))}
           </tbody>
         </table>
-        <section className="flex flex-col items-center">
+        <section className="flex flex-col items-center mt-8">
           <h2 className={`${headerStyle} w-full text-center`}>
             Log in as Government Employee
           </h2>
