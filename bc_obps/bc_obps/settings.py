@@ -161,3 +161,20 @@ if os.environ.get("GOOGLE_APPLICATION_CREDENTIALS"):
 CORS_ALLOWED_ORIGINS = ["http://localhost:3000"]
 
 DATA_UPLOAD_MAX_MEMORY_SIZE = 20000000
+
+# Sentry Exception Tracking
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
+
+SENTRY_DSN = os.environ.get('SENTRY_DSN')
+if SENTRY_DSN:
+    sentry_sdk.init(
+        dsn=SENTRY_DSN,
+        integrations=[DjangoIntegration()],
+        # Set traces_sample_rate to 1.0 to capture 100%
+        # of transactions for performance monitoring.
+        # We recommend adjusting this value in production.
+        traces_sample_rate=1.0,
+        # Specify environment (usually production or staging)
+        environment='production',
+    )

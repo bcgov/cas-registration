@@ -8,7 +8,7 @@ and can be called from server components or from client components.
 "use server";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
-
+import * as Sentry from "@sentry/nextjs";
 // 🛠️ Function to get the encrypted JWT from NextAuth getToken route function
 export async function getToken() {
   try {
@@ -58,7 +58,6 @@ function getUUIDFromEndpoint(endpoint: string): string | null {
  * @param method The HTTP method to use for the request (GET, POST, PUT, DELETE, PATCH).
  * @param pathToRevalidate The path of the data to revalidate after the request is complete.
  * @param options Optional data to include in the request body (example: body for POST, PUT, and PATCH requests, overriding cache control).
- * @param options Optional data to include in the request body (example: body for POST, PUT, and PATCH requests, overriding cache control).
  * @returns A Promise that resolves to the JSON response from the API endpoint, or an error object if the request fails.
  */
 export async function actionHandler(
@@ -67,64 +66,77 @@ export async function actionHandler(
   pathToRevalidate?: string,
   options: RequestInit = {},
 ) {
-  try {
-    // 🔒 Get the encrypted JWT
-    const token = await getToken();
-    // get the user_guid from the JWT
-    const userGuid = token?.user_guid || getUUIDFromEndpoint(endpoint) || "";
+  // Create a FormData object from the body if it's a string to pass to Sentry
+  const formData = new FormData();
+  if (options?.body && typeof options.body === "string")
+    for (const [key, value] of Object.entries(JSON.parse(options.body)))
+      formData.append(key, value as any);
 
-    // Add user_guid to Django API Auhtorization header
-    const defaultOptions: RequestInit = {
-      cache: "no-store", // Default cache option
-      method,
-      headers: new Headers({
-        Authorization: JSON.stringify({
-          user_guid: userGuid,
-        }),
-      }),
-    };
+  return Sentry.withServerActionInstrumentation(
+    `ActionHandler error for endpoint: ${endpoint} and method: ${method}`,
+    { formData },
+    async () => {
+      try {
+        // 🔒 Get the encrypted JWT
+        const token = await getToken();
+        // get the user_guid from the JWT
+        const userGuid =
+          token?.user_guid || getUUIDFromEndpoint(endpoint) || "";
 
-    const mergedOptions: RequestInit = {
-      ...defaultOptions,
-      ...options, // Merge the provided options, allowing cache to be overridden
-    };
+        // Add user_guid to Django API Authorization header
+        const defaultOptions: RequestInit = {
+          cache: "no-store", // Default cache option
+          method,
+          headers: new Headers({
+            Authorization: JSON.stringify({
+              user_guid: userGuid,
+            }),
+          }),
+        };
 
-    const response = await fetch(
-      `${process.env.API_URL}${endpoint}`,
-      mergedOptions,
-    );
-    if (!response.ok) {
-      const res = await response.json();
+        const mergedOptions: RequestInit = {
+          ...defaultOptions,
+          ...options, // Merge the provided options, allowing cache to be overridden
+        };
 
-      // Handle API errors, if any
-      if ("message" in res) return { error: res.message };
+        const response = await fetch(
+          `${process.env.API_URL}${endpoint}`,
+          mergedOptions,
+        );
+        if (!response.ok) {
+          const res = await response.json();
 
-      // Handle HTTP errors, e.g., response.status is not in the 200-299 range
-      return { error: `HTTP error! Status: ${response.status}` };
-    }
+          // Handle API errors, if any
+          if ("message" in res) return { error: res.message };
 
-    const data = await response.json();
+          // Handle HTTP errors, e.g., response.status is not in the 200-299 range
+          return { error: `HTTP error! Status: ${response.status}` };
+        }
 
-    if (pathToRevalidate) revalidatePath(pathToRevalidate);
+        const data = await response.json();
 
-    return data;
-  } catch (error: unknown) {
-    // Handle any errors, including network issues
-    if (error instanceof Error) {
-      // eslint-disable-next-line no-console
-      console.error(`An error occurred while fetching ${endpoint}:`, error);
-      return {
-        // eslint-disable-next-line no-console
-        error: `An error occurred while fetching ${endpoint}: ${error.message}`,
-      };
-    } else {
-      // eslint-disable-next-line no-console
-      console.error(`An unknown error occurred while fetching ${endpoint}`);
-      return {
-        error: `An unknown error occurred while fetching ${endpoint}`,
-      };
-    }
-  }
+        if (pathToRevalidate) revalidatePath(pathToRevalidate);
+
+        return data;
+      } catch (error: unknown) {
+        // Handle any errors, including network issues
+        if (error instanceof Error) {
+          // eslint-disable-next-line no-console
+          console.error(`An error occurred while fetching ${endpoint}:`, error);
+          return {
+            // eslint-disable-next-line no-console
+            error: `An error occurred while fetching ${endpoint}: ${error.message}`,
+          };
+        } else {
+          // eslint-disable-next-line no-console
+          console.error(`An unknown error occurred while fetching ${endpoint}`);
+          return {
+            error: `An unknown error occurred while fetching ${endpoint}`,
+          };
+        }
+      }
+    },
+  );
 }
 
 // 🛠️ Function to get .env vars from server-side
