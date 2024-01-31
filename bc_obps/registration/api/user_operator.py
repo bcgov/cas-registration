@@ -1,6 +1,5 @@
 from django.db import IntegrityError, transaction
 import pytz
-from registration.constants import UNAUTHORIZED_MESSAGE
 from registration.decorators import authorize
 from registration.schema import (
     UserOperatorOut,
@@ -40,7 +39,6 @@ from registration.utils import (
 )
 from ninja.responses import codes_4xx
 from datetime import datetime
-from ninja.errors import HttpError
 from django.forms import model_to_dict
 
 
@@ -126,17 +124,11 @@ def save_operator(payload: UserOperatorOperatorIn, operator_instance: Operator, 
                 new_po_operator_instance.save()
                 new_po_operator_instance.set_create_or_update(modifier=user)
 
-        # get or create a draft UserOperator instance
-        existing_user_operator = UserOperator.objects.filter(
+        # get an existing user_operator instance or create a new one with the default role
+        user_operator, created = UserOperator.objects.get_or_create(
             user=user, operator=created_or_updated_operator_instance
-        ).first()
-        if existing_user_operator:
-            user_operator = existing_user_operator
-        else:
-            # Only set role if created so that we don't create a new UserOperator instance if one already exists
-            user_operator = UserOperator.objects.create(
-                user=user, operator=created_or_updated_operator_instance, role=UserOperator.Roles.REPORTER
-            )
+        )
+        if created:
             user_operator.set_create_or_update(modifier=user)
         return 200, {"user_operator_id": user_operator.id}
 
