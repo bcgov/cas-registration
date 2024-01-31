@@ -163,7 +163,6 @@ jobs:
         run: |
           rm -rf /tmp/.buildx-cache
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
-        # Add a new step to print environment variables for debugging
       - name: Debug Environment Variables
         run: |
           echo "KEYCLOAK_CLIENT_ID: $KEYCLOAK_CLIENT_ID"
@@ -175,16 +174,21 @@ jobs:
           echo "NEXTAUTH_URL: $NEXTAUTH_URL"
           echo "SITEMINDER_AUTH_URL: $SITEMINDER_AUTH_URL"
           echo "SITEMINDER_KEYCLOAK_LOGOUT_URL: $SITEMINDER_KEYCLOAK_LOGOUT_URL"
-        env:
-          KEYCLOAK_CLIENT_ID: ${{ secrets.KEYCLOAK_CLIENT_ID }}
-          KEYCLOAK_CLIENT_SECRET: ${{ secrets.KEYCLOAK_CLIENT_SECRET }}
-          KEYCLOAK_LOGIN_URL: https://dev.loginproxy.gov.bc.ca/auth/realms/standard
-          KEYCLOAK_LOGOUT_URL: https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout
-          KEYCLOAK_TOKEN_URL: https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/token
-          NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
-          NEXTAUTH_URL: http://localhost:3000/
-          SITEMINDER_AUTH_URL: https://logontest7.gov.bc.ca
-          SITEMINDER_KEYCLOAK_LOGOUT_URL: https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout
+      # Add a new step to test environment variables in the Docker container
+      - name: Test Environment Variables in Docker Container
+        run: |
+          docker run --rm \
+            -e KEYCLOAK_CLIENT_ID=${{ secrets.KEYCLOAK_CLIENT_ID }} \
+            -e KEYCLOAK_CLIENT_SECRET=${{ secrets.KEYCLOAK_CLIENT_SECRET }} \
+            -e KEYCLOAK_LOGIN_URL=https://dev.loginproxy.gov.bc.ca/auth/realms/standard \
+            -e KEYCLOAK_LOGOUT_URL=https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout \
+            -e KEYCLOAK_TOKEN_URL=https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/token \
+            -e NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }} \
+            -e NEXTAUTH_URL=http://localhost:3000/ \
+            -e SITEMINDER_AUTH_URL=https://logontest7.gov.bc.ca \
+            -e SITEMINDER_KEYCLOAK_LOGOUT_URL=https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout \
+            ghcr.io/bcgov/cas-reg-frontend:latest \
+            /usr/bin/env
   e2e:
     needs:
       ["backend-docker-build", "frontend-docker-build", "install-dev-tools"]
