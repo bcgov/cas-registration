@@ -56,9 +56,19 @@ const login = async (
     console.log("Completing login form...");
     // Fill the user field
     await page.locator("id=user").fill(userName);
+    // Get the value of the user field
+    // eslint-disable-next-line no-console
+    const userFieldValue = await page.locator("id=user").inputValue();
+    console.log("User Field Value:", userFieldValue);
     // Fill the pw field
     await page.getByLabel("Password").fill(password);
+    // Get the value of the password field
+    const passwordFieldValue = await page.getByLabel("Password").inputValue();
+    // Check that the password field is not blank
+    expect(passwordFieldValue).toBeTruthy();
     // Click Continue button
+    // eslint-disable-next-line no-console
+    console.log("Clicking Continue...");
     await page.getByRole("button", { name: "Continue" }).click();
 
     // 🕒 Wait for the home page profile navigation link to be present

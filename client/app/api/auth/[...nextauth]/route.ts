@@ -20,21 +20,31 @@ export const authOptions: NextAuthOptions = {
       // eslint-disable-next-line no-console
       console.error(code, ...message);
       // Log environment variables (replace with your actual environment variable names)
+
+      // eslint-disable-next-line no-console
       console.error(
         "Environment Variable: KEYCLOAK_CLIENT_ID",
         process.env.KEYCLOAK_CLIENT_ID
       );
+      // eslint-disable-next-line no-console
       console.error(
         "Environment Variable: KEYCLOAK_LOGIN_URL",
         process.env.KEYCLOAK_LOGIN_URL
       );
+      // eslint-disable-next-line no-console
+      console.error(
+        "Environment Variable: NEXTAUTH_URL",
+        process.env.NEXTAUTH_URL
+      );
 
       // Test for empty or null values of NEXTAUTH_SECRET and KEYCLOAK_CLIENT_SECRET
       if (!process.env.NEXTAUTH_SECRET) {
+        // eslint-disable-next-line no-console
         console.error("Error: NEXTAUTH_SECRET is not defined or empty.");
       }
 
       if (!process.env.KEYCLOAK_CLIENT_SECRET) {
+        // eslint-disable-next-line no-console
         console.error("Error: KEYCLOAK_CLIENT_SECRET is not defined or empty.");
       }
     },
@@ -61,7 +71,7 @@ export const authOptions: NextAuthOptions = {
       },
     }),
   ],
-  secret: `${process.env.NEXTAUTH_SECRET}`,
+  secret: process.env.NEXTAUTH_SECRET,
   //https://next-auth.js.org/configuration/pages
   pages: {
     error: "/auth/error", // Error code passed in query string as ?error=
