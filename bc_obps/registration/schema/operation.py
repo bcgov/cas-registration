@@ -49,20 +49,15 @@ class OperationUpdateIn(ModelSchema):
     position_title: Optional[str] = None
     email: Optional[str] = None
     phone_number: Optional[str] = None
+    regulated_products: Optional[List[int]] = []
+    reporting_activities: Optional[List[int]] = []
     # external point of contact details
     external_point_of_contact_first_name: Optional[str] = None
     external_point_of_contact_last_name: Optional[str] = None
     external_point_of_contact_position_title: Optional[str] = None
     external_point_of_contact_email: Optional[str] = None
     external_point_of_contact_phone_number: Optional[str] = None
-    # shared point of contact details
-    street_address: Optional[str] = None
-    municipality: Optional[str] = None
-    province: Optional[str] = None
-    postal_code: Optional[str] = None
     is_external_point_of_contact: Optional[bool] = None
-    operation_has_multiple_operators: Optional[bool] = False
-    multiple_operators_array: Optional[list] = None
     statutory_declaration: Optional[str] = None
 
     @validator("statutory_declaration")

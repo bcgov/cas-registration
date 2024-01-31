@@ -87,10 +87,8 @@ class TestUtils:
         naics_code = baker.make(NaicsCode, naics_code=123456, naics_description='desc')
         point_of_contact = baker.make(Contact)
         operator = operator_baker()
-        activity = baker.make(ReportingActivity)
         product = baker.make(RegulatedProduct)
         operation = operation_baker()
-        operation.reporting_activities.set([activity.id])
         operation.regulated_products.set([product.id])
 
         return OperationUpdateIn(
@@ -98,14 +96,6 @@ class TestUtils:
             point_of_contact_id=point_of_contact.id,
             type="Single Facility Operation",
             naics_code_id=naics_code.id,
-            reporting_activities=[activity.id],
-            physical_street_address="19 Evergreen Terrace",
-            physical_municipality="Springfield",
-            physical_province="BC",
-            physical_postal_code="V1V 1V1",
-            legal_land_description="It's legal",
-            latitude=90,
-            longitude=-120,
             regulated_products=[product.id],
             point_of_contact=point_of_contact.id,
             operator_id=operator.id,
@@ -114,11 +104,6 @@ class TestUtils:
             last_name="Simpson",
             email="homer@email.com",
             phone_number="+17787777777",
-            street_address="19 Evergreen Terrace",
-            position_title="Nuclear Safety Inspector",
-            municipality="Springfield",
-            province="BC",
-            postal_code="V1V 1V1",
         )
 
     @staticmethod
