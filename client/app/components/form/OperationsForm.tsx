@@ -81,9 +81,7 @@ export default function OperationsForm({ formData, schema }: Readonly<Props>) {
             const method = isCreate ? "POST" : "PUT";
             const endpoint = isCreate
               ? "registration/operations"
-              : `registration/operations/${formData?.id}?submit=${isFinalStep}&save_contact=${
-                  formSection === 2
-                }`;
+              : `registration/operations/${formData?.id}?submit=${isFinalStep}&form_section=${formSection}`;
             const pathToRevalidate = isCreate
               ? "dashboard/operations"
               : `dashboard/operations/${formData?.id}`;

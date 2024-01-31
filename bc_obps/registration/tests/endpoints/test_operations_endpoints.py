@@ -115,7 +115,7 @@ class TestOperationsEndpoint(CommonTestSetup):
                 role,
                 content_type_json,
                 mock_operation.json(),
-                self.endpoint + "/" + str(operation.id) + "?submit=false&save_contact=false",
+                self.endpoint + "/" + str(operation.id) + "?submit=false&form_section=1",
             )
             assert response.status_code == 401
 
@@ -233,71 +233,72 @@ class TestOperationsEndpoint(CommonTestSetup):
         )
         assert post_response.status_code == 201
 
-    def test_post_new_operation_with_multiple_operators(self):
-        naics_code = baker.make(NaicsCode)
-        contact = baker.make(Contact)
-        regulated_products = baker.make(RegulatedProduct, _quantity=2)
-        reporting_activities = baker.make(ReportingActivity, _quantity=2)
-        operator = operator_baker()
-        mock_operation = OperationCreateIn(
-            name='Springfield Nuclear Power Plant',
-            type='Single Facility Operation',
-            naics_code_id=naics_code.id,
-            operation_has_multiple_operators=True,
-            multiple_operators_array=[
-                {
-                    "mo_legal_name": "test",
-                    "mo_trade_name": "test",
-                    "mo_cra_business_number": 123,
-                    "mo_bc_corporate_registry_number": 'abc1234567',
-                    "mo_business_structure": "BC Corporation",
-                    "mo_website": "https://www.test-mo.com",
-                    "mo_physical_street_address": "test",
-                    "mo_physical_municipality": "test",
-                    "mo_physical_province": "BC",
-                    "mo_physical_postal_code": "V1V 1V1",
-                    "mo_mailing_address_same_as_physical": True,
-                    "mo_mailing_street_address": "test",
-                    "mo_mailing_municipality": "test",
-                    "mo_mailing_province": "BC",
-                    "mo_mailing_postal_code": "V1V 1V1",
-                },
-                {
-                    "mo_legal_name": "test2",
-                    "mo_trade_name": "test2",
-                    "mo_cra_business_number": 123,
-                    "mo_bc_corporate_registry_number": 'wer1234567',
-                    "mo_business_structure": "BC Corporation",
-                    "mo_physical_street_address": "test",
-                    "mo_physical_municipality": "test",
-                    "mo_physical_province": "BC",
-                    "mo_physical_postal_code": "V1V 1V1",
-                    "mo_mailing_address_same_as_physical": True,
-                    "mo_mailing_street_address": "test",
-                    "mo_mailing_municipality": "test",
-                    "mo_mailing_province": "BC",
-                    "mo_mailing_postal_code": "V1V 1V1",
-                },
-            ],
-            reporting_activities=reporting_activities,
-            regulated_products=regulated_products,
-            contacts=[contact.id],
-            operator_id=operator.id,
-        )
-        post_response = TestUtils.mock_post_with_auth_role(
-            self, 'industry_user', content_type_json, mock_operation.json()
-        )
-        assert post_response.status_code == 201
-        assert post_response.json().get('id') is not None
-        baker.make(
-            UserOperator, user_id=self.user.user_guid, status=UserOperator.Statuses.APPROVED, operator_id=operator.id
-        )
-        get_response = TestUtils.mock_get_with_auth_role(self, 'industry_user').json()[0]
-        assert (
-            'operation_has_multiple_operators' in get_response
-            and get_response['operation_has_multiple_operators'] == True
-        )
-        assert 'multiple_operators_array' in get_response and len(get_response['multiple_operators_array']) == 2
+    # commenting out this unit test for now because multiple_operators are not included in MVP
+    # def test_post_new_operation_with_multiple_operators(self):
+    #     naics_code = baker.make(NaicsCode)
+    #     contact = baker.make(Contact)
+    #     regulated_products = baker.make(RegulatedProduct, _quantity=2)
+    #     # reporting_activities = baker.make(ReportingActivity, _quantity=2)
+    #     operator = operator_baker()
+    #     mock_operation = OperationCreateIn(
+    #         name='Springfield Nuclear Power Plant',
+    #         type='Single Facility Operation',
+    #         naics_code_id=naics_code.id,
+    #         # operation_has_multiple_operators=True,
+    #         # multiple_operators_array=[
+    #         #     {
+    #         #         "mo_legal_name": "test",
+    #         #         "mo_trade_name": "test",
+    #         #         "mo_cra_business_number": 123,
+    #         #         "mo_bc_corporate_registry_number": 'abc1234567',
+    #         #         "mo_business_structure": "BC Corporation",
+    #         #         "mo_website": "https://www.test-mo.com",
+    #         #         "mo_physical_street_address": "test",
+    #         #         "mo_physical_municipality": "test",
+    #         #         "mo_physical_province": "BC",
+    #         #         "mo_physical_postal_code": "V1V 1V1",
+    #         #         "mo_mailing_address_same_as_physical": True,
+    #         #         "mo_mailing_street_address": "test",
+    #         #         "mo_mailing_municipality": "test",
+    #         #         "mo_mailing_province": "BC",
+    #         #         "mo_mailing_postal_code": "V1V 1V1",
+    #         #     },
+    #         #     {
+    #         #         "mo_legal_name": "test2",
+    #         #         "mo_trade_name": "test2",
+    #         #         "mo_cra_business_number": 123,
+    #         #         "mo_bc_corporate_registry_number": 'wer1234567',
+    #         #         "mo_business_structure": "BC Corporation",
+    #         #         "mo_physical_street_address": "test",
+    #         #         "mo_physical_municipality": "test",
+    #         #         "mo_physical_province": "BC",
+    #         #         "mo_physical_postal_code": "V1V 1V1",
+    #         #         "mo_mailing_address_same_as_physical": True,
+    #         #         "mo_mailing_street_address": "test",
+    #         #         "mo_mailing_municipality": "test",
+    #         #         "mo_mailing_province": "BC",
+    #         #         "mo_mailing_postal_code": "V1V 1V1",
+    #         #     },
+    #         # ],
+    #         # reporting_activities=reporting_activities,
+    #         regulated_products=regulated_products,
+    #         contacts=[contact.id],
+    #         operator_id=operator.id,
+    #     )
+    #     post_response = TestUtils.mock_post_with_auth_role(
+    #         self, 'industry_user', content_type_json, mock_operation.json()
+    #     )
+    #     assert post_response.status_code == 201
+    #     assert post_response.json().get('id') is not None
+    #     baker.make(
+    #         UserOperator, user_id=self.user.user_guid, status=UserOperator.Statuses.APPROVED, operator_id=operator.id
+    #     )
+    #     get_response = TestUtils.mock_get_with_auth_role(self, 'industry_user').json()[0]
+    #     assert (
+    #         'operation_has_multiple_operators' in get_response
+    #         and get_response['operation_has_multiple_operators'] == True
+    #     )
+    #     assert 'multiple_operators_array' in get_response and len(get_response['multiple_operators_array']) == 2
 
     def test_post_new_malformed_operation(self):
         response = TestUtils.mock_post_with_auth_role(
@@ -328,7 +329,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             type='Type 1',
             operator_id=operator.id,
             regulated_products=[],
-            reporting_activities=[],
+            # reporting_activities=[],
         )
         post_response = TestUtils.mock_post_with_auth_role(
             self, "industry_user", content_type_json, data=new_operation.json()
@@ -473,7 +474,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             'industry_user',
             content_type_json,
             payload.json(),
-            self.endpoint + "/" + str(operation.id) + "?submit=false&save_contact=false",
+            self.endpoint + "/" + str(operation.id) + "?submit=false&form_section=1",
         )
         assert response.status_code == 200
         assert response.json() == {"name": "New name"}
@@ -502,7 +503,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             'industry_user',
             content_type_json,
             payload.json(),
-            self.endpoint + "/" + str(operation.id) + "?submit=true&save_contact=false",
+            self.endpoint + "/" + str(operation.id) + "?submit=true&form_section=1",
         )
 
         assert response.status_code == 200
@@ -521,7 +522,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             'industry_user',
             content_type_json,
             {"garbage": "i am bad data"},
-            self.endpoint + "/" + str(operation.id) + "?submit=false&save_contact=false",
+            self.endpoint + "/" + str(operation.id) + "?submit=false&form_section=1",
         )
 
         assert response.status_code == 422
@@ -539,7 +540,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             point_of_contact_id=contact2.id,
             type='Single Facility Operation',
             naics_code_id=operation.naics_code_id,
-            reporting_activities=[],
+            # reporting_activities=[],
             regulated_products=[],
             operation_has_multiple_operators=False,
             point_of_contact=contact2.id,
@@ -561,7 +562,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             'industry_user',
             content_type_json,
             update.json(),
-            self.endpoint + '/' + str(operation.id) + "?submit=true&save_contact=true",
+            self.endpoint + '/' + str(operation.id) + "?submit=true&form_section=2",
         )
         assert put_response.status_code == 200
 
@@ -581,7 +582,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             name='Springfield Nuclear Power Plant',
             type='Single Facility Operation',
             naics_code_id=operation.naics_code_id,
-            reporting_activities=[],
+            # reporting_activities=[],
             regulated_products=[],
             operation_has_multiple_operators=False,
             documents=[],
@@ -608,7 +609,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             'industry_user',
             content_type_json,
             update.json(),
-            self.endpoint + '/' + str(operation.id) + "?submit=true&save_contact=true",
+            self.endpoint + '/' + str(operation.id) + "?submit=true&form_section=2",
         )
         assert put_response.status_code == 200
 
@@ -644,8 +645,8 @@ class TestOperationsEndpoint(CommonTestSetup):
             naics_code_id=operation.naics_code_id,
             operator_id=operator.id,
             documents=[],
-            regulated_products=[],
-            reporting_activities=[],
+            # regulated_products=[],
+            # reporting_activities=[],
         )
 
         TestUtils.authorize_current_user_as_operator_user(self, operator)
@@ -654,7 +655,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             'industry_user',
             content_type_json,
             update.json(),
-            self.endpoint + '/' + str(operation.id) + "?submit=true&save_contact=false",
+            self.endpoint + '/' + str(operation.id) + "?submit=true&form_section=1",
         )
         assert put_response.status_code == 200
         assert Operation.objects.count() == 1
@@ -679,7 +680,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             naics_code_id=operation.naics_code_id,
             documents=[],
             regulated_products=[],
-            reporting_activities=[],
+            # reporting_activities=[],
         )
 
         TestUtils.authorize_current_user_as_operator_user(self, operator)
@@ -688,7 +689,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             'industry_user',
             content_type_json,
             update.json(),
-            self.endpoint + '/' + str(operation.id) + "?submit=true&save_contact=false",
+            self.endpoint + '/' + str(operation.id) + "?submit=true&form_section=1",
         )
         assert put_response.status_code == 200
         assert Operation.objects.count() == 1
@@ -714,7 +715,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             naics_code_id=operation.naics_code_id,
             documents=[],
             regulated_products=[],
-            reporting_activities=[],
+            # reporting_activities=[],
         )
         TestUtils.authorize_current_user_as_operator_user(self, operator)
         put_response = TestUtils.mock_put_with_auth_role(
@@ -722,7 +723,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             'industry_user',
             content_type_json,
             update.json(),
-            self.endpoint + '/' + str(operation.id) + "?submit=true&save_contact=false",
+            self.endpoint + '/' + str(operation.id) + "?submit=true&form_section=1",
         )
 
         assert put_response.status_code == 200
@@ -751,7 +752,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             naics_code_id=operation.naics_code_id,
             documents=[],
             regulated_products=[],
-            reporting_activities=[],
+            # reporting_activities=[],
         )
         TestUtils.authorize_current_user_as_operator_user(self, operator)
         put_response = TestUtils.mock_put_with_auth_role(
@@ -759,7 +760,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             'industry_user',
             content_type_json,
             update.json(),
-            self.endpoint + '/' + str(operation.id) + "?submit=true&save_contact=false",
+            self.endpoint + '/' + str(operation.id) + "?submit=true&form_section=1",
         )
 
         assert put_response.status_code == 200
@@ -781,14 +782,15 @@ class TestOperationsEndpoint(CommonTestSetup):
         operation.submission_date = fake_timestamp_from_past
         operation.save(update_fields=['status', 'operator_id', 'submission_date'])
 
+        regulated_product = baker.make(RegulatedProduct)
         update = OperationUpdateIn(
             name='Declined Operation Name',
             type='Type',
             operator_id=operator.id,
             naics_code_id=operation.naics_code_id,
             documents=[],
-            regulated_products=[],
-            reporting_activities=[],
+            regulated_products=[regulated_product.id],
+            # reporting_activities=[],
         )
         TestUtils.authorize_current_user_as_operator_user(self, operator)
         put_response = TestUtils.mock_put_with_auth_role(
@@ -796,7 +798,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             'industry_user',
             content_type_json,
             update.json(),
-            self.endpoint + '/' + str(operation.id) + "?submit=true&save_contact=false",
+            self.endpoint + '/' + str(operation.id) + "?submit=true&form_section=1",
         )
 
         assert put_response.status_code == 200
@@ -809,3 +811,66 @@ class TestOperationsEndpoint(CommonTestSetup):
         # assert that operation's submission_date has been updated to the current time (approximately)
         assert retrieved_operation.submission_date - datetime.now(timezone.utc) < timedelta(seconds=10)
         assert retrieved_operation.status == Operation.Statuses.PENDING
+
+    def test_put_operation_one_form_section_at_a_time(self):
+        # test setup
+        operator = operator_baker()
+        operation = operation_baker()
+        operation.operator_id = operator.id
+        operation.save(update_fields=['operator_id'])
+        TestUtils.authorize_current_user_as_operator_user(self, operator)
+
+        # update fields visible in section 1 of form (on frontend)
+        update_from_form_section_1 = OperationUpdateIn(
+            name='New and Improved Legal Name',
+            type='Type A',
+            operator_id=operator.id,
+            documents=[],
+            regulated_products=[],
+            naics_code_id=operation.naics_code_id
+            # reporting_activities=[1],
+        )
+        put_response_1 = TestUtils.mock_put_with_auth_role(
+            self,
+            'industry_user',
+            content_type_json,
+            update_from_form_section_1.json(),
+            self.endpoint + '/' + str(operation.id) + "?submit=false&form_section=1",
+        )
+        assert put_response_1.status_code == 200
+        assert Operation.objects.count() == 1
+        retrieved_op = Operation.objects.first()
+        assert retrieved_op.name == 'New and Improved Legal Name'
+        assert retrieved_op.type == 'Type A'
+
+        # update fields visible in section 2 of form
+        update_from_form_section_2 = OperationUpdateIn(
+            name='This name should not be changed',
+            type='bad type',
+            operator_id=operator.id,
+            naics_code_id=operation.naics_code_id,
+            regulated_products=[],
+            # reporting_activities=[],
+            is_external_point_of_contact=True,
+            external_point_of_contact_first_name='Bart',
+            external_point_of_contact_last_name='Simpson',
+            external_point_of_contact_position_title='Scoundrel',
+            external_point_of_contact_email='bart@email.com',
+            external_point_of_contact_phone_number='+17787777777',
+        )
+        put_response_2 = TestUtils.mock_put_with_auth_role(
+            self,
+            'industry_user',
+            content_type_json,
+            update_from_form_section_2.json(),
+            self.endpoint + '/' + str(operation.id) + "?submit=false&form_section=2",
+        )
+        assert put_response_2.status_code == 200
+        assert Operation.objects.count() == 1
+        retrieved_op = Operation.objects.first()
+        # should be 2 contacts - the original Contact created by baker for the operation, and the updated "Bart" contact
+        assert Contact.objects.count() == 2
+        contact = Contact.objects.last()
+        assert contact.first_name == 'Bart'
+        assert retrieved_op.point_of_contact_id == contact.id
+        assert retrieved_op.name == 'New and Improved Legal Name'

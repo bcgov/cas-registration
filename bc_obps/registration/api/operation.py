@@ -184,7 +184,7 @@ def create_operation(request, payload: OperationCreateIn):
 
 @router.put("/operations/{operation_id}", response={200: OperationUpdateOut, codes_4xx: Message})
 @authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles())
-def update_operation(request, operation_id: int, submit: str, save_contact: str, payload: OperationUpdateIn):
+def update_operation(request, operation_id: int, submit: str, form_section: int, payload: OperationUpdateIn):
     user: User = request.current_user
     user_operator = UserOperator.objects.filter(user_id=user.user_guid).first()
     # if there's no user_operator or operator, then the user hasn't requested access to the operator
@@ -207,7 +207,27 @@ def update_operation(request, operation_id: int, submit: str, save_contact: str,
 
     point_of_contact_id = payload.point_of_contact_id or None
 
-    if save_contact == "true":
+    # the frontend includes default values, which are being sent in the payload to the backend. We need to know
+    # whether the data being received in the payload is what the user has actually viewed, so we separate this
+    # by form_section (the paginated form in the UI)
+    if form_section == 1:
+        data_fields = [
+            'name',
+            'type',
+            'naics_code_id',
+            'swrs_facility_id',
+            'bcghg_id',
+            'opt_in',
+        ]
+        payload_dict: dict = {}
+        for attr in data_fields:
+            if hasattr(payload, attr):
+                payload_dict[attr] = getattr(payload, attr)
+        for attr, value in payload_dict.items():
+            setattr(operation, attr, value)
+        operation.regulated_products.set(payload.regulated_products)
+        operation.save(update_fields=list(payload_dict.keys()))
+    elif form_section == 2:
         is_external_point_of_contact = payload.is_external_point_of_contact
 
         if is_external_point_of_contact is False:  # the point of contact is the user
@@ -239,23 +259,7 @@ def update_operation(request, operation_id: int, submit: str, save_contact: str,
             )
             external_poc.set_create_or_update(modifier=user)
             operation.point_of_contact = external_poc
-
-    # updating only a subset of fields (using all fields would overwrite the existing ones)
-    # TODO: review the use of payload_dict. I'm suspicious of this logic....
-    payload_dict: dict = payload.dict(
-        include={
-            "name",
-            "type",
-            "previous_year_attributable_emissions",
-            "swrs_facility_id",
-            "bcghg_id",
-            "opt_in",
-            "operation_has_multiple_operators",
-        }
-    )
-
-    for attr, value in payload_dict.items():
-        setattr(operation, attr, value)
+        operation.save(update_fields=['point_of_contact'])
 
     if submit == "true":
         """
@@ -272,15 +276,7 @@ def update_operation(request, operation_id: int, submit: str, save_contact: str,
             operation.submission_date = datetime.now(pytz.utc)
             operation.save(update_fields=['status', 'submission_date'])
 
-    operation.save(update_fields=list(payload_dict.keys()))
     operation.set_create_or_update(modifier=user)
-
-    if payload.operation_has_multiple_operators:
-        create_or_update_multiple_operators(payload.multiple_operators_array, operation, user)
-    else:  # if the operation doesn't have multiple operators anymore, archive all existing ones
-        operation_multiple_operators = MultipleOperator.objects.filter(operation_id=operation.id)
-        for operator in operation_multiple_operators:
-            operator.set_archive(modifier=user)
 
     if payload.statutory_declaration:
         operation.documents.filter(type=DocumentType.objects.get(name="signed_statutory_declaration")).delete()
