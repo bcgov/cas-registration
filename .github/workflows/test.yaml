@@ -192,8 +192,8 @@ jobs:
             -e NEXTAUTH_URL=http://localhost:3000/ \
             -e SITEMINDER_AUTH_URL=https://logontest7.gov.bc.ca \
             -e SITEMINDER_KEYCLOAK_LOGOUT_URL=https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout \
-            ghcr.io/bcgov/cas-reg-frontend:latest \
-            /usr/bin/env
+            ghcr.io/bcgov/cas-reg-frontend:latest /bin/sh -c 'echo "Environment variables are set"'
+
   e2e:
     needs:
       ["backend-docker-build", "frontend-docker-build", "install-dev-tools"]
