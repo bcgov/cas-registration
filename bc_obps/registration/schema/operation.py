@@ -77,6 +77,8 @@ class OperationUpdateIn(ModelSchema):
             "id",  # need to exclude id since it's auto generated and we don't want to pass it in
             "documents",  # excluding documents because they are handled by individual form fields
             *AUDIT_FIELDS,
+            "status",
+            "submission_date",
         ]
 
         allow_population_by_field_name = True
