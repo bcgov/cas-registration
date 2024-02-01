@@ -13,8 +13,15 @@ class OperatorOut(ModelSchema):
     """
 
     physical_street_address: Optional[str] = Field(None, alias="physical_address.street_address")
+    physical_municipality: Optional[str] = Field(None, alias="physical_address.municipality")
+    physical_province: Optional[str] = Field(None, alias="physical_address.province")
+    physical_postal_code: Optional[str] = Field(None, alias="physical_address.postal_code")
+    mailing_street_address: Optional[str] = Field(None, alias="mailing_address.street_address")
+    mailing_municipality: Optional[str] = Field(None, alias="mailing_address.municipality")
+    mailing_province: Optional[str] = Field(None, alias="mailing_address.province")
+    mailing_postal_code: Optional[str] = Field(None, alias="mailing_address.postal_code")
     operator_has_parent_operators: bool
-    parent_operators_array: Optional[List[ParentOperatorOut]] = Field(None, alias="operator.parent_operators")
+    parent_operators_array: Optional[List[ParentOperatorOut]] = Field(None, alias="parent_operators")
 
     @staticmethod
     def resolve_operator_has_parent_operators(obj: UserOperator) -> bool:
