@@ -1,0 +1,58 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  labels:
+    app.kubernetes.io/name: cas-registration
+    component: backend
+  name: import-ciip-swrs-data
+  namespace: <REG NAMESPACE>
+spec:
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: cas-registration
+        component: backend
+      name: import-ciip-swrs-data
+    spec:
+      activeDeadlineSeconds: 300
+      automountServiceAccountToken: false
+      containers:
+        - name: import-ciip-swrs-data
+          image: ghcr.io/bcgov/cas-obps-data-import:latest
+          resources:
+            limits:
+              cpu: 500m
+              memory: 128Mi
+            requests:
+              cpu: 100m
+              memory: 64Mi
+          env:
+            - name: PGHOST
+              value: <GET FROM REG NAMESPACE>
+            - name: PGPORT
+              value: <GET FROM REG NAMESPACE>
+            - name: PGDATABASE
+              value: <GET FROM REG NAMESPACE>
+            - name: PGUSER
+              value: <GET FROM REG NAMESPACE>
+            - name: PGPASSWORD
+              value: <GET FROM REG NAMESPACE>
+            - name: CIIP_HOST
+              value: <GET FROM CIIP NAMESPACE>
+            - name: CIIP_DB
+              value: <GET FROM CIIP NAMESPACE>
+            - name: CIIP_USER
+              value: <GET READONLY USER FROM CIIP NAMESPACE>
+            - name: CIIP_PASSWORD
+              value: <GET READONLY PASSWORD FROM CIIP NAMESPACE>
+          command:
+            - /usr/bin/env
+            - bash
+            - -c
+            - >
+              psql -c "create extension if not exists postgres_fdw;";
+              psql -c "create schema if not exists imp;";
+              psql -f ./obps_swrs_import_fdw.sql;
+              psql -f ./obps_import_swrs_data_from_fdw.sql;
+              psql -c "select imp.import_swrs_data('$(CIIP_HOST)', '$(CIIP_DB)', '$(PGPORT)', '$(CIIP_USER)', '$(CIIP_PASSWORD)', true);";
+      restartPolicy: Never
