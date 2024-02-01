@@ -25,7 +25,7 @@ const MultiStepAccordion = ({ schema, uiSchema, formData }: Props) => {
   };
 
   return (
-    <>
+    <section className="mb-8">
       <div className="w-full flex justify-end mb-4 mt-12">
         <div>
           <button
@@ -58,7 +58,7 @@ const MultiStepAccordion = ({ schema, uiSchema, formData }: Props) => {
           </Accordion>
         );
       })}
-    </>
+    </section>
   );
 };
 
