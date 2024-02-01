@@ -21,7 +21,7 @@ const operation = () => {
   const operation = http.post(
     HOST + "/operations",
     JSON.stringify({
-      operator_id: 1,
+      operator_id: 2,
       name: "Test Operation",
       status: "Pending",
       documents: [],
@@ -46,7 +46,7 @@ const operation = () => {
     http.put(
       HOST + `/operations/${operationId}?submit=false&save_contact=false`,
       JSON.stringify({
-        operator_id: 1,
+        operator_id: 2,
         name: "Test Operation Updated",
         status: "Pending",
         documents: [],
