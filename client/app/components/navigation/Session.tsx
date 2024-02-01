@@ -1,4 +1,3 @@
-import Login from "@/app/components/navigation/Login";
 import Profile from "@/app/components/navigation/Profile";
 import { useSession } from "next-auth/react";
 import { getUserFullName } from "@/app/utils/getUserFullName";
@@ -14,10 +13,7 @@ export default function Session() {
   if (status === "loading") {
     //👇️ Handle loading state (e.g., show a loading spinner).
     return <div>Loading...</div>;
-  } else if (!session) {
-    //👇️ Handle unauthenticated state (e.g., show a "Sign In" button).
-    return <Login />;
-  } else {
+  } else if (session) {
     //👇️ Handle authenticated state (e.g., display user information).
     // You can access the user session data through the 'session' variable.
     return <Profile name={profileName} />;
