@@ -155,7 +155,6 @@ export const createOperationSchema = (
     }),
   );
 
-  console.log(businessStructureList);
   if (Array.isArray(businessStructureOptions)) {
     // for operator
 
