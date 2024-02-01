@@ -1,4 +1,5 @@
-from ninja import Schema
+from typing import Optional
+from ninja import Field, Schema
 from ninja import ModelSchema
 from registration.constants import AUDIT_FIELDS
 from registration.models import Operator
@@ -8,6 +9,8 @@ class OperatorOut(ModelSchema):
     """
     Schema for the Operator model
     """
+
+    physical_street_address: Optional[str] = Field(None, alias="physical_address.street_address")
 
     class Config:
         model = Operator
