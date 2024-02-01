@@ -8,11 +8,15 @@ import {
 } from "@mui/x-data-grid";
 import Link from "next/link";
 import { BC_GOV_BACKGROUND_COLOR_BLUE } from "@/app/styles/colors";
+import { Session } from "next-auth";
 
 interface Props {
   rows: GridRowsProp;
   columns: GridColDef[];
   cntxt?: string;
+  // Optionally pass the server session to the component
+  // Since directly using client session can be a bit slow to load
+  session?: Session | null;
 }
 
 interface SortIconProps {
@@ -49,9 +53,11 @@ const DescendingIcon = () => {
   return <SortIcon topFill="white" bottomFill="grey" />;
 };
 
-const DataGrid: React.FC<Props> = ({ rows, columns, cntxt }) => {
+const DataGrid: React.FC<Props> = ({ rows, columns, cntxt, session }) => {
   // 📚  Define a state variable to store columns
   const [customColumns, setCustomColumns] = useState<GridColDef[]>(columns);
+
+  const isIndustryUser = session?.user.app_role?.includes("industry");
 
   useEffect(() => {
     // 🔍 Props passed from Server Components—for example client/app/operations/page.tsx—must be serializable
@@ -68,7 +74,10 @@ const DataGrid: React.FC<Props> = ({ rows, columns, cntxt }) => {
                   {/* 🔗 Add reg or details link */}
                   <Link
                     className="no-underline text-bc-link-blue whitespace-normal"
-                    href={`operations/${params.row.id}`}
+                    // Indutry users view multistep form, internal users view single page details route
+                    href={`operations/${params.row.id}${
+                      isIndustryUser ? "/1" : ""
+                    }`}
                   >
                     {params.row.status === "Not Started"
                       ? "Start Application"
