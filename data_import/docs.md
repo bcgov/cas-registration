@@ -24,6 +24,7 @@ This directory contains all the files necessary to import data from ciip/swrs in
 - Delete the Kubernetes Network Policy in CIIP prod, we shouldn't need it outside of this import work
 
 ## Subsequent Run Steps:
+
 - This work is intended for a one-time run, however, it can be run subsequent times by changing one parameter in the job template.
 - If any changes to the functions are made, then a new image will need to be built & pushed to ghcrio/bcgov
 - The addresses should not be re-imported when run a second time as there is no common unique identifier between the source and destination data to check against & therefore re-importing them will result in duplicate address rows.
@@ -34,11 +35,12 @@ This directory contains all the files necessary to import data from ciip/swrs in
 ## Manual Testing:
 
 - This import was manually tested in the following ways:
+
   - The set of results in the obps operator table is equal to the number of results from the initial swrs.organisation query used to pare down the results into unique operator rows where the operator submitted a swrs report in 2022.
   - The set of results in the obps operation table is equal to the number of results from the initial swrs.facilty query used to pare down the results into unique facility rows where the facility_type was either 'SFO' or 'LFO' and the facility submitted a swrs report in 2022.
   - The following union query was run on the output of the fdw import to ensure that the correct operations were associated to the correct operators in the obps operation table:
 
-  ``` sql
+  ```sql
   -- BEGIN SOURCE QUERY
   with x as (
     select max(o.report_id) as max_report_id, o.swrs_organisation_id from swrs.organisation o
@@ -73,10 +75,12 @@ This directory contains all the files necessary to import data from ciip/swrs in
   select cra_business_number, swrs_facility_id from erc.operation f join erc.operator o on f.operator_id = o.id;
   -- END DESTINATION QUERY
   ```
+
   The number of results did not differ after applying the union operator on the two queries. So there are no extraneous rows between the two queries where a facility / operation's swrs_facility_id has been associated incorrecty with a different organisation / operator's swrs_organisation_id.
 
   - The following similar query was run to ensure that no addresses were incorrectly associated with an operator after import:
-  ``` sql
+
+  ```sql
   -- BEGIN SOURCE QUERY
   with x as (
   select max(o.report_id) as max_report_id, o.swrs_organisation_id from swrs.organisation o
@@ -110,4 +114,5 @@ This directory contains all the files necessary to import data from ciip/swrs in
   join erc.address ma on o.mailing_address_id = ma.id;
   -- END DESTINATION QUERY
   ```
+
   The results differed by 1 row as there is a duplicate organisation with matching cra_business_numbers, but different swrs_organisation_ids in the original query. This duplicate is normalized during the import to resolve to one operator. So, ignoring this duplicate row, there are no extraneous rows between the two queries where an address was incorrectly associated with an operator.

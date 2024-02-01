@@ -17,7 +17,7 @@ spec:
       activeDeadlineSeconds: 300
       automountServiceAccountToken: false
       containers:
-        - name:  import-ciip-swrs-data
+        - name: import-ciip-swrs-data
           image: ghcr.io/bcgov/cas-obps-data-import:latest
           resources:
             limits:
