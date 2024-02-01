@@ -15,9 +15,17 @@ spec:
       name: import-ciip-swrs-data
     spec:
       activeDeadlineSeconds: 300
+      automountServiceAccountToken: false
       containers:
         - name:  import-ciip-swrs-data
           image: ghcr.io/bcgov/cas-obps-data-import:latest
+          resources:
+            limits:
+              cpu: 500m
+              memory: 128Mi
+            requests:
+              cpu: 100m
+              memory: 64Mi
           env:
             - name: PGHOST
               value: <GET FROM REG NAMESPACE>
