@@ -27,6 +27,7 @@ const Accordion = ({ children, expanded, title }: Props) => {
     <MuiAccordion
       disableGutters
       sx={{
+        // This removes a small shadow that appears when the accordions are stacked
         position: "initial",
       }}
       expanded={isExpanded}
