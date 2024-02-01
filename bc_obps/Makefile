@@ -85,7 +85,7 @@ migrations:
 .PHONY: superuser
 superuser: ## create a superuser
 superuser:
-	$(POETRY_RUN) python $(MANAGE_PY) createsuperuser
+	$(POETRY_RUN) python $(MANAGE_PY) create_superuser
 
 loadfixtures: ## add all registration fixture files to the db
 loadfixtures:
