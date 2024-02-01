@@ -16,6 +16,7 @@ import { Status } from "@/app/utils/enums";
 import { Operation as OperationInt } from "@/app/components/routes/operations/types";
 import Link from "next/link";
 import OperationReviewForm from "@/app/components/form/OperationReviewForm";
+import { BusinessStructure } from "@/app/components/routes/select-operator/form/types";
 
 // 🚀 API call: GET user's data
 async function getUserFormData(): Promise<
@@ -65,22 +66,34 @@ export async function getRegulatedProducts() {
 //   }
 // }
 
-// Commenting out as we are disabling the multiple operators feature
 // 🛠️ Function to fetch the business structures
-// Commenting out as we are disabling the multiple operators feature
-// async function getBusinessStructures() {
-//   return actionHandler(
-//     `registration/business_structures`,
-//     "GET",
-//     `/dashboard/select-operator/user-operator`,
-//   );
-// }
+async function getBusinessStructures() {
+  return actionHandler(
+    `registration/business_structures`,
+    "GET",
+    `/dashboard/select-operator/user-operator`,
+  );
+}
 
 // 🛠️ Function to fetch an operation by ID
 async function getOperation(id: number) {
   try {
     return await actionHandler(
       `registration/operations/${id}`,
+      "GET",
+      `/operations/${id}`,
+    );
+  } catch (error) {
+    // Handle the error here or rethrow it to handle it at a higher level
+    throw error;
+  }
+}
+
+// 🛠️ Function to fetch an operator by ID
+async function getOperator(id: number) {
+  try {
+    return await actionHandler(
+      `registration/operators/${id}`,
       "GET",
       `/operations/${id}`,
     );
@@ -102,7 +115,7 @@ export const createOperationSchema = (
   //   id: number;
   //   name: string;
   // }[],
-  /*   businessStructureList: { id: string; label: string }[], */
+  businessStructureList: { id: string; label: string }[],
 ) => {
   const localSchema = JSON.parse(JSON.stringify(schema));
   // naics codes
@@ -132,48 +145,33 @@ export const createOperationSchema = (
   //   localSchema.properties.operationPage1.properties.reporting_activities.items.enumNames =
   //     reportingActivities.map((activity) => activity?.name);
   // }
-  // business structures
-  // Commenting out as we are disabling the multiple operators feature
-  // const businessStructureOptions = businessStructureList?.map(
-  //   (businessStructure) => ({
-  //     type: "string",
-  //     title: businessStructure.label,
-  //     enum: [businessStructure.id],
-  //     value: businessStructure.id,
-  //   }),
-  // );
-  //
-  // if (Array.isArray(businessStructureOptions)) {
-  //   localSchema.properties.operationPage1.allOf[2].then.properties.multiple_operators_array.items.properties.mo_business_structure.anyOf =
-  //     businessStructureOptions;
-  // }
+  //business structures
+  const businessStructureOptions = businessStructureList?.map(
+    (businessStructure) => ({
+      type: "string",
+      title: businessStructure.label,
+      enum: [businessStructure.id],
+      value: businessStructure.id,
+    }),
+  );
+
+  console.log(businessStructureList);
+  if (Array.isArray(businessStructureOptions)) {
+    // for operator
+
+    localSchema.properties.userOperatorPage1.properties.business_structure = {
+      ...localSchema.properties.userOperatorPage1.properties.business_structure,
+      anyOf: businessStructureOptions,
+    };
+    // localSchema.properties.operationPage1.allOf[2].then.properties.multiple_operators_array.items.properties.mo_business_structure.anyOf =
+    //   businessStructureOptions;
+  }
 
   return localSchema;
 };
 
 // 🧩 Main component
 export default async function Operation({ numRow }: { numRow?: number }) {
-  const codes = await getNaicsCodes();
-  const products = await getRegulatedProducts();
-  /*   const activities = await getReportingActivities(); */
-  // Commenting out as we are disabling the multiple operators feature
-  // const businessStructures: BusinessStructure[] = await getBusinessStructures();
-
-  let operation: OperationInt | undefined;
-
-  // Check that numRow is a number so we don't try to fetch an operation with a string eg: "create"
-  if (numRow && !isNaN(Number(numRow))) {
-    operation = await getOperation(numRow);
-  }
-
-  // Commenting out as we are disabling the multiple operators feature
-  // const businessStructuresList = businessStructures?.map(
-  //   (businessStructure: BusinessStructure) => ({
-  //     id: businessStructure.name,
-  //     label: businessStructure.name,
-  //   }),
-  // );
-
   let userProfileFormData: UserProfileFormData | { error: string } =
     await getUserFormData();
   const currentUserAppRole = (userProfileFormData as UserProfileFormData)
@@ -181,6 +179,31 @@ export default async function Operation({ numRow }: { numRow?: number }) {
   const isCasInternal =
     currentUserAppRole?.includes("cas") &&
     !currentUserAppRole?.includes("pending");
+  const codes = await getNaicsCodes();
+  const products = await getRegulatedProducts();
+  /*   const activities = await getReportingActivities(); */
+
+  let operation: OperationInt | undefined;
+  let operator: any;
+  let businessStructures: BusinessStructure[] = [];
+
+  // Check that numRow is a number so we don't try to fetch an operation with a string eg: "create"
+  if (numRow && !isNaN(Number(numRow))) {
+    operation = await getOperation(numRow);
+  }
+
+  if (operation?.operator_id && isCasInternal) {
+    // fetch operator data for internal users
+    operator = await getOperator(operation?.operator_id);
+    businessStructures = await getBusinessStructures();
+  }
+
+  const businessStructuresList = businessStructures?.map(
+    (businessStructure: BusinessStructure) => ({
+      id: businessStructure.name,
+      label: businessStructure.name,
+    }),
+  );
 
   const boroId: JSX.Element = (
     <div className="flex items-center gap-3 mt-4">
@@ -237,6 +260,7 @@ export default async function Operation({ numRow }: { numRow?: number }) {
 
   const formData = {
     ...operation,
+    ...operator,
     // Add the correct point of contact data if there is no point of contact data
     ...(!pointOfContactEmail && {
       ...userProfileFormData,
@@ -291,6 +315,7 @@ export default async function Operation({ numRow }: { numRow?: number }) {
             operationInternalUserSchema,
             codes,
             products,
+            businessStructuresList,
           )}
           formData={transformedFormData as OperationsFormData}
         />
@@ -300,6 +325,7 @@ export default async function Operation({ numRow }: { numRow?: number }) {
             operationSchema,
             codes,
             products,
+            [],
             // activities,
             // businessStructuresList,
           )}
