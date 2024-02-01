@@ -1,3 +1,6 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import MuiAccordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
@@ -6,12 +9,26 @@ import { BC_GOV_BACKGROUND_COLOR_BLUE } from "@/app/styles/colors";
 
 interface Props {
   children: React.ReactNode;
+  expanded?: boolean;
   title: string | React.ReactNode;
 }
 
-const Accordion = ({ children, title }: Props) => {
+const Accordion = ({ children, expanded, title }: Props) => {
+  const [isExpanded, setIsExpanded] = useState(expanded);
+
+  useEffect(() => {
+    setIsExpanded(expanded);
+  }, [expanded]);
+
   return (
-    <MuiAccordion disableGutters>
+    <MuiAccordion
+      disableGutters
+      sx={{
+        position: "initial",
+      }}
+      expanded={isExpanded}
+      onChange={() => setIsExpanded(!isExpanded)}
+    >
       <AccordionSummary
         expandIcon={
           <ArrowDropDownIcon
@@ -31,7 +48,13 @@ const Accordion = ({ children, title }: Props) => {
       >
         {title}
       </AccordionSummary>
-      <AccordionDetails>{children}</AccordionDetails>
+      <AccordionDetails
+        sx={{
+          paddingY: "32px",
+        }}
+      >
+        {children}
+      </AccordionDetails>
     </MuiAccordion>
   );
 };
