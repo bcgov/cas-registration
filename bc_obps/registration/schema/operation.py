@@ -41,16 +41,12 @@ class OperationUpdateOut(Schema):
 
 class OperationUpdateIn(ModelSchema):
     # Converting types
-    verified_at: Optional[date] = None
-    # point of contact details
-    point_of_contact_id: Optional[int] = None
     first_name: Optional[str] = None
+    point_of_contact_id: Optional[int] = None
     last_name: Optional[str] = None
     position_title: Optional[str] = None
     email: Optional[str] = None
     phone_number: Optional[str] = None
-    regulated_products: Optional[List[int]] = []
-    reporting_activities: Optional[List[int]] = []
     # external point of contact details
     external_point_of_contact_first_name: Optional[str] = None
     external_point_of_contact_last_name: Optional[str] = None
@@ -68,14 +64,7 @@ class OperationUpdateIn(ModelSchema):
 
     class Config:
         model = Operation
-        model_exclude = [
-            "id",  # need to exclude id since it's auto generated and we don't want to pass it in
-            "documents",  # excluding documents because they are handled by individual form fields
-            *AUDIT_FIELDS,
-            "status",
-            "submission_date",
-        ]
-
+        model_fields = ['operator', 'name', 'type', 'naics_code', 'opt_in', 'point_of_contact', 'regulated_products']
         allow_population_by_field_name = True
 
 
