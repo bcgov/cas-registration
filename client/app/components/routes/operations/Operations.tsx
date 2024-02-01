@@ -135,7 +135,12 @@ export default async function Operations() {
   // Render the DataGrid component
   return (
     <div className="mt-5">
-      <DataGrid cntxt="operations" rows={rows} columns={columns} />
+      <DataGrid
+        cntxt="operations"
+        rows={rows}
+        columns={columns}
+        session={session}
+      />
     </div>
   );
 }

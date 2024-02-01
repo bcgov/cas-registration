@@ -157,11 +157,14 @@ export const createOperationSchema = (
 
   if (Array.isArray(businessStructureOptions)) {
     // for operator
-
-    localSchema.properties.userOperatorPage1.properties.business_structure = {
-      ...localSchema.properties.userOperatorPage1.properties.business_structure,
-      anyOf: businessStructureOptions,
-    };
+    // Only add this to the schema if the operator page exists for internal users
+    if (localSchema.properties?.userOperatorPage1) {
+      localSchema.properties.userOperatorPage1.properties.business_structure = {
+        ...localSchema.properties.userOperatorPage1.properties
+          .business_structure,
+        anyOf: businessStructureOptions,
+      };
+    }
     // localSchema.properties.operationPage1.allOf[2].then.properties.multiple_operators_array.items.properties.mo_business_structure.anyOf =
     //   businessStructureOptions;
   }
