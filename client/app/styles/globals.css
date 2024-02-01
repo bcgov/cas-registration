@@ -11,6 +11,10 @@
   a {
     @apply text-bc-link-blue underline;
   }
+  .button-link {
+    /* Style a button as a link */
+    @apply p-0 decoration-solid border-0 text-lg bg-transparent cursor-pointer underline text-bc-link-blue;
+  }
   .form-heading {
     @apply text-2xl py-2 w-full font-bold border-solid text-bc-bg-blue border-bc-bg-blue border-l-0 border-r-0 mb-4;
   }
