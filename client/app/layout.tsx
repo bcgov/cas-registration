@@ -9,6 +9,8 @@ import "@/app/styles/globals.css";
 import SessionProvider from "@/app/components/auth/SessionProvider";
 import ThemeRegistry from "@/app/components/theme/ThemeRegistry";
 import type { Metadata, Viewport } from "next";
+import Footer from "@/app/components/layout/Footer";
+import Header from "@/app/components/layout/Header";
 // 🏷 import {named} can be significantly slower than import default
 import Box from "@mui/material/Box";
 
@@ -59,8 +61,10 @@ export default async function RootLayout({
                 padding: "0 16px",
               }}
             >
+              <Header />
               {/* Content goes here */}
               {children}
+              <Footer />
             </Box>
           </ThemeRegistry>
         </SessionProvider>
