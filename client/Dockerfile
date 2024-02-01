@@ -30,7 +30,7 @@ RUN chmod +x /usr/local/bin/dumb-init
 ENTRYPOINT ["dumb-init", "--"]
 
 ENV NODE_ENV=production
-# ARG from `.github/workflows/test.yaml\frontend-docker-build` 
+# ARG from `.github/workflows/test.yaml\frontend-docker-build`
 ARG KEYCLOAK_LOGIN_URL
 ENV KEYCLOAK_LOGIN_URL ${KEYCLOAK_LOGIN_URL}
 
