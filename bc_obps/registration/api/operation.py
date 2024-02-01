@@ -211,18 +211,16 @@ def update_operation(request, operation_id: int, submit: str, form_section: int,
     # whether the data being received in the payload is what the user has actually viewed, so we separate this
     # by form_section (the paginated form in the UI)
     if form_section == 1:
-        data_fields = [
-            'name',
-            'type',
-            'naics_code_id',
-            'swrs_facility_id',
-            'bcghg_id',
-            'opt_in',
-        ]
-        payload_dict: dict = {}
-        for attr in data_fields:
-            if hasattr(payload, attr):
-                payload_dict[attr] = getattr(payload, attr)
+        payload_dict: dict = payload.dict(
+            include={
+                'name',
+                'type',
+                'naics_code_id',
+                'swrs_facility_id',
+                'bcghg_id',
+                'opt_in',
+            }
+        )
         for attr, value in payload_dict.items():
             setattr(operation, attr, value)
         operation.regulated_products.set(payload.regulated_products)
@@ -271,7 +269,7 @@ def update_operation(request, operation_id: int, submit: str, form_section: int,
             - if operation.status was "Not Started", it should switch to Pending
             - if operation.status was "Pending", it should remain as Pending
         """
-        if Operation.Statuses(operation.status) is not Operation.Statuses.APPROVED:
+        if operation.status != Operation.Statuses.APPROVED:
             operation.status = Operation.Statuses.PENDING
             operation.submission_date = datetime.now(pytz.utc)
             operation.save(update_fields=['status', 'submission_date'])

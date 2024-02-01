@@ -540,7 +540,6 @@ class TestOperationsEndpoint(CommonTestSetup):
             # reporting_activities=[],
             regulated_products=[],
             operation_has_multiple_operators=False,
-            point_of_contact=contact2.id,
             operator_id=operator.id,
             is_external_point_of_contact=False,
             street_address='19 Evergreen Terrace',
@@ -642,7 +641,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             naics_code_id=operation.naics_code_id,
             operator_id=operator.id,
             documents=[],
-            # regulated_products=[],
+            regulated_products=[],
             # reporting_activities=[],
         )
 
@@ -816,6 +815,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         operation.operator_id = operator.id
         operation.save(update_fields=['operator_id'])
         TestUtils.authorize_current_user_as_operator_user(self, operator)
+        original_contact_id = operation.point_of_contact.id
 
         # update fields visible in section 1 of form (on frontend)
         update_from_form_section_1 = OperationUpdateIn(
@@ -867,7 +867,6 @@ class TestOperationsEndpoint(CommonTestSetup):
         retrieved_op = Operation.objects.first()
         # should be 2 contacts - the original Contact created by baker for the operation, and the updated "Bart" contact
         assert Contact.objects.count() == 2
-        contact = Contact.objects.last()
-        assert contact.first_name == 'Bart'
-        assert retrieved_op.point_of_contact_id == contact.id
+        assert retrieved_op.point_of_contact.first_name == 'Bart'
+        assert retrieved_op.point_of_contact_id != original_contact_id
         assert retrieved_op.name == 'New and Improved Legal Name'
