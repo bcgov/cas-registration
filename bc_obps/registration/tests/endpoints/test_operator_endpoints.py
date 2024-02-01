@@ -131,7 +131,7 @@ class TestOperatorsEndpoint(CommonTestSetup):
         assert response.status_code == 404
 
     def test_get_operator_from_user(self):
-        operator = baker.make(Operator, status='Pending')
+        operator = operator_baker()
         baker.make(UserOperator, user=self.user, operator=operator)
 
         response = TestUtils.mock_get_with_auth_role(self, 'industry_user', base_endpoint + "operator-from-user")
