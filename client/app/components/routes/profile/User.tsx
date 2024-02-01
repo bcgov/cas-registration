@@ -32,11 +32,9 @@ export default async function User() {
       const names = getUserFullName(session)?.split(" ");
 
       formData = {
-        first_name: names?.[0] ?? "", // Use nullish coalescing here
-        last_name: names?.[1] ?? "", // Use nullish coalescing here
-        email: session?.user?.email || "",
-        phone_number: "",
-        position_title: "",
+        first_name: names?.[0],
+        last_name: names?.[1],
+        email: session?.user?.email,
       };
     } else {
       return (
