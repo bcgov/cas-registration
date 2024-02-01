@@ -17,6 +17,9 @@ const Accordion = ({ children, expanded, title }: Props) => {
   const [isExpanded, setIsExpanded] = useState(expanded);
 
   useEffect(() => {
+    // Update isExpanded state when expanded prop changes
+    // This is necessary to allow the parent component to control the expanded state
+    // as well as to allow the user to control the expanded state
     setIsExpanded(expanded);
   }, [expanded]);
 
