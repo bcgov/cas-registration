@@ -530,16 +530,17 @@ class TestOperationsEndpoint(CommonTestSetup):
         contact2 = baker.make(Contact, email=contact1.email)
         operator = operator_baker()
         operation = operation_baker(operator.id)
+        operation.point_of_contact = contact2
+        operation.save(update_fields=['point_of_contact'])
 
         update = OperationUpdateIn(
             name='Springfield Nuclear Power Plant',
             # this updates the existing contact (contact2)
-            point_of_contact_id=contact2.id,
             type='Single Facility Operation',
             naics_code_id=operation.naics_code_id,
             # reporting_activities=[],
             regulated_products=[],
-            operation_has_multiple_operators=False,
+            # operation_has_multiple_operators=False,
             operator_id=operator.id,
             is_external_point_of_contact=False,
             street_address='19 Evergreen Terrace',
@@ -580,7 +581,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             naics_code_id=operation.naics_code_id,
             # reporting_activities=[],
             regulated_products=[],
-            operation_has_multiple_operators=False,
+            # operation_has_multiple_operators=False,
             documents=[],
             operator_id=operator.id,
             is_external_point_of_contact=True,
@@ -609,9 +610,9 @@ class TestOperationsEndpoint(CommonTestSetup):
         )
         assert put_response.status_code == 200
 
-        # expect 2 Contacts in the database -- the first_contact, and the external_point_of_contact
-        assert Contact.objects.count() == 2
+        # expect 1 Contact in the database -- we are updating the existing point_of_contact
         contacts = Contact.objects.all()
+        assert contacts.count() == 1
         assert first_contact in contacts
         # assert that external_point_of_contact is one of the Contacts in the database
         bart_contact = None
@@ -865,8 +866,8 @@ class TestOperationsEndpoint(CommonTestSetup):
         assert put_response_2.status_code == 200
         assert Operation.objects.count() == 1
         retrieved_op = Operation.objects.first()
-        # should be 2 contacts - the original Contact created by baker for the operation, and the updated "Bart" contact
-        assert Contact.objects.count() == 2
+        # should be 1 contacts - we updated the existing point_of_contact
+        assert Contact.objects.count() == 1
         assert retrieved_op.point_of_contact.first_name == 'Bart'
-        assert retrieved_op.point_of_contact_id != original_contact_id
+        assert retrieved_op.point_of_contact_id == original_contact_id
         assert retrieved_op.name == 'New and Improved Legal Name'
