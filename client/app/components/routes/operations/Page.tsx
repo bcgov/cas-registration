@@ -19,7 +19,7 @@ export default async function OperationsPage() {
   return (
     <>
       {/* Conditionally render the button based on user's role */}
-      {role === "industry_user_admin" && (
+      {role?.includes("industry_user") && (
         <Link href={"/dashboard/operations/create/1"}>
           <Button variant="contained">Add Operation</Button>
         </Link>
