@@ -1,3 +1,32 @@
+## [0.1.1-beta-5](https://github.com/bcgov/cas-registration/compare/v0.1.1-beta-4...v0.1.1-beta-5) (2024-02-02)
+
+### Bug Fixes
+
+- add physical_street_address field to `OperatorOut` schema ([1234fb4](https://github.com/bcgov/cas-registration/commit/1234fb4b6ddee5f4474b02e81d6e1f3d33f6d99e))
+- comment multiple operators schema serverside code ([19adef6](https://github.com/bcgov/cas-registration/commit/19adef6e9e9c8b4addfeab32f2626162e0b7c71d))
+- correct operation id ([d466ad8](https://github.com/bcgov/cas-registration/commit/d466ad844347bd3e823e85568670ff2b448e4e72))
+- document api error ([bf57458](https://github.com/bcgov/cas-registration/commit/bf574580967a9da48748a99bcf82f12bce76a759))
+- don't save address when creating operations contact ([5f1bef7](https://github.com/bcgov/cas-registration/commit/5f1bef762d68b4227e6c7f55061a89f7f2e507cf))
+- ensure configMap is in place prior to TF job ([64ba3f6](https://github.com/bcgov/cas-registration/commit/64ba3f6c02e8a59bfba22605b466b6ac74e69712))
+- error occurred in Server Component render ([ead3d47](https://github.com/bcgov/cas-registration/commit/ead3d47368a4ba7724661ed1e86733a19243d923))
+- operation form point of contact required fields ([8bcf310](https://github.com/bcgov/cas-registration/commit/8bcf3109eee86f955a604d768e9a1b8804f8df4c))
+- operators can only edit their own operations ([72cdae0](https://github.com/bcgov/cas-registration/commit/72cdae037e71f97038a51d06f03836aefb6b2aa6))
+- re-enable pagination on mui datagrid ([d91a9d8](https://github.com/bcgov/cas-registration/commit/d91a9d8510fee76d8abc73f3fa18c3f6755e5cdb))
+- rebase error ([d0a6dc2](https://github.com/bcgov/cas-registration/commit/d0a6dc2d3592de03a99d5f949fb15de0510a85e3))
+- rename point of contact field ([df8a55c](https://github.com/bcgov/cas-registration/commit/df8a55c4dab06dcfb3df45d7d0d54e18879f2915))
+- save bceid business name/guid to database ([dd958c6](https://github.com/bcgov/cas-registration/commit/dd958c632ad7adf346587f8abfe56769e6ad5c39))
+
+### Features
+
+- add ghg emissions section title ([c730b1d](https://github.com/bcgov/cas-registration/commit/c730b1d0240731aa6bc0473485df509e2fc485da))
+- add opt in note ([e7772f5](https://github.com/bcgov/cas-registration/commit/e7772f55a76efd858953bbd4c33a0b72af0d0c17))
+- add opt in section title ([94eb7b8](https://github.com/bcgov/cas-registration/commit/94eb7b8de36e4a01bcd46a7ee7d9e60b579aba6c))
+- add point of contact section title ([fb7c43a](https://github.com/bcgov/cas-registration/commit/fb7c43a1cf49e6eb3f52380a2e32691de7d9acf7))
+- bcghg id readonly ([6c001d6](https://github.com/bcgov/cas-registration/commit/6c001d6b84dd176c0e97a454f03fa3093993f9dc))
+- make address field optional ([dc64ad7](https://github.com/bcgov/cas-registration/commit/dc64ad71f80c88a9afa19fab74129849594f9b27))
+- operations api add save_contact query param ([db2e82b](https://github.com/bcgov/cas-registration/commit/db2e82b381e1f98c2001fcac5075d21a9bd458fc))
+- update landing page design ([aafdcb2](https://github.com/bcgov/cas-registration/commit/aafdcb2eccd45fd0eb9b921961f2cb39fcf1c21c))
+
 ## [v0.1.1-beta-4](https://github.com/bcgov/cas-registration/compare/0.1.1-beta-3...v0.1.1-beta-4) (2024-01-26)
 
 ### Bug Fixes
