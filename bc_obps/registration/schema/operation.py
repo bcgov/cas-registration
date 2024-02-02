@@ -42,7 +42,6 @@ class OperationUpdateOut(Schema):
 class OperationUpdateIn(ModelSchema):
     # Converting types
     first_name: Optional[str] = None
-    point_of_contact_id: Optional[int] = None
     last_name: Optional[str] = None
     position_title: Optional[str] = None
     email: Optional[str] = None
