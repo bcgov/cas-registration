@@ -18,8 +18,8 @@ interface Props {
   showRequestChanges?: boolean;
   onApprove: () => Promise<any>;
   onReject: () => Promise<any>;
-  onRequestChange: () => Promise<any>;
-  onUndoRequestChange: () => Promise<any>;
+  onRequestChange?: () => Promise<any>;
+  onUndoRequestChange?: () => Promise<any>;
 }
 
 interface CloseProps {
@@ -107,12 +107,12 @@ const Review = ({
   };
 
   const handleChangeRequestConfirm = () => {
-    onRequestChange();
+    onRequestChange?.();
     setShowRequestChangesUndo(true);
   };
 
   const handleUndoRequestChanges = async () => {
-    onUndoRequestChange();
+    onUndoRequestChange?.();
     setShowChangeConfirmation(false);
     setShowRequestChangesUndo(false);
   };
