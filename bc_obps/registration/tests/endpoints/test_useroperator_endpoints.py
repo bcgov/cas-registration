@@ -4,7 +4,6 @@ from model_bakery import baker
 from django.test import Client
 from localflavor.ca.models import CAPostalCodeField
 from registration.models import (
-    Address,
     BusinessRole,
     BusinessStructure,
     Contact,
@@ -593,7 +592,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         user_operator = UserOperator.objects.get(id=user_operator_id)
         assert user_operator.operator is not None
         assert user_operator.user == self.user
-        assert user_operator.role == UserOperator.Roles.REPORTER
+        assert user_operator.role == UserOperator.Roles.PENDING
         assert user_operator.status == UserOperator.Statuses.DRAFT
 
         operator: Operator = user_operator.operator

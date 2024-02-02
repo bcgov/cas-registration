@@ -4,16 +4,13 @@ from django.core.exceptions import ValidationError
 from django.db import IntegrityError, models
 from django.db.models import QuerySet
 from registration.constants import UNAUTHORIZED_MESSAGE
-import requests
-import base64
+import requests, base64, re
 from django.core.files.base import ContentFile
-import re
-from registration.models import Document, DocumentType
-
-from .models import User, Operator, UserOperator
 from django.shortcuts import get_object_or_404
 from ninja.errors import HttpError
 from registration.models import (
+    Document,
+    User,
     Operator,
     User,
     UserOperator,
@@ -127,16 +124,12 @@ def check_access_request_matches_business_guid(
     return 200, None
 
 
-def raise_401_if_user_not_authorized(
-    request, authorized_app_roles, authorized_user_operator_roles=[]
-) -> Tuple[int, Optional[Union[dict[str, str], None]]]:
+def raise_401_if_user_not_authorized(request, authorized_app_roles, authorized_user_operator_roles=None) -> None:
     """
     Raise a 401 error if a user is not authorized. To be authorized the user must:
         - be logged in (request.current_user exists)
         - have an authorized app_role
         - if the user's app_role is industry_user, then they must additionally have an authorized UserOperator.role
-
-
     """
     if not hasattr(request, 'current_user'):
         raise HttpError(401, UNAUTHORIZED_MESSAGE)
@@ -147,16 +140,21 @@ def raise_401_if_user_not_authorized(
         raise HttpError(401, UNAUTHORIZED_MESSAGE)
 
     if user.is_industry_user():
-        user_operator_role = None
-        try:
-            user_operator = UserOperator.objects.get(user=user.user_guid)
-            user_operator_role = user_operator.role
-        except UserOperator.DoesNotExist:
-            pass
-
-        # We don't assign a UserOperator role on create. This means user_operator_role can be None in two cases: 1) the role hasn't been assigned yet and 2) no user operator record has been created yet
-        if user_operator_role not in authorized_user_operator_roles:
+        # We always need to pass authorized_user_operator_roles if the user is an industry user
+        if not authorized_user_operator_roles:
             raise HttpError(401, UNAUTHORIZED_MESSAGE)
+
+        # If authorized_user_operator_roles is the same as all industry user operator roles, then we can skip the check (Means all industry user roles are authorized)
+        if sorted(authorized_user_operator_roles) != sorted(UserOperator.get_all_industry_user_operator_roles()):
+            user_operator_role = None
+            try:
+                user_operator = UserOperator.objects.get(user=user.user_guid)
+                user_operator_role = user_operator.role
+            except UserOperator.DoesNotExist:
+                pass
+
+            if not user_operator_role or user_operator_role not in authorized_user_operator_roles:
+                raise HttpError(401, UNAUTHORIZED_MESSAGE)
 
 
 def get_an_operators_approved_users(operator: Operator) -> QuerySet[UUID]:
