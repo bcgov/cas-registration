@@ -1,23 +1,50 @@
-import { actionHandler } from "@/app/utils/actions";
+"use client";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import Tiles from "@/app/components/navigation/Tiles";
-/*
-📚
-In the app directory, nested folders are normally mapped to URL paths.
-However, you can mark a folder as a Route Group to prevent the folder from being included in the route's URL path.
-This allows you to organize your route segments and project files into logical groups without affecting the URL path structure, (useful in dynamic BreadCrumbs)
-e.g. app\(authenticated)\dashboard maps to route: http://localhost:3000/dashboard
-*/
-
-export async function getOperatorFromUser() {
-  try {
-    return await actionHandler("registration/operator-from-user", "GET", "");
-  } catch (error) {
-    // Handle the error here or rethrow it to handle it at a higher level
-    throw error;
-  }
-}
+import { actionHandler } from "@/app/utils/actions";
+import { FrontEndRoles } from "@/app/utils/enums";
+import Card from "@mui/material/Card";
+import Typography from "@mui/material/Typography";
+import { getServerSession } from "next-auth";
 
 export default async function Page() {
-  const operator = await getOperatorFromUser();
-  return <Tiles operatorStatus={operator.status} />;
+  const session = await getServerSession(authOptions);
+  const role = session?.user?.app_role || "";
+  let status = "";
+  switch (role) {
+    case FrontEndRoles.INDUSTRY_USER:
+    case FrontEndRoles.INDUSTRY_USER_ADMIN:
+      const operator = await actionHandler(
+        "registration/operator-from-user",
+        "GET",
+        "",
+      );
+      status = operator.status;
+      break;
+  }
+  return (
+    <div>
+      {role === FrontEndRoles.CAS_PENDING ? (
+        <>
+          <Card
+            data-testid="dashboard-pending-message"
+            sx={{ padding: 2, margin: 2, border: "none", boxShadow: "none" }}
+          >
+            <Typography variant="h5" component="div">
+              Welcome to B.C. Industrial Emissions Reporting System
+            </Typography>
+            <Typography variant="body1" color="textSecondary" component="div">
+              Your access request is pending approval.
+            </Typography>
+            <Typography variant="body1" color="textSecondary" component="div">
+              Once approved, you can log back in with access to the system.
+            </Typography>
+          </Card>
+        </>
+      ) : (
+        // Display role based tiles here
+        <Tiles role={role} operatorStatus={status} />
+      )}
+    </div>
+  );
 }
