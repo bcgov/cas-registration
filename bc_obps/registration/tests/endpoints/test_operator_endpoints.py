@@ -4,7 +4,7 @@ from django.test import Client
 from localflavor.ca.models import CAPostalCodeField
 from registration.tests.utils.bakers import operator_baker
 from registration.constants import AUDIT_FIELDS
-from registration.models import Operator
+from registration.models import Operator, UserOperator
 from registration.schema.operator import OperatorOut
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 
