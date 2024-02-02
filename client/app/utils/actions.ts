@@ -60,7 +60,7 @@ function getUUIDFromEndpoint(endpoint: string): string | null {
  * @param options Optional data to include in the request body (example: body for POST, PUT, and PATCH requests, overriding cache control).
  * @returns A Promise that resolves to the JSON response from the API endpoint, or an error object if the request fails.
  */
-export async function actionHandler(
+client/app/utils/actions.tsexport async function actionHandler(
   endpoint: string,
   method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH",
   pathToRevalidate?: string,
