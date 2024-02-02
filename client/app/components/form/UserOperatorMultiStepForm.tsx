@@ -36,8 +36,8 @@ export default function UserOperatorMultiStepForm({
     parseInt(params?.formSection as string) ||
     parseInt(searchParams.get("form-section") as string);
   const isCreate = pathname.includes("create");
-  const isExistingOperator = !formData.is_new;
-
+  const isExistingOperator = formData.is_new === false;
+  console.log("is existing operator", isExistingOperator);
   const formSectionIndex = formSection - 1;
 
   const formSectionList = Object.keys(schema.properties as RJSFSchema);
@@ -162,7 +162,7 @@ Some fields cannot be edited. If you need to change those fields, please contact
           formData={formData}
           onSubmit={submitHandler}
           submitButtonText={
-            isExistingOperator ? "Save and Return to Dashboard" : ""
+            isExistingOperator ? "Save and Return to Dashboard" : "Submit"
           }
           uiSchema={userOperatorUiSchema}
         />
