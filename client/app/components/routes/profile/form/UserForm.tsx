@@ -4,7 +4,10 @@ import FormBase from "@/app/components/form/FormBase";
 import { Alert } from "@mui/material";
 import SubmitButton from "@/app/components/form/SubmitButton";
 import { actionHandler } from "@/app/utils/actions";
-import { UserProfileFormData } from "@/app/components/form/formDataTypes";
+import {
+  UserProfileFormData,
+  UserProfilePartialFormData,
+} from "@/app/components/form/formDataTypes";
 import { userSchema, userUiSchema } from "@/app/utils/jsonSchema/user";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -12,7 +15,7 @@ import { useRouter } from "next/navigation";
 // 📐 Interface: expected properties and their types for UserForm component
 
 interface Props {
-  formData?: UserProfileFormData;
+  formData?: UserProfilePartialFormData;
   isCreate: boolean;
 }
 // 🏗️ Client side component: dashboard\profile

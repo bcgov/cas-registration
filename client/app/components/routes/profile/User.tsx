@@ -1,6 +1,9 @@
 import { actionHandler } from "@/app/utils/actions";
 import UserForm from "@/app/components/routes/profile/form/UserForm";
-import { UserProfileFormData } from "@/app/components/form/formDataTypes";
+import {
+  UserProfileFormData,
+  UserProfilePartialFormData,
+} from "@/app/components/form/formDataTypes";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { getUserFullName } from "@/app/utils/getUserFullName";
@@ -18,7 +21,7 @@ export default async function User() {
   // determines POST or PUT based on formData.error.includes("404")
   let isCreate = false;
   // get user's data
-  let formData: UserProfileFormData | { error: string } =
+  let formData: UserProfilePartialFormData | { error: string } =
     await getUserFormData();
   if ("error" in formData) {
     if (formData.error.includes("404")) {
@@ -32,11 +35,9 @@ export default async function User() {
       const names = getUserFullName(session)?.split(" ");
 
       formData = {
-        first_name: names?.[0] ?? "", // Use nullish coalescing here
-        last_name: names?.[1] ?? "", // Use nullish coalescing here
-        email: session?.user?.email || "",
-        phone_number: "",
-        position_title: "",
+        first_name: names?.[0],
+        last_name: names?.[1],
+        email: session?.user?.email ?? undefined,
       };
     } else {
       return (
