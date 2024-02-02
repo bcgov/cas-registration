@@ -205,8 +205,6 @@ def update_operation(request, operation_id: int, submit: str, form_section: int,
     operation.operator_id = payload.operator
     operation.naics_code_id = payload.naics_code
 
-    point_of_contact_id = payload.point_of_contact_id or None
-
     # the frontend includes default values, which are being sent in the payload to the backend. We need to know
     # whether the data being received in the payload is what the user has actually viewed, so we separate this
     # by form_section (the paginated form in the UI)
@@ -215,8 +213,6 @@ def update_operation(request, operation_id: int, submit: str, form_section: int,
             include={
                 'name',
                 'type',
-                'naics_code_id',
-                'swrs_facility_id',
                 'bcghg_id',
                 'opt_in',
             }
@@ -224,8 +220,9 @@ def update_operation(request, operation_id: int, submit: str, form_section: int,
         for attr, value in payload_dict.items():
             setattr(operation, attr, value)
         operation.regulated_products.set(payload.regulated_products)
-        operation.save(update_fields=list(payload_dict.keys()))
+        operation.save(update_fields=list(payload_dict.keys()) + ['naics_code', 'operator'])
     elif form_section == 2:
+        point_of_contact_id = operation.point_of_contact_id or None
         is_external_point_of_contact = payload.is_external_point_of_contact
 
         if is_external_point_of_contact is False:  # the point of contact is the user
@@ -274,8 +271,6 @@ def update_operation(request, operation_id: int, submit: str, form_section: int,
             operation.submission_date = datetime.now(pytz.utc)
             operation.save(update_fields=['status', 'submission_date'])
 
-    operation.set_create_or_update(modifier=user)
-
     if payload.statutory_declaration:
         operation.documents.filter(type=DocumentType.objects.get(name="signed_statutory_declaration")).delete()
 
@@ -285,6 +280,7 @@ def update_operation(request, operation_id: int, submit: str, form_section: int,
         )
         operation.documents.set([document])
 
+    operation.set_create_or_update(modifier=user)
     return 200, {"name": operation.name}
 
 
