@@ -36,8 +36,8 @@ export default function UserOperatorMultiStepForm({
     parseInt(params?.formSection as string) ||
     parseInt(searchParams.get("form-section") as string);
   const isCreate = pathname.includes("create");
+  // we need to check that is_new is false specfically (vs !) because it will be undefined when creating a new useroperator
   const isExistingOperator = formData.is_new === false;
-  console.log("is existing operator", isExistingOperator);
   const formSectionIndex = formSection - 1;
 
   const formSectionList = Object.keys(schema.properties as RJSFSchema);
