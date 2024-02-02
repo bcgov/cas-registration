@@ -36,6 +36,7 @@ export default function UserOperatorMultiStepForm({
     parseInt(params?.formSection as string) ||
     parseInt(searchParams.get("form-section") as string);
   const isCreate = pathname.includes("create");
+  const isExistingOperator = !formData.is_new;
 
   const formSectionIndex = formSection - 1;
 
@@ -76,6 +77,10 @@ export default function UserOperatorMultiStepForm({
       return { error: response.error };
     }
     if (isFinalStep) {
+      if (isExistingOperator) {
+        push(`/dashboard`);
+        return;
+      }
       push(
         `/dashboard/select-operator/received/add-operator/${response.operator_id}`
       );
@@ -105,7 +110,7 @@ export default function UserOperatorMultiStepForm({
   const isReviewWithRequestChanges =
     isCasInternal && formData.is_new && formSection === 1;
   const isReviewWithoutRequestChanges = isCasInternal && formSection === 2;
-  const isExistingOperator = !formData.is_new;
+
   const isExistingOperatorMessage =
     isIndustryUser && !formData.is_new && formSection === 1;
 
