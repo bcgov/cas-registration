@@ -10,6 +10,8 @@ on:
 env:
   PGUSER: postgres
   DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+  KEYCLOAK_CLIENT_ID: ${{ secrets.KEYCLOAK_CLIENT_ID }}
+  KEYCLOAK_CLIENT_SECRET: ${{ secrets.KEYCLOAK_CLIENT_SECRET }}
 
 jobs:
   install-dev-tools:
@@ -211,6 +213,8 @@ jobs:
         uses: ./.github/actions/local-app-run
         with:
           django_secret_key: ${{ env.DJANGO_SECRET_KEY }}
+          keycloak_client_id: ${{ env.KEYCLOAK_CLIENT_ID }}
+          keycloak_client_secret: ${{ env.KEYCLOAK_CLIENT_SECRET }}
       - name: Install Playwright Browsers
         run: yarn playwright install --with-deps
         working-directory: ./client
