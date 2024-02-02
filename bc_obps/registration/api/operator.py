@@ -17,8 +17,12 @@ from django.core.exceptions import ValidationError
 ##### GET #####
 
 
-@router.get("/operators", response={200: OperatorOut, codes_4xx: Message, codes_5xx: Message})
-@authorize(AppRole.get_all_app_roles(), UserOperator.get_all_industry_user_operator_roles())
+@router.get(
+    "/operators",
+    response={200: OperatorOut, codes_4xx: Message, codes_5xx: Message},
+    url_name="operators_by_legal_name_or_cra",
+)
+@authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles())
 def get_operator_by_legal_name_or_cra(
     request, legal_name: Optional[str] = None, cra_business_number: Optional[int] = None
 ):
@@ -37,8 +41,13 @@ def get_operator_by_legal_name_or_cra(
     return 200, operator
 
 
-@router.get("/operators/legal-name", response={200: List[OperatorOut], codes_4xx: Message, codes_5xx: Message})
-def get_operator_by_legal_name_or_cra(request, search_value: Optional[str] = None):
+@router.get(
+    "/operators/legal-name",
+    response={200: List[OperatorOut], codes_4xx: Message, codes_5xx: Message},
+    url_name="operators_by_legal_name",
+)
+@authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles())
+def get_operator_by_legal_name(request, search_value: Optional[str] = None):
     try:
         if search_value:
             operators = Operator.objects.filter(legal_name__icontains=search_value)
@@ -52,7 +61,7 @@ def get_operator_by_legal_name_or_cra(request, search_value: Optional[str] = Non
     return 200, operators
 
 
-@router.get("/operators/{operator_id}", response={200: OperatorOut, codes_4xx: Message})
+@router.get("/operators/{operator_id}", response={200: OperatorOut, codes_4xx: Message}, url_name="operator")
 @authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles())
 def get_operator(request, operator_id: int):
     try:
@@ -68,7 +77,7 @@ def get_operator(request, operator_id: int):
 ##### PUT #####
 
 
-@router.put("/operators/{operator_id}", response={200: OperatorOut, codes_4xx: Message})
+@router.put("/operators/{operator_id}", response={200: OperatorOut, codes_4xx: Message}, url_name="update_operator")
 @authorize(AppRole.get_authorized_irc_roles())
 def update_operator(request, operator_id: int, payload: OperatorIn):
     operator = get_object_or_404(Operator, id=operator_id)

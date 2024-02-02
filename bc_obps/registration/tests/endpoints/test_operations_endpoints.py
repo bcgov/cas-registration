@@ -1,7 +1,6 @@
-import pytest, pytz
+import pytz
 from datetime import datetime, timedelta, timezone
 from model_bakery import baker
-from django.test import Client
 from localflavor.ca.models import CAPostalCodeField
 from registration.models import (
     NaicsCode,
@@ -14,16 +13,7 @@ from registration.models import (
 )
 from registration.schema import OperationCreateIn, OperationUpdateIn
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
-
-pytestmark = pytest.mark.django_db
-from registration.tests.utils.bakers import document_baker, operation_baker, operator_baker, user_operator_baker
-
-# initialize the APIClient app
-client = Client()
-
-base_endpoint = "/api/registration/"
-
-content_type_json = "application/json"
+from registration.tests.utils.bakers import operation_baker, operator_baker, user_operator_baker
 
 baker.generators.add(CAPostalCodeField, TestUtils.mock_postal_code)
 
@@ -32,7 +22,8 @@ fake_timestamp_from_past_str_format = '%Y-%m-%d %H:%M:%S.%f%z'
 
 
 class TestOperationsEndpoint(CommonTestSetup):
-    endpoint = base_endpoint + "operations"
+    endpoint = CommonTestSetup.base_endpoint + "operations"
+    content_type_json = CommonTestSetup.content_type_json
 
     def build_update_status_url(self, operation_id: int) -> str:
         return self.endpoint + "/" + str(operation_id) + "/update-status"
@@ -65,7 +56,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         )
         assert response.status_code == 401
 
-    def industry_users_can_only_get_their_own_operations(self):
+    def test_industry_users_can_only_get_their_own_operations(self):
         random_operator = operator_baker()
         the_users_operator = operator_baker()
         user_operator = baker.make(
@@ -91,14 +82,14 @@ class TestOperationsEndpoint(CommonTestSetup):
     def test_unauthorized_roles_cannot_post(self):
         mock_operation = TestUtils.mock_OperationCreateIn()
         # IRC users can't post
-        post_response = TestUtils.mock_post_with_auth_role(self, "cas_admin", content_type_json, mock_operation.json())
+        post_response = TestUtils.mock_post_with_auth_role(self, "cas_admin", self.content_type_json, mock_operation.json())
         assert post_response.status_code == 401
         post_response = post_response = TestUtils.mock_post_with_auth_role(
-            self, "cas_analyst", content_type_json, mock_operation.json(), endpoint=None
+            self, "cas_analyst", self.content_type_json, mock_operation.json(), endpoint=None
         )
         assert post_response.status_code == 401
         post_response = post_response = TestUtils.mock_post_with_auth_role(
-            self, "cas_pending", content_type_json, mock_operation.json()
+            self, "cas_pending", self.content_type_json, mock_operation.json()
         )
         assert post_response.status_code == 401
 
@@ -112,45 +103,11 @@ class TestOperationsEndpoint(CommonTestSetup):
             response = TestUtils.mock_put_with_auth_role(
                 self,
                 role,
-                content_type_json,
+                self.content_type_json,
                 mock_operation.json(),
                 self.endpoint + "/" + str(operation.id) + "?submit=false&form_section=1",
             )
             assert response.status_code == 401
-
-    def industry_users_can_only_put_their_own_operations(self):
-        mock_payload = TestUtils.mock_OperationUpdateIn()
-
-        random_operator = baker.make(Operator)
-        the_users_operator = baker.make(Operator)
-        user_operator = baker.make(
-            UserOperator,
-            user_id=self.user.user_guid,
-            status=UserOperator.Statuses.APPROVED,
-            operator=the_users_operator,
-        )
-
-        random_operation = baker.make(Operation, operator=random_operator)
-        baker.make(Operation, operator=user_operator.operator)  # operation that belongs to the user's operator
-
-        response = TestUtils.mock_put_with_auth_role(
-            self,
-            "industry_user",
-            content_type_json,
-            mock_payload.json(),
-            self.endpoint + "/" + str(random_operation.id) + "?submit=false",
-        )
-        assert response.status_code == 401
-
-    def test_unauthorized_users_cannot_update_status(self):
-        operation = operation_baker()
-
-        url = self.build_update_status_url(operation_id=operation.id)
-
-        response = TestUtils.mock_put_with_auth_role(
-            self, "industry_user", content_type_json, {"status": "approved"}, url
-        )
-        assert response.status_code == 401
 
     # GET
     def test_operations_endpoint_get_method_for_200_status(self):
@@ -216,7 +173,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         TestUtils.authorize_current_user_as_operator_user(self, operator)
         mock_operation = TestUtils.mock_OperationCreateIn()
         post_response = TestUtils.mock_post_with_auth_role(
-            self, "industry_user", content_type_json, mock_operation.json()
+            self, "industry_user", self.content_type_json, mock_operation.json()
         )
         assert post_response.status_code == 201
         assert post_response.json().get('name') == "Springfield Nuclear Power Plant"
@@ -225,7 +182,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         get_response = TestUtils.mock_get_with_auth_role(self, "industry_user").json()[0]
         assert 'status' in get_response and get_response['status'] == 'Not Started'
         post_response = TestUtils.mock_post_with_auth_role(
-            self, "industry_user", content_type_json, mock_operation.json(), endpoint=None
+            self, "industry_user", self.content_type_json, mock_operation.json(), endpoint=None
         )
         assert post_response.status_code == 201
 
@@ -282,7 +239,7 @@ class TestOperationsEndpoint(CommonTestSetup):
     #         operator_id=operator.id,
     #     )
     #     post_response = TestUtils.mock_post_with_auth_role(
-    #         self, 'industry_user', content_type_json, mock_operation.json()
+    #         self, 'industry_user', self.content_type_json, mock_operation.json()
     #     )
     #     assert post_response.status_code == 201
     #     assert post_response.json().get('id') is not None
@@ -298,7 +255,7 @@ class TestOperationsEndpoint(CommonTestSetup):
 
     def test_post_new_malformed_operation(self):
         response = TestUtils.mock_post_with_auth_role(
-            self, "industry_user", content_type_json, {"garbage": "i am bad data"}
+            self, "industry_user", self.content_type_json, {"garbage": "i am bad data"}
         )
         assert response.status_code == 422
 
@@ -311,7 +268,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         operator = operator_baker()
         TestUtils.authorize_current_user_as_operator_user(self, operator)
         post_response = TestUtils.mock_post_with_auth_role(
-            self, "industry_user", content_type_json, data=mock_operation2.json()
+            self, "industry_user", self.content_type_json, data=mock_operation2.json()
         )
         assert post_response.status_code == 400
         assert post_response.json().get('message') == "Operation with this BCGHG ID already exists."
@@ -330,7 +287,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         operator = operator_baker()
         TestUtils.authorize_current_user_as_operator_user(self, operator)
         post_response = TestUtils.mock_post_with_auth_role(
-            self, "industry_user", content_type_json, data=new_operation.json()
+            self, "industry_user", self.content_type_json, data=new_operation.json()
         )
         assert post_response.status_code == 201
         assert Operation.objects.count() == 1
@@ -340,10 +297,44 @@ class TestOperationsEndpoint(CommonTestSetup):
         assert operation.point_of_contact_id is None
 
     # PUT
+    def test_industry_users_can_only_put_their_own_operations(self):
+        mock_payload = TestUtils.mock_OperationUpdateIn()
+
+        random_operator = baker.make(Operator)
+        the_users_operator = baker.make(Operator)
+        user_operator = baker.make(
+            UserOperator,
+            user_id=self.user.user_guid,
+            status=UserOperator.Statuses.APPROVED,
+            operator=the_users_operator,
+        )
+
+        random_operation = baker.make(Operation, operator=random_operator)
+        baker.make(Operation, operator=user_operator.operator)  # operation that belongs to the user's operator
+
+        response = TestUtils.mock_put_with_auth_role(
+            self,
+            "industry_user",
+            self.content_type_json,
+            mock_payload.json(),
+            self.endpoint + "/" + str(random_operation.id) + "?submit=false",
+        )
+        assert response.status_code == 401
+
+    def test_unauthorized_users_cannot_update_status(self):
+        operation = operation_baker()
+
+        url = self.build_update_status_url(operation_id=operation.id)
+
+        response = TestUtils.mock_put_with_auth_role(
+            self, "industry_user", self.content_type_json, {"status": "approved"}, url
+        )
+        assert response.status_code == 401
+
     def test_put_operation_update_invalid_operation_id(self):
         url = self.build_update_status_url(operation_id=99999999999)
         put_response = TestUtils.mock_put_with_auth_role(
-            self, "cas_admin", content_type_json, {"status": "approved"}, url
+            self, "cas_admin", self.content_type_json, {"status": "approved"}, url
         )
         assert put_response.status_code == 404
         assert put_response.json().get('detail') == "Not Found"
@@ -356,7 +347,7 @@ class TestOperationsEndpoint(CommonTestSetup):
 
         now = datetime.now(pytz.utc)
         put_response_1 = TestUtils.mock_put_with_auth_role(
-            self, "cas_admin", content_type_json, {"status": "Approved"}, url
+            self, "cas_admin", self.content_type_json, {"status": "Approved"}, url
         )
         assert put_response_1.status_code == 200
         put_response_1_dict = put_response_1.json()
@@ -389,7 +380,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         operation.save()
 
         put_response_2 = TestUtils.mock_put_with_auth_role(
-            self, "cas_admin", content_type_json, {"status": "Approved"}, url
+            self, "cas_admin", self.content_type_json, {"status": "Approved"}, url
         )
         assert put_response_2.status_code == 200
         assert new_operator.status == Operator.Statuses.APPROVED
@@ -404,7 +395,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         url = self.build_update_status_url(operation_id=operation.id)
 
         put_response = TestUtils.mock_put_with_auth_role(
-            self, "cas_admin", content_type_json, {"status": "Declined"}, url
+            self, "cas_admin", self.content_type_json, {"status": "Declined"}, url
         )
         assert put_response.status_code == 200
         put_response_dict = put_response.json()
@@ -426,7 +417,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         url = self.build_update_status_url(operation_id=operation.id)
 
         put_response = TestUtils.mock_put_with_auth_role(
-            self, "cas_admin", content_type_json, {"status": "Not Started"}, url
+            self, "cas_admin", self.content_type_json, {"status": "Not Started"}, url
         )
         assert put_response.status_code == 200
         put_response_dict = put_response.json()
@@ -448,7 +439,7 @@ class TestOperationsEndpoint(CommonTestSetup):
 
         url = self.build_update_status_url(operation_id=operation.id)
 
-        response = TestUtils.mock_put_with_auth_role(self, "cas_admin", content_type_json, {"status": "nonsense"}, url)
+        response = TestUtils.mock_put_with_auth_role(self, "cas_admin", self.content_type_json, {"status": "nonsense"}, url)
         assert response.status_code == 400
         assert response.json().get('message') == "'nonsense' is not a valid Operation.Statuses"
 
@@ -467,7 +458,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         response = TestUtils.mock_put_with_auth_role(
             self,
             'industry_user',
-            content_type_json,
+            self.content_type_json,
             payload.json(),
             self.endpoint + "/" + str(operation.id) + "?submit=false&form_section=1",
         )
@@ -497,7 +488,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         response = TestUtils.mock_put_with_auth_role(
             self,
             'industry_user',
-            content_type_json,
+            self.content_type_json,
             payload.json(),
             self.endpoint + "/" + str(operation.id) + "?submit=true&form_section=1",
         )
@@ -518,7 +509,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         response = TestUtils.mock_put_with_auth_role(
             self,
             'industry_user',
-            content_type_json,
+            self.content_type_json,
             {"garbage": "i am bad data"},
             self.endpoint + "/" + str(operation.id) + "?submit=false&form_section=1",
         )
@@ -558,7 +549,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         put_response = TestUtils.mock_put_with_auth_role(
             self,
             'industry_user',
-            content_type_json,
+            self.content_type_json,
             update.json(),
             self.endpoint + '/' + str(operation.id) + "?submit=true&form_section=2",
         )
@@ -605,7 +596,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         put_response = TestUtils.mock_put_with_auth_role(
             self,
             'industry_user',
-            content_type_json,
+            self.content_type_json,
             update.json(),
             self.endpoint + '/' + str(operation.id) + "?submit=true&form_section=2",
         )
@@ -651,7 +642,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         put_response = TestUtils.mock_put_with_auth_role(
             self,
             'industry_user',
-            content_type_json,
+            self.content_type_json,
             update.json(),
             self.endpoint + '/' + str(operation.id) + "?submit=true&form_section=1",
         )
@@ -685,7 +676,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         put_response = TestUtils.mock_put_with_auth_role(
             self,
             'industry_user',
-            content_type_json,
+            self.content_type_json,
             update.json(),
             self.endpoint + '/' + str(operation.id) + "?submit=true&form_section=1",
         )
@@ -719,7 +710,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         put_response = TestUtils.mock_put_with_auth_role(
             self,
             'industry_user',
-            content_type_json,
+            self.content_type_json,
             update.json(),
             self.endpoint + '/' + str(operation.id) + "?submit=true&form_section=1",
         )
@@ -756,7 +747,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         put_response = TestUtils.mock_put_with_auth_role(
             self,
             'industry_user',
-            content_type_json,
+            self.content_type_json,
             update.json(),
             self.endpoint + '/' + str(operation.id) + "?submit=true&form_section=1",
         )
@@ -794,7 +785,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         put_response = TestUtils.mock_put_with_auth_role(
             self,
             'industry_user',
-            content_type_json,
+            self.content_type_json,
             update.json(),
             self.endpoint + '/' + str(operation.id) + "?submit=true&form_section=1",
         )
@@ -832,7 +823,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         put_response_1 = TestUtils.mock_put_with_auth_role(
             self,
             'industry_user',
-            content_type_json,
+            self.content_type_json,
             update_from_form_section_1.json(),
             self.endpoint + '/' + str(operation.id) + "?submit=false&form_section=1",
         )
@@ -860,7 +851,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         put_response_2 = TestUtils.mock_put_with_auth_role(
             self,
             'industry_user',
-            content_type_json,
+            self.content_type_json,
             update_from_form_section_2.json(),
             self.endpoint + '/' + str(operation.id) + "?submit=false&form_section=2",
         )

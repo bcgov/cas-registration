@@ -1,12 +1,11 @@
 import pytest, json
+from registration.constants import BASE_ENDPOINT
 from registration.models import (
     Address,
     AppRole,
     BusinessStructure,
     Contact,
-    Document,
     NaicsCode,
-    Operation,
     Operator,
     RegulatedProduct,
     ReportingActivity,
@@ -17,7 +16,7 @@ from model_bakery import baker
 from registration.schema import OperationCreateIn, OperationUpdateIn, UserOperatorContactIn, UserOperatorOperatorIn
 from django.test import Client
 from phonenumber_field.modelfields import PhoneNumberField
-from registration.tests.utils.bakers import document_baker, operation_baker, operator_baker, user_operator_baker
+from registration.tests.utils.bakers import operation_baker, operator_baker, user_operator_baker
 
 pytestmark = pytest.mark.django_db
 
@@ -139,6 +138,10 @@ baker.generators.add(PhoneNumberField, TestUtils.mock_phone_number)
 
 
 class CommonTestSetup:
+    pytestmark = pytest.mark.django_db  # This is used to mark a test function as requiring the database
+    base_endpoint = BASE_ENDPOINT
+    content_type_json = "application/json"
+
     def setup(self):
         self.user = baker.make(User, _fill_optional=True)  # Passing _fill_optional to fill all fields with random data
         self.auth_header = {'user_guid': str(self.user.user_guid)}

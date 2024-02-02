@@ -149,10 +149,12 @@ class ExternalDashboardUsersTileData(ModelSchema):
         model_fields = ["role", "status"]
 
 
-class UserOperatorListOut(Schema):
-    id: int
-    status: str
-    first_name: str
-    last_name: str
-    email: str
-    legal_name: str
+class UserOperatorListOut(ModelSchema):
+    first_name: str = Field(..., alias="user.first_name")
+    last_name: str = Field(..., alias="user.last_name")
+    email: str = Field(..., alias="user.email")
+    legal_name: str = Field(..., alias="operator.legal_name")
+
+    class Config:
+        model = UserOperator
+        model_fields = ["id", "status"]

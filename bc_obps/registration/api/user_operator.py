@@ -1,5 +1,4 @@
-from urllib.error import HTTPError
-from django.db import IntegrityError, transaction
+from django.db import transaction
 from registration.utils import (
     generate_useful_error,
     update_model_instance,
@@ -39,7 +38,6 @@ from registration.models import (
 )
 from ninja.responses import codes_4xx
 from datetime import datetime
-from django.forms import model_to_dict
 
 
 # Function to save operator data to reuse in POST/PUT methods
@@ -134,7 +132,7 @@ def save_operator(payload: UserOperatorOperatorIn, operator_instance: Operator, 
 
 
 ##### GET #####
-@router.get("/user-operator-from-user", response={200: PendingUserOperatorOut, codes_4xx: Message})
+@router.get("/user-operator-from-user", response={200: PendingUserOperatorOut, codes_4xx: Message}, url_name="user_operator_from_user")
 @authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
 def get_user_operator_status(request):
     user_operator = get_object_or_404(UserOperator, user_id=request.current_user.user_guid)
@@ -142,7 +140,11 @@ def get_user_operator_status(request):
     return 200, {**user_operator.__dict__, "is_new": operator.is_new}
 
 
-@router.get("/is-approved-admin-user-operator/{user_guid}", response={200: IsApprovedUserOperator, codes_4xx: Message})
+@router.get(
+    "/is-approved-admin-user-operator/{user_guid}",
+    response={200: IsApprovedUserOperator, codes_4xx: Message},
+    url_name="is_approved_admin_user_operator",
+)
 @authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
 def is_approved_admin_user_operator(request, user_guid: str):
     approved_user_operator: bool = UserOperator.objects.filter(
@@ -152,7 +154,7 @@ def is_approved_admin_user_operator(request, user_guid: str):
     return 200, {"approved": approved_user_operator}
 
 
-@router.get("/user-operator-operator", response={200: OperatorFromUserOperatorOut, codes_4xx: Message})
+@router.get("/user-operator-operator", response={200: OperatorFromUserOperatorOut, codes_4xx: Message}, url_name="user_operator_operator")
 @authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
 def get_user_operator_operator_id(request):
     user: User = request.current_user
@@ -169,16 +171,14 @@ def get_user_operator_operator_id(request):
     return 200, user_operator.operator
 
 
-@router.get("/user-operator-id", response={200: UserOperatorIdOut, codes_4xx: Message})
+@router.get("/user-operator-id", response={200: UserOperatorIdOut, codes_4xx: Message}, url_name="user_operator_id")
 @authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
 def get_user_operator_id(request):
     user_operator = get_object_or_404(UserOperator, user_id=request.current_user.user_guid)
     return 200, {"user_operator_id": user_operator.id}
 
 
-@router.get(
-    "/select-operator/user-operator/{int:user_operator_id}", response={200: UserOperatorOut, codes_4xx: Message}
-)
+@router.get("/select-operator/user-operator/{int:user_operator_id}", response={200: UserOperatorOut, codes_4xx: Message}, url_name="user_operator")
 @authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles())
 def get_user_operator(request, user_operator_id: int):
     user: User = request.current_user
@@ -199,7 +199,9 @@ def get_user_operator(request, user_operator_id: int):
         return UserOperatorOut.from_orm(user_operator)
 
 
-@router.get("/operator-has-admin/{operator_id}", response={200: bool, codes_4xx: Message})
+@router.get(
+    "/operator-has-admin/{operator_id}", response={200: bool, codes_4xx: Message}, url_name="operator_has_admin"
+)
 @authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles())
 def get_user_operator_admin_exists(request, operator_id: int):
     has_admin = UserOperator.objects.filter(
@@ -208,7 +210,11 @@ def get_user_operator_admin_exists(request, operator_id: int):
     return 200, has_admin
 
 
-@router.get("/user-operator-list-from-user", response=List[ExternalDashboardUsersTileData])
+@router.get(
+    "/user-operator-list-from-user",
+    response=List[ExternalDashboardUsersTileData],
+    url_name="user_operator_list_from_user",
+)
 @authorize(["industry_user"], ["admin"])
 def get_user(request):
     user: User = request.current_user
@@ -220,50 +226,19 @@ def get_user(request):
 @router.get("/user-operators", response=List[UserOperatorListOut])
 @authorize(AppRole.get_authorized_irc_roles())
 def list_user_operators(request):
-    qs = UserOperator.objects.select_related("operator", "user").only(
+    return UserOperator.objects.select_related("operator", "user").only(
         "id", "status", "user__last_name", "user__first_name", "user__email", "operator__legal_name"
     )
-    user_operator_list = []
-
-    for user_operator in qs:
-        user_operator_related_fields_dict = model_to_dict(
-            user_operator,
-            fields=[
-                "id",
-                "status",
-            ],
-        )
-        user = user_operator.user
-        user_related_fields_dict = model_to_dict(
-            user,
-            fields=[
-                "first_name",
-                "last_name",
-                "email",
-            ],
-        )
-        operator = user_operator.operator
-        operator_related_fields_dict = model_to_dict(
-            operator,
-            fields=[
-                "legal_name",
-            ],
-        )
-
-        user_operator_list.append(
-            {
-                **user_operator_related_fields_dict,
-                **user_related_fields_dict,
-                **operator_related_fields_dict,
-            }
-        )
-    return user_operator_list
 
 
 ##### POST #####
 
 
-@router.post("/select-operator/request-admin-access", response={201: RequestAccessOut, codes_4xx: Message})
+@router.post(
+    "/select-operator/request-admin-access",
+    response={201: RequestAccessOut, codes_4xx: Message},
+    url_name="user_operator_request_admin_access",
+)
 @authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
 def request_access(request, payload: SelectOperatorIn):
     user: User = request.current_user
@@ -289,7 +264,11 @@ def request_access(request, payload: SelectOperatorIn):
         return 400, {"message": str(e)}
 
 
-@router.post("/select-operator/request-access", response={201: RequestAccessOut, codes_4xx: Message})
+@router.post(
+    "/select-operator/request-access",
+    response={201: RequestAccessOut, codes_4xx: Message},
+    url_name="user_operator_request_access",
+)
 @authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
 def request_access(request, payload: SelectOperatorIn):
     user: User = request.current_user
@@ -313,7 +292,9 @@ def request_access(request, payload: SelectOperatorIn):
         return 400, {"message": str(e)}
 
 
-@router.post("/user-operator/operator", response={200: RequestAccessOut, codes_4xx: Message})
+@router.post(
+    "/user-operator/operator", response={200: RequestAccessOut, codes_4xx: Message}, url_name="user_operator_operator"
+)
 @authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
 def create_operator_and_user_operator(request, payload: UserOperatorOperatorIn):
     try:
@@ -340,7 +321,11 @@ def create_operator_and_user_operator(request, payload: UserOperatorOperatorIn):
 
 
 ##### PUT #####
-@router.put("/user-operator/operator/{int:user_operator_id}", response={200: RequestAccessOut, codes_4xx: Message})
+@router.put(
+    "/user-operator/operator/{int:user_operator_id}",
+    response={200: RequestAccessOut, codes_4xx: Message},
+    url_name="user_operator_operator",
+)
 @authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
 def update_operator_and_user_operator(request, payload: UserOperatorOperatorIn, user_operator_id: int):
     user: User = request.current_user
@@ -359,7 +344,11 @@ def update_operator_and_user_operator(request, payload: UserOperatorOperatorIn, 
         return 400, {"message": str(e)}
 
 
-@router.put("/select-operator/user-operator/update-status", response={200: UserOperatorOut, codes_4xx: Message})
+@router.put(
+    "/select-operator/user-operator/update-status",
+    response={200: UserOperatorOut, codes_4xx: Message},
+    url_name="user_operator_update_status",
+)
 @authorize(AppRole.get_all_authorized_app_roles(), ["admin"])
 def update_user_operator_status(request, payload: UserOperatorStatusUpdate):
     current_user: User = request.current_user  # irc user or industry user admin
