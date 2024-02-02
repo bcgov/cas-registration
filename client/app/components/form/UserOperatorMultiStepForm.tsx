@@ -97,11 +97,13 @@ export default function UserOperatorMultiStepForm({
     session?.user.app_role?.includes("cas") &&
     !session?.user.app_role?.includes("pending");
 
+  const isIndustryUser = session?.user.app_role?.includes("industry");
+
   const isFormStatusDisabled =
     formData?.status === Status.PENDING || formData?.status === Status.APPROVED;
 
   const isExistingOperatorMessage =
-    !isCasInternal && !formData.is_new && formSection === 1;
+    isIndustryUser && !formData.is_new && formSection === 1;
 
   const operatorRoute = isCasInternal ? "operators" : "select-operator";
   // If the user is an approved cas internal user or if no operator exists show the entire multistep form
@@ -133,7 +135,7 @@ Some fields cannot be edited. If you need to change those fields, please contact
               ? "/dashboard/operators"
               : "/dashboard/select-operator"
           }
-          allowEdit={isFormStatusDisabled && !isCasInternal}
+          allowEdit={isFormStatusDisabled && isIndustryUser}
           allowBackNavigation
           baseUrl={`/dashboard/${operatorRoute}/user-operator/${
             isCreate ? "create" : userOperatorId
