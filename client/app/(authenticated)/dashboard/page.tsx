@@ -1,4 +1,3 @@
-"use client";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import Tiles from "@/app/components/navigation/Tiles";
 import { actionHandler } from "@/app/utils/actions";
