@@ -18,12 +18,12 @@ runs:
         docker run -d \
           --network=host \
           -e "API_URL=http://127.0.0.1:8000/api/" \
-          -e "KEYCLOAK_CLIENT_ID=${{ secrets.KEYCLOAK_CLIENT_ID }}" \
-          -e "KEYCLOAK_CLIENT_SECRET=${{ secrets.KEYCLOAK_CLIENT_SECRET }}" \
+          -e "KEYCLOAK_CLIENT_ID={{ secrets.KEYCLOAK_CLIENT_ID }}" \
+          -e "KEYCLOAK_CLIENT_SECRET={{ secrets.KEYCLOAK_CLIENT_SECRET }}" \
           -e "KEYCLOAK_LOGIN_URL=https://dev.loginproxy.gov.bc.ca/auth/realms/standard" \
           -e "KEYCLOAK_LOGOUT_URL=https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout" \
           -e "KEYCLOAK_TOKEN_URL=https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/token" \
-          -e "NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}" \
+          -e "NEXTAUTH_SECRET={{ secrets.NEXTAUTH_SECRET }}" \
           -e "NEXTAUTH_URL=http://localhost:3000/" \
           -e "SITEMINDER_AUTH_URL=https://logontest7.gov.bc.ca" \
           -e "SITEMINDER_KEYCLOAK_LOGOUT_URL=https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout" \
