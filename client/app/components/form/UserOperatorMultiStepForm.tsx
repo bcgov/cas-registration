@@ -100,9 +100,6 @@ export default function UserOperatorMultiStepForm({
   const isFormStatusDisabled =
     formData?.status === Status.PENDING || formData?.status === Status.APPROVED;
 
-  const isReviewWithRequestChanges =
-    isCasInternal && formData.is_new && formSection === 1;
-  const isReviewWithoutRequestChanges = isCasInternal && formSection === 2;
   const isExistingOperatorMessage =
     !isCasInternal && !formData.is_new && formSection === 1;
 
@@ -120,19 +117,7 @@ export default function UserOperatorMultiStepForm({
 Some fields cannot be edited. If you need to change those fields, please contact us via email at GHGRegulator@gov.bc.ca."
           />
         )}
-        {isReviewWithRequestChanges && (
-          <>
-            <Note message="This is a new operator. You must approve this operator before approving its admin." />
-            <UserOperatorReview
-              userOperator={formData as UserOperatorFormData}
-              userOperatorId={Number(userOperatorId)}
-              isOperatorNew={formData?.is_new}
-              operatorId={formData?.operator_id}
-              showRequestChanges
-            />
-          </>
-        )}
-        {isReviewWithoutRequestChanges && (
+        {isCasInternal && (
           <UserOperatorReview
             userOperator={formData as UserOperatorFormData}
             userOperatorId={Number(userOperatorId)}

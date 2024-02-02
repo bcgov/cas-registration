@@ -88,24 +88,6 @@ export default function UserOperatorReview({
     return response;
   };
 
-  const requestOperatorChange = async () => {
-    const response = await changeOperatorStatus(
-      Status.CHANGES_REQUESTED,
-      operatorId as number,
-    );
-
-    return response;
-  };
-
-  const undoRequestOperatorChange = async () => {
-    const response = await changeOperatorStatus(
-      Status.PENDING,
-      operatorId as number,
-    );
-
-    return response;
-  };
-
   return (
     <Review
       approvedMessage={`You have approved the ${requestText}.`}
@@ -120,8 +102,6 @@ export default function UserOperatorReview({
         isOperatorNew ? declineOperatorRequest : declinePrimeAdminRequest
       }
       showRequestChanges={showRequestChanges}
-      onRequestChange={requestOperatorChange}
-      onUndoRequestChange={undoRequestOperatorChange}
     />
   );
 }
