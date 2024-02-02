@@ -44,7 +44,7 @@ const operation = () => {
 
   check(
     http.put(
-      HOST + `/operations/${operationId}?submit=false&save_contact=false`,
+      HOST + `/operations/${operationId}?submit=false&form_section=1`,
       JSON.stringify({
         operator_id: 2,
         name: "Test Operation Updated",
