@@ -67,6 +67,15 @@ class OperationUpdateIn(ModelSchema):
         allow_population_by_field_name = True
 
 
+class OperationListOut(ModelSchema):
+    operator: str = Field(..., alias="operator.legal_name")
+    bc_obps_regulated_operation: Optional[str] = Field(None, alias="bc_obps_regulated_operation.id")
+
+    class Config:
+        model = Operation
+        model_fields = ['id', 'name', 'bcghg_id', 'submission_date', 'status']
+
+
 class OperationOut(ModelSchema):
     # handling aliases and optional fields
     operator_id: int = Field(..., alias="operator.id")
