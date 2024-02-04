@@ -51,11 +51,13 @@ INSTALLED_APPS = [
     "registration.apps.RegistrationConfig",
 ]
 
-if DEBUG:
+if DEBUG:  # DEV only apps
     INSTALLED_APPS.append("django_extensions")
+    INSTALLED_APPS.append("silk")
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
+    "silk.middleware.SilkyMiddleware",
     "registration.middleware.kubernetes_middleware.KubernetesHealthCheckMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
