@@ -1,14 +1,20 @@
 from typing import List, Optional
-import uuid, re
+import re
 from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
 from localflavor.ca.models import CAPostalCodeField, CAProvinceField
-from registration.constants import BC_CORPORATE_REGISTRY_REGEX, BC_CORPORATE_REGISTRY_REGEX_MESSAGE, BORO_ID_REGEX
+from registration.constants import (
+    BC_CORPORATE_REGISTRY_REGEX,
+    BC_CORPORATE_REGISTRY_REGEX_MESSAGE,
+    BORO_ID_REGEX,
+    USER_CACHE_PREFIX,
+)
 from simple_history.models import HistoricalRecords
 from django.core.validators import RegexValidator
 from django.utils import timezone
 from django.core.exceptions import ValidationError
 from django.core.files.storage import default_storage
+from django.core.cache import cache
 
 
 class BaseModel(models.Model):
@@ -291,6 +297,14 @@ class User(UserAndContactCommonInfo):
         Return whether or not the user is an industry user.
         """
         return self.app_role.role_name == "industry_user"
+
+    def save(self, *args, **kwargs):
+        """
+        Override the save method to clear the cache when the user is saved.
+        """
+        cache_key = f"{USER_CACHE_PREFIX}{self.user_guid}"
+        cache.delete(cache_key)
+        super().save(*args, **kwargs)
 
 
 class BusinessRole(BaseModel):
