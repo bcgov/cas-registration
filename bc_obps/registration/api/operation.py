@@ -1,5 +1,6 @@
 from registration.constants import UNAUTHORIZED_MESSAGE
 from registration.decorators import authorize
+from registration.schema.operation import OperationListOut
 from .api_base import router
 from datetime import datetime
 import pytz
@@ -102,13 +103,17 @@ def create_or_update_multiple_operators(
 ##### GET #####
 
 
-@router.get("/operations", response={200: List[OperationOut], codes_4xx: Message})
+@router.get("/operations", response={200: List[OperationListOut], codes_4xx: Message})
 @authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles())
 def list_operations(request):
     user: User = request.current_user
     # IRC users can see all operations except ones that are not started yet
     if user.is_irc_user():
-        qs = Operation.objects.exclude(status=Operation.Statuses.NOT_STARTED)
+        qs = (
+            Operation.objects.select_related("operator", "bc_obps_regulated_operation")
+            .exclude(status=Operation.Statuses.NOT_STARTED)
+            .only(*OperationListOut.Config.model_fields, "operator__legal_name", "bc_obps_regulated_operation__id")
+        )
         return 200, qs
     # Industry users can only see their companies' operations (if there's no user_operator or operator, then the user hasn't requested access to the operator)
     user_operator = UserOperator.objects.filter(user_id=user.user_guid).first()
@@ -117,9 +122,14 @@ def list_operations(request):
     approved_users = get_an_operators_approved_users(user_operator.operator)
     if user.user_guid not in approved_users:
         raise HttpError(401, UNAUTHORIZED_MESSAGE)
-    operators_operations = Operation.objects.filter(operator_id=user_operator.operator.id).order_by(
-        "-created_at"
-    )  # order by created_at to get the latest one first
+    # order by created_at to get the latest one first
+    operators_operations = (
+        Operation.objects.select_related("operator", "bc_obps_regulated_operation")
+        .filter(operator_id=user_operator.operator.id)
+        .order_by("-created_at")
+        .only(*OperationListOut.Config.model_fields, "operator__legal_name", "bc_obps_regulated_operation__id")
+    )
+
     return 200, operators_operations
 
 
