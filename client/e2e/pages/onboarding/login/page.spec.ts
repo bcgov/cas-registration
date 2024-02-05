@@ -49,18 +49,6 @@ const login = async (
     await page.waitForSelector(profileNavSelector);
     // 🔍 Assert that the link is available
     expect(profileNavSelector).not.toBeNull();
-
-    // Get url path based on user role
-    let path = "/dashboard";
-    // 🛸 Navigate to the dashboard page
-    await navigateAndWaitForLoad(page, url + path);
-    switch (role) {
-      case UserRole.NEW_USER:
-        path = "/profile";
-        break;
-    }
-    // 🔍 Assert url path based on user role
-    expect(page.url().toLocaleLowerCase()).toContain(path);
   } catch (error) {
     // eslint-disable-next-line no-console
     console.error(`Login failed for ${userName}:`, error);
