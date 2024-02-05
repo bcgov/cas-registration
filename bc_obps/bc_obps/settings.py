@@ -51,13 +51,9 @@ INSTALLED_APPS = [
     "registration.apps.RegistrationConfig",
 ]
 
-if DEBUG:  # DEV only apps
-    INSTALLED_APPS.append("django_extensions")
-    INSTALLED_APPS.append("silk")
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
-    "silk.middleware.SilkyMiddleware",
     "registration.middleware.kubernetes_middleware.KubernetesHealthCheckMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
@@ -70,6 +66,11 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     'simple_history.middleware.HistoryRequestMiddleware',
 ]
+
+if DEBUG:  # DEV only apps
+    INSTALLED_APPS.append("django_extensions")
+    INSTALLED_APPS.append("silk")
+    MIDDLEWARE.append("silk.middleware.SilkyMiddleware")
 
 ROOT_URLCONF = "bc_obps.urls"
 
