@@ -10,16 +10,29 @@ import { BC_GOV_BACKGROUND_COLOR_BLUE } from "@/app/styles/colors";
 interface Props {
   children: React.ReactNode;
   expanded?: boolean;
+  expandedOptions?: { isExpandAll: boolean };
   title: string | React.ReactNode;
 }
 
-const Accordion = ({ children, expanded, title }: Props) => {
+const Accordion = ({
+  children,
+  expanded = false,
+  expandedOptions,
+  title,
+}: Props) => {
   const [isExpanded, setIsExpanded] = useState(expanded);
 
   useEffect(() => {
-    // Update isExpanded state when expanded prop changes
+    // Update isExpanded state when isExpandAll prop changes
     // This is necessary to allow the parent component to control the expanded state
     // as well as to allow the user to control the expanded state
+    const isExpandAll = expandedOptions?.isExpandAll;
+    if (isExpandAll !== undefined) {
+      setIsExpanded(isExpandAll);
+    }
+  }, [expandedOptions]);
+
+  useEffect(() => {
     setIsExpanded(expanded);
   }, [expanded]);
 
