@@ -11,17 +11,20 @@ interface Props {
 }
 
 const MultiStepAccordion = ({ schema, uiSchema, formData }: Props) => {
-  const [expandAll, setExpandAll] = useState(false);
+  const [expandAll, setExpandAll] = useState({ isExpandAll: false });
   const accordionSectionList = Object.keys(schema.properties as any);
 
   if (accordionSectionList.length === 0) return null;
 
+  // spread previous state so it's saved in a new memory location to trigger a re-render
+  // This was needed because the buttons wouldn't work correctly when the same value was passed
+  // if a user opened a single accordion and then clicked "Collapse All"
   const handleExpandAll = () => {
-    setExpandAll(true);
+    setExpandAll({ ...expandAll, isExpandAll: true });
   };
 
   const handleCollapseAll = () => {
-    setExpandAll(false);
+    setExpandAll({ ...expandAll, isExpandAll: false });
   };
 
   return (
@@ -43,7 +46,7 @@ const MultiStepAccordion = ({ schema, uiSchema, formData }: Props) => {
         return (
           <Accordion
             key={index}
-            expanded={expandAll}
+            expandedOptions={expandAll}
             title={schema.properties[accordionSectionList[index]].title}
           >
             <FormBase
