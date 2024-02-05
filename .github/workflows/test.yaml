@@ -226,7 +226,7 @@ jobs:
           e2e_cas_user_password: ${{ env.E2E_CAS_USER_PASSWORD }}
           e2e_industry_user_admin: ${{ env.E2E_INDUSTRY_USER_ADMIN }}
           e2e_industry_user_admin_password: ${{ env.E2E_INDUSTRY_USER_ADMIN_PASSWORD }}
-          e2e_industry_user: ${{ env.E2E_INDUSTRY_USER }}
+          e2e_industry_user: ${{ secrets.E2E_INDUSTRY_USER }}
           e2e_industry_user_password: ${{ env.E2E_INDUSTRY_USER_PASSWORD }}
           e2e_new_user: ${{ env.E2E_NEW_USER }}
           e2e_new_user_guid: ${{ env.E2E_NEW_USER_GUID }}
@@ -236,6 +236,13 @@ jobs:
         working-directory: ./client
       - name: Run Playwright Tests
         run: |
+          # Print environment variables for debugging
+          echo "API_URL: $API_URL"
+          echo "DB_USER: $DB_USER"
+          echo "E2E_INDUSTRY_USER_ADMIN: $E2E_INDUSTRY_USER_ADMIN"
+          echo "E2E_INDUSTRY_USER_ADMIN_PASSWORD: $e2e_industry_user_admin_password"
+          echo "E2E_INDUSTRY_USER: $E2E_INDUSTRY_USER"
+          echo "E2E_INDUSTRY_USER_PASSWORD: $e2e_industry_user_password"
           DEBUG=pw:browser npx playwright test --trace=on --workers=1 client/e2e/*
         env:
           API_URL: http://127.0.0.1:8000/api/
