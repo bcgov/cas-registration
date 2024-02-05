@@ -3,13 +3,14 @@
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import { styled } from "@mui/material/styles";
-
-import Session from "@/app/components/navigation/Session";
+import Profile from "@/app/components/navigation/Profile";
 
 export default function Header() {
+  const { data: session } = useSession();
   // 🖥️📲  using MUI theme breakpoints for responsive design https://mui.com/material-ui/customization/breakpoints/
 
   // 🧩 For authentication content using theme breakpoints to hide for mobile & tablet
@@ -102,14 +103,18 @@ export default function Header() {
             B.C. Industrial Emissions Reporting System (BCIERS)
           </Typography>
           {/* 👇️ Authentication content for laptop & desktop */}
-          <ButtonsRight>
-            <Session />
-          </ButtonsRight>
+          {session && (
+            <ButtonsRight>
+              <Profile />
+            </ButtonsRight>
+          )}
         </Toolbar>
         {/* 👇️ Authentication content for mobile & tablet */}
-        <ButtonsBottom>
-          <Session />
-        </ButtonsBottom>
+        {session && (
+          <ButtonsBottom>
+            <Profile />
+          </ButtonsBottom>
+        )}
       </Box>
     </AppBar>
   );
