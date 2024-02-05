@@ -52,6 +52,8 @@ const login = async (
 
     // Get url path based on user role
     let path = "/dashboard";
+    // 🛸 Navigate to the dashboard page
+    await navigateAndWaitForLoad(page, url + path);
     switch (role) {
       case UserRole.NEW_USER:
         path = "/profile";
