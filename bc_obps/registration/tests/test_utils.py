@@ -325,7 +325,7 @@ class TestGetAnOperatorsUsers:
             operator=operator2,
             status=UserOperator.Statuses.APPROVED,
         )
-        get_an_operators_approved_users(operator1)
+        get_an_operators_approved_users(operator1.pk)
 
         result = User.objects.filter(user_guid=approved_user.user_guid)
         assert result.exists() and result.count() == 1

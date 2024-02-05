@@ -116,16 +116,16 @@ def list_operations(request):
         )
         return 200, qs
     # Industry users can only see their companies' operations (if there's no user_operator or operator, then the user hasn't requested access to the operator)
-    user_operator = UserOperator.objects.filter(user_id=user.user_guid).first()
+    user_operator = UserOperator.objects.filter(user_id=user.user_guid).only("operator_id").first()
     if not user_operator:
         raise HttpError(401, UNAUTHORIZED_MESSAGE)
-    approved_users = get_an_operators_approved_users(user_operator.operator)
+    approved_users = get_an_operators_approved_users(user_operator.operator_id)
     if user.user_guid not in approved_users:
         raise HttpError(401, UNAUTHORIZED_MESSAGE)
     # order by created_at to get the latest one first
     operators_operations = (
         Operation.objects.select_related("operator", "bc_obps_regulated_operation")
-        .filter(operator_id=user_operator.operator.id)
+        .filter(operator_id=user_operator.operator_id)
         .order_by("-created_at")
         .only(*OperationListOut.Config.model_fields, "operator__legal_name", "bc_obps_regulated_operation__id")
     )
@@ -141,7 +141,7 @@ def get_operation(request, operation_id: int):
         user_operator = UserOperator.objects.filter(user_id=user.user_guid).first()
         if not user_operator:
             raise HttpError(401, UNAUTHORIZED_MESSAGE)
-        approved_users = get_an_operators_approved_users(user_operator.operator)
+        approved_users = get_an_operators_approved_users(user_operator.operator_id)
         if user.user_guid not in approved_users:
             raise HttpError(401, UNAUTHORIZED_MESSAGE)
         operation = get_object_or_404(Operation, id=operation_id, operator_id=user_operator.operator.id)
@@ -202,7 +202,7 @@ def update_operation(request, operation_id: int, submit: str, form_section: int,
         raise HttpError(401, UNAUTHORIZED_MESSAGE)
     operator = Operator.objects.get(id=user_operator.operator_id)
 
-    approved_users = get_an_operators_approved_users(operator)
+    approved_users = get_an_operators_approved_users(operator.pk)
     if user.user_guid not in approved_users:
         raise HttpError(401, UNAUTHORIZED_MESSAGE)
 
