@@ -5,6 +5,15 @@ inputs:
   django_secret_key:
     description: "Django secret key"
     required: true
+  keycloak_client_id:
+    description: "Identifier for keycloak dev client"
+    required: true
+  keycloak_client_secret:
+    description: "Keycloak client secret"
+    required: true
+  nextauth_secret:
+    description: "NextAuth secret"
+    required: true
 
 runs:
   using: composite
