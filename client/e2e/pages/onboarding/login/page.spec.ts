@@ -17,7 +17,7 @@ const url = process.env.E2E_BASEURL || "";
 // 🛠️ Function: log in to Keycloak
 const login = async (
   page: any,
-  userName: string,
+  user: string,
   password: string,
   role: string
 ) => {
@@ -38,7 +38,7 @@ const login = async (
     // Click the login button
     await page.getByRole("button", { name: loginButton }).click();
     // Fill the user field
-    await page.locator("id=user").fill(userName);
+    await page.locator("id=user").fill(user);
     // Fill the pw field
     await page.getByLabel("Password").fill(password);
     await page.getByRole("button", { name: "Continue" }).click();
@@ -51,7 +51,7 @@ const login = async (
     expect(profileNavSelector).not.toBeNull();
   } catch (error) {
     // eslint-disable-next-line no-console
-    console.error(`Login failed for ${userName}:`, error);
+    console.error(`Login failed for ${user}:`, error);
     throw error;
   }
 };

@@ -32,7 +32,7 @@ const setupAuth = async (
   user: string,
   password: string,
   storageState: string,
-  role: string,
+  role: string
 ) => {
   try {
     const url = "http://localhost:3000/home";
@@ -71,23 +71,16 @@ const setupAuth = async (
     // 🕒 Wait for the navigation to complete
     await page.waitForLoadState("domcontentloaded");
 
+    // Click the login button
     await page.getByRole("button", { name: loginButton }).click();
-
-    // 🕒 Wait for the user field to be present
-    await page.waitForSelector("#user");
-
-    // Click and fill the user field
-    await page.locator("#user").click();
-    await page.locator("#user").fill(user);
-
-    // Click and fill the password field
-    await page.getByLabel("Password").click();
+    // Fill the user field
+    await page.locator("id=user").fill(user);
+    // Fill the pw field
     await page.getByLabel("Password").fill(password);
-
-    // Click the Continue button
     await page.getByRole("button", { name: "Continue" }).click();
 
-    // 🕒 Wait for the profile navigation link to be present
+    // 🕒 Wait for the home page profile navigation link to be present
+    // 🚩 BP approach (?) seems to fail: await expect(page.getByTestId("nav-user-profile")).toBeVisible();
     const profileNavSelector = '[data-testid="nav-user-profile"]';
     await page.waitForSelector(profileNavSelector);
 
@@ -97,7 +90,7 @@ const setupAuth = async (
 
     // eslint-disable-next-line no-console
     console.log(
-      `Successful authentication setup for ${user} captured in storageState ${storageState}`,
+      `Successful authentication setup for ${user} captured in storageState ${storageState}`
     );
   } catch (error) {
     // Handle any errors that occurred during the authentication process
@@ -114,7 +107,7 @@ export default async function globalSetup() {
   // 👤 Set storageState for Authenticated IDIR and BCeid credentials using NextAuth and Keycloak to be used in subsequent test suites
   // eslint-disable-next-line no-console
   console.log(
-    "Global setup to authenticate all user roles and store each role session in storageState to be used in test suites to mock user by role.",
+    "Global setup to authenticate all user roles and store each role session in storageState to be used in test suites to mock user by role."
   );
 
   // ➰ Loop through the entries of UserRole enum
@@ -134,7 +127,7 @@ export default async function globalSetup() {
       user || "",
       pw || "",
       process.env[role + "_STORAGE"] || "",
-      value,
+      value
     );
   }
 }
