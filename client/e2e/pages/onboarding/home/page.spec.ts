@@ -10,7 +10,7 @@ const url = "http://localhost:3000/home";
 test.describe.configure({ mode: "serial" });
 
 test.describe("Test Page - Home", () => {
-  test("Test Login", async ({ page }) => {
+  test("Test Welcome", async ({ page }) => {
     await page.goto(url);
     await expect(page.url().toLocaleLowerCase()).toContain("/home");
     await expect(page.getByText("Welcome")).toBeVisible();
