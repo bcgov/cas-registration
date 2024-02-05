@@ -12,7 +12,13 @@ env:
   DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
   KEYCLOAK_CLIENT_ID: ${{ secrets.KEYCLOAK_CLIENT_ID }}
   KEYCLOAK_CLIENT_SECRET: ${{ secrets.KEYCLOAK_CLIENT_SECRET }}
-
+  E2E_CAS_USER: ${{ secrets.CAS_USER }}
+  E2E_CAS_USER_PASSWORD: ${{ secrets.CAS_USER_PASSWORD }}
+  E2E_CAS_USER_GUID: ${{ secrets.CAS_USER_GUID }}
+  E2E_INDUSTRY_USER_ADMIN_PASSWORD: ${{ secrets.INDUSTRY_USER_ADMIN_PASSWORD }}
+  E2E_INDUSTRY_USER_PASSWORD: ${{ secrets.INDUSTRY_USER_PASSWORD }}
+  E2E_NEW_USER_PASSWORD: ${{ secrets.NEW_USER_PASSWORD }}
+  E2E_NEW_USER_GUID: ${{ secrets.NEW_USER_GUID }}
 jobs:
   install-dev-tools:
     runs-on: ubuntu-latest
@@ -215,6 +221,16 @@ jobs:
           django_secret_key: ${{ env.DJANGO_SECRET_KEY }}
           keycloak_client_id: ${{ env.KEYCLOAK_CLIENT_ID }}
           keycloak_client_secret: ${{ env.KEYCLOAK_CLIENT_SECRET }}
+          e2e_cas_user: ${{ env.E2E_CAS_USER }}
+          e2e_cas_user_guid: ${{ env.E2E_CAS_USER_GUID }}
+          e2e_cas_user_password: ${{ env.E2E_CAS_USER_PASSWORD }}
+          e2e_industry_user_admin: ${{ env.E2E_INDUSTRY_USER_ADMIN }}
+          e2e_industry_user_admin_password: ${{ env.E2E_INDUSTRY_USER_ADMIN_PASSWORD }}
+          e2e_industry_user: ${{ env.E2E_INDUSTRY_USER }}
+          e2e_industry_user_password: ${{ env.E2E_INDUSTRY_USER_PASSWORD }}
+          e2e_new_user: ${{ env.E2E_NEW_USER }}
+          e2e_new_user_guid: ${{ env.E2E_NEW_USER_GUID }}
+          e2e_new_user_password: ${{ env.E2E_NEW_USER_PASSWORD }}
       - name: Install Playwright Browsers
         run: yarn playwright install --with-deps
         working-directory: ./client
@@ -234,16 +250,9 @@ jobs:
           E2E_INDUSTRY_USER_STORAGE: playwright/.auth/industry_user.json
           E2E_INDUSTRY_USER_ADMIN_STORAGE: playwright/.auth/industry_user_admin.json
           E2E_NEW_USER_STORAGE: playwright/.auth/new_user.json
-          E2E_CAS_USERNAME: ${{ secrets.CAS_USER }}
-          E2E_CAS_PASSWORD: ${{ secrets.CAS_PASSWORD }}
-          E2E_CAS_USER_GUID: ${{ secrets.CAS_USER_GUID }}
-          E2E_INDUSTRY_USER_ADMIN_USERNAME: bc-cas-dev
-          E2E_INDUSTRY_USER_ADMIN_PASSWORD: ${{ secrets.INDUSTRY_USER_ADMIN_PASSWORD }}
-          E2E_INDUSTRY_USER_USERNAME: bc-cas-dev-secondary
-          E2E_INDUSTRY_USER_PASSWORD: ${{ secrets.INDUSTRY_USER_PASSWORD }}
-          E2E_NEW_USER_USERNAME: bc-cas-dev-three
-          E2E_NEW_USER_PASSWORD: ${{ secrets.NEW_USER_PASSWORD }}
-          E2E_NEW_USER_GUID: ${{ secrets.NEW_USER_GUID }}
+          E2E_INDUSTRY_USER_ADMIN: bc-cas-dev
+          E2E_INDUSTRY_USER: bc-cas-dev-secondary
+          E2E_NEW_USER: bc-cas-dev-three
         working-directory: ./client
       - uses: actions/upload-artifact@v3
         if: always()
