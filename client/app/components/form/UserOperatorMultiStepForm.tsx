@@ -97,15 +97,15 @@ export default function UserOperatorMultiStepForm({
     session?.user.app_role?.includes("cas") &&
     !session?.user.app_role?.includes("pending");
 
+  const isIndustryUser = session?.user.app_role?.includes("industry");
+
   const isFormStatusDisabled =
     formData?.status === Status.PENDING || formData?.status === Status.APPROVED;
 
-  const isReviewWithRequestChanges =
-    isCasInternal && formData.is_new && formSection === 1;
-  const isReviewWithoutRequestChanges = isCasInternal && formSection === 2;
   const isExistingOperatorMessage =
-    !isCasInternal && !formData.is_new && formSection === 1;
+    isIndustryUser && !formData.is_new && formSection === 1;
 
+  const isNewOperatorMessage = formData.is_new && formSection === 1;
   const operatorRoute = isCasInternal ? "operators" : "select-operator";
   // If the user is an approved cas internal user or if no operator exists show the entire multistep form
   if (isCasInternal || !userOperatorId || formSection) {
@@ -120,27 +120,20 @@ export default function UserOperatorMultiStepForm({
 Some fields cannot be edited. If you need to change those fields, please contact us via email at GHGRegulator@gov.bc.ca."
           />
         )}
-        {isReviewWithRequestChanges && (
+        {isCasInternal && (
           <>
-            <Note message="This is a new operator. You must approve this operator before approving its admin." />
+            {isNewOperatorMessage && (
+              <Note message="This is a new operator. You must approve this operator before approving its admin." />
+            )}
             <UserOperatorReview
               userOperator={formData as UserOperatorFormData}
               userOperatorId={Number(userOperatorId)}
               isOperatorNew={formData?.is_new}
               operatorId={formData?.operator_id}
-              showRequestChanges
+              // We don't want to show the request changes button for Prime Admin approval
+              showRequestChanges={false}
             />
           </>
-        )}
-        {isReviewWithoutRequestChanges && (
-          <UserOperatorReview
-            userOperator={formData as UserOperatorFormData}
-            userOperatorId={Number(userOperatorId)}
-            isOperatorNew={formData?.is_new}
-            operatorId={formData?.operator_id}
-            // We don't want to show the request changes button for Prime Admin approval
-            showRequestChanges={false}
-          />
         )}
         <MultiStepFormBase
           cancelUrl={
@@ -148,7 +141,7 @@ Some fields cannot be edited. If you need to change those fields, please contact
               ? "/dashboard/operators"
               : "/dashboard/select-operator"
           }
-          allowEdit={isFormStatusDisabled && !isCasInternal}
+          allowEdit={isFormStatusDisabled && isIndustryUser}
           allowBackNavigation
           baseUrl={`/dashboard/${operatorRoute}/user-operator/${
             isCreate ? "create" : userOperatorId
