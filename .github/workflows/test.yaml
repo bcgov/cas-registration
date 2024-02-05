@@ -206,6 +206,7 @@ jobs:
           issue_title: OWASP Baseline - Backend
           fail_action: false
 
+          e2e_industry_user: ${{ secrets.E2E_INDUSTRY_USER }}
   e2e:
     needs:
       ["backend-docker-build", "frontend-docker-build", "install-dev-tools"]
@@ -224,10 +225,7 @@ jobs:
           e2e_cas_user: ${{ env.E2E_CAS_USER }}
           e2e_cas_user_guid: ${{ env.E2E_CAS_USER_GUID }}
           e2e_cas_user_password: ${{ env.E2E_CAS_USER_PASSWORD }}
-          e2e_industry_user_admin: ${{ env.E2E_INDUSTRY_USER_ADMIN }}
           e2e_industry_user_admin_password: ${{ env.E2E_INDUSTRY_USER_ADMIN_PASSWORD }}
-          e2e_industry_user: ${{ secrets.E2E_INDUSTRY_USER }}
-          e2e_industry_user_password: ${{ env.E2E_INDUSTRY_USER_PASSWORD }}
           e2e_new_user: ${{ env.E2E_NEW_USER }}
           e2e_new_user_guid: ${{ env.E2E_NEW_USER_GUID }}
           e2e_new_user_password: ${{ env.E2E_NEW_USER_PASSWORD }}
@@ -241,8 +239,11 @@ jobs:
           echo "DB_USER: $DB_USER"
           echo "E2E_INDUSTRY_USER_ADMIN: $E2E_INDUSTRY_USER_ADMIN"
           echo "E2E_INDUSTRY_USER_ADMIN_PASSWORD: $e2e_industry_user_admin_password"
+          echo "E2E_INDUSTRY_USER_ADMIN_PASSWORD: $E2E_INDUSTRY_USER_ADMIN_PASSWORD"
           echo "E2E_INDUSTRY_USER: $E2E_INDUSTRY_USER"
-          echo "E2E_INDUSTRY_USER_PASSWORD: $e2e_industry_user_password"
+          echo "E2E_INDUSTRY_USER_PASSWORD: $E2E_INDUSTRY_USER_PASSWORD"
+          echo "E2E_NEW_USER: $E2E_NEW_USER"
+          echo "E2E_NEW_USER_PASSWORD: $E2E_NEW_USER_PASSWORD"
           DEBUG=pw:browser npx playwright test --trace=on --workers=1 client/e2e/*
         env:
           API_URL: http://127.0.0.1:8000/api/
@@ -254,12 +255,14 @@ jobs:
           E2E_CAS_ADMIN_STORAGE: playwright/.auth/cas_admin.json
           E2E_CAS_ANALYST_STORAGE: playwright/.auth/cas_analyst.json
           E2E_CAS_PENDING_STORAGE: playwright/.auth/cas_pending.json
-          E2E_INDUSTRY_USER_STORAGE: playwright/.auth/industry_user.json
           E2E_INDUSTRY_USER_ADMIN_STORAGE: playwright/.auth/industry_user_admin.json
+          E2E_INDUSTRY_USER_STORAGE: playwright/.auth/industry_user.json
           E2E_NEW_USER_STORAGE: playwright/.auth/new_user.json
           E2E_INDUSTRY_USER_ADMIN: bc-cas-dev
           E2E_INDUSTRY_USER: bc-cas-dev-secondary
+          E2E_INDUSTRY_USER_PASSWORD: ${{ secrets.E2E_INDUSTRY_USER_PASSWORD }}
           E2E_NEW_USER: bc-cas-dev-three
+          E2E_NEW_USER_PASSWORD: ${{ env.E2E_NEW_USER_PASSWORD }}
         working-directory: ./client
       - uses: actions/upload-artifact@v3
         if: always()
