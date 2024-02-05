@@ -23,11 +23,15 @@ class TestOperatorsEndpoint(CommonTestSetup):
     # GET
     def test_unauthorized_users_cannot_get_operators_by_legal_name_or_cra(self):
         legal_name_response = TestUtils.mock_get_with_auth_role(
-            self, 'cas_pending', custom_reverse_lazy('operators') + "?legal_name=Test Operator legal name"
+            self,
+            'cas_pending',
+            custom_reverse_lazy('operators_by_legal_name_or_cra') + "?legal_name=Test Operator legal name",
         )
         assert legal_name_response.status_code == 401
         cra_response = TestUtils.mock_get_with_auth_role(
-            self, 'cas_pending', custom_reverse_lazy('operators') + "?cra_business_number=123456789"
+            self,
+            'cas_pending',
+            custom_reverse_lazy('operators_by_legal_name_or_cra') + "?cra_business_number=123456789",
         )
         assert cra_response.status_code == 401
 
@@ -40,20 +44,24 @@ class TestOperatorsEndpoint(CommonTestSetup):
         assert response.status_code == 401
 
     def test_get_operators_no_parameters(self):
-        response = TestUtils.mock_get_with_auth_role(self, 'industry_user', custom_reverse_lazy('operators'))
+        response = TestUtils.mock_get_with_auth_role(
+            self, 'industry_user', custom_reverse_lazy('operators_by_legal_name_or_cra')
+        )
         assert response.status_code == 404
         assert response.json() == {"message": "No parameters provided"}
 
     def test_get_operators_by_legal_name(self):
         response = TestUtils.mock_get_with_auth_role(
-            self, 'industry_user', custom_reverse_lazy('operators') + "?legal_name=Test Operator legal name"
+            self,
+            'industry_user',
+            custom_reverse_lazy('operators_by_legal_name') + "?search_value=Test Operator legal name",
         )
         assert response.status_code == 200
         response_dict: dict = response.json()
-        for key in response_dict.keys():
+        for key in response_dict[0].keys():
             # exclude audit fields
             if key not in AUDIT_FIELDS:
-                assert response_dict[key] == OperatorOut.from_orm(self.operator).dict()[key]
+                assert response_dict[0][key] == OperatorOut.from_orm(self.operator).dict()[key]
 
     def test_unauthorized_users_cannot_search_operators_by_legal_name(self):
         response = TestUtils.mock_get_with_auth_role(
@@ -86,7 +94,9 @@ class TestOperatorsEndpoint(CommonTestSetup):
 
     def test_get_operators_by_cra_number(self):
         response = TestUtils.mock_get_with_auth_role(
-            self, 'industry_user', self.endpoint + "?cra_business_number=123456789"
+            self,
+            'industry_user',
+            custom_reverse_lazy('operators_by_legal_name_or_cra') + "?cra_business_number=123456789",
         )
         assert response.status_code == 200
         response_dict: dict = response.json()
@@ -97,19 +107,25 @@ class TestOperatorsEndpoint(CommonTestSetup):
 
     def test_get_operators_no_matching_operator_legal_name(self):
         response = TestUtils.mock_get_with_auth_role(
-            self, 'industry_user', self.endpoint + "?legal_name=Test Operator legal name 2"
+            self,
+            'industry_user',
+            custom_reverse_lazy('operators_by_legal_name_or_cra') + "?legal_name=No matching operator",
         )
         assert response.status_code == 404
 
     def test_get_operators_no_matching_operator_cra_number(self):
         response = TestUtils.mock_get_with_auth_role(
-            self, 'industry_user', self.endpoint + "?cra_business_number=987654321"
+            self,
+            'industry_user',
+            custom_reverse_lazy('operators_by_legal_name_or_cra') + "?cra_business_number=987654321",
         )
         assert response.status_code == 404
 
     def test_select_operator_with_valid_id(self):
         operator = operator_baker()
-        response = TestUtils.mock_get_with_auth_role(self, "cas_analyst", self.endpoint + "/" + str(operator.id))
+        response = TestUtils.mock_get_with_auth_role(
+            self, "cas_analyst", custom_reverse_lazy('update_operator', kwargs={"operator_id": operator.id})
+        )
         assert response.status_code == 200
         response_dict: dict = response.json()
         for key in response_dict.keys():
@@ -121,7 +137,7 @@ class TestOperatorsEndpoint(CommonTestSetup):
         invalid_operator_id = 99999  # Invalid operator ID
 
         response = TestUtils.mock_get_with_auth_role(
-            self, "cas_analyst", self.endpoint + "/" + str(invalid_operator_id)
+            self, "cas_analyst", custom_reverse_lazy('operator', kwargs={"operator_id": invalid_operator_id})
         )
         assert response.status_code == 404
         assert response.json() == {'message': 'No matching operator found'}
@@ -136,7 +152,7 @@ class TestOperatorsEndpoint(CommonTestSetup):
             'cas_pending',
             self.content_type_json,
             {'status': Operator.Statuses.APPROVED},
-            self.endpoint + "/" + str(operator.id),
+            custom_reverse_lazy('update_operator', kwargs={"operator_id": operator.id}),
         )
         assert response.status_code == 401
 
@@ -145,7 +161,7 @@ class TestOperatorsEndpoint(CommonTestSetup):
             'industry_user',
             self.content_type_json,
             {'status': Operator.Statuses.APPROVED},
-            self.endpoint + "/" + str(operator.id),
+            custom_reverse_lazy('update_operator', kwargs={"operator_id": operator.id}),
         )
         assert response.status_code == 401
 
@@ -154,7 +170,7 @@ class TestOperatorsEndpoint(CommonTestSetup):
             'industry_user',
             self.content_type_json,
             {'status': Operator.Statuses.APPROVED},
-            self.endpoint + "/" + str(operator.id),
+            custom_reverse_lazy('update_operator', kwargs={"operator_id": operator.id}),
         )
         assert response.status_code == 401
 
@@ -169,7 +185,7 @@ class TestOperatorsEndpoint(CommonTestSetup):
             'cas_admin',
             self.content_type_json,
             {"status": Operator.Statuses.APPROVED},
-            self.endpoint + "/" + str(operator.id),
+            custom_reverse_lazy('update_operator', kwargs={"operator_id": operator.id}),
         )
 
         assert response.status_code == 200
@@ -188,7 +204,7 @@ class TestOperatorsEndpoint(CommonTestSetup):
             'cas_admin',
             self.content_type_json,
             {"status": Operator.Statuses.CHANGES_REQUESTED},
-            self.endpoint + "/" + str(operator.id),
+            custom_reverse_lazy('update_operator', kwargs={"operator_id": operator.id}),
         )
 
         assert response.status_code == 200
