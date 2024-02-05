@@ -111,7 +111,7 @@ test.describe("Test Page - Home", () => {
       role = "E2E_" + role;
       switch (value) {
         case UserRole.INDUSTRY_USER:
-          user = process.env[`${role}_USERNAME`] || "";
+          user = process.env[`${role}`] || "";
           pw = process.env[`${role}_PASSWORD`] || "";
           test("Test Login", async ({ page }) => {
             await login(page, user, pw, value);
