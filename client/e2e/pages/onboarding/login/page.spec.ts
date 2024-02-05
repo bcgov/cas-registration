@@ -12,7 +12,7 @@ import { navigateAndWaitForLoad } from "@/e2e/utils/helpers";
 dotenv.config({ path: "./e2e/.env.local" });
 
 // Set the test URL
-const url = process.env.E2E_BASEURL + "home";
+const url = process.env.E2E_BASEURL || "";
 
 // 🛠️ Function: log in to Keycloak
 const login = async (
@@ -22,20 +22,6 @@ const login = async (
   role: string
 ) => {
   try {
-    // 🔍 Log navigation details
-    page.on("request", (request: { url: () => any }) => {
-      // eslint-disable-next-line no-console
-      console.log(`[Navigating to] ${request.url()}`);
-    });
-
-    // 🔍  Set up event listener for console messages
-    page.on("console", (message: { text: () => any }) => {
-      console.log(`[Page Console] ${message.text()}`);
-    });
-
-    // eslint-disable-next-line no-console
-    console.log(`[LOGIN] ${userName}`);
-
     // 🛸 Navigate to the home page
     await navigateAndWaitForLoad(page, url);
 
@@ -51,30 +37,14 @@ const login = async (
 
     // Click the login button
     await page.getByRole("button", { name: loginButton }).click();
-
-    // eslint-disable-next-line no-console
-    console.log("Completing login form...");
     // Fill the user field
     await page.locator("id=user").fill(userName);
-    // Get the value of the user field
-    // eslint-disable-next-line no-console
-    const userFieldValue = await page.locator("id=user").inputValue();
-    console.log("User Field Value:", userFieldValue);
     // Fill the pw field
     await page.getByLabel("Password").fill(password);
-    // Get the value of the password field
-    const passwordFieldValue = await page.getByLabel("Password").inputValue();
-    // Check that the password field is not blank
-    expect(passwordFieldValue).toBeTruthy();
-    // Click Continue button
-    // eslint-disable-next-line no-console
-    console.log("Clicking Continue...");
     await page.getByRole("button", { name: "Continue" }).click();
 
     // 🕒 Wait for the home page profile navigation link to be present
     // 🚩 BP approach (?) seems to fail: await expect(page.getByTestId("nav-user-profile")).toBeVisible();
-    // eslint-disable-next-line no-console
-    console.log("Waiting for the profile navigation link to be present...");
     const profileNavSelector = '[data-testid="nav-user-profile"]';
     await page.waitForSelector(profileNavSelector);
     // 🔍 Assert that the link is available
@@ -87,8 +57,6 @@ const login = async (
         path = "/profile";
         break;
     }
-    // eslint-disable-next-line no-console
-    console.log(`Asserting url path ${path} for user role ${role}`);
     // 🔍 Assert url path based on user role
     expect(page.url().toLocaleLowerCase()).toContain(path);
   } catch (error) {

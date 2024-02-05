@@ -227,16 +227,6 @@ jobs:
         working-directory: ./client
       - name: Run Playwright Tests
         run: |
-          # Print environment variables for debugging
-          echo "API_URL: $API_URL"
-          echo "DB_USER: $DB_USER"
-          echo "E2E_INDUSTRY_USER_ADMIN: $E2E_INDUSTRY_USER_ADMIN"
-          echo "E2E_INDUSTRY_USER_ADMIN_PASSWORD: $e2e_industry_user_admin_password"
-          echo "E2E_INDUSTRY_USER_ADMIN_PASSWORD: $E2E_INDUSTRY_USER_ADMIN_PASSWORD"
-          echo "E2E_INDUSTRY_USER: $E2E_INDUSTRY_USER"
-          echo "E2E_INDUSTRY_USER_PASSWORD: $E2E_INDUSTRY_USER_PASSWORD"
-          echo "E2E_NEW_USER: $E2E_NEW_USER"
-          echo "E2E_NEW_USER_PASSWORD: $E2E_NEW_USER_PASSWORD"
           DEBUG=pw:browser npx playwright test --trace=on --workers=1 client/e2e/*
         env:
           API_URL: http://127.0.0.1:8000/api/
