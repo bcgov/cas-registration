@@ -138,5 +138,5 @@ class OperationListOut(Schema):
     total_pages: int
     
 class OperationPaginatedOut(Schema):
-    data: List[OperationOut]
+    data: List[OperationListOut]
     row_count: int
