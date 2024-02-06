@@ -6,9 +6,10 @@ import { FrontEndRoles } from "@/app/utils/enums";
 import Card from "@mui/material/Card";
 import Typography from "@mui/material/Typography";
 import { getServerSession } from "next-auth";
+import {mockSession} from '@/mock/mocksession'
 
 export default async function Page() {
-  const session = await getServerSession(authOptions);
+  const session = process.env.BYPASS ? mockSession : await getServerSession(authOptions);
   const role = session?.user?.app_role || "";
   let operatorStatus = "";
   let userOperatorStatus = "";

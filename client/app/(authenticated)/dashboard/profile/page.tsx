@@ -4,10 +4,11 @@ import User from "@/app/components/routes/profile/User";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { IDP } from "@/app/utils/enums";
+import { mockSession } from "@/mock/mocksession";
 
 // 🏗️ Sync server component: dashboard\profile
 export default async function Page() {
-  const session = await getServerSession(authOptions);
+  const session = process.env.BYPASS ? mockSession : await getServerSession(authOptions);
   const isIdirUser = session?.identity_provider?.includes(IDP.IDIR);
   return (
     <>

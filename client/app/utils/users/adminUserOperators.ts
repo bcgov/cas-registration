@@ -1,5 +1,6 @@
 import { Status, UserOperatorStatus } from "@/app/utils/enums";
 import { actionHandler, getToken } from "@/app/utils/actions";
+import { mockToken } from "@/mock/mocksession";
 
 export interface ExternalDashboardUsersTile {
   user: { [key: string]: any };
@@ -43,7 +44,7 @@ export async function processExternalDashboardUsersTileData() {
     : [];
 
   // 🤳Identify current admin user in the list
-  const token = await getToken();
+  const token = process.env.BYPASS ? mockToken : await getToken();
   const uid = token?.user_guid ?? "";
   const selfIndex = transformedTileData.findIndex((userOperator) => {
     return userOperator.user.user_guid.replace(/-/g, "") === uid;

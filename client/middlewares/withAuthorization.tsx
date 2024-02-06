@@ -8,6 +8,7 @@ import {
 import { MiddlewareFactory } from "./types";
 import { getToken } from "next-auth/jwt";
 import { IDP } from "@/app/utils/enums";
+import { mockToken } from "@/mock/mocksession";
 
 /*
 Access control logic is managed using Next.js middleware and NextAuth.js authentication JWT token.
@@ -68,7 +69,7 @@ const isAuthorizedIdirUser = (token: {
 export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
   return async (request: NextRequest, _next: NextFetchEvent) => {
     const { pathname } = request.nextUrl;
-    const token = await getToken({
+    const token = process.env.BYPASS ? mockToken : await getToken({
       req: request,
       secret: process.env.NEXTAUTH_SECRET,
     });

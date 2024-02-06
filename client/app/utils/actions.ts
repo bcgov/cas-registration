@@ -9,9 +9,11 @@ and can be called from server components or from client components.
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import * as Sentry from "@sentry/nextjs";
+import { mockToken } from "mock/mocksession"
 // 🛠️ Function to get the encrypted JWT from NextAuth getToken route function
 export async function getToken() {
   try {
+    if (process.env.BYPASS) return mockToken
     const res = await fetch(`${process.env.NEXTAUTH_URL}/api/auth/token`, {
       method: "GET",
       headers: { Cookie: cookies().toString() },
@@ -78,7 +80,7 @@ export async function actionHandler(
     async () => {
       try {
         // 🔒 Get the encrypted JWT
-        const token = await getToken();
+        const token = process.env.BYPASS ? mockToken : await getToken();
         // get the user_guid from the JWT
         const userGuid =
           token?.user_guid || getUUIDFromEndpoint(endpoint) || "";

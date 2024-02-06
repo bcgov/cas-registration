@@ -7,13 +7,14 @@ import Loading from "@/app/components/loading/SkeletonGrid";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import Note, { registrationRequestNote } from "../../datagrid/Note";
+import {mockSession} from "@/mock/mocksession";
 
 export default async function OperationsPage() {
   // 👤 Use NextAuth.js hook to get information about the user's session
   /* When calling from the server-side i.e., in Route Handlers, React Server Components, API routes,
    * getServerSession requires passing the same object you would pass to NextAuth
    */
-  const session = await getServerSession(authOptions);
+  const session = process.env.BYPASS ? mockSession : await getServerSession(authOptions);
   const role = session?.user?.app_role;
 
   return (

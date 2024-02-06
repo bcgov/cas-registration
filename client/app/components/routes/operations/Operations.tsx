@@ -5,6 +5,7 @@ import DataGrid from "@/app/components/datagrid/DataGrid";
 import { statusStyle } from "@/app/components/datagrid/helpers";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import {mockSession} from '@/mock/mocksession'
 
 // 🛠️ Function to fetch operations
 async function getOperations() {
@@ -43,7 +44,7 @@ const formatTimestamp = (timestamp: string) => {
 
 // 🧩 Main component
 export default async function Operations() {
-  const session = await getServerSession(authOptions);
+  const session = process.env.BYPASS ? mockSession : await getServerSession(authOptions);
   // Fetch operations data
   const operations: {
     id: number;
