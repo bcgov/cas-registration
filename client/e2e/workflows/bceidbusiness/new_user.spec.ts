@@ -20,10 +20,8 @@ test.describe("Test Workflow new user", () => {
   test.use({ storageState: storageState });
   test("Test Redirect to Profile", async ({ page }) => {
     // eslint-disable-next-line no-console
-    console.log(storageState);
     console.log(
-      (await page.context().storageState({ path: storageState })).origins[0]
-        .localStorage
+      (await page.context().storageState({ path: storageState })).cookies
     );
     // 🛸 Navigate to the home page
     await navigateAndWaitForLoad(page, url);

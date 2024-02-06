@@ -78,9 +78,13 @@ const setupAuth = async (
 
     // 🔑 Login to Keycloak
     // Fill the user field
-    await page.locator("id=user").fill(user);
+    await page.locator("id=user").fill(user, {
+      timeout: 600000,
+    });
     // Fill the pw field
-    await page.getByLabel("Password").fill(password);
+    await page.getByLabel("Password").fill(password, {
+      timeout: 600000,
+    });
     // Click Continue button
     await page.getByRole("button", { name: "Continue" }).click();
 
