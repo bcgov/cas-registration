@@ -6,11 +6,15 @@ import { GridRenderCellParams } from "@mui/x-data-grid";
 import { actionHandler } from "@/app/utils/actions";
 import { formatOperationRows } from "@/app/components/routes/operations/Operations";
 
-const fetchOperationPageData = async (page: number) => {
+const fetchOperationPageData = async (
+  page: number,
+  sortField: string,
+  sortDirection: string,
+) => {
   try {
     // fetch data from server
     const pageData = await actionHandler(
-      `registration/operations?page=${page}`,
+      `registration/operations?page=${page}&sort_field=${sortField}&sort_direction=${sortDirection}`,
       "GET",
       "",
     );
