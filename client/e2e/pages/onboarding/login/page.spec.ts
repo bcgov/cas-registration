@@ -2,13 +2,13 @@
 // 🔍 Asserts the user can login, logout, and login
 
 import { test, expect } from "@playwright/test";
-import * as dotenv from "dotenv";
 // 👤 User Roles
 import { UserRole } from "@/e2e/utils/enums";
 // 🛸 Login Links
 import { LoginLink } from "@/e2e/utils/enums";
 import { navigateAndWaitForLoad } from "@/e2e/utils/helpers";
 
+import * as dotenv from "dotenv";
 dotenv.config({ path: "./e2e/.env.local" });
 
 // Set the test URL
