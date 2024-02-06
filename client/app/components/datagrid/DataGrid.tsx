@@ -79,7 +79,8 @@ const DataGrid: React.FC<Props> = ({
 
   useEffect(() => {
     const sortModelField = sortModel[0]?.field ?? "created_at";
-    const sortModelOrder = sortModel[0]?.sort ?? "asc";
+    const sortModelOrder = sortModel[0]?.sort ?? "desc";
+
     // Don't fetch data if the component is not mounted
     // Since we will grab the first page using the server side props
     if (!isComponentMounted || !fetchPageData) return;
@@ -95,6 +96,7 @@ const DataGrid: React.FC<Props> = ({
     };
 
     fetchData().then(() => setLoading(false));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paginationModel, sortModel]);
 
   return (
