@@ -9,12 +9,12 @@ import { formatOperationRows } from "@/app/components/routes/operations/Operatio
 const fetchOperationPageData = async (
   page: number,
   sortField?: string,
-  sortDirection?: string,
+  sortOrder?: string,
 ) => {
   try {
     // fetch data from server
     const pageData = await actionHandler(
-      `registration/operations?page=${page}&sort_field=${sortField}&sort_direction=${sortDirection}`,
+      `registration/operations?page=${page}&sort_field=${sortField}&sort_order=${sortOrder}`,
       "GET",
       "",
     );

@@ -9,12 +9,12 @@ import { formatUserOperatorRows } from "@/app/components/routes/access-requests/
 const fetchUserOperatorPageData = async (
   page: number,
   sortField?: string,
-  sortDirection?: string,
+  sortOrder?: string,
 ) => {
   try {
     // fetch data from server
     const pageData = await actionHandler(
-      `registration/user-operators?page=${page}&sort_field=${sortField}&sort_direction=${sortDirection}`,
+      `registration/user-operators?page=${page}&sort_field=${sortField}&sort_order=${sortOrder}`,
       "GET",
       "",
     );
