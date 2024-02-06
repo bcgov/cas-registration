@@ -1,7 +1,7 @@
 import { GridRowsProp } from "@mui/x-data-grid";
 
 import { actionHandler } from "@/app/utils/actions";
-import DataGrid from "@/app/components/datagrid/DataGrid";
+import OperationDataGrid from "@/app/components/datagrid/OperationDataGrid";
 import { statusStyle } from "@/app/components/datagrid/helpers";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
@@ -12,7 +12,7 @@ async function getOperations() {
     return await actionHandler(
       "registration/operations",
       "GET",
-      "/dashboard/operations",
+      "/dashboard/operations"
     );
   } catch (error) {
     // Handle the error here or rethrow it to handle it at a higher level
@@ -79,7 +79,7 @@ export default async function Operations() {
               submission_date: formatTimestamp(submission_date) ?? status,
               status: status,
             };
-          },
+          }
         )
       : [];
 
@@ -135,12 +135,7 @@ export default async function Operations() {
   // Render the DataGrid component
   return (
     <div className="mt-5">
-      <DataGrid
-        cntxt="operations"
-        rows={rows}
-        columns={columns}
-        session={session}
-      />
+      <OperationDataGrid rows={rows} columns={columns} />
     </div>
   );
 }
