@@ -16,15 +16,15 @@ const url = process.env.E2E_BASEURL || "";
 test.describe.configure({ mode: "serial" });
 test.describe("Test Workflow new user", () => {
   // 👤 run test as new user with no role
-  // Resolve to an absolute path based on the relative path in the env var
-  const storageState = path.resolve(
-    __dirname,
-    process.env.E2E_NEW_USER_STORAGE || ""
-  );
-  // eslint-disable-next-line no-console
-  console.log(storageState);
+  const storageState = process.env.E2E_NEW_USER_STORAGE;
   test.use({ storageState: storageState });
   test("Test Redirect to Profile", async ({ page }) => {
+    // eslint-disable-next-line no-console
+    console.log(storageState);
+    console.log(
+      (await page.context().storageState({ path: storageState })).origins[0]
+        .localStorage
+    );
     // 🛸 Navigate to the home page
     await navigateAndWaitForLoad(page, url);
     // 🔍 Assert that the current URL ends with "/profile"
