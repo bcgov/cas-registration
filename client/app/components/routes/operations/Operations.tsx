@@ -13,7 +13,7 @@ async function getOperations() {
       // Fetch page one of the operations data on initial load
       "registration/operations?page=1",
       "GET",
-      "/dashboard/operations"
+      "/dashboard/operations",
     );
   } catch (error) {
     // Handle the error here or rethrow it to handle it at a higher level
@@ -62,7 +62,7 @@ export const formatOperationRows = (rows: GridRowsProp) => {
         submission_date: formatTimestamp(submission_date) ?? status,
         status,
       };
-    }
+    },
   );
 };
 
