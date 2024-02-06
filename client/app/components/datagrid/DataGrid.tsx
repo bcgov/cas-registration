@@ -1,22 +1,16 @@
 "use client";
-import { useEffect, useState } from "react";
+
 import {
   DataGrid as MuiGrid,
   GridRowsProp,
   GridColDef,
-  GridRenderCellParams,
 } from "@mui/x-data-grid";
-import Link from "next/link";
 import { BC_GOV_BACKGROUND_COLOR_BLUE } from "@/app/styles/colors";
 import { Session } from "next-auth";
 
 interface Props {
   rows: GridRowsProp;
   columns: GridColDef[];
-  cntxt?: string;
-  // Optionally pass the server session to the component
-  // Since directly using client session can be a bit slow to load
-  session?: Session | null;
 }
 
 interface SortIconProps {
@@ -53,79 +47,12 @@ const DescendingIcon = () => {
   return <SortIcon topFill="white" bottomFill="grey" />;
 };
 
-const DataGrid: React.FC<Props> = ({ rows, columns, cntxt, session }) => {
-  // 📚  Define a state variable to store columns
-  const [customColumns, setCustomColumns] = useState<GridColDef[]>(columns);
-
-  const isIndustryUser = session?.user.app_role?.includes("industry");
-
-  useEffect(() => {
-    // 🔍 Props passed from Server Components—for example client/app/operations/page.tsx—must be serializable
-    // Handling non-serializable column functions here...
-    switch (cntxt) {
-      case "operations":
-        // 📚 Define a custom renderCell function for the 'action' column
-        const updatedColumnsOperations = columns.map((column) => {
-          if (column.field === "action") {
-            return {
-              ...column,
-              renderCell: (params: GridRenderCellParams) => (
-                <div>
-                  {/* 🔗 Add reg or details link */}
-                  <Link
-                    className="no-underline text-bc-link-blue whitespace-normal"
-                    // Indutry users view multistep form, internal users view single page details route
-                    href={`operations/${params.row.id}${
-                      isIndustryUser ? "/1" : ""
-                    }`}
-                  >
-                    {params.row.status === "Not Started"
-                      ? "Start Application"
-                      : "View Details"}
-                  </Link>
-                </div>
-              ),
-            };
-          }
-          return column;
-        });
-        //  🔄 Use updatedColumns for rendering the DataGrid
-        setCustomColumns(updatedColumnsOperations);
-        break;
-      case "user-operators":
-        // 📚 Define a custom renderCell function for the 'action' column
-        const updatedColumnsUserOperators = columns.map((column) => {
-          if (column.field === "action") {
-            return {
-              ...column,
-              renderCell: (params: GridRenderCellParams) => (
-                <div>
-                  {/* Link to the first page of the multistep form for a specific user-operator. The '1' represents the first formSection of the form. */}
-                  <Link
-                    className="no-underline text-bc-link-blue"
-                    href={`operators/user-operator/${params.row.id}/1`}
-                  >
-                    View Details
-                  </Link>
-                </div>
-              ),
-            };
-          }
-          return column;
-        });
-        //  🔄 Use updatedColumns for rendering the DataGrid
-        setCustomColumns(updatedColumnsUserOperators);
-        break;
-      default:
-        break;
-    }
-  }, [columns, cntxt]);
-
+const DataGrid: React.FC<Props> = ({ rows, columns }) => {
   return (
     <div style={{ height: "auto", width: "100%" }}>
       <MuiGrid
         rows={rows}
-        columns={customColumns}
+        columns={columns}
         showCellVerticalBorder
         initialState={{
           pagination: { paginationModel: { pageSize: 20 } },
