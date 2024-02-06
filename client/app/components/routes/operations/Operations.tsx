@@ -80,7 +80,6 @@ export default async function Operations() {
       submission_date: string;
       status: string;
     }[];
-    total_pages: number;
     row_count: number;
   } = await getOperations();
   if (!operations) {
