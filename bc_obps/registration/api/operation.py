@@ -26,7 +26,7 @@ from registration.models import (
 from registration.schema import (
     OperationCreateIn,
     OperationUpdateIn,
-    OperationListOut,
+    OperationPaginatedOut,
     OperationOut,
     OperationCreateOut,
     OperationUpdateOut,
@@ -109,7 +109,7 @@ def create_or_update_multiple_operators(
 ##### GET #####
 
 
-@router.get("/operations", response={200: OperationListOut, codes_4xx: Message})
+@router.get("/operations", response={200: OperationPaginatedOut, codes_4xx: Message})
 @authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles())
 def list_operations(request, page: int = 1):
     user: User = request.current_user
@@ -119,6 +119,7 @@ def list_operations(request, page: int = 1):
             Operation.objects.select_related("operator", "bc_obps_regulated_operation")
             .exclude(status=Operation.Statuses.NOT_STARTED)
             .only(*OperationListOut.Config.model_fields, "operator__legal_name", "bc_obps_regulated_operation__id")
+            .order_by("-created_at")
         )
         paginator = Paginator(qs, 20)
         return 200, OperationListOut(
@@ -142,7 +143,7 @@ def list_operations(request, page: int = 1):
     )
     paginator = Paginator(operators_operations, 20)
     return 200, {
-        "operation_list": paginator.page(page).object_list,
+        "data": paginator.page(page).object_list,
         "total_pages": paginator.num_pages,
         "row_count": paginator.count,
     }

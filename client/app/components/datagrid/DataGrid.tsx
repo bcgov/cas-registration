@@ -15,6 +15,7 @@ interface Props {
   rows: GridRowsProp;
   rowCount?: number;
   columns: GridColDef[];
+  paginationMode?: "client" | "server";
 }
 
 interface SortIconProps {
@@ -54,10 +55,11 @@ const DescendingIcon = () => {
 const PAGE_SIZE = 20;
 
 const DataGrid: React.FC<Props> = ({
+  columns,
   fetchPageData,
+  paginationMode = "client",
   rows: initialRows,
   rowCount,
-  columns,
 }) => {
   const [rows, setRows] = useState(initialRows ?? []);
   const [loading, setLoading] = useState(false);
@@ -99,8 +101,8 @@ const DataGrid: React.FC<Props> = ({
           pagination: { paginationModel: { pageSize: 20 } },
         }}
         pagination
-        sortingMode="server"
-        paginationMode="server"
+        sortingMode={paginationMode}
+        paginationMode={paginationMode}
         onPaginationModelChange={setPaginationModel}
         onSortModelChange={setSortModel}
         // Set the row height to "auto" so that the row height will adjust to the content

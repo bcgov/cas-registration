@@ -31,7 +31,13 @@ const OperatorDataGrid = ({
     return column;
   });
 
-  return <DataGrid rows={rows} columns={updatedColumnsUserOperators} />;
+  return (
+    <DataGrid
+      columns={updatedColumnsUserOperators}
+      paginationMode="server"
+      rows={rows}
+    />
+  );
 };
 
 export default OperatorDataGrid;
