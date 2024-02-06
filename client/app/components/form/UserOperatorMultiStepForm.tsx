@@ -67,7 +67,7 @@ export default function UserOperatorMultiStepForm({
       }/${formSection}`,
       {
         body: JSON.stringify(newFormData),
-      }
+      },
     );
 
     if (response.error) {
@@ -82,7 +82,7 @@ export default function UserOperatorMultiStepForm({
         return;
       }
       push(
-        `/dashboard/select-operator/received/add-operator/${response.operator_id}`
+        `/dashboard/select-operator/received/add-operator/${response.operator_id}`,
       );
       return;
     }
@@ -94,7 +94,7 @@ export default function UserOperatorMultiStepForm({
         isCreate ? "create" : userOperatorId
       }/${formSection + 1}${
         isCreate ? `?user-operator-id=${response.user_operator_id}` : ""
-      }`
+      }`,
     );
   };
 
@@ -106,10 +106,6 @@ export default function UserOperatorMultiStepForm({
 
   const isFormStatusDisabled =
     formData?.status === Status.PENDING || formData?.status === Status.APPROVED;
-
-  const isReviewWithRequestChanges =
-    isCasInternal && formData.is_new && formSection === 1;
-  const isReviewWithoutRequestChanges = isCasInternal && formSection === 2;
 
   const isExistingOperatorMessage =
     isIndustryUser && !formData.is_new && formSection === 1;
