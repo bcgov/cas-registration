@@ -98,12 +98,6 @@ const setupAuth = async (
     await page.context().storageState({ path: storageState });
     // eslint-disable-next-line no-console
     console.log(
-      (await page.context().storageState({ path: storageState })).origins
-    );
-    // eslint-disable-next-line no-console
-    console.log(await page.context().cookies());
-    // eslint-disable-next-line no-console
-    console.log(
       `🤸 Successful authentication setup for ${user} captured in storageState ${storageState} 🤸`
     );
   } catch (error) {
@@ -135,14 +129,14 @@ export default async function globalSetup() {
       case UserRole.NEW_USER:
         user = process.env[role];
         pw = process.env[role + "_PASSWORD"];
-        // 🔑 Authenticate this user role and save to storageState
-        await setupAuth(
-          user || "",
-          pw || "",
-          process.env[role + "_STORAGE"] as string,
-          value
-        );
         break;
     }
+    // 🔑 Authenticate this user role and save to storageState
+    await setupAuth(
+      user || "",
+      pw || "",
+      process.env[role + "_STORAGE"] as string,
+      value
+    );
   }
 }
