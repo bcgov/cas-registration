@@ -237,3 +237,9 @@ class UserOperatorListOut(Schema):
     last_name: str
     email: str
     legal_name: str
+
+
+class UserOperatorPaginatedOut(Schema):
+    row_count: int
+    total_pages: int
+    data: List[UserOperatorListOut]
