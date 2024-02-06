@@ -18,6 +18,10 @@ test.describe.serial("Test Workflow new user", () => {
   test.use({ storageState: storageState }); // this will error if no such file or directory
   test("Test Redirect to Profile", async ({ page }) => {
     // eslint-disable-next-line no-console
+    console.log(
+      (await page.context().storageState({ path: storageState })).origins
+    );
+    // eslint-disable-next-line no-console
     console.log(await page.context().cookies());
     // 🛸 Navigate to the home page
     await navigateAndWaitForLoad(page, url + "/profile");
