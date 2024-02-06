@@ -123,8 +123,7 @@ def list_operations(request, page: int = 1):
         )
         paginator = Paginator(qs, 20)
         return 200, OperationListOut(
-            operation_list=[OperationOut.from_orm(operation) for operation in paginator.page(page).object_list],
-            total_pages=paginator.num_pages,
+            data=[OperationOut.from_orm(operation) for operation in paginator.page(page).object_list],
             row_count=paginator.count,
         )
     # Industry users can only see their companies' operations (if there's no user_operator or operator, then the user hasn't requested access to the operator)
@@ -144,7 +143,6 @@ def list_operations(request, page: int = 1):
     paginator = Paginator(operators_operations, 20)
     return 200, {
         "data": paginator.page(page).object_list,
-        "total_pages": paginator.num_pages,
         "row_count": paginator.count,
     }
 
