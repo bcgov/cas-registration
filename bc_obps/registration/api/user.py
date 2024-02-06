@@ -7,6 +7,11 @@ from .api_base import router
 from django.shortcuts import get_object_or_404
 from ninja.responses import codes_4xx
 from registration.enums.enums import IdPs
+from django.db import IntegrityError, transaction
+from registration.utils import (
+    generate_useful_error,
+)
+from django.core.exceptions import ValidationError
 
 ##### GET #####
 
@@ -39,30 +44,31 @@ def get_user_role(request, user_guid: str):
 @router.post("/user-profile/{identity_provider}", response={200: UserOut, codes_4xx: Message})
 def create_user_profile(request, identity_provider: str, payload: UserIn):
     try:
-        # Determine the role based on the identity provider
-        role_mapping = {
-            IdPs.IDIR.value: AppRole.objects.get(role_name="cas_admin")
-            if settings.BYPASS_ROLE_ASSIGNMENT
-            else AppRole.objects.get(role_name="cas_pending"),
-            IdPs.BCEIDBUSINESS.value: AppRole.objects.get(role_name="industry_user"),
-        }
-        role: AppRole = role_mapping.get(identity_provider, None)
-        new_user = User.objects.create(
-            user_guid=json.loads(request.headers.get('Authorization')).get('user_guid'),
-            business_guid=payload.business_guid,
-            bceid_business_name=payload.bceid_business_name,
-            app_role=role,
-            first_name=payload.first_name,
-            last_name=payload.last_name,
-            email=payload.email,
-            position_title=payload.position_title,
-            phone_number=payload.phone_number,
-        )
-
+        with transaction.atomic():
+            # Determine the role based on the identity provider
+            role_mapping = {
+                IdPs.IDIR.value: AppRole.objects.get(role_name="cas_admin")
+                if settings.BYPASS_ROLE_ASSIGNMENT
+                else AppRole.objects.get(role_name="cas_pending"),
+                IdPs.BCEIDBUSINESS.value: AppRole.objects.get(role_name="industry_user"),
+            }
+            role: AppRole = role_mapping.get(identity_provider, None)
+            new_user = User.objects.create(
+                user_guid=json.loads(request.headers.get('Authorization')).get('user_guid'),
+                business_guid=payload.business_guid,
+                bceid_business_name=payload.bceid_business_name,
+                app_role=role,
+                first_name=payload.first_name,
+                last_name=payload.last_name,
+                email=payload.email,
+                position_title=payload.position_title,
+                phone_number=payload.phone_number,
+            )
+        return 200, new_user
+    except ValidationError as e:
+        return 400, {"message": generate_useful_error(e)}
     except Exception as e:
         return 400, {"message": str(e)}
-
-    return 200, new_user
 
 
 ##### PUT #####
@@ -74,12 +80,15 @@ def create_user_profile(request, identity_provider: str, payload: UserIn):
 def update_user_profile(request, payload: UserIn):
     user: User = request.current_user
     try:
-        for attr, value in payload.dict().items():
-            setattr(user, attr, value)
-        user.save()
+        with transaction.atomic():
+            for attr, value in payload.dict().items():
+                setattr(user, attr, value)
+            user.save()
+            return 200, user
+    except ValidationError as e:
+        return 400, {"message": generate_useful_error(e)}
     except Exception as e:
         return 400, {"message": str(e)}
-    return 200, user
 
 
 ##### DELETE #####
