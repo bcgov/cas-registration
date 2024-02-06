@@ -113,9 +113,9 @@ def create_or_update_multiple_operators(
 @authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles())
 def list_operations(request, page: int = 1, sort_field: str = "created_at", sort_order: str = "desc"):
     user: User = request.current_user
+    sort_direction = "-" if sort_order == "desc" else ""
     # IRC users can see all operations except ones that are not started yet
     if user.is_irc_user():
-        sort_direction = "-" if sort_order == "desc" else ""
         qs = (
             Operation.objects.select_related("operator", "bc_obps_regulated_operation")
             .exclude(status=Operation.Statuses.NOT_STARTED)
@@ -138,7 +138,7 @@ def list_operations(request, page: int = 1, sort_field: str = "created_at", sort
     operators_operations = (
         Operation.objects.select_related("operator", "bc_obps_regulated_operation")
         .filter(operator_id=user_operator.operator_id)
-        .order_by("-created_at")
+        .order_by(f"{sort_direction}{sort_field}")
         .only(*OperationListOut.Config.model_fields, "operator__legal_name", "bc_obps_regulated_operation__id")
     )
     paginator = Paginator(operators_operations, 20)
