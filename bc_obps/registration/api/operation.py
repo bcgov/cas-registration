@@ -123,7 +123,7 @@ def list_operations(request, page: int = 1, sort_field: str = "created_at", sort
             .order_by(f"{sort_direction}{sort_field}")
         )
         paginator = Paginator(qs, 20)
-        return 200, OperationListOut(
+        return 200, OperationPaginatedOut(
             data=[OperationOut.from_orm(operation) for operation in paginator.page(page).object_list],
             row_count=paginator.count,
         )
@@ -142,7 +142,7 @@ def list_operations(request, page: int = 1, sort_field: str = "created_at", sort
         .only(*OperationListOut.Config.model_fields, "operator__legal_name", "bc_obps_regulated_operation__id")
     )
     paginator = Paginator(operators_operations, 20)
-    return 200, OperationListOut(
+    return 200, OperationPaginatedOut(
         data=[OperationOut.from_orm(operation) for operation in paginator.page(page).object_list],
         row_count=paginator.count,
     )
