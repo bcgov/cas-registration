@@ -1,41 +1,9 @@
 import { Page } from "@playwright/test";
-// 👤 User Roles
-import { UserRole } from "@/e2e/utils/enums";
-
-// 🔗 Import Dashboard navigation route data
-import casAdminDashboard from "@/app/data/dashboard/cas_admin.json";
-import casAnalystDashboard from "@/app/data/dashboard/cas_analyst.json";
-import industryUserDashboard from "@/app/data/dashboard/industry_user.json";
-import industryUserAdminDashboard from "@/app/data/dashboard/industry_user_admin.json";
-
-// 📐 Type:  DashboardSection
-export type DashboardSection = {
-  title: string;
-  content: string;
-  links: DashboardLink[];
-};
-// 📐 Type:  DashboardLink
-type DashboardLink = {
-  title: string;
-  href: string;
-};
-
-// 🛠️ Function: Maps user role to its respective dashboard section from json object import
-export const getDashboardDataMap = (): Record<string, DashboardSection[]> => {
-  return {
-    [UserRole.CAS_ADMIN]: casAdminDashboard,
-    [UserRole.CAS_ANALYST]: casAnalystDashboard,
-    [UserRole.CAS_PENDING]: [],
-    [UserRole.INDUSTRY_USER_ADMIN]: industryUserAdminDashboard,
-    [UserRole.INDUSTRY_USER]: industryUserDashboard,
-    [UserRole.NEW_USER]: [],
-  };
-};
 
 // 🛠️ Function: Navigates to a given URL and waits for the page to load
 export const navigateAndWaitForLoad = async (
   page: Page,
-  url: string,
+  url: string
 ): Promise<void> => {
   if (!page) {
     throw new Error("Invalid Page object");
