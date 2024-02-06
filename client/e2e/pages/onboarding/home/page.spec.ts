@@ -12,8 +12,7 @@ dotenv.config({ path: "./e2e/.env.local" });
 const url = process.env.E2E_BASEURL || "";
 
 // 🏷 Annotate test suite as serial
-test.describe.configure({ mode: "serial" });
-test.describe("Test Page - Home", () => {
+test.describe.serial("Test Page - Home", () => {
   test("Test Welcome", async ({ page }) => {
     // 🛸 Navigate to the home page
     await navigateAndWaitForLoad(page, url);

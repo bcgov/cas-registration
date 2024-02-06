@@ -21,6 +21,7 @@ import { UserRole } from "@/e2e/utils/enums";
 import { LoginLink } from "@/e2e/utils/enums";
 // 🥞 Connection pool to postgres DB
 import { pool } from "@/e2e/utils/pool";
+import path from "path";
 
 // Set the test URL
 const url = process.env.E2E_BASEURL || "";
@@ -95,7 +96,9 @@ const setupAuth = async (
 
     // 💾 Capture the storage state (e.g., auth session cookies) of the current page and saves it to a file specified
     // This storeageState can then be used for e2e tests requiring authentication
-    await page.context().storageState({ path: storageState });
+    await page
+      .context()
+      .storageState({ path: path.resolve(__dirname, storageState as string) });
 
     // eslint-disable-next-line no-console
     console.log(

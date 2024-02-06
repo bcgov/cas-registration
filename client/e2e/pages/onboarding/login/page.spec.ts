@@ -61,8 +61,7 @@ const login = async (
 };
 
 // 🏷 Annotate test suite as serial
-test.describe.configure({ mode: "serial" });
-test.describe("Test Page - Home", () => {
+test.describe.serial("Test Page - Home", () => {
   // ➰ Loop through the entries of UserRole enum
   for (let [role, value] of Object.entries(UserRole)) {
     test.describe(`Test User Role - ${value}`, () => {
