@@ -241,5 +241,4 @@ class UserOperatorListOut(Schema):
 
 class UserOperatorPaginatedOut(Schema):
     row_count: int
-    total_pages: int
     data: List[UserOperatorListOut]

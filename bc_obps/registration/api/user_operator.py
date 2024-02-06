@@ -243,7 +243,6 @@ def list_user_operators(request, page: int = 1):
         )
     return 200, UserOperatorPaginatedOut(
         data=user_operator_list,
-        total_pages=paginator.num_pages,
         row_count=paginator.count,
     )
 

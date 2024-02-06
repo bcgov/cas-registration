@@ -131,4 +131,3 @@ class OperationUpdateStatusIn(ModelSchema):
 class OperationPaginatedOut(Schema):
     data: List[OperationOut]
     row_count: int
-    total_pages: int
