@@ -258,36 +258,6 @@ jobs:
           name: playwright-report
           path: client/playwright-report
           retention-days: 30
-      - uses: actions/upload-artifact@v3
-        if: always()
-        with:
-          name: cas-admin-storage
-          path: client/.auth/cas_admin.json
-      - uses: actions/upload-artifact@v3
-        if: always()
-        with:
-          name: cas-analyst-storage
-          path: client/.auth/cas_analyst.json
-      - uses: actions/upload-artifact@v3
-        if: always()
-        with:
-          name: cas-pending-storage
-          path: client/.auth/cas_pending.json
-      - uses: actions/upload-artifact@v3
-        if: always()
-        with:
-          name: industry-user-storage
-          path: client/.auth/industry_user.json
-      - uses: actions/upload-artifact@v3
-        if: always()
-        with:
-          name: industry-user-admin-storage
-          path: client/.auth/industry_user_admin.json
-      - uses: actions/upload-artifact@v3
-        if: always()
-        with:
-          name: new-user-storage
-          path: client/.auth/new_user.json
   backend-tests:
     needs:
       ["backend-docker-build", "frontend-docker-build", "install-dev-tools"]

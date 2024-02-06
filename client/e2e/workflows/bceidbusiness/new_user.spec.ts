@@ -17,7 +17,11 @@ test.describe.serial("Test Workflow new user", () => {
   const storageState = process.env.E2E_NEW_USER_STORAGE;
   test.use({ storageState: storageState }); // this will error if no such file or directory
   test("Test Redirect to Profile", async ({ page }) => {
-    // 🛸 Navigate to the home page
+    // eslint-disable-next-line no-console
+    console.log(storageState);
+    // eslint-disable-next-line no-console
+    console.log(await page.context().cookies());
+    // 🛸 Navigate to the profile page
     await navigateAndWaitForLoad(page, url + "/profile");
     // 🔍 Assert that the current URL ends with "/profile"
     await expect(page.url().toLocaleLowerCase()).toContain("/profile");
