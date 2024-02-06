@@ -7,6 +7,7 @@ import {
 
 import { MiddlewareFactory } from "./types";
 import { getToken } from "next-auth/jwt";
+import { IDP } from "@/app/utils/enums";
 
 /*
 Access control logic is managed using Next.js middleware and NextAuth.js authentication JWT token.
@@ -50,6 +51,19 @@ const isAuthorizationRequiredPath = (
   );
 };
 
+const isAuthorizedIdirUser = (token: {
+  identity_provider?: string;
+  app_role?: string;
+}): boolean => {
+  if (!token) {
+    return false;
+  }
+
+  const idp = token.identity_provider;
+  const appRole = token.app_role;
+  return idp === IDP.IDIR && !appRole?.includes("pending") ? true : false;
+};
+
 // Middleware for authorization
 export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
   return async (request: NextRequest, _next: NextFetchEvent) => {
@@ -89,6 +103,37 @@ export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
 
       // Check if the path requires authorization
       if (isAuthorizationRequiredPath(pathname, token)) {
+        if (pathname.includes("operations")) {
+          // Industry users are only allowed to see their operations if their operator is pending/approved
+          if (!isAuthorizedIdirUser(token)) {
+            try {
+              const options: RequestInit = {
+                cache: "no-store", // Default cache option
+                method: "GET",
+                headers: new Headers({
+                  Authorization: JSON.stringify({
+                    user_guid: token.user_guid,
+                  }),
+                }),
+              };
+              const response = await fetch(
+                `${process.env.API_URL}registration/operator-from-user`,
+                options,
+              );
+              const operator = await response.json();
+              if (
+                operator.status !== "Pending" &&
+                operator.status !== "Approved"
+              ) {
+                return NextResponse.redirect(
+                  new URL(`/dashboard`, request.url),
+                );
+              }
+            } catch (error) {
+              throw error;
+            }
+          }
+        }
         request.nextUrl.pathname = `${token.identity_provider}/${token.app_role}${pathname}`;
         return NextResponse.rewrite(request.nextUrl);
       }
