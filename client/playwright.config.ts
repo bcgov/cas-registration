@@ -33,6 +33,7 @@ export default defineConfig({
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: "on-first-retry",
   },
+  timeout: 10000, // Set timeout to 10 seconds
   // 🚩 The globalSetup option in playwright.config.js allows you to specify a JavaScript file that will be executed ONCE before all test suites.
   globalSetup: require.resolve("e2e/setup/global.ts"),
   /* Configure projects for major browsers */

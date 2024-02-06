@@ -93,7 +93,7 @@ const setupAuth = async (
 
     // eslint-disable-next-line no-console
     console.log(
-      `Successful authentication setup for ${user} captured in storageState ${storageState}`
+      `🤸🤸🤸 Successful authentication setup for ${user} captured in storageState ${storageState} 🤸🤸🤸`
     );
   } catch (error) {
     // Handle any errors that occurred during the authentication process
