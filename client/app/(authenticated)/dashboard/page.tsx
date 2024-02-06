@@ -1,15 +1,14 @@
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import Tiles from "@/app/components/navigation/Tiles";
 import { getUserOperator } from "@/app/components/routes/select-operator/Page";
 import { actionHandler } from "@/app/utils/actions";
 import { FrontEndRoles } from "@/app/utils/enums";
 import Card from "@mui/material/Card";
 import Typography from "@mui/material/Typography";
-import { getServerSession } from "next-auth";
-import {mockSession} from '@/mock/mocksession'
+import { getServerSessionWrapper } from "@/app/utils/getServerSessionWrapper";
+
 
 export default async function Page() {
-  const session = process.env.BYPASS ? mockSession : await getServerSession(authOptions);
+  const session = await getServerSessionWrapper();
   const role = session?.user?.app_role || "";
   let operatorStatus = "";
   let userOperatorStatus = "";

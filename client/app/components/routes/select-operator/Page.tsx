@@ -4,12 +4,10 @@ import Loading from "@/app/components/loading/SkeletonField";
 import SelectOperator from "@/app/components/routes/select-operator/form/SelectOperator";
 import { BC_GOV_LINKS_COLOR } from "@/app/styles/colors";
 import Link from "next/link";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { actionHandler } from "@/app/utils/actions";
 import { UserOperatorStatus } from "@/app/utils/enums";
 import { getUserFullName } from "@/app/utils/getUserFullName";
-import { mockSession } from "@/mock/mocksession";
+import { getServerSessionWrapper } from "@/app/utils/getServerSessionWrapper";
 
 export const getUserOperator = async () => {
   try {
@@ -24,7 +22,7 @@ export const getUserOperator = async () => {
 };
 
 export default async function MyOperatorPage() {
-  const session = process.env.BYPASS ? mockSession : await getServerSession(authOptions);
+  const session = await getServerSessionWrapper();
   const userName = getUserFullName(session);
   const userOperator = await getUserOperator();
   const isNew = userOperator.is_new;

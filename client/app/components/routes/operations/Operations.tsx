@@ -3,9 +3,7 @@ import { GridRowsProp } from "@mui/x-data-grid";
 import { actionHandler } from "@/app/utils/actions";
 import DataGrid from "@/app/components/datagrid/DataGrid";
 import { statusStyle } from "@/app/components/datagrid/helpers";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import {mockSession} from '@/mock/mocksession'
+import { getServerSessionWrapper } from "@/app/utils/getServerSessionWrapper";
 
 // 🛠️ Function to fetch operations
 async function getOperations() {
@@ -44,7 +42,7 @@ const formatTimestamp = (timestamp: string) => {
 
 // 🧩 Main component
 export default async function Operations() {
-  const session = process.env.BYPASS ? mockSession : await getServerSession(authOptions);
+  const session = await getServerSessionWrapper();
   // Fetch operations data
   const operations: {
     id: number;
