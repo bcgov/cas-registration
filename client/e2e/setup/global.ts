@@ -20,8 +20,10 @@ import { UserRole } from "@/e2e/utils/enums";
 import { LoginLink } from "@/e2e/utils/enums";
 // 🥞 Connection pool to postgres DB
 import { pool } from "@/e2e/utils/pool";
-
-// 🛠️ function: login with Keycloak credetials and store authenticated user by role session's state
+import { navigateAndWaitForLoad } from "../utils/helpers";
+// Set the test URL
+const url = process.env.E2E_BASEURL || "";
+// 🛠️ function: login with Keycloak credentials and store authenticated user by role session's state
 /**
 📖
 In Playwright, the storageState function is used to capture the current state of storage (such as cookies, local storage, etc.) associated with a page.
@@ -35,9 +37,6 @@ const setupAuth = async (
   role: string
 ) => {
   try {
-    const url = "http://localhost:3000/home";
-    const browser = await chromium.launch();
-    const page = await browser.newPage();
     let loginButton = LoginLink.INDUSTRY_USER;
     switch (role) {
       case UserRole.CAS_ADMIN:
@@ -50,15 +49,15 @@ const setupAuth = async (
         // eslint-disable-next-line no-console
         console.log(`Upserting ${user} for role ${role}`);
         const upsert = `
-          INSERT INTO erc.user (user_guid, business_guid, first_name, last_name, position_title, email, phone_number, app_role_id)
+          INSERT INTO erc.user (user_guid, business_guid, bceid_business_name, first_name, last_name, position_title, email, phone_number, app_role_id)
           VALUES
-            ($1, '123e4567-e89b-12d3-a456-426614174001', 'CAS', $2, 'Software Engineer', $3, '123 456 7890', $4)
+            ($1, '123e4567-e89b-12d3-a456-426614174001', 'bceid_business_name', 'CAS', $2, 'Software Engineer', $3, '123 456 7890', $4)
           ON CONFLICT (user_guid)
           DO UPDATE SET
             app_role_id = EXCLUDED.app_role_id;
         `;
         await pool.query(upsert, [
-          process.env.CAS_USER_GUID,
+          process.env.E2E_CAS_USER_GUID,
           user,
           `${user}@test.com`,
           role,
@@ -66,20 +65,24 @@ const setupAuth = async (
         break;
     }
 
-    // 🔑 Login to get user's Keycloak information and user role set in `client/app/api/auth/[...nextauth]/route.ts` based on data from erc.user table
-    await page.goto(url);
-    // 🕒 Wait for the navigation to complete
-    await page.waitForLoadState("domcontentloaded");
+    const browser = await chromium.launch();
+    const page = await browser.newPage();
+
+    // 🛸 Navigate to the home page
+    await navigateAndWaitForLoad(page, url);
 
     // Click the login button
     await page.getByRole("button", { name: loginButton }).click();
+
+    // 🔑 Login to Keycloak
     // Fill the user field
     await page.locator("id=user").fill(user);
     // Fill the pw field
     await page.getByLabel("Password").fill(password);
+    // Click Continue button
     await page.getByRole("button", { name: "Continue" }).click();
 
-    // 🕒 Wait for the home page profile navigation link to be present
+    // 🕒 Wait for the profile navigation link to be present
     // 🚩 BP approach (?) seems to fail: await expect(page.getByTestId("nav-user-profile")).toBeVisible();
     const profileNavSelector = '[data-testid="nav-user-profile"]';
     await page.waitForSelector(profileNavSelector);
@@ -112,13 +115,13 @@ export default async function globalSetup() {
 
   // ➰ Loop through the entries of UserRole enum
   for (const [role, value] of Object.entries(UserRole)) {
-    let user = process.env.CAS_USERNAME;
-    let pw = process.env.CAS_PASSWORD;
+    let user = process.env.E2E_CAS_USER;
+    let pw = process.env.E2E_CAS_USER_PASSWORD;
     switch (value) {
       case UserRole.INDUSTRY_USER_ADMIN:
       case UserRole.INDUSTRY_USER:
       case UserRole.NEW_USER:
-        user = process.env[role + "_USERNAME"];
+        user = process.env[role];
         pw = process.env[role + "_PASSWORD"];
         break;
     }

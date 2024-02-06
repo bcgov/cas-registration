@@ -22,9 +22,6 @@ const login = async (
   role: string
 ) => {
   try {
-    // 🛸 Navigate to the home page
-    await navigateAndWaitForLoad(page, url);
-
     // Determine the login button based on the user role
     let loginButton = LoginLink.INDUSTRY_USER;
     switch (role) {
@@ -35,15 +32,21 @@ const login = async (
         break;
     }
 
+    // 🛸 Navigate to the home page
+    await navigateAndWaitForLoad(page, url);
+
     // Click the login button
     await page.getByRole("button", { name: loginButton }).click();
+
+    // 🔑 Login to Keycloak
     // Fill the user field
     await page.locator("id=user").fill(user);
     // Fill the pw field
     await page.getByLabel("Password").fill(password);
+    // Click Continue button
     await page.getByRole("button", { name: "Continue" }).click();
 
-    // 🕒 Wait for the home page profile navigation link to be present
+    // 🕒 Wait for the profile navigation link to be present
     // 🚩 BP approach (?) seems to fail: await expect(page.getByTestId("nav-user-profile")).toBeVisible();
     const profileNavSelector = '[data-testid="nav-user-profile"]';
     await page.waitForSelector(profileNavSelector);
