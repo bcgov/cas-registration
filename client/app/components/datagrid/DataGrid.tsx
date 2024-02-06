@@ -11,7 +11,11 @@ import { BC_GOV_BACKGROUND_COLOR_BLUE } from "@/app/styles/colors";
 import { Session } from "next-auth";
 
 interface Props {
-  fetchPageData?: (page: number) => Promise<any>;
+  fetchPageData?: (
+    page: number,
+    sortField?: string,
+    sortOrder?: string,
+  ) => Promise<any>;
   rows: GridRowsProp;
   rowCount?: number;
   columns: GridColDef[];
@@ -68,7 +72,6 @@ const DataGrid: React.FC<Props> = ({
     page: 0,
     pageSize: PAGE_SIZE,
   });
-
   const [sortModel, setSortModel] = useState([] as GridSortItem[]);
 
   useEffect(() => {
@@ -76,13 +79,19 @@ const DataGrid: React.FC<Props> = ({
   }, []);
 
   useEffect(() => {
+    const sortModelField = sortModel[0]?.field ?? "created_at";
+    const sortModelDirection = sortModel[0]?.sort ?? "asc";
     // Don't fetch data if the component is not mounted
     // Since we will grab the first page using the server side props
     if (!isComponentMounted || !fetchPageData) return;
     setLoading(true);
     const fetchData = async () => {
       // fetch data from server
-      const pageData = await fetchPageData(paginationModel.page + 1);
+      const pageData = await fetchPageData(
+        paginationModel.page + 1,
+        sortModelField,
+        sortModelDirection,
+      );
       setRows(pageData);
     };
 

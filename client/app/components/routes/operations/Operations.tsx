@@ -56,11 +56,11 @@ export const formatOperationRows = (rows: GridRowsProp) => {
       return {
         id,
         bc_obps_regulated_operation: bc_obps_regulated_operation ?? "N/A",
-        operation_name: name,
-        bcghg_id: bcghg_id,
-        operator_name: operator,
+        name,
+        bcghg_id,
+        operator: operator,
         submission_date: formatTimestamp(submission_date) ?? status,
-        status: status,
+        status,
       };
     }
   );
@@ -98,7 +98,7 @@ export default async function Operations() {
   const columns = [
     { field: "bcghg_id", headerName: "BC GHG ID", width: 160 },
     {
-      field: "operation_name",
+      field: "name",
       headerName: "Operation",
       width: isOperatorColumn ? 320 : 560,
     },
@@ -133,7 +133,7 @@ export default async function Operations() {
   if (isOperatorColumn) {
     // Add the operator column if the user is CAS internal
     columns.splice(operatorColumnIndex, 0, {
-      field: "operator_name",
+      field: "operator",
       headerName: "Operator",
       width: 320,
     });
