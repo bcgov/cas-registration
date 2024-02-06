@@ -8,8 +8,8 @@ import { formatOperationRows } from "@/app/components/routes/operations/Operatio
 
 const fetchOperationPageData = async (
   page: number,
-  sortField: string,
-  sortDirection: string,
+  sortField?: string,
+  sortDirection?: string,
 ) => {
   try {
     // fetch data from server

@@ -6,11 +6,15 @@ import Link from "next/link";
 import { GridRenderCellParams } from "@mui/x-data-grid";
 import { formatUserOperatorRows } from "@/app/components/routes/access-requests/AccessRequests";
 
-const fetchUserOperatorPageData = async (page: number) => {
+const fetchUserOperatorPageData = async (
+  page: number,
+  sortField?: string,
+  sortDirection?: string,
+) => {
   try {
     // fetch data from server
     const pageData = await actionHandler(
-      `registration/user-operators?page=${page}`,
+      `registration/user-operators?page=${page}&sort_field=${sortField}&sort_direction=${sortDirection}`,
       "GET",
       "",
     );

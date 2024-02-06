@@ -223,10 +223,22 @@ def get_user(request):
 @router.get("/user-operators", response=UserOperatorPaginatedOut)
 @authorize(AppRole.get_authorized_irc_roles())
 
-def list_user_operators(request, page: int = 1):
+def list_user_operators(request, page: int = 1, sort_field: str = "created_at", sort_order: str = "desc"):
+    sort_direction = "-" if sort_order == "desc" else ""
+
+    user_fields = [
+        "first_name",
+        "last_name",
+        "email",
+    ]
+    if sort_field in user_fields:
+        sort_field = f"user__{sort_field}"
+    if sort_field == "legal_name":
+        sort_field = "operator__legal_name"
     qs = UserOperator.objects.select_related("operator", "user").only(
         "id", "status", "user__last_name", "user__first_name", "user__email", "operator__legal_name"
-    ).order_by("-created_at")
+    ).order_by(f"{sort_direction}{sort_field}")
+    paginator = Paginator(qs, 20)
     user_operator_list = []
 
     paginator = Paginator(qs, 20)
@@ -242,11 +254,7 @@ def list_user_operators(request, page: int = 1):
         user = user_operator.user
         user_related_fields_dict = model_to_dict(
             user,
-            fields=[
-                "first_name",
-                "last_name",
-                "email",
-            ],
+            fields=user_fields,
         )
         operator = user_operator.operator
         operator_related_fields_dict = model_to_dict(
