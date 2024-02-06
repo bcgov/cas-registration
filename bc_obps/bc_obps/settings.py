@@ -51,8 +51,6 @@ INSTALLED_APPS = [
     "registration.apps.RegistrationConfig",
 ]
 
-if DEBUG:
-    INSTALLED_APPS.append("django_extensions")
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
@@ -68,6 +66,11 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     'simple_history.middleware.HistoryRequestMiddleware',
 ]
+
+if DEBUG:  # DEV only apps
+    INSTALLED_APPS.append("django_extensions")
+    INSTALLED_APPS.append("silk")
+    MIDDLEWARE.append("silk.middleware.SilkyMiddleware")
 
 ROOT_URLCONF = "bc_obps.urls"
 
