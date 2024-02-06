@@ -1,5 +1,5 @@
 import { GridColDef, GridRowsProp } from "@mui/x-data-grid";
-import DataGrid from "@/app/components/datagrid/DataGrid";
+import OperatorDataGrid from "@/app/components/datagrid/OperatorDataGrid";
 import {
   ExternalDashboardUsersTile,
   processExternalDashboardUsersTileData,
@@ -64,6 +64,7 @@ export default async function Page() {
       headerAlign: "center",
     },
   ];
+
   const statusRows: GridRowsProp = userOperatorStatuses.map((uOS) => ({
     id: uOS.user.user_guid,
     name: `${uOS.user.first_name} ${uOS.user.last_name.slice(0, 1)}`,
@@ -73,5 +74,5 @@ export default async function Page() {
     status: uOS.status,
   }));
 
-  return <DataGrid rows={statusRows} columns={columns} />;
+  return <OperatorDataGrid rows={statusRows} columns={columns} />;
 }

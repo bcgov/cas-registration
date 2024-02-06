@@ -2,7 +2,7 @@ import { GridRowsProp } from "@mui/x-data-grid";
 import Note from "@/app/components/datagrid/Note";
 
 import { actionHandler } from "@/app/utils/actions";
-import DataGrid from "@/app/components/datagrid/DataGrid";
+import OperatorDataGrid from "@/app/components/datagrid/OperatorDataGrid";
 import { UserOperator } from "./types";
 import { statusStyle } from "@/app/components/datagrid/helpers";
 
@@ -52,8 +52,7 @@ export default async function AccessRequests() {
         classNames="mb-4 mt-6"
         message="Once “Approved,” the user will have access to their operator dashboard with full admin permissions, and can grant access and designate permissions to other authorized users there."
       />
-      <DataGrid
-        cntxt="user-operators"
+      <OperatorDataGrid
         rows={rows}
         columns={[
           {
