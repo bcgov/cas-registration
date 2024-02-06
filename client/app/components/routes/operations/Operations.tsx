@@ -71,7 +71,7 @@ export default async function Operations() {
   const session = await getServerSession(authOptions);
   // Fetch operations data
   const operations: {
-    operation_list: {
+    data: {
       id: number;
       bcghg_id: string;
       bc_obps_regulated_operation: string;
@@ -90,7 +90,7 @@ export default async function Operations() {
   const { row_count: rowCount } = operations;
   // Transform the fetched data into rows for the DataGrid component
 
-  const rows = formatOperationRows(operations.operation_list);
+  const rows = formatOperationRows(operations.data);
   // Show the operator column if the user is CAS internal
   const isOperatorColumn =
     session?.user.app_role?.includes("cas") &&
