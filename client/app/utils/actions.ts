@@ -64,7 +64,7 @@ export async function actionHandler(
   endpoint: string,
   method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH",
   pathToRevalidate?: string,
-  options: RequestInit = {}
+  options: RequestInit = {},
 ) {
   // Create a FormData object from the body if it's a string to pass to Sentry
   const formData = new FormData();
@@ -101,7 +101,7 @@ export async function actionHandler(
 
         const response = await fetch(
           `${process.env.API_URL}${endpoint}`,
-          mergedOptions
+          mergedOptions,
         );
         if (!response.ok) {
           const res = await response.json();
@@ -135,7 +135,7 @@ export async function actionHandler(
           };
         }
       }
-    }
+    },
   );
 }
 

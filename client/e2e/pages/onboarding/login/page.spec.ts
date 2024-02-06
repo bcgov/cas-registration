@@ -20,7 +20,7 @@ const login = async (
   page: any,
   user: string,
   password: string,
-  role: string
+  role: string,
 ) => {
   try {
     // Determine the login button based on the user role
