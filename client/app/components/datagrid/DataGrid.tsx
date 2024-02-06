@@ -8,7 +8,6 @@ import {
   GridSortItem,
 } from "@mui/x-data-grid";
 import { BC_GOV_BACKGROUND_COLOR_BLUE } from "@/app/styles/colors";
-import { Session } from "next-auth";
 
 interface Props {
   fetchPageData?: (
@@ -80,7 +79,7 @@ const DataGrid: React.FC<Props> = ({
 
   useEffect(() => {
     const sortModelField = sortModel[0]?.field ?? "created_at";
-    const sortModelDirection = sortModel[0]?.sort ?? "asc";
+    const sortModelOrder = sortModel[0]?.sort ?? "asc";
     // Don't fetch data if the component is not mounted
     // Since we will grab the first page using the server side props
     if (!isComponentMounted || !fetchPageData) return;
@@ -90,13 +89,13 @@ const DataGrid: React.FC<Props> = ({
       const pageData = await fetchPageData(
         paginationModel.page + 1,
         sortModelField,
-        sortModelDirection,
+        sortModelOrder,
       );
       setRows(pageData);
     };
 
     fetchData().then(() => setLoading(false));
-  }, [isComponentMounted, paginationModel, sortModel]);
+  }, [paginationModel, sortModel]);
 
   return (
     <div style={{ height: "auto", width: "100%" }}>
