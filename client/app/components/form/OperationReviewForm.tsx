@@ -2,10 +2,12 @@
 
 import { operationInternalUserUiSchema } from "@/app/utils/jsonSchema/operations";
 import MultiStepAccordion from "@/app/components/form/MultiStepAccordion";
+import { OperationsFormData } from "@/app/components/form/OperationsForm";
+import { RJSFSchema } from "@rjsf/utils";
 
 interface Props {
-  formData: any;
-  schema: any;
+  formData: OperationsFormData;
+  schema: RJSFSchema;
 }
 
 const OperationReviewForm = ({ formData, schema }: Props) => {
