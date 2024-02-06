@@ -1,8 +1,10 @@
-from typing import Optional
+from typing import List, Optional
 from ninja import Field, Schema
-from ninja import ModelSchema
+from ninja import ModelSchema, Schema, Field
 from registration.constants import AUDIT_FIELDS
 from registration.models import Operator
+from registration.models import UserOperator
+from .parent_operator import ParentOperatorOut
 
 
 class OperatorOut(ModelSchema):
@@ -11,6 +13,19 @@ class OperatorOut(ModelSchema):
     """
 
     physical_street_address: Optional[str] = Field(None, alias="physical_address.street_address")
+    physical_municipality: Optional[str] = Field(None, alias="physical_address.municipality")
+    physical_province: Optional[str] = Field(None, alias="physical_address.province")
+    physical_postal_code: Optional[str] = Field(None, alias="physical_address.postal_code")
+    mailing_street_address: Optional[str] = Field(None, alias="mailing_address.street_address")
+    mailing_municipality: Optional[str] = Field(None, alias="mailing_address.municipality")
+    mailing_province: Optional[str] = Field(None, alias="mailing_address.province")
+    mailing_postal_code: Optional[str] = Field(None, alias="mailing_address.postal_code")
+    operator_has_parent_operators: bool
+    parent_operators_array: Optional[List[ParentOperatorOut]] = Field(None, alias="parent_operators")
+
+    @staticmethod
+    def resolve_operator_has_parent_operators(obj: UserOperator) -> bool:
+        return obj.parent_operators.exists()
 
     class Config:
         model = Operator
