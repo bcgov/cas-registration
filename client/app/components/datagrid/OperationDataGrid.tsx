@@ -14,7 +14,7 @@ const fetchOperationPageData = async (page: number) => {
       "GET",
       "",
     );
-    return formatOperationRows(pageData.operation_list);
+    return formatOperationRows(pageData.data);
   } catch (error) {
     throw error;
   }
@@ -53,10 +53,11 @@ const OperationDataGrid = ({
 
   return (
     <DataGrid
+      columns={updatedColumnsOperations}
       fetchPageData={fetchOperationPageData}
+      paginationMode="server"
       rows={rows}
       rowCount={rowCount}
-      columns={updatedColumnsOperations}
     />
   );
 };
