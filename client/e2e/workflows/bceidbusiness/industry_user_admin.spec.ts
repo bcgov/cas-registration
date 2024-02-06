@@ -1,5 +1,5 @@
-// 🧪 Suite to test the bceidbusiness new user workflow using storageState
-// 🔍 Asserts new user is redirected to profile
+// 🧪 Suite to test the bceidbusiness industry_user_admin workflow using storageState
+// 🔍 Asserts new user is redirected to dashboard
 
 import { test, expect } from "@playwright/test";
 // ⛏️ Helpers
@@ -12,12 +12,12 @@ dotenv.config({ path: "./e2e/.env.local" });
 const url = process.env.E2E_BASEURL as string;
 
 // 🏷 Annotate test suite as serial
-test.describe.serial("Test Workflow new user", () => {
+test.describe.serial("Test Workflow industry_user", () => {
   // 👤 run test as new user with no role
-  const storageState = process.env.E2E_NEW_USER_STORAGE;
+  const storageState = process.env.E2E_INDUSTRY_USER_ADMIN_STORAGE;
   test.use({ storageState: storageState }); // this will error if no such file or directory
-  test("Test Redirect to Profile", async ({ page }) => {
-    const path = "profile";
+  test("Test Redirect to Dashboard", async ({ page }) => {
+    const path = "dashboard";
     // eslint-disable-next-line no-console
     console.log(storageState);
     // eslint-disable-next-line no-console
