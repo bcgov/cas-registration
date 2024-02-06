@@ -27,6 +27,7 @@ from registration.schema import (
     OperationCreateIn,
     OperationUpdateIn,
     OperationPaginatedOut,
+    OperationListOut,
     OperationOut,
     OperationCreateOut,
     OperationUpdateOut,
@@ -123,8 +124,9 @@ def list_operations(request, page: int = 1, sort_field: str = "created_at", sort
             .order_by(f"{sort_direction}{sort_field}")
         )
         paginator = Paginator(qs, 20)
+
         return 200, OperationPaginatedOut(
-            data=[OperationOut.from_orm(operation) for operation in paginator.page(page).object_list],
+            data=[OperationListOut.from_orm(operation) for operation in paginator.page(page).object_list],
             row_count=paginator.count,
         )
     # Industry users can only see their companies' operations (if there's no user_operator or operator, then the user hasn't requested access to the operator)
@@ -143,7 +145,7 @@ def list_operations(request, page: int = 1, sort_field: str = "created_at", sort
     )
     paginator = Paginator(operators_operations, 20)
     return 200, OperationPaginatedOut(
-        data=[OperationOut.from_orm(operation) for operation in paginator.page(page).object_list],
+        data=[OperationListOut.from_orm(operation) for operation in paginator.page(page).object_list],
         row_count=paginator.count,
     )
 
