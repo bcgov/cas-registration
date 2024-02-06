@@ -10,6 +10,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 async function getOperations() {
   try {
     return await actionHandler(
+      // Fetch page one of the operations data on initial load
       "registration/operations?page=1",
       "GET",
       "/dashboard/operations"

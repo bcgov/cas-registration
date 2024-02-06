@@ -11,7 +11,7 @@ import { BC_GOV_BACKGROUND_COLOR_BLUE } from "@/app/styles/colors";
 import { Session } from "next-auth";
 
 interface Props {
-  fetchPageData: (page: number) => Promise<any>;
+  fetchPageData?: (page: number) => Promise<any>;
   rows: GridRowsProp;
   rowCount?: number;
   columns: GridColDef[];
@@ -76,7 +76,7 @@ const DataGrid: React.FC<Props> = ({
   useEffect(() => {
     // Don't fetch data if the component is not mounted
     // Since we will grab the first page using the server side props
-    if (!isComponentMounted) return;
+    if (!isComponentMounted || !fetchPageData) return;
     setLoading(true);
     const fetchData = async () => {
       // fetch data from server
