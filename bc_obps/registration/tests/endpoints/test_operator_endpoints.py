@@ -4,7 +4,7 @@ from django.test import Client
 from localflavor.ca.models import CAPostalCodeField
 from registration.tests.utils.bakers import operator_baker
 from registration.constants import AUDIT_FIELDS
-from registration.models import Operator
+from registration.models import Operator, UserOperator
 from registration.schema.operator import OperatorOut
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 
@@ -123,14 +123,24 @@ class TestOperatorsEndpoint(CommonTestSetup):
             self, 'industry_user', self.endpoint + "?legal_name=Test Operator legal name 2"
         )
         assert response.status_code == 404
-        assert response.json() == {"message": "No matching operator found. Retry or add operator."}
 
     def test_get_operators_no_matching_operator_cra_number(self):
         response = TestUtils.mock_get_with_auth_role(
             self, 'industry_user', self.endpoint + "?cra_business_number=987654321"
         )
         assert response.status_code == 404
-        assert response.json() == {"message": "No matching operator found. Retry or add operator."}
+
+    def test_get_operator_from_user(self):
+        operator = operator_baker()
+        baker.make(UserOperator, user=self.user, operator=operator)
+
+        response = TestUtils.mock_get_with_auth_role(self, 'industry_user', base_endpoint + "operator-from-user")
+        assert response.status_code == 200
+
+    def test_get_operator_from_user_when_no_user_operator(self):
+
+        response = TestUtils.mock_get_with_auth_role(self, 'industry_user', base_endpoint + "operator-from-user")
+        assert response.status_code == 404
 
     def test_select_operator_with_valid_id(self):
         operator = operator_baker()

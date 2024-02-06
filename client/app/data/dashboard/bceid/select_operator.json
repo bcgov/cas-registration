@@ -1,0 +1,9 @@
+[
+  {
+    "title": "Select Operator",
+    "content": "View or update your operator information",
+    "links": [
+      { "title": "Select Operator ➤", "href": "/dashboard/select-operator" }
+    ]
+  }
+]

@@ -23,6 +23,7 @@ interface MultiStepFormProps {
   schema: any;
   setErrorReset?: (error: undefined) => void;
   showSubmissionStep?: boolean;
+  submitButtonText?: string;
   uiSchema: any;
 }
 
@@ -39,6 +40,7 @@ const MultiStepFormBase = ({
   schema,
   setErrorReset,
   showSubmissionStep,
+  submitButtonText,
   uiSchema,
 }: MultiStepFormProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -125,6 +127,7 @@ const MultiStepFormBase = ({
           baseUrl={baseUrl}
           cancelUrl={cancelUrl}
           allowBackNavigation={allowBackNavigation}
+          submitButtonText={submitButtonText}
         />
       </FormBase>
     </>
