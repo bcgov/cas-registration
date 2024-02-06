@@ -3,10 +3,11 @@
 import { useState } from "react";
 import Accordion from "app/components/accordion/Accordion";
 import FormBase from "./FormBase";
+import { RJSFSchema, UiSchema } from "@rjsf/utils";
 
 interface Props {
-  schema: any;
-  uiSchema: any;
+  schema: RJSFSchema;
+  uiSchema: UiSchema;
   formData: any;
 }
 
@@ -43,14 +44,19 @@ const MultiStepAccordion = ({ schema, uiSchema, formData }: Props) => {
         </div>
       </div>
       {accordionSectionList.map((_section, index) => {
+        const schemaSection = schema.properties?.[
+          accordionSectionList[index]
+        ] as RJSFSchema;
+        const schemaTitle = schemaSection?.title;
+
         return (
           <Accordion
             key={index}
             expandedOptions={expandAll}
-            title={schema.properties[accordionSectionList[index]].title}
+            title={schemaTitle}
           >
             <FormBase
-              schema={schema.properties[accordionSectionList[index]]}
+              schema={schema.properties ? schemaSection : {}}
               uiSchema={uiSchema}
               formData={formData}
               disabled
