@@ -114,9 +114,10 @@ export default async function globalSetup() {
   );
 
   // ➰ Loop through the entries of UserRole enum
-  for (const [role, value] of Object.entries(UserRole)) {
+  for (let [role, value] of Object.entries(UserRole)) {
     let user = process.env.E2E_CAS_USER;
     let pw = process.env.E2E_CAS_USER_PASSWORD;
+    role = "E2E_" + role;
     switch (value) {
       case UserRole.INDUSTRY_USER_ADMIN:
       case UserRole.INDUSTRY_USER:
