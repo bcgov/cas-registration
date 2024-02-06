@@ -96,7 +96,8 @@ const setupAuth = async (
     // 💾 Capture the storage state (e.g., auth session cookies) of the current page and saves it to a file specified
     // This storeageState can then be used for e2e tests requiring authentication
     await page.context().storageState({ path: storageState });
-
+    // eslint-disable-next-line no-console
+    console.log(await page.context().cookies());
     // eslint-disable-next-line no-console
     console.log(
       `🤸 Successful authentication setup for ${user} captured in storageState ${storageState} 🤸`
