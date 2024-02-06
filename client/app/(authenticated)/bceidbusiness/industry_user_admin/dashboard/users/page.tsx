@@ -1,5 +1,5 @@
 import { GridColDef, GridRowsProp } from "@mui/x-data-grid";
-import OperatorDataGrid from "@/app/components/datagrid/OperatorDataGrid";
+import DataGrid from "@/app/components/datagrid/DataGrid";
 import {
   ExternalDashboardUsersTile,
   processExternalDashboardUsersTileData,
@@ -74,5 +74,5 @@ export default async function Page() {
     status: uOS.status,
   }));
 
-  return <OperatorDataGrid rows={statusRows} columns={columns} />;
+  return <DataGrid rows={statusRows} columns={columns} />;
 }
