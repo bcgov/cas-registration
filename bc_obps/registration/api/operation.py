@@ -8,6 +8,7 @@ from django.core.exceptions import ValidationError
 import pytz
 from typing import List
 from django.shortcuts import get_object_or_404
+from django.core.paginator import Paginator
 from registration.models import (
     AppRole,
     MultipleOperator,
@@ -26,6 +27,7 @@ from registration.models import (
 from registration.schema import (
     OperationCreateIn,
     OperationUpdateIn,
+    OperationListOut,
     OperationOut,
     OperationCreateOut,
     OperationUpdateOut,
@@ -105,9 +107,9 @@ def create_or_update_multiple_operators(
 ##### GET #####
 
 
-@router.get("/operations", response={200: List[OperationListOut], codes_4xx: Message})
+@router.get("/operations", response={200: OperationListOut, codes_4xx: Message})
 @authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles())
-def list_operations(request):
+def list_operations(request, page: int = 1):
     user: User = request.current_user
     # IRC users can see all operations except ones that are not started yet
     if user.is_irc_user():
@@ -116,7 +118,12 @@ def list_operations(request):
             .exclude(status=Operation.Statuses.NOT_STARTED)
             .only(*OperationListOut.Config.model_fields, "operator__legal_name", "bc_obps_regulated_operation__id")
         )
-        return 200, qs
+        paginator = Paginator(qs, 20)
+        return 200, OperationListOut(
+            operation_list=[OperationOut.from_orm(operation) for operation in paginator.page(page).object_list],
+            total_pages=paginator.num_pages,
+            row_count=paginator.count,
+        )
     # Industry users can only see their companies' operations (if there's no user_operator or operator, then the user hasn't requested access to the operator)
     user_operator = UserOperator.objects.filter(user_id=user.user_guid).only("operator_id").first()
     if not user_operator:
@@ -131,8 +138,12 @@ def list_operations(request):
         .order_by("-created_at")
         .only(*OperationListOut.Config.model_fields, "operator__legal_name", "bc_obps_regulated_operation__id")
     )
-
-    return 200, operators_operations
+    paginator = Paginator(operators_operations, 20)
+    return 200, {
+        "operation_list": paginator.page(page).object_list,
+        "total_pages": paginator.num_pages,
+        "row_count": paginator.count,
+    }
 
 
 @router.get("/operations/{operation_id}", response={200: OperationOut, codes_4xx: Message})

@@ -4,7 +4,6 @@ from ninja import Field, ModelSchema, Schema
 from registration.constants import AUDIT_FIELDS
 from registration.models import Operation, Document
 from datetime import date
-from .contact import ContactSchema
 from pydantic import validator
 
 
@@ -127,3 +126,9 @@ class OperationUpdateStatusIn(ModelSchema):
     class Config:
         model = Operation
         model_fields = ["status"]
+
+
+class OperationListOut(Schema):
+    operation_list: List[OperationOut]
+    total_pages: int
+    row_count: int

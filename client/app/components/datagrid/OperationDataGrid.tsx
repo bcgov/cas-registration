@@ -3,13 +3,31 @@
 import DataGrid from "./DataGrid";
 import Link from "next/link";
 import { GridRenderCellParams } from "@mui/x-data-grid";
+import { actionHandler } from "@/app/utils/actions";
+import { formatOperationRows } from "@/app/components/routes/operations/Operations";
+
+const fetchOperationPageData = async (page: number) => {
+  try {
+    // fetch data from server
+    const pageData = await actionHandler(
+      `registration/operations?page=${page}`,
+      "GET",
+      "",
+    );
+    return formatOperationRows(pageData.operation_list);
+  } catch (error) {
+    throw error;
+  }
+};
 
 const OperationDataGrid = ({
   rows,
+  rowCount,
   columns,
 }: {
   rows: any[];
   columns: any[];
+  rowCount: number;
 }) => {
   const updatedColumnsOperations = columns.map((column) => {
     if (column.field === "action") {
@@ -33,7 +51,14 @@ const OperationDataGrid = ({
     return column;
   });
 
-  return <DataGrid rows={rows} columns={updatedColumnsOperations} />;
+  return (
+    <DataGrid
+      fetchPageData={fetchOperationPageData}
+      rows={rows}
+      rowCount={rowCount}
+      columns={updatedColumnsOperations}
+    />
+  );
 };
 
 export default OperationDataGrid;
