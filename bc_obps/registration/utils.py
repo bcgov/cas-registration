@@ -157,9 +157,9 @@ def raise_401_if_user_not_authorized(request, authorized_app_roles, authorized_u
                 raise HttpError(401, UNAUTHORIZED_MESSAGE)
 
 
-def get_an_operators_approved_users(operator: Operator) -> QuerySet[UUID]:
+def get_an_operators_approved_users(operator_pk: int) -> QuerySet[UUID]:
     # get a list of all the operator's approved user ids
-    user_ids = UserOperator.objects.filter(operator_id=operator.id, status=UserOperator.Statuses.APPROVED).values_list(
+    user_ids = UserOperator.objects.filter(operator_id=operator_pk, status=UserOperator.Statuses.APPROVED).values_list(
         'user_id', flat=True
     )
 

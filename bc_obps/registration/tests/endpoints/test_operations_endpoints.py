@@ -1,4 +1,4 @@
-import pytest, json, pytz
+import pytest, pytz
 from datetime import datetime, timedelta, timezone
 from model_bakery import baker
 from django.test import Client
@@ -199,20 +199,17 @@ class TestOperationsEndpoint(CommonTestSetup):
         )
         response = TestUtils.mock_get_with_auth_role(self, "cas_admin")
         assert response.status_code == 200
-        assert len(json.loads(response.content)) == 2
+        assert len(response.json()) == 2
         response = TestUtils.mock_get_with_auth_role(self, "cas_analyst")
         assert response.status_code == 200
-        assert len(json.loads(response.content)) == 2
+        assert len(response.json()) == 2
         # industry users can only see their own company's operations, and only if they're approved
         baker.make(
             UserOperator, user_id=self.user.user_guid, status=UserOperator.Statuses.APPROVED, operator_id=operator1.id
         )
         response = TestUtils.mock_get_with_auth_role(self, "industry_user")
         assert response.status_code == 200
-        assert len(json.loads(response.content)) == 1
-        response = TestUtils.mock_get_with_auth_role(self, "industry_user")
-        assert response.status_code == 200
-        assert len(json.loads(response.content)) == 1
+        assert len(response.json()) == 1
 
     # POST
     def test_authorized_roles_can_post_new_operation(self):

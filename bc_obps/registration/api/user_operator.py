@@ -162,7 +162,6 @@ def get_user_operator_operator_id(request):
 @authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
 def get_user_operator_id(request):
     user_operator = get_object_or_404(UserOperator, user_id=request.current_user.user_guid)
-    print(user_operator)
     return 200, {"user_operator_id": user_operator.id}
 
 
