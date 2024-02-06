@@ -8,21 +8,23 @@
  */
 
 import { chromium } from "@playwright/test";
-// environment variables stored in client/e2e/.env.local
+// ⛏️ Helpers
+import { navigateAndWaitForLoad } from "@/e2e/utils/helpers";
+// ℹ️ Environment variables
 import * as dotenv from "dotenv";
 dotenv.config({
   path: "./e2e/.env.local",
 });
-
 // 👤 User Roles
 import { UserRole } from "@/e2e/utils/enums";
 // 🛸 Login Links
 import { LoginLink } from "@/e2e/utils/enums";
 // 🥞 Connection pool to postgres DB
 import { pool } from "@/e2e/utils/pool";
-import { navigateAndWaitForLoad } from "../utils/helpers";
+
 // Set the test URL
 const url = process.env.E2E_BASEURL || "";
+
 // 🛠️ function: login with Keycloak credentials and store authenticated user by role session's state
 /**
 📖

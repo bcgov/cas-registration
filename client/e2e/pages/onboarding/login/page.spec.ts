@@ -4,7 +4,7 @@
 import { test, expect } from "@playwright/test";
 // ⛏️ Helpers
 import { navigateAndWaitForLoad } from "@/e2e/utils/helpers";
-// 👀 env vars
+// ℹ️ Environment variables
 import * as dotenv from "dotenv";
 dotenv.config({ path: "./e2e/.env.local" });
 // 👤 User Roles

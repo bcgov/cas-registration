@@ -1,16 +1,11 @@
 import * as path from "path";
 import * as dotenv from "dotenv";
 
-// Get the current directory of the script
-const currentDir = __dirname;
-
-// Construct the path to the .env file
-const envFilePath = path.resolve(currentDir, "../../../bc_obps/.env");
+// Resolve the path to the .env file
+const envFilePath = path.resolve(__dirname, "../../../bc_obps/.env");
 
 // Load environment variables from the .env file
-dotenv.config({
-  path: envFilePath,
-});
+dotenv.config({ path: envFilePath });
 
 // Connection to PostgreSQL DB
 const { Pool } = require("pg");

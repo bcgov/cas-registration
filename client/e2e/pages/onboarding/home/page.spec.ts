@@ -1,10 +1,10 @@
 // 🧪 Suite to test the onboarding\Home page `http://localhost:3000/home`
-// 🔍 Asserts simple test =home page has welcome text
+// 🔍 Asserts simple test = home page has welcome text
 
 import { test, expect } from "@playwright/test";
 // ⛏️ Helpers
 import { navigateAndWaitForLoad } from "@/e2e/utils/helpers";
-// 👀 env vars
+// ℹ️ Environment variables
 import * as dotenv from "dotenv";
 dotenv.config({ path: "./e2e/.env.local" });
 

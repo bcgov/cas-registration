@@ -4,9 +4,10 @@
 import { test, expect } from "@playwright/test";
 // ⛏️ Helpers
 import { navigateAndWaitForLoad } from "@/e2e/utils/helpers";
-// 👀 env vars
+// ℹ️ Environment variables
 import * as dotenv from "dotenv";
 dotenv.config({ path: "./e2e/.env.local" });
+import * as path from "path";
 
 // set the test url
 const url = process.env.E2E_BASEURL || "";
@@ -15,7 +16,13 @@ const url = process.env.E2E_BASEURL || "";
 test.describe.configure({ mode: "serial" });
 test.describe("Test Workflow new user", () => {
   // 👤 run test as new user with no role
-  const storageState = process.env.E2E_NEW_USER_STORAGE;
+  // Resolve to an absolute path based on the relative path in the env var
+  const storageState = path.resolve(
+    __dirname,
+    process.env.E2E_NEW_USER_STORAGE || ""
+  );
+  // eslint-disable-next-line no-console
+  console.log(storageState);
   test.use({ storageState: storageState });
   test("Test Redirect to Profile", async ({ page }) => {
     // 🛸 Navigate to the home page

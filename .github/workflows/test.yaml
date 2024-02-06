@@ -235,7 +235,7 @@ jobs:
           DB_PORT: 5432
           DB_HOST: localhost
           E2E_BASEURL: http://localhost:3000/
-          E2E_CAS_USER: ${{ secrets.CAS_USER }}
+          E2E_CAS_USER: SHOGAN
           E2E_CAS_USER_GUID: ${{ secrets.CAS_USER_GUID }}
           E2E_CAS_USER_PASSWORD: ${{ secrets.CAS_PASSWORD }}
           E2E_CAS_ADMIN_STORAGE: playwright/.auth/cas_admin.json
