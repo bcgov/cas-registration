@@ -47,7 +47,7 @@ const setupAuth = async (
         loginButton = LoginLink.CAS;
         // 🛢 To generate a storageState file for each CAS role...
         // perform an upsert query that inserts or updates the role associated with your IDIR user_guid in the erc.user table.
-
+        // then login with a cas ID will be assigned this role in client/app/api/auth/[...nextauth]/route.ts
         // eslint-disable-next-line no-console
         console.log(`Upserting ${user} for role ${role}`);
         const upsert = `
@@ -79,11 +79,11 @@ const setupAuth = async (
     // 🔑 Login to Keycloak
     // Fill the user field
     await page.locator("id=user").fill(user, {
-      timeout: 600000,
+      timeout: 60000,
     });
     // Fill the pw field
     await page.getByLabel("Password").fill(password, {
-      timeout: 600000,
+      timeout: 60000,
     });
     // Click Continue button
     await page.getByRole("button", { name: "Continue" }).click();

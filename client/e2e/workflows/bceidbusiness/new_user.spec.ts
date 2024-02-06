@@ -15,10 +15,14 @@ const url = process.env.E2E_BASEURL || "";
 test.describe.serial("Test Workflow new user", () => {
   // 👤 run test as new user with no role
   const storageState = process.env.E2E_NEW_USER_STORAGE;
-  test.use({ storageState: storageState });
+  test.use({ storageState: storageState }); // this will error if no such file or directory
   test("Test Redirect to Profile", async ({ page }) => {
+    // eslint-disable-next-line no-console
+    console.log(
+      (await page.context().storageState({ path: storageState })).cookies
+    );
     // 🛸 Navigate to the home page
-    await navigateAndWaitForLoad(page, url);
+    await navigateAndWaitForLoad(page, url + "/profile");
     // 🔍 Assert that the current URL ends with "/profile"
     await expect(page.url().toLocaleLowerCase()).toContain("/profile");
     // Try and navigate to Dashboard
