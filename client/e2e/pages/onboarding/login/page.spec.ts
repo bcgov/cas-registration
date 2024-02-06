@@ -2,14 +2,15 @@
 // 🔍 Asserts the user can login, logout, and login
 
 import { test, expect } from "@playwright/test";
+// ⛏️ Helpers
+import { navigateAndWaitForLoad } from "@/e2e/utils/helpers";
+// 👀 env vars
+import * as dotenv from "dotenv";
+dotenv.config({ path: "./e2e/.env.local" });
 // 👤 User Roles
 import { UserRole } from "@/e2e/utils/enums";
 // 🛸 Login Links
 import { LoginLink } from "@/e2e/utils/enums";
-import { navigateAndWaitForLoad } from "@/e2e/utils/helpers";
-
-import * as dotenv from "dotenv";
-dotenv.config({ path: "./e2e/.env.local" });
 
 // Set the test URL
 const url = process.env.E2E_BASEURL || "";
@@ -61,7 +62,6 @@ const login = async (
 
 // 🏷 Annotate test suite as serial
 test.describe.configure({ mode: "serial" });
-
 test.describe("Test Page - Home", () => {
   // ➰ Loop through the entries of UserRole enum
   for (let [role, value] of Object.entries(UserRole)) {
