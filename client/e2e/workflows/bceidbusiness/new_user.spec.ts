@@ -16,7 +16,7 @@ const url = process.env.E2E_BASEURL || "http://localhost:3000/";
 
 test.describe("Test Workflow new user", () => {
   // 👤 run test as new user with no role
-  const storageState = process.env.NEW_USER_STORAGE;
+  const storageState = process.env.E2E_NEW_USER_STORAGE;
   test.use({ storageState: storageState });
   test("Test Redirect to Profile", async ({ page }) => {
     await navigateAndWaitForLoad(page, url);
