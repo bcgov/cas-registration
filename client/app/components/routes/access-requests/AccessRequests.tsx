@@ -3,14 +3,14 @@ import Note from "@/app/components/datagrid/Note";
 
 import { actionHandler } from "@/app/utils/actions";
 import OperatorDataGrid from "@/app/components/datagrid/OperatorDataGrid";
-import { UserOperator } from "./types";
+import { UserOperatorPaginated } from "./types";
 import { statusStyle } from "@/app/components/datagrid/helpers";
 
 // 🛠️ Function to fetch user-operators
 async function getUserOperators() {
   try {
     return await actionHandler(
-      "registration/user-operators",
+      "registration/user-operators?page=1",
       "GET",
       "/dashboard/operators",
     );
@@ -20,30 +20,30 @@ async function getUserOperators() {
   }
 }
 
+export const formatUserOperatorRows = (rows: GridRowsProp) => {
+  return rows.map(
+    ({ id, status, first_name, last_name, email, legal_name }) => {
+      return {
+        id,
+        status,
+        first_name,
+        last_name,
+        email,
+        legal_name,
+      };
+    },
+  );
+};
+
 // 🧩 Main component
 export default async function AccessRequests() {
   // Fetch userOperator data
-  const userOperators: [UserOperator] = await getUserOperators();
+  const userOperators: UserOperatorPaginated = await getUserOperators();
   if (!userOperators) {
     return <div>No access requests yet.</div>;
   }
-
-  // Transform the fetched data into rows for the DataGrid component
-  const rows: GridRowsProp =
-    userOperators.length > 0
-      ? userOperators.map(
-          ({ id, status, first_name, last_name, email, legal_name }) => {
-            return {
-              id,
-              status,
-              first_name,
-              last_name,
-              email,
-              legal_name,
-            };
-          },
-        )
-      : [];
+  const { row_count: rowCount } = userOperators;
+  const rows = formatUserOperatorRows(userOperators.data);
 
   // Render the DataGrid component
   return (
@@ -54,6 +54,7 @@ export default async function AccessRequests() {
       />
       <OperatorDataGrid
         rows={rows}
+        rowCount={rowCount}
         columns={[
           {
             field: "id",

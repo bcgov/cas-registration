@@ -13,11 +13,13 @@ from registration.schema import (
     UserOperatorOut,
     SelectOperatorIn,
     Message,
+    UserOperatorPaginatedOut,
     UserOperatorOperatorIn,
     RequestAccessOut,
     IsApprovedUserOperator,
     UserOperatorIdOut,
-    UserOperatorListOut,
+    UserOperatorOperatorIdOut,
+    UserOperatorStatus,
     UserOperatorStatusUpdate,
     ExternalDashboardUsersTileData,
     PendingUserOperatorOut,
@@ -26,6 +28,7 @@ from registration.schema import (
 from typing import List
 
 from .api_base import router
+from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404
 
 from registration.models import (
@@ -217,15 +220,18 @@ def get_user(request):
     return user_operator_list
 
 
-@router.get("/user-operators", response=List[UserOperatorListOut])
+@router.get("/user-operators", response=UserOperatorPaginatedOut)
 @authorize(AppRole.get_authorized_irc_roles())
-def list_user_operators(request):
+
+def list_user_operators(request, page: int = 1):
     qs = UserOperator.objects.select_related("operator", "user").only(
         "id", "status", "user__last_name", "user__first_name", "user__email", "operator__legal_name"
-    )
+    ).order_by("-created_at")
     user_operator_list = []
 
-    for user_operator in qs:
+    paginator = Paginator(qs, 20)
+
+    for user_operator in paginator.page(page).object_list:
         user_operator_related_fields_dict = model_to_dict(
             user_operator,
             fields=[
@@ -257,7 +263,11 @@ def list_user_operators(request):
                 **operator_related_fields_dict,
             }
         )
-    return user_operator_list
+    return 200, UserOperatorPaginatedOut(
+        data=user_operator_list,
+        total_pages=paginator.num_pages,
+        row_count=paginator.count,
+    )
 
 
 ##### POST #####
