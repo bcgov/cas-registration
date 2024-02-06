@@ -8,6 +8,7 @@ import {
   StatutoryDeclarationDisclaimerTitle,
   StatutoryDeclarationUploadFieldTitle,
 } from "@/app/components/form/titles/operationsTitles";
+import { userOperatorPage1, userOperatorUiSchema } from "./userOperator";
 
 const subheading = {
   "ui:classNames": "text-bc-bg-blue text-start text-lg",
@@ -407,6 +408,15 @@ export const operationSchema: RJSFSchema = {
   },
 };
 
+export const operationInternalUserSchema: RJSFSchema = {
+  ...operationSchema,
+  properties: {
+    // Show the Operator Information page for internal users
+    userOperatorPage1,
+    ...operationSchema.properties,
+  },
+};
+
 export const operationUiSchema = {
   "ui:order": [
     "operationPage1",
@@ -576,4 +586,16 @@ export const operationUiSchema = {
     },
     "ui:title": StatutoryDeclarationUploadFieldTitle,
   },
+};
+
+export const operationInternalUserUiSchema = {
+  ...userOperatorUiSchema,
+  ...operationUiSchema,
+  "ui:options": {
+    label: false,
+  },
+  "ui:order": [
+    ...userOperatorUiSchema["ui:order"],
+    ...operationUiSchema["ui:order"],
+  ],
 };
