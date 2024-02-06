@@ -21,7 +21,6 @@ import { UserRole } from "@/e2e/utils/enums";
 import { LoginLink } from "@/e2e/utils/enums";
 // 🥞 Connection pool to postgres DB
 import { pool } from "@/e2e/utils/pool";
-import path from "path";
 
 // Set the test URL
 const url = process.env.E2E_BASEURL || "";
@@ -135,7 +134,7 @@ export default async function globalSetup() {
         await setupAuth(
           user || "",
           pw || "",
-          path.resolve(__dirname, process.env[role + "_STORAGE"] as string),
+          process.env[role + "_STORAGE"] as string,
           value
         );
         break;

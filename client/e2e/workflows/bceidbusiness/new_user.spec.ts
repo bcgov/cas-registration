@@ -7,7 +7,6 @@ import { navigateAndWaitForLoad } from "@/e2e/utils/helpers";
 // ℹ️ Environment variables
 import * as dotenv from "dotenv";
 dotenv.config({ path: "./e2e/.env.local" });
-import * as path from "path";
 
 // set the test url
 const url = process.env.E2E_BASEURL || "";
@@ -16,7 +15,7 @@ const url = process.env.E2E_BASEURL || "";
 test.describe.serial("Test Workflow new user", () => {
   // 👤 run test as new user with no role
   const storageState = process.env.E2E_NEW_USER_STORAGE;
-  test.use({ storageState: path.resolve(__dirname, storageState as string) });
+  test.use({ storageState: storageState });
   test("Test Redirect to Profile", async ({ page }) => {
     // 🛸 Navigate to the home page
     await navigateAndWaitForLoad(page, url);
