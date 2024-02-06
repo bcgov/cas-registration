@@ -1,15 +1,19 @@
 "use client";
+import { useEffect, useState } from "react";
 
 import {
   DataGrid as MuiGrid,
   GridRowsProp,
   GridColDef,
+  GridSortItem,
 } from "@mui/x-data-grid";
 import { BC_GOV_BACKGROUND_COLOR_BLUE } from "@/app/styles/colors";
 import { Session } from "next-auth";
 
 interface Props {
+  fetchPageData: (page: number) => Promise<any>;
   rows: GridRowsProp;
+  rowCount?: number;
   columns: GridColDef[];
 }
 
@@ -47,16 +51,58 @@ const DescendingIcon = () => {
   return <SortIcon topFill="white" bottomFill="grey" />;
 };
 
-const DataGrid: React.FC<Props> = ({ rows, columns }) => {
+const PAGE_SIZE = 20;
+
+const DataGrid: React.FC<Props> = ({
+  fetchPageData,
+  rows: initialRows,
+  rowCount,
+  columns,
+}) => {
+  const [rows, setRows] = useState(initialRows ?? []);
+  const [loading, setLoading] = useState(false);
+  const [isComponentMounted, setIsComponentMounted] = useState(false);
+  const [paginationModel, setPaginationModel] = useState({
+    page: 0,
+    pageSize: PAGE_SIZE,
+  });
+
+  const [sortModel, setSortModel] = useState([] as GridSortItem[]);
+
+  useEffect(() => {
+    setIsComponentMounted(true);
+  }, []);
+
+  useEffect(() => {
+    // Don't fetch data if the component is not mounted
+    // Since we will grab the first page using the server side props
+    if (!isComponentMounted) return;
+    setLoading(true);
+    const fetchData = async () => {
+      // fetch data from server
+      const pageData = await fetchPageData(paginationModel.page + 1);
+      setRows(pageData);
+    };
+
+    fetchData().then(() => setLoading(false));
+  }, [isComponentMounted, paginationModel, sortModel]);
+
   return (
     <div style={{ height: "auto", width: "100%" }}>
       <MuiGrid
         rows={rows}
         columns={columns}
+        loading={loading}
+        rowCount={rowCount}
         showCellVerticalBorder
         initialState={{
           pagination: { paginationModel: { pageSize: 20 } },
         }}
+        pagination
+        sortingMode="server"
+        paginationMode="server"
+        onPaginationModelChange={setPaginationModel}
+        onSortModelChange={setSortModel}
         // Set the row height to "auto" so that the row height will adjust to the content
         getRowHeight={() => "auto"}
         slots={{
