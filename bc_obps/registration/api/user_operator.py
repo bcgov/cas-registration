@@ -42,6 +42,7 @@ from registration.models import (
 from ninja.responses import codes_4xx
 from datetime import datetime
 from django.forms import model_to_dict
+from registration.constants import PAGE_SIZE
 
 
 # Function to save operator data to reuse in POST/PUT methods
@@ -217,7 +218,7 @@ def list_user_operators(request, page: int = 1, sort_field: str = "created_at", 
     if sort_field == "legal_name":
         sort_field = "operator__legal_name"
     qs = UserOperator.objects.all().order_by(f"{sort_direction}{sort_field}")
-    paginator = Paginator(qs, 20)
+    paginator = Paginator(qs, PAGE_SIZE)
     user_operator_list = []
 
     for user_operator in paginator.page(page).object_list:

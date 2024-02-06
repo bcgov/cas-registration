@@ -1,4 +1,4 @@
-from registration.constants import UNAUTHORIZED_MESSAGE
+from registration.constants import PAGE_SIZE, UNAUTHORIZED_MESSAGE
 from django.db import transaction
 from registration.decorators import authorize
 from registration.schema.operation import OperationListOut
@@ -121,7 +121,7 @@ def list_operations(request, page: int = 1, sort_field: str = "created_at", sort
             .only(*OperationListOut.Config.model_fields, "operator__legal_name", "bc_obps_regulated_operation__id")
             .order_by(f"{sort_direction}{sort_field}")
         )
-        paginator = Paginator(qs, 20)
+        paginator = Paginator(qs, PAGE_SIZE)
 
         return 200, OperationPaginatedOut(
             data=[OperationListOut.from_orm(operation) for operation in paginator.page(page).object_list],
@@ -141,7 +141,7 @@ def list_operations(request, page: int = 1, sort_field: str = "created_at", sort
         .order_by(f"{sort_direction}{sort_field}")
         .only(*OperationListOut.Config.model_fields, "operator__legal_name", "bc_obps_regulated_operation__id")
     )
-    paginator = Paginator(operators_operations, 20)
+    paginator = Paginator(operators_operations, PAGE_SIZE)
     return 200, OperationPaginatedOut(
         data=[OperationListOut.from_orm(operation) for operation in paginator.page(page).object_list],
         row_count=paginator.count,
