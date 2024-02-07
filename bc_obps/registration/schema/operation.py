@@ -1,10 +1,10 @@
-from typing import List, Optional
+from typing import Optional
+from registration.schema.operator import OperatorForOperationOut
 from registration.utils import file_to_data_url, data_url_to_file
 from ninja import Field, ModelSchema, Schema
 from registration.constants import AUDIT_FIELDS
-from registration.models import Operation, Document
+from registration.models import Operation
 from datetime import date
-from .contact import ContactSchema
 from pydantic import validator
 
 
@@ -77,13 +77,7 @@ class OperationListOut(ModelSchema):
 
 
 class OperationOut(ModelSchema):
-    # handling aliases and optional fields
-    operator_id: int = Field(..., alias="operator.id")
     naics_code_id: Optional[int] = Field(None, alias="naics_code.id")
-    bcghg_id: Optional[str] = None
-    opt_in: Optional[bool] = None
-    verified_at: Optional[date] = None
-    # point of contact handling
     first_name: Optional[str] = Field(None, alias="point_of_contact.first_name")
     last_name: Optional[str] = Field(None, alias="point_of_contact.last_name")
     email: Optional[str] = Field(None, alias="point_of_contact.email")
@@ -93,14 +87,14 @@ class OperationOut(ModelSchema):
     municipality: Optional[str] = Field(None, alias="point_of_contact.address.municipality")
     province: Optional[str] = Field(None, alias="point_of_contact.address.province")
     postal_code: Optional[str] = Field(None, alias="point_of_contact.address.postal_code")
-
-    operation_has_multiple_operators: Optional[bool] = Field(False, alias="operation_has_multiple_operators")
-    multiple_operators_array: Optional["List[MultipleOperatorOut]"] = Field(None, alias="multiple_operator")
-    operator: str = Field(..., alias="operator.legal_name")
+    # Not using Multiple operators for MVP
+    # operation_has_multiple_operators: Optional[bool] = Field(False, alias="operation_has_multiple_operators")
+    # multiple_operators_array: Optional["List[MultipleOperatorOut]"] = Field(None, alias="multiple_operator")
     statutory_declaration: Optional[str] = None
+    bc_obps_regulated_operation: Optional[str] = Field(None, alias="bc_obps_regulated_operation.id")
 
     @staticmethod
-    def resolve_statutory_declaration(obj: Document):
+    def resolve_statutory_declaration(obj: Operation):
         statutory_declaration = obj.get_statutory_declaration()
         if statutory_declaration:
             return file_to_data_url(statutory_declaration)
@@ -115,12 +109,25 @@ class OperationOut(ModelSchema):
 
     class Config:
         model = Operation
-        model_exclude = [*AUDIT_FIELDS, "naics_code"]
+        model_fields = [
+            "id",
+            'name',
+            'type',
+            'bcghg_id',
+            'opt_in',
+            'regulated_products',
+            'previous_year_attributable_emissions',
+            'status',
+        ]
 
 
-from .multiple_operator import MultipleOperatorOut
+class OperationWithOperatorOut(OperationOut):  # used for irc users
+    operator: OperatorForOperationOut = Field(..., alias="operator")
 
-OperationOut.update_forward_refs()
+
+# Not using Multiple operators for MVP
+# from .multiple_operator import MultipleOperatorOut
+# OperationOut.update_forward_refs()
 
 
 class OperationUpdateStatusIn(ModelSchema):

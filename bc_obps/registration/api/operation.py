@@ -1,12 +1,11 @@
 from registration.constants import UNAUTHORIZED_MESSAGE
 from django.db import transaction
 from registration.decorators import authorize
-from registration.schema.operation import OperationListOut
 from .api_base import router
 from datetime import datetime
 from django.core.exceptions import ValidationError
 import pytz
-from typing import List
+from typing import List, Union
 from django.shortcuts import get_object_or_404
 from registration.models import (
     AppRole,
@@ -31,6 +30,8 @@ from registration.schema import (
     OperationUpdateOut,
     Message,
     OperationUpdateStatusIn,
+    OperationListOut,
+    OperationWithOperatorOut,
 )
 from registration.utils import get_an_operators_approved_users, generate_useful_error
 from ninja.responses import codes_4xx, codes_5xx
@@ -135,21 +136,48 @@ def list_operations(request):
     return 200, operators_operations
 
 
-@router.get("/operations/{operation_id}", response={200: OperationOut, codes_4xx: Message})
+@router.get(
+    "/operations/{operation_id}", response={200: Union[OperationOut, OperationWithOperatorOut], codes_4xx: Message}
+)
 @authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles())
 def get_operation(request, operation_id: int):
+    # In this endpoint we are using different schema and different operation queries to optimize the response based on the user role
     user: User = request.current_user
+    try:
+        operation = (
+            Operation.objects.only(
+                *OperationOut.Config.model_fields,
+                "naics_code",
+                "point_of_contact__address",
+                "point_of_contact__first_name",
+                "point_of_contact__last_name",
+                "point_of_contact__email",
+                "point_of_contact__position_title",
+                "point_of_contact__phone_number",
+                "bc_obps_regulated_operation__id",
+                "operator__physical_address",
+                "operator__mailing_address",
+                "operator__legal_name",
+                "operator__trade_name",
+                "operator__cra_business_number",
+                "operator__bc_corporate_registry_number",
+                "operator__business_structure",
+                "operator__website",
+            )
+            .select_related(
+                "operator__physical_address", "operator__mailing_address", "point_of_contact__address", "naics_code"
+            )
+            .prefetch_related("operator__parent_operators", "regulated_products")
+            .get(id=operation_id)
+        )
+    except Operation.DoesNotExist:
+        raise HttpError(404, "Operation not found")
     if user.is_industry_user():
-        user_operator = UserOperator.objects.filter(user_id=user.user_guid).first()
-        if not user_operator:
+        if not operation.user_has_access(user.user_guid):
             raise HttpError(401, UNAUTHORIZED_MESSAGE)
-        approved_users = get_an_operators_approved_users(user_operator.operator_id)
-        if user.user_guid not in approved_users:
-            raise HttpError(401, UNAUTHORIZED_MESSAGE)
-        operation = get_object_or_404(Operation, id=operation_id, operator_id=user_operator.operator.id)
-    elif user.is_irc_user():
-        operation = get_object_or_404(Operation, id=operation_id)
-    return 200, OperationOut.from_orm(operation)
+        return 200, OperationOut.from_orm(operation)
+    # Use the OperationWithOperatorOut schema to include the operator details
+    return 200, OperationWithOperatorOut.from_orm(operation)
 
 
 ##### POST #####
