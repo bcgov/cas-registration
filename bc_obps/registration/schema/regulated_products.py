@@ -9,4 +9,4 @@ class RegulatedProductSchema(ModelSchema):
 
     class Config:
         model = RegulatedProduct
-        model_fields = "__all__"
+        model_fields = ["id", "name"]
