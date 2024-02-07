@@ -1,10 +1,18 @@
-// Login Links
+export enum ActionButton {
+  CONTINUE = "Continue",
+  SUBMIT = "Submit",
+}
+
 export enum LoginLink {
   CAS = "Log in with IDIR",
   INDUSTRY_USER = "Log in with Business BCeID",
+  OUT = "Log out",
 }
 
-// User Roles
+export enum DataTestID {
+  PROFILE = '[data-testid="nav-user-profile"]',
+}
+
 export enum UserRole {
   CAS_PENDING = "cas_pending",
   CAS_ANALYST = "cas_analyst",
