@@ -15,14 +15,19 @@ const stages = [
 export const options = {
   scenarios: {
     landing_page: {
-      executor: "ramping-vus",
-      stages: stages,
+      executor: "constant-vus",
+      vus: 20,
+      duration: "10000s",
+      options: {
+        browser: {
+          type: "chromium",
+        },
+      },
     },
   },
   thresholds: {
-    http_req_duration: ["p(99)<1500"], // 99% of requests must complete below 1.5s
+    checks: ["rate==1.0"],
   },
-  rps: 50, // don't increase this without consulting platform services first
 };
 
 export default function () {

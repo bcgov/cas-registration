@@ -81,12 +81,12 @@ perf_test:
 	@k6 -e SERVER_HOST=$(SERVER_ROUTE) run client/tests/performance/script.js --out csv=k6_results/test_results.csv
 
 .PHONY: perf_test_frontend
-perf_test: ## run performance tests with k6
-perf_test: APP_HOST=http://localhost:3000
-perf_test: APP_API_ROUTE=/api
-perf_test: APP_ROUTE=$(APP_HOST)$(APP_API_ROUTE)
-perf_test:
-	@k6 -e APP_HOST=$(APP_ROUTE) run client/tests/performance/script.js --out csv=k6_results/test_results_frontend.csv
+perf_test_frontend: ## run frontend performance tests with k6
+perf_test_frontend: APP_HOST=http://localhost:3000
+perf_test_frontend: APP_API_ROUTE=/api
+perf_test_frontend: APP_ROUTE=$(APP_HOST)$(APP_API_ROUTE)
+perf_test_frontend:
+	@k6 -e APP_HOST=$(APP_ROUTE) run client/tests/performance/frontend_script.js --out csv=k6_results/test_results_frontend.csv
 
 
 # include .env.devops
