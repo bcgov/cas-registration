@@ -1,13 +1,13 @@
 /* eslint-disable */
 import exec from "k6/execution";
-import business_structures from "./scenarios/business_structures.js";
-import naics from "./scenarios/naics.js";
-import operation from "./scenarios/operation.js";
-import operator from "./scenarios/operator.js";
-import regulated_products from "./scenarios/regulated_products.js";
-import reporting_activities from "./scenarios/reporting_activities.js";
-import user from "./scenarios/user.js";
-import user_operator from "./scenarios/user_operator.js";
+import business_structures from "./scenarios/backend/business_structures.js";
+import naics from "./scenarios/backend/naics.js";
+import operation from "./scenarios/backend/operation.js";
+import operator from "./scenarios/backend/operator.js";
+import regulated_products from "./scenarios/backend/regulated_products.js";
+import reporting_activities from "./scenarios/backend/reporting_activities.js";
+import user from "./scenarios/backend/user.js";
+import user_operator from "./scenarios/backend/user_operator.js";
 
 const stages = [
   { duration: "5m", target: 20 }, // simulate ramp-up of traffic from 1 to 20 users over 5 minutes.
