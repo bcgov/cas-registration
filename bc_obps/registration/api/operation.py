@@ -1,8 +1,10 @@
 from registration.constants import UNAUTHORIZED_MESSAGE
+from django.db import transaction
 from registration.decorators import authorize
 from registration.schema.operation import OperationListOut
 from .api_base import router
 from datetime import datetime
+from django.core.exceptions import ValidationError
 import pytz
 from typing import List
 from django.shortcuts import get_object_or_404
@@ -30,7 +32,7 @@ from registration.schema import (
     Message,
     OperationUpdateStatusIn,
 )
-from registration.utils import get_an_operators_approved_users
+from registration.utils import get_an_operators_approved_users, generate_useful_error
 from ninja.responses import codes_4xx, codes_5xx
 from ninja.errors import HttpError
 
@@ -176,17 +178,24 @@ def create_operation(request, payload: OperationCreateIn):
         existing_operation: Operation = Operation.objects.filter(bcghg_id=bcghg_id).first()
         if existing_operation:
             return 400, {"message": "Operation with this BCGHG ID already exists."}
+    try:
+        with transaction.atomic():
+            operation = Operation.objects.create(
+                **payload_dict, operator_id=payload.operator, naics_code_id=payload.naics_code
+            )
+            operation.regulated_products.set(payload.regulated_products)
+            # Not needed for MVP
+            # operation.reporting_activities.set(payload.reporting_activities)
+            operation.set_create_or_update(modifier=user)
 
-    operation = Operation.objects.create(**payload_dict, operator_id=payload.operator, naics_code_id=payload.naics_code)
-    operation.regulated_products.set(payload.regulated_products)
-    # Not needed for MVP
-    # operation.reporting_activities.set(payload.reporting_activities)
-    operation.set_create_or_update(modifier=user)
+            if payload.operation_has_multiple_operators:
+                create_or_update_multiple_operators(payload.multiple_operators_array, operation, user)
 
-    if payload.operation_has_multiple_operators:
-        create_or_update_multiple_operators(payload.multiple_operators_array, operation, user)
-
-    return 201, {"name": operation.name, "id": operation.id}
+            return 201, {"name": operation.name, "id": operation.id}
+    except ValidationError as e:
+        return 400, {"message": generate_useful_error(e)}
+    except Exception as e:
+        return 400, {"message": str(e)}
 
 
 ##### PUT #####
@@ -211,87 +220,92 @@ def update_operation(request, operation_id: int, submit: str, form_section: int,
     # industry users can only edit operations that belong to their operator
     if operation.operator_id != user_operator.operator.id:
         raise HttpError(401, UNAUTHORIZED_MESSAGE)
+    try:
+        with transaction.atomic():
+            operation.operator_id = payload.operator
+            operation.naics_code_id = payload.naics_code
 
-    operation.operator_id = payload.operator
-    operation.naics_code_id = payload.naics_code
+            # the frontend includes default values, which are being sent in the payload to the backend. We need to know
+            # whether the data being received in the payload is what the user has actually viewed, so we separate this
+            # by form_section (the paginated form in the UI)
+            if form_section == 1:
+                payload_dict: dict = payload.dict(
+                    include={
+                        'name',
+                        'type',
+                        'bcghg_id',
+                        'opt_in',
+                    }
+                )
+                for attr, value in payload_dict.items():
+                    setattr(operation, attr, value)
+                operation.regulated_products.set(payload.regulated_products)
+                operation.save(update_fields=list(payload_dict.keys()) + ['naics_code', 'operator'])
+            elif form_section == 2:
+                point_of_contact_id = operation.point_of_contact_id or None
+                is_external_point_of_contact = payload.is_external_point_of_contact
 
-    # the frontend includes default values, which are being sent in the payload to the backend. We need to know
-    # whether the data being received in the payload is what the user has actually viewed, so we separate this
-    # by form_section (the paginated form in the UI)
-    if form_section == 1:
-        payload_dict: dict = payload.dict(
-            include={
-                'name',
-                'type',
-                'bcghg_id',
-                'opt_in',
-            }
-        )
-        for attr, value in payload_dict.items():
-            setattr(operation, attr, value)
-        operation.regulated_products.set(payload.regulated_products)
-        operation.save(update_fields=list(payload_dict.keys()) + ['naics_code', 'operator'])
-    elif form_section == 2:
-        point_of_contact_id = operation.point_of_contact_id or None
-        is_external_point_of_contact = payload.is_external_point_of_contact
+                if is_external_point_of_contact is False:  # the point of contact is the user
+                    poc, _ = Contact.objects.update_or_create(
+                        id=point_of_contact_id,
+                        defaults={
+                            "first_name": payload.first_name,
+                            "last_name": payload.last_name,
+                            "position_title": payload.position_title,
+                            "email": payload.email,
+                            "phone_number": payload.phone_number,
+                            "business_role": BusinessRole.objects.get(role_name="Operation Registration Lead"),
+                        },
+                    )
+                    poc.set_create_or_update(modifier=user)
+                    operation.point_of_contact = poc
 
-        if is_external_point_of_contact is False:  # the point of contact is the user
-            poc, _ = Contact.objects.update_or_create(
-                id=point_of_contact_id,
-                defaults={
-                    "first_name": payload.first_name,
-                    "last_name": payload.last_name,
-                    "position_title": payload.position_title,
-                    "email": payload.email,
-                    "phone_number": payload.phone_number,
-                    "business_role": BusinessRole.objects.get(role_name="Operation Registration Lead"),
-                },
-            )
-            poc.set_create_or_update(modifier=user)
-            operation.point_of_contact = poc
+                elif is_external_point_of_contact is True:  # the point of contact is an external user
+                    external_poc, _ = Contact.objects.update_or_create(
+                        id=point_of_contact_id,
+                        defaults={
+                            "first_name": payload.external_point_of_contact_first_name,
+                            "last_name": payload.external_point_of_contact_last_name,
+                            "position_title": payload.external_point_of_contact_position_title,
+                            "email": payload.external_point_of_contact_email,
+                            "phone_number": payload.external_point_of_contact_phone_number,
+                            "business_role": BusinessRole.objects.get(role_name="Operation Registration Lead"),
+                        },
+                    )
+                    external_poc.set_create_or_update(modifier=user)
+                    operation.point_of_contact = external_poc
+                operation.save(update_fields=['point_of_contact'])
 
-        elif is_external_point_of_contact is True:  # the point of contact is an external user
-            external_poc, _ = Contact.objects.update_or_create(
-                id=point_of_contact_id,
-                defaults={
-                    "first_name": payload.external_point_of_contact_first_name,
-                    "last_name": payload.external_point_of_contact_last_name,
-                    "position_title": payload.external_point_of_contact_position_title,
-                    "email": payload.external_point_of_contact_email,
-                    "phone_number": payload.external_point_of_contact_phone_number,
-                    "business_role": BusinessRole.objects.get(role_name="Operation Registration Lead"),
-                },
-            )
-            external_poc.set_create_or_update(modifier=user)
-            operation.point_of_contact = external_poc
-        operation.save(update_fields=['point_of_contact'])
+            if submit == "true":
+                """
+                if the PUT request has submit == "true" (i.e., user has clicked Submit button in UI form), the desired behaviour depends on
+                the Operation's status:
+                    - if operation.status was already "Approved", it should remain Approved and the submission date should not be altered
+                    - if operation.status was "Changes Requested", it should switch to Pending
+                    - if operation.status was "Declined", it should switch to Pending
+                    - if operation.status was "Not Started", it should switch to Pending
+                    - if operation.status was "Pending", it should remain as Pending
+                """
+                if operation.status != Operation.Statuses.APPROVED:
+                    operation.status = Operation.Statuses.PENDING
+                    operation.submission_date = datetime.now(pytz.utc)
+                    operation.save(update_fields=['status', 'submission_date'])
 
-    if submit == "true":
-        """
-        if the PUT request has submit == "true" (i.e., user has clicked Submit button in UI form), the desired behaviour depends on
-        the Operation's status:
-            - if operation.status was already "Approved", it should remain Approved and the submission date should not be altered
-            - if operation.status was "Changes Requested", it should switch to Pending
-            - if operation.status was "Declined", it should switch to Pending
-            - if operation.status was "Not Started", it should switch to Pending
-            - if operation.status was "Pending", it should remain as Pending
-        """
-        if operation.status != Operation.Statuses.APPROVED:
-            operation.status = Operation.Statuses.PENDING
-            operation.submission_date = datetime.now(pytz.utc)
-            operation.save(update_fields=['status', 'submission_date'])
+            if payload.statutory_declaration:
+                operation.documents.filter(type=DocumentType.objects.get(name="signed_statutory_declaration")).delete()
 
-    if payload.statutory_declaration:
-        operation.documents.filter(type=DocumentType.objects.get(name="signed_statutory_declaration")).delete()
+                document = Document.objects.create(
+                    file=payload.statutory_declaration,
+                    type=DocumentType.objects.get(name="signed_statutory_declaration"),
+                )
+                operation.documents.set([document])
 
-        document = Document.objects.create(
-            file=payload.statutory_declaration,
-            type=DocumentType.objects.get(name="signed_statutory_declaration"),
-        )
-        operation.documents.set([document])
-
-    operation.set_create_or_update(modifier=user)
-    return 200, {"name": operation.name}
+            operation.set_create_or_update(modifier=user)
+            return 200, {"name": operation.name}
+    except ValidationError as e:
+        return 400, {"message": generate_useful_error(e)}
+    except Exception as e:
+        return 400, {"message": str(e)}
 
 
 @router.put(
@@ -301,29 +315,29 @@ def update_operation(request, operation_id: int, submit: str, form_section: int,
 def update_operation_status(request, operation_id: int, payload: OperationUpdateStatusIn):
     operation = get_object_or_404(Operation, id=operation_id)
     user: User = request.current_user
-    status = Operation.Statuses(payload.status)
-    operation.status = status
-    if status in [Operation.Statuses.APPROVED, Operation.Statuses.DECLINED]:
-        operation.verified_at = datetime.now(pytz.utc)
-        operation.verified_by = user
-        if status == Operation.Statuses.APPROVED:
-            try:
-                operation.generate_unique_boro_id()
-                # approve the operator if it's not already approved (the case for imported operators)
-                operator: Operator = operation.operator
-                if operator.status != Operator.Statuses.APPROVED:
-                    operator.status = Operator.Statuses.APPROVED
-                    operator.is_new = False
-                    operator.verified_at = datetime.now(pytz.utc)
-                    operator.verified_by = user
-                    operator.save(update_fields=["status", "is_new", "verified_at", "verified_by"])
-                    operator.set_create_or_update(modifier=user)
-            except Exception as e:
-                return 400, {"message": str(e)}
     try:
-        operation.save()
-        operation.set_create_or_update(modifier=user)
-    except Exception as e:
-        return 500, {"message": str(e)}
+        with transaction.atomic():
+            status = Operation.Statuses(payload.status)
+            operation.status = status
+            if status in [Operation.Statuses.APPROVED, Operation.Statuses.DECLINED]:
+                operation.verified_at = datetime.now(pytz.utc)
+                operation.verified_by = user
+                if status == Operation.Statuses.APPROVED:
+                    operation.generate_unique_boro_id()
+                    # approve the operator if it's not already approved (the case for imported operators)
+                    operator: Operator = operation.operator
+                    if operator.status != Operator.Statuses.APPROVED:
+                        operator.status = Operator.Statuses.APPROVED
+                        operator.is_new = False
+                        operator.verified_at = datetime.now(pytz.utc)
+                        operator.verified_by = user
+                        operator.save(update_fields=["status", "is_new", "verified_at", "verified_by"])
+                        operator.set_create_or_update(modifier=user)
+            operation.save()
+            operation.set_create_or_update(modifier=user)
 
-    return 200, operation
+            return 200, operation
+    except ValidationError as e:
+        return 400, {"message": generate_useful_error(e)}
+    except Exception as e:
+        return 400, {"message": str(e)}
