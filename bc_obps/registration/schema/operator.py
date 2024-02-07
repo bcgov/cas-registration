@@ -3,7 +3,6 @@ from ninja import Field, Schema
 from ninja import ModelSchema, Schema, Field
 from registration.constants import AUDIT_FIELDS
 from registration.models import Operator
-from registration.models import UserOperator
 from .parent_operator import ParentOperatorOut
 
 
@@ -24,7 +23,7 @@ class OperatorOut(ModelSchema):
     parent_operators_array: Optional[List[ParentOperatorOut]] = Field(None, alias="parent_operators")
 
     @staticmethod
-    def resolve_operator_has_parent_operators(obj: UserOperator) -> bool:
+    def resolve_operator_has_parent_operators(obj: Operator) -> bool:
         return obj.parent_operators.exists()
 
     class Config:
