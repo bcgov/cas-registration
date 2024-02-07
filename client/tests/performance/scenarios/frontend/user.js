@@ -6,7 +6,8 @@ const user = async () => {
   const page = browser.newPage();
 
   try {
-    await page.goto(HOST);
+    await page.goto(HOST + "/dashboard/profile");
+    await page.goto(HOST + "/dashboard/users");
   } finally {
     page.close();
   }

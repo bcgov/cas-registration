@@ -7,7 +7,9 @@ import user_operator from "./scenarios/frontend/user_operator.js";
 
 const defaultOptions = {
   executor: "constant-vus",
-  vus: 5,
+  // Due to the heavy nature of the front end tests experiment with the number of VUs
+  // and maybe try running one scenario at a time to avoid overloading your system and getting errors
+  vus: 1,
   duration: "10000s",
   options: {
     browser: {
@@ -17,10 +19,10 @@ const defaultOptions = {
 };
 export const options = {
   scenarios: {
-    // landing_page: defaultOptions,
+    landing_page: defaultOptions,
     operation: defaultOptions,
-    // user: defaultOptions,
-    // user_operator: defaultOptions,
+    user: defaultOptions,
+    user_operator: defaultOptions,
   },
   thresholds: {
     checks: ["rate==1.0"],

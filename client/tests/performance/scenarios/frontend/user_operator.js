@@ -6,7 +6,8 @@ const userOperator = async () => {
   const page = browser.newPage();
 
   try {
-    await page.goto(HOST);
+    await page.goto(HOST + "/dashboard/select-operator/user-operator/2/1");
+    await page.goto(HOST + "/dashboard/select-operator/user-operator/2/2");
   } finally {
     page.close();
   }

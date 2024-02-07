@@ -1,4 +1,3 @@
-import { check } from "k6";
 import { browser } from "k6/experimental/browser";
 
 const HOST = __ENV.APP_HOST;
@@ -8,10 +7,8 @@ const operation = async () => {
 
   try {
     await page.goto(HOST + "/dashboard/operations");
-
-    check(page, {
-      header: (p) => p.locator('//button[text()="Add Operation"]'),
-    });
+    await page.goto(HOST + "/dashboard/operations/2/1");
+    await page.goto(HOST + "/dashboard/operations/2/2");
   } finally {
     page.close();
   }
