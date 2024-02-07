@@ -28,5 +28,8 @@ test.describe.serial("Test Workflow new user", () => {
   test("Test update profile", async ({ loggedInPage }) => {
     const profilePage = new ProfilePOM(loggedInPage.page);
     await profilePage.update();
+    // 🔍 Assert that the current URL ends with "/dashboard"
+    const path = "/dashboard";
+    await expect(loggedInPage.page.url().toLocaleLowerCase()).toContain(path);
   });
 });
