@@ -375,7 +375,6 @@ export const userOperatorSchema: RJSFSchema = {
   type: "object",
   properties: {
     userOperatorPage1,
-    userOperatorPage2,
   },
 };
 
