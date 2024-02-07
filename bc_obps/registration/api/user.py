@@ -7,6 +7,10 @@ from .api_base import router
 from django.shortcuts import get_object_or_404
 from ninja.responses import codes_4xx
 from registration.enums.enums import IdPs
+from registration.utils import (
+    generate_useful_error,
+)
+from django.core.exceptions import ValidationError
 
 ##### GET #####
 
@@ -58,11 +62,11 @@ def create_user_profile(request, identity_provider: str, payload: UserIn):
             position_title=payload.position_title,
             phone_number=payload.phone_number,
         )
-
+        return 200, new_user
+    except ValidationError as e:
+        return 400, {"message": generate_useful_error(e)}
     except Exception as e:
         return 400, {"message": str(e)}
-
-    return 200, new_user
 
 
 ##### PUT #####
@@ -77,9 +81,11 @@ def update_user_profile(request, payload: UserIn):
         for attr, value in payload.dict().items():
             setattr(user, attr, value)
         user.save()
+        return 200, user
+    except ValidationError as e:
+        return 400, {"message": generate_useful_error(e)}
     except Exception as e:
         return 400, {"message": str(e)}
-    return 200, user
 
 
 ##### DELETE #####

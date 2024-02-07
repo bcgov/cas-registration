@@ -1,4 +1,11 @@
 from django.db import IntegrityError, transaction
+from registration.utils import (
+    generate_useful_error,
+    update_model_instance,
+    check_users_admin_request_eligibility,
+    check_access_request_matches_business_guid,
+)
+from django.core.exceptions import ValidationError
 import pytz
 from registration.decorators import authorize
 from registration.schema import (
@@ -19,7 +26,7 @@ from registration.schema import (
 from typing import List
 from .api_base import router
 from django.shortcuts import get_object_or_404
-from django.core.exceptions import ValidationError
+
 from registration.models import (
     AppRole,
     BusinessRole,
@@ -29,13 +36,6 @@ from registration.models import (
     Contact,
     ParentOperator,
     Address,
-)
-from registration.utils import (
-    generate_useful_error,
-    update_model_instance,
-    check_users_admin_request_eligibility,
-    check_access_request_matches_business_guid,
-    get_an_operators_approved_users,
 )
 from ninja.responses import codes_4xx
 from datetime import datetime
@@ -249,18 +249,24 @@ def request_access(request, payload: SelectOperatorIn):
     user: User = request.current_user
     operator: Operator = get_object_or_404(Operator, id=payload.operator_id)
 
-    # check if user is eligible to request access
-    status, message = check_users_admin_request_eligibility(user, operator)
-    if status != 200:
-        return status, message
+    try:
+        with transaction.atomic():
+            # check if user is eligible to request access
+            status, message = check_users_admin_request_eligibility(user, operator)
+            if status != 200:
+                return status, message
 
-    # Making a draft UserOperator instance if one doesn't exist
-    user_operator, created = UserOperator.objects.get_or_create(
-        user=user, operator=operator, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.DRAFT
-    )
-    if created:
-        user_operator.set_create_or_update(modifier=user)
-    return 201, {"user_operator_id": user_operator.id}
+            # Making a draft UserOperator instance if one doesn't exist
+            user_operator, created = UserOperator.objects.get_or_create(
+                user=user, operator=operator, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.DRAFT
+            )
+            if created:
+                user_operator.set_create_or_update(modifier=user)
+            return 201, {"user_operator_id": user_operator.id}
+    except ValidationError as e:
+        return 400, {"message": generate_useful_error(e)}
+    except Exception as e:
+        return 400, {"message": str(e)}
 
 
 @router.post("/select-operator/request-access", response={201: RequestAccessOut, codes_4xx: Message})
@@ -268,37 +274,44 @@ def request_access(request, payload: SelectOperatorIn):
 def request_access(request, payload: SelectOperatorIn):
     user: User = request.current_user
     operator: Operator = get_object_or_404(Operator, id=payload.operator_id)
-    status, message = check_access_request_matches_business_guid(user.user_guid, operator)
-    if status != 200:
-        return status, message
+    try:
+        with transaction.atomic():
+            status, message = check_access_request_matches_business_guid(user.user_guid, operator)
+            if status != 200:
+                return status, message
 
-    # Making a draft UserOperator instance if one doesn't exist
-    user_operator, created = UserOperator.objects.get_or_create(
-        user=user, operator=operator, status=UserOperator.Statuses.PENDING, role=UserOperator.Roles.REPORTER
-    )
-    if created:
-        user_operator.set_create_or_update(modifier=user)
-    return 201, {"user_operator_id": user_operator.id}
+            # Making a draft UserOperator instance if one doesn't exist
+            user_operator, created = UserOperator.objects.get_or_create(
+                user=user, operator=operator, status=UserOperator.Statuses.PENDING, role=UserOperator.Roles.REPORTER
+            )
+            if created:
+                user_operator.set_create_or_update(modifier=user)
+            return 201, {"user_operator_id": user_operator.id}
+    except ValidationError as e:
+        return 400, {"message": generate_useful_error(e)}
+    except Exception as e:
+        return 400, {"message": str(e)}
 
 
 @router.post("/user-operator/operator", response={200: RequestAccessOut, codes_4xx: Message})
 @authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
 def create_operator_and_user_operator(request, payload: UserOperatorOperatorIn):
     try:
-        cra_business_number: str = payload.cra_business_number
-        user: User = request.current_user
-        existing_operator: Operator = Operator.objects.filter(cra_business_number=cra_business_number).first()
-        # check if operator with this CRA Business Number already exists
-        if existing_operator:
-            return 400, {"message": "Operator with this CRA Business Number already exists."}
-        operator_instance: Operator = Operator(
-            cra_business_number=cra_business_number,
-            bc_corporate_registry_number=payload.bc_corporate_registry_number,
-            # treating business_structure as a foreign key
-            business_structure=payload.business_structure,
-        )
-        # save operator data
-        return save_operator(payload, operator_instance, user)
+        with transaction.atomic():
+            cra_business_number: str = payload.cra_business_number
+            user: User = request.current_user
+            existing_operator: Operator = Operator.objects.filter(cra_business_number=cra_business_number).first()
+            # check if operator with this CRA Business Number already exists
+            if existing_operator:
+                return 400, {"message": "Operator with this CRA Business Number already exists."}
+            operator_instance: Operator = Operator(
+                cra_business_number=cra_business_number,
+                bc_corporate_registry_number=payload.bc_corporate_registry_number,
+                # treating business_structure as a foreign key
+                business_structure=payload.business_structure,
+            )
+            # save operator data
+            return save_operator(payload, operator_instance, user)
 
     except ValidationError as e:
         return 400, {"message": generate_useful_error(e)}
@@ -310,45 +323,59 @@ def create_operator_and_user_operator(request, payload: UserOperatorOperatorIn):
 @authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
 def create_user_operator_contact(request, payload: UserOperatorContactIn):
     try:
-        user_operator_instance: UserOperator = get_object_or_404(UserOperator, id=payload.user_operator_id)
+        with transaction.atomic():
+            user_operator_instance: UserOperator = get_object_or_404(UserOperator, id=payload.user_operator_id)
+            operator: Operator = user_operator_instance.operator
+            user: User = request.current_user
+            is_senior_officer: bool = payload.is_senior_officer
+
+            address = Address.objects.create(
+                street_address=payload.street_address,
+                municipality=payload.municipality,
+                province=payload.province,
+                postal_code=payload.postal_code,
+            )
+
+            senior_officer_contact: Contact = Contact(
+                business_role=BusinessRole.objects.get(role_name='Senior Officer'),
+                position_title=payload.position_title,
+                address=address,
+            )
+
+            # if the user is a senior officer, use their info as the contact info
+            if is_senior_officer:
+                senior_officer_contact.first_name = user.first_name
+                senior_officer_contact.last_name = user.last_name
+                senior_officer_contact.email = user.email
+                senior_officer_contact.phone_number = user.phone_number
+            # otherwise, use the info from the form
+            else:
+                senior_officer_contact.first_name = payload.first_name
+                senior_officer_contact.last_name = payload.last_name
+                senior_officer_contact.email = payload.so_email
+                senior_officer_contact.phone_number = payload.so_phone_number
+
+            senior_officer_contact.save()
+            senior_officer_contact.set_create_or_update(modifier=user)
+
+            # archive the existing Senior Officer contact
+            operator.contacts.filter(business_role=BusinessRole.objects.get(role_name='Senior Officer')).update(
+                archived_at=datetime.now(pytz.utc), archived_by_id=user.user_guid
+            )
+
+        if user_operator_instance.status != UserOperator.Statuses.APPROVED:
+            user_operator_instance.status = UserOperator.Statuses.PENDING
+        user_operator_instance.save(
+            update_fields=["status"],
+        )
+        user_operator_instance.set_create_or_update(modifier=user)
+
+        # Add the Senior Officer contact to the Operator instance
         operator: Operator = user_operator_instance.operator
-        user: User = request.current_user
-        is_senior_officer: bool = payload.is_senior_officer
+        operator.contacts.add(senior_officer_contact)
+        operator.set_create_or_update(modifier=user)
 
-        address = Address.objects.create(
-            street_address=payload.street_address,
-            municipality=payload.municipality,
-            province=payload.province,
-            postal_code=payload.postal_code,
-        )
-
-        senior_officer_contact: Contact = Contact(
-            business_role=BusinessRole.objects.get(role_name='Senior Officer'),
-            position_title=payload.position_title,
-            address=address,
-        )
-
-        # if the user is a senior officer, use their info as the contact info
-        if is_senior_officer:
-            senior_officer_contact.first_name = user.first_name
-            senior_officer_contact.last_name = user.last_name
-            senior_officer_contact.email = user.email
-            senior_officer_contact.phone_number = user.phone_number
-        # otherwise, use the info from the form
-        else:
-            senior_officer_contact.first_name = payload.first_name
-            senior_officer_contact.last_name = payload.last_name
-            senior_officer_contact.email = payload.so_email
-            senior_officer_contact.phone_number = payload.so_phone_number
-
-        senior_officer_contact.save()
-        senior_officer_contact.set_create_or_update(modifier=user)
-
-        # archive the existing Senior Officer contact
-        operator.contacts.filter(business_role=BusinessRole.objects.get(role_name='Senior Officer')).update(
-            archived_at=datetime.now(pytz.utc), archived_by_id=user.user_guid
-        )
-
+        return 200, {"operator_id": operator.id}
     except ValidationError as e:
         return 400, {"message": generate_useful_error(e)}
     # error handling when an existing contact with the same email already exists
@@ -356,20 +383,6 @@ def create_user_operator_contact(request, payload: UserOperatorContactIn):
         return 400, {"message": "A contact with this email already exists."}
     except Exception as e:
         return 400, {"message": str(e)}
-
-    if user_operator_instance.status != UserOperator.Statuses.APPROVED:
-        user_operator_instance.status = UserOperator.Statuses.PENDING
-    user_operator_instance.save(
-        update_fields=["status"],
-    )
-    user_operator_instance.set_create_or_update(modifier=user)
-
-    # Add the Senior Officer contact to the Operator instance
-    operator: Operator = user_operator_instance.operator
-    operator.contacts.add(senior_officer_contact)
-    operator.set_create_or_update(modifier=user)
-
-    return 200, {"operator_id": operator.id}
 
 
 ##### PUT #####
@@ -404,24 +417,30 @@ def update_user_operator_status(request, payload: UserOperatorStatusUpdate):
     # We can't update the status of a user_operator if the operator has been declined or is awaiting review
     if user_operator.operator.status in [Operator.Statuses.PENDING, Operator.Statuses.DECLINED]:
         return 400, {"message": "Operator must be approved before approving users."}
-    user_operator.status = payload.status
-    if user_operator.status in [UserOperator.Statuses.APPROVED, UserOperator.Statuses.DECLINED]:
-        user_operator.verified_at = datetime.now(pytz.utc)
-        user_operator.verified_by_id = current_user.user_guid
+    try:
+        with transaction.atomic():
+            user_operator.status = payload.status
+            if user_operator.status in [UserOperator.Statuses.APPROVED, UserOperator.Statuses.DECLINED]:
+                user_operator.verified_at = datetime.now(pytz.utc)
+                user_operator.verified_by_id = current_user.user_guid
 
-    elif user_operator.status == UserOperator.Statuses.PENDING:
-        user_operator.verified_at = None
-        user_operator.verified_by_id = None
+            elif user_operator.status == UserOperator.Statuses.PENDING:
+                user_operator.verified_at = None
+                user_operator.verified_by_id = None
 
-    user_operator.save(update_fields=["status", "verified_at", "verified_by_id"])
-    user_operator.set_create_or_update(modifier=current_user)
+            user_operator.save(update_fields=["status", "verified_at", "verified_by_id"])
+            user_operator.set_create_or_update(modifier=current_user)
 
-    if user_operator.status == UserOperator.Statuses.DECLINED:
-        # hard delete contacts (Senior Officers) associated with the operator and the user who requested access
-        user_operator.operator.contacts.filter(
-            created_by=user_operator.user, business_role=BusinessRole.objects.get(role_name='Senior Officer')
-        ).delete()
-    return UserOperatorOut.from_orm(user_operator)
+            if user_operator.status == UserOperator.Statuses.DECLINED:
+                # hard delete contacts (Senior Officers) associated with the operator and the user who requested access
+                user_operator.operator.contacts.filter(
+                    created_by=user_operator.user, business_role=BusinessRole.objects.get(role_name='Senior Officer')
+                ).delete()
+            return UserOperatorOut.from_orm(user_operator)
+    except ValidationError as e:
+        return 400, {"message": generate_useful_error(e)}
+    except Exception as e:
+        return 400, {"message": str(e)}
 
 
 ##### DELETE #####

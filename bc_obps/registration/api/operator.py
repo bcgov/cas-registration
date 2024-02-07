@@ -9,6 +9,11 @@ from registration.schema.operator import OperatorIn, OperatorOut
 from registration.schema import Message
 from datetime import datetime
 import pytz
+from django.db import transaction
+from registration.utils import (
+    generate_useful_error,
+)
+from django.core.exceptions import ValidationError
 
 
 ##### GET #####
@@ -82,16 +87,22 @@ def get_operator_from_user(request):
 def update_operator(request, operator_id: int, payload: OperatorIn):
     operator = get_object_or_404(Operator, id=operator_id)
     user: User = request.current_user
-    operator.status = payload.status
-    if operator.status in [Operator.Statuses.APPROVED, Operator.Statuses.DECLINED]:
-        operator.is_new = False
-        operator.verified_at = datetime.now(pytz.utc)
-        operator.verified_by_id = user.user_guid
+    try:
+        with transaction.atomic():
+            operator.status = payload.status
+            if operator.status in [Operator.Statuses.APPROVED, Operator.Statuses.DECLINED]:
+                operator.is_new = False
+                operator.verified_at = datetime.now(pytz.utc)
+                operator.verified_by_id = user.user_guid
 
-    operator.save()
-    operator.set_create_or_update(modifier=user)
+            operator.save()
+            operator.set_create_or_update(modifier=user)
 
-    return 200, operator
+            return 200, operator
+    except ValidationError as e:
+        return 400, {"message": generate_useful_error(e)}
+    except Exception as e:
+        return 400, {"message": str(e)}
 
 
 ##### DELETE #####
