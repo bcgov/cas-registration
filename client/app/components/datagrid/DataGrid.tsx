@@ -109,9 +109,10 @@ const DataGrid: React.FC<Props> = ({
         rowCount={rowCount}
         showCellVerticalBorder
         initialState={{
-          pagination: { paginationModel: { pageSize: 20 } },
+          pagination: { paginationModel: { pageSize: PAGE_SIZE } },
         }}
         pagination
+        pageSizeOptions={[PAGE_SIZE]}
         sortingMode={paginationMode}
         paginationMode={paginationMode}
         onPaginationModelChange={setPaginationModel}
