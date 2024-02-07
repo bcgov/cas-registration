@@ -9,7 +9,7 @@ const defaultOptions = {
   executor: "constant-vus",
   // Due to the heavy nature of the front end tests experiment with the number of VUs
   // and maybe try running one scenario at a time to avoid overloading your system and getting errors
-  vus: 1,
+  vus: 1, // If running all 4 scenarios this is 1x4=4 VUs
   duration: "10000s",
   options: {
     browser: {
