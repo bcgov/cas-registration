@@ -8,6 +8,7 @@ import {
   GridSortItem,
 } from "@mui/x-data-grid";
 import { BC_GOV_BACKGROUND_COLOR_BLUE } from "@/app/styles/colors";
+import Pagination from "@/app/components/datagrid/Pagination";
 
 interface Props {
   fetchPageData?: (
@@ -121,6 +122,7 @@ const DataGrid: React.FC<Props> = ({
           columnSortedAscendingIcon: AscendingIcon,
           columnSortedDescendingIcon: DescendingIcon,
           columnUnsortedIcon: SortIcon,
+          pagination: Pagination,
         }}
         sx={{
           "& .MuiDataGrid-columnHeaderDraggableContainer": {
