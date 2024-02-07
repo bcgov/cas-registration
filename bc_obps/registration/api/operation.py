@@ -315,10 +315,10 @@ def update_operation(request, operation_id: int, submit: str, form_section: int,
 def update_operation_status(request, operation_id: int, payload: OperationUpdateStatusIn):
     operation = get_object_or_404(Operation, id=operation_id)
     user: User = request.current_user
-    status = Operation.Statuses(payload.status)
-    operation.status = status
     try:
         with transaction.atomic():
+            status = Operation.Statuses(payload.status)
+            operation.status = status
             if status in [Operation.Statuses.APPROVED, Operation.Statuses.DECLINED]:
                 operation.verified_at = datetime.now(pytz.utc)
                 operation.verified_by = user
@@ -337,10 +337,10 @@ def update_operation_status(request, operation_id: int, payload: OperationUpdate
                     except Exception as e:
                         return 400, {"message": str(e)}
 
-                operation.save()
-                operation.set_create_or_update(modifier=user)
+            operation.save()
+            operation.set_create_or_update(modifier=user)
 
-                return 200, operation
+            return 200, operation
     except ValidationError as e:
         return 400, {"message": generate_useful_error(e)}
     except Exception as e:
