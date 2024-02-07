@@ -131,7 +131,7 @@ def save_operator(payload: UserOperatorOperatorIn, operator_instance: Operator, 
         )
         if created:
             user_operator.set_create_or_update(modifier=user)
-        return 200, {"user_operator_id": user_operator.id, "operator_id": created_or_updated_operator_instance.id}
+        return 200, {"user_operator_id": user_operator.id}
 
 
 ##### GET #####

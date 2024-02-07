@@ -41,6 +41,7 @@ export default function RequestAccessButton({
       setErrorList([{ message: response.error }]);
       return;
     }
+    // admin vs. subsequent access request conditionality handled in component
     push(`/dashboard/select-operator/received/request-access/${operatorId}`);
   };
 
