@@ -59,7 +59,7 @@ class ParentOperatorOut(ModelSchema):
 
     @staticmethod
     def resolve_po_mailing_address_same_as_physical(obj: ParentOperator) -> bool:
-        return obj.mailing_address.id == obj.physical_address.id
+        return obj.mailing_address_id == obj.physical_address_id
 
     class Config:
         model = ParentOperator
