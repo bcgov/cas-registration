@@ -222,8 +222,9 @@ class TestOperationsEndpoint(CommonTestSetup):
         assert post_response.json().get('name') == "Springfield Nuclear Power Plant"
         assert post_response.json().get('id') is not None
         # check that the default status of pending was applied
-        get_response = TestUtils.mock_get_with_auth_role(self, "industry_user").json()[0]
-        assert 'status' in get_response and get_response['status'] == 'Not Started'
+        get_response = TestUtils.mock_get_with_auth_role(self, "industry_user").json()
+        get_response_data = get_response.get('data')[0]
+        assert 'status' in get_response_data and get_response_data['status'] == 'Not Started'
         post_response = TestUtils.mock_post_with_auth_role(
             self, "industry_user", content_type_json, mock_operation.json(), endpoint=None
         )
