@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@mui/material";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 
 interface SubmitButtonProps {
@@ -28,6 +29,11 @@ const SubmitButton: React.FunctionComponent<SubmitButtonProps> = ({
 }) => {
   const isFinalStep = step === steps.length - 1;
   const isDisabled = disabled || isSubmitting;
+  const { data: session } = useSession();
+
+  const isCasInternal =
+    session?.user.app_role?.includes("cas") &&
+    !session?.user.app_role?.includes("pending");
 
   return (
     <div className={`flex w-full mt-8 justify-between ${classNames}`}>
@@ -67,14 +73,16 @@ const SubmitButton: React.FunctionComponent<SubmitButtonProps> = ({
             </Button>
           </Link>
         ) : (
-          <Button
-            type="submit"
-            aria-disabled={isDisabled}
-            disabled={isDisabled}
-            variant="contained"
-          >
-            {!isFinalStep ? "Next" : submitButtonText ?? "Submit"}
-          </Button>
+          !isCasInternal && (
+            <Button
+              type="submit"
+              aria-disabled={isDisabled}
+              disabled={isDisabled}
+              variant="contained"
+            >
+              {!isFinalStep ? "Next" : submitButtonText ?? "Submit"}
+            </Button>
+          )
         )}
       </div>
     </div>
