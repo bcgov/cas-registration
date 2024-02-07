@@ -4,7 +4,11 @@ import CardContent from "@mui/material/CardContent";
 import Grid from "@mui/material/Grid";
 import Link from "@mui/material/Link";
 import Typography from "@mui/material/Typography";
-import { FrontEndRoles, OperatorStatus } from "@/app/utils/enums";
+import {
+  FrontEndRoles,
+  OperatorStatus,
+  UserOperatorStatus,
+} from "@/app/utils/enums";
 import reportAProblemTile from "@/app/data/dashboard/report_a_problem.json";
 import bceidSelectOperatorTile from "@/app/data/dashboard/bceid/select_operator.json";
 import bceidMyOperatorTile from "@/app/data/dashboard/bceid/my_operator.json";
@@ -24,9 +28,11 @@ type ContentItem = {
 export default function Tiles({
   role,
   operatorStatus,
+  userOperatorStatus,
 }: {
   role: string;
   operatorStatus: string;
+  userOperatorStatus: string;
 }) {
   let contents: ContentItem[] | null = null;
   switch (role) {
@@ -47,30 +53,40 @@ export default function Tiles({
       ];
       break;
     case FrontEndRoles.INDUSTRY_USER_ADMIN:
-      if (
-        operatorStatus === OperatorStatus.PENDING ||
-        operatorStatus === OperatorStatus.APPROVED
-      ) {
-        contents = [
-          ...bceidMyOperatorTile,
-          ...bceidOperationsTile,
-          ...bceidUsersTile,
-          ...reportAProblemTile,
-        ];
-      } else {
-        contents = [...bceidSelectOperatorTile, ...reportAProblemTile];
+      if (userOperatorStatus === UserOperatorStatus.APPROVED) {
+        if (
+          operatorStatus === OperatorStatus.PENDING ||
+          operatorStatus === OperatorStatus.APPROVED
+        ) {
+          contents = [
+            ...bceidMyOperatorTile,
+            ...bceidOperationsTile,
+            ...bceidUsersTile,
+            ...reportAProblemTile,
+          ];
+        } else {
+          contents = [...bceidSelectOperatorTile, ...reportAProblemTile];
+        }
+        break;
       }
-      break;
     case FrontEndRoles.INDUSTRY_USER:
-      if (
-        operatorStatus === OperatorStatus.PENDING ||
-        operatorStatus === OperatorStatus.APPROVED
-      ) {
-        contents = [
-          ...bceidMyOperatorTile,
-          ...bceidOperationsTile,
-          ...reportAProblemTile,
-        ];
+      console.log("here?");
+      console.log("userOperatorStatus", userOperatorStatus);
+      console.log(
+        "userOperatorStatus === UserOperatorStatus.APPROVED",
+        userOperatorStatus === UserOperatorStatus.APPROVED,
+      );
+      if (userOperatorStatus === UserOperatorStatus.APPROVED) {
+        if (
+          operatorStatus === OperatorStatus.PENDING ||
+          operatorStatus === OperatorStatus.APPROVED
+        ) {
+          contents = [
+            ...bceidMyOperatorTile,
+            ...bceidOperationsTile,
+            ...reportAProblemTile,
+          ];
+        }
       } else {
         contents = [...bceidSelectOperatorTile, ...reportAProblemTile];
       }

@@ -307,7 +307,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
             id=response_json["user_operator_id"],
             user=self.user,
             operator=operator,
-            status=UserOperator.Statuses.DRAFT,
+            status=UserOperator.Statuses.PENDING,
             role=UserOperator.Roles.ADMIN,
         ).exists()
 
