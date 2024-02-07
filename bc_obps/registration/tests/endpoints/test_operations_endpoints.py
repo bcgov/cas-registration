@@ -450,8 +450,9 @@ class TestOperationsEndpoint(CommonTestSetup):
 
         url = self.build_update_status_url(operation_id=operation.id)
 
-        with pytest.raises(ValidationError):
-            TestUtils.mock_put_with_auth_role(self, "cas_admin", content_type_json, {"status": "nonsense"}, url)
+        response = TestUtils.mock_put_with_auth_role(self, "cas_admin", content_type_json, {"status": "nonsense"}, url)
+        assert response.status_code == 400
+        assert response.json().get('message') == "'nonsense' is not a valid Operation.Statuses"
 
     def test_put_operation_without_submit(self):
         payload = TestUtils.mock_OperationUpdateIn()
