@@ -9,4 +9,4 @@ class NaicsCodeSchema(ModelSchema):
 
     class Config:
         model = NaicsCode
-        model_fields = "__all__"
+        model_fields = ["id", "naics_code", "naics_description"]
