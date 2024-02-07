@@ -20,9 +20,12 @@ const login = async (
   page: any,
   user: string,
   password: string,
-  role: string,
+  role: string
 ) => {
   try {
+    // eslint-disable-next-line no-console
+    console.log(`LOGIN ${role}`);
+
     // Determine the login button based on the user role
     let loginButton = LoginLink.INDUSTRY_USER;
     switch (role) {
@@ -64,20 +67,31 @@ const login = async (
 test.describe.serial("Test Page - Home", () => {
   // ➰ Loop through the entries of UserRole enum
   for (let [role, value] of Object.entries(UserRole)) {
+    // Only login once for CAS ID...
+    // Check if the current role is CAS_ADMIN or CAS_ANALYST, skip executing tests for this role
+    if (value === UserRole.CAS_ADMIN || value === UserRole.CAS_ANALYST) {
+      continue;
+    }
+
     test.describe(`Test User Role - ${value}`, () => {
       // Set user and password based on the user role
-      let user = "";
-      let pw = "";
+      let user = process.env.E2E_CAS_USER as string;
+      let pw = process.env.E2E_CAS_USER_PASSWORD as string;
       role = "E2E_" + role;
       switch (value) {
+        case UserRole.INDUSTRY_USER_ADMIN:
         case UserRole.INDUSTRY_USER:
+        case UserRole.NEW_USER:
           user = process.env[`${role}`] || "";
           pw = process.env[`${role}_PASSWORD`] || "";
-          test("Test Login", async ({ page }) => {
-            await login(page, user, pw, value);
-          });
+          break;
+        case UserRole.CAS_ADMIN:
+        case UserRole.CAS_ANALYST:
           break;
       }
+      test("Test Login", async ({ page }) => {
+        await login(page, user, pw, value);
+      });
     });
   }
 });
