@@ -182,6 +182,13 @@ class NaicsCode(BaseModel):
         db_table_comment = "Naics codes"
         db_table = 'erc"."naics_code'
 
+    def save(self, *args, **kwargs):
+        """
+        Override the save method to clear the cache when/if the NAICS code is saved.
+        """
+        cache.delete('naics_codes')
+        super().save(*args, **kwargs)
+
 
 class RegulatedProduct(BaseModel):
     """Regulated products model"""
@@ -192,6 +199,13 @@ class RegulatedProduct(BaseModel):
     class Meta:
         db_table_comment = "Regulated products"
         db_table = 'erc"."regulated_product'
+
+    def save(self, *args, **kwargs):
+        """
+        Override the save method to clear the cache when/if the regulated product is saved.
+        """
+        cache.delete('regulated_products')
+        super().save(*args, **kwargs)
 
 
 class ReportingActivity(BaseModel):
@@ -372,6 +386,13 @@ class BusinessStructure(BaseModel):
     class Meta:
         db_table_comment = "The business structure of an operator"
         db_table = 'erc"."business_structure'
+
+    def save(self, *args, **kwargs):
+        """
+        Override the save method to clear the cache when the business structure is saved.
+        """
+        cache.delete('business_structures')
+        super().save(*args, **kwargs)
 
 
 class Operator(TimeStampedModel):
