@@ -3,7 +3,7 @@
  * Page objects model (POM) simplify test authoring by creating a higher-level API
  * POM simplify maintenance by capturing element selectors in one place and create reusable code to avoid repetition. *
  */
-import { Locator, Page, expect } from "@playwright/test";
+import { Locator, Page } from "@playwright/test";
 // ⛏️ Helpers
 import { getFieldRequired } from "@/e2e/utils/helpers";
 import { ActionButton } from "@/e2e/utils/enums";
