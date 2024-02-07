@@ -391,12 +391,11 @@ def create_user_operator_contact(request, payload: UserOperatorContactIn):
 def update_operator_and_user_operator(request, payload: UserOperatorOperatorIn, user_operator_id: int):
     user: User = request.current_user
     try:
-        with transaction.atomic():
-            user_operator_instance: UserOperator = get_object_or_404(UserOperator, id=user_operator_id, user=user)
-            operator_instance: Operator = user_operator_instance.operator
+        user_operator_instance: UserOperator = get_object_or_404(UserOperator, id=user_operator_id, user=user)
+        operator_instance: Operator = user_operator_instance.operator
 
-            # save operator data
-            return save_operator(payload, operator_instance, user)
+        # save operator data
+        return save_operator(payload, operator_instance, user)
 
     except ValidationError as e:
         return 400, {"message": generate_useful_error(e)}

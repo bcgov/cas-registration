@@ -1,4 +1,5 @@
 import pytest, pytz
+from django.core.exceptions import ValidationError
 from datetime import datetime, timedelta, timezone
 from model_bakery import baker
 from django.test import Client
@@ -449,7 +450,7 @@ class TestOperationsEndpoint(CommonTestSetup):
 
         url = self.build_update_status_url(operation_id=operation.id)
 
-        with pytest.raises(ValueError):
+        with pytest.raises(ValidationError):
             TestUtils.mock_put_with_auth_role(self, "cas_admin", content_type_json, {"status": "nonsense"}, url)
 
     def test_put_operation_without_submit(self):
