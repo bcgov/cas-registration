@@ -245,6 +245,18 @@ class TestOperationsEndpoint(CommonTestSetup):
         # assert that the first item in the page 1 response is not the same as the first item in the page 2 response
         assert page_1_response_id != page_2_response_id
 
+        # Get the page 2 response but with a different sort order
+        response = TestUtils.mock_get_with_auth_role(
+            self, "cas_admin", self.endpoint + "?page=2&sort_field=created_at&sort_order=asc"
+        )
+        assert response.status_code == 200
+        response_data = response.json().get('data')
+        # save the id of the first paginated response item
+        page_2_response_id_reverse = response_data[0].get('id')
+        assert len(response_data) == 20
+        # assert that the first item in the page 2 response is not the same as the first item in the page 2 response with reversed order
+        assert page_2_response_id != page_2_response_id_reverse
+
     # POST
     def test_authorized_roles_can_post_new_operation(self):
         operator = operator_baker()
