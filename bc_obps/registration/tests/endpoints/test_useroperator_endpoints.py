@@ -73,12 +73,12 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         response = TestUtils.mock_get_with_auth_role(self, 'cas_pending', f"{base_endpoint}user-operator-operator-id")
         assert response.status_code == 401
 
-        # user-operator-status-from-user
-        response = TestUtils.mock_get_with_auth_role(self, 'cas_pending', f"{base_endpoint}user-operator-operator-id")
+        # user-operator-from-user
+        response = TestUtils.mock_get_with_auth_role(self, 'cas_pending', f"{base_endpoint}user-operator-from-user")
         assert response.status_code == 401
-        response = TestUtils.mock_get_with_auth_role(self, 'cas_admin', f"{base_endpoint}user-operator-operator-id")
+        response = TestUtils.mock_get_with_auth_role(self, 'cas_admin', f"{base_endpoint}user-operator-from-user")
         assert response.status_code == 401
-        response = TestUtils.mock_get_with_auth_role(self, 'cas_analyst', f"{base_endpoint}user-operator-operator-id")
+        response = TestUtils.mock_get_with_auth_role(self, 'cas_analyst', f"{base_endpoint}user-operator-from-user")
         assert response.status_code == 401
 
     def test_user_operator_unauthorized_users_cannot_post(self):
@@ -165,15 +165,14 @@ class TestUserOperatorEndpoint(CommonTestSetup):
             )
             assert response.status_code == 401
 
-    def test_get_user_operator_status(self):
+    def test_get_user_operator(self):
         user_operator = user_operator_baker()
         user_operator.user_id = self.user.user_guid
         user_operator.save(update_fields=['user_id'])
-        response = TestUtils.mock_get_with_auth_role(
-            self, 'industry_user', f"{base_endpoint}user-operator-status-from-user"
-        )
+        response = TestUtils.mock_get_with_auth_role(self, 'industry_user', f"{base_endpoint}user-operator-from-user")
         assert response.status_code == 200
         assert response.json()['status'] == user_operator.status
+        assert response.json().get('is_new') is not None
 
     def test_get_user_operator_data_industry_user(self):
         operator = operator_baker()
@@ -582,7 +581,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         assert user_operator.operator is not None
         assert user_operator.user == self.user
         assert user_operator.role == UserOperator.Roles.PENDING
-        assert user_operator.status == UserOperator.Statuses.DRAFT
+        assert user_operator.status == UserOperator.Statuses.PENDING
 
         operator: Operator = user_operator.operator
         assert {
