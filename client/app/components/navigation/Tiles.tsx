@@ -70,12 +70,6 @@ export default function Tiles({
         break;
       }
     case FrontEndRoles.INDUSTRY_USER:
-      console.log("here?");
-      console.log("userOperatorStatus", userOperatorStatus);
-      console.log(
-        "userOperatorStatus === UserOperatorStatus.APPROVED",
-        userOperatorStatus === UserOperatorStatus.APPROVED,
-      );
       if (userOperatorStatus === UserOperatorStatus.APPROVED) {
         if (
           operatorStatus === OperatorStatus.PENDING ||
