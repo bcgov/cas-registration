@@ -1,5 +1,6 @@
 from typing import List, Optional
 import re
+from uuid import UUID
 from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
 from localflavor.ca.models import CAPostalCodeField, CAProvinceField
@@ -158,10 +159,9 @@ class Document(TimeStampedModel):
     class Meta:
         db_table_comment = "Documents"
         db_table = 'erc"."document'
-
-    indexes = [
-        models.Index(fields=["type"], name="document_type_idx"),
-    ]
+        indexes = [
+            models.Index(fields=["type"], name="document_type_idx"),
+        ]
 
     def delete(self, *args, **kwargs):
         # Delete the file from Google Cloud Storage before deleting the model instance
@@ -629,15 +629,6 @@ class OperationAndFacilityCommonInfo(TimeStampedModel):
         db_table_comment = "An abstract base class (used for putting common information into a number of other models) containing fields for operations and facilities"
         db_table = 'erc"."operation'
 
-    def get_statutory_declaration(self) -> Optional[Document]:
-        """
-        Returns the statutory declaration associated with the operation.
-        """
-
-        return self.documents.filter(
-            type=DocumentType.objects.get(name="signed_statutory_declaration")
-        ).first()  # filter returns a queryset, so we use .first() to get the single record (there will only ever be one statutory declaration per operation)
-
 
 class Operation(OperationAndFacilityCommonInfo):
     """Operation model"""
@@ -730,7 +721,28 @@ class Operation(OperationAndFacilityCommonInfo):
             models.Index(fields=["operator"], name="operator_idx"),
             models.Index(fields=["naics_code"], name="naics_code_idx"),
             models.Index(fields=["verified_by"], name="operation_verified_by_idx"),
+            models.Index(fields=["created_at"], name="operation_created_at_idx"),
+            models.Index(fields=["status"], name="operation_status_idx"),
         ]
+
+    def get_statutory_declaration(self) -> Optional[Document]:
+        """
+        Returns the statutory declaration associated with the operation.
+        """
+
+        return (
+            self.documents.filter(type=DocumentType.objects.get(name="signed_statutory_declaration"))
+            .only('file')
+            .first()
+        )  # filter returns a queryset, so we use .first() to get the single record (there will only ever be one statutory declaration per operation)
+
+    def user_has_access(self, user_guid: UUID) -> bool:
+        """
+        Returns whether a user has access to the operation.
+        """
+        return UserOperator.objects.filter(
+            user_id=user_guid, operator=self.operator, status=UserOperator.Statuses.APPROVED
+        ).exists()
 
     def generate_unique_boro_id(self) -> None:
         """
@@ -922,3 +934,9 @@ class ParentOperator(TimeStampedModel):
     class Meta:
         db_table_comment = "Table to store parent operator metadata"
         db_table = 'erc"."parent_operator'
+        indexes = [
+            models.Index(fields=["child_operator"], name="po_child_operator_idx"),
+            models.Index(fields=["business_structure"], name="po_business_structure_idx"),
+            models.Index(fields=["physical_address"], name="po_physical_address_idx"),
+            models.Index(fields=["mailing_address"], name="po_mailing_address_idx"),
+        ]
