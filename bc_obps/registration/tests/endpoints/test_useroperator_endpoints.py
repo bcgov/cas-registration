@@ -120,17 +120,6 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         )
         assert response.status_code == 401
 
-        # user-operator/contact
-        for role in ['cas_pending', 'cas_admin', 'cas_analyst']:
-            response = TestUtils.mock_post_with_auth_role(
-                self,
-                role,
-                content_type_json,
-                TestUtils.mock_UserOperatorContactIn().json(),
-                f"{base_endpoint}user-operator/contact",
-            )
-            assert response.status_code == 401
-
     def test_unauthorized_users_cannot_put(self):
         # /select-operator/user-operator/update-status
         user = baker.make(User)
