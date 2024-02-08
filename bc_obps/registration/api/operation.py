@@ -40,7 +40,9 @@ from ninja.errors import HttpError
 
 
 # Function to save multiple operators so we can reuse it in put/post routes
-def create_or_update_multiple_operators(multiple_operators_array: List[MultipleOperator], operation: Operation, user: User) -> None:
+def create_or_update_multiple_operators(
+    multiple_operators_array: List[MultipleOperator], operation: Operation, user: User
+) -> None:
     """
     Creates or updates multiple operators associated with a specific operation.
 
@@ -96,7 +98,9 @@ def create_or_update_multiple_operators(multiple_operators_array: List[MultipleO
 
         # check if there is a multiple_operator with that operation id and number
         # if there is, update it, if not, create it
-        multiple_operator, _ = MultipleOperator.objects.update_or_create(operation_id=operation.id, operator_index=idx + 1, defaults={**new_operator})
+        multiple_operator, _ = MultipleOperator.objects.update_or_create(
+            operation_id=operation.id, operator_index=idx + 1, defaults={**new_operator}
+        )
         multiple_operator.set_create_or_update(user.pk)
 
 
@@ -133,7 +137,9 @@ def list_operations(request):
     return 200, operators_operations
 
 
-@router.get("/operations/{operation_id}", response={200: Union[OperationOut, OperationWithOperatorOut], codes_4xx: Message})
+@router.get(
+    "/operations/{operation_id}", response={200: Union[OperationOut, OperationWithOperatorOut], codes_4xx: Message}
+)
 @authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles())
 def get_operation(request, operation_id: int):
     # In this endpoint we are using different schema and different operation queries to optimize the response based on the user role
@@ -159,7 +165,9 @@ def get_operation(request, operation_id: int):
                 "operator__business_structure",
                 "operator__website",
             )
-            .select_related("operator__physical_address", "operator__mailing_address", "point_of_contact__address", "naics_code")
+            .select_related(
+                "operator__physical_address", "operator__mailing_address", "point_of_contact__address", "naics_code"
+            )
             .prefetch_related("operator__parent_operators", "regulated_products")
             .get(id=operation_id)
         )
@@ -201,18 +209,21 @@ def create_operation(request, payload: OperationCreateIn):
             return 400, {"message": "Operation with this BCGHG ID already exists."}
     try:
         with transaction.atomic():
-            operation = Operation.objects.create(**payload_dict, operator_id=payload.operator, naics_code_id=payload.naics_code)
-            operation.regulated_products.set(payload.regulated_products)
-            # Not needed for MVP
-            # operation.reporting_activities.set(payload.reporting_activities)
-            operation.set_create_or_update(modifier=user)
-
             # Using ThroughModel and bulk_create to speed up the process
             ThroughModel = Operation.regulated_products.through
-            regulated_product_id_list = RegulatedProduct.objects.filter(id__in=payload.regulated_products).values_list("id", flat=True)
-            operation = Operation(**payload_dict, operator_id=user_operator.operator_id, naics_code_id=payload.naics_code)
+            regulated_product_id_list = RegulatedProduct.objects.filter(id__in=payload.regulated_products).values_list(
+                "id", flat=True
+            )
+            operation = Operation(
+                **payload_dict, operator_id=user_operator.operator_id, naics_code_id=payload.naics_code
+            )
             Operation.objects.bulk_create([operation])  # using bulk_create to speed up the process(5 less queries)
-            ThroughModel.objects.bulk_create([ThroughModel(operation_id=operation.id, regulatedproduct_id=regulated_product_id) for regulated_product_id in regulated_product_id_list])
+            ThroughModel.objects.bulk_create(
+                [
+                    ThroughModel(operation_id=operation.id, regulatedproduct_id=regulated_product_id)
+                    for regulated_product_id in regulated_product_id_list
+                ]
+            )
             operation.set_create_or_update(user.pk)
 
             # Not needed for MVP
@@ -337,7 +348,9 @@ def update_operation(request, operation_id: int, submit: str, form_section: int,
         return 400, {"message": str(e)}
 
 
-@router.put("/operations/{operation_id}/update-status", response={200: OperationOut, codes_4xx: Message, codes_5xx: Message})
+@router.put(
+    "/operations/{operation_id}/update-status", response={200: OperationOut, codes_4xx: Message, codes_5xx: Message}
+)
 @authorize(AppRole.get_authorized_irc_roles())
 def update_operation_status(request, operation_id: int, payload: OperationUpdateStatusIn):
     operation = get_object_or_404(Operation, id=operation_id)
