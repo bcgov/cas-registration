@@ -187,7 +187,12 @@ def get_operation(request, operation_id: int):
 @authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
 def create_operation(request, payload: OperationCreateIn):
     user: User = request.current_user
-    # excluding the fields that have to be handled separately (We don't assign point of contact to the operation here, we do it in the next/update step)
+    # Adding this part instead to prevent an extra call from the frontend to get operator_id and pass it in the payload
+    try:
+        user_operator = UserOperator.objects.only("operator__id").get(user=user.user_guid)
+    except UserOperator.DoesNotExist:
+        return 404, {"message": "User is not associated with any operator"}
+
     payload_dict: dict = payload.dict(
         exclude={
             "regulated_products",
