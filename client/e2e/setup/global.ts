@@ -9,28 +9,29 @@
 
 import { chromium } from "@playwright/test";
 // ⛏️ Helpers
-import { login, navigateAndWaitForLoad } from "@/e2e/utils/helpers";
-// ☰ Enums
-import { DataTestID, UserRole } from "@/e2e/utils/enums";
-// 🥞 Connection pool to postgres DB
-import { pool } from "@/e2e/utils/pool";
+import { navigateAndWaitForLoad } from "@/e2e/utils/helpers";
 // ℹ️ Environment variables
 import * as dotenv from "dotenv";
-import User from "@/app/components/routes/profile/User";
 dotenv.config({
   path: "./e2e/.env.local",
 });
+// 👤 User Roles
+import { UserRole } from "@/e2e/utils/enums";
+// 🛸 Login Links
+import { LoginLink } from "@/e2e/utils/enums";
+// 🥞 Connection pool to postgres DB
+import { pool } from "@/e2e/utils/pool";
 
 // Set the test URL
 const url = process.env.E2E_BASEURL || "";
 
+// 🛠️ function: login with Keycloak credentials and store authenticated user by role session's state
 /**
 📖
 In Playwright, the storageState function is used to capture the current state of storage (such as cookies, local storage, etc.) associated with a page.
 This captured state can later be used to restore the page to the same state, enabling scenarios like persisting user authentication across different browser sessions
 or sharing state between different test cases.
  */
-// 🛠️ function: login with Keycloak credentials and store authenticated user by role session's state
 const setupAuth = async (
   user: string,
   password: string,
@@ -38,10 +39,12 @@ const setupAuth = async (
   role: string
 ) => {
   try {
+    let loginButton = LoginLink.INDUSTRY_USER;
     switch (role) {
       case UserRole.CAS_ADMIN:
       case UserRole.CAS_ANALYST:
       case UserRole.CAS_PENDING:
+        loginButton = LoginLink.CAS;
         // 🛢 To generate a storageState file for each CAS role...
         // perform an upsert query that inserts or updates the role associated with your IDIR user_guid in the erc.user table.
         // then login with a cas ID will be assigned this role in client/app/api/auth/[...nextauth]/route.ts
@@ -70,12 +73,25 @@ const setupAuth = async (
     // 🛸 Navigate to the home page
     await navigateAndWaitForLoad(page, url);
 
+    // Click the login button
+    await page.getByRole("button", { name: loginButton }).click();
+
     // 🔑 Login to Keycloak
-    await login(page, user, password, role);
+    // Fill the user field
+    await page.locator("id=user").fill(user, {
+      timeout: 60000,
+    });
+    // Fill the pw field
+    await page.getByLabel("Password").fill(password, {
+      timeout: 60000,
+    });
+    // Click Continue button
+    await page.getByRole("button", { name: "Continue" }).click();
+
     // 🕒 Wait for the profile navigation link to be present
     // 🚩 BP approach (?) seems to fail: await expect(page.getByTestId("nav-user-profile")).toBeVisible();
-    const profileNavSelector = DataTestID.PROFILE;
-    await page.waitForSelector(profileNavSelector, { timeout: 60000 });
+    const profileNavSelector = '[data-testid="nav-user-profile"]';
+    await page.waitForSelector(profileNavSelector);
 
     // 💾 Capture the storage state (e.g., auth session cookies) of the current page and saves it to a file specified
     // This storeageState can then be used for e2e tests requiring authentication
@@ -116,7 +132,6 @@ export default async function globalSetup() {
         break;
     }
     // 🔑 Authenticate this user role and save to storageState
-    /*****************TEMP*************************** */
     if (value === UserRole.NEW_USER) {
       await setupAuth(
         user || "",
