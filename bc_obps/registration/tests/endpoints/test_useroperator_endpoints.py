@@ -69,16 +69,16 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         response = TestUtils.mock_get_with_auth_role(self, 'cas_analyst', f"{base_endpoint}user-operator-id")
         assert response.status_code == 401
 
-        # /user-operator-operator-id
-        response = TestUtils.mock_get_with_auth_role(self, 'cas_pending', f"{base_endpoint}user-operator-operator-id")
+        # /user-operator-operator
+        response = TestUtils.mock_get_with_auth_role(self, 'cas_pending', f"{base_endpoint}user-operator-operator")
         assert response.status_code == 401
 
-        # user-operator-from-user
-        response = TestUtils.mock_get_with_auth_role(self, 'cas_pending', f"{base_endpoint}user-operator-from-user")
+        # user-operator-status-from-user
+        response = TestUtils.mock_get_with_auth_role(self, 'cas_pending', f"{base_endpoint}user-operator-operator")
         assert response.status_code == 401
-        response = TestUtils.mock_get_with_auth_role(self, 'cas_admin', f"{base_endpoint}user-operator-from-user")
+        response = TestUtils.mock_get_with_auth_role(self, 'cas_admin', f"{base_endpoint}user-operator-operator")
         assert response.status_code == 401
-        response = TestUtils.mock_get_with_auth_role(self, 'cas_analyst', f"{base_endpoint}user-operator-from-user")
+        response = TestUtils.mock_get_with_auth_role(self, 'cas_analyst', f"{base_endpoint}user-operator-operator")
         assert response.status_code == 401
 
     def test_user_operator_unauthorized_users_cannot_post(self):
@@ -412,7 +412,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         # Act
         operator = operator_baker()
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
-        response = TestUtils.mock_get_with_auth_role(self, 'industry_user', f"{base_endpoint}user-operator-operator-id")
+        response = TestUtils.mock_get_with_auth_role(self, 'industry_user', f"{base_endpoint}user-operator-operator")
 
         response_json = response.json()
 
@@ -425,7 +425,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
     # GET USER OPERATOR OPERATOR ID 404
     def test_get_user_operator_operator_id_with_invalid_user(self):
         # Act
-        response = TestUtils.mock_get_with_auth_role(self, 'industry_user', f"{base_endpoint}user-operator-operator-id")
+        response = TestUtils.mock_get_with_auth_role(self, 'industry_user', f"{base_endpoint}user-operator-operator")
 
         response_json = response.json()
 

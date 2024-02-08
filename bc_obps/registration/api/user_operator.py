@@ -16,13 +16,14 @@ from registration.schema import (
     RequestAccessOut,
     IsApprovedUserOperator,
     UserOperatorIdOut,
-    UserOperatorOperatorIdOut,
     UserOperatorListOut,
     UserOperatorStatusUpdate,
     ExternalDashboardUsersTileData,
     PendingUserOperatorOut,
+    OperatorFromUserOperatorOut
 )
 from typing import List
+
 from .api_base import router
 from django.shortcuts import get_object_or_404
 
@@ -32,7 +33,6 @@ from registration.models import (
     Operator,
     User,
     UserOperator,
-    Contact,
     ParentOperator,
     Address,
 )
@@ -151,11 +151,19 @@ def is_approved_admin_user_operator(request, user_guid: str):
     return 200, {"approved": approved_user_operator}
 
 
-@router.get("/user-operator-operator-id", response={200: UserOperatorOperatorIdOut, codes_4xx: Message})
+@router.get("/user-operator-operator", response={200: OperatorFromUserOperatorOut, codes_4xx: Message})
 @authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
 def get_user_operator_operator_id(request):
-    user_operator = get_object_or_404(UserOperator, user_id=request.current_user.user_guid)
-    return 200, {"operator_id": user_operator.operator_id}
+    user: User = request.current_user
+    try:
+        user_operator = (
+            UserOperator.objects.only("operator__status", "operator_id")
+            .select_related("operator")
+            .get(user=user.user_guid)
+        )
+    except UserOperator.DoesNotExist:
+        return 404, {"message": "User is not associated with any operator"}
+    return 200, user_operator.operator
 
 
 @router.get("/user-operator-id", response={200: UserOperatorIdOut, codes_4xx: Message})
