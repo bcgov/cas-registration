@@ -100,7 +100,7 @@ def create_or_update_multiple_operators(
         multiple_operator, _ = MultipleOperator.objects.update_or_create(
             operation_id=operation.id, operator_index=idx + 1, defaults={**new_operator}
         )
-        multiple_operator.set_create_or_update(modifier=user)
+        multiple_operator.set_create_or_update(user.pk)
 
 
 ##### GET #####
@@ -285,7 +285,7 @@ def update_operation(request, operation_id: int, submit: str, form_section: int,
                             "business_role": BusinessRole.objects.get(role_name="Operation Registration Lead"),
                         },
                     )
-                    poc.set_create_or_update(modifier=user)
+                    poc.set_create_or_update(user.pk)
                     operation.point_of_contact = poc
 
                 elif is_external_point_of_contact is True:  # the point of contact is an external user
@@ -300,7 +300,7 @@ def update_operation(request, operation_id: int, submit: str, form_section: int,
                             "business_role": BusinessRole.objects.get(role_name="Operation Registration Lead"),
                         },
                     )
-                    external_poc.set_create_or_update(modifier=user)
+                    external_poc.set_create_or_update(user.pk)
                     operation.point_of_contact = external_poc
                 operation.save(update_fields=['point_of_contact'])
 
@@ -328,7 +328,7 @@ def update_operation(request, operation_id: int, submit: str, form_section: int,
                 )
                 operation.documents.set([document])
 
-            operation.set_create_or_update(modifier=user)
+            operation.set_create_or_update(user.pk)
             return 200, {"name": operation.name}
     except ValidationError as e:
         return 400, {"message": generate_useful_error(e)}
@@ -360,9 +360,9 @@ def update_operation_status(request, operation_id: int, payload: OperationUpdate
                         operator.verified_at = datetime.now(pytz.utc)
                         operator.verified_by = user
                         operator.save(update_fields=["status", "is_new", "verified_at", "verified_by"])
-                        operator.set_create_or_update(modifier=user)
+                        operator.set_create_or_update(user.pk)
             operation.save()
-            operation.set_create_or_update(modifier=user)
+            operation.set_create_or_update(user.pk)
 
             return 200, operation
     except ValidationError as e:

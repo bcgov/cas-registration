@@ -10,12 +10,6 @@ from .parent_operator import ParentOperatorIn, ParentOperatorOut
 from .business_structure import validate_business_structure
 
 
-class UserOperatorStatus(ModelSchema):
-    class Config:
-        model = UserOperator
-        model_fields = ["status"]
-
-
 class PendingUserOperatorOut(ModelSchema):
     is_new: bool
 
