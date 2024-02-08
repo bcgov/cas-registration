@@ -85,21 +85,9 @@ export default function OperationsForm({ formData, schema }: Readonly<Props>) {
             const pathToRevalidate = isCreate
               ? "dashboard/operations"
               : `dashboard/operations/${formData?.id}`;
-
-            // 🚀 API call: Get operator id associated with this user
-            const responseOpId = await actionHandler(
-              "registration/user-operator-operator-id",
-              "GET",
-              "",
-            );
-            if (responseOpId.error) {
-              setError(responseOpId.error);
-              return;
-            }
             const body = {
               ...formData,
               ...data.formData,
-              operator_id: responseOpId.operator_id,
             };
             const response = await actionHandler(
               endpoint,
