@@ -16,6 +16,7 @@ import { DataTestID, UserRole } from "@/e2e/utils/enums";
 import { pool } from "@/e2e/utils/pool";
 // ℹ️ Environment variables
 import * as dotenv from "dotenv";
+import User from "@/app/components/routes/profile/User";
 dotenv.config({
   path: "./e2e/.env.local",
 });
@@ -115,11 +116,14 @@ export default async function globalSetup() {
         break;
     }
     // 🔑 Authenticate this user role and save to storageState
-    await setupAuth(
-      user || "",
-      pw || "",
-      process.env[role + "_STORAGE"] as string,
-      value
-    );
+    /*****************TEMP*************************** */
+    if (value === UserRole.NEW_USER) {
+      await setupAuth(
+        user || "",
+        pw || "",
+        process.env[role + "_STORAGE"] as string,
+        value
+      );
+    }
   }
 }
