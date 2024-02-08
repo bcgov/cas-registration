@@ -19,7 +19,9 @@ from django.core.exceptions import ValidationError
 
 @router.get("/operators", response={200: OperatorOut, codes_4xx: Message, codes_5xx: Message})
 @authorize(AppRole.get_all_app_roles(), UserOperator.get_all_industry_user_operator_roles())
-def get_operator_by_legal_name_or_cra(request, legal_name: Optional[str] = None, cra_business_number: Optional[int] = None):
+def get_operator_by_legal_name_or_cra(
+    request, legal_name: Optional[str] = None, cra_business_number: Optional[int] = None
+):
     try:
         if legal_name:
             operator = Operator.objects.get(legal_name=legal_name)
