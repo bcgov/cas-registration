@@ -8,7 +8,7 @@ import { navigateAndWaitForLoad } from "@/e2e/utils/helpers";
 import * as dotenv from "dotenv";
 dotenv.config({ path: "./e2e/.env.local" });
 // 👤 User Roles
-import { UserRole } from "@/e2e/utils/enums";
+import { AppRoute, UserRole } from "@/e2e/utils/enums";
 // 🛸 Login Links
 import { LoginLink } from "@/e2e/utils/enums";
 
@@ -87,6 +87,9 @@ test.describe.serial("Test Page - Home", () => {
       if (value === UserRole.NEW_USER) {
         test("Test Login", async ({ page }) => {
           await login(page, user, pw, value);
+          // 🔍 Assert that the current URL ends with "/profile"
+          const path = AppRoute.PROFILE;
+          await expect(page.url().toLocaleLowerCase()).toContain(path);
         });
       }
     });
