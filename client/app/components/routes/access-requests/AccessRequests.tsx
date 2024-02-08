@@ -1,5 +1,3 @@
-"use client";
-
 import { GridRowsProp } from "@mui/x-data-grid";
 import Note from "@/app/components/datagrid/Note";
 import OperatorDataGrid from "@/app/components/datagrid/OperatorDataGrid";
@@ -7,7 +5,7 @@ import { UserOperatorPaginated } from "./types";
 import { statusStyle } from "@/app/components/datagrid/helpers";
 
 export const formatUserOperatorRows = (rows: GridRowsProp) => {
-  return rows.map(
+  return rows?.map(
     ({ id, status, first_name, last_name, email, legal_name }) => {
       return {
         id,
