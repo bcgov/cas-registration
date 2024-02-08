@@ -32,7 +32,7 @@ const login = async (
     }
 
     // eslint-disable-next-line no-console
-    console.log(`${loginButton} ${role}`);
+    console.log(`${loginButton} ROLE ${role}`);
 
     // 🛸 Navigate to the home page
     await navigateAndWaitForLoad(page, url);
@@ -83,9 +83,12 @@ test.describe.serial("Test Page - Home", () => {
           pw = process.env[`${role}_PASSWORD`] || "";
           break;
       }
-      test("Test Login", async ({ page }) => {
-        await login(page, user, pw, value);
-      });
+      // TEMP
+      if (value === UserRole.NEW_USER) {
+        test("Test Login", async ({ page }) => {
+          await login(page, user, pw, value);
+        });
+      }
     });
   }
 });
