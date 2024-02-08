@@ -4,13 +4,17 @@
 import { test, expect } from "@playwright/test";
 // ⛏️ Helpers
 import { navigateAndWaitForLoad } from "@/e2e/utils/helpers";
+// ☰ Enums
+import {
+  ActionButton,
+  AppRoute,
+  DataTestID,
+  LoginLink,
+  UserRole,
+} from "@/e2e/utils/enums";
 // ℹ️ Environment variables
 import * as dotenv from "dotenv";
 dotenv.config({ path: "./e2e/.env.local" });
-// 👤 User Roles
-import { UserRole } from "@/e2e/utils/enums";
-// 🛸 Login Links
-import { LoginLink } from "@/e2e/utils/enums";
 
 // Set the test URL
 const url = process.env.E2E_BASEURL || "";
@@ -23,6 +27,9 @@ const login = async (
   role: string
 ) => {
   try {
+    // 🛸 Navigate to the home page
+    await navigateAndWaitForLoad(page, url);
+
     // Determine the login button based on the user role
     let loginButton = LoginLink.INDUSTRY_USER;
     switch (role) {
@@ -30,27 +37,21 @@ const login = async (
         loginButton = LoginLink.CAS;
         break;
     }
-
-    // eslint-disable-next-line no-console
-    console.log(`${loginButton} ${role}`);
-
-    // 🛸 Navigate to the home page
-    await navigateAndWaitForLoad(page, url);
-
     // Click the login button
     await page.getByRole("button", { name: loginButton }).click();
-
     // 🔑 Login to Keycloak
     // Fill the user field
-    await page.locator("id=user").fill(user);
+    await page.locator("id=user").fill(process.env.E2E_NEW_USER as string);
     // Fill the pw field
-    await page.getByLabel("Password").fill(password);
+    await page
+      .getByLabel("Password")
+      .fill(process.env.E2E_NEW_USER_PASSWORD as string);
     // Click Continue button
-    await page.getByRole("button", { name: "Continue" }).click();
+    await page.getByRole("button", { name: ActionButton.CONTINUE }).click();
 
     // 🕒 Wait for the profile navigation link to be present
     // 🚩 BP approach (?) seems to fail: await expect(page.getByTestId("nav-user-profile")).toBeVisible();
-    const profileNavSelector = '[data-testid="nav-user-profile"]';
+    const profileNavSelector = DataTestID.PROFILE;
     await page.waitForSelector(profileNavSelector);
     // 🔍 Assert that the link is available
     expect(profileNavSelector).not.toBeNull();
@@ -83,9 +84,15 @@ test.describe.serial("Test Page - Home", () => {
           pw = process.env[`${role}_PASSWORD`] || "";
           break;
       }
-      test("Test Login", async ({ page }) => {
-        await login(page, user, pw, value);
-      });
+      // TEMP
+      if (value === UserRole.NEW_USER) {
+        test("Test Login", async ({ page }) => {
+          await login(page, user, pw, value);
+          // 🔍 Assert that the current URL ends with "/profile"
+          const path = AppRoute.PROFILE;
+          await expect(page.url().toLocaleLowerCase()).toContain(path);
+        });
+      }
     });
   }
 });
