@@ -57,25 +57,25 @@ class TimeStampedModel(BaseModel):
     class Meta:
         abstract = True
 
-    def set_create_or_update(self, modifier: 'User') -> None:
+    def set_create_or_update(self, modifier_pk: 'User') -> None:
         """
         Set the created by field if it is not already set.
         Otherwise, set the updated by field and updated at field.
         """
         if not self.created_by:  # created_at is automatically set by auto_now_add
-            self.created_by = modifier
+            self.created_by_id = modifier_pk
+            self.save(update_fields=['created_by_id'])
         else:
-            self.updated_by = modifier
+            self.updated_by_id = modifier_pk
             self.updated_at = timezone.now()
+            self.save(update_fields=['updated_by_id', 'updated_at'])
 
-        self.save(update_fields=['created_by', 'updated_by', 'updated_at'])
-
-    def set_archive(self, modifier: 'User') -> None:
+    def set_archive(self, modifier_pk: 'User') -> None:
         """Set the archived by field and archived at field if they are not already set."""
         if self.archived_by or self.archived_at:
             raise ValueError("Archived by or archived at is already set.")
         self.archived_at = timezone.now()
-        self.archived_by = modifier
+        self.archived_by_id = modifier_pk
         self.save(update_fields=['archived_by', 'archived_at'])
 
 

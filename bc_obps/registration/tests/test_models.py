@@ -892,7 +892,7 @@ class TestModelsWithAuditColumns(TestCase):
         for model, field_to_update, model_baker in self.models_with_audit_columns_and_field_to_update:
             instance: Type[TimeStampedModel] = model_baker()
             # CREATE
-            instance.set_create_or_update(modifier=self.user_1)
+            instance.set_create_or_update(self.user_1.pk)
             self.assertIsNotNone(instance.created_at)
             self.assertEqual(instance.created_by, self.user_1)
 
@@ -906,7 +906,7 @@ class TestModelsWithAuditColumns(TestCase):
             model.objects.filter(id=instance.id).update(
                 **{field_to_update: model_data_field_has_choices[0][0] if model_data_field_has_choices else 'updated'}
             )
-            instance.set_create_or_update(modifier=self.user_2)
+            instance.set_create_or_update(self.user_2.pk)
             instance.refresh_from_db()
             self.assertIsNotNone(instance.created_at)
             self.assertEqual(instance.created_by, self.user_1)
@@ -917,7 +917,7 @@ class TestModelsWithAuditColumns(TestCase):
             self.assertIsNone(instance.archived_by)
 
             # ARCHIVE
-            instance.set_archive(modifier=self.user_1)
+            instance.set_archive(self.user_1.pk)
             self.assertIsNotNone(instance.created_at)
             self.assertEqual(instance.created_by, self.user_1)
             self.assertIsNotNone(instance.updated_at)
@@ -943,7 +943,7 @@ class TestModelsWithAuditColumns(TestCase):
     def test_existing_audit_columns_presence(self):
         for model, field_to_update, model_baker in self.models_with_audit_columns_and_field_to_update:
             instance: Type[TimeStampedModel] = model_baker()
-            instance.set_create_or_update(modifier=self.user_1)
+            instance.set_create_or_update(self.user_1.pk)
 
             # Save the initial audit values for comparison
             initial_created_at = instance.created_at
@@ -954,7 +954,7 @@ class TestModelsWithAuditColumns(TestCase):
             model.objects.filter(id=instance.id).update(
                 **{field_to_update: model_data_field_has_choices[0][0] if model_data_field_has_choices else 'updated'}
             )
-            instance.set_create_or_update(modifier=self.user_2)
+            instance.set_create_or_update(self.user_2.pk)
             instance.refresh_from_db()
 
             # Ensure existing audit columns remain unchanged

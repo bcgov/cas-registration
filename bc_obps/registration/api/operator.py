@@ -21,9 +21,7 @@ from django.core.exceptions import ValidationError
 
 @router.get("/operators", response={200: OperatorOut, codes_4xx: Message, codes_5xx: Message})
 @authorize(AppRole.get_all_app_roles(), UserOperator.get_all_industry_user_operator_roles())
-def get_operator_by_legal_name_or_cra(
-    request, legal_name: Optional[str] = None, cra_business_number: Optional[int] = None
-):
+def get_operator_by_legal_name_or_cra(request, legal_name: Optional[str] = None, cra_business_number: Optional[int] = None):
     try:
         if legal_name:
             operator = Operator.objects.get(legal_name=legal_name)
@@ -96,8 +94,7 @@ def update_operator(request, operator_id: int, payload: OperatorIn):
                 operator.verified_by_id = user.user_guid
 
             operator.save()
-            operator.set_create_or_update(modifier=user)
-
+            operator.set_create_or_update(user.pk)
             return 200, operator
     except ValidationError as e:
         return 400, {"message": generate_useful_error(e)}
