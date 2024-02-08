@@ -5,6 +5,7 @@ export enum ActionButton {
 
 export enum AppRoute {
   DASHBOARD = "/dashboard",
+  HOME = "/home",
   PROFILE = "/profile",
 }
 
