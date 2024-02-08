@@ -130,18 +130,6 @@ class TestOperatorsEndpoint(CommonTestSetup):
         )
         assert response.status_code == 404
 
-    def test_get_operator_from_user(self):
-        operator = operator_baker()
-        baker.make(UserOperator, user=self.user, operator=operator)
-
-        response = TestUtils.mock_get_with_auth_role(self, 'industry_user', base_endpoint + "operator-from-user")
-        assert response.status_code == 200
-
-    def test_get_operator_from_user_when_no_user_operator(self):
-
-        response = TestUtils.mock_get_with_auth_role(self, 'industry_user', base_endpoint + "operator-from-user")
-        assert response.status_code == 404
-
     def test_select_operator_with_valid_id(self):
         operator = operator_baker()
         response = TestUtils.mock_get_with_auth_role(self, "cas_analyst", self.endpoint + "/" + str(operator.id))
