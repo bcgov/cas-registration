@@ -11,27 +11,20 @@ from pydantic import validator
 #### Operation schemas
 
 
-class OperationCreateOut(Schema):
-    id: int
-    name: str
+class OperationCreateOut(ModelSchema):
+    class Config:
+        model = Operation
+        model_fields = ["id", "name"]
 
 
 class OperationCreateIn(ModelSchema):
-    # Converting types
-    verified_at: Optional[date] = None
-    operation_has_multiple_operators: Optional[bool] = False
-    multiple_operators_array: Optional[list] = None
+    # Not using Multiple operators for MVP
+    # operation_has_multiple_operators: Optional[bool] = False
+    # multiple_operators_array: Optional[list] = None
 
     class Config:
         model = Operation
-        model_exclude = [
-            "id",  # need to exclude id since it's auto generated and we don't want to pass it in
-            "documents",  # excluding documents because they are handled by individual form fields
-            # Reporting activities not needed for MVP
-            "reporting_activities",
-            *AUDIT_FIELDS,
-        ]
-
+        model_fields = ['name', 'type', 'naics_code', 'opt_in', 'regulated_products', 'bcghg_id']
         allow_population_by_field_name = True
 
 
