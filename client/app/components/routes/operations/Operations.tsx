@@ -11,7 +11,7 @@ async function getOperations() {
   try {
     return await actionHandler(
       // Fetch page one of the operations data on initial load
-      "registration/operations?page=1",
+      "registration/operations",
       "GET",
       "/dashboard/operations",
     );
