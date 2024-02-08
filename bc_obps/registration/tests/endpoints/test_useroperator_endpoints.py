@@ -408,7 +408,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         assert response_json == {"detail": "Not Found"}
 
     # GET USER OPERATOR OPERATOR ID 200
-    def test_get_user_operator_operator_id(self):
+    def test_get_user_operator_operator(self):
         # Act
         operator = operator_baker()
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
@@ -421,9 +421,10 @@ class TestUserOperatorEndpoint(CommonTestSetup):
 
         # Additional Assertions
         assert "operator_id" in response_json
+        assert "status" in response_json
 
     # GET USER OPERATOR OPERATOR ID 404
-    def test_get_user_operator_operator_id_with_invalid_user(self):
+    def test_get_user_operator_operator_with_invalid_user(self):
         # Act
         response = TestUtils.mock_get_with_auth_role(self, 'industry_user', f"{base_endpoint}user-operator-operator")
 
@@ -434,7 +435,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         assert response.status_code == 404
 
         # Additional Assertions
-        assert response_json == {"detail": "Not Found"}
+        assert response_json == {'message': 'User is not associated with any operator'}
 
     def test_duplicates_not_allowed(self):
         operator = operator_baker()

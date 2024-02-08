@@ -157,7 +157,7 @@ def get_user_operator_operator_id(request):
     user: User = request.current_user
     try:
         user_operator = (
-            UserOperator.objects.only("operator__status", "operator_id")
+            UserOperator.objects.only("operator__status", "operator__id")
             .select_related("operator")
             .get(user=user.user_guid)
         )

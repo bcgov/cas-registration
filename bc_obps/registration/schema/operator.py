@@ -112,6 +112,8 @@ class OperatorFromUserOperatorOut(ModelSchema):
     Schema for the Operator associated with a UserOperator
     """
 
+    operator_id: int = Field(..., alias="id")
+
     class Config:
         model = Operator
-        model_fields = ["id", "status"]
+        model_fields = ["status"]
