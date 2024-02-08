@@ -1,4 +1,4 @@
-import { Status } from "@/app/utils/enums";
+import { Status, UserOperatorStatus } from "@/app/utils/enums";
 import { actionHandler, getToken } from "@/app/utils/actions";
 
 export interface ExternalDashboardUsersTile {
@@ -33,8 +33,10 @@ export async function processExternalDashboardUsersTileData() {
   const transformedTileData = Array.isArray(tileData)
     ? tileData.map((userOperator) => {
         userOperator.status = userOperator.status
-          ? Status[userOperator.status.toUpperCase() as keyof typeof Status]
-          : Status.DRAFT;
+          ? UserOperatorStatus[
+              userOperator.status.toUpperCase() as keyof typeof UserOperatorStatus
+            ]
+          : UserOperatorStatus.PENDING;
 
         return userOperator;
       })
