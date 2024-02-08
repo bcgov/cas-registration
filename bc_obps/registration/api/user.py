@@ -1,4 +1,6 @@
 import json
+from typing import Optional
+from uuid import UUID
 from django.conf import settings
 from registration.decorators import authorize
 from registration.models import AppRole, User
@@ -23,17 +25,29 @@ def get_user(request):
 
 
 # endpoint to return user data if user exists in user table
-@router.get("/user-profile", response=UserOut)
+@router.get("/user-profile", response={200: UserOut, codes_4xx: Message})
 def get_user_profile(request):
     user = get_object_or_404(User, user_guid=json.loads(request.headers.get('Authorization')).get('user_guid'))
-    return UserOut.from_orm(user)
+    try:
+        user_guid: Optional[UUID] = json.loads(request.headers.get('Authorization')).get('user_guid')
+        user = (
+            User.objects.only(*UserOut.Config.model_fields, "app_role")
+            .select_related('app_role')
+            .get(user_guid=user_guid)
+        )
+    except User.DoesNotExist:
+        return 404, {"message": "No matching user found"}
+    return 200, user
 
 
 # endpoint to return user's role_name if user exists in user table
-@router.get("/user-app-role/{user_guid}", response=UserAppRoleOut)
+@router.get("/user-app-role/{user_guid}", response={200: UserAppRoleOut, codes_4xx: Message})
 def get_user_role(request, user_guid: str):
-    user: User = get_object_or_404(User, user_guid=user_guid)
-    return user.app_role
+    try:
+        user = User.objects.only('app_role').select_related('app_role').get(user_guid=user_guid)
+    except User.DoesNotExist:
+        return 404, {"message": "No matching user found"}
+    return 200, user.app_role
 
 
 ##### POST #####
