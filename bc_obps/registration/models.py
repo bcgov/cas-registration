@@ -299,6 +299,9 @@ class User(UserAndContactCommonInfo):
                 name="uuid_user_and_business_constraint",
             )
         ]
+        indexes = [
+            models.Index(fields=["app_role"], name="user_app_role_idx"),
+        ]
 
     def is_irc_user(self) -> bool:
         """
