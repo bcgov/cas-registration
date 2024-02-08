@@ -74,7 +74,7 @@ const setupAuth = async (
     // 🕒 Wait for the profile navigation link to be present
     // 🚩 BP approach (?) seems to fail: await expect(page.getByTestId("nav-user-profile")).toBeVisible();
     const profileNavSelector = DataTestID.PROFILE;
-    await page.waitForSelector(profileNavSelector);
+    await page.waitForSelector(profileNavSelector, { timeout: 60000 });
 
     // 💾 Capture the storage state (e.g., auth session cookies) of the current page and saves it to a file specified
     // This storeageState can then be used for e2e tests requiring authentication
