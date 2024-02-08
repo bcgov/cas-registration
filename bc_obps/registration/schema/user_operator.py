@@ -35,10 +35,6 @@ class UserOperatorIdOut(Schema):
     user_operator_id: int
 
 
-class UserOperatorOperatorIdOut(Schema):
-    operator_id: int
-
-
 class RequestAccessOut(Schema):
     user_operator_id: int
     operator_id: int
@@ -194,21 +190,6 @@ class UserOperatorContactIn(ModelSchema):
         model_exclude = ["id", "documents", "business_role", "address", "email", "phone_number", *AUDIT_FIELDS]
         # whether an aliased field may be populated by its name as given by the model attribute, as well as the alias
         allow_population_by_field_name = True
-
-
-class SelectUserOperatorStatus(Schema):
-    """
-    Schema for a User Operator model
-    """
-
-    first_name: str = Field(..., alias="user.first_name")
-    last_name: str = Field(..., alias="user.last_name")
-    email: str = Field(..., alias="user.email")
-    position_title: str = Field(..., alias="user.position_title")
-    business_name: str = Field(..., alias="operator.legal_name")
-    user_id: uuid.UUID = Field(..., alias="user.user_guid")
-    role: str
-    status: str
 
 
 class ExternalDashboardUsersTileData(ModelSchema):
