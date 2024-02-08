@@ -131,7 +131,7 @@ def save_operator(payload: UserOperatorOperatorIn, operator_instance: Operator, 
         )
         if created:
             user_operator.set_create_or_update(modifier=user)
-        return 200, {"user_operator_id": user_operator.id}
+        return 200, {"user_operator_id": user_operator.id, 'operator_id': user_operator.operator.id}
 
 
 ##### GET #####
@@ -257,19 +257,18 @@ def request_access(request, payload: SelectOperatorIn):
             status, message = check_users_admin_request_eligibility(user, operator)
             if status != 200:
                 return status, message
-    # Making a pending UserOperator instance if one doesn't exist
+        # Making a pending UserOperator instance if one doesn't exist
         user_operator, created = UserOperator.objects.get_or_create(
             user=user, operator=operator, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.PENDING
         )
         if created:
             user_operator.set_create_or_update(modifier=user)
         return 201, {"user_operator_id": user_operator.id}
-            
+
     except ValidationError as e:
         return 400, {"message": generate_useful_error(e)}
     except Exception as e:
         return 400, {"message": str(e)}
-    
 
 
 @router.post("/select-operator/request-access", response={201: RequestAccessOut, codes_4xx: Message})

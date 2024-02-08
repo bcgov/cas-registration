@@ -47,6 +47,7 @@ class UserOperatorOperatorIdOut(Schema):
 
 class RequestAccessOut(Schema):
     user_operator_id: int
+    operator_id: int
 
 
 class UserOperatorOut(ModelSchema):
