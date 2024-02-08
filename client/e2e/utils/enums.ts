@@ -3,14 +3,19 @@ export enum ActionButton {
   SUBMIT = "Submit",
 }
 
-export enum LoginLink {
-  CAS = "Log in with IDIR",
-  INDUSTRY_USER = "Log in with Business BCeID",
-  OUT = "Log out",
+export enum AppRoute {
+  DASHBOARD = "/dashboard",
+  PROFILE = "/profile",
 }
 
 export enum DataTestID {
   PROFILE = '[data-testid="nav-user-profile"]',
+}
+
+export enum LoginLink {
+  CAS = "Log in with IDIR",
+  INDUSTRY_USER = "Log in with Business BCeID",
+  OUT = "Log out",
 }
 
 export enum UserRole {

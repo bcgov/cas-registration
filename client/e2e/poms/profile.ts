@@ -6,7 +6,8 @@
 import { Locator, Page, expect } from "@playwright/test";
 // ⛏️ Helpers
 import { getFieldRequired } from "@/e2e/utils/helpers";
-import { ActionButton } from "@/e2e/utils/enums";
+// ☰ Enums
+import { AppRoute, ActionButton } from "@/e2e/utils/enums";
 // ℹ️ Environment variables
 import * as dotenv from "dotenv";
 dotenv.config({ path: "./e2e/.env.local" });
@@ -46,7 +47,7 @@ export class ProfilePOM {
   }
   async isCorrectUrl() {
     // 🔍 Assert that the current URL ends with "/profile"
-    const path = "/profile";
+    const path = AppRoute.PROFILE;
     await expect(this.page.url().toLocaleLowerCase()).toContain(path);
   }
 }
