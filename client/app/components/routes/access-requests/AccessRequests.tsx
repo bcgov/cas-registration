@@ -1,24 +1,10 @@
+"use client";
+
 import { GridRowsProp } from "@mui/x-data-grid";
 import Note from "@/app/components/datagrid/Note";
-
-import { actionHandler } from "@/app/utils/actions";
 import OperatorDataGrid from "@/app/components/datagrid/OperatorDataGrid";
 import { UserOperatorPaginated } from "./types";
 import { statusStyle } from "@/app/components/datagrid/helpers";
-
-// 🛠️ Function to fetch user-operators
-async function getUserOperators() {
-  try {
-    return await actionHandler(
-      "registration/user-operators?page=1",
-      "GET",
-      "/dashboard/operators",
-    );
-  } catch (error) {
-    // Handle the error here or rethrow it to handle it at a higher level
-    throw error;
-  }
-}
 
 export const formatUserOperatorRows = (rows: GridRowsProp) => {
   return rows.map(
@@ -36,9 +22,11 @@ export const formatUserOperatorRows = (rows: GridRowsProp) => {
 };
 
 // 🧩 Main component
-export default async function AccessRequests() {
-  // Fetch userOperator data
-  const userOperators: UserOperatorPaginated = await getUserOperators();
+const AccessRequests = ({
+  userOperators,
+}: {
+  userOperators: UserOperatorPaginated;
+}) => {
   if (!userOperators) {
     return <div>No access requests yet.</div>;
   }
@@ -88,4 +76,6 @@ export default async function AccessRequests() {
       />
     </>
   );
-}
+};
+
+export default AccessRequests;
