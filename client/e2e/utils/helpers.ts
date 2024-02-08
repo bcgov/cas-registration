@@ -1,4 +1,11 @@
 import { Page } from "@playwright/test";
+// ☰ Enums
+import {
+  ActionButton,
+  DataTestID,
+  LoginLink,
+  UserRole,
+} from "@/e2e/utils/enums";
 
 // 🛠️ Function: Navigates to a given URL and waits for the page to load
 export const navigateAndWaitForLoad = async (
@@ -15,6 +22,45 @@ export const navigateAndWaitForLoad = async (
     page.waitForEvent("framenavigated"),
     page.waitForEvent("load"),
   ]);
+};
+
+// 🛠️ Function: log in to Keycloak
+export const login = async (
+  page: any,
+  user: string,
+  password: string,
+  role: string
+) => {
+  try {
+    // Determine the login button based on the user role
+    let loginButton = LoginLink.INDUSTRY_USER;
+    switch (role) {
+      case UserRole.CAS_PENDING:
+        loginButton = LoginLink.CAS;
+        break;
+    }
+
+    // eslint-disable-next-line no-console
+    console.log(`${loginButton} ROLE ${role}`);
+
+    // 🛸 Navigate to the home page
+    await navigateAndWaitForLoad(page, process.env.E2E_BASEURL as string);
+
+    // Click the login button
+    await page.getByRole("button", { name: loginButton }).click();
+
+    // 🔑 Login to Keycloak
+    // Fill the user field
+    await page.locator("id=user").fill(user);
+    // Fill the pw field
+    await page.getByLabel("Password").fill(password);
+    // Click Continue button
+    await page.getByRole("button", { name: ActionButton.CONTINUE }).click();
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error(`Login failed for ${user}:`, error);
+    throw error;
+  }
 };
 
 // 🛠️ Function: get all label elements with required field character * within form fieldset
