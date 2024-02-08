@@ -105,3 +105,13 @@ class OperatorForOperationOut(ModelSchema):
             "business_structure",
             "website",
         ]
+
+
+class OperatorFromUserOperatorOut(ModelSchema):
+    """
+    Schema for the Operator associated with a UserOperator
+    """
+
+    class Config:
+        model = Operator
+        model_fields = ["id", "status"]
