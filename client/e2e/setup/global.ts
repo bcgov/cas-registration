@@ -20,9 +20,6 @@ dotenv.config({
   path: "./e2e/.env.local",
 });
 
-// Set the test URL
-const url = process.env.E2E_BASEURL || "";
-
 // 🛠️ function: login with Keycloak credentials and store authenticated user by role session's state
 /**
 📖
@@ -37,12 +34,10 @@ const setupAuth = async (
   role: string
 ) => {
   try {
-    let loginButton = LoginLink.INDUSTRY_USER;
     switch (role) {
       case UserRole.CAS_ADMIN:
       case UserRole.CAS_ANALYST:
       case UserRole.CAS_PENDING:
-        loginButton = LoginLink.CAS;
         // 🛢 To generate a storageState file for each CAS role...
         // perform an upsert query that inserts or updates the role associated with your IDIR user_guid in the erc.user table.
         // then login with a cas ID will be assigned this role in client/app/api/auth/[...nextauth]/route.ts
