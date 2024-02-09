@@ -2,9 +2,9 @@ import pytest
 from model_bakery import baker
 from django.test import Client
 from localflavor.ca.models import CAPostalCodeField
-from registration.tests.utils.bakers import operator_baker
+from registration.tests.utils.bakers import operator_baker, user_operator_baker
 from registration.constants import AUDIT_FIELDS
-from registration.models import Operator
+from registration.models import Operator, UserOperator, User
 from registration.schema.operator import OperatorOut
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
@@ -39,7 +39,7 @@ class TestOperatorsEndpoint(CommonTestSetup):
                 self,
                 role,
                 self.content_type,
-                {'status': Operator.Statuses.APPROVED},
+                {'status': Operator.Statuses.APPROVED, 'user_operator_id': 1},
                 custom_reverse_lazy('update_operator', kwargs={'operator_id': operator.id}),
             )
             assert response.status_code == 401
@@ -134,16 +134,21 @@ class TestOperatorsEndpoint(CommonTestSetup):
         assert response.json() == {'message': 'No matching operator found'}
 
     def test_put_approve_operator(self):
+        user = baker.make(User)
         operator = operator_baker()
         operator.status = Operator.Statuses.PENDING
         operator.is_new = True
         operator.save(update_fields=["status", "is_new"])
+        user_operator = user_operator_baker()
+        user_operator.user = user
+        user_operator.operator = operator
+        user_operator.save(update_fields=["user", "operator"])
 
         response = TestUtils.mock_put_with_auth_role(
             self,
             'cas_admin',
             self.content_type,
-            {"status": Operator.Statuses.APPROVED},
+            {"status": Operator.Statuses.APPROVED, 'user_operator_id': user_operator.id},
             custom_reverse_lazy('update_operator', kwargs={'operator_id': operator.id}),
         )
 
@@ -154,20 +159,81 @@ class TestOperatorsEndpoint(CommonTestSetup):
         assert response.json().get("verified_by") == str(self.user.user_guid)
 
     def test_put_request_changes_to_operator(self):
+        user = baker.make(User)
         operator = operator_baker()
         operator.status = Operator.Statuses.PENDING
-        operator.save(update_fields=["status"])
+        operator.save(update_fields=["status", "is_new"])
+        user_operator = user_operator_baker()
+        user_operator.user = user
+        user_operator.operator = operator
+        user_operator.save(update_fields=["user", "operator"])
 
         response = TestUtils.mock_put_with_auth_role(
             self,
             'cas_admin',
             self.content_type,
-            {"status": Operator.Statuses.CHANGES_REQUESTED},
+            {"status": Operator.Statuses.CHANGES_REQUESTED, 'user_operator_id': user_operator.id},
             custom_reverse_lazy('update_operator', kwargs={'operator_id': operator.id}),
         )
 
         assert response.status_code == 200
 
         assert response.json().get('status') == Operator.Statuses.CHANGES_REQUESTED
-        assert response.json().get('is_new') == True
         assert response.json().get("verified_by") == None
+
+    # declining a new operator declines the prime admin request too
+    def test_put_decline_new_operator(self):
+        operator = operator_baker()
+        operator.status = Operator.Statuses.PENDING
+        operator.is_new = True
+        operator.save(update_fields=["status", "is_new"])
+        user_operator = user_operator_baker()
+        user_operator.operator = operator
+        user_operator.save
+
+        response = TestUtils.mock_put_with_auth_role(
+            self,
+            'cas_admin',
+            content_type_json,
+            {"status": Operator.Statuses.DECLINED, 'user_operator_id': user_operator.id},
+            self.endpoint + "/" + str(operator.id),
+        )
+
+        assert response.status_code == 200
+
+        assert response.json().get('status') == Operator.Statuses.DECLINED
+        assert response.json().get('is_new') == False
+        assert response.json().get("verified_by") == str(self.user.user_guid)
+        user_operator.refresh_from_db()  # refresh the user_operator object to get the updated status
+        assert user_operator.status == UserOperator.Statuses.DECLINED
+        assert user_operator.verified_by == self.user
+
+    # declining an existing operator only declines the operator, not the user_operator
+    def test_put_decline_existing_operator(self):
+        user = baker.make(User)
+        operator = operator_baker()
+        operator.status = Operator.Statuses.PENDING
+        operator.is_new = False
+        operator.save(update_fields=["status", "is_new"])
+        user_operator = user_operator_baker()
+        user_operator.user = user
+        user_operator.operator = operator
+        user_operator.status = UserOperator.Statuses.PENDING
+        user_operator.save(update_fields=["user", "operator", "status"])
+
+        response = TestUtils.mock_put_with_auth_role(
+            self,
+            'cas_admin',
+            content_type_json,
+            {"status": Operator.Statuses.DECLINED, 'user_operator_id': user_operator.id},
+            self.endpoint + "/" + str(operator.id),
+        )
+
+        assert response.status_code == 200
+
+        assert response.json().get('status') == Operator.Statuses.DECLINED
+        assert response.json().get('is_new') == False
+        assert response.json().get("verified_by") == str(self.user.user_guid)
+        user_operator.refresh_from_db()  # refresh the user_operator object to get the updated status
+        assert user_operator.status == UserOperator.Statuses.PENDING
+        assert user_operator.verified_by == None
