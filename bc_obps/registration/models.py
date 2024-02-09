@@ -9,6 +9,7 @@ from registration.constants import (
     BC_CORPORATE_REGISTRY_REGEX_MESSAGE,
     BORO_ID_REGEX,
     USER_CACHE_PREFIX,
+    AUDIT_FIELDS,
 )
 from simple_history.models import HistoricalRecords
 from django.core.validators import RegexValidator
@@ -16,6 +17,7 @@ from django.utils import timezone
 from django.core.exceptions import ValidationError
 from django.core.files.storage import default_storage
 from django.core.cache import cache
+from django.db import connection
 
 
 class BaseModel(models.Model):
@@ -28,7 +30,15 @@ class BaseModel(models.Model):
         abstract = True
 
     def save(self, *args, **kwargs):
-        self.full_clean()  # validate the model before saving
+        # if `update_fields` is passed, we only clean them otherwise we clean all fields(except audit fields)
+        # This is to optimize the performance of the save method
+        update_fields = kwargs.get('update_fields', [])
+        fields_to_exclude_from_cleaning = AUDIT_FIELDS  # exclude audit fields from cleaning
+        if update_fields:
+            fields_to_exclude_from_cleaning += [
+                field.name for field in self._meta.fields if field.name not in update_fields
+            ]
+        self.full_clean(exclude=fields_to_exclude_from_cleaning)  # validate the model before saving
         super().save(*args, **kwargs)
 
 
@@ -62,21 +72,16 @@ class TimeStampedModel(BaseModel):
         Set the created by field if it is not already set.
         Otherwise, set the updated by field and updated at field.
         """
-        if not self.created_by:  # created_at is automatically set by auto_now_add
-            self.created_by_id = modifier_pk
-            self.save(update_fields=['created_by_id'])
+        if not self.created_by_id:  # created_at is automatically set by auto_now_add
+            self.__class__.objects.filter(pk=self.pk).update(created_by_id=modifier_pk)
         else:
-            self.updated_by_id = modifier_pk
-            self.updated_at = timezone.now()
-            self.save(update_fields=['updated_by_id', 'updated_at'])
+            self.__class__.objects.filter(pk=self.pk).update(updated_by_id=modifier_pk, updated_at=timezone.now())
 
     def set_archive(self, modifier_pk: 'User') -> None:
         """Set the archived by field and archived at field if they are not already set."""
-        if self.archived_by or self.archived_at:
+        if self.archived_by_id or self.archived_at:
             raise ValueError("Archived by or archived at is already set.")
-        self.archived_at = timezone.now()
-        self.archived_by_id = modifier_pk
-        self.save(update_fields=['archived_by', 'archived_at'])
+        self.__class__.objects.filter(pk=self.pk).update(archived_by_id=modifier_pk, archived_at=timezone.now())
 
 
 class AppRole(BaseModel):
