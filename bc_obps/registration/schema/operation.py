@@ -33,7 +33,6 @@ class OperationUpdateOut(Schema):
 
 
 class OperationUpdateIn(ModelSchema):
-    # Converting types
     first_name: Optional[str] = None
     last_name: Optional[str] = None
     position_title: Optional[str] = None
@@ -56,7 +55,7 @@ class OperationUpdateIn(ModelSchema):
 
     class Config:
         model = Operation
-        model_fields = ['operator', 'name', 'type', 'naics_code', 'opt_in', 'point_of_contact', 'regulated_products']
+        model_fields = ['name', 'type', 'naics_code', 'opt_in', 'point_of_contact', 'regulated_products']
         allow_population_by_field_name = True
 
 
@@ -127,3 +126,9 @@ class OperationUpdateStatusIn(ModelSchema):
     class Config:
         model = Operation
         model_fields = ["status"]
+
+
+class OperationUpdateStatusOut(ModelSchema):
+    class Config:
+        model = Operation
+        model_fields = ["id"]
