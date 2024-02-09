@@ -211,7 +211,9 @@ def get_user(request):
 @router.get("/user-operators", response=List[UserOperatorListOut])
 @authorize(AppRole.get_authorized_irc_roles())
 def list_user_operators(request):
-    qs = UserOperator.objects.select_related("operator", "user").only("id", "status", "user__last_name", "user__first_name", "user__email", "operator__legal_name")
+    qs = UserOperator.objects.select_related("operator", "user").only(
+        "id", "status", "user__last_name", "user__first_name", "user__email", "operator__legal_name"
+    )
     user_operator_list = []
 
     for user_operator in qs:
