@@ -231,11 +231,13 @@ class TestUserOperatorEndpoint(CommonTestSetup):
             user=self.user,
             operator=operator_baker(),
             role=UserOperator.Roles.ADMIN,
-            status=UserOperator.Statuses.APPROVED,
+            status=UserOperator.Statuses.PENDING,
             _quantity=60,
         )
 
-        response = TestUtils.mock_get_with_auth_role(self, 'cas_admin', f"{base_endpoint}user-operators")
+        response = TestUtils.mock_get_with_auth_role(
+            self, 'cas_admin', f"{base_endpoint}user-operator-initial-requests"
+        )
         assert response.status_code == 200
         response_data = response.json().get('data')
         # save the id of the first paginated response item
@@ -243,7 +245,9 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         assert len(response_data) == 20
         # Get the page 2 response
         response = TestUtils.mock_get_with_auth_role(
-            self, "cas_admin", f"{base_endpoint}user-operators?page=2&sort_field=created_at&sort_order=desc"
+            self,
+            "cas_admin",
+            f"{base_endpoint}user-operator-initial-requests?page=2&sort_field=created_at&sort_order=desc",
         )
         assert response.status_code == 200
         response_data = response.json().get('data')
@@ -255,7 +259,9 @@ class TestUserOperatorEndpoint(CommonTestSetup):
 
         # Get page 2 again but with different sort order
         response = TestUtils.mock_get_with_auth_role(
-            self, "cas_admin", f"{base_endpoint}user-operators?page=2&sort_field=created_at&sort_order=asc"
+            self,
+            "cas_admin",
+            f"{base_endpoint}user-operator-initial-requests?page=2&sort_field=created_at&sort_order=asc",
         )
         assert response.status_code == 200
         response_data = response.json().get('data')
@@ -264,6 +270,44 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         assert len(response_data) == 20
         # assert that the first item in the page 2 response is not the same as the first item in the page 2 response with reversed order
         assert page_2_response_id != page_2_response_id_reverse
+
+    def test_get_user_operators_check_response_returns_only_correct_status(self):
+        # Add only approved user operators
+        baker.make(
+            UserOperator,
+            user=self.user,
+            operator=operator_baker(),
+            role=UserOperator.Roles.ADMIN,
+            status=UserOperator.Statuses.APPROVED,
+            _quantity=21,
+        )
+
+        response = TestUtils.mock_get_with_auth_role(
+            self, 'cas_admin', f"{base_endpoint}user-operator-initial-requests"
+        )
+        assert response.status_code == 200
+        response_data = response.json().get('data')
+
+        # returns 0 because there are only approved user operators
+        assert len(response_data) == 0
+
+        # Now add some pending user operators
+        baker.make(
+            UserOperator,
+            user=self.user,
+            operator=operator_baker(),
+            role=UserOperator.Roles.ADMIN,
+            status=UserOperator.Statuses.PENDING,
+            _quantity=10,
+        )
+
+        response = TestUtils.mock_get_with_auth_role(
+            self, 'cas_admin', f"{base_endpoint}user-operator-initial-requests"
+        )
+        assert response.status_code == 200
+        response_data = response.json().get('data')
+        # returns 10 since we added 10 pending user operators
+        assert len(response_data) == 10
 
     def test_user_operator_put_update_user_status(self):
         user = baker.make(User)
