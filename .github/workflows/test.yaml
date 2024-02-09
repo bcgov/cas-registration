@@ -10,6 +10,16 @@ on:
 env:
   PGUSER: postgres
   DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+  KEYCLOAK_CLIENT_ID: ${{ secrets.KEYCLOAK_CLIENT_ID }}
+  KEYCLOAK_CLIENT_SECRET: ${{ secrets.KEYCLOAK_CLIENT_SECRET }}
+  E2E_CAS_USER: ${{ secrets.CAS_USER }}
+  E2E_CAS_USER_PASSWORD: ${{ secrets.CAS_USER_PASSWORD }}
+  E2E_CAS_USER_GUID: ${{ secrets.CAS_USER_GUID }}
+  E2E_INDUSTRY_USER_ADMIN_PASSWORD: ${{ secrets.INDUSTRY_USER_ADMIN_PASSWORD }}
+  E2E_INDUSTRY_USER_PASSWORD: ${{ secrets.INDUSTRY_USER_PASSWORD }}
+  E2E_NEW_USER_PASSWORD: ${{ secrets.NEW_USER_PASSWORD }}
+  E2E_NEW_USER_GUID: ${{ secrets.NEW_USER_GUID }}
+  NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
 
 jobs:
   install-dev-tools:
@@ -210,11 +220,38 @@ jobs:
         uses: ./.github/actions/local-app-run
         with:
           django_secret_key: ${{ env.DJANGO_SECRET_KEY }}
+          keycloak_client_id: ${{ env.KEYCLOAK_CLIENT_ID }}
+          keycloak_client_secret: ${{ env.KEYCLOAK_CLIENT_SECRET }}
+          nextauth_secret: ${{ env.NEXTAUTH_SECRET }}
       - name: Install Playwright Browsers
         run: yarn playwright install --with-deps
         working-directory: ./client
-      - name: Run Playwright tests
-        run: DEBUG=pw:browser npx playwright test --workers=1 client/e2e/*
+      - name: Run Playwright Tests
+        run: |
+          DEBUG=pw:browser npx playwright test --trace=on --workers=1 client/e2e/*
+        env:
+          API_URL: http://127.0.0.1:8000/api/
+          DB_USER: postgres
+          DB_NAME: registration
+          DB_PORT: 5432
+          DB_HOST: localhost
+          E2E_BASEURL: http://localhost:3000/
+          E2E_CAS_USER: SHOGAN
+          E2E_CAS_USER_GUID: ${{ secrets.E2E_CAS_USER_GUID }}
+          E2E_CAS_USER_PASSWORD: ${{ secrets.E2E_CAS_USER_PASSWORD}}
+          E2E_CAS_ADMIN_STORAGE: playwright/.auth/cas_admin.json
+          E2E_CAS_ANALYST_STORAGE: playwright/.auth/cas_analyst.json
+          E2E_CAS_PENDING_STORAGE: playwright/.auth/cas_pending.json
+          E2E_INDUSTRY_USER_ADMIN_STORAGE: playwright/.auth/industry_user_admin.json
+          E2E_INDUSTRY_USER_STORAGE: playwright/.auth/industry_user.json
+          E2E_NEW_USER_STORAGE: playwright/.auth/new_user.json
+          E2E_INDUSTRY_USER_ADMIN: bc-cas-dev
+          E2E_INDUSTRY_USER_ADMIN_PASSWORD: ${{ secrets.E2E_INDUSTRY_USER_ADMIN_PASSWORD }}
+          E2E_INDUSTRY_USER: bc-cas-dev-secondary
+          E2E_INDUSTRY_USER_PASSWORD: ${{ secrets.E2E_INDUSTRY_USER_PASSWORD }}
+          E2E_NEW_USER: bc-cas-dev-three
+          E2E_NEW_USER_GUID: ${{ secrets.E2E_NEW_USER_GUID }}
+          E2E_NEW_USER_PASSWORD: ${{ secrets.E2E_NEW_USER_PASSWORD }}
         working-directory: ./client
       - uses: actions/upload-artifact@v3
         if: always()
