@@ -893,6 +893,7 @@ class TestModelsWithAuditColumns(TestCase):
             instance: Type[TimeStampedModel] = model_baker()
             # CREATE
             instance.set_create_or_update(self.user_1.pk)
+            instance.refresh_from_db()
             self.assertIsNotNone(instance.created_at)
             self.assertEqual(instance.created_by, self.user_1)
 
@@ -918,6 +919,7 @@ class TestModelsWithAuditColumns(TestCase):
 
             # ARCHIVE
             instance.set_archive(self.user_1.pk)
+            instance.refresh_from_db()
             self.assertIsNotNone(instance.created_at)
             self.assertEqual(instance.created_by, self.user_1)
             self.assertIsNotNone(instance.updated_at)
@@ -944,6 +946,7 @@ class TestModelsWithAuditColumns(TestCase):
         for model, field_to_update, model_baker in self.models_with_audit_columns_and_field_to_update:
             instance: Type[TimeStampedModel] = model_baker()
             instance.set_create_or_update(self.user_1.pk)
+            instance.refresh_from_db()
 
             # Save the initial audit values for comparison
             initial_created_at = instance.created_at
