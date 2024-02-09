@@ -21,6 +21,7 @@ dotenv.config({ path: "./e2e/.env.local" });
 export class HomePOM {
   readonly page: Page;
   readonly url: string = process.env.E2E_BASEURL + AppRoute.HOME;
+
   readonly buttonContinue: Locator;
   readonly linkLogout: Locator;
   readonly fieldUser: Locator;
@@ -29,27 +30,31 @@ export class HomePOM {
 
   constructor(page: Page) {
     this.page = page;
+
     this.buttonContinue = page.getByRole("button", {
       name: ActionButton.CONTINUE,
     });
+
     this.linkLogout = page.getByRole("button", { name: Logout.OUT });
     this.fieldUser = this.page.locator(Keycloak.FIELD_USER_LOCATOR);
     this.fieldUserPassword = this.page.getByLabel(Keycloak.FIELD_PW_LOCATOR);
     this.textSSOLogout = page.locator("p", { hasText: Logout.SSO });
   }
-  // 🛸 Navigate to this page url
+
   async route() {
     await this.page.goto(this.url);
   }
-  // 🔑 Login to Keycloak
+
   async login(user: string, password: string, role: string) {
     // Determine the login button based on the user role
     let loginButton = Login.INDUSTRY_USER;
+
     switch (role) {
       case UserRole.CAS_PENDING:
         loginButton = Login.CAS;
         break;
     }
+
     // Click the login button
     await this.page.getByRole("button", { name: loginButton }).click();
     // Fill the user field
@@ -59,18 +64,18 @@ export class HomePOM {
     // Click Continue button
     await this.buttonContinue.click();
   }
-  // 🔒 Logout of Keycloak
+
   async logout() {
     await this.linkLogout.click();
     await expect(this.textSSOLogout).toBeVisible();
   }
-  // 🔍 Assert url reflects this page url
+
   async urlIsCorrect() {
     const path = AppRoute.HOME;
     const currentUrl = await this.page.url();
     await expect(currentUrl.toLocaleLowerCase()).toContain(path);
   }
-  // 🕒 Wait for the profile navigation link to be visible
+
   async userIsLoggedIn() {
     await this.page.waitForSelector(DataTestID.PROFILE);
   }

@@ -23,11 +23,11 @@ export class ProfilePOM {
       name: ActionButton.SUBMIT,
     });
   }
-  // 🛸 Navigate to this page url
+
   async route() {
     await this.page.goto(this.url);
   }
-  // ✏️ Complete Profile form
+
   async update() {
     // Locate all required fields within the fieldset
     const requiredFields = await getFieldRequired(this.page);
@@ -47,7 +47,7 @@ export class ProfilePOM {
     }
     await this.buttonSubmit.click();
   }
-  // 🔍 Assert url reflects this page url
+
   async urlIsCorrect() {
     const path = AppRoute.PROFILE;
     const currentUrl = await this.page.url();

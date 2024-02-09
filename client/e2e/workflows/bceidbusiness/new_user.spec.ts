@@ -1,8 +1,9 @@
 // 🧪 Suite to test the bceidbusiness new user workflow using storageState
 // 🔍 Asserts new user is redirected to profile
 
-import { test, expect } from "@playwright/test";
+import { test } from "@playwright/test";
 // 🪄 Page Object Models
+import { DashboardPOM } from "@/e2e/poms/dashboard";
 import { HomePOM } from "@/e2e/poms/home";
 import { ProfilePOM } from "@/e2e/poms/profile";
 // ℹ️ Environment variables
@@ -25,5 +26,13 @@ test.describe("Test Workflow new user", () => {
     // 🔍 Assert that the current URL ends with "/profile"
     const profilePage = new ProfilePOM(page);
     await profilePage.urlIsCorrect();
+  });
+  test("Test Update Profile", async ({ page }) => {
+    const profilePage = new ProfilePOM(page);
+    await profilePage.route();
+    await profilePage.update();
+    // 🔍 Assert that the current URL ends with "/dashboard"
+    const dashboardPage = new DashboardPOM(page);
+    await dashboardPage.urlIsCorrect();
   });
 });
