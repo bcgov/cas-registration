@@ -163,6 +163,8 @@ def get_user_operator_operator_id(request):
         )
     except UserOperator.DoesNotExist:
         return 404, {"message": "User is not associated with any operator"}
+    except UserOperator.MultipleObjectsReturned:
+        return 400, {"message": "User is associated with multiple operators"}
     return 200, user_operator.operator
 
 
