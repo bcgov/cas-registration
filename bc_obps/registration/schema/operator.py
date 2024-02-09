@@ -36,6 +36,8 @@ class OperatorIn(ModelSchema):
     Schema for the Operator model
     """
 
+    user_operator_id: int
+
     class Config:
         model = Operator
         model_fields = ['status']
