@@ -17,6 +17,7 @@ from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 
 pytestmark = pytest.mark.django_db
 from registration.tests.utils.bakers import document_baker, operation_baker, operator_baker, user_operator_baker
+from registration.constants import PAGE_SIZE
 
 # initialize the APIClient app
 client = Client()
@@ -201,11 +202,11 @@ class TestOperationsEndpoint(CommonTestSetup):
         response = TestUtils.mock_get_with_auth_role(self, "cas_admin")
         assert response.status_code == 200
         response_data = response.json().get('data')
-        assert len(response_data) == 20
+        assert len(response_data) == PAGE_SIZE
         response = TestUtils.mock_get_with_auth_role(self, "cas_analyst")
         assert response.status_code == 200
         response_data = response.json().get('data')
-        assert len(response_data) == 20
+        assert len(response_data) == PAGE_SIZE
         # industry users can only see their own company's operations, and only if they're approved
         baker.make(
             UserOperator, user_id=self.user.user_guid, status=UserOperator.Statuses.APPROVED, operator_id=operator1.id
@@ -213,7 +214,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         response = TestUtils.mock_get_with_auth_role(self, "industry_user")
         assert response.status_code == 200
         response_data = response.json().get('data')
-        assert len(response_data) == 20
+        assert len(response_data) == PAGE_SIZE
 
     def test_operations_endpoint_get_method_paginated(self):
         operator1 = operator_baker()
@@ -230,7 +231,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         response_data = response.json().get('data')
         # save the id of the first paginated response item
         page_1_response_id = response_data[0].get('id')
-        assert len(response_data) == 20
+        assert len(response_data) == PAGE_SIZE
         # Get the page 2 response
         response = TestUtils.mock_get_with_auth_role(
             self, "cas_admin", self.endpoint + "?page=2&sort_field=created_at&sort_order=desc"
@@ -239,7 +240,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         response_data = response.json().get('data')
         # save the id of the first paginated response item
         page_2_response_id = response_data[0].get('id')
-        assert len(response_data) == 20
+        assert len(response_data) == PAGE_SIZE
         # assert that the first item in the page 1 response is not the same as the first item in the page 2 response
         assert page_1_response_id != page_2_response_id
 
@@ -251,7 +252,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         response_data = response.json().get('data')
         # save the id of the first paginated response item
         page_2_response_id_reverse = response_data[0].get('id')
-        assert len(response_data) == 20
+        assert len(response_data) == PAGE_SIZE
         # assert that the first item in the page 2 response is not the same as the first item in the page 2 response with reversed order
         assert page_2_response_id != page_2_response_id_reverse
 
