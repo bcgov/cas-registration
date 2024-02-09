@@ -75,9 +75,11 @@ export default function UserOperatorForm({
     return push(`/dashboard`);
   };
 
+  // page flashes if !isCasInternal or !isIndustryUser is used
   const isCasInternal =
     session?.user.app_role?.includes("cas") &&
     !session?.user.app_role?.includes("pending");
+  const isIndustryUser = session?.user.app_role?.includes("industry");
 
   const isFormStatusDisabled =
     formData?.status === Status.PENDING || formData?.status === Status.APPROVED;
@@ -87,7 +89,7 @@ export default function UserOperatorForm({
 
   return (
     <>
-      {!isCasInternal && (
+      {isIndustryUser && (
         <Note
           classNames={"mb-4 mt-6"}
           showNotePrefix={false}
@@ -117,7 +119,7 @@ Some fields cannot be edited. If you need to change those fields, please contact
         cancelUrl={
           isCasInternal ? "/dashboard/operators" : "/dashboard/select-operator"
         }
-        allowEdit={isFormStatusDisabled && !isCasInternal}
+        allowEdit={isFormStatusDisabled && isIndustryUser}
         allowBackNavigation
         baseUrl={`/dashboard/${operatorRoute}/user-operator/${
           isCreate ? "create" : userOperatorId
