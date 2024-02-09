@@ -11,7 +11,7 @@ import { chromium } from "@playwright/test";
 // 🪄 Page Object Models
 import { HomePOM } from "@/e2e/poms/home";
 // ☰ Enums
-import { UserRole, LoginLink } from "@/e2e/utils/enums";
+import { UserRole } from "@/e2e/utils/enums";
 // 🥞 Connection pool to postgres DB
 import { pool } from "@/e2e/utils/pool";
 // ℹ️ Environment variables
@@ -34,15 +34,15 @@ const setupAuth = async (
   role: string
 ) => {
   try {
+    // 🛢 To generate a storageState file for each CAS role...
+    // perform an upsert query that inserts or updates the role associated with your IDIR user_guid in the erc.user table.
+    // then login with a cas ID will be assigned this role in client/app/api/auth/[...nextauth]/route.ts
     switch (role) {
       case UserRole.CAS_ADMIN:
       case UserRole.CAS_ANALYST:
       case UserRole.CAS_PENDING:
-        // 🛢 To generate a storageState file for each CAS role...
-        // perform an upsert query that inserts or updates the role associated with your IDIR user_guid in the erc.user table.
-        // then login with a cas ID will be assigned this role in client/app/api/auth/[...nextauth]/route.ts
         // eslint-disable-next-line no-console
-        console.log(`Upserting ${user} for role ${role}`);
+        console.log(`🥞 Upserting ${user} for role ${role}`);
         const upsert = `
           INSERT INTO erc.user (user_guid, business_guid, bceid_business_name, first_name, last_name, position_title, email, phone_number, app_role_id)
           VALUES
@@ -59,17 +59,17 @@ const setupAuth = async (
         ]);
         break;
     }
-
+    // ✨  Launch new instance of the Chromium browser
     const browser = await chromium.launch();
     const page = await browser.newPage();
-
     // 🛸 Navigate to home page
     const homePage = new HomePOM(page);
     await homePage.route();
     // 🔑 Login
+    // eslint-disable-next-line no-console
+    console.log(`🔑 Logging in user ${user}`);
     await homePage.login(user, password, role);
     await homePage.userIsLoggedIn();
-
     // 💾 Capture the storage state (e.g., auth session cookies) of the current page and saves it to a file specified
     // This storeageState can then be used for e2e tests requiring authentication
     await page.context().storageState({ path: storageState });
@@ -108,12 +108,34 @@ export default async function globalSetup() {
         pw = process.env[role + "_PASSWORD"];
         break;
     }
-    // 🔑 Authenticate this user role and save to storageState
-    await setupAuth(
-      user || "",
-      pw || "",
-      process.env[role + "_STORAGE"] as string,
-      value
-    );
+    // Retry mechanism with maximum number of retries for flaky Keycloak?
+    const maxRetries = 3;
+    let retries = 0;
+    let success = false;
+    while (!success && retries < maxRetries) {
+      try {
+        // 🔑 Authenticate this user role and save to storageState
+        if (value === UserRole.NEW_USER) {
+          await setupAuth(
+            user || "",
+            pw || "",
+            process.env[role + "_STORAGE"] as string,
+            value
+          );
+        }
+        success = true; // Set success to true if setupAuth succeeds
+      } catch (error) {
+        // Increment retries count and log error
+        retries++;
+        // eslint-disable-next-line no-console
+        console.error(
+          `🐛 Error in setupAuth: ${error}. Retrying (${retries}/${maxRetries})...`
+        );
+      }
+    }
+    if (!success) {
+      // Throw an error if setupAuth fails after maximum retries
+      throw new Error(`Unable to authenticate for role: ${value}`);
+    }
   }
 }

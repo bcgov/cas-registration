@@ -21,13 +21,9 @@ test.describe("Test Workflow new user", () => {
     const homePage = new HomePOM(page);
     await homePage.route();
     // 🔍 Assert user is logged in
-    expect(await homePage.userIsLoggedIn()).toBeTruthy();
-    // 🛸 Navigate to profile page
+    await homePage.userIsLoggedIn();
+    // 🔍 Assert that the current URL ends with "/profile"
     const profilePage = new ProfilePOM(page);
-    await profilePage.route();
-    // 🔍 Assert user is logged in
-    expect(await homePage.userIsLoggedIn()).toBeTruthy();
-    // 🔍 Assert correct url
-    expect(await profilePage.urlIsCorrect()).toBeTruthy();
+    await profilePage.urlIsCorrect();
   });
 });

@@ -13,10 +13,19 @@ export enum DataTestID {
   PROFILE = '[data-testid="nav-user-profile"]',
 }
 
-export enum LoginLink {
+export enum Keycloak {
+  FIELD_USER_LOCATOR = "id=user",
+  FIELD_PW_LOCATOR = "Password",
+}
+
+export enum Login {
   CAS = "Log in with IDIR",
   INDUSTRY_USER = "Log in with Business BCeID",
+}
+
+export enum Logout {
   OUT = "Log out",
+  SSO = "You are logged out",
 }
 
 export enum UserRole {

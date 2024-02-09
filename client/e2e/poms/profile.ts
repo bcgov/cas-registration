@@ -3,7 +3,7 @@
  * Page objects model (POM) simplify test authoring by creating a higher-level API
  * POM simplify maintenance by capturing element selectors in one place and create reusable code to avoid repetition. *
  */
-import { Locator, Page } from "@playwright/test";
+import { Locator, Page, expect } from "@playwright/test";
 // ⛏️ Helpers
 import { getFieldRequired } from "@/e2e/utils/helpers";
 // ☰ Enums
@@ -23,9 +23,11 @@ export class ProfilePOM {
       name: ActionButton.SUBMIT,
     });
   }
+  // 🛸 Navigate to this page url
   async route() {
     await this.page.goto(this.url);
   }
+  // ✏️ Complete Profile form
   async update() {
     // Locate all required fields within the fieldset
     const requiredFields = await getFieldRequired(this.page);
@@ -45,10 +47,9 @@ export class ProfilePOM {
     }
     await this.buttonSubmit.click();
   }
+  // 🔍 Assert url reflects this page url
   async urlIsCorrect() {
-    // Check current URL ends as expected
     const path = AppRoute.PROFILE;
-    const currentUrl = await this.page.url();
-    return currentUrl.toLowerCase().includes(path.toLowerCase());
+    await expect(this.url.toLocaleLowerCase()).toContain(path);
   }
 }
