@@ -7,13 +7,13 @@ import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { actionHandler } from "@/app/utils/actions";
-import { Status } from "@/app/utils/enums";
+import { UserOperatorStatus } from "@/app/utils/enums";
 import { getUserFullName } from "@/app/utils/getUserFullName";
 
-const getUserOperatorStatus = async () => {
+export const getUserOperator = async () => {
   try {
     return await actionHandler(
-      `registration/user-operator-status-from-user`,
+      `registration/user-operator-from-user`,
       "GET",
       "",
     );
@@ -22,28 +22,25 @@ const getUserOperatorStatus = async () => {
   }
 };
 
-const getUserOperatorId = async () => {
-  try {
-    return await actionHandler(`registration/user-operator-id`, "GET", "");
-  } catch (error) {
-    throw error;
-  }
-};
-
 export default async function MyOperatorPage() {
   const session = await getServerSession(authOptions);
   const userName = getUserFullName(session);
+  const userOperator = await getUserOperator();
+  const isNew = userOperator.is_new;
+  const { status, id, operator } = userOperator;
+  if (status === UserOperatorStatus.PENDING) {
+    if (isNew) {
+      return redirect(
+        `/dashboard/select-operator/received/add-operator/${operator}`,
+      );
+    }
+    return redirect(
+      `/dashboard/select-operator/received/request-access/${operator}`,
+    );
+  }
 
-  const userOperatorIdResponse = await getUserOperatorId();
-  const userOperatorId = userOperatorIdResponse?.user_operator_id;
-
-  const { status } = await getUserOperatorStatus();
-
-  const isRedirectToForm =
-    status === Status.APPROVED || status === Status.PENDING;
-
-  if (isRedirectToForm) {
-    redirect(`/dashboard/select-operator/user-operator/${userOperatorId}/1`);
+  if (status === UserOperatorStatus.APPROVED) {
+    return redirect(`/dashboard/select-operator/user-operator/${id}/1`);
   }
 
   return (

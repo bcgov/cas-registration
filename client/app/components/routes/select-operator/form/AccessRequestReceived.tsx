@@ -2,8 +2,6 @@ import { Operator } from "@/app/components/routes/select-operator/form/types";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import { getOperator } from "@/app/components/routes/select-operator/form/ConfirmSelectedOperator";
 import { actionHandler } from "@/app/utils/actions";
-import Link from "next/link";
-import Button from "@mui/material/Button";
 
 export async function getOperatorHasAdmin(id: number) {
   return actionHandler(
@@ -46,16 +44,6 @@ export default async function AccessRequestReceived({
         Operation Representative has been received and will be reviewed.
       </p>
       {adminRequestJSX}
-      <Link href="/dashboard/select-operator">
-        <Button
-          className="my-10"
-          aria-label={"View Submitted Information"}
-          color="primary"
-          variant="contained"
-        >
-          View Submitted Information
-        </Button>
-      </Link>
     </>
   );
 
@@ -75,6 +63,7 @@ export default async function AccessRequestReceived({
 
   let content: JSX.Element | undefined;
   if (step === "add-operator") content = addOperatorJSX;
+  else if (hasAdmin) content = requestSubsequentAccessJSX;
   else if (step === "request-access")
     content = (
       <>
@@ -86,7 +75,6 @@ export default async function AccessRequestReceived({
         {adminRequestJSX}
       </>
     );
-  else if (hasAdmin) content = requestSubsequentAccessJSX;
 
   return (
     <section className="text-center my-auto text-2xl flex flex-col gap-3">

@@ -1,8 +1,5 @@
 import { actionHandler } from "@/app/utils/actions";
-import {
-  userOperatorPage2,
-  userOperatorSchema,
-} from "@/app/utils/jsonSchema/userOperator";
+import { userOperatorSchema } from "@/app/utils/jsonSchema/userOperator";
 
 import { BusinessStructure } from "@/app/components/routes/select-operator/form/types";
 import { RJSFSchema } from "@rjsf/utils";
@@ -10,8 +7,7 @@ import {
   UserInformationInitialFormData,
   UserOperatorFormData,
 } from "@/app/components/form/formDataTypes";
-import UserOperatorMultiStepForm from "@/app/components/form/UserOperatorMultiStepForm";
-import UserOperatorContactForm from "@/app/components/form/UserOperatorContactForm";
+import UserOperatorForm from "@/app/components/form/UserOperatorForm";
 
 async function getCurrentUser() {
   return actionHandler(
@@ -89,11 +85,6 @@ export default async function UserOperator({
   )
     return serverError;
 
-  // const currentUserAppRole = userData.app_role.role_name;
-  // const isCasInternal =
-  //   currentUserAppRole?.includes("cas") &&
-  //   !currentUserAppRole?.includes("pending");
-
   const businessStructuresList = businessStructures?.map(
     (businessStructure: BusinessStructure) => ({
       id: businessStructure.name,
@@ -107,11 +98,8 @@ export default async function UserOperator({
     ...userOperatorData,
   };
 
-  return params?.id === "request-access" ? (
-    // If the operator exists then show the form from the second page
-    <UserOperatorContactForm formData={formData} schema={userOperatorPage2} />
-  ) : (
-    <UserOperatorMultiStepForm
+  return (
+    <UserOperatorForm
       schema={createUserOperatorSchema(businessStructuresList)}
       formData={formData}
     />

@@ -209,6 +209,7 @@ const Review = ({
             <Box
               sx={{
                 width: "fit-content",
+                marginBottom: "40px",
               }}
             >
               <Button
@@ -219,6 +220,7 @@ const Review = ({
                 aria-label="Approve application"
                 sx={{
                   marginRight: "12px",
+
                   border: "1px solid",
                   fontWeight: "bold",
                 }}

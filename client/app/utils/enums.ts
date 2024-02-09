@@ -23,6 +23,13 @@ export enum OperatorStatus {
   CHANGES_REQUESTED = "Changes Requested",
 }
 
+export enum UserOperatorStatus {
+  PENDING = "Pending",
+  APPROVED = "Approved",
+  DECLINED = "Declined",
+}
+
+// user statuses
 export enum Status {
   MYSELF = "Myself",
   APPROVED = "Approved",

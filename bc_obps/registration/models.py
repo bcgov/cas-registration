@@ -483,7 +483,6 @@ class UserOperator(TimeStampedModel):
         PENDING = "pending", "Pending"
 
     class Statuses(models.TextChoices):
-        DRAFT = "Draft"
         PENDING = "Pending"
         APPROVED = "Approved"
         DECLINED = "Declined"
@@ -509,7 +508,7 @@ class UserOperator(TimeStampedModel):
     status = models.CharField(
         max_length=1000,
         choices=Statuses.choices,
-        default=Statuses.DRAFT,
+        default=Statuses.PENDING,
         db_comment="The status of a user operator in the app (e.g. pending review)",
     )
     verified_at = models.DateTimeField(
