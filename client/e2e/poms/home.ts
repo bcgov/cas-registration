@@ -57,8 +57,11 @@ export class HomePOM {
 
     // Click the login button
     await this.page.getByRole("button", { name: loginButton }).click();
+    // Keycloak so flaky, sooo flaky!
     // Fill the user field
-    await this.fieldUser.fill(user);
+    await this.fieldUser.fill(user, {
+      timeout: 11000,
+    });
     // Fill the pw field
     await this.fieldUserPassword.fill(password);
     // Click Continue button

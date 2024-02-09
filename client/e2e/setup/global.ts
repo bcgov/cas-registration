@@ -115,14 +115,25 @@ export default async function globalSetup() {
     while (!success && retries < maxRetries) {
       try {
         // 🔑 Authenticate this user role and save to storageState
-        if (value === UserRole.NEW_USER) {
-          await setupAuth(
-            user || "",
-            pw || "",
-            process.env[role + "_STORAGE"] as string,
-            value,
-          );
-        }
+        /*****************TEMP**********************/
+        /*  switch (value) {
+          case UserRole.INDUSTRY_USER_ADMIN:
+          case UserRole.INDUSTRY_USER:
+          case UserRole.NEW_USER:
+            await setupAuth(
+              user || "",
+              pw || "",
+              process.env[role + "_STORAGE"] as string,
+              value
+            );
+            break;
+        }*/
+        await setupAuth(
+          user || "",
+          pw || "",
+          process.env[role + "_STORAGE"] as string,
+          value,
+        );
         success = true; // Set success to true if setupAuth succeeds
       } catch (error) {
         // Increment retries count and log error
