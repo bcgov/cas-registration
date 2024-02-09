@@ -346,15 +346,16 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         response_data = response.json().get('data')
         # returns 1 since the user operator is tied to a different operator
         assert len(response_data) == 1
-
-    def test_user_operator_put_update_user_status(self):
+    def test_user_operator_put_cannot_update_status_when_operator_not_approved(self):
         user = baker.make(User)
+
+        operator = operator_baker()
+        operator.status = Operator.Statuses.PENDING
+        operator.save(update_fields=['status'])
         user_operator = user_operator_baker()
         user_operator.user_id = user.user_guid
-        user_operator.operator = baker.make(
-            Operator, status=Operator.Statuses.PENDING, bc_corporate_registry_number="abc1234567", _fill_optional=True
-        )
-        user_operator.save(update_fields=['user_id', 'operator'])
+        user_operator.operator = operator
+        user_operator.save(update_fields=['user_id', 'operator_id'])
 
         response_1 = TestUtils.mock_put_with_auth_role(
             self,
@@ -363,17 +364,23 @@ class TestUserOperatorEndpoint(CommonTestSetup):
             {"status": UserOperator.Statuses.APPROVED, "user_operator_id": user_operator.id},
             custom_reverse_lazy('update_user_operator_status'),
         )
-
         # make sure user can't change the status of a user_operator when operator is not approved
         assert response_1.status_code == 400
         response_1_json = response_1.json()
         assert response_1_json == {'message': 'Operator must be approved before approving users.'}
 
-        # Change operator status to approved
-        user_operator.operator = baker.make(
-            Operator, status=Operator.Statuses.APPROVED, bc_corporate_registry_number="efg1234567", _fill_optional=True
-        )
-        user_operator.save()
+    def test_user_operator_put_can_update_status(self):
+
+        user = baker.make(User)
+        operator = operator_baker()
+        operator.status = Operator.Statuses.APPROVED
+        operator.is_new = False
+        operator.save(update_fields=['status', 'is_new'])
+        user_operator = user_operator_baker()
+        user_operator.user_id = user.user_guid
+        user_operator.operator = operator
+        user_operator.save(update_fields=['user_id', 'operator_id'])
+
         response_2 = TestUtils.mock_put_with_auth_role(
             self,
             'cas_admin',
@@ -386,6 +393,16 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         assert user_operator.status == UserOperator.Statuses.APPROVED
         assert user_operator.verified_by == self.user
 
+    def test_user_operator_put_decline_rejects_everything(self):
+        user = baker.make(User)
+        operator = operator_baker()
+        operator.status = Operator.Statuses.APPROVED
+        operator.is_new = False
+        operator.save(update_fields=['status', 'is_new'])
+        user_operator = user_operator_baker()
+        user_operator.user_id = user.user_guid
+        user_operator.operator = operator
+        user_operator.save(update_fields=['user_id', 'operator_id'])
         # Assigning contacts to the operator of the user_operator
         contacts = baker.make(
             Contact,
