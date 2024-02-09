@@ -263,7 +263,7 @@ def request_access(request, payload: SelectOperatorIn):
         )
         if created:
             user_operator.set_create_or_update(modifier=user)
-        return 201, {"user_operator_id": user_operator.id}
+        return 201, {"user_operator_id": user_operator.id, "operator_id": user_operator.operator.id}
 
     except ValidationError as e:
         return 400, {"message": generate_useful_error(e)}
@@ -288,7 +288,7 @@ def request_access(request, payload: SelectOperatorIn):
             )
             if created:
                 user_operator.set_create_or_update(modifier=user)
-            return 201, {"user_operator_id": user_operator.id}
+            return 201, {"user_operator_id": user_operator.id, "operator_id": user_operator.operator.id}
     except ValidationError as e:
         return 400, {"message": generate_useful_error(e)}
     except Exception as e:
