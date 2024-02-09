@@ -31,7 +31,7 @@ const setupAuth = async (
   user: string,
   password: string,
   storageState: string,
-  role: string,
+  role: string
 ) => {
   try {
     // 🛢 To generate a storageState file for each CAS role...
@@ -75,7 +75,7 @@ const setupAuth = async (
     await page.context().storageState({ path: storageState });
     // eslint-disable-next-line no-console
     console.log(
-      `🤸 Successful authentication setup for ${user} captured in storageState ${storageState} 🤸`,
+      `🤸 Successful authentication setup for ${user} captured in storageState ${storageState} 🤸`
     );
   } catch (error) {
     // Handle any errors that occurred during the authentication process
@@ -92,7 +92,7 @@ export default async function globalSetup() {
   // 👤 Set storageState for Authenticated IDIR and BCeid credentials using NextAuth and Keycloak to be used in subsequent test suites
   // eslint-disable-next-line no-console
   console.log(
-    "👤 Global setup to authenticate all user roles and store each session in storageState to be used in test suites to mock user by role.",
+    "👤 Global setup to authenticate all user roles and store each session in storageState to be used in test suites to mock user by role."
   );
 
   // ➰ Loop through the entries of UserRole enum
@@ -115,24 +115,11 @@ export default async function globalSetup() {
     while (!success && retries < maxRetries) {
       try {
         // 🔑 Authenticate this user role and save to storageState
-        /*****************TEMP**********************/
-        /*  switch (value) {
-          case UserRole.INDUSTRY_USER_ADMIN:
-          case UserRole.INDUSTRY_USER:
-          case UserRole.NEW_USER:
-            await setupAuth(
-              user || "",
-              pw || "",
-              process.env[role + "_STORAGE"] as string,
-              value
-            );
-            break;
-        }*/
         await setupAuth(
           user || "",
           pw || "",
           process.env[role + "_STORAGE"] as string,
-          value,
+          value
         );
         success = true; // Set success to true if setupAuth succeeds
       } catch (error) {
@@ -140,7 +127,7 @@ export default async function globalSetup() {
         retries++;
         // eslint-disable-next-line no-console
         console.error(
-          `🐛 Error in setupAuth: ${error}. Retrying (${retries}/${maxRetries})...`,
+          `🐛 Error in setupAuth: ${error}. Retrying (${retries}/${maxRetries})...`
         );
       }
     }
