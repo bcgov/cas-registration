@@ -19,6 +19,7 @@ test.describe("Test Workflow new user", () => {
   test("Test Redirect to Profile", async ({ page }) => {
     // 🛸 Navigate to home page
     const homePage = new HomePOM(page);
+    await homePage.route();
     // 🔍 Assert user is logged in
     expect(await homePage.userIsLoggedIn()).toBeTruthy();
     // 🛸 Navigate to profile page

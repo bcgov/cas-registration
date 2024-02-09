@@ -222,6 +222,7 @@ jobs:
           django_secret_key: ${{ env.DJANGO_SECRET_KEY }}
           keycloak_client_id: ${{ env.KEYCLOAK_CLIENT_ID }}
           keycloak_client_secret: ${{ env.KEYCLOAK_CLIENT_SECRET }}
+          nextauth_secret: ${{ env.NEXTAUTH_SECRET }}
       - name: Install Playwright Browsers
         run: yarn playwright install --with-deps
         working-directory: ./client
@@ -258,6 +259,12 @@ jobs:
           name: playwright-report
           path: client/playwright-report
           retention-days: 30
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: new_user
+          path: client/playwright/.auth/new_user.json
+          retention-days: 1
   backend-tests:
     needs:
       ["backend-docker-build", "frontend-docker-build", "install-dev-tools"]
