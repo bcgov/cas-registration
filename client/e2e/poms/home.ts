@@ -57,10 +57,10 @@ export class HomePOM {
 
     // Click the login button
     await this.page.getByRole("button", { name: loginButton }).click();
-    // Keycloak so flaky, sooo flaky!
+
     // Fill the user field
     await this.fieldUser.fill(user, {
-      timeout: 11000,
+      timeout: 11000, // Keycloak so flaky, sooo flaky!
     });
     // Fill the pw field
     await this.fieldUserPassword.fill(password);
@@ -80,6 +80,8 @@ export class HomePOM {
   }
 
   async userIsLoggedIn() {
-    await this.page.waitForSelector(DataTestID.PROFILE);
+    await this.page.waitForSelector(DataTestID.PROFILE, {
+      timeout: 11000, // Keycloak so flaky, sooo flaky!
+    });
   }
 }
