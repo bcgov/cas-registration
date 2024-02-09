@@ -16,6 +16,14 @@ class UserOperatorStatus(ModelSchema):
         model_fields = ["status"]
 
 
+class PendingUserOperatorOut(ModelSchema):
+    is_new: bool
+
+    class Config:
+        model = UserOperator
+        model_exclude = [*AUDIT_FIELDS]
+
+
 class UserOperatorStatusUpdate(ModelSchema):
     user_guid: Optional[uuid.UUID] = None
     user_operator_id: Optional[int] = None
@@ -39,6 +47,7 @@ class UserOperatorOperatorIdOut(Schema):
 
 class RequestAccessOut(Schema):
     user_operator_id: int
+    operator_id: int
 
 
 class UserOperatorOut(ModelSchema):

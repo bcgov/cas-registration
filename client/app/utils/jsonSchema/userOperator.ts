@@ -55,7 +55,7 @@ export const userOperatorPage1: RJSFSchema = {
       readOnly: true,
     },
     operator_has_parent_operators: {
-      title: "Does this operator have multiple parent companies?",
+      title: "Does this operator have one or more parent company?",
       type: "boolean",
       default: false,
     },
@@ -375,7 +375,6 @@ export const userOperatorSchema: RJSFSchema = {
   type: "object",
   properties: {
     userOperatorPage1,
-    userOperatorPage2,
   },
 };
 

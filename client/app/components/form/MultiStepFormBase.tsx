@@ -55,6 +55,7 @@ const MultiStepFormBase = ({
     (section) => schema.properties[section].title,
   );
 
+  // Submission step is a bubble on the stepper that says "Submit"
   const formSectionTitles = showSubmissionStep
     ? [...mapSectionTitles, "Submission"]
     : mapSectionTitles;
@@ -91,7 +92,7 @@ const MultiStepFormBase = ({
   return (
     <>
       {allowEdit && (
-        <div className="w-full flex justify-end">
+        <div className="w-full flex justify-end mb-10">
           <Button
             variant="contained"
             color="primary"
@@ -102,10 +103,12 @@ const MultiStepFormBase = ({
           </Button>
         </div>
       )}
-      <MultiStepHeader
-        step={formSectionIndex}
-        steps={isCustomStepNames ? customStepNames : formSectionTitles}
-      />
+      {formSectionList.length > 1 && (
+        <MultiStepHeader
+          step={formSectionIndex}
+          steps={isCustomStepNames ? customStepNames : formSectionTitles}
+        />
+      )}
       <FormBase
         className="[&>div>fieldset]:min-h-[40vh]"
         schema={
@@ -126,7 +129,9 @@ const MultiStepFormBase = ({
           steps={formSectionList}
           baseUrl={baseUrl}
           cancelUrl={cancelUrl}
-          allowBackNavigation={allowBackNavigation}
+          allowBackNavigation={
+            allowBackNavigation && formSectionList.length > 1
+          }
           submitButtonText={submitButtonText}
         />
       </FormBase>
