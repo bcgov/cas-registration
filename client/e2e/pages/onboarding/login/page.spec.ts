@@ -25,8 +25,9 @@ test.describe("Test Page - Home", () => {
       );
       await loggedInPage.isLoggedIn();
       // 🔍 Assert that the current URL ends with "/profile"
-      const profilePage = new ProfilePOM(loggedInPage.page);
+      const profilePage = new ProfilePOM(page);
       await profilePage.route();
+      await loggedInPage.isLoggedIn();
       // await profilePage.isCorrectUrl();
     });
   });
