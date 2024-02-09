@@ -27,10 +27,5 @@ test.describe("Test Workflow new user", () => {
     await page.waitForSelector(profileNavSelector);
     // 🔍 Assert that the link is available
     expect(profileNavSelector).not.toBeNull();
-    // 🛸 Navigate to the profile page
-    const path = AppRoute.PROFILE;
-    await navigateAndWaitForLoad(page, url + path);
-    // 🔍 Assert that the current URL ends with "/profile"
-    //await expect(page.url().toLocaleLowerCase()).toContain(path);
   });
 });

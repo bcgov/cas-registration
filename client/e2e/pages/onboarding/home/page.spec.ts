@@ -10,6 +10,7 @@ test.describe.configure({ mode: "serial" });
 test.describe("Test Page - Home", () => {
   test("Test Welcome", async ({ page }) => {
     const homePage = new HomePOM(page);
+    await homePage.route();
     await homePage.isCorrectUrl();
     // 🔍 Assert welcome text is visible
     await expect(homePage.page.getByText("Welcome")).toBeVisible();
