@@ -170,22 +170,24 @@ def get_user_operator_id(request):
 
 @router.get(
     "/select-operator/user-operator/{int:user_operator_id}",
-    response=UserOperatorOut,
+    response={200:  UserOperatorOut, codes_4xx: Message}
 )
 @authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles())
 def get_user_operator(request, user_operator_id: int):
     user: User = request.current_user
     if user.is_industry_user():
         # Industry users can only get their own UserOperator instance
-        user_operator = UserOperator.objects.select_related('operator').get(id=user_operator_id, user=user.user_guid)
-        if not user_operator:
-            raise HTTPError(404, "Operation not found")
+        try:
+          user_operator = UserOperator.objects.select_related('operator').get(id=user_operator_id, user=user.user_guid)
+        except UserOperator.DoesNotExist:
+            return 404, {"message": "No matching userOperator found"}
         # user_operator = get_object_or_404(UserOperator, id=user_operator_id, user=user.user_guid)
         return UserOperatorOut.from_orm(user_operator)
     else:
-        user_operator = UserOperator.objects.select_related('operator').get(id=user_operator_id)
-        if not user_operator:
-            raise HTTPError(404, "Operation not found")
+        try:
+          user_operator = UserOperator.objects.select_related('operator').get(id=user_operator_id)
+        except UserOperator.DoesNotExist:
+            return 404, {"message": "No matching userOperator found"}
         # user_operator = get_object_or_404(UserOperator, id=user_operator_id)
         return UserOperatorOut.from_orm(user_operator)
 
