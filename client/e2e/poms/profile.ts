@@ -45,9 +45,10 @@ export class ProfilePOM {
     }
     await this.buttonSubmit.click();
   }
-  async isCorrectUrl() {
-    // 🔍 Assert that the current URL ends as expected
+  async urlIsCorrect() {
+    // Check current URL ends as expected
     const path = AppRoute.PROFILE;
-    await expect(this.page.url().toLocaleLowerCase()).toContain(path);
+    const currentUrl = await this.page.url();
+    return currentUrl.toLowerCase().includes(path.toLowerCase());
   }
 }

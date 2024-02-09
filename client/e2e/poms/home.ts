@@ -3,7 +3,7 @@
  * Page objects model (POM) simplify test authoring by creating a higher-level API
  * POM simplify maintenance by capturing element selectors in one place and create reusable code to avoid repetition. *
  */
-import { Locator, Page, expect } from "@playwright/test";
+import { Locator, Page } from "@playwright/test";
 // ☰ Enums
 import {
   ActionButton,
@@ -48,17 +48,16 @@ export class HomePOM {
       .getByRole("button", { name: ActionButton.CONTINUE })
       .click();
   }
-  async isCorrectUrl() {
-    // 🔍 Assert that the current URL ends as expected
+  async urlIsCorrect() {
+    // Check current URL ends as expected
     const path = AppRoute.HOME;
-    await expect(this.page.url().toLocaleLowerCase()).toContain(path);
+    const currentUrl = await this.page.url();
+    return currentUrl.toLowerCase().includes(path.toLowerCase());
   }
-  async isLoggedIn() {
-    // 🔍 Assert user profile link is visible
-    // 🚩 BP approach (?) seems to fail: await expect(page.getByTestId("nav-user-profile")).toBeVisible();
+  async userIsLoggedIn(): Promise<boolean> {
+    // Get Profile link selector
     const profileNavSelector = DataTestID.PROFILE;
     await this.page.waitForSelector(profileNavSelector);
-    // 🔍 Assert that the link is available
-    expect(profileNavSelector).not.toBeNull();
+    return await this.page.isVisible(profileNavSelector);
   }
 }
