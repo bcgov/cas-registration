@@ -20,7 +20,7 @@ from registration.schema import (
     UserOperatorStatusUpdate,
     ExternalDashboardUsersTileData,
     PendingUserOperatorOut,
-    OperatorFromUserOperatorOut
+    OperatorFromUserOperatorOut,
 )
 from typing import List
 
