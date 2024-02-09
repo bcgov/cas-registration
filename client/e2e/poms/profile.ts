@@ -50,6 +50,7 @@ export class ProfilePOM {
   // 🔍 Assert url reflects this page url
   async urlIsCorrect() {
     const path = AppRoute.PROFILE;
-    await expect(this.url.toLocaleLowerCase()).toContain(path);
+    const currentUrl = await this.page.url();
+    await expect(currentUrl.toLocaleLowerCase()).toContain(path);
   }
 }

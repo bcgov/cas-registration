@@ -67,7 +67,8 @@ export class HomePOM {
   // 🔍 Assert url reflects this page url
   async urlIsCorrect() {
     const path = AppRoute.HOME;
-    await expect(this.url.toLocaleLowerCase()).toContain(path);
+    const currentUrl = await this.page.url();
+    await expect(currentUrl.toLocaleLowerCase()).toContain(path);
   }
   // 🕒 Wait for the profile navigation link to be visible
   async userIsLoggedIn() {
