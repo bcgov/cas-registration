@@ -32,7 +32,7 @@ export default function UserOperatorReview({
         "PUT",
         "",
         {
-          body: JSON.stringify({ status }),
+          body: JSON.stringify({ status, user_operator_id: userOperatorId }),
         },
       );
       onSuccess?.();

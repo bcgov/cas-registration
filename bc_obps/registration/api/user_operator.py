@@ -434,12 +434,16 @@ def update_user_operator_status(request, payload: UserOperatorStatusUpdate):
     else:
         return 404, {"message": "No parameters provided"}
 
-    # We can't update the status of a user_operator if the operator has been declined or is awaiting review
+
+    # We can't update the status of a user_operator if the operator has been declined or is awaiting review, or if the operator is new
+    operator = get_object_or_404(Operator, id=user_operator.operator.id)
     if user_operator.operator.status in [
         Operator.Statuses.PENDING,
         Operator.Statuses.DECLINED,
         Operator.Statuses.DRAFT,
-    ]:
+    ] or operator.is_new:
+
+
         return 400, {"message": "Operator must be approved before approving users."}
     try:
         with transaction.atomic():
