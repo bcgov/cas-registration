@@ -33,6 +33,7 @@ from registration.schema import (
     OperationUpdateStatusIn,
     OperationListOut,
     OperationWithOperatorOut,
+    OperationUpdateStatusOut,
 )
 from registration.utils import get_an_operators_approved_users, generate_useful_error
 from ninja.responses import codes_4xx, codes_5xx
@@ -349,19 +350,21 @@ def update_operation(request, operation_id: int, submit: str, form_section: int,
 
 
 @router.put(
-    "/operations/{operation_id}/update-status", response={200: OperationOut, codes_4xx: Message, codes_5xx: Message}
+    "/operations/{operation_id}/update-status",
+    response={200: OperationUpdateStatusOut, codes_4xx: Message, codes_5xx: Message},
 )
 @authorize(AppRole.get_authorized_irc_roles())
 def update_operation_status(request, operation_id: int, payload: OperationUpdateStatusIn):
-    operation = get_object_or_404(Operation, id=operation_id)
+    operation = Operation.objects.select_related('operator', 'bc_obps_regulated_operation').get(id=operation_id)
+    if not operation:
+        raise HttpError(404, "Operation not found")
     user: User = request.current_user
     try:
         with transaction.atomic():
             status = Operation.Statuses(payload.status)
-            operation.status = status
             if status in [Operation.Statuses.APPROVED, Operation.Statuses.DECLINED]:
                 operation.verified_at = datetime.now(pytz.utc)
-                operation.verified_by = user
+                operation.verified_by_id = user.pk
                 if status == Operation.Statuses.APPROVED:
                     operation.generate_unique_boro_id()
                     # approve the operator if it's not already approved (the case for imported operators)
@@ -370,12 +373,12 @@ def update_operation_status(request, operation_id: int, payload: OperationUpdate
                         operator.status = Operator.Statuses.APPROVED
                         operator.is_new = False
                         operator.verified_at = datetime.now(pytz.utc)
-                        operator.verified_by = user
-                        operator.save(update_fields=["status", "is_new", "verified_at", "verified_by"])
+                        operator.verified_by_id = user.pk
+                        operator.save(update_fields=["status", "is_new", "verified_at", "verified_by_id"])
                         operator.set_create_or_update(user.pk)
-            operation.save()
+            operation.status = status
+            operation.save(update_fields=['status', 'verified_at', 'verified_by_id', 'bc_obps_regulated_operation'])
             operation.set_create_or_update(user.pk)
-
             return 200, operation
     except ValidationError as e:
         return 400, {"message": generate_useful_error(e)}
