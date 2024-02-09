@@ -8,19 +8,17 @@
  */
 
 import { chromium } from "@playwright/test";
-// ⛏️ Helpers
-import { navigateAndWaitForLoad } from "@/e2e/utils/helpers";
+// 🪄 Page Object Models
+import { HomePOM } from "@/e2e/poms/home";
+// ☰ Enums
+import { UserRole, LoginLink } from "@/e2e/utils/enums";
+// 🥞 Connection pool to postgres DB
+import { pool } from "@/e2e/utils/pool";
 // ℹ️ Environment variables
 import * as dotenv from "dotenv";
 dotenv.config({
   path: "./e2e/.env.local",
 });
-// 👤 User Roles
-import { UserRole } from "@/e2e/utils/enums";
-// 🛸 Login Links
-import { LoginLink } from "@/e2e/utils/enums";
-// 🥞 Connection pool to postgres DB
-import { pool } from "@/e2e/utils/pool";
 
 // Set the test URL
 const url = process.env.E2E_BASEURL || "";
@@ -70,28 +68,12 @@ const setupAuth = async (
     const browser = await chromium.launch();
     const page = await browser.newPage();
 
-    // 🛸 Navigate to the home page
-    await navigateAndWaitForLoad(page, url);
-
-    // Click the login button
-    await page.getByRole("button", { name: loginButton }).click();
-
-    // 🔑 Login to Keycloak
-    // Fill the user field
-    await page.locator("id=user").fill(user, {
-      timeout: 60000,
-    });
-    // Fill the pw field
-    await page.getByLabel("Password").fill(password, {
-      timeout: 60000,
-    });
-    // Click Continue button
-    await page.getByRole("button", { name: "Continue" }).click();
-
-    // 🕒 Wait for the profile navigation link to be present
-    // 🚩 BP approach (?) seems to fail: await expect(page.getByTestId("nav-user-profile")).toBeVisible();
-    const profileNavSelector = '[data-testid="nav-user-profile"]';
-    await page.waitForSelector(profileNavSelector);
+    // 🛸 Navigate to home page
+    const homePage = new HomePOM(page);
+    await homePage.route();
+    // 🔑 Login
+    await homePage.login(user, password, role);
+    await homePage.userIsLoggedIn();
 
     // 💾 Capture the storage state (e.g., auth session cookies) of the current page and saves it to a file specified
     // This storeageState can then be used for e2e tests requiring authentication
@@ -132,14 +114,11 @@ export default async function globalSetup() {
         break;
     }
     // 🔑 Authenticate this user role and save to storageState
-    //****************TEMP*******************************/
-    if (value === UserRole.NEW_USER) {
-      await setupAuth(
-        user || "",
-        pw || "",
-        process.env[role + "_STORAGE"] as string,
-        value
-      );
-    }
+    await setupAuth(
+      user || "",
+      pw || "",
+      process.env[role + "_STORAGE"] as string,
+      value
+    );
   }
 }

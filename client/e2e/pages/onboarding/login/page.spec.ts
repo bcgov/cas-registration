@@ -34,25 +34,23 @@ test.describe("Test Page - Home", () => {
           password = process.env[`${role}_PASSWORD`] || "";
           break;
       }
-      //****************TEMP*******************************/
-      if (value === UserRole.NEW_USER) {
-        test(`Test Login - ${value}`, async ({ page }) => {
-          // 🛸 Navigate to home page
-          const homePage = new HomePOM(page);
-          await homePage.route();
-          // 🔑 Login
-          await homePage.login(user, password, value);
-          // 🔍 Assert user is logged in
-          expect(await homePage.userIsLoggedIn()).toBeTruthy();
-          // 🛸 Navigate to profile page
-          const profilePage = new ProfilePOM(page);
-          await profilePage.route();
-          // 🔍 Assert user is logged in
-          expect(await homePage.userIsLoggedIn()).toBeTruthy();
-          // 🔍 Assert correct url
-          expect(await profilePage.urlIsCorrect()).toBeTruthy();
-        });
-      }
+
+      test(`Test Login - ${value}`, async ({ page }) => {
+        // 🛸 Navigate to home page
+        const homePage = new HomePOM(page);
+        await homePage.route();
+        // 🔑 Login
+        await homePage.login(user, password, value);
+        // 🔍 Assert user is logged in
+        expect(await homePage.userIsLoggedIn()).toBeTruthy();
+        // 🛸 Navigate to profile page
+        const profilePage = new ProfilePOM(page);
+        await profilePage.route();
+        // 🔍 Assert user is logged in
+        expect(await homePage.userIsLoggedIn()).toBeTruthy();
+        // 🔍 Assert correct url
+        expect(await profilePage.urlIsCorrect()).toBeTruthy();
+      });
     });
   }
 });
