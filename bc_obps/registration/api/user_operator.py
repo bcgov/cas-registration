@@ -1,3 +1,4 @@
+from urllib.error import HTTPError
 from django.db import IntegrityError, transaction
 from registration.utils import (
     generate_useful_error,
@@ -176,10 +177,16 @@ def get_user_operator(request, user_operator_id: int):
     user: User = request.current_user
     if user.is_industry_user():
         # Industry users can only get their own UserOperator instance
-        user_operator = get_object_or_404(UserOperator, id=user_operator_id, user=user.user_guid)
+        user_operator = UserOperator.objects.select_related('operator').get(id=user_operator_id, user=user.user_guid)
+        if not user_operator:
+            raise HTTPError(404, "Operation not found")
+        # user_operator = get_object_or_404(UserOperator, id=user_operator_id, user=user.user_guid)
         return UserOperatorOut.from_orm(user_operator)
     else:
-        user_operator = get_object_or_404(UserOperator, id=user_operator_id)
+        user_operator = UserOperator.objects.select_related('operator').get(id=user_operator_id)
+        if not user_operator:
+            raise HTTPError(404, "Operation not found")
+        # user_operator = get_object_or_404(UserOperator, id=user_operator_id)
         return UserOperatorOut.from_orm(user_operator)
 
 
