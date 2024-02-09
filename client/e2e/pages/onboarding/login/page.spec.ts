@@ -2,7 +2,7 @@
 // 🔍 Asserts the user can login, logout, and login
 
 import { test } from "@playwright/test";
-// 🪄page object model
+// 🪄 Page Object Models
 import { HomePOM } from "@/e2e/poms/home";
 import { ProfilePOM } from "@/e2e/poms/profile";
 // ☰ Enums
@@ -14,21 +14,20 @@ dotenv.config({ path: "./e2e/.env.local" });
 // 🏷 Annotate test suite as serial
 test.describe.configure({ mode: "serial" });
 test.describe("Test Page - Home", () => {
-    test.describe(`Test User Role - none`, () => { 
-      test("Test Login", async ({ page }) => {
-        const loggedInPage = new HomePOM(page);
-        await loggedInPage.route();
-        await loggedInPage.login(
-          process.env.E2E_NEW_USER as string,
-          process.env.E2E_NEW_USER_PASSWORD as string,
-          UserRole.NEW_USER
-        );
-        await loggedInPage.isLoggedIn();
-        // 🔍 Assert that the current URL ends with "/profile"
-         const profilePage = new ProfilePOM(page);
-        await profilePage.route();
-        // await profilePage.isCorrectUrl();
-      });
-   
-  }
+  test.describe(`Test User Role - none`, () => {
+    test("Test Login", async ({ page }) => {
+      const loggedInPage = new HomePOM(page);
+      await loggedInPage.route();
+      await loggedInPage.login(
+        process.env.E2E_NEW_USER as string,
+        process.env.E2E_NEW_USER_PASSWORD as string,
+        UserRole.NEW_USER
+      );
+      await loggedInPage.isLoggedIn();
+      // 🔍 Assert that the current URL ends with "/profile"
+      const profilePage = new ProfilePOM(page);
+      await profilePage.route();
+      // await profilePage.isCorrectUrl();
+    });
+  });
 });
