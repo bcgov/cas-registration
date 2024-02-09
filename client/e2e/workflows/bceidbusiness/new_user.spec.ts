@@ -2,16 +2,13 @@
 // 🔍 Asserts new user is redirected to profile
 
 import { test, expect } from "@playwright/test";
-// ⛏️ Helpers
-import { navigateAndWaitForLoad } from "@/e2e/utils/helpers";
+// 🪄page object model
+import { ProfilePOM } from "@/e2e/poms/profile";
 // ☰ Enums
-import { AppRoute, DataTestID } from "@/e2e/utils/enums";
+import { DataTestID } from "@/e2e/utils/enums";
 // ℹ️ Environment variables
 import * as dotenv from "dotenv";
 dotenv.config({ path: "./e2e/.env.local" });
-
-// set the test url
-const url = process.env.E2E_BASEURL as string;
 
 // 🏷 Annotate test suite as serial
 test.describe.configure({ mode: "serial" });
@@ -27,5 +24,8 @@ test.describe("Test Workflow new user", () => {
     await page.waitForSelector(profileNavSelector);
     // 🔍 Assert that the link is available
     expect(profileNavSelector).not.toBeNull();
+    // 🔍 Assert that the current URL ends with "/profile"
+    const profilePage = new ProfilePOM(page);
+    await profilePage.route();
   });
 });

@@ -343,11 +343,18 @@ Run tests iwith the Playwright GUI using terminal command:
 ````bash
 cd client && yarn e2e:ui
 
-
 ### Debugging Playwright in CI
 
 You can download the artifacts from the CI job and run the tests locally by following the steps in the [Playwright documentation](https://playwright.dev/docs/ci-intro#downloading-the-html-report).
 
+4.0 To open last HTML report run:
+
+Open report from new terminal command:
+
+```bash
+cd client && yarn playwright show-report
+
+```
 ### Debugging Django using Shell Plus
 
 [Shell Plus](https://django-extensions.readthedocs.io/en/latest/shell_plus.html) is a Django extension that allows you to run a shell with all of your Django models and settings pre-loaded. This is useful for debugging and testing.
