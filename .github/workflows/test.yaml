@@ -19,6 +19,7 @@ env:
   E2E_INDUSTRY_USER_PASSWORD: ${{ secrets.INDUSTRY_USER_PASSWORD }}
   E2E_NEW_USER_PASSWORD: ${{ secrets.NEW_USER_PASSWORD }}
   E2E_NEW_USER_GUID: ${{ secrets.NEW_USER_GUID }}
+  NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
 jobs:
   install-dev-tools:
     runs-on: ubuntu-latest
