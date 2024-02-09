@@ -159,5 +159,5 @@ class UserOperatorListOut(Schema):
 
 
 class UserOperatorPaginatedOut(Schema):
-    row_count: int
     data: List[UserOperatorListOut]
+    row_count: int
