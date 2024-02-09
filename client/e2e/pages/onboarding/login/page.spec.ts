@@ -42,15 +42,14 @@ test.describe("Test Page - Home", () => {
           await homePage.route();
           await homePage.login(user, password, value);
           // 🔍 Assert user is logged in
-          let userIsLoggedIn = await homePage.userIsLoggedIn();
-          expect(userIsLoggedIn).toBeTruthy();
+          expect(await homePage.userIsLoggedIn()).toBeTruthy();
           // 🛸 Navigate to profile page
           const profilePage = new ProfilePOM(page);
           await profilePage.route();
           // 🔍 Assert user is logged in
           expect(await homePage.userIsLoggedIn()).toBeTruthy();
-          // 🔍 Assert that the current URL ends with "/profile"
-          // await profilePage.isCorrectUrl();
+          // 🔍 Assert correct url
+          expect(await profilePage.urlIsCorrect()).toBeTruthy();
         });
       }
     });

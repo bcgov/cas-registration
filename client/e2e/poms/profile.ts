@@ -14,7 +14,7 @@ dotenv.config({ path: "./e2e/.env.local" });
 
 export class ProfilePOM {
   readonly page: Page;
-  readonly url: string = process.env.E2E_BASEURL + "profile";
+  readonly url: string = process.env.E2E_BASEURL + AppRoute.PROFILE;
   readonly buttonSubmit: Locator;
 
   constructor(page: Page) {
