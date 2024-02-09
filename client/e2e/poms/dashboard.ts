@@ -17,12 +17,11 @@ export class DashboardPOM {
   constructor(page: Page) {
     this.page = page;
   }
-  // 🛸 Navigate to this page url
+
   async route() {
     await this.page.goto(this.url);
   }
 
-  // 🔍 Assert url reflects this page url
   async urlIsCorrect() {
     const path = AppRoute.DASHBOARD;
     const currentUrl = await this.page.url();

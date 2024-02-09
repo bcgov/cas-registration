@@ -2,9 +2,9 @@
 
 import { test } from "@playwright/test";
 // 🪄 Page Object Models
+import { DashboardPOM } from "@/e2e/poms/dashboard";
 import { HomePOM } from "@/e2e/poms/home";
 import { ProfilePOM } from "@/e2e/poms/profile";
-import { DashboardPOM } from "@/e2e/poms/dashboard";
 // ☰ Enums
 import { UserRole } from "@/e2e/utils/enums";
 // ℹ️ Environment variables
@@ -57,7 +57,7 @@ test.describe("Test Page - Home", () => {
             await profilePage.urlIsCorrect();
             break;
           default:
-            // 🔍 Assert that the current URL ends with "/pdashboard"
+            // 🔍 Assert that the current URL ends with "/dashboard"
             const dashboardPage = new DashboardPOM(page);
             await dashboardPage.urlIsCorrect();
             break;
