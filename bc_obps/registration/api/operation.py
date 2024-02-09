@@ -6,7 +6,6 @@ from datetime import datetime
 from django.core.exceptions import ValidationError
 import pytz
 from typing import List, Union
-from django.shortcuts import get_object_or_404
 from registration.models import (
     AppRole,
     MultipleOperator,
@@ -15,7 +14,6 @@ from registration.models import (
     Contact,
     BusinessRole,
     BusinessStructure,
-    RegulatedProduct,
     User,
     UserOperator,
     MultipleOperator,
@@ -173,7 +171,7 @@ def get_operation(request, operation_id: int):
             .get(id=operation_id)
         )
     except Operation.DoesNotExist:
-        raise HttpError(404, "Operation not found")
+        raise HttpError(404, "Not Found")
     if user.is_industry_user():
         if not operation.user_has_access(user.user_guid):
             raise HttpError(401, UNAUTHORIZED_MESSAGE)
@@ -194,6 +192,8 @@ def create_operation(request, payload: OperationCreateIn):
         user_operator = UserOperator.objects.only("operator__id").get(user=user.user_guid)
     except UserOperator.DoesNotExist:
         return 404, {"message": "User is not associated with any operator"}
+    except UserOperator.MultipleObjectsReturned:
+        return 400, {"message": "User is associated with multiple operators."}
 
     payload_dict: dict = payload.dict(
         exclude={
@@ -211,20 +211,10 @@ def create_operation(request, payload: OperationCreateIn):
     try:
         with transaction.atomic():
             # Using ThroughModel and bulk_create to speed up the process
-            ThroughModel = Operation.regulated_products.through
-            regulated_product_id_list = RegulatedProduct.objects.filter(id__in=payload.regulated_products).values_list(
-                "id", flat=True
-            )
-            operation = Operation(
+            operation = Operation.objects.create(
                 **payload_dict, operator_id=user_operator.operator_id, naics_code_id=payload.naics_code
             )
-            Operation.objects.bulk_create([operation])  # using bulk_create to speed up the process(5 less queries)
-            ThroughModel.objects.bulk_create(
-                [
-                    ThroughModel(operation_id=operation.id, regulatedproduct_id=regulated_product_id)
-                    for regulated_product_id in regulated_product_id_list
-                ]
-            )
+            operation.regulated_products.set(payload.regulated_products)
             operation.set_create_or_update(user.pk)
 
             # Not needed for MVP
@@ -246,42 +236,38 @@ def create_operation(request, payload: OperationCreateIn):
 @authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles())
 def update_operation(request, operation_id: int, submit: str, form_section: int, payload: OperationUpdateIn):
     user: User = request.current_user
-    user_operator = UserOperator.objects.filter(user_id=user.user_guid).first()
-    # if there's no user_operator or operator, then the user hasn't requested access to the operator
-    if not user_operator:
-        raise HttpError(401, UNAUTHORIZED_MESSAGE)
-    operator = Operator.objects.get(id=user_operator.operator_id)
-
-    approved_users = get_an_operators_approved_users(operator.pk)
-    if user.user_guid not in approved_users:
+    try:
+        # if there's no user_operator or operator, then the user hasn't requested access to the operator
+        user_operator = UserOperator.objects.only('operator__id').get(user=user.user_guid)
+    except UserOperator.DoesNotExist:
         raise HttpError(401, UNAUTHORIZED_MESSAGE)
 
-    operation = get_object_or_404(Operation, id=operation_id)
+    try:
+        operation = (
+            Operation.objects.only('operator__id', 'point_of_contact__id')
+            .select_related('operator', 'point_of_contact')
+            .prefetch_related('regulated_products')
+            .get(id=operation_id)
+        )
+    except Operation.DoesNotExist:
+        raise HttpError(404, "Not Found")
 
     # industry users can only edit operations that belong to their operator
-    if operation.operator_id != user_operator.operator.id:
+    if not operation.user_has_access(user.user_guid) or operation.operator_id != user_operator.operator_id:
         raise HttpError(401, UNAUTHORIZED_MESSAGE)
+
     try:
         with transaction.atomic():
-            operation.operator_id = payload.operator
-            operation.naics_code_id = payload.naics_code
-
             # the frontend includes default values, which are being sent in the payload to the backend. We need to know
             # whether the data being received in the payload is what the user has actually viewed, so we separate this
             # by form_section (the paginated form in the UI)
             if form_section == 1:
-                payload_dict: dict = payload.dict(
-                    include={
-                        'name',
-                        'type',
-                        'bcghg_id',
-                        'opt_in',
-                    }
-                )
+                payload_dict: dict = payload.dict(include={'name', 'type', 'bcghg_id', 'opt_in'})
                 for attr, value in payload_dict.items():
                     setattr(operation, attr, value)
+                operation.naics_code_id = payload.naics_code
+                operation.save(update_fields=[*payload_dict.keys(), 'naics_code_id'])
                 operation.regulated_products.set(payload.regulated_products)
-                operation.save(update_fields=list(payload_dict.keys()) + ['naics_code', 'operator'])
             elif form_section == 2:
                 point_of_contact_id = operation.point_of_contact_id or None
                 is_external_point_of_contact = payload.is_external_point_of_contact
@@ -355,9 +341,10 @@ def update_operation(request, operation_id: int, submit: str, form_section: int,
 )
 @authorize(AppRole.get_authorized_irc_roles())
 def update_operation_status(request, operation_id: int, payload: OperationUpdateStatusIn):
-    operation = Operation.objects.select_related('operator', 'bc_obps_regulated_operation').get(id=operation_id)
-    if not operation:
-        raise HttpError(404, "Operation not found")
+    try:
+        operation = Operation.objects.select_related('operator', 'bc_obps_regulated_operation').get(id=operation_id)
+    except Operation.DoesNotExist:
+        raise HttpError(404, "Not Found")
     user: User = request.current_user
     try:
         with transaction.atomic():
