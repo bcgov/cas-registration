@@ -31,9 +31,7 @@ const SubmitButton: React.FunctionComponent<SubmitButtonProps> = ({
   const isDisabled = disabled || isSubmitting;
   const { data: session } = useSession();
 
-  const isCasInternal =
-    session?.user.app_role?.includes("cas") &&
-    !session?.user.app_role?.includes("pending");
+  const isIndustryUser = session?.user.app_role?.includes("industry");
 
   return (
     <div className={`flex w-full mt-8 justify-between ${classNames}`}>
@@ -73,7 +71,7 @@ const SubmitButton: React.FunctionComponent<SubmitButtonProps> = ({
             </Button>
           </Link>
         ) : (
-          !isCasInternal && (
+          isIndustryUser && (
             <Button
               type="submit"
               aria-disabled={isDisabled}
