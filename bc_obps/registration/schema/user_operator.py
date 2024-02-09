@@ -45,17 +45,6 @@ class UserOperatorOut(ModelSchema):
     Custom schema for the user operator form
     """
 
-    first_name: str
-    last_name: str
-    position_title: str
-    street_address: str
-    municipality: str
-    postal_code: str
-    province: str
-    email: str = Field(..., alias="user.email")
-    phone_number: str
-    so_email: str
-    so_phone_number: str
     legal_name: str = Field(..., alias="operator.legal_name")
     trade_name: Optional[str] = Field("", alias="operator.trade_name")
     cra_business_number: Optional[int] = Field(None, alias="operator.cra_business_number")
@@ -72,7 +61,6 @@ class UserOperatorOut(ModelSchema):
     mailing_province: Optional[str] = Field(None, alias="operator.mailing_address.province")
     mailing_postal_code: Optional[str] = Field(None, alias="operator.mailing_address.postal_code")
     website: Optional[str] = Field("", alias="operator.website")
-    is_senior_officer: bool
     mailing_address_same_as_physical: bool
     operator_id: int = Field(..., alias="operator.id")
     is_new: bool = Field(..., alias="operator.is_new")
@@ -80,54 +68,10 @@ class UserOperatorOut(ModelSchema):
     parent_operators_array: Optional[List[ParentOperatorOut]] = Field(None, alias="operator.parent_operators")
 
     @staticmethod
-    def resolve_is_senior_officer(obj: UserOperator):
-        return obj.user_is_senior_officer()
-
-    @staticmethod
     def resolve_mailing_address_same_as_physical(obj: UserOperator):
         if not obj.operator.mailing_address or not obj.operator.physical_address:
             return False
         return obj.operator.mailing_address.id == obj.operator.physical_address.id
-
-    @staticmethod
-    def resolve_first_name(obj: UserOperator):
-        return obj.get_senior_officer().first_name if obj.get_senior_officer() else ""
-
-    @staticmethod
-    def resolve_last_name(obj: UserOperator):
-        return obj.get_senior_officer().last_name if obj.get_senior_officer() else ""
-
-    @staticmethod
-    def resolve_position_title(obj: UserOperator):
-        return obj.get_senior_officer().position_title if obj.get_senior_officer() else ""
-
-    @staticmethod
-    def resolve_street_address(obj: UserOperator):
-        return obj.get_senior_officer().address.street_address if obj.get_senior_officer() else ""
-
-    @staticmethod
-    def resolve_municipality(obj: UserOperator):
-        return obj.get_senior_officer().address.municipality if obj.get_senior_officer() else ""
-
-    @staticmethod
-    def resolve_postal_code(obj: UserOperator):
-        return obj.get_senior_officer().address.postal_code if obj.get_senior_officer() else ""
-
-    @staticmethod
-    def resolve_province(obj: UserOperator):
-        return obj.get_senior_officer().address.province if obj.get_senior_officer() else ""
-
-    @staticmethod
-    def resolve_so_email(obj: UserOperator):
-        return obj.get_senior_officer().email if obj.get_senior_officer() else ""
-
-    @staticmethod
-    def resolve_phone_number(obj: UserOperator):
-        return str(obj.user.phone_number) if obj.user.phone_number else ""
-
-    @staticmethod
-    def resolve_so_phone_number(obj: UserOperator):
-        return str(obj.get_senior_officer().phone_number) if obj.get_senior_officer() else ""
 
     @staticmethod
     def resolve_operator_has_parent_operators(obj: UserOperator) -> bool:
