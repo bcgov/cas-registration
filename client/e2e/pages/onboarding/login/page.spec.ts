@@ -37,9 +37,10 @@ test.describe("Test Page - Home", () => {
       //****************TEMP*******************************/
       if (value === UserRole.NEW_USER) {
         test(`Test Login - ${value}`, async ({ page }) => {
-          // 🔑 Login
+          // 🛸 Navigate to home page
           const homePage = new HomePOM(page);
           await homePage.route();
+          // 🔑 Login
           await homePage.login(user, password, value);
           // 🔍 Assert user is logged in
           expect(await homePage.userIsLoggedIn()).toBeTruthy();
