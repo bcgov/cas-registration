@@ -17,7 +17,6 @@ from django.utils import timezone
 from django.core.exceptions import ValidationError
 from django.core.files.storage import default_storage
 from django.core.cache import cache
-from django.db import connection
 
 
 class BaseModel(models.Model):
@@ -31,14 +30,14 @@ class BaseModel(models.Model):
 
     def save(self, *args, **kwargs):
         # if `update_fields` is passed, we only clean them otherwise we clean all fields(except audit fields)
-        # This is to optimize the performance of the save method
-        update_fields = kwargs.get('update_fields', [])
-        fields_to_exclude_from_cleaning = AUDIT_FIELDS  # exclude audit fields from cleaning
-        if update_fields:
-            fields_to_exclude_from_cleaning += [
-                field.name for field in self._meta.fields if field.name not in update_fields
-            ]
-        self.full_clean(exclude=fields_to_exclude_from_cleaning)  # validate the model before saving
+        # This is to optimize the performance of the save method by only validating the fields that are being updated
+        fields_to_update = kwargs.get('update_fields')
+        if fields_to_update:
+            self.full_clean(
+                exclude=[field.name for field in self._meta.fields if field.name not in fields_to_update]
+            )  # validate the model before saving
+        else:
+            self.full_clean(exclude=AUDIT_FIELDS)  # validate the model before saving
         super().save(*args, **kwargs)
 
 
@@ -748,9 +747,12 @@ class Operation(OperationAndFacilityCommonInfo):
         """
         Returns whether a user has access to the operation.
         """
-        return UserOperator.objects.filter(
-            user_id=user_guid, operator=self.operator, status=UserOperator.Statuses.APPROVED
-        ).exists()
+        return (
+            UserOperator.objects.only('user__user_guid', 'operator__id')
+            .select_related('operator', 'user')
+            .filter(user_id=user_guid, operator_id=self.operator_id, status=UserOperator.Statuses.APPROVED)
+            .exists()
+        )
 
     def generate_unique_boro_id(self) -> None:
         """
