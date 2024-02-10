@@ -342,6 +342,7 @@ Run tests iwith the Playwright GUI using terminal command:
 
 ````bash
 cd client && yarn e2e:ui
+```
 
 ### Debugging Playwright in CI
 
