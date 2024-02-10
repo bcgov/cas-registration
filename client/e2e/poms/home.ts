@@ -81,7 +81,7 @@ export class HomePOM {
 
   async userIsLoggedIn() {
     await this.page.waitForSelector(DataTestID.PROFILE, {
-      timeout: 11000, // Keycloak so flaky, sooo flaky!
+      timeout: 11000, // flaky!
     });
   }
 }
