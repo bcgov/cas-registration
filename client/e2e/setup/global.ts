@@ -5,6 +5,8 @@
  Here we will:
  - create process.env variables for use in test suites
  - create storageState files for authenticated user by role for use in test suites
+ NOTE:
+ Debugging options: https://playwright.dev/docs/test-global-setup-teardown#capturing-trace-of-failures-during-global-setup
  */
 
 import { chromium } from "@playwright/test";
@@ -33,6 +35,10 @@ const setupAuth = async (
   storageState: string,
   role: string,
 ) => {
+  // ✨  Launch new instance of the Chromium browser
+  const browser = await chromium.launch();
+  const context = await browser.newContext();
+  const page = await context.newPage();
   try {
     // 🛢 To generate a storageState file for each CAS role...
     // perform an upsert query that inserts or updates the role associated with your IDIR user_guid in the erc.user table.
@@ -59,9 +65,6 @@ const setupAuth = async (
         ]);
         break;
     }
-    // ✨  Launch new instance of the Chromium browser
-    const browser = await chromium.launch();
-    const page = await browser.newPage();
     // 🛸 Navigate to home page
     const homePage = new HomePOM(page);
     await homePage.route();
@@ -77,11 +80,12 @@ const setupAuth = async (
     console.log(
       `🤸 Successful authentication setup for ${user} captured in storageState ${storageState} 🤸`,
     );
+    await browser.close();
   } catch (error) {
     // Handle any errors that occurred during the authentication process
+    await browser.close();
     // eslint-disable-next-line no-console
     console.error(`Authentication failed for ${user}:`, error);
-    // Rethrow the error
     throw error;
   }
 };
@@ -115,19 +119,12 @@ export default async function globalSetup() {
     while (!success && retries < maxRetries) {
       try {
         // 🔑 Authenticate this user role and save to storageState
-        /*****************TEMP**********************/
-        switch (value) {
-          case UserRole.INDUSTRY_USER_ADMIN:
-          case UserRole.INDUSTRY_USER:
-          case UserRole.NEW_USER:
-            await setupAuth(
-              user || "",
-              pw || "",
-              process.env[role + "_STORAGE"] as string,
-              value,
-            );
-            break;
-        }
+        await setupAuth(
+          user || "",
+          pw || "",
+          process.env[role + "_STORAGE"] as string,
+          value,
+        );
         success = true; // Set success to true if setupAuth succeeds
       } catch (error) {
         // Increment retries count and log error
