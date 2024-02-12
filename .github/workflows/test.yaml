@@ -200,7 +200,7 @@ jobs:
           cmd_options: "-a -d -T 5 -m 2"
           issue_title: OWASP Baseline - Backend
           fail_action: false
- e2e:
+  e2e:
     needs:
       ["backend-docker-build", "frontend-docker-build", "install-dev-tools"]
     timeout-minutes: 60
@@ -229,7 +229,7 @@ jobs:
           DB_PORT: 5432
           DB_HOST: localhost
           E2E_BASEURL: http://localhost:3000/
-          E2E_CAS_USER:  ${{ secrets.E2E_CAS_USER }}
+          E2E_CAS_USER: ${{ secrets.E2E_CAS_USER }}
           E2E_CAS_USER_GUID: ${{ secrets.E2E_CAS_USER_GUID }}
           E2E_CAS_USER_PASSWORD: ${{ secrets.E2E_CAS_USER_PASSWORD}}
           E2E_CAS_ADMIN_STORAGE: playwright/.auth/cas_admin.json
