@@ -24,7 +24,7 @@ class CurrentUserMiddleware:
                     user = get_object_or_404(User, user_guid=user_guid)
 
                     # Cache the user for 1 hour
-                    cache.set(cache_key, user, 3600)
+                    cache.set(cache_key, user, 300)
 
                 request.current_user = user  # Attach user to request for access in API endpoints
 
