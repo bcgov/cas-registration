@@ -29,7 +29,7 @@ test.describe("Test Page - Home", () => {
       if (value === UserRole.CAS_ADMIN || value === UserRole.CAS_ANALYST) {
         continue;
       }
-      test(`Test Login/Logout - ${value}`, async ({ page }) => {
+      test(`Test Login - ${value}`, async ({ page }) => {
         // 👤 Set user and password based on the user role
         let user = process.env.E2E_CAS_USER as string;
         let password = process.env.E2E_CAS_USER_PASSWORD as string;
