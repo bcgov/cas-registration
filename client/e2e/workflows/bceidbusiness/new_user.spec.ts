@@ -13,7 +13,7 @@ dotenv.config({ path: "./e2e/.env.local" });
 // 🏷 Annotate test suite as serial
 test.describe.configure({ mode: "serial" });
 test.describe("Test Workflow new user", () => {
-  // 👤 run test as new user with no role
+  // 👤 run test using the storageState for this role
   const storageState = process.env.E2E_NEW_USER_STORAGE;
   // Note: specify storageState for each test file or test group, instead of setting it in the config. https://playwright.dev/docs/next/auth#reuse-signed-in-state
   test.use({ storageState: storageState }); // this will error if no such file or directory

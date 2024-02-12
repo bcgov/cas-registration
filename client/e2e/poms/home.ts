@@ -54,10 +54,15 @@ export class HomePOM {
 
   async login(user: string, password: string, role: string) {
     // Determine the login button based on the user role
-    if (role === UserRole.CAS_PENDING) {
-      await this.buttonLoginIDIR.click();
-    } else {
-      await this.buttonLoginBCeID.click();
+    switch (role) {
+      case UserRole.INDUSTRY_USER_ADMIN:
+      case UserRole.INDUSTRY_USER:
+      case UserRole.NEW_USER:
+        await this.buttonLoginBCeID.click();
+        break;
+      default:
+        await this.buttonLoginIDIR.click();
+        break;
     }
     // Fill the user field
     await this.fieldUser.fill(user, {

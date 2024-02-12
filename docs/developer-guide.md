@@ -338,17 +338,37 @@ Run tests in the background using terminal command:
 cd client && yarn e2e
 ```
 
-Run tests iwith the Playwright GUI using terminal command:
+Run tests with the Playwright GUI using terminal command:
 
-````bash
+```bash
 cd client && yarn e2e:ui
 ```
 
-### Debugging Playwright in CI
+### Debugging Playwright
 
-You can download the artifacts from the CI job and run the tests locally by following the steps in the [Playwright documentation](https://playwright.dev/docs/ci-intro#downloading-the-html-report).
+**HTML report**
+The HTML report shows you a report of all your tests that have been ran and on which browsers as well as how long they took. Tests can be filtered by passed tests, failed, flakey or skipped tests. You can also search for a particular test. Clicking on a test will open the detailed view where you can see more information on your tests such as the errors, the test steps and the trace.
 
-4.0 To open last HTML report run:
+```
+npx playwright show-report
+```
+
+**Traces**
+Traces are normally run in a Continuous Integration(CI) environment, because locally you can use UI Mode for developing and debugging tests. However, if you want to run traces locally without using UI Mode, you can force tracing to be on with --trace on.
+
+```
+npx playwright test --trace on
+```
+
+**Opening the trace**
+In the HTML report click on the trace icon next to the test name file name to directly open the trace for the required test, or run command:
+
+```bash
+cd client &&  npx playwright show-trace test-results/setup-trace.zip
+
+```
+
+For debugging CI, you can download the artifacts and view the results locally [Playwright documentation](https://playwright.dev/docs/ci-intro#downloading-the-html-report).
 
 Open report from new terminal command:
 
@@ -356,10 +376,6 @@ Open report from new terminal command:
 cd client && yarn playwright show-report
 
 ```
-
-### Debugging Playwright in CI
-
-You can download the artifacts from the CI job and run the tests locally by following the steps in the [Playwright documentation](https://playwright.dev/docs/ci-intro#downloading-the-html-report).
 
 ### Debugging Django using Shell Plus
 
@@ -562,4 +578,7 @@ class OperationListOut(ModelSchema):
         model = Operation
         model_fields = ['id', 'name', 'bcghg_id', 'submission_date', 'status']
 ```
-````
+
+```
+
+```
