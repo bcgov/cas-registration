@@ -66,7 +66,6 @@ class TestUtils:
         reporting_activities = baker.make(ReportingActivity, _quantity=2)
         regulated_products = baker.make(RegulatedProduct, _quantity=2)
         point_of_contact = baker.make(Contact)
-        operator = operator or operator_baker()
         return OperationCreateIn(
             name='Springfield Nuclear Power Plant',
             type='Single Facility Operation',
@@ -74,7 +73,6 @@ class TestUtils:
             reporting_activities=reporting_activities,
             regulated_products=regulated_products,
             point_of_contact=point_of_contact.id,
-            operator=operator.id,
             is_external_point_of_contact=False,
             street_address='19 Evergreen Terrace',
             municipality='Springfield',
@@ -86,7 +84,6 @@ class TestUtils:
     def mock_OperationUpdateIn():
         naics_code = baker.make(NaicsCode, naics_code=123456, naics_description='desc')
         point_of_contact = baker.make(Contact)
-        operator = operator_baker()
         product = baker.make(RegulatedProduct)
         operation = operation_baker()
         operation.regulated_products.set([product.id])
@@ -98,7 +95,6 @@ class TestUtils:
             naics_code_id=naics_code.id,
             regulated_products=[product.id],
             point_of_contact=point_of_contact.id,
-            operator_id=operator.id,
             is_external_point_of_contact=False,
             first_name="Homer",
             last_name="Simpson",

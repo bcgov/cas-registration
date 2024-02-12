@@ -4,9 +4,7 @@ from .api_base import router
 from django.shortcuts import get_object_or_404
 from registration.models import AppRole, Operator, UserOperator, User
 from ninja.responses import codes_4xx, codes_5xx
-from registration.schema import Message, OperatorOut
-from registration.schema.operator import OperatorIn, OperatorOut
-from registration.schema import Message
+from registration.schema import Message, OperatorOut, OperatorIn
 from datetime import datetime
 import pytz
 from django.db import transaction
@@ -64,18 +62,6 @@ def get_operator(request, operator_id: int):
     return 200, operator
 
 
-@router.get("/operator-from-user", response={200: OperatorOut, codes_4xx: Message})
-@authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
-def get_operator_from_user(request):
-    user: User = request.current_user
-    try:
-        user_operator = get_object_or_404(UserOperator, user=user.user_guid)
-        operator = user_operator.operator
-    except Exception as e:
-        return 404, {"message": "User is not associated with any operator"}
-    return 200, operator
-
-
 ##### POST #####
 
 
@@ -96,8 +82,7 @@ def update_operator(request, operator_id: int, payload: OperatorIn):
                 operator.verified_by_id = user.user_guid
 
             operator.save()
-            operator.set_create_or_update(modifier=user)
-
+            operator.set_create_or_update(user.pk)
             return 200, operator
     except ValidationError as e:
         return 400, {"message": generate_useful_error(e)}

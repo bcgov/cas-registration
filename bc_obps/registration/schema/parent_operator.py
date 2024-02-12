@@ -1,7 +1,7 @@
 from typing import Optional
 from ninja import ModelSchema, Schema, Field
 from pydantic import validator
-from registration.constants import AUDIT_FIELDS, BC_CORPORATE_REGISTRY_REGEX
+from registration.constants import BC_CORPORATE_REGISTRY_REGEX
 from registration.models import BusinessStructure, ParentOperator
 from .business_structure import validate_business_structure
 
@@ -59,8 +59,8 @@ class ParentOperatorOut(ModelSchema):
 
     @staticmethod
     def resolve_po_mailing_address_same_as_physical(obj: ParentOperator) -> bool:
-        return obj.mailing_address.id == obj.physical_address.id
+        return obj.mailing_address_id == obj.physical_address_id
 
     class Config:
         model = ParentOperator
-        model_exclude = [*AUDIT_FIELDS, "id", "child_operator"]
+        model_fields = ["operator_index"]

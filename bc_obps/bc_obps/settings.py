@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 import os
 from google.oauth2 import service_account
 from pathlib import Path
+import dj_database_url
 
 from dotenv import load_dotenv
 
@@ -69,8 +70,10 @@ MIDDLEWARE = [
 
 if DEBUG:  # DEV only apps
     INSTALLED_APPS.append("django_extensions")
+    # SILK
     INSTALLED_APPS.append("silk")
-    MIDDLEWARE.append("silk.middleware.SilkyMiddleware")
+    MIDDLEWARE.insert(0, "silk.middleware.SilkyMiddleware")
+    SILKY_PYTHON_PROFILER = True
 
 ROOT_URLCONF = "bc_obps.urls"
 
@@ -95,18 +98,8 @@ WSGI_APPLICATION = "bc_obps.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.environ.get("DB_NAME", "registration"),
-        "USER": os.environ.get("DB_USER", "postgres"),
-        "PASSWORD": os.environ.get("DB_PASSWORD"),
-        "HOST": os.environ.get("DB_HOST", "127.0.0.1"),
-        "PORT": os.environ.get("DB_PORT", "5432"),
-    }
-}
-
+default_db_url = f"postgres://{os.environ.get('DB_USER', 'postgres')}:{os.environ.get('DB_PASSWORD')}@{os.environ.get('DB_HOST', '127.0.0.1')}:{os.environ.get('DB_PORT', '5432')}/{os.environ.get('DB_NAME', 'registration')}"
+DATABASES = {'default': dj_database_url.config(default=default_db_url, conn_max_age=600, conn_health_checks=True)}
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
