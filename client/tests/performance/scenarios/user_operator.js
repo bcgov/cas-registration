@@ -31,12 +31,12 @@ const userOperator = () => {
     },
   );
 
-  const getUserOperatorOperatorId = http.get(
-    HOST + "/user-operator-operator-id",
+  const getUserOperatorOperator = http.get(
+    HOST + "/user-operator-operator",
     industryUser2Params,
   );
 
-  check(getUserOperatorOperatorId, {
+  check(getUserOperatorOperator, {
     "is status 200": (r) => r.status === 200,
   });
 
@@ -50,7 +50,7 @@ const userOperator = () => {
   });
 
   const userOperatorId = JSON.parse(getUserOperatorId.body).user_operator_id;
-  const operatorId = JSON.parse(getUserOperatorOperatorId.body).operator_id;
+  const operatorId = JSON.parse(getUserOperatorOperator.body).operator_id;
 
   check(
     http.get(

@@ -89,20 +89,6 @@ async function getOperation(id: number) {
   }
 }
 
-// 🛠️ Function to fetch an operator by ID
-async function getOperator(id: number) {
-  try {
-    return await actionHandler(
-      `registration/operators/${id}`,
-      "GET",
-      `/operations/${id}`,
-    );
-  } catch (error) {
-    // Handle the error here or rethrow it to handle it at a higher level
-    throw error;
-  }
-}
-
 // 🛠️ Function to create an operation schema with updated enum values
 export const createOperationSchema = (
   schema: RJSFSchema,
@@ -194,9 +180,13 @@ export default async function Operation({ numRow }: { numRow?: number }) {
     operation = await getOperation(numRow);
   }
 
-  if (operation?.operator_id && isCasInternal) {
+  if (
+    operation?.operator &&
+    Object.keys(operation.operator as object).length > 0 &&
+    isCasInternal
+  ) {
     // fetch operator data for internal users
-    operator = await getOperator(operation?.operator_id);
+    operator = operation?.operator;
     businessStructures = await getBusinessStructures();
   }
 

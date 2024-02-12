@@ -1,7 +1,5 @@
-from typing import Optional
-from ninja import ModelSchema
+from ninja import Field, ModelSchema
 from registration.models import AppRole, User
-from .address import AddressSchema
 
 
 class UserIn(ModelSchema):
@@ -25,8 +23,7 @@ class UserAppRoleOut(ModelSchema):
 
 
 class UserOut(ModelSchema):
-    app_role: UserAppRoleOut  # Include AppRoleOut model as a field
-    address: Optional[AddressSchema] = None
+    app_role: UserAppRoleOut = Field(..., alias="app_role")
 
     @staticmethod
     def resolve_phone_number(obj):

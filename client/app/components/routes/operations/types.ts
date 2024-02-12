@@ -1,3 +1,5 @@
+import { Operator } from "../select-operator/form/types";
+
 export interface Operation {
   id: number;
   name: string;
@@ -13,7 +15,7 @@ export interface Operation {
   swrs_facility_id?: number;
   bcghg_id?: string;
   opt_in?: boolean;
-  operator: number;
+  operator: Operator;
   operation_has_multiple_operators: boolean;
   first_name: string;
   last_name: string;

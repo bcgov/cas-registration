@@ -1,4 +1,4 @@
-from django.db import IntegrityError, transaction
+from django.db import transaction
 from registration.utils import (
     generate_useful_error,
     update_model_instance,
@@ -14,17 +14,16 @@ from registration.schema import (
     Message,
     UserOperatorOperatorIn,
     RequestAccessOut,
-    UserOperatorContactIn,
     IsApprovedUserOperator,
     UserOperatorIdOut,
-    UserOperatorOperatorIdOut,
-    UserOperatorStatus,
     UserOperatorListOut,
     UserOperatorStatusUpdate,
     ExternalDashboardUsersTileData,
     PendingUserOperatorOut,
+    OperatorFromUserOperatorOut,
 )
 from typing import List
+
 from .api_base import router
 from django.shortcuts import get_object_or_404
 
@@ -34,7 +33,6 @@ from registration.models import (
     Operator,
     User,
     UserOperator,
-    Contact,
     ParentOperator,
     Address,
 )
@@ -81,7 +79,7 @@ def save_operator(payload: UserOperatorOperatorIn, operator_instance: Operator, 
             operator_instance, operator_related_fields, payload.dict()
         )
         created_or_updated_operator_instance.save()
-        created_or_updated_operator_instance.set_create_or_update(modifier=user)
+        created_or_updated_operator_instance.set_create_or_update(user.pk)
 
         # create parent operator records
         operator_has_parent_operators: bool = payload.operator_has_parent_operators
@@ -123,14 +121,14 @@ def save_operator(payload: UserOperatorOperatorIn, operator_instance: Operator, 
                     new_po_operator_instance, po_operator_fields_mapping, po_operator.dict()
                 )
                 new_po_operator_instance.save()
-                new_po_operator_instance.set_create_or_update(modifier=user)
+                new_po_operator_instance.set_create_or_update(user.pk)
 
         # get an existing user_operator instance or create a new one with the default role
         user_operator, created = UserOperator.objects.get_or_create(
             user=user, operator=created_or_updated_operator_instance
         )
         if created:
-            user_operator.set_create_or_update(modifier=user)
+            user_operator.set_create_or_update(user.pk)
         return 200, {"user_operator_id": user_operator.id, 'operator_id': user_operator.operator.id}
 
 
@@ -153,11 +151,21 @@ def is_approved_admin_user_operator(request, user_guid: str):
     return 200, {"approved": approved_user_operator}
 
 
-@router.get("/user-operator-operator-id", response={200: UserOperatorOperatorIdOut, codes_4xx: Message})
+@router.get("/user-operator-operator", response={200: OperatorFromUserOperatorOut, codes_4xx: Message})
 @authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
 def get_user_operator_operator_id(request):
-    user_operator = get_object_or_404(UserOperator, user_id=request.current_user.user_guid)
-    return 200, {"operator_id": user_operator.operator_id}
+    user: User = request.current_user
+    try:
+        user_operator = (
+            UserOperator.objects.only("operator__status", "operator__id")
+            .select_related("operator")
+            .get(user=user.user_guid)
+        )
+    except UserOperator.DoesNotExist:
+        return 404, {"message": "User is not associated with any operator"}
+    except UserOperator.MultipleObjectsReturned:
+        return 400, {"message": "User is associated with multiple operators"}
+    return 200, user_operator.operator
 
 
 @router.get("/user-operator-id", response={200: UserOperatorIdOut, codes_4xx: Message})
@@ -262,7 +270,7 @@ def request_access(request, payload: SelectOperatorIn):
             user=user, operator=operator, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.PENDING
         )
         if created:
-            user_operator.set_create_or_update(modifier=user)
+            user_operator.set_create_or_update(user.pk)
         return 201, {"user_operator_id": user_operator.id, "operator_id": user_operator.operator.id}
 
     except ValidationError as e:
@@ -287,7 +295,7 @@ def request_access(request, payload: SelectOperatorIn):
                 user=user, operator=operator, status=UserOperator.Statuses.PENDING, role=UserOperator.Roles.REPORTER
             )
             if created:
-                user_operator.set_create_or_update(modifier=user)
+                user_operator.set_create_or_update(user.pk)
             return 201, {"user_operator_id": user_operator.id, "operator_id": user_operator.operator.id}
     except ValidationError as e:
         return 400, {"message": generate_useful_error(e)}
@@ -365,7 +373,7 @@ def update_user_operator_status(request, payload: UserOperatorStatusUpdate):
                 user_operator.verified_by_id = None
 
             user_operator.save(update_fields=["status", "verified_at", "verified_by_id"])
-            user_operator.set_create_or_update(modifier=current_user)
+            user_operator.set_create_or_update(current_user.pk)
 
             if user_operator.status == UserOperator.Statuses.DECLINED:
                 # hard delete contacts (Senior Officers) associated with the operator and the user who requested access

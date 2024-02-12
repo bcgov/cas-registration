@@ -1,5 +1,6 @@
 from typing import List, Optional
 import re
+from uuid import UUID
 from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
 from localflavor.ca.models import CAPostalCodeField, CAProvinceField
@@ -8,6 +9,7 @@ from registration.constants import (
     BC_CORPORATE_REGISTRY_REGEX_MESSAGE,
     BORO_ID_REGEX,
     USER_CACHE_PREFIX,
+    AUDIT_FIELDS,
 )
 from simple_history.models import HistoricalRecords
 from django.core.validators import RegexValidator
@@ -27,7 +29,15 @@ class BaseModel(models.Model):
         abstract = True
 
     def save(self, *args, **kwargs):
-        self.full_clean()  # validate the model before saving
+        # if `update_fields` is passed, we only clean them otherwise we clean all fields(except audit fields)
+        # This is to optimize the performance of the save method by only validating the fields that are being updated
+        fields_to_update = kwargs.get('update_fields')
+        if fields_to_update:
+            self.full_clean(
+                exclude=[field.name for field in self._meta.fields if field.name not in fields_to_update]
+            )  # validate the model before saving
+        else:
+            self.full_clean(exclude=AUDIT_FIELDS)  # validate the model before saving
         super().save(*args, **kwargs)
 
 
@@ -56,26 +66,21 @@ class TimeStampedModel(BaseModel):
     class Meta:
         abstract = True
 
-    def set_create_or_update(self, modifier: 'User') -> None:
+    def set_create_or_update(self, modifier_pk: 'User') -> None:
         """
         Set the created by field if it is not already set.
         Otherwise, set the updated by field and updated at field.
         """
-        if not self.created_by:  # created_at is automatically set by auto_now_add
-            self.created_by = modifier
+        if not self.created_by_id:  # created_at is automatically set by auto_now_add
+            self.__class__.objects.filter(pk=self.pk).update(created_by_id=modifier_pk)
         else:
-            self.updated_by = modifier
-            self.updated_at = timezone.now()
+            self.__class__.objects.filter(pk=self.pk).update(updated_by_id=modifier_pk, updated_at=timezone.now())
 
-        self.save(update_fields=['created_by', 'updated_by', 'updated_at'])
-
-    def set_archive(self, modifier: 'User') -> None:
+    def set_archive(self, modifier_pk: 'User') -> None:
         """Set the archived by field and archived at field if they are not already set."""
-        if self.archived_by or self.archived_at:
+        if self.archived_by_id or self.archived_at:
             raise ValueError("Archived by or archived at is already set.")
-        self.archived_at = timezone.now()
-        self.archived_by = modifier
-        self.save(update_fields=['archived_by', 'archived_at'])
+        self.__class__.objects.filter(pk=self.pk).update(archived_by_id=modifier_pk, archived_at=timezone.now())
 
 
 class AppRole(BaseModel):
@@ -158,10 +163,9 @@ class Document(TimeStampedModel):
     class Meta:
         db_table_comment = "Documents"
         db_table = 'erc"."document'
-
-    indexes = [
-        models.Index(fields=["type"], name="document_type_idx"),
-    ]
+        indexes = [
+            models.Index(fields=["type"], name="document_type_idx"),
+        ]
 
     def delete(self, *args, **kwargs):
         # Delete the file from Google Cloud Storage before deleting the model instance
@@ -182,6 +186,13 @@ class NaicsCode(BaseModel):
         db_table_comment = "Naics codes"
         db_table = 'erc"."naics_code'
 
+    def save(self, *args, **kwargs):
+        """
+        Override the save method to clear the cache when/if the NAICS code is saved.
+        """
+        cache.delete('naics_codes')
+        super().save(*args, **kwargs)
+
 
 class RegulatedProduct(BaseModel):
     """Regulated products model"""
@@ -192,6 +203,13 @@ class RegulatedProduct(BaseModel):
     class Meta:
         db_table_comment = "Regulated products"
         db_table = 'erc"."regulated_product'
+
+    def save(self, *args, **kwargs):
+        """
+        Override the save method to clear the cache when/if the regulated product is saved.
+        """
+        cache.delete('regulated_products')
+        super().save(*args, **kwargs)
 
 
 class ReportingActivity(BaseModel):
@@ -285,6 +303,9 @@ class User(UserAndContactCommonInfo):
                 name="uuid_user_and_business_constraint",
             )
         ]
+        indexes = [
+            models.Index(fields=["app_role"], name="user_app_role_idx"),
+        ]
 
     def is_irc_user(self) -> bool:
         """
@@ -372,6 +393,13 @@ class BusinessStructure(BaseModel):
     class Meta:
         db_table_comment = "The business structure of an operator"
         db_table = 'erc"."business_structure'
+
+    def save(self, *args, **kwargs):
+        """
+        Override the save method to clear the cache when the business structure is saved.
+        """
+        cache.delete('business_structures')
+        super().save(*args, **kwargs)
 
 
 class Operator(TimeStampedModel):
@@ -608,15 +636,6 @@ class OperationAndFacilityCommonInfo(TimeStampedModel):
         db_table_comment = "An abstract base class (used for putting common information into a number of other models) containing fields for operations and facilities"
         db_table = 'erc"."operation'
 
-    def get_statutory_declaration(self) -> Optional[Document]:
-        """
-        Returns the statutory declaration associated with the operation.
-        """
-
-        return self.documents.filter(
-            type=DocumentType.objects.get(name="signed_statutory_declaration")
-        ).first()  # filter returns a queryset, so we use .first() to get the single record (there will only ever be one statutory declaration per operation)
-
 
 class Operation(OperationAndFacilityCommonInfo):
     """Operation model"""
@@ -709,7 +728,31 @@ class Operation(OperationAndFacilityCommonInfo):
             models.Index(fields=["operator"], name="operator_idx"),
             models.Index(fields=["naics_code"], name="naics_code_idx"),
             models.Index(fields=["verified_by"], name="operation_verified_by_idx"),
+            models.Index(fields=["created_at"], name="operation_created_at_idx"),
+            models.Index(fields=["status"], name="operation_status_idx"),
         ]
+
+    def get_statutory_declaration(self) -> Optional[Document]:
+        """
+        Returns the statutory declaration associated with the operation.
+        """
+
+        return (
+            self.documents.filter(type=DocumentType.objects.get(name="signed_statutory_declaration"))
+            .only('file')
+            .first()
+        )  # filter returns a queryset, so we use .first() to get the single record (there will only ever be one statutory declaration per operation)
+
+    def user_has_access(self, user_guid: UUID) -> bool:
+        """
+        Returns whether a user has access to the operation.
+        """
+        return (
+            UserOperator.objects.only('user__user_guid', 'operator__id')
+            .select_related('operator', 'user')
+            .filter(user_id=user_guid, operator_id=self.operator_id, status=UserOperator.Statuses.APPROVED)
+            .exists()
+        )
 
     def generate_unique_boro_id(self) -> None:
         """
@@ -901,3 +944,9 @@ class ParentOperator(TimeStampedModel):
     class Meta:
         db_table_comment = "Table to store parent operator metadata"
         db_table = 'erc"."parent_operator'
+        indexes = [
+            models.Index(fields=["child_operator"], name="po_child_operator_idx"),
+            models.Index(fields=["business_structure"], name="po_business_structure_idx"),
+            models.Index(fields=["physical_address"], name="po_physical_address_idx"),
+            models.Index(fields=["mailing_address"], name="po_mailing_address_idx"),
+        ]

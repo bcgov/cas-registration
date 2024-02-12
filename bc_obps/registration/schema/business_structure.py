@@ -15,4 +15,4 @@ def validate_business_structure(value: str) -> BusinessStructure:
 class BusinessStructureOut(ModelSchema):
     class Config:
         model = BusinessStructure
-        model_fields = '__all__'
+        model_fields = ["name"]
