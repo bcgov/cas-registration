@@ -371,15 +371,8 @@ class TestUserOperatorEndpoint(CommonTestSetup):
 
     def test_user_operator_put_can_update_status(self):
 
-        user = baker.make(User)
-        operator = operator_baker()
-        operator.status = Operator.Statuses.APPROVED
-        operator.is_new = False
-        operator.save(update_fields=['status', 'is_new'])
-        user_operator = user_operator_baker()
-        user_operator.user_id = user.user_guid
-        user_operator.operator = operator
-        user_operator.save(update_fields=['user_id', 'operator_id'])
+        operator = operator_baker({'status': Operator.Statuses.APPROVED, 'is_new': False})
+        user_operator = user_operator_baker({'operator': operator})
 
         response_2 = TestUtils.mock_put_with_auth_role(
             self,
