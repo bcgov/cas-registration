@@ -67,9 +67,6 @@ test.describe("Test Page - Home", () => {
             await dashboardPage.urlIsCorrect();
             break;
         }
-        // 🔒 Logout
-        // 🔍 Assert Keycloak SSO text is visible
-        await homePage.logout();
       });
     }
   });
