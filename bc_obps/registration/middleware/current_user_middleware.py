@@ -23,7 +23,7 @@ class CurrentUserMiddleware:
                     # If user is not in cache, fetch from database
                     user = get_object_or_404(User, user_guid=user_guid)
 
-                    # Cache the user for 1 hour
+                    # Cache the user for 5 minutes
                     cache.set(cache_key, user, 300)
 
                 request.current_user = user  # Attach user to request for access in API endpoints
