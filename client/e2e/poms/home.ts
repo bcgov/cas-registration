@@ -20,14 +20,21 @@ dotenv.config({ path: "./e2e/.env.local" });
 
 export class HomePOM {
   readonly page: Page;
+
   readonly url: string = process.env.E2E_BASEURL + AppRoute.HOME;
 
   readonly buttonContinue: Locator;
+
   readonly buttonLoginBCeID: Locator;
+
   readonly buttonLoginIDIR: Locator;
+
   readonly linkLogout: Locator;
+
   readonly fieldUser: Locator;
+
   readonly fieldUserPassword: Locator;
+
   readonly textSSOLogout: Locator;
 
   constructor(page: Page) {
