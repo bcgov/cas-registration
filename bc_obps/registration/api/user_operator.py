@@ -190,14 +190,12 @@ def get_user_operator(request, user_operator_id: int):
             )
         except UserOperator.DoesNotExist:
             return 404, {"message": "No matching userOperator found"}
-        # user_operator = get_object_or_404(UserOperator, id=user_operator_id, user=user.user_guid)
         return UserOperatorOut.from_orm(user_operator)
     else:
         try:
             user_operator = UserOperator.objects.select_related('operator').get(id=user_operator_id)
         except UserOperator.DoesNotExist:
             return 404, {"message": "No matching userOperator found"}
-        # user_operator = get_object_or_404(UserOperator, id=user_operator_id)
         return UserOperatorOut.from_orm(user_operator)
 
 
