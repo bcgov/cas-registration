@@ -134,15 +134,9 @@ class TestOperatorsEndpoint(CommonTestSetup):
         assert response.json() == {'message': 'No matching operator found'}
 
     def test_put_approve_operator(self):
-        user = baker.make(User)
-        operator = operator_baker()
-        operator.status = Operator.Statuses.PENDING
-        operator.is_new = True
-        operator.save(update_fields=["status", "is_new"])
-        user_operator = user_operator_baker()
-        user_operator.user = user
-        user_operator.operator = operator
-        user_operator.save(update_fields=["user", "operator"])
+
+        operator = operator_baker({'status': Operator.Statuses.PENDING, 'is_new': True})
+        user_operator = user_operator_baker({'operator': operator})
 
         response = TestUtils.mock_put_with_auth_role(
             self,
@@ -159,14 +153,9 @@ class TestOperatorsEndpoint(CommonTestSetup):
         assert response.json().get("verified_by") == str(self.user.user_guid)
 
     def test_put_request_changes_to_operator(self):
-        user = baker.make(User)
-        operator = operator_baker()
-        operator.status = Operator.Statuses.PENDING
-        operator.save(update_fields=["status", "is_new"])
-        user_operator = user_operator_baker()
-        user_operator.user = user
-        user_operator.operator = operator
-        user_operator.save(update_fields=["user", "operator"])
+
+        operator = operator_baker({'status': Operator.Statuses.PENDING})
+        user_operator = user_operator_baker({'operator': operator})
 
         response = TestUtils.mock_put_with_auth_role(
             self,
@@ -183,13 +172,9 @@ class TestOperatorsEndpoint(CommonTestSetup):
 
     # declining a new operator declines the prime admin request too
     def test_put_decline_new_operator(self):
-        operator = operator_baker()
-        operator.status = Operator.Statuses.PENDING
-        operator.is_new = True
-        operator.save(update_fields=["status", "is_new"])
-        user_operator = user_operator_baker()
-        user_operator.operator = operator
-        user_operator.save
+
+        operator = operator_baker({'status': Operator.Statuses.PENDING, 'is_new': True})
+        user_operator = user_operator_baker({'operator': operator})
 
         response = TestUtils.mock_put_with_auth_role(
             self,
@@ -210,16 +195,8 @@ class TestOperatorsEndpoint(CommonTestSetup):
 
     # declining an existing operator only declines the operator, not the user_operator
     def test_put_decline_existing_operator(self):
-        user = baker.make(User)
-        operator = operator_baker()
-        operator.status = Operator.Statuses.PENDING
-        operator.is_new = False
-        operator.save(update_fields=["status", "is_new"])
-        user_operator = user_operator_baker()
-        user_operator.user = user
-        user_operator.operator = operator
-        user_operator.status = UserOperator.Statuses.PENDING
-        user_operator.save(update_fields=["user", "operator", "status"])
+        operator = operator_baker({'status': Operator.Statuses.PENDING, 'is_new': False})
+        user_operator = user_operator_baker({'operator': operator, 'status': UserOperator.Statuses.PENDING})
 
         response = TestUtils.mock_put_with_auth_role(
             self,
