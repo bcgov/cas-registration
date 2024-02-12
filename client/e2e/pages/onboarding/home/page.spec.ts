@@ -1,6 +1,6 @@
 // 🧪 Suite to test the onboarding\Home page `http://localhost:3000/home`
 
-import { test } from "@playwright/test";
+import { test, expect } from "@playwright/test";
 // 🪄 Page Object Models
 import { DashboardPOM } from "@/e2e/poms/dashboard";
 import { HomePOM } from "@/e2e/poms/home";
@@ -29,7 +29,7 @@ test.describe("Test Page - Home", () => {
       if (value === UserRole.CAS_ADMIN || value === UserRole.CAS_ANALYST) {
         continue;
       }
-      test(`Test Login - ${value}`, async ({ page }) => {
+      test(`Test Login/Logout - ${value}`, async ({ page }) => {
         // 👤 Set user and password based on the user role
         let user = process.env.E2E_CAS_USER as string;
         let password = process.env.E2E_CAS_USER_PASSWORD as string;
@@ -45,6 +45,11 @@ test.describe("Test Page - Home", () => {
         // 🛸 Navigate to home page
         const homePage = new HomePOM(page);
         await homePage.route();
+        // 🔍 Assert that the current URL ends with "/home"
+        await homePage.urlIsCorrect();
+        // 🔍 Assert that the login buttons are available
+        await expect(homePage.buttonLoginBCeID).toBeVisible();
+        await expect(homePage.buttonLoginIDIR).toBeVisible();
         // 🔑 Login
         await homePage.login(user, password, value);
         // 🔍 Assert user is logged in
@@ -62,6 +67,9 @@ test.describe("Test Page - Home", () => {
             await dashboardPage.urlIsCorrect();
             break;
         }
+        // 🔒 Logout
+        // 🔍 Assert Keycloak SSO text is visible
+        await homePage.logout();
       });
     }
   });

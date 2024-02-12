@@ -23,6 +23,8 @@ export class HomePOM {
   readonly url: string = process.env.E2E_BASEURL + AppRoute.HOME;
 
   readonly buttonContinue: Locator;
+  readonly buttonLoginBCeID: Locator;
+  readonly buttonLoginIDIR: Locator;
   readonly linkLogout: Locator;
   readonly fieldUser: Locator;
   readonly fieldUserPassword: Locator;
@@ -34,7 +36,12 @@ export class HomePOM {
     this.buttonContinue = page.getByRole("button", {
       name: ActionButton.CONTINUE,
     });
-
+    this.buttonLoginBCeID = this.page.getByRole("button", {
+      name: Login.INDUSTRY_USER,
+    });
+    this.buttonLoginIDIR = this.page.getByRole("button", {
+      name: Login.CAS,
+    });
     this.linkLogout = page.getByRole("button", { name: Logout.OUT });
     this.fieldUser = this.page.locator(Keycloak.FIELD_USER_LOCATOR);
     this.fieldUserPassword = this.page.getByLabel(Keycloak.FIELD_PW_LOCATOR);
@@ -47,17 +54,11 @@ export class HomePOM {
 
   async login(user: string, password: string, role: string) {
     // Determine the login button based on the user role
-    let loginButton = Login.INDUSTRY_USER;
-
-    switch (role) {
-      case UserRole.CAS_PENDING:
-        loginButton = Login.CAS;
-        break;
+    if (role === UserRole.CAS_PENDING) {
+      await this.buttonLoginIDIR.click();
+    } else {
+      await this.buttonLoginBCeID.click();
     }
-
-    // Click the login button
-    await this.page.getByRole("button", { name: loginButton }).click();
-
     // Fill the user field
     await this.fieldUser.fill(user, {
       timeout: 11000, // Keycloak so flaky, sooo flaky!
@@ -81,7 +82,7 @@ export class HomePOM {
 
   async userIsLoggedIn() {
     await this.page.waitForSelector(DataTestID.PROFILE, {
-      timeout: 11000, // flaky!
+      timeout: 11000, // flaky keycloak!
     });
   }
 }
