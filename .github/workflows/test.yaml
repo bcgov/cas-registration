@@ -12,13 +12,6 @@ env:
   DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
   KEYCLOAK_CLIENT_ID: ${{ secrets.KEYCLOAK_CLIENT_ID }}
   KEYCLOAK_CLIENT_SECRET: ${{ secrets.KEYCLOAK_CLIENT_SECRET }}
-  E2E_CAS_USER: ${{ secrets.CAS_USER }}
-  E2E_CAS_USER_PASSWORD: ${{ secrets.CAS_USER_PASSWORD }}
-  E2E_CAS_USER_GUID: ${{ secrets.CAS_USER_GUID }}
-  E2E_INDUSTRY_USER_ADMIN_PASSWORD: ${{ secrets.INDUSTRY_USER_ADMIN_PASSWORD }}
-  E2E_INDUSTRY_USER_PASSWORD: ${{ secrets.INDUSTRY_USER_PASSWORD }}
-  E2E_NEW_USER_PASSWORD: ${{ secrets.NEW_USER_PASSWORD }}
-  E2E_NEW_USER_GUID: ${{ secrets.NEW_USER_GUID }}
   NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
 
 jobs:
@@ -207,7 +200,7 @@ jobs:
           cmd_options: "-a -d -T 5 -m 2"
           issue_title: OWASP Baseline - Backend
           fail_action: false
-  e2e:
+ e2e:
     needs:
       ["backend-docker-build", "frontend-docker-build", "install-dev-tools"]
     timeout-minutes: 60
@@ -236,9 +229,9 @@ jobs:
           DB_PORT: 5432
           DB_HOST: localhost
           E2E_BASEURL: http://localhost:3000/
-          E2E_CAS_USER: ${{ env.E2E_CAS_USER }}
-          E2E_CAS_USER_GUID: ${{ env.E2E_CAS_USER_GUID }}
-          E2E_CAS_USER_PASSWORD: ${{ env.E2E_CAS_USER_PASSWORD}}
+          E2E_CAS_USER:  ${{ secrets.E2E_CAS_USER }}
+          E2E_CAS_USER_GUID: ${{ secrets.E2E_CAS_USER_GUID }}
+          E2E_CAS_USER_PASSWORD: ${{ secrets.E2E_CAS_USER_PASSWORD}}
           E2E_CAS_ADMIN_STORAGE: playwright/.auth/cas_admin.json
           E2E_CAS_ANALYST_STORAGE: playwright/.auth/cas_analyst.json
           E2E_CAS_PENDING_STORAGE: playwright/.auth/cas_pending.json
@@ -246,12 +239,12 @@ jobs:
           E2E_INDUSTRY_USER_STORAGE: playwright/.auth/industry_user.json
           E2E_NEW_USER_STORAGE: playwright/.auth/new_user.json
           E2E_INDUSTRY_USER_ADMIN: bc-cas-dev
-          E2E_INDUSTRY_USER_ADMIN_PASSWORD: ${{ env.E2E_INDUSTRY_USER_ADMIN_PASSWORD }}
+          E2E_INDUSTRY_USER_ADMIN_PASSWORD: ${{ secrets.E2E_INDUSTRY_USER_ADMIN_PASSWORD }}
           E2E_INDUSTRY_USER: bc-cas-dev-secondary
-          E2E_INDUSTRY_USER_PASSWORD: ${{ env.E2E_INDUSTRY_USER_PASSWORD }}
+          E2E_INDUSTRY_USER_PASSWORD: ${{ secrets.E2E_INDUSTRY_USER_PASSWORD }}
           E2E_NEW_USER: bc-cas-dev-three
-          E2E_NEW_USER_GUID: ${{ env.E2E_NEW_USER_GUID }}
-          E2E_NEW_USER_PASSWORD: ${{ env.E2E_NEW_USER_PASSWORD }}
+          E2E_NEW_USER_GUID: ${{ secrets.E2E_NEW_USER_GUID }}
+          E2E_NEW_USER_PASSWORD: ${{ secrets.E2E_NEW_USER_PASSWORD }}
         working-directory: ./client
       - uses: actions/upload-artifact@v3
         if: always()
