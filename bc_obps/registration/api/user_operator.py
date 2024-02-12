@@ -347,6 +347,8 @@ def update_operator_and_user_operator(request, payload: UserOperatorOperatorIn, 
     try:
         user_operator_instance: UserOperator = get_object_or_404(UserOperator, id=user_operator_id, user=user)
         operator_instance: Operator = user_operator_instance.operator
+        if operator_instance.status == 'Draft':
+            operator_instance.status = 'Pending'
 
         # save operator data
         return save_operator(payload, operator_instance, user)
