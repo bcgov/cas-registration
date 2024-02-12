@@ -1,4 +1,5 @@
-from django.db import transaction
+from urllib.error import HTTPError
+from django.db import IntegrityError, transaction
 from registration.utils import (
     generate_useful_error,
     update_model_instance,
@@ -176,18 +177,27 @@ def get_user_operator_id(request):
 
 
 @router.get(
-    "/select-operator/user-operator/{int:user_operator_id}",
-    response=UserOperatorOut,
+    "/select-operator/user-operator/{int:user_operator_id}", response={200: UserOperatorOut, codes_4xx: Message}
 )
 @authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles())
 def get_user_operator(request, user_operator_id: int):
     user: User = request.current_user
     if user.is_industry_user():
         # Industry users can only get their own UserOperator instance
-        user_operator = get_object_or_404(UserOperator, id=user_operator_id, user=user.user_guid)
+        try:
+            user_operator = UserOperator.objects.select_related('operator').get(
+                id=user_operator_id, user=user.user_guid
+            )
+        except UserOperator.DoesNotExist:
+            return 404, {"message": "No matching userOperator found"}
+        # user_operator = get_object_or_404(UserOperator, id=user_operator_id, user=user.user_guid)
         return UserOperatorOut.from_orm(user_operator)
     else:
-        user_operator = get_object_or_404(UserOperator, id=user_operator_id)
+        try:
+            user_operator = UserOperator.objects.select_related('operator').get(id=user_operator_id)
+        except UserOperator.DoesNotExist:
+            return 404, {"message": "No matching userOperator found"}
+        # user_operator = get_object_or_404(UserOperator, id=user_operator_id)
         return UserOperatorOut.from_orm(user_operator)
 
 
@@ -212,7 +222,9 @@ def get_user(request):
 @router.get("/user-operators", response=List[UserOperatorListOut])
 @authorize(AppRole.get_authorized_irc_roles())
 def list_user_operators(request):
-    qs = UserOperator.objects.all()
+    qs = UserOperator.objects.select_related("operator", "user").only(
+        "id", "status", "user__last_name", "user__first_name", "user__email", "operator__legal_name"
+    )
     user_operator_list = []
 
     for user_operator in qs:
