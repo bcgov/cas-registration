@@ -606,6 +606,12 @@ class UserOperator(TimeStampedModel):
             models.Index(fields=["user"], name="user_operator_user_idx"),
             models.Index(fields=["operator"], name="user_operator_operator_idx"),
         ]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["user", "operator"],
+                name="user_and_operator_unique_constraint",
+            )
+        ]
 
     def __str__(self) -> str:
         fields = [f"{field.name}={getattr(self, field.name)}" for field in self._meta.fields]
