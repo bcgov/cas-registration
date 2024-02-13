@@ -132,11 +132,8 @@ class OperationUpdateStatusOut(ModelSchema):
     class Config:
         model = Operation
         model_fields = ["id"]
-        
-class OperationListOut(Schema):
-    operation_list: List[OperationOut]
-    total_pages: int
-    
+
+
 class OperationPaginatedOut(Schema):
     data: List[OperationListOut]
     row_count: int
