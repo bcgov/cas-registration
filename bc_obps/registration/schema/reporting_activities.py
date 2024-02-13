@@ -9,4 +9,4 @@ class ReportingActivitySchema(ModelSchema):
 
     class Config:
         model = ReportingActivity
-        model_fields = "__all__"
+        model_fields = ["name", "applicable_to"]
