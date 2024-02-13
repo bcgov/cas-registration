@@ -274,36 +274,6 @@ const browser = await chromium.launch({ headless: true });
 **Ensure you have the following configuration**
 
 1. From file `client/e2e/.env.local.example` create `client/e2e/.env.local` with values reflecting instructions in file `client/e2e/.env.local.example`
-2. Ensure the DB tables are configured with appropriate users and roles:
-
-```
-cd bc_obps && psql
-```
-
-```
- \c registration
-```
-
-- Ensure the the erc.user table includes rows below **without** `bc-cas-dev-three`
-
-```
-SELECT first_name,last_name,app_role_id FROM erc.user;
-```
-
-| first_name | last_name     | app_role_id   |
-| ---------- | ------------- | ------------- |
-| Bcgov      | Cas           | industry_user |
-| Bcgov      | Cas SECONDARY | industry_user |
-
-- Ensure the the erc.user_operator table **includes** `bc-cas-dev` with role `admin` and status `Approved`, as below below:
-
-```
- SELECT  role, status. user_id FROM erc.user_operator;cd client &&
-```
-
-| role  | status   | user_id   |
-| ----- | -------- | --------- |
-| admin | Approved | ba2ba6... |
 
 ##### e2e Testing
 

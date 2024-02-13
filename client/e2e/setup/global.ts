@@ -33,7 +33,7 @@ const setupAuth = async (
   user: string,
   password: string,
   storageState: string,
-  role: string,
+  role: string
 ) => {
   // ✨  Launch new instance of the Chromium browser
   const browser = await chromium.launch();
@@ -78,7 +78,7 @@ const setupAuth = async (
     await page.context().storageState({ path: storageState });
     // eslint-disable-next-line no-console
     console.log(
-      `🤸 Successful authentication setup for ${user} captured in storageState ${storageState} 🤸`,
+      `🤸 Successful authentication setup for ${user} captured in storageState ${storageState} 🤸`
     );
     await browser.close();
   } catch (error) {
@@ -93,10 +93,63 @@ const setupAuth = async (
 export default async function globalSetup() {
   // 🌍 Perform global setup tasks here...
 
+  // 🥞 Set DB for e2e tests pre-reqs
+  // eslint-disable-next-line no-console
+  console.log("🥞 Db setup for e2e tests environment...");
+  try {
+    let query: {
+      text: string;
+      values: (string | number)[];
+    } = {
+      text: `
+    INSERT INTO erc.operator (id, status, legal_name, trade_name, cra_business_number, bc_corporate_registry_number, business_structure, mailing_address_id, physical_address_id)
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+    ON CONFLICT (id)
+    DO UPDATE SET status = EXCLUDED.status;
+  `,
+      values: [
+        2,
+        "Approved",
+        "Existing Operator 2 Legal Name",
+        "Existing Operator 2 Trade Name",
+        "987654321",
+        "def1234567",
+        "BC Corporation",
+        4,
+        3,
+      ],
+    };
+    // eslint-disable-next-line no-console
+    console.error("✔️ Upserted Operation id 2 with status Approved.");
+    query = {
+      text: `
+    INSERT INTO erc.user_operator (user_id, role, status, operator_id)
+    VALUES ($1, 'admin', 'Approved',2)
+    ON CONFLICT (user_id)
+    DO UPDATE SET role = EXCLUDED.role, status = EXCLUDED.status;
+  `,
+      values: [process.env.E2E_INDUSTRY_USER_ADMIN_GUID as string],
+    };
+    // eslint-disable-next-line no-console
+    console.error(
+      "✔️ Upserted bc-cas-dev as user operator for operator_id 2 with role admin and status Approved."
+    );
+    query = {
+      text: "DELETE FROM erc.user WHERE user_guid = $1",
+      values: [process.env.NEW_USER_GUID as string],
+    };
+    // Execute the deletion query
+    await pool.query(query);
+    // eslint-disable-next-line no-console
+    console.error("✔️ Deleted bc-cas-dev-three new user record.");
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error("❌ Error in Db setup:", error);
+  }
   // 👤 Set storageState for Authenticated IDIR and BCeid credentials using NextAuth and Keycloak to be used in subsequent test suites
   // eslint-disable-next-line no-console
   console.log(
-    "👤 Global setup to authenticate all user roles and store each session in storageState to be used in test suites to mock user by role.",
+    "👤 Global setup to authenticate all user roles and store each session in storageState to be used in test suites to mock user by role."
   );
 
   // ➰ Loop through the entries of UserRole enum
@@ -123,7 +176,7 @@ export default async function globalSetup() {
           user || "",
           pw || "",
           process.env[role + "_STORAGE"] as string,
-          value,
+          value
         );
         success = true; // Set success to true if setupAuth succeeds
       } catch (error) {
@@ -131,7 +184,7 @@ export default async function globalSetup() {
         retries++;
         // eslint-disable-next-line no-console
         console.error(
-          `🐛 Error in setupAuth: ${error}. Retrying (${retries}/${maxRetries})...`,
+          `🐛 Error in setupAuth: ${error}. Retrying (${retries}/${maxRetries})...`
         );
       }
     }
