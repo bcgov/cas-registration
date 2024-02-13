@@ -13,6 +13,8 @@ import Footer from "@/app/components/layout/Footer";
 import Header from "@/app/components/layout/Header";
 // 🏷 import {named} can be significantly slower than import default
 import Box from "@mui/material/Box";
+import { getServerSession } from "next-auth";
+import { authOptions } from "./api/auth/[...nextauth]/route";
 
 export const metadata: Metadata = {
   title: "CAS OBPS REGISTRATION",
@@ -30,6 +32,9 @@ export default async function RootLayout({
 }: {
   readonly children: React.ReactNode;
 }) {
+  //🪝 Wrap the returned auth session in the "use client" version of NextAuth SessionProvider so to expose the useSession() hook in client components
+  const session = await getServerSession(authOptions);
+
   return (
     <html lang="en">
       {
@@ -37,7 +42,7 @@ export default async function RootLayout({
       }
       <body id="__next">
         {/* 👇️  NextAuth SessionProvider available to client children via useSession */}
-        <SessionProvider>
+        <SessionProvider session={session}>
           {
             //👇️ provide MUI custom theme to the components within the layout
           }
