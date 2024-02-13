@@ -29,7 +29,7 @@
     "fields": {
       "user": "279c80cf57814c28872740a133d17c0d",
       "operator": 2,
-      "role": "reporter",
+      "role": "admin",
       "status": "Pending",
       "verified_at": null,
       "verified_by": null
@@ -41,7 +41,7 @@
     "fields": {
       "user": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
       "operator": 3,
-      "role": "reporter",
+      "role": "admin",
       "status": "Pending",
       "verified_at": null,
       "verified_by": null
@@ -53,7 +53,7 @@
     "fields": {
       "user": "00000000-0000-0000-0000-000000000002",
       "operator": 3,
-      "role": "reporter",
+      "role": "admin",
       "status": "Pending",
       "verified_at": null,
       "verified_by": null
@@ -65,7 +65,7 @@
     "fields": {
       "user": "00000000-0000-0000-0000-000000000003",
       "operator": 2,
-      "role": "reporter",
+      "role": "admin",
       "status": "Pending",
       "verified_at": null,
       "verified_by": null
@@ -77,7 +77,7 @@
     "fields": {
       "user": "00000000-0000-0000-0000-000000000004",
       "operator": 2,
-      "role": "reporter",
+      "role": "admin",
       "status": "Pending",
       "verified_at": null,
       "verified_by": null
@@ -89,7 +89,7 @@
     "fields": {
       "user": "00000000-0000-0000-0000-000000000005",
       "operator": 2,
-      "role": "reporter",
+      "role": "admin",
       "status": "Pending",
       "verified_at": null,
       "verified_by": null
@@ -101,7 +101,7 @@
     "fields": {
       "user": "00000000-0000-0000-0000-000000000006",
       "operator": 2,
-      "role": "reporter",
+      "role": "admin",
       "status": "Pending",
       "verified_at": null,
       "verified_by": null
@@ -113,7 +113,7 @@
     "fields": {
       "user": "00000000-0000-0000-0000-000000000007",
       "operator": 2,
-      "role": "reporter",
+      "role": "admin",
       "status": "Pending",
       "verified_at": null,
       "verified_by": null
@@ -125,7 +125,7 @@
     "fields": {
       "user": "00000000-0000-0000-0000-000000000008",
       "operator": 2,
-      "role": "reporter",
+      "role": "admin",
       "status": "Pending",
       "verified_at": null,
       "verified_by": null
@@ -137,7 +137,7 @@
     "fields": {
       "user": "00000000-0000-0000-0000-000000000009",
       "operator": 2,
-      "role": "reporter",
+      "role": "admin",
       "status": "Pending",
       "verified_at": null,
       "verified_by": null
@@ -149,7 +149,7 @@
     "fields": {
       "user": "00000000-0000-0000-0000-000000000010",
       "operator": 2,
-      "role": "reporter",
+      "role": "admin",
       "status": "Pending",
       "verified_at": null,
       "verified_by": null
@@ -161,7 +161,7 @@
     "fields": {
       "user": "00000000-0000-0000-0000-000000000011",
       "operator": 2,
-      "role": "reporter",
+      "role": "admin",
       "status": "Pending",
       "verified_at": null,
       "verified_by": null
@@ -173,7 +173,7 @@
     "fields": {
       "user": "00000000-0000-0000-0000-000000000012",
       "operator": 2,
-      "role": "reporter",
+      "role": "admin",
       "status": "Pending",
       "verified_at": null,
       "verified_by": null
@@ -185,7 +185,7 @@
     "fields": {
       "user": "00000000-0000-0000-0000-000000000013",
       "operator": 2,
-      "role": "reporter",
+      "role": "admin",
       "status": "Pending",
       "verified_at": null,
       "verified_by": null
@@ -197,7 +197,7 @@
     "fields": {
       "user": "00000000-0000-0000-0000-000000000014",
       "operator": 2,
-      "role": "reporter",
+      "role": "admin",
       "status": "Pending",
       "verified_at": null,
       "verified_by": null
@@ -209,7 +209,7 @@
     "fields": {
       "user": "00000000-0000-0000-0000-000000000015",
       "operator": 2,
-      "role": "reporter",
+      "role": "admin",
       "status": "Pending",
       "verified_at": null,
       "verified_by": null
@@ -221,7 +221,7 @@
     "fields": {
       "user": "00000000-0000-0000-0000-000000000016",
       "operator": 2,
-      "role": "reporter",
+      "role": "admin",
       "status": "Pending",
       "verified_at": null,
       "verified_by": null
@@ -233,7 +233,7 @@
     "fields": {
       "user": "00000000-0000-0000-0000-000000000017",
       "operator": 2,
-      "role": "reporter",
+      "role": "admin",
       "status": "Pending",
       "verified_at": null,
       "verified_by": null
@@ -245,7 +245,7 @@
     "fields": {
       "user": "00000000-0000-0000-0000-000000000018",
       "operator": 2,
-      "role": "reporter",
+      "role": "admin",
       "status": "Pending",
       "verified_at": null,
       "verified_by": null
@@ -257,7 +257,7 @@
     "fields": {
       "user": "00000000-0000-0000-0000-000000000019",
       "operator": 2,
-      "role": "reporter",
+      "role": "admin",
       "status": "Pending",
       "verified_at": null,
       "verified_by": null
@@ -269,7 +269,7 @@
     "fields": {
       "user": "00000000-0000-0000-0000-000000000020",
       "operator": 2,
-      "role": "reporter",
+      "role": "admin",
       "status": "Pending",
       "verified_at": null,
       "verified_by": null
@@ -281,7 +281,7 @@
     "fields": {
       "user": "00000000-0000-0000-0000-000000000021",
       "operator": 2,
-      "role": "reporter",
+      "role": "admin",
       "status": "Pending",
       "verified_at": null,
       "verified_by": null
@@ -293,7 +293,7 @@
     "fields": {
       "user": "00000000-0000-0000-0000-000000000022",
       "operator": 2,
-      "role": "reporter",
+      "role": "admin",
       "status": "Pending",
       "verified_at": null,
       "verified_by": null
@@ -305,7 +305,7 @@
     "fields": {
       "user": "00000000-0000-0000-0000-000000000023",
       "operator": 2,
-      "role": "reporter",
+      "role": "admin",
       "status": "Pending",
       "verified_at": null,
       "verified_by": null
@@ -317,7 +317,7 @@
     "fields": {
       "user": "00000000-0000-0000-0000-000000000024",
       "operator": 2,
-      "role": "reporter",
+      "role": "admin",
       "status": "Pending",
       "verified_at": null,
       "verified_by": null
