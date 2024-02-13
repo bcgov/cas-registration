@@ -1,3 +1,43 @@
+## [0.1.1-beta-6](https://github.com/bcgov/cas-registration/compare/v0.1.1-beta-5...v0.1.1-beta-6) (2024-02-13)
+
+### Bug Fixes
+
+- access requests nextjs server component error ([e2ef027](https://github.com/bcgov/cas-registration/commit/e2ef027d5016037e2c7b42177b76476ddf98b627))
+- add back new operator message ([bf7b970](https://github.com/bcgov/cas-registration/commit/bf7b9708f9695c54d5478820831173bc170b7e28))
+- add k6 operation api query param ([c217fb0](https://github.com/bcgov/cas-registration/commit/c217fb0f7b5d244402c4f7756551638dbfc29976))
+- add operations form section route for industry users ([e2e445e](https://github.com/bcgov/cas-registration/commit/e2e445ee1d463b8a3527a5251bd2ce1c3567a2cf))
+- add optional chaining to datagrid map ([90735d6](https://github.com/bcgov/cas-registration/commit/90735d623990ff96370f74ab4d2a153bf5576c19))
+- add page size to mui datagrid page size options ([2c6f680](https://github.com/bcgov/cas-registration/commit/2c6f680c1fede242e870a43f2837d143fc1d8ade))
+- add partial user profile form data type ([a93c91b](https://github.com/bcgov/cas-registration/commit/a93c91b0297d54eb0ce5b5a0c04620df9b70a061))
+- add unique constraint to user_operator table ([d54db0f](https://github.com/bcgov/cas-registration/commit/d54db0f1e1e47ff03968e32d3c2fb91f953093fe))
+- attachments in undefined state ([cc9dc39](https://github.com/bcgov/cas-registration/commit/cc9dc390ae92b9ea115689035acb9d6406f22aba))
+- datagrid sorting ([ba5f828](https://github.com/bcgov/cas-registration/commit/ba5f8281234dc5b0d1da35825595384c6af2a560))
+- force accordion state rerender ([07291c7](https://github.com/bcgov/cas-registration/commit/07291c7d0297d15e57041d44986a1e583e16cbae))
+- operation form operators business structures field ([c33c0df](https://github.com/bcgov/cas-registration/commit/c33c0df5e9ffeff9af8ad5c17a5d6877ecc8cc83))
+- operation out schema rebase error ([1cddda0](https://github.com/bcgov/cas-registration/commit/1cddda03c96e3eb439e641f8ca87628ca32c43ca))
+- operations k6 test due to rebase changes ([88e4bf0](https://github.com/bcgov/cas-registration/commit/88e4bf0157f834643a62f497d19c1b89731f4a19))
+- operator out schema mailing address fields ([942ee21](https://github.com/bcgov/cas-registration/commit/942ee2115028a954c183a137e795ca3ecea0765c))
+- optimize get operations endpoint ([3dcabfb](https://github.com/bcgov/cas-registration/commit/3dcabfb56d8666b6ca2a0c61bb0e89d70fed15b9))
+- remove session loading from header ([ac9cd33](https://github.com/bcgov/cas-registration/commit/ac9cd33b1c5c458d44c5e716cfff9db9156470ee))
+- user operation list out for pagination out ([c00b371](https://github.com/bcgov/cas-registration/commit/c00b3714defab5838b61aa975ba23092371152b3))
+- user operator form industry user conditionals ([e9b22c9](https://github.com/bcgov/cas-registration/commit/e9b22c974d23660958b7c9409a082aa1e73f2fcf))
+- user page datagrid regression ([22e24be](https://github.com/bcgov/cas-registration/commit/22e24be050efeb26876bfe20602eb80d4c0ac3ae))
+- user profile null values not triggering form validation ([6e1831e](https://github.com/bcgov/cas-registration/commit/6e1831e358dc90be458c69f4017f19386715ee02))
+
+### Features
+
+- add accordion component ([c6a9afb](https://github.com/bcgov/cas-registration/commit/c6a9afb097ab5d93f65a3b8076d0fa309e6de50f))
+- add multistep accordion expand/collapse all buttons ([28e8523](https://github.com/bcgov/cas-registration/commit/28e852374e239e924232a1315561edc848dce30e))
+- add numbered pagination component to mui datagrid ([00596e2](https://github.com/bcgov/cas-registration/commit/00596e2230892d9c269a720102a4af92434e0136))
+- add operation internal review form ([4d338bf](https://github.com/bcgov/cas-registration/commit/4d338bf6c6e422a7c6f390988ac6a424a48686a0))
+- add operations internal user ui schema ([8ada345](https://github.com/bcgov/cas-registration/commit/8ada345c5f0ac0823d32c40f03136e40a63642a8))
+- add operator datagrid serverside sorting ([5f65124](https://github.com/bcgov/cas-registration/commit/5f6512476434ed451223225794f53c4c31d4f8e8))
+- add server pagination sort support for operation datagrid ([40e4616](https://github.com/bcgov/cas-registration/commit/40e4616ff99b7fa4ea04efc44753171759572939))
+- add server pagination to operator datagrid ([90fcddd](https://github.com/bcgov/cas-registration/commit/90fcdddce130157cce5723f0070efb6e80204f45))
+- conditionally show the operations tile ([f0da614](https://github.com/bcgov/cas-registration/commit/f0da614c0dc2de9d3ec7f1536717ae6130b1bef9))
+- enable server side pagination for operations datagrid ([82816e9](https://github.com/bcgov/cas-registration/commit/82816e9e0c1a0785f057fbce5851049981c1ff8f))
+- make internal user operation schema ([55a673a](https://github.com/bcgov/cas-registration/commit/55a673a1fac9c0ba55f2e3c24a18159f6f038b17))
+
 ## [0.1.1-beta-5](https://github.com/bcgov/cas-registration/compare/v0.1.1-beta-4...v0.1.1-beta-5) (2024-02-02)
 
 ### Bug Fixes
