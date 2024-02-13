@@ -1,21 +1,16 @@
 import { actionHandler } from "@/app/utils/actions";
-import { userOperatorSchema } from "@/app/utils/jsonSchema/userOperator";
+import {
+  userOperatorSchema,
+  userOperatorInternalUserSchema,
+} from "@/app/utils/jsonSchema/userOperator";
 
 import { BusinessStructure } from "@/app/components/routes/select-operator/form/types";
 import { RJSFSchema } from "@rjsf/utils";
-import {
-  UserInformationInitialFormData,
-  UserOperatorFormData,
-} from "@/app/components/form/formDataTypes";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { UserOperatorFormData } from "@/app/components/form/formDataTypes";
 import UserOperatorForm from "@/app/components/form/UserOperatorForm";
-
-async function getCurrentUser() {
-  return actionHandler(
-    `registration/user`,
-    "GET",
-    `/dashboard/select-operator/user-operator`,
-  );
-}
+import UserOperatorReviewForm from "@/app/components/form/UserOperatorReviewForm";
 
 async function getBusinessStructures() {
   return actionHandler(
@@ -36,9 +31,10 @@ export async function getUserOperatorFormData(id: number | string) {
 
 // To populate the options for the business structure select field
 const createUserOperatorSchema = (
+  schema: RJSFSchema,
   businessStructureList: { id: string; label: string }[],
 ): RJSFSchema => {
-  const localSchema = JSON.parse(JSON.stringify(userOperatorSchema));
+  const localSchema = JSON.parse(JSON.stringify(schema));
 
   const businessStructureOptions = businessStructureList?.map(
     (businessStructure) => ({
@@ -67,22 +63,19 @@ export default async function UserOperator({
 }: Readonly<{
   params?: { id?: number | string; readonly?: boolean };
 }>) {
+  const session = await getServerSession(authOptions);
+  const isCasInternal =
+    session?.user.app_role?.includes("cas") &&
+    !session?.user.app_role?.includes("pending");
   const serverError = <div>Server Error. Please try again later.</div>;
   const userOperatorId = params?.id;
   const businessStructures: BusinessStructure[] | { error: string } =
     await getBusinessStructures();
 
-  const userData: UserInformationInitialFormData | { error: string } =
-    await getCurrentUser();
-
   const userOperatorData: UserOperatorFormData | { error: string } =
     await getUserOperatorFormData(userOperatorId as string | number);
 
-  if (
-    "error" in userData ||
-    "error" in businessStructures ||
-    "error" in userOperatorData
-  )
+  if ("error" in businessStructures || "error" in userOperatorData)
     return serverError;
 
   const businessStructuresList = businessStructures?.map(
@@ -93,14 +86,28 @@ export default async function UserOperator({
   );
 
   const formData = {
-    // We need to only pass the email and phone number to the user information page
-    ...{ email: userData?.email, phone_number: userData?.phone_number },
     ...userOperatorData,
   };
 
+  // Render the review form if the user is CAS internal
+  if (isCasInternal) {
+    return (
+      <UserOperatorReviewForm
+        schema={createUserOperatorSchema(
+          userOperatorInternalUserSchema,
+          businessStructuresList,
+        )}
+        formData={formData}
+      />
+    );
+  }
+
   return (
     <UserOperatorForm
-      schema={createUserOperatorSchema(businessStructuresList)}
+      schema={createUserOperatorSchema(
+        userOperatorSchema,
+        businessStructuresList,
+      )}
       formData={formData}
     />
   );
