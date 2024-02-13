@@ -130,15 +130,13 @@ const Review = ({
     ? confirmApproveMessage
     : confirmRejectMessage;
 
-  if (!isReviewButtons) return null;
-
   return (
     <Box
       sx={{
         // 🛠️ to prevent leaving extra space when there is no content
         minHeight: "auto",
         width: "100%",
-        marginBottom: "16px",
+        marginBottom: isReviewButtons ? "16px" : "0",
       }}
     >
       <Modal
