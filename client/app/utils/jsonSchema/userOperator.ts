@@ -371,10 +371,49 @@ export const userOperatorPage2: RJSFSchema = {
   ],
 };
 
+export const userOperatorUserInformationPage2: RJSFSchema = {
+  type: "object",
+  title: "User Information",
+  properties: {
+    position_title: {
+      type: "string",
+      title: "Position Title",
+    },
+    first_name: {
+      type: "string",
+      title: "First Name",
+    },
+    last_name: {
+      type: "string",
+      title: "Last Name",
+    },
+    email: {
+      type: "string",
+      title: "Email Address",
+      format: "email",
+      readOnly: true,
+    },
+    phone_number: {
+      type: "string",
+      title: "Phone Number",
+      format: "phone",
+      readOnly: true,
+    },
+  },
+};
+
 export const userOperatorSchema: RJSFSchema = {
   type: "object",
   properties: {
     userOperatorPage1,
+  },
+};
+
+export const userOperatorInternalUserSchema: RJSFSchema = {
+  type: "object",
+  properties: {
+    userOperatorPage1,
+    userOperatorUserInformationPage2,
   },
 };
 
@@ -547,5 +586,13 @@ export const userOperatorUiSchema = {
         "ui:widget": "PostalCodeWidget",
       },
     },
+  },
+};
+
+export const userOperatorInternalUserUiSchema = {
+  ...userOperatorUiSchema,
+  // Remove headings since titles are displayed in Accordion header
+  "ui:options": {
+    label: false,
   },
 };
