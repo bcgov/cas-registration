@@ -10,7 +10,7 @@ from django.core.cache import cache
 ##### GET #####
 
 
-@router.get("/regulated_products", response=List[RegulatedProductSchema])
+@router.get("/regulated_products", response=List[RegulatedProductSchema], url_name="list_regulated_products")
 @authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles())
 def list_regulated_products(request):
     cached_data = cache.get("regulated_products")
