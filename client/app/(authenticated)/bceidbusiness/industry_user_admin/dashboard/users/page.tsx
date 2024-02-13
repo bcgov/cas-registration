@@ -64,6 +64,7 @@ export default async function Page() {
       headerAlign: "center",
     },
   ];
+
   const statusRows: GridRowsProp = userOperatorStatuses.map((uOS) => ({
     id: uOS.user.user_guid,
     name: `${uOS.user.first_name} ${uOS.user.last_name.slice(0, 1)}`,

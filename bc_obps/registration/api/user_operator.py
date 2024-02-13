@@ -13,11 +13,11 @@ from registration.schema import (
     UserOperatorOut,
     SelectOperatorIn,
     Message,
+    UserOperatorPaginatedOut,
     UserOperatorOperatorIn,
     RequestAccessOut,
     IsApprovedUserOperator,
     UserOperatorIdOut,
-    UserOperatorListOut,
     UserOperatorStatusUpdate,
     ExternalDashboardUsersTileData,
     PendingUserOperatorOut,
@@ -26,6 +26,7 @@ from registration.schema import (
 from typing import List
 
 from .api_base import router
+from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404
 
 from registration.models import (
@@ -40,6 +41,7 @@ from registration.models import (
 from ninja.responses import codes_4xx
 from datetime import datetime
 from django.forms import model_to_dict
+from registration.constants import PAGE_SIZE
 
 
 # Function to save operator data to reuse in POST/PUT methods
@@ -217,15 +219,32 @@ def get_user(request):
     return user_operator_list
 
 
-@router.get("/user-operators", response=List[UserOperatorListOut])
+@router.get("/user-operators", response=UserOperatorPaginatedOut)
 @authorize(AppRole.get_authorized_irc_roles())
-def list_user_operators(request):
-    qs = UserOperator.objects.select_related("operator", "user").only(
-        "id", "status", "user__last_name", "user__first_name", "user__email", "operator__legal_name"
+def list_user_operators(request, page: int = 1, sort_field: str = "created_at", sort_order: str = "desc"):
+    sort_direction = "-" if sort_order == "desc" else ""
+
+    user_fields = [
+        "first_name",
+        "last_name",
+        "email",
+    ]
+    if sort_field in user_fields:
+        sort_field = f"user__{sort_field}"
+    if sort_field == "legal_name":
+        sort_field = "operator__legal_name"
+
+    qs = (
+        UserOperator.objects.select_related("operator", "user")
+        .only("id", "status", "user__last_name", "user__first_name", "user__email", "operator__legal_name")
+        .order_by(f"{sort_direction}{sort_field}")
     )
+    paginator = Paginator(qs, PAGE_SIZE)
     user_operator_list = []
 
-    for user_operator in qs:
+    paginator = Paginator(qs, 20)
+
+    for user_operator in paginator.page(page).object_list:
         user_operator_related_fields_dict = model_to_dict(
             user_operator,
             fields=[
@@ -236,11 +255,7 @@ def list_user_operators(request):
         user = user_operator.user
         user_related_fields_dict = model_to_dict(
             user,
-            fields=[
-                "first_name",
-                "last_name",
-                "email",
-            ],
+            fields=user_fields,
         )
         operator = user_operator.operator
         operator_related_fields_dict = model_to_dict(
@@ -257,7 +272,10 @@ def list_user_operators(request):
                 **operator_related_fields_dict,
             }
         )
-    return user_operator_list
+    return 200, UserOperatorPaginatedOut(
+        data=user_operator_list,
+        row_count=paginator.count,
+    )
 
 
 ##### POST #####

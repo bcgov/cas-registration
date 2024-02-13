@@ -62,5 +62,316 @@
       "regulated_products": [],
       "status": "Approved"
     }
+  },
+  {
+    "model": "registration.operation",
+    "fields": {
+      "operator": 1,
+      "documents": [],
+      "submission_date": "2024-01-13T15:28:00.000Z",
+      "point_of_contact": 1,
+      "name": "Operation 5",
+      "type": "Single Facility Operation",
+      "naics_code": 21,
+      "opt_in": false,
+      "bcghg_id": "23219990001",
+      "regulated_products": [],
+      "status": "Pending"
+    }
+  },
+  {
+    "model": "registration.operation",
+    "fields": {
+      "operator": 1,
+      "documents": [],
+      "submission_date": "2024-01-14T15:27:00.000Z",
+      "point_of_contact": 1,
+      "name": "Operation 6",
+      "type": "Single Facility Operation",
+      "naics_code": 21,
+      "opt_in": false,
+      "bcghg_id": "23219990000",
+      "regulated_products": [],
+      "status": "Pending"
+    }
+  },
+  {
+    "model": "registration.operation",
+    "fields": {
+      "operator": 1,
+      "documents": [],
+      "submission_date": "2024-01-15T15:27:00.000Z",
+      "point_of_contact": 1,
+      "name": "Operation 7",
+      "type": "Single Facility Operation",
+      "naics_code": 21,
+      "opt_in": false,
+      "bcghg_id": "23219990006",
+      "regulated_products": [],
+      "status": "Pending"
+    }
+  },
+  {
+    "model": "registration.operation",
+    "fields": {
+      "operator": 1,
+      "documents": [],
+      "submission_date": "2024-01-16T15:27:00.000Z",
+      "point_of_contact": 1,
+      "name": "Operation 8",
+      "type": "Single Facility Operation",
+      "naics_code": 21,
+      "opt_in": false,
+      "bcghg_id": "23219990007",
+      "regulated_products": [],
+      "status": "Pending"
+    }
+  },
+  {
+    "model": "registration.operation",
+    "fields": {
+      "operator": 1,
+      "documents": [],
+      "submission_date": "2024-01-17T15:27:00.000Z",
+      "point_of_contact": 1,
+      "name": "Operation 9",
+      "type": "Single Facility Operation",
+      "naics_code": 21,
+      "opt_in": false,
+      "bcghg_id": "23219990008",
+      "regulated_products": [],
+      "status": "Pending"
+    }
+  },
+  {
+    "model": "registration.operation",
+    "fields": {
+      "operator": 1,
+      "documents": [],
+      "submission_date": "2024-01-18T15:27:00.000Z",
+      "point_of_contact": 1,
+      "name": "Operation 10",
+      "type": "Single Facility Operation",
+      "naics_code": 21,
+      "opt_in": false,
+      "bcghg_id": "23219990009",
+      "regulated_products": [],
+      "status": "Pending"
+    }
+  },
+  {
+    "model": "registration.operation",
+    "fields": {
+      "operator": 1,
+      "documents": [],
+      "submission_date": "2024-01-19T15:27:00.000Z",
+      "point_of_contact": 1,
+      "name": "Operation 11",
+      "type": "Single Facility Operation",
+      "naics_code": 21,
+      "opt_in": false,
+      "bcghg_id": "23219990010",
+      "regulated_products": [],
+      "status": "Pending"
+    }
+  },
+  {
+    "model": "registration.operation",
+    "fields": {
+      "operator": 1,
+      "documents": [],
+      "submission_date": "2024-01-20T15:27:00.000Z",
+      "point_of_contact": 1,
+      "name": "Operation 12",
+      "type": "Single Facility Operation",
+      "naics_code": 21,
+      "opt_in": false,
+      "bcghg_id": "23219990011",
+      "regulated_products": [],
+      "status": "Pending"
+    }
+  },
+  {
+    "model": "registration.operation",
+    "fields": {
+      "operator": 1,
+      "documents": [],
+      "submission_date": "2024-01-21T15:27:00.000Z",
+      "point_of_contact": 1,
+      "name": "Operation 13",
+      "type": "Single Facility Operation",
+      "naics_code": 21,
+      "opt_in": false,
+      "bcghg_id": "23219990012",
+      "regulated_products": [],
+      "status": "Pending"
+    }
+  },
+  {
+    "model": "registration.operation",
+    "fields": {
+      "operator": 2,
+      "documents": [],
+      "submission_date": "2024-01-22T15:27:00.000Z",
+      "point_of_contact": 1,
+      "name": "Operation 14",
+      "type": "Single Facility Operation",
+      "naics_code": 21,
+      "opt_in": false,
+      "bcghg_id": "23219990013",
+      "regulated_products": [],
+      "status": "Pending"
+    }
+  },
+  {
+    "model": "registration.operation",
+    "fields": {
+      "operator": 2,
+      "documents": [],
+      "submission_date": "2024-01-23T15:27:00.000Z",
+      "point_of_contact": 1,
+      "name": "Operation 15",
+      "type": "Single Facility Operation",
+      "naics_code": 21,
+      "opt_in": false,
+      "bcghg_id": "23219990014",
+      "regulated_products": [],
+      "status": "Pending"
+    }
+  },
+  {
+    "model": "registration.operation",
+    "fields": {
+      "operator": 2,
+      "documents": [],
+      "submission_date": "2024-01-24T15:27:00.000Z",
+      "point_of_contact": 1,
+      "name": "Operation 16",
+      "type": "Single Facility Operation",
+      "naics_code": 21,
+      "opt_in": false,
+      "bcghg_id": "23219990015",
+      "regulated_products": [],
+      "status": "Pending"
+    }
+  },
+  {
+    "model": "registration.operation",
+    "fields": {
+      "operator": 2,
+      "documents": [],
+      "submission_date": "2024-01-25T15:27:00.000Z",
+      "point_of_contact": 1,
+      "name": "Operation 17",
+      "type": "Single Facility Operation",
+      "naics_code": 21,
+      "opt_in": false,
+      "bcghg_id": "23219990016",
+      "regulated_products": [],
+      "status": "Pending"
+    }
+  },
+  {
+    "model": "registration.operation",
+    "fields": {
+      "operator": 2,
+      "documents": [],
+      "submission_date": "2024-01-26T15:27:00.000Z",
+      "point_of_contact": 1,
+      "name": "Operation 18",
+      "type": "Single Facility Operation",
+      "naics_code": 21,
+      "opt_in": false,
+      "bcghg_id": "23219990017",
+      "regulated_products": [],
+      "status": "Pending"
+    }
+  },
+  {
+    "model": "registration.operation",
+    "fields": {
+      "operator": 2,
+      "documents": [],
+      "submission_date": "2024-01-27T15:27:00.000Z",
+      "point_of_contact": 1,
+      "name": "Operation 19",
+      "type": "Single Facility Operation",
+      "naics_code": 21,
+      "opt_in": false,
+      "bcghg_id": "23219990018",
+      "regulated_products": [],
+      "status": "Pending"
+    }
+  },
+  {
+    "model": "registration.operation",
+    "fields": {
+      "operator": 2,
+      "documents": [],
+      "submission_date": "2024-01-28T15:27:00.000Z",
+      "name": "Operation 20",
+      "type": "Single Facility Operation",
+      "naics_code": 21,
+      "opt_in": false,
+      "bcghg_id": "23219990019",
+      "regulated_products": [],
+      "status": "Pending"
+    }
+  },
+  {
+    "model": "registration.operation",
+    "fields": {
+      "operator": 2,
+      "documents": [],
+      "name": "Operation 21",
+      "type": "Single Facility Operation",
+      "naics_code": 21,
+      "opt_in": false,
+      "bcghg_id": "23219990020",
+      "regulated_products": [],
+      "status": "Pending"
+    }
+  },
+  {
+    "model": "registration.operation",
+    "fields": {
+      "operator": 2,
+      "documents": [],
+      "name": "Operation 22",
+      "type": "Single Facility Operation",
+      "naics_code": 21,
+      "opt_in": false,
+      "bcghg_id": "23219990021",
+      "regulated_products": [],
+      "status": "Pending"
+    }
+  },
+  {
+    "model": "registration.operation",
+    "fields": {
+      "operator": 2,
+      "documents": [],
+      "name": "Operation 23",
+      "type": "Single Facility Operation",
+      "naics_code": 21,
+      "opt_in": false,
+      "bcghg_id": "23219990022",
+      "regulated_products": [],
+      "status": "Pending"
+    }
+  },
+  {
+    "model": "registration.operation",
+    "fields": {
+      "operator": 2,
+      "documents": [],
+      "name": "Operation 24",
+      "type": "Single Facility Operation",
+      "naics_code": 21,
+      "opt_in": false,
+      "bcghg_id": "23219990023",
+      "regulated_products": [],
+      "status": "Pending"
+    }
   }
 ]

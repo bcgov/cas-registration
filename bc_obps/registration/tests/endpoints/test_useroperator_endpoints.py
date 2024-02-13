@@ -14,6 +14,7 @@ from registration.models import (
 )
 from registration.tests.utils.bakers import operator_baker, user_operator_baker
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
+from registration.constants import PAGE_SIZE
 
 pytestmark = pytest.mark.django_db
 
@@ -224,6 +225,46 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         )
 
         assert len(json.loads(response.content)) == 1
+
+    def test_get_user_operators_paginated(self):
+        baker.make(
+            UserOperator,
+            user=self.user,
+            operator=operator_baker(),
+            role=UserOperator.Roles.ADMIN,
+            status=UserOperator.Statuses.APPROVED,
+            _quantity=60,
+        )
+
+        response = TestUtils.mock_get_with_auth_role(self, 'cas_admin', f"{base_endpoint}user-operators")
+        assert response.status_code == 200
+        response_data = response.json().get('data')
+        # save the id of the first paginated response item
+        page_1_response_id = response_data[0].get('id')
+        assert len(response_data) == PAGE_SIZE
+        # Get the page 2 response
+        response = TestUtils.mock_get_with_auth_role(
+            self, "cas_admin", f"{base_endpoint}user-operators?page=2&sort_field=created_at&sort_order=desc"
+        )
+        assert response.status_code == 200
+        response_data = response.json().get('data')
+        # save the id of the first paginated response item
+        page_2_response_id = response_data[0].get('id')
+        assert len(response_data) == PAGE_SIZE
+        # assert that the first item in the page 1 response is not the same as the first item in the page 2 response
+        assert page_1_response_id != page_2_response_id
+
+        # Get page 2 again but with different sort order
+        response = TestUtils.mock_get_with_auth_role(
+            self, "cas_admin", f"{base_endpoint}user-operators?page=2&sort_field=created_at&sort_order=asc"
+        )
+        assert response.status_code == 200
+        response_data = response.json().get('data')
+        # save the id of the first paginated response item
+        page_2_response_id_reverse = response_data[0].get('id')
+        assert len(response_data) == PAGE_SIZE
+        # assert that the first item in the page 2 response is not the same as the first item in the page 2 response with reversed order
+        assert page_2_response_id != page_2_response_id_reverse
 
     def test_user_operator_put_update_user_status(self):
         user = baker.make(User)

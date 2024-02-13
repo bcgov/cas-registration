@@ -16,3 +16,5 @@ BC_CORPORATE_REGISTRY_REGEX_MESSAGE = "BC Corporate Registry Number should be 1-
 BORO_ID_REGEX = r"^\d{2}-\d{4}$"
 
 USER_CACHE_PREFIX = "user_cache_"
+
+PAGE_SIZE = 20
