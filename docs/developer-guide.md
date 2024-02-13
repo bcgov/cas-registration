@@ -256,17 +256,6 @@ Use `expect` assertions to verify the expected behavior of the application. This
 expect(await page.isVisible('[data-testid="success-message"]')).toBe(true);
 ```
 
-#### Headless Mode for CI/CD
-
-When running tests in a Continuous Integration (CI) or Continuous Deployment (CD) pipeline, consider using headless mode to improve performance and resource consumption.
-
-Start client app from new terminal command:
-
-```javascript
-// Launch browser in headless mode
-const browser = await chromium.launch({ headless: true });
-```
-
 #### Playwright Testing Prerequisites
 
 - To run playwright end-to-end tests for the first time, you may need to run `yarn playwright install --with-deps` to install the browsers
@@ -319,9 +308,14 @@ cd client && yarn e2e:ui
 **HTML report**
 The HTML report shows you a report of all your tests that have been ran and on which browsers as well as how long they took. Tests can be filtered by passed tests, failed, flakey or skipped tests. You can also search for a particular test. Clicking on a test will open the detailed view where you can see more information on your tests such as the errors, the test steps and the trace.
 
+For debugging CI, you can download the HTML report artifact found in `GitHub\Actions\Test Registration App\Artifacts\ playwright-report` and extract the files to `client/playwright-report`. To view the downloaded the HTML report artifact locally run terminal command:
+
+```bash
+cd client && yarn playwright show-report
+
 ```
-npx playwright show-report
-```
+
+[Debugging CI Playwright documentation](https://playwright.dev/docs/ci-intro#downloading-the-html-report).
 
 **Traces**
 Traces are normally run in a Continuous Integration(CI) environment, because locally you can use UI Mode for developing and debugging tests. However, if you want to run traces locally without using UI Mode, you can force tracing to be on with --trace on.
@@ -335,15 +329,6 @@ In the HTML report click on the trace icon next to the test name file name to di
 
 ```bash
 cd client &&  npx playwright show-trace test-results/setup-trace.zip
-
-```
-
-For debugging CI, you can download the artifacts and view the results locally [Playwright documentation](https://playwright.dev/docs/ci-intro#downloading-the-html-report).
-
-Open report from new terminal command:
-
-```bash
-cd client && yarn playwright show-report
 
 ```
 
