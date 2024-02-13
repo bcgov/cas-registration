@@ -50,7 +50,7 @@ export default async function AccessRequestReceived({
   const requestSubsequentAccessJSX: JSX.Element = (
     <>
       <p>
-        Your access request has been send to Administrator(s) of{" "}
+        Your access request has been sent to the Administrator(s) of{" "}
         <b>{operator.legal_name}</b> for review.
       </p>
       <p>Once approved, you will receive a confirmation email.</p>

@@ -12,7 +12,12 @@ from registration.models import (
     User,
     UserOperator,
 )
-from registration.tests.utils.bakers import operator_baker, user_operator_baker
+from registration.tests.utils.bakers import (
+    address_baker,
+    generate_random_bc_corporate_registry_number,
+    operator_baker,
+    user_operator_baker,
+)
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.constants import PAGE_SIZE
 
@@ -227,14 +232,21 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         assert len(json.loads(response.content)) == 1
 
     def test_get_user_operators_paginated(self):
-        baker.make(
-            UserOperator,
-            user=self.user,
-            operator=operator_baker(),
-            role=UserOperator.Roles.ADMIN,
-            status=UserOperator.Statuses.APPROVED,
-            _quantity=60,
-        )
+        for i in range(60):
+            baker.make(
+                UserOperator,
+                user=self.user,
+                operator=baker.make(
+                    Operator,
+                    id=i,
+                    bc_corporate_registry_number=generate_random_bc_corporate_registry_number(),
+                    business_structure=BusinessStructure.objects.first(),
+                    physical_address=address_baker(),
+                    website='https://www.example-operator.com',
+                ),
+                role=UserOperator.Roles.ADMIN,
+                status=UserOperator.Statuses.APPROVED,
+            )
 
         response = TestUtils.mock_get_with_auth_role(self, 'cas_admin', f"{base_endpoint}user-operators")
         assert response.status_code == 200

@@ -490,14 +490,23 @@ class OperatorModelTest(BaseTestCase):
         cls.test_object.contacts.set([Contact.objects.get(id=1), Contact.objects.get(id=2)])
         # Create multiple UserOperators connected with the test Operator
         user_operators_user = User.objects.get(user_guid="3fa85f64-5717-4562-b3fc-2c963f66afa6")
-        for _ in range(2):
-            UserOperator.objects.create(
-                user=user_operators_user,
-                operator=Operator.objects.get(id=1),
-                role=UserOperator.Roles.ADMIN,
-                verified_at=timezone.now(),
-                verified_by=User.objects.get(user_guid="00000000-0000-0000-0000-000000000001"),
-            )
+        user_operators_user_2 = User.objects.get(user_guid="4da70f32-65fd-4137-87c1-111f2daba3dd")
+
+        UserOperator.objects.create(
+            user=user_operators_user,
+            operator=Operator.objects.get(id=1),
+            role=UserOperator.Roles.ADMIN,
+            verified_at=timezone.now(),
+            verified_by=User.objects.get(user_guid="00000000-0000-0000-0000-000000000001"),
+        )
+
+        UserOperator.objects.create(
+            user=user_operators_user_2,
+            operator=Operator.objects.get(id=1),
+            role=UserOperator.Roles.ADMIN,
+            verified_at=timezone.now(),
+            verified_by=User.objects.get(user_guid="00000000-0000-0000-0000-000000000001"),
+        )
 
         cls.field_data = [
             *timestamp_common_fields,
@@ -593,6 +602,23 @@ class UserOperatorModelTest(BaseTestCase):
             ("verified_by", "verified by", None, None),
             ("verified_at", "verified at", None, None),
         ]
+
+    def test_unique_user_operator_constraint(self):
+        user_operators_user = User.objects.get(user_guid="3fa85f64-5717-4562-b3fc-2c963f66afa6")
+        # First user_operator record is `cls.test_object` from the fixture, attempt to create a row with duplicate a user/operator pair
+        invalid_user_operator_record = UserOperator(
+            user=user_operators_user,
+            operator=Operator.objects.get(id=1),
+            role=UserOperator.Roles.ADMIN,
+            status=UserOperator.Statuses.PENDING,
+            verified_at=timezone.now(),
+            verified_by=User.objects.get(user_guid="00000000-0000-0000-0000-000000000001"),
+        )
+
+        with self.assertRaises(
+            ValidationError, msg="A UserOperator record with this user-operator pair already exists."
+        ):
+            invalid_user_operator_record.save()
 
 
 class OperationModelTest(BaseTestCase):
