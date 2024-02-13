@@ -11,7 +11,6 @@ import {
 import { userOperatorUiSchema } from "@/app/utils/jsonSchema/userOperator";
 import { actionHandler } from "@/app/utils/actions";
 import { useSession } from "next-auth/react";
-import UserOperatorReview from "@/app/components/routes/access-requests/form/UserOperatorReview";
 import MultiStepFormBase from "@/app/components/form/MultiStepFormBase";
 import { UserOperatorFormData } from "@/app/components/form/formDataTypes";
 import Note from "../datagrid/Note";
@@ -84,7 +83,6 @@ export default function UserOperatorForm({
   const isFormStatusDisabled =
     formData?.status === Status.PENDING || formData?.status === Status.APPROVED;
 
-  const isNewOperatorMessage = formData.is_new && formSection === 1;
   const operatorRoute = isCasInternal ? "operators" : "select-operator";
 
   return (
@@ -98,23 +96,6 @@ export default function UserOperatorForm({
 Some fields cannot be edited. If you need to change those fields, please contact us via email at GHGRegulator@gov.bc.ca."
         />
       )}
-
-      {isCasInternal && (
-        <>
-          {isNewOperatorMessage && (
-            <Note message="This is a new operator. You must approve this operator before approving its admin." />
-          )}
-          <UserOperatorReview
-            userOperator={formData as UserOperatorFormData}
-            userOperatorId={Number(userOperatorId)}
-            isOperatorNew={formData?.is_new}
-            operatorId={formData?.operator_id}
-            // We don't want to show the request changes button for Prime Admin approval
-            showRequestChanges={false}
-          />
-        </>
-      )}
-
       <MultiStepFormBase
         cancelUrl={
           isCasInternal ? "/dashboard/operators" : "/dashboard/select-operator"
