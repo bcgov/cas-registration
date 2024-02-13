@@ -1,6 +1,6 @@
 
 backend:
-  replicaCount: 1
+  replicaCount: 2
 
   image:
     tag: "latest"
@@ -10,8 +10,16 @@ backend:
 
   environment: test
 
+  resources:
+    limits:
+      cpu: 800m
+      memory: 600Mi
+    requests:
+      cpu: 300m
+      memory: 300Mi
+
 frontend:
-  replicaCount: 1
+  replicaCount: 2
 
   image:
     tag: "latest"
@@ -24,3 +32,11 @@ frontend:
   auth:
     keycloakAuthUrl: https://test.loginproxy.gov.bc.ca/auth
     siteminderAuthUrl: https://logontest7.gov.bc.ca
+
+  resources:
+    limits:
+      cpu: 400m
+      memory: 500Mi
+    requests:
+      cpu: 200m
+      memory: 250Mi
