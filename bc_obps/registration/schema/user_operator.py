@@ -71,7 +71,7 @@ class UserOperatorOut(ModelSchema):
     email: str = Field(..., alias="user.email")
     phone_number: str = str(Field(None, alias="user.phone_number"))
     position_title: str = Field(None, alias="user.position_title")
-    bceid_business_name: str = Field(None, alias="user.bceid_business_name")
+    bceid_business_name: Optional[str] = Field(None, alias="user.bceid_business_name")
 
     @staticmethod
     def resolve_mailing_address_same_as_physical(obj: UserOperator):
@@ -85,9 +85,6 @@ class UserOperatorOut(ModelSchema):
 
     @staticmethod
     def resolve_phone_number(obj):
-        # PhoneNumberField returns a PhoneNumber object and we need a string
-        if not obj.user.phone_number:
-            return
         return str(obj.user.phone_number)
 
     class Config:
