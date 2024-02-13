@@ -139,9 +139,9 @@ baker.generators.add(PhoneNumberField, TestUtils.mock_phone_number)
 class CommonTestSetup:
     pytestmark = pytest.mark.django_db  # This is used to mark a test function as requiring the database
     base_endpoint = BASE_ENDPOINT
-    content_type_json = "application/json"
 
     def setup(self):
+        self.content_type = "application/json"
         self.user = baker.make(User, _fill_optional=True)  # Passing _fill_optional to fill all fields with random data
         self.auth_header = {'user_guid': str(self.user.user_guid)}
         self.auth_header_dumps = json.dumps(self.auth_header)
