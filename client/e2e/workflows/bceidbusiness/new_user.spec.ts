@@ -4,7 +4,6 @@
 import { test } from "@playwright/test";
 // 🪄 Page Object Models
 import { DashboardPOM } from "@/e2e/poms/dashboard";
-import { HomePOM } from "@/e2e/poms/home";
 import { ProfilePOM } from "@/e2e/poms/profile";
 // ℹ️ Environment variables
 import * as dotenv from "dotenv";
@@ -18,20 +17,19 @@ test.describe("Test Workflow new user", () => {
   // Note: specify storageState for each test file or test group, instead of setting it in the config. https://playwright.dev/docs/next/auth#reuse-signed-in-state
   test.use({ storageState: storageState }); // this will error if no such file or directory
   test("Test Redirect to Profile", async ({ page }) => {
-    // 🛸 Navigate to home page
-    const homePage = new HomePOM(page);
-    await homePage.route();
-    // 🔍 Assert user is logged in
-    await homePage.userIsLoggedIn();
-    // 🔍 Assert that the current URL ends with "/profile"
+    // 🛸 Navigate to dashboard page
+    const dashboardPage = new DashboardPOM(page);
+    await dashboardPage.route();
+    // 🔍 Assert that the current URL ends with "(authenticated/profile"
     const profilePage = new ProfilePOM(page);
     await profilePage.urlIsCorrect();
   });
   test("Test Update Profile", async ({ page }) => {
+    // 🛸 Navigate to profile page
     const profilePage = new ProfilePOM(page);
     await profilePage.route();
     await profilePage.update();
-    // 🔍 Assert that the current URL ends with "/dashboard"
+    // 🔍 Assert that the current URL ends with "(authenticated)/dashboard"
     const dashboardPage = new DashboardPOM(page);
     await dashboardPage.urlIsCorrect();
   });

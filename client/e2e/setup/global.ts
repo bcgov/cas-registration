@@ -33,7 +33,7 @@ const setupAuth = async (
   user: string,
   password: string,
   storageState: string,
-  role: string
+  role: string,
 ) => {
   // ✨  Launch new instance of the Chromium browser
   const browser = await chromium.launch();
@@ -78,7 +78,7 @@ const setupAuth = async (
     await page.context().storageState({ path: storageState });
     // eslint-disable-next-line no-console
     console.log(
-      `🤸 Successful authentication setup for ${user} captured in storageState ${storageState} 🤸`
+      `🤸 Successful authentication setup for ${user} captured in storageState ${storageState} 🤸`,
     );
     await browser.close();
   } catch (error) {
@@ -132,7 +132,7 @@ export default async function globalSetup() {
     };
     // eslint-disable-next-line no-console
     console.error(
-      "✔️ Upserted bc-cas-dev as user operator for operator_id 2 with role admin and status Approved."
+      "✔️ Upserted bc-cas-dev as user operator for operator_id 2 with role admin and status Approved.",
     );
     query = {
       text: "DELETE FROM erc.user WHERE user_guid = $1",
@@ -149,7 +149,7 @@ export default async function globalSetup() {
   // 👤 Set storageState for Authenticated IDIR and BCeid credentials using NextAuth and Keycloak to be used in subsequent test suites
   // eslint-disable-next-line no-console
   console.log(
-    "👤 Global setup to authenticate all user roles and store each session in storageState to be used in test suites to mock user by role."
+    "👤 Global setup to authenticate all user roles and store each session in storageState to be used in test suites to mock user by role.",
   );
 
   // ➰ Loop through the entries of UserRole enum
@@ -176,7 +176,7 @@ export default async function globalSetup() {
           user || "",
           pw || "",
           process.env[role + "_STORAGE"] as string,
-          value
+          value,
         );
         success = true; // Set success to true if setupAuth succeeds
       } catch (error) {
@@ -184,7 +184,7 @@ export default async function globalSetup() {
         retries++;
         // eslint-disable-next-line no-console
         console.error(
-          `🐛 Error in setupAuth: ${error}. Retrying (${retries}/${maxRetries})...`
+          `🐛 Error in setupAuth: ${error}. Retrying (${retries}/${maxRetries})...`,
         );
       }
     }
