@@ -615,7 +615,9 @@ class UserOperatorModelTest(BaseTestCase):
             verified_by=User.objects.get(user_guid="00000000-0000-0000-0000-000000000001"),
         )
 
-        with self.assertRaises(ValidationError, msg="A UserOperator record with this user-operator pair already exists."):
+        with self.assertRaises(
+            ValidationError, msg="A UserOperator record with this user-operator pair already exists."
+        ):
             invalid_user_operator_record.save()
 
 
