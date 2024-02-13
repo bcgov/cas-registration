@@ -33,7 +33,6 @@ export default defineConfig({
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: "on-first-retry",
   },
-  timeout: 60000,
   // 🚩 The globalSetup option in playwright.config.js allows you to specify a JavaScript file that will be executed ONCE before all test suites.
   globalSetup: require.resolve("e2e/setup/global.ts"),
 
@@ -45,7 +44,14 @@ export default defineConfig({
         ...devices["Desktop Chrome"],
       },
     },
-
+    {
+      name: "firefox",
+      use: { ...devices["Desktop Firefox"] },
+    },
+    {
+      name: "webkit",
+      use: { ...devices["Desktop Safari"] },
+    },
     /* Test against mobile viewports. */
     // {
     //   name: 'Mobile Chrome',

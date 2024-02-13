@@ -578,7 +578,3 @@ class OperationListOut(ModelSchema):
         model = Operation
         model_fields = ['id', 'name', 'bcghg_id', 'submission_date', 'status']
 ```
-
-```
-
-```
