@@ -1,31 +1,20 @@
-import pytest, json, uuid
+import json, uuid
 from registration.schema import UserIn
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
-from django.test import Client
 from registration.enums.enums import IdPs
-
-pytestmark = pytest.mark.django_db
-
-base_endpoint = "/api/registration/"
-
-content_type_json = "application/json"
-
-client = Client()
+from registration.utils import custom_reverse_lazy
 
 
 class TestUserEndpoint(CommonTestSetup):
-    endpoint = base_endpoint + "user"
-    endpoint_profile = endpoint + "-profile"
-
     def test_unauthorized_users_cannot_get(self):
         # /user
-        response = TestUtils.mock_get_with_auth_role(self, "cas_pending")
+        response = TestUtils.mock_get_with_auth_role(self, "cas_pending", custom_reverse_lazy('get_user'))
         assert response.status_code == 401
 
     # GET USER
     def test_get_user(self):
         # Act
-        response = TestUtils.mock_get_with_auth_role(self, 'industry_user', self.endpoint)
+        response = TestUtils.mock_get_with_auth_role(self, 'industry_user', custom_reverse_lazy('get_user'))
         content = response.json()
         # Assert
         assert response.status_code == 200
@@ -44,11 +33,8 @@ class TestUserEndpoint(CommonTestSetup):
 
     # GET USER PROFILE
     def test_get_user_profile(self):
-        # Arrange
-        url = f"{self.endpoint_profile}"
-
         # Act
-        response = TestUtils.mock_get_with_auth_role(self, 'cas_admin', url)
+        response = TestUtils.mock_get_with_auth_role(self, 'cas_admin', custom_reverse_lazy('get_user_profile'))
         content = response.json()
 
         # Assert
@@ -83,9 +69,9 @@ class TestUserEndpoint(CommonTestSetup):
 
         # Act
         # Construct the endpoint URL for identity_provider "bceidbusiness"
-        response = client.post(
-            f"{self.endpoint_profile}/{IdPs.BCEIDBUSINESS.value}",
-            content_type=content_type_json,
+        response = TestUtils.client.post(
+            custom_reverse_lazy('create_user_profile', kwargs={'identity_provider': IdPs.BCEIDBUSINESS.value}),
+            content_type=self.content_type,
             data=mock_payload.json(),
             HTTP_AUTHORIZATION=json.dumps({'user_guid': str(uuid.uuid4())}),
         )
@@ -130,9 +116,9 @@ class TestUserEndpoint(CommonTestSetup):
 
         # Act
         # Construct the endpoint URL for identity_provider "idir"
-        response = client.post(
-            f"{self.endpoint_profile}/{IdPs.IDIR.value}",
-            content_type=content_type_json,
+        response = TestUtils.client.post(
+            custom_reverse_lazy('create_user_profile', kwargs={'identity_provider': IdPs.IDIR.value}),
+            content_type=self.content_type,
             data=mock_payload.json(),
             HTTP_AUTHORIZATION=json.dumps({'user_guid': str(uuid.uuid4())}),
         )
@@ -176,7 +162,11 @@ class TestUserEndpoint(CommonTestSetup):
 
         # Act
         response = TestUtils.mock_put_with_auth_role(
-            self, 'industry_user', content_type_json, mock_payload.json(), f"{self.endpoint_profile}"
+            self,
+            'industry_user',
+            self.content_type,
+            mock_payload.json(),
+            custom_reverse_lazy('update_user_profile'),
         )
         content = response.json()
 
