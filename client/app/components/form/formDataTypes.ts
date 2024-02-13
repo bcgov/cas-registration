@@ -1,6 +1,7 @@
 export interface UserFormData {
   first_name: string;
   last_name: string;
+  bceid_business_name: string;
   position_title: string;
   street_address: string;
   municipality: string;
