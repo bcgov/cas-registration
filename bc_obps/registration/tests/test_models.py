@@ -903,6 +903,7 @@ class TestModelsWithAuditColumns(TestCase):
 
             # CHECK HISTORY
             history_1 = instance.history.most_recent()
+            history_1.refresh_from_db()
             self.assertEqual(history_1.created_at, instance.created_at)
             self.assertEqual(history_1.created_by, instance.created_by)
             self.assertIsNone(history_1.updated_at)
@@ -927,6 +928,7 @@ class TestModelsWithAuditColumns(TestCase):
 
             # CHECK HISTORY
             history_2 = instance.history.most_recent()
+            history_2.refresh_from_db()
             self.assertEqual(history_2.created_at, instance.created_at)
             self.assertEqual(history_2.created_by, instance.created_by)
             self.assertEqual(history_2.updated_at, instance.updated_at)
@@ -949,6 +951,7 @@ class TestModelsWithAuditColumns(TestCase):
 
             # CHECK HISTORY
             history_3 = instance.history.most_recent()
+            history_3.refresh_from_db()
             self.assertEqual(history_3.created_at, instance.created_at)
             self.assertEqual(history_3.created_by, instance.created_by)
             self.assertEqual(history_3.updated_at, instance.updated_at)
