@@ -1,4 +1,6 @@
 UNAUTHORIZED_MESSAGE = "Unauthorized."
+BASE_ENDPOINT = "/api/registration/"
+DEFAULT_API_NAMESPACE = "api-1.0.0"
 
 # Used to exclude audit fields from the schema
 AUDIT_FIELDS = [
