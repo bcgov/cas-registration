@@ -7,7 +7,7 @@ from django.core.cache import cache
 
 
 ##### GET #####
-@router.get("/business_structures", response=List[BusinessStructureOut])
+@router.get("/business_structures", response=List[BusinessStructureOut], url_name="list_business_structures")
 @authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles())
 def list_business_structures(request):
     cached_data = cache.get("business_structures")

@@ -8,7 +8,7 @@ from django.core.cache import cache
 ##### GET #####
 
 
-@router.get("/naics_codes", response=List[NaicsCodeSchema])
+@router.get("/naics_codes", response=List[NaicsCodeSchema], url_name="list_naics_codes")
 @authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles())
 def list_naics_codes(request):
     cached_data = cache.get("naics_codes")
