@@ -1,22 +1,25 @@
 "use client";
 import { useEffect, useState } from "react";
+
 import {
   DataGrid as MuiGrid,
   GridRowsProp,
   GridColDef,
-  GridRenderCellParams,
+  GridSortItem,
 } from "@mui/x-data-grid";
-import Link from "next/link";
 import { BC_GOV_BACKGROUND_COLOR_BLUE } from "@/app/styles/colors";
-import { Session } from "next-auth";
+import Pagination from "@/app/components/datagrid/Pagination";
 
 interface Props {
+  fetchPageData?: (
+    page: number,
+    sortField?: string,
+    sortOrder?: string,
+  ) => Promise<any>;
   rows: GridRowsProp;
+  rowCount?: number;
   columns: GridColDef[];
-  cntxt?: string;
-  // Optionally pass the server session to the component
-  // Since directly using client session can be a bit slow to load
-  session?: Session | null;
+  paginationMode?: "client" | "server";
 }
 
 interface SortIconProps {
@@ -53,89 +56,74 @@ const DescendingIcon = () => {
   return <SortIcon topFill="white" bottomFill="grey" />;
 };
 
-const DataGrid: React.FC<Props> = ({ rows, columns, cntxt, session }) => {
-  // 📚  Define a state variable to store columns
-  const [customColumns, setCustomColumns] = useState<GridColDef[]>(columns);
+const PAGE_SIZE = 20;
 
-  const isIndustryUser = session?.user.app_role?.includes("industry");
+const DataGrid: React.FC<Props> = ({
+  columns,
+  fetchPageData,
+  paginationMode = "client",
+  rows: initialRows,
+  rowCount,
+}) => {
+  const [rows, setRows] = useState(initialRows ?? []);
+  const [loading, setLoading] = useState(false);
+  const [isComponentMounted, setIsComponentMounted] = useState(false);
+  const [paginationModel, setPaginationModel] = useState({
+    page: 0,
+    pageSize: PAGE_SIZE,
+  });
+  const [sortModel, setSortModel] = useState([] as GridSortItem[]);
 
   useEffect(() => {
-    // 🔍 Props passed from Server Components—for example client/app/operations/page.tsx—must be serializable
-    // Handling non-serializable column functions here...
-    switch (cntxt) {
-      case "operations":
-        // 📚 Define a custom renderCell function for the 'action' column
-        const updatedColumnsOperations = columns.map((column) => {
-          if (column.field === "action") {
-            return {
-              ...column,
-              renderCell: (params: GridRenderCellParams) => (
-                <div>
-                  {/* 🔗 Add reg or details link */}
-                  <Link
-                    className="no-underline text-bc-link-blue whitespace-normal"
-                    // Indutry users view multistep form, internal users view single page details route
-                    href={`operations/${params.row.id}${
-                      isIndustryUser ? "/1" : ""
-                    }`}
-                  >
-                    {params.row.status === "Not Started"
-                      ? "Start Application"
-                      : "View Details"}
-                  </Link>
-                </div>
-              ),
-            };
-          }
-          return column;
-        });
-        //  🔄 Use updatedColumns for rendering the DataGrid
-        setCustomColumns(updatedColumnsOperations);
-        break;
-      case "user-operators":
-        // 📚 Define a custom renderCell function for the 'action' column
-        const updatedColumnsUserOperators = columns.map((column) => {
-          if (column.field === "action") {
-            return {
-              ...column,
-              renderCell: (params: GridRenderCellParams) => (
-                <div>
-                  {/* Link to the first page of the multistep form for a specific user-operator. The '1' represents the first formSection of the form. */}
-                  <Link
-                    className="no-underline text-bc-link-blue"
-                    href={`operators/user-operator/${params.row.id}/1`}
-                  >
-                    View Details
-                  </Link>
-                </div>
-              ),
-            };
-          }
-          return column;
-        });
-        //  🔄 Use updatedColumns for rendering the DataGrid
-        setCustomColumns(updatedColumnsUserOperators);
-        break;
-      default:
-        break;
-    }
-  }, [columns, cntxt]);
+    setIsComponentMounted(true);
+  }, []);
+
+  useEffect(() => {
+    const sortModelField = sortModel[0]?.field ?? "created_at";
+    const sortModelOrder = sortModel[0]?.sort ?? "desc";
+
+    // Don't fetch data if the component is not mounted
+    // Since we will grab the first page using the server side props
+    if (!isComponentMounted || !fetchPageData) return;
+    setLoading(true);
+    const fetchData = async () => {
+      // fetch data from server
+      const pageData = await fetchPageData(
+        paginationModel.page + 1,
+        sortModelField,
+        sortModelOrder,
+      );
+      setRows(pageData);
+    };
+
+    fetchData().then(() => setLoading(false));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [paginationModel, sortModel]);
 
   return (
     <div style={{ height: "auto", width: "100%" }}>
       <MuiGrid
         rows={rows}
-        columns={customColumns}
+        columns={columns}
+        loading={loading}
+        rowCount={rowCount}
         showCellVerticalBorder
         initialState={{
-          pagination: { paginationModel: { pageSize: 20 } },
+          pagination: { paginationModel: { pageSize: PAGE_SIZE } },
         }}
+        pagination
+        pageSizeOptions={[PAGE_SIZE]}
+        sortingMode={paginationMode}
+        paginationMode={paginationMode}
+        onPaginationModelChange={setPaginationModel}
+        onSortModelChange={setSortModel}
         // Set the row height to "auto" so that the row height will adjust to the content
         getRowHeight={() => "auto"}
         slots={{
           columnSortedAscendingIcon: AscendingIcon,
           columnSortedDescendingIcon: DescendingIcon,
           columnUnsortedIcon: SortIcon,
+          pagination: Pagination,
         }}
         sx={{
           "& .MuiDataGrid-columnHeaderDraggableContainer": {

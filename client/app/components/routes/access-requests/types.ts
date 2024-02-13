@@ -6,3 +6,9 @@ export interface UserOperator {
   email: string;
   legal_name: string;
 }
+
+export interface UserOperatorPaginated {
+  data: UserOperator[];
+  row_count: number;
+  page: number;
+}

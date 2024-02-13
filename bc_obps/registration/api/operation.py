@@ -1,4 +1,4 @@
-from registration.constants import UNAUTHORIZED_MESSAGE
+from registration.constants import PAGE_SIZE, UNAUTHORIZED_MESSAGE
 from django.db import transaction
 from registration.decorators import authorize
 from .api_base import router
@@ -6,6 +6,8 @@ from datetime import datetime
 from django.core.exceptions import ValidationError
 import pytz
 from typing import List, Union
+from typing import List
+from django.core.paginator import Paginator
 from registration.models import (
     AppRole,
     MultipleOperator,
@@ -24,6 +26,8 @@ from registration.models import (
 from registration.schema import (
     OperationCreateIn,
     OperationUpdateIn,
+    OperationPaginatedOut,
+    OperationListOut,
     OperationOut,
     OperationCreateOut,
     OperationUpdateOut,
@@ -106,18 +110,25 @@ def create_or_update_multiple_operators(
 ##### GET #####
 
 
-@router.get("/operations", response={200: List[OperationListOut], codes_4xx: Message})
+@router.get("/operations", response={200: OperationPaginatedOut, codes_4xx: Message})
 @authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles())
-def list_operations(request):
+def list_operations(request, page: int = 1, sort_field: str = "created_at", sort_order: str = "desc"):
     user: User = request.current_user
+    sort_direction = "-" if sort_order == "desc" else ""
     # IRC users can see all operations except ones that are not started yet
     if user.is_irc_user():
         qs = (
             Operation.objects.select_related("operator", "bc_obps_regulated_operation")
             .exclude(status=Operation.Statuses.NOT_STARTED)
             .only(*OperationListOut.Config.model_fields, "operator__legal_name", "bc_obps_regulated_operation__id")
+            .order_by(f"{sort_direction}{sort_field}")
         )
-        return 200, qs
+        paginator = Paginator(qs, PAGE_SIZE)
+
+        return 200, OperationPaginatedOut(
+            data=[OperationListOut.from_orm(operation) for operation in paginator.page(page).object_list],
+            row_count=paginator.count,
+        )
     # Industry users can only see their companies' operations (if there's no user_operator or operator, then the user hasn't requested access to the operator)
     user_operator = UserOperator.objects.filter(user_id=user.user_guid).only("operator_id").first()
     if not user_operator:
@@ -129,11 +140,14 @@ def list_operations(request):
     operators_operations = (
         Operation.objects.select_related("operator", "bc_obps_regulated_operation")
         .filter(operator_id=user_operator.operator_id)
-        .order_by("-created_at")
+        .order_by(f"{sort_direction}{sort_field}")
         .only(*OperationListOut.Config.model_fields, "operator__legal_name", "bc_obps_regulated_operation__id")
     )
-
-    return 200, operators_operations
+    paginator = Paginator(operators_operations, PAGE_SIZE)
+    return 200, OperationPaginatedOut(
+        data=[OperationListOut.from_orm(operation) for operation in paginator.page(page).object_list],
+        row_count=paginator.count,
+    )
 
 
 @router.get(

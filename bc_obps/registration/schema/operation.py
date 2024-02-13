@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import List, Optional
 from registration.schema.operator import OperatorForOperationOut
 from registration.utils import file_to_data_url, data_url_to_file
 from ninja import Field, ModelSchema, Schema
@@ -132,3 +132,8 @@ class OperationUpdateStatusOut(ModelSchema):
     class Config:
         model = Operation
         model_fields = ["id"]
+
+
+class OperationPaginatedOut(Schema):
+    data: List[OperationListOut]
+    row_count: int

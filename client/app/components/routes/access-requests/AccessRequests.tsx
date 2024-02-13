@@ -1,49 +1,35 @@
 import { GridRowsProp } from "@mui/x-data-grid";
 import Note from "@/app/components/datagrid/Note";
-
-import { actionHandler } from "@/app/utils/actions";
-import DataGrid from "@/app/components/datagrid/DataGrid";
-import { UserOperator } from "./types";
+import OperatorDataGrid from "@/app/components/datagrid/OperatorDataGrid";
+import { UserOperatorPaginated } from "./types";
 import { statusStyle } from "@/app/components/datagrid/helpers";
 
-// 🛠️ Function to fetch user-operators
-async function getUserOperators() {
-  try {
-    return await actionHandler(
-      "registration/user-operators",
-      "GET",
-      "/dashboard/operators",
-    );
-  } catch (error) {
-    // Handle the error here or rethrow it to handle it at a higher level
-    throw error;
-  }
-}
+export const formatUserOperatorRows = (rows: GridRowsProp) => {
+  return rows?.map(
+    ({ id, status, first_name, last_name, email, legal_name }) => {
+      return {
+        id,
+        status,
+        first_name,
+        last_name,
+        email,
+        legal_name,
+      };
+    },
+  );
+};
 
 // 🧩 Main component
-export default async function AccessRequests() {
-  // Fetch userOperator data
-  const userOperators: [UserOperator] = await getUserOperators();
+const AccessRequests = ({
+  userOperators,
+}: {
+  userOperators: UserOperatorPaginated;
+}) => {
   if (!userOperators) {
     return <div>No access requests yet.</div>;
   }
-
-  // Transform the fetched data into rows for the DataGrid component
-  const rows: GridRowsProp =
-    userOperators.length > 0
-      ? userOperators.map(
-          ({ id, status, first_name, last_name, email, legal_name }) => {
-            return {
-              id,
-              status,
-              first_name,
-              last_name,
-              email,
-              legal_name,
-            };
-          },
-        )
-      : [];
+  const { row_count: rowCount } = userOperators;
+  const rows = formatUserOperatorRows(userOperators.data);
 
   // Render the DataGrid component
   return (
@@ -52,9 +38,9 @@ export default async function AccessRequests() {
         classNames="mb-4 mt-6"
         message="Once “Approved,” the user will have access to their operator dashboard with full admin permissions, and can grant access and designate permissions to other authorized users there."
       />
-      <DataGrid
-        cntxt="user-operators"
+      <OperatorDataGrid
         rows={rows}
+        rowCount={rowCount}
         columns={[
           {
             field: "id",
@@ -88,4 +74,6 @@ export default async function AccessRequests() {
       />
     </>
   );
-}
+};
+
+export default AccessRequests;

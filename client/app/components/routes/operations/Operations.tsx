@@ -1,7 +1,7 @@
 import { GridRowsProp } from "@mui/x-data-grid";
 
 import { actionHandler } from "@/app/utils/actions";
-import DataGrid from "@/app/components/datagrid/DataGrid";
+import OperationDataGrid from "@/app/components/datagrid/OperationDataGrid";
 import { statusStyle } from "@/app/components/datagrid/helpers";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
@@ -10,6 +10,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 async function getOperations() {
   try {
     return await actionHandler(
+      // Fetch page one of the operations data on initial load
       "registration/operations",
       "GET",
       "/dashboard/operations",
@@ -41,48 +42,54 @@ const formatTimestamp = (timestamp: string) => {
   return `${date}\n${timeWithTimeZone}`;
 };
 
+export const formatOperationRows = (rows: GridRowsProp) => {
+  return rows.map(
+    ({
+      id,
+      bc_obps_regulated_operation,
+      operator,
+      submission_date,
+      status,
+      name,
+      bcghg_id,
+    }) => {
+      return {
+        id,
+        bc_obps_regulated_operation: bc_obps_regulated_operation ?? "N/A",
+        name,
+        bcghg_id,
+        operator: operator,
+        submission_date: formatTimestamp(submission_date) ?? status,
+        status,
+      };
+    },
+  );
+};
+
 // 🧩 Main component
 export default async function Operations() {
   const session = await getServerSession(authOptions);
   // Fetch operations data
   const operations: {
-    id: number;
-    bcghg_id: string;
-    bc_obps_regulated_operation: string;
-    name: string;
-    operator: string;
-    submission_date: string;
-    status: string;
-  }[] = await getOperations();
+    data: {
+      id: number;
+      bcghg_id: string;
+      bc_obps_regulated_operation: string;
+      name: string;
+      operator: string;
+      submission_date: string;
+      status: string;
+    }[];
+    row_count: number;
+  } = await getOperations();
   if (!operations) {
     return <div>No operations data in database.</div>;
   }
-  // Transform the fetched data into rows for the DataGrid component
-  const rows: GridRowsProp =
-    operations.length > 0
-      ? operations.map(
-          ({
-            id,
-            bc_obps_regulated_operation,
-            operator,
-            submission_date,
-            status,
-            name,
-            bcghg_id,
-          }) => {
-            return {
-              id,
-              bc_obps_regulated_operation: bc_obps_regulated_operation ?? "N/A",
-              operation_name: name,
-              bcghg_id: bcghg_id,
-              operator_name: operator,
-              submission_date: formatTimestamp(submission_date) ?? status,
-              status: status,
-            };
-          },
-        )
-      : [];
 
+  const { row_count: rowCount } = operations;
+  // Transform the fetched data into rows for the DataGrid component
+
+  const rows = formatOperationRows(operations.data);
   // Show the operator column if the user is CAS internal
   const isOperatorColumn =
     session?.user.app_role?.includes("cas") &&
@@ -91,7 +98,7 @@ export default async function Operations() {
   const columns = [
     { field: "bcghg_id", headerName: "BC GHG ID", width: 160 },
     {
-      field: "operation_name",
+      field: "name",
       headerName: "Operation",
       width: isOperatorColumn ? 320 : 560,
     },
@@ -126,7 +133,7 @@ export default async function Operations() {
   if (isOperatorColumn) {
     // Add the operator column if the user is CAS internal
     columns.splice(operatorColumnIndex, 0, {
-      field: "operator_name",
+      field: "operator",
       headerName: "Operator",
       width: 320,
     });
@@ -135,12 +142,7 @@ export default async function Operations() {
   // Render the DataGrid component
   return (
     <div className="mt-5">
-      <DataGrid
-        cntxt="operations"
-        rows={rows}
-        columns={columns}
-        session={session}
-      />
+      <OperationDataGrid rows={rows} rowCount={rowCount} columns={columns} />
     </div>
   );
 }
