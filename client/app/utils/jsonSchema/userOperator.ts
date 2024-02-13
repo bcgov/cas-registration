@@ -375,10 +375,6 @@ export const userOperatorUserInformationPage2: RJSFSchema = {
   type: "object",
   title: "User Information",
   properties: {
-    position_title: {
-      type: "string",
-      title: "Position Title",
-    },
     first_name: {
       type: "string",
       title: "First Name",
@@ -386,6 +382,14 @@ export const userOperatorUserInformationPage2: RJSFSchema = {
     last_name: {
       type: "string",
       title: "Last Name",
+    },
+    bceid_business_name: {
+      type: "string",
+      title: "BCeID Business Name",
+    },
+    position_title: {
+      type: "string",
+      title: "Position Title",
     },
     email: {
       type: "string",
@@ -420,15 +424,10 @@ export const userOperatorInternalUserSchema: RJSFSchema = {
 export const userOperatorUiSchema = {
   "ui:order": [
     // contact info
-    "is_senior_officer",
-    "senior_officer_section",
     "first_name",
     "last_name",
+    "bceid_business_name",
     "position_title",
-    "street_address",
-    "municipality",
-    "province",
-    "postal_code",
     "email",
     "phone_number",
     // so = senior officer

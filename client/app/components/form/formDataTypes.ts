@@ -31,6 +31,7 @@ interface ParentOperator {
   po_mailing_province?: string;
   po_mailing_postal_code?: string;
 }
+
 export interface UserOperatorFormData extends UserFormData {
   is_senior_officer: string;
   legal_name: string;
