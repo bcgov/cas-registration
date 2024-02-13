@@ -603,7 +603,7 @@ class UserOperatorModelTest(BaseTestCase):
             ("verified_at", "verified at", None, None),
         ]
 
-    def test_unique_cra_business_number_constraint(self):
+    def test_unique_user_operator_constraint(self):
         user_operators_user = User.objects.get(user_guid="3fa85f64-5717-4562-b3fc-2c963f66afa6")
         # First user_operator record is `cls.test_object` from the fixture, attempt to create a row with duplicate a user/operator pair
         invalid_user_operator_record = UserOperator(
