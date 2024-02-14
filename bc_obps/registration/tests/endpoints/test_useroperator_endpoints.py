@@ -267,7 +267,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
                     website='https://www.example-operator.com',
                 ),
                 role=UserOperator.Roles.ADMIN,
-                status=UserOperator.Statuses.APPROVED,
+                status=UserOperator.Statuses.PENDING,
             )
 
         response = TestUtils.mock_get_with_auth_role(self, 'cas_admin', custom_reverse_lazy('list_user_operators'))
@@ -303,6 +303,44 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         assert len(response_data) == PAGE_SIZE
         # assert that the first item in the page 2 response is not the same as the first item in the page 2 response with reversed order
         assert page_2_response_id != page_2_response_id_reverse
+
+    def test_get_user_operators_check_response_returns_only_correct_status(self):
+        # Add only approved user operators
+        for i in range(21):
+            baker.make(
+                UserOperator,
+                user=self.user,
+                operator=operator_baker(),
+                role=UserOperator.Roles.ADMIN,
+                status=UserOperator.Statuses.APPROVED,
+            )
+
+        response = TestUtils.mock_get_with_auth_role(
+            custom_reverse_lazy('list_user_operators') + "user-operator-initial-requests"
+        )
+        assert response.status_code == 200
+        response_data = response.json().get('data')
+
+        # returns 0 because there are only approved user operators
+        assert len(response_data) == 0
+
+        # Now add some pending user operators
+        for i in range(10):
+            baker.make(
+                UserOperator,
+                user=self.user,
+                operator=operator_baker(),
+                role=UserOperator.Roles.ADMIN,
+                status=UserOperator.Statuses.PENDING,
+            )
+
+        response = TestUtils.mock_get_with_auth_role(
+            custom_reverse_lazy('list_user_operators') + "user-operator-initial-requests"
+        )
+        assert response.status_code == 200
+        response_data = response.json().get('data')
+        # returns 10 since we added 10 pending user operators
+        assert len(response_data) == 10
 
     def test_user_operator_put_update_user_status(self):
         user = baker.make(User)
