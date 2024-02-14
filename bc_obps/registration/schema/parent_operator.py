@@ -29,6 +29,7 @@ class ParentOperatorIn(Schema):
     po_mailing_municipality: Optional[str]
     po_mailing_province: Optional[str]
     po_mailing_postal_code: Optional[str]
+    operator_index: Optional[int]
 
     @validator("po_business_structure")
     @classmethod
