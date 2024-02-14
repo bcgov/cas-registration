@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "@mui/material/Link";
 import {
   FrontEndRoles,
   OperatorStatus,
@@ -106,7 +105,7 @@ export default function Tiles({
   }
 
   return (
-    <section className="flex flex-wrap gap-x-16 lg:gap-x-24 gap-y-16">
+    <section className="flex flex-wrap gap-x-16 lg:gap-x-24 gap-y-16 mt-4">
       {contents &&
         contents.map((content) => {
           const { title, links } = content;
@@ -123,16 +122,12 @@ export default function Tiles({
               <p className="mt-6 mb-0">{content.content}</p>
               {typeof links === "object" &&
                 links.map((link, i) => (
-                  <Link
+                  <a
                     key={i}
                     href={link.href}
-                    sx={{
-                      textDecoration: "none",
-                      padding: "8px",
-                      marginTop: "16px",
-                      display: "flex",
-                      alignItems: "center",
-                    }}
+                    className={`flex items-center mt-6 no-underline ${
+                      link.notification && "font-bold"
+                    }`}
                   >
                     {link?.notification && (
                       <span className="mr-2">
@@ -140,7 +135,7 @@ export default function Tiles({
                       </span>
                     )}
                     {link.title}
-                  </Link>
+                  </a>
                 ))}
             </div>
           );
