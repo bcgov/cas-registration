@@ -30,8 +30,8 @@ test.beforeAll(async () => {
       values: (string | number | boolean)[];
     } = {
       text: `
-    INSERT INTO erc.operator (id, status, legal_name, trade_name, cra_business_number, bc_corporate_registry_number, business_structure_id, mailing_address_id, physical_address_id, is_new)
-    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+    INSERT INTO erc.operator (id, status, legal_name, trade_name, cra_business_number, bc_corporate_registry_number, business_structure_id, is_new)
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
     ON CONFLICT (id)
     DO UPDATE SET status = EXCLUDED.status;
   `,
@@ -43,8 +43,6 @@ test.beforeAll(async () => {
         "987654321",
         "def1234567",
         "BC Corporation",
-        1,
-        1,
         false,
       ],
     };
@@ -79,7 +77,7 @@ test.beforeAll(async () => {
       text: `
     INSERT INTO erc.user_operator (user_id, role, status, operator_id)
     VALUES ($1,  $2, $3, $4)
-    ON CONFLICT (id)
+    ON CONFLICT (user_id, operator_id)
     DO UPDATE SET role = EXCLUDED.role, status = EXCLUDED.status;
   `,
       values: [
