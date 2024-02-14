@@ -9,6 +9,7 @@ import {
 import reportAProblemTile from "@/app/data/dashboard/report_a_problem.json";
 import bceidSelectOperatorTile from "@/app/data/dashboard/bceid/select_operator.json";
 import bceidMyOperatorTile from "@/app/data/dashboard/bceid/my_operator.json";
+import bceidMyOperatorDraftTile from "@/app/data/dashboard/bceid/my_operator_draft.json";
 import bceidOperationsTile from "@/app/data/dashboard/bceid/operations.json";
 import bceidUsersTile from "@/app/data/dashboard/bceid/users.json";
 import idirOperatorsTile from "@/app/data/dashboard/idir/operators.json";
@@ -16,6 +17,7 @@ import idirOperationsTile from "@/app/data/dashboard/idir/operations.json";
 import idirUsersTile from "@/app/data/dashboard/idir/users.json";
 import Inbox from "@/app/components/icons/Inbox";
 import Layers from "@/app/components/icons/Layers";
+import Notification from "@/app/components/icons/Notification";
 import Users from "@/app/components/icons/Users";
 import Wrench from "@/app/components/icons/Wrench";
 
@@ -23,11 +25,12 @@ import Wrench from "@/app/components/icons/Wrench";
 type ContentItem = {
   title: string;
   content: string;
-  links?: { title: string; href: string }[];
+  links?: { title: string; href: string; notification?: string }[];
 };
 
 const iconsMap: Record<string, any> = {
   Operators: Inbox,
+  "Select Operator": Inbox,
   Operations: Layers,
   "Report a Problem": Wrench,
   Users: Users,
@@ -72,6 +75,13 @@ export default function Tiles({
             ...bceidUsersTile,
             ...reportAProblemTile,
           ];
+        } else if (operatorStatus === OperatorStatus.DRAFT) {
+          contents = [
+            ...bceidMyOperatorDraftTile,
+            ...bceidOperationsTile,
+            ...bceidUsersTile,
+            ...reportAProblemTile,
+          ];
         } else {
           contents = [...bceidSelectOperatorTile, ...reportAProblemTile];
         }
@@ -111,7 +121,6 @@ export default function Tiles({
               </h2>
 
               <p className="mt-6 mb-0">{content.content}</p>
-
               {typeof links === "object" &&
                 links.map((link, i) => (
                   <Link
@@ -121,8 +130,15 @@ export default function Tiles({
                       textDecoration: "none",
                       padding: "8px",
                       marginTop: "16px",
+                      display: "flex",
+                      alignItems: "center",
                     }}
                   >
+                    {link?.notification && (
+                      <span className="mr-2">
+                        <Notification />
+                      </span>
+                    )}
                     {link.title}
                   </Link>
                 ))}
