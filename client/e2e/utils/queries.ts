@@ -2,7 +2,7 @@
 import * as dotenv from "dotenv";
 dotenv.config({ path: "./e2e/.env.local" });
 
-export const upsert_operator_id = {
+export const upsertOperator = {
   text: `
     INSERT INTO erc.operator (id, status, legal_name, trade_name, cra_business_number, bc_corporate_registry_number, business_structure_id, is_new)
     VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
@@ -21,7 +21,7 @@ export const upsert_operator_id = {
   ],
 };
 
-export const upsert_operator_user = {
+export const upsertOperatorUser = {
   text: `
      INSERT INTO erc.user (user_guid, app_role_id, first_name, last_name , position_title , email, phone_number, business_guid, bceid_business_name )
     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
@@ -41,7 +41,7 @@ export const upsert_operator_user = {
   ],
 };
 
-export const upsert_industry_user_admin = {
+export const upsertIOUserAdmin = {
   text: `
      INSERT INTO erc.user (user_guid, app_role_id, first_name, last_name , position_title , email, phone_number, business_guid, bceid_business_name )
     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
@@ -61,7 +61,7 @@ export const upsert_industry_user_admin = {
   ],
 };
 
-export const upsert_industry_user = {
+export const upsertIOUser = {
   text: `
          INSERT INTO erc.user (user_guid, app_role_id, first_name, last_name , position_title , email, phone_number, business_guid, bceid_business_name )
     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
@@ -81,7 +81,7 @@ export const upsert_industry_user = {
   ],
 };
 
-export const delete_new_user = {
+export const deleteNewUser = {
   text: "DELETE FROM erc.user WHERE user_guid = $1",
   values: [process.env.NEW_USER_GUID as string],
 };
