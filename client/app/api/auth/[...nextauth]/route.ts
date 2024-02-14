@@ -28,6 +28,8 @@ export const authOptions: NextAuthOptions = {
       },
     }),
   ],
+  //https://next-auth.js.org/configuration/nextjs#secret
+  secret: `${process.env.NEXTAUTH_SECRET}`,
   //https://next-auth.js.org/configuration/pages
   pages: {
     error: "/auth/error", // Error code passed in query string as ?error=

@@ -185,52 +185,152 @@ TestUtils.mock_postal_code()
 
 #### Run Playwright Specs
 
+Certainly! Below is a simple template for documentation on writing Playwright tests, including best practices and tips. Feel free to customize it based on your specific needs:
+
+## 1.0 Ensure the server is running:
+
+Start server from new terminal command:
+
+# Playwright Testing Documentation
+
+## Introduction
+
+Playwright is a powerful end-to-end testing library for web applications. It provides a simple API to automate browser actions, allowing developers to create robust and maintainable tests.
+
+## Getting Started
+
+To get started with Playwright, you'll need to install it as a dependency in your project:
+
+```bash
+cd bc_obps && make run
+npm install @playwright/test
+```
+
+2.0 Ensure the client app is running:
+
+## Writing Tests
+
+### Basic Test Structure
+
+Playwright tests follow a simple structure. Each test case is a JavaScript or TypeScript function with Playwright APIs for interacting with the browser.
+
+```javascript
+const { test } = require("@playwright/test");
+test("Example Test", async ({ page }) => {
+  // Your test logic goes here
+});
+```
+
+### Locators
+
+#### Prefer User-Facing Attributes
+
+When selecting elements, prefer using user-facing attributes over XPath or CSS selectors. This ensures that the tests are tied to the actual user experience and are less prone to breakage when the underlying structure changes.
+
+```javascript
+// Bad: Using XPath
+await page.click('//div[@class="my-button"]');
+// Good: Using User-Facing Attribute
+await page.click('[data-testid="my-button"]');
+```
+
+#### Code Generation
+
+To find locators, leverage Playwright's code generation feature. Use the following command to record user actions and generate test code:
+
+```bash
+cd client && npx playwright codegen http://localhost:3000
+```
+
+### Best Practices
+
+#### Test Isolation
+
+Ensure that each test is independent and does not rely on the state or outcome of other tests. This helps in maintaining a clean and predictable test suite.
+
+#### Use `expect` Assertions
+
+Use `expect` assertions to verify the expected behavior of the application. This makes your tests more readable and clearly defines the criteria for success.
+
+```javascript
+expect(await page.isVisible('[data-testid="success-message"]')).toBe(true);
+```
+
+#### Playwright Testing Prerequisites
+
+- To run playwright end-to-end tests for the first time, you may need to run `yarn playwright install --with-deps` to install the browsers
+
+**Ensure you have the following configuration**
+
+1. From file `client/e2e/.env.local.example` create `client/e2e/.env.local` with values reflecting instructions in file `client/e2e/.env.local.example`
+
+##### e2e Testing
+
 1.0 Ensure the server is running:
 
 Start server from new terminal command:
 
 ```bash
+cd client && yarn dev
 cd bc_obps && make run
 ```
 
+2.1 Or, for faster performance:
 2.0 Ensure the client app is running:
 
-Start client app from new terminal command:
-
-```bash
-cd client && yarn dev
-```
-
-2.1 Or, for faster performance:
-
 Build and start client app from new terminal command:
+To simulate how the application will behave in a production environment locally, start client app from new terminal command:
 
 ```bash
 cd client && yarn build && yarn start
 ```
 
 Alternatively, you can uncomment the `webServer` array in `playwright.config.ts` to run the tests without running client and server separately.
+Note: you can uncomment the `webServer` array in `playwright.config.ts` to run the tests without running client and server separately.
 
 3.0 Run the tests:
 
 Run tests from new terminal command:
+Run tests in the background using terminal command:
+
+```bash
+cd client && yarn e2e
+```
+
+Run tests with the Playwright GUI using terminal command:
 
 ```bash
 cd client && yarn e2e:ui
 ```
 
-4.0 To open last HTML report run:
+### Debugging Playwright
 
-Open report from new terminal command:
+**HTML report**
+The HTML report shows you a report of all your tests that have been ran and on which browsers as well as how long they took. Tests can be filtered by passed tests, failed, flakey or skipped tests. You can also search for a particular test. Clicking on a test will open the detailed view where you can see more information on your tests such as the errors, the test steps and the trace.
+
+For debugging CI, you can download the HTML report artifact found in `GitHub\Actions\Test Registration App\Artifacts\ playwright-report` and extract the files to `client/playwright-report`. To view the downloaded the HTML report artifact locally run terminal command:
 
 ```bash
 cd client && yarn playwright show-report
 
 ```
 
-### Debugging Playwright in CI
+[Debugging CI Playwright documentation](https://playwright.dev/docs/ci-intro#downloading-the-html-report).
 
-You can download the artifacts from the CI job and run the tests locally by following the steps in the [Playwright documentation](https://playwright.dev/docs/ci-intro#downloading-the-html-report).
+**Traces**
+Traces are normally run in a Continuous Integration(CI) environment, because locally you can use UI Mode for developing and debugging tests. However, if you want to run traces locally without using UI Mode, you can force tracing to be on with --trace on.
+
+```
+npx playwright test --trace on
+```
+
+**Opening the trace**
+In the HTML report click on the trace icon next to the test name file name to directly open the trace for the required test, or run command:
+
+```bash
+cd client &&  npx playwright show-trace test-results/setup-trace.zip
+
+```
 
 ### Debugging Django using Shell Plus
 
