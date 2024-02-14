@@ -86,18 +86,40 @@ def save_operator(payload: UserOperatorOperatorIn, operator_instance: Operator, 
         # create parent operator records
         operator_has_parent_operators: bool = payload.operator_has_parent_operators
         if operator_has_parent_operators:
-            po_operator_fields_mapping = {
-                "po_legal_name": "legal_name",
-                "po_trade_name": "trade_name",
-                "po_cra_business_number": "cra_business_number",
-                "po_bc_corporate_registry_number": "bc_corporate_registry_number",
-                "po_website": "website",
-            }
             for idx, po_operator in enumerate(payload.parent_operators_array):
-                new_po_operator_instance: ParentOperator = ParentOperator(
-                    child_operator=created_or_updated_operator_instance,
-                    operator_index=idx + 1,
+
+                existing_parent_operator_indices = list(
+                    ParentOperator.objects.filter(child_operator=created_or_updated_operator_instance).values_list(
+                        'operator_index', flat=True
+                    )
                 )
+
+                # archive any parent operators that have been removed
+                if existing_parent_operator_indices:
+
+                    def get_indices(po):
+                        return po.operator_index
+
+                    updated_parent_operator_indices = [
+                        get_indices(po) for po in payload.parent_operators_array if get_indices(po) is not None
+                    ]
+
+                    indices_to_delete = list(
+                        set(existing_parent_operator_indices) - set(updated_parent_operator_indices)
+                    )
+
+                    if indices_to_delete:
+                        for op_index in indices_to_delete:
+                            ParentOperator.objects.get(operator_index=op_index).set_archive(user.pk)
+
+                # assign an operator_index to new parent operators
+                if not po_operator.operator_index:
+                    highest_existing_index = (
+                        max(existing_parent_operator_indices) if len(existing_parent_operator_indices) > 0 else 0
+                    )
+
+                    po_operator.operator_index = highest_existing_index + 1
+
                 # handle addresses--if there's no mailing address given, it's the same as the physical address
                 po_physical_address = Address.objects.create(
                     street_address=po_operator.po_physical_street_address,
@@ -105,10 +127,9 @@ def save_operator(payload: UserOperatorOperatorIn, operator_instance: Operator, 
                     province=po_operator.po_physical_province,
                     postal_code=po_operator.po_physical_postal_code,
                 )
-                new_po_operator_instance.physical_address = po_physical_address
 
                 if po_operator.po_mailing_address_same_as_physical:
-                    new_po_operator_instance.mailing_address = po_physical_address
+                    po_mailing_address = po_physical_address
                 else:
                     po_mailing_address = Address.objects.create(
                         street_address=po_operator.po_mailing_street_address,
@@ -116,14 +137,23 @@ def save_operator(payload: UserOperatorOperatorIn, operator_instance: Operator, 
                         province=po_operator.po_mailing_province,
                         postal_code=po_operator.po_mailing_postal_code,
                     )
-                    new_po_operator_instance.mailing_address = po_mailing_address
 
-                new_po_operator_instance.business_structure = po_operator.po_business_structure
-                new_po_operator_instance = update_model_instance(
-                    new_po_operator_instance, po_operator_fields_mapping, po_operator.dict()
+                po_operator_instance, _ = ParentOperator.objects.update_or_create(
+                    child_operator=created_or_updated_operator_instance,
+                    operator_index=po_operator.operator_index,
+                    defaults={
+                        "legal_name": po_operator.po_legal_name,
+                        "trade_name": po_operator.po_trade_name,
+                        "cra_business_number": po_operator.po_cra_business_number,
+                        "bc_corporate_registry_number": po_operator.po_bc_corporate_registry_number,
+                        "business_structure": po_operator.po_business_structure,
+                        "website": po_operator.po_website,
+                        "physical_address": po_physical_address,
+                        "mailing_address": po_mailing_address,
+                    },
                 )
-                new_po_operator_instance.save()
-                new_po_operator_instance.set_create_or_update(user.pk)
+
+                po_operator_instance.set_create_or_update(user.pk)
 
         # get an existing user_operator instance or create a new one with the default role
         user_operator, created = UserOperator.objects.get_or_create(
