@@ -7,7 +7,7 @@ import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { actionHandler } from "@/app/utils/actions";
-import { UserOperatorStatus } from "@/app/utils/enums";
+import { OperatorStatus, UserOperatorStatus } from "@/app/utils/enums";
 import { getUserFullName } from "@/app/utils/getUserFullName";
 
 export const getUserOperator = async () => {
@@ -41,7 +41,10 @@ export default async function MyOperatorPage() {
     );
   }
 
-  if (status === UserOperatorStatus.APPROVED) {
+  if (
+    status === UserOperatorStatus.APPROVED &&
+    operator.status === OperatorStatus.DRAFT
+  ) {
     return permanentRedirect(
       `/dashboard/select-operator/user-operator/${id}/1`,
     );
