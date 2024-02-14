@@ -1,6 +1,6 @@
 // 🧪 Suite to test the onboarding\Home page `http://localhost:3000/home`
 
-import { test, expect } from "@playwright/test";
+import { test } from "@playwright/test";
 // 🪄 Page Object Models
 import { DashboardPOM } from "@/e2e/poms/dashboard";
 import { ProfilePOM } from "@/e2e/poms/profile";
@@ -8,14 +8,23 @@ import { ProfilePOM } from "@/e2e/poms/profile";
 import { UserRole } from "@/e2e/utils/enums";
 // 🥞 Connection pool to postgres DB
 import { pool } from "@/e2e/utils/pool";
-import { delete_new_user, upsert_industry_user } from "@/e2e/utils/queries";
+import { deleteNewUser, upsertIOUser } from "@/e2e/utils/queries";
 // ℹ️ Environment variables
 import * as dotenv from "dotenv";
 dotenv.config({ path: "./e2e/.env.local" });
 
-// 🏷 Annotate test suite as serial
-test.describe.configure({ mode: "serial" });
-
+// 🛠️ Function: deletes the new user record from the database
+const deleteNewUserRecord = async () => {
+  try {
+    const query = deleteNewUser;
+    // Execute the deletion query
+    await pool.query(query);
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error("Error deleting new user record:", error);
+    throw error;
+  }
+};
 // 📚 Declare a beforeAll hook that is executed once per worker process before all tests.
 // 🥞 Set DB for profile update
 // For industry_user, ensure there is an associated user
@@ -24,7 +33,7 @@ test.beforeAll(async () => {
   try {
     // 👤 industry_user: bc-cas-dev-secondary
     // Upsert a User record
-    let query = upsert_industry_user;
+    let query = upsertIOUser;
     // ▶️ Execute the query
     await pool.query(query);
 
@@ -38,19 +47,8 @@ test.beforeAll(async () => {
   }
 });
 
-// 🛠️ Function: deletes the new user record from the database
-const deleteNewUserRecord = async () => {
-  try {
-    const query = delete_new_user;
-    // Execute the deletion query
-    await pool.query(query);
-  } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error("Error deleting new user record:", error);
-    throw error;
-  }
-};
-
+// 🏷 Annotate test suite as serial
+test.describe.configure({ mode: "serial" });
 test.describe("Test Page - Profile", () => {
   // ➰ Loop through the entries of UserRole enum
   for (let [role, value] of Object.entries(UserRole)) {

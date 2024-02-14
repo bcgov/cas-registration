@@ -10,11 +10,11 @@ import { UserRole } from "@/e2e/utils/enums";
 // 🥞 Connection pool to postgres DB
 import { pool } from "@/e2e/utils/pool";
 import {
-  delete_new_user,
-  upsert_industry_user_admin,
-  upsert_industry_user,
-  upsert_operator_id,
-  upsert_operator_user,
+  deleteNewUser,
+  upsertIOUser,
+  upsertIOUserAdmin,
+  upsertOperator,
+  upsertOperatorUser,
 } from "@/e2e/utils/queries";
 // ℹ️ Environment variables
 import * as dotenv from "dotenv";
@@ -32,27 +32,27 @@ test.beforeAll(async () => {
   try {
     // 👤 industry_user_admin: bc-cas-dev
     // Upsert an Operator record
-    let query = upsert_operator_id;
+    let query = upsertOperator;
     // ▶️ Execute the query
     await pool.query(query);
     // Upsert a User record
-    query = upsert_industry_user_admin;
+    query = upsertIOUserAdmin;
     // ▶️ Execute the query
     await pool.query(query);
     // Upsert an User Operator record
-    query = upsert_operator_user;
+    query = upsertOperatorUser;
     // ▶️ Execute the query
     await pool.query(query);
 
     // 👤 industry_user: bc-cas-dev-secondary
     // Upsert a User record
-    query = upsert_industry_user;
+    query = upsertIOUser;
     // ▶️ Execute the query
     await pool.query(query);
 
     // 👤 new user: bc-cas-dev-three
     // Delete User record
-    query = delete_new_user;
+    query = deleteNewUser;
     // ▶️ Execute the deletion query
     await pool.query(query);
   } catch (error) {
