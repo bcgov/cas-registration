@@ -250,6 +250,7 @@ def list_user_operators(request, page: int = 1, sort_field: str = "created_at", 
         "last_name",
         "email",
     ]
+    print(UserOperator.objects.filter(status=UserOperator.Statuses.APPROVED).values_list("operator_id", flat=True))
     if sort_field in user_fields:
         sort_field = f"user__{sort_field}"
     if sort_field == "legal_name":
@@ -259,7 +260,12 @@ def list_user_operators(request, page: int = 1, sort_field: str = "created_at", 
         UserOperator.objects.select_related("operator", "user")
         .only("id", "status", "user__last_name", "user__first_name", "user__email", "operator__legal_name")
         .order_by(f"{sort_direction}{sort_field}")
-        .exclude(status=UserOperator.Statuses.APPROVED)
+        .exclude(
+            # exclude access requests to an operator that already has an approved admin
+            operator_id__in=UserOperator.objects.filter(status=UserOperator.Statuses.APPROVED).values_list(
+                "operator_id", flat=True
+            ),
+        )
     )
     paginator = Paginator(qs, PAGE_SIZE)
     user_operator_list = []
