@@ -1,7 +1,7 @@
 "use client";
 
+import { useState } from "react";
 import { useParams } from "next/navigation";
-
 import { userOperatorInternalUserUiSchema } from "@/app/utils/jsonSchema/userOperator";
 import MultiStepAccordion from "@/app/components/form/MultiStepAccordion";
 import { UserOperatorFormData } from "@/app/components/form/formDataTypes";
@@ -18,6 +18,9 @@ const UserOperatorReviewForm = ({ formData, schema }: Props) => {
   const userOperatorId = params.id;
   const isNewOperator = formData.is_new;
   const userOperatorStatus = formData.status;
+  const [rerenderKey, setRerenderKey] = useState(
+    crypto.getRandomValues(new Uint32Array(1))[0],
+  );
 
   return (
     <MultiStepAccordion
@@ -30,6 +33,11 @@ const UserOperatorReviewForm = ({ formData, schema }: Props) => {
           <UserOperatorReview
             userOperator={formData as UserOperatorFormData}
             userOperatorId={Number(userOperatorId)}
+            // Set rerenderKey to a new random value to force a rerender when the operator is approved
+            // So that we can reset the prime admin review if there was an error ie: operator needs to be approved first
+            onSuccess={() =>
+              setRerenderKey(crypto.getRandomValues(new Uint32Array(1))[0])
+            }
             note="This is a new operator. You must approve this operator before approving its admin."
             isOperatorNew={formData?.is_new}
             operatorId={formData?.operator_id}
@@ -38,6 +46,7 @@ const UserOperatorReviewForm = ({ formData, schema }: Props) => {
         ),
         "User Information": (
           <UserOperatorReview
+            key={rerenderKey}
             userOperator={formData as UserOperatorFormData}
             userOperatorId={Number(userOperatorId)}
             operatorId={formData?.operator_id}

@@ -9,6 +9,7 @@ interface Props {
   note?: string;
   userOperator: UserOperatorFormData;
   userOperatorId: number;
+  onSuccess?: () => void;
   operatorId?: number;
   isOperatorNew?: boolean;
   showRequestChanges?: boolean;
@@ -18,6 +19,7 @@ export default function UserOperatorReview({
   note,
   userOperator,
   userOperatorId,
+  onSuccess,
   operatorId,
   isOperatorNew,
   showRequestChanges,
@@ -33,6 +35,7 @@ export default function UserOperatorReview({
           body: JSON.stringify({ status }),
         },
       );
+      onSuccess?.();
       return response;
     } catch (error) {
       throw error;
