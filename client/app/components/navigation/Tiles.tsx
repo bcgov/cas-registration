@@ -1,9 +1,6 @@
 "use client";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import Grid from "@mui/material/Grid";
+
 import Link from "@mui/material/Link";
-import Typography from "@mui/material/Typography";
 import {
   FrontEndRoles,
   OperatorStatus,
@@ -17,12 +14,23 @@ import bceidUsersTile from "@/app/data/dashboard/bceid/users.json";
 import idirOperatorsTile from "@/app/data/dashboard/idir/operators.json";
 import idirOperationsTile from "@/app/data/dashboard/idir/operations.json";
 import idirUsersTile from "@/app/data/dashboard/idir/users.json";
+import Inbox from "@/app/components/icons/Inbox";
+import Layers from "@/app/components/icons/Layers";
+import Users from "@/app/components/icons/Users";
+import Wrench from "@/app/components/icons/Wrench";
 
 // 📐 type for ContentItem used to build dashboard content tiles
 type ContentItem = {
   title: string;
   content: string;
   links?: { title: string; href: string }[];
+};
+
+const iconsMap: Record<string, any> = {
+  Operators: Inbox,
+  Operations: Layers,
+  "Report a Problem": Wrench,
+  Users: Users,
 };
 
 export default function Tiles({
@@ -88,46 +96,39 @@ export default function Tiles({
   }
 
   return (
-    <>
-      <Grid container>
-        {contents &&
-          contents.map((content, index) => (
-            <Grid
-              key={index}
-              item
-              component={Card}
-              xs={12}
-              sm={6}
-              md={3}
-              sx={{
-                margin: 6,
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "space-between",
-              }}
+    <section className="flex flex-wrap gap-x-16 lg:gap-x-24 gap-y-16">
+      {contents &&
+        contents.map((content) => {
+          const { title, links } = content;
+          return (
+            <div
+              key={title}
+              className="dashboard-tile-container hover:box-shadow-tile hover:transition-shadow"
             >
-              <CardContent data-testid="dashboard-nav-card">
-                <Typography variant="h5" component="h2">
-                  {content.title}
-                </Typography>
+              <h2 className="flex items-center m-0">
+                {iconsMap[title]?.()}
+                <div className="ml-2">{content.title}</div>
+              </h2>
 
-                <Typography component="p" color="textSecondary">
-                  {content.content}
-                </Typography>
-              </CardContent>
-              {typeof content.links === "object" &&
-                content.links.map((link, i) => (
+              <p className="mt-6 mb-0">{content.content}</p>
+
+              {typeof links === "object" &&
+                links.map((link, i) => (
                   <Link
                     key={i}
                     href={link.href}
-                    sx={{ textDecoration: "none", padding: "8px" }}
+                    sx={{
+                      textDecoration: "none",
+                      padding: "8px",
+                      marginTop: "16px",
+                    }}
                   >
                     {link.title}
                   </Link>
                 ))}
-            </Grid>
-          ))}
-      </Grid>
-    </>
+            </div>
+          );
+        })}
+    </section>
   );
 }
