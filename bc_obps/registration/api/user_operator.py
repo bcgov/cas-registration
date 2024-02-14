@@ -347,6 +347,8 @@ def create_operator_and_user_operator(request, payload: UserOperatorOperatorIn):
                 bc_corporate_registry_number=payload.bc_corporate_registry_number,
                 # treating business_structure as a foreign key
                 business_structure=payload.business_structure,
+                # This used to default to 'Draft' but now defaults to 'Pending' since we removed page 2 of the user operator form
+                status=Operator.Statuses.PENDING,
             )
             # save operator data
             return save_operator(payload, operator_instance, user)
@@ -389,7 +391,11 @@ def update_user_operator_status(request, payload: UserOperatorStatusUpdate):
         return 404, {"message": "No parameters provided"}
 
     # We can't update the status of a user_operator if the operator has been declined or is awaiting review
-    if user_operator.operator.status in [Operator.Statuses.PENDING, Operator.Statuses.DECLINED]:
+    if user_operator.operator.status in [
+        Operator.Statuses.PENDING,
+        Operator.Statuses.DECLINED,
+        Operator.Statuses.DRAFT,
+    ]:
         return 400, {"message": "Operator must be approved before approving users."}
     try:
         with transaction.atomic():
