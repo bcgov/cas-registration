@@ -67,7 +67,7 @@ const Accordion = ({
       </AccordionSummary>
       <AccordionDetails
         sx={{
-          paddingY: "32px",
+          paddingY: "16px",
         }}
       >
         {children}

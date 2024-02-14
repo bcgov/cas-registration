@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Alert, Button, Box } from "@mui/material";
 import RecommendIcon from "@mui/icons-material/Recommend";
+import Note from "@/app/components/datagrid/Note";
 import DoNotDisturbIcon from "@mui/icons-material/DoNotDisturb";
 import Modal from "@/app/components/modal/Modal";
 import RequestChanges from "./RequestChanges";
@@ -15,6 +16,7 @@ interface Props {
   approvedMessage: string;
   declinedMessage: string;
   isStatusPending: boolean;
+  note?: string;
   showRequestChanges?: boolean;
   onApprove: () => Promise<any>;
   onReject: () => Promise<any>;
@@ -47,6 +49,7 @@ const Review = ({
   confirmRejectMessage,
   isStatusPending,
   declinedMessage,
+  note,
   showRequestChanges = true,
   onApprove,
   onReject,
@@ -133,6 +136,7 @@ const Review = ({
         // 🛠️ to prevent leaving extra space when there is no content
         minHeight: "auto",
         width: "100%",
+        marginBottom: isReviewButtons ? "16px" : "0",
       }}
     >
       <Modal
@@ -190,10 +194,17 @@ const Review = ({
         <Box
           sx={{
             display: "flex",
-            flexDirection: "row",
+            flexDirection: {
+              xs: "column",
+              lg: "row",
+            },
             width: "100%",
-            alignItems: "center",
-            justifyContent: showRequestChanges ? "space-between" : "flex-end",
+            alignItems: {
+              xs: "flex-end",
+              lg: "center",
+            },
+            justifyContent:
+              showRequestChanges || note ? "space-between" : "flex-end",
           }}
         >
           {showRequestChanges && (
@@ -205,11 +216,17 @@ const Review = ({
               showUndo={showRequestChangesUndo}
             />
           )}
+          {note && (
+            <span className="w-full mb-2 lg:mb-0">
+              <Note message={note} />
+            </span>
+          )}
           {!showChangeConfirmation && !showRequestChangesUndo && (
             <Box
               sx={{
                 width: "fit-content",
-                marginBottom: "40px",
+                minWidth: "fit-content",
+                height: "fit-content",
               }}
             >
               <Button
@@ -220,7 +237,6 @@ const Review = ({
                 aria-label="Approve application"
                 sx={{
                   marginRight: "12px",
-
                   border: "1px solid",
                   fontWeight: "bold",
                 }}
@@ -250,6 +266,7 @@ const Review = ({
             key={e.message}
             action={<CloseButton onClose={handleCloseAlert} />}
             severity="error"
+            className="mb-4"
           >
             {e?.stack ?? e.message}
           </Alert>
@@ -261,6 +278,7 @@ const Review = ({
             key={e.message}
             action={<CloseButton onClose={handleCloseAlert} />}
             severity="success"
+            className="mb-4"
           >
             {e.message}
           </Alert>

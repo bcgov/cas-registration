@@ -5,6 +5,7 @@ import Link from "next/link";
 import { GridRenderCellParams } from "@mui/x-data-grid";
 import { actionHandler } from "@/app/utils/actions";
 import { formatOperationRows } from "@/app/components/routes/operations/Operations";
+import { useSession } from "next-auth/react";
 
 const fetchOperationPageData = async (
   page: number,
@@ -33,6 +34,10 @@ const OperationDataGrid = ({
   columns: any[];
   rowCount: number;
 }) => {
+  const { data: session } = useSession();
+
+  const isIndustryUser = session?.user.app_role?.includes("industry");
+
   const updatedColumnsOperations = columns.map((column) => {
     if (column.field === "action") {
       return {
@@ -42,7 +47,7 @@ const OperationDataGrid = ({
             {/* 🔗 Add reg or details link */}
             <Link
               className="no-underline text-bc-link-blue whitespace-normal"
-              href={`operations/${params.row.id}/1`}
+              href={`operations/${params.row.id}${isIndustryUser ? "/1" : ""}`}
             >
               {params.row.status === "Not Started"
                 ? "Start Application"
