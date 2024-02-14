@@ -43,8 +43,8 @@ test.beforeAll(async () => {
         "987654321",
         "def1234567",
         "BC Corporation",
-        4,
-        3,
+        1,
+        1,
         false,
       ],
     };
@@ -127,6 +127,7 @@ test.beforeAll(async () => {
   } catch (error) {
     // eslint-disable-next-line no-console
     console.error("❌ Error in Db setup for login roles:", error);
+    throw error;
   }
 });
 
