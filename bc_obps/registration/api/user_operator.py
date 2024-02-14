@@ -250,7 +250,7 @@ def list_user_operators(request, page: int = 1, sort_field: str = "created_at", 
         "last_name",
         "email",
     ]
-    print(UserOperator.objects.filter(status=UserOperator.Statuses.APPROVED).values_list("operator_id", flat=True))
+
     if sort_field in user_fields:
         sort_field = f"user__{sort_field}"
     if sort_field == "legal_name":

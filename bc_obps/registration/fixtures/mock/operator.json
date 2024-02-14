@@ -58,5 +58,65 @@
       "verified_at": null,
       "verified_by": null
     }
+  },
+  {
+    "model": "registration.operator",
+    "pk": 4,
+    "fields": {
+      "legal_name": "New Operator 4 Legal Name",
+      "trade_name": "New Operator 4 Trade Name",
+      "cra_business_number": 987654323,
+      "bc_corporate_registry_number": "jkl1234567",
+      "business_structure": "BC Corporation",
+      "physical_address": 3,
+      "mailing_address": 4,
+      "website": "http://www.example2.com",
+      "documents": [],
+      "contacts": [1],
+      "status": "Rejected",
+      "is_new": true,
+      "verified_at": null,
+      "verified_by": null
+    }
+  },
+  {
+    "model": "registration.operator",
+    "pk": 5,
+    "fields": {
+      "legal_name": "New Operator 5 Legal Name",
+      "trade_name": "New Operator 5 Trade Name",
+      "cra_business_number": 987654324,
+      "bc_corporate_registry_number": "mno1234567",
+      "business_structure": "BC Corporation",
+      "physical_address": 3,
+      "mailing_address": 4,
+      "website": "http://www.example2.com",
+      "documents": [],
+      "contacts": [1],
+      "status": "Approved",
+      "is_new": true,
+      "verified_at": "2024-01-03 08:09:51.133556-08",
+      "verified_by": "00000000-0000-0000-0000-000000000002"
+    }
+  },
+  {
+    "model": "registration.operator",
+    "pk": 6,
+    "fields": {
+      "legal_name": "New Operator 6 Legal Name",
+      "trade_name": "New Operator 6 Trade Name",
+      "cra_business_number": 987654325,
+      "bc_corporate_registry_number": "pqr1234567",
+      "business_structure": "BC Corporation",
+      "physical_address": 3,
+      "mailing_address": 4,
+      "website": "http://www.example2.com",
+      "documents": [],
+      "contacts": [1],
+      "status": "Approved",
+      "is_new": true,
+      "verified_at": "2024-01-03 08:09:51.133556-08",
+      "verified_by": "00000000-0000-0000-0000-000000000002"
+    }
   }
 ]
