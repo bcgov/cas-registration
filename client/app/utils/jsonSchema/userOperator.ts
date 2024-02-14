@@ -371,6 +371,41 @@ export const userOperatorPage2: RJSFSchema = {
   ],
 };
 
+export const userOperatorUserInformationPage2: RJSFSchema = {
+  type: "object",
+  title: "User Information",
+  properties: {
+    first_name: {
+      type: "string",
+      title: "First Name",
+    },
+    last_name: {
+      type: "string",
+      title: "Last Name",
+    },
+    bceid_business_name: {
+      type: "string",
+      title: "BCeID Business Name",
+    },
+    position_title: {
+      type: "string",
+      title: "Position Title",
+    },
+    email: {
+      type: "string",
+      title: "Email Address",
+      format: "email",
+      readOnly: true,
+    },
+    phone_number: {
+      type: "string",
+      title: "Phone Number",
+      format: "phone",
+      readOnly: true,
+    },
+  },
+};
+
 export const userOperatorSchema: RJSFSchema = {
   type: "object",
   properties: {
@@ -378,18 +413,21 @@ export const userOperatorSchema: RJSFSchema = {
   },
 };
 
+export const userOperatorInternalUserSchema: RJSFSchema = {
+  type: "object",
+  properties: {
+    userOperatorPage1,
+    userOperatorUserInformationPage2,
+  },
+};
+
 export const userOperatorUiSchema = {
   "ui:order": [
     // contact info
-    "is_senior_officer",
-    "senior_officer_section",
     "first_name",
     "last_name",
+    "bceid_business_name",
     "position_title",
-    "street_address",
-    "municipality",
-    "province",
-    "postal_code",
     "email",
     "phone_number",
     // so = senior officer
@@ -547,5 +585,13 @@ export const userOperatorUiSchema = {
         "ui:widget": "PostalCodeWidget",
       },
     },
+  },
+};
+
+export const userOperatorInternalUserUiSchema = {
+  ...userOperatorUiSchema,
+  // Remove headings since titles are displayed in Accordion header
+  "ui:options": {
+    label: false,
   },
 };

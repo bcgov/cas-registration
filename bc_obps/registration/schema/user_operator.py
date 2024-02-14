@@ -66,6 +66,12 @@ class UserOperatorOut(ModelSchema):
     is_new: bool = Field(..., alias="operator.is_new")
     operator_has_parent_operators: bool
     parent_operators_array: Optional[List[ParentOperatorOut]] = Field(None, alias="operator.parent_operators")
+    first_name: str = Field(..., alias="user.first_name")
+    last_name: str = Field(..., alias="user.last_name")
+    email: str = Field(..., alias="user.email")
+    phone_number: str = str(Field(None, alias="user.phone_number"))
+    position_title: str = Field(None, alias="user.position_title")
+    bceid_business_name: Optional[str] = Field(None, alias="user.bceid_business_name")
 
     @staticmethod
     def resolve_mailing_address_same_as_physical(obj: UserOperator):
@@ -76,6 +82,10 @@ class UserOperatorOut(ModelSchema):
     @staticmethod
     def resolve_operator_has_parent_operators(obj: UserOperator) -> bool:
         return obj.operator.parent_operators.exists()
+
+    @staticmethod
+    def resolve_phone_number(obj):
+        return str(obj.user.phone_number)
 
     class Config:
         model = UserOperator

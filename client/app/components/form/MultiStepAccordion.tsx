@@ -6,12 +6,21 @@ import FormBase from "./FormBase";
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
 
 interface Props {
+  // Optional prop to render a section before the form
+  beforeForm?: { [key: string]: React.ReactNode };
+  expandedSteps?: { [key: string]: boolean };
+  formData: any;
   schema: RJSFSchema;
   uiSchema: UiSchema;
-  formData: any;
 }
 
-const MultiStepAccordion = ({ schema, uiSchema, formData }: Props) => {
+const MultiStepAccordion = ({
+  beforeForm,
+  expandedSteps,
+  formData,
+  schema,
+  uiSchema,
+}: Props) => {
   const [expandAll, setExpandAll] = useState({ isExpandAll: false });
   const accordionSectionList = Object.keys(schema.properties as any);
 
@@ -47,14 +56,22 @@ const MultiStepAccordion = ({ schema, uiSchema, formData }: Props) => {
         const schemaSection = schema.properties?.[
           accordionSectionList[index]
         ] as RJSFSchema;
-        const schemaTitle = schemaSection?.title;
+        const schemaTitle = schemaSection.title;
+        const isBeforeForm =
+          beforeForm && schemaTitle && beforeForm[schemaTitle];
+        const isExpanded =
+          expandedSteps && schemaTitle && expandedSteps[schemaTitle]
+            ? true
+            : false;
 
         return (
           <Accordion
             key={index}
+            expanded={isExpanded}
             expandedOptions={expandAll}
             title={schemaTitle}
           >
+            {isBeforeForm}
             <FormBase
               schema={schema.properties ? schemaSection : {}}
               uiSchema={uiSchema}

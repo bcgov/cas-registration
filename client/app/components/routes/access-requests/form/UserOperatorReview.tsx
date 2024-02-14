@@ -6,16 +6,20 @@ import { Status } from "@/app/utils/enums";
 import { UserOperatorFormData } from "@/app/components/form/formDataTypes";
 
 interface Props {
+  note?: string;
   userOperator: UserOperatorFormData;
   userOperatorId: number;
+  onSuccess?: () => void;
   operatorId?: number;
   isOperatorNew?: boolean;
   showRequestChanges?: boolean;
 }
 
 export default function UserOperatorReview({
+  note,
   userOperator,
   userOperatorId,
+  onSuccess,
   operatorId,
   isOperatorNew,
   showRequestChanges,
@@ -31,6 +35,7 @@ export default function UserOperatorReview({
           body: JSON.stringify({ status }),
         },
       );
+      onSuccess?.();
       return response;
     } catch (error) {
       throw error;
@@ -95,6 +100,7 @@ export default function UserOperatorReview({
       confirmApproveMessage={`Are you sure you want to approve the ${requestText}?`}
       confirmRejectMessage={`Are you sure you want to decline the ${requestText}?`}
       isStatusPending={userOperator.status === Status.PENDING}
+      note={note}
       onApprove={
         isOperatorNew ? approveOperatorRequest : approvePrimeAdminRequest
       }
