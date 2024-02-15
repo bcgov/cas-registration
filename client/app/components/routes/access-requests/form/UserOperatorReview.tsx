@@ -2,7 +2,7 @@
 
 import { actionHandler } from "@/app/utils/actions";
 import Review from "app/components/button/Review";
-import { Status } from "@/app/utils/enums";
+import { OperatorStatus, Status, UserOperatorStatus } from "@/app/utils/enums";
 import { UserOperatorFormData } from "@/app/components/form/formDataTypes";
 
 interface Props {
@@ -32,7 +32,7 @@ export default function UserOperatorReview({
         "PUT",
         "",
         {
-          body: JSON.stringify({ status }),
+          body: JSON.stringify({ status, user_operator_id: userOperatorId }),
         },
       );
       onSuccess?.();
@@ -99,7 +99,10 @@ export default function UserOperatorReview({
       declinedMessage={`You have declined the ${requestText}.`}
       confirmApproveMessage={`Are you sure you want to approve the ${requestText}?`}
       confirmRejectMessage={`Are you sure you want to decline the ${requestText}?`}
-      isStatusPending={userOperator.status === Status.PENDING}
+      isStatusPending={
+        userOperator.status === UserOperatorStatus.PENDING &&
+        userOperator.operator_status !== OperatorStatus.DECLINED
+      }
       note={note}
       onApprove={
         isOperatorNew ? approveOperatorRequest : approvePrimeAdminRequest
