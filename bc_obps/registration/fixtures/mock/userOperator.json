@@ -52,7 +52,7 @@
     "pk": 5,
     "fields": {
       "user": "00000000-0000-0000-0000-000000000002",
-      "operator": 4,
+      "operator": 5,
       "role": "admin",
       "status": "Pending",
       "verified_at": null,
@@ -112,7 +112,7 @@
     "pk": 10,
     "fields": {
       "user": "00000000-0000-0000-0000-000000000007",
-      "operator": 4,
+      "operator": 6,
       "role": "admin",
       "status": "Pending",
       "verified_at": null,
@@ -172,7 +172,7 @@
     "pk": 15,
     "fields": {
       "user": "00000000-0000-0000-0000-000000000012",
-      "operator": 4,
+      "operator": 5,
       "role": "admin",
       "status": "Pending",
       "verified_at": null,
@@ -256,7 +256,7 @@
     "pk": 22,
     "fields": {
       "user": "00000000-0000-0000-0000-000000000019",
-      "operator": 4,
+      "operator": 2,
       "role": "admin",
       "status": "Pending",
       "verified_at": null,
