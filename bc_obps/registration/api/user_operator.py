@@ -85,7 +85,7 @@ def save_operator(payload: UserOperatorOperatorIn, operator_instance: Operator, 
         created_or_updated_operator_instance.save()
         created_or_updated_operator_instance.set_create_or_update(user.pk)
 
-        handle_parent_operators(payload, created_or_updated_operator_instance, user)
+        handle_parent_operators(payload.parent_operators_array, created_or_updated_operator_instance, user)
 
         # get an existing user_operator instance or create a new one with the default role
         user_operator, created = UserOperator.objects.get_or_create(
