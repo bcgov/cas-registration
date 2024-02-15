@@ -107,6 +107,18 @@ def get_user_operator_from_user(request):
     user_operator = get_object_or_404(UserOperator, user_id=request.current_user.user_guid)
     operator = get_object_or_404(Operator, id=user_operator.operator_id)
     return 200, {**user_operator.__dict__, "is_new": operator.is_new, "operator_status": operator.status}
+def get_user_operator_status(request):
+    try:
+        user_operator = (
+          UserOperator.objects.only("id", "status", "operator__id", "operator__is_new")
+          .exclude(status=UserOperator.Statuses.DECLINED)
+          .select_related("operator")
+          .get(user_id=request.current_user.user_guid)
+
+        )
+    except UserOperator.DoesNotExist:
+        return 404, {"message": "User is not associated with any operator"}
+    return 200, PendingUserOperatorOut.from_orm(user_operator)
 
 
 @router.get(
@@ -134,8 +146,10 @@ def get_user_operator_operator(request):
     try:
         user_operator = (
             UserOperator.objects.only("operator__status", "operator__id")
+            .exclude(status=UserOperator.Statuses.DECLINED)
             .select_related("operator")
             .get(user=user.user_guid)
+
         )
     except UserOperator.DoesNotExist:
         return 404, {"message": "User is not associated with any operator"}
@@ -187,6 +201,15 @@ def get_user_operator_admin_exists(request, operator_id: int):
         operator_id=operator_id, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.APPROVED
     ).exists()
     return 200, has_admin
+
+@router.get("/operator-access-declined/{operator_id}", response={200: bool, codes_4xx: Message})
+@authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles())
+def get_user_operator_admin_exists(request, operator_id: int):
+    user: User = request.current_user
+    is_declined = UserOperator.objects.filter(
+        operator_id=operator_id, user_id=user.user_guid, status=UserOperator.Statuses.DECLINED
+    ).exists()
+    return 200, is_declined
 
 
 @router.get(
