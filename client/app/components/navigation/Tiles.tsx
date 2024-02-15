@@ -8,7 +8,6 @@ import {
 import reportAProblemTile from "@/app/data/dashboard/report_a_problem.json";
 import bceidSelectOperatorTile from "@/app/data/dashboard/bceid/select_operator.json";
 import bceidMyOperatorTile from "@/app/data/dashboard/bceid/my_operator.json";
-import bceidMyOperatorDraftTile from "@/app/data/dashboard/bceid/my_operator_draft.json";
 import bceidOperationsTile from "@/app/data/dashboard/bceid/operations.json";
 import bceidUsersTile from "@/app/data/dashboard/bceid/users.json";
 import idirOperatorsTile from "@/app/data/dashboard/idir/operators.json";
@@ -28,11 +27,29 @@ type ContentItem = {
 };
 
 const iconsMap: Record<string, any> = {
+  "My Operator": Inbox,
+  "My Operations": Layers,
   Operators: Inbox,
   "Select Operator": Inbox,
   Operations: Layers,
   "Report a Problem": Wrench,
   Users: Users,
+  "User Access Management": Users,
+};
+
+const userOperatorNotifications = (operatorStatus: string | undefined) => {
+  let notifications = 0;
+  if (!operatorStatus || operatorStatus === OperatorStatus.DRAFT) {
+    notifications++;
+  }
+  return notifications;
+};
+
+// notificationMap is used to retrieve the notification count for each type of notification
+// set the notification type in the links array of the Tile JSON file
+const notificationMap = {
+  operator: userOperatorNotifications,
+  // Add Operations and User notification functions here
 };
 
 export default function Tiles({
@@ -70,13 +87,6 @@ export default function Tiles({
         ) {
           contents = [
             ...bceidMyOperatorTile,
-            ...bceidOperationsTile,
-            ...bceidUsersTile,
-            ...reportAProblemTile,
-          ];
-        } else if (operatorStatus === OperatorStatus.DRAFT) {
-          contents = [
-            ...bceidMyOperatorDraftTile,
             ...bceidOperationsTile,
             ...bceidUsersTile,
             ...reportAProblemTile,
@@ -121,22 +131,40 @@ export default function Tiles({
 
               <p className="mt-6 mb-0">{content.content}</p>
               {typeof links === "object" &&
-                links.map((link, i) => (
-                  <a
-                    key={i}
-                    href={link.href}
-                    className={`flex items-center mt-6 no-underline ${
-                      link.notification && "font-bold"
-                    }`}
-                  >
-                    {link?.notification && (
-                      <span className="mr-2">
-                        <Notification />
-                      </span>
-                    )}
-                    {link.title}
-                  </a>
-                ))}
+                links.map((link, i) => {
+                  const notificationType = link?.notification;
+
+                  // Get the notification count for the current tile using the notificationMap
+                  const notificationCount =
+                    notificationMap[
+                      notificationType as keyof typeof notificationMap
+                    ]?.(operatorStatus) || 0;
+
+                  const isNotification = notificationCount > 0;
+
+                  return (
+                    <a
+                      key={i}
+                      href={link.href}
+                      className={`flex items-center mt-6 no-underline ${
+                        isNotification && "font-bold"
+                      }`}
+                    >
+                      {notificationType ? (
+                        <>
+                          {isNotification && (
+                            <span className="mr-2">
+                              <Notification />
+                            </span>
+                          )}
+                          {`${notificationCount} pending action(s) required`}
+                        </>
+                      ) : (
+                        link.title
+                      )}
+                    </a>
+                  );
+                })}
             </div>
           );
         })}

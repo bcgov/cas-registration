@@ -4,9 +4,9 @@
     "content": "View or update your operator information",
     "links": [
       {
-        "title": "1 pending action(s) required",
+        "title": "Select Operator ➤",
         "href": "/dashboard/select-operator",
-        "notification": true
+        "notification": "operator"
       }
     ]
   }
