@@ -240,7 +240,7 @@ def get_user_operator_list_from_user(request):
     return user_operator_list
 
 
-@router.get("/user-operators", response=UserOperatorPaginatedOut, url_name="list_user_operators")
+@router.get("/user-operator-initial-requests", response=UserOperatorPaginatedOut, url_name="list_user_operators")
 @authorize(AppRole.get_authorized_irc_roles())
 def list_user_operators(request, page: int = 1, sort_field: str = "created_at", sort_order: str = "desc"):
     sort_direction = "-" if sort_order == "desc" else ""
@@ -250,6 +250,7 @@ def list_user_operators(request, page: int = 1, sort_field: str = "created_at", 
         "last_name",
         "email",
     ]
+
     if sort_field in user_fields:
         sort_field = f"user__{sort_field}"
     if sort_field == "legal_name":
@@ -259,6 +260,12 @@ def list_user_operators(request, page: int = 1, sort_field: str = "created_at", 
         UserOperator.objects.select_related("operator", "user")
         .only("id", "status", "user__last_name", "user__first_name", "user__email", "operator__legal_name")
         .order_by(f"{sort_direction}{sort_field}")
+        .exclude(
+            # exclude access requests to an operator that already has an approved admin
+            operator_id__in=UserOperator.objects.filter(status=UserOperator.Statuses.APPROVED).values_list(
+                "operator_id", flat=True
+            ),
+        )
     )
     paginator = Paginator(qs, PAGE_SIZE)
     user_operator_list = []

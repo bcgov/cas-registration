@@ -8,7 +8,7 @@ import { UserOperatorPaginated } from "@/app/components/routes/access-requests/t
 async function getUserOperators() {
   try {
     return await actionHandler(
-      "registration/user-operators",
+      "registration/user-operator-initial-requests",
       "GET",
       "/dashboard/operators",
     );
