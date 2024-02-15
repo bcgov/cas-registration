@@ -52,7 +52,7 @@
     "pk": 5,
     "fields": {
       "user": "00000000-0000-0000-0000-000000000002",
-      "operator": 3,
+      "operator": 5,
       "role": "admin",
       "status": "Pending",
       "verified_at": null,
@@ -64,7 +64,7 @@
     "pk": 6,
     "fields": {
       "user": "00000000-0000-0000-0000-000000000003",
-      "operator": 2,
+      "operator": 5,
       "role": "admin",
       "status": "Pending",
       "verified_at": null,
@@ -76,7 +76,7 @@
     "pk": 7,
     "fields": {
       "user": "00000000-0000-0000-0000-000000000004",
-      "operator": 2,
+      "operator": 1,
       "role": "admin",
       "status": "Pending",
       "verified_at": null,
@@ -100,7 +100,7 @@
     "pk": 9,
     "fields": {
       "user": "00000000-0000-0000-0000-000000000006",
-      "operator": 2,
+      "operator": 3,
       "role": "admin",
       "status": "Pending",
       "verified_at": null,
@@ -112,7 +112,7 @@
     "pk": 10,
     "fields": {
       "user": "00000000-0000-0000-0000-000000000007",
-      "operator": 2,
+      "operator": 6,
       "role": "admin",
       "status": "Pending",
       "verified_at": null,
@@ -124,7 +124,7 @@
     "pk": 11,
     "fields": {
       "user": "00000000-0000-0000-0000-000000000008",
-      "operator": 2,
+      "operator": 5,
       "role": "admin",
       "status": "Pending",
       "verified_at": null,
@@ -136,7 +136,7 @@
     "pk": 12,
     "fields": {
       "user": "00000000-0000-0000-0000-000000000009",
-      "operator": 2,
+      "operator": 1,
       "role": "admin",
       "status": "Pending",
       "verified_at": null,
@@ -160,7 +160,7 @@
     "pk": 14,
     "fields": {
       "user": "00000000-0000-0000-0000-000000000011",
-      "operator": 2,
+      "operator": 3,
       "role": "admin",
       "status": "Pending",
       "verified_at": null,
@@ -172,7 +172,7 @@
     "pk": 15,
     "fields": {
       "user": "00000000-0000-0000-0000-000000000012",
-      "operator": 2,
+      "operator": 5,
       "role": "admin",
       "status": "Pending",
       "verified_at": null,
@@ -184,7 +184,7 @@
     "pk": 16,
     "fields": {
       "user": "00000000-0000-0000-0000-000000000013",
-      "operator": 2,
+      "operator": 5,
       "role": "admin",
       "status": "Pending",
       "verified_at": null,
@@ -196,7 +196,7 @@
     "pk": 17,
     "fields": {
       "user": "00000000-0000-0000-0000-000000000014",
-      "operator": 2,
+      "operator": 6,
       "role": "admin",
       "status": "Pending",
       "verified_at": null,
@@ -208,7 +208,7 @@
     "pk": 18,
     "fields": {
       "user": "00000000-0000-0000-0000-000000000015",
-      "operator": 2,
+      "operator": 6,
       "role": "admin",
       "status": "Pending",
       "verified_at": null,
@@ -220,7 +220,7 @@
     "pk": 19,
     "fields": {
       "user": "00000000-0000-0000-0000-000000000016",
-      "operator": 2,
+      "operator": 1,
       "role": "admin",
       "status": "Pending",
       "verified_at": null,
@@ -244,7 +244,7 @@
     "pk": 21,
     "fields": {
       "user": "00000000-0000-0000-0000-000000000018",
-      "operator": 2,
+      "operator": 3,
       "role": "admin",
       "status": "Pending",
       "verified_at": null,
@@ -268,7 +268,7 @@
     "pk": 23,
     "fields": {
       "user": "00000000-0000-0000-0000-000000000020",
-      "operator": 2,
+      "operator": 5,
       "role": "admin",
       "status": "Pending",
       "verified_at": null,
@@ -280,7 +280,7 @@
     "pk": 24,
     "fields": {
       "user": "00000000-0000-0000-0000-000000000021",
-      "operator": 2,
+      "operator": 6,
       "role": "admin",
       "status": "Pending",
       "verified_at": null,
@@ -292,7 +292,7 @@
     "pk": 25,
     "fields": {
       "user": "00000000-0000-0000-0000-000000000022",
-      "operator": 2,
+      "operator": 1,
       "role": "admin",
       "status": "Pending",
       "verified_at": null,
@@ -316,7 +316,7 @@
     "pk": 27,
     "fields": {
       "user": "00000000-0000-0000-0000-000000000024",
-      "operator": 2,
+      "operator": 6,
       "role": "admin",
       "status": "Pending",
       "verified_at": null,

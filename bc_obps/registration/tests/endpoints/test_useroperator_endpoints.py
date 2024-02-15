@@ -16,6 +16,7 @@ from registration.tests.utils.bakers import (
     address_baker,
     generate_random_bc_corporate_registry_number,
     operator_baker,
+    user_baker,
     user_operator_baker,
 )
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
@@ -267,7 +268,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
                     website='https://www.example-operator.com',
                 ),
                 role=UserOperator.Roles.ADMIN,
-                status=UserOperator.Statuses.APPROVED,
+                status=UserOperator.Statuses.PENDING,
             )
 
         response = TestUtils.mock_get_with_auth_role(self, 'cas_admin', custom_reverse_lazy('list_user_operators'))
@@ -303,6 +304,48 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         assert len(response_data) == PAGE_SIZE
         # assert that the first item in the page 2 response is not the same as the first item in the page 2 response with reversed order
         assert page_2_response_id != page_2_response_id_reverse
+
+    def test_get_user_operators_check_response_returns_operators_with_no_approved_admins(self):
+        operator = operator_baker()
+
+        # Make two user operators tied to the same operator
+        baker.make(
+            UserOperator,
+            user=user_baker(),
+            operator=operator,
+            role=UserOperator.Roles.ADMIN,
+            status=UserOperator.Statuses.APPROVED,
+        )
+
+        baker.make(
+            UserOperator,
+            user=user_baker(),
+            operator=operator,
+            role=UserOperator.Roles.ADMIN,
+            status=UserOperator.Statuses.PENDING,
+        )
+
+        response = TestUtils.mock_get_with_auth_role(self, "cas_admin", custom_reverse_lazy('list_user_operators'))
+        assert response.status_code == 200
+        response_data = response.json().get('data')
+
+        # returns 0 since both user operators are tied to the same operator and one prime admin request is approved
+        assert len(response_data) == 0
+
+        # Now add user operator tied to a different operator
+        baker.make(
+            UserOperator,
+            user=user_baker(),
+            operator=operator_baker(),
+            role=UserOperator.Roles.ADMIN,
+            status=UserOperator.Statuses.PENDING,
+        )
+
+        response = TestUtils.mock_get_with_auth_role(self, "cas_admin", custom_reverse_lazy('list_user_operators'))
+        assert response.status_code == 200
+        response_data = response.json().get('data')
+        # returns 1 since the user operator is tied to a different operator
+        assert len(response_data) == 1
 
     def test_user_operator_put_update_user_status(self):
         user = baker.make(User)
