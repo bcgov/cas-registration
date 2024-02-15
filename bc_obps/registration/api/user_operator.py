@@ -1,5 +1,5 @@
 from django.db import transaction
-from django.db import  transaction
+from django.db import transaction
 from registration.api.utils.handle_parent_operators import handle_parent_operators
 from registration.utils import (
     generate_useful_error,
