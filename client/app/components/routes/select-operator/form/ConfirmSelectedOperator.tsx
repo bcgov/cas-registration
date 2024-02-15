@@ -41,17 +41,25 @@ export default async function ConfirmSelectedOperator({
   );
   const accessDeclined: boolean | { error: string} = await getOperatorAccessDeclined(params.id);
 
-  if (accessDeclined)
-    return (
-      <section className="text-center my-auto text-2xl flex flex-col gap-3">
-      <span>
-        <CancelIcon sx={{ color: "#FF0000", fontSize: 50 }} />
-      </span>
-      <p>
-        Your access request to be the Administrator of{" "}
-        <b>{operator.legal_name}</b> was declined.
-      </p>
-      <p className="text-center">
+  if (accessDeclined) {
+    const declinedHasAdminJSX: JSX.Element = (
+      <>
+        <p>
+          Your access request was declined by an Administrator of <b>{operator.legal_name}</b>
+        </p>
+        <p className="text-center">
+          If you believe this is an error and you should be granted access, please contact the administrator of <b>{operator.legal_name}</b>
+        </p>
+      </>
+    );
+
+    const declinedNoAdminJSX: JSX.Element = (
+      <>
+        <p>
+          Your Administrator access request to be the Operation Representative of{" "}
+          <b>{operator.legal_name}</b> was declined.
+        </p>
+        <p className="text-center">
         If you believe this is an error and you should be granted access, please email us at <br />
         <a
           href="mailto:GHGRegulator@gov.bc.ca"
@@ -59,18 +67,27 @@ export default async function ConfirmSelectedOperator({
         >
           GHGRegulator@gov.bc.ca
         </a>
-      </p>
+        </p>
+      </>
+    );
+    return (
+      <section className="text-center my-auto text-2xl flex flex-col gap-3">
+      <span>
+        <CancelIcon sx={{ color: "#FF0000", fontSize: 50 }} />
+      </span>
+      {hasAdmin ? declinedHasAdminJSX : declinedNoAdminJSX}
       <span className="text-sm">
               <Link
                 href="/dashboard/select-operator"
                 className="underline hover:no-underline text-sm"
                 style={{ color: BC_GOV_LINKS_COLOR }}
               >
-                Return to select operator
+                Select another operator
               </Link>
             </span>
     </section>
     )
+  }
 
   if (
     "error" in operator ||
