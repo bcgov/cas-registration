@@ -153,8 +153,6 @@ def get_user_operator_operator(request):
         )
     except UserOperator.DoesNotExist:
         return 404, {"message": "User is not associated with any operator"}
-    except UserOperator.MultipleObjectsReturned:
-        return 400, {"message": "User is associated with multiple operators"}
     return 200, user_operator.operator
 
 
@@ -220,8 +218,8 @@ def get_user_operator_admin_exists(request, operator_id: int):
 @authorize(["industry_user"], ["admin"])
 def get_user_operator_list_from_user(request):
     user: User = request.current_user
-    operator = UserOperator.objects.get(user=user.user_guid).operator
-    user_operator_list = UserOperator.objects.filter(operator_id=operator)
+    operator = UserOperator.objects.select_related("operator").exclude(status=UserOperator.Statuses.DECLINED).get(user=user.user_guid).operator
+    user_operator_list = UserOperator.objects.select_related("user").filter(operator_id=operator, user__business_guid=user.business_guid)
     return user_operator_list
 
 

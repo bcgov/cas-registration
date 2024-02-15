@@ -151,7 +151,7 @@ def raise_401_if_user_not_authorized(request, authorized_app_roles, authorized_u
         if sorted(authorized_user_operator_roles) != sorted(UserOperator.get_all_industry_user_operator_roles()):
             user_operator_role = None
             try:
-                user_operator = UserOperator.objects.get(user=user.user_guid)
+                user_operator = UserOperator.objects.exclude(status=UserOperator.Statuses.DECLINED).get(user=user.user_guid)
                 user_operator_role = user_operator.role
             except UserOperator.DoesNotExist:
                 pass
