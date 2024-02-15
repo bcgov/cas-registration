@@ -1,6 +1,7 @@
 [
   {
     "title": "Report a Problem",
+    "icon": "Wrench",
     "content": "Something wrong?",
     "links": [
       {
