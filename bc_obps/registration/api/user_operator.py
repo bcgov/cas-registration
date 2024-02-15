@@ -106,7 +106,7 @@ def save_operator(payload: UserOperatorOperatorIn, operator_instance: Operator, 
 def get_user_operator_from_user(request):
     user_operator = get_object_or_404(UserOperator, user_id=request.current_user.user_guid)
     operator = get_object_or_404(Operator, id=user_operator.operator_id)
-    return 200, {**user_operator.__dict__, "is_new": operator.is_new}
+    return 200, {**user_operator.__dict__, "is_new": operator.is_new, "operator_status": operator.status}
 
 
 @router.get(
