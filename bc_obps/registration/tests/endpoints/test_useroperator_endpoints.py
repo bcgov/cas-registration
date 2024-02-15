@@ -881,7 +881,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         response = TestUtils.mock_put_with_auth_role(
             self,
             'industry_user',
-            content_type_json,
+            self.content_type,
             mock_payload,
             f"{self.user_operator_endpoint}/operator/{user_operator.id}",
         )
