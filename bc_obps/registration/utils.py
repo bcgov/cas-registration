@@ -16,6 +16,8 @@ from registration.models import (
     UserOperator,
 )
 from django.urls import reverse_lazy
+from datetime import datetime
+import pytz
 
 
 def check_users_admin_request_eligibility(user: User, operator: Operator) -> Union[None, tuple[int, dict]]:
@@ -208,3 +210,8 @@ def custom_reverse_lazy(view_name, *args, **kwargs) -> str:
     A custom reverse_lazy function that includes the default API namespace.
     """
     return reverse_lazy(f"{DEFAULT_API_NAMESPACE}:{view_name}", *args, **kwargs)
+
+
+def set_verification_columns(record, user_guid):
+    record.verified_at = datetime.now(pytz.utc)
+    record.verified_by_id = user_guid

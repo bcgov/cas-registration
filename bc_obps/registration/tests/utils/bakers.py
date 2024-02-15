@@ -44,14 +44,19 @@ def contact_baker():
     return baker.make(Contact)
 
 
-def operator_baker():
-    return baker.make(
-        Operator,
-        bc_corporate_registry_number=generate_random_bc_corporate_registry_number(),
-        business_structure=BusinessStructure.objects.first(),
-        physical_address=address_baker(),
-        website='https://www.example-operator.com',
-    )
+def operator_baker(custom_properties=None):
+    properties = {
+        'bc_corporate_registry_number': generate_random_bc_corporate_registry_number(),
+        'business_structure': BusinessStructure.objects.first(),
+        'physical_address': address_baker(),
+        'website': 'https://www.example-operator.com',
+    }
+
+    # Update properties with custom_properties if provided
+    if custom_properties:
+        properties.update(custom_properties)
+
+    return baker.make(Operator, **properties)
 
 
 def operation_baker(operator_id=None):
@@ -73,8 +78,17 @@ def operation_baker(operator_id=None):
     )
 
 
-def user_operator_baker():
-    return baker.make(UserOperator, user=user_baker(), operator=operator_baker())
+def user_operator_baker(custom_properties=None):
+    properties = {
+        'user': user_baker(),
+        'operator': operator_baker(),
+    }
+
+    # Update properties with custom_properties if provided
+    if custom_properties:
+        properties.update(custom_properties)
+
+    return baker.make(UserOperator, **properties)
 
 
 def multiple_operator_baker():

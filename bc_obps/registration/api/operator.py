@@ -10,6 +10,7 @@ import pytz
 from django.db import transaction
 from registration.utils import (
     generate_useful_error,
+    set_verification_columns,
 )
 from django.core.exceptions import ValidationError
 
@@ -84,10 +85,16 @@ def update_operator(request, operator_id: int, payload: OperatorIn):
     try:
         with transaction.atomic():
             operator.status = payload.status
+            # when new operators are declined, their prime admin should be declined too
+            user_operator = get_object_or_404(UserOperator, id=payload.user_operator_id)
+            if operator.is_new and operator.status == Operator.Statuses.DECLINED:
+                user_operator.status = UserOperator.Statuses.DECLINED
+                set_verification_columns(user_operator, user.user_guid)
+                user_operator.save()
+
             if operator.status in [Operator.Statuses.APPROVED, Operator.Statuses.DECLINED]:
                 operator.is_new = False
-                operator.verified_at = datetime.now(pytz.utc)
-                operator.verified_by_id = user.user_guid
+                set_verification_columns(operator, user.user_guid)
 
             operator.save()
             operator.set_create_or_update(user.pk)
