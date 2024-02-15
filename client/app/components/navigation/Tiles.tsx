@@ -34,7 +34,9 @@ const iconsMap: Record<string, any> = {
   Users,
 };
 
-const userOperatorNotifications = (operatorStatus: string | undefined) => {
+const industryUserOperatorNotifications = (
+  operatorStatus: string | undefined,
+) => {
   let notifications = 0;
   if (!operatorStatus || operatorStatus === OperatorStatus.DRAFT) {
     notifications++;
@@ -45,7 +47,7 @@ const userOperatorNotifications = (operatorStatus: string | undefined) => {
 // notificationMap is used to retrieve the notification count for each type of notification
 // set the notification type in the links array of the Tile JSON file
 const notificationMap = {
-  operator: userOperatorNotifications,
+  industryOperator: industryUserOperatorNotifications,
   // Add Operations and User notification functions here
 };
 
