@@ -1,4 +1,4 @@
-from typing import Type, Union, Iterable, Dict, Any, Tuple, Optional
+from typing import List, Type, Union, Iterable, Dict, Any, Tuple, Optional
 from uuid import UUID
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError, models
@@ -127,7 +127,9 @@ def check_access_request_matches_business_guid(
     return 200, None
 
 
-def raise_401_if_user_not_authorized(request, authorized_app_roles, authorized_user_operator_roles=None) -> None:
+def raise_401_if_user_not_authorized(
+    request, authorized_app_roles: List[str], authorized_user_operator_roles: Optional[List[str]] = None
+) -> None:
     """
     Raise a 401 error if a user is not authorized. To be authorized the user must:
         - be logged in (request.current_user exists)
