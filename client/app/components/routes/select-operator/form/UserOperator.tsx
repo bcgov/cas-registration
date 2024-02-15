@@ -23,7 +23,6 @@ async function getBusinessStructures() {
 export async function getUserOperatorFormData(id: number | string) {
   if (!id || isNaN(Number(id))) return {};
   return actionHandler(
-    // brianna
     `registration/select-operator/user-operator/${id}`,
     "GET",
     `/user-operator/${id}`,
