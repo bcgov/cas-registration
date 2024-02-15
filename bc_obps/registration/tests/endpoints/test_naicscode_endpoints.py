@@ -16,3 +16,5 @@ class TestNaicsCodeEndpoint(CommonTestSetup):
             response = TestUtils.mock_get_with_auth_role(self, role)
             assert response.status_code == 200
             assert len(response.json()) == NaicsCode.objects.count()
+            # # Check that we only get the "id", "naics_code" and "naics_description"
+            assert list(response.json()[0].keys()) == ["id", "naics_code", "naics_description"]
