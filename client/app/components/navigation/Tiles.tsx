@@ -120,10 +120,7 @@ export default function Tiles({
         contents.map((content) => {
           const { title, links } = content;
           return (
-            <div
-              key={title}
-              className="dashboard-tile-container hover:box-shadow-tile hover:transition-shadow"
-            >
+            <div key={title} className="dashboard-tile-container">
               <h2 className="flex items-center m-0">
                 {iconsMap[title]?.()}
                 <div className="ml-2">{content.title}</div>
