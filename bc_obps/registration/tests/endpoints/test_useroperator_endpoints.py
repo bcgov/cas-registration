@@ -346,6 +346,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         response_data = response.json().get('data')
         # returns 1 since the user operator is tied to a different operator
         assert len(response_data) == 1
+
     def test_user_operator_put_cannot_update_status_when_operator_not_approved(self):
         user = baker.make(User)
 
