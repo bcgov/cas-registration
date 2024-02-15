@@ -211,6 +211,7 @@ def custom_reverse_lazy(view_name, *args, **kwargs) -> str:
     """
     return reverse_lazy(f"{DEFAULT_API_NAMESPACE}:{view_name}", *args, **kwargs)
 
+
 def set_verification_columns(record, user_guid):
     record.verified_at = datetime.now(pytz.utc)
     record.verified_by_id = user_guid
