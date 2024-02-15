@@ -22,6 +22,7 @@ const MinusSVG = () => (
 
 const ArrayFieldTemplate = ({
   canAdd,
+  disabled,
   items,
   onAddClick,
   uiSchema,
@@ -67,8 +68,9 @@ const ArrayFieldTemplate = ({
           </div>
         );
       })}
-      {canAdd && (
+      {canAdd && !disabled && (
         <Button
+          disabled={disabled}
           variant="contained"
           className="w-fit my-8 normal-case"
           onClick={onAddClick}
