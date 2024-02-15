@@ -1,3 +1,5 @@
+import { OperatorStatus } from "@/app/utils/enums";
+
 export interface UserFormData {
   first_name: string;
   last_name: string;
@@ -33,6 +35,7 @@ interface ParentOperator {
 }
 
 export interface UserOperatorFormData extends UserFormData {
+  operator_status: OperatorStatus;
   is_senior_officer: string;
   legal_name: string;
   trade_name?: string;
