@@ -179,9 +179,9 @@ class TestOperatorsEndpoint(CommonTestSetup):
         response = TestUtils.mock_put_with_auth_role(
             self,
             'cas_admin',
-            content_type_json,
+            self.content_type,
             {"status": Operator.Statuses.DECLINED, 'user_operator_id': user_operator.id},
-            self.endpoint + "/" + str(operator.id),
+            custom_reverse_lazy('update_operator', kwargs={'operator_id': operator.id}),
         )
 
         assert response.status_code == 200
@@ -201,9 +201,9 @@ class TestOperatorsEndpoint(CommonTestSetup):
         response = TestUtils.mock_put_with_auth_role(
             self,
             'cas_admin',
-            content_type_json,
+            self.content_type,
             {"status": Operator.Statuses.DECLINED, 'user_operator_id': user_operator.id},
-            self.endpoint + "/" + str(operator.id),
+            custom_reverse_lazy('update_operator', kwargs={'operator_id': operator.id}),
         )
 
         assert response.status_code == 200
