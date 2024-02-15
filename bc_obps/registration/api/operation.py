@@ -110,7 +110,7 @@ def create_or_update_multiple_operators(
 ##### GET #####
 
 
-@router.get("/operations", response={200: OperationPaginatedOut, codes_4xx: Message})
+@router.get("/operations", response={200: OperationPaginatedOut, codes_4xx: Message}, url_name="list_operations")
 @authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles())
 def list_operations(request, page: int = 1, sort_field: str = "created_at", sort_order: str = "desc"):
     user: User = request.current_user
@@ -151,7 +151,9 @@ def list_operations(request, page: int = 1, sort_field: str = "created_at", sort
 
 
 @router.get(
-    "/operations/{operation_id}", response={200: Union[OperationOut, OperationWithOperatorOut], codes_4xx: Message}
+    "/operations/{operation_id}",
+    response={200: Union[OperationOut, OperationWithOperatorOut], codes_4xx: Message},
+    url_name="get_operation",
 )
 @authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles())
 def get_operation(request, operation_id: int):
@@ -197,7 +199,7 @@ def get_operation(request, operation_id: int):
 ##### POST #####
 
 
-@router.post("/operations", response={201: OperationCreateOut, codes_4xx: Message})
+@router.post("/operations", response={201: OperationCreateOut, codes_4xx: Message}, url_name="create_operation")
 @authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
 def create_operation(request, payload: OperationCreateIn):
     user: User = request.current_user
@@ -246,7 +248,9 @@ def create_operation(request, payload: OperationCreateIn):
 ##### PUT #####
 
 
-@router.put("/operations/{operation_id}", response={200: OperationUpdateOut, codes_4xx: Message})
+@router.put(
+    "/operations/{operation_id}", response={200: OperationUpdateOut, codes_4xx: Message}, url_name="update_operation"
+)
 @authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles())
 def update_operation(request, operation_id: int, submit: str, form_section: int, payload: OperationUpdateIn):
     user: User = request.current_user
@@ -352,6 +356,7 @@ def update_operation(request, operation_id: int, submit: str, form_section: int,
 @router.put(
     "/operations/{operation_id}/update-status",
     response={200: OperationUpdateStatusOut, codes_4xx: Message, codes_5xx: Message},
+    url_name="update_operation_status",
 )
 @authorize(AppRole.get_authorized_irc_roles())
 def update_operation_status(request, operation_id: int, payload: OperationUpdateStatusIn):

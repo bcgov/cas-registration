@@ -3,7 +3,7 @@ from uuid import UUID
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError, models
 from django.db.models import QuerySet
-from registration.constants import UNAUTHORIZED_MESSAGE
+from registration.constants import UNAUTHORIZED_MESSAGE, DEFAULT_API_NAMESPACE
 import requests, base64, re
 from django.core.files.base import ContentFile
 from django.shortcuts import get_object_or_404
@@ -15,6 +15,7 @@ from registration.models import (
     User,
     UserOperator,
 )
+from django.urls import reverse_lazy
 
 
 def check_users_admin_request_eligibility(user: User, operator: Operator) -> Union[None, tuple[int, dict]]:
@@ -200,3 +201,10 @@ def data_url_to_file(data_url: str):
     # Decode the base64-encoded data
     file_data = base64.b64decode(encoded_data)
     return ContentFile(file_data, file_name)
+
+
+def custom_reverse_lazy(view_name, *args, **kwargs) -> str:
+    """
+    A custom reverse_lazy function that includes the default API namespace.
+    """
+    return reverse_lazy(f"{DEFAULT_API_NAMESPACE}:{view_name}", *args, **kwargs)
