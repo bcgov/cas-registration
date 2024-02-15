@@ -1,3 +1,31 @@
+## [0.1.1-beta-7](https://github.com/bcgov/cas-registration/compare/v0.1.1-beta-6...v0.1.1-beta-7) (2024-02-15)
+
+### Bug Fixes
+
+- add operator form draft status ([7c0e1e0](https://github.com/bcgov/cas-registration/commit/7c0e1e0020f8c2756d9340ffb6f71a7232a7802a))
+- empty string causing url widget validation to trigger ([015713f](https://github.com/bcgov/cas-registration/commit/015713f943bc857be34f01ccf32cfdf7e8cd68bf))
+- exclude operators that have an approved admin ([f5b8a7c](https://github.com/bcgov/cas-registration/commit/f5b8a7cdbd4bda784d5fa9b5185598576bbd985d))
+- lines-between-class-members ([34372a2](https://github.com/bcgov/cas-registration/commit/34372a283e651a3b896d93979f2b6191c18267b9))
+- operations dashboard link ([28eae32](https://github.com/bcgov/cas-registration/commit/28eae32a7e6aee0ff4130cd5d4921bef36ca6b23))
+- operator_mailing_address_id ([a09229e](https://github.com/bcgov/cas-registration/commit/a09229efa72667a08ddfbec8830623c9cb27fc9a))
+- remove use effect from url widget ([a6a8887](https://github.com/bcgov/cas-registration/commit/a6a8887a7ec5a636b9779cccc54ecb48567bcf08))
+- review component alert message display ([b33979d](https://github.com/bcgov/cas-registration/commit/b33979d7348b18ba423323d4f5d5ecc4d5d7d4ec))
+- update user operator fixtures ([e812306](https://github.com/bcgov/cas-registration/commit/e812306473ef20ec63ec41b40fa3701f5f4158c8))
+- user operator out schema ([681df7c](https://github.com/bcgov/cas-registration/commit/681df7cf805f12c7befcd187f48ae6c09c6445c6))
+
+### Features
+
+- add bceid business name to user operator user info ([2c23df8](https://github.com/bcgov/cas-registration/commit/2c23df8b4fa2a0da25efb8ae31c647b3cf68874f))
+- exclude approved user operators from internal dashboard ([f85bd19](https://github.com/bcgov/cas-registration/commit/f85bd19b49ee33f9c113dbe24ea39c96072ea2ac))
+- expand user operator accordions that need review ([e6e5909](https://github.com/bcgov/cas-registration/commit/e6e5909f54c286e4bc55fffcc7050af0a31f76a2))
+- reset prime admin review on new operator approval ([c0ca365](https://github.com/bcgov/cas-registration/commit/c0ca36556f73ef6f9f487a6bdf0a7437fba8c9fa))
+- return user data with user operator out schema ([597adfe](https://github.com/bcgov/cas-registration/commit/597adfe5bc1d52b9ec7354cc27db1c98b5ba2077))
+- use multistep accordion for user operator internal review ([e5cef93](https://github.com/bcgov/cas-registration/commit/e5cef93ba8055f267f28dba765a905ebe7d72dee))
+
+### Reverts
+
+- remove idir wf ([c000e05](https://github.com/bcgov/cas-registration/commit/c000e05489b9a7f63e5520ec0df748e03ca3ce3b))
+
 ## [0.1.1-beta-6](https://github.com/bcgov/cas-registration/compare/v0.1.1-beta-5...v0.1.1-beta-6) (2024-02-13)
 
 ### Bug Fixes
