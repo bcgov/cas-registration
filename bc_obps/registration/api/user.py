@@ -17,7 +17,7 @@ from django.core.exceptions import ValidationError
 ##### GET #####
 
 
-@router.get("/user", response=UserOut)
+@router.get("/user", response=UserOut, url_name="get_user")
 @authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles())
 def get_user(request):
     user: User = request.current_user
@@ -25,7 +25,7 @@ def get_user(request):
 
 
 # endpoint to return user data if user exists in user table
-@router.get("/user-profile", response={200: UserOut, codes_4xx: Message})
+@router.get("/user-profile", response={200: UserOut, codes_4xx: Message}, url_name="get_user_profile")
 def get_user_profile(request):
     user = get_object_or_404(User, user_guid=json.loads(request.headers.get('Authorization')).get('user_guid'))
     try:
@@ -41,7 +41,7 @@ def get_user_profile(request):
 
 
 # endpoint to return user's role_name if user exists in user table
-@router.get("/user-app-role/{user_guid}", response={200: UserAppRoleOut, codes_4xx: Message})
+@router.get("/user-app-role/{user_guid}", response={200: UserAppRoleOut, codes_4xx: Message}, url_name="get_user_role")
 def get_user_role(request, user_guid: str):
     try:
         user = User.objects.only('app_role').select_related('app_role').get(user_guid=user_guid)
@@ -54,7 +54,9 @@ def get_user_role(request, user_guid: str):
 
 
 # Endpoint to create a new user
-@router.post("/user-profile/{identity_provider}", response={200: UserOut, codes_4xx: Message})
+@router.post(
+    "/user-profile/{identity_provider}", response={200: UserOut, codes_4xx: Message}, url_name="create_user_profile"
+)
 def create_user_profile(request, identity_provider: str, payload: UserIn):
     try:
         # Determine the role based on the identity provider
@@ -87,7 +89,7 @@ def create_user_profile(request, identity_provider: str, payload: UserIn):
 
 
 # Endpoint to update a user
-@router.put("/user-profile", response={200: UserOut, codes_4xx: Message})
+@router.put("/user-profile", response={200: UserOut, codes_4xx: Message}, url_name="update_user_profile")
 @authorize(AppRole.get_all_app_roles(), UserOperator.get_all_industry_user_operator_roles())
 def update_user_profile(request, payload: UserIn):
     user: User = request.current_user
