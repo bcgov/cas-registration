@@ -899,7 +899,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
 
         # parent_operator_2 has been edited
         assert parent_operators[0].legal_name == "test po legal name-EDITED"
-        parent_operators[0].operator_index == 2
+        assert parent_operators[0].operator_index == 2
         assert parent_operators[0].archived_by is None
         assert parent_operators[0].archived_at is None
 
