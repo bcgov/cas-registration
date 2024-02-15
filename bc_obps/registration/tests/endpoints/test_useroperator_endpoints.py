@@ -1,7 +1,6 @@
 from typing import List
 import pytest, json
 from model_bakery import baker
-from django.test import Client
 from localflavor.ca.models import CAPostalCodeField
 from registration.models import (
     BusinessRole,
