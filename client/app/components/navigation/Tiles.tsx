@@ -22,19 +22,16 @@ import Wrench from "@/app/components/icons/Wrench";
 // 📐 type for ContentItem used to build dashboard content tiles
 type ContentItem = {
   title: string;
+  icon: string;
   content: string;
   links?: { title: string; href: string; notification?: string }[];
 };
 
 const iconsMap: Record<string, any> = {
-  "My Operator": Inbox,
-  "My Operations": Layers,
-  Operators: Inbox,
-  "Select Operator": Inbox,
-  Operations: Layers,
-  "Report a Problem": Wrench,
-  Users: Users,
-  "User Access Management": Users,
+  Inbox,
+  Layers,
+  Wrench,
+  Users,
 };
 
 const userOperatorNotifications = (operatorStatus: string | undefined) => {
@@ -118,11 +115,11 @@ export default function Tiles({
     <section className="flex flex-wrap gap-x-16 lg:gap-x-24 gap-y-16 mt-4">
       {contents &&
         contents.map((content) => {
-          const { title, links } = content;
+          const { icon, links, title } = content;
           return (
             <div key={title} className="dashboard-tile-container">
               <h2 className="flex items-center m-0">
-                {iconsMap[title]?.()}
+                {iconsMap[icon]?.()}
                 <div className="ml-2">{content.title}</div>
               </h2>
 
