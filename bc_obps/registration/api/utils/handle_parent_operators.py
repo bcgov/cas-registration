@@ -1,3 +1,4 @@
+from typing import List
 from registration.models import (
     AppRole,
     BusinessRole,
@@ -9,38 +10,45 @@ from registration.models import (
 )
 
 
-def handle_parent_operators(payload, created_or_updated_operator_instance, user):
-    # create parent operator records
-    operator_has_parent_operators: bool = payload.operator_has_parent_operators
-    if operator_has_parent_operators:
-        for idx, po_operator in enumerate(payload.parent_operators_array):
+def handle_parent_operators(updated_parent_operators, operator_instance, user):
 
+    existing_parent_operators = operator_instance.parent_operators
+
+    # if the user has removed all parent operators, archive them all
+    if not updated_parent_operators and existing_parent_operators:
+        for po in existing_parent_operators.all():
+            po.set_archive(user.pk)
+        return
+
+    # if the user has added, edited, or removed some parent operators
+
+    if updated_parent_operators:
+        for po_operator in updated_parent_operators:
+            # this needs to be in the loop because if the loop adds a new operator, we need to catch that new index
             existing_parent_operator_indices = list(
-                ParentOperator.objects.filter(child_operator=created_or_updated_operator_instance).values_list(
-                    'operator_index', flat=True
-                )
+                operator_instance.parent_operators.values_list('operator_index', flat=True)
             )
 
             # archive any parent operators that have been removed
             if existing_parent_operator_indices:
 
-                def get_indices(po):
-                    return po.operator_index
-
                 updated_parent_operator_indices = [
-                    get_indices(po) for po in payload.parent_operators_array if get_indices(po) is not None
+                    po.operator_index for po in updated_parent_operators if po.operator_index
                 ]
 
                 indices_to_delete = list(set(existing_parent_operator_indices) - set(updated_parent_operator_indices))
 
                 if indices_to_delete:
-                    for op_index in indices_to_delete:
-                        ParentOperator.objects.get(operator_index=op_index).set_archive(user.pk)
+                    parent_operators_to_delete: List[ParentOperator] = operator_instance.parent_operators.filter(
+                        operator_index__in=indices_to_delete
+                    )
+                    for po in parent_operators_to_delete:
+                        po.set_archive(user.pk)
 
             # assign an operator_index to new parent operators
             if not po_operator.operator_index:
                 highest_existing_index = (
-                    max(existing_parent_operator_indices) if len(existing_parent_operator_indices) > 0 else 0
+                    max(existing_parent_operator_indices) if existing_parent_operator_indices else 0
                 )
 
                 po_operator.operator_index = highest_existing_index + 1
@@ -64,7 +72,7 @@ def handle_parent_operators(payload, created_or_updated_operator_instance, user)
                 )
 
             po_operator_instance, _ = ParentOperator.objects.update_or_create(
-                child_operator=created_or_updated_operator_instance,
+                child_operator=operator_instance,
                 operator_index=po_operator.operator_index,
                 defaults={
                     "legal_name": po_operator.po_legal_name,
