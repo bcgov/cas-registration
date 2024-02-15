@@ -203,7 +203,7 @@ def data_url_to_file(data_url: str):
     return ContentFile(file_data, file_name)
 
 
-def custom_reverse_lazy(view_name, *args, **kwargs):
+def custom_reverse_lazy(view_name, *args, **kwargs) -> str:
     """
     A custom reverse_lazy function that includes the default API namespace.
     """

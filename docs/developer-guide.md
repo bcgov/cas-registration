@@ -533,3 +533,17 @@ class OperationListOut(ModelSchema):
         model = Operation
         model_fields = ['id', 'name', 'bcghg_id', 'submission_date', 'status']
 ```
+
+## Common Utils
+
+### `custom_reverse_lazy` Function
+
+This utility function facilitates flexible URL reversal in Django by allowing the reverse of a URL. It's particularly useful for dynamic parameter URLs and avoids hardcoding. Additionally, it leverages the `url_name` defined on each API endpoint for URL reversal, ensuring consistency.
+
+For example, to reverse the URL for the `get_operation` API endpoint with a dynamic parameter `operation_id`:
+
+```python
+custom_reverse_lazy("get_operation", kwargs={"operation_id": operation_instance_1.id})
+```
+
+This will return the URL for the `get_operation` endpoint with the `operation_id` parameter.
