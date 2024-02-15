@@ -27,7 +27,17 @@ export default async function MyOperatorPage() {
   const userName = getUserFullName(session);
   const userOperator = await getUserOperator();
   const isNew = userOperator.is_new;
+  const operatorStatus = userOperator.operator_status;
   const { status, id, operator } = userOperator;
+  if (
+    status === UserOperatorStatus.APPROVED ||
+    operatorStatus === OperatorStatus.DRAFT
+  ) {
+    return permanentRedirect(
+      `/dashboard/select-operator/user-operator/${id}/1`,
+    );
+  }
+
   if (status === UserOperatorStatus.PENDING) {
     if (isNew) {
       // Using permanentRedirect instead of redirect to avoid the double rendering bug
@@ -38,15 +48,6 @@ export default async function MyOperatorPage() {
     }
     return permanentRedirect(
       `/dashboard/select-operator/received/request-access/${operator}`,
-    );
-  }
-
-  if (
-    status === UserOperatorStatus.APPROVED &&
-    operator.status === OperatorStatus.DRAFT
-  ) {
-    return permanentRedirect(
-      `/dashboard/select-operator/user-operator/${id}/1`,
     );
   }
 
