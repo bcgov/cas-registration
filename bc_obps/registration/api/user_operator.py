@@ -110,11 +110,10 @@ def get_user_operator_from_user(request):
 def get_user_operator_status(request):
     try:
         user_operator = (
-          UserOperator.objects.only("id", "status", "operator__id", "operator__is_new")
-          .exclude(status=UserOperator.Statuses.DECLINED)
-          .select_related("operator")
-          .get(user_id=request.current_user.user_guid)
-
+            UserOperator.objects.only("id", "status", "operator__id", "operator__is_new")
+            .exclude(status=UserOperator.Statuses.DECLINED)
+            .select_related("operator")
+            .get(user_id=request.current_user.user_guid)
         )
     except UserOperator.DoesNotExist:
         return 404, {"message": "User is not associated with any operator"}
@@ -149,7 +148,6 @@ def get_user_operator_operator(request):
             .exclude(status=UserOperator.Statuses.DECLINED)
             .select_related("operator")
             .get(user=user.user_guid)
-
         )
     except UserOperator.DoesNotExist:
         return 404, {"message": "User is not associated with any operator"}
@@ -200,6 +198,7 @@ def get_user_operator_admin_exists(request, operator_id: int):
     ).exists()
     return 200, has_admin
 
+
 @router.get("/operator-access-declined/{operator_id}", response={200: bool, codes_4xx: Message})
 @authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles())
 def get_user_operator_admin_exists(request, operator_id: int):
@@ -218,8 +217,15 @@ def get_user_operator_admin_exists(request, operator_id: int):
 @authorize(["industry_user"], ["admin"])
 def get_user_operator_list_from_user(request):
     user: User = request.current_user
-    operator = UserOperator.objects.select_related("operator").exclude(status=UserOperator.Statuses.DECLINED).get(user=user.user_guid).operator
-    user_operator_list = UserOperator.objects.select_related("user").filter(operator_id=operator, user__business_guid=user.business_guid)
+    operator = (
+        UserOperator.objects.select_related("operator")
+        .exclude(status=UserOperator.Statuses.DECLINED)
+        .get(user=user.user_guid)
+        .operator
+    )
+    user_operator_list = UserOperator.objects.select_related("user").filter(
+        operator_id=operator, user__business_guid=user.business_guid
+    )
     return user_operator_list
 
 

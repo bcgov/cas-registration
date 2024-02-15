@@ -72,7 +72,7 @@ export default async function Page() {
     business: uOS.operator.legal_name,
     accessType: uOS.role.charAt(0).toLocaleUpperCase() + uOS.role.slice(1), // Capitalize first letter
     status: uOS.status,
-    userOperatorId: uOS.id
+    userOperatorId: uOS.id,
   }));
 
   return <DataGrid rows={statusRows} columns={columns} />;
