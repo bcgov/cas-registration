@@ -410,9 +410,7 @@ def update_operator_and_user_operator(request, payload: UserOperatorOperatorIn, 
 @authorize(AppRole.get_all_authorized_app_roles(), ["admin"])
 def update_user_operator_status(request, payload: UserOperatorStatusUpdate):
     current_user: User = request.current_user  # irc user or industry user admin
-    if payload.user_guid:  # to update the status of a user_operator by user_guid
-        user_operator = get_object_or_404(UserOperator, user_id=payload.user_guid)
-    elif payload.user_operator_id:  # to update the status of a user_operator by user_operator_id
+    if payload.user_operator_id:  # to update the status of a user_operator by user_operator_id
         user_operator = get_object_or_404(UserOperator, id=payload.user_operator_id)
     else:
         return 404, {"message": "No parameters provided"}
