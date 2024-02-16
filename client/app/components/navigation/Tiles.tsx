@@ -1,9 +1,5 @@
 "use client";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import Grid from "@mui/material/Grid";
-import Link from "@mui/material/Link";
-import Typography from "@mui/material/Typography";
+
 import {
   FrontEndRoles,
   OperatorStatus,
@@ -17,12 +13,50 @@ import bceidUsersTile from "@/app/data/dashboard/bceid/users.json";
 import idirOperatorsTile from "@/app/data/dashboard/idir/operators.json";
 import idirOperationsTile from "@/app/data/dashboard/idir/operations.json";
 import idirUsersTile from "@/app/data/dashboard/idir/users.json";
+import Inbox from "@/app/components/icons/Inbox";
+import Layers from "@/app/components/icons/Layers";
+import NotificationIcon from "@/app/components/icons/Notification";
+import Users from "@/app/components/icons/Users";
+import Wrench from "@/app/components/icons/Wrench";
+import {
+  IconMap,
+  Notification,
+  NotificationMap,
+} from "@/app/components/navigation/types";
 
 // 📐 type for ContentItem used to build dashboard content tiles
 type ContentItem = {
   title: string;
+  icon: string;
   content: string;
-  links?: { title: string; href: string }[];
+  links?: { title?: string; href: string; notification?: string }[];
+};
+
+const iconMap: IconMap = {
+  Inbox,
+  Layers,
+  Wrench,
+  Users,
+};
+
+const industryUserOperatorNotifications = (
+  operatorStatus: string | undefined,
+) => {
+  let notifications = 0;
+  if (!operatorStatus || operatorStatus === OperatorStatus.DRAFT) {
+    notifications++;
+  }
+  return {
+    count: notifications,
+    message: `${notifications} pending action(s) required`,
+  } as Notification;
+};
+
+// notificationMap is used to retrieve the notification count for each type of notification
+// The key is the href of the link and the value is a function that returns a Notification object
+const notificationMap: NotificationMap = {
+  industryOperator: industryUserOperatorNotifications,
+  // Add Operations and User notification functions here
 };
 
 export default function Tiles({
@@ -88,46 +122,58 @@ export default function Tiles({
   }
 
   return (
-    <>
-      <Grid container>
-        {contents &&
-          contents.map((content, index) => (
-            <Grid
-              key={index}
-              item
-              component={Card}
-              xs={12}
-              sm={6}
-              md={3}
-              sx={{
-                margin: 6,
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "space-between",
-              }}
-            >
-              <CardContent data-testid="dashboard-nav-card">
-                <Typography variant="h5" component="h2">
-                  {content.title}
-                </Typography>
+    <section className="flex flex-wrap gap-x-16 lg:gap-x-24 gap-y-16 mt-4">
+      {contents &&
+        contents.map((content) => {
+          const { icon, links, title } = content;
+          return (
+            <div key={title} className="dashboard-tile-container">
+              <h2 className="flex items-center m-0">
+                {iconMap[icon as keyof IconMap]?.()}
+                <div className="ml-2">{content.title}</div>
+              </h2>
 
-                <Typography component="p" color="textSecondary">
-                  {content.content}
-                </Typography>
-              </CardContent>
-              {typeof content.links === "object" &&
-                content.links.map((link, i) => (
-                  <Link
-                    key={i}
-                    href={link.href}
-                    sx={{ textDecoration: "none", padding: "8px" }}
-                  >
-                    {link.title}
-                  </Link>
-                ))}
-            </Grid>
-          ))}
-      </Grid>
-    </>
+              <p className="mt-6 mb-0">{content.content}</p>
+              {typeof links === "object" &&
+                links.map((link, i) => {
+                  const isLinkNotification =
+                    link.notification && link.notification in notificationMap;
+
+                  // Get the notification message for the current tile using the notificationMap
+                  const notification =
+                    isLinkNotification &&
+                    (notificationMap[
+                      link.notification as keyof NotificationMap
+                    ]?.(operatorStatus) as Notification);
+
+                  const isNotification = notification && notification.count > 0;
+
+                  return (
+                    <a
+                      key={i}
+                      href={link.href}
+                      className={`flex items-center mt-6 no-underline ${
+                        isNotification && "font-bold"
+                      }`}
+                    >
+                      {isLinkNotification ? (
+                        <>
+                          {isNotification && (
+                            <span className="mr-2">
+                              <NotificationIcon />
+                            </span>
+                          )}
+                          {notification && notification.message}
+                        </>
+                      ) : (
+                        link.title
+                      )}
+                    </a>
+                  );
+                })}
+            </div>
+          );
+        })}
+    </section>
   );
 }
