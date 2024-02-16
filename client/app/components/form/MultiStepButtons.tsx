@@ -32,7 +32,6 @@ const SubmitButton: React.FunctionComponent<SubmitButtonProps> = ({
   const { data: session } = useSession();
 
   const isIndustryUser = session?.user.app_role?.includes("industry");
-
   return (
     <div className={`flex w-full mt-8 justify-between ${classNames}`}>
       {cancelUrl && (
@@ -67,7 +66,7 @@ const SubmitButton: React.FunctionComponent<SubmitButtonProps> = ({
               type="button"
               disabled={isFinalStep || isSubmitting}
             >
-              Next
+              {isSubmitting ? "Save and Continue" : "Next"}
             </Button>
           </Link>
         ) : (
@@ -78,7 +77,9 @@ const SubmitButton: React.FunctionComponent<SubmitButtonProps> = ({
               disabled={isDisabled}
               variant="contained"
             >
-              {!isFinalStep ? "Next" : submitButtonText ?? "Submit"}
+              {!isFinalStep
+                ? "Save and Continue"
+                : submitButtonText ?? "Submit"}
             </Button>
           )
         )}
