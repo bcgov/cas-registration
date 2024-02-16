@@ -130,17 +130,9 @@ def list_operations(request, page: int = 1, sort_field: str = "created_at", sort
             data=[OperationListOut.from_orm(operation) for operation in paginator.page(page).object_list],
             row_count=paginator.count,
         )
-    # Industry users can only see their companies' operations (if there's no user_operator or operator, then the user hasn't requested access to the operator)
-    user_operator = (
-        UserOperator.objects.filter(user_id=user.user_guid)
-        .exclude(status=UserOperator.Statuses.DECLINED)
-        .only("operator_id")
-        .first()
-    )
+    # Industry users can only see their companies' operations (if there's no user_operator, then the user hasn't requested access to the operator)
+    user_operator = user.get_approved_user_operator()
     if not user_operator:
-        raise HttpError(401, UNAUTHORIZED_MESSAGE)
-    approved_users = get_an_operators_approved_users(user_operator.operator_id)
-    if user.user_guid not in approved_users:
         raise HttpError(401, UNAUTHORIZED_MESSAGE)
     # order by created_at to get the latest one first
     operators_operations = (
@@ -262,14 +254,9 @@ def create_operation(request, payload: OperationCreateIn):
 @authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles())
 def update_operation(request, operation_id: UUID, submit: str, form_section: int, payload: OperationUpdateIn):
     user: User = request.current_user
-    try:
-        # if there's no user_operator or operator, then the user hasn't requested access to the operator
-        user_operator = (
-            UserOperator.objects.exclude(status=UserOperator.Statuses.DECLINED)
-            .only('operator__id')
-            .get(user=user.user_guid)
-        )
-    except UserOperator.DoesNotExist:
+    # if there's no user_operator, then the user hasn't requested access to the operator
+    user_operator = user.get_approved_user_operator()
+    if not user_operator:
         raise HttpError(401, UNAUTHORIZED_MESSAGE)
 
     try:
