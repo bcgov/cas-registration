@@ -50,7 +50,8 @@ export default async function ConfirmSelectedOperator({
         </p>
         <p className="text-center">
           If you believe this is an error and you should be granted access,
-          please contact the administrator of <b>{(operator as Operator).legal_name}</b>
+          please contact the administrator of{" "}
+          <b>{(operator as Operator).legal_name}</b>
         </p>
       </>
     );
