@@ -13,7 +13,7 @@ from .business_structure import validate_business_structure
 class PendingUserOperatorOut(ModelSchema):
     operator_status: str
     is_new: bool = Field(..., alias="operator.is_new")
-    operator_id: int = Field(..., alias="operator.id")
+    operatorId: int = Field(..., alias="operator.id")
 
     class Config:
         model = UserOperator
