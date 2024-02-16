@@ -53,7 +53,7 @@ const industryUserOperatorNotifications = (
 };
 
 // notificationMap is used to retrieve the notification count for each type of notification
-// set the notification type in the links array of the Tile JSON file
+// The key is the href of the link and the value is a function that returns a Notification object
 const notificationMap: NotificationMap = {
   "/dashboard/select-operator": industryUserOperatorNotifications,
   // Add Operations and User notification functions here
