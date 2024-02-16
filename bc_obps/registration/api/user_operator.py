@@ -428,7 +428,6 @@ def update_user_operator_status(request, payload: UserOperatorStatusUpdate):
         in [
             Operator.Statuses.PENDING,
             Operator.Statuses.DECLINED,
-            Operator.Statuses.DRAFT,
         ]
         or operator.is_new
     ):
