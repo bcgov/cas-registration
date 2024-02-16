@@ -51,8 +51,8 @@ export const upsertUserIOAdmin = {
   values: [
     process.env.E2E_INDUSTRY_USER_ADMIN_GUID as string,
     "industry_user",
-    "Cas",
     "Bcgov",
+    "Cas",
     "ADMINISTRATOR",
     "email@email.com",
     "+16044015432",
@@ -67,9 +67,9 @@ export const upsertUserIO = {
   values: [
     process.env.E2E_INDUSTRY_USER_GUID as string,
     "industry_user",
-    "Cas SECONDARY",
-    "Bcgov",
-    "ADMINISTRATOR",
+    "Cas",
+    "SECONDARY",
+    "USER",
     "email@email.com",
     "+16044015432",
     "efb76d57-88b7-4eb6-9f26-ec12b49c14c1",
