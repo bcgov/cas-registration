@@ -10,7 +10,7 @@ import { UserRole } from "@/e2e/utils/enums";
 // 🥞 Connection pool to postgres DB
 import { pool } from "@/e2e/utils/pool";
 import {
-  deleteNewUser,
+  deleteUserNew,
   upsertUserIO,
   upsertUserIOAdmin,
   upsertOperator,
@@ -52,7 +52,7 @@ test.beforeAll(async () => {
 
     // 👤 new user: bc-cas-dev-three
     // Delete User record
-    query = deleteNewUser;
+    query = deleteUserNew;
     // ▶️ Execute the deletion query
     await pool.query(query);
   } catch (error) {
