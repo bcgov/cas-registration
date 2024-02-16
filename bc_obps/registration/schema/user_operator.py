@@ -12,6 +12,7 @@ from .business_structure import validate_business_structure
 
 class PendingUserOperatorOut(ModelSchema):
     is_new: bool
+    operator_status: str
 
     class Config:
         model = UserOperator
