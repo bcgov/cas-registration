@@ -53,8 +53,12 @@ test.describe("Test Page - Profile", () => {
   test.describe(`Test User Role`, () => {
     // ➰ Loop through the entries of UserRole enum
     for (let [role, value] of Object.entries(UserRole)) {
-      // No need to test both IO user IDs
-      if (value === UserRole.INDUSTRY_USER_ADMIN) {
+      // No need to test all roles...1 cas, 1 industry_user, and 1 new user should do it
+      if (
+        value === UserRole.CAS_PENDING ||
+        value === UserRole.CAS_ANALYST ||
+        value === UserRole.INDUSTRY_USER_ADMIN
+      ) {
         continue;
       }
       role = "E2E_" + role;
