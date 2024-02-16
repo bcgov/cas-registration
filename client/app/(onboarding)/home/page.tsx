@@ -87,7 +87,11 @@ export default function Page() {
 
           <p>
             Before getting started, take a moment to review the detailed{" "}
-            <a href="ADD LINK HERE" target="_blank" rel="noopener noreferrer">
+            <a
+              href="https://www2.gov.bc.ca/assets/gov/environment/climate-change/ind/obps/guidance/bc_obps_guidance.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               guidance
             </a>
             .
@@ -117,10 +121,16 @@ export default function Page() {
           <p>
             To check eligibility, and for further information about the B.C.
             OBPS, please visit the{" "}
-            <a href="ADD LINK HERE" target="_blank" rel="noopener noreferrer">
+            <a
+              href="https://www2.gov.bc.ca/gov/content/environment/climate-change/industry/bc-output-based-pricing-system"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               program website.
             </a>
           </p>
+          {/*
+          This section is commented out because the link will not be available until post MVP.
           <p>
             Please visit the{" "}
             <a
@@ -132,7 +142,7 @@ export default function Page() {
             </a>{" "}
             webpage to learn more about claiming an exemption from the carbon
             tax.
-          </p>
+          </p>*/}
         </section>
         <section className="flex flex-col items-center bg-bc-bg-light-grey my-10 py-8">
           <h2 className={headerStyle}>Contact us</h2>
@@ -181,9 +191,7 @@ export default function Page() {
           </p>
         </section>
         <h2 className={headerStyle}>Key Dates</h2>
-        <table
-          className={`table-auto w-full text-lg border-collapse ${tableBorder}`}
-        >
+        <table className={`table-auto w-full border-collapse ${tableBorder}`}>
           <colgroup>
             <col className="w-[30%]" />
             <col className="w-[70%]" />
