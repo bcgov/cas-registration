@@ -1,7 +1,6 @@
 import pytz
 from datetime import datetime, timedelta, timezone
 from model_bakery import baker
-from django.test import Client
 from localflavor.ca.models import CAPostalCodeField
 from registration.models import (
     NaicsCode,
@@ -46,7 +45,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         user_operator_instance = user_operator_baker()
         user_operator_instance.status = UserOperator.Statuses.PENDING
         user_operator_instance.user_id = self.user.user_guid
-        user_operator_instance.save(update_fields=['user', 'status'])
+        user_operator_instance.save()
 
         response = TestUtils.mock_get_with_auth_role(self, "industry_user")
         assert response.status_code == 401
@@ -58,7 +57,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         )
         assert response.status_code == 401
 
-    def industry_users_can_only_get_their_own_operations(self):
+    def test_industry_users_can_only_get_their_own_operations(self):
         random_operator = operator_baker()
         the_users_operator = operator_baker()
         user_operator = baker.make(
@@ -69,33 +68,97 @@ class TestOperationsEndpoint(CommonTestSetup):
         )
 
         random_operation = operation_baker(random_operator.id)
-        operation_baker(user_operator.operator.id)  # operation that belongs to the user's operator
+        users_operation = operation_baker(user_operator.operator.id)  # operation that belongs to the user's operator
 
         # operations
-        response = TestUtils.mock_get_with_auth_role(self, "industry_user")
-        assert response.json().length() == 1
+        response_1 = TestUtils.mock_get_with_auth_role(self, "industry_user")
+        response_json = response_1.json()
+        assert len(response_json.get('data')) == 1
+        assert response_json.get('row_count') == 1
+        response_data = response_json.get('data')
+        assert response_data[0].get('id') == users_operation.id
+        assert response_data[0].get('name') == users_operation.name
+        # Make sure the response has the expected keys based on the schema
+        assert response_data[0].keys() == {
+            'id',
+            'name',
+            'bcghg_id',
+            'status',
+            'submission_date',
+            'operator',
+            'bc_obps_regulated_operation',
+        }
 
         # /operations/{operation_id}
-        response = TestUtils.mock_get_with_auth_role(
+        response_2 = TestUtils.mock_get_with_auth_role(
             self, "industry_user", custom_reverse_lazy("get_operation", kwargs={"operation_id": random_operation.id})
         )
-        assert response.status_code == 401
+        assert response_2.status_code == 401
+
+    def test_users_get_different_data_based_on_role(self):
+        the_users_operator = operator_baker()
+        user_operator = baker.make(
+            UserOperator,
+            user_id=self.user.user_guid,
+            status=UserOperator.Statuses.APPROVED,
+            operator=the_users_operator,
+        )
+
+        users_operation = operation_baker(user_operator.operator.id)
+
+        response_1 = TestUtils.mock_get_with_auth_role(
+            self, "industry_user", custom_reverse_lazy("get_operation", kwargs={"operation_id": users_operation.id})
+        )
+        assert response_1.status_code == 200
+        response_data = response_1.json()
+        assert response_data.get('id') == users_operation.id
+        assert response_data.get('name') == users_operation.name
+        # Make sure the response has the expected keys based on the role
+        response_keys_for_industry_users = {
+            'id',
+            'name',
+            'type',
+            'bcghg_id',
+            'opt_in',
+            'regulated_products',
+            'previous_year_attributable_emissions',
+            'status',
+            'naics_code_id',
+            'first_name',
+            'last_name',
+            'email',
+            'phone_number',
+            'position_title',
+            'street_address',
+            'municipality',
+            'province',
+            'postal_code',
+            'statutory_declaration',
+            'bc_obps_regulated_operation',
+        }
+        assert response_data.keys() == response_keys_for_industry_users
+
+        response_2 = TestUtils.mock_get_with_auth_role(
+            self, "cas_admin", custom_reverse_lazy("get_operation", kwargs={"operation_id": users_operation.id})
+        )
+        assert response_2.status_code == 200
+        response_data = response_2.json()
+        assert response_data.get('id') == users_operation.id
+        assert response_data.get('name') == users_operation.name
+        # Make sure the response has the expected keys based on the role
+        response_keys_for_industry_users.update({'operator'})
+        assert response_data.keys() == response_keys_for_industry_users
 
     def test_unauthorized_roles_cannot_post(self):
         mock_operation = TestUtils.mock_OperationCreateIn()
         # IRC users can't post
-        post_response = TestUtils.mock_post_with_auth_role(self, "cas_admin", self.content_type, mock_operation.json())
-        assert post_response.status_code == 401
-        post_response = post_response = TestUtils.mock_post_with_auth_role(
-            self, "cas_analyst", self.content_type, mock_operation.json(), endpoint=None
-        )
-        assert post_response.status_code == 401
-        post_response = post_response = TestUtils.mock_post_with_auth_role(
-            self, "cas_pending", self.content_type, mock_operation.json()
-        )
-        assert post_response.status_code == 401
+        for role in ['cas_pending', 'cas_admin', 'cas_analyst']:
+            response = TestUtils.mock_post_with_auth_role(
+                self, role, self.content_type, mock_operation.json(), custom_reverse_lazy("create_operation")
+            )
+            assert response.status_code == 401
 
-    def test_unauthorized_roles_cannot_put_operations(self):
+    def test_unauthorized_roles_cannot_update_operations(self):
         operation = operation_baker()
         mock_operation = TestUtils.mock_OperationUpdateIn()
         # IRC users can't put
@@ -112,11 +175,10 @@ class TestOperationsEndpoint(CommonTestSetup):
             )
             assert response.status_code == 401
 
-    def industry_users_can_only_put_their_own_operations(self):
+    def test_industry_users_can_only_put_their_own_operations(self):
         mock_payload = TestUtils.mock_OperationUpdateIn()
-
-        random_operator = baker.make(Operator)
-        the_users_operator = baker.make(Operator)
+        random_operator = operator_baker()
+        the_users_operator = operator_baker()
         user_operator = baker.make(
             UserOperator,
             user_id=self.user.user_guid,
@@ -124,8 +186,8 @@ class TestOperationsEndpoint(CommonTestSetup):
             operator=the_users_operator,
         )
 
-        random_operation = baker.make(Operation, operator=random_operator)
-        baker.make(Operation, operator=user_operator.operator)  # operation that belongs to the user's operator
+        random_operation = operation_baker(random_operator.id)
+        operation_baker(user_operator.operator.id)  # operation that belongs to the user's operator
 
         response = TestUtils.mock_put_with_auth_role(
             self,
@@ -150,23 +212,63 @@ class TestOperationsEndpoint(CommonTestSetup):
         assert response.status_code == 401
 
     # GET
-    def test_operations_endpoint_get_method_for_200_status(self):
-        # IRC users can get all operations
-        response = TestUtils.mock_get_with_auth_role(self, "cas_admin")
-        assert response.status_code == 200
-        response = TestUtils.mock_get_with_auth_role(self, "cas_analyst")
-        assert response.status_code == 200
+    def test_get_all_operations_endpoint_based_on_role(self):
+        pending_operation = operation_baker()
+        pending_operation.status = Operation.Statuses.PENDING
+        pending_operation.save(update_fields=['status'])
+        operation_baker()  # this operation is not started
+
+        # IRC users can get all operations excluding ones with a not started status
+        for role in ['cas_admin', 'cas_analyst']:
+            response = TestUtils.mock_get_with_auth_role(self, role)
+            assert response.status_code == 200
+            response_json = response.json()
+            assert response_json.get('row_count') == 1
+            response_data = response_json.get('data')[0]
+            assert response_data.keys() == {  # Make sure the response has the expected keys based on the schema
+                'id',
+                'name',
+                'bcghg_id',
+                'status',
+                'operator',
+                'submission_date',
+                'bc_obps_regulated_operation',
+            }
+            for key in response_data.keys():
+                if key == 'operator':
+                    assert response_data.get(key) == pending_operation.operator.legal_name
+                else:
+                    assert response_data.get(key) == getattr(pending_operation, key)
+
         # industry users can only get their own company's operations, and only if they're approved
         user_operator_instance = user_operator_baker()
         user_operator_instance.status = UserOperator.Statuses.APPROVED
         user_operator_instance.user_id = self.user.user_guid
         user_operator_instance.save(update_fields=['user', 'status'])
+        users_operation = operation_baker(
+            user_operator_instance.operator.id
+        )  # operation that belongs to the user's operator
         response = TestUtils.mock_get_with_auth_role(self, "industry_user")
         assert response.status_code == 200
-        response = TestUtils.mock_get_with_auth_role(self, "industry_user")
-        assert response.status_code == 200
+        response_json = response.json()
+        assert response_json.get('row_count') == 1
+        response_data = response_json.get('data')[0]
+        assert response_data.keys() == {  # Make sure the response has the expected keys based on the schema
+            'id',
+            'name',
+            'bcghg_id',
+            'status',
+            'operator',
+            'submission_date',
+            'bc_obps_regulated_operation',
+        }
+        for key in response_data.keys():
+            if key == 'operator':
+                assert response_data.get(key) == users_operation.operator.legal_name
+            else:
+                assert response_data.get(key) == getattr(users_operation, key)
 
-    def test_get_method_for_invalid_operation_id(self):
+    def test_get_operation_with_invalid_operation_id(self):
         response = TestUtils.mock_get_with_auth_role(
             self, endpoint=custom_reverse_lazy("get_operation", kwargs={"operation_id": 99999}), role_name="cas_admin"
         )
@@ -197,14 +299,12 @@ class TestOperationsEndpoint(CommonTestSetup):
             status=Operation.Statuses.NOT_STARTED,
             naics_code=baker.make(NaicsCode, naics_code=123456, naics_description='desc'),
         )
-        response = TestUtils.mock_get_with_auth_role(self, "cas_admin")
-        assert response.status_code == 200
-        response_data = response.json().get('data')
-        assert len(response_data) == PAGE_SIZE
-        response = TestUtils.mock_get_with_auth_role(self, "cas_analyst")
-        assert response.status_code == 200
-        response_data = response.json().get('data')
-        assert len(response_data) == PAGE_SIZE
+        for role in ['cas_admin', 'cas_analyst']:
+            response = TestUtils.mock_get_with_auth_role(self, role)
+            assert response.status_code == 200
+            response_data = response.json().get('data')
+            assert len(response_data) == PAGE_SIZE
+
         # industry users can only see their own company's operations, and only if they're approved
         baker.make(
             UserOperator, user_id=self.user.user_guid, status=UserOperator.Statuses.APPROVED, operator_id=operator1.id
@@ -265,7 +365,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         assert len(response_data) == PAGE_SIZE
         # Get the page 2 response
         response = TestUtils.mock_get_with_auth_role(
-            self, "cas_admin", self.endpoint + "?page=2&sort_field=created_at&sort_order=desc"
+            self, "cas_admin", custom_reverse_lazy('list_operations') + "?page=2&sort_field=created_at&sort_order=desc"
         )
         assert response.status_code == 200
         response_data = response.json().get('data')
@@ -277,7 +377,7 @@ class TestOperationsEndpoint(CommonTestSetup):
 
         # Get the page 2 response but with a different sort order
         response = TestUtils.mock_get_with_auth_role(
-            self, "cas_admin", self.endpoint + "?page=2&sort_field=created_at&sort_order=asc"
+            self, "cas_admin", custom_reverse_lazy('list_operations') + "?page=2&sort_field=created_at&sort_order=asc"
         )
         assert response.status_code == 200
         response_data = response.json().get('data')
@@ -293,7 +393,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         TestUtils.authorize_current_user_as_operator_user(self, operator)
         mock_operation = TestUtils.mock_OperationCreateIn()
         post_response = TestUtils.mock_post_with_auth_role(
-            self, "industry_user", self.content_type, mock_operation.json()
+            self, "industry_user", self.content_type, mock_operation.json(), custom_reverse_lazy("create_operation")
         )
         assert post_response.status_code == 201
         assert post_response.json().get('name') == "Springfield Nuclear Power Plant"
@@ -302,10 +402,6 @@ class TestOperationsEndpoint(CommonTestSetup):
         get_response = TestUtils.mock_get_with_auth_role(self, "industry_user").json()
         get_response_data = get_response.get('data')[0]
         assert 'status' in get_response_data and get_response_data['status'] == 'Not Started'
-        post_response = TestUtils.mock_post_with_auth_role(
-            self, "industry_user", self.content_type, mock_operation.json(), endpoint=None
-        )
-        assert post_response.status_code == 201
 
     def test_post_new_operation_ignores_declined_user_operator_records(self):
         operator = operator_baker()
@@ -403,7 +499,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         )
         assert response.status_code == 422
 
-    def test_post_existing_operation(self):
+    def test_post_existing_operation_with_same_bcghg_id(self):
         operation_instance = operation_baker()
         operation_instance.bcghg_id = 123
         operation_instance.save(update_fields=['bcghg_id'])
@@ -412,7 +508,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         operator = operator_baker()
         TestUtils.authorize_current_user_as_operator_user(self, operator)
         post_response = TestUtils.mock_post_with_auth_role(
-            self, "industry_user", self.content_type, data=mock_operation2.json()
+            self, "industry_user", self.content_type, mock_operation2.json(), custom_reverse_lazy("create_operation")
         )
         assert post_response.status_code == 400
         assert post_response.json().get('message') == "Operation with this BCGHG ID already exists."
@@ -441,7 +537,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         assert operation.point_of_contact_id is None
 
     # PUT
-    def test_put_operation_update_invalid_operation_id(self):
+    def test_put_operation_update_status_invalid_operation_id(self):
         put_response = TestUtils.mock_put_with_auth_role(
             self,
             "cas_admin",
@@ -465,6 +561,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         assert put_response_1.status_code == 200
         put_response_1_dict = put_response_1.json()
         assert put_response_1_dict.get("id") == str(operation.id)  # string representation of UUID
+        assert put_response_1_dict.keys() == {"id"}  # Make sure the response has the expected keys based on the schema
         operation_after_put = Operation.objects.get(id=operation.id)
         assert operation_after_put.status == Operation.Statuses.APPROVED
         assert operation_after_put.verified_by == self.user
@@ -475,7 +572,9 @@ class TestOperationsEndpoint(CommonTestSetup):
         assert operator.verified_by == self.user
         assert operator.verified_at.strftime("%Y-%m-%d") == now.strftime("%Y-%m-%d")
 
-        get_response = TestUtils.mock_get_with_auth_role(self, "cas_admin", self.endpoint + "/" + str(operation.id))
+        get_response = TestUtils.mock_get_with_auth_role(
+            self, "cas_admin", custom_reverse_lazy("get_operation", kwargs={"operation_id": operation.id})
+        )
         assert get_response.status_code == 200
         get_response_dict = get_response.json()
         assert get_response_dict.get("status") == "Approved"
@@ -515,6 +614,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         assert put_response.status_code == 200
         put_response_dict = put_response.json()
         assert put_response_dict.get("id") == str(operation.id)  # string representation of UUID
+        assert put_response_dict.keys() == {"id"}  # Make sure the response has the expected keys based on the schema
         operation_after_put = Operation.objects.get(id=operation.id)
         assert operation_after_put.status == Operation.Statuses.DECLINED
         assert operation_after_put.verified_by == self.user
@@ -624,7 +724,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         assert response.json() == {"name": "New name"}
 
         get_response = TestUtils.mock_get_with_auth_role(
-            self, "industry_user", self.endpoint + "/" + str(operation.id)
+            self, "industry_user", custom_reverse_lazy("get_operation", kwargs={"operation_id": operation.id})
         ).json()
         assert get_response["status"] == Operation.Statuses.PENDING
         assert get_response["name"] == payload.name
