@@ -76,7 +76,6 @@ test.describe("Test Page - Profile", () => {
             // 🔍 Assert that the current URL ends with "/dashboard"
             const dashboardPage = new DashboardPOM(page);
             await dashboardPage.urlIsCorrect();
-            await deleteNewUserRecord();
             break;
         }
       });
