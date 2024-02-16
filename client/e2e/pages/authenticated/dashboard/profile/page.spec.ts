@@ -57,12 +57,11 @@ test.describe("Test Page - Profile", () => {
       if (value === UserRole.INDUSTRY_USER_ADMIN) {
         continue;
       }
+      role = "E2E_" + role;
+      // 👤 run test as this role
+      const storageState = process.env[role + "_STORAGE"] as string;
+      test.use({ storageState: storageState });
       test(`Test Profile Update for ${role}`, async ({ page }) => {
-        role = "E2E_" + role;
-        // 👤 run test as this role
-        const storageState = process.env[role + "_STORAGE"] as string;
-        test.use({ storageState: storageState });
-
         // 🛸 Navigate to profile page
         const profilePage = new ProfilePOM(page);
         await profilePage.route();
