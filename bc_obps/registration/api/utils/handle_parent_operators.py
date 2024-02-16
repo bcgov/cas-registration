@@ -46,21 +46,18 @@ def assign_index(existing_parent_operator_indices):
 
 def handle_parent_operators(updated_parent_operators, operator_instance, user):
 
-    existing_parent_operators = operator_instance.parent_operators
+    existing_parent_operators = operator_instance.parent_operators.all()
 
     # if the user has removed all parent operators, archive them all
     if not updated_parent_operators and existing_parent_operators:
-        for po in existing_parent_operators.all():
+        for po in existing_parent_operators:
             po.set_archive(user.pk)
         return
 
+    existing_parent_operator_indices = list(operator_instance.parent_operators.values_list('operator_index', flat=True))
     # if the user has added, edited, or removed some parent operators
     if updated_parent_operators:
         for po_operator in updated_parent_operators:
-            # this needs to be in the loop because if the loop adds a new operator, we need to catch that new index
-            existing_parent_operator_indices = list(
-                operator_instance.parent_operators.values_list('operator_index', flat=True)
-            )
 
             # archive any parent operators that have been removed
             if existing_parent_operator_indices:
@@ -71,6 +68,7 @@ def handle_parent_operators(updated_parent_operators, operator_instance, user):
             # assign an operator_index to new parent operators
             if not po_operator.operator_index:
                 po_operator.operator_index = assign_index(existing_parent_operator_indices)
+                existing_parent_operator_indices.append(po_operator.operator_index)
 
             addresses = handle_parent_operator_addresses(po_operator)
 
