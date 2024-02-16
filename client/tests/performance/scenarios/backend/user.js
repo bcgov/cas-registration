@@ -7,7 +7,7 @@ import {
   industryUserParams,
   internalUserParams,
   INDUSTRY_USER_GUID,
-} from "../setup/params.js";
+} from "../../setup/params.js";
 
 const user = () => {
   const HOST = __ENV.SERVER_HOST;
