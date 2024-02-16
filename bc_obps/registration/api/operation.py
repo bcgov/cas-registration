@@ -345,7 +345,7 @@ def update_operation(request, operation_id: UUID, submit: str, form_section: int
                 operation.documents.set([document])
 
             operation.set_create_or_update(user.pk)
-            return 200, {"name": operation.name}
+            return 200, operation
     except ValidationError as e:
         return 400, {"message": generate_useful_error(e)}
     except Exception as e:
