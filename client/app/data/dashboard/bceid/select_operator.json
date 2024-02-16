@@ -5,8 +5,8 @@
     "content": "View or update your operator information",
     "links": [
       {
-        "title": "Select Operator ➤",
-        "href": "/dashboard/select-operator"
+        "href": "/dashboard/select-operator",
+        "notification": "industryOperator"
       }
     ]
   }

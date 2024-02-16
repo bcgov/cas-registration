@@ -11,5 +11,5 @@ export interface Notification {
 }
 
 export interface NotificationMap {
-  [key: string]: (...args: any[]) => Notification;
+  industryOperator: (operatorStatus: string | undefined) => Notification;
 }
