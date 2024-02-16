@@ -46,11 +46,11 @@ export default async function ConfirmSelectedOperator({
       <>
         <p>
           Your access request was declined by an Administrator of{" "}
-          <b>{operator.legal_name}</b>
+          <b>{(operator as Operator).legal_name}</b>
         </p>
         <p className="text-center">
           If you believe this is an error and you should be granted access,
-          please contact the administrator of <b>{operator.legal_name}</b>
+          please contact the administrator of <b>{(operator as Operator).legal_name}</b>
         </p>
       </>
     );
@@ -59,7 +59,7 @@ export default async function ConfirmSelectedOperator({
       <>
         <p>
           Your Administrator access request to be the Operation Representative
-          of <b>{operator.legal_name}</b> was declined.
+          of <b>{(operator as Operator).legal_name}</b> was declined.
         </p>
         <p className="text-center">
           If you believe this is an error and you should be granted access,
