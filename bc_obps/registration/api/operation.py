@@ -250,7 +250,7 @@ def create_operation(request, payload: OperationCreateIn):
 @router.put(
     "/operations/{operation_id}", response={200: OperationUpdateOut, codes_4xx: Message}, url_name="update_operation"
 )
-@authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles())
+@authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
 def update_operation(request, operation_id: int, submit: str, form_section: int, payload: OperationUpdateIn):
     user: User = request.current_user
     # if there's no user_operator, then the user hasn't requested access to the operator
