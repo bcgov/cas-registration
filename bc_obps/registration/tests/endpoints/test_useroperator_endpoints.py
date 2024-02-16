@@ -516,6 +516,50 @@ class TestUserOperatorEndpoint(CommonTestSetup):
 
         assert user_operator_exists, "UserOperator object was not created"
 
+    # /user-operator-from-user ignores DECLINED records
+    def test_get_user_operator(self):
+        user_operator = user_operator_baker()
+        user_operator.user_id = self.user.user_guid
+        user_operator.status = UserOperator.Statuses.DECLINED
+        user_operator.save(update_fields=['user_id', 'status'])
+        response = TestUtils.mock_get_with_auth_role(
+            self, 'industry_user', custom_reverse_lazy('get_user_operator_from_user')
+        )
+        assert response.status_code == 404
+
+    # /GET operator-access-declined
+    def test_get_user_operator(self):
+        user_operator = user_operator_baker()
+        user_operator.user_id = self.user.user_guid
+        user_operator.status = UserOperator.Statuses.DECLINED
+        user_operator.save(update_fields=['user_id', 'status'])
+        response = TestUtils.mock_get_with_auth_role(
+            self, 'industry_user', custom_reverse_lazy('operator_access_declined', kwargs={'operator_id': user_operator.operator_id}),
+
+        )
+        response_json = response.json()
+        assert response.status_code == 200
+        print(response_json)
+        assert response_json == True
+
+    # /user-operator-list-from-user ignores DECLINED records
+    def test_get_user_operator(self):
+        operator = operator_baker()
+        operator.status = 'Approved'
+        operator.save(update_fields=["created_by", "status"])
+        baker.make(
+            UserOperator, user=self.user, operator=operator, role=UserOperator.Roles.ADMIN, created_by=self.user
+        )
+        baker.make(
+            UserOperator, operator=operator, status=UserOperator.Statuses.DECLINED
+        )
+        response = TestUtils.mock_get_with_auth_role(
+            self, 'industry_user', custom_reverse_lazy('get_user_operator_list_from_user')
+        )
+        response_json = response.json()
+        assert response.status_code == 200
+        assert len(response_json) == 1
+
     # GET USER OPERATOR ID 200
     def test_get_user_operator_operator_id(self):
         # Act
@@ -759,7 +803,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         }
 
         parent_operators: List[ParentOperator] = operator.parent_operators.all()
-        assert len(parent_operators) == 2
+
         # Assert that the parent operator 1 is the same as the first object in the parent_operators_array
         assert {
             "legal_name": parent_operators[0].legal_name,

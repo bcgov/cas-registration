@@ -199,7 +199,7 @@ def get_user_operator_admin_exists(request, operator_id: int):
     return 200, has_admin
 
 
-@router.get("/operator-access-declined/{operator_id}", response={200: bool, codes_4xx: Message})
+@router.get("/operator-access-declined/{operator_id}", response={200: bool, codes_4xx: Message}, url_name="operator_access_declined",)
 @authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles())
 def get_user_operator_admin_exists(request, operator_id: int):
     user: User = request.current_user
