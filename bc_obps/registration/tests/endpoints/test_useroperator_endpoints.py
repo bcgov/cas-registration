@@ -18,6 +18,7 @@ from registration.tests.utils.bakers import (
     operator_baker,
     user_baker,
     user_operator_baker,
+    parent_operator_baker,
 )
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.constants import PAGE_SIZE
@@ -657,6 +658,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
             'message': 'Bc Corporate Registry Number: Operator with this Bc corporate registry number already exists.'
         }
 
+    # PARENT OPERATORS
     def test_create_operator_and_user_operator_with_parent_operators(self):
         mock_payload_2 = {
             "legal_name": "New Operator",
@@ -828,7 +830,152 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         assert parent_operators[0].operator_index == 1
         assert parent_operators[1].operator_index == 2
 
+    def test_edit_and_archive_parent_operators(self):
+
+        child_operator = operator_baker()
+        user_operator = baker.make(UserOperator, operator=child_operator, user=self.user)
+
+        parent_operator_1 = parent_operator_baker()
+        parent_operator_1.child_operator_id = child_operator.id
+        parent_operator_1.operator_index = 1
+        parent_operator_1.save(update_fields=["child_operator_id", "operator_index"])
+
+        parent_operator_2 = parent_operator_baker()
+        parent_operator_2.child_operator_id = child_operator.id
+        parent_operator_2.operator_index = 2
+        parent_operator_2.save(update_fields=["child_operator_id", "operator_index"])
+
+        unrelated_parent_operator = parent_operator_baker()
+        unrelated_parent_operator.legal_name = 'i should not be deleted'
+        unrelated_parent_operator.operator_index = 1
+        unrelated_parent_operator.save(update_fields=["legal_name", "operator_index"])
+
+        mock_payload = {
+            "legal_name": "New Operator",
+            "trade_name": "New Operator Trade Name",
+            "cra_business_number": 963852741,
+            "bc_corporate_registry_number": "adh1234321",
+            "business_structure": BusinessStructure.objects.first().pk,
+            "physical_street_address": "test physical street address",
+            "physical_municipality": "test physical municipality",
+            "physical_province": "BC",
+            "physical_postal_code": "H0H0H0",
+            "mailing_address_same_as_physical": True,
+            "operator_has_parent_operators": True,
+            "parent_operators_array": [
+                {
+                    "po_legal_name": "test po legal name-EDITED",
+                    "po_cra_business_number": 123456789,
+                    "po_bc_corporate_registry_number": "poo7654321",
+                    "po_business_structure": BusinessStructure.objects.first().pk,
+                    "po_website": "https://testpo.com",
+                    "po_physical_street_address": "test po physical street address",
+                    "po_physical_municipality": "test po physical municipality",
+                    "po_physical_province": "ON",
+                    "po_physical_postal_code": "H0H0H0",
+                    "po_mailing_address_same_as_physical": True,
+                    "operator_index": 2,
+                },
+            ],
+        }
+        response = TestUtils.mock_put_with_auth_role(
+            self,
+            'industry_user',
+            self.content_type,
+            mock_payload,
+            custom_reverse_lazy('update_operator_and_user_operator', kwargs={'user_operator_id': user_operator.id}),
+        )
+        assert response.status_code == 200
+
+        parent_operators: List[ParentOperator] = child_operator.parent_operators.all()
+
+        assert len(parent_operators) == 1  # archived records are not pulled
+
+        # parent_operator_1 has been archived
+        parent_operator_1.refresh_from_db()
+        assert parent_operator_1.operator_index == 1
+        assert parent_operator_1.archived_by is not None
+        assert parent_operator_1.archived_at is not None
+
+        # parent_operator_2 has been edited
+        assert parent_operators[0].legal_name == "test po legal name-EDITED"
+        assert parent_operators[0].operator_index == 2
+        assert parent_operators[0].archived_by is None
+        assert parent_operators[0].archived_at is None
+
+        # unrelated_parent_operator has the same id as parent_operator_1 and should be left alone as it doesn't belong to the child operator
+        unrelated_parent_operator.refresh_from_db()
+        assert unrelated_parent_operator.legal_name == 'i should not be deleted'
+
+    def remove_all_parent_operators(self):
+
+        child_operator = operator_baker()
+        user_operator = baker.make(UserOperator, operator=child_operator, user=self.user)
+
+        parent_operator_1 = parent_operator_baker()
+        parent_operator_1.child_operator_id = child_operator.id
+        parent_operator_1.operator_index = 1
+        parent_operator_1.save(update_fields=["child_operator_id", "operator_index"])
+
+        parent_operator_2 = parent_operator_baker()
+        parent_operator_2.child_operator_id = child_operator.id
+        parent_operator_2.operator_index = 2
+        parent_operator_2.save(update_fields=["child_operator_id", "operator_index"])
+
+        unrelated_parent_operator = parent_operator_baker()
+        unrelated_parent_operator.legal_name = 'i should not be deleted'
+        unrelated_parent_operator.operator_index = 1
+        unrelated_parent_operator.save(update_fields=["legal_name", "operator_index"])
+
+        mock_payload = {
+            "legal_name": "New Operator",
+            "trade_name": "New Operator Trade Name",
+            "cra_business_number": 963852741,
+            "bc_corporate_registry_number": "adh1234321",
+            "business_structure": BusinessStructure.objects.first().pk,
+            "physical_street_address": "test physical street address",
+            "physical_municipality": "test physical municipality",
+            "physical_province": "BC",
+            "physical_postal_code": "H0H0H0",
+            "mailing_address_same_as_physical": True,
+            "operator_has_parent_operators": True,
+            "parent_operators_array": [
+                {},
+            ],
+        }
+        response = TestUtils.mock_put_with_auth_role(
+            self,
+            'industry_user',
+            self.content_type,
+            mock_payload,
+            f"{self.user_operator_endpoint}/operator/{user_operator.id}",
+        )
+        assert response.status_code == 200
+
+        parent_operators: List[ParentOperator] = child_operator.parent_operators.all()
+
+        assert len(parent_operators) == 0  # archived records are not pulled
+
+        # parent_operator_1 has been archived
+        parent_operator_1.refresh_from_db()
+        assert parent_operator_1.operator_index == 1
+        assert parent_operator_1.archived_by is not None
+        assert parent_operator_1.archived_at is not None
+
+        # parent_operator_2 has been archived
+        parent_operator_2.refresh_from_db()
+        assert parent_operator_2.operator_index == 2
+        assert parent_operator_2.archived_by is not None
+        assert parent_operator_2.archived_at is not None
+
+        # unrelated_parent_operator has the same id as parent_operator_1 and should be left alone as it doesn't belong to the child operator
+        unrelated_parent_operator.refresh_from_db()
+        assert unrelated_parent_operator.archived_by is None
+        assert unrelated_parent_operator.archived_at is None
+
+    ## STATUS
     def test_draft_status_changes_to_pending(self):
+
         operator = operator_baker()
         operator.created_by = self.user
         operator.status = 'Draft'

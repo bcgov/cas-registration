@@ -1,4 +1,6 @@
 from django.db import transaction
+from django.db import transaction
+from registration.api.utils.handle_parent_operators import handle_parent_operators
 from registration.utils import (
     generate_useful_error,
     update_model_instance,
@@ -83,47 +85,7 @@ def save_operator(payload: UserOperatorOperatorIn, operator_instance: Operator, 
         created_or_updated_operator_instance.save()
         created_or_updated_operator_instance.set_create_or_update(user.pk)
 
-        # create parent operator records
-        operator_has_parent_operators: bool = payload.operator_has_parent_operators
-        if operator_has_parent_operators:
-            po_operator_fields_mapping = {
-                "po_legal_name": "legal_name",
-                "po_trade_name": "trade_name",
-                "po_cra_business_number": "cra_business_number",
-                "po_bc_corporate_registry_number": "bc_corporate_registry_number",
-                "po_website": "website",
-            }
-            for idx, po_operator in enumerate(payload.parent_operators_array):
-                new_po_operator_instance: ParentOperator = ParentOperator(
-                    child_operator=created_or_updated_operator_instance,
-                    operator_index=idx + 1,
-                )
-                # handle addresses--if there's no mailing address given, it's the same as the physical address
-                po_physical_address = Address.objects.create(
-                    street_address=po_operator.po_physical_street_address,
-                    municipality=po_operator.po_physical_municipality,
-                    province=po_operator.po_physical_province,
-                    postal_code=po_operator.po_physical_postal_code,
-                )
-                new_po_operator_instance.physical_address = po_physical_address
-
-                if po_operator.po_mailing_address_same_as_physical:
-                    new_po_operator_instance.mailing_address = po_physical_address
-                else:
-                    po_mailing_address = Address.objects.create(
-                        street_address=po_operator.po_mailing_street_address,
-                        municipality=po_operator.po_mailing_municipality,
-                        province=po_operator.po_mailing_province,
-                        postal_code=po_operator.po_mailing_postal_code,
-                    )
-                    new_po_operator_instance.mailing_address = po_mailing_address
-
-                new_po_operator_instance.business_structure = po_operator.po_business_structure
-                new_po_operator_instance = update_model_instance(
-                    new_po_operator_instance, po_operator_fields_mapping, po_operator.dict()
-                )
-                new_po_operator_instance.save()
-                new_po_operator_instance.set_create_or_update(user.pk)
+        handle_parent_operators(payload.parent_operators_array, created_or_updated_operator_instance, user)
 
         # get an existing user_operator instance or create a new one with the default role
         user_operator, created = UserOperator.objects.get_or_create(
