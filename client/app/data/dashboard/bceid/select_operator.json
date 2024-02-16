@@ -6,8 +6,7 @@
     "links": [
       {
         "title": "Select Operator ➤",
-        "href": "/dashboard/select-operator",
-        "notification": "industryOperator"
+        "href": "/dashboard/select-operator"
       }
     ]
   }

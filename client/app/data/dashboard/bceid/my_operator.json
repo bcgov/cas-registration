@@ -6,8 +6,7 @@
     "links": [
       {
         "title": "0 pending action(s) required",
-        "href": "/dashboard/select-operator",
-        "notification": "industryOperator"
+        "href": "/dashboard/select-operator"
       }
     ]
   }
