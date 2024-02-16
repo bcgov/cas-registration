@@ -43,7 +43,8 @@
       "opt_in": false,
       "bcghg_id": "23219990003",
       "regulated_products": [],
-      "status": "Pending"
+      "status": "Approved",
+      "bc_obps_regulated_operation": "21-0001"
     }
   },
   {
@@ -52,7 +53,7 @@
       "operator": 1,
       "documents": [],
       "submission_date": "2024-01-12T15:27:00.000Z",
-      "bc_obps_regulated_operation": "21-0001",
+      "bc_obps_regulated_operation": "21-0002",
       "point_of_contact": 1,
       "name": "Operation 4",
       "type": "Single Facility Operation",
