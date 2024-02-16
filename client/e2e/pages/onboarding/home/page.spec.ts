@@ -11,10 +11,10 @@ import { UserRole } from "@/e2e/utils/enums";
 import { pool } from "@/e2e/utils/pool";
 import {
   deleteNewUser,
-  upsertIOUser,
-  upsertIOUserAdmin,
+  upsertUserIO,
+  upsertUserIOAdmin,
   upsertOperator,
-  upsertOperatorUser,
+  upsertUserOperator,
 } from "@/e2e/utils/queries";
 // ℹ️ Environment variables
 import * as dotenv from "dotenv";
@@ -36,17 +36,17 @@ test.beforeAll(async () => {
     // ▶️ Execute the query
     await pool.query(query);
     // Upsert a User record
-    query = upsertIOUserAdmin;
+    query = upsertUserIOAdmin;
     // ▶️ Execute the query
     await pool.query(query);
     // Upsert an User Operator record
-    query = upsertOperatorUser;
+    query = upsertUserOperator;
     // ▶️ Execute the query
     await pool.query(query);
 
     // 👤 industry_user: bc-cas-dev-secondary
     // Upsert a User record
-    query = upsertIOUser;
+    query = upsertUserIO;
     // ▶️ Execute the query
     await pool.query(query);
 

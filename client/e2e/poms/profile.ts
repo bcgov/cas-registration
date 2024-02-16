@@ -5,7 +5,7 @@
  */
 import { Locator, Page, expect } from "@playwright/test";
 // ⛏️ Helpers
-import { getFieldAlerts, getFieldRequired } from "@/e2e/utils/helpers";
+import { fieldsClear, fieldsUpdate, getFieldAlerts } from "@/e2e/utils/helpers";
 // ☰ Enums
 import { AppRoute, ActionButton } from "@/e2e/utils/enums";
 // ℹ️ Environment variables
@@ -31,44 +31,20 @@ export class ProfilePOM {
   }
 
   async updateFail() {
-    // Locate all required fields within the fieldset
-    const requiredFields = await getFieldRequired(this.page);
-    if (requiredFields) {
-      // 📛 Clear the required input fields to trigger alerts
-      for (const input of requiredFields) {
-        const labelText = await input.textContent();
-        const inputField = await this.page.getByLabel(labelText as string);
-        // Click the field to focus it
-        await inputField.click();
-        // Clear the field
-        await inputField.clear();
-      }
-      // Click the Submit button
-      await this.buttonSubmit.click();
-      // Locate all alert elements within the fieldset
-      const alertElements = await getFieldAlerts(this.page);
-      // 🔍 Assert there to be exactly the same number of required fields and alert elements
-      expect(requiredFields.length).toBe(alertElements.length);
-    }
+    // Clear all required fields
+    const clearedFields = await fieldsClear(this.page);
+    // Click the Submit button
+    await this.buttonSubmit.click();
+    // Locate all alert elements within the fieldset
+    const alertElements = await getFieldAlerts(this.page);
+    // 🔍 Assert there to be exactly the same number of required fields and alert elements
+    expect(clearedFields).toBe(alertElements.length);
   }
 
   async updateSuccess() {
-    // Locate all required fields within the fieldset
-    const requiredFields = await getFieldRequired(this.page);
-    if (requiredFields) {
-      //  Set required input fields
-      for (const input of requiredFields) {
-        const labelText = await input.textContent();
-        const inputField = await this.page.getByLabel(labelText as string);
-        // Click the field to focus it
-        await inputField.click();
-        if (labelText === "Phone Number*") {
-          await this.page.getByLabel(labelText).fill("987 654 3210"); //Format should be ### ### ####
-        } else {
-          await inputField.fill(`E2E ${labelText}`);
-        }
-      }
-    }
+    // Update all required fields
+    await fieldsUpdate(this.page);
+    // Click the Submit button
     await this.buttonSubmit.click();
   }
 
