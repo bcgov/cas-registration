@@ -48,7 +48,6 @@ export default async function MyOperatorPage() {
     }
     return permanentRedirect(
       `/dashboard/select-operator/received/request-access/${operator}`,
-    );
   }
 
   return (
