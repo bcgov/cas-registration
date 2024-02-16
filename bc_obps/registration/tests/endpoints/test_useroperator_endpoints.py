@@ -534,8 +534,9 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         user_operator.status = UserOperator.Statuses.DECLINED
         user_operator.save(update_fields=['user_id', 'status'])
         response = TestUtils.mock_get_with_auth_role(
-            self, 'industry_user', custom_reverse_lazy('operator_access_declined', kwargs={'operator_id': user_operator.operator_id}),
-
+            self,
+            'industry_user',
+            custom_reverse_lazy('operator_access_declined', kwargs={'operator_id': user_operator.operator_id}),
         )
         response_json = response.json()
         assert response.status_code == 200
@@ -547,12 +548,8 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         operator = operator_baker()
         operator.status = 'Approved'
         operator.save(update_fields=["created_by", "status"])
-        baker.make(
-            UserOperator, user=self.user, operator=operator, role=UserOperator.Roles.ADMIN, created_by=self.user
-        )
-        baker.make(
-            UserOperator, operator=operator, status=UserOperator.Statuses.DECLINED
-        )
+        baker.make(UserOperator, user=self.user, operator=operator, role=UserOperator.Roles.ADMIN, created_by=self.user)
+        baker.make(UserOperator, operator=operator, status=UserOperator.Statuses.DECLINED)
         response = TestUtils.mock_get_with_auth_role(
             self, 'industry_user', custom_reverse_lazy('get_user_operator_list_from_user')
         )

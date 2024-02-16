@@ -308,27 +308,27 @@ class TestOperationsEndpoint(CommonTestSetup):
         assert post_response.status_code == 201
 
     def test_post_new_operation_ignores_declined_user_operator_records(self):
-      operator = operator_baker()
-      operator2 = operator_baker()
-      baker.make(
+        operator = operator_baker()
+        operator2 = operator_baker()
+        baker.make(
             UserOperator, user_id=self.user.user_guid, status=UserOperator.Statuses.DECLINED, operator_id=operator2.id
         )
-      TestUtils.authorize_current_user_as_operator_user(self, operator)
-      mock_operation = TestUtils.mock_OperationCreateIn()
-      post_response = TestUtils.mock_post_with_auth_role(
-          self, "industry_user", self.content_type, mock_operation.json()
-      )
-      assert post_response.status_code == 201
-      assert post_response.json().get('name') == "Springfield Nuclear Power Plant"
-      assert post_response.json().get('id') is not None
-      # check that the default status of pending was applied
-      get_response = TestUtils.mock_get_with_auth_role(self, "industry_user").json()
-      get_response_data = get_response.get('data')[0]
-      assert 'status' in get_response_data and get_response_data['status'] == 'Not Started'
-      post_response = TestUtils.mock_post_with_auth_role(
-          self, "industry_user", self.content_type, mock_operation.json(), endpoint=None
-      )
-      assert post_response.status_code == 201
+        TestUtils.authorize_current_user_as_operator_user(self, operator)
+        mock_operation = TestUtils.mock_OperationCreateIn()
+        post_response = TestUtils.mock_post_with_auth_role(
+            self, "industry_user", self.content_type, mock_operation.json()
+        )
+        assert post_response.status_code == 201
+        assert post_response.json().get('name') == "Springfield Nuclear Power Plant"
+        assert post_response.json().get('id') is not None
+        # check that the default status of pending was applied
+        get_response = TestUtils.mock_get_with_auth_role(self, "industry_user").json()
+        get_response_data = get_response.get('data')[0]
+        assert 'status' in get_response_data and get_response_data['status'] == 'Not Started'
+        post_response = TestUtils.mock_post_with_auth_role(
+            self, "industry_user", self.content_type, mock_operation.json(), endpoint=None
+        )
+        assert post_response.status_code == 201
 
     # commenting out this unit test for now because multiple_operators are not included in MVP
     # def test_post_new_operation_with_multiple_operators(self):
