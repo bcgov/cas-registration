@@ -46,6 +46,13 @@ export class ProfilePOM {
     await fieldsUpdate(this.page);
     // Click the Submit button
     await this.buttonSubmit.click();
+    // 🔍 Assert successful submission
+    // 🕒 Wait for the success message to be attached to the DOM
+    await this.page.waitForSelector("text=Success", { state: "attached" });
+    // Check if the success message existed at some point
+    const isSuccessExisted = (await this.page.$("text=Success")) !== null;
+    //  🔍 Assert that the success message existed at some point
+    await expect(isSuccessExisted).toBe(true);
   }
 
   async urlIsCorrect() {
