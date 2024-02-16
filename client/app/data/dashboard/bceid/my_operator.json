@@ -5,8 +5,8 @@
     "content": "View or update your operator information, which needs to be complete before applying for BORO ID's",
     "links": [
       {
-        "title": "0 pending action(s) required",
-        "href": "/dashboard/select-operator"
+        "href": "/dashboard/select-operator",
+        "notification": "industryOperator"
       }
     ]
   }
