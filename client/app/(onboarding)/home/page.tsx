@@ -198,17 +198,17 @@ export default function Page() {
           </colgroup>
           <thead>
             <tr>
-              <th className={`p-4 ${tableBorder}`}>Date</th>
-              <th className={`p-4 ${tableBorder}`}>Event</th>
+              <th className={`py-4 px-2 text-left ${tableBorder}`}>Date</th>
+              <th className={`py-4 px-2 text-left ${tableBorder}`}>Event</th>
             </tr>
           </thead>
           <tbody>
             {events.map((row, index) => (
               <tr key={index}>
-                <td className={`px-6 py-8 ${tableBorder} whitespace-pre-line`}>
+                <td className={`px-2 py-6 ${tableBorder} whitespace-pre-line`}>
                   {row.date}
                 </td>
-                <td className={`px-6 py-8 ${tableBorder}`}>{row.event}</td>
+                <td className={`px-2 py-6 ${tableBorder}`}>{row.event}</td>
               </tr>
             ))}
           </tbody>
