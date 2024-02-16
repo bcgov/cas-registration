@@ -70,7 +70,6 @@ test.describe("Test Page - Profile", () => {
         await profilePage.updateFail();
         // 🔍 Assert profile update
         await profilePage.updateSuccess();
-        // 🔍 Assert that the current URL is correct
         switch (value) {
           case UserRole.NEW_USER:
             // 🔍 Assert that the current URL ends with "/dashboard"
