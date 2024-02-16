@@ -7,7 +7,7 @@ import {
   industryUser3Params,
   internalUserParams,
   INDUSTRY_USER_GUID,
-} from "../setup/params.js";
+} from "../../setup/params.js";
 import { crypto } from "k6/experimental/webcrypto";
 
 const userOperator = () => {

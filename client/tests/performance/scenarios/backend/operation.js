@@ -1,7 +1,7 @@
 /* eslint-disable */
 import http from "k6/http";
 import { check } from "k6";
-import { industryUserParams, internalUserParams } from "../setup/params.js";
+import { industryUserParams, internalUserParams } from "../../setup/params.js";
 
 const operation = () => {
   const HOST = __ENV.SERVER_HOST;

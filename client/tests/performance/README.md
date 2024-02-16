@@ -12,9 +12,13 @@
 
 4. Test it is working correctly by running tests against your local backend server running at `http://127.0.0.1:8000/`.
 
-5. Change variable `SERVER_HOST` value in Makefile to the route being tested eg: `https://cas-reg-backend-dev.apps.silver.devops.gov.bc.ca/home/`
+```
+**IMPORTANT**: If running the frontend tests you will need to disable auth and deploy an image to OpenShift. We implemented a hacky solution and didn't want to merge it into the codebase here that can be used as an example: https://github.com/bcgov/cas-registration/pull/898
+```
 
-6. Run `make perf_test`
+5. Change variable `APP_HOST` pr `SERVER_HOST` value in Makefile to the route being tested eg: `https://cas-reg-backend-dev.apps.silver.devops.gov.bc.ca/home/`
+
+6. Run `make perf_test` or `make perf_test_frontend`
 
 7. Monitor deployment
 
