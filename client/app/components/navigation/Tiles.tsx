@@ -15,19 +15,24 @@ import idirOperationsTile from "@/app/data/dashboard/idir/operations.json";
 import idirUsersTile from "@/app/data/dashboard/idir/users.json";
 import Inbox from "@/app/components/icons/Inbox";
 import Layers from "@/app/components/icons/Layers";
-import Notification from "@/app/components/icons/Notification";
+import NotificationIcon from "@/app/components/icons/Notification";
 import Users from "@/app/components/icons/Users";
 import Wrench from "@/app/components/icons/Wrench";
+import {
+  IconMap,
+  Notification,
+  NotificationMap,
+} from "@/app/components/navigation/types";
 
 // 📐 type for ContentItem used to build dashboard content tiles
 type ContentItem = {
   title: string;
   icon: string;
   content: string;
-  links?: { title: string; href: string; notification?: string }[];
+  links?: { title: string; href: string }[];
 };
 
-const iconsMap: Record<string, any> = {
+const iconMap: IconMap = {
   Inbox,
   Layers,
   Wrench,
@@ -41,13 +46,16 @@ const industryUserOperatorNotifications = (
   if (!operatorStatus || operatorStatus === OperatorStatus.DRAFT) {
     notifications++;
   }
-  return notifications;
+  return {
+    count: notifications,
+    message: `${notifications} pending action(s) required`,
+  } as Notification;
 };
 
 // notificationMap is used to retrieve the notification count for each type of notification
 // set the notification type in the links array of the Tile JSON file
-const notificationMap = {
-  industryOperator: industryUserOperatorNotifications,
+const notificationMap: NotificationMap = {
+  "/dashboard/select-operator": industryUserOperatorNotifications,
   // Add Operations and User notification functions here
 };
 
@@ -121,22 +129,24 @@ export default function Tiles({
           return (
             <div key={title} className="dashboard-tile-container">
               <h2 className="flex items-center m-0">
-                {iconsMap[icon]?.()}
+                {iconMap[icon as keyof IconMap]?.()}
                 <div className="ml-2">{content.title}</div>
               </h2>
 
               <p className="mt-6 mb-0">{content.content}</p>
               {typeof links === "object" &&
                 links.map((link, i) => {
-                  const notificationType = link?.notification;
+                  // If the href exists in the notificationMap, it is a notification link
+                  const isLinkNotification = link.href in notificationMap;
 
-                  // Get the notification count for the current tile using the notificationMap
-                  const notificationCount =
-                    notificationMap[
-                      notificationType as keyof typeof notificationMap
-                    ]?.(operatorStatus) || 0;
+                  // Get the notification message for the current tile using the notificationMap
+                  const notification =
+                    isLinkNotification &&
+                    (notificationMap[
+                      link.href as keyof typeof notificationMap
+                    ]?.(operatorStatus) as Notification);
 
-                  const isNotification = notificationCount > 0;
+                  const isNotification = notification && notification.count > 0;
 
                   return (
                     <a
@@ -146,14 +156,14 @@ export default function Tiles({
                         isNotification && "font-bold"
                       }`}
                     >
-                      {notificationType ? (
+                      {isLinkNotification ? (
                         <>
                           {isNotification && (
                             <span className="mr-2">
-                              <Notification />
+                              <NotificationIcon />
                             </span>
                           )}
-                          {`${notificationCount} pending action(s) required`}
+                          {notification && notification.message}
                         </>
                       ) : (
                         link.title
