@@ -38,14 +38,16 @@ export const upsertUserOperator = {
   ],
 };
 
-// Upsert a User record: bc-cas-dev
-export const upsertUserIOAdmin = {
-  text: `
+// Upsert a User record
+const upsertUser = `
      INSERT INTO erc.user (user_guid, app_role_id, first_name, last_name , position_title , email, phone_number, business_guid, bceid_business_name )
     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
     ON CONFLICT (user_guid)
     DO UPDATE SET app_role_id = EXCLUDED.app_role_id
-  `,
+  `;
+// Upsert a User record:  bc-cas-dev
+export const upsertUserIOAdmin = {
+  text: upsertUser,
   values: [
     process.env.E2E_INDUSTRY_USER_ADMIN_GUID as string,
     "industry_user",
@@ -61,12 +63,7 @@ export const upsertUserIOAdmin = {
 
 // Upsert a User record: bc-cas-dev-secondary
 export const upsertUserIO = {
-  text: `
-         INSERT INTO erc.user (user_guid, app_role_id, first_name, last_name , position_title , email, phone_number, business_guid, bceid_business_name )
-    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-    ON CONFLICT (user_guid)
-    DO UPDATE SET app_role_id = EXCLUDED.app_role_id
-  `,
+  text: upsertUser,
   values: [
     process.env.E2E_INDUSTRY_USER_GUID as string,
     "industry_user",
