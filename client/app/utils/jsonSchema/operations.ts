@@ -50,16 +50,23 @@ const operationPage1: RJSFSchema = {
     //   },
     //   title: "Reporting Activities",
     // },
-    ghg_emissions_section: {
+    bcghg_id: { type: "string", title: "BCGHG ID", readOnly: true, default: 'New operations will be assigned a BCGHGID by the Climate Action Secretariat' },
+    opt_in_section: {
       //Not an actual field in the db - this is just to make the form look like the wireframes
-      title:
-        "Please provide information about the GHG emissions report for 2022",
+      title: "Opt-in information",
       type: "object",
       readOnly: true,
     },
-    "Did you submit a GHG emissions report for reporting year 2022?": {
+    opt_in: {
       type: "boolean",
+      title: "Are you applying to be an opted-in operation?",
       default: false,
+    },
+    opt_in_note_section: {
+      //Not an actual field in the db - this is just to make the form look like the wireframes
+      title: "Opt-in information Note",
+      type: "object",
+      readOnly: true,
     },
     // multiple_operators_section: {
     //   //Not an actual field in the db - this is just to make the form look like the wireframes
@@ -73,58 +80,6 @@ const operationPage1: RJSFSchema = {
     //   default: false,
     // },
   },
-  allOf: [
-    {
-      if: {
-        properties: {
-          "Did you submit a GHG emissions report for reporting year 2022?": {
-            const: true,
-          },
-        },
-      },
-      then: {
-        properties: {
-          bcghg_id: { type: "string", title: "BCGHG ID", readOnly: true },
-        },
-        required: [
-          "previous_year_attributable_emissions",
-          "swrs_facility_id",
-          "bcghg_id",
-        ],
-      },
-    },
-    {
-      if: {
-        properties: {
-          "Did you submit a GHG emissions report for reporting year 2022?": {
-            const: false,
-          },
-        },
-      },
-      then: {
-        properties: {
-          opt_in_section: {
-            //Not an actual field in the db - this is just to make the form look like the wireframes
-            title: "Opt-in information",
-            type: "object",
-            readOnly: true,
-          },
-          opt_in: {
-            type: "boolean",
-            title: "Are you applying to be an opted-in operation?",
-            default: false,
-          },
-          opt_in_note_section: {
-            //Not an actual field in the db - this is just to make the form look like the wireframes
-            title: "Opt-in information Note",
-            type: "object",
-            readOnly: true,
-          },
-        },
-
-        required: ["opt_in"],
-      },
-    },
     // {
     //   if: {
     //     properties: {
@@ -272,7 +227,6 @@ const operationPage1: RJSFSchema = {
     //     },
     //   },
     // },
-  ],
 };
 
 const operationPage2: RJSFSchema = {
@@ -431,8 +385,8 @@ export const operationUiSchema = {
     "Did you submit a GHG emissions report for reporting year 2022?",
     "bcghg_id",
     "opt_in_section",
-    "opt_in",
     "opt_in_note_section",
+    "opt_in",
     "opt_in_signed_statuatory_declaration",
     "is_external_point_of_contact",
     "point_of_contact_section",
@@ -477,12 +431,6 @@ export const operationUiSchema = {
     "ui:widget": "ComboBox",
     "ui:placeholder": "Select Primary NAICS code",
   },
-  "Did you submit a GHG emissions report for reporting year 2022?": {
-    "ui:widget": "RadioWidget",
-  },
-  ghg_emissions_section: {
-    ...subheading,
-  },
   operation_has_multiple_operators: {
     "ui:FieldTemplate": FieldTemplate,
     "ui:widget": "RadioWidget",
@@ -495,16 +443,21 @@ export const operationUiSchema = {
     ...subheading,
     "ui:title": PointOfContactTitle,
   },
+  bcghg_id: {
+    "ui:field": "markupBlock",
+    "webStringKey": "info.markup.block"
+  },
   opt_in_section: {
     ...subheading,
-  },
-  opt_in: {
-    "ui:widget": "RadioWidget",
   },
   opt_in_note_section: {
     "ui:FieldTemplate": TitleOnlyFieldTemplate,
     "ui:title": OptInOperationTitle,
   },
+  opt_in: {
+    "ui:widget": "RadioWidget",
+  },
+
   province: {
     "ui:widget": "ComboBox",
   },
