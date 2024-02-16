@@ -104,13 +104,9 @@ def save_operator(payload: UserOperatorOperatorIn, operator_instance: Operator, 
 )
 @authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
 def get_user_operator_from_user(request):
-    user_operator = get_object_or_404(UserOperator, user_id=request.current_user.user_guid)
-    operator = get_object_or_404(Operator, id=user_operator.operator_id)
-    return 200, {**user_operator.__dict__, "is_new": operator.is_new, "operator_status": operator.status}
-def get_user_operator_status(request):
     try:
         user_operator = (
-            UserOperator.objects.only("id", "status", "operator__id", "operator__is_new")
+            UserOperator.objects.only("id", "status", "operator__id", "operator__is_new", "operator__status")
             .exclude(status=UserOperator.Statuses.DECLINED)
             .select_related("operator")
             .get(user_id=request.current_user.user_guid)
