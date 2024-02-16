@@ -29,7 +29,7 @@ type ContentItem = {
   title: string;
   icon: string;
   content: string;
-  links?: { title: string; href: string }[];
+  links?: { title?: string; href: string; notification?: string }[];
 };
 
 const iconMap: IconMap = {
@@ -55,7 +55,7 @@ const industryUserOperatorNotifications = (
 // notificationMap is used to retrieve the notification count for each type of notification
 // The key is the href of the link and the value is a function that returns a Notification object
 const notificationMap: NotificationMap = {
-  "/dashboard/select-operator": industryUserOperatorNotifications,
+  industryOperator: industryUserOperatorNotifications,
   // Add Operations and User notification functions here
 };
 
@@ -136,14 +136,14 @@ export default function Tiles({
               <p className="mt-6 mb-0">{content.content}</p>
               {typeof links === "object" &&
                 links.map((link, i) => {
-                  // If the href exists in the notificationMap, it is a notification link
-                  const isLinkNotification = link.href in notificationMap;
+                  const isLinkNotification =
+                    link.notification && link.notification in notificationMap;
 
                   // Get the notification message for the current tile using the notificationMap
                   const notification =
                     isLinkNotification &&
                     (notificationMap[
-                      link.href as keyof typeof notificationMap
+                      link.notification as keyof NotificationMap
                     ]?.(operatorStatus) as Notification);
 
                   const isNotification = notification && notification.count > 0;
