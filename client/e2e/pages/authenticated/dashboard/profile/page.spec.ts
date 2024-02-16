@@ -1,4 +1,4 @@
-// 🧪 Suite to test the onboarding\Home page `http://localhost:3000/home`
+// 🧪 Suite to test the authentication\profile
 
 import { test } from "@playwright/test";
 // 🪄 Page Object Models
@@ -8,7 +8,7 @@ import { ProfilePOM } from "@/e2e/poms/profile";
 import { UserRole } from "@/e2e/utils/enums";
 // 🥞 Connection pool to postgres DB
 import { pool } from "@/e2e/utils/pool";
-import { deleteNewUser, upsertIOUser } from "@/e2e/utils/queries";
+import { deleteUserNew, upsertUserIO } from "@/e2e/utils/queries";
 // ℹ️ Environment variables
 import * as dotenv from "dotenv";
 dotenv.config({ path: "./e2e/.env.local" });
@@ -16,7 +16,7 @@ dotenv.config({ path: "./e2e/.env.local" });
 // 🛠️ Function: deletes the new user record from the database
 const deleteNewUserRecord = async () => {
   try {
-    const query = deleteNewUser;
+    const query = deleteUserNew;
     // Execute the deletion query
     await pool.query(query);
   } catch (error) {
@@ -33,7 +33,7 @@ test.beforeAll(async () => {
   try {
     // 👤 industry_user: bc-cas-dev-secondary
     // Upsert a User record
-    let query = upsertIOUser;
+    let query = upsertUserIO;
     // ▶️ Execute the query
     await pool.query(query);
 
@@ -50,15 +50,19 @@ test.beforeAll(async () => {
 // 🏷 Annotate test suite as serial
 test.describe.configure({ mode: "serial" });
 test.describe("Test Page - Profile", () => {
-  // ➰ Loop through the entries of UserRole enum
-  for (let [role, value] of Object.entries(UserRole)) {
-    test.describe(`Test User Role - ${value}`, () => {
-      // 👤 run test as this role
-      role = "E2E_" + role;
-      const storageState = process.env[role + "_STORAGE"] as string;
-      test.use({ storageState: storageState });
+  test.describe(`Test User Role`, () => {
+    // ➰ Loop through the entries of UserRole enum
+    for (let [role, value] of Object.entries(UserRole)) {
+      // No need to test both IO user IDs
+      if (value === UserRole.INDUSTRY_USER_ADMIN) {
+        continue;
+      }
+      test(`Test Profile Update for ${role}`, async ({ page }) => {
+        role = "E2E_" + role;
+        // 👤 run test as this role
+        const storageState = process.env[role + "_STORAGE"] as string;
+        test.use({ storageState: storageState });
 
-      test("Test Profile Update", async ({ page }) => {
         // 🛸 Navigate to profile page
         const profilePage = new ProfilePOM(page);
         await profilePage.route();
@@ -76,6 +80,6 @@ test.describe("Test Page - Profile", () => {
             break;
         }
       });
-    });
-  }
+    }
+  });
 });
