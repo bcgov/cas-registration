@@ -177,6 +177,9 @@ export const userOperatorPage1: RJSFSchema = {
                   type: "boolean",
                   default: true,
                 },
+                operator_index: {
+                  type: "number",
+                },
               },
               allOf: [
                 {
@@ -584,6 +587,7 @@ export const userOperatorUiSchema = {
       po_mailing_postal_code: {
         "ui:widget": "PostalCodeWidget",
       },
+      operator_index: { "ui:widget": "hidden" },
     },
   },
 };
