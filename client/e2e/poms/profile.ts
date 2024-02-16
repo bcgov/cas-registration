@@ -47,10 +47,9 @@ export class ProfilePOM {
     // Click the Submit button
     await this.buttonSubmit.click();
     // 🔍 Assert successful submission
-    // 🕒 Wait for the success message to be attached to the DOM
-    await this.page.waitForSelector("text=Success", { state: "attached" });
-    // Check if the success message existed at some point
-    const isSuccessExisted = (await this.page.$("text=Success")) !== null;
+    const isSuccessExisted =
+      (await this.page.locator("div").filter({ hasText: /^✅ Success$/ })) !==
+      null;
     //  🔍 Assert that the success message existed at some point
     await expect(isSuccessExisted).toBe(true);
   }
