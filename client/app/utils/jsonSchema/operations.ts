@@ -443,10 +443,6 @@ export const operationUiSchema = {
     ...subheading,
     "ui:title": PointOfContactTitle,
   },
-  bcghg_id: {
-    "ui:field": "markupBlock",
-    "webStringKey": "info.markup.block"
-  },
   opt_in_section: {
     ...subheading,
   },
