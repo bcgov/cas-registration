@@ -5,8 +5,6 @@ from django.shortcuts import get_object_or_404
 from registration.models import AppRole, Operator, UserOperator, User
 from ninja.responses import codes_4xx, codes_5xx
 from registration.schema import Message, OperatorOut, OperatorIn
-from datetime import datetime
-import pytz
 from django.db import transaction
 from registration.utils import (
     generate_useful_error,
