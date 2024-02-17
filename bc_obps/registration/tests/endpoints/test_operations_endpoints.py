@@ -215,7 +215,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         assert len(response_data) == PAGE_SIZE
 
     def test_operations_endpoint_get_ignores_declined_user_operators(self):
-        # IRC users can get all operations except ones with a not Started status
+        # Endpoint ignores user_operator records with a 'DECLINED' status
         operator1 = operator_baker()
         operator2 = operator_baker()
         baker.make(
