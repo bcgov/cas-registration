@@ -800,6 +800,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         }
 
         parent_operators: List[ParentOperator] = operator.parent_operators.all()
+        assert len(parent_operators) == 2
 
         # Assert that the parent operator 1 is the same as the first object in the parent_operators_array
         assert {
