@@ -31,7 +31,6 @@ interface ButtonRenderCellParams extends GridRenderCellParams {
 
 const handleUpdateStatus = async (
   userOperatorId: number,
-  userGuid: string,
   statusUpdate: Status,
 ) => {
   try {
@@ -42,7 +41,6 @@ const handleUpdateStatus = async (
       {
         body: JSON.stringify({
           status: statusUpdate,
-          user_guid: userGuid,
           user_operator_id: userOperatorId,
         }),
       },
@@ -56,7 +54,6 @@ export async function ChangeUserOperatorStatusColumnCell(
   params: Readonly<ButtonRenderCellParams>,
 ) {
   const userOperatorStatus = params.row.status;
-  const userGuid = params.row.id;
   const userOperatorId = params.row.userOperatorId;
 
   const buttonsToShow = (status: Status): UserOperatorStatusAction[] => {
@@ -96,7 +93,7 @@ export async function ChangeUserOperatorStatusColumnCell(
           variant={item.title === "Undo" ? "text" : "outlined"}
           key={index}
           onClick={async () =>
-            handleUpdateStatus(userOperatorId, userGuid, item.statusTo)
+            handleUpdateStatus(userOperatorId, item.statusTo)
           }
           color={item.color}
           endIcon={item.icon}
