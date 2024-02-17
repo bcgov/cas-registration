@@ -200,15 +200,9 @@ def get_operation(request, operation_id: int):
 @authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
 def create_operation(request, payload: OperationCreateIn):
     user: User = request.current_user
-    # Adding this part instead to prevent an extra call from the frontend to get operator_id and pass it in the payload
-    try:
-        user_operator = (
-            UserOperator.objects.exclude(status=UserOperator.Statuses.DECLINED)
-            .only("operator__id")
-            .get(user=user.user_guid)
-        )
-    except UserOperator.DoesNotExist:
-        return 404, {"message": "User is not associated with any operator"}
+    user_operator = user.get_approved_user_operator()
+    if not user_operator:
+        raise HttpError(401, UNAUTHORIZED_MESSAGE)
 
     payload_dict: dict = payload.dict(
         exclude={
@@ -225,7 +219,6 @@ def create_operation(request, payload: OperationCreateIn):
             return 400, {"message": "Operation with this BCGHG ID already exists."}
     try:
         with transaction.atomic():
-            # Using ThroughModel and bulk_create to speed up the process
             operation = Operation.objects.create(
                 **payload_dict, operator_id=user_operator.operator_id, naics_code_id=payload.naics_code
             )
