@@ -130,7 +130,12 @@ def list_operations(request, page: int = 1, sort_field: str = "created_at", sort
             row_count=paginator.count,
         )
     # Industry users can only see their companies' operations (if there's no user_operator or operator, then the user hasn't requested access to the operator)
-    user_operator = UserOperator.objects.filter(user_id=user.user_guid).only("operator_id").first()
+    user_operator = (
+        UserOperator.objects.filter(user_id=user.user_guid)
+        .exclude(status=UserOperator.Statuses.DECLINED)
+        .only("operator_id")
+        .first()
+    )
     if not user_operator:
         raise HttpError(401, UNAUTHORIZED_MESSAGE)
     approved_users = get_an_operators_approved_users(user_operator.operator_id)
@@ -205,11 +210,13 @@ def create_operation(request, payload: OperationCreateIn):
     user: User = request.current_user
     # Adding this part instead to prevent an extra call from the frontend to get operator_id and pass it in the payload
     try:
-        user_operator = UserOperator.objects.only("operator__id").get(user=user.user_guid)
+        user_operator = (
+            UserOperator.objects.exclude(status=UserOperator.Statuses.DECLINED)
+            .only("operator__id")
+            .get(user=user.user_guid)
+        )
     except UserOperator.DoesNotExist:
         return 404, {"message": "User is not associated with any operator"}
-    except UserOperator.MultipleObjectsReturned:
-        return 400, {"message": "User is associated with multiple operators."}
 
     payload_dict: dict = payload.dict(
         exclude={
@@ -256,7 +263,11 @@ def update_operation(request, operation_id: int, submit: str, form_section: int,
     user: User = request.current_user
     try:
         # if there's no user_operator or operator, then the user hasn't requested access to the operator
-        user_operator = UserOperator.objects.only('operator__id').get(user=user.user_guid)
+        user_operator = (
+            UserOperator.objects.exclude(status=UserOperator.Statuses.DECLINED)
+            .only('operator__id')
+            .get(user=user.user_guid)
+        )
     except UserOperator.DoesNotExist:
         raise HttpError(401, UNAUTHORIZED_MESSAGE)
 

@@ -66,12 +66,12 @@ export default async function Page() {
   ];
 
   const statusRows: GridRowsProp = userOperatorStatuses.map((uOS) => ({
-    id: uOS.user.user_guid,
     name: `${uOS.user.first_name} ${uOS.user.last_name.slice(0, 1)}`,
     email: uOS.user.email,
     business: uOS.operator.legal_name,
     accessType: uOS.role.charAt(0).toLocaleUpperCase() + uOS.role.slice(1), // Capitalize first letter
     status: uOS.status,
+    userOperatorId: uOS.id,
   }));
 
   return <DataGrid rows={statusRows} columns={columns} />;

@@ -11,16 +11,16 @@ from .business_structure import validate_business_structure
 
 
 class PendingUserOperatorOut(ModelSchema):
-    is_new: bool
-    operator_status: str
+    is_new: bool = Field(..., alias="operator.is_new")
+    operatorId: int = Field(..., alias="operator.id")
+    operatorStatus: str = Field(..., alias="operator.status")
 
     class Config:
         model = UserOperator
-        model_exclude = [*AUDIT_FIELDS]
+        model_fields = ["id", "status"]
 
 
 class UserOperatorStatusUpdate(ModelSchema):
-    user_guid: Optional[uuid.UUID] = None
     user_operator_id: Optional[int] = None
 
     class Config:
@@ -158,7 +158,7 @@ class ExternalDashboardUsersTileData(ModelSchema):
 
     class Config:
         model = UserOperator
-        model_fields = ["role", "status"]
+        model_fields = ["role", "status", "id"]
 
 
 class UserOperatorListOut(Schema):

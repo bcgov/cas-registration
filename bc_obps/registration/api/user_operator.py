@@ -104,9 +104,16 @@ def save_operator(payload: UserOperatorOperatorIn, operator_instance: Operator, 
 )
 @authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
 def get_user_operator_from_user(request):
-    user_operator = get_object_or_404(UserOperator, user_id=request.current_user.user_guid)
-    operator = get_object_or_404(Operator, id=user_operator.operator_id)
-    return 200, {**user_operator.__dict__, "is_new": operator.is_new, "operator_status": operator.status}
+    try:
+        user_operator = (
+            UserOperator.objects.only("id", "status", "operator__id", "operator__is_new", "operator__status")
+            .exclude(status=UserOperator.Statuses.DECLINED)
+            .select_related("operator")
+            .get(user_id=request.current_user.user_guid)
+        )
+    except UserOperator.DoesNotExist:
+        return 404, {"message": "User is not associated with any operator"}
+    return 200, PendingUserOperatorOut.from_orm(user_operator)
 
 
 @router.get(
@@ -134,13 +141,12 @@ def get_user_operator_operator(request):
     try:
         user_operator = (
             UserOperator.objects.only("operator__status", "operator__id")
+            .exclude(status=UserOperator.Statuses.DECLINED)
             .select_related("operator")
             .get(user=user.user_guid)
         )
     except UserOperator.DoesNotExist:
         return 404, {"message": "User is not associated with any operator"}
-    except UserOperator.MultipleObjectsReturned:
-        return 400, {"message": "User is associated with multiple operators"}
     return 200, user_operator.operator
 
 
@@ -190,6 +196,20 @@ def get_user_operator_admin_exists(request, operator_id: int):
 
 
 @router.get(
+    "/operator-access-declined/{operator_id}",
+    response={200: bool, codes_4xx: Message},
+    url_name="operator_access_declined",
+)
+@authorize(['industry_user'])
+def get_user_operator_admin_exists(request, operator_id: int):
+    user: User = request.current_user
+    is_declined = UserOperator.objects.filter(
+        operator_id=operator_id, user_id=user.user_guid, status=UserOperator.Statuses.DECLINED
+    ).exists()
+    return 200, is_declined
+
+
+@router.get(
     "/user-operator-list-from-user",
     response=List[ExternalDashboardUsersTileData],
     url_name="get_user_operator_list_from_user",
@@ -197,8 +217,15 @@ def get_user_operator_admin_exists(request, operator_id: int):
 @authorize(["industry_user"], ["admin"])
 def get_user_operator_list_from_user(request):
     user: User = request.current_user
-    operator = UserOperator.objects.get(user=user.user_guid).operator
-    user_operator_list = UserOperator.objects.filter(operator_id=operator)
+    operator = (
+        UserOperator.objects.select_related("operator")
+        .exclude(status=UserOperator.Statuses.DECLINED)
+        .get(user=user.user_guid)
+        .operator
+    )
+    user_operator_list = UserOperator.objects.select_related("user").filter(
+        operator_id=operator, user__business_guid=user.business_guid
+    )
     return user_operator_list
 
 
@@ -389,9 +416,7 @@ def update_operator_and_user_operator(request, payload: UserOperatorOperatorIn, 
 @authorize(AppRole.get_all_authorized_app_roles(), ["admin"])
 def update_user_operator_status(request, payload: UserOperatorStatusUpdate):
     current_user: User = request.current_user  # irc user or industry user admin
-    if payload.user_guid:  # to update the status of a user_operator by user_guid
-        user_operator = get_object_or_404(UserOperator, user_id=payload.user_guid)
-    elif payload.user_operator_id:  # to update the status of a user_operator by user_operator_id
+    if payload.user_operator_id:  # to update the status of a user_operator by user_operator_id
         user_operator = get_object_or_404(UserOperator, id=payload.user_operator_id)
     else:
         return 404, {"message": "No parameters provided"}
