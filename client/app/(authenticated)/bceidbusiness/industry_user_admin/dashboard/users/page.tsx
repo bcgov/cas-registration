@@ -66,7 +66,6 @@ export default async function Page() {
   ];
 
   const statusRows: GridRowsProp = userOperatorStatuses.map((uOS) => ({
-    id: uOS.user.user_guid,
     name: `${uOS.user.first_name} ${uOS.user.last_name.slice(0, 1)}`,
     email: uOS.user.email,
     business: uOS.operator.legal_name,
