@@ -149,7 +149,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         response_keys_for_industry_users.update({'operator'})
         assert response_data.keys() == response_keys_for_industry_users
 
-    def test_unauthorized_roles_cannot_post(self):
+    def test_unauthorized_roles_cannot_create_new_operation(self):
         mock_operation = TestUtils.mock_OperationCreateIn()
         # IRC users can't post
         for role in ['cas_pending', 'cas_admin', 'cas_analyst']:
@@ -1136,3 +1136,76 @@ class TestOperationsEndpoint(CommonTestSetup):
         assert retrieved_op.point_of_contact.first_name == 'Bart'
         assert retrieved_op.point_of_contact_id == original_contact_id
         assert retrieved_op.name == 'New and Improved Legal Name'
+
+    def test_unapproved_industry_users_cannot_create_or_update_operations(self):
+        operator = operator_baker()
+        operation = operation_baker(operator.id)
+        user_operator = user_operator_baker(
+            {'user': self.user, 'operator': operator, 'status': UserOperator.Statuses.PENDING}
+        )
+        mock_create_operation = TestUtils.mock_OperationCreateIn()
+        mock_update_operation = TestUtils.mock_OperationUpdateIn()
+
+        # PENDING user
+        post_response_1 = TestUtils.mock_post_with_auth_role(
+            self,
+            "industry_user",
+            self.content_type,
+            mock_create_operation.json(),
+            custom_reverse_lazy("create_operation"),
+        )
+        assert post_response_1.status_code == 401
+
+        put_response_1 = TestUtils.mock_put_with_auth_role(
+            self,
+            "industry_user",
+            self.content_type,
+            mock_update_operation.json(),
+            custom_reverse_lazy("update_operation", kwargs={"operation_id": operation.id})
+            + "?submit=false&form_section=1",
+        )
+        assert put_response_1.status_code == 401
+
+        # DECLINED user
+        user_operator.status = UserOperator.Statuses.DECLINED
+        user_operator.save(update_fields=['status'])
+        post_response_2 = TestUtils.mock_post_with_auth_role(
+            self,
+            "industry_user",
+            self.content_type,
+            mock_create_operation.json(),
+            custom_reverse_lazy("create_operation"),
+        )
+        assert post_response_2.status_code == 401
+
+        put_response_2 = TestUtils.mock_put_with_auth_role(
+            self,
+            "industry_user",
+            self.content_type,
+            mock_update_operation.json(),
+            custom_reverse_lazy("update_operation", kwargs={"operation_id": operation.id})
+            + "?submit=false&form_section=1",
+        )
+        assert put_response_2.status_code == 401
+
+        # APPROVED user
+        user_operator.status = UserOperator.Statuses.APPROVED
+        user_operator.save(update_fields=['status'])
+        post_response_3 = TestUtils.mock_post_with_auth_role(
+            self,
+            "industry_user",
+            self.content_type,
+            mock_create_operation.json(),
+            custom_reverse_lazy("create_operation"),
+        )
+        assert post_response_3.status_code == 201
+
+        put_response_3 = TestUtils.mock_put_with_auth_role(
+            self,
+            "industry_user",
+            self.content_type,
+            mock_update_operation.json(),
+            custom_reverse_lazy("update_operation", kwargs={"operation_id": operation.id})
+            + "?submit=false&form_section=1",
+        )
+        assert put_response_3.status_code == 200
