@@ -3,7 +3,7 @@ import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import { getOperator } from "@/app/components/routes/select-operator/form/ConfirmSelectedOperator";
 import { actionHandler } from "@/app/utils/actions";
 
-export async function getOperatorHasAdmin(id: number) {
+export async function getOperatorHasAdmin(id: string) {
   return actionHandler(
     `registration/operator-has-admin/${id}`,
     "GET",
@@ -14,9 +14,9 @@ export async function getOperatorHasAdmin(id: number) {
 export default async function AccessRequestReceived({
   params,
 }: {
-  readonly params: { id: number; step: string };
+  readonly params: { id: string; step: string };
 }) {
-  const operatorId: number = params.id;
+  const operatorId: string = params.id;
   const step: string = params.step;
 
   const operator: Operator | { error: string } = await getOperator(operatorId);

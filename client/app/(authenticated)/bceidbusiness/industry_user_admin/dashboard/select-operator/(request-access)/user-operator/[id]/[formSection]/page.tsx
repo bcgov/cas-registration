@@ -3,7 +3,7 @@ import SelectOperatorRequestAccessReceivedUserOperatorPage from "@/app/component
 export default async function Page({
   params,
 }: {
-  readonly params?: Readonly<{ id: number | string; formSection: number }>;
+  readonly params?: Readonly<{ id: string; formSection: number }>;
 }) {
   return (
     <SelectOperatorRequestAccessReceivedUserOperatorPage params={params} />

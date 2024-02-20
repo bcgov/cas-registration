@@ -3,7 +3,7 @@ import SelectOperatorRequestAccessReceivedPage from "@/app/components/routes/sel
 export default async function Page({
   params,
 }: {
-  readonly params: { id: number; step: string };
+  readonly params: { id: string; step: string };
 }) {
   return <SelectOperatorRequestAccessReceivedPage params={params} />;
 }

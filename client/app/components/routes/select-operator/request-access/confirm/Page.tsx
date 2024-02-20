@@ -5,7 +5,7 @@ import ConfirmSelectedOperator from "@/app/components/routes/select-operator/for
 export default async function SelectOperatorRequestAccessConfirmPage({
   params,
 }: {
-  readonly params: { id: number };
+  readonly params: { id: string };
 }) {
   return (
     <Suspense fallback={<Loading />}>
