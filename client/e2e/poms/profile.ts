@@ -5,7 +5,7 @@
  */
 import { Locator, Page, expect } from "@playwright/test";
 // ⛏️ Helpers
-import { getFieldRequired } from "@/e2e/utils/helpers";
+import { fieldsClear, fieldsUpdate, getFieldAlerts } from "@/e2e/utils/helpers";
 // ☰ Enums
 import { AppRoute, ActionButton } from "@/e2e/utils/enums";
 // ℹ️ Environment variables
@@ -30,24 +30,28 @@ export class ProfilePOM {
     await this.page.goto(this.url);
   }
 
-  async update() {
-    // Locate all required fields within the fieldset
-    const requiredFields = await getFieldRequired(this.page);
-    if (requiredFields) {
-      //  Set required input fields
-      for (const input of requiredFields) {
-        const labelText = await input.textContent();
-        const inputField = await this.page.getByLabel(labelText as string);
-        // Click the field to focus it
-        await inputField.click();
-        if (labelText === "Phone Number*") {
-          await this.page.getByLabel(labelText).fill("987 654 3210"); //Format should be ### ### ####
-        } else {
-          await inputField.fill(`E2E TEST ${labelText}`);
-        }
-      }
-    }
+  async updateFail() {
+    // Clear all required fields
+    const clearedFields = await fieldsClear(this.page);
+    // Click the Submit button
     await this.buttonSubmit.click();
+    // Locate all alert elements within the fieldset
+    const alertElements = await getFieldAlerts(this.page);
+    // 🔍 Assert there to be exactly the same number of required fields and alert elements
+    expect(clearedFields).toBe(alertElements.length);
+  }
+
+  async updateSuccess() {
+    // Update all required fields
+    await fieldsUpdate(this.page);
+    // Click the Submit button
+    await this.buttonSubmit.click();
+    // 🔍 Assert successful submission
+    const isSuccessExisted =
+      (await this.page.locator("div").filter({ hasText: /^✅ Success$/ })) !==
+      null;
+    //  🔍 Assert that the success message existed at some point
+    await expect(isSuccessExisted).toBe(true);
   }
 
   async urlIsCorrect() {
