@@ -179,13 +179,14 @@ class TestUserOperatorEndpoint(CommonTestSetup):
             "operator_has_parent_operators": False,
             "parent_operators_array": [],
         }
+        user_operator = user_operator_baker()
         for role in ['cas_pending', 'cas_admin', 'cas_analyst']:
             response = TestUtils.mock_put_with_auth_role(
                 self,
                 role,
                 self.content_type,
                 mock_payload,
-                custom_reverse_lazy('update_operator_and_user_operator', kwargs={'user_operator_id': 1}),
+                custom_reverse_lazy('update_operator_and_user_operator', kwargs={'user_operator_id': user_operator.id}),
             )
             assert response.status_code == 401
 
@@ -216,7 +217,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
             custom_reverse_lazy('get_user_operator', kwargs={'user_operator_id': user_operator_id}),
         )
         assert response.status_code == 200
-        assert response.json()['operator_id'] == operator.id
+        assert response.json()['operator_id'] == str(operator.id)  # String representation of the UUID
 
     def test_get_user_operator_data_industry_user_invalid_request(self):
         operator = operator_baker()
@@ -238,7 +239,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
             self, 'cas_admin', custom_reverse_lazy('get_user_operator', kwargs={'user_operator_id': user_operator.id})
         )
         assert response.status_code == 200
-        assert response.json()['operator_id'] == operator.id
+        assert response.json()['operator_id'] == str(operator.id)  # String representation of the UUID
 
     def test_get_users_operators_list(self):
         baker.make(
@@ -372,7 +373,6 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         assert response_1_json == {'message': 'Operator must be approved before approving users.'}
 
     def test_user_operator_put_can_update_status(self):
-
         operator = operator_baker({'status': Operator.Statuses.APPROVED, 'is_new': False})
         user_operator = user_operator_baker({'operator': operator})
 
@@ -452,8 +452,8 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         response = TestUtils.mock_post_with_auth_role(
             self, 'industry_user', self.content_type, invalid_payload, custom_reverse_lazy('request_admin_access')
         )
-        assert response.status_code == 404
-        assert response.json() == {"detail": "Not Found"}
+        assert response.status_code == 422
+        assert response.json().get('detail')[0].get('msg') == 'value is not a valid uuid'
 
     def test_is_approved_admin_user_operator_with_approved_user(self):
         mock_user = baker.make(User)
@@ -873,7 +873,6 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         assert parent_operators[1].operator_index == 2
 
     def test_edit_and_archive_parent_operators(self):
-
         child_operator = operator_baker()
         user_operator = baker.make(UserOperator, operator=child_operator, user=self.user)
 
@@ -950,7 +949,6 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         assert unrelated_parent_operator.legal_name == 'i should not be deleted'
 
     def remove_all_parent_operators(self):
-
         child_operator = operator_baker()
         user_operator = baker.make(UserOperator, operator=child_operator, user=self.user)
 
@@ -1017,7 +1015,6 @@ class TestUserOperatorEndpoint(CommonTestSetup):
 
     ## STATUS
     def test_draft_status_changes_to_pending(self):
-
         operator = operator_baker()
         operator.created_by = self.user
         operator.status = 'Draft'

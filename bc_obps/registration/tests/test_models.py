@@ -165,7 +165,7 @@ class TestInitialData(TestCase):
                 'Limestone for sale',
                 'Liquid sugar',
                 'Solid Sugar',
-                'Mining: co',
+                'Mining: coal',
                 'Mining: copper equivalent, open pit',
                 'Mining: copper equivalent, underground',
                 'Mining: gold equivalent',
@@ -634,7 +634,8 @@ class OperationModelTest(BaseTestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.test_object = Operation.objects.first()
+        # Get the first operation from the fixture with a swrs_facility_id so we can test the unique constraint
+        cls.test_object = Operation.objects.filter(swrs_facility_id__isnull=False).first()
         cls.test_object.documents.set(
             [
                 Document.objects.get(id=1),
@@ -721,7 +722,6 @@ class OperationModelTest(BaseTestCase):
     def test_generate_unique_boro_id_multiple_existing_ids_same_year(self):
         current_year = datetime.now().year % 100
         # Case: Multiple existing BORO IDs for the current year
-        current_year = datetime.now().year % 100
         existing_ids = [f"{current_year:02d}-0002", f"{current_year:02d}-0003", f"{current_year:02d}-0001"]
         Operation.objects.bulk_create(
             [

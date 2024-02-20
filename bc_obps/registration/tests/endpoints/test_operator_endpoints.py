@@ -34,12 +34,13 @@ class TestOperatorsEndpoint(CommonTestSetup):
         # /operators/{operator_id}
 
         operator = operator_baker()
+        user_operator = user_operator_baker({'operator': operator})
         for role in ['cas_pending', 'industry_user']:
             response = TestUtils.mock_put_with_auth_role(
                 self,
                 role,
                 self.content_type,
-                {'status': Operator.Statuses.APPROVED, 'user_operator_id': 1},
+                {'status': Operator.Statuses.APPROVED, 'user_operator_id': user_operator.id},
                 custom_reverse_lazy('update_operator', kwargs={'operator_id': operator.id}),
             )
             assert response.status_code == 401
@@ -60,7 +61,10 @@ class TestOperatorsEndpoint(CommonTestSetup):
         for key in response_dict.keys():
             # exclude audit fields
             if key not in AUDIT_FIELDS:
-                assert response_dict[key] == OperatorOut.from_orm(self.operator).dict()[key]
+                if key == "id":
+                    assert response_dict[key] == str(self.operator.id)  # String representation of UUID
+                else:
+                    assert response_dict[key] == OperatorOut.from_orm(self.operator).dict()[key]
 
     def test_get_search_operators_by_legal_name(self):
         response = TestUtils.mock_get_with_auth_role(
@@ -74,7 +78,10 @@ class TestOperatorsEndpoint(CommonTestSetup):
         for key in response_dict[0].keys():
             # exclude audit fields
             if key not in AUDIT_FIELDS:
-                assert response_dict[0][key] == OperatorOut.from_orm(self.operator).dict()[key]
+                if key == "id":
+                    assert response_dict[0][key] == str(self.operator.id)  # String representation of UUID
+                else:
+                    assert response_dict[0][key] == OperatorOut.from_orm(self.operator).dict()[key]
 
     def test_get_search_operators_by_legal_name_no_value(self):
         response = TestUtils.mock_get_with_auth_role(
@@ -94,7 +101,10 @@ class TestOperatorsEndpoint(CommonTestSetup):
         for key in response_dict.keys():
             # exclude audit fields
             if key not in AUDIT_FIELDS:
-                assert response_dict[key] == OperatorOut.from_orm(self.operator).dict()[key]
+                if key == "id":
+                    assert response_dict[key] == str(self.operator.id)  # String representation of UUID
+                else:
+                    assert response_dict[key] == OperatorOut.from_orm(self.operator).dict()[key]
 
     def test_get_operators_no_matching_operator_legal_name(self):
         response = TestUtils.mock_get_with_auth_role(
@@ -122,7 +132,10 @@ class TestOperatorsEndpoint(CommonTestSetup):
         for key in response_dict.keys():
             # exclude audit fields
             if key not in AUDIT_FIELDS:
-                assert response_dict[key] == OperatorOut.from_orm(operator).dict()[key]
+                if key == "id":
+                    assert response_dict[key] == str(operator.id)  # String representation of UUID
+                else:
+                    assert response_dict[key] == OperatorOut.from_orm(operator).dict()[key]
 
     def test_select_operator_with_invalid_id(self):
         invalid_operator_id = 99999  # Invalid operator ID
@@ -130,11 +143,10 @@ class TestOperatorsEndpoint(CommonTestSetup):
         response = TestUtils.mock_get_with_auth_role(
             self, "cas_analyst", custom_reverse_lazy('get_operator', kwargs={"operator_id": invalid_operator_id})
         )
-        assert response.status_code == 404
-        assert response.json() == {'message': 'No matching operator found'}
+        assert response.status_code == 422
+        assert response.json().get('detail')[0].get('msg') == "value is not a valid uuid"
 
     def test_put_approve_operator(self):
-
         operator = operator_baker({'status': Operator.Statuses.PENDING, 'is_new': True})
         user_operator = user_operator_baker({'operator': operator})
 
@@ -153,7 +165,6 @@ class TestOperatorsEndpoint(CommonTestSetup):
         assert response.json().get("verified_by") == str(self.user.user_guid)
 
     def test_put_request_changes_to_operator(self):
-
         operator = operator_baker({'status': Operator.Statuses.PENDING})
         user_operator = user_operator_baker({'operator': operator})
 
@@ -172,7 +183,6 @@ class TestOperatorsEndpoint(CommonTestSetup):
 
     # declining a new operator declines the prime admin request too
     def test_put_decline_new_operator(self):
-
         operator = operator_baker({'status': Operator.Statuses.PENDING, 'is_new': True})
         user_operator = user_operator_baker({'operator': operator})
 
