@@ -24,6 +24,6 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["../**/*", "./.eslintrc.js", ".next/types/**/*.ts"],
+  "include": ["./**/*", "./.eslintrc.js", ".next/types/**/*.ts"],
   "exclude": [".next", "node_modules", "public"]
 }
