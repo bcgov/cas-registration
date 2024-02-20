@@ -1,7 +1,7 @@
 [
   {
     "model": "registration.operator",
-    "pk": 1,
+    "pk": "00000000-0000-0000-0000-000000000001",
     "fields": {
       "legal_name": "Operator 1 Legal Name",
       "trade_name": "Operator 1 Trade Name",
@@ -21,7 +21,7 @@
   },
   {
     "model": "registration.operator",
-    "pk": 2,
+    "pk": "00000000-0000-0000-0000-000000000002",
     "fields": {
       "legal_name": "Existing Operator 2 Legal Name",
       "trade_name": "Existing Operator 2 Trade Name",
@@ -41,7 +41,7 @@
   },
   {
     "model": "registration.operator",
-    "pk": 3,
+    "pk": "00000000-0000-0000-0000-000000000003",
     "fields": {
       "legal_name": "New Operator 3 Legal Name",
       "trade_name": "New Operator 3 Trade Name",
@@ -61,7 +61,7 @@
   },
   {
     "model": "registration.operator",
-    "pk": 4,
+    "pk": "00000000-0000-0000-0000-000000000004",
     "fields": {
       "legal_name": "Existing Operator 4 Legal Name",
       "trade_name": "Existing Operator 4 Trade Name",
@@ -81,7 +81,7 @@
   },
   {
     "model": "registration.operator",
-    "pk": 5,
+    "pk": "00000000-0000-0000-0000-000000000005",
     "fields": {
       "legal_name": "New Operator 5 Legal Name",
       "trade_name": "New Operator 5 Trade Name",
@@ -101,7 +101,7 @@
   },
   {
     "model": "registration.operator",
-    "pk": 6,
+    "pk": "00000000-0000-0000-0000-000000000006",
     "fields": {
       "legal_name": "Existing Operator 6 Legal Name",
       "trade_name": "Existing Operator 6 Trade Name",

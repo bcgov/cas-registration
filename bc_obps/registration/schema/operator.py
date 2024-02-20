@@ -1,4 +1,5 @@
 from typing import List, Optional
+from uuid import UUID
 from ninja import Field, Schema
 from ninja import ModelSchema, Schema, Field
 from registration.constants import AUDIT_FIELDS
@@ -36,7 +37,7 @@ class OperatorIn(ModelSchema):
     Schema for the Operator model
     """
 
-    user_operator_id: int
+    user_operator_id: UUID
 
     class Config:
         model = Operator
@@ -44,7 +45,7 @@ class OperatorIn(ModelSchema):
 
 
 class SelectOperatorIn(Schema):
-    operator_id: int
+    operator_id: UUID
 
 
 class OperatorExternalDashboardUsersTileData(ModelSchema):
@@ -114,7 +115,7 @@ class OperatorFromUserOperatorOut(ModelSchema):
     Schema for the Operator associated with a UserOperator
     """
 
-    operator_id: int = Field(..., alias="id")
+    operator_id: UUID = Field(..., alias="id")
 
     class Config:
         model = Operator
