@@ -8,15 +8,18 @@ export const PointOfContactTitle = (
 export const OptInOperationTitle = (
   <div className="max-w-2xl">
     Operations within regulated sectors that emit less than 10,000 tonnes CO2e
-    per year may voluntarily opt-in to the B.C. OBPS.<br/><br/>
-
-    Operators of industrial operations that intend to apply to be
-    an opted-in operation must submit an application form by email which is
-    available on our website.<br/><br/>
-
-    Operations that emit greater than 10,000 tonnes CO2e per year are required to participate
-    and are not considered opt ins.<br/><br/>
-
+    per year may voluntarily opt-in to the B.C. OBPS.
+    <br />
+    <br />
+    Operators of industrial operations that intend to apply to be an opted-in
+    operation must submit an application form by email which is available on our
+    website.
+    <br />
+    <br />
+    Operations that emit greater than 10,000 tonnes CO2e per year are required
+    to participate and are not considered opt ins.
+    <br />
+    <br />
     Further information and opt-in application forms can be found on the &nbsp;
     <a
       href="https://www2.gov.bc.ca/gov/content/environment/climate-change/industry/bc-output-based-pricing-system"
@@ -24,8 +27,8 @@ export const OptInOperationTitle = (
       rel="noopener noreferrer"
     >
       B.C. OBPS website
-    </a>.
-
+    </a>
+    .
   </div>
 );
 
