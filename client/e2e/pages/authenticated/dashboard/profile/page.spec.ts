@@ -65,7 +65,7 @@ test.describe("Test Page - Profile", () => {
       // 👤 run test as this role
       const storageState = process.env[role + "_STORAGE"] as string;
       test.use({ storageState: storageState });
-      test(`Test Profile Update for ${role}`, async ({ page }) => {
+      test(`Test Profile Update for ${value}`, async ({ page }) => {
         // 🛸 Navigate to profile page
         const profilePage = new ProfilePOM(page);
         await profilePage.route();
