@@ -5,7 +5,7 @@ import UserOperator from "@/app/components/routes/select-operator/form/UserOpera
 export default async function Page({
   params,
 }: {
-  params: { id: number; readonly: boolean };
+  params: { id: string; readonly: boolean };
 }) {
   return (
     <Suspense fallback={<Loading />}>

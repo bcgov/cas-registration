@@ -77,7 +77,7 @@ async function getBusinessStructures() {
 }
 
 // 🛠️ Function to fetch an operation by ID
-async function getOperation(id: number) {
+async function getOperation(id: string) {
   try {
     return await actionHandler(
       `registration/operations/${id}`,
@@ -160,7 +160,7 @@ export const createOperationSchema = (
 };
 
 // 🧩 Main component
-export default async function Operation({ numRow }: { numRow?: number }) {
+export default async function Operation({ numRow }: { numRow?: string }) {
   let userProfileFormData: UserProfileFormData | { error: string } =
     await getUserFormData();
   const currentUserAppRole = (userProfileFormData as UserProfileFormData)
