@@ -1,6 +1,7 @@
 from uuid import UUID
 from django.db import transaction
 from django.db import transaction
+from registration.api.utils.handle_operator_addresses import handle_operator_addresses
 from registration.api.utils.handle_parent_operators import handle_parent_operators
 from registration.utils import (
     generate_useful_error,
@@ -49,33 +50,17 @@ from registration.constants import PAGE_SIZE
 def save_operator(payload: UserOperatorOperatorIn, operator_instance: Operator, user: User):
     # rollback the transaction if any of the following fails (mostly to prevent orphaned addresses)
     with transaction.atomic():
-        # create physical address record
-        physical_address = Address.objects.create(
-            street_address=payload.physical_street_address,
-            municipality=payload.physical_municipality,
-            province=payload.physical_province,
-            postal_code=payload.physical_postal_code,
-        )
-        operator_instance.physical_address = physical_address
 
-        if payload.mailing_address_same_as_physical:
-            mailing_address = physical_address
-        else:
-            # create mailing address record if mailing address is not the same as the physical address
-            mailing_address = Address.objects.create(
-                street_address=payload.mailing_street_address,
-                municipality=payload.mailing_municipality,
-                province=payload.mailing_province,
-                postal_code=payload.mailing_postal_code,
-            )
+        physical_address, mailing_address = handle_operator_addresses(payload).values()
+        operator_instance.physical_address = physical_address
         operator_instance.mailing_address = mailing_address
 
         # fields to update on the Operator model
         operator_related_fields = [
             "legal_name",
             "trade_name",
-            "physical_address_id",
-            "mailing_address_id",
+            "physical_address",
+            "mailing_address",
             "website",
             "business_structure",
         ]

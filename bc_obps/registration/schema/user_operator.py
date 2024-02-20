@@ -104,11 +104,13 @@ class UserOperatorOperatorIn(Schema):
     cra_business_number: int
     bc_corporate_registry_number: str = Field(regex=BC_CORPORATE_REGISTRY_REGEX)
     business_structure: str
+    physical_address_id: Optional[int] = None
     physical_street_address: str
     physical_municipality: str
     physical_province: str
     physical_postal_code: str
     # below are optional fields because we might use physical address as mailing address
+    mailing_address_id: Optional[int] = None
     mailing_street_address: Optional[str] = None
     mailing_municipality: Optional[str] = None
     mailing_province: Optional[str] = None
