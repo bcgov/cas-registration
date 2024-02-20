@@ -11,6 +11,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { UserOperatorFormData } from "@/app/components/form/formDataTypes";
 import UserOperatorForm from "@/app/components/form/UserOperatorForm";
 import UserOperatorReviewForm from "@/app/components/form/UserOperatorReviewForm";
+import { validate as isValidUUID } from "uuid";
 
 async function getBusinessStructures() {
   return actionHandler(
@@ -21,7 +22,7 @@ async function getBusinessStructures() {
 }
 
 export async function getUserOperatorFormData(id: number | string) {
-  if (!id || isNaN(Number(id))) return {};
+  if (!id || !isValidUUID(id)) return {};
   return actionHandler(
     `registration/select-operator/user-operator/${id}`,
     "GET",
@@ -61,7 +62,7 @@ const createUserOperatorSchema = (
 export default async function UserOperator({
   params,
 }: Readonly<{
-  params?: { id?: number | string; readonly?: boolean };
+  params?: { id?: string; readonly?: boolean };
 }>) {
   const session = await getServerSession(authOptions);
   const isCasInternal =
@@ -73,7 +74,7 @@ export default async function UserOperator({
     await getBusinessStructures();
 
   const userOperatorData: UserOperatorFormData | { error: string } =
-    await getUserOperatorFormData(userOperatorId as string | number);
+    await getUserOperatorFormData(userOperatorId as string);
 
   if ("error" in businessStructures || "error" in userOperatorData)
     return serverError;
