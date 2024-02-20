@@ -200,7 +200,7 @@ def get_user_operator_admin_exists(request, operator_id: int):
     response={200: bool, codes_4xx: Message},
     url_name="operator_access_declined",
 )
-@authorize(['industry_user'])
+@authorize(['industry_user'], UserOperator.get_all_industry_user_operator_roles())
 def get_user_operator_admin_exists(request, operator_id: int):
     user: User = request.current_user
     is_declined = UserOperator.objects.filter(
