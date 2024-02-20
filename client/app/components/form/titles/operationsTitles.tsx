@@ -19,12 +19,15 @@ export const StatutoryDeclarationDisclaimerTitle = (
     <br />
     <ul className="mt-0">
       <li>
-        Information in this application will be shared with the Minister of
-        Finance and the name of the Operator and BORO ID may be disclosed.
+        the information in this application is being collected for registration
+        of the operation under GGIRCA and may be disclosed to the Ministry of
+        Finance for the administration and enforcement of the Carbon Tax Act.
       </li>
       <li>
-        The Operator is responsible for determining their eligibility for an
-        exemption under the Carbon Tax Act.
+        the BC OBPS Regulated Operation ID (BORO ID) will be required for
+        claiming exemption from paying carbon tax on fuel that is subject to an
+        OBPS compliance obligation. BORO IDs used for claiming the exemption
+        will be disclosed to fuel suppliers.
       </li>
     </ul>
   </>
@@ -35,7 +38,15 @@ export const StatutoryDeclarationUploadFieldTitle = (
     Statutory Declaration
     <br />
     <span className="font-normal">
-      (Download <a href="TEMPLATE DOWNLOAD URL HERE">template</a>)
+      (Download{" "}
+      <a
+        href="https://www2.gov.bc.ca/assets/gov/environment/climate-change/ind/obps/forms/boro_id_statutory_declaration_form.pdf"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        template
+      </a>
+      )
     </span>
   </>
 );
