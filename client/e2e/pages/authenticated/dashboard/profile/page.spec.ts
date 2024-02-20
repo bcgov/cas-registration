@@ -28,7 +28,7 @@ const deleteNewUserRecord = async () => {
 // 📚 Declare a beforeAll hook that is executed once per worker process before all tests.
 // 🥞 Set DB for profile update
 // For industry_user, ensure there is an associated user
-// For no role/new user, ensure there is NOT an associated user
+// For "new user" test, ensure there is NOT an associated "new user" record in the db so that on "new user" login the ID will have no app_role
 test.beforeAll(async () => {
   try {
     // 👤 industry_user: bc-cas-dev-secondary
@@ -53,7 +53,7 @@ test.describe("Test Page - Profile", () => {
   test.describe(`Test User Role`, () => {
     // ➰ Loop through the entries of UserRole enum
     for (let [role, value] of Object.entries(UserRole)) {
-      // No need to test all roles...1 cas, 1 industry_user, and 1 new user should do it
+      // Ensures that certain roles are not tested in the current context
       if (
         value === UserRole.CAS_PENDING ||
         value === UserRole.CAS_ANALYST ||

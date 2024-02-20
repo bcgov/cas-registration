@@ -91,7 +91,7 @@ test.describe("Test Page - Home", () => {
     // ➰ Loop through the entries of UserRole enum
     for (let [role, value] of Object.entries(UserRole)) {
       // Only login once for CAS ID...i.e. CAS_PENDING
-      // Check if the current role is to be skipped executing tests
+      // Ensures that certain roles are not tested in the current context
       if (value === UserRole.CAS_ADMIN || value === UserRole.CAS_ANALYST) {
         continue;
       }
