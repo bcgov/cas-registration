@@ -1,29 +1,8 @@
 from typing import List
+from registration.api.utils.handle_operator_addresses import  handle_operator_addresses
 from registration.models import (
     ParentOperator,
-    Address,
 )
-
-
-def handle_parent_operator_addresses(po_operator):
-
-    po_physical_address = Address.objects.create(
-        street_address=po_operator.po_physical_street_address,
-        municipality=po_operator.po_physical_municipality,
-        province=po_operator.po_physical_province,
-        postal_code=po_operator.po_physical_postal_code,
-    )
-
-    if po_operator.po_mailing_address_same_as_physical:
-        po_mailing_address = po_physical_address
-    else:
-        po_mailing_address = Address.objects.create(
-            street_address=po_operator.po_mailing_street_address,
-            municipality=po_operator.po_mailing_municipality,
-            province=po_operator.po_mailing_province,
-            postal_code=po_operator.po_mailing_postal_code,
-        )
-    return {"po_physical_address": po_physical_address, "po_mailing_address": po_mailing_address}
 
 
 def archive_parent_operators(existing_parent_operator_indices, updated_parent_operators, operator_instance, user):
@@ -70,7 +49,7 @@ def handle_parent_operators(updated_parent_operators, operator_instance, user):
                 po_operator.operator_index = assign_index(existing_parent_operator_indices)
                 existing_parent_operator_indices.append(po_operator.operator_index)
 
-            addresses = handle_parent_operator_addresses(po_operator)
+            physical_address, mailing_address = handle_operator_addresses(po_operator.dict(), po_operator.po_physical_address_id, po_operator.po_mailing_address_id, 'po_').values()
 
             po_operator_instance, _ = ParentOperator.objects.update_or_create(
                 child_operator=operator_instance,
@@ -82,9 +61,8 @@ def handle_parent_operators(updated_parent_operators, operator_instance, user):
                     "bc_corporate_registry_number": po_operator.po_bc_corporate_registry_number,
                     "business_structure": po_operator.po_business_structure,
                     "website": po_operator.po_website,
-                    "physical_address": addresses['po_physical_address'],
-                    "mailing_address": addresses['po_mailing_address'],
+                    "physical_address": physical_address,
+                    "mailing_address": mailing_address,
                 },
             )
-
             po_operator_instance.set_create_or_update(user.pk)
