@@ -38,7 +38,7 @@ test.beforeAll(async () => {
     await pool.query(query);
 
     // 👤 new user: bc-cas-dev-three
-    // Delete User record
+    // Ensure the environment does not new user: bc-cas-dev-three
     await deleteNewUserRecord();
   } catch (error) {
     // eslint-disable-next-line no-console
@@ -78,6 +78,8 @@ test.describe("Test Page - Profile", () => {
             // 🔍 Assert that the current URL ends with "/dashboard"
             const dashboardPage = new DashboardPOM(page);
             await dashboardPage.urlIsCorrect();
+            // Cleanup the environment for other tests
+            await deleteNewUserRecord();
             break;
         }
       });
