@@ -479,7 +479,7 @@ class OperatorModelTest(BaseTestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.test_object = Operator.objects.get(id=1)
+        cls.test_object = Operator.objects.first()
         cls.test_object.documents.set(
             [
                 Document.objects.get(id=1),
@@ -494,7 +494,7 @@ class OperatorModelTest(BaseTestCase):
 
         UserOperator.objects.create(
             user=user_operators_user,
-            operator=Operator.objects.get(id=1),
+            operator=Operator.objects.first(),
             role=UserOperator.Roles.ADMIN,
             verified_at=timezone.now(),
             verified_by=User.objects.get(user_guid="00000000-0000-0000-0000-000000000001"),
@@ -502,7 +502,7 @@ class OperatorModelTest(BaseTestCase):
 
         UserOperator.objects.create(
             user=user_operators_user_2,
-            operator=Operator.objects.get(id=1),
+            operator=Operator.objects.first(),
             role=UserOperator.Roles.ADMIN,
             verified_at=timezone.now(),
             verified_by=User.objects.get(user_guid="00000000-0000-0000-0000-000000000001"),
@@ -586,7 +586,7 @@ class UserOperatorModelTest(BaseTestCase):
         user_operators_user = User.objects.get(user_guid="3fa85f64-5717-4562-b3fc-2c963f66afa6")
         cls.test_object = UserOperator.objects.create(
             user=user_operators_user,
-            operator=Operator.objects.get(id=1),
+            operator=Operator.objects.first(),
             role=UserOperator.Roles.ADMIN,
             status=UserOperator.Statuses.PENDING,
             verified_at=timezone.now(),
@@ -608,7 +608,7 @@ class UserOperatorModelTest(BaseTestCase):
         # First user_operator record is `cls.test_object` from the fixture, attempt to create a row with duplicate a user/operator pair
         invalid_user_operator_record = UserOperator(
             user=user_operators_user,
-            operator=Operator.objects.get(id=1),
+            operator=Operator.objects.first(),
             role=UserOperator.Roles.ADMIN,
             status=UserOperator.Statuses.PENDING,
             verified_at=timezone.now(),
