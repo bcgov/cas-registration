@@ -242,6 +242,15 @@ To find locators, leverage Playwright's code generation feature. Use the followi
 cd client && npx playwright codegen http://localhost:3000
 ```
 
+### Visual Comparisons
+
+Playwright Test includes the ability to produce and visually compare screenshots using await expect(page).toHaveScreenshot(). On first execution, Playwright test will generate reference screenshots. Subsequent runs will compare against the reference.
+If you need to update the reference screenshots then run command:
+
+```bash
+cd client && npx playwright test --update-snapshots
+```
+
 ### Best Practices
 
 #### Test Isolation
@@ -250,23 +259,22 @@ Ensure that each test is independent and does not rely on the state or outcome o
 
 #### Use `expect` Assertions
 
-Use `expect` assertions to verify the expected behavior of the application. This makes your tests more readable and clearly defines the criteria for success.
+Use `expect` assertions to verify the expected behavior of the application. Playwright includes async matchers that will wait until the expected condition is met. Consider the following example:
 
 ```javascript
-expect(await page.isVisible('[data-testid="success-message"]')).toBe(true);
+await expect(page.getByTestId("status")).toHaveText("Submitted");
 ```
 
-#### Playwright Testing Prerequisites
+Playwright will be re-testing the element with the test id of status until the fetched element has the "Submitted" text. It will re-fetch the element and check it over and over, until the condition is met or until the timeout is reached.
+
+### e2e Testing
+
+#### Prerequisites
 
 - To run playwright end-to-end tests for the first time, you may need to run `yarn playwright install --with-deps` to install the browsers
+  Ensure you have the configuration from file `client/e2e/.env.local.example` in `client/e2e/.env.local` with values reflecting instructions in file `client/e2e/.env.local.example`
 
-**Ensure you have the following configuration**
-
-1. From file `client/e2e/.env.local.example` create `client/e2e/.env.local` with values reflecting instructions in file `client/e2e/.env.local.example`
-
-##### e2e Testing
-
-1.0 Ensure the server is running:
+  1.0 Ensure the server is running:
 
 Start server from new terminal command:
 
@@ -275,17 +283,12 @@ cd client && yarn dev
 cd bc_obps && make run
 ```
 
-2.1 Or, for faster performance:
-2.0 Ensure the client app is running:
-
-Build and start client app from new terminal command:
-To simulate how the application will behave in a production environment locally, start client app from new terminal command:
+2.1 Or, to simulate how the application will behave in a production environment locally, start client app from new terminal command:
 
 ```bash
 cd client && yarn build && yarn start
 ```
 
-Alternatively, you can uncomment the `webServer` array in `playwright.config.ts` to run the tests without running client and server separately.
 Note: you can uncomment the `webServer` array in `playwright.config.ts` to run the tests without running client and server separately.
 
 3.0 Run the tests:
