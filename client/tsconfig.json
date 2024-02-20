@@ -24,6 +24,6 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["./**/*", "./.eslintrc.js", ".next/types/**/*.ts"],
-  "exclude": [".next", "node_modules", "public"]
+  "include": ["../**/*", "./.eslintrc.js", ".next/types/**/*.ts"],
+  "exclude": [".next", "node_modules", "public", "../bc_obps"]
 }
