@@ -1,6 +1,7 @@
 from typing import List, Optional
 import re
 from uuid import UUID
+import uuid
 from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
 from localflavor.ca.models import CAPostalCodeField, CAProvinceField
@@ -450,6 +451,9 @@ class Operator(TimeStampedModel):
         DECLINED = "Declined"
         CHANGES_REQUESTED = "Changes Requested"
 
+    id = models.UUIDField(
+        primary_key=True, default=uuid.uuid4, db_comment="Primary key to identify the operator", verbose_name="ID"
+    )
     legal_name = models.CharField(max_length=1000, db_comment="The legal name of an operator", unique=True)
     trade_name = models.CharField(max_length=1000, blank=True, db_comment="The trade name of an operator")
     cra_business_number = models.IntegerField(db_comment="The CRA business number of an operator")
@@ -557,6 +561,9 @@ class UserOperator(TimeStampedModel):
         APPROVED = "Approved"
         DECLINED = "Declined"
 
+    id = models.UUIDField(
+        primary_key=True, default=uuid.uuid4, db_comment="Primary key to identify the user operator", verbose_name="ID"
+    )
     user = models.ForeignKey(
         User,
         on_delete=models.DO_NOTHING,
@@ -698,6 +705,9 @@ class Operation(OperationAndFacilityCommonInfo):
         DECLINED = "Declined"
         CHANGES_REQUESTED = "Changes Requested"
 
+    id = models.UUIDField(
+        primary_key=True, default=uuid.uuid4, db_comment="Primary key to identify the operation", verbose_name="ID"
+    )
     operator = models.ForeignKey(
         Operator,
         on_delete=models.DO_NOTHING,

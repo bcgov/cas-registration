@@ -1,5 +1,5 @@
 from typing import List, Optional
-import uuid
+from uuid import UUID
 from registration.schema.operator import OperatorExternalDashboardUsersTileData
 from registration.schema.user import UserExternalDashboardUsersTileData
 from ninja import ModelSchema, Schema, Field
@@ -21,7 +21,7 @@ class PendingUserOperatorOut(ModelSchema):
 
 
 class UserOperatorStatusUpdate(ModelSchema):
-    user_operator_id: Optional[int] = None
+    user_operator_id: Optional[UUID] = None
 
     class Config:
         model = UserOperator
@@ -33,12 +33,12 @@ class IsApprovedUserOperator(Schema):
 
 
 class UserOperatorIdOut(Schema):
-    user_operator_id: int
+    user_operator_id: UUID
 
 
 class RequestAccessOut(Schema):
-    user_operator_id: int
-    operator_id: int
+    user_operator_id: UUID
+    operator_id: UUID
 
 
 class UserOperatorOut(ModelSchema):
@@ -64,7 +64,7 @@ class UserOperatorOut(ModelSchema):
     mailing_postal_code: Optional[str] = Field(None, alias="operator.mailing_address.postal_code")
     website: Optional[str] = Field("", alias="operator.website")
     mailing_address_same_as_physical: bool
-    operator_id: int = Field(..., alias="operator.id")
+    operator_id: UUID = Field(..., alias="operator.id")
     is_new: bool = Field(..., alias="operator.is_new")
     operator_has_parent_operators: bool
     parent_operators_array: Optional[List[ParentOperatorOut]] = Field(None, alias="operator.parent_operators")
@@ -139,7 +139,7 @@ class UserOperatorContactIn(ModelSchema):
     # these fields are optional because we might use the user's info as the contact info
     first_name: Optional[str] = None
     last_name: Optional[str] = None
-    user_operator_id: int
+    user_operator_id: UUID
 
     class Config:
         model = Contact
@@ -162,7 +162,7 @@ class ExternalDashboardUsersTileData(ModelSchema):
 
 
 class UserOperatorListOut(Schema):
-    id: int
+    id: UUID
     status: str
     first_name: str
     last_name: str

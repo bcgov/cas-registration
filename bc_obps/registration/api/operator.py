@@ -1,4 +1,5 @@
 from typing import List, Optional
+from uuid import UUID
 from registration.decorators import authorize
 from .api_base import router
 from django.shortcuts import get_object_or_404
@@ -63,7 +64,7 @@ def get_operators_by_legal_name(request, search_value: Optional[str] = None):
 
 @router.get("/operators/{operator_id}", response={200: OperatorOut, codes_4xx: Message}, url_name="get_operator")
 @authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles())
-def get_operator(request, operator_id: int):
+def get_operator(request, operator_id: UUID):
     try:
         operator = get_object_or_404(Operator, id=operator_id)
     except Exception as e:
@@ -79,7 +80,7 @@ def get_operator(request, operator_id: int):
 
 @router.put("/operators/{operator_id}", response={200: OperatorOut, codes_4xx: Message}, url_name="update_operator")
 @authorize(AppRole.get_authorized_irc_roles())
-def update_operator(request, operator_id: int, payload: OperatorIn):
+def update_operator(request, operator_id: UUID, payload: OperatorIn):
     operator = get_object_or_404(Operator, id=operator_id)
     user: User = request.current_user
     try:
