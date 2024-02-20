@@ -19,12 +19,14 @@ class ParentOperatorIn(Schema):
     po_website: Optional[
         str
     ] = ""  # This is a URLField in the model, but we don't need to validate it here if not passed in
+    po_physical_address_id: Optional[int]
     po_physical_street_address: str
     po_physical_municipality: str
     po_physical_province: str
     po_physical_postal_code: str
     po_mailing_address_same_as_physical: bool
     # below are optional fields because we might use physical address as mailing address
+    po_mailing_address_id: Optional[int]
     po_mailing_street_address: Optional[str]
     po_mailing_municipality: Optional[str]
     po_mailing_province: Optional[str]
