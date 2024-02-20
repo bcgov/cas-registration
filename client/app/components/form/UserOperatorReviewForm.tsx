@@ -32,7 +32,7 @@ const UserOperatorReviewForm = ({ formData, schema }: Props) => {
         "Operator Information": isNewOperator && (
           <UserOperatorReview
             userOperator={formData as UserOperatorFormData}
-            userOperatorId={Number(userOperatorId)}
+            userOperatorId={userOperatorId as string}
             // Set rerenderKey to a new random value to force a rerender when the operator is approved
             // So that we can reset the prime admin review if there was an error ie: operator needs to be approved first
             onSuccess={() =>
@@ -48,7 +48,7 @@ const UserOperatorReviewForm = ({ formData, schema }: Props) => {
           <UserOperatorReview
             key={rerenderKey}
             userOperator={formData as UserOperatorFormData}
-            userOperatorId={Number(userOperatorId)}
+            userOperatorId={userOperatorId as string}
             operatorId={formData?.operator_id}
             showRequestChanges={false}
           />

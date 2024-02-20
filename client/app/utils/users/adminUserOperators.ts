@@ -11,7 +11,7 @@ export interface ExternalDashboardUsersTile {
   email: string;
   role: string;
   status: string | Status;
-  id: number;
+  id: string;
 }
 
 export async function getExternalDashboardUsersTileData(): Promise<
