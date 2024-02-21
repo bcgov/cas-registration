@@ -1,3 +1,4 @@
+from uuid import UUID
 from django.db import transaction
 from django.db import transaction
 from registration.api.utils.handle_parent_operators import handle_parent_operators
@@ -36,7 +37,6 @@ from registration.models import (
     Operator,
     User,
     UserOperator,
-    ParentOperator,
     Address,
 )
 from ninja.responses import codes_4xx
@@ -158,12 +158,12 @@ def get_user_operator_id(request):
 
 
 @router.get(
-    "/select-operator/user-operator/{int:user_operator_id}",
+    "/select-operator/user-operator/{uuid:user_operator_id}",
     response={200: UserOperatorOut, codes_4xx: Message},
     url_name="get_user_operator",
 )
 @authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles())
-def get_user_operator(request, user_operator_id: int):
+def get_user_operator(request, user_operator_id: UUID):
     user: User = request.current_user
     if user.is_industry_user():
         # Industry users can only get their own UserOperator instance
@@ -188,7 +188,7 @@ def get_user_operator(request, user_operator_id: int):
     url_name="get_user_operator_admin_exists",
 )
 @authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles())
-def get_user_operator_admin_exists(request, operator_id: int):
+def get_user_operator_admin_exists(request, operator_id: UUID):
     has_admin = UserOperator.objects.filter(
         operator_id=operator_id, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.APPROVED
     ).exists()
@@ -201,7 +201,7 @@ def get_user_operator_admin_exists(request, operator_id: int):
     url_name="operator_access_declined",
 )
 @authorize(['industry_user'], UserOperator.get_all_industry_user_operator_roles())
-def get_user_operator_admin_exists(request, operator_id: int):
+def get_user_operator_admin_exists(request, operator_id: UUID):
     user: User = request.current_user
     is_declined = UserOperator.objects.filter(
         operator_id=operator_id, user_id=user.user_guid, status=UserOperator.Statuses.DECLINED
@@ -386,12 +386,12 @@ def create_operator_and_user_operator(request, payload: UserOperatorOperatorIn):
 
 ##### PUT #####
 @router.put(
-    "/user-operator/operator/{int:user_operator_id}",
+    "/user-operator/operator/{uuid:user_operator_id}",
     response={200: RequestAccessOut, codes_4xx: Message},
     url_name="update_operator_and_user_operator",
 )
 @authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
-def update_operator_and_user_operator(request, payload: UserOperatorOperatorIn, user_operator_id: int):
+def update_operator_and_user_operator(request, payload: UserOperatorOperatorIn, user_operator_id: UUID):
     user: User = request.current_user
     try:
         user_operator_instance: UserOperator = get_object_or_404(UserOperator, id=user_operator_id, user=user)
@@ -424,7 +424,6 @@ def update_user_operator_status(request, payload: UserOperatorStatusUpdate):
     # We can't update the status of a user_operator if the operator has been declined or is awaiting review, or if the operator is new
     operator = get_object_or_404(Operator, id=user_operator.operator.id)
     if user_operator.operator.status == Operator.Statuses.DECLINED or operator.is_new:
-
         return 400, {"message": "Operator must be approved before approving users."}
     try:
         with transaction.atomic():

@@ -5,7 +5,7 @@ import CancelIcon from "@mui/icons-material/Cancel";
 import Link from "next/link";
 import { BC_GOV_LINKS_COLOR } from "@/app/styles/colors";
 
-export async function getOperator(id: number) {
+export async function getOperator(id: string) {
   return actionHandler(
     `registration/operators/${id}`,
     "GET",
@@ -13,7 +13,7 @@ export async function getOperator(id: number) {
   );
 }
 
-export async function getOperatorHasAdmin(id: number) {
+export async function getOperatorHasAdmin(id: string) {
   return actionHandler(
     `registration/operator-has-admin/${id}`,
     "GET",
@@ -21,7 +21,7 @@ export async function getOperatorHasAdmin(id: number) {
   );
 }
 
-export async function getOperatorAccessDeclined(id: number) {
+export async function getOperatorAccessDeclined(id: string) {
   return actionHandler(
     `registration/operator-access-declined/${id}`,
     "GET",
@@ -32,7 +32,7 @@ export async function getOperatorAccessDeclined(id: number) {
 export default async function ConfirmSelectedOperator({
   params,
 }: Readonly<{
-  params: { id: number };
+  params: { id: string };
 }>) {
   const operator: Operator | { error: string } = await getOperator(params.id);
   const hasAdmin: boolean | { error: string } = await getOperatorHasAdmin(

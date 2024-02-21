@@ -4,6 +4,7 @@ import { useParams, usePathname } from "next/navigation";
 import Box from "@mui/material/Box";
 import Link from "@mui/material/Link";
 import Breadcrumbs from "@mui/material/Breadcrumbs/Breadcrumbs";
+import { validate as isValidUUID } from "uuid";
 
 // 📐 type for breadcrumb props
 type TBreadCrumbProps = {
@@ -13,8 +14,8 @@ type TBreadCrumbProps = {
 
 // 🛠️ Function to translate a numeric part
 function translateNumericPart(segment: string): string {
-  // Check if the segment is numeric, and if so, prefix with "Operation ID"
-  if (!isNaN(Number(segment))) {
+  // Check if the segment is UUID, and if so, prefix with "Operation ID"
+  if (!isNaN(Number(segment)) || isValidUUID(segment)) {
     return `ID ${segment}`;
   }
   return segment;
@@ -22,6 +23,7 @@ function translateNumericPart(segment: string): string {
 
 // 🛠️ Function to un-slugify and capitalize a string
 function unslugifyAndCapitalize(segment: string): string {
+  if (isValidUUID(segment)) return segment; // Do not capitalize UUIDs
   return segment
     .split("-")
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))

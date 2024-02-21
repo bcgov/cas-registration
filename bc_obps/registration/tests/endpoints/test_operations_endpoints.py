@@ -170,8 +170,8 @@ class TestOperationsEndpoint(CommonTestSetup):
         response = TestUtils.mock_get_with_auth_role(
             self, endpoint=custom_reverse_lazy("get_operation", kwargs={"operation_id": 99999}), role_name="cas_admin"
         )
-        assert response.status_code == 404
-        assert response.json().get('detail') == "Not Found"
+        assert response.status_code == 422
+        assert response.json().get('detail')[0].get('msg') == "value is not a valid uuid"
 
     def test_operations_endpoint_get_method_with_mock_data(self):
         # IRC users can get all operations except ones with a not Started status
@@ -449,8 +449,8 @@ class TestOperationsEndpoint(CommonTestSetup):
             {"status": "approved"},
             custom_reverse_lazy("update_operation_status", kwargs={"operation_id": 99999999999}),
         )
-        assert put_response.status_code == 404
-        assert put_response.json().get('detail') == "Not Found"
+        assert put_response.status_code == 422
+        assert put_response.json().get('detail')[0].get('msg') == "value is not a valid uuid"
 
     def test_put_operation_update_status_approved(self):
         operation = operation_baker()
@@ -464,7 +464,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         )
         assert put_response_1.status_code == 200
         put_response_1_dict = put_response_1.json()
-        assert put_response_1_dict.get("id") == operation.id
+        assert put_response_1_dict.get("id") == str(operation.id)  # string representation of UUID
         operation_after_put = Operation.objects.get(id=operation.id)
         assert operation_after_put.status == Operation.Statuses.APPROVED
         assert operation_after_put.verified_by == self.user
@@ -514,7 +514,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         )
         assert put_response.status_code == 200
         put_response_dict = put_response.json()
-        assert put_response_dict.get("id") == operation.id
+        assert put_response_dict.get("id") == str(operation.id)  # string representation of UUID
         operation_after_put = Operation.objects.get(id=operation.id)
         assert operation_after_put.status == Operation.Statuses.DECLINED
         assert operation_after_put.verified_by == self.user
@@ -540,7 +540,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         )
         assert put_response.status_code == 200
         put_response_dict = put_response.json()
-        assert put_response_dict.get("id") == operation.id
+        assert put_response_dict.get("id") == str(operation.id)  # string representation of UUID
         operation_after_put = Operation.objects.get(id=operation.id)
         assert operation_after_put.status == Operation.Statuses.NOT_STARTED
         assert operation_after_put.verified_by is None

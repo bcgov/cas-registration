@@ -1,3 +1,4 @@
+from uuid import UUID
 from registration.constants import PAGE_SIZE, UNAUTHORIZED_MESSAGE
 from django.db import transaction
 from registration.decorators import authorize
@@ -161,7 +162,7 @@ def list_operations(request, page: int = 1, sort_field: str = "created_at", sort
     url_name="get_operation",
 )
 @authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles())
-def get_operation(request, operation_id: int):
+def get_operation(request, operation_id: UUID):
     # In this endpoint we are using different schema and different operation queries to optimize the response based on the user role
     user: User = request.current_user
     try:
@@ -259,7 +260,7 @@ def create_operation(request, payload: OperationCreateIn):
     "/operations/{operation_id}", response={200: OperationUpdateOut, codes_4xx: Message}, url_name="update_operation"
 )
 @authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles())
-def update_operation(request, operation_id: int, submit: str, form_section: int, payload: OperationUpdateIn):
+def update_operation(request, operation_id: UUID, submit: str, form_section: int, payload: OperationUpdateIn):
     user: User = request.current_user
     try:
         # if there's no user_operator or operator, then the user hasn't requested access to the operator
@@ -370,7 +371,7 @@ def update_operation(request, operation_id: int, submit: str, form_section: int,
     url_name="update_operation_status",
 )
 @authorize(AppRole.get_authorized_irc_roles())
-def update_operation_status(request, operation_id: int, payload: OperationUpdateStatusIn):
+def update_operation_status(request, operation_id: UUID, payload: OperationUpdateStatusIn):
     try:
         operation = Operation.objects.select_related('operator', 'bc_obps_regulated_operation').get(id=operation_id)
     except Operation.DoesNotExist:

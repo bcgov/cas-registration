@@ -17,6 +17,7 @@ import { Operation as OperationInt } from "@/app/components/routes/operations/ty
 import Link from "next/link";
 import OperationReviewForm from "@/app/components/form/OperationReviewForm";
 import { BusinessStructure } from "@/app/components/routes/select-operator/form/types";
+import { validate as isValidUUID } from "uuid";
 
 // 🚀 API call: GET user's data
 async function getUserFormData(): Promise<
@@ -76,7 +77,7 @@ async function getBusinessStructures() {
 }
 
 // 🛠️ Function to fetch an operation by ID
-async function getOperation(id: number) {
+async function getOperation(id: string) {
   try {
     return await actionHandler(
       `registration/operations/${id}`,
@@ -159,7 +160,7 @@ export const createOperationSchema = (
 };
 
 // 🧩 Main component
-export default async function Operation({ numRow }: { numRow?: number }) {
+export default async function Operation({ numRow }: { numRow?: string }) {
   let userProfileFormData: UserProfileFormData | { error: string } =
     await getUserFormData();
   const currentUserAppRole = (userProfileFormData as UserProfileFormData)
@@ -176,7 +177,7 @@ export default async function Operation({ numRow }: { numRow?: number }) {
   let businessStructures: BusinessStructure[] = [];
 
   // Check that numRow is a number so we don't try to fetch an operation with a string eg: "create"
-  if (numRow && !isNaN(Number(numRow))) {
+  if (numRow && isValidUUID(numRow)) {
     operation = await getOperation(numRow);
   }
 
