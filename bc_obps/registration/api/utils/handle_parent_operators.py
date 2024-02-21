@@ -1,5 +1,6 @@
 from typing import List
-from registration.api.utils.handle_operator_addresses import  handle_operator_addresses
+from registration.utils import    handle_operator_addresses
+
 from registration.models import (
     ParentOperator,
 )
