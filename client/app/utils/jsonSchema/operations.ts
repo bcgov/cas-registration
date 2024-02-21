@@ -54,8 +54,6 @@ const operationPage1: RJSFSchema = {
       type: "string",
       title: "BCGHG ID",
       readOnly: true,
-      default:
-        "New operations will be assigned a BCGHGID by the Climate Action Secretariat",
     },
     opt_in_section: {
       //Not an actual field in the db - this is just to make the form look like the wireframes
@@ -388,7 +386,6 @@ export const operationUiSchema = {
     "regulated_products",
     // "reporting_activities",
     "ghg_emissions_section",
-    "Did you submit a GHG emissions report for reporting year 2022?",
     "bcghg_id",
     "opt_in_section",
     "opt_in_note_section",
@@ -436,6 +433,10 @@ export const operationUiSchema = {
   naics_code_id: {
     "ui:widget": "ComboBox",
     "ui:placeholder": "Select Primary NAICS code",
+  },
+  bcghg_id: {
+    "ui:placeholder":
+      "New operations will be assigned a BCGHGID by the Climate Action Secretariat",
   },
   operation_has_multiple_operators: {
     "ui:FieldTemplate": FieldTemplate,
