@@ -28,8 +28,10 @@ class OperationCreateIn(ModelSchema):
         allow_population_by_field_name = True
 
 
-class OperationUpdateOut(Schema):
-    name: str
+class OperationUpdateOut(ModelSchema):
+    class Config:
+        model = Operation
+        model_fields = ["name"]
 
 
 class OperationUpdateIn(ModelSchema):
