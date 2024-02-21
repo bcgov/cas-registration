@@ -5,12 +5,14 @@ import { test, expect } from "@playwright/test";
 import { DashboardPOM } from "@/e2e/poms/dashboard";
 import { ProfilePOM } from "@/e2e/poms/profile";
 // ☰ Enums
-import { UserRole } from "@/e2e/utils/enums";
+import { AppRole, UserRole, UserOperatorStatus } from "@/e2e/utils/enums";
 // 🥞 DB CRUD
 import {
   deleteUserOperatorRecord,
+  operatorUUID,
   upsertUserRecord,
   upsertOperatorRecord,
+  userOperatorUUID,
   upsertUserOperatorRecord,
 } from "@/e2e/utils/queries";
 // ℹ️ Environment variables
@@ -33,25 +35,16 @@ test.beforeAll(async () => {
     // Scenario FrontEndRoles.INDUSTRY_USER_ADMIN where UserOperatorStatus.APPROVED && OperatorStatus.APPROVED;
     // Upsert a User record: bc-cas-dev
     await upsertUserRecord(UserRole.INDUSTRY_USER_ADMIN);
-    // Upsert an Operator record: operator id 2
-    await upsertOperatorRecord([
-      2,
-      "Approved",
-      "Existing Operator 2 Legal Name",
-      "Existing Operator 2 Trade Name",
-      "987654321",
-      "def1234567",
-      "BC Corporation",
-      false,
-    ]);
+    // Upsert an Operator record, default values
+    await upsertOperatorRecord();
     // Upsert an User Operator record: industry_user_admin, operator id 2
     await upsertUserOperatorRecord([
+      userOperatorUUID,
       process.env.E2E_INDUSTRY_USER_ADMIN_GUID as string,
-      "admin",
-      "Approved",
-      2,
+      AppRole.ADMIN,
+      UserOperatorStatus.APPROVED,
+      operatorUUID,
     ]);
-
     // Scenario FrontEndRoles.INDUSTRY_USER where userOperatorStatus !== UserOperatorStatus.APPROVED
     // Shows "Select Operator\...1 pending action(s) required" bceidSelectOperatorTile
     // ensure user is not associated with any operator

@@ -6,12 +6,14 @@ import { DashboardPOM } from "@/e2e/poms/dashboard";
 import { HomePOM } from "@/e2e/poms/home";
 import { ProfilePOM } from "@/e2e/poms/profile";
 // ☰ Enums
-import { UserRole } from "@/e2e/utils/enums";
+import { AppRole, UserRole, UserOperatorStatus } from "@/e2e/utils/enums";
 // 🥞 DB CRUD
 import {
   deleteUserRecord,
+  operatorUUID,
   upsertUserRecord,
   upsertOperatorRecord,
+  userOperatorUUID,
   upsertUserOperatorRecord,
 } from "@/e2e/utils/queries";
 // ℹ️ Environment variables
@@ -24,38 +26,29 @@ test.describe.configure({ mode: "serial" });
 // 📚 Declare a beforeAll hook that is executed once per worker process before all tests.
 // 🥞 Set DB for e2e login roles
 /*
-For industry_user_admin: set up for user login to have app_role "industry_uer_admin"
+For industry_user_admin: set up for user login to have app_role "industry_user_admin"
 - create user
 - create operator
 - create user operator
+For industry_user: set up for user login to have app_role "industry_user"
+- create user
 For "new user":
 -  delete record in the db so that on "new user" login the ID will have no app_role
 */
-// For industry_user_admin, ensure there is an approved operator, an associated user, and an associated user_operator
-// For industry_user, ensure there is an associated user
-// For no role/new user, ensure there is NOT an associated user
 test.beforeAll(async () => {
   try {
     // 👤 industry_user_admin
     // Upsert a User record: bc-cas-dev
     await upsertUserRecord(UserRole.INDUSTRY_USER_ADMIN);
-    // Upsert an Operator record: operator id 2
-    await upsertOperatorRecord([
-      2,
-      "Approved",
-      "Existing Operator 2 Legal Name",
-      "Existing Operator 2 Trade Name",
-      "987654321",
-      "def1234567",
-      "BC Corporation",
-      false,
-    ]);
+    // Upsert an Operator record, default values
+    await upsertOperatorRecord();
     // Upsert an User Operator record: industry_user_admin, operator id 2
     await upsertUserOperatorRecord([
+      userOperatorUUID,
       process.env.E2E_INDUSTRY_USER_ADMIN_GUID as string,
-      "admin",
-      "Approved",
-      2,
+      AppRole.ADMIN,
+      UserOperatorStatus.APPROVED,
+      operatorUUID,
     ]);
 
     // 👤 industry_user

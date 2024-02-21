@@ -2,7 +2,9 @@ export enum ActionButton {
   CONTINUE = "Continue",
   SUBMIT = "Submit",
 }
-
+export enum AppRole {
+  ADMIN = "admin",
+}
 export enum AppRoute {
   DASHBOARD = "dashboard",
   HOME = "home",
@@ -26,6 +28,20 @@ export enum Login {
 export enum Logout {
   OUT = "Log out",
   SSO = "You are logged out",
+}
+
+export enum OperatorStatus {
+  DRAFT = "Draft",
+  PENDING = "Pending",
+  APPROVED = "Approved",
+  DECLINED = "Declined",
+  CHANGES_REQUESTED = "Changes Requested",
+}
+
+export enum UserOperatorStatus {
+  PENDING = "Pending",
+  APPROVED = "Approved",
+  DECLINED = "Declined",
 }
 
 export enum UserRole {
