@@ -7,7 +7,6 @@ from datetime import datetime
 from django.core.exceptions import ValidationError
 import pytz
 from typing import List, Union
-from typing import List
 from django.core.paginator import Paginator
 from registration.models import (
     AppRole,
@@ -38,7 +37,7 @@ from registration.schema import (
     OperationWithOperatorOut,
     OperationUpdateStatusOut,
 )
-from registration.utils import get_an_operators_approved_users, generate_useful_error
+from registration.utils import generate_useful_error
 from ninja.responses import codes_4xx, codes_5xx
 from ninja.errors import HttpError
 
