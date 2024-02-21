@@ -1,10 +1,11 @@
 from uuid import UUID
 from django.db import transaction
 from django.db import transaction
-from registration.api.utils.handle_operator_addresses import  handle_operator_addresses
+
 from registration.api.utils.handle_parent_operators import handle_parent_operators
 from registration.utils import (
     generate_useful_error,
+    handle_operator_addresses,
     update_model_instance,
     check_users_admin_request_eligibility,
     check_access_request_matches_business_guid,
