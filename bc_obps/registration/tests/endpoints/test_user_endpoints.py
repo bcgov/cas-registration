@@ -1,5 +1,5 @@
 import json, uuid
-from registration.schema import UserIn
+from registration.schema import UserIn, UserUpdateIn
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.enums.enums import IdPs
 from registration.utils import custom_reverse_lazy
@@ -148,7 +148,30 @@ class TestUserEndpoint(CommonTestSetup):
         assert 'user_guid' not in content  # PUT USER PROFILE
         assert 'business_guid' not in content
 
-    def test_update_user_profile(self):
+    def test_update_user_profile_valid_fields(self):
+        mock_payload = UserUpdateIn(
+            first_name='Test', last_name='User', phone_number='+12509454578', position_title='CTO'
+        )
+
+        response = TestUtils.mock_put_with_auth_role(
+            self, 'industry_user', self.content_type, mock_payload.json(), custom_reverse_lazy('update_user_profile')
+        )
+        content = response.json()
+
+        assert response.status_code == 200
+        assert 'first_name' in content and isinstance(content['first_name'], str) and content['first_name'] == 'Test'
+        assert 'last_name' in content and isinstance(content['last_name'], str) and content['last_name'] == 'User'
+        assert (
+            'position_title' in content
+            and isinstance(content['position_title'], str)
+            and content['position_title'] == 'CTO'
+        )
+        assert 'phone_number' in content and isinstance(content['phone_number'], str)
+
+        assert 'user_guid' not in content
+        assert 'business_guid' not in content
+
+    def test_update_user_profile_invalid_fields(self):
         # Arrange
         mock_payload = UserIn(
             first_name='Test',
@@ -181,12 +204,12 @@ class TestUserEndpoint(CommonTestSetup):
             and isinstance(content['position_title'], str)
             and content['position_title'] == 'Boss'
         )
-        assert 'email' in content and isinstance(content['email'], str) and content['email'] == 'test.user@email.com'
+        assert 'email' in content and isinstance(content['email'], str) and content['email'] != 'test.user@email.com'
         assert 'phone_number' in content and isinstance(content['phone_number'], str)
         assert (
             'bceid_business_name' in content
             and isinstance(content['bceid_business_name'], str)
-            and content['bceid_business_name'] == 'test business'
+            and content['bceid_business_name'] != 'test business'
         )
 
         # Additional Assertion for user_guid

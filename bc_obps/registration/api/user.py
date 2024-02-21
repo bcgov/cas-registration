@@ -4,7 +4,7 @@ from uuid import UUID
 from django.conf import settings
 from registration.decorators import authorize
 from registration.models import AppRole, User
-from registration.schema import UserAppRoleOut, UserOut, UserIn, Message, UserOperator
+from registration.schema import UserAppRoleOut, UserOut, UserIn, Message, UserOperator, UserUpdateIn
 from .api_base import router
 from django.shortcuts import get_object_or_404
 from ninja.responses import codes_4xx
@@ -91,7 +91,7 @@ def create_user_profile(request, identity_provider: str, payload: UserIn):
 # Endpoint to update a user
 @router.put("/user-profile", response={200: UserOut, codes_4xx: Message}, url_name="update_user_profile")
 @authorize(AppRole.get_all_app_roles(), UserOperator.get_all_industry_user_operator_roles())
-def update_user_profile(request, payload: UserIn):
+def update_user_profile(request, payload: UserUpdateIn):
     user: User = request.current_user
     try:
         for attr, value in payload.dict().items():
