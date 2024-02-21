@@ -98,11 +98,11 @@ export default function Tiles({
             ...bceidUsersTile,
             ...reportAProblemTile,
           ];
-        } else {
-          contents = [...bceidSelectOperatorTile, ...reportAProblemTile];
         }
-        break;
+      } else {
+        contents = [...bceidSelectOperatorTile, ...reportAProblemTile];
       }
+      break;
     case FrontEndRoles.INDUSTRY_USER:
       if (userOperatorStatus === UserOperatorStatus.APPROVED) {
         if (
