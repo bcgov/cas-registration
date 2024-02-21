@@ -7,7 +7,6 @@ from datetime import datetime
 from django.core.exceptions import ValidationError
 import pytz
 from typing import List, Union
-from typing import List
 from django.core.paginator import Paginator
 from registration.models import (
     AppRole,
@@ -38,7 +37,7 @@ from registration.schema import (
     OperationWithOperatorOut,
     OperationUpdateStatusOut,
 )
-from registration.utils import get_an_operators_approved_users, generate_useful_error
+from registration.utils import generate_useful_error
 from ninja.responses import codes_4xx, codes_5xx
 from ninja.errors import HttpError
 
@@ -130,17 +129,9 @@ def list_operations(request, page: int = 1, sort_field: str = "created_at", sort
             data=[OperationListOut.from_orm(operation) for operation in paginator.page(page).object_list],
             row_count=paginator.count,
         )
-    # Industry users can only see their companies' operations (if there's no user_operator or operator, then the user hasn't requested access to the operator)
-    user_operator = (
-        UserOperator.objects.filter(user_id=user.user_guid)
-        .exclude(status=UserOperator.Statuses.DECLINED)
-        .only("operator_id")
-        .first()
-    )
+    # Industry users can only see their companies' operations (if there's no user_operator, then the user hasn't requested access to the operator)
+    user_operator = user.get_approved_user_operator()
     if not user_operator:
-        raise HttpError(401, UNAUTHORIZED_MESSAGE)
-    approved_users = get_an_operators_approved_users(user_operator.operator_id)
-    if user.user_guid not in approved_users:
         raise HttpError(401, UNAUTHORIZED_MESSAGE)
     # order by created_at to get the latest one first
     operators_operations = (
@@ -209,15 +200,9 @@ def get_operation(request, operation_id: UUID):
 @authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
 def create_operation(request, payload: OperationCreateIn):
     user: User = request.current_user
-    # Adding this part instead to prevent an extra call from the frontend to get operator_id and pass it in the payload
-    try:
-        user_operator = (
-            UserOperator.objects.exclude(status=UserOperator.Statuses.DECLINED)
-            .only("operator__id")
-            .get(user=user.user_guid)
-        )
-    except UserOperator.DoesNotExist:
-        return 404, {"message": "User is not associated with any operator"}
+    user_operator = user.get_approved_user_operator()
+    if not user_operator:
+        raise HttpError(401, UNAUTHORIZED_MESSAGE)
 
     payload_dict: dict = payload.dict(
         exclude={
@@ -234,7 +219,6 @@ def create_operation(request, payload: OperationCreateIn):
             return 400, {"message": "Operation with this BCGHG ID already exists."}
     try:
         with transaction.atomic():
-            # Using ThroughModel and bulk_create to speed up the process
             operation = Operation.objects.create(
                 **payload_dict, operator_id=user_operator.operator_id, naics_code_id=payload.naics_code
             )
@@ -259,17 +243,12 @@ def create_operation(request, payload: OperationCreateIn):
 @router.put(
     "/operations/{operation_id}", response={200: OperationUpdateOut, codes_4xx: Message}, url_name="update_operation"
 )
-@authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles())
+@authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
 def update_operation(request, operation_id: UUID, submit: str, form_section: int, payload: OperationUpdateIn):
     user: User = request.current_user
-    try:
-        # if there's no user_operator or operator, then the user hasn't requested access to the operator
-        user_operator = (
-            UserOperator.objects.exclude(status=UserOperator.Statuses.DECLINED)
-            .only('operator__id')
-            .get(user=user.user_guid)
-        )
-    except UserOperator.DoesNotExist:
+    # if there's no user_operator, then the user hasn't requested access to the operator
+    user_operator = user.get_approved_user_operator()
+    if not user_operator:
         raise HttpError(401, UNAUTHORIZED_MESSAGE)
 
     try:
@@ -358,7 +337,7 @@ def update_operation(request, operation_id: UUID, submit: str, form_section: int
                 operation.documents.set([document])
 
             operation.set_create_or_update(user.pk)
-            return 200, {"name": operation.name}
+            return 200, operation
     except ValidationError as e:
         return 400, {"message": generate_useful_error(e)}
     except Exception as e:

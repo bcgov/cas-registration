@@ -348,6 +348,13 @@ class User(UserAndContactCommonInfo):
         """
         return self.app_role.role_name == "industry_user"
 
+    def get_approved_user_operator(self) -> Optional['UserOperator']:
+        """
+        Return the UserOperator associated with the user.
+        Based on the Constraint, there should only be one UserOperator associated with a user and operator.
+        """
+        return self.user_operators.only("operator_id").filter(status=UserOperator.Statuses.APPROVED).first()
+
     def save(self, *args, **kwargs):
         """
         Override the save method to clear the cache when the user is saved.
