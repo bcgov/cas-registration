@@ -8,7 +8,7 @@ import { UserOperatorFormData } from "@/app/components/form/formDataTypes";
 interface Props {
   note?: string;
   userOperator: UserOperatorFormData;
-  userOperatorId: number;
+  userOperatorId: string;
   onSuccess?: () => void;
   operatorId?: number;
   isOperatorNew?: boolean;

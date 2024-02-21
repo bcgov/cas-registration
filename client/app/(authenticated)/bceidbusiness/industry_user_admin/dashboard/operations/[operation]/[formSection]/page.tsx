@@ -4,7 +4,7 @@ import OperationsOperationPage from "@/app/components/routes/operations/operatio
 export default function Page({
   params,
 }: {
-  params: Readonly<{ operation: number }>;
+  params: Readonly<{ operation: string }>;
 }) {
   return <OperationsOperationPage params={params} />;
 }

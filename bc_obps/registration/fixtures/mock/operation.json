@@ -2,7 +2,7 @@
   {
     "model": "registration.operation",
     "fields": {
-      "operator": 1,
+      "operator": "685d581b-5698-411f-ae00-de1d97334a71",
       "verified_at": "2023-10-13T15:27:00.000Z",
       "verified_by": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
       "documents": [],
@@ -19,7 +19,7 @@
   {
     "model": "registration.operation",
     "fields": {
-      "operator": 2,
+      "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
       "documents": [],
       "name": "Operation 2",
       "type": "Single Facility Operation",
@@ -33,7 +33,7 @@
   {
     "model": "registration.operation",
     "fields": {
-      "operator": 2,
+      "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
       "documents": [],
       "point_of_contact": 1,
       "name": "Operation 3",
@@ -50,7 +50,7 @@
   {
     "model": "registration.operation",
     "fields": {
-      "operator": 1,
+      "operator": "685d581b-5698-411f-ae00-de1d97334a71",
       "documents": [],
       "submission_date": "2024-01-12T15:27:00.000Z",
       "bc_obps_regulated_operation": "21-0002",
@@ -67,7 +67,7 @@
   {
     "model": "registration.operation",
     "fields": {
-      "operator": 1,
+      "operator": "685d581b-5698-411f-ae00-de1d97334a71",
       "documents": [],
       "submission_date": "2024-01-13T15:28:00.000Z",
       "point_of_contact": 1,
@@ -83,7 +83,7 @@
   {
     "model": "registration.operation",
     "fields": {
-      "operator": 1,
+      "operator": "685d581b-5698-411f-ae00-de1d97334a71",
       "documents": [],
       "submission_date": "2024-01-14T15:27:00.000Z",
       "point_of_contact": 1,
@@ -99,7 +99,7 @@
   {
     "model": "registration.operation",
     "fields": {
-      "operator": 1,
+      "operator": "685d581b-5698-411f-ae00-de1d97334a71",
       "documents": [],
       "submission_date": "2024-01-15T15:27:00.000Z",
       "point_of_contact": 1,
@@ -115,7 +115,7 @@
   {
     "model": "registration.operation",
     "fields": {
-      "operator": 1,
+      "operator": "685d581b-5698-411f-ae00-de1d97334a71",
       "documents": [],
       "submission_date": "2024-01-16T15:27:00.000Z",
       "point_of_contact": 1,
@@ -131,7 +131,7 @@
   {
     "model": "registration.operation",
     "fields": {
-      "operator": 1,
+      "operator": "685d581b-5698-411f-ae00-de1d97334a71",
       "documents": [],
       "submission_date": "2024-01-17T15:27:00.000Z",
       "point_of_contact": 1,
@@ -147,7 +147,7 @@
   {
     "model": "registration.operation",
     "fields": {
-      "operator": 1,
+      "operator": "685d581b-5698-411f-ae00-de1d97334a71",
       "documents": [],
       "submission_date": "2024-01-18T15:27:00.000Z",
       "point_of_contact": 1,
@@ -163,7 +163,7 @@
   {
     "model": "registration.operation",
     "fields": {
-      "operator": 1,
+      "operator": "685d581b-5698-411f-ae00-de1d97334a71",
       "documents": [],
       "submission_date": "2024-01-19T15:27:00.000Z",
       "point_of_contact": 1,
@@ -179,7 +179,7 @@
   {
     "model": "registration.operation",
     "fields": {
-      "operator": 1,
+      "operator": "685d581b-5698-411f-ae00-de1d97334a71",
       "documents": [],
       "submission_date": "2024-01-20T15:27:00.000Z",
       "point_of_contact": 1,
@@ -195,7 +195,7 @@
   {
     "model": "registration.operation",
     "fields": {
-      "operator": 1,
+      "operator": "685d581b-5698-411f-ae00-de1d97334a71",
       "documents": [],
       "submission_date": "2024-01-21T15:27:00.000Z",
       "point_of_contact": 1,
@@ -211,7 +211,7 @@
   {
     "model": "registration.operation",
     "fields": {
-      "operator": 2,
+      "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
       "documents": [],
       "submission_date": "2024-01-22T15:27:00.000Z",
       "point_of_contact": 1,
@@ -227,7 +227,7 @@
   {
     "model": "registration.operation",
     "fields": {
-      "operator": 2,
+      "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
       "documents": [],
       "submission_date": "2024-01-23T15:27:00.000Z",
       "point_of_contact": 1,
@@ -243,7 +243,7 @@
   {
     "model": "registration.operation",
     "fields": {
-      "operator": 2,
+      "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
       "documents": [],
       "submission_date": "2024-01-24T15:27:00.000Z",
       "point_of_contact": 1,
@@ -259,7 +259,7 @@
   {
     "model": "registration.operation",
     "fields": {
-      "operator": 2,
+      "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
       "documents": [],
       "submission_date": "2024-01-25T15:27:00.000Z",
       "point_of_contact": 1,
@@ -275,7 +275,7 @@
   {
     "model": "registration.operation",
     "fields": {
-      "operator": 2,
+      "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
       "documents": [],
       "submission_date": "2024-01-26T15:27:00.000Z",
       "point_of_contact": 1,
@@ -291,7 +291,7 @@
   {
     "model": "registration.operation",
     "fields": {
-      "operator": 2,
+      "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
       "documents": [],
       "submission_date": "2024-01-27T15:27:00.000Z",
       "point_of_contact": 1,
@@ -307,7 +307,7 @@
   {
     "model": "registration.operation",
     "fields": {
-      "operator": 2,
+      "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
       "documents": [],
       "submission_date": "2024-01-28T15:27:00.000Z",
       "name": "Operation 20",
@@ -322,7 +322,7 @@
   {
     "model": "registration.operation",
     "fields": {
-      "operator": 2,
+      "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
       "documents": [],
       "name": "Operation 21",
       "type": "Single Facility Operation",
@@ -336,7 +336,7 @@
   {
     "model": "registration.operation",
     "fields": {
-      "operator": 2,
+      "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
       "documents": [],
       "name": "Operation 22",
       "type": "Single Facility Operation",
@@ -350,7 +350,7 @@
   {
     "model": "registration.operation",
     "fields": {
-      "operator": 2,
+      "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
       "documents": [],
       "name": "Operation 23",
       "type": "Single Facility Operation",
@@ -364,7 +364,7 @@
   {
     "model": "registration.operation",
     "fields": {
-      "operator": 2,
+      "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
       "documents": [],
       "name": "Operation 24",
       "type": "Single Facility Operation",

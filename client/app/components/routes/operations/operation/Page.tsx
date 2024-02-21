@@ -5,7 +5,7 @@ import Loading from "@/app/components/loading/SkeletonForm";
 export default async function OperationsOperationPage({
   params,
 }: {
-  params: { operation: number };
+  params: { operation: string };
 }) {
   return (
     <>

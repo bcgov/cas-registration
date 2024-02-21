@@ -1,7 +1,7 @@
 [
   {
     "model": "registration.operator",
-    "pk": 1,
+    "pk": "685d581b-5698-411f-ae00-de1d97334a71",
     "fields": {
       "legal_name": "Operator 1 Legal Name",
       "trade_name": "Operator 1 Trade Name",
@@ -21,7 +21,7 @@
   },
   {
     "model": "registration.operator",
-    "pk": 2,
+    "pk": "4242ea9d-b917-4129-93c2-db00b7451051",
     "fields": {
       "legal_name": "Existing Operator 2 Legal Name",
       "trade_name": "Existing Operator 2 Trade Name",
@@ -41,7 +41,7 @@
   },
   {
     "model": "registration.operator",
-    "pk": 3,
+    "pk": "438eff6c-d2e7-40ab-8220-29d3a86ef314",
     "fields": {
       "legal_name": "New Operator 3 Legal Name",
       "trade_name": "New Operator 3 Trade Name",
@@ -61,7 +61,7 @@
   },
   {
     "model": "registration.operator",
-    "pk": 4,
+    "pk": "7e8b72dc-4196-427f-a553-7879748139e1",
     "fields": {
       "legal_name": "Existing Operator 4 Legal Name",
       "trade_name": "Existing Operator 4 Trade Name",
@@ -81,7 +81,7 @@
   },
   {
     "model": "registration.operator",
-    "pk": 5,
+    "pk": "4c1010c1-55ca-485d-84bd-6d975fd0af90",
     "fields": {
       "legal_name": "New Operator 5 Legal Name",
       "trade_name": "New Operator 5 Trade Name",
@@ -101,7 +101,7 @@
   },
   {
     "model": "registration.operator",
-    "pk": 6,
+    "pk": "5712ee05-5f3b-4822-825d-6fffddafda4c",
     "fields": {
       "legal_name": "Existing Operator 6 Legal Name",
       "trade_name": "Existing Operator 6 Trade Name",
