@@ -24,8 +24,8 @@ export class DashboardPOM {
   }
 
   async urlIsCorrect() {
-    const path = AppRoute.DASHBOARD;
+    const path = this.url;
     const currentUrl = await this.page.url();
-    await expect(currentUrl.toLocaleLowerCase()).toContain(path);
+    await expect(currentUrl.toLowerCase()).toMatch(path.toLowerCase());
   }
 }

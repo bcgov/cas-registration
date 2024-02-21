@@ -4,9 +4,9 @@ export enum ActionButton {
 }
 
 export enum AppRoute {
-  DASHBOARD = "/dashboard",
-  HOME = "/home",
-  PROFILE = "/dashboard/profile",
+  DASHBOARD = "dashboard",
+  HOME = "home",
+  PROFILE = "dashboard/profile",
 }
 
 export enum DataTestID {
