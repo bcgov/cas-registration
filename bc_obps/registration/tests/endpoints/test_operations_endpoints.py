@@ -76,7 +76,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         assert len(response_json.get('data')) == 1
         assert response_json.get('row_count') == 1
         response_data = response_json.get('data')
-        assert response_data[0].get('id') == users_operation.id
+        assert response_data[0].get('id') == str(users_operation.id)  # string representation of UUID
         assert response_data[0].get('name') == users_operation.name
         # Make sure the response has the expected keys based on the schema
         assert response_data[0].keys() == {
@@ -111,7 +111,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         )
         assert response_1.status_code == 200
         response_data = response_1.json()
-        assert response_data.get('id') == users_operation.id
+        assert response_data.get('id') == str(users_operation.id)  # string representation of UUID
         assert response_data.get('name') == users_operation.name
         # Make sure the response has the expected keys based on the role
         response_keys_for_industry_users = {
@@ -143,7 +143,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         )
         assert response_2.status_code == 200
         response_data = response_2.json()
-        assert response_data.get('id') == users_operation.id
+        assert response_data.get('id') == str(users_operation.id)  # string representation of UUID
         assert response_data.get('name') == users_operation.name
         # Make sure the response has the expected keys based on the role
         response_keys_for_industry_users.update({'operator'})
@@ -237,6 +237,10 @@ class TestOperationsEndpoint(CommonTestSetup):
             for key in response_data.keys():
                 if key == 'operator':
                     assert response_data.get(key) == pending_operation.operator.legal_name
+                elif key == 'id':
+                    assert response_data.get(key) == str(
+                        getattr(pending_operation, key)
+                    )  # string representation of UUID
                 else:
                     assert response_data.get(key) == getattr(pending_operation, key)
 
@@ -265,6 +269,8 @@ class TestOperationsEndpoint(CommonTestSetup):
         for key in response_data.keys():
             if key == 'operator':
                 assert response_data.get(key) == users_operation.operator.legal_name
+            elif key == 'id':
+                assert response_data.get(key) == str(getattr(users_operation, key))
             else:
                 assert response_data.get(key) == getattr(users_operation, key)
 
