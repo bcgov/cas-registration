@@ -44,17 +44,42 @@ export const deleteUserOperatorRecord = async <T>(values: T[]) => {
 
 // Upsert an Operator record
 const upsertOperator = `
-    INSERT INTO erc.operator (id, status, legal_name, trade_name, cra_business_number, bc_corporate_registry_number, business_structure_id, is_new)
+    INSERT INTO erc.operator (legal_name, trade_name, cra_business_number, bc_corporate_registry_number, business_structure_id, status, is_new, id)
     VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
     ON CONFLICT (id)
     DO UPDATE SET status = EXCLUDED.status;
   `;
-// 🛠️ Function: upserts operator record based on values received
-export const upsertOperatorRecord = async <T>(values: T[]) => {
+// Operator UUID
+export const operatorUUID = "4242ea9d-b917-4129-93c2-db00b7451051";
+let upsertOperatorValues = [
+  "Existing Operator 2 Legal Name",
+  "Existing Operator 2 Trade Name",
+  "987654321",
+  "def1234567",
+  "BC Corporation",
+  "Approved",
+  false,
+  operatorUUID,
+];
+// 🛠️ Function: upserts operator record based on optional values received
+export const upsertOperatorRecord = async (
+  status?: string,
+  isNew?: boolean,
+  id?: string,
+) => {
   try {
+    if (status) {
+      upsertOperatorValues[5] = status;
+    }
+    if (isNew) {
+      upsertOperatorValues[6] = isNew;
+    }
+    if (id) {
+      upsertOperatorValues[7] = id;
+    }
     const query = {
       text: upsertOperator,
-      values: values,
+      values: upsertOperatorValues,
     };
     // ▶️ Execute the query
     await pool.query(query);
@@ -122,9 +147,11 @@ export const upsertUserRecord = async (userRole: string) => {
 };
 
 // Upsert a User Operator record
+// Operator UUID
+export const userOperatorUUID = "9bb541e6-41f5-47d3-8359-2fab4f5bc4c0";
 const upsertUserOperator = `
-    INSERT INTO erc.user_operator (user_id, role, status, operator_id)
-    VALUES ($1,  $2, $3, $4)
+      INSERT INTO erc.user_operator (id, user_id, role, status, operator_id)
+    VALUES ($1, $2, $3, $4, $5)
     ON CONFLICT (user_id, operator_id)
     DO UPDATE SET role = EXCLUDED.role, status = EXCLUDED.status;
   `;
