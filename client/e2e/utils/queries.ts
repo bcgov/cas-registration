@@ -11,7 +11,7 @@ export const upsertOperator = {
     DO UPDATE SET status = EXCLUDED.status;
   `,
   values: [
-    2,
+    "4242ea9d-b917-4129-93c2-db00b7451051",
     "Approved",
     "Existing Operator 2 Legal Name",
     "Existing Operator 2 Trade Name",
@@ -25,16 +25,17 @@ export const upsertOperator = {
 // Upsert an User Operator record
 export const upsertUserOperator = {
   text: `
-    INSERT INTO erc.user_operator (user_id, role, status, operator_id)
-    VALUES ($1,  $2, $3, $4)
+    INSERT INTO erc.user_operator (id, user_id, role, status, operator_id)
+    VALUES ($1,  $2, $3, $4, $5)
     ON CONFLICT (user_id, operator_id)
     DO UPDATE SET role = EXCLUDED.role, status = EXCLUDED.status;
   `,
   values: [
+    "9bb541e6-41f5-47d3-8359-2fab4f5bc4c0",
     process.env.E2E_INDUSTRY_USER_ADMIN_GUID as string,
     "admin",
     "Approved",
-    2,
+    "4242ea9d-b917-4129-93c2-db00b7451051",
   ],
 };
 
