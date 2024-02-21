@@ -79,14 +79,18 @@ def save_operator(payload: UserOperatorOperatorIn, operator_instance: Operator, 
             "website",
             "business_structure",
         ]
-        created_or_updated_operator_instance: Operator = update_model_instance(operator_instance, operator_related_fields, payload.dict())
+        created_or_updated_operator_instance: Operator = update_model_instance(
+            operator_instance, operator_related_fields, payload.dict()
+        )
         created_or_updated_operator_instance.save()
         created_or_updated_operator_instance.set_create_or_update(user.pk)
 
         handle_parent_operators(payload.parent_operators_array, created_or_updated_operator_instance, user)
 
         # get an existing user_operator instance or create a new one with the default role
-        user_operator, created = UserOperator.objects.get_or_create(user=user, operator=created_or_updated_operator_instance)
+        user_operator, created = UserOperator.objects.get_or_create(
+            user=user, operator=created_or_updated_operator_instance
+        )
         if created:
             user_operator.set_create_or_update(user.pk)
         return 200, {"user_operator_id": user_operator.id, 'operator_id': user_operator.operator.id}
@@ -119,7 +123,9 @@ def get_user_operator_from_user(request):
 )
 @authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
 def is_approved_admin_user_operator(request, user_guid: str):
-    approved_user_operator: bool = UserOperator.objects.filter(user_id=user_guid, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.APPROVED).exists()
+    approved_user_operator: bool = UserOperator.objects.filter(
+        user_id=user_guid, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.APPROVED
+    ).exists()
 
     return 200, {"approved": approved_user_operator}
 
@@ -133,7 +139,12 @@ def is_approved_admin_user_operator(request, user_guid: str):
 def get_user_operator_operator(request):
     user: User = request.current_user
     try:
-        user_operator = UserOperator.objects.only("operator__status", "operator__id").exclude(status=UserOperator.Statuses.DECLINED).select_related("operator").get(user=user.user_guid)
+        user_operator = (
+            UserOperator.objects.only("operator__status", "operator__id")
+            .exclude(status=UserOperator.Statuses.DECLINED)
+            .select_related("operator")
+            .get(user=user.user_guid)
+        )
     except UserOperator.DoesNotExist:
         return 404, {"message": "User is not associated with any operator"}
     return 200, user_operator.operator
@@ -157,7 +168,9 @@ def get_user_operator(request, user_operator_id: UUID):
     if user.is_industry_user():
         # Industry users can only get their own UserOperator instance
         try:
-            user_operator = UserOperator.objects.select_related('operator').get(id=user_operator_id, user=user.user_guid)
+            user_operator = UserOperator.objects.select_related('operator').get(
+                id=user_operator_id, user=user.user_guid
+            )
         except UserOperator.DoesNotExist:
             return 404, {"message": "No matching userOperator found"}
         return UserOperatorOut.from_orm(user_operator)
@@ -176,7 +189,9 @@ def get_user_operator(request, user_operator_id: UUID):
 )
 @authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles())
 def get_user_operator_admin_exists(request, operator_id: UUID):
-    has_admin = UserOperator.objects.filter(operator_id=operator_id, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.APPROVED).exists()
+    has_admin = UserOperator.objects.filter(
+        operator_id=operator_id, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.APPROVED
+    ).exists()
     return 200, has_admin
 
 
@@ -188,7 +203,9 @@ def get_user_operator_admin_exists(request, operator_id: UUID):
 @authorize(['industry_user'], UserOperator.get_all_industry_user_operator_roles())
 def get_user_operator_admin_exists(request, operator_id: UUID):
     user: User = request.current_user
-    is_declined = UserOperator.objects.filter(operator_id=operator_id, user_id=user.user_guid, status=UserOperator.Statuses.DECLINED).exists()
+    is_declined = UserOperator.objects.filter(
+        operator_id=operator_id, user_id=user.user_guid, status=UserOperator.Statuses.DECLINED
+    ).exists()
     return 200, is_declined
 
 
@@ -200,8 +217,15 @@ def get_user_operator_admin_exists(request, operator_id: UUID):
 @authorize(["industry_user"], ["admin"])
 def get_user_operator_list_from_user(request):
     user: User = request.current_user
-    operator = UserOperator.objects.select_related("operator").exclude(status=UserOperator.Statuses.DECLINED).get(user=user.user_guid).operator
-    user_operator_list = UserOperator.objects.select_related("user").filter(operator_id=operator, user__business_guid=user.business_guid)
+    operator = (
+        UserOperator.objects.select_related("operator")
+        .exclude(status=UserOperator.Statuses.DECLINED)
+        .get(user=user.user_guid)
+        .operator
+    )
+    user_operator_list = UserOperator.objects.select_related("user").filter(
+        operator_id=operator, user__business_guid=user.business_guid
+    )
     return user_operator_list
 
 
@@ -227,7 +251,9 @@ def list_user_operators(request, page: int = 1, sort_field: str = "created_at", 
         .order_by(f"{sort_direction}{sort_field}")
         .exclude(
             # exclude access requests to an operator that already has an approved admin
-            operator_id__in=UserOperator.objects.filter(status=UserOperator.Statuses.APPROVED).values_list("operator_id", flat=True),
+            operator_id__in=UserOperator.objects.filter(status=UserOperator.Statuses.APPROVED).values_list(
+                "operator_id", flat=True
+            ),
         )
     )
     paginator = Paginator(qs, PAGE_SIZE)
@@ -287,7 +313,9 @@ def request_admin_access(request, payload: SelectOperatorIn):
             if status != 200:
                 return status, message
         # Making a pending UserOperator instance if one doesn't exist
-        user_operator, created = UserOperator.objects.get_or_create(user=user, operator=operator, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.PENDING)
+        user_operator, created = UserOperator.objects.get_or_create(
+            user=user, operator=operator, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.PENDING
+        )
         if created:
             user_operator.set_create_or_update(user.pk)
         return 201, {"user_operator_id": user_operator.id, "operator_id": user_operator.operator.id}
@@ -298,7 +326,9 @@ def request_admin_access(request, payload: SelectOperatorIn):
         return 400, {"message": str(e)}
 
 
-@router.post("/select-operator/request-access", response={201: RequestAccessOut, codes_4xx: Message}, url_name="request_access")
+@router.post(
+    "/select-operator/request-access", response={201: RequestAccessOut, codes_4xx: Message}, url_name="request_access"
+)
 @authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
 def request_access(request, payload: SelectOperatorIn):
     user: User = request.current_user
@@ -310,7 +340,9 @@ def request_access(request, payload: SelectOperatorIn):
                 return status, message
 
             # Making a draft UserOperator instance if one doesn't exist
-            user_operator, created = UserOperator.objects.get_or_create(user=user, operator=operator, status=UserOperator.Statuses.PENDING, role=UserOperator.Roles.REPORTER)
+            user_operator, created = UserOperator.objects.get_or_create(
+                user=user, operator=operator, status=UserOperator.Statuses.PENDING, role=UserOperator.Roles.REPORTER
+            )
             if created:
                 user_operator.set_create_or_update(user.pk)
             return 201, {"user_operator_id": user_operator.id, "operator_id": user_operator.operator.id}
@@ -409,7 +441,9 @@ def update_user_operator_status(request, payload: UserOperatorStatusUpdate):
 
             if user_operator.status == UserOperator.Statuses.DECLINED:
                 # hard delete contacts (Senior Officers) associated with the operator and the user who requested access
-                user_operator.operator.contacts.filter(created_by=user_operator.user, business_role=BusinessRole.objects.get(role_name='Senior Officer')).delete()
+                user_operator.operator.contacts.filter(
+                    created_by=user_operator.user, business_role=BusinessRole.objects.get(role_name='Senior Officer')
+                ).delete()
             return UserOperatorOut.from_orm(user_operator)
     except ValidationError as e:
         return 400, {"message": generate_useful_error(e)}
