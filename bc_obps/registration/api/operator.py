@@ -1,11 +1,11 @@
-from typing import List, Optional
+from typing import List, Optional, Union
 from uuid import UUID
 from registration.decorators import authorize
 from .api_base import router
 from django.shortcuts import get_object_or_404
 from registration.models import AppRole, Operator, UserOperator, User
 from ninja.responses import codes_4xx, codes_5xx
-from registration.schema import Message, OperatorOut, OperatorIn
+from registration.schema import Message, OperatorOut, OperatorIn, OperatorSearchOut, ConfirmSelectedOperatorOut
 from django.db import transaction
 from registration.utils import (
     generate_useful_error,
@@ -19,53 +19,33 @@ from django.core.exceptions import ValidationError
 
 @router.get(
     "/operators",
-    response={200: OperatorOut, codes_4xx: Message, codes_5xx: Message},
-    url_name="get_operator_by_legal_name_or_cra",
+    response={200: Union[OperatorSearchOut, List[OperatorSearchOut]], codes_4xx: Message, codes_5xx: Message},
+    url_name="get_operator_by_cra_number",
 )
-@authorize(AppRole.get_all_app_roles(), UserOperator.get_all_industry_user_operator_roles())
-def get_operator_by_legal_name_or_cra(
-    request, legal_name: Optional[str] = None, cra_business_number: Optional[int] = None
-):
-    try:
-        if legal_name:
-            operator = Operator.objects.get(legal_name=legal_name)
-        elif cra_business_number:
+@authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles())
+def get_operators_by_cra_number_or_legal_name(request, cra_business_number: Optional[int], legal_name: Optional[str]):
+    if not cra_business_number and not legal_name:
+        return 404, {"message": "No search value provided"}
+    if cra_business_number:
+        try:
             operator = Operator.objects.get(cra_business_number=cra_business_number)
-        else:
-            return 404, {"message": "No parameters provided"}
-    except Operator.DoesNotExist:
-        return 404, {"message": "No matching operator found. Retry or add operator."}
-    except Exception as e:
-        return 500, {"message": str(e)}
-
-    return 200, operator
+            return 200, OperatorSearchOut.from_orm(operator)
+        except Operator.DoesNotExist:
+            return 404, {"message": "No matching operator found. Retry or add operator."}
+    elif legal_name:
+        operators = Operator.objects.filter(legal_name__icontains=legal_name)
+        return 200, [OperatorSearchOut.from_orm(operator) for operator in operators]
+    return 404, {"message": "No matching operator found. Retry or add operator."}
 
 
 @router.get(
-    "/operators/legal-name",
-    response={200: List[OperatorOut], codes_4xx: Message, codes_5xx: Message},
-    url_name="get_operators_by_legal_name",
+    "/operators/{operator_id}", response={200: ConfirmSelectedOperatorOut, codes_4xx: Message}, url_name="get_operator"
 )
-def get_operators_by_legal_name(request, search_value: Optional[str] = None):
-    try:
-        if search_value:
-            operators = Operator.objects.filter(legal_name__icontains=search_value)
-        else:
-            return 404, {"message": "No parameters provided"}
-    except Operator.DoesNotExist:
-        return 404, {"message": "No matching operator found. Retry or add operator."}
-    except Exception as e:
-        return 500, {"message": str(e)}
-
-    return 200, operators
-
-
-@router.get("/operators/{operator_id}", response={200: OperatorOut, codes_4xx: Message}, url_name="get_operator")
 @authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles())
 def get_operator(request, operator_id: UUID):
     try:
         operator = get_object_or_404(Operator, id=operator_id)
-    except Exception as e:
+    except Exception:
         return 404, {"message": "No matching operator found"}
     return 200, operator
 
