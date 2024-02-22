@@ -873,7 +873,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
 
     def test_edit_and_archive_parent_operators(self):
         child_operator = operator_baker()
-        user_operator = baker.make(UserOperator, operator=child_operator, user=self.user)
+        user_operator = baker.make(UserOperator, operator=child_operator, user=self.user, role='admin', status='Approved')
 
         parent_operator_1 = parent_operator_baker()
         parent_operator_1.child_operator_id = child_operator.id
@@ -1095,6 +1095,41 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         assert operator is not None
         assert operator.updated_by == self.user
         assert operator.updated_at is not None
+
+    def test_put_user_operator_operator_unauthorized(self):
+        operator = operator_baker()
+        operator.created_by = self.user
+        operator.save(update_fields=["created_by"])
+        user_operator = baker.make(
+            UserOperator, user=self.user, operator=operator, role=UserOperator.Roles.REPORTER, created_by=self.user
+        )
+        mock_payload = {
+            "legal_name": "Put Operator Legal Name",
+            "trade_name": "Put Operator Trade Name",
+            "cra_business_number": 963852741,
+            "bc_corporate_registry_number": "abc1234321",
+            "business_structure": BusinessStructure.objects.first().pk,
+            "physical_street_address": "test physical street address",
+            "physical_municipality": "test physical municipality",
+            "physical_province": "BC",
+            "physical_postal_code": "H0H0H0",
+            "mailing_address_same_as_physical": False,
+            "mailing_street_address": "test mailing street address",
+            "mailing_municipality": "test mailing municipality",
+            "mailing_province": "BC",
+            "mailing_postal_code": "V0V0V0",
+            "operator_has_parent_operators": True,
+            "parent_operators_array": [],
+        }
+        put_response = TestUtils.mock_put_with_auth_role(
+            self,
+            'industry_user',
+            self.content_type,
+            mock_payload,
+            custom_reverse_lazy('update_operator_and_user_operator', kwargs={'user_operator_id': user_operator.id}),
+        )
+
+        assert put_response.status_code == 401
 
     def test_put_user_operator_operator_malformed_data(self):
         operator = operator_baker()
