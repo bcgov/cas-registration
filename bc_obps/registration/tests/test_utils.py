@@ -349,7 +349,7 @@ class TestFileHelpers:
         assert result.exists() and result.is_file()
 
 
-class TestUserOperatorHelpers:
+class TestOperatorHelpers:
     @staticmethod
     def test_handle_operator_addresses_create_without_prefix():
         from registration.api.utils.operator_utils import handle_operator_addresses
@@ -398,6 +398,31 @@ class TestUserOperatorHelpers:
         assert len(Address.objects.all()) == 2
         assert Address.objects.get(id=existing_physical_address.id).street_address == "123 Main St"
         assert Address.objects.get(id=existing_mailing_address.id).postal_code == "X1Y 2Z3"
+
+    @staticmethod
+    def test_handle_operator_addresses__add_mailing_address():
+        from registration.api.utils.operator_utils import handle_operator_addresses
+
+        existing_physical_address = baker.make(Address)
+        existing_mailing_address = existing_physical_address
+
+        address_data = {
+            "po_physical_street_address": "Physical address",
+            "po_physical_municipality": "Sometown",
+            "po_physical_province": "ON",
+            "po_physical_postal_code": "D4E 5F6",
+            "po_mailing_address_same_as_physical": False,
+            "po_mailing_street_address": "Mailing address",
+            "po_mailing_municipality": "Sometown",
+            "po_mailing_province": "ON",
+            "po_mailing_postal_code": "D4E 5F6",
+        }
+
+        handle_operator_addresses(address_data, existing_physical_address.id, existing_mailing_address.id, 'po_')
+
+        assert len(Address.objects.all()) == 2
+        assert Address.objects.get(street_address="Physical address") is not None
+        assert Address.objects.get(street_address="Mailing address") is not None
 
     @staticmethod
     def test_save_operator():
