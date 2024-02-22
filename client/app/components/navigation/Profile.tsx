@@ -14,7 +14,7 @@ export default function Profile() {
   // 👇️ run function whenever the session object changes e.g. session.error changes
   useEffect(() => {
     if (session?.error === "ErrorAccessToken") {
-      // Keycloak has exppired; so, Signout of next-auth as well
+      // Keycloak has expired; so, call next-auth Signout
       signOut();
     }
   }, [session]);

@@ -64,6 +64,10 @@ for (let [role, value] of Object.entries(UserRole)) {
     // 👤 run test as this role
     test.use({ storageState: storageState });
     test("Test Selfie", async ({ page }, testInfo) => {
+      // eslint-disable-next-line no-console
+      console.log(
+        `Test Dashboard Selfie for ${value} using storageState ${storageState}`
+      );
       // 🛸 Navigate to dashboard page
       const dashboardPage = new DashboardPOM(page);
       await dashboardPage.route();
