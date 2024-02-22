@@ -39,7 +39,10 @@ export default async function MyOperatorPage() {
     );
   }
 
-  if (status === UserOperatorStatus.PENDING || (operatorStatus === OperatorStatus.DRAFT && !isNew)) {
+  if (
+    status === UserOperatorStatus.PENDING ||
+    (operatorStatus === OperatorStatus.DRAFT && !isNew)
+  ) {
     if (isNew) {
       return permanentRedirect(
         `/dashboard/select-operator/received/add-operator/${operatorId}`,

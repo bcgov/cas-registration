@@ -873,7 +873,9 @@ class TestUserOperatorEndpoint(CommonTestSetup):
 
     def test_edit_and_archive_parent_operators(self):
         child_operator = operator_baker()
-        user_operator = baker.make(UserOperator, operator=child_operator, user=self.user, role='admin', status='Approved')
+        user_operator = baker.make(
+            UserOperator, operator=child_operator, user=self.user, role='admin', status='Approved'
+        )
 
         parent_operator_1 = parent_operator_baker()
         parent_operator_1.child_operator_id = child_operator.id
