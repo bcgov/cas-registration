@@ -43,16 +43,24 @@ def handle_operator_addresses(address_data: AddressesData, physical_address_id, 
     if address_data.get(f'{prefix}mailing_address_same_as_physical'):
         mailing_address = physical_address
     else:
-        # create or update mailing address record if mailing address is not the same as the physical address
-        mailing_address, _ = Address.objects.update_or_create(
-            id=mailing_address_id,
-            defaults={
-                "street_address": address_data.get(f'{prefix}mailing_street_address'),
-                "municipality": address_data.get(f'{prefix}mailing_municipality'),
-                "province": address_data.get(f'{prefix}mailing_province'),
-                "postal_code": address_data.get(f'{prefix}mailing_postal_code'),
-            },
-        )
+        # if mailing_address_same_as_physical == False but the ids match, it means that the user previously set the addresses to the same but now has added a mailing address
+        if physical_address_id == mailing_address_id:
+            mailing_address = Address.objects.create(
+                street_address=address_data.get(f'{prefix}mailing_street_address'),
+                municipality=address_data.get(f'{prefix}mailing_municipality'),
+                province=address_data.get(f'{prefix}mailing_province'),
+                postal_code=address_data.get(f'{prefix}mailing_postal_code'),
+            )
+        else:
+            mailing_address, _ = Address.objects.update_or_create(
+                id=mailing_address_id,
+                defaults={
+                    "street_address": address_data.get(f'{prefix}mailing_street_address'),
+                    "municipality": address_data.get(f'{prefix}mailing_municipality'),
+                    "province": address_data.get(f'{prefix}mailing_province'),
+                    "postal_code": address_data.get(f'{prefix}mailing_postal_code'),
+                },
+            )
     return {"physical_address": physical_address, "mailing_address": mailing_address}
 
 
@@ -61,10 +69,7 @@ def save_operator(payload: UserOperatorOperatorIn, operator_instance: Operator, 
     # rollback the transaction if any of the following fails (mostly to prevent orphaned addresses)
     with transaction.atomic():
         existing_physical_address = getattr(getattr(operator_instance, 'physical_address', None), 'id', None)
-        existing_mailing_address = existing_physical_address = getattr(
-            getattr(operator_instance, 'mailing_address', None), 'id', None
-        )
-
+        existing_mailing_address = getattr(getattr(operator_instance, 'mailing_address', None), 'id', None)
         physical_address, mailing_address = handle_operator_addresses(
             payload.dict(), existing_physical_address, existing_mailing_address
         ).values()
