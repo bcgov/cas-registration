@@ -74,10 +74,10 @@ export default function UserForm({ formData, isCreate }: Props) {
     }
     // ✅ Set success state to true
     setIsSuccess(true);
-    // 🕐 Wait for 1 second and then reset success state
+    // 🕐 Wait for 3 second and then reset success state
     setTimeout(() => {
       setIsSuccess(false);
-    }, 1000);
+    }, 3000);
   };
 
   return (

@@ -12,6 +12,7 @@ import * as dotenv from "dotenv";
 dotenv.config({ path: "./e2e/.env.local" });
 
 /***********************Operator********************************/
+
 // Operator values type
 type UpsertOperatorValues = {
   legalName: string;
@@ -40,7 +41,7 @@ export const upsertOperatorRecord = async (
   status: string = OperatorStatus.APPROVED,
   isNew: boolean = false,
   id: string = OperatorUUID.DEFAULT,
-  values: Partial<UpsertOperatorValues> = {}
+  values: Partial<UpsertOperatorValues> = {},
 ) => {
   try {
     // Merge default values with provided values
@@ -74,6 +75,7 @@ export const upsertOperatorRecord = async (
 };
 
 /***********************User********************************/
+
 // Upsert a User record
 const upsertUser = `
      INSERT INTO erc.user (user_guid, app_role_id, first_name, last_name , position_title , email, phone_number, business_guid, bceid_business_name )
@@ -81,6 +83,7 @@ const upsertUser = `
     ON CONFLICT (user_guid)
     DO UPDATE SET app_role_id = EXCLUDED.app_role_id;
   `;
+
 // industry_user
 const upsertUserIOValues = [
   process.env.E2E_INDUSTRY_USER_GUID as string,
@@ -93,6 +96,7 @@ const upsertUserIOValues = [
   "efb76d57-88b7-4eb6-9f26-ec12b49c14c1",
   "bceid_business_name1",
 ];
+
 // industry_user_admin
 const upsertUserIOAdminValues = [
   process.env.E2E_INDUSTRY_USER_ADMIN_GUID as string,
@@ -105,10 +109,12 @@ const upsertUserIOAdminValues = [
   "efb76d57-88b7-4eb6-9f26-ec12b49c14c1",
   "bceid_business_name2",
 ];
+
 // 🛠️ Function: upserts user record
 export const upsertUserRecord = async (userRole: string) => {
   try {
     let values: (string | number | boolean)[] = [];
+    // Get values based on user role
     switch (userRole) {
       case UserRole.INDUSTRY_USER:
         values = upsertUserIOValues;
@@ -129,9 +135,10 @@ export const upsertUserRecord = async (userRole: string) => {
     throw error;
   }
 };
-// Delete User record
+
 // Delete User record
 const deleteUserQuery = "DELETE FROM erc.user WHERE user_guid = $1";
+
 // 🛠️ Function: deletes user based on user_guid
 export const deleteUserRecord = async (userGuid: string) => {
   try {
@@ -147,12 +154,14 @@ export const deleteUserRecord = async (userGuid: string) => {
   }
 };
 
-/***********************UserOperator********************************/
+/***********************User Operator********************************/
+
 // User Operator values type
 type UpsertUserOperatorValues = {
   id: string;
   operator_id: string;
 };
+
 // User Operator default values
 const defaultUserOperatorValues: UpsertUserOperatorValues = {
   id: UserOperatorUUID.DEFAULT,
@@ -172,7 +181,7 @@ export const upsertUserOperatorRecord = async (
   userId: string,
   role: string,
   status: string,
-  values: Partial<UpsertUserOperatorValues> = {}
+  values: Partial<UpsertUserOperatorValues> = {},
 ) => {
   try {
     // Merge default values with provided values
