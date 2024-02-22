@@ -1,4 +1,4 @@
-// 🧪 Suite to test the authentication\profile
+// 🧪 Suite to test `client/app/(authenticated)/dashboard/profile/page.tsx`
 
 import { test } from "@playwright/test";
 // 🪄 Page Object Models
@@ -25,7 +25,7 @@ test.beforeAll(async () => {
     // 👤 upsert industry_user: bc-cas-dev-secondary
     await upsertUserRecord(UserRole.INDUSTRY_USER);
     // 👤 delete new user: bc-cas-dev-three
-    await deleteUserRecord([process.env.E2E_NEW_USER_GUID as string]);
+    await deleteUserRecord(process.env.E2E_NEW_USER_GUID as string);
   } catch (error) {
     // eslint-disable-next-line no-console
     console.error("❌ Error in Db setup for profile roles:", error);
@@ -41,7 +41,7 @@ test.afterAll(async () => {
   try {
     // Cleanup the environment for other tests
     // 👤 delete new user: bc-cas-dev-three
-    await deleteUserRecord([process.env.E2E_NEW_USER_GUID as string]);
+    await deleteUserRecord(process.env.E2E_NEW_USER_GUID as string);
   } catch (error) {
     throw error;
   }

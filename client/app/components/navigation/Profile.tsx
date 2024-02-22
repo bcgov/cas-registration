@@ -1,6 +1,6 @@
 import Button from "@mui/material/Button/Button";
 import Link from "@mui/material/Link";
-import { signIn, signOut, useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { getUserFullName } from "@/app/utils/getUserFullName";
 import { useEffect } from "react";
 
@@ -14,7 +14,8 @@ export default function Profile() {
   // 👇️ run function whenever the session object changes e.g. session.error changes
   useEffect(() => {
     if (session?.error === "ErrorAccessToken") {
-      signIn("keycloak"); // Force sign in to hopefully resolve error
+      // Keycloak has exppired; so, Signout of next-auth as well
+      signOut();
     }
   }, [session]);
 

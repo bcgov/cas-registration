@@ -1,4 +1,4 @@
-// 🧪 Suite to test the onboarding\Home page `http://localhost:3000/home`
+// 🧪 Suite to test `client/app/(onboarding)/home/page.tsx`
 
 import { test, expect } from "@playwright/test";
 // 🪄 Page Object Models
@@ -10,10 +10,8 @@ import { AppRole, UserRole, UserOperatorStatus } from "@/e2e/utils/enums";
 // 🥞 DB CRUD
 import {
   deleteUserRecord,
-  operatorUUID,
   upsertUserRecord,
   upsertOperatorRecord,
-  userOperatorUUID,
   upsertUserOperatorRecord,
 } from "@/e2e/utils/queries";
 // ℹ️ Environment variables
@@ -40,23 +38,21 @@ test.beforeAll(async () => {
     // 👤 industry_user_admin
     // Upsert a User record: bc-cas-dev
     await upsertUserRecord(UserRole.INDUSTRY_USER_ADMIN);
-    // Upsert an Operator record, default values
+    // Upsert an Operator record, using default values
     await upsertOperatorRecord();
     // Upsert an User Operator record: industry_user_admin, operator id 2
-    await upsertUserOperatorRecord([
-      userOperatorUUID,
+    await upsertUserOperatorRecord(
       process.env.E2E_INDUSTRY_USER_ADMIN_GUID as string,
       AppRole.ADMIN,
-      UserOperatorStatus.APPROVED,
-      operatorUUID,
-    ]);
+      UserOperatorStatus.APPROVED
+    );
 
     // 👤 industry_user
     // Upsert a User record: bc-cas-dev-secondary
     await upsertUserRecord(UserRole.INDUSTRY_USER);
 
     // 👤 delete new user: bc-cas-dev-three
-    await deleteUserRecord([process.env.E2E_NEW_USER_GUID as string]);
+    await deleteUserRecord(process.env.E2E_NEW_USER_GUID as string);
   } catch (error) {
     // eslint-disable-next-line no-console
     console.error("❌ Error in Db setup for login roles:", error);
