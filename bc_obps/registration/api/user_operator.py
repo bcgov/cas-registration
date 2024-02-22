@@ -1,16 +1,10 @@
 from uuid import UUID
 from django.db import transaction
-from django.db import transaction
-# from registration.api.utils.save_operator import save_operator
-
-from registration.api.utils.handle_parent_operators import handle_parent_operators
+from registration.api.utils.operator_utils import save_operator
 from registration.utils import (
     generate_useful_error,
-    handle_operator_addresses,
-    update_model_instance,
     check_users_admin_request_eligibility,
     check_access_request_matches_business_guid,
-    save_operator
 )
 from django.core.exceptions import ValidationError
 import pytz
@@ -30,7 +24,6 @@ from registration.schema import (
     OperatorFromUserOperatorOut,
 )
 from typing import List
-
 from .api_base import router
 from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404
@@ -41,13 +34,11 @@ from registration.models import (
     Operator,
     User,
     UserOperator,
-    Address,
 )
 from ninja.responses import codes_4xx
 from datetime import datetime
 from django.forms import model_to_dict
 from registration.constants import PAGE_SIZE
-
 
 
 ##### GET #####
