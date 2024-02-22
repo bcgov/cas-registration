@@ -11,7 +11,7 @@ mailing_province_code varchar(2);
 begin
 
   create temporary table temp_operator(
-    id integer generated always as identity primary key,
+    id uuid default uuid_generate_v4() primary key,
     swrs_organisation_id integer unique,
     legal_name text,
     trade_name text,
@@ -157,9 +157,11 @@ begin
         returning id into mailing_addr_id;
 
       insert into erc.operator(
+        id,
         legal_name,
         trade_name,
         cra_business_number,
+        swrs_organisation_id,
         bc_corporate_registry_number,
         created_at,
         status,
@@ -167,9 +169,11 @@ begin
         physical_address_id,
         mailing_address_id
       ) values (
+        temp_row.id,
         temp_row.legal_name,
         temp_row.trade_name,
         temp_row.cra_business_number,
+        temp_row.swrs_organisation_id,
         temp_row.bc_corporate_registry_number,
         now(),
         'Draft',
@@ -185,9 +189,11 @@ begin
         mailing_address_id = mailing_addr_id;
     else
       insert into erc.operator(
+        id,
         legal_name,
         trade_name,
         cra_business_number,
+        swrs_organisation_id,
         bc_corporate_registry_number,
         created_at,
         status,
@@ -195,9 +201,11 @@ begin
         physical_address_id,
         mailing_address_id
       ) values (
+        temp_row.id,
         temp_row.legal_name,
         temp_row.trade_name,
         temp_row.cra_business_number,
+        temp_row.swrs_organisation_id,
         temp_row.bc_corporate_registry_number,
         now(),
         'Draft',
@@ -227,6 +235,7 @@ begin
     order by swrs_facility_id
   )
   insert into erc.operation(
+    id,
     swrs_facility_id,
     operator_id,
     name,
@@ -236,6 +245,7 @@ begin
     status
   )
   select
+    uuid_generate_v4(),
     sf.swrs_facility_id,
     (select id from erc.operator where operator.cra_business_number = o.cra_business_number::integer),
     coalesce(f.facility_name, sf.facility_name) as facility_name,

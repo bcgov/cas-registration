@@ -464,6 +464,11 @@ class Operator(TimeStampedModel):
     legal_name = models.CharField(max_length=1000, db_comment="The legal name of an operator", unique=True)
     trade_name = models.CharField(max_length=1000, blank=True, db_comment="The trade name of an operator")
     cra_business_number = models.IntegerField(db_comment="The CRA business number of an operator")
+    swrs_organisation_id = models.IntegerField(
+        db_comment="An identifier used in the CIIP/SWRS dataset (in swrs: organisation = operator). This identifier will only be populated for operators that were imported from that dataset.",
+        blank=True,
+        null=True,
+    )
     bc_corporate_registry_number = models.CharField(
         db_comment="The BC corporate registry number of an operator",
         null=True,

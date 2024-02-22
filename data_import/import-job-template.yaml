@@ -51,6 +51,7 @@ spec:
             - -c
             - >
               psql -c "create extension if not exists postgres_fdw;";
+              psql -c 'create extension if not exists "uuid-ossp";';
               psql -c "create schema if not exists imp;";
               psql -f ./obps_swrs_import_fdw.sql;
               psql -f ./obps_import_swrs_data_from_fdw.sql;
