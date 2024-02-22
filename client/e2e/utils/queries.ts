@@ -1,95 +1,79 @@
 // 🥞 Connection pool to postgres DB
 import { pool } from "@/e2e/utils/pool";
 // ☰ Enums
-import { UserRole } from "@/e2e/utils/enums";
+import {
+  UserRole,
+  OperatorStatus,
+  OperatorUUID,
+  UserOperatorUUID,
+} from "@/e2e/utils/enums";
 // ℹ️ Environment variables
 import * as dotenv from "dotenv";
 dotenv.config({ path: "./e2e/.env.local" });
 
-// Delete User record
-const deleteUser = "DELETE FROM erc.user WHERE user_guid = $1";
-// 🛠️ Function: deletes user based on values received
-export const deleteUserRecord = async <T>(values: T[]) => {
-  try {
-    const query = {
-      text: deleteUser,
-      values: values,
-    };
-    // ▶️ Execute the query
-    await pool.query(query);
-  } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error(`Error deleting record:`, error);
-    throw error;
-  }
+/***********************Operator********************************/
+// Operator values type
+type UpsertOperatorValues = {
+  legalName: string;
+  tradeName: string;
+  craBusinessNumber: string;
+  bcCorporateRegistryNumber: string;
+  businessStructure: string;
 };
-
-// Delete User Operator record
-const deleteUserOperator = "DELETE FROM erc.user_operator WHERE user_id = $1";
-// 🛠️ Function: deletes user operator based on values received
-export const deleteUserOperatorRecord = async <T>(values: T[]) => {
-  try {
-    const query = {
-      text: deleteUserOperator,
-      values: values,
-    };
-    // ▶️ Execute the query
-    await pool.query(query);
-  } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error(`Error deleting record:`, error);
-    throw error;
-  }
+// Operator default values
+const defaultUpsertOperatorValues: UpsertOperatorValues = {
+  legalName: "Existing Operator 2 Legal Name",
+  tradeName: "Existing Operator 2 Trade Name",
+  craBusinessNumber: "987654321",
+  bcCorporateRegistryNumber: "def1234567",
+  businessStructure: "BC Corporation",
 };
-
-// Upsert an Operator record
+// Operator Upsert SQL
 const upsertOperator = `
     INSERT INTO erc.operator (legal_name, trade_name, cra_business_number, bc_corporate_registry_number, business_structure_id, status, is_new, id)
     VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
     ON CONFLICT (id)
     DO UPDATE SET status = EXCLUDED.status;
   `;
-// Operator UUID
-export const operatorUUID = "4242ea9d-b917-4129-93c2-db00b7451051";
-let upsertOperatorValues = [
-  "Existing Operator 2 Legal Name",
-  "Existing Operator 2 Trade Name",
-  "987654321",
-  "def1234567",
-  "BC Corporation",
-  "Approved",
-  false,
-  operatorUUID,
-];
-// 🛠️ Function: upserts operator record based on optional values received
+// 🛠️ Function: upserts operator record
 export const upsertOperatorRecord = async (
-  status?: string,
-  isNew?: boolean,
-  id?: string,
+  status: string = OperatorStatus.APPROVED,
+  isNew: boolean = false,
+  id: string = OperatorUUID.DEFAULT,
+  values: Partial<UpsertOperatorValues> = {}
 ) => {
   try {
-    if (status) {
-      upsertOperatorValues[5] = status;
-    }
-    if (isNew) {
-      upsertOperatorValues[6] = isNew;
-    }
-    if (id) {
-      upsertOperatorValues[7] = id;
-    }
+    // Merge default values with provided values
+    const mergedValues: UpsertOperatorValues = {
+      ...defaultUpsertOperatorValues,
+      ...values,
+    };
+
+    const upsertOperatorValues = [
+      mergedValues.legalName,
+      mergedValues.tradeName,
+      mergedValues.craBusinessNumber,
+      mergedValues.bcCorporateRegistryNumber,
+      mergedValues.businessStructure,
+      status,
+      isNew,
+      id,
+    ];
+
     const query = {
       text: upsertOperator,
       values: upsertOperatorValues,
     };
-    // ▶️ Execute the query
+
+    // Execute the query
     await pool.query(query);
   } catch (error) {
-    // eslint-disable-next-line no-console
     console.error(`Error upserting operator record:`, error);
     throw error;
   }
 };
 
+/***********************User********************************/
 // Upsert a User record
 const upsertUser = `
      INSERT INTO erc.user (user_guid, app_role_id, first_name, last_name , position_title , email, phone_number, business_guid, bceid_business_name )
@@ -104,10 +88,10 @@ const upsertUserIOValues = [
   "Cas",
   "SECONDARY",
   "USER",
-  "email@email.com",
-  "+16044015432",
+  "cas.secondary@email.com",
+  "+16044015431",
   "efb76d57-88b7-4eb6-9f26-ec12b49c14c1",
-  "bceid_business_name",
+  "bceid_business_name1",
 ];
 // industry_user_admin
 const upsertUserIOAdminValues = [
@@ -116,12 +100,12 @@ const upsertUserIOAdminValues = [
   "Bcgov",
   "Cas",
   "ADMINISTRATOR",
-  "email@email.com",
+  "bcgov.cas@email.com",
   "+16044015432",
   "efb76d57-88b7-4eb6-9f26-ec12b49c14c1",
-  "bceid_business_name",
+  "bceid_business_name2",
 ];
-// 🛠️ Function: upserts user record based on user role received
+// 🛠️ Function: upserts user record
 export const upsertUserRecord = async (userRole: string) => {
   try {
     let values: (string | number | boolean)[] = [];
@@ -145,28 +129,86 @@ export const upsertUserRecord = async (userRole: string) => {
     throw error;
   }
 };
-
-// Upsert a User Operator record
-// Operator UUID
-export const userOperatorUUID = "9bb541e6-41f5-47d3-8359-2fab4f5bc4c0";
-const upsertUserOperator = `
-      INSERT INTO erc.user_operator (id, user_id, role, status, operator_id)
-    VALUES ($1, $2, $3, $4, $5)
-    ON CONFLICT (user_id, operator_id)
-    DO UPDATE SET role = EXCLUDED.role, status = EXCLUDED.status;
-  `;
-// 🛠️ Function: upserts user operator record based on values received
-export const upsertUserOperatorRecord = async <T>(values: T[]) => {
+// Delete User record
+// Delete User record
+const deleteUserQuery = "DELETE FROM erc.user WHERE user_guid = $1";
+// 🛠️ Function: deletes user based on user_guid
+export const deleteUserRecord = async (userGuid: string) => {
   try {
     const query = {
-      text: upsertUserOperator,
-      values: values,
+      text: deleteUserQuery,
+      values: [userGuid],
     };
-    // ▶️ Execute the query
+    // Execute the query
     await pool.query(query);
   } catch (error) {
-    // eslint-disable-next-line no-console
+    console.error(`Error deleting user record:`, error);
+    throw error;
+  }
+};
+
+/***********************UserOperator********************************/
+// User Operator values type
+type UpsertUserOperatorValues = {
+  id: string;
+  operator_id: string;
+};
+// User Operator default values
+const defaultUserOperatorValues: UpsertUserOperatorValues = {
+  id: UserOperatorUUID.DEFAULT,
+  operator_id: OperatorUUID.DEFAULT,
+};
+
+// Upsert a User Operator record
+const upsertUserOperatorQuery = `
+  INSERT INTO erc.user_operator (id, operator_id, user_id, role, status)
+  VALUES ($1, $2, $3, $4, $5)
+  ON CONFLICT (operator_id, user_id)
+  DO UPDATE SET role = EXCLUDED.role, status = EXCLUDED.status;
+`;
+
+// 🛠️ Function: upserts user operator
+export const upsertUserOperatorRecord = async (
+  userId: string,
+  role: string,
+  status: string,
+  values: Partial<UpsertUserOperatorValues> = {}
+) => {
+  try {
+    // Merge default values with provided values
+    const mergedValues: UpsertUserOperatorValues = {
+      ...defaultUserOperatorValues,
+      ...values,
+    };
+
+    const query = {
+      text: upsertUserOperatorQuery,
+      values: [mergedValues.id, mergedValues.operator_id, userId, role, status],
+    };
+
+    // Execute the query
+    await pool.query(query);
+  } catch (error) {
     console.error(`Error upserting user operator record:`, error);
+    throw error;
+  }
+};
+
+// Delete User Operator record
+const deleteUserOperatorQuery =
+  "DELETE FROM erc.user_operator WHERE user_id = $1";
+
+// 🛠️ Function: deletes user operator based on user_id
+export const deleteUserOperatorRecord = async (userId: string) => {
+  try {
+    const query = {
+      text: deleteUserOperatorQuery,
+      values: [userId],
+    };
+    // Execute the query
+    await pool.query(query);
+  } catch (error) {
+    console.error(`Error deleting user operator record:`, error);
     throw error;
   }
 };

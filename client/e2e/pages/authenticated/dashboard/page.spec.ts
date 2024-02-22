@@ -1,4 +1,4 @@
-// 🧪 Suite to test the authentication\dashboard
+// 🧪 Suite to test `client/app/(authenticated)/dashboard/page.tsx`
 
 import { test, expect } from "@playwright/test";
 // 🪄 Page Object Models
@@ -9,10 +9,8 @@ import { AppRole, UserRole, UserOperatorStatus } from "@/e2e/utils/enums";
 // 🥞 DB CRUD
 import {
   deleteUserOperatorRecord,
-  operatorUUID,
   upsertUserRecord,
   upsertOperatorRecord,
-  userOperatorUUID,
   upsertUserOperatorRecord,
 } from "@/e2e/utils/queries";
 // ℹ️ Environment variables
@@ -35,22 +33,20 @@ test.beforeAll(async () => {
     // Scenario FrontEndRoles.INDUSTRY_USER_ADMIN where UserOperatorStatus.APPROVED && OperatorStatus.APPROVED;
     // Upsert a User record: bc-cas-dev
     await upsertUserRecord(UserRole.INDUSTRY_USER_ADMIN);
-    // Upsert an Operator record, default values
+    // Upsert an Operator record, using default values
     await upsertOperatorRecord();
     // Upsert an User Operator record: industry_user_admin, operator id 2
-    await upsertUserOperatorRecord([
-      userOperatorUUID,
+    await upsertUserOperatorRecord(
       process.env.E2E_INDUSTRY_USER_ADMIN_GUID as string,
       AppRole.ADMIN,
-      UserOperatorStatus.APPROVED,
-      operatorUUID,
-    ]);
+      UserOperatorStatus.APPROVED
+    );
     // Scenario FrontEndRoles.INDUSTRY_USER where userOperatorStatus !== UserOperatorStatus.APPROVED
     // Shows "Select Operator\...1 pending action(s) required" bceidSelectOperatorTile
     // ensure user is not associated with any operator
-    await deleteUserOperatorRecord([
-      process.env.E2E_INDUSTRY_USER_GUID as string,
-    ]);
+    await deleteUserOperatorRecord(
+      process.env.E2E_INDUSTRY_USER_GUID as string
+    );
   } catch (error) {
     // eslint-disable-next-line no-console
     console.error("❌ Error in Db setup for profile roles:", error);
