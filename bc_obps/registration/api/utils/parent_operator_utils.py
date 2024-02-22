@@ -44,10 +44,26 @@ def handle_parent_operators(updated_parent_operators, operator_instance, user):
                 po_operator.operator_index = assign_index(existing_parent_operator_indices)
                 existing_parent_operator_indices.append(po_operator.operator_index)
 
+            # handle addresses
+            existing_po_physical_address = ParentOperator.objects.filter(
+                child_operator_id=operator_instance.id, operator_index=po_operator.operator_index
+            ).first()
+            existing_po_physical_address_id = (
+                existing_po_physical_address.physical_address_id if existing_po_physical_address else None
+            )
+
+            existing_po_mailing_address = ParentOperator.objects.filter(
+                child_operator_id=operator_instance.id, operator_index=po_operator.operator_index
+            ).first()
+            existing_po_mailing_address_id = (
+                existing_po_mailing_address.mailing_address_id if existing_po_mailing_address else None
+            )
+
             physical_address, mailing_address = handle_operator_addresses(
-                po_operator.dict(), po_operator.po_physical_address_id, po_operator.po_mailing_address_id, 'po_'
+                po_operator.dict(), existing_po_physical_address_id, existing_po_mailing_address_id, 'po_'
             ).values()
 
+            # create or update the parent operator
             po_operator_instance, _ = ParentOperator.objects.update_or_create(
                 child_operator=operator_instance,
                 operator_index=po_operator.operator_index,
