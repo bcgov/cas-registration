@@ -1,4 +1,5 @@
 from typing import Optional
+from registration.schema.validators import validate_cra_business_number
 from ninja import ModelSchema, Schema, Field
 from pydantic import validator
 from registration.constants import BC_CORPORATE_REGISTRY_REGEX
@@ -35,6 +36,11 @@ class ParentOperatorIn(Schema):
     @classmethod
     def validate_po_business_structure(cls, value: str) -> BusinessStructure:
         return validate_business_structure(value)
+
+    @validator("po_cra_business_number")
+    @classmethod
+    def validate_cra_business_number(cls, value: str):
+        return validate_cra_business_number(value)
 
 
 class ParentOperatorOut(ModelSchema):
