@@ -28,7 +28,7 @@ def generate_random_bc_corporate_registry_number():
     return dummy_data
 
 
-def user_baker(custom_properties=None):
+def user_baker(custom_properties=None)-> User:
     properties = {}
     if custom_properties:
         properties.update(custom_properties)
@@ -36,19 +36,19 @@ def user_baker(custom_properties=None):
     return baker.make(User, **properties)
 
 
-def address_baker():
+def address_baker() -> Address:
     return baker.make(Address)
 
 
-def document_baker():
+def document_baker() -> Document:
     return baker.make(Document, file='test.pdf')
 
 
-def contact_baker():
+def contact_baker() -> Contact:
     return baker.make(Contact)
 
 
-def operator_baker(custom_properties=None):
+def operator_baker(custom_properties=None) -> Operator:
     properties = {
         'bc_corporate_registry_number': generate_random_bc_corporate_registry_number(),
         'business_structure': BusinessStructure.objects.first(),
@@ -63,7 +63,7 @@ def operator_baker(custom_properties=None):
     return baker.make(Operator, **properties)
 
 
-def operation_baker(operator_id: uuid.UUID = None):
+def operation_baker(operator_id: uuid.UUID = None) -> Operation:
     if operator_id:
         return baker.make(
             Operation,
@@ -82,7 +82,7 @@ def operation_baker(operator_id: uuid.UUID = None):
     )
 
 
-def user_operator_baker(custom_properties=None):
+def user_operator_baker(custom_properties=None) -> UserOperator:
     properties = {
         'user': user_baker(),
         'operator': operator_baker(),
@@ -95,7 +95,7 @@ def user_operator_baker(custom_properties=None):
     return baker.make(UserOperator, **properties)
 
 
-def multiple_operator_baker():
+def multiple_operator_baker() -> MultipleOperator:
     return baker.make(
         MultipleOperator,
         operation=operation_baker(),
@@ -105,7 +105,7 @@ def multiple_operator_baker():
     )
 
 
-def parent_operator_baker():
+def parent_operator_baker() -> ParentOperator:
     return baker.make(
         ParentOperator,
         child_operator=operator_baker(),
