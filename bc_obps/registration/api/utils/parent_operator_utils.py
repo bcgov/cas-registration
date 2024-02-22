@@ -1,13 +1,9 @@
 from typing import List
-from registration.utils import    handle_operator_addresses
-
-from registration.models import (
-    ParentOperator,
-)
+from registration.api.utils.operator_utils import handle_operator_addresses
+from registration.models import ParentOperator
 
 
 def archive_parent_operators(existing_parent_operator_indices, updated_parent_operators, operator_instance, user):
-
     updated_parent_operator_indices = [po.operator_index for po in updated_parent_operators if po.operator_index]
 
     indices_to_delete = list(set(existing_parent_operator_indices) - set(updated_parent_operator_indices))
@@ -25,7 +21,6 @@ def assign_index(existing_parent_operator_indices):
 
 
 def handle_parent_operators(updated_parent_operators, operator_instance, user):
-
     existing_parent_operators = operator_instance.parent_operators.all()
 
     # if the user has removed all parent operators, archive them all
@@ -38,7 +33,6 @@ def handle_parent_operators(updated_parent_operators, operator_instance, user):
     # if the user has added, edited, or removed some parent operators
     if updated_parent_operators:
         for po_operator in updated_parent_operators:
-
             # archive any parent operators that have been removed
             if existing_parent_operator_indices:
                 archive_parent_operators(
@@ -50,7 +44,9 @@ def handle_parent_operators(updated_parent_operators, operator_instance, user):
                 po_operator.operator_index = assign_index(existing_parent_operator_indices)
                 existing_parent_operator_indices.append(po_operator.operator_index)
 
-            physical_address, mailing_address = handle_operator_addresses(po_operator.dict(), po_operator.po_physical_address_id, po_operator.po_mailing_address_id, 'po_').values()
+            physical_address, mailing_address = handle_operator_addresses(
+                po_operator.dict(), po_operator.po_physical_address_id, po_operator.po_mailing_address_id, 'po_'
+            ).values()
 
             po_operator_instance, _ = ParentOperator.objects.update_or_create(
                 child_operator=operator_instance,

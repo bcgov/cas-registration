@@ -1,7 +1,5 @@
-# from registration.api.utils.save_operator import save_operator
 from registration.schema.parent_operator import ParentOperatorIn
 from registration.schema.user_operator import UserOperatorOperatorIn
-from registration.utils import    handle_operator_addresses, save_operator
 import pytest
 import tempfile
 from model_bakery import baker
@@ -338,7 +336,6 @@ class TestGetAnOperatorsUsers:
 class TestFileHelpers:
     @staticmethod
     def file_to_data_url_returns_data_url():
-
         # Create a temporary file
         temp_pdf_file = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf")
 
@@ -355,6 +352,7 @@ class TestFileHelpers:
 class TestUserOperatorHelpers:
     @staticmethod
     def test_handle_operator_addresses_create_without_prefix():
+        from registration.api.utils.operator_utils import handle_operator_addresses
 
         address_data = {
             "physical_street_address": "123 Main St",
@@ -378,6 +376,7 @@ class TestUserOperatorHelpers:
 
     @staticmethod
     def test_handle_operator_addresses_update_with_prefix():
+        from registration.api.utils.operator_utils import handle_operator_addresses
 
         existing_physical_address = baker.make(Address)
         existing_mailing_address = baker.make(Address)
@@ -402,6 +401,8 @@ class TestUserOperatorHelpers:
 
     @staticmethod
     def test_save_operator():
+        from registration.api.utils.operator_utils import save_operator
+
         user = baker.make(User)
         operator_instance: Operator = Operator(
             cra_business_number=1234321,
