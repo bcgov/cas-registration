@@ -520,6 +520,7 @@ class OperatorModelTest(BaseTestCase):
                 None,
                 None,
             ),
+            ("swrs_organisation_id", "swrs organisation id", None, None),
             ("business_structure", "business structure", None, None),
             ("physical_address", "physical address", None, None),
             ("mailing_address", "mailing address", None, None),
