@@ -59,7 +59,7 @@ export default function UserForm({ formData, isCreate }: Props) {
           business_guid: session?.user?.bceid_business_guid,
           bceid_business_name: session?.user?.bceid_business_name,
         }),
-      },
+      }
     );
     // 🛑 Set loading to false after the API call is completed
     setIsLoading(false);
@@ -98,7 +98,7 @@ export default function UserForm({ formData, isCreate }: Props) {
         {/* Disable the button when loading or when success state is true */}
         <SubmitButton
           label={isSuccess ? "✅ Success" : "Submit"}
-          disabled={isLoading || isSuccess}
+          disabled={isLoading}
         />
       </div>
     </FormBase>
