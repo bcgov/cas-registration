@@ -335,7 +335,7 @@ def create_operator_and_user_operator(request, payload: UserOperatorOperatorIn):
     response={200: RequestAccessOut, codes_4xx: Message},
     url_name="update_operator_and_user_operator",
 )
-@authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
+@authorize(["industry_user"], ["admin"])
 def update_operator_and_user_operator(request, payload: UserOperatorOperatorIn, user_operator_id: UUID):
     user: User = request.current_user
     try:
