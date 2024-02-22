@@ -30,7 +30,7 @@ export default async function MyOperatorPage() {
   const { status, id, operatorId, operatorStatus } = userOperator;
   if (
     status === UserOperatorStatus.APPROVED ||
-    operatorStatus === OperatorStatus.DRAFT
+    (operatorStatus === OperatorStatus.DRAFT && isNew)
   ) {
     // Using permanentRedirect instead of redirect to avoid the double rendering bug
     // https://github.com/vercel/next.js/issues/57257
@@ -39,7 +39,7 @@ export default async function MyOperatorPage() {
     );
   }
 
-  if (status === UserOperatorStatus.PENDING) {
+  if (status === UserOperatorStatus.PENDING || (operatorStatus === OperatorStatus.DRAFT && !isNew)) {
     if (isNew) {
       return permanentRedirect(
         `/dashboard/select-operator/received/add-operator/${operatorId}`,
