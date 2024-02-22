@@ -1100,27 +1100,22 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         operator = operator_baker()
         operator.created_by = self.user
         operator.save(update_fields=["created_by"])
+        mock_payload = {
+            "legal_name": "Unauthorized",
+            "trade_name": "Unauthorized",
+            "cra_business_number": 678123654,
+            "bc_corporate_registry_number": "jkl1234321",
+            "business_structure": BusinessStructure.objects.first().pk,
+            "physical_street_address": "add",
+            "physical_municipality": "add",
+            "physical_province": "BC",
+            "physical_postal_code": "H0H0H0",
+            "mailing_address_same_as_physical": True,
+            "operator_has_parent_operators": False,
+        }
         user_operator = baker.make(
             UserOperator, user=self.user, operator=operator, role=UserOperator.Roles.REPORTER, created_by=self.user
         )
-        mock_payload = {
-            "legal_name": "Put Operator Legal Name",
-            "trade_name": "Put Operator Trade Name",
-            "cra_business_number": 963852741,
-            "bc_corporate_registry_number": "abc1234321",
-            "business_structure": BusinessStructure.objects.first().pk,
-            "physical_street_address": "test physical street address",
-            "physical_municipality": "test physical municipality",
-            "physical_province": "BC",
-            "physical_postal_code": "H0H0H0",
-            "mailing_address_same_as_physical": False,
-            "mailing_street_address": "test mailing street address",
-            "mailing_municipality": "test mailing municipality",
-            "mailing_province": "BC",
-            "mailing_postal_code": "V0V0V0",
-            "operator_has_parent_operators": True,
-            "parent_operators_array": [],
-        }
         put_response = TestUtils.mock_put_with_auth_role(
             self,
             'industry_user',
