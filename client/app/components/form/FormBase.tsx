@@ -38,14 +38,11 @@ const FormBase: React.FC<FormPropsWithTheme<any>> = (props) => {
   const Form = useMemo(() => withTheme(theme ?? defaultTheme), [theme]);
   const [formState, setFormState] = useState(formData ?? {});
 
-  const handleChange = () => {
-    if (setErrorReset) setErrorReset(undefined);
-  };
-
   // Handling form state externally as RJSF was resetting the form data on submission and
   // creating buggy behaviour if there was an API error and the user attempted to resubmit
   const handleSubmit = (e: IChangeEvent) => {
     setFormState(e.formData);
+    if (setErrorReset) setErrorReset(undefined); // Reset error state on form submission
 
     if (onSubmit) onSubmit(e, formState);
   };
@@ -56,7 +53,6 @@ const FormBase: React.FC<FormPropsWithTheme<any>> = (props) => {
       formData={formState}
       noHtml5Validate
       omitExtraData={omitExtraData ?? true}
-      onChange={handleChange}
       onSubmit={handleSubmit}
       showErrorList={false}
       transformErrors={transformErrors}
