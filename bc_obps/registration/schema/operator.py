@@ -7,6 +7,20 @@ from registration.models import Operator
 from .parent_operator import ParentOperatorOut
 
 
+class OperatorSearchOut(ModelSchema):
+    class Config:
+        model = Operator
+        model_fields = ["id", "legal_name"]
+
+
+class ConfirmSelectedOperatorOut(ModelSchema):
+    physical_street_address: Optional[str] = Field(None, alias="physical_address.street_address")
+
+    class Config:
+        model = Operator
+        model_fields = ["id", "legal_name", "trade_name", "cra_business_number"]
+
+
 class OperatorOut(ModelSchema):
     """
     Schema for the Operator model
