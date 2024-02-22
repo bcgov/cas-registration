@@ -85,6 +85,18 @@ export default function UserOperatorForm({
 
   const operatorRoute = isCasInternal ? "operators" : "select-operator";
 
+  const confirmationMessage = (
+    <>
+      Please click on the &quot;Edit Information&quot; button, fill out missing
+      information or update incorrect information about your operator, and then
+      click on the &quot;Save and Return to Dashboard&quot; button to confirm
+      the completeness and accuracy. <br />
+      Some fields cannot be edited. If you need to change those fields, please
+      contact us via email at{" "}
+      <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca</a>.
+    </>
+  );
+
   return (
     <>
       {isIndustryUser && (
@@ -92,8 +104,7 @@ export default function UserOperatorForm({
           classNames={"mb-4 mt-6"}
           showNotePrefix={false}
           showAlertIcon={true}
-          message="Please fill out missing information or update incorrect information about your operator to continue with your application.
-Some fields cannot be edited. If you need to change those fields, please contact us via email at GHGRegulator@gov.bc.ca."
+          message={confirmationMessage}
         />
       )}
       <MultiStepFormBase

@@ -5,7 +5,7 @@ export const registrationRequestNote =
 
 interface Props {
   classNames?: string;
-  message: string;
+  message: string | JSX.Element;
   showAlertIcon?: boolean;
   showNotePrefix?: boolean;
 }
