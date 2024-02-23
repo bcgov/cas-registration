@@ -144,8 +144,13 @@ export const authOptions: NextAuthOptions = {
               body: formData,
             });
             const refreshedToken = await response.json();
+
+            console.log(refreshedToken);
             if (!response.ok) throw refreshedToken;
             token = refreshedToken;
+            token.access_token_expires_at = refreshedToken.expires_at;
+
+            console.log(token);
           } catch (error) {
             token.error = Errors.ACCESS_TOKEN;
           }
