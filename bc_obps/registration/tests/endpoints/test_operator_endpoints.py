@@ -3,7 +3,7 @@ from localflavor.ca.models import CAPostalCodeField
 from registration.tests.utils.bakers import operator_baker, user_operator_baker
 from registration.constants import AUDIT_FIELDS
 from registration.models import Operator, UserOperator
-from registration.schema.operator import OperatorOut
+from registration.schema.operator import OperatorOut, OperatorSearchOut, ConfirmSelectedOperatorOut
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
 
@@ -28,102 +28,87 @@ class TestOperatorsEndpoint(CommonTestSetup):
         )
         assert response.status_code == 401
 
-    def test_operator_unauthorized_users_cannot_put(self):
-        # /operators/{operator_id}
-
+    def test_operator_unauthorized_users_cannot_update(self):
+        user_operator = user_operator_baker()
         operator = operator_baker()
-        user_operator = user_operator_baker({'operator': operator})
         for role in ['cas_pending', 'industry_user']:
             response = TestUtils.mock_put_with_auth_role(
                 self,
                 role,
                 self.content_type,
                 {'status': Operator.Statuses.APPROVED, 'user_operator_id': user_operator.id},
-                custom_reverse_lazy('update_operator', kwargs={'operator_id': operator.id}),
+                custom_reverse_lazy('update_operator_status', kwargs={'operator_id': operator.id}),
             )
             assert response.status_code == 401
 
     def test_get_operators_no_parameters(self):
-        response = TestUtils.mock_get_with_auth_role(self, 'industry_user')
+        response = TestUtils.mock_get_with_auth_role(
+            self, 'industry_user', custom_reverse_lazy('get_operators_by_cra_number_or_legal_name')
+        )
         assert response.status_code == 404
-        assert response.json() == {"message": "No parameters provided"}
+        assert response.json() == {"message": "No search value provided"}
 
     def test_get_operators_by_legal_name(self):
         response = TestUtils.mock_get_with_auth_role(
             self,
             'industry_user',
-            custom_reverse_lazy('get_operator_by_legal_name_or_cra') + '?legal_name=Test Operator legal name',
-        )
-        assert response.status_code == 200
-        response_dict: dict = response.json()
-        for key in response_dict.keys():
-            # exclude audit fields
-            if key not in AUDIT_FIELDS:
-                if key == "id":
-                    assert response_dict[key] == str(self.operator.id)  # String representation of UUID
-                else:
-                    assert response_dict[key] == OperatorOut.from_orm(self.operator).dict()[key]
-
-    def test_get_search_operators_by_legal_name(self):
-        response = TestUtils.mock_get_with_auth_role(
-            self,
-            "industry_user",
-            custom_reverse_lazy('get_operators_by_legal_name') + '?search_value=Test Operator legal name',
+            custom_reverse_lazy('get_operators_by_cra_number_or_legal_name') + '?legal_name=Test Operator legal name',
         )
         assert response.status_code == 200
         response_dict: dict = response.json()
         assert len(response_dict) == 1
         for key in response_dict[0].keys():
-            # exclude audit fields
-            if key not in AUDIT_FIELDS:
-                if key == "id":
-                    assert response_dict[0][key] == str(self.operator.id)  # String representation of UUID
-                else:
-                    assert response_dict[0][key] == OperatorOut.from_orm(self.operator).dict()[key]
+            if key == "id":
+                assert response_dict[0][key] == str(self.operator.id)  # String representation of UUID
+            else:
+                assert response_dict[0][key] == OperatorSearchOut.from_orm(self.operator).dict()[key]
 
     def test_get_search_operators_by_legal_name_no_value(self):
         response = TestUtils.mock_get_with_auth_role(
-            self, 'industry_user', custom_reverse_lazy('get_operators_by_legal_name') + '?search_value='
+            self, 'industry_user', custom_reverse_lazy('get_operators_by_cra_number_or_legal_name') + '?legal_name='
         )
         assert response.status_code == 404
-        assert response.json() == {"message": "No parameters provided"}
+        assert response.json() == {"message": "No search value provided"}
+
+    def test_get_search_operators_by_cra_business_number_no_value(self):
+        response = TestUtils.mock_get_with_auth_role(
+            self,
+            'industry_user',
+            custom_reverse_lazy('get_operators_by_cra_number_or_legal_name') + '?cra_business_number=',
+        )
+        assert response.json() == {"message": "No search value provided"}
 
     def test_get_operators_by_cra_number(self):
         response = TestUtils.mock_get_with_auth_role(
             self,
             'industry_user',
-            custom_reverse_lazy('get_operator_by_legal_name_or_cra') + '?cra_business_number=111111111',
+            custom_reverse_lazy('get_operators_by_cra_number_or_legal_name') + '?cra_business_number=111111111',
         )
         assert response.status_code == 200
         response_dict: dict = response.json()
-        for key in response_dict.keys():
-            # exclude audit fields
-            if key not in AUDIT_FIELDS:
-                if key == "id":
-                    assert response_dict[key] == str(self.operator.id)  # String representation of UUID
-                else:
-                    assert response_dict[key] == OperatorOut.from_orm(self.operator).dict()[key]
+        assert response_dict['id'] == str(OperatorSearchOut.from_orm(self.operator).dict()['id'])
 
     def test_get_operators_no_matching_operator_legal_name(self):
         response = TestUtils.mock_get_with_auth_role(
             self,
             'industry_user',
-            custom_reverse_lazy('get_operator_by_legal_name_or_cra') + "?legal_name=No matching operator",
+            custom_reverse_lazy('get_operators_by_cra_number_or_legal_name') + "?legal_name=No matching operator",
         )
-        assert response.status_code == 404
+        assert response.status_code == 200
+        assert response.json() == []
 
     def test_get_operators_no_matching_operator_cra_number(self):
         response = TestUtils.mock_get_with_auth_role(
             self,
             'industry_user',
-            custom_reverse_lazy('get_operator_by_legal_name_or_cra') + "?cra_business_number=987654321",
+            custom_reverse_lazy('get_operators_by_cra_number_or_legal_name') + "?cra_business_number=987654321",
         )
         assert response.status_code == 404
 
     def test_select_operator_with_valid_id(self):
         operator = operator_baker()
         response = TestUtils.mock_get_with_auth_role(
-            self, "cas_analyst", custom_reverse_lazy('update_operator', kwargs={"operator_id": operator.id})
+            self, "cas_analyst", custom_reverse_lazy('get_operator', kwargs={"operator_id": operator.id})
         )
         assert response.status_code == 200
         response_dict: dict = response.json()
@@ -133,7 +118,7 @@ class TestOperatorsEndpoint(CommonTestSetup):
                 if key == "id":
                     assert response_dict[key] == str(operator.id)  # String representation of UUID
                 else:
-                    assert response_dict[key] == OperatorOut.from_orm(operator).dict()[key]
+                    assert response_dict[key] == ConfirmSelectedOperatorOut.from_orm(operator).dict()[key]
 
     def test_select_operator_with_invalid_id(self):
         invalid_operator_id = 99999  # Invalid operator ID
@@ -153,14 +138,26 @@ class TestOperatorsEndpoint(CommonTestSetup):
             'cas_admin',
             self.content_type,
             {"status": Operator.Statuses.APPROVED, 'user_operator_id': user_operator.id},
-            custom_reverse_lazy('update_operator', kwargs={'operator_id': operator.id}),
+            custom_reverse_lazy('update_operator_status', kwargs={'operator_id': operator.id}),
         )
 
         assert response.status_code == 200
-
-        assert response.json().get('status') == Operator.Statuses.APPROVED
-        assert response.json().get('is_new') == False
-        assert response.json().get("verified_by") == str(self.user.user_guid)
+        response_dict = response.json()
+        assert response_dict.get('status') == Operator.Statuses.APPROVED
+        assert response_dict.get('is_new') == False
+        assert response_dict.get("verified_by") == str(self.user.user_guid)
+        operator.refresh_from_db()  # refresh the operator object to get the updated status
+        for key in response_dict.keys():
+            if key not in AUDIT_FIELDS:
+                if key == "id":
+                    assert response_dict[key] == str(operator.id)  # String representation of UUID
+                elif key == "verified_at":
+                    # tweaking time format to match the expected format
+                    assert response_dict[key] == operator.verified_at.strftime("%Y-%m-%dT%H:%M:%S.%fZ")[:-4] + "Z"
+                elif key == "verified_by":
+                    assert response_dict[key] == str(operator.verified_by.user_guid)
+                else:
+                    assert response_dict[key] == OperatorOut.from_orm(operator).dict()[key]
 
     def test_put_request_changes_to_operator(self):
         operator = operator_baker({'status': Operator.Statuses.PENDING})
@@ -171,7 +168,7 @@ class TestOperatorsEndpoint(CommonTestSetup):
             'cas_admin',
             self.content_type,
             {"status": Operator.Statuses.CHANGES_REQUESTED, 'user_operator_id': user_operator.id},
-            custom_reverse_lazy('update_operator', kwargs={'operator_id': operator.id}),
+            custom_reverse_lazy('update_operator_status', kwargs={'operator_id': operator.id}),
         )
 
         assert response.status_code == 200
@@ -189,7 +186,7 @@ class TestOperatorsEndpoint(CommonTestSetup):
             'cas_admin',
             self.content_type,
             {"status": Operator.Statuses.DECLINED, 'user_operator_id': user_operator.id},
-            custom_reverse_lazy('update_operator', kwargs={'operator_id': operator.id}),
+            custom_reverse_lazy('update_operator_status', kwargs={'operator_id': operator.id}),
         )
 
         assert response.status_code == 200
@@ -211,7 +208,7 @@ class TestOperatorsEndpoint(CommonTestSetup):
             'cas_admin',
             self.content_type,
             {"status": Operator.Statuses.DECLINED, 'user_operator_id': user_operator.id},
-            custom_reverse_lazy('update_operator', kwargs={'operator_id': operator.id}),
+            custom_reverse_lazy('update_operator_status', kwargs={'operator_id': operator.id}),
         )
 
         assert response.status_code == 200
