@@ -18,6 +18,12 @@ from registration.models import (
 from django.urls import reverse_lazy
 from datetime import datetime
 import pytz
+from typing import Optional
+from registration.models import (
+    Operator,
+    User,
+    UserOperator,
+)
 
 
 def check_users_admin_request_eligibility(user: User, operator: Operator) -> Union[None, tuple[int, dict]]:

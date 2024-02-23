@@ -71,6 +71,7 @@ def create_or_update_multiple_operators(
             "operation_id": operation.id,
             "operator_index": idx + 1,
         }
+        # This will create a new address every time instead of updating, fix if multiple operators if re-added
         # handle addresses--if there's no mailing address given, it's the same as the physical address
         physical_address = Address.objects.create(
             street_address=operator.get("mo_physical_street_address"),

@@ -1,10 +1,8 @@
 from uuid import UUID
 from django.db import transaction
-from django.db import transaction
-from registration.api.utils.handle_parent_operators import handle_parent_operators
+from registration.api.utils.operator_utils import save_operator
 from registration.utils import (
     generate_useful_error,
-    update_model_instance,
     check_users_admin_request_eligibility,
     check_access_request_matches_business_guid,
 )
@@ -26,7 +24,6 @@ from registration.schema import (
     OperatorFromUserOperatorOut,
 )
 from typing import List
-
 from .api_base import router
 from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404
@@ -37,63 +34,11 @@ from registration.models import (
     Operator,
     User,
     UserOperator,
-    Address,
 )
 from ninja.responses import codes_4xx
 from datetime import datetime
 from django.forms import model_to_dict
 from registration.constants import PAGE_SIZE
-
-
-# Function to save operator data to reuse in POST/PUT methods
-def save_operator(payload: UserOperatorOperatorIn, operator_instance: Operator, user: User):
-    # rollback the transaction if any of the following fails (mostly to prevent orphaned addresses)
-    with transaction.atomic():
-        # create physical address record
-        physical_address = Address.objects.create(
-            street_address=payload.physical_street_address,
-            municipality=payload.physical_municipality,
-            province=payload.physical_province,
-            postal_code=payload.physical_postal_code,
-        )
-        operator_instance.physical_address = physical_address
-
-        if payload.mailing_address_same_as_physical:
-            mailing_address = physical_address
-        else:
-            # create mailing address record if mailing address is not the same as the physical address
-            mailing_address = Address.objects.create(
-                street_address=payload.mailing_street_address,
-                municipality=payload.mailing_municipality,
-                province=payload.mailing_province,
-                postal_code=payload.mailing_postal_code,
-            )
-        operator_instance.mailing_address = mailing_address
-
-        # fields to update on the Operator model
-        operator_related_fields = [
-            "legal_name",
-            "trade_name",
-            "physical_address_id",
-            "mailing_address_id",
-            "website",
-            "business_structure",
-        ]
-        created_or_updated_operator_instance: Operator = update_model_instance(
-            operator_instance, operator_related_fields, payload.dict()
-        )
-        created_or_updated_operator_instance.save()
-        created_or_updated_operator_instance.set_create_or_update(user.pk)
-
-        handle_parent_operators(payload.parent_operators_array, created_or_updated_operator_instance, user)
-
-        # get an existing user_operator instance or create a new one with the default role
-        user_operator, created = UserOperator.objects.get_or_create(
-            user=user, operator=created_or_updated_operator_instance
-        )
-        if created:
-            user_operator.set_create_or_update(user.pk)
-        return 200, {"user_operator_id": user_operator.id, 'operator_id': user_operator.operator.id}
 
 
 ##### GET #####
