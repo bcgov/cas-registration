@@ -20,6 +20,9 @@ export const metadata: Metadata = {
   title: "CAS OBPS REGISTRATION",
   description:
     "The OBPS is designed to ensure there is a price incentive for industrial emitters to reduce their greenhouse gas emissions and spur innovation while maintaining competitiveness and protecting against carbon leakage.",
+  icons: {
+    icon: "/img/favicon.ico",
+  },
 };
 
 export const viewport: Viewport = {

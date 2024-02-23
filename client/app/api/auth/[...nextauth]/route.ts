@@ -45,6 +45,7 @@ export const authOptions: NextAuthOptions = {
     // 👇️ called whenever a JSON Web Token is created/updated
     async jwt({ token, account, profile }) {
       try {
+        // 🧩 custom properties are configured through module augmentation in client/app/types/next-auth.d.ts
         if (profile) {
           token.given_name = (profile as KeycloakProfile).given_name;
           token.family_name = (profile as KeycloakProfile).family_name;
@@ -58,22 +59,13 @@ export const authOptions: NextAuthOptions = {
         //📌  Provider account (only available on sign in)
         if (account) {
           // ✨  On a new sessions, you can add information to the next-auth created token...
-          // 🧩 custom properties are configured through module augmentation in client/app/types/next-auth.d.ts
-
-          // 👇️ used for refresh token strategy
-          token.access_token = account.access_token;
-          token.access_token_expires_at = account.expires_at;
-          token.refresh_token = account.refresh_token;
-
-          // 👇️ used for federated logout, client/app/api/auth/logout/route.ts
-          token.id_token = account.id_token;
 
           // 👇️ used for routing and DJANGO API calls
           token.user_guid = account.providerAccountId.split("@")[0];
 
           token.identity_provider = account.providerAccountId.split("@")[1];
         }
-        // If no token.app_role, augment the keycloak token with cas registration user approle
+        // If no token.app_role, augment the keycloak token with cas registration user app_role
         if (!token.app_role) {
           // 🚀 API call: Get user app_role by user_guid from user table
           const responseRole = await actionHandler(
@@ -103,63 +95,6 @@ export const authOptions: NextAuthOptions = {
           } else {
             // 🛸 Routing: no app_role user found; so, user will be routed to dashboard\profile
           }
-        }
-        // 🕐 evaluate if the access_token_expires_at timestamp is less than the current timestamp, indicating an expired token
-        if (
-          (token.access_token_expires_at ?? 0) < Math.floor(Date.now() / 1000)
-        ) {
-          // 👇️ refresh token- returns a new token with updated properties
-          try {
-            /*
-              Keycloak provides a REST API enables the creation of an access_token through a POST endpoint with application/x-www-form-urlencoded outcome
-              Method: POST
-                URL: https://keycloak.example.com/auth/realms/myrealm/protocol/openid-connect/token
-                Body type: x-www-form-urlencoded
-                Form fields:
-                client_id :
-                client_secret :
-                grant_type : refresh_token
-                refresh_token:
-              */
-            const details = {
-              client_id: `${process.env.KEYCLOAK_CLIENT_ID}`,
-              client_secret: `${process.env.KEYCLOAK_CLIENT_SECRET}`,
-              grant_type: ["refresh_token"],
-              refresh_token: token.refresh_token,
-            };
-            const formBody: string[] = [];
-            Object.entries(details).forEach(([key, value]: [string, any]) => {
-              const encodedKey = encodeURIComponent(key);
-              const encodedValue = encodeURIComponent(value);
-              formBody.push(encodedKey + "=" + encodedValue);
-            });
-            const formData = formBody.join("&");
-            const url = `${process.env.KEYCLOAK_TOKEN_URL}`;
-            const response = await fetch(url, {
-              method: "POST",
-              headers: {
-                "Content-Type":
-                  "application/x-www-form-urlencoded;charset=UTF-8",
-              },
-              body: formData,
-            });
-            const refreshedToken = await response.json();
-            if (!response.ok) throw refreshedToken;
-            return {
-              ...token,
-              error: refreshedToken.error,
-              access_token: refreshedToken.access_token,
-              access_token_expires_at:
-                Math.floor(Date.now() / 1000) +
-                (refreshedToken.refresh_expires_in ?? 0),
-              refresh_token:
-                refreshedToken.refresh_token ?? token.refresh_token, // Fall back to old refresh token
-            };
-          } catch (error) {
-            token.error = Errors.ACCESS_TOKEN;
-          }
-        } else {
-          // The token is still valid; no need to refresh
         }
       } catch (error) {
         token.error = Errors.ACCESS_TOKEN;
@@ -208,7 +143,7 @@ export const authOptions: NextAuthOptions = {
       if (url.startsWith("/")) return `${baseUrl}${url}`;
       // Allows callback URLs on the same origin
       else if (new URL(url).origin === baseUrl) return url;
-      // 🛸 Allow callbacks to identity server
+      // 🛸 Allow callbacks to identity server for federated signout after next-auth SignOut(): client/app/components/navigation/Profile.tsx
       else if (new URL(url).origin === process.env.SITEMINDER_AUTH_URL)
         return url;
       return baseUrl;
