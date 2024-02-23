@@ -23,8 +23,12 @@ export default function SelectOperatorForm({
     <Form
       schema={schema}
       onSubmit={async (data: { formData?: SelectOperatorFormData }) => {
+        const queryParam = `?${data.formData?.search_type}=${data.formData?.[
+          data.formData?.search_type as keyof SelectOperatorFormData
+        ]}`;
+
         const response = await actionHandler(
-          `registration/operators?cra_business_number=${data.formData?.cra_business_number}`,
+          `registration/operators${queryParam}`,
           "GET",
           "/dashboard/select-operator",
         );
@@ -33,8 +37,9 @@ export default function SelectOperatorForm({
           setErrorList([{ message: response.error }]);
           return;
         }
-
-        push(`/dashboard/select-operator/confirm/${response.id}`);
+        // If the response is an array, we want the first element's id
+        let operatorId = response.length > 0 ? response[0].id : response.id;
+        push(`/dashboard/select-operator/confirm/${operatorId}`);
       }}
       uiSchema={selectOperatorUiSchema}
       className="mx-auto"
