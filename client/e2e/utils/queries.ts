@@ -41,7 +41,7 @@ export const upsertOperatorRecord = async (
   status: string = OperatorStatus.APPROVED,
   isNew: boolean = false,
   id: string = OperatorUUID.DEFAULT,
-  values: Partial<UpsertOperatorValues> = {}
+  values: Partial<UpsertOperatorValues> = {},
 ) => {
   try {
     // Merge default values with provided values
@@ -225,7 +225,7 @@ export const upsertUserOperatorRecord = async (
   userId: string,
   role: string,
   status: string,
-  values: Partial<UpsertUserOperatorValues> = {}
+  values: Partial<UpsertUserOperatorValues> = {},
 ) => {
   try {
     // Merge default values with provided values
