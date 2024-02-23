@@ -69,12 +69,70 @@ export const upsertOperatorRecord = async (
     // Execute the query
     await pool.query(query);
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error(`Error upserting operator record:`, error);
     throw error;
   }
 };
 
+// Delete Operator record
+const deleteOperatorQuery = "DELETE FROM erc.operator WHERE created_by_id = $1";
+
+// 🛠️ Function: deletes operator based on created_by_id
+export const deleteOperatorRecord = async (createdbyId: string) => {
+  try {
+    const query = {
+      text: deleteOperatorQuery,
+      values: [createdbyId],
+    };
+    // Execute the query
+    await pool.query(query);
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error(`Error deleting operator record:`, error);
+    throw error;
+  }
+};
+
 /***********************User********************************/
+// User User values type
+type UpsertUserValues = {
+  user_guid: string;
+  role: string;
+  first_name: string;
+  last_name: string;
+  position_title: string;
+  email: string;
+  phone_number: string;
+  business_guid: string;
+  bceid_business_name: string;
+};
+
+// industry_user
+const upsertUserIOValues: UpsertUserValues = {
+  user_guid: process.env.E2E_INDUSTRY_USER_GUID as string,
+  role: "industry_user",
+  first_name: "Cas",
+  last_name: "SECONDARY",
+  position_title: "USER",
+  email: "cas.secondary@email.com",
+  phone_number: "+16044015431",
+  business_guid: "efb76d57-88b7-4eb6-9f26-ec12b49c14c1",
+  bceid_business_name: "bceid_business_name1",
+};
+
+// industry_user_admin
+const upsertUserIOAdminValues: UpsertUserValues = {
+  user_guid: process.env.E2E_INDUSTRY_USER_ADMIN_GUID as string,
+  role: "industry_user",
+  first_name: "Bcgov",
+  last_name: "Cas",
+  position_title: "ADMINISTRATOR",
+  email: "bcgov.cas@email.com",
+  phone_number: "+16044015432",
+  business_guid: "efb76d57-88b7-4eb6-9f26-ec12b49c14c1",
+  bceid_business_name: "bceid_business_name2",
+};
 
 // Upsert a User record
 const upsertUser = `
@@ -84,36 +142,22 @@ const upsertUser = `
     DO UPDATE SET app_role_id = EXCLUDED.app_role_id;
   `;
 
-// industry_user
-const upsertUserIOValues = [
-  process.env.E2E_INDUSTRY_USER_GUID as string,
-  "industry_user",
-  "Cas",
-  "SECONDARY",
-  "USER",
-  "cas.secondary@email.com",
-  "+16044015431",
-  "efb76d57-88b7-4eb6-9f26-ec12b49c14c1",
-  "bceid_business_name1",
-];
-
-// industry_user_admin
-const upsertUserIOAdminValues = [
-  process.env.E2E_INDUSTRY_USER_ADMIN_GUID as string,
-  "industry_user",
-  "Bcgov",
-  "Cas",
-  "ADMINISTRATOR",
-  "bcgov.cas@email.com",
-  "+16044015432",
-  "efb76d57-88b7-4eb6-9f26-ec12b49c14c1",
-  "bceid_business_name2",
-];
+const upsertUserCasValues: UpsertUserValues = {
+  user_guid: process.env.E2E_CAS_USER_GUID as string,
+  role: "TBD",
+  first_name: "First",
+  last_name: "Last",
+  position_title: "CAS",
+  email: "email@email.com",
+  phone_number: "+16044015477",
+  business_guid: "efb76d57-88b7-4eb6-9f26-ec12b49c14c1",
+  bceid_business_name: "bceid_business_name3",
+};
 
 // 🛠️ Function: upserts user record
 export const upsertUserRecord = async (userRole: string) => {
   try {
-    let values: (string | number | boolean)[] = [];
+    let values: UpsertUserValues | undefined;
     // Get values based on user role
     switch (userRole) {
       case UserRole.INDUSTRY_USER:
@@ -122,13 +166,31 @@ export const upsertUserRecord = async (userRole: string) => {
       case UserRole.INDUSTRY_USER_ADMIN:
         values = upsertUserIOAdminValues;
         break;
+      case UserRole.CAS_ADMIN:
+      case UserRole.CAS_ANALYST:
+      case UserRole.CAS_PENDING:
+        values = upsertUserCasValues;
+        values.role = userRole;
+        break;
     }
-    const query = {
-      text: upsertUser,
-      values: values,
-    };
-    // ▶️ Execute the query
-    await pool.query(query);
+    if (values) {
+      const query = {
+        text: upsertUser,
+        values: [
+          values.user_guid,
+          values.role,
+          values.first_name,
+          values.last_name,
+          values.position_title,
+          values.email,
+          values.phone_number,
+          values.business_guid,
+          values.bceid_business_name,
+        ],
+      };
+      // ▶️ Execute the query
+      await pool.query(query);
+    }
   } catch (error) {
     // eslint-disable-next-line no-console
     console.error(`Error upserting user ${userRole} record:`, error);
@@ -149,6 +211,7 @@ export const deleteUserRecord = async (userGuid: string) => {
     // Execute the query
     await pool.query(query);
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error(`Error deleting user record:`, error);
     throw error;
   }
@@ -198,6 +261,7 @@ export const upsertUserOperatorRecord = async (
     // Execute the query
     await pool.query(query);
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error(`Error upserting user operator record:`, error);
     throw error;
   }
@@ -217,6 +281,7 @@ export const deleteUserOperatorRecord = async (userId: string) => {
     // Execute the query
     await pool.query(query);
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error(`Error deleting user operator record:`, error);
     throw error;
   }

@@ -14,15 +14,14 @@ import { chromium } from "@playwright/test";
 import { HomePOM } from "@/e2e/poms/home";
 // ☰ Enums
 import { AppRole, UserOperatorStatus, UserRole } from "@/e2e/utils/enums";
-// 🥞 Connection pool to postgres DB
-import { pool } from "@/e2e/utils/pool";
-// ℹ️ Environment variables
-import * as dotenv from "dotenv";
+// 🥞 DB CRUD
 import {
   upsertOperatorRecord,
   upsertUserOperatorRecord,
   upsertUserRecord,
-} from "../utils/queries";
+} from "@/e2e/utils/queries";
+// ℹ️ Environment variables
+import * as dotenv from "dotenv";
 dotenv.config({
   path: "./e2e/.env.local",
 });
@@ -55,15 +54,7 @@ const setupAuth = async (
         // For CAS role...
         // perform an upsert query that inserts or updates the role associated with your IDIR user_guid in the erc.user table.
         // then login with a cas ID will be assigned this role in client/app/api/auth/[...nextauth]/route.ts
-        const upsert = `
-          INSERT INTO erc.user (user_guid, first_name, last_name, app_role_id, business_guid, bceid_business_name, position_title, email, phone_number)
-          VALUES
-            ($1, $2, $2, $3, '123e4567-e89b-12d3-a456-426614174001', 'bceid_business_name',  'Software Engineer', 'e2e@test.com', '123 456 7890')
-          ON CONFLICT (user_guid)
-          DO UPDATE SET
-            app_role_id = EXCLUDED.app_role_id;
-        `;
-        await pool.query(upsert, [process.env.E2E_CAS_USER_GUID, user, role]);
+        await upsertUserRecord(role);
         break;
       case UserRole.INDUSTRY_USER:
         // Upsert a User record: bc-cas-dev-secondary

@@ -88,11 +88,6 @@ test.describe("Test Page - Home", () => {
   test.describe(`Test User Role`, () => {
     // ➰ Loop through the entries of UserRole enum
     for (let [role, value] of Object.entries(UserRole)) {
-      // Only login once for CAS ID...i.e. CAS_PENDING
-      // Ensures that certain roles are not tested in the current context
-      if (value === UserRole.CAS_ADMIN || value === UserRole.CAS_ANALYST) {
-        continue;
-      }
       test(`Test Login - ${value}`, async ({ page }) => {
         // 👤 Set user and password based on the user role
         let user = process.env.E2E_CAS_USER as string;
@@ -104,6 +99,13 @@ test.describe("Test Page - Home", () => {
           case UserRole.NEW_USER:
             user = process.env[`${role}`] || "";
             password = process.env[`${role}_PASSWORD`] || "";
+            break;
+          case UserRole.CAS_ADMIN:
+          case UserRole.CAS_ANALYST:
+            await upsertUserRecord(value);
+            break;
+          case UserRole.CAS_PENDING:
+            await deleteUserRecord(process.env.E2E_CAS_USER_GUID as string);
             break;
         }
         // 🛸 Navigate to home page
@@ -121,6 +123,7 @@ test.describe("Test Page - Home", () => {
         // 🔍 Assert that the current URL is correct
         switch (value) {
           case UserRole.NEW_USER:
+          case UserRole.CAS_PENDING:
             // 🔍 Assert that the current URL ends with "/profile"
             const profilePage = new ProfilePOM(page);
             await profilePage.urlIsCorrect();
