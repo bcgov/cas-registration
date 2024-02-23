@@ -13,9 +13,13 @@ import { chromium } from "@playwright/test";
 // 🪄 Page Object Models
 import { HomePOM } from "@/e2e/poms/home";
 // ☰ Enums
-import { UserRole } from "@/e2e/utils/enums";
-// 🥞 Connection pool to postgres DB
-import { pool } from "@/e2e/utils/pool";
+import { AppRole, UserOperatorStatus, UserRole } from "@/e2e/utils/enums";
+// 🥞 DB CRUD
+import {
+  upsertOperatorRecord,
+  upsertUserOperatorRecord,
+  upsertUserRecord,
+} from "@/e2e/utils/queries";
 // ℹ️ Environment variables
 import * as dotenv from "dotenv";
 dotenv.config({
@@ -40,29 +44,33 @@ const setupAuth = async (
   const context = await browser.newContext();
   const page = await context.newPage();
   try {
-    // 🛢 To generate a storageState file for each CAS role...
-    // perform an upsert query that inserts or updates the role associated with your IDIR user_guid in the erc.user table.
-    // then login with a cas ID will be assigned this role in client/app/api/auth/[...nextauth]/route.ts
+    // 🛢 Generate a storageState file for each role...
+    // eslint-disable-next-line no-console
+    console.log(`🥞 Upserting ${user} for role ${role}`);
     switch (role) {
       case UserRole.CAS_ADMIN:
       case UserRole.CAS_ANALYST:
       case UserRole.CAS_PENDING:
-        // eslint-disable-next-line no-console
-        console.log(`🥞 Upserting ${user} for role ${role}`);
-        const upsert = `
-          INSERT INTO erc.user (user_guid, business_guid, bceid_business_name, first_name, last_name, position_title, email, phone_number, app_role_id)
-          VALUES
-            ($1, '123e4567-e89b-12d3-a456-426614174001', 'bceid_business_name', 'CAS', $2, 'Software Engineer', $3, '123 456 7890', $4)
-          ON CONFLICT (user_guid)
-          DO UPDATE SET
-            app_role_id = EXCLUDED.app_role_id;
-        `;
-        await pool.query(upsert, [
-          process.env.E2E_CAS_USER_GUID,
-          user,
-          `${user}@test.com`,
-          role,
-        ]);
+        // For CAS role...
+        // perform an upsert query that inserts or updates the role associated with your IDIR user_guid in the erc.user table.
+        // then login with a cas ID will be assigned this role in client/app/api/auth/[...nextauth]/route.ts
+        await upsertUserRecord(role);
+        break;
+      case UserRole.INDUSTRY_USER:
+        // Upsert a User record: bc-cas-dev-secondary
+        await upsertUserRecord(UserRole.INDUSTRY_USER);
+        break;
+      case UserRole.INDUSTRY_USER_ADMIN:
+        // Upsert a User record: bc-cas-dev
+        await upsertUserRecord(UserRole.INDUSTRY_USER_ADMIN);
+        // Upsert an Operator record, using default values
+        await upsertOperatorRecord();
+        // Upsert an User Operator record: industry_user_admin, operator id 2
+        await upsertUserOperatorRecord(
+          process.env.E2E_INDUSTRY_USER_ADMIN_GUID as string,
+          AppRole.ADMIN,
+          UserOperatorStatus.APPROVED,
+        );
         break;
     }
     // 🛸 Navigate to home page

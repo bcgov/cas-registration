@@ -2,11 +2,13 @@ export enum ActionButton {
   CONTINUE = "Continue",
   SUBMIT = "Submit",
 }
-
+export enum AppRole {
+  ADMIN = "admin",
+}
 export enum AppRoute {
-  DASHBOARD = "/dashboard",
-  HOME = "/home",
-  PROFILE = "/dashboard/profile",
+  DASHBOARD = "dashboard",
+  HOME = "home",
+  PROFILE = "dashboard/profile",
 }
 
 export enum DataTestID {
@@ -26,6 +28,27 @@ export enum Login {
 export enum Logout {
   OUT = "Log out",
   SSO = "You are logged out",
+}
+
+export enum OperatorStatus {
+  DRAFT = "Draft",
+  PENDING = "Pending",
+  APPROVED = "Approved",
+  DECLINED = "Declined",
+  CHANGES_REQUESTED = "Changes Requested",
+}
+
+export enum OperatorUUID {
+  DEFAULT = "4242ea9d-b917-4129-93c2-db00b7451051",
+}
+
+export enum UserOperatorStatus {
+  PENDING = "Pending",
+  APPROVED = "Approved",
+  DECLINED = "Declined",
+}
+export enum UserOperatorUUID {
+  DEFAULT = "9bb541e6-41f5-47d3-8359-2fab4f5bc4c0",
 }
 
 export enum UserRole {
