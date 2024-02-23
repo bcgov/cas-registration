@@ -19,11 +19,13 @@ from django.core.exceptions import ValidationError
 
 @router.get(
     "/operators",
-    response={200: Union[OperatorSearchOut, List[OperatorSearchOut]], codes_4xx: Message, codes_5xx: Message},
-    url_name="get_operator_by_cra_number",
+    response={200: Union[List[OperatorSearchOut], OperatorSearchOut], codes_4xx: Message, codes_5xx: Message},
+    url_name="get_operators_by_cra_number_or_legal_name",
 )
 @authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles())
-def get_operators_by_cra_number_or_legal_name(request, cra_business_number: Optional[int], legal_name: Optional[str]):
+def get_operators_by_cra_number_or_legal_name(
+    request, cra_business_number: Optional[Union[int, str]] = None, legal_name: Optional[str] = ""
+):
     if not cra_business_number and not legal_name:
         return 404, {"message": "No search value provided"}
     if cra_business_number:
@@ -56,9 +58,11 @@ def get_operator(request, operator_id: UUID):
 ##### PUT #####
 
 
-@router.put("/operators/{operator_id}", response={200: OperatorOut, codes_4xx: Message}, url_name="update_operator")
+@router.put(
+    "/operators/{operator_id}", response={200: OperatorOut, codes_4xx: Message}, url_name="update_operator_status"
+)
 @authorize(AppRole.get_authorized_irc_roles())
-def update_operator(request, operator_id: UUID, payload: OperatorIn):
+def update_operator_status(request, operator_id: UUID, payload: OperatorIn):
     operator = get_object_or_404(Operator, id=operator_id)
     user: User = request.current_user
     try:
