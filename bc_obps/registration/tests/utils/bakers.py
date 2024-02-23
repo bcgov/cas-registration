@@ -34,6 +34,8 @@ def user_baker(custom_properties=None) -> User:
         properties.update(custom_properties)
 
     return baker.make(User, **properties)
+def generate_random_cra_business_number():
+    return random.randint(100000000, 999999999)
 
 
 def address_baker() -> Address:
@@ -54,6 +56,7 @@ def operator_baker(custom_properties=None) -> Operator:
         'business_structure': BusinessStructure.objects.first(),
         'physical_address': address_baker(),
         'website': 'https://www.example-operator.com',
+        'cra_business_number': generate_random_cra_business_number(),
     }
 
     # Update properties with custom_properties if provided
@@ -102,6 +105,7 @@ def multiple_operator_baker() -> MultipleOperator:
         bc_corporate_registry_number='abc1234567',
         business_structure=BusinessStructure.objects.first(),
         website='https://www.example-mo.com',
+        cra_business_number=generate_random_cra_business_number(),
     )
 
 
@@ -110,7 +114,7 @@ def parent_operator_baker() -> ParentOperator:
         ParentOperator,
         child_operator=operator_baker(),
         operator_index=1,
-        cra_business_number=147852369,
+        cra_business_number=generate_random_cra_business_number(),
         bc_corporate_registry_number='asd7654321',
         business_structure=BusinessStructure.objects.first(),
         physical_address=Address.objects.first(),

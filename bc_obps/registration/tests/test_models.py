@@ -538,14 +538,14 @@ class OperatorModelTest(BaseTestCase):
         ]
 
     def test_check_cra_business_number_format(self):
-        valid_numbers = ['123456789']
-        for id in valid_numbers:
-            self.test_object.id = id
+        valid_numbers = [123454321]
+        for number in valid_numbers:
+            self.test_object.cra_business_number = number
             self.test_object.save()
 
-        invalid_numbers = ['123', 'ABCDEFGHI', '123-ABCd', '^&*%#@!()']
-        for id in invalid_numbers:
-            self.test_object.id = id
+        invalid_numbers = [123, '123456789', 'ABCDEFGHI', '123-ABCd', '^&*%#@!()']
+        for number in invalid_numbers:
+            self.test_object.cra_business_number = number
             with self.assertRaises(ValidationError):
                 self.test_object.save()
 
