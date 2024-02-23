@@ -78,7 +78,7 @@ export const authOptions: NextAuthOptions = {
           // 🚀 API call: Get user app_role by user_guid from user table
           const responseRole = await actionHandler(
             `registration/user-app-role/${token.user_guid}`,
-            "GET",
+            "GET"
           );
           if (responseRole?.role_name) {
             // user found in table, assign role to token (note: all industry users have the same app role of `industry_user`, and their permissions are further defined by their role in the UserOperator model)
@@ -89,7 +89,7 @@ export const authOptions: NextAuthOptions = {
                 // 🚀 API call: check if user is admin approved
                 const responseAdmin = await actionHandler(
                   `registration/is-approved-admin-user-operator/${token.user_guid}`,
-                  "GET",
+                  "GET"
                 );
                 if (responseAdmin?.approved) {
                   token.app_role = "industry_user_admin"; // note: industry_user_admin a front-end only role. In the db, all industry users have an industry_user app_role, and their permissions are further defined by UserOperator.role
@@ -145,16 +145,7 @@ export const authOptions: NextAuthOptions = {
             });
             const refreshedToken = await response.json();
             if (!response.ok) throw refreshedToken;
-            return {
-              ...token,
-              error: refreshedToken.error,
-              access_token: refreshedToken.access_token,
-              access_token_expires_at:
-                Math.floor(Date.now() / 1000) +
-                (refreshedToken.refresh_expires_in ?? 0),
-              refresh_token:
-                refreshedToken.refresh_token ?? token.refresh_token, // Fall back to old refresh token
-            };
+            token = refreshedToken;
           } catch (error) {
             token.error = Errors.ACCESS_TOKEN;
           }

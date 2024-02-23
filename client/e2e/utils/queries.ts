@@ -41,7 +41,7 @@ export const upsertOperatorRecord = async (
   status: string = OperatorStatus.APPROVED,
   isNew: boolean = false,
   id: string = OperatorUUID.DEFAULT,
-  values: Partial<UpsertOperatorValues> = {},
+  values: Partial<UpsertOperatorValues> = {}
 ) => {
   try {
     // Merge default values with provided values
@@ -71,25 +71,6 @@ export const upsertOperatorRecord = async (
   } catch (error) {
     // eslint-disable-next-line no-console
     console.error(`Error upserting operator record:`, error);
-    throw error;
-  }
-};
-
-// Delete Operator record
-const deleteOperatorQuery = "DELETE FROM erc.operator WHERE created_by_id = $1";
-
-// 🛠️ Function: deletes operator based on created_by_id
-export const deleteOperatorRecord = async (createdbyId: string) => {
-  try {
-    const query = {
-      text: deleteOperatorQuery,
-      values: [createdbyId],
-    };
-    // Execute the query
-    await pool.query(query);
-  } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error(`Error deleting operator record:`, error);
     throw error;
   }
 };
@@ -244,7 +225,7 @@ export const upsertUserOperatorRecord = async (
   userId: string,
   role: string,
   status: string,
-  values: Partial<UpsertUserOperatorValues> = {},
+  values: Partial<UpsertUserOperatorValues> = {}
 ) => {
   try {
     // Merge default values with provided values
