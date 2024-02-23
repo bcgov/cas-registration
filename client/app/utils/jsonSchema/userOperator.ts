@@ -36,6 +36,8 @@ export const userOperatorPage1: RJSFSchema = {
     cra_business_number: {
       type: "number",
       title: "CRA Business Number",
+      minimum: 100000000,
+      maximum: 999999999,
     },
     bc_corporate_registry_number: {
       type: "string",
@@ -129,6 +131,8 @@ export const userOperatorPage1: RJSFSchema = {
                 po_cra_business_number: {
                   type: "number",
                   title: "CRA Business Number",
+                  minimum: 100000000,
+                  maximum: 999999999,
                 },
                 po_bc_corporate_registry_number: {
                   type: "string",
