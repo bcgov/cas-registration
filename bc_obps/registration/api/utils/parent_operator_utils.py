@@ -1,33 +1,9 @@
 from typing import List
-from registration.models import (
-    ParentOperator,
-    Address,
-)
-
-
-def handle_parent_operator_addresses(po_operator):
-
-    po_physical_address = Address.objects.create(
-        street_address=po_operator.po_physical_street_address,
-        municipality=po_operator.po_physical_municipality,
-        province=po_operator.po_physical_province,
-        postal_code=po_operator.po_physical_postal_code,
-    )
-
-    if po_operator.po_mailing_address_same_as_physical:
-        po_mailing_address = po_physical_address
-    else:
-        po_mailing_address = Address.objects.create(
-            street_address=po_operator.po_mailing_street_address,
-            municipality=po_operator.po_mailing_municipality,
-            province=po_operator.po_mailing_province,
-            postal_code=po_operator.po_mailing_postal_code,
-        )
-    return {"po_physical_address": po_physical_address, "po_mailing_address": po_mailing_address}
+from registration.api.utils.operator_utils import handle_operator_addresses
+from registration.models import ParentOperator
 
 
 def archive_parent_operators(existing_parent_operator_indices, updated_parent_operators, operator_instance, user):
-
     updated_parent_operator_indices = [po.operator_index for po in updated_parent_operators if po.operator_index]
 
     indices_to_delete = list(set(existing_parent_operator_indices) - set(updated_parent_operator_indices))
@@ -45,7 +21,6 @@ def assign_index(existing_parent_operator_indices):
 
 
 def handle_parent_operators(updated_parent_operators, operator_instance, user):
-
     existing_parent_operators = operator_instance.parent_operators.all()
 
     # if the user has removed all parent operators, archive them all
@@ -58,7 +33,6 @@ def handle_parent_operators(updated_parent_operators, operator_instance, user):
     # if the user has added, edited, or removed some parent operators
     if updated_parent_operators:
         for po_operator in updated_parent_operators:
-
             # archive any parent operators that have been removed
             if existing_parent_operator_indices:
                 archive_parent_operators(
@@ -70,8 +44,26 @@ def handle_parent_operators(updated_parent_operators, operator_instance, user):
                 po_operator.operator_index = assign_index(existing_parent_operator_indices)
                 existing_parent_operator_indices.append(po_operator.operator_index)
 
-            addresses = handle_parent_operator_addresses(po_operator)
+            # handle addresses
+            existing_po_physical_address = ParentOperator.objects.filter(
+                child_operator_id=operator_instance.id, operator_index=po_operator.operator_index
+            ).first()
+            existing_po_physical_address_id = (
+                existing_po_physical_address.physical_address_id if existing_po_physical_address else None
+            )
 
+            existing_po_mailing_address = ParentOperator.objects.filter(
+                child_operator_id=operator_instance.id, operator_index=po_operator.operator_index
+            ).first()
+            existing_po_mailing_address_id = (
+                existing_po_mailing_address.mailing_address_id if existing_po_mailing_address else None
+            )
+
+            physical_address, mailing_address = handle_operator_addresses(
+                po_operator.dict(), existing_po_physical_address_id, existing_po_mailing_address_id, 'po_'
+            ).values()
+
+            # create or update the parent operator
             po_operator_instance, _ = ParentOperator.objects.update_or_create(
                 child_operator=operator_instance,
                 operator_index=po_operator.operator_index,
@@ -82,9 +74,8 @@ def handle_parent_operators(updated_parent_operators, operator_instance, user):
                     "bc_corporate_registry_number": po_operator.po_bc_corporate_registry_number,
                     "business_structure": po_operator.po_business_structure,
                     "website": po_operator.po_website,
-                    "physical_address": addresses['po_physical_address'],
-                    "mailing_address": addresses['po_mailing_address'],
+                    "physical_address": physical_address,
+                    "mailing_address": mailing_address,
                 },
             )
-
             po_operator_instance.set_create_or_update(user.pk)
