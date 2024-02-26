@@ -1118,6 +1118,17 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         user_operator = baker.make(
             UserOperator, user=self.user, operator=operator, role=UserOperator.Roles.REPORTER, created_by=self.user
         )
+        # Test REPORTER 401
+        put_response = TestUtils.mock_put_with_auth_role(
+            self,
+            'industry_user',
+            self.content_type,
+            mock_payload,
+            custom_reverse_lazy('update_operator_and_user_operator', kwargs={'user_operator_id': user_operator.id}),
+        )
+        user_operator.role = UserOperator.Roles.PENDING
+        user_operator.save(update_fields=["role"])
+        # Test PENDING 401
         put_response = TestUtils.mock_put_with_auth_role(
             self,
             'industry_user',
