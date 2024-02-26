@@ -5,11 +5,13 @@ import ListItem from "@mui/material/ListItem/ListItem";
 import Typography from "@mui/material/Typography/Typography";
 import Footer from "@/app/components/layout/Footer";
 import Header from "@/app/components/layout/Header";
+import { getUser } from "./layout";
 
-export default function NotFound() {
+export default async function NotFound() {
+  const { first_name: firstName, last_name: lastName } = await getUser();
   return (
     <>
-      <Header />{" "}
+      <Header userFullName={firstName + " " + lastName} />{" "}
       <Container
         sx={{
           marginTop: 20,

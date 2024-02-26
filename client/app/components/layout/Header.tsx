@@ -9,7 +9,7 @@ import Box from "@mui/material/Box";
 import { styled } from "@mui/material/styles";
 import Profile from "@/app/components/navigation/Profile";
 
-export default function Header() {
+export default function Header({ userFullName }: { userFullName: string }) {
   const { data: session } = useSession();
   // 🖥️📲  using MUI theme breakpoints for responsive design https://mui.com/material-ui/customization/breakpoints/
 
@@ -105,14 +105,14 @@ export default function Header() {
           {/* 👇️ Authentication content for laptop & desktop */}
           {session && (
             <ButtonsRight>
-              <Profile />
+              <Profile userFullName={userFullName} />
             </ButtonsRight>
           )}
         </Toolbar>
         {/* 👇️ Authentication content for mobile & tablet */}
         {session && (
           <ButtonsBottom>
-            <Profile />
+            <Profile userFullName={userFullName} />
           </ButtonsBottom>
         )}
       </Box>
