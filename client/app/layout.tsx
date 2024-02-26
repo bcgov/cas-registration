@@ -15,6 +15,7 @@ import Header from "@/app/components/layout/Header";
 import Box from "@mui/material/Box";
 import { getServerSession } from "next-auth";
 import { authOptions } from "./api/auth/[...nextauth]/route";
+import { actionHandler } from "./utils/actions";
 
 export const metadata: Metadata = {
   title: "CAS OBPS REGISTRATION",
@@ -30,11 +31,23 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
+export async function getUser() {
+  try {
+    return await actionHandler("registration/user-profile", "GET", "/");
+  } catch (error) {
+    // Handle the error here or rethrow it to handle it at a higher level
+    throw error;
+  }
+}
+
 export default async function RootLayout({
   children,
 }: {
   readonly children: React.ReactNode;
 }) {
+  // use the user's name from the database instead of from the session
+  const { first_name: firstName, last_name: lastName } = await getUser();
+
   //🪝 Wrap the returned auth session in the "use client" version of NextAuth SessionProvider so to expose the useSession() hook in client components
   const session = await getServerSession(authOptions);
 
@@ -69,7 +82,7 @@ export default async function RootLayout({
                 padding: "0 16px",
               }}
             >
-              <Header />
+              <Header userFullName={firstName + " " + lastName} />
               {/* Content goes here */}
               {children}
               <Footer />
