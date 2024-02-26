@@ -700,7 +700,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         get_response = TestUtils.mock_get_with_auth_role(
             self, "industry_user", custom_reverse_lazy("get_operation", kwargs={"operation_id": operation.id})
         ).json()
-        assert get_response["status"] == Operation.Statuses.NOT_STARTED
+        assert get_response["status"] == Operation.Statuses.DRAFT
 
     def test_put_operation_with_submit(self):
         payload = TestUtils.mock_OperationUpdateIn()
