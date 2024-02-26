@@ -87,34 +87,30 @@ export default function Tiles({
       ];
       break;
     case FrontEndRoles.INDUSTRY_USER_ADMIN:
-      if (userOperatorStatus === UserOperatorStatus.APPROVED) {
-        if (
-          operatorStatus === OperatorStatus.PENDING ||
-          operatorStatus === OperatorStatus.APPROVED
-        ) {
-          contents = [
-            ...bceidMyOperatorTile,
-            ...bceidOperationsTile,
-            ...bceidUsersTile,
-            ...reportAProblemTile,
-          ];
-        }
+      if (userOperatorStatus === UserOperatorStatus.APPROVED && (
+        operatorStatus === OperatorStatus.PENDING ||
+        operatorStatus === OperatorStatus.APPROVED
+      )) {
+        contents = [
+          ...bceidMyOperatorTile,
+          ...bceidOperationsTile,
+          ...bceidUsersTile,
+          ...reportAProblemTile,
+        ];
       } else {
         contents = [...bceidSelectOperatorTile, ...reportAProblemTile];
       }
       break;
     case FrontEndRoles.INDUSTRY_USER:
-      if (userOperatorStatus === UserOperatorStatus.APPROVED) {
-        if (
-          operatorStatus === OperatorStatus.PENDING ||
-          operatorStatus === OperatorStatus.APPROVED
-        ) {
-          contents = [
-            ...bceidMyOperatorTile,
-            ...bceidOperationsTile,
-            ...reportAProblemTile,
-          ];
-        }
+      if (userOperatorStatus === UserOperatorStatus.APPROVED && (
+        operatorStatus === OperatorStatus.PENDING ||
+        operatorStatus === OperatorStatus.APPROVED
+      )) {
+        contents = [
+          ...bceidMyOperatorTile,
+          ...bceidOperationsTile,
+          ...reportAProblemTile,
+        ];
       } else {
         contents = [...bceidSelectOperatorTile, ...reportAProblemTile];
       }
