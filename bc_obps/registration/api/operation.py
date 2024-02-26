@@ -116,11 +116,12 @@ def create_or_update_multiple_operators(
 def list_operations(request, page: int = 1, sort_field: str = "created_at", sort_order: str = "desc"):
     user: User = request.current_user
     sort_direction = "-" if sort_order == "desc" else ""
-    # IRC users can see all operations except ones that are not started yet
+    # IRC users can see all operations except ones with status of "Not Started" or "Draft"
     if user.is_irc_user():
         qs = (
             Operation.objects.select_related("operator", "bc_obps_regulated_operation")
             .exclude(status=Operation.Statuses.NOT_STARTED)
+            .exclude(status=Operation.Statuses.DRAFT)
             .only(*OperationListOut.Config.model_fields, "operator__legal_name", "bc_obps_regulated_operation__id")
             .order_by(f"{sort_direction}{sort_field}")
         )
@@ -272,11 +273,13 @@ def update_operation(request, operation_id: UUID, submit: str, form_section: int
             # whether the data being received in the payload is what the user has actually viewed, so we separate this
             # by form_section (the paginated form in the UI)
             if form_section == 1:
+                if operation.status == Operation.Statuses.NOT_STARTED:
+                    operation.status = Operation.Statuses.DRAFT
                 payload_dict: dict = payload.dict(include={'name', 'type', 'bcghg_id', 'opt_in'})
                 for attr, value in payload_dict.items():
                     setattr(operation, attr, value)
                 operation.naics_code_id = payload.naics_code
-                operation.save(update_fields=[*payload_dict.keys(), 'naics_code_id'])
+                operation.save(update_fields=[*payload_dict.keys(), 'naics_code_id', 'status'])
                 operation.regulated_products.set(payload.regulated_products)
             elif form_section == 2:
                 point_of_contact_id = operation.point_of_contact_id or None
