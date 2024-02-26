@@ -28,8 +28,12 @@ def generate_random_bc_corporate_registry_number():
     return dummy_data
 
 
-def user_baker():
-    return baker.make(User)
+def user_baker(custom_properties=None):
+    properties = {}
+    if custom_properties:
+        properties.update(custom_properties)
+
+    return baker.make(User, **properties)
 
 
 def address_baker():
