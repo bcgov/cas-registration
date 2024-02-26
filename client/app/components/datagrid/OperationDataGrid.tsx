@@ -37,24 +37,37 @@ const OperationDataGrid = ({
   const { data: session } = useSession();
 
   const isIndustryUser = session?.user.app_role?.includes("industry");
-
   const updatedColumnsOperations = columns.map((column) => {
     if (column.field === "action") {
       return {
         ...column,
-        renderCell: (params: GridRenderCellParams) => (
-          <div>
-            {/* 🔗 Add reg or details link */}
-            <Link
-              className="no-underline text-bc-link-blue whitespace-normal"
-              href={`operations/${params.row.id}${isIndustryUser ? "/1" : ""}`}
-            >
-              {params.row.status === "Not Started"
-                ? "Start Application"
-                : "View Details"}
-            </Link>
-          </div>
-        ),
+        renderCell: (params: GridRenderCellParams) => {
+          let actionText;
+          switch (params.row.status) {
+            case "Not Started":
+              actionText = "Start Registration";
+              break;
+            case "Draft":
+              actionText = "Continue";
+              break;
+            default:
+              actionText = "View Details";
+          }
+
+          return (
+            <div>
+              {/* 🔗 Add reg or details link */}
+              <Link
+                className="no-underline text-bc-link-blue whitespace-normal"
+                href={`operations/${params.row.id}${
+                  isIndustryUser ? "/1" : ""
+                }`}
+              >
+                {actionText}
+              </Link>
+            </div>
+          );
+        },
       };
     }
     return column;
