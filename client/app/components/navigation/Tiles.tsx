@@ -87,10 +87,11 @@ export default function Tiles({
       ];
       break;
     case FrontEndRoles.INDUSTRY_USER_ADMIN:
-      if (userOperatorStatus === UserOperatorStatus.APPROVED && (
-        operatorStatus === OperatorStatus.PENDING ||
-        operatorStatus === OperatorStatus.APPROVED
-      )) {
+      if (
+        userOperatorStatus === UserOperatorStatus.APPROVED &&
+        (operatorStatus === OperatorStatus.PENDING ||
+          operatorStatus === OperatorStatus.APPROVED)
+      ) {
         contents = [
           ...bceidMyOperatorTile,
           ...bceidOperationsTile,
@@ -102,10 +103,11 @@ export default function Tiles({
       }
       break;
     case FrontEndRoles.INDUSTRY_USER:
-      if (userOperatorStatus === UserOperatorStatus.APPROVED && (
-        operatorStatus === OperatorStatus.PENDING ||
-        operatorStatus === OperatorStatus.APPROVED
-      )) {
+      if (
+        userOperatorStatus === UserOperatorStatus.APPROVED &&
+        (operatorStatus === OperatorStatus.PENDING ||
+          operatorStatus === OperatorStatus.APPROVED)
+      ) {
         contents = [
           ...bceidMyOperatorTile,
           ...bceidOperationsTile,
