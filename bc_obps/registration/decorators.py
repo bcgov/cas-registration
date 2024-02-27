@@ -7,7 +7,9 @@ from django.http import HttpRequest
 
 
 def authorize(
-    authorized_app_roles: List[str], authorized_user_operator_roles: List[str] = []
+    authorized_app_roles: List[str],
+    authorized_user_operator_roles: List[str] = [],
+    industry_user_must_be_approved: bool = True,
 ) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
     """
     Decorator to authorize a user based on their app_role and UserOperator.role.
@@ -22,7 +24,9 @@ def authorize(
         @wraps(func)
         def wrapper(request: HttpRequest, *args: Any, **kwargs: Any) -> Any:
             try:
-                raise_401_if_user_not_authorized(request, authorized_app_roles, authorized_user_operator_roles)
+                raise_401_if_user_not_authorized(
+                    request, authorized_app_roles, authorized_user_operator_roles, industry_user_must_be_approved
+                )
             except HttpError as e:
                 raise HttpError(HTTPStatus.UNAUTHORIZED, str(e))
             return func(request, *args, **kwargs)
