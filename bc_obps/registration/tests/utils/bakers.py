@@ -34,6 +34,8 @@ def user_baker(custom_properties=None) -> User:
         properties.update(custom_properties)
 
     return baker.make(User, **properties)
+
+
 def generate_random_cra_business_number():
     return random.randint(100000000, 999999999)
 
