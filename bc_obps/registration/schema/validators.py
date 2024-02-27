@@ -1,4 +1,4 @@
-def validate_cra_business_number(value: str):
+def validate_cra_business_number(value: int):
     """
     Validate that the cra_business_number has 9 digits.
     """
