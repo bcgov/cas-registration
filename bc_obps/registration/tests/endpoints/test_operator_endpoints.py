@@ -17,7 +17,7 @@ class TestOperatorsEndpoint(CommonTestSetup):
         super().setup()
         self.operator = operator_baker()
         self.operator.legal_name = "Test Operator legal name"
-        self.operator.cra_business_number = "123456789"
+        self.operator.cra_business_number = 111111111
         self.operator.save(update_fields=["legal_name", "cra_business_number"])
 
     def test_operator_unauthorized_users_cannot_get(self):
@@ -92,7 +92,7 @@ class TestOperatorsEndpoint(CommonTestSetup):
         response = TestUtils.mock_get_with_auth_role(
             self,
             'industry_user',
-            custom_reverse_lazy('get_operator_by_legal_name_or_cra') + '?cra_business_number=123456789',
+            custom_reverse_lazy('get_operator_by_legal_name_or_cra') + '?cra_business_number=111111111',
         )
         assert response.status_code == 200
         response_dict: dict = response.json()

@@ -1,5 +1,6 @@
 from typing import List, Optional
 from uuid import UUID
+from registration.schema.validators import validate_cra_business_number
 from registration.schema.operator import OperatorExternalDashboardUsersTileData
 from registration.schema.user import UserExternalDashboardUsersTileData
 from ninja import ModelSchema, Schema, Field
@@ -122,6 +123,11 @@ class UserOperatorOperatorIn(Schema):
     @classmethod
     def validate_business_structure(cls, value: str) -> BusinessStructure:
         return validate_business_structure(value)
+
+    @validator("cra_business_number")
+    @classmethod
+    def validate_cra_business_number(cls, value: int):
+        return validate_cra_business_number(value)
 
 
 class UserOperatorContactIn(ModelSchema):

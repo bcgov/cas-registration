@@ -430,7 +430,7 @@ class TestOperatorHelpers:
 
         user = baker.make(User)
         operator_instance: Operator = Operator(
-            cra_business_number=1234321,
+            cra_business_number=444444444,
             bc_corporate_registry_number="aaa1111111",
             business_structure=BusinessStructure.objects.first(),
             status=Operator.Statuses.PENDING,
