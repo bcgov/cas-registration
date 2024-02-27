@@ -15,6 +15,7 @@ const customFormats = {
 const customFormatsErrorMessages = {
   bc_corporate_registry_number:
     "BC Corporate Registry number should be 1-3 letters followed by 7 digits",
+  cra_business_number: "CRA Business Number should be 9 digits.",
   "postal-code": "Format should be A1A 1A1",
   phone: "Format should be ### ### ####",
   email: "Please enter a valid email address, e.g. mail@example.com",

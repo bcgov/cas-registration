@@ -8,12 +8,13 @@ from localflavor.ca.models import CAPostalCodeField, CAProvinceField
 from registration.constants import (
     BC_CORPORATE_REGISTRY_REGEX,
     BC_CORPORATE_REGISTRY_REGEX_MESSAGE,
+    CRA_BUSINESS_NUMBER_MESSAGE,
     BORO_ID_REGEX,
     USER_CACHE_PREFIX,
     AUDIT_FIELDS,
 )
 from simple_history.models import HistoricalRecords
-from django.core.validators import RegexValidator
+from django.core.validators import RegexValidator, MaxValueValidator, MinValueValidator
 from django.utils import timezone
 from django.core.exceptions import ValidationError
 from django.core.files.storage import default_storage
@@ -463,7 +464,13 @@ class Operator(TimeStampedModel):
     )
     legal_name = models.CharField(max_length=1000, db_comment="The legal name of an operator", unique=True)
     trade_name = models.CharField(max_length=1000, blank=True, db_comment="The trade name of an operator")
-    cra_business_number = models.IntegerField(db_comment="The CRA business number of an operator")
+    cra_business_number = models.IntegerField(
+        validators=[
+            MaxValueValidator(999999999, message=CRA_BUSINESS_NUMBER_MESSAGE),
+            MinValueValidator(100000000, message=CRA_BUSINESS_NUMBER_MESSAGE),  # Assuming  9-digit number
+        ],
+        db_comment="The CRA business number of an operator",
+    )
     swrs_organisation_id = models.IntegerField(
         db_comment="An identifier used in the CIIP/SWRS dataset (in swrs: organisation = operator). This identifier will only be populated for operators that were imported from that dataset.",
         blank=True,

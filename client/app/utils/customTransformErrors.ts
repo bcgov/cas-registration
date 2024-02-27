@@ -5,10 +5,14 @@ export const customTransformErrors = (
   customFormatsErrorMessages: { [key: string]: string },
 ) => {
   return errors.map((error) => {
+    if (
+      error?.property === ".cra_business_number" ||
+      ".po_cra_business_number"
+    ) {
+      error.message = customFormatsErrorMessages.cra_business_number;
+    }
     if (error?.name === "required") {
       error.message = "Required field";
-      // remove stack after PR 316 is in
-      error.stack = "Required field";
       return error;
     }
     if (
@@ -16,8 +20,6 @@ export const customTransformErrors = (
       customFormatsErrorMessages[error.params.format]
     ) {
       error.message = customFormatsErrorMessages[error.params.format];
-      // remove stack after PR 316 is in
-      error.stack = customFormatsErrorMessages[error.params.format];
       return error;
     }
     return error;

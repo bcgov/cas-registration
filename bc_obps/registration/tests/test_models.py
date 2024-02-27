@@ -537,6 +537,18 @@ class OperatorModelTest(BaseTestCase):
             ("parent_operators", "parent operator", None, None),
         ]
 
+    def test_check_cra_business_number_format(self):
+        valid_numbers = [123454321]
+        for number in valid_numbers:
+            self.test_object.cra_business_number = number
+            self.test_object.save()
+
+        invalid_numbers = [123, '123456789', 'ABCDEFGHI', '123-ABCd', '^&*%#@!()']
+        for number in invalid_numbers:
+            self.test_object.cra_business_number = number
+            with self.assertRaises(ValidationError):
+                self.test_object.save()
+
     def test_unique_cra_business_number_constraint(self):
         # First operator is `cls.test_object` from the fixture, attempt to create another operator with matching cra_business_number
         invalid_operator = Operator(

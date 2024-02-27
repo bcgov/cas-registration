@@ -15,6 +15,7 @@ from registration.models import (
 from registration.tests.utils.bakers import (
     address_baker,
     generate_random_bc_corporate_registry_number,
+    generate_random_cra_business_number,
     operator_baker,
     user_baker,
     user_operator_baker,
@@ -265,6 +266,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
                     Operator,
                     id=i,
                     bc_corporate_registry_number=generate_random_bc_corporate_registry_number(),
+                    cra_business_number=generate_random_cra_business_number(),
                     business_structure=BusinessStructure.objects.first(),
                     physical_address=address_baker(),
                     website='https://www.example-operator.com',

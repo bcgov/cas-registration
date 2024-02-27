@@ -104,7 +104,7 @@ class TestUtils:
     def mock_UserOperatorOperatorIn():
         return UserOperatorOperatorIn(
             legal_name='test',
-            cra_business_number=123,
+            cra_business_number=333333333,
             bc_corporate_registry_number='adh1234321',
             business_structure=BusinessStructure.objects.first().pk,
             physical_street_address='test',
