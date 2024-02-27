@@ -1133,9 +1133,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
 
     def test_put_user_operator_operator_with_an_existing_cra_business_number(self):
         existing_operator = operator_baker()
-        new_operator = operator_baker()
-        new_operator.created_by = self.user
-        new_operator.save(update_fields=["created_by"])
+        new_operator = operator_baker({'created_by': self.user})
         user_operator = baker.make(
             UserOperator, user=self.user, operator=new_operator, role=UserOperator.Roles.ADMIN, created_by=self.user
         )

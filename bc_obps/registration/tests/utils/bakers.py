@@ -28,7 +28,7 @@ def generate_random_bc_corporate_registry_number():
     return dummy_data
 
 
-def user_baker(custom_properties=None)-> User:
+def user_baker(custom_properties=None) -> User:
     properties = {}
     if custom_properties:
         properties.update(custom_properties)
