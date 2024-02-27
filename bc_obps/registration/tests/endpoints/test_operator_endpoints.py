@@ -105,6 +105,29 @@ class TestOperatorsEndpoint(CommonTestSetup):
         )
         assert response.status_code == 404
 
+    def test_get_operators_by_cra_number_or_legal_name_exclude_declined_operators(self):
+        operator = operator_baker({'status': Operator.Statuses.DECLINED})
+
+        # CRA number
+        response = TestUtils.mock_get_with_auth_role(
+            self,
+            'industry_user',
+            custom_reverse_lazy('get_operators_by_cra_number_or_legal_name')
+            + f'?cra_business_number={operator.cra_business_number}',
+        )
+        assert response.status_code == 404
+        assert response.json() == {"message": "No matching operator found. Retry or add operator."}
+
+        # Legal name
+        response = TestUtils.mock_get_with_auth_role(
+            self,
+            'industry_user',
+            custom_reverse_lazy('get_operators_by_cra_number_or_legal_name') + f'?legal_name={operator.legal_name}',
+        )
+
+        assert response.status_code == 200
+        assert response.json() == []
+
     def test_select_operator_with_valid_id(self):
         operator = operator_baker()
         response = TestUtils.mock_get_with_auth_role(

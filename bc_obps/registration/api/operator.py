@@ -30,12 +30,14 @@ def get_operators_by_cra_number_or_legal_name(
         return 404, {"message": "No search value provided"}
     if cra_business_number:
         try:
-            operator = Operator.objects.get(cra_business_number=cra_business_number)
+            operator = Operator.objects.exclude(status=Operator.Statuses.DECLINED).get(
+                cra_business_number=cra_business_number
+            )
             return 200, OperatorSearchOut.from_orm(operator)
         except Operator.DoesNotExist:
             return 404, {"message": "No matching operator found. Retry or add operator."}
     elif legal_name:
-        operators = Operator.objects.filter(legal_name__icontains=legal_name)
+        operators = Operator.objects.exclude(status=Operator.Statuses.DECLINED).filter(legal_name__icontains=legal_name)
         return 200, [OperatorSearchOut.from_orm(operator) for operator in operators]
     return 404, {"message": "No matching operator found. Retry or add operator."}
 
