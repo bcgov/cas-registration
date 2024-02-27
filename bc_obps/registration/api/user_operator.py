@@ -350,6 +350,14 @@ def update_operator_and_user_operator(request, payload: UserOperatorOperatorIn, 
     try:
         user_operator_instance: UserOperator = get_object_or_404(UserOperator, id=user_operator_id, user=user)
         operator_instance: Operator = user_operator_instance.operator
+        # Check cra_business_number for uniqueness except for the current operator
+        cra_business_number: str = payload.cra_business_number
+        existing_operator: Operator = (
+            Operator.objects.filter(cra_business_number=cra_business_number).exclude(id=operator_instance.id).exists()
+        )
+        # check if operator with this CRA Business Number already exists
+        if existing_operator:
+            return 400, {"message": "Operator with this CRA Business Number already exists."}
         if operator_instance.status == 'Draft':
             operator_instance.status = 'Pending'
 

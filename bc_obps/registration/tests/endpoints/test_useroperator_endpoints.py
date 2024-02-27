@@ -1,5 +1,5 @@
 from typing import List
-import pytest, json
+import json
 from model_bakery import baker
 from localflavor.ca.models import CAPostalCodeField
 from registration.models import (
@@ -1090,7 +1090,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
             "mailing_municipality": "test mailing municipality",
             "mailing_province": "BC",
             "mailing_postal_code": "V0V0V0",
-            "operator_has_parent_operators": True,
+            "operator_has_parent_operators": False,
             "parent_operators_array": [],
         }
         put_response = TestUtils.mock_put_with_auth_role(
@@ -1112,6 +1112,60 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         assert operator is not None
         assert operator.updated_by == self.user
         assert operator.updated_at is not None
+        assert mock_payload == {
+            "legal_name": operator.legal_name,
+            "trade_name": operator.trade_name,
+            "cra_business_number": operator.cra_business_number,
+            "bc_corporate_registry_number": operator.bc_corporate_registry_number,
+            "business_structure": operator.business_structure.pk,
+            "physical_street_address": operator.physical_address.street_address,
+            "physical_municipality": operator.physical_address.municipality,
+            "physical_province": operator.physical_address.province,
+            "physical_postal_code": operator.physical_address.postal_code,
+            "mailing_address_same_as_physical": operator.mailing_address_id == operator.physical_address_id,
+            "mailing_street_address": operator.mailing_address.street_address,
+            "mailing_municipality": operator.mailing_address.municipality,
+            "mailing_province": operator.mailing_address.province,
+            "mailing_postal_code": operator.mailing_address.postal_code,
+            "operator_has_parent_operators": operator.parent_operators.exists(),
+            "parent_operators_array": list(operator.parent_operators.all()),
+        }
+
+    def test_put_user_operator_operator_with_an_existing_cra_business_number(self):
+        existing_operator = operator_baker()
+        new_operator = operator_baker({'created_by': self.user})
+        user_operator = baker.make(
+            UserOperator, user=self.user, operator=new_operator, role=UserOperator.Roles.ADMIN, created_by=self.user
+        )
+        mock_payload = {
+            "legal_name": "Put Operator Legal Name",
+            "trade_name": "Put Operator Trade Name",
+            "cra_business_number": existing_operator.cra_business_number,
+            "bc_corporate_registry_number": "abc1234321",
+            "business_structure": BusinessStructure.objects.first().pk,
+            "physical_street_address": "test physical street address",
+            "physical_municipality": "test physical municipality",
+            "physical_province": "BC",
+            "physical_postal_code": "H0H0H0",
+            "mailing_address_same_as_physical": False,
+            "mailing_street_address": "test mailing street address",
+            "mailing_municipality": "test mailing municipality",
+            "mailing_province": "BC",
+            "mailing_postal_code": "V0V0V0",
+            "operator_has_parent_operators": False,
+            "parent_operators_array": [],
+        }
+        put_response = TestUtils.mock_put_with_auth_role(
+            self,
+            'industry_user',
+            self.content_type,
+            mock_payload,
+            custom_reverse_lazy('update_operator_and_user_operator', kwargs={'user_operator_id': user_operator.id}),
+        )
+
+        response_json = put_response.json()
+        assert put_response.status_code == 400
+        assert response_json == {"message": "Operator with this CRA Business Number already exists."}
 
     def test_put_user_operator_operator_unauthorized(self):
         operator = operator_baker()
