@@ -10,6 +10,7 @@ from registration.models import (
     ParentOperator,
     User,
     UserOperator,
+    AppRole,
 )
 from registration.tests.utils.bakers import (
     address_baker,
@@ -306,47 +307,61 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         # assert that the first item in the page 2 response is not the same as the first item in the page 2 response with reversed order
         assert page_2_response_id != page_2_response_id_reverse
 
-    def test_get_user_operators_check_response_returns_operators_with_no_approved_admins(self):
+    def test_get_user_operator_list_for_cas_users_when_operator_has_approved_admin(self):
         operator = operator_baker()
-
-        # Make two user operators tied to the same operator
+        admin_user = baker.make(User, app_role=AppRole.objects.get(role_name='industry_user'))
+        # admin A approved by CAS
         baker.make(
             UserOperator,
-            user=user_baker(),
             operator=operator,
             role=UserOperator.Roles.ADMIN,
             status=UserOperator.Statuses.APPROVED,
+            verified_by=baker.make(User, app_role=AppRole.objects.get(role_name='cas_admin')),
         )
-
+        # admin B approved by admin A
         baker.make(
             UserOperator,
-            user=user_baker(),
             operator=operator,
             role=UserOperator.Roles.ADMIN,
-            status=UserOperator.Statuses.PENDING,
+            status=UserOperator.Statuses.APPROVED,
+            verified_by=admin_user,
         )
-
-        response = TestUtils.mock_get_with_auth_role(self, "cas_admin", custom_reverse_lazy('list_user_operators'))
-        assert response.status_code == 200
-        response_data = response.json().get('data')
-
-        # returns 0 since both user operators are tied to the same operator and one prime admin request is approved
-        assert len(response_data) == 0
-
-        # Now add user operator tied to a different operator
+        # pending admin request
+        baker.make(UserOperator, operator=operator, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.PENDING)
+        # no role pending request
         baker.make(
-            UserOperator,
-            user=user_baker(),
-            operator=operator_baker(),
-            role=UserOperator.Roles.ADMIN,
-            status=UserOperator.Statuses.PENDING,
+            UserOperator, operator=operator, role=UserOperator.Roles.PENDING, status=UserOperator.Statuses.PENDING
+        )
+        # pending reporter request
+        baker.make(
+            UserOperator, operator=operator, role=UserOperator.Roles.REPORTER, status=UserOperator.Statuses.PENDING
         )
 
         response = TestUtils.mock_get_with_auth_role(self, "cas_admin", custom_reverse_lazy('list_user_operators'))
         assert response.status_code == 200
         response_data = response.json().get('data')
-        # returns 1 since the user operator is tied to a different operator
+
+        # returns 1 since CAS users only see access requests they approved
         assert len(response_data) == 1
+
+    def test_get_user_operator_list_for_cas_users_when_operator_does_not_have_an_admin(self):
+
+        operator = operator_baker()
+        # unapproved admin request #1
+        baker.make(UserOperator, operator=operator, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.PENDING)
+        # unapproved admin request #2
+        baker.make(UserOperator, operator=operator, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.PENDING)
+        # second access request
+        baker.make(
+            UserOperator, operator=operator, role=UserOperator.Roles.PENDING, status=UserOperator.Statuses.PENDING
+        )
+
+        response = TestUtils.mock_get_with_auth_role(self, "cas_admin", custom_reverse_lazy('list_user_operators'))
+        assert response.status_code == 200
+        response_data = response.json().get('data')
+
+        # returns 3 since CAS sees all requests if there isn't an approved admin
+        assert len(response_data) == 3
 
     def test_user_operator_put_cannot_update_status_when_operator_not_approved(self):
         user = baker.make(User)
