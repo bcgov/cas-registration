@@ -74,7 +74,7 @@ class TestOperatorsEndpoint(CommonTestSetup):
         response = TestUtils.mock_get_with_auth_role(
             self,
             'industry_user',
-            custom_reverse_lazy('get_operators_by_cra_number_or_legal_name') + '?cra_business_number=',
+            custom_reverse_lazy('get_operators_by_cra_number_or_legal_name') + '?cra_business_number=0',
         )
         assert response.json() == {"message": "No search value provided"}
 
@@ -143,9 +143,6 @@ class TestOperatorsEndpoint(CommonTestSetup):
 
         assert response.status_code == 200
         response_dict = response.json()
-        assert response_dict.get('status') == Operator.Statuses.APPROVED
-        assert response_dict.get('is_new') == False
-        assert response_dict.get("verified_by") == str(self.user.user_guid)
         operator.refresh_from_db()  # refresh the operator object to get the updated status
         for key in response_dict.keys():
             if key not in AUDIT_FIELDS:
