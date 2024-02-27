@@ -6,6 +6,7 @@ import { GridRenderCellParams } from "@mui/x-data-grid";
 import { actionHandler } from "@/app/utils/actions";
 import { formatOperationRows } from "@/app/components/routes/operations/Operations";
 import { useSession } from "next-auth/react";
+import { OperationStatus } from "@/app/utils/enums";
 
 const fetchOperationPageData = async (
   page: number,
@@ -44,10 +45,10 @@ const OperationDataGrid = ({
         renderCell: (params: GridRenderCellParams) => {
           let actionText;
           switch (params.row.status) {
-            case "Not Started":
+            case OperationStatus.NOT_STARTED:
               actionText = "Start Registration";
               break;
-            case "Draft":
+            case OperationStatus.DRAFT:
               actionText = "Continue";
               break;
             default:
