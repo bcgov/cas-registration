@@ -85,11 +85,13 @@ def save_operator(payload: UserOperatorOperatorIn, operator_instance: Operator, 
             "mailing_address",
             "website",
             "business_structure",
+            "cra_business_number",
+            "bc_corporate_registry_number",
         ]
         created_or_updated_operator_instance: Operator = update_model_instance(
             operator_instance, operator_related_fields, payload.dict()
         )
-        created_or_updated_operator_instance.save()
+        created_or_updated_operator_instance.save(update_fields=operator_related_fields + ["status"])
         created_or_updated_operator_instance.set_create_or_update(user.pk)
 
         # Using the import here to avoid circular import
