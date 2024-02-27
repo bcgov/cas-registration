@@ -24,7 +24,7 @@ from django.core.exceptions import ValidationError
 )
 @authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles())
 def get_operators_by_cra_number_or_legal_name(
-    request, cra_business_number: Optional[Union[int, str]] = None, legal_name: Optional[str] = ""
+    request, cra_business_number: Optional[int] = None, legal_name: Optional[str] = ""
 ):
     if not cra_business_number and not legal_name:
         return 404, {"message": "No search value provided"}
