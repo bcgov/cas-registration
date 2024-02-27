@@ -222,15 +222,15 @@ class TestUserOperatorEndpoint(CommonTestSetup):
 
     def test_get_user_operator_data_industry_user_invalid_request(self):
         operator = operator_baker()
-        user_operator = baker.make(UserOperator, operator=operator)
+        user_operator = baker.make(UserOperator, operator=operator, status=UserOperator.Statuses.APPROVED)
 
         response = TestUtils.mock_get_with_auth_role(
             self,
             'industry_user',
             custom_reverse_lazy('get_user_operator', kwargs={'user_operator_id': user_operator.id}),
         )
-        # returns 404 because the user_operator does not belong to the current user
-        assert response.status_code == 404
+        # returns 401 because the user_operator does not belong to the current user
+        assert response.status_code == 401
 
     def test_get_user_operator_data_internal_user(self):
         operator = operator_baker()
@@ -472,6 +472,9 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         assert response.json().get('detail')[0].get('msg') == 'value is not a valid uuid'
 
     def test_is_approved_admin_user_operator_with_approved_user(self):
+        # self is an approved user_operator (this endpoint requires approval to access)
+        user_operator_baker({'user': self.user, 'status': UserOperator.Statuses.APPROVED})
+
         mock_user = baker.make(User)
         mock_user_operator = user_operator_baker()
         mock_user_operator.user_id = mock_user.user_guid
@@ -487,6 +490,8 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         assert response.json() == {"approved": True}
 
     def test_is_approved_admin_user_operator_without_approved_user(self):
+        # self is an approved user_operator (this endpoint requires approval to access)
+        user_operator_baker({'user': self.user, 'status': UserOperator.Statuses.APPROVED})
         mock_user = baker.make(User)
         mock_user_operator = user_operator_baker()
         mock_user_operator.user_id = mock_user.user_guid
@@ -564,7 +569,16 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         operator = operator_baker()
         operator.status = 'Approved'
         operator.save(update_fields=["created_by", "status"])
-        baker.make(UserOperator, user=self.user, operator=operator, role=UserOperator.Roles.ADMIN, created_by=self.user)
+        # Approved user_operator record for the operator
+        baker.make(
+            UserOperator,
+            user=self.user,
+            operator=operator,
+            role=UserOperator.Roles.ADMIN,
+            created_by=self.user,
+            status=UserOperator.Statuses.APPROVED,
+        )
+        # Declined user_operator record for the same operator
         baker.make(UserOperator, operator=operator, status=UserOperator.Statuses.DECLINED)
         response = TestUtils.mock_get_with_auth_role(
             self, 'industry_user', custom_reverse_lazy('get_user_operator_list_from_user')
@@ -620,23 +634,18 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         assert "operator_id" in response_json
         assert "status" in response_json
 
-    # GET USER OPERATOR OPERATOR ID 404
+    # GET USER OPERATOR OPERATOR ID 401
     def test_get_user_operator_operator_with_invalid_user(self):
         # Act
         response = TestUtils.mock_get_with_auth_role(
             self, 'industry_user', custom_reverse_lazy('get_user_operator_operator')
         )
 
-        response_json = response.json()
-
-        # Assert
-        # user is invalid because they're not in the user operator table
-        assert response.status_code == 404
-
-        # Additional Assertions
-        assert response_json == {'message': 'User is not associated with any operator'}
+        # User_operator must be approved to see their operator info
+        assert response.status_code == 401
 
     def test_duplicates_not_allowed(self):
+
         operator = operator_baker()
 
         # duplicate CRA business number
@@ -1038,7 +1047,12 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         operator.status = 'Draft'
         operator.save(update_fields=["created_by", "status"])
         user_operator = baker.make(
-            UserOperator, user=self.user, operator=operator, role=UserOperator.Roles.ADMIN, created_by=self.user
+            UserOperator,
+            user=self.user,
+            operator=operator,
+            role=UserOperator.Roles.ADMIN,
+            created_by=self.user,
+            status=UserOperator.Statuses.APPROVED,
         )
         mock_payload = {
             "legal_name": "Put Operator Legal Name",
@@ -1075,7 +1089,12 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         operator.created_by = self.user
         operator.save(update_fields=["created_by"])
         user_operator = baker.make(
-            UserOperator, user=self.user, operator=operator, role=UserOperator.Roles.ADMIN, created_by=self.user
+            UserOperator,
+            user=self.user,
+            operator=operator,
+            role=UserOperator.Roles.ADMIN,
+            created_by=self.user,
+            status=UserOperator.Statuses.APPROVED,
         )
         mock_payload = {
             "legal_name": "Put Operator Legal Name",
@@ -1226,7 +1245,13 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         operator_1 = operator_baker()
         operator_2 = operator_baker()
 
-        user_operator = baker.make(UserOperator, user=self.user, operator=operator_2, role=UserOperator.Roles.ADMIN)
+        user_operator = baker.make(
+            UserOperator,
+            user=self.user,
+            operator=operator_2,
+            role=UserOperator.Roles.ADMIN,
+            status=UserOperator.Statuses.APPROVED,
+        )
 
         # duplicate legal name
         payload_with_duplicate_legal_name = {
