@@ -31,6 +31,7 @@ from django.shortcuts import get_object_or_404
 from registration.models import (
     AppRole,
     BusinessRole,
+    Operation,
     Operator,
     User,
     UserOperator,
@@ -195,12 +196,20 @@ def list_user_operators(request, page: int = 1, sort_field: str = "created_at", 
         .only("id", "status", "user__last_name", "user__first_name", "user__email", "operator__legal_name")
         .order_by(f"{sort_direction}{sort_field}")
         .exclude(
-            # exclude access requests to an operator that already has an approved admin
-            operator_id__in=UserOperator.objects.filter(status=UserOperator.Statuses.APPROVED).values_list(
-                "operator_id", flat=True
-            ),
+            # exclude pending user_operators that belong to operators that already have approved admins
+            status=Operation.Statuses.PENDING,
+            operator_id__in=UserOperator.objects.filter(
+                role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.APPROVED
+            ).values_list("operator_id", flat=True),
+        )
+        .exclude(
+            # exclude approved user_operators that were approved by industry users
+            id__in=UserOperator.objects.filter(
+                status=UserOperator.Statuses.APPROVED, verified_by__in=User.objects.filter(app_role='industry_user')
+            ).values_list("id", flat=True)
         )
     )
+
     paginator = Paginator(qs, PAGE_SIZE)
     user_operator_list = []
 
