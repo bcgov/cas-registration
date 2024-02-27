@@ -49,12 +49,12 @@ spec:
             - name: DB_PORT
               valueFrom:
                 secretKeyRef:
-                  key: port
+                  key: pgbouncer-port
                   name: cas-obps-postgres-pguser-registration
             - name: DB_HOST
               valueFrom:
                 secretKeyRef:
-                  key: host
+                  key: pgbouncer-host
                   name: cas-obps-postgres-pguser-registration
             - name: ALLOWED_HOSTS
               value: '*'
