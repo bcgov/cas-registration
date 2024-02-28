@@ -1156,7 +1156,12 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         existing_operator = operator_baker()
         new_operator = operator_baker({'created_by': self.user})
         user_operator = baker.make(
-            UserOperator, user=self.user, operator=new_operator, role=UserOperator.Roles.ADMIN, created_by=self.user
+            UserOperator,
+            user=self.user,
+            operator=new_operator,
+            role=UserOperator.Roles.ADMIN,
+            created_by=self.user,
+            status=UserOperator.Statuses.APPROVED,
         )
         mock_payload = {
             "legal_name": "Put Operator Legal Name",
