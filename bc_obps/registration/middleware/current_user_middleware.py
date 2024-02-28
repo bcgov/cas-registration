@@ -1,4 +1,5 @@
 import json
+from uuid import UUID
 from django.core.cache import cache
 from django.shortcuts import get_object_or_404
 from registration.constants import USER_CACHE_PREFIX
@@ -13,7 +14,7 @@ class CurrentUserMiddleware:
         auth_header = request.headers.get('Authorization')
         if auth_header:
             try:
-                user_guid = json.loads(auth_header).get('user_guid')
+                user_guid = UUID(json.loads(auth_header).get('user_guid'))
 
                 # Try to get the user from cache
                 cache_key = f"{USER_CACHE_PREFIX}{user_guid}"
