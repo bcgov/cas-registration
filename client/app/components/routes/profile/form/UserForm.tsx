@@ -62,7 +62,7 @@ export default function UserForm({ formData, isCreate }: Props) {
           business_guid: session?.user?.bceid_business_guid,
           bceid_business_name: session?.user?.bceid_business_name,
         }),
-      }
+      },
     );
     // 🛑 Set loading to false after the API call is completed
     setIsLoading(false);

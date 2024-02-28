@@ -15,7 +15,6 @@ import Header from "@/app/components/layout/Header";
 import Box from "@mui/material/Box";
 import { getServerSession } from "next-auth";
 import { authOptions } from "./api/auth/[...nextauth]/route";
-import { actionHandler } from "./utils/actions";
 
 export const metadata: Metadata = {
   title: "CAS OBPS REGISTRATION",
@@ -30,15 +29,6 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
 };
-
-export async function getUser() {
-  try {
-    return await actionHandler("registration/user-profile", "GET", "/");
-  } catch (error) {
-    // Handle the error here or rethrow it to handle it at a higher level
-    throw error;
-  }
-}
 
 export default async function RootLayout({
   children,
