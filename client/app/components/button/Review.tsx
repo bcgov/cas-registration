@@ -9,13 +9,14 @@ import Modal from "@/app/components/modal/Modal";
 import RequestChanges from "./RequestChanges";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
+import { Status } from "@/app/utils/enums";
 
 interface Props {
   confirmApproveMessage: string;
   confirmRejectMessage: string;
   approvedMessage: string;
   declinedMessage: string;
-  isStatusPending: boolean;
+  operationStatus: Status;
   note?: string;
   showRequestChanges?: boolean;
   onApprove: () => Promise<any>;
@@ -47,7 +48,7 @@ const Review = ({
   approvedMessage,
   confirmApproveMessage,
   confirmRejectMessage,
-  isStatusPending,
+  operationStatus,
   declinedMessage,
   note,
   showRequestChanges = true,
@@ -61,7 +62,9 @@ const Review = ({
   const [modalState, setModalState] = useState("" as string);
   const [dismissAlert, setDismissAlert] = useState(false);
   const [showChangeConfirmation, setShowChangeConfirmation] = useState(false);
-  const [showRequestChangesUndo, setShowRequestChangesUndo] = useState(false);
+  const [showRequestChangesUndo, setShowRequestChangesUndo] = useState(
+    operationStatus === Status.CHANGES_REQUESTED,
+  );
 
   const handleApprove = () => {
     setModalState("approve");
@@ -120,7 +123,7 @@ const Review = ({
     setShowRequestChangesUndo(false);
   };
   const isReviewButtons =
-    (isStatusPending &&
+    (operationStatus === Status.PENDING &&
       errorList.length === 0 &&
       successMessageList.length === 0) ||
     showRequestChangesUndo;
