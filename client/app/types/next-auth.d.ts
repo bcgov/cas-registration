@@ -20,6 +20,7 @@ declare module "next-auth/jwt" {
     app_role?: string;
     given_name?: string;
     family_name?: string;
+    full_name?: string;
     bceid_business_name: string | undefined;
     bceid_business_guid: string | undefined;
   }
@@ -36,6 +37,7 @@ declare module "next-auth" {
       app_role?: string;
       given_name?: string;
       family_name?: string;
+      full_name?: string;
     } & DefaultSession["user"];
   }
 }
