@@ -74,7 +74,7 @@ const RequestChanges: React.FC<Props> = ({
         </span>
         <span className="mx-2 font-bold">Changes have been requested.</span>
         <button
-          className="bg-transparent border-0 p-0 text-bc-link-blue text-lg font-underline font-bold underline decoration-bc-link-blue"
+          className="bg-transparent border-0 p-0 text-bc-link-blue text-lg font-underline font-bold underline decoration-bc-link-blue hover:cursor-pointer"
           aria-label="Undo Request Changes"
           onClick={handleUndoRequestChangesClick}
         >
