@@ -86,6 +86,7 @@ class OperationOut(ModelSchema):
     # multiple_operators_array: Optional["List[MultipleOperatorOut]"] = Field(None, alias="multiple_operator")
     statutory_declaration: Optional[str] = None
     bc_obps_regulated_operation: Optional[str] = Field(None, alias="bc_obps_regulated_operation.id")
+    bcghg_id: Optional[str] = ""
 
     @staticmethod
     def resolve_statutory_declaration(obj: Operation):
@@ -93,6 +94,10 @@ class OperationOut(ModelSchema):
         if statutory_declaration:
             return file_to_data_url(statutory_declaration)
         return None
+
+    @staticmethod
+    def resolve_bcghg_id(obj: Operation):
+        return obj.bcghg_id or ""
 
     @staticmethod
     def resolve_phone_number(obj):
@@ -107,7 +112,6 @@ class OperationOut(ModelSchema):
             "id",
             'name',
             'type',
-            'bcghg_id',
             'opt_in',
             'regulated_products',
             'previous_year_attributable_emissions',
