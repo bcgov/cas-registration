@@ -16,7 +16,8 @@ interface Props {
   confirmRejectMessage: string;
   approvedMessage: string;
   declinedMessage: string;
-  operationStatus: Status;
+  isStatusPending: boolean;
+  operationStatus?: Status;
   note?: string;
   showRequestChanges?: boolean;
   onApprove: () => Promise<any>;
@@ -48,6 +49,7 @@ const Review = ({
   approvedMessage,
   confirmApproveMessage,
   confirmRejectMessage,
+  isStatusPending,
   operationStatus,
   declinedMessage,
   note,
@@ -63,7 +65,7 @@ const Review = ({
   const [dismissAlert, setDismissAlert] = useState(false);
   const [showChangeConfirmation, setShowChangeConfirmation] = useState(false);
   const [showRequestChangesUndo, setShowRequestChangesUndo] = useState(
-    operationStatus === Status.CHANGES_REQUESTED,
+    operationStatus ? operationStatus === Status.CHANGES_REQUESTED : false,
   );
 
   const handleApprove = () => {
@@ -123,7 +125,7 @@ const Review = ({
     setShowRequestChangesUndo(false);
   };
   const isReviewButtons =
-    (operationStatus === Status.PENDING &&
+    (isStatusPending &&
       errorList.length === 0 &&
       successMessageList.length === 0) ||
     showRequestChangesUndo;
