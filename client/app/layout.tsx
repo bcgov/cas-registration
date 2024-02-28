@@ -45,10 +45,8 @@ export default async function RootLayout({
 }: {
   readonly children: React.ReactNode;
 }) {
-  // use the user's name from the database instead of from the session
-  const { first_name: firstName, last_name: lastName } = await getUser();
-
   //🪝 Wrap the returned auth session in the "use client" version of NextAuth SessionProvider so to expose the useSession() hook in client components
+  // Session properties come from client/app/api/auth/[...nextauth]/route.ts
   const session = await getServerSession(authOptions);
 
   return (
@@ -82,7 +80,7 @@ export default async function RootLayout({
                 padding: "0 16px",
               }}
             >
-              <Header userFullName={firstName + " " + lastName} />
+              <Header />
               {/* Content goes here */}
               {children}
               <Footer />
