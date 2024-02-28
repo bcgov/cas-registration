@@ -48,7 +48,8 @@ from registration.constants import PAGE_SIZE
     response={200: PendingUserOperatorOut, codes_4xx: Message},
     url_name="get_user_operator_from_user",
 )
-@authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
+# brianna I think it's fine for them to see this unapproved
+@authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles(), False)
 def get_user_operator_from_user(request):
     try:
         user_operator = (
@@ -97,7 +98,8 @@ def get_user_operator_operator(request):
 
 
 @router.get("/user-operator-id", response={200: UserOperatorIdOut, codes_4xx: Message}, url_name="get_user_operator_id")
-@authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
+# brianna I think it's fine for them to see this
+@authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles(), False)
 def get_user_operator_id(request):
     user_operator = get_object_or_404(UserOperator, user_id=request.current_user.user_guid)
     return 200, {"user_operator_id": user_operator.id}
@@ -133,7 +135,7 @@ def get_user_operator(request, user_operator_id: UUID):
     response={200: bool, codes_4xx: Message},
     url_name="get_user_operator_admin_exists",
 )
-@authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles())
+@authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles(), False)
 def get_user_operator_admin_exists(request, operator_id: UUID):
     has_admin = UserOperator.objects.filter(
         operator_id=operator_id, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.APPROVED
@@ -146,7 +148,7 @@ def get_user_operator_admin_exists(request, operator_id: UUID):
     response={200: bool, codes_4xx: Message},
     url_name="operator_access_declined",
 )
-@authorize(['industry_user'], UserOperator.get_all_industry_user_operator_roles())
+@authorize(['industry_user'], UserOperator.get_all_industry_user_operator_roles(), False)
 def get_user_operator_admin_exists(request, operator_id: UUID):
     user: User = request.current_user
     is_declined = UserOperator.objects.filter(
@@ -163,6 +165,7 @@ def get_user_operator_admin_exists(request, operator_id: UUID):
 @authorize(["industry_user"], ["admin"])
 def get_user_operator_list_from_user(request):
     user: User = request.current_user
+    # this gets the user's operator by looking it up in the user_operator table (we exclude declined user_operators because the user may have previously requested access and been declined and therefore have two records in the user_operator table)
     operator = (
         UserOperator.objects.select_related("operator")
         .exclude(status=UserOperator.Statuses.DECLINED)
@@ -255,7 +258,7 @@ def list_user_operators(request, page: int = 1, sort_field: str = "created_at", 
     response={201: RequestAccessOut, codes_4xx: Message},
     url_name="request_admin_access",
 )
-@authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
+@authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles(), False)
 def request_admin_access(request, payload: SelectOperatorIn):
     user: User = request.current_user
     operator: Operator = get_object_or_404(Operator, id=payload.operator_id)
@@ -283,7 +286,7 @@ def request_admin_access(request, payload: SelectOperatorIn):
 @router.post(
     "/select-operator/request-access", response={201: RequestAccessOut, codes_4xx: Message}, url_name="request_access"
 )
-@authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
+@authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles(), False)
 def request_access(request, payload: SelectOperatorIn):
     user: User = request.current_user
     operator: Operator = get_object_or_404(Operator, id=payload.operator_id)
@@ -293,6 +296,7 @@ def request_access(request, payload: SelectOperatorIn):
             if status != 200:
                 return status, message
 
+            # brianna how could one exist if this is an access request?
             # Making a draft UserOperator instance if one doesn't exist
             user_operator, created = UserOperator.objects.get_or_create(
                 user=user, operator=operator, status=UserOperator.Statuses.PENDING, role=UserOperator.Roles.REPORTER
@@ -311,7 +315,7 @@ def request_access(request, payload: SelectOperatorIn):
     response={200: RequestAccessOut, codes_4xx: Message},
     url_name="create_operator_and_user_operator",
 )
-@authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
+@authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles(), False)
 def create_operator_and_user_operator(request, payload: UserOperatorOperatorIn):
     try:
         with transaction.atomic():

@@ -11,7 +11,7 @@ from django.core.cache import cache
 
 
 @router.get("/reporting_activities", response=List[ReportingActivitySchema], url_name="list_reporting_activities")
-@authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles())
+@authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles(), False)
 def list_reporting_activities(request):
     cached_data = cache.get("reporting_activities")
     if cached_data:

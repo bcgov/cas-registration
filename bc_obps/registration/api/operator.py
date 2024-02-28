@@ -22,7 +22,7 @@ from django.core.exceptions import ValidationError
     response={200: Union[List[OperatorSearchOut], OperatorSearchOut], codes_4xx: Message, codes_5xx: Message},
     url_name="get_operators_by_cra_number_or_legal_name",
 )
-@authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles())
+@authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles(), False)
 def get_operators_by_cra_number_or_legal_name(
     request, cra_business_number: Optional[int] = None, legal_name: Optional[str] = ""
 ):
@@ -49,7 +49,7 @@ def get_operators_by_cra_number_or_legal_name(
 @router.get(
     "/operators/{operator_id}", response={200: ConfirmSelectedOperatorOut, codes_4xx: Message}, url_name="get_operator"
 )
-@authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles())
+@authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles(), False)
 def get_operator(request, operator_id: UUID):
     try:
         operator = get_object_or_404(Operator, id=operator_id)
