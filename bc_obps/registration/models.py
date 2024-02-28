@@ -719,6 +719,7 @@ class Operation(OperationAndFacilityCommonInfo):
 
     class Statuses(models.TextChoices):
         NOT_STARTED = "Not Started"
+        DRAFT = "Draft"
         PENDING = "Pending"
         APPROVED = "Approved"
         DECLINED = "Declined"
