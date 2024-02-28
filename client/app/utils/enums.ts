@@ -15,6 +15,15 @@ export enum FrontEndRoles {
   INDUSTRY_USER_ADMIN = "industry_user_admin",
 }
 
+export enum OperationStatus {
+  NOT_STARTED = "Not Started",
+  DRAFT = "Draft",
+  PENDING = "Pending",
+  APPROVED = "Approved",
+  DECLINED = "Declined",
+  CHANGES_REQUESTED = "Changes Requested",
+}
+
 export enum OperatorStatus {
   DRAFT = "Draft",
   PENDING = "Pending",

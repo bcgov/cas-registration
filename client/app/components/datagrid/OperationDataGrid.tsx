@@ -6,6 +6,7 @@ import { GridRenderCellParams } from "@mui/x-data-grid";
 import { actionHandler } from "@/app/utils/actions";
 import { formatOperationRows } from "@/app/components/routes/operations/Operations";
 import { useSession } from "next-auth/react";
+import { OperationStatus } from "@/app/utils/enums";
 
 const fetchOperationPageData = async (
   page: number,
@@ -37,24 +38,37 @@ const OperationDataGrid = ({
   const { data: session } = useSession();
 
   const isIndustryUser = session?.user.app_role?.includes("industry");
-
   const updatedColumnsOperations = columns.map((column) => {
     if (column.field === "action") {
       return {
         ...column,
-        renderCell: (params: GridRenderCellParams) => (
-          <div>
-            {/* 🔗 Add reg or details link */}
-            <Link
-              className="no-underline text-bc-link-blue whitespace-normal"
-              href={`operations/${params.row.id}${isIndustryUser ? "/1" : ""}`}
-            >
-              {params.row.status === "Not Started"
-                ? "Start Application"
-                : "View Details"}
-            </Link>
-          </div>
-        ),
+        renderCell: (params: GridRenderCellParams) => {
+          let actionText;
+          switch (params.row.status) {
+            case OperationStatus.NOT_STARTED:
+              actionText = "Start Registration";
+              break;
+            case OperationStatus.DRAFT:
+              actionText = "Continue";
+              break;
+            default:
+              actionText = "View Details";
+          }
+
+          return (
+            <div>
+              {/* 🔗 Add reg or details link */}
+              <Link
+                className="no-underline text-bc-link-blue whitespace-normal"
+                href={`operations/${params.row.id}${
+                  isIndustryUser ? "/1" : ""
+                }`}
+              >
+                {actionText}
+              </Link>
+            </div>
+          );
+        },
       };
     }
     return column;

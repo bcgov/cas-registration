@@ -67,9 +67,9 @@
   {
     "model": "registration.operation",
     "fields": {
-      "operator": "685d581b-5698-411f-ae00-de1d97334a71",
+      "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
       "documents": [],
-      "submission_date": "2024-01-13T15:28:00.000Z",
+      "submission_date": null,
       "point_of_contact": 1,
       "name": "Operation 5",
       "type": "Single Facility Operation",
@@ -77,7 +77,7 @@
       "opt_in": false,
       "bcghg_id": "23219990001",
       "regulated_products": [],
-      "status": "Pending"
+      "status": "Draft"
     }
   },
   {

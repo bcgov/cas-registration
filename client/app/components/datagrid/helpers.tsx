@@ -11,6 +11,7 @@ export const statusStyle = (params: GridRenderCellParams) => {
     [Status.APPROVED, "success"],
     [Status.CHANGES_REQUESTED, "info"],
     [Status.NOT_STARTED, "secondary"],
+    [Status.DRAFT, "secondary"],
     [Status.DECLINED, "error"],
   ]);
   const status = params.value as string;
