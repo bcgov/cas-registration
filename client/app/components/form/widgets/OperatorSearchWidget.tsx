@@ -35,9 +35,8 @@ const OperatorSearchWidget: React.FC<WidgetProps> = ({
       return;
     }
 
-    const queryParam = `?search_value=${val}`;
     const response = await actionHandler(
-      `registration/operators/legal-name${queryParam}`,
+      `registration/operators?legal_name=${val}`,
       "GET",
     );
 
@@ -106,13 +105,16 @@ const OperatorSearchWidget: React.FC<WidgetProps> = ({
           placeholder={uiSchema?.["ui:placeholder"] ?? ""}
         />
       )}
-      renderOption={(renderProps, option: any) => {
-        return (
-          <li {...renderProps} key={option}>
-            {option}
-          </li>
-        );
-      }}
+      renderOption={(renderProps, option: any) => (
+        <li
+          {...renderProps}
+          key={option}
+          // We need to use MuiAutocomplete-option to keep the default styles
+          className="MuiAutocomplete-option text-left"
+        >
+          {option}
+        </li>
+      )}
     />
   );
 };

@@ -37,8 +37,9 @@ export default function SelectOperatorForm({
           setErrorList([{ message: response.error }]);
           return;
         }
-
-        push(`/dashboard/select-operator/confirm/${response.id}`);
+        // If the response is an array, we want the first element's id
+        let operatorId = response.length > 0 ? response[0].id : response.id;
+        push(`/dashboard/select-operator/confirm/${operatorId}`);
       }}
       uiSchema={selectOperatorUiSchema}
       className="mx-auto"
