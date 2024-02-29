@@ -16,6 +16,12 @@ class UserIn(ModelSchema):
         ]
 
 
+class UserUpdateIn(ModelSchema):
+    class Config:
+        model = User
+        model_fields = ["first_name", "last_name", "position_title", "phone_number"]
+
+
 class UserAppRoleOut(ModelSchema):
     class Config:
         model = AppRole
