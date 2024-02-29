@@ -48,7 +48,6 @@ from registration.constants import PAGE_SIZE
     response={200: PendingUserOperatorOut, codes_4xx: Message},
     url_name="get_user_operator_from_user",
 )
-# brianna I think it's fine for them to see this unapproved
 @authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles(), False)
 def get_user_operator_from_user(request):
     try:
@@ -98,7 +97,6 @@ def get_user_operator_operator(request):
 
 
 @router.get("/user-operator-id", response={200: UserOperatorIdOut, codes_4xx: Message}, url_name="get_user_operator_id")
-# brianna I think it's fine for them to see this
 @authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles(), False)
 def get_user_operator_id(request):
     user_operator = get_object_or_404(UserOperator, user_id=request.current_user.user_guid)
@@ -149,7 +147,7 @@ def get_user_operator_admin_exists(request, operator_id: UUID):
     url_name="operator_access_declined",
 )
 @authorize(['industry_user'], UserOperator.get_all_industry_user_operator_roles(), False)
-def get_user_operator_admin_exists(request, operator_id: UUID):
+def get_user_operator_access_declined(request, operator_id: UUID):
     user: User = request.current_user
     is_declined = UserOperator.objects.filter(
         operator_id=operator_id, user_id=user.user_guid, status=UserOperator.Statuses.DECLINED
@@ -296,7 +294,6 @@ def request_access(request, payload: SelectOperatorIn):
             if status != 200:
                 return status, message
 
-            # brianna how could one exist if this is an access request?
             # Making a draft UserOperator instance if one doesn't exist
             user_operator, created = UserOperator.objects.get_or_create(
                 user=user, operator=operator, status=UserOperator.Statuses.PENDING, role=UserOperator.Roles.REPORTER
