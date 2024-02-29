@@ -11,6 +11,7 @@ import { actionHandler } from "@/app/utils/actions";
 import OperationReview from "./OperationReview";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
+import ErrorIcon from "@mui/icons-material/Error";
 import { Fade } from "@mui/material";
 import { Status } from "@/app/utils/enums";
 import { Operation as OperationInt } from "@/app/components/routes/operations/types";
@@ -198,7 +199,7 @@ export default async function Operation({ numRow }: { numRow?: string }) {
     }),
   );
 
-  const boroId: JSX.Element = (
+  const boroIdJSX: JSX.Element = (
     <div className="flex items-center gap-3 mt-4">
       <CheckCircleIcon
         fontSize="large"
@@ -245,9 +246,21 @@ export default async function Operation({ numRow }: { numRow?: string }) {
     </div>
   );
 
+  const operationRegistrationChangesRequestedJSX: JSX.Element = (
+    <div className="flex gap-3 mt-2 items-center">
+      <ErrorIcon fontSize="large" />
+      <p>
+        Changes are requested for this application. Please check your email from
+        GHGRegulator@gov.bc.ca for details.
+      </p>
+    </div>
+  );
+
   const showRegistrationRequestResult: boolean | undefined =
     operation &&
-    [Status.DECLINED, Status.APPROVED].includes(operation?.status as Status);
+    [Status.DECLINED, Status.APPROVED, Status.CHANGES_REQUESTED].includes(
+      operation?.status as Status,
+    );
 
   const pointOfContactEmail = operation?.email ?? undefined;
 
@@ -291,15 +304,24 @@ export default async function Operation({ numRow }: { numRow?: string }) {
       ? formData?.multiple_operators_array
       : [{}],
   };
+
+  let registrationRequestResultJSX;
+
+  if (operation?.bc_obps_regulated_operation) {
+    registrationRequestResultJSX = boroIdJSX;
+  } else if (operation?.status === Status.DECLINED) {
+    registrationRequestResultJSX = operationRegistrationDeclinedJSX;
+  } else if (operation?.status === Status.CHANGES_REQUESTED && !isCasInternal) {
+    registrationRequestResultJSX = operationRegistrationChangesRequestedJSX;
+  }
+
   // Render the OperationsForm component with schema and formData if the operation already exists
   return (
     <>
       <OperationReview operation={operation} />
-      {showRegistrationRequestResult && (
+      {showRegistrationRequestResult && registrationRequestResultJSX && (
         <Fade in={showRegistrationRequestResult}>
-          {operation?.bc_obps_regulated_operation
-            ? boroId
-            : operationRegistrationDeclinedJSX}
+          {registrationRequestResultJSX}
         </Fade>
       )}
       {isCasInternal ? (

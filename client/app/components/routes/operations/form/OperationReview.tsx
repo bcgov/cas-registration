@@ -65,6 +65,7 @@ const OperationReview = ({ operation }: Props) => {
       confirmApproveMessage="Are you sure you want to approve this request for carbon tax exemption?"
       confirmRejectMessage="Are you sure you want to decline this request for carbon tax exemption?"
       isStatusPending={operation.status === Status.PENDING}
+      operationStatus={operation.status as Status}
       onApprove={approveRequest}
       onReject={declineRequest}
       onRequestChange={requestChange}
