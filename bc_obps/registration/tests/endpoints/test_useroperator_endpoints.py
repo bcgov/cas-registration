@@ -402,6 +402,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         assert response_2.status_code == 200
         user_operator.refresh_from_db()  # refresh the user_operator object to get the updated status
         assert user_operator.status == UserOperator.Statuses.APPROVED
+        assert user_operator.role == UserOperator.Roles.ADMIN
         assert user_operator.verified_by == self.user
 
     def test_user_operator_put_decline_rejects_everything(self):
