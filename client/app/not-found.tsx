@@ -6,10 +6,10 @@ import Typography from "@mui/material/Typography/Typography";
 import Footer from "@/app/components/layout/Footer";
 import Header from "@/app/components/layout/Header";
 
-export default function NotFound() {
+export default async function NotFound() {
   return (
     <>
-      <Header />{" "}
+      <Header />
       <Container
         sx={{
           marginTop: 20,

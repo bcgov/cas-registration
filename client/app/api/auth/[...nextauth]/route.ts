@@ -65,6 +65,17 @@ export const authOptions: NextAuthOptions = {
 
           token.identity_provider = account.providerAccountId.split("@")[1];
         }
+        // 🚀 API call: Get user name from user table
+        const response = await actionHandler(
+          "registration/user-profile",
+          "GET",
+        );
+        const { first_name: firstName, last_name: lastName } = response || {};
+        if (firstName && lastName) {
+          token.full_name = `${firstName} ${lastName}`;
+        } else {
+          token.full_name = `${token.given_name} ${token.family_name}`;
+        }
         // If no token.app_role, augment the keycloak token with cas registration user app_role
         if (!token.app_role) {
           // 🚀 API call: Get user app_role by user_guid from user table
@@ -132,6 +143,7 @@ export const authOptions: NextAuthOptions = {
               : token.bceid_business_name,
           given_name: token.given_name,
           family_name: token.family_name,
+          full_name: token.full_name,
           app_role: token.app_role,
         },
       };

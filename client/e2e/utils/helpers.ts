@@ -42,7 +42,7 @@ export async function fieldsUpdate(page: Page) {
       await inputField.click();
       switch (labelText) {
         case "Phone Number*":
-          await page.getByLabel(labelText).fill("987 654 3210"); //Format should be ### ### ####
+          await page.getByLabel(labelText).fill("604 401 5432"); //Format should be ### ### ####
           break;
         default:
           await inputField.fill(`E2E ${labelText}`);
