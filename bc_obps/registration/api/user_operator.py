@@ -387,7 +387,7 @@ def update_user_operator_status(request, payload: UserOperatorStatusUpdate):
     # We can't update the status of a user_operator if the operator has been declined or is awaiting review, or if the operator is new
     operator = get_object_or_404(Operator, id=user_operator.operator.id)
     if user_operator.operator.status == Operator.Statuses.DECLINED or operator.is_new:
-        return 400, {"message": "Operator must be approved before approving users."}
+        return 400, {"message": "Operator must be approved before approving or declining users."}
     try:
         with transaction.atomic():
             user_operator.status = payload.status
