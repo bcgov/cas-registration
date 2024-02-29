@@ -36,8 +36,8 @@ const OperationDataGrid = ({
   rowCount: number;
 }) => {
   const { data: session } = useSession();
-
   const isIndustryUser = session?.user.app_role?.includes("industry");
+
   const updatedColumnsOperations = columns.map((column) => {
     if (column.field === "action") {
       return {
@@ -57,12 +57,18 @@ const OperationDataGrid = ({
 
           return (
             <div>
-              {/* 🔗 Add reg or details link */}
+              {/* 🔗 Add link with href query parameter with row's descriptive text*/}
               <Link
                 className="no-underline text-bc-link-blue whitespace-normal"
-                href={`operations/${params.row.id}${
-                  isIndustryUser ? "/1" : ""
-                }`}
+                href={{
+                  pathname: `operations/${params.row.id}${
+                    isIndustryUser ? "/1" : ""
+                  }`,
+                  query: {
+                    title: `${params.row.name}`,
+                  },
+                }}
+                replace={true}
               >
                 {actionText}
               </Link>
