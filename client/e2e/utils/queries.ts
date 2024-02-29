@@ -93,8 +93,8 @@ type UpsertUserValues = {
 const upsertUserIOValues: UpsertUserValues = {
   user_guid: process.env.E2E_INDUSTRY_USER_GUID as string,
   role: "industry_user",
-  first_name: "Cas",
-  last_name: "SECONDARY",
+  first_name: "bc-cas-dev-secondary",
+  last_name: "Industry User",
   position_title: "USER",
   email: "cas.secondary@email.com",
   phone_number: "+16044015431",
@@ -106,8 +106,8 @@ const upsertUserIOValues: UpsertUserValues = {
 const upsertUserIOAdminValues: UpsertUserValues = {
   user_guid: process.env.E2E_INDUSTRY_USER_ADMIN_GUID as string,
   role: "industry_user",
-  first_name: "Bcgov",
-  last_name: "Cas",
+  first_name: "bc-cas-dev",
+  last_name: "Industry User",
   position_title: "ADMINISTRATOR",
   email: "bcgov.cas@email.com",
   phone_number: "+16044015432",
@@ -115,25 +115,25 @@ const upsertUserIOAdminValues: UpsertUserValues = {
   bceid_business_name: "bceid_business_name2",
 };
 
-// Upsert a User record
-const upsertUser = `
-     INSERT INTO erc.user (user_guid, app_role_id, first_name, last_name , position_title , email, phone_number, business_guid, bceid_business_name )
-    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-    ON CONFLICT (user_guid)
-    DO UPDATE SET app_role_id = EXCLUDED.app_role_id;
-  `;
-
 const upsertUserCasValues: UpsertUserValues = {
   user_guid: process.env.E2E_CAS_USER_GUID as string,
   role: "TBD",
-  first_name: "First",
-  last_name: "Last",
+  first_name: "IDIR",
+  last_name: "CAS USER",
   position_title: "CAS",
   email: "email@email.com",
   phone_number: "+16044015477",
   business_guid: "efb76d57-88b7-4eb6-9f26-ec12b49c14c1",
   bceid_business_name: "bceid_business_name3",
 };
+
+// Upsert a User record
+const upsertUser = `
+     INSERT INTO erc.user (user_guid, app_role_id, first_name, last_name , position_title , email, phone_number, business_guid, bceid_business_name )
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+    ON CONFLICT (user_guid)
+    DO UPDATE SET app_role_id = EXCLUDED.app_role_id, first_name = EXCLUDED.first_name, last_name = EXCLUDED.last_name;
+  `;
 
 // 🛠️ Function: upserts user record
 export const upsertUserRecord = async (userRole: string) => {
