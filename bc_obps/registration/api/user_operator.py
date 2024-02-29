@@ -395,11 +395,15 @@ def update_user_operator_status(request, payload: UserOperatorStatusUpdate):
                 user_operator.verified_at = datetime.now(pytz.utc)
                 user_operator.verified_by_id = current_user.user_guid
 
+                # We need to adjust this role assignment in ticket #470
+                if user_operator.status == UserOperator.Statuses.APPROVED:
+                    user_operator.role = UserOperator.Roles.ADMIN
+
             elif user_operator.status == UserOperator.Statuses.PENDING:
                 user_operator.verified_at = None
                 user_operator.verified_by_id = None
 
-            user_operator.save(update_fields=["status", "verified_at", "verified_by_id"])
+            user_operator.save(update_fields=["status", "verified_at", "verified_by_id", "role"])
             user_operator.set_create_or_update(current_user.pk)
 
             if user_operator.status == UserOperator.Statuses.DECLINED:
