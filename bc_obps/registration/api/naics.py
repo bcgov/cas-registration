@@ -9,7 +9,7 @@ from django.core.cache import cache
 
 
 @router.get("/naics_codes", response=List[NaicsCodeSchema], url_name="list_naics_codes")
-@authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles())
+@authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles(), False)
 def list_naics_codes(request):
     cached_data = cache.get("naics_codes")
     if cached_data:

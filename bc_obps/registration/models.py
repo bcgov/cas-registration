@@ -351,7 +351,7 @@ class User(UserAndContactCommonInfo):
 
     def get_approved_user_operator(self) -> Optional['UserOperator']:
         """
-        Return the UserOperator associated with the user.
+        Return the approved UserOperator record associated with the user.
         Based on the Constraint, there should only be one UserOperator associated with a user and operator.
         """
         return self.user_operators.only("operator_id").filter(status=UserOperator.Statuses.APPROVED).first()

@@ -37,7 +37,7 @@ from registration.schema import (
     OperationWithOperatorOut,
     OperationUpdateStatusOut,
 )
-from registration.utils import generate_useful_error
+from registration.utils import generate_useful_error, get_current_user_approved_user_operator_or_raise
 from ninja.responses import codes_4xx, codes_5xx
 from ninja.errors import HttpError
 
@@ -131,10 +131,8 @@ def list_operations(request, page: int = 1, sort_field: str = "created_at", sort
             data=[OperationListOut.from_orm(operation) for operation in paginator.page(page).object_list],
             row_count=paginator.count,
         )
-    # Industry users can only see their companies' operations (if there's no user_operator, then the user hasn't requested access to the operator)
-    user_operator = user.get_approved_user_operator()
-    if not user_operator:
-        raise HttpError(401, UNAUTHORIZED_MESSAGE)
+    # Industry users can only see their companies' operations (industry user must be approved)
+    user_operator = get_current_user_approved_user_operator_or_raise(user)
     # order by created_at to get the latest one first
     operators_operations = (
         Operation.objects.select_related("operator", "bc_obps_regulated_operation")
@@ -202,9 +200,7 @@ def get_operation(request, operation_id: UUID):
 @authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
 def create_operation(request, payload: OperationCreateIn):
     user: User = request.current_user
-    user_operator = user.get_approved_user_operator()
-    if not user_operator:
-        raise HttpError(401, UNAUTHORIZED_MESSAGE)
+    user_operator = get_current_user_approved_user_operator_or_raise(user)
 
     payload_dict: dict = payload.dict(
         exclude={
@@ -248,10 +244,7 @@ def create_operation(request, payload: OperationCreateIn):
 @authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
 def update_operation(request, operation_id: UUID, submit: str, form_section: int, payload: OperationUpdateIn):
     user: User = request.current_user
-    # if there's no user_operator, then the user hasn't requested access to the operator
-    user_operator = user.get_approved_user_operator()
-    if not user_operator:
-        raise HttpError(401, UNAUTHORIZED_MESSAGE)
+    user_operator = get_current_user_approved_user_operator_or_raise(user)
 
     try:
         operation = (
