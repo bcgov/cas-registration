@@ -44,12 +44,14 @@ test.beforeAll(async () => {
     // Scenario FrontEndRoles.INDUSTRY_USER where userOperatorStatus !== UserOperatorStatus.APPROVED
     // Shows "Select Operator\...1 pending action(s) required" bceidSelectOperatorTile
     // ensure user is not associated with any operator
+    // Upsert a User record: bc-cas-dev-secondary
+    await upsertUserRecord(UserRole.INDUSTRY_USER);
     await deleteUserOperatorRecord(
       process.env.E2E_INDUSTRY_USER_GUID as string,
     );
   } catch (error) {
     // eslint-disable-next-line no-console
-    console.error("❌ Error in Db setup for profile roles:", error);
+    console.error("❌ Error in Db setup for dashboard:", error);
     throw error;
   }
 });
