@@ -87,13 +87,14 @@ export default function Bread({
   if (params && params.formSection) {
     pathNames.pop();
   }
-  // 🕹️ Toggle UUID segment to title segment..
-  // by using search parameter and useState which is maintained between renders of a top-level React component
+  // 🕹️ Toggle UUID segment to a title segment...
+  // by using title parameter sent from grid row's href
+  // and useState which is maintained between renders of a top-level React component (required for next\back) navigations
   const searchParams = useSearchParams();
   const rowTitle = searchParams.get("title") as string;
   const [crumbTitle, setTitle] = useState<string>("");
   useEffect(() => {
-    // Set the title state to recordTitle if it exists
+    // Set the title state to rowTitle if it exists
     if (rowTitle) {
       setTitle(rowTitle);
     }
