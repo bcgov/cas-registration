@@ -3,11 +3,11 @@
  * Page objects model (POM) simplify test authoring by creating a higher-level API
  * POM simplify maintenance by capturing element selectors in one place and create reusable code to avoid repetition. *
  */
-import { Locator, Page, expect } from "@playwright/test";
+import { ElementHandle, Locator, Page, expect } from "@playwright/test";
 // ⛏️ Helpers
 import { fieldsClear, fieldsUpdate, getFieldAlerts } from "@/e2e/utils/helpers";
 // ☰ Enums
-import { AppRoute, ActionButton } from "@/e2e/utils/enums";
+import { AppRoute, ActionButton, DataTestID } from "@/e2e/utils/enums";
 // ℹ️ Environment variables
 import * as dotenv from "dotenv";
 dotenv.config({ path: "./e2e/.env.local" });
@@ -38,7 +38,7 @@ export class ProfilePOM {
     // Locate all alert elements within the fieldset
     const alertElements = await getFieldAlerts(this.page);
     // 🔍 Assert there to be exactly the same number of required fields and alert elements
-    expect(clearedFields).toBe(alertElements.length);
+    await expect(clearedFields).toBe(alertElements.length);
   }
 
   async updateSuccess() {
@@ -46,12 +46,30 @@ export class ProfilePOM {
     await fieldsUpdate(this.page);
     // Click the Submit button
     await this.buttonSubmit.click();
-    // 🔍 Assert successful submission
+    // Wait for the success message to appear
+    await this.page.waitForSelector('div:has-text("✅ Success")', {
+      timeout: 11000,
+    });
+    // Check if the success message exists
     const isSuccessExisted =
-      (await this.page.locator("div").filter({ hasText: /^✅ Success$/ })) !==
-      null;
-    //  🔍 Assert that the success message existed at some point
-    await expect(isSuccessExisted).toBe(true);
+      (await this.page.$('div:has-text("✅ Success")')) !== null;
+
+    //  🔍 Assert the success message
+    expect(isSuccessExisted).toBe(true);
+  }
+
+  async userFullNameIsCorrect(expectedText: string) {
+    // Get the element handle
+    const elementHandle: ElementHandle | null = await this.page.$(
+      DataTestID.PROFILE,
+    );
+    // If elementHandle is null, return false
+    if (!elementHandle) {
+      return false;
+    }
+    // Get the text value of the profile link
+    const actualText = (await elementHandle.textContent()) as string;
+    await expect(actualText.toLowerCase()).toMatch(expectedText.toLowerCase());
   }
 
   async urlIsCorrect() {

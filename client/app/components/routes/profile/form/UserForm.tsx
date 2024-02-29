@@ -36,7 +36,12 @@ export default function UserForm({ formData, isCreate }: Props) {
   const handleUpdate = async () => {
     // With NextAuth strategy: "jwt" , update() method will trigger a jwt callback where app_role will be augmented to the jwt and session objects
     await update();
-    // After the update is complete, navigate to the dashboard
+    // ✅ Set success state to true
+    setIsSuccess(true);
+    // 🕐 Wait for 3 second and then reset success state
+    setTimeout(() => {
+      setIsSuccess(false);
+    }, 3000);
     if (isCreate) {
       // 🛸 Routing: after the update is complete, navigate to the dashboard
       router.push("/dashboard");
@@ -74,13 +79,6 @@ export default function UserForm({ formData, isCreate }: Props) {
 
     // Apply new data to NextAuth JWT
     await handleUpdate();
-
-    // ✅ Set success state to true
-    setIsSuccess(true);
-    // 🕐 Wait for 3 second and then reset success state
-    setTimeout(() => {
-      setIsSuccess(false);
-    }, 3000);
   };
 
   return (
