@@ -40,6 +40,8 @@ export default function OperationsForm({ formData, schema }: Readonly<Props>) {
 
   const isFormStatusPending = formData?.status === Status.PENDING;
 
+  // used for breadcrumb
+  let paramTitle = "Create";
   return (
     <>
       {operationName ? (
@@ -81,7 +83,7 @@ export default function OperationsForm({ formData, schema }: Readonly<Props>) {
             const method = isCreate ? "POST" : "PUT";
             const endpoint = isCreate
               ? "registration/operations"
-              : `registration/operations/${formData?.id}?submit=${isFinalStep}&form_section=${formSection}`;
+              : `registration/operations/${formData?.id}?title=${paramTitle}&submit=${isFinalStep}&form_section=${formSection}`;
             const pathToRevalidate = isCreate
               ? "dashboard/operations"
               : `dashboard/operations/${formData?.id}`;
@@ -107,10 +109,17 @@ export default function OperationsForm({ formData, schema }: Readonly<Props>) {
               return { error: response.error };
             }
 
-            router.replace(`/dashboard/operations/${operation}/${formSection}`);
+            if (response.name) {
+              paramTitle = response.name;
+            }
+            router.replace(
+              `/dashboard/operations/${operation}/${formSection}?title=${paramTitle}`,
+            );
             if (isNotFinalStep) {
               router.push(
-                `/dashboard/operations/${operation}/${formSection + 1}`,
+                `/dashboard/operations/${operation}/${
+                  formSection + 1
+                }?title=${paramTitle}`,
               );
               return;
             }
