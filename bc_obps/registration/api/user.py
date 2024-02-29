@@ -18,7 +18,7 @@ from django.core.exceptions import ValidationError
 
 
 @router.get("/user", response=UserOut, url_name="get_user")
-@authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles())
+@authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles(), False)
 def get_user(request):
     user: User = request.current_user
     return user
@@ -90,7 +90,7 @@ def create_user_profile(request, identity_provider: str, payload: UserIn):
 
 # Endpoint to update a user
 @router.put("/user-profile", response={200: UserOut, codes_4xx: Message}, url_name="update_user_profile")
-@authorize(AppRole.get_all_app_roles(), UserOperator.get_all_industry_user_operator_roles())
+@authorize(AppRole.get_all_app_roles(), UserOperator.get_all_industry_user_operator_roles(), False)
 def update_user_profile(request, payload: UserIn):
     user: User = request.current_user
     try:

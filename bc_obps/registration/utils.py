@@ -134,13 +134,16 @@ def check_access_request_matches_business_guid(
 
 
 def raise_401_if_user_not_authorized(
-    request, authorized_app_roles: List[str], authorized_user_operator_roles: Optional[List[str]] = None
+    request,
+    authorized_app_roles: List[str],
+    authorized_user_operator_roles: Optional[List[str]] = None,
+    industry_user_must_be_approved: bool = True,
 ) -> None:
     """
     Raise a 401 error if a user is not authorized. To be authorized the user must:
         - be logged in (request.current_user exists)
         - have an authorized app_role
-        - if the user's app_role is industry_user, then they must additionally have an authorized UserOperator.role
+        - if the user's app_role is industry_user, then they must additionally have status = 'Approved' in the user_operator table unless industry_user_must_be_approved is set to False (defaults to True)
     """
     if not hasattr(request, 'current_user'):
         raise HttpError(401, UNAUTHORIZED_MESSAGE)
@@ -155,12 +158,19 @@ def raise_401_if_user_not_authorized(
         if not authorized_user_operator_roles:
             raise HttpError(401, UNAUTHORIZED_MESSAGE)
 
+        if industry_user_must_be_approved:
+            approved_user_operator = user.user_operators.filter(status=UserOperator.Statuses.APPROVED).exists()
+            if not approved_user_operator:
+                raise HttpError(401, UNAUTHORIZED_MESSAGE)
+
         # If authorized_user_operator_roles is the same as all industry user operator roles, then we can skip the check (Means all industry user roles are authorized)
         if sorted(authorized_user_operator_roles) != sorted(UserOperator.get_all_industry_user_operator_roles()):
             user_operator_role = None
             try:
-                user_operator = UserOperator.objects.exclude(status=UserOperator.Statuses.DECLINED).get(
-                    user=user.user_guid
+                user_operator = (
+                    UserOperator.objects.exclude(status=UserOperator.Statuses.DECLINED)
+                    .only('role')
+                    .get(user=user.user_guid)
                 )
                 user_operator_role = user_operator.role
             except UserOperator.DoesNotExist:
@@ -168,6 +178,13 @@ def raise_401_if_user_not_authorized(
 
             if not user_operator_role or user_operator_role not in authorized_user_operator_roles:
                 raise HttpError(401, UNAUTHORIZED_MESSAGE)
+
+
+def get_current_user_approved_user_operator_or_raise(user: User) -> Optional[UserOperator]:
+    user_operator = user.get_approved_user_operator()
+    if not user_operator:
+        raise HttpError(401, UNAUTHORIZED_MESSAGE)
+    return user_operator
 
 
 def get_an_operators_approved_users(operator_pk: int) -> QuerySet[UUID]:
