@@ -149,6 +149,7 @@ class TestUserEndpoint(CommonTestSetup):
         assert 'business_guid' not in content
 
     def test_update_user_profile_valid_fields(self):
+        user_instance_before_update = self.user
         mock_payload = UserUpdateIn(
             first_name='Test', last_name='User', phone_number='+12509454578', position_title='CTO'
         )
@@ -170,6 +171,11 @@ class TestUserEndpoint(CommonTestSetup):
 
         assert 'user_guid' not in content
         assert 'business_guid' not in content
+
+        # Make sure user can't update business_guid and bceid_business_name
+        user_after_update = self.user
+        assert user_instance_before_update.bceid_business_name == user_after_update.bceid_business_name
+        assert user_instance_before_update.business_guid == user_after_update.business_guid
 
     def test_update_user_profile_invalid_fields(self):
         # Arrange
