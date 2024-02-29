@@ -20,7 +20,6 @@ async function getOperations() {
     throw error;
   }
 }
-
 const formatTimestamp = (timestamp: string) => {
   if (!timestamp) return undefined;
 
@@ -28,6 +27,7 @@ const formatTimestamp = (timestamp: string) => {
     month: "short",
     day: "numeric",
     year: "numeric",
+    timeZone: "America/Vancouver",
   });
 
   const timeWithTimeZone = new Date(timestamp).toLocaleString("en-CA", {
@@ -35,6 +35,7 @@ const formatTimestamp = (timestamp: string) => {
     minute: "numeric",
     second: "numeric",
     timeZoneName: "short",
+    timeZone: "America/Vancouver",
   });
 
   // Return with a line break so we can display date and time on separate lines
