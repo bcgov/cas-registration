@@ -8,6 +8,7 @@ export default function Profile() {
   const userFullName = getUserFullName(session);
   return (
     <div className="flex items-center">
+      brianna date test {formatTimestamp(date)}
       <Link
         data-testid="nav-user-profile"
         href="/dashboard/profile"
