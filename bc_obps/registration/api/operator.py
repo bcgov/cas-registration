@@ -46,6 +46,7 @@ def get_operators_by_cra_number_or_legal_name(
     return 404, {"message": "No matching operator found. Retry or add operator."}
 
 
+# We have to let unapproved users to reach this endpoint otherwise they can't see operator info when they select it
 @router.get(
     "/operators/{operator_id}", response={200: ConfirmSelectedOperatorOut, codes_4xx: Message}, url_name="get_operator"
 )
