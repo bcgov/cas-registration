@@ -20,7 +20,7 @@ async function getOperations() {
     throw error;
   }
 }
-export const formatTimestamp = (timestamp: any) => {
+const formatTimestamp = (timestamp: string) => {
   if (!timestamp) return undefined;
 
   const date = new Date(timestamp).toLocaleString("en-CA", {
