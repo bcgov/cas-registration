@@ -386,7 +386,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         # make sure user can't change the status of a user_operator when operator is not approved
         assert response_1.status_code == 400
         response_1_json = response_1.json()
-        assert response_1_json == {'message': 'Operator must be approved before approving users.'}
+        assert response_1_json == {'message': 'Operator must be approved before approving or declining users.'}
 
     def test_user_operator_put_can_update_status(self):
         operator = operator_baker({'status': Operator.Statuses.APPROVED, 'is_new': False})
