@@ -36,6 +36,7 @@ export default async function RootLayout({
   readonly children: React.ReactNode;
 }) {
   //🪝 Wrap the returned auth session in the "use client" version of NextAuth SessionProvider so to expose the useSession() hook in client components
+  // Session properties come from client/app/api/auth/[...nextauth]/route.ts
   const session = await getServerSession(authOptions);
 
   return (

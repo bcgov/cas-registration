@@ -25,10 +25,13 @@ for (let [role, value] of Object.entries(UserRole)) {
       await profilePage.route();
       // 🔍 Assert that the current URL
       await profilePage.urlIsCorrect();
-      // 🔍 Assert profile update required fields
+      // 🔍 Assert profile update validates required fields
       await profilePage.updateFail();
-      // 🔍 Assert profile update
+      // 🔍 Assert profile update success
       await profilePage.updateSuccess();
+      //🔍 Assert profile name reflects the updated user profile full name
+      await profilePage.userFullNameIsCorrect("e2e first name* e2e last name*");
+
       switch (value) {
         case UserRole.NEW_USER:
           // 🔍 Assert that the current URL
