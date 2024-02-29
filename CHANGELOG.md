@@ -1,3 +1,51 @@
+# [1.0.0](https://github.com/bcgov/cas-registration/compare/v0.1.1-beta-7...v1.0.0) (2024-02-29)
+
+### Bug Fixes
+
+- add error message for statutory declaration field ([8cf1007](https://github.com/bcgov/cas-registration/commit/8cf1007c443fb1791fcf5c6d9714048250e4aaf6))
+- adjust role assignment for approved user operators ([60d8cde](https://github.com/bcgov/cas-registration/commit/60d8cdeac85abc108d97d22283a113e096429f51))
+- auth token refresh ([669cb03](https://github.com/bcgov/cas-registration/commit/669cb030a08440dcfbe614d3d221f677f65e559e))
+- dashboard tiles responsive width ([12796f5](https://github.com/bcgov/cas-registration/commit/12796f55f8c8ad05edfede86ad2d7ac9ec47dc23))
+- Declined user_operator records do not block subsequent requests ([e7435ce](https://github.com/bcgov/cas-registration/commit/e7435ce72c189cbbb4c73bc94b4feb96d2e5da49))
+- disable submit only on loading ([1902fdc](https://github.com/bcgov/cas-registration/commit/1902fdcd39251d016a4b40fbf6094bdc9aad2268))
+- display changes requested section ([b36fbb4](https://github.com/bcgov/cas-registration/commit/b36fbb4ee1b2b28bc520f5cd9ba0cd848a98ec73))
+- fix authorize definition causing incorrect declined message ([40b4ce0](https://github.com/bcgov/cas-registration/commit/40b4ce0b58214abe2897d7cbc3e2d4f87152fcd2))
+- fix issue not showing api errors on the form ([ef35098](https://github.com/bcgov/cas-registration/commit/ef35098ceba28f9d4f81afe1c38f99e2fed95151))
+- global db setup for auth roles ([8ae016c](https://github.com/bcgov/cas-registration/commit/8ae016c6f1c977effd0a9712c89854e41929f3ac))
+- hide parent operator button if form is disabled ([05ffbca](https://github.com/bcgov/cas-registration/commit/05ffbcac214285213aca67c99e379ca04891d9cf))
+- k6 params error ([b00bb72](https://github.com/bcgov/cas-registration/commit/b00bb72fb48103ee7b69bf0b839aab3087df309a))
+- mui data grid needs id ([172af01](https://github.com/bcgov/cas-registration/commit/172af0123a8fcf8f55907779ffa5a636dac37675))
+- next auth signOut ([96e3ac9](https://github.com/bcgov/cas-registration/commit/96e3ac9d4468066ba01f0d0a6f4c25984be076f7))
+- nextauth ([831b340](https://github.com/bcgov/cas-registration/commit/831b34004b8f3c04c482f13b473a489f0043c567))
+- operator search results order and text alignment ([1506e2c](https://github.com/bcgov/cas-registration/commit/1506e2c9a68b82812c526fdd55c8c871d2322cb4))
+- pass empty string for null bcghg id field ([be1d55c](https://github.com/bcgov/cas-registration/commit/be1d55cd6185d381327381002e7e7775f8ee06b2))
+- profile all roles ([177dc21](https://github.com/bcgov/cas-registration/commit/177dc210216408f21c6d5103a9e1a14590683bc7))
+- redirect select operator based on operator status ([a47e787](https://github.com/bcgov/cas-registration/commit/a47e787bcc20865cc4fa21babbb73224e917da46))
+- remove GHG emission report boolean section ([5c2123a](https://github.com/bcgov/cas-registration/commit/5c2123a1809b3aee6bb4327eca0255ab0fc7497c))
+- set operations table timezone ([c091556](https://github.com/bcgov/cas-registration/commit/c0915561e1f4013782c78b1371e599e4aab7a12f))
+- set operations table timezone ([14af261](https://github.com/bcgov/cas-registration/commit/14af2616bf01d83f1a1ce14649db899c978f134e))
+- the PUT endpoint for updating an operator is restricted to admins ([26511ab](https://github.com/bcgov/cas-registration/commit/26511ab12ca636dbc491b9d46aef8c7d5d2f0f79))
+- Tile logic fixed so blank dashboard is not seen when operator is in draft state ([344a06c](https://github.com/bcgov/cas-registration/commit/344a06c2af671b659f03e7a2a370503b19854990))
+- typo ([336b856](https://github.com/bcgov/cas-registration/commit/336b85684eff8c89a3dacbf7e240c6e2bad81433))
+- update error message when declining prime admins ([4d40e3a](https://github.com/bcgov/cas-registration/commit/4d40e3aa7d5fc62bc9eb5a7b1d222ec163afb477))
+- use permenant redirect function instead of redirect ([e4b4322](https://github.com/bcgov/cas-registration/commit/e4b4322217a5e607592b56e870ac1b5bf1f719f4))
+
+### Features
+
+- add icons to dashboard tiles ([6584cec](https://github.com/bcgov/cas-registration/commit/6584cec8d358f17a5949215ca4a3062bd55fc36c))
+- add missing urls to home page ([d7b4151](https://github.com/bcgov/cas-registration/commit/d7b41519a7fac853a33b8d4706d74af77f4bc5c6))
+- add notification icon to dashboard tiles ([38a4e48](https://github.com/bcgov/cas-registration/commit/38a4e48efd88624bede291b702976c4a8baa94f3))
+- e2e test for dashboard tiles ([2fba2cc](https://github.com/bcgov/cas-registration/commit/2fba2cc3caec21634b9929e0f65fecb96c443d87))
+- k6 frontend tests basic setup ([dbc583e](https://github.com/bcgov/cas-registration/commit/dbc583e88b92a68ee9d898ff45ab9bbec152d300))
+- notification tile font is bold ([40045ed](https://github.com/bcgov/cas-registration/commit/40045edab95651d5dcd3a503f2847933336daffd))
+- profile page all roles ([9089794](https://github.com/bcgov/cas-registration/commit/9089794271e28785366fe0828fde6e11143990ae))
+- redirect user operators with a draft operator to form ([edeb152](https://github.com/bcgov/cas-registration/commit/edeb152e1eb90dbc47d723de866bea07d88b0b0c))
+
+### Reverts
+
+- Revert "chore: 2nd temp testing" ([4e5770b](https://github.com/bcgov/cas-registration/commit/4e5770b8bb7fca388b7dda6ab675125d1bfad33d))
+- Revert "chore: temp testing commit" ([09cf1d9](https://github.com/bcgov/cas-registration/commit/09cf1d9d4581a48ff442d538245f5b187cc976dd))
+
 ## [0.1.1-beta-7](https://github.com/bcgov/cas-registration/compare/v0.1.1-beta-6...v0.1.1-beta-7) (2024-02-15)
 
 ### Bug Fixes
