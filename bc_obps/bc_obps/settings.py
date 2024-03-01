@@ -163,10 +163,10 @@ DATA_UPLOAD_MAX_MEMORY_SIZE = 20000000
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
 
-SENTRY_DSN = os.environ.get('SENTRY_DSN')
-if SENTRY_DSN:
+USE_SENTRY = os.environ.get('SENTRY_ENVRIONMENT')
+if USE_SENTRY == 'prod' and DEBUG == 'False':
     sentry_sdk.init(
-        dsn=SENTRY_DSN,
+        dsn="https://c097ce7d51760bab348fa0608eea9870@o646776.ingest.sentry.io/4506621387407360",
         integrations=[DjangoIntegration()],
         # Set traces_sample_rate to 1.0 to capture 100%
         # of transactions for performance monitoring.
