@@ -37,9 +37,20 @@ export default function SelectOperatorForm({
           setErrorList([{ message: response.error }]);
           return;
         }
-        // If the response is an array, we want the first element's id
-        let operatorId = response.length > 0 ? response[0].id : response.id;
-        push(`/dashboard/select-operator/confirm/${operatorId}`);
+        console.log(response);
+        // If the response is an array, we want the first element
+        let operatorId;
+        let operatorLegalName;
+        if (response.length > 0) {
+          operatorId = response[0].id;
+          operatorLegalName = response[0].legal_name;
+        } else {
+          operatorId = response.id;
+          operatorLegalName = response.legal_name;
+        }
+        push(
+          `/dashboard/select-operator/confirm/${operatorId}?title=${operatorLegalName}`,
+        );
       }}
       uiSchema={selectOperatorUiSchema}
       className="mx-auto"
