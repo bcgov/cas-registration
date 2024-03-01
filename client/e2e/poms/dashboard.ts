@@ -19,12 +19,15 @@ export class DashboardPOM {
 
   readonly selectOperatorTile: Locator;
 
+  readonly operationsTile: Locator;
+
   constructor(page: Page) {
     this.page = page;
     this.msgPending = this.page.locator(DataTestID.MESSAGE_PENDING);
     this.selectOperatorTile = this.page.getByText(
       "1 pending action(s) required",
     );
+    this.operationsTile = page.getByRole("link", { name: /.*operations.*/i });
   }
 
   async route() {
@@ -43,5 +46,9 @@ export class DashboardPOM {
 
   async clickSelectOperatorTile() {
     await this.selectOperatorTile.click();
+  }
+
+  async clickOperationsTile() {
+    await this.operationsTile.click();
   }
 }
