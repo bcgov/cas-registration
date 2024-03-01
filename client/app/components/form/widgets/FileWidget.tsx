@@ -150,8 +150,12 @@ const FileWidget = ({
   options,
   registry,
 }: WidgetProps) => {
+  // We need to store the value in state to prevent loosing the value when user switches between tabs
+  const [localValue, setLocalValue] = useState(value);
   const [filesInfo, setFilesInfo] = useState<FileInfoType[]>(
-    Array.isArray(value) ? extractFileInfo(value) : extractFileInfo([value]),
+    Array.isArray(localValue)
+      ? extractFileInfo(localValue)
+      : extractFileInfo([localValue]),
   );
   const { data: session } = useSession();
   const isCasInternal =
@@ -183,14 +187,16 @@ const FileWidget = ({
         });
         if (multiple) {
           setFilesInfo(filesInfo.concat(filesInfoEvent[0]));
-          onChange(value.concat(newValue[0]));
+          onChange(localValue.concat(newValue[0]));
+          setLocalValue(localValue.concat(newValue[0]));
         } else {
           setFilesInfo(filesInfoEvent);
           onChange(newValue[0]);
+          setLocalValue(newValue[0]);
         }
       });
     },
-    [multiple, value, filesInfo, onChange],
+    [multiple, localValue, filesInfo, onChange],
   );
 
   const disabledColour =
@@ -205,7 +211,7 @@ const FileWidget = ({
           onClick={handleClick}
           className={`p-0 decoration-solid border-0 text-lg bg-transparent cursor-pointer underline ${disabledColour}`}
         >
-          {value ? "Reupload attachment" : "Upload attachment"}
+          {localValue ? "Reupload attachment" : "Upload attachment"}
         </button>
       )}
       <input
@@ -220,7 +226,7 @@ const FileWidget = ({
         value=""
         accept={options.accept ? String(options.accept) : undefined}
       />
-      {value ? (
+      {localValue ? (
         <FilesInfo
           registry={registry}
           filesInfo={filesInfo}
