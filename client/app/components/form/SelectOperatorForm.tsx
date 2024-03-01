@@ -37,7 +37,6 @@ export default function SelectOperatorForm({
           setErrorList([{ message: response.error }]);
           return;
         }
-        console.log(response);
         // If the response is an array, we want the first element
         let operatorId;
         let operatorLegalName;
