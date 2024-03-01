@@ -22,7 +22,7 @@ interface ButtonRenderCellParams extends GridRenderCellParams {
     name: string;
     email: string;
     business: string;
-    userRole: string;
+    accessType: string;
     status: Status;
     actions: string;
     userOperatorId: number;
@@ -37,7 +37,7 @@ const handleUpdateStatus = async (
     return await actionHandler(
       `registration/select-operator/user-operator/update-status`,
       "PUT",
-      "/dashboard/users",
+      "",
       {
         body: JSON.stringify({
           status: statusUpdate,
@@ -50,9 +50,7 @@ const handleUpdateStatus = async (
   }
 };
 
-export async function ChangeUserOperatorStatusColumnCell(
-  params: Readonly<ButtonRenderCellParams>,
-) {
+const ChangeUserOperatorStatusColumnCell = (params: ButtonRenderCellParams) => {
   const userOperatorStatus = params.row.status;
   const userOperatorId = params.row.userOperatorId;
 
@@ -103,4 +101,6 @@ export async function ChangeUserOperatorStatusColumnCell(
       ))}
     </Stack>
   );
-}
+};
+
+export default ChangeUserOperatorStatusColumnCell;
