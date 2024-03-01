@@ -4,6 +4,7 @@ import {
   ChangeEvent,
   MutableRefObject,
   useCallback,
+  useEffect,
   useRef,
   useState,
 } from "react";
@@ -157,6 +158,13 @@ const FileWidget = ({
       ? extractFileInfo(localValue)
       : extractFileInfo([localValue]),
   );
+  // 🥷 Prevent resetting the value to null when user switch tabs
+  useEffect(() => {
+    if (localValue && !value) {
+      onChange(localValue);
+    }
+  }, [localValue, onChange, value]);
+
   const { data: session } = useSession();
   const isCasInternal =
     session?.user.app_role?.includes("cas") &&
