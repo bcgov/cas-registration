@@ -1,10 +1,12 @@
-// 🧪 Suite to test the bceidbusiness new user workflow using storageState
+// 🧪 Suite to test the cas_admin workflows using storageState
+// 🔍 Asserts new user is redirected to profile
 
 import { test } from "@playwright/test";
 // 🪄 Page Object Models
 import { DashboardPOM } from "@/e2e/poms/dashboard";
 // ℹ️ Environment variables
 import * as dotenv from "dotenv";
+import { OperationsPOM } from "@/e2e/poms/operations";
 dotenv.config({ path: "./e2e/.env.local" });
 
 // 🏷 Annotate test suite as serial
@@ -21,4 +23,63 @@ test.describe("Test Workflow cas_admin", () => {
     // 🔍 Assert that the current URL ends with "(authenticated)/dashboard"
     await dashboardPage.urlIsCorrect();
   });
+
+  test("Operations Tile workflow", async ({ page }) => {
+    // 🛸 Navigate to operations tile page
+    const dashboardPage = new DashboardPOM(page);
+    const operationsPage = new OperationsPOM(page);
+    await dashboardPage.route();
+    await dashboardPage.clickOperationsTile();
+    await operationsPage.urlIsCorrect();
+    await operationsPage.page.waitForSelector(".MuiDataGrid-root");
+
+    // AC: table headers include ["Operator", "Operation" (legal name), "Submission Date", "Actions", "Status", and "BORO ID"]
+    await operationsPage.columnNamesAreCorrect([
+      "BC GHG ID",
+      "Operator",
+      "Operation",
+      "Submission Date",
+      "BORO ID",
+      "Application Status",
+      "Action",
+    ]);
+    // AC: is able to view all operations with statuses of "Pending", "Accepted", or "Declined"
+    // brianna--do we already have the dev data in from the other CI steps and django setup?
+    await operationsPage.operationsViewIsCorrect("cas_admin", [
+      "Approved",
+      "Approved",
+      "Declined",
+      "Pending",
+      "Pending",
+      "Pending",
+      "Pending",
+      "Pending",
+      "Pending",
+      "Pending",
+      "Pending",
+      "Pending",
+      "Pending",
+      "Pending",
+      "Pending",
+      "Pending",
+      "Pending",
+      "Pending",
+      "Pending",
+      "Pending",
+    ]);
+
+    // AC: is able to click "View Details" on any operation and see detailed info about it (read only)
+    await operationsPage.page
+      .getByText(/view details/i)
+      .first()
+      .click();
+
+    //  AC: is not able to edit the data in any Operation form
+    // Brianna will we need to expand the sections to check individually, or will this cover it?
+    await operationsPage.checkReadonlyFields();
+  });
+
+  //   AC: is able to Preview the Statutory Declaration PDF in any Operation form
+  //  AC: is able to Approve, Decline, or Request Changes on any Pending operation
+  // - AC: approving an Operation triggers the generation of a BORO ID, which appears at the top of the form
 });
