@@ -1,6 +1,6 @@
 "use client";
-import React, { ReactNode } from "react";
-import { useParams, usePathname } from "next/navigation";
+import React, { ReactNode, useEffect, useState } from "react";
+import { useParams, usePathname, useSearchParams } from "next/navigation";
 import Box from "@mui/material/Box";
 import Link from "@mui/material/Link";
 import Breadcrumbs from "@mui/material/Breadcrumbs/Breadcrumbs";
@@ -11,15 +11,6 @@ type TBreadCrumbProps = {
   separator: ReactNode;
   capitalizeLinks?: boolean;
 };
-
-// 🛠️ Function to translate a numeric part
-function translateNumericPart(segment: string): string {
-  // Check if the segment is UUID, and if so, prefix with "Operation ID"
-  if (!isNaN(Number(segment)) || isValidUUID(segment)) {
-    return `ID ${segment}`;
-  }
-  return segment;
-}
 
 // 🛠️ Function to un-slugify and capitalize a string
 function unslugifyAndCapitalize(segment: string): string {
@@ -96,7 +87,26 @@ export default function Bread({
   if (params && params.formSection) {
     pathNames.pop();
   }
-
+  // 🕹️ Toggle UUID segment to a title segment...
+  // by using title parameter sent from link href
+  // and useState which is maintained between renders of a top-level React component (required for next\back) navigations
+  const searchParams = useSearchParams();
+  const paramTitle = searchParams.get("title") as string;
+  const [crumbTitle, setCrumbTitle] = useState<string>("");
+  useEffect(() => {
+    // Set the title state to rowTitle if it exists
+    if (paramTitle) {
+      setCrumbTitle(paramTitle);
+    }
+  }, [paramTitle]);
+  // 🛠️ Function to toggle UUID segment to row's "title" information
+  function translateNumericPart(segment: string): string {
+    // Check if the segment is UUID, and if so, use crumbTitle
+    if (!isNaN(Number(segment)) || isValidUUID(segment)) {
+      return crumbTitle;
+    }
+    return segment;
+  }
   return (
     <Box
       sx={{
