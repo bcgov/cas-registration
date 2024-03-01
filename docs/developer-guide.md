@@ -306,6 +306,8 @@ Run tests with the Playwright GUI using terminal command:
 cd client && yarn e2e:ui
 ```
 
+pre-commit run --all-files
+
 ### Debugging Playwright
 
 **HTML report**
