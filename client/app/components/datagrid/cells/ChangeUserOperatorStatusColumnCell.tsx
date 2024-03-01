@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { GridRenderCellParams } from "@mui/x-data-grid/models/params/gridCellParams";
 import Button, { ButtonOwnProps } from "@mui/material/Button";
 import { actionHandler } from "@/app/utils/actions";
@@ -53,6 +54,7 @@ const handleUpdateStatus = async (
 const ChangeUserOperatorStatusColumnCell = (params: ButtonRenderCellParams) => {
   const userOperatorStatus = params.row.status;
   const userOperatorId = params.row.userOperatorId;
+  const [statusState, setStatusState] = useState(userOperatorStatus);
 
   const buttonsToShow = (status: Status): UserOperatorStatusAction[] => {
     if (status === Status.MYSELF) {
@@ -86,13 +88,14 @@ const ChangeUserOperatorStatusColumnCell = (params: ButtonRenderCellParams) => {
 
   return (
     <Stack direction="row" spacing={1}>
-      {buttonsToShow(userOperatorStatus).map((item, index) => (
+      {buttonsToShow(statusState).map((item, index) => (
         <Button
           variant={item.title === "Undo" ? "text" : "outlined"}
           key={index}
-          onClick={async () =>
-            handleUpdateStatus(userOperatorId, item.statusTo)
-          }
+          onClick={async () => {
+            const res = await handleUpdateStatus(userOperatorId, item.statusTo);
+            setStatusState(res.status);
+          }}
           color={item.color}
           endIcon={item.icon}
         >
