@@ -39,10 +39,16 @@ const OperatorDataGrid = ({
         ...column,
         renderCell: (params: GridRenderCellParams) => (
           <div>
+            {/* 🔗 Add link with href query parameter with row's descriptive text*/}
             {/* Link to the first page of the multistep form for a specific user-operator. The '1' represents the first formSection of the form. */}
             <Link
               className="no-underline text-bc-link-blue"
-              href={`operators/user-operator/${params.row.id}/1`}
+              href={{
+                pathname: `operators/user-operator/${params.row.id}/1`,
+                query: {
+                  title: `${params.row.legal_name}`,
+                },
+              }}
             >
               View Details
             </Link>
