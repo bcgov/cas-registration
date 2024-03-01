@@ -88,20 +88,20 @@ export default function Bread({
     pathNames.pop();
   }
   // 🕹️ Toggle UUID segment to a title segment...
-  // by using title parameter sent from grid row's href
+  // by using title parameter sent from link href
   // and useState which is maintained between renders of a top-level React component (required for next\back) navigations
   const searchParams = useSearchParams();
-  const rowTitle = searchParams.get("title") as string;
-  const [crumbTitle, setTitle] = useState<string>("");
+  const paramTitle = searchParams.get("title") as string;
+  const [crumbTitle, setCrumbTitle] = useState<string>("");
   useEffect(() => {
     // Set the title state to rowTitle if it exists
-    if (rowTitle) {
-      setTitle(rowTitle);
+    if (paramTitle) {
+      setCrumbTitle(paramTitle);
     }
-  }, [rowTitle]);
+  }, [paramTitle]);
   // 🛠️ Function to toggle UUID segment to row's "title" information
   function translateNumericPart(segment: string): string {
-    // Check if the segment is UUID, and if so, use record title
+    // Check if the segment is UUID, and if so, use crumbTitle
     if (!isNaN(Number(segment)) || isValidUUID(segment)) {
       return crumbTitle;
     }
