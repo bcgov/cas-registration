@@ -2,13 +2,20 @@ export enum ActionButton {
   CONTINUE = "Continue",
   SUBMIT = "Submit",
 }
+
 export enum AppRole {
   ADMIN = "admin",
 }
+
 export enum AppRoute {
   DASHBOARD = "dashboard",
   HOME = "home",
+  OPERATION = "dashboard/operations/create/1",
+  OPERATIONS = "dashboard/operations",
+  OPERATOR = "dashboard/select-operator",
+  OPERATORS = "dashboard/operators",
   PROFILE = "dashboard/profile",
+  USERS = "dashboard/users",
 }
 
 export enum DataTestID {
