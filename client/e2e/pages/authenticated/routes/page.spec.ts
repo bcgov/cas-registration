@@ -1,6 +1,7 @@
 import { test } from "@playwright/test";
 // 🪄 Page Object Models
 import { DashboardPOM } from "@/e2e/poms/dashboard";
+import { HomePOM } from "@/e2e/poms/home";
 import { OperationPOM } from "@/e2e/poms/operation";
 import { OperationsPOM } from "@/e2e/poms/operations";
 import { OperatorPOM } from "@/e2e/poms/operator";
@@ -79,6 +80,7 @@ for (let [role, value] of Object.entries(UserRole)) {
             pomPage = new DashboardPOM(page);
             break;
           case AppRoute.HOME:
+            pomPage = new HomePOM(page);
             break;
           case AppRoute.OPERATION:
             pomPage = new OperationPOM(page);
@@ -105,7 +107,13 @@ for (let [role, value] of Object.entries(UserRole)) {
           // 🔍 Assert that the current URL role access
           const isAllowedRoute = accessLists.includes(route);
           if (isAllowedRoute) {
-            await pomPage.urlIsCorrect();
+            if (route === AppRoute.HOME) {
+              // authenticated users never get to home, redirected to dashboard
+              const dashboardPage = new DashboardPOM(page);
+              dashboardPage.urlIsCorrect();
+            } else {
+              await pomPage.urlIsCorrect();
+            }
           } else {
             await pomPage.page.waitForSelector(DataTestID.NOTFOUND); //the test will fail with a timeout error if no selector
           }
