@@ -1,7 +1,7 @@
 // 🧪 Suite to test the bceidbusiness new user workflow using storageState
 // 🔍 Asserts new user is redirected to profile
 
-import { test } from "@playwright/test";
+import { test, expect } from "@playwright/test";
 // 🪄 Page Object Models
 import { DashboardPOM } from "@/e2e/poms/dashboard";
 // ℹ️ Environment variables
@@ -21,5 +21,28 @@ test.describe("Test Workflow cas_pending", () => {
     await dashboardPage.route();
     // 🔍 Assert that the current URL ends with "(authenticated)/dashboard"
     await dashboardPage.urlIsCorrect();
+  });
+  test("Test Pending Message", async ({ page }) => {
+    // Navigate to dashboard page
+    const dashboardPage = new DashboardPOM(page);
+    await dashboardPage.route();
+    // 🔍 Assert that the pending message is displayed
+    await dashboardPage.page.waitForSelector(
+      '[data-testid="dashboard-pending-message"]',
+    );
+    //  Assert all text content
+    const allText = await dashboardPage.page.textContent(
+      '[data-testid="dashboard-pending-message"]',
+    );
+    //  Combine selectors and expected text
+    const expectedText = [
+      "Welcome to B.C. Industrial Emissions Reporting System",
+      "Your access request is pending approval.",
+      "Once approved, you can log back in with access to the system.",
+    ];
+    //  Assert all text content
+    for (const text of expectedText) {
+      expect(allText).toContain(text);
+    }
   });
 });
