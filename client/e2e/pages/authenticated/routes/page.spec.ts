@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test } from "@playwright/test";
 // 🪄 Page Object Models
 import { DashboardPOM } from "@/e2e/poms/dashboard";
 import { OperationPOM } from "@/e2e/poms/operation";
@@ -8,7 +8,7 @@ import { OperatorsPOM } from "@/e2e/poms/operators";
 import { ProfilePOM } from "@/e2e/poms/profile";
 import { UsersPOM } from "@/e2e/poms/users";
 // ☰ Enums
-import { AppRoute, UserRole } from "@/e2e/utils/enums";
+import { AppRoute, UserRole, DataTestID } from "@/e2e/utils/enums";
 // 🚨 Object literal policing route access by role
 const appRouteRoles: Record<AppRoute, UserRole[]> = {
   [AppRoute.DASHBOARD]: [
@@ -104,12 +104,11 @@ for (let [role, value] of Object.entries(UserRole)) {
           await pomPage.route();
           // 🔍 Assert that the current URL role access
           const isAllowedRoute = accessLists.includes(route);
-          const code = isAllowedRoute ? 500 : 404;
-          // Listen for response status code
-          page.on("response", async (response) => {
-            // Add your expect test for the response status code
-            expect(response.status()).toBe(code);
-          });
+          if (isAllowedRoute) {
+            await pomPage.urlIsCorrect();
+          } else {
+            await pomPage.page.waitForSelector(DataTestID.NOTFOUND); //the test will fail with a timeout error if no selector
+          }
         }
       }
     });

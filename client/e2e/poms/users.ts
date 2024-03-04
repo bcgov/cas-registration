@@ -22,4 +22,10 @@ export class UsersPOM {
   async route() {
     await this.page.goto(this.url);
   }
+
+  async urlIsCorrect() {
+    const path = this.url;
+    const currentUrl = await this.page.url();
+    await expect(currentUrl.toLowerCase()).toMatch(path.toLowerCase());
+  }
 }

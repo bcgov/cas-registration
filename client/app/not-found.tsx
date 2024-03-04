@@ -15,7 +15,7 @@ export default async function NotFound() {
           marginTop: 20,
         }}
       >
-        <Typography variant="h5" gutterBottom>
+        <Typography data-testid="not-found" variant="h5" gutterBottom>
           The page you’re looking for is unavailable.
         </Typography>
         <Typography variant="body1" paragraph>
