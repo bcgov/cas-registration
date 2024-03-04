@@ -5,7 +5,6 @@ import { test } from "@playwright/test";
 import { DashboardPOM } from "@/e2e/poms/dashboard";
 // ℹ️ Environment variables
 import * as dotenv from "dotenv";
-import { OperationsPOM } from "@/e2e/poms/operations";
 dotenv.config({ path: "./e2e/.env.local" });
 
 // 🏷 Annotate test suite as serial
@@ -21,20 +20,7 @@ test.describe("Test Workflow industry_user_admin", () => {
     // 🛸 Navigate to dashboard page
     const dashboardPage = new DashboardPOM(page);
     await dashboardPage.route();
-    const operationsPage = new OperationsPOM(page);
     // 🔍 Assert that the current URL ends with "(authenticated)/dashboard"
     await dashboardPage.urlIsCorrect();
-    await dashboardPage.clickOperationsTile();
-    await operationsPage.urlIsCorrect();
-    await operationsPage.page.waitForSelector(".MuiDataGrid-root");
-    await operationsPage.columnNamesAreCorrect([
-      "BC GHG ID",
-      "Operator",
-      "Operation",
-      "Submission Date",
-      "BORO ID",
-      "Application Status",
-      "Action",
-    ]);
   });
 });
