@@ -1,6 +1,5 @@
 "use client";
 
-import { GridRenderCellParams } from "@mui/x-data-grid/models/params/gridCellParams";
 import Button, { ButtonOwnProps } from "@mui/material/Button";
 import { actionHandler } from "@/app/utils/actions";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
@@ -8,25 +7,13 @@ import DoNotDisturbIcon from "@mui/icons-material/DoNotDisturb";
 import { ReactNode } from "react";
 import { Stack } from "@mui/system";
 import { Status } from "@/app/utils/enums";
+import { UserOperatorRenderCellParams } from "@/app/components/datagrid/cells/types";
 
 interface UserOperatorStatusAction {
   statusTo: Status;
   title: string;
   color: ButtonOwnProps["color"];
   icon?: ReactNode;
-}
-
-interface ButtonRenderCellParams extends GridRenderCellParams {
-  row: {
-    id: string;
-    name: string;
-    email: string;
-    business: string;
-    accessType: string;
-    status: Status;
-    actions: string;
-    userOperatorId: number;
-  };
 }
 
 const handleUpdateStatus = async (
@@ -50,7 +37,9 @@ const handleUpdateStatus = async (
   }
 };
 
-const ChangeUserOperatorStatusColumnCell = (params: ButtonRenderCellParams) => {
+const ChangeUserOperatorStatusColumnCell = (
+  params: UserOperatorRenderCellParams,
+) => {
   const userOperatorStatus = params.row.status;
   const userOperatorId = params.row.userOperatorId;
 
@@ -95,10 +84,6 @@ const ChangeUserOperatorStatusColumnCell = (params: ButtonRenderCellParams) => {
             params.api.updateRows([
               {
                 ...params.row,
-                accessType:
-                  res.status === Status.DECLINED
-                    ? "N/A"
-                    : params.row.accessType,
                 status: res.status,
               },
             ]);

@@ -3,6 +3,7 @@
 import { GridColDef } from "@mui/x-data-grid";
 import DataGrid from "@/app/components/datagrid/DataGrid";
 import { OperatorStatus } from "@/app/utils/enums";
+import AccessTypeColumnCell from "@/app/components/datagrid/cells/AccessTypeColumnCell";
 import ChangeUserOperatorStatusColumnCell from "@/app/components/datagrid/cells/ChangeUserOperatorStatusColumnCell";
 import { statusStyle } from "@/app/components/datagrid/helpers";
 
@@ -17,14 +18,14 @@ const columns: GridColDef[] = [
   {
     field: "name",
     headerName: "Name",
-    flex: 2,
+    flex: 4,
     align: "center",
     headerAlign: "center",
   },
   {
     field: "email",
     headerName: "Email",
-    flex: 6,
+    flex: 5,
     align: "center",
     headerAlign: "center",
   },
@@ -38,15 +39,10 @@ const columns: GridColDef[] = [
   {
     field: "accessType",
     headerName: "Access Type",
-    flex: 4,
+    flex: 3,
+    renderCell: AccessTypeColumnCell,
     align: "center",
     headerAlign: "center",
-    editable: true,
-    type: "singleSelect",
-    valueOptions: [
-      { value: "admin", label: "Admin" },
-      { value: "reporter", label: "Reporter" },
-    ],
   },
   {
     field: "status",
@@ -61,7 +57,7 @@ const columns: GridColDef[] = [
     headerName: "Actions",
     sortable: false,
     renderCell: ChangeUserOperatorStatusColumnCell,
-    flex: 6,
+    flex: 5,
     align: "center",
     headerAlign: "center",
   },
