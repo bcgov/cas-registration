@@ -6,6 +6,7 @@ import { test, expect } from "@playwright/test";
 import { DashboardPOM } from "@/e2e/poms/dashboard";
 // ℹ️ Environment variables
 import * as dotenv from "dotenv";
+import { HomePOM } from "@/e2e/poms/home";
 dotenv.config({ path: "./e2e/.env.local" });
 
 // 🏷 Annotate test suite as serial
@@ -15,6 +16,17 @@ test.describe("Test Workflow cas_pending", () => {
   const storageState = process.env.E2E_CAS_PENDING_STORAGE;
   // Note: specify storageState for each test file or test group, instead of setting it in the config. https://playwright.dev/docs/next/auth#reuse-signed-in-state
   test.use({ storageState: storageState }); // this will error if no such file or directory
+  test("Test Navigation to `home` is redirected to Dashboard page", async ({
+    page,
+  }) => {
+    // 🛸 Navigate to home page
+    const homePage = new HomePOM(page);
+    await homePage.route();
+    // 🔍 Assert that the pending message is displayed
+    await homePage.page.waitForSelector(
+      '[data-testid="dashboard-pending-message"]',
+    );
+  });
   test("Test Redirect to Dashboard", async ({ page }) => {
     // 🛸 Navigate to dashboard page
     const dashboardPage = new DashboardPOM(page);
