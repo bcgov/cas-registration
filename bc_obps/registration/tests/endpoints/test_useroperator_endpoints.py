@@ -462,7 +462,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
             user=self.user,
             operator=operator,
             status=UserOperator.Statuses.PENDING,
-            role=UserOperator.Roles.ADMIN,
+            role=UserOperator.Roles.PENDING,
         ).exists()
 
         assert user_operator_exists, "UserOperator object was not created"
