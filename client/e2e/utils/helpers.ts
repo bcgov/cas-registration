@@ -166,9 +166,7 @@ export async function getAllFields(page: Page) {
   const fields = await page.$$("fieldset#root");
   return fields;
 }
-
-export async function getReadonlyFields(page: Page) {
-  const fieldset = await page.$("fieldset#root");
-  const readonlyFields = await fieldset?.$$("readonly");
-  return readonlyFields;
+export async function getAllFormInputs(page: Page) {
+  const fields = await page.locator("input").all();
+  return fields;
 }
