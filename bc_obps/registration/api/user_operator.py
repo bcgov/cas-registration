@@ -269,7 +269,7 @@ def request_admin_access(request, payload: SelectOperatorIn):
                 return status, message
         # Making a pending UserOperator instance if one doesn't exist
         user_operator, created = UserOperator.objects.get_or_create(
-            user=user, operator=operator, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.PENDING
+            user=user, operator=operator, role=UserOperator.Roles.PENDING, status=UserOperator.Statuses.PENDING
         )
         if created:
             user_operator.set_create_or_update(user.pk)
@@ -296,7 +296,7 @@ def request_access(request, payload: SelectOperatorIn):
 
             # Making a draft UserOperator instance if one doesn't exist
             user_operator, created = UserOperator.objects.get_or_create(
-                user=user, operator=operator, status=UserOperator.Statuses.PENDING, role=UserOperator.Roles.REPORTER
+                user=user, operator=operator, status=UserOperator.Statuses.PENDING, role=UserOperator.Roles.PENDING
             )
             if created:
                 user_operator.set_create_or_update(user.pk)
@@ -399,7 +399,10 @@ def update_user_operator_status(request, payload: UserOperatorStatusUpdate):
                 user_operator.verified_at = datetime.now(pytz.utc)
                 user_operator.verified_by_id = current_user.user_guid
 
-                if user_operator.status == UserOperator.Statuses.APPROVED:
+                if (
+                    user_operator.status == UserOperator.Statuses.APPROVED
+                    and updated_role != UserOperator.Roles.PENDING
+                ):
                     user_operator.role = updated_role
 
             elif user_operator.status == UserOperator.Statuses.PENDING:
