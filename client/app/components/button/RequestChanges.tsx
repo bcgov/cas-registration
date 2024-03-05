@@ -100,7 +100,7 @@ const RequestChanges: React.FC<Props> = ({
               className="mr-2"
               variant="contained"
               color="primary"
-              aria-label="Request Changes"
+              aria-label="Confirm Change Request"
               onClick={onRequestChangeConfirm}
             >
               Confirm change request
@@ -108,7 +108,7 @@ const RequestChanges: React.FC<Props> = ({
             <Button
               variant="outlined"
               color="primary"
-              aria-label="Request Changes"
+              aria-label="Cancel Change Request"
               onClick={handleCancelClick}
             >
               Cancel request
