@@ -10,51 +10,30 @@ import { ProfilePOM } from "@/e2e/poms/profile";
 import { UsersPOM } from "@/e2e/poms/users";
 // ☰ Enums
 import {
-  AppRole,
   AppRoute,
   appRouteRoles,
   DataTestID,
-  UserOperatorStatus,
-  UserOperatorUUID,
   UserRole,
 } from "@/e2e/utils/enums";
-// 🥞 DB CRUD
-import {
-  upsertUserRecord,
-  upsertOperatorRecord,
-  upsertUserOperatorRecord,
-} from "@/e2e/utils/queries";
 // ℹ️ Environment variables
 import * as dotenv from "dotenv";
+import { deleteUserOperatorRecord } from "@/e2e/utils/queries";
 dotenv.config({ path: "./e2e/.env.local" });
 
 // 📚 Declare a beforeAll hook that is executed once per worker process before all tests.
 // 🥞 Set DB for dashboard tiles
 /*
-For industry_user: allow access to route `dashboard/select-operator`
-- create user
-- create operator
-- create user operator
+For industry_user: create scenario for Operator Select\1 action pending
+- delete user operator
 */
 test.beforeAll(async () => {
   try {
-    // Scenario FrontEndRoles.INDUSTRY_USER where UserOperatorStatus.APPROVED && OperatorStatus.APPROVED;
-    // Upsert a User record: bc-cas-dev-secondary
-    await upsertUserRecord(UserRole.INDUSTRY_USER);
-    // Upsert an Operator record, using default values
-    await upsertOperatorRecord();
-    // Upsert an User Operator record: industry_user, operator id 2
-    await upsertUserOperatorRecord(
+    await deleteUserOperatorRecord(
       process.env.E2E_INDUSTRY_USER_GUID as string,
-      AppRole.ADMIN,
-      UserOperatorStatus.APPROVED,
-      {
-        id: UserOperatorUUID.INDUSTRY_USER,
-      },
     );
   } catch (error) {
     // eslint-disable-next-line no-console
-    console.error("❌ Error in Db setup for routes:", error);
+    console.error("❌ Error in Db setup for route:", error);
     throw error;
   }
 });
@@ -76,14 +55,14 @@ for (let [role, value] of Object.entries(UserRole)) {
   role = "E2E_" + role;
   const storageState = process.env[role + "_STORAGE"] as string;
   test.describe(`Test Route Access for ${value}`, () => {
-    // 👤 run test as this role
+    // 👤 Run test as this role
     test.use({ storageState: storageState });
     test("Test Navigate to Routes", async ({ page }) => {
-      // 🚨 Build user role's allow list
+      // 🚨 Build routes allowed list for this user role
       const accessLists = buildAccessLists(value);
       // 🛸 Navigate to all routes
       for (let route of Object.values(AppRoute)) {
-        // 🧩 Create instance of route's POM
+        // 🧩 Create instance of this route's POM
         let pomPage;
         switch (route) {
           case AppRoute.DASHBOARD:
@@ -112,6 +91,7 @@ for (let [role, value] of Object.entries(UserRole)) {
             break;
         }
         if (pomPage) {
+          // 🚨 Check if route is in the role's allow list
           const isAllowedRoute = accessLists.includes(route);
           const timeOut = 15000;
           // eslint-disable-next-line no-console
@@ -121,9 +101,10 @@ for (let [role, value] of Object.entries(UserRole)) {
 
           // 🛸 Navigate to route
           await pomPage.route();
+          // 📌 Some roles have exceptions to the expected results
           switch (value) {
             case UserRole.CAS_PENDING:
-              // 👤 authenticated cas_pending have no role; so, redirected to dashboard for al route except `profile`
+              // 👤 Authenticated cas_pending have no role; so, redirected to dashboard for all routes except `profile`
               if (route === AppRoute.PROFILE) {
                 // 🔍 Assert that the current URL ends with "/profile"
                 const profilePage = new ProfilePOM(page);
@@ -135,39 +116,57 @@ for (let [role, value] of Object.entries(UserRole)) {
               }
               break;
             case UserRole.NEW_USER:
-              // 👤 authenticated IO new user is redirected to  `profile`
+              // 👤 Authenticated new user is redirected to  `profile` for all routes
               // 🔍 Assert that the current URL ends with "/profile"
               const profilePage = new ProfilePOM(page);
               profilePage.urlIsCorrect();
               break;
             default:
+              // 👤 All other roles, routing results are based on route accesibility
               if (isAllowedRoute) {
-                // 🔑 Accessible route
-                if (route === AppRoute.HOME) {
-                  // 👤 authenticated users never get to home, redirected to dashboard
+                // 🔑 Accessible route, role has access
+                // 📌 Some routes have exceptions to the expected results
+                switch (route) {
+                  case AppRoute.HOME:
+                    // 👤 Authenticated users never get to home, redirected to dashboard
+                    // 🔍 Assert that the current URL ends with "/dashboard"
+                    const dashboardPage = new DashboardPOM(page);
+                    dashboardPage.urlIsCorrect();
+                    break;
+                  default:
+                    // 🛸 All other routes
+                    // 🔍 Assert that the current URL is correct
+                    await pomPage.urlIsCorrect();
+                    // 🔍 Assert that the not-found selector is not available
+                    // Wait for the selector to not be available with a timeout
+                    await page.waitForSelector('[data-testid="not-found"]', {
+                      state: "hidden",
+                      timeout: timeOut,
+                    });
+                    const notFoundSelector = await page.$(
+                      '[data-testid="not-found"]',
+                    );
+                    expect(notFoundSelector).toBeFalsy();
+                    break;
+                }
+              } else {
+                // 🔒 Inaccessible route, role has no access
+                // 📌 Some role && routes have exceptions to the expected results
+                if (
+                  value === UserRole.INDUSTRY_USER &&
+                  (route === AppRoute.OPERATION ||
+                    route === AppRoute.OPERATIONS)
+                ) {
+                  // 👤 Authenticated INDUSTRY_USER with 1 action pending get redirected to dashboard
                   // 🔍 Assert that the current URL ends with "/dashboard"
                   const dashboardPage = new DashboardPOM(page);
                   dashboardPage.urlIsCorrect();
                 } else {
-                  // 🔍 Assert that the role has access
-                  await pomPage.urlIsCorrect();
-                  // Wait for the selector to not be available with a timeout
-                  await page.waitForSelector('[data-testid="not-found"]', {
-                    state: "hidden",
+                  // 🔍 Assert that the role has NO access, not-found selector is available
+                  await pomPage.page.waitForSelector(DataTestID.NOTFOUND, {
                     timeout: timeOut,
                   });
-                  // 🔍 Assert that the not-found selector is not available
-                  const notFoundSelector = await page.$(
-                    '[data-testid="not-found"]',
-                  );
-                  expect(notFoundSelector).toBeFalsy();
                 }
-              } else {
-                // 🔒 Inaccessible route
-                // 🔍 Assert that the role has NO access, not-found selector is available
-                await pomPage.page.waitForSelector(DataTestID.NOTFOUND, {
-                  timeout: timeOut,
-                });
               }
               break;
           }
