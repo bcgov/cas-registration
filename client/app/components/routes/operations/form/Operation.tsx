@@ -209,7 +209,7 @@ export default async function Operation({ numRow }: { numRow?: string }) {
       />
       <div>
         {isCasInternal ? (
-          <p>
+          <p data-testid="cas-admin-operation-approved-message">
             This operation’s application for a B.C. OBPS Regulated Operation ID
             was approved.
           </p>
@@ -239,7 +239,7 @@ export default async function Operation({ numRow }: { numRow?: string }) {
     <div className="flex items-start gap-3 mt-4">
       <CancelIcon fontSize="large" color="error" />
       <div>
-        <p className="mt-0">
+        <p className="mt-0" data-testid="cas-admin-operation-declined-message">
           This operation’s application for a B.C. OBPS Regulated Operation ID
           was declined.
         </p>
