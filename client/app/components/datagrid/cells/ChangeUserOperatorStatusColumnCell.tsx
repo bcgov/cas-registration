@@ -6,7 +6,7 @@ import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import DoNotDisturbIcon from "@mui/icons-material/DoNotDisturb";
 import { ReactNode } from "react";
 import { Stack } from "@mui/system";
-import { Status } from "@/app/utils/enums";
+import { FrontEndRoles, Status } from "@/app/utils/enums";
 import { UserOperatorRenderCellParams } from "@/app/components/datagrid/cells/types";
 
 interface UserOperatorStatusAction {
@@ -19,6 +19,7 @@ interface UserOperatorStatusAction {
 const handleUpdateStatus = async (
   userOperatorId: number,
   statusUpdate: Status,
+  roleUpdate: FrontEndRoles,
 ) => {
   try {
     return await actionHandler(
@@ -27,6 +28,7 @@ const handleUpdateStatus = async (
       "",
       {
         body: JSON.stringify({
+          role: roleUpdate,
           status: statusUpdate,
           user_operator_id: userOperatorId,
         }),
@@ -42,7 +44,8 @@ const ChangeUserOperatorStatusColumnCell = (
 ) => {
   const userOperatorStatus = params.row.status;
   const userOperatorId = params.row.userOperatorId;
-
+  const accessType = params.row.accessType;
+  const userOperatorRole = accessType;
   const buttonsToShow = (status: Status): UserOperatorStatusAction[] => {
     if (status === Status.MYSELF) {
       return [];
@@ -80,7 +83,11 @@ const ChangeUserOperatorStatusColumnCell = (
           variant={item.title === "Undo" ? "text" : "outlined"}
           key={index}
           onClick={async () => {
-            const res = await handleUpdateStatus(userOperatorId, item.statusTo);
+            const res = await handleUpdateStatus(
+              userOperatorId,
+              item.statusTo,
+              userOperatorRole as FrontEndRoles,
+            );
             params.api.updateRows([
               {
                 ...params.row,

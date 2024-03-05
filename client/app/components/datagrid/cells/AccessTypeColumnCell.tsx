@@ -22,7 +22,7 @@ const AccessTypeColumnCell = (params: UserOperatorRenderCellParams) => {
     return "N/A";
   }
 
-  if (status === Status.APPROVED) {
+  if (status === Status.APPROVED || status === Status.MYSELF) {
     return <span className="capitalize">{accessType}</span>;
   }
 

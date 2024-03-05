@@ -391,13 +391,21 @@ def update_user_operator_status(request, payload: UserOperatorStatusUpdate):
     try:
         with transaction.atomic():
             user_operator.status = payload.status
+
+            operator: Operator = user_operator.operator
+            # confirm that the current_user has appropriate permissions for the same operator as the user_operator
+            current_user_user_operator = get_object_or_404(UserOperator, user=current_user)
+
+            if current_user_user_operator.operator != operator or current_user_user_operator.role != 'admin':
+                return 400, {"message": "Invalid permissions."}
+
             if user_operator.status in [UserOperator.Statuses.APPROVED, UserOperator.Statuses.DECLINED]:
                 user_operator.verified_at = datetime.now(pytz.utc)
                 user_operator.verified_by_id = current_user.user_guid
 
-                # We need to adjust this role assignment in ticket #470
                 if user_operator.status == UserOperator.Statuses.APPROVED:
-                    user_operator.role = UserOperator.Roles.ADMIN
+                    updated_role = payload.role
+                    user_operator.role = updated_role
 
             elif user_operator.status == UserOperator.Statuses.PENDING:
                 user_operator.verified_at = None
