@@ -2,7 +2,7 @@
 
 import { GridColDef } from "@mui/x-data-grid";
 import DataGrid from "@/app/components/datagrid/DataGrid";
-import { OperatorStatus } from "@/app/utils/enums";
+import { OperatorStatus, UserOperatorRoles } from "@/app/utils/enums";
 import AccessTypeColumnCell from "@/app/components/datagrid/cells/AccessTypeColumnCell";
 import ChangeUserOperatorStatusColumnCell from "@/app/components/datagrid/cells/ChangeUserOperatorStatusColumnCell";
 import { statusStyle } from "@/app/components/datagrid/helpers";
@@ -72,12 +72,16 @@ const UserOperatorDataGrid = ({
   const rowData = userOperatorData.map((uOS) => {
     const { id, role, status, user, operator } = uOS;
 
+    // If the user is pending, we want to default the access type dropdown to Reporter
+    const accessType =
+      role === UserOperatorRoles.PENDING ? UserOperatorRoles.REPORTER : role;
+
     return {
       id: id, // This unique ID is needed for DataGrid to work properly
       name: `${user.first_name} ${user.last_name}`,
       email: user.email,
       business: operator.legal_name,
-      accessType: status === OperatorStatus.DECLINED ? "N/A" : role,
+      accessType: status === OperatorStatus.DECLINED ? "N/A" : accessType,
       status: status,
       userOperatorId: id,
     };
