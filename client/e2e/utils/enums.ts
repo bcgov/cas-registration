@@ -68,7 +68,6 @@ export enum UserOperatorStatus {
 // 🤳 UUIDs UserOperator
 export enum UserOperatorUUID {
   INDUSTRY_USER_ADMIN = "9bb541e6-41f5-47d3-8359-2fab4f5bc4c0",
-  INDUSTRY_USER = "c49122dc-b44a-44e6-b38e-77584bff606b",
 }
 
 //  // 👤  User roles
@@ -98,11 +97,10 @@ export const appRouteRoles: Record<AppRoute, UserRole[]> = {
     UserRole.INDUSTRY_USER_ADMIN,
     UserRole.NEW_USER,
   ],
-  [AppRoute.OPERATION]: [UserRole.INDUSTRY_USER, UserRole.INDUSTRY_USER_ADMIN],
+  [AppRoute.OPERATION]: [UserRole.INDUSTRY_USER_ADMIN],
   [AppRoute.OPERATIONS]: [
     UserRole.CAS_ANALYST,
     UserRole.CAS_ADMIN,
-    UserRole.INDUSTRY_USER,
     UserRole.INDUSTRY_USER_ADMIN,
   ],
   [AppRoute.OPERATOR]: [UserRole.INDUSTRY_USER, UserRole.INDUSTRY_USER_ADMIN],
