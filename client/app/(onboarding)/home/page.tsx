@@ -97,10 +97,11 @@ export default function Page() {
             .
           </p>
           <p>
-            BCIERS will enable operators to apply for a B.C. Regulated Operation
-            ID (BORO ID) for each industrial operation that is eligible to
-            participate in the B.C. OBPS. A BORO ID is needed to claim a carbon
-            tax exemption under the Carbon Tax Act starting April 1, 2024.
+            BCIERS will enable operators to apply for a B.C. OBPS Regulated
+            Operation ID (BORO ID) for each industrial operation that is
+            eligible to participate in the B.C. OBPS. A BORO ID is needed to
+            claim a carbon tax exemption under the Carbon Tax Act starting April
+            1, 2024.
           </p>
         </section>
         <section>
