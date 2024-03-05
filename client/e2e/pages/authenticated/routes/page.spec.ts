@@ -15,6 +15,7 @@ import {
   appRouteRoles,
   DataTestID,
   UserOperatorStatus,
+  UserOperatorUUID,
   UserRole,
 } from "@/e2e/utils/enums";
 // 🥞 DB CRUD
@@ -47,10 +48,13 @@ test.beforeAll(async () => {
       process.env.E2E_INDUSTRY_USER_GUID as string,
       AppRole.ADMIN,
       UserOperatorStatus.APPROVED,
+      {
+        id: UserOperatorUUID.INDUSTRY_USER,
+      },
     );
   } catch (error) {
     // eslint-disable-next-line no-console
-    console.error("❌ Error in Db setup for dashboard:", error);
+    console.error("❌ Error in Db setup for routes:", error);
     throw error;
   }
 });
