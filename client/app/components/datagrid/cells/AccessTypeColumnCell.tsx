@@ -2,7 +2,7 @@ import Select, { SelectChangeEvent } from "@mui/material/Select";
 import FormControl from "@mui/material/FormControl";
 import MenuItem from "@mui/material/MenuItem";
 import { UserOperatorRenderCellParams } from "@/app/components/datagrid/cells/types";
-import { Status } from "@/app/utils/enums";
+import { UserOperatorRoles, Status } from "@/app/utils/enums";
 
 const AccessTypeColumnCell = (params: UserOperatorRenderCellParams) => {
   const {
@@ -37,7 +37,7 @@ const AccessTypeColumnCell = (params: UserOperatorRenderCellParams) => {
         id={id}
         name={id}
         notched={false}
-        value={accessType}
+        value={accessType as UserOperatorRoles}
         label="Access Type"
         onChange={handleChange}
       >

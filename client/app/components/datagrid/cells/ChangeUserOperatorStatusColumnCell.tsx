@@ -6,7 +6,7 @@ import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import DoNotDisturbIcon from "@mui/icons-material/DoNotDisturb";
 import { ReactNode } from "react";
 import { Stack } from "@mui/system";
-import { FrontEndRoles, Status } from "@/app/utils/enums";
+import { UserOperatorRoles, Status } from "@/app/utils/enums";
 import { UserOperatorRenderCellParams } from "@/app/components/datagrid/cells/types";
 
 interface UserOperatorStatusAction {
@@ -19,7 +19,7 @@ interface UserOperatorStatusAction {
 const handleUpdateStatus = async (
   userOperatorId: number,
   statusUpdate: Status,
-  roleUpdate: FrontEndRoles,
+  roleUpdate: UserOperatorRoles,
 ) => {
   try {
     return await actionHandler(
@@ -86,7 +86,7 @@ const ChangeUserOperatorStatusColumnCell = (
             const res = await handleUpdateStatus(
               userOperatorId,
               item.statusTo,
-              userOperatorRole as FrontEndRoles,
+              userOperatorRole as UserOperatorRoles,
             );
             params.api.updateRows([
               {
