@@ -1,12 +1,13 @@
 // 🧪 Suite to test the cas_admin workflows using storageState
 // 🔍 Asserts new user is redirected to profile
 
-import { test } from "@playwright/test";
+import { test, expect } from "@playwright/test";
 // 🪄 Page Object Models
 import { DashboardPOM } from "@/e2e/poms/dashboard";
 // ℹ️ Environment variables
 import * as dotenv from "dotenv";
 import { OperationsPOM } from "@/e2e/poms/operations";
+import { getAllFormInputs } from "@/e2e/utils/helpers";
 dotenv.config({ path: "./e2e/.env.local" });
 
 // 🏷 Annotate test suite as serial
@@ -33,7 +34,7 @@ test.describe("Test Workflow cas_admin", () => {
     await operationsPage.urlIsCorrect();
     await operationsPage.page.waitForSelector(".MuiDataGrid-root");
 
-    // AC: table headers include ["Operator", "Operation" (legal name), "Submission Date", "Actions", "Status", and "BORO ID"]
+    // 🧪 cas_admin is able to view operations table with the following columns
     await operationsPage.columnNamesAreCorrect([
       "BC GHG ID",
       "Operator",
@@ -43,8 +44,7 @@ test.describe("Test Workflow cas_admin", () => {
       "Application Status",
       "Action",
     ]);
-    // AC: is able to view all operations with statuses of "Pending", "Accepted", or "Declined"
-    // brianna--do we already have the dev data in from the other CI steps and django setup?
+    // 🧪 cas_admin is able to view all operations with statuses of "Pending", "Accepted", or "Declined"
     await operationsPage.operationsViewIsCorrect("cas_admin", [
       "Approved",
       "Approved",
@@ -68,18 +68,143 @@ test.describe("Test Workflow cas_admin", () => {
       "Pending",
     ]);
 
-    // AC: is able to click "View Details" on any operation and see detailed info about it (read only)
+    // 🧪 cas_admin is able to click "View Details" on any operation and see detailed info about it (read only)
+    const viewDetailsButtons = operationsPage.page.getByRole("link", {
+      name: /view details/i,
+    });
+    await viewDetailsButtons.first().click(); // APPROVED operation
+
+    // Approved operation message on top of the form
+    await expect(
+      operationsPage.page.locator(
+        "data-testid=cas-admin-operation-approved-message",
+      ),
+    ).toBeVisible();
+    // Click Expand All button
     await operationsPage.page
-      .getByText(/view details/i)
-      .first()
+      .getByRole("button", { name: "Expand All" })
       .click();
+    // Check Form Headers
+    await expect(
+      operationsPage.page.getByRole("button", { name: "Operator Information" }),
+    ).toBeVisible();
+    await expect(
+      operationsPage.page.getByRole("button", {
+        name: "Operation Information",
+      }),
+    ).toBeVisible();
+    await expect(
+      operationsPage.page.getByRole("button", { name: "Point of Contact" }),
+    ).toBeVisible();
+    await expect(
+      operationsPage.page.getByRole("button", {
+        name: "Statutory Declaration and Disclaimer",
+      }),
+    ).toBeVisible();
 
-    //  AC: is not able to edit the data in any Operation form
-    // Brianna will we need to expand the sections to check individually, or will this cover it?
-    await operationsPage.checkReadonlyFields();
+    // Check that all form fields are disabled and not editable
+    const allFormFields = await getAllFormInputs(operationsPage.page);
+    for (const field of allFormFields) {
+      await expect(field).toBeDisabled();
+      await expect(field).not.toBeEditable();
+    }
+
+    //🧪 cas_admin is able to Preview the Statutory Declaration PDF in any Operation form
+    const downloadPromise = page.waitForEvent("download"); // Start waiting for download before clicking.
+    await operationsPage.page.getByRole("link", { name: "Preview" }).click();
+    const download = await downloadPromise;
+    expect(download.suggestedFilename()).toContain("mock_file.pdf");
+    await download.delete(); // Delete the downloaded file (cleanup)
+
+    // Click the Collapse All button
+    await operationsPage.page
+      .getByRole("button", { name: "Collapse All" })
+      .click();
+    for (const field of allFormFields) await expect(field).not.toBeVisible();
+
+    // 🔙 Navigate back to the operations table
+    await operationsPage.page.getByRole("link", { name: "Operations" }).click();
+    await operationsPage.page.waitForSelector(".MuiDataGrid-root");
+
+    // 🧪 cas_admin is able to see "Approve", "Decline", or "Request Changes" on a Pending operation
+    await viewDetailsButtons.nth(3).click(); // PENDING operation
+    const requestChangesButton = operationsPage.page.locator(
+      "button[aria-label='Request Changes']",
+    );
+    const approveButton = operationsPage.page.locator(
+      "button[aria-label='Approve application']",
+    );
+    const rejectButton = operationsPage.page.locator(
+      "button[aria-label='Reject application']",
+    );
+    await expect(requestChangesButton).toBeVisible();
+    await expect(approveButton).toBeVisible();
+    await expect(rejectButton).toBeVisible();
+
+    // 🧪 cas_admin is able to click "Request Changes" and subsequently reverse this action on a Pending operation
+    await requestChangesButton.click();
+    const confirmChangeRequestButton = operationsPage.page.locator(
+      "button[aria-label='Confirm Change Request']",
+    );
+    await expect(confirmChangeRequestButton).toBeVisible();
+    const cancelRequestButton = operationsPage.page.locator(
+      "button[aria-label='Cancel Change Request']",
+    );
+    await expect(cancelRequestButton).toBeVisible();
+    await confirmChangeRequestButton.click();
+    const undoRequestChanges = operationsPage.page.locator(
+      "button[aria-label='Undo Request Changes']",
+    );
+    await expect(undoRequestChanges).toBeVisible();
+    await undoRequestChanges.click();
+
+    // 🧪 cas_admin is able to click "Approve" on a Pending operation and triggers the generation of a BORO ID
+    await approveButton.click();
+    const modal = operationsPage.page.locator("data-testid=modal");
+    await expect(modal).toBeVisible();
+    await expect(modal.locator("button[aria-label='Confirm']")).toBeVisible();
+    await expect(modal.locator("button[aria-label='Cancel']")).toBeVisible();
+    await modal.locator("button[aria-label='Confirm']").click();
+    await expect(modal).not.toBeVisible();
+    await expect(operationsPage.page.locator(".MuiAlert-message")).toHaveText(
+      "You have approved the request for carbon tax exemption.",
+    );
+    await expect(
+      operationsPage.page.locator(
+        "data-testid=cas-admin-operation-approved-message",
+      ),
+    ).toBeVisible();
+
+    // 🔙 Navigate back to the operations table
+    await operationsPage.page.getByRole("link", { name: "Operations" }).click();
+    await operationsPage.page.waitForSelector(".MuiDataGrid-root");
+
+    // 🧪 cas_admin is able to click "Decline" on a Pending operation
+    await viewDetailsButtons.nth(3).click(); // PENDING operation
+    await rejectButton.click();
+    await expect(modal).toBeVisible();
+    await expect(modal.locator("button[aria-label='Confirm']")).toBeVisible();
+    await expect(modal.locator("button[aria-label='Cancel']")).toBeVisible();
+    await modal.locator("button[aria-label='Confirm']").click();
+    await expect(modal).not.toBeVisible();
+    await expect(
+      operationsPage.page.locator(
+        "data-testid=cas-admin-operation-declined-message",
+      ),
+    ).toBeVisible();
   });
+  // TODO: ADD SNAPSHOTS?!?!?
 
-  //   AC: is able to Preview the Statutory Declaration PDF in any Operation form
-  //  AC: is able to Approve, Decline, or Request Changes on any Pending operation
-  // - AC: approving an Operation triggers the generation of a BORO ID, which appears at the top of the form
+  test("Report a Problem Tile workflow", async ({ page }) => {
+    // 🛸 Navigate to dashboard page
+    const dashboardPage = new DashboardPOM(page);
+    await dashboardPage.route();
+    // 🧪 Assert that the current URL ends with "(authenticated)/dashboard"
+    await dashboardPage.urlIsCorrect();
+    // 🧪 has a mailto: link on it
+    expect(dashboardPage.reportProblemLink).toHaveAttribute(
+      "href",
+      /mailto:GHGRegulator@gov.bc.ca/i,
+    );
+  });
 });

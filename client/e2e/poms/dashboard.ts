@@ -21,6 +21,8 @@ export class DashboardPOM {
 
   readonly operationsTile: Locator;
 
+  readonly reportProblemLink: Locator;
+
   constructor(page: Page) {
     this.page = page;
     this.msgPending = this.page.locator(DataTestID.MESSAGE_PENDING);
@@ -28,6 +30,9 @@ export class DashboardPOM {
       "1 pending action(s) required",
     );
     this.operationsTile = page.getByRole("link", { name: /.*operations.*/i });
+    this.reportProblemLink = page.getByRole("link", {
+      name: "Report problems to GHGRegulator@gov.bc.ca",
+    });
   }
 
   async route() {
