@@ -34,13 +34,13 @@ export default function Page() {
       window.open(
         "https://www.bceid.ca/register/business/",
         "_blank",
-        "noopener,noreferrer"
+        "noopener,noreferrer",
       );
     } else {
       window.open(
         `https://www.${env}.bceid.ca/register/business/`,
         "_blank",
-        "noopener,noreferrer"
+        "noopener,noreferrer",
       );
     }
   };
