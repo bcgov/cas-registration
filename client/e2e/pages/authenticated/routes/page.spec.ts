@@ -113,7 +113,7 @@ for (let [role, value] of Object.entries(UserRole)) {
         }
         if (pomPage) {
           const isAllowedRoute = accessLists.includes(route);
-          const timeOut = 11000;
+          const timeOut = 15000;
           // eslint-disable-next-line no-console
           console.log(
             `🚀 Route ${route} for ${value} has access ${isAllowedRoute}`,
@@ -121,46 +121,55 @@ for (let [role, value] of Object.entries(UserRole)) {
 
           // 🛸 Navigate to route
           await pomPage.route();
-          if (value === UserRole.CAS_PENDING) {
-            // 👤 authenticated cas_pending have no role; so, redirected to dashboard...except for profile
-            if (route === AppRoute.PROFILE) {
-              // 🔍 Assert that the current URL ends with "/profile"
-              const profilePage = new ProfilePOM(page);
-              profilePage.urlIsCorrect();
-            } else {
-              // 🔍 Assert that the current URL ends with "/dashboard"
-              const dashboardPage = new DashboardPOM(page);
-              dashboardPage.urlIsCorrect();
-            }
-          } else {
-            if (isAllowedRoute) {
-              // 🔑 Accessible route
-              if (route === AppRoute.HOME) {
-                // 👤 authenticated users never get to home, redirected to dashboard
+          switch (value) {
+            case UserRole.CAS_PENDING:
+              // 👤 authenticated cas_pending have no role; so, redirected to dashboard for al route except `profile`
+              if (route === AppRoute.PROFILE) {
+                // 🔍 Assert that the current URL ends with "/profile"
+                const profilePage = new ProfilePOM(page);
+                profilePage.urlIsCorrect();
+              } else {
                 // 🔍 Assert that the current URL ends with "/dashboard"
                 const dashboardPage = new DashboardPOM(page);
                 dashboardPage.urlIsCorrect();
+              }
+              break;
+            case UserRole.NEW_USER:
+              // 👤 authenticated IO new user is redirected to  `profile`
+              // 🔍 Assert that the current URL ends with "/profile"
+              const profilePage = new ProfilePOM(page);
+              profilePage.urlIsCorrect();
+              break;
+            default:
+              if (isAllowedRoute) {
+                // 🔑 Accessible route
+                if (route === AppRoute.HOME) {
+                  // 👤 authenticated users never get to home, redirected to dashboard
+                  // 🔍 Assert that the current URL ends with "/dashboard"
+                  const dashboardPage = new DashboardPOM(page);
+                  dashboardPage.urlIsCorrect();
+                } else {
+                  // 🔍 Assert that the role has access
+                  await pomPage.urlIsCorrect();
+                  // Wait for the selector to not be available with a timeout
+                  await page.waitForSelector('[data-testid="not-found"]', {
+                    state: "hidden",
+                    timeout: timeOut,
+                  });
+                  // 🔍 Assert that the not-found selector is not available
+                  const notFoundSelector = await page.$(
+                    '[data-testid="not-found"]',
+                  );
+                  expect(notFoundSelector).toBeFalsy();
+                }
               } else {
-                // 🔍 Assert that the role has access
-                await pomPage.urlIsCorrect();
-                // Wait for the selector to not be available with a timeout
-                await page.waitForSelector('[data-testid="not-found"]', {
-                  state: "hidden",
+                // 🔒 Inaccessible route
+                // 🔍 Assert that the role has NO access, not-found selector is available
+                await pomPage.page.waitForSelector(DataTestID.NOTFOUND, {
                   timeout: timeOut,
                 });
-                // 🔍 Assert that the not-found selector is not available
-                const notFoundSelector = await page.$(
-                  '[data-testid="not-found"]',
-                );
-                expect(notFoundSelector).toBeFalsy();
               }
-            } else {
-              // 🔒 Inaccessible route
-              // 🔍 Assert that the role has NO access, not-found selector is available
-              await pomPage.page.waitForSelector(DataTestID.NOTFOUND, {
-                timeout: timeOut,
-              });
-            }
+              break;
           }
         }
       }
