@@ -1,4 +1,4 @@
-import { test } from "@playwright/test";
+import { test, expect } from "@playwright/test";
 // 🪄 Page Object Models
 import { DashboardPOM } from "@/e2e/poms/dashboard";
 import { HomePOM } from "@/e2e/poms/home";
@@ -9,46 +9,51 @@ import { OperatorsPOM } from "@/e2e/poms/operators";
 import { ProfilePOM } from "@/e2e/poms/profile";
 import { UsersPOM } from "@/e2e/poms/users";
 // ☰ Enums
-import { AppRoute, UserRole, DataTestID } from "@/e2e/utils/enums";
-// 🚨 Object literal policing route access by role
-const appRouteRoles: Record<AppRoute, UserRole[]> = {
-  [AppRoute.DASHBOARD]: [
-    UserRole.CAS_PENDING,
-    UserRole.CAS_ANALYST,
-    UserRole.CAS_ADMIN,
-    UserRole.INDUSTRY_USER,
-    UserRole.INDUSTRY_USER_ADMIN,
-  ],
-  [AppRoute.HOME]: [
-    UserRole.CAS_PENDING,
-    UserRole.CAS_ANALYST,
-    UserRole.CAS_ADMIN,
-    UserRole.INDUSTRY_USER,
-    UserRole.INDUSTRY_USER_ADMIN,
-    UserRole.NEW_USER,
-  ],
-  [AppRoute.OPERATION]: [UserRole.INDUSTRY_USER, UserRole.INDUSTRY_USER_ADMIN],
-  [AppRoute.OPERATIONS]: [
-    UserRole.CAS_ANALYST,
-    UserRole.CAS_ADMIN,
-    UserRole.INDUSTRY_USER,
-    UserRole.INDUSTRY_USER_ADMIN,
-  ],
-  [AppRoute.OPERATOR]: [UserRole.INDUSTRY_USER, UserRole.INDUSTRY_USER_ADMIN],
-  [AppRoute.OPERATORS]: [UserRole.CAS_ANALYST, UserRole.CAS_ADMIN],
-  [AppRoute.PROFILE]: [
-    UserRole.CAS_PENDING,
-    UserRole.CAS_ANALYST,
-    UserRole.CAS_ADMIN,
-    UserRole.INDUSTRY_USER,
-    UserRole.INDUSTRY_USER_ADMIN,
-    UserRole.NEW_USER,
-  ],
-  [AppRoute.USERS]: [UserRole.CAS_ADMIN, UserRole.INDUSTRY_USER_ADMIN],
-};
+import {
+  AppRole,
+  AppRoute,
+  appRouteRoles,
+  DataTestID,
+  UserOperatorStatus,
+  UserRole,
+} from "@/e2e/utils/enums";
+// 🥞 DB CRUD
+import {
+  upsertUserRecord,
+  upsertOperatorRecord,
+  upsertUserOperatorRecord,
+} from "@/e2e/utils/queries";
 // ℹ️ Environment variables
 import * as dotenv from "dotenv";
 dotenv.config({ path: "./e2e/.env.local" });
+
+// 📚 Declare a beforeAll hook that is executed once per worker process before all tests.
+// 🥞 Set DB for dashboard tiles
+/*
+For industry_user: allow access to route `dashboard/select-operator`
+- create user
+- create operator
+- create user operator
+*/
+test.beforeAll(async () => {
+  try {
+    // Scenario FrontEndRoles.INDUSTRY_USER where UserOperatorStatus.APPROVED && OperatorStatus.APPROVED;
+    // Upsert a User record: bc-cas-dev-secondary
+    await upsertUserRecord(UserRole.INDUSTRY_USER);
+    // Upsert an Operator record, using default values
+    await upsertOperatorRecord();
+    // Upsert an User Operator record: industry_user, operator id 2
+    await upsertUserOperatorRecord(
+      process.env.E2E_INDUSTRY_USER_GUID as string,
+      AppRole.ADMIN,
+      UserOperatorStatus.APPROVED,
+    );
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error("❌ Error in Db setup for dashboard:", error);
+    throw error;
+  }
+});
 
 // 🛠️ Function to build allow and deny lists based on current user role
 function buildAccessLists(currentRole: UserRole): AppRoute[] {
@@ -70,10 +75,11 @@ for (let [role, value] of Object.entries(UserRole)) {
     // 👤 run test as this role
     test.use({ storageState: storageState });
     test("Test Navigate to Routes", async ({ page }) => {
-      // 🚨 Build user role's allow and deny list
+      // 🚨 Build user role's allow list
       const accessLists = buildAccessLists(value);
       // 🛸 Navigate to all routes
       for (let route of Object.values(AppRoute)) {
+        // 🧩 Create instance of route's POM
         let pomPage;
         switch (route) {
           case AppRoute.DASHBOARD:
@@ -102,20 +108,55 @@ for (let [role, value] of Object.entries(UserRole)) {
             break;
         }
         if (pomPage) {
-          // 🛸 Navigate to page
-          await pomPage.route();
-          // 🔍 Assert that the current URL role access
           const isAllowedRoute = accessLists.includes(route);
-          if (isAllowedRoute) {
-            if (route === AppRoute.HOME) {
-              // authenticated users never get to home, redirected to dashboard
+          const timeOut = 11000;
+          // eslint-disable-next-line no-console
+          console.log(
+            `🚀 Route ${route} for ${value} has access ${isAllowedRoute}`,
+          );
+
+          // 🛸 Navigate to route
+          await pomPage.route();
+          if (value === UserRole.CAS_PENDING) {
+            // 👤 authenticated cas_pending have no role; so, redirected to dashboard...except for profile
+            if (route === AppRoute.PROFILE) {
+              // 🔍 Assert that the current URL ends with "/profile"
+              const profilePage = new ProfilePOM(page);
+              profilePage.urlIsCorrect();
+            } else {
+              // 🔍 Assert that the current URL ends with "/dashboard"
               const dashboardPage = new DashboardPOM(page);
               dashboardPage.urlIsCorrect();
-            } else {
-              await pomPage.urlIsCorrect();
             }
           } else {
-            await pomPage.page.waitForSelector(DataTestID.NOTFOUND); //the test will fail with a timeout error if no selector
+            if (isAllowedRoute) {
+              // 🔑 Accessible route
+              if (route === AppRoute.HOME) {
+                // 👤 authenticated users never get to home, redirected to dashboard
+                // 🔍 Assert that the current URL ends with "/dashboard"
+                const dashboardPage = new DashboardPOM(page);
+                dashboardPage.urlIsCorrect();
+              } else {
+                // 🔍 Assert that the role has access
+                await pomPage.urlIsCorrect();
+                // Wait for the selector to not be available with a timeout
+                await page.waitForSelector('[data-testid="not-found"]', {
+                  state: "hidden",
+                  timeout: timeOut,
+                });
+                // 🔍 Assert that the not-found selector is not available
+                const notFoundSelector = await page.$(
+                  '[data-testid="not-found"]',
+                );
+                expect(notFoundSelector).toBeFalsy();
+              }
+            } else {
+              // 🔒 Inaccessible route
+              // 🔍 Assert that the role has NO access, not-found selector is available
+              await pomPage.page.waitForSelector(DataTestID.NOTFOUND, {
+                timeout: timeOut,
+              });
+            }
           }
         }
       }
