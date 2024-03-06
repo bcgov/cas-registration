@@ -208,7 +208,7 @@ type UpsertUserOperatorValues = {
 
 // User Operator default values
 const defaultUserOperatorValues: UpsertUserOperatorValues = {
-  id: UserOperatorUUID.DEFAULT,
+  id: UserOperatorUUID.INDUSTRY_USER_ADMIN,
   operator_id: OperatorUUID.DEFAULT,
 };
 
