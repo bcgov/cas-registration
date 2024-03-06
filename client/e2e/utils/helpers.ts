@@ -170,3 +170,15 @@ export async function getAllFormInputs(page: Page) {
   const fields = await page.locator("input").all();
   return fields;
 }
+
+export async function downloadPDF(
+  page: Page,
+  linkName: string,
+  fileName: string,
+) {
+  const downloadPromise = page.waitForEvent("download"); // Start waiting for download before clicking.
+  await page.getByRole("link", { name: linkName }).click();
+  const download = await downloadPromise;
+  expect(download.suggestedFilename()).toContain(fileName);
+  await download.delete(); // Delete the downloaded file (cleanup)
+}
