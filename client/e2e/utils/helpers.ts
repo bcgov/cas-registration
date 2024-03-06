@@ -1,4 +1,4 @@
-import { Page } from "@playwright/test";
+import { Page, expect } from "@playwright/test";
 
 // 🛠️ Function: get all label elements with required field character * within form fieldset
 export async function getFieldRequired(page: Page) {
@@ -55,4 +55,16 @@ export async function fieldsUpdate(page: Page) {
 export async function getAllFormInputs(page: Page) {
   const fields = await page.locator("input").all();
   return fields;
+}
+
+export async function downloadPDF(
+  page: Page,
+  linkName: string,
+  fileName: string,
+) {
+  const downloadPromise = page.waitForEvent("download"); // Start waiting for download before clicking.
+  await page.getByRole("link", { name: linkName }).click();
+  const download = await downloadPromise;
+  expect(download.suggestedFilename()).toContain(fileName);
+  await download.delete(); // Delete the downloaded file (cleanup)
 }
