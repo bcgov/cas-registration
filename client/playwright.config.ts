@@ -35,6 +35,8 @@ export default defineConfig({
   },
   // 🚩 The globalSetup option in playwright.config.js allows you to specify a JavaScript file that will be executed ONCE before all test suites.
   globalSetup: require.resolve("e2e/setup/global.ts"),
+  snapshotPathTemplate:
+    "{testDir}/{testFileDir}/{testFileName}-snapshots/{arg}{-projectName}{ext}",
 
   /* Configure projects for major browsers */
   projects: [
