@@ -216,20 +216,10 @@ jobs:
           keycloak_client_id: ${{ env.KEYCLOAK_CLIENT_ID }}
           keycloak_client_secret: ${{ env.KEYCLOAK_CLIENT_SECRET }}
           nextauth_secret: ${{ env.NEXTAUTH_SECRET }}
-      - name: Install Playwright Browsers
+      - name: Install Playwright
         run: yarn playwright install --with-deps
         working-directory: ./client
-      # For our visual tests to work, we’ll need to store snapshots between runs. For this, we’ll cache them using Github’s “artifacts” feature.
-      - name: Set up cache
-        id: cache
-        uses: actions/cache@v2
-        with:
-          path: playwright/.test
-          key: ${{ runner.os }}-playwright-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-playwright-
       - name: Run Playwright Tests
-        continue-on-error: true
         run: |
           DEBUG=pw:browser npx playwright test --trace=on --workers=1 client/e2e/*
         env:
