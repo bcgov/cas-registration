@@ -66,7 +66,7 @@ test.describe("Test Workflow cas_admin", () => {
     await operatorsPage.operatorsViewIsCorrect("cas_admin", [
       "Declined",
       "Approved",
-      "Pending",
+      "Declined",
       "Pending",
       "Pending",
       "Pending",
@@ -137,7 +137,7 @@ test.describe("Test Workflow cas_admin", () => {
     await operatorsPage.clickOperatorsLink();
 
     // 🧪 cas_admin is able to click "View Details" on a pending operator and see detailed info about it (read only)
-    await clickViewDetailsButton(operatorsPage.page, 2); // PENDING operator(new operator)
+    await clickViewDetailsButton(operatorsPage.page, 3); // PENDING operator(new operator)
 
     await operatorsPage.clickExpandAllButton();
     await checkFormHeaders(operatorsPage.page, [
@@ -205,7 +205,7 @@ test.describe("Test Workflow cas_admin", () => {
     await operatorsPage.clickOperatorsLink();
 
     // 🧪 cas_admin is able to Decline new operator
-    await clickViewDetailsButton(operatorsPage.page, 2); // PENDING operator(another new operator)
+    await clickViewDetailsButton(operatorsPage.page, 4); // PENDING operator(another new operator)
 
     // New operator note is visible
     await operatorsPage.checkNewOperatorNote();
@@ -249,7 +249,7 @@ test.describe("Test Workflow cas_admin", () => {
     await operatorsPage.clickOperatorsLink();
 
     // 🧪 cas_admin is able to Approve admin request
-    await clickViewDetailsButton(operatorsPage.page, 3); // PENDING admin request (Existing operator)
+    await clickViewDetailsButton(operatorsPage.page, 4); // PENDING admin request (Existing operator)
 
     // Operator information header is collapsed
     await checkFormHeaderIsCollapsed(
@@ -277,7 +277,7 @@ test.describe("Test Workflow cas_admin", () => {
     await operatorsPage.clickOperatorsLink();
 
     // 🧪 cas_admin is able to Decline admin request
-    await clickViewDetailsButton(operatorsPage.page, 8); // PENDING admin request (Existing operator)
+    await clickViewDetailsButton(operatorsPage.page, 9); // PENDING admin request (Existing operator)
 
     await rejectButton.click(); // clicking admin access request rejection
     await expect(modal).toBeVisible();
