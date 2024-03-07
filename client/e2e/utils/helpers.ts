@@ -1,4 +1,6 @@
-import { Page, expect } from "@playwright/test";
+import { Page, expect, Locator } from "@playwright/test";
+// ☰ Enums
+import { DataTestID } from "@/e2e/utils/enums";
 
 // 🛠️ Function: get all label elements with required field character * within form fieldset
 export async function getFieldRequired(page: Page) {
@@ -67,4 +69,94 @@ export async function downloadPDF(
   const download = await downloadPromise;
   expect(download.suggestedFilename()).toContain(fileName);
   await download.delete(); // Delete the downloaded file (cleanup)
+}
+
+export async function tableColumnNamesAreCorrect(
+  page: Page,
+  expectedColumnNames: string[],
+) {
+  for (const columnName of expectedColumnNames) {
+    expect(
+      page.locator(".MuiDataGrid-columnHeaderTitle").getByText(columnName),
+    ).toBeVisible();
+  }
+}
+
+export async function clickViewDetailsButton(
+  page: Page,
+  childIndex: number = 0,
+) {
+  const viewDetailsButtons = page.getByRole("link", {
+    name: /view details/i,
+  });
+  await viewDetailsButtons.nth(childIndex).click();
+}
+
+export async function checkFormHeaders(page: Page, formHeaders: string[]) {
+  for (const header of formHeaders) {
+    await expect(page.getByRole("button", { name: header })).toBeVisible();
+  }
+}
+
+export async function checkFormHeaderIsCollapsed(
+  page: Page,
+  formHeader: string,
+) {
+  await expect(page.getByRole("button", { name: formHeader })).toHaveAttribute(
+    "aria-expanded",
+    "false",
+  );
+}
+
+export async function disabledAndNotEditable(fields: Locator[]) {
+  for (const field of fields) {
+    await expect(field).toBeDisabled();
+    await expect(field).not.toBeEditable();
+  }
+}
+
+export async function getModal(page: Page) {
+  return page.locator(DataTestID.MODAL);
+}
+
+export async function getModalConfirmButton(modal: Locator) {
+  return modal.locator("button[aria-label='Confirm']");
+}
+
+export async function getModalCancelButton(modal: Locator) {
+  return modal.locator("button[aria-label='Cancel']");
+}
+
+export async function getApproveButton(page: Page) {
+  const approveButton = page.locator(
+    "button[aria-label='Approve application']",
+  );
+  return approveButton;
+}
+
+export async function getRejectButton(page: Page) {
+  const rejectButton = page.locator("button[aria-label='Reject application']");
+  return rejectButton;
+}
+
+export async function checkLocatorsVisibility(
+  page: Page,
+  locators: Locator[],
+  visible: boolean = true,
+) {
+  for (const locator of locators) {
+    if (visible) {
+      await expect(locator).toBeVisible();
+    } else {
+      await expect(locator).not.toBeVisible();
+    }
+  }
+}
+
+export async function checkAlertMessage(
+  page: Page,
+  alertMessage: string | RegExp,
+  index: number = 0,
+) {
+  await expect(page.getByRole("alert").nth(index)).toHaveText(alertMessage);
 }

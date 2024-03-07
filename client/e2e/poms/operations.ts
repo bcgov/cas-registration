@@ -6,9 +6,10 @@
 import { Locator, Page, expect } from "@playwright/test";
 // ☰ Enums
 import { AppRoute, UserRole } from "@/e2e/utils/enums";
+// 🛠️ Helpers
+import { getAllFormInputs } from "@/e2e/utils/helpers";
 // ℹ️ Environment variables
 import * as dotenv from "dotenv";
-import { getAllFormInputs } from "@/e2e/utils/helpers";
 dotenv.config({ path: "./e2e/.env.local" });
 
 export class OperationsPOM {
@@ -52,26 +53,6 @@ export class OperationsPOM {
     await this.page.waitForSelector(".MuiDataGrid-root");
   }
 
-  async clickViewDetailsButton(childIndex: number = 0) {
-    const viewDetailsButtons = this.page.getByRole("link", {
-      name: /view details/i,
-    });
-    await viewDetailsButtons.nth(childIndex).click();
-  }
-
-  async columnNamesAreCorrect(expectedColumnNames: string[]) {
-    const columnNames = await this.page.$$eval(
-      ".MuiDataGrid-columnHeaderTitle",
-      (columns) =>
-        columns.map((column) => {
-          return column?.textContent?.trim();
-        }),
-    );
-    for (let i = 0; i < expectedColumnNames.length; i++) {
-      expect(columnNames[i]).toEqual(expectedColumnNames[i]);
-    }
-  }
-
   async operationsViewIsCorrect(role: string, expectedStatuses: string[]) {
     switch (role) {
       case UserRole.INDUSTRY_USER_ADMIN:
@@ -98,25 +79,6 @@ export class OperationsPOM {
     }
 
     expect(statuses).toStrictEqual(expectedStatuses);
-  }
-
-  async checkFormHeaders() {
-    await expect(
-      this.page.getByRole("button", { name: "Operator Information" }),
-    ).toBeVisible();
-    await expect(
-      this.page.getByRole("button", {
-        name: "Operation Information",
-      }),
-    ).toBeVisible();
-    await expect(
-      this.page.getByRole("button", { name: "Point of Contact" }),
-    ).toBeVisible();
-    await expect(
-      this.page.getByRole("button", {
-        name: "Statutory Declaration and Disclaimer",
-      }),
-    ).toBeVisible();
   }
 
   // 🔩 Below functions are specific to operation detail page
@@ -149,24 +111,7 @@ export class OperationsPOM {
     const requestChangesButton = this.page.locator(
       "button[aria-label='Request Changes']",
     );
-    await expect(requestChangesButton).toBeVisible();
     return requestChangesButton;
-  }
-
-  async getApproveButton() {
-    const approveButton = this.page.locator(
-      "button[aria-label='Approve application']",
-    );
-    await expect(approveButton).toBeVisible();
-    return approveButton;
-  }
-
-  async getRejectButton() {
-    const rejectButton = this.page.locator(
-      "button[aria-label='Reject application']",
-    );
-    await expect(rejectButton).toBeVisible();
-    return rejectButton;
   }
 
   async getConfirmChangeRequestButton() {
@@ -179,17 +124,5 @@ export class OperationsPOM {
 
   async getUndoChangeRequestButton() {
     return this.page.locator("button[aria-label='Undo Request Changes']");
-  }
-
-  async getModal() {
-    return this.page.locator("data-testid=modal");
-  }
-
-  async getModalConfirmButton(modal: Locator) {
-    return modal.locator("button[aria-label='Confirm']");
-  }
-
-  async getModalCancelButton(modal: Locator) {
-    return modal.locator("button[aria-label='Cancel']");
   }
 }
