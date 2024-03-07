@@ -230,7 +230,8 @@ jobs:
       # Generates new snapshots if they don’t exist
       - name: Initialize snapshots
         if: ${{steps.cache.outputs.cache-hit != 'true'}}
-        run: npx playwright test --update-snapshots
+        run: |
+          DEBUG=pw:browser npx playwright test --update-snapshots client/e2e/*
       - name: Run Playwright Tests
         continue-on-error: true
         run: |

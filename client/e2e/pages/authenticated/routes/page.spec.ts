@@ -29,7 +29,7 @@ For industry_user: create scenario for Operator Select\1 action pending
 test.beforeAll(async () => {
   try {
     await deleteUserOperatorRecord(
-      process.env.E2E_INDUSTRY_USER_GUID as string,
+      process.env.E2E_INDUSTRY_USER_GUID as string
     );
   } catch (error) {
     // eslint-disable-next-line no-console
@@ -94,11 +94,6 @@ for (let [role, value] of Object.entries(UserRole)) {
           // 🚨 Check if route is in the role's allow list
           const isAllowedRoute = accessLists.includes(route);
           const timeOut = 15000;
-          // eslint-disable-next-line no-console
-          console.log(
-            `🚀 Route ${route} for ${value} has access ${isAllowedRoute}`,
-          );
-
           // 🛸 Navigate to route
           await pomPage.route();
           // 📌 Some roles have exceptions to the expected results
@@ -144,7 +139,7 @@ for (let [role, value] of Object.entries(UserRole)) {
                       timeout: timeOut,
                     });
                     const notFoundSelector = await page.$(
-                      '[data-testid="not-found"]',
+                      '[data-testid="not-found"]'
                     );
                     expect(notFoundSelector).toBeFalsy();
                     break;

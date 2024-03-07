@@ -26,9 +26,9 @@ export default defineConfig({
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : undefined,
   /* Organize all of tests’ outputs into the `.test` directory */
-  outputDir: ".test/spec/output",
+  outputDir: "playwright/.test/spec/output",
   snapshotPathTemplate:
-    ".test/spec/snaps/{projectName}/{testFilePath}/{arg}{ext}",
+    "playwright/.test/spec/snaps/{projectName}/{testFilePath}/{arg}{ext}",
   testMatch: "*.spec.{ts,tsx}",
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [
