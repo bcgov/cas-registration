@@ -347,7 +347,6 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         assert len(response_data) == 1
 
     def test_get_user_operator_list_for_cas_users_when_operator_does_not_have_an_admin(self):
-
         operator = operator_baker()
         # unapproved admin request #1
         baker.make(UserOperator, operator=operator, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.PENDING)
@@ -396,13 +395,17 @@ class TestUserOperatorEndpoint(CommonTestSetup):
             self,
             'cas_admin',
             self.content_type,
-            {"status": UserOperator.Statuses.APPROVED, "user_operator_id": user_operator.id},
+            {
+                "role": UserOperator.Roles.REPORTER,
+                "status": UserOperator.Statuses.APPROVED,
+                "user_operator_id": user_operator.id,
+            },
             custom_reverse_lazy('update_user_operator_status'),
         )
         assert response_2.status_code == 200
         user_operator.refresh_from_db()  # refresh the user_operator object to get the updated status
         assert user_operator.status == UserOperator.Statuses.APPROVED
-        assert user_operator.role == UserOperator.Roles.ADMIN
+        assert user_operator.role == UserOperator.Roles.REPORTER
         assert user_operator.verified_by == self.user
 
     def test_user_operator_put_decline_rejects_everything(self):
@@ -434,6 +437,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         assert response_3.status_code == 200
         user_operator.refresh_from_db()  # refresh the user_operator object to get the updated status
         assert user_operator.status == UserOperator.Statuses.DECLINED
+        assert user_operator.role == UserOperator.Roles.PENDING
         assert user_operator.verified_by == self.user
         assert user_operator.operator.contacts.count() == 0
         assert Contact.objects.count() == 0
@@ -458,7 +462,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
             user=self.user,
             operator=operator,
             status=UserOperator.Statuses.PENDING,
-            role=UserOperator.Roles.ADMIN,
+            role=UserOperator.Roles.PENDING,
         ).exists()
 
         assert user_operator_exists, "UserOperator object was not created"
@@ -646,7 +650,6 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         assert response.status_code == 401
 
     def test_duplicates_not_allowed(self):
-
         operator = operator_baker()
 
         # duplicate CRA business number

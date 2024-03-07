@@ -2,7 +2,12 @@
 
 import { actionHandler } from "@/app/utils/actions";
 import Review from "app/components/button/Review";
-import { OperatorStatus, Status, UserOperatorStatus } from "@/app/utils/enums";
+import {
+  OperatorStatus,
+  Status,
+  UserOperatorRoles,
+  UserOperatorStatus,
+} from "@/app/utils/enums";
 import { UserOperatorFormData } from "@/app/components/form/formDataTypes";
 
 interface Props {
@@ -50,7 +55,11 @@ export default function UserOperatorReview({
         "PUT",
         "",
         {
-          body: JSON.stringify({ status, user_operator_id: userOperatorId }),
+          body: JSON.stringify({
+            role: UserOperatorRoles.ADMIN,
+            status,
+            user_operator_id: userOperatorId,
+          }),
         },
       );
       return response;

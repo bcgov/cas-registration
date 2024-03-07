@@ -32,6 +32,12 @@ export enum OperatorStatus {
   CHANGES_REQUESTED = "Changes Requested",
 }
 
+export enum UserOperatorRoles {
+  ADMIN = "admin",
+  REPORTER = "reporter",
+  PENDING = "pending",
+}
+
 export enum UserOperatorStatus {
   PENDING = "Pending",
   APPROVED = "Approved",

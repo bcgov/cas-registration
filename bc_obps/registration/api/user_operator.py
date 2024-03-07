@@ -269,7 +269,7 @@ def request_admin_access(request, payload: SelectOperatorIn):
                 return status, message
         # Making a pending UserOperator instance if one doesn't exist
         user_operator, created = UserOperator.objects.get_or_create(
-            user=user, operator=operator, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.PENDING
+            user=user, operator=operator, role=UserOperator.Roles.PENDING, status=UserOperator.Statuses.PENDING
         )
         if created:
             user_operator.set_create_or_update(user.pk)
@@ -296,7 +296,7 @@ def request_access(request, payload: SelectOperatorIn):
 
             # Making a draft UserOperator instance if one doesn't exist
             user_operator, created = UserOperator.objects.get_or_create(
-                user=user, operator=operator, status=UserOperator.Statuses.PENDING, role=UserOperator.Roles.REPORTER
+                user=user, operator=operator, status=UserOperator.Statuses.PENDING, role=UserOperator.Roles.PENDING
             )
             if created:
                 user_operator.set_create_or_update(user.pk)
@@ -391,22 +391,30 @@ def update_user_operator_status(request, payload: UserOperatorStatusUpdate):
     try:
         with transaction.atomic():
             user_operator.status = payload.status
+
+            operator: Operator = user_operator.operator
+            updated_role = payload.role
+
             if user_operator.status in [UserOperator.Statuses.APPROVED, UserOperator.Statuses.DECLINED]:
                 user_operator.verified_at = datetime.now(pytz.utc)
                 user_operator.verified_by_id = current_user.user_guid
 
-                # We need to adjust this role assignment in ticket #470
-                if user_operator.status == UserOperator.Statuses.APPROVED:
-                    user_operator.role = UserOperator.Roles.ADMIN
+                if (
+                    user_operator.status == UserOperator.Statuses.APPROVED
+                    and updated_role != UserOperator.Roles.PENDING
+                ):
+                    user_operator.role = updated_role
 
             elif user_operator.status == UserOperator.Statuses.PENDING:
                 user_operator.verified_at = None
                 user_operator.verified_by_id = None
+                user_operator.role = UserOperator.Roles.PENDING
 
             user_operator.save(update_fields=["status", "verified_at", "verified_by_id", "role"])
             user_operator.set_create_or_update(current_user.pk)
-
             if user_operator.status == UserOperator.Statuses.DECLINED:
+                # Set role to pending for now but we may want to add a new role for declined
+                user_operator.role = UserOperator.Roles.PENDING
                 # hard delete contacts (Senior Officers) associated with the operator and the user who requested access
                 user_operator.operator.contacts.filter(
                     created_by=user_operator.user, business_role=BusinessRole.objects.get(role_name='Senior Officer')
