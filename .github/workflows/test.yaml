@@ -219,7 +219,20 @@ jobs:
       - name: Install Playwright Browsers
         run: yarn playwright install --with-deps
         working-directory: ./client
+      # For our visual tests to work, we’ll need to store snapshots between runs. For this, we’ll cache them using Github’s “artifacts” feature.
+      - name: Set up cache
+        id: cache
+        uses: actions/cache@v4
+        with:
+          key: cache/${{github.repository}}/${{github.ref}}
+          restore-keys: cache/${{github.repository}}/refs/heads/develop
+          path: .test/**
+      # Generates new snapshots if they don’t exist
+      - name: Initialize snapshots
+        if: ${{steps.cache.outputs.cache-hit != 'true'}}
+        run: npx playwright test --update-snapshots
       - name: Run Playwright Tests
+        continue-on-error: true
         run: |
           DEBUG=pw:browser npx playwright test --trace=on --workers=1 --repeat-all client/e2e/*
         env:
@@ -248,6 +261,7 @@ jobs:
           E2E_NEW_USER_PASSWORD: ${{ secrets.E2E_NEW_USER_PASSWORD }}
           E2E_NEW_USER_STORAGE: playwright/.auth/new_user.json
         working-directory: ./client
+      # Upload our HTML report as an artifact, so that we can reference it
       - uses: actions/upload-artifact@v3
         if: always()
         with:

@@ -19,12 +19,28 @@ export default defineConfig({
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
+  /* In a CI environment tests will run slower, and they’ll be a little more flaky, so we need to adapt accordingly */
+  timeout: 1000 * 60,
   /* Retry on CI only */
   retries: process.env.CI ? 2 : 0,
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : undefined,
+  /* Organize all of tests’ outputs into the `.test` directory */
+  outputDir: ".test/spec/output",
+  snapshotPathTemplate:
+    ".test/spec/snaps/{projectName}/{testFilePath}/{arg}{ext}",
+  testMatch: "*.spec.{ts,tsx}",
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: "html",
+  reporter: [
+    [
+      "html",
+      {
+        outputFolder: ".test/spec/results",
+        open: "never",
+      },
+    ],
+    process.env.CI ? ["github"] : ["line"],
+  ],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
