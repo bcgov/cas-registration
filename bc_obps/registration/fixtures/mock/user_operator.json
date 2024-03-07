@@ -324,5 +324,27 @@
       "verified_by": null,
       "user_friendly_id": 27
     }
+  },
+  {
+    "model": "registration.useroperator",
+    "fields": {
+      "user": "00000000-0000-0000-0000-000000000025",
+      "operator": "f3e3e3e3-3e3e-3e3e-3e3e-3e3e3e3e3e3e",
+      "role": "admin",
+      "status": "Pending",
+      "verified_at": null,
+      "verified_by": null
+    }
+  },
+  {
+    "model": "registration.useroperator",
+    "fields": {
+      "user": "00000000-0000-0000-0000-000000000026",
+      "operator": "4a792f0f-cf9d-48c8-9a95-f504c5f84b12",
+      "role": "admin",
+      "status": "Pending",
+      "verified_at": null,
+      "verified_by": null
+    }
   }
 ]
