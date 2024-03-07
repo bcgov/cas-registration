@@ -83,7 +83,7 @@ test.describe("Test Workflow cas_admin", () => {
       "Pending",
       "Pending",
       "Pending",
-      "Approved",
+      "Pending",
     ]);
 
     // 🧪 cas_admin is able to click "View Details" on a declined operator and see detailed info about it (read only)
@@ -249,7 +249,7 @@ test.describe("Test Workflow cas_admin", () => {
     await operatorsPage.clickOperatorsLink();
 
     // 🧪 cas_admin is able to Approve admin request
-    await clickViewDetailsButton(operatorsPage.page, 2); // PENDING admin request (Existing operator)
+    await clickViewDetailsButton(operatorsPage.page, 3); // PENDING admin request (Existing operator)
 
     // Operator information header is collapsed
     await checkFormHeaderIsCollapsed(
@@ -277,7 +277,7 @@ test.describe("Test Workflow cas_admin", () => {
     await operatorsPage.clickOperatorsLink();
 
     // 🧪 cas_admin is able to Decline admin request
-    await clickViewDetailsButton(operatorsPage.page, 5); // PENDING admin request (Existing operator)
+    await clickViewDetailsButton(operatorsPage.page, 8); // PENDING admin request (Existing operator)
 
     await rejectButton.click(); // clicking admin access request rejection
     await expect(modal).toBeVisible();
