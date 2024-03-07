@@ -1,13 +1,13 @@
 "use client";
 
-import { GridRenderCellParams } from "@mui/x-data-grid/models/params/gridCellParams";
 import Button, { ButtonOwnProps } from "@mui/material/Button";
 import { actionHandler } from "@/app/utils/actions";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import DoNotDisturbIcon from "@mui/icons-material/DoNotDisturb";
 import { ReactNode } from "react";
 import { Stack } from "@mui/system";
-import { Status } from "@/app/utils/enums";
+import { UserOperatorRoles, Status } from "@/app/utils/enums";
+import { UserOperatorRenderCellParams } from "@/app/components/datagrid/cells/types";
 
 interface UserOperatorStatusAction {
   statusTo: Status;
@@ -16,30 +16,19 @@ interface UserOperatorStatusAction {
   icon?: ReactNode;
 }
 
-interface ButtonRenderCellParams extends GridRenderCellParams {
-  row: {
-    id: string;
-    name: string;
-    email: string;
-    business: string;
-    userRole: string;
-    status: Status;
-    actions: string;
-    userOperatorId: number;
-  };
-}
-
 const handleUpdateStatus = async (
   userOperatorId: number,
   statusUpdate: Status,
+  roleUpdate: UserOperatorRoles,
 ) => {
   try {
     return await actionHandler(
       `registration/select-operator/user-operator/update-status`,
       "PUT",
-      "/dashboard/users",
+      "",
       {
         body: JSON.stringify({
+          role: roleUpdate,
           status: statusUpdate,
           user_operator_id: userOperatorId,
         }),
@@ -50,12 +39,13 @@ const handleUpdateStatus = async (
   }
 };
 
-export async function ChangeUserOperatorStatusColumnCell(
-  params: Readonly<ButtonRenderCellParams>,
-) {
+const ChangeUserOperatorStatusColumnCell = (
+  params: UserOperatorRenderCellParams,
+) => {
   const userOperatorStatus = params.row.status;
   const userOperatorId = params.row.userOperatorId;
-
+  const accessType = params.row.accessType;
+  const userOperatorRole = accessType;
   const buttonsToShow = (status: Status): UserOperatorStatusAction[] => {
     if (status === Status.MYSELF) {
       return [];
@@ -92,9 +82,19 @@ export async function ChangeUserOperatorStatusColumnCell(
         <Button
           variant={item.title === "Undo" ? "text" : "outlined"}
           key={index}
-          onClick={async () =>
-            handleUpdateStatus(userOperatorId, item.statusTo)
-          }
+          onClick={async () => {
+            const res = await handleUpdateStatus(
+              userOperatorId,
+              item.statusTo,
+              userOperatorRole as UserOperatorRoles,
+            );
+            params.api.updateRows([
+              {
+                ...params.row,
+                status: res.status,
+              },
+            ]);
+          }}
           color={item.color}
           endIcon={item.icon}
         >
@@ -103,4 +103,6 @@ export async function ChangeUserOperatorStatusColumnCell(
       ))}
     </Stack>
   );
-}
+};
+
+export default ChangeUserOperatorStatusColumnCell;

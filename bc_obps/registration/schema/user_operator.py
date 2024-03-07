@@ -24,6 +24,7 @@ class PendingUserOperatorOut(ModelSchema):
 
 class UserOperatorStatusUpdate(ModelSchema):
     user_operator_id: Optional[UUID] = None
+    role: Optional[str] = None
 
     class Config:
         model = UserOperator
