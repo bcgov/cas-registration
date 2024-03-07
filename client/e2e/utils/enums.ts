@@ -28,6 +28,7 @@ export enum DataTestID {
   PROFILE = '[data-testid="nav-user-profile"]',
   CAS_ADMIN_OPERATION_APPROVED_MESSAGE = '[data-testid="cas-admin-operation-approved-message"]',
   CAS_ADMIN_OPERATION_DECLINED_MESSAGE = '[data-testid="cas-admin-operation-declined-message"]',
+  MODAL = '[data-testid="modal"]',
 }
 
 // 👋 keycloak selectors
