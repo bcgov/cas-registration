@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     "corsheaders",
     "localflavor",
     "registration.apps.RegistrationConfig",
+    "reporting.apps.ReportingConfig",
 ]
 
 
