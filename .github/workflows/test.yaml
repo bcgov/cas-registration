@@ -222,15 +222,16 @@ jobs:
       # For our visual tests to work, we’ll need to store snapshots between runs. For this, we’ll cache them using Github’s “artifacts” feature.
       - name: Set up cache
         id: cache
-        uses: actions/cache@v4
+        uses: actions/cache@v2
         with:
-          key: cache/${{github.repository}}/${{github.ref}}
-          restore-keys: cache/${{github.repository}}/refs/heads/develop
-          path: playwright/.test/**
+          path: playwright/.test
+          key: ${{ runner.os }}-playwright-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-playwright-
       - name: Run Playwright Tests
         continue-on-error: true
         run: |
-          DEBUG=pw:browser npx playwright test --trace=on --workers=1 --update-snapshots client/e2e/*
+          DEBUG=pw:browser npx playwright test --trace=on --workers=1 client/e2e/*
         env:
           API_URL: http://127.0.0.1:8000/api/
           DB_USER: postgres
@@ -257,12 +258,11 @@ jobs:
           E2E_NEW_USER_PASSWORD: ${{ secrets.E2E_NEW_USER_PASSWORD }}
           E2E_NEW_USER_STORAGE: playwright/.auth/new_user.json
         working-directory: ./client
-      # Upload our HTML report as an artifact, so that we can reference it
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v3
         if: always()
         with:
           name: playwright-report
-          path: playwright/.test/spec/results/
+          path: client/playwright-report
           retention-days: 30
   backend-tests:
     needs:
