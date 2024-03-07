@@ -36,7 +36,7 @@ export default defineConfig({
       "html",
       {
         outputFolder: ".test/spec/results",
-        open: "never",
+        open: process.env.CI ? "never" : "always",
       },
     ],
     process.env.CI ? ["github"] : ["line"],

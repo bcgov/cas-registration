@@ -226,16 +226,11 @@ jobs:
         with:
           key: cache/${{github.repository}}/${{github.ref}}
           restore-keys: cache/${{github.repository}}/refs/heads/develop
-          path: .test/**
-      # Generates new snapshots if they don’t exist
-      - name: Initialize snapshots
-        if: ${{steps.cache.outputs.cache-hit != 'true'}}
-        run: |
-          DEBUG=pw:browser npx playwright test --update-snapshots client/e2e/*
+          path: playwright/.test/**
       - name: Run Playwright Tests
         continue-on-error: true
         run: |
-          DEBUG=pw:browser npx playwright test --trace=on --workers=1 --repeat-all client/e2e/*
+          DEBUG=pw:browser npx playwright test --trace=on --workers=1 --update-snapshots client/e2e/*
         env:
           API_URL: http://127.0.0.1:8000/api/
           DB_USER: postgres
