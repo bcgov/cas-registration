@@ -4,7 +4,7 @@
     "fields": {
       "user": "00000000-0000-0000-0000-000000000001",
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
-      "role": "admin",
+      "role": "pending",
       "status": "Approved",
       "verified_at": "2024-02-26 06:24:57.293242-08",
       "verified_by": "ba2ba62a121842e0942aab9e92ce8822",
@@ -16,7 +16,7 @@
     "fields": {
       "user": "ba2ba62a121842e0942aab9e92ce8822",
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
-      "role": "admin",
+      "role": "pending",
       "status": "Approved",
       "verified_at": "2024-02-26 06:24:57.293242-08",
       "verified_by": "4da70f32-65fd-4137-87c1-111f2daba3dd",
@@ -29,9 +29,9 @@
       "user": "279c80cf57814c28872740a133d17c0d",
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
       "role": "pending",
-      "status": "Pending",
-      "verified_at": null,
-      "verified_by": null,
+      "status": "Declined",
+      "verified_at": "2024-02-27 06:24:57.293242-08",
+      "verified_by": "4da70f32-65fd-4137-87c1-111f2daba3dd",
       "user_friendly_id": 3
     }
   },
@@ -41,7 +41,7 @@
       "user": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
       "operator": "438eff6c-d2e7-40ab-8220-29d3a86ef314",
       "role": "pending",
-      "status": "Pending",
+      "status": "Approved",
       "verified_at": null,
       "verified_by": null,
       "user_friendly_id": 4
@@ -330,7 +330,7 @@
     "fields": {
       "user": "00000000-0000-0000-0000-000000000025",
       "operator": "f3e3e3e3-3e3e-3e3e-3e3e-3e3e3e3e3e3e",
-      "role": "admin",
+      "role": "pending",
       "status": "Pending",
       "verified_at": null,
       "verified_by": null
@@ -341,7 +341,7 @@
     "fields": {
       "user": "00000000-0000-0000-0000-000000000026",
       "operator": "4a792f0f-cf9d-48c8-9a95-f504c5f84b12",
-      "role": "admin",
+      "role": "pending",
       "status": "Pending",
       "verified_at": null,
       "verified_by": null
