@@ -221,7 +221,7 @@ jobs:
         working-directory: ./client
       - name: Run Playwright Tests
         run: |
-          DEBUG=pw:browser npx playwright test --trace=on --workers=1 client/e2e/*
+          DEBUG=pw:browser npx playwright test --trace=on --workers=1 --repeat-all client/e2e/*
         env:
           API_URL: http://127.0.0.1:8000/api/
           DB_USER: postgres
