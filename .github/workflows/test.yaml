@@ -220,12 +220,16 @@ jobs:
         run: yarn playwright install --with-deps
         working-directory: ./client
         # Configures caching for the playwright/.test directory
-      - name: Set up Playwright cache
+      - name: Set up Playwright Cache
         id: cache
         uses: actions/cache@v4
         with:
           key: cache/playwright-snapshots-${{ github.run_id }}
           path: playwright/.test/**
+        # Initialize snapshots only if cache miss
+      - name: Initialize Snapshots
+        if: ${{ steps.cache.outputs.cache-hit != 'true' }}
+        run: npx playwright test --update-snapshots client/e2e/*
         # Run Playwright Tests
       - name: Run Playwright Tests
         # Uploads report even if the tests fail
@@ -259,19 +263,19 @@ jobs:
           E2E_NEW_USER_STORAGE: playwright/.auth/new_user.json
         working-directory: ./client
       # Caches the snapshot files after the test execution
-      - name: Cache snapshot files
+      - name: Cache Snapshot Files
         if: always()
         uses: actions/cache@v4
         with:
-          key: snapshot-cache-${{ github.run_id }}
+          key: cache/playwright-snapshots-${{ github.run_id }}
           path: playwright/.test/**
       # Uploads the test report as an artifact
-      - name: Upload Playwright test report
-        uses: actions/upload-artifact@v3
+      - name: Upload Playwright Test Report
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: playwright-report
-          path: client/playwright-report
+          path: playwright/.test/spec/results/
           retention-days: 30
   backend-tests:
     needs:
