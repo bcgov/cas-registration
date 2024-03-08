@@ -13,8 +13,8 @@ baker.generators.add(CAPostalCodeField, TestUtils.mock_postal_code)
 class TestOperatorsEndpoint(CommonTestSetup):
     endpoint = CommonTestSetup.base_endpoint + "operators"
 
-    def setup(self):
-        super().setup()
+    def setup_method(self):
+        super().setup_method()
         self.operator = operator_baker()
         self.operator.legal_name = "Test Operator legal name"
         self.operator.cra_business_number = 111111111
