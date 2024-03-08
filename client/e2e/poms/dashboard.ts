@@ -19,12 +19,28 @@ export class DashboardPOM {
 
   readonly selectOperatorTile: Locator;
 
+  readonly operationsTile: Locator;
+
+  readonly operatorsTile: Locator;
+
+  readonly operatorsTileIndustry: Locator;
+
+  readonly reportProblemLink: Locator;
+
   constructor(page: Page) {
     this.page = page;
     this.msgPending = this.page.locator(DataTestID.MESSAGE_PENDING);
     this.selectOperatorTile = this.page.getByText(
-      "1 pending action(s) required",
+      "1 pending action(s) required"
     );
+
+    this.page = page;
+    this.operationsTile = page.getByRole("link", { name: /.*operations.*/i });
+    this.operatorsTile = page.getByRole("link", { name: /.*operator.*/i });
+    this.operatorsTileIndustry = page.locator("#My-Operator-link");
+    this.reportProblemLink = page.getByRole("link", {
+      name: "Report problems to GHGRegulator@gov.bc.ca",
+    });
   }
 
   async route() {
@@ -43,5 +59,17 @@ export class DashboardPOM {
 
   async clickSelectOperatorTile() {
     await this.selectOperatorTile.click();
+  }
+
+  async clickOperationsTile() {
+    await this.operationsTile.click();
+  }
+
+  async clickOperatorsTile() {
+    await this.operatorsTile.click();
+  }
+
+  async clickOperatorsTileIndustry() {
+    await this.operatorsTileIndustry.click();
   }
 }
