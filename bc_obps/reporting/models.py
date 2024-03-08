@@ -7,7 +7,7 @@ class Report(models.Model):
 
     class Meta:
         db_table_comment = "A table to store reports"
-        db_table = "erc.report"
+        db_table = 'erc"."report'
         app_label = 'reporting'
 
     def __str__(self):
