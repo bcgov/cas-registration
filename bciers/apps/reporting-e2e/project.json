@@ -1,0 +1,7 @@
+{
+  "name": "reporting-e2e",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/reporting-e2e/src",
+  "targets": {},
+  "implicitDependencies": ["reporting"]
+}
