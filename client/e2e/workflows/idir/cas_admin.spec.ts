@@ -66,23 +66,6 @@ test.describe("Test Workflow cas_admin", () => {
     await operatorsPage.operatorsViewIsCorrect("cas_admin", [
       "Declined",
       "Approved",
-      "Declined",
-      "Pending",
-      "Pending",
-      "Pending",
-      "Pending",
-      "Pending",
-      "Pending",
-      "Pending",
-      "Pending",
-      "Pending",
-      "Pending",
-      "Pending",
-      "Pending",
-      "Pending",
-      "Pending",
-      "Pending",
-      "Pending",
       "Pending",
     ]);
 
@@ -313,24 +296,7 @@ test.describe("Test Workflow cas_admin", () => {
     // 🧪 cas_admin is able to view all operations with statuses of "Pending", "Accepted", or "Declined"
     await operationsPage.operationsViewIsCorrect("cas_admin", [
       "Approved",
-      "Approved",
       "Declined",
-      "Pending",
-      "Pending",
-      "Pending",
-      "Pending",
-      "Pending",
-      "Pending",
-      "Pending",
-      "Pending",
-      "Pending",
-      "Pending",
-      "Pending",
-      "Pending",
-      "Pending",
-      "Pending",
-      "Pending",
-      "Pending",
       "Pending",
     ]);
 

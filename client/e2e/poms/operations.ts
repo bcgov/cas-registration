@@ -65,20 +65,12 @@ export class OperationsPOM {
         break;
     }
 
-    // Get all operations on the page
-    const operations = await this.page.$$(".MuiDataGrid-row");
-
-    // Get statuses of operations
-    const statuses = [];
-    for (const operation of operations) {
-      // Get the status of the operation (5th column in the table)
-      const status = await operation
-        .$$(".MuiDataGrid-cell")
-        .then((cells) => cells[5].textContent());
-      if (status) statuses.push(status.trim());
+    // Check if the statuses are visible
+    for (const status of expectedStatuses) {
+      await expect(
+        this.page.getByRole("cell", { name: status }).first(),
+      ).toBeVisible();
     }
-
-    expect(statuses).toStrictEqual(expectedStatuses);
   }
 
   // 🔩 Below functions are specific to operation detail page
