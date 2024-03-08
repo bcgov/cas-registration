@@ -1,0 +1,8 @@
+{
+  "name": "shared_components",
+  "$schema": "../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "shared_components/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {}
+}
