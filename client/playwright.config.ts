@@ -15,6 +15,8 @@ import { defineConfig, devices } from "@playwright/test";
  */
 export default defineConfig({
   testDir: "./e2e",
+  /* CI runs slower; so, increase timeout to avoid flakys */
+  timeout: 1000 * 60,
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
@@ -23,8 +25,22 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 0,
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : undefined,
+  /* Organize all of tests’ outputs into the `.test` directory */
+  outputDir: "playwright/.test/spec/output",
+  snapshotPathTemplate:
+    "playwright/.test/spec/snaps/{projectName}/{testFilePath}/{arg}{ext}",
+  testMatch: "*.spec.{ts,tsx}",
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: "html",
+  reporter: [
+    [
+      "html",
+      {
+        outputFolder: ".test/spec/results",
+        open: process.env.CI ? "never" : "always",
+      },
+    ],
+    process.env.CI ? ["github"] : ["line"],
+  ],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
