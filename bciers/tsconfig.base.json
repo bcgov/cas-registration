@@ -15,8 +15,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@bciers/shared_components": ["shared_components/src/index.ts"],
-      "@bciers/shared_components/server": ["shared_components/src/server.ts"]
+      "@bciers/components": ["libs/shared/components/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
