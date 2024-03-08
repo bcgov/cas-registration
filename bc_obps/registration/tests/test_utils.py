@@ -234,7 +234,7 @@ class TestCheckUserAdminRequestEligibility:
 
 
 class TestCheckIfRoleAuthorized(TestCase):
-    def setUp(self):
+    def setup_method(self, *args, **kwargs):
         # Every test needs access to the request factory.
         self.factory = RequestFactory()
         self.request = self.factory.get("/not/important")
