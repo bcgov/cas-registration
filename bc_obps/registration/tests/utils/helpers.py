@@ -140,7 +140,7 @@ class CommonTestSetup:
     pytestmark = pytest.mark.django_db  # This is used to mark a test function as requiring the database
     base_endpoint = BASE_ENDPOINT
 
-    def setup(self):
+    def setup_method(self):
         self.content_type = "application/json"
         self.user = baker.make(User, _fill_optional=True)  # Passing _fill_optional to fill all fields with random data
         self.auth_header = {'user_guid': str(self.user.user_guid)}
