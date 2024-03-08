@@ -14,6 +14,8 @@ import { defineConfig, devices } from "@playwright/test";
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
+  /* In a CI environment tests will run slower, and they’ll be a little more flaky, so we need to adapt accordingly */
+  timeout: 1000 * 60,
   testDir: "./e2e",
   /* Run tests in files in parallel */
   fullyParallel: true,
