@@ -3,7 +3,7 @@
  * Page objects model (POM) simplify test authoring by creating a higher-level API
  * POM simplify maintenance by capturing element selectors in one place and create reusable code to avoid repetition. *
  */
-import { Page, expect } from "@playwright/test";
+import { expect, Locator, Page } from "@playwright/test";
 // ☰ Enums
 import { AppRoute } from "@/e2e/utils/enums";
 // ℹ️ Environment variables
@@ -15,8 +15,27 @@ export class OperatorPOM {
 
   readonly url: string = process.env.E2E_BASEURL + AppRoute.OPERATOR;
 
+  readonly buttonEdit: Locator;
+
+  readonly buttonSaveAndReturn: Locator;
+
+  readonly editInformationNote =
+    /Please click on the "Edit Information" button/i;
+
+  readonly operatorFormTitle = /Operator Information/i;
+
+  readonly legalNameLabel = /Legal Name*/i;
+
   constructor(page: Page) {
     this.page = page;
+    this.buttonEdit = page.getByRole("button", {
+      name: /edit information/i,
+    });
+    this.buttonSaveAndReturn = page.getByRole("button", {
+      name: /save and return to dashboard/i,
+    });
+
+    this.legalNameField = page.getByLabel(this.legalNameLabel);
   }
 
   async route() {
@@ -27,5 +46,26 @@ export class OperatorPOM {
     const path = this.url;
     const currentUrl = await this.page.url();
     await expect(currentUrl.toLowerCase()).toMatch(path.toLowerCase());
+  }
+
+  async operatorViewIsCorrect() {
+    await expect(this.page.getByText(this.editInformationNote)).toBeVisible();
+    await expect(this.page.getByText(this.operatorFormTitle)).toBeVisible();
+    await expect(this.buttonEdit).toBeVisible();
+    await expect(this.buttonSaveAndReturn).toBeVisible();
+  }
+
+  async clickEditInformation() {
+    expect(this.buttonEdit).toBeEnabled();
+    await this.buttonEdit.click();
+  }
+
+  async clickSaveAndReturn() {
+    expect(this.buttonSaveAndReturn).toBeEnabled();
+    await this.buttonSaveAndReturn.click();
+  }
+
+  async editOperatorInformation() {
+    await this.legalNameField.fill("New Legal Name");
   }
 }

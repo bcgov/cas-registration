@@ -21,6 +21,8 @@ export class DashboardPOM {
 
   readonly operatorsTile: Locator;
 
+  readonly operatorsTileIndustry: Locator;
+
   readonly reportProblemLink: Locator;
 
   constructor(page: Page) {
@@ -31,6 +33,7 @@ export class DashboardPOM {
     this.operationsTile = page.getByRole("link", { name: /.*operations.*/i });
     this.operationsTile = page.getByRole("link", { name: "Operations ➤" });
     this.operatorsTile = page.getByRole("link", { name: "Operators ➤" });
+    this.operatorsTileIndustry = page.locator("#My-Operator-link");
     this.reportProblemLink = page.getByRole("link", {
       name: "Report problems to GHGRegulator@gov.bc.ca",
     });
@@ -56,5 +59,9 @@ export class DashboardPOM {
 
   async clickOperatorsTile() {
     await this.operatorsTile.click();
+  }
+
+  async clickOperatorsTileIndustry() {
+    await this.operatorsTileIndustry.click();
   }
 }
