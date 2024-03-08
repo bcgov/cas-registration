@@ -227,6 +227,11 @@ jobs:
       - name: Install Playwright Browsers
         run: yarn playwright install --with-deps
         working-directory: ./client
+      - name: Run Playwright Snapshots
+        run: |
+          if [ ${{ steps.playwright-cache.outputs.cache-hit != 'true' }} ] || [[ ${{ github.event.inputs.update-snapshots }} == 'true' ]]; then
+            DEBUG=pw:browser npx playwright test --update-snapshots client/e2e/*
+          fi
       - name: Run Playwright Tests
         run: |
           DEBUG=pw:browser npx playwright test --trace=on --workers=1 client/e2e/*
