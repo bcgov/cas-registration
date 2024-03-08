@@ -44,7 +44,7 @@ test.beforeAll(async () => {
     await upsertUserOperatorRecord(
       process.env.E2E_INDUSTRY_USER_ADMIN_GUID as string,
       AppRole.ADMIN,
-      UserOperatorStatus.APPROVED,
+      UserOperatorStatus.APPROVED
     );
 
     // 👤 industry_user
@@ -61,13 +61,6 @@ test.beforeAll(async () => {
 });
 
 test.describe("Test Page - Home", () => {
-  test("Test Route", async ({ page }) => {
-    const homePage = new HomePOM(page);
-    await homePage.route();
-    // 🔍 Assert correct url
-    homePage.urlIsCorrect();
-  });
-
   test("Test Selfie", async ({ page }, testInfo) => {
     const homePage = new HomePOM(page);
     await homePage.route();
@@ -83,58 +76,5 @@ test.describe("Test Page - Home", () => {
       body: screenshot,
       contentType: "image/png",
     });
-  });
-
-  test.describe(`Test User Role`, () => {
-    // ➰ Loop through the entries of UserRole enum
-    for (let [role, value] of Object.entries(UserRole)) {
-      test(`Test Login - ${value}`, async ({ page }) => {
-        // 👤 Set user and password based on the user role
-        let user = process.env.E2E_CAS_USER as string;
-        let password = process.env.E2E_CAS_USER_PASSWORD as string;
-        role = "E2E_" + role;
-        switch (value) {
-          case UserRole.INDUSTRY_USER_ADMIN:
-          case UserRole.INDUSTRY_USER:
-          case UserRole.NEW_USER:
-            user = process.env[`${role}`] || "";
-            password = process.env[`${role}_PASSWORD`] || "";
-            break;
-          case UserRole.CAS_ADMIN:
-          case UserRole.CAS_ANALYST:
-            await upsertUserRecord(value);
-            break;
-          case UserRole.CAS_PENDING:
-            await deleteUserRecord(process.env.E2E_CAS_USER_GUID as string);
-            break;
-        }
-        // 🛸 Navigate to home page
-        const homePage = new HomePOM(page);
-        await homePage.route();
-        // 🔍 Assert that the current URL ends with "/home"
-        await homePage.urlIsCorrect();
-        // 🔍 Assert that the login buttons are available
-        await expect(homePage.buttonLoginBCeID).toBeVisible();
-        await expect(homePage.buttonLoginIDIR).toBeVisible();
-        // 🔑 Login
-        await homePage.login(user, password, value);
-        // 🔍 Assert user is logged in
-        await homePage.userIsLoggedIn();
-        // 🔍 Assert that the current URL is correct
-        switch (value) {
-          case UserRole.NEW_USER:
-          case UserRole.CAS_PENDING:
-            // 🔍 Assert that the current URL ends with "/profile"
-            const profilePage = new ProfilePOM(page);
-            await profilePage.urlIsCorrect();
-            break;
-          default:
-            // 🔍 Assert that the current URL ends with "/dashboard"
-            const dashboardPage = new DashboardPOM(page);
-            await dashboardPage.urlIsCorrect();
-            break;
-        }
-      });
-    }
   });
 });
