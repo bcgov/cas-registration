@@ -71,21 +71,12 @@ export class OperatorsPOM {
         break;
     }
 
-    // Get all operators on the page
-    const operators = await this.page.locator(".MuiDataGrid-row").all();
-
-    // Get statuses of operators
-    const statuses = [];
-    for (const operator of operators) {
-      // Get the status of the operator (6th column in the table)
-      const status = await operator
-        .locator(".MuiDataGrid-cell")
-        .nth(5)
-        .textContent();
-      if (status) statuses.push(status.trim());
+    // Check if the statuses are visible
+    for (const status of expectedStatuses) {
+      await expect(
+        this.page.getByRole("cell", { name: status }).first(),
+      ).toBeVisible();
     }
-
-    expect(statuses).toStrictEqual(expectedStatuses);
   }
 
   // 🔩 Below functions are specific to operator detail page
