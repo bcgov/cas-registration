@@ -105,7 +105,7 @@ export default function Page() {
           </p>
         </section>
         <section>
-          {/*<h2 className={headerStyle}>
+          <h2 className={headerStyle}>
             How to apply for a B.C. OBPS Regulated Operation ID
           </h2>
           <ol>
@@ -114,7 +114,7 @@ export default function Page() {
             <li>
               Submit an application for each of your industrial operations.
             </li>
-          </ol>*/}
+          </ol>
           <p>
             Upon review, each eligible industrial operation will receive a BORO
             ID.
