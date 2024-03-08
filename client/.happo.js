@@ -9,10 +9,10 @@ module.exports = {
   apiSecret: process.env.HAPPO_API_SECRET,
   project: "cas-registration",
   targets: {
-    // chrome: new RemoteBrowserTarget("chrome", {
-    //   viewport: VIEWPORT,
-    //   maxHeight: MAXHEIGHT,
-    // }),
+    chrome: new RemoteBrowserTarget("chrome", {
+      viewport: VIEWPORT,
+      maxHeight: MAXHEIGHT,
+    }),
     firefox: new RemoteBrowserTarget("firefox", {
       viewport: VIEWPORT,
       maxHeight: MAXHEIGHT,
