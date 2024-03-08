@@ -924,7 +924,7 @@ class TestModelsWithAuditColumns(TestCase):
         (ParentOperator, 'legal_name', parent_operator_baker),
     ]
 
-    def setUp(self):
+    def setup_method(self, *args, **kwargs):
         [self.user_1, self.user_2] = baker.make(User, _quantity=2)
 
     def test_set_audit_columns(self):
