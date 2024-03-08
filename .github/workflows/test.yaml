@@ -219,19 +219,18 @@ jobs:
       - name: Install Playwright
         run: yarn playwright install --with-deps
         working-directory: ./client
-      # Docker layers cached during the frontend build will be utilized during the Playwright tests
-      - name: Set up cache
+        # Configures caching for the playwright/.test directory
+      - name: Set up Playwright cache
         id: cache
         uses: actions/cache@v4
         with:
-          key: cache/${{ github.repository }}/${{ github.ref }}
-          restore-keys: cache/${{ github.repository }}/refs/heads/master
+          key: cache/playwright-snapshots-${{ github.run_id }}
           path: playwright/.test/**
-      # Initialize snapshots only if cache miss
+        # Initialize snapshots only if cache miss
       - name: Initialize snapshots
         if: ${{ steps.cache.outputs.cache-hit != 'true' }}
         run: npx playwright test --update-snapshots client/e2e/*
-      # Run Playwright Tests
+        # Run Playwright Tests
       - name: Run Playwright Tests
         # Uploads report even if the tests fail
         continue-on-error: true
@@ -263,7 +262,16 @@ jobs:
           E2E_NEW_USER_PASSWORD: ${{ secrets.E2E_NEW_USER_PASSWORD }}
           E2E_NEW_USER_STORAGE: playwright/.auth/new_user.json
         working-directory: ./client
-      - uses: actions/upload-artifact@v3
+      # Caches the snapshot files after the test execution
+      - name: Cache snapshot files
+        if: always()
+        uses: actions/cache@v4
+        with:
+          key: snapshot-cache-${{ github.run_id }}
+          path: playwright/.test/**
+      # Uploads the test report as an artifact
+      - name: Upload Playwright test report
+        uses: actions/upload-artifact@v3
         if: always()
         with:
           name: playwright-report
