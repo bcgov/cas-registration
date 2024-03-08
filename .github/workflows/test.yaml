@@ -216,7 +216,7 @@ jobs:
           keycloak_client_id: ${{ env.KEYCLOAK_CLIENT_ID }}
           keycloak_client_secret: ${{ env.KEYCLOAK_CLIENT_SECRET }}
           nextauth_secret: ${{ env.NEXTAUTH_SECRET }}
-      - name: Install Playwright Browsers
+      - name: Install Playwright
         run: yarn playwright install --with-deps
         working-directory: ./client
       - name: Run Playwright Tests
