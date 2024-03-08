@@ -226,16 +226,12 @@ jobs:
         with:
           key: cache/playwright-snapshots-${{ github.run_id }}
           path: playwright/.test/**
-        # Initialize snapshots only if cache miss
-      - name: Initialize snapshots
-        if: ${{ steps.cache.outputs.cache-hit != 'true' }}
-        run: npx playwright test --update-snapshots client/e2e/*
         # Run Playwright Tests
       - name: Run Playwright Tests
         # Uploads report even if the tests fail
         continue-on-error: true
         run: |
-          DEBUG=pw:browser npx playwright test --trace=on --workers=1 client/e2e/*
+          DEBUG=pw:browser npx playwright test --trace=on --workers=1 --update-snapshots client/e2e/*
         env:
           API_URL: http://127.0.0.1:8000/api/
           DB_USER: postgres
