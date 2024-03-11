@@ -48,8 +48,6 @@ test.describe("Test Workflow industry_user_admin", () => {
     await operatorPage.editOperatorInformation();
     await operatorPage.clickSaveAndReturn();
 
-    // TODO: Figure out why this timeout is required
-    await page.waitForTimeout(2000);
     await dashboardPage.dashboardTilesAreVisibleIndustryAdmin();
 
     // Verify that we have returned to the dashboard

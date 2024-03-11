@@ -72,6 +72,7 @@ export class OperatorPOM {
   async clickSaveAndReturn() {
     expect(this.buttonSaveAndReturn).toBeEnabled();
     await this.buttonSaveAndReturn.click();
+    await this.page.waitForLoadState("networkidle");
   }
 
   async editOperatorInformation() {
