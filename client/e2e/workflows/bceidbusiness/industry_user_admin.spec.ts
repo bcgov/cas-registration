@@ -39,13 +39,17 @@ test.describe("Test Workflow industry_user_admin", () => {
     await operatorPage.urlIsCorrect();
     await operatorPage.operatorViewIsCorrect();
 
+    // industry_user_admin is able to view read only user operator form
+    await operatorPage.operatorFormIsDisabled();
+
     // industry_user_admin is able to edit the operator form
     await operatorPage.clickEditInformation();
     await operatorPage.editOperatorInformation();
     await operatorPage.clickSaveAndReturn();
 
-    // There may be a better wait to wait for the redirect than using this wait
+    // TODO: Figure out why this timeout is required
     await page.waitForTimeout(2000);
+    await dashboardPage.dashboardTilesAreVisibleIndustryAdmin();
 
     // Verify that we have returned to the dashboard
     await dashboardPage.urlIsCorrect();

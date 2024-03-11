@@ -55,9 +55,18 @@ export class OperatorPOM {
     await expect(this.buttonSaveAndReturn).toBeVisible();
   }
 
+  async operatorFormIsDisabled() {
+    await expect(this.legalNameField).toBeDisabled();
+  }
+
+  async operatorFormIsEnabled() {
+    await expect(this.legalNameField).toBeEnabled();
+  }
+
   async clickEditInformation() {
     expect(this.buttonEdit).toBeEnabled();
     await this.buttonEdit.click();
+    expect(this.operatorFormIsEnabled).toBeTruthy();
   }
 
   async clickSaveAndReturn() {
