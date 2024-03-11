@@ -3,11 +3,13 @@
 import { test } from "@playwright/test";
 // 🪄 Page Object Models
 import { DashboardPOM } from "@/e2e/poms/dashboard";
+import { OperationPOM } from "@/e2e/poms/operation";
+import { OperationsPOM } from "@/e2e/poms/operations";
 import { OperatorPOM } from "@/e2e/poms/operator";
 // 🛠️ Helpers
+import { tableColumnNamesAreCorrect } from "@/e2e/utils/helpers";
 import * as dotenv from "dotenv";
 dotenv.config({ path: "./e2e/.env.local" });
-// 🛠️ Helpers
 
 // 🏷 Annotate test suite as serial
 test.describe.configure({ mode: "serial" });
@@ -47,5 +49,73 @@ test.describe("Test Workflow industry_user_admin", () => {
 
     // Verify that we have returned to the dashboard
     await dashboardPage.urlIsCorrect();
+  });
+
+  test("Operations Tile Start Registration workflow", async ({ page }) => {
+    // 🛸 Navigate to operations tile page
+    const dashboardPage = new DashboardPOM(page);
+    const operationPage = new OperationPOM(page);
+    const operationsPage = new OperationsPOM(page);
+    await dashboardPage.route();
+
+    // Click Operations tile and view the Operations form
+    await dashboardPage.clickOperationsTileIndustry();
+    await operationsPage.urlIsCorrect();
+    await operationsPage.operationsTableIsVisible();
+
+    // industry_admin is able to view operations table with the following columns
+    await tableColumnNamesAreCorrect(operationsPage.page, [
+      "BC GHG ID",
+      "Operation",
+      "Submission Date",
+      "BORO ID",
+      "Application Status",
+      "Action",
+    ]);
+
+    // commenting this out as it breaks if we re-run the test locally due to status changes
+    // await operationsPage.operationsViewIsCorrect(UserRole.INDUSTRY_USER_ADMIN, [
+    //   "Not Started",
+    //   "Approved",
+    //   "Draft",
+    //   "Pending",
+    //   "Pending",
+    //   "Pending",
+    //   "Pending",
+    //   "Pending",
+    //   "Pending",
+    //   "Pending",
+    //   "Pending",
+    //   "Pending",
+    //   "Pending",
+    //   "Pending",
+    // ]);
+
+    // industry_user_admin is able to click the Add Operation button
+    await operationsPage.clickAddOperationButton();
+
+    // Verify that we are on the operation detail page
+    await operationPage.operationFormIsVisible();
+
+    // Fill page 1 and click save and continue to move to the next step
+    await operationPage.fillOperationFormPage1();
+    await operationPage.clickSaveAndContinue();
+    await operationPage.operationFormStep2IsVisible();
+
+    // Fill page 2 and click save and continue to move to the next step
+    await operationPage.fillOperationFormPage2();
+    await operationPage.clickSaveAndContinue();
+    await operationPage.operationFormStep3IsVisible();
+
+    // Fill page 3 and click save and continue to move to the next step
+    await operationPage.addFile();
+    await operationPage.clickSubmit();
+
+    // Verify that the submission was successful
+    await operationPage.operationSuccessfulSubmissionIsVisible();
+    await operationPage.clickReturnToOperationsList();
+
+    // Verify that we have returned to the operations table
+    await operationsPage.operationsTableIsVisible();
   });
 });

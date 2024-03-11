@@ -54,6 +54,7 @@ const SelectWidget: React.FC<WidgetProps> = (props) => {
       <Select
         labelId={id}
         value={value || ""}
+        data-testid={id}
         id={id}
         disabled={disabled || readonly}
         name={id}

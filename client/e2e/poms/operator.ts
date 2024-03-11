@@ -41,7 +41,7 @@ export class OperatorPOM {
 
   readonly operatorFormTitle = /Operator Information/i;
 
-  readonly legalNameLabel = /Legal Name*/i;
+  readonly legalNameField: Locator;
 
   readonly legalNameField: Locator;
 
@@ -78,7 +78,7 @@ export class OperatorPOM {
       name: /save and return to dashboard/i,
     });
 
-    this.legalNameField = page.getByLabel(this.legalNameLabel);
+    this.legalNameField = page.getByLabel(/Legal Name*/i);
   }
 
   async route() {
