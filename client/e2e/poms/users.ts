@@ -26,6 +26,6 @@ export class UsersPOM {
   async urlIsCorrect() {
     const path = this.url;
     const currentUrl = await this.page.url();
-    await expect(currentUrl.toLowerCase()).toMatch(path.toLowerCase());
+    expect(currentUrl.toLowerCase()).toMatch(path.toLowerCase());
   }
 }
