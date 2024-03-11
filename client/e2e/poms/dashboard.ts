@@ -64,6 +64,21 @@ export class DashboardPOM {
     await this.selectOperatorTile.click();
   }
 
+  async dashboardTilesAreVisibleIndustryAdmin() {
+    expect(
+      this.page.getByRole("heading", { name: "My Operator" })
+    ).toBeVisible();
+    expect(
+      this.page.getByRole("heading", { name: "My Operations" })
+    ).toBeVisible();
+    expect(
+      this.page.getByRole("heading", { name: "User Access Management" })
+    ).toBeVisible();
+    expect(
+      this.page.getByRole("heading", { name: "Report a Problem" })
+    ).toBeVisible();
+  }
+
   async clickOperationsTile() {
     await this.operationsTile.click();
   }
