@@ -26,7 +26,10 @@ const MultiStepHeader = ({ step, steps }: MultiStepHeaderProps) => {
             >
               {i + 1}
             </div>
-            <div className={`multistep-header-title ml-4 h-min ${titleWidth}`}>
+            <div
+              className={`ml-4 h-min ${titleWidth}`}
+              data-testid="multistep-header-title"
+            >
               {steps[i]}
             </div>
 
