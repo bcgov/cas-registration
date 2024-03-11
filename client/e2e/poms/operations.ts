@@ -26,6 +26,8 @@ export class OperationsPOM {
 
   readonly buttonSubmit: Locator;
 
+  readonly buttonAddOperation: Locator;
+
   constructor(page: Page) {
     this.page = page;
     this.buttonAdd = page.getByRole("button", {
@@ -36,6 +38,9 @@ export class OperationsPOM {
     });
     this.buttonSubmit = page.getByRole("button", {
       name: /submit/i,
+    });
+    this.buttonAddOperation = page.getByRole("button", {
+      name: /add operation/i,
     });
   }
 
@@ -54,10 +59,12 @@ export class OperationsPOM {
   }
 
   async operationsViewIsCorrect(role: string, expectedStatuses: string[]) {
+    let statusIndex = 5;
     switch (role) {
       case UserRole.INDUSTRY_USER_ADMIN:
       case UserRole.INDUSTRY_USER:
-        // later
+        // The status column is different for industry users
+        statusIndex = 4;
         break;
       default:
         await expect(this.page.getByText(this.internalNote)).toBeVisible();
@@ -74,7 +81,7 @@ export class OperationsPOM {
       // Get the status of the operation (5th column in the table)
       const status = await operation
         .$$(".MuiDataGrid-cell")
-        .then((cells) => cells[5].textContent());
+        .then((cells) => cells[statusIndex].textContent());
       if (status) statuses.push(status.trim());
     }
 
@@ -101,10 +108,20 @@ export class OperationsPOM {
     for (const field of allFormFields) await expect(field).not.toBeVisible();
   }
 
+  async clickAddOperationButton() {
+    // Click Add Operation button
+    await this.buttonAddOperation.click();
+  }
+
   async clickOperationsLink() {
     // Click Operations link on the breadcrumb and wait for the operations table to load
     await this.page.getByRole("link", { name: "Operations" }).click();
     await this.page.waitForSelector(".MuiDataGrid-root");
+  }
+
+  async clickStartRegistrationLink() {
+    // Click Start Registration link
+    await this.page.getByRole("link", { name: "Start Registration" }).click();
   }
 
   async getRequestChangesButton() {
