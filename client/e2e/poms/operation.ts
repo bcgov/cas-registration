@@ -36,9 +36,15 @@ export class OperationPOM {
     this.buttonSaveAndContinue = page.getByRole("button", {
       name: /save and continue/i,
     });
-    this.operationPage1Title = page.getByLabel("Operation Information");
-    this.operationPage2Title = page.getByLabel("Point of Contact");
-    this.operationPage3Title = page.getByLabel("Statutory Declaration");
+    this.operationPage1Title = page
+      .getByTestId("field-template-label")
+      .getByText("Operation Information");
+    this.operationPage2Title = page
+      .getByTestId("field-template-label")
+      .getByText("Point of Contact");
+    this.operationPage3Title = page
+      .getByTestId("field-template-label")
+      .getByText("Statutory Declaration");
     this.buttonCancel = page.getByRole("button", {
       name: /cancel/i,
     });
@@ -59,63 +65,75 @@ export class OperationPOM {
 
   async urlIsCorrect() {
     const path = this.url;
-    const currentUrl = await this.page.url();
-    await expect(currentUrl.toLowerCase()).toMatch(path.toLowerCase());
+    const currentUrl = this.page.url();
+    expect(currentUrl.toLowerCase()).toMatch(path.toLowerCase());
   }
 
   async operationFormIsVisible() {
     await this.page.waitForSelector("form");
-    await this.operationPage1Title;
+    await expect(this.operationPage1Title).toBeVisible();
+
     // Check for the presence of the multistep form headers
-    await this.page.locator(
-      ".multistep-header-title[text()='Operation Information']",
-    );
-    await this.page.locator(
-      ".multistep-header-title[text()='Point of Contact']",
-    );
-    await this.page.locator(
-      ".multistep-header-title[text()='Statutory Declaration']",
-    );
+    expect(
+      this.page
+        .getByTestId("multistep-header-title")
+        .getByText("Operation Information"),
+    ).toBeVisible();
+    expect(
+      this.page
+        .getByTestId("multistep-header-title")
+        .getByText("Point of Contact"),
+    ).toBeVisible();
+    expect(
+      this.page
+        .getByTestId("multistep-header-title")
+        .getByText("Statutory Declaration"),
+    ).toBeVisible();
   }
 
   async operationFormStep2IsVisible() {
-    await this.operationPage2Title;
+    await expect(this.operationPage2Title).toBeVisible();
   }
 
   async operationFormStep3IsVisible() {
-    await this.operationPage3Title;
+    await expect(this.operationPage3Title).toBeVisible();
   }
 
   async operationSuccessfulSubmissionIsVisible() {
-    await this.page.getByText(
+    this.page.getByText(
       "Your application for the B.C. OBPS Regulated Operation ID for Test Operation Name has been received.",
     );
-    await this.page.getByText(
+    this.page.getByText(
       "Once approved, you will receive a confirmation email.",
     );
-    await this.page.getByText(
+    this.page.getByText(
       "You can then log back in and view the B.C. OBPS Regulated Operation ID for Test Operation Name.",
     );
   }
 
   async clickCancelButton() {
     await this.buttonCancel.click();
+    await this.page.waitForLoadState("networkidle");
   }
 
   async clickNextButton() {
     await this.buttonNext.click();
+    await this.page.waitForLoadState("networkidle");
   }
 
   async clickReturnToOperationsList() {
     await this.returnToOperationsListButton.click();
+    await this.page.waitForLoadState("networkidle");
   }
 
   async clickSaveAndContinue() {
     await this.buttonSaveAndContinue.click();
+    await this.page.waitForLoadState("networkidle");
   }
 
   async clickSubmitButton() {
     await this.buttonSubmit.click();
+    await this.page.waitForLoadState("networkidle");
   }
 
   async fillOperationFormPage1() {
