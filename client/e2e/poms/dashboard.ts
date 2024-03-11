@@ -29,6 +29,8 @@ export class DashboardPOM {
 
   readonly reportProblemLink: Locator;
 
+  readonly userAccessManagementTile: Locator;
+
   constructor(page: Page) {
     this.page = page;
     this.msgPending = this.page.locator(DataTestID.MESSAGE_PENDING);
@@ -44,6 +46,9 @@ export class DashboardPOM {
     this.reportProblemLink = page.getByRole("link", {
       name: "Report problems to GHGRegulator@gov.bc.ca",
     });
+    this.userAccessManagementTile = page.locator(
+      "#User-Access-Management-link",
+    );
   }
 
   async route() {
@@ -81,17 +86,26 @@ export class DashboardPOM {
 
   async clickOperationsTile() {
     await this.operationsTile.click();
+    await this.page.waitForLoadState("networkidle");
   }
 
   async clickOperationsTileIndustry() {
     await this.operationsTileIndustry.click();
+    await this.page.waitForLoadState("networkidle");
   }
 
   async clickOperatorsTile() {
     await this.operatorsTile.click();
+    await this.page.waitForLoadState("networkidle");
   }
 
   async clickOperatorsTileIndustry() {
     await this.operatorsTileIndustry.click();
+    await this.page.waitForLoadState("networkidle");
+  }
+
+  async clickUserAccessManagementTileIndustry() {
+    await this.userAccessManagementTile.click();
+    await this.page.waitForLoadState("networkidle");
   }
 }

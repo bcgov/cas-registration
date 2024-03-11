@@ -6,6 +6,7 @@ import { DashboardPOM } from "@/e2e/poms/dashboard";
 import { OperationPOM } from "@/e2e/poms/operation";
 import { OperationsPOM } from "@/e2e/poms/operations";
 import { OperatorPOM } from "@/e2e/poms/operator";
+import { UsersPOM } from "@/e2e/poms/users";
 // 🛠️ Helpers
 import { tableColumnNamesAreCorrect } from "@/e2e/utils/helpers";
 import * as dotenv from "dotenv";
@@ -161,5 +162,26 @@ test.describe("Test Workflow industry_user_admin", () => {
 
     // Verify that we have returned to the operations table
     await operationsPage.operationsTableIsVisible();
+  });
+
+  test("User Access Management Tile workflow", async ({ page }) => {
+    // 🛸 Navigate to user access management tile page
+    const dashboardPage = new DashboardPOM(page);
+    const userPage = new UsersPOM(page);
+    await dashboardPage.route();
+
+    // Click User Access Management tile and view the User Access Management form
+    await dashboardPage.clickUserAccessManagementTileIndustry();
+    await userPage.urlIsCorrect();
+
+    // industry_admin is able to view User Access Management table with the following columns
+    await tableColumnNamesAreCorrect(userPage.page, [
+      "User ID",
+      "Name",
+      "Email",
+      "BCeID Business",
+      "Access Type",
+      "Status",
+    ]);
   });
 });
