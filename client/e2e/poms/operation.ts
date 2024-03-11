@@ -15,7 +15,13 @@ export class OperationPOM {
 
   readonly url: string = process.env.E2E_BASEURL + AppRoute.OPERATION;
 
+  readonly buttonCancel: Locator;
+
+  readonly buttonNext: Locator;
+
   readonly buttonSaveAndContinue: Locator;
+
+  readonly buttonSubmit: Locator;
 
   readonly operationPage1Title: Locator;
 
@@ -25,8 +31,6 @@ export class OperationPOM {
 
   readonly returnToOperationsListButton: Locator;
 
-  readonly submitButton: Locator;
-
   constructor(page: Page) {
     this.page = page;
     this.buttonSaveAndContinue = page.getByRole("button", {
@@ -35,7 +39,13 @@ export class OperationPOM {
     this.operationPage1Title = page.getByLabel("Operation Information");
     this.operationPage2Title = page.getByLabel("Point of Contact");
     this.operationPage3Title = page.getByLabel("Statutory Declaration");
-    this.submitButton = page.getByRole("button", {
+    this.buttonCancel = page.getByRole("button", {
+      name: /cancel/i,
+    });
+    this.buttonNext = page.getByRole("button", {
+      name: /next/i,
+    });
+    this.buttonSubmit = page.getByRole("button", {
       name: /submit/i,
     });
     this.returnToOperationsListButton = page.getByRole("button", {
@@ -88,6 +98,14 @@ export class OperationPOM {
     );
   }
 
+  async clickCancelButton() {
+    await this.buttonCancel.click();
+  }
+
+  async clickNextButton() {
+    await this.buttonNext.click();
+  }
+
   async clickReturnToOperationsList() {
     await this.returnToOperationsListButton.click();
   }
@@ -96,8 +114,8 @@ export class OperationPOM {
     await this.buttonSaveAndContinue.click();
   }
 
-  async clickSubmit() {
-    await this.submitButton.click();
+  async clickSubmitButton() {
+    await this.buttonSubmit.click();
   }
 
   async fillOperationFormPage1() {
