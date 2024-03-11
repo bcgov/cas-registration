@@ -113,11 +113,52 @@ test.describe("Test Workflow industry_user_admin", () => {
 
     // Fill page 3 and click save and continue to move to the next step
     await operationPage.addFile();
-    await operationPage.clickSubmit();
+    await operationPage.clickSubmitButton();
 
     // Verify that the submission was successful
     await operationPage.operationSuccessfulSubmissionIsVisible();
     await operationPage.clickReturnToOperationsList();
+
+    // Verify that we have returned to the operations table
+    await operationsPage.operationsTableIsVisible();
+  });
+
+  test("Operations Tile View Details workflow", async ({ page }) => {
+    // 🛸 Navigate to operations tile page
+    const dashboardPage = new DashboardPOM(page);
+    const operationPage = new OperationPOM(page);
+    const operationsPage = new OperationsPOM(page);
+    await dashboardPage.route();
+
+    // Click Operations tile and view the Operations form
+    await dashboardPage.clickOperationsTileIndustry();
+    await operationsPage.urlIsCorrect();
+    await operationsPage.operationsTableIsVisible();
+
+    // industry_admin is able to view operations table with the following columns
+    await tableColumnNamesAreCorrect(operationsPage.page, [
+      "BC GHG ID",
+      "Operation",
+      "Submission Date",
+      "BORO ID",
+      "Application Status",
+      "Action",
+    ]);
+
+    // industry_user_admin is able to click the View Details button
+    await operationsPage.clickViewDetailsButton();
+
+    // Verify that we are on the operation detail page
+    await operationPage.operationFormIsVisible();
+    await operationPage.clickNextButton();
+
+    // Verify that we are on the operation detail page step 2
+    await operationPage.operationFormStep2IsVisible();
+    await operationPage.clickNextButton();
+
+    // Verify that we are on the operation detail page step 3
+    await operationPage.operationFormStep3IsVisible();
+    await operationPage.clickCancelButton();
 
     // Verify that we have returned to the operations table
     await operationsPage.operationsTableIsVisible();

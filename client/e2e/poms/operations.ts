@@ -124,6 +124,15 @@ export class OperationsPOM {
     await this.page.getByRole("link", { name: "Start Registration" }).click();
   }
 
+  async clickViewDetailsButton(childIndex: number = 0) {
+    const viewDetailsButtons = await this.page
+      .getByRole("link", {
+        name: /view details/i,
+      })
+      .all();
+    await viewDetailsButtons[childIndex].click();
+  }
+
   async getRequestChangesButton() {
     const requestChangesButton = this.page.locator(
       "button[aria-label='Request Changes']",
