@@ -59,6 +59,7 @@ const ComboBox: React.FC<WidgetProps> = ({
       renderInput={(params) => (
         <TextField
           {...params}
+          data-testid={id}
           placeholder={uiSchema?.["ui:placeholder"] ?? ""}
         />
       )}
