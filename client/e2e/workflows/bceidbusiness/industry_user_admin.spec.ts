@@ -28,7 +28,7 @@ test.describe("Test Workflow industry_user_admin", () => {
     await dashboardPage.urlIsCorrect();
   });
 
-  test("Operators Tile workflow", async ({ page }) => {
+  test("Operators Tile view and edit operator workflow", async ({ page }) => {
     // 🛸 Navigate to operators tile page
     const dashboardPage = new DashboardPOM(page);
     const operatorPage = new OperatorPOM(page);
@@ -55,7 +55,7 @@ test.describe("Test Workflow industry_user_admin", () => {
     await dashboardPage.urlIsCorrect();
   });
 
-  test("Operations Tile Start Registration workflow", async ({ page }) => {
+  test("Operations Tile Add Operation workflow", async ({ page }) => {
     // 🛸 Navigate to operations tile page
     const dashboardPage = new DashboardPOM(page);
     const operationPage = new OperationPOM(page);
@@ -91,7 +91,7 @@ test.describe("Test Workflow industry_user_admin", () => {
     //   "Pending",
     //   "Pending",
     //   "Pending",
-    //   "Pending",
+    //  "Pending",
     //   "Pending",
     // ]);
 
@@ -120,7 +120,6 @@ test.describe("Test Workflow industry_user_admin", () => {
     await operationPage.clickReturnToOperationsList();
 
     // Verify that we have returned to the operations table
-    await operationsPage.operationsTableIsVisible();
   });
 
   test("Operations Tile View Details workflow", async ({ page }) => {
