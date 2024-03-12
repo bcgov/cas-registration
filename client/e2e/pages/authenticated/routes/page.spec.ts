@@ -93,12 +93,6 @@ for (let [role, value] of Object.entries(UserRole)) {
         if (pomPage) {
           // 🚨 Check if route is in the role's allow list
           const isAllowedRoute = accessLists.includes(route);
-          const timeOut = 15000;
-          // eslint-disable-next-line no-console
-          console.log(
-            `🚀 Route ${route} for ${value} has access ${isAllowedRoute}`,
-          );
-
           // 🛸 Navigate to route
           await pomPage.route();
           // 📌 Some roles have exceptions to the expected results
@@ -138,10 +132,9 @@ for (let [role, value] of Object.entries(UserRole)) {
                     // 🔍 Assert that the current URL is correct
                     await pomPage.urlIsCorrect();
                     // 🔍 Assert that the not-found selector is not available
-                    // Wait for the selector to not be available with a timeout
+                    // Wait for the selector to not be available
                     await page.waitForSelector('[data-testid="not-found"]', {
                       state: "hidden",
-                      timeout: timeOut,
                     });
                     const notFoundSelector = await page.$(
                       '[data-testid="not-found"]',
@@ -163,9 +156,7 @@ for (let [role, value] of Object.entries(UserRole)) {
                   dashboardPage.urlIsCorrect();
                 } else {
                   // 🔍 Assert that the role has NO access, not-found selector is available
-                  await pomPage.page.waitForSelector(DataTestID.NOTFOUND, {
-                    timeout: timeOut,
-                  });
+                  await pomPage.page.waitForSelector(DataTestID.NOTFOUND);
                 }
               }
               break;
