@@ -123,13 +123,14 @@ export class OperationsPOM {
     await this.page.getByRole("link", { name: "Start Registration" }).click();
   }
 
-  async clickViewDetailsButton(childIndex: number = 0) {
+  async clickViewDetailsButton(index: number = 0) {
+    // Optionally pass the index since there are multiple view details buttons in the fixtures
     const viewDetailsButtons = await this.page
       .getByRole("link", {
         name: /view details/i,
       })
       .all();
-    await viewDetailsButtons[childIndex].click();
+    await viewDetailsButtons[index].click();
   }
 
   async getRequestChangesButton() {
