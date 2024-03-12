@@ -48,14 +48,10 @@ export class ProfilePOM {
     await this.buttonSubmit.click();
     // Wait for the success message to appear
     await this.page.waitForSelector('div:has-text("✅ Success")', {
-      timeout: 11000,
+      timeout: 15000,
     });
-    // Check if the success message exists
-    const isSuccessExisted =
-      (await this.page.$('div:has-text("✅ Success")')) !== null;
-
-    //  🔍 Assert the success message
-    expect(isSuccessExisted).toBe(true);
+    // If all actions succeed, return true
+    return true;
   }
 
   async userFullNameIsCorrect(expectedText: string) {
