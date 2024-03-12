@@ -11,9 +11,6 @@ define your shared interfaces in a single place, and get type-safety across your
 declare module "next-auth/jwt" {
   interface JWT {
     access_token?: string | undefined;
-    access_token_expires_at: number | undefined;
-    refresh_token?: string | undefined;
-    id_token: string | undefined;
     user_guid: string | undefined;
     identity_provider: string | undefined;
     error?: string;

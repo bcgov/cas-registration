@@ -34,6 +34,11 @@ export const authOptions: NextAuthOptions = {
   pages: {
     error: "/auth/error", // Error code passed in query string as ?error=
   },
+  // https://next-auth.js.org/configuration/options#session
+  session: {
+    strategy: "jwt",
+    maxAge: 30 * 60, // 30 minutes matching Keycloak token expiration time
+  },
   //https://next-auth.js.org/configuration/callbacks
   callbacks: {
     /**
