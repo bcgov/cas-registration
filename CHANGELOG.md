@@ -1,3 +1,21 @@
+# [1.1.0](https://github.com/bcgov/cas-registration/compare/v1.0.0...v1.1.0) (2024-03-12)
+
+### Bug Fixes
+
+- flaky profile update test ([f9d8218](https://github.com/bcgov/cas-registration/commit/f9d821868e26a214a5016dec274d9f578f9a65c0))
+- store the state to prevent loosing it when switching tabs ([2e8a25b](https://github.com/bcgov/cas-registration/commit/2e8a25b80810108947dc99e7f0a176be87f9685b))
+
+### Features
+
+- add db setup for IO ([a02aa75](https://github.com/bcgov/cas-registration/commit/a02aa75a889cc37d88c44692117491dfa105ec1e))
+- add not-found selector ([008b0e7](https://github.com/bcgov/cas-registration/commit/008b0e7a7a338dc7093fc7275b24ecca193128c2))
+- breadcrumb UUID transforms to text ([ad7c00f](https://github.com/bcgov/cas-registration/commit/ad7c00ffd773dc34f15ece2c6e09319296ce5f95))
+- home route test ([f3470b2](https://github.com/bcgov/cas-registration/commit/f3470b2b2437a34c34b2f2422c23ff43fcba88f8))
+- route access by role ([3e174e2](https://github.com/bcgov/cas-registration/commit/3e174e237dca6133530883615f2b8b0879c23197))
+- route for new user ([526a6f0](https://github.com/bcgov/cas-registration/commit/526a6f07a466e3e2fe97a6912b3da0b196bbd44f))
+- select operator breadcrumb title ([1489789](https://github.com/bcgov/cas-registration/commit/14897899371878da22ce614888db9822586f9412))
+- select operator title ([edf6f06](https://github.com/bcgov/cas-registration/commit/edf6f06261d944fcb5b368ec97d668a320ba0f06))
+
 # [1.0.0](https://github.com/bcgov/cas-registration/compare/v0.1.1-beta-7...v1.0.0) (2024-02-29)
 
 ### Bug Fixes
