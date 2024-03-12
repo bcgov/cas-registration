@@ -164,7 +164,9 @@ test.describe("Test Workflow industry_user_admin", () => {
     await operationsPage.operationsTableIsVisible();
   });
 
-  test("User Access Management Tile workflow", async ({ page }) => {
+  test("User Access Management Tile workflow - Approve and Decline users", async ({
+    page,
+  }) => {
     // 🛸 Navigate to user access management tile page
     const dashboardPage = new DashboardPOM(page);
     const userPage = new UsersPOM(page);
@@ -187,7 +189,13 @@ test.describe("Test Workflow industry_user_admin", () => {
     // Approve user
     await userPage.approveOrDeclineUser(UserOperatorStatus.APPROVED, 1);
 
-    // // Undo user status change
+    // // Undo user status change - doing this so we can re-run test locally with no errors
     await userPage.undoUserStatusChange(UserOperatorStatus.APPROVED, 1);
+
+    // Decline user
+    await userPage.approveOrDeclineUser(UserOperatorStatus.DECLINED, 2);
+
+    //  Undo user status change - doing this so we can re-run test locally with no errors
+    await userPage.undoUserStatusChange(UserOperatorStatus.DECLINED, 2);
   });
 });
