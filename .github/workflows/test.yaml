@@ -219,6 +219,7 @@ jobs:
       - name: Install Playwright Browsers
         run: yarn playwright install --with-deps
         working-directory: ./client
+      - run: docker run -d -p 1025:1025 -p 8025:8025 mailhog/mailhog # start mailhog
       - name: Run Playwright Tests
         run: |
           DEBUG=pw:browser npx playwright test --trace=on --workers=1 client/e2e/*
@@ -247,6 +248,7 @@ jobs:
           E2E_NEW_USER_GUID: ${{ secrets.E2E_NEW_USER_GUID }}
           E2E_NEW_USER_PASSWORD: ${{ secrets.E2E_NEW_USER_PASSWORD }}
           E2E_NEW_USER_STORAGE: playwright/.auth/new_user.json
+          SMTP_CONNECTION_STRING: smtp://@localhost:1025
         working-directory: ./client
       - uses: actions/upload-artifact@v3
         if: always()

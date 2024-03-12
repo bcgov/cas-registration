@@ -42,3 +42,11 @@ frontend:
     requests:
       cpu: 60m
       memory: 256Mi
+
+mailhog:
+  enable: true
+  securityContext:
+    runAsUser: 1001650000
+    fsGroup: 1001650000
+    runAsNonRoot: true
+  host: cas-obps-mailhog-dev.apps.silver.devops.gov.bc.ca
