@@ -11,6 +11,8 @@ import { UsersPOM } from "@/e2e/poms/users";
 import { tableColumnNamesAreCorrect } from "@/e2e/utils/helpers";
 import * as dotenv from "dotenv";
 dotenv.config({ path: "./e2e/.env.local" });
+// ☰ Enums
+import { UserOperatorStatus } from "@/e2e/utils/enums";
 
 // 🏷 Annotate test suite as serial
 test.describe.configure({ mode: "serial" });
@@ -181,5 +183,11 @@ test.describe("Test Workflow industry_user_admin", () => {
       "Access Type",
       "Status",
     ]);
+
+    // Approve user
+    await userPage.approveOrDeclineUser(UserOperatorStatus.APPROVED, 1);
+
+    // // Undo user status change
+    await userPage.undoUserStatusChange(UserOperatorStatus.APPROVED, 1);
   });
 });
