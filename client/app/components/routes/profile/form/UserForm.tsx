@@ -91,7 +91,11 @@ export default function UserForm({ formData, isCreate }: Props) {
     >
       {errorList.length > 0 &&
         errorList.map((e: any) => (
-          <Alert key={e.message} severity="error">
+          <Alert
+            key={e.message}
+            severity="error"
+            data-testid="alert-error-user-profile"
+          >
             {e?.stack ?? e.message}
           </Alert>
         ))}

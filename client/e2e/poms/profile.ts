@@ -44,12 +44,31 @@ export class ProfilePOM {
   async updateSuccess() {
     // Update all required fields
     await fieldsUpdate(this.page);
+    // Get button element handle for states validation
+    const buttonElement = await this.buttonSubmit.elementHandle();
     // Click the Submit button
     await this.buttonSubmit.click();
-    // Wait for the success message to appear
-    await this.page.waitForSelector('div:has-text("✅ Success")', {
-      timeout: 15000,
-    });
+    if (buttonElement) {
+      // Wait for loading state to be true based on buttonSubmit disabled
+      await this.page.waitForFunction(() => buttonElement.isDisabled);
+      // Wait for loading to complete
+      await this.page.waitForLoadState("networkidle");
+      // Wait for loading state to be false indicating create actionhandler has returned a response
+      await this.page.waitForFunction(() => !buttonElement.isDisabled);
+      // Assert no error alerts after loading completes
+      const alertElement = await this.page.waitForSelector(
+        DataTestID.PROFILE_ERROR,
+        {
+          state: "hidden",
+        },
+      );
+      // Assert that the Alert element is not visible
+      await expect(alertElement).toBeNull();
+    } else {
+      // eslint-disable-next-line no-console
+      console.log("Submit button element handle not found");
+      return false;
+    }
     // If all actions succeed, return true
     return true;
   }

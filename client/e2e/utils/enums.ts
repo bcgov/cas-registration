@@ -24,6 +24,7 @@ export enum AppRoute {
 export enum DataTestID {
   NOTFOUND = '[data-testid="not-found"]',
   PROFILE = '[data-testid="nav-user-profile"]',
+  PROFILE_ERROR = '[data-testid="alert-error-user-profile"]',
 }
 
 // 👋 keycloak selectors
