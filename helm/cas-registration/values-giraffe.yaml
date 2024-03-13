@@ -1,3 +1,5 @@
+# Temporary values for Monorepo-supported cas registration with cas-reporting.
+# This should deploy into a namespace to trial the side-by-side deployments.
 
 backend:
   replicaCount: 2
@@ -34,6 +36,20 @@ frontend:
   auth:
     keycloakAuthUrl: https://dev.loginproxy.gov.bc.ca/auth
     siteminderAuthUrl: https://logontest7.gov.bc.ca
+
+  resources:
+    limits:
+      cpu: 200m
+      memory: 512Mi
+    requests:
+      cpu: 60m
+      memory: 256Mi
+
+reportingFrontend:
+  enabled: true
+
+  route:
+    host: gir-cas-rep-frontend-dev.apps.silver.devops.gov.bc.ca
 
   resources:
     limits:
