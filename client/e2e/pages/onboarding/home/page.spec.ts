@@ -84,7 +84,7 @@ test.describe("Test Page - Home", () => {
     const pageContent = page.locator("html");
 
     await happoPlaywright.screenshot(homePage.page, pageContent, {
-      component: "Dashboard page",
+      component: "Home page",
       variant: "default",
     });
   });
