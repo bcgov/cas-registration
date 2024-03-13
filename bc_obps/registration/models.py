@@ -588,8 +588,7 @@ class UserOperator(TimeStampedModel):
     user_friendly_id = SerialField(
         primary_key=False,
         editable=False,
-        help_text=_("Auto Increment Number"),
-        verbose_name=_("Number"),
+        db_comment="A user-friendly ID to identify the user operator",
     )
     user = models.ForeignKey(
         User,
