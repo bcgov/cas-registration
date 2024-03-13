@@ -200,6 +200,20 @@ jobs:
           cmd_options: "-a -d -T 5 -m 2"
           issue_title: OWASP Baseline - Backend
           fail_action: false
+  happo:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 100
+      - uses: actions/setup-node@v1
+      - run: npm ci
+        working-directory: ./client
+      - run: npm run happo-ci-github-actions
+        working-directory: ./client
+        env:
+          HAPPO_API_KEY: ${{ secrets.HAPPO_API_KEY }}
+          HAPPO_API_SECRET: ${{ secrets.HAPPO_API_SECRET }}
   e2e:
     needs:
       ["backend-docker-build", "frontend-docker-build", "install-dev-tools"]
