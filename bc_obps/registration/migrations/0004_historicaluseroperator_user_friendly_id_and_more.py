@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
             model_name='historicaluseroperator',
             name='user_friendly_id',
             field=registration.fields.SerialField(
-                blank=True, editable=False, help_text='Auto Increment Number', verbose_name='Number'
+                blank=True, db_comment='A user-friendly ID to identify the user operator', editable=False
             ),
             preserve_default=False,
         ),
@@ -27,7 +27,7 @@ class Migration(migrations.Migration):
             model_name='useroperator',
             name='user_friendly_id',
             field=registration.fields.SerialField(
-                blank=True, editable=False, help_text='Auto Increment Number', verbose_name='Number'
+                blank=True, db_comment='A user-friendly ID to identify the user operator', editable=False
             ),
             preserve_default=False,
         ),
