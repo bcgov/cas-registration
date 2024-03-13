@@ -6,9 +6,28 @@ import { DashboardPOM } from "@/e2e/poms/dashboard";
 import { ProfilePOM } from "@/e2e/poms/profile";
 // ☰ Enums
 import { UserRole } from "@/e2e/utils/enums";
+// 🥞 DB CRUD
+import { deleteUserRecord } from "@/e2e/utils/queries";
 // ℹ️ Environment variables
 import * as dotenv from "dotenv";
 dotenv.config({ path: "./e2e/.env.local" });
+
+// 📚 Declare a beforeAll hook that is executed once per worker process before all tests.
+// 🥞 Set DB for e2e login roles
+/*
+For "new user":
+-  delete record in the db so that on "new user" login the ID will have no app_role
+*/
+test.beforeAll(async () => {
+  try {
+    // 👤 delete new user: bc-cas-dev-three
+    await deleteUserRecord(process.env.E2E_NEW_USER_GUID as string);
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error("❌ Error in Db setup for profile by roles:", error);
+    throw error;
+  }
+});
 
 // 🏷 Annotate test suite as serial
 test.describe.configure({ mode: "serial" });

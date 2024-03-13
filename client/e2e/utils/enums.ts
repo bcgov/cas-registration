@@ -22,9 +22,9 @@ export enum AppRoute {
 
 // 👋 playwright selectors targeting an HTML element
 export enum DataTestID {
+  ERROR_PROFILE = '[data-testid="alert-error-user-profile"]',
   NOTFOUND = '[data-testid="not-found"]',
   PROFILE = '[data-testid="nav-user-profile"]',
-  PROFILE_ERROR = '[data-testid="alert-error-user-profile"]',
 }
 
 // 👋 keycloak selectors

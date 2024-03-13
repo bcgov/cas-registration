@@ -17,17 +17,25 @@ import {
 } from "@/e2e/utils/enums";
 // ℹ️ Environment variables
 import * as dotenv from "dotenv";
-import { deleteUserOperatorRecord } from "@/e2e/utils/queries";
+import {
+  deleteUserOperatorRecord,
+  deleteUserRecord,
+} from "@/e2e/utils/queries";
 dotenv.config({ path: "./e2e/.env.local" });
 
 // 📚 Declare a beforeAll hook that is executed once per worker process before all tests.
-// 🥞 Set DB for dashboard tiles
+// 🥞 Set DB for route access
 /*
+For industry_user new
+- delete user
 For industry_user: create scenario for Operator Select\1 action pending
 - delete user operator
 */
 test.beforeAll(async () => {
   try {
+    // 👤 delete new user: bc-cas-dev-three
+    await deleteUserRecord(process.env.E2E_NEW_USER_GUID as string);
+    // 👤 delete user operator
     await deleteUserOperatorRecord(
       process.env.E2E_INDUSTRY_USER_GUID as string,
     );
@@ -48,8 +56,6 @@ function buildAccessLists(currentRole: UserRole): AppRoute[] {
   }, [] as AppRoute[]);
 }
 
-// 🏷 Annotate test suite as serial
-test.describe.configure({ mode: "serial" });
 // ➰ Loop through the entries of UserRole enum
 for (let [role, value] of Object.entries(UserRole)) {
   role = "E2E_" + role;
@@ -133,12 +139,10 @@ for (let [role, value] of Object.entries(UserRole)) {
                     await pomPage.urlIsCorrect();
                     // 🔍 Assert that the not-found selector is not available
                     // Wait for the selector to not be available
-                    await page.waitForSelector('[data-testid="not-found"]', {
+                    await page.waitForSelector(DataTestID.NOTFOUND, {
                       state: "hidden",
                     });
-                    const notFoundSelector = await page.$(
-                      '[data-testid="not-found"]',
-                    );
+                    const notFoundSelector = await page.$(DataTestID.NOTFOUND);
                     expect(notFoundSelector).toBeFalsy();
                     break;
                 }

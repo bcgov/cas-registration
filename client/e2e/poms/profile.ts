@@ -3,7 +3,7 @@
  * Page objects model (POM) simplify test authoring by creating a higher-level API
  * POM simplify maintenance by capturing element selectors in one place and create reusable code to avoid repetition. *
  */
-import { ElementHandle, Locator, Page, expect } from "@playwright/test";
+import { Locator, Page, expect } from "@playwright/test";
 // ⛏️ Helpers
 import { fieldsClear, fieldsUpdate, getFieldAlerts } from "@/e2e/utils/helpers";
 // ☰ Enums
@@ -44,47 +44,22 @@ export class ProfilePOM {
   async updateSuccess() {
     // Update all required fields
     await fieldsUpdate(this.page);
-    // Get button element handle for states validation
-    const buttonElement = await this.buttonSubmit.elementHandle();
     // Click the Submit button
     await this.buttonSubmit.click();
-    if (buttonElement) {
-      // Wait for loading state to be true based on buttonSubmit disabled
-      await this.page.waitForFunction(() => buttonElement.isDisabled);
-      // Wait for loading to complete
-      await this.page.waitForLoadState("networkidle");
-      // Wait for loading state to be false indicating create actionhandler has returned a response
-      await this.page.waitForFunction(() => !buttonElement.isDisabled);
-      // Assert no error alerts after loading completes
-      const alertElement = await this.page.waitForSelector(
-        DataTestID.PROFILE_ERROR,
-        {
-          state: "hidden",
-        },
-      );
-      // Assert that the Alert element is not visible
-      await expect(alertElement).toBeNull();
-    } else {
-      // eslint-disable-next-line no-console
-      console.log("Submit button element handle not found");
-      return false;
-    }
-    // If all actions succeed, return true
-    return true;
+    // Response from submit either shows errors or triggeres handleSubmit which handles state changes on submit button etc.
+    // 🔍 Assert that the error selector is not available
+    await this.page.waitForSelector(DataTestID.ERROR_PROFILE, {
+      state: "hidden",
+    });
+    const notFoundSelector = await this.page.$(DataTestID.ERROR_PROFILE);
+    expect(notFoundSelector).toBeFalsy();
   }
 
   async userFullNameIsCorrect(expectedText: string) {
-    // Get the element handle
-    const elementHandle: ElementHandle | null = await this.page.$(
-      DataTestID.PROFILE,
+    // Waits for the selector to appear with the expected text
+    await this.page.waitForSelector(
+      `${DataTestID.PROFILE}:has-text("${expectedText}")`,
     );
-    // If elementHandle is null, return false
-    if (!elementHandle) {
-      return false;
-    }
-    // Get the text value of the profile link
-    const actualText = (await elementHandle.textContent()) as string;
-    await expect(actualText.toLowerCase()).toMatch(expectedText.toLowerCase());
   }
 
   async urlIsCorrect() {
