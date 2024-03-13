@@ -57,41 +57,45 @@ test.beforeAll(async () => {
 });
 
 // 🏷 Annotate test suite as serial
+
+// 🏷 Annotate test suite as serial
 test.describe.configure({ mode: "serial" });
-// ➰ Loop through the entries of UserRole enum
-for (let [role, value] of Object.entries(UserRole)) {
-  role = "E2E_" + role;
-  const storageState = process.env[role + "_STORAGE"] as string;
-  test.describe(`Test Dashboard for ${value}`, () => {
-    // 👤 run test as this role
-    test.use({ storageState: storageState });
-    test("Test Selfie", async ({ page }, testInfo) => {
-      // 🛸 Navigate to dashboard page
-      const dashboardPage = new DashboardPOM(page);
-      await dashboardPage.route();
-      switch (value) {
-        case UserRole.NEW_USER:
-          // 🔍 Assert that the current URL ends with "/profile"
-          const profilePage = new ProfilePOM(page);
-          await profilePage.urlIsCorrect();
-          break;
-        default:
-          // 🔍 Assert that the current URL ends with "/dashboard"
-          await dashboardPage.urlIsCorrect();
-          // 🔍 Assert that the content is correct
-          // Note: When you run snapshot for the first time the test runner will Error: A snapshot doesn't exist...
-          // that's because there was no golden file...
-          // but, this method took a bunch of screenshots until two consecutive screenshots matched, and saved the last screenshot to file system...
-          // it is now ready to be added to the repository and expected to pass test
-          await expect(page).toHaveScreenshot();
-          // 👀 Attach the screenshot to the report
-          const screenshot = await page.screenshot();
-          await testInfo.attach("screenshot", {
-            body: screenshot,
-            contentType: "image/png",
-          });
-          break;
-      }
+test.describe("Test Dashboard Page", () => {
+  // ➰ Loop through the entries of UserRole enum
+  for (let [role, value] of Object.entries(UserRole)) {
+    role = "E2E_" + role;
+    const storageState = process.env[role + "_STORAGE"] as string;
+    test.describe(`Test Role ${value}`, () => {
+      // 👤 run test as this role
+      test.use({ storageState: storageState });
+      test("Test Selfie", async ({ page }, testInfo) => {
+        // 🛸 Navigate to dashboard page
+        const dashboardPage = new DashboardPOM(page);
+        await dashboardPage.route();
+        switch (value) {
+          case UserRole.NEW_USER:
+            // 🔍 Assert that the current URL ends with "/profile"
+            const profilePage = new ProfilePOM(page);
+            await profilePage.urlIsCorrect();
+            break;
+          default:
+            // 🔍 Assert that the current URL ends with "/dashboard"
+            await dashboardPage.urlIsCorrect();
+            // 🔍 Assert that the content is correct
+            // Note: When you run snapshot for the first time the test runner will Error: A snapshot doesn't exist...
+            // that's because there was no golden file...
+            // but, this method took a bunch of screenshots until two consecutive screenshots matched, and saved the last screenshot to file system...
+            // it is now ready to be added to the repository and expected to pass test
+            await expect(page).toHaveScreenshot();
+            // 👀 Attach the screenshot to the report
+            const screenshot = await page.screenshot();
+            await testInfo.attach("screenshot", {
+              body: screenshot,
+              contentType: "image/png",
+            });
+            break;
+        }
+      });
     });
-  });
-}
+  }
+});

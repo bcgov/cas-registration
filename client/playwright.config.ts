@@ -23,7 +23,9 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   /* Retry on CI only */
   retries: process.env.CI ? 2 : 0,
-  /* Opt out of parallel tests on CI. */
+  /* Opt out of parallel tests on CI:
+  Running tests sequentially helps with stability & reproducibility.
+  In this way, each test uses 100% of available computational resources and network bandwidth, without fighting for the available resources with other tests */
   workers: process.env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: "html",

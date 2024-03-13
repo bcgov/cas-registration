@@ -18,9 +18,6 @@ import {
 import * as dotenv from "dotenv";
 dotenv.config({ path: "./e2e/.env.local" });
 
-// 🏷 Annotate test suite as serial
-test.describe.configure({ mode: "serial" });
-
 // 📚 Declare a beforeAll hook that is executed once per worker process before all tests.
 // 🥞 Set DB for e2e login roles
 /*
@@ -60,6 +57,8 @@ test.beforeAll(async () => {
   }
 });
 
+// 🏷 Annotate test suite as serial
+test.describe.configure({ mode: "serial" });
 test.describe("Test Page - Home", () => {
   test("Test Route", async ({ page }) => {
     const homePage = new HomePOM(page);
