@@ -20,6 +20,15 @@ class AttachmentObject:
     filename: str
 
 
+class ContextObject:
+    bcc: Optional[List[str]]
+    cc: Optional[List[str]]
+    context: dict
+    delayTS: Optional[int] = 0
+    tag: Optional[str]
+    to: List[str]
+
+
 class EmailOutData:
     attachments: Optional[List[AttachmentObject]]
     bcc: Optional[List[str]]

@@ -1,8 +1,9 @@
+from typing import List
 import requests
 from uuid import UUID
 from django.conf import settings
 
-from registration.email.schema import EmailOutData
+from registration.email.schema import EmailOutData, ContextObject
 
 
 class EmailService:
@@ -34,6 +35,8 @@ class EmailService:
             response = requests.get(self.apiUrl + endpoint, headers=headers, timeout=10)
         elif method == 'POST':
             response = requests.post(self.apiUrl + endpoint, headers=headers, json=data, timeout=10)
+        elif method == 'DELETE':
+            response = requests.delete(self.apiUrl + endpoint, headers=headers, timeout=10)
         else:
             raise ValueError("Invalid HTTP method")
 
@@ -43,7 +46,7 @@ class EmailService:
         self._get_token()
         try:
             response = self._make_request("/health")
-            for dependency in response.get('dependencies'):
+            for dependency in response.json().get('dependencies'):
                 if dependency.get('healthy') != True:
                     print(f'{dependency.get("name")} is not healthy')
                     return False
@@ -53,7 +56,11 @@ class EmailService:
 
     def get_message_status(self, msgId: UUID):
         self._get_token()
-        return self._make_request(f'/status/{msgId}')
+        try:
+            response = self._make_request(f'/status/{msgId}')
+            return response.json()
+        except Exception as exc:
+            print(f'Exception retrieving message status for {msgId} - ', str(exc))
 
     def send_email(self, email_data: EmailOutData):
         self._get_token()
@@ -63,9 +70,22 @@ class EmailService:
                 method='POST',
                 data=email_data,
             )
-            print(response.json())
+            return response.json()
         except Exception as exc:
             print("Exception in send_email ", str(exc))
 
-    # def merge_template_and_send(self, email_data: EmailOutData, contexts:):
-    #     self._get_token()
+    def cancel_email(self, msgId: UUID):
+        self._get_token()
+        try:
+            response = self._make_request(f'/cancel/{msgId}', method='DELETE')
+            return response.json()
+        except Exception as exc:
+            print(f'Exception in cancelling email {msgId} - ', str(exc))
+
+    def merge_template_and_send(self, email_data: EmailOutData, contexts: List[ContextObject]):
+        self._get_token()
+        try:
+            response = self._make_request("/emailMerge", method='POST', data={'contexts': contexts, **email_data})
+            return response.json()
+        except Exception as exc:
+            print(f'Exception in merging template and sending! ', str(exc))
