@@ -35,4 +35,8 @@ export class DashboardPOM {
     const currentUrl = await this.page.url();
     await expect(currentUrl.toLowerCase()).toMatch(path.toLowerCase());
   }
+
+  async clickSelectOperatorTile() {
+    await this.msgPending.click();
+  }
 }

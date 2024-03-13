@@ -44,6 +44,23 @@ export async function fieldsUpdate(page: Page) {
         case "Phone Number*":
           await page.getByLabel(labelText).fill("604 401 5432"); //Format should be ### ### ####
           break;
+        case "CRA Business Number*":
+          await page.getByLabel(labelText).fill("123454321");
+          break;
+        case "BC Corporate Registry Number*":
+          await page.getByLabel(labelText).fill("AAA1111111");
+          break;
+        case "Business Structure*":
+          await page.getByLabel(labelText).fill("General Partnership");
+          await page.getByText(/General Partnership/i).click();
+          break;
+        case "Province*":
+          await page.getByLabel(labelText).fill("Alberta");
+          await page.getByText(/Alberta/i).click();
+          break;
+        case "Postal Code*":
+          await page.getByLabel(labelText).fill("H0H 0H0");
+          break;
         default:
           await inputField.fill(`E2E ${labelText}`);
           break;
