@@ -13,8 +13,6 @@ env:
   KEYCLOAK_CLIENT_ID: ${{ secrets.KEYCLOAK_CLIENT_ID }}
   KEYCLOAK_CLIENT_SECRET: ${{ secrets.KEYCLOAK_CLIENT_SECRET }}
   NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
-  HAPPO_API_KEY: ${{ secrets.HAPPO_API_KEY }}
-  HAPPO_API_SECRET: ${{ secrets.HAPPO_API_SECRET }}
 
 jobs:
   install-dev-tools:
@@ -218,8 +216,8 @@ jobs:
           keycloak_client_id: ${{ env.KEYCLOAK_CLIENT_ID }}
           keycloak_client_secret: ${{ env.KEYCLOAK_CLIENT_SECRET }}
           nextauth_secret: ${{ env.NEXTAUTH_SECRET }}
-          hapo_api_key: ${{ env.HAPPO_API_KEY }}
-          hapo_api_secret: ${{ env.HAPPO_API_SECRET }}
+          happo_api_key: ${{ env.HAPPO_API_KEY }}
+          happo_api_secret: ${{ env.HAPPO_API_SECRET }}
       - name: Install Playwright Browsers
         run: yarn playwright install --with-deps
         working-directory: ./client
@@ -252,6 +250,8 @@ jobs:
           E2E_NEW_USER_PASSWORD: ${{ secrets.E2E_NEW_USER_PASSWORD }}
           E2E_NEW_USER_STORAGE: playwright/.auth/new_user.json
           HAPPO_ENABLED: true
+          HAPPO_API_KEY: ${{ secrets.HAPPO_API_KEY }}
+          HAPPO_API_SECRET: ${{ secrets.HAPPO_API_SECRET }}
         working-directory: ./client
       - uses: actions/upload-artifact@v3
         if: always()
