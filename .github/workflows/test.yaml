@@ -207,7 +207,7 @@ jobs:
         with:
           fetch-depth: 100
       - uses: actions/setup-node@v1
-      - run: npm ci
+      - run: npm install --package-lock-only && npm ci
         working-directory: ./client
       - run: npm run happo-ci-github-actions
         working-directory: ./client

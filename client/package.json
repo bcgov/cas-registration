@@ -12,7 +12,9 @@
     "e2e": "yarn happo-e2e -- -- yarn playwright test",
     "e2e:ui": "yarn happo-e2e -- -- yarn playwright test --ui",
     "e2e:sequential": "playwright test --workers=1 client/e2e/*",
-    "audit-deps": "improved-yarn-audit"
+    "audit-deps": "improved-yarn-audit",
+    "happo": "happo",
+    "happo-ci-github-actions": "happo-ci-github-actions"
   },
   "dependencies": {
     "@babel/traverse": "^7.23.2",
@@ -77,9 +79,5 @@
     "jest-extended": "^4.0.1",
     "prettier": "^3.0.3",
     "ts-jest": "^29.1.1"
-  },
-  "scripts": {
-    "happo": "happo",
-    "happo-ci-github-actions": "happo-ci-github-actions"
   }
 }
