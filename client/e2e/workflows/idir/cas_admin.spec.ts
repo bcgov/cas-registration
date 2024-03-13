@@ -1,5 +1,6 @@
+import { chromium } from "@playwright/test";
 // 🧪 Suite to test the cas_admin workflows using storageState
-import { test, expect } from "@playwright/test";
+import { test, expect, APIResponse } from "@playwright/test";
 // 🪄 Page Object Models
 import { DashboardPOM } from "@/e2e/poms/dashboard";
 import { OperationsPOM } from "@/e2e/poms/operations";
@@ -25,10 +26,25 @@ import {
 } from "@/e2e/utils/helpers";
 // ℹ️ Environment variables
 import * as dotenv from "dotenv";
+
 dotenv.config({ path: "./e2e/.env.local" });
 
 // 🏷 Annotate test suite as serial
 test.describe.configure({ mode: "serial" });
+
+// Hit the test setup endpoint before running the tests to ensure the test data is set up
+test.beforeAll(async () => {
+  const browser = await chromium.launch();
+  const context = await browser.newContext();
+  let response: APIResponse = await context.request.get(
+    "http://localhost:8000/api/registration/test-setup",
+  );
+
+  // Wait for the response and check for success status text and code (e.g., 200)
+  expect(await response.text()).toBe("Test setup complete.");
+  expect(response.status()).toBe(200);
+});
+
 test.describe("Test Workflow cas_admin", () => {
   // 👤 run test using the storageState for this role
   const storageState = JSON.parse(process.env.E2E_CAS_ADMIN_STORAGE as string);
@@ -120,7 +136,7 @@ test.describe("Test Workflow cas_admin", () => {
     await operatorsPage.clickOperatorsLink();
 
     // 🧪 cas_admin is able to click "View Details" on a pending operator and see detailed info about it (read only)
-    await clickViewDetailsButton(operatorsPage.page, 3); // PENDING operator(new operator)
+    await clickViewDetailsButton(operatorsPage.page, 4); // PENDING operator(new operator)
 
     await operatorsPage.clickExpandAllButton();
     await checkFormHeaders(operatorsPage.page, [
@@ -188,7 +204,7 @@ test.describe("Test Workflow cas_admin", () => {
     await operatorsPage.clickOperatorsLink();
 
     // 🧪 cas_admin is able to Decline new operator
-    await clickViewDetailsButton(operatorsPage.page, 4); // PENDING operator(another new operator)
+    await clickViewDetailsButton(operatorsPage.page, 6); // PENDING operator(another new operator)
 
     // New operator note is visible
     await operatorsPage.checkNewOperatorNote();
@@ -232,7 +248,7 @@ test.describe("Test Workflow cas_admin", () => {
     await operatorsPage.clickOperatorsLink();
 
     // 🧪 cas_admin is able to Approve admin request
-    await clickViewDetailsButton(operatorsPage.page, 4); // PENDING admin request (Existing operator)
+    await clickViewDetailsButton(operatorsPage.page, 5); // PENDING admin request (Existing operator)
 
     // Operator information header is collapsed
     await checkFormHeaderIsCollapsed(
