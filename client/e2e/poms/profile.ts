@@ -46,18 +46,19 @@ export class ProfilePOM {
     await fieldsUpdate(this.page);
     // Click the Submit button
     await this.buttonSubmit.click();
-    // Wait for the success message to appear
-    await this.page.waitForSelector('div:has-text("✅ Success")', {
-      timeout: 15000,
+    // Response from submit either shows errors or triggeres handleSubmit which handles state changes on submit button etc.
+    // 🔍 Assert that the error selector is not available
+    await this.page.waitForSelector(DataTestID.ERROR_PROFILE, {
+      state: "hidden",
     });
-    // If all actions succeed, return true
-    return true;
+    const notFoundSelector = await this.page.$(DataTestID.ERROR_PROFILE);
+    expect(notFoundSelector).toBeFalsy();
   }
 
   async userFullNameIsCorrect(expectedText: string) {
     // Get the element handle
     const elementHandle: ElementHandle | null = await this.page.$(
-      DataTestID.PROFILE,
+      DataTestID.PROFILE
     );
     // If elementHandle is null, return false
     if (!elementHandle) {
