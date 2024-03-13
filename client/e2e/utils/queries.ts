@@ -10,6 +10,10 @@ import {
 // ℹ️ Environment variables
 import * as dotenv from "dotenv";
 dotenv.config({ path: "./e2e/.env.local" });
+// 🛠️ UUID generator
+import { v4 } from "uuid";
+// 📦 File system
+import * as fs from "fs"; // Import for file system access
 
 /***********************Operator********************************/
 
@@ -267,3 +271,211 @@ export const deleteUserOperatorRecord = async (userId: string) => {
     throw error;
   }
 };
+
+// 🛠️ Function to truncate all tables in erc schema
+export const truncateDatabase = async () => {
+  // ⛔️ We don't want to truncate tables with production data
+  const tablesWithProductionData = [
+    "app_role",
+    "business_role",
+    "business_structure",
+    "document_type",
+    "naics_code",
+    "regulated_product",
+    "reporting_activity",
+    "user",
+  ];
+  try {
+    const truncateQuery = `
+    SET SCHEMA 'erc';
+    DO $$
+    DECLARE
+        statements CURSOR FOR
+            SELECT tablename FROM pg_tables
+            WHERE schemaname = 'erc'
+            AND tablename NOT IN (${tablesWithProductionData.map(
+              (table) => `'${table}'`,
+            )});
+    BEGIN
+        FOR stmt IN statements LOOP
+            EXECUTE 'TRUNCATE TABLE ' || quote_ident(stmt.tablename) || ' CASCADE;';
+        END LOOP;
+    END;
+    $$ LANGUAGE plpgsql;
+    `;
+    await pool.query(truncateQuery);
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error("Error truncating database:", error);
+    throw error;
+  }
+};
+
+async function getPrimaryKeyField(modelName: string): Promise<string | null> {
+  // Implement logic to query the database schema and retrieve the primary key field for the given modelName
+  const query = `
+    SELECT kcu.column_name
+    FROM information_schema.table_constraints AS tc
+    JOIN information_schema.key_column_usage AS kcu
+      ON tc.constraint_name = kcu.constraint_name
+    JOIN information_schema.tables AS t
+      ON tc.table_name = t.table_name
+      AND tc.table_schema = t.table_schema
+    WHERE tc.constraint_type = 'PRIMARY KEY'
+      AND tc.table_schema = 'erc'
+      AND t.table_name = '${modelName}';
+  `;
+
+  try {
+    const result = await pool.query(query);
+    return result.rows[0]?.column_name;
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error(
+      `Error retrieving primary key field for model: ${modelName}`,
+      error,
+    );
+    return null;
+  }
+}
+
+// 🛠️ Function to insert ManyToMany fields of a data model into DB
+export const insertManyToManyFields = async (
+  modelName: string,
+  item: any,
+  manyToManyFields: string[],
+  id: string | number | undefined,
+) => {
+  // If the model has ManyToMany fields, we need to insert the values into the ManyToMany table
+  for (const manyToManyField of manyToManyFields) {
+    const manyToManyValuesList = item.fields[manyToManyField];
+    // ManyToMany fields are plural, so we need to remove the last character to get the singular form
+    const singularManyToManyField = manyToManyField.slice(0, -1); // e.g. contacts -> contact
+
+    for (const manyToManyValue of manyToManyValuesList) {
+      const manyToManyInsertQuery = `
+                    INSERT INTO erc.${modelName}_${manyToManyField} (${modelName}_id, ${singularManyToManyField}_id)
+                    VALUES (${id}, ${manyToManyValue});
+                    `;
+      try {
+        await pool.query(manyToManyInsertQuery);
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error(
+          `Error loading fixture data for ManyToMany field: ${manyToManyField}`,
+          error,
+        );
+      }
+    }
+  }
+};
+
+async function loadFixtureData(data: any[]) {
+  // model name in fixture file is in format registration.model
+  const modelName = `${data[0].model.split(".")[1]}`;
+
+  // models with UUID primary key that don't have a pk field in the fixture file
+  const modelsWithUUIDPrimaryKey = ["operation"];
+
+  // We need to treat ManyToMany fields differently
+  const manyToManyFieldsMapping: { [key: string]: string[] } = {
+    // Model name: [List of ManyToMany field names]
+    operator: ["contacts"],
+    // Add entries for other models with ManyToMany fields
+  };
+
+  // Loop through each item in the fixture data
+  for (let index = 0; index < data.length; index++) {
+    let item = data[index];
+    const primaryKey = item.pk || null; // if pk provided in fixture file, use it, otherwise null
+
+    // If the model has a ManyToMany field, we need to handle it differently
+    // We extract the ManyToMany fields and their values from the item
+    // and insert them into the ManyToMany table using a separate SQL query
+    const fields = Object.keys(item.fields);
+    const fieldsWithoutManyToMany = fields.filter(
+      (field) => !manyToManyFieldsMapping[modelName]?.includes(field),
+    );
+    const values = fieldsWithoutManyToMany.map((field) => item.fields[field]);
+
+    // Determine the ID to be used in the SQL query
+    let id;
+    switch (true) {
+      // If a primary key is provided in the fixture file, use it
+      case primaryKey !== null:
+        id = `'${primaryKey}'`;
+        break;
+      // If the model has a UUID primary key, generate a UUID
+      case modelsWithUUIDPrimaryKey.includes(modelName):
+        id = `'${v4()}'`;
+        break;
+      // If the model has a PK other than the pk defined in the fixture file, don't use ID
+      case ["user", "bc_obps_regulated_operation"].includes(modelName):
+        break;
+      default:
+        id = index + 1;
+        break;
+    }
+
+    // Placeholder for each field in the SQL query like $1, $2, $3, ...
+    const placeholders = fieldsWithoutManyToMany.map(
+      (_, placeholderIndex) => `$${placeholderIndex + 1}`,
+    );
+
+    // Retrieve primary key field dynamically
+    const primaryKeyField = await getPrimaryKeyField(modelName);
+    // Handle potential errors (e.g., if the model doesn't exist)
+    if (!primaryKeyField) {
+      // eslint-disable-next-line no-console
+      console.error(
+        `Could not determine primary key field for model: ${modelName}`,
+      );
+      continue;
+    }
+
+    let insertQuery;
+    if (id) {
+      insertQuery = `
+      INSERT INTO erc.${modelName} (id, ${fieldsWithoutManyToMany.join(", ")})
+      VALUES (${id}, ${placeholders.join(", ")})
+      ON CONFLICT (${primaryKeyField})
+      DO NOTHING;
+      `;
+    } else {
+      insertQuery = `
+      INSERT INTO erc.${modelName} (${fieldsWithoutManyToMany.join(", ")})
+      VALUES (${placeholders.join(", ")})
+      ON CONFLICT (${primaryKeyField})
+      DO NOTHING;
+  `;
+    }
+    try {
+      await pool.query(insertQuery, values);
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error(
+        `Error loading fixture data for model: ${modelName}`,
+        error,
+      );
+    }
+
+    // --- ManyToMany fields handling ---
+    const manyToManyFields = fields.filter(
+      (field) => manyToManyFieldsMapping[modelName]?.includes(field),
+    );
+    if (manyToManyFields.length > 0)
+      insertManyToManyFields(modelName, item, manyToManyFields, id);
+  }
+}
+
+export async function loadFixtures(fixturePaths: string[]) {
+  try {
+    for (const fixturePath of fixturePaths) {
+      const fixtureData = JSON.parse(fs.readFileSync(fixturePath, "utf-8"));
+      await loadFixtureData(fixtureData); // Call separate function for data loading
+    }
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error("Error loading fixtures:", error);
+  }
+}

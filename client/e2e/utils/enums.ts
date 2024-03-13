@@ -120,3 +120,14 @@ export const appRouteRoles: Record<AppRoute, UserRole[]> = {
   ],
   [AppRoute.USERS]: [UserRole.CAS_ADMIN, UserRole.INDUSTRY_USER_ADMIN],
 };
+
+// 🛣️ Fixtures path
+export enum FixturePath {
+  CONTACT = "../bc_obps/registration/fixtures/mock/contact.json",
+  USER = "../bc_obps/registration/fixtures/mock/user.json",
+  ADDRESS = "../bc_obps/registration/fixtures/mock/address.json",
+  BC_OBPS_REGULATED_OPERATION = "../bc_obps/registration/fixtures/mock/bc_obps_regulated_operation.json",
+  OPERATION = "../bc_obps/registration/fixtures/mock/operation.json",
+  OPERATOR = "../bc_obps/registration/fixtures/mock/operator.json",
+  USER_OPERATOR = "../bc_obps/registration/fixtures/mock/userOperator.json",
+}
