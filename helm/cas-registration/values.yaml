@@ -72,6 +72,38 @@ frontend:
     targetCPUUtilizationPercentage: 80
     # targetMemoryUtilizationPercentage: 80
 
+reportingFrontend:
+  enabled: false
+  replicaCount: 1
+
+  image:
+    repository: ghcr.io/bcgov/cas-rep-frontend
+    pullPolicy: Always
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "latest"
+
+  service:
+    type: ClusterIP
+    port: 3000
+
+  route:
+    host: ~
+
+  resources:
+    limits:
+      cpu: 100m
+      memory: 256Mi
+    requests:
+      cpu: 60m
+      memory: 192Mi
+
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+    # targetMemoryUtilizationPercentage: 80
+
 devops:
   image:
     repository: hashicorp/terraform
