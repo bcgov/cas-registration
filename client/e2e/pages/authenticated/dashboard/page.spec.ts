@@ -1,6 +1,6 @@
 // 🧪 Suite to test `client/app/(authenticated)/dashboard/page.tsx`
 
-import { test, expect } from "@playwright/test";
+import { test } from "@playwright/test";
 // 🪄 Page Object Models
 import { DashboardPOM } from "@/e2e/poms/dashboard";
 import { ProfilePOM } from "@/e2e/poms/profile";
@@ -16,6 +16,7 @@ import {
 // ℹ️ Environment variables
 import * as dotenv from "dotenv";
 dotenv.config({ path: "./e2e/.env.local" });
+const happoPlaywright = require("happo-playwright");
 
 // 📚 Declare a beforeAll hook that is executed once per worker process before all tests.
 // 🥞 Set DB for dashboard tiles
@@ -28,6 +29,7 @@ For industry_user_admin:
 - create operator
 - create user operator
 */
+
 test.beforeAll(async () => {
   try {
     // Scenario FrontEndRoles.INDUSTRY_USER_ADMIN where UserOperatorStatus.APPROVED && OperatorStatus.APPROVED;
@@ -56,6 +58,14 @@ test.beforeAll(async () => {
   }
 });
 
+test.beforeEach(async ({ context }) => {
+  await happoPlaywright.init(context);
+});
+
+test.afterEach(async () => {
+  await happoPlaywright.finish();
+});
+
 // 🏷 Annotate test suite as serial
 test.describe.configure({ mode: "serial" });
 // ➰ Loop through the entries of UserRole enum
@@ -65,9 +75,10 @@ for (let [role, value] of Object.entries(UserRole)) {
   test.describe(`Test Dashboard for ${value}`, () => {
     // 👤 run test as this role
     test.use({ storageState: storageState });
-    test("Test Selfie", async ({ page }, testInfo) => {
+    test("Test Selfie", async ({ page }) => {
       // 🛸 Navigate to dashboard page
       const dashboardPage = new DashboardPOM(page);
+
       await dashboardPage.route();
       switch (value) {
         case UserRole.NEW_USER:
@@ -78,17 +89,11 @@ for (let [role, value] of Object.entries(UserRole)) {
         default:
           // 🔍 Assert that the current URL ends with "/dashboard"
           await dashboardPage.urlIsCorrect();
-          // 🔍 Assert that the content is correct
-          // Note: When you run snapshot for the first time the test runner will Error: A snapshot doesn't exist...
-          // that's because there was no golden file...
-          // but, this method took a bunch of screenshots until two consecutive screenshots matched, and saved the last screenshot to file system...
-          // it is now ready to be added to the repository and expected to pass test
-          await expect(page).toHaveScreenshot();
-          // 👀 Attach the screenshot to the report
-          const screenshot = await page.screenshot();
-          await testInfo.attach("screenshot", {
-            body: screenshot,
-            contentType: "image/png",
+
+          const pageContent = page.locator("html");
+          await happoPlaywright.screenshot(dashboardPage.page, pageContent, {
+            component: "Dashboard page",
+            variant: "default",
           });
           break;
       }

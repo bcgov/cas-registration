@@ -200,6 +200,7 @@ jobs:
           cmd_options: "-a -d -T 5 -m 2"
           issue_title: OWASP Baseline - Backend
           fail_action: false
+
   e2e:
     needs:
       ["backend-docker-build", "frontend-docker-build", "install-dev-tools"]
@@ -221,7 +222,7 @@ jobs:
         working-directory: ./client
       - name: Run Playwright Tests
         run: |
-          DEBUG=pw:browser npx playwright test --trace=on --workers=1 client/e2e/*
+          DEBUG=pw:browser npx happo-e2e -- npx playwright test --trace=on --workers=1 client/e2e/*
         env:
           API_URL: http://127.0.0.1:8000/api/
           DB_USER: postgres
@@ -247,6 +248,9 @@ jobs:
           E2E_NEW_USER_GUID: ${{ secrets.E2E_NEW_USER_GUID }}
           E2E_NEW_USER_PASSWORD: ${{ secrets.E2E_NEW_USER_PASSWORD }}
           E2E_NEW_USER_STORAGE: playwright/.auth/new_user.json
+          HAPPO_ENABLED: true
+          HAPPO_API_KEY: ${{ secrets.HAPPO_API_KEY }}
+          HAPPO_API_SECRET: ${{ secrets.HAPPO_API_SECRET }}
         working-directory: ./client
       - uses: actions/upload-artifact@v3
         if: always()

@@ -244,12 +244,49 @@ cd client && npx playwright codegen http://localhost:3000
 
 ### Visual Comparisons
 
-Playwright Test includes the ability to produce and visually compare screenshots using await expect(page).toHaveScreenshot(). On first execution, Playwright test will generate reference screenshots. Subsequent runs will compare against the reference.
-If you need to update the reference screenshots then run command:
+[Happo](https://happo.io/) is a cross browser screenshot testing library used to test for visual regressions. It is integrated with Playwright to capture screenshots of your application and compare them against a baseline to detect any visual changes and will upload the screenshots to the happo servers.
 
-```bash
-cd client && npx playwright test --update-snapshots
+To view and approve Happo diffs, open a pull request with your changes and let the e2e tests run. Once the tests are complete, the Happo report will appear in the list of CI jobs. If there are differences, you can approve or reject them. If you approve them, the new screenshots will be used as the baseline for future tests once merged.
+
+Read more about Happo and how to review diffs here:
+[Reviewing Happo Diffs](https://docs.happo.io/docs/reviewing-diffs)
+
+#### Basic setup to take Happo screenshots in your test file
+
 ```
+import { test } from "@playwright/test";
+import happoPlaywright from "happo-playwright";
+
+test.beforeEach(async ({ context }) => {
+  await happoPlaywright.init(context);
+});
+
+test.afterEach(async () => {
+  await happoPlaywright.finish();
+});
+
+```
+
+#### Taking a screenshot
+
+Using html selector to take screenshot of entire page. Use something more specific if testing a component.
+
+```
+const selector = page.locator("html");
+
+await happoPlaywright.screenshot(page, selector, {
+  component: "Page",
+  variant: "default",
+});
+```
+
+#### Using Happo on your local e2e tests
+
+To view diffs found while running your local e2e tests ask the dev team for access to the Happo dashboard. Add the Happo API key and secret to your .env file. The API key and secret can be found in the Happo dashboard under the Account section.
+
+````
+
+After you run your e2e tests the screenshots can be viewed in the Happo dashboard as snap requests.
 
 ### Best Practices
 
@@ -263,7 +300,7 @@ Use `expect` assertions to verify the expected behavior of the application. Play
 
 ```javascript
 await expect(page.getByTestId("status")).toHaveText("Submitted");
-```
+````
 
 Playwright will be re-testing the element with the test id of status until the fetched element has the "Submitted" text. It will re-fetch the element and check it over and over, until the condition is met or until the timeout is reached.
 
