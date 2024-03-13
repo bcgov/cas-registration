@@ -282,9 +282,11 @@ await happoPlaywright.screenshot(page, selector, {
 
 #### Using Happo on your local e2e tests
 
-To view diffs found while running your local e2e tests ask the dev team for access to the Happo dashboard. Add the Happo API key and secret to your .env file. The
+To view diffs found while running your local e2e tests ask the dev team for access to the Happo dashboard. Add the Happo API key and secret to your .env file. The API key and secret can be found in the Happo dashboard under the Account section.
 
-After you run your e2e tests the screenshots can be viewed in the Happo dashboard.
+````
+
+After you run your e2e tests the screenshots can be viewed in the Happo dashboard as snap requests.
 
 ### Best Practices
 
@@ -298,7 +300,7 @@ Use `expect` assertions to verify the expected behavior of the application. Play
 
 ```javascript
 await expect(page.getByTestId("status")).toHaveText("Submitted");
-```
+````
 
 Playwright will be re-testing the element with the test id of status until the fetched element has the "Submitted" text. It will re-fetch the element and check it over and over, until the condition is met or until the timeout is reached.
 
