@@ -1,5 +1,5 @@
 from typing import List, Optional
-from bc_obps.settings import DEBUG
+from bc_obps.settings import ENVIRONMENT
 from registration.schema.operator import OperatorForOperationOut
 from registration.utils import file_to_data_url, data_url_to_file
 from ninja import Field, ModelSchema, Schema
@@ -90,7 +90,7 @@ class OperationOut(ModelSchema):
     @staticmethod
     def resolve_statutory_declaration(obj: Operation):
         # Using a mock file for e2e testing
-        use_mock_file = DEBUG and not obj.documents.exists() and obj.status == obj.Statuses.APPROVED
+        use_mock_file = ENVIRONMENT == "develop" and not obj.documents.exists() and obj.status == obj.Statuses.APPROVED
         if use_mock_file:
             from registration.tests.test_utils import mock_file_to_data_url  # to avoid circular import
 
