@@ -92,7 +92,7 @@ for (let [role, value] of Object.entries(UserRole)) {
 
           const pageContent = page.locator("html");
           await happoPlaywright.screenshot(dashboardPage.page, pageContent, {
-            component: "Dashboard page",
+            component: `${role} Dashboard page`,
             variant: "default",
           });
           break;
