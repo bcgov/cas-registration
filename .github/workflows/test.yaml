@@ -216,8 +216,6 @@ jobs:
           keycloak_client_id: ${{ env.KEYCLOAK_CLIENT_ID }}
           keycloak_client_secret: ${{ env.KEYCLOAK_CLIENT_SECRET }}
           nextauth_secret: ${{ env.NEXTAUTH_SECRET }}
-          happo_api_key: ${{ env.HAPPO_API_KEY }}
-          happo_api_secret: ${{ env.HAPPO_API_SECRET }}
       - name: Install Playwright Browsers
         run: yarn playwright install --with-deps
         working-directory: ./client
