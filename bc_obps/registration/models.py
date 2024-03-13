@@ -19,6 +19,8 @@ from django.utils import timezone
 from django.core.exceptions import ValidationError
 from django.core.files.storage import default_storage
 from django.core.cache import cache
+from .fields import SerialField
+from django.utils.translation import gettext as _
 
 
 class BaseModel(models.Model):
@@ -582,6 +584,12 @@ class UserOperator(TimeStampedModel):
 
     id = models.UUIDField(
         primary_key=True, default=uuid.uuid4, db_comment="Primary key to identify the user operator", verbose_name="ID"
+    )
+    user_friendly_id = SerialField(
+        primary_key=False,
+        editable=False,
+        help_text=_("Auto Increment Number"),
+        verbose_name=_("Number"),
     )
     user = models.ForeignKey(
         User,
