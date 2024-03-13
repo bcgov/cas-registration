@@ -14,6 +14,14 @@
     ],
     "sharedGlobals": []
   },
+  "targetDefaults": {
+    "build": {
+      "cache": true
+    },
+    "container": {
+      "cache": true
+    }
+  },
   "plugins": [
     {
       "plugin": "@nx/next/plugin",
