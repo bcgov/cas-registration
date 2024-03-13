@@ -58,7 +58,7 @@ export class ProfilePOM {
   async userFullNameIsCorrect(expectedText: string) {
     // Get the element handle
     const elementHandle: ElementHandle | null = await this.page.$(
-      DataTestID.PROFILE
+      DataTestID.PROFILE,
     );
     // If elementHandle is null, return false
     if (!elementHandle) {
