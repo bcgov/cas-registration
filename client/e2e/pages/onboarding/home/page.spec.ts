@@ -17,6 +17,7 @@ import {
 // ℹ️ Environment variables
 import * as dotenv from "dotenv";
 dotenv.config({ path: "./e2e/.env.local" });
+import happoPlaywright from "happo-playwright";
 
 // 🏷 Annotate test suite as serial
 test.describe.configure({ mode: "serial" });
@@ -60,6 +61,14 @@ test.beforeAll(async () => {
   }
 });
 
+test.beforeEach(async ({ context }) => {
+  await happoPlaywright.init(context);
+});
+
+test.afterEach(async () => {
+  await happoPlaywright.finish();
+});
+
 test.describe("Test Page - Home", () => {
   test("Test Route", async ({ page }) => {
     const homePage = new HomePOM(page);
@@ -68,20 +77,15 @@ test.describe("Test Page - Home", () => {
     homePage.urlIsCorrect();
   });
 
-  test("Test Selfie", async ({ page }, testInfo) => {
+  test("Test Selfie", async ({ page }) => {
     const homePage = new HomePOM(page);
     await homePage.route();
-    // 🔍 Assert that the content is correct
-    // Note: When you run snapshot for the first time the test runner will Error: A snapshot doesn't exist...
-    // that's because there was no golden file...
-    // but, this method took a bunch of screenshots until two consecutive screenshots matched, and saved the last screenshot to file system...
-    // it is now ready to be added to the repository and expected to pass test
-    await expect(page).toHaveScreenshot();
-    // 👀 Attach the screenshot to the report
-    const screenshot = await page.screenshot();
-    await testInfo.attach("screenshot", {
-      body: screenshot,
-      contentType: "image/png",
+
+    const pageContent = page.locator("html");
+
+    await happoPlaywright.screenshot(homePage.page, pageContent, {
+      component: "Home page",
+      variant: "default",
     });
   });
 
