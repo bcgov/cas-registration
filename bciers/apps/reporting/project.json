@@ -10,8 +10,18 @@
       "defaultConfiguration": "dev",
       "options": {
         "outputPath": "dist/reporting",
-        "generateLockfile": true,
         "experimentalAppOnly": true
+      }
+    },
+    "container": {
+      "executor": "@nx-tools/nx-container:build",
+      "dependsOn": ["build"],
+      "defaultConfiguration": "dev",
+      "options": {
+        "engine": "docker",
+        "context": "dist/reporting",
+        "file": "apps/reporting/Dockerfile",
+        "tags": ["cas-reporting:latest"]
       }
     }
   },
