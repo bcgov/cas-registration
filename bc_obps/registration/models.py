@@ -585,10 +585,9 @@ class UserOperator(TimeStampedModel):
     id = models.UUIDField(
         primary_key=True, default=uuid.uuid4, db_comment="Primary key to identify the user operator", verbose_name="ID"
     )
-    user_friendly_id = SerialField(
-        primary_key=False,
-        editable=False,
-        db_comment="A user-friendly ID to identify the user operator",
+
+    user_friendly_id = models.IntegerField(
+        null=True, blank=True, db_comment="A user-friendly ID to identify the user operator"
     )
     user = models.ForeignKey(
         User,
@@ -677,6 +676,12 @@ class UserOperator(TimeStampedModel):
         Return all UserOperator.role options
         """
         return UserOperator.Roles.values
+
+    def save(self, *args, **kwargs):
+        # Add a user_friendly_id to the UserOperator if it doesn't already have one
+        if not self.user_friendly_id:
+            self.user_friendly_id = UserOperator.objects.count() + 1
+            super().save(*args, **kwargs)
 
 
 class OperationAndFacilityCommonInfo(TimeStampedModel):
