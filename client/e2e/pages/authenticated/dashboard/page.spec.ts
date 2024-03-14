@@ -71,7 +71,7 @@ test.describe.configure({ mode: "serial" });
 // ➰ Loop through the entries of UserRole enum
 for (let [role, value] of Object.entries(UserRole)) {
   role = "E2E_" + role;
-  const storageState = process.env[role + "_STORAGE"] as string;
+  const storageState = JSON.parse(process.env[role + "_STORAGE"] as string);
   test.describe(`Test Dashboard for ${value}`, () => {
     // 👤 run test as this role
     test.use({ storageState: storageState });

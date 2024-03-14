@@ -282,7 +282,7 @@ await happoPlaywright.screenshot(page, selector, {
 
 #### Using Happo on your local e2e tests
 
-To view diffs found while running your local e2e tests ask the dev team for access to the Happo dashboard. Add the Happo API key and secret to your .env file. The API key and secret can be found in the Happo dashboard under the Account section.
+To view diffs found while running your local e2e tests ask the dev team for access to the Happo dashboard. Add the Happo API key and secret to your `client/e2e/.env.local` file. The API key and secret can be found in the Happo dashboard under the Account section.
 
 ````
 
