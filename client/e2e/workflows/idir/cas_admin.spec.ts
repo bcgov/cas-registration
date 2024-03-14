@@ -367,6 +367,12 @@ test.describe("Test Workflow cas_admin", () => {
     await expect(operationsPage.page.locator(".MuiAlert-message")).toHaveText(
       "You have approved the request for carbon tax exemption.",
     );
+
+    // Adding a wait to ensure the message is visible
+    await operationsPage.page.waitForSelector(
+      DataTestID.CAS_ADMIN_OPERATION_APPROVED_MESSAGE,
+    );
+    // Approved operation message on top of the form
     await expect(
       operationsPage.page.locator(
         DataTestID.CAS_ADMIN_OPERATION_APPROVED_MESSAGE,
