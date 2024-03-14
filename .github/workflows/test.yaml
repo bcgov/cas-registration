@@ -217,6 +217,15 @@ jobs:
           keycloak_client_id: ${{ env.KEYCLOAK_CLIENT_ID }}
           keycloak_client_secret: ${{ env.KEYCLOAK_CLIENT_SECRET }}
           nextauth_secret: ${{ env.NEXTAUTH_SECRET }}
+      - name: Decode secrets
+        run: |
+          echo "${{ secrets.E2E_CAS_ADMIN_STORAGE }}" | base64 --decode > E2E_CAS_ADMIN_STORAGE.json
+          echo "${{ secrets.E2E_CAS_ANALYST_STORAGE }}" | base64 --decode > E2E_CAS_ANALYST_STORAGE.json
+          echo "${{ secrets.E2E_CAS_PENDING_STORAGE }}" | base64 --decode > E2E_CAS_PENDING_STORAGE.json
+          echo "${{ secrets.E2E_INDUSTRY_USER_ADMIN_STORAGE }}" | base64 --decode > E2E_INDUSTRY_USER_ADMIN_STORAGE.json
+          echo "${{ secrets.E2E_INDUSTRY_USER_STORAGE }}" | base64 --decode > E2E_INDUSTRY_USER_STORAGE.json
+          echo "${{ secrets.E2E_BEW_USER_STORAGE }}" | base64 --decode > E2E_NEW_USER_STORAGE.json
+
       - name: Install Playwright Browsers
         run: yarn playwright install --with-deps
         working-directory: ./client
@@ -233,21 +242,21 @@ jobs:
           E2E_CAS_USER: ${{ secrets.E2E_CAS_USER }}
           E2E_CAS_USER_GUID: ${{ secrets.E2E_CAS_USER_GUID }}
           E2E_CAS_USER_PASSWORD: ${{ secrets.E2E_CAS_USER_PASSWORD}}
-          E2E_CAS_ADMIN_STORAGE: ${{ secrets.E2E_CAS_ADMIN_STORAGE}}
-          E2E_CAS_ANALYST_STORAGE: ${{ secrets.E2E_CAS_ANALYST_STORAGE}}
-          E2E_CAS_PENDING_STORAGE: ${{ secrets.E2E_CAS_PENDING_STORAGE}}
+          E2E_CAS_ADMIN_STORAGE: $(cat E2E_CAS_ADMIN_STORAGE.json)
+          E2E_CAS_ANALYST_STORAGE: $(cat E2E_CAS_ANALYST_STORAGE.json)
+          E2E_CAS_PENDING_STORAGE: $(cat E2E_CAS_PENDING_STORAGE.json)
           E2E_INDUSTRY_USER_ADMIN: bc-cas-dev
           E2E_INDUSTRY_USER_ADMIN_GUID: ${{ secrets.E2E_INDUSTRY_USER_ADMIN_GUID }}
           E2E_INDUSTRY_USER_ADMIN_PASSWORD: ${{ secrets.E2E_INDUSTRY_USER_ADMIN_PASSWORD }}
-          E2E_INDUSTRY_USER_ADMIN_STORAGE: ${{ secrets.E2E_INDUSTRY_USER_ADMIN_STORAGE}}
+          E2E_INDUSTRY_USER_ADMIN_STORAGE: $(cat E2E_INDUSTRY_USER_ADMIN_STORAGE.json)
           E2E_INDUSTRY_USER: bc-cas-dev-secondary
           E2E_INDUSTRY_USER_GUID: ${{ secrets.E2E_INDUSTRY_USER_GUID }}
           E2E_INDUSTRY_USER_PASSWORD: ${{ secrets.E2E_INDUSTRY_USER_PASSWORD }}
-          E2E_INDUSTRY_USER_STORAGE: ${{ secrets.E2E_INDUSTRY_USER_STORAGE}}
+          E2E_INDUSTRY_USER_STORAGE: $(cat E2E_INDUSTRY_USER_STORAGE.json)
           E2E_NEW_USER: bc-cas-dev-three
           E2E_NEW_USER_GUID: ${{ secrets.E2E_NEW_USER_GUID }}
           E2E_NEW_USER_PASSWORD: ${{ secrets.E2E_NEW_USER_PASSWORD }}
-          E2E_NEW_USER_STORAGE: ${{ secrets.E2E_NEW_USER_STORAGE}}
+          E2E_NEW_USER_STORAGE: $(cat E2E_NEW_USER_STORAGE.json)
           HAPPO_ENABLED: true
           HAPPO_API_KEY: ${{ secrets.HAPPO_API_KEY }}
           HAPPO_API_SECRET: ${{ secrets.HAPPO_API_SECRET }}
