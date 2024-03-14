@@ -8,11 +8,11 @@ router = Router()
 
 # testing endpoint
 @router.get("/test-setup")
-def setup(request):
+def setup(request, workflow: str = None):
     if settings.ENVIRONMENT == "develop":
         try:
             call_command('truncate_dev_data_tables')
-            call_command('load_fixtures')
+            call_command('load_fixtures', workflow)
             return HttpResponse("Test setup complete.", status=200)
         except Exception as e:
             return HttpResponse(f"Test setup failed. Reason:{e}", status=500)
