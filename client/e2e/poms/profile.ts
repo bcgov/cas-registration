@@ -5,7 +5,11 @@
  */
 import { Locator, Page, expect } from "@playwright/test";
 // ⛏️ Helpers
-import { fieldsClear, fieldsUpdate, getFieldAlerts } from "@/e2e/utils/helpers";
+import {
+  fieldsClear,
+  fillRequiredFormFields,
+  getFieldAlerts,
+} from "@/e2e/utils/helpers";
 // ☰ Enums
 import { AppRoute, ActionButton, DataTestID } from "@/e2e/utils/enums";
 // ℹ️ Environment variables
@@ -46,7 +50,7 @@ export class ProfilePOM {
 
   async updateSuccess() {
     // Update all required fields
-    await fieldsUpdate(this.page);
+    await fillRequiredFormFields(this.page);
     // Click the Submit button
     await this.buttonSubmit.click();
     // Wait for API request/response
