@@ -7,7 +7,8 @@
       "role": "admin",
       "status": "Approved",
       "verified_at": "2024-02-26 06:24:57.293242-08",
-      "verified_by": "ba2ba62a121842e0942aab9e92ce8822"
+      "verified_by": "ba2ba62a121842e0942aab9e92ce8822",
+      "user_friendly_id": 1
     }
   },
   {
@@ -18,7 +19,8 @@
       "role": "admin",
       "status": "Approved",
       "verified_at": "2024-02-26 06:24:57.293242-08",
-      "verified_by": "4da70f32-65fd-4137-87c1-111f2daba3dd"
+      "verified_by": "4da70f32-65fd-4137-87c1-111f2daba3dd",
+      "user_friendly_id": 2
     }
   },
   {
@@ -29,7 +31,8 @@
       "role": "pending",
       "status": "Pending",
       "verified_at": null,
-      "verified_by": null
+      "verified_by": null,
+      "user_friendly_id": 3
     }
   },
   {
@@ -40,7 +43,8 @@
       "role": "pending",
       "status": "Pending",
       "verified_at": null,
-      "verified_by": null
+      "verified_by": null,
+      "user_friendly_id": 4
     }
   },
   {
@@ -51,7 +55,8 @@
       "role": "pending",
       "status": "Pending",
       "verified_at": null,
-      "verified_by": null
+      "verified_by": null,
+      "user_friendly_id": 5
     }
   },
   {
@@ -62,7 +67,8 @@
       "role": "pending",
       "status": "Pending",
       "verified_at": null,
-      "verified_by": null
+      "verified_by": null,
+      "user_friendly_id": 6
     }
   },
   {
@@ -73,7 +79,8 @@
       "role": "pending",
       "status": "Pending",
       "verified_at": null,
-      "verified_by": null
+      "verified_by": null,
+      "user_friendly_id": 7
     }
   },
   {
@@ -84,7 +91,8 @@
       "role": "pending",
       "status": "Pending",
       "verified_at": null,
-      "verified_by": null
+      "verified_by": null,
+      "user_friendly_id": 8
     }
   },
   {
@@ -95,7 +103,8 @@
       "role": "pending",
       "status": "Pending",
       "verified_at": null,
-      "verified_by": null
+      "verified_by": null,
+      "user_friendly_id": 9
     }
   },
   {
@@ -106,7 +115,8 @@
       "role": "pending",
       "status": "Pending",
       "verified_at": null,
-      "verified_by": null
+      "verified_by": null,
+      "user_friendly_id": 10
     }
   },
   {
@@ -117,7 +127,8 @@
       "role": "pending",
       "status": "Pending",
       "verified_at": null,
-      "verified_by": null
+      "verified_by": null,
+      "user_friendly_id": 11
     }
   },
   {
@@ -128,7 +139,8 @@
       "role": "pending",
       "status": "Pending",
       "verified_at": null,
-      "verified_by": null
+      "verified_by": null,
+      "user_friendly_id": 12
     }
   },
   {
@@ -139,7 +151,8 @@
       "role": "pending",
       "status": "Pending",
       "verified_at": null,
-      "verified_by": null
+      "verified_by": null,
+      "user_friendly_id": 13
     }
   },
   {
@@ -150,7 +163,8 @@
       "role": "pending",
       "status": "Pending",
       "verified_at": null,
-      "verified_by": null
+      "verified_by": null,
+      "user_friendly_id": 14
     }
   },
   {
@@ -161,7 +175,8 @@
       "role": "pending",
       "status": "Pending",
       "verified_at": null,
-      "verified_by": null
+      "verified_by": null,
+      "user_friendly_id": 15
     }
   },
   {
@@ -172,7 +187,8 @@
       "role": "pending",
       "status": "Pending",
       "verified_at": null,
-      "verified_by": null
+      "verified_by": null,
+      "user_friendly_id": 16
     }
   },
   {
@@ -183,7 +199,8 @@
       "role": "pending",
       "status": "Pending",
       "verified_at": null,
-      "verified_by": null
+      "verified_by": null,
+      "user_friendly_id": 17
     }
   },
   {
@@ -194,7 +211,8 @@
       "role": "pending",
       "status": "Pending",
       "verified_at": null,
-      "verified_by": null
+      "verified_by": null,
+      "user_friendly_id": 18
     }
   },
   {
@@ -206,7 +224,8 @@
       "role": "pending",
       "status": "Pending",
       "verified_at": null,
-      "verified_by": null
+      "verified_by": null,
+      "user_friendly_id": 19
     }
   },
   {
@@ -218,7 +237,8 @@
       "role": "pending",
       "status": "Pending",
       "verified_at": null,
-      "verified_by": null
+      "verified_by": null,
+      "user_friendly_id": 20
     }
   },
   {
@@ -229,7 +249,8 @@
       "role": "pending",
       "status": "Pending",
       "verified_at": null,
-      "verified_by": null
+      "verified_by": null,
+      "user_friendly_id": 21
     }
   },
   {
@@ -240,7 +261,8 @@
       "role": "pending",
       "status": "Pending",
       "verified_at": null,
-      "verified_by": null
+      "verified_by": null,
+      "user_friendly_id": 22
     }
   },
   {
@@ -251,7 +273,8 @@
       "role": "pending",
       "status": "Pending",
       "verified_at": null,
-      "verified_by": null
+      "verified_by": null,
+      "user_friendly_id": 23
     }
   },
   {
@@ -262,7 +285,8 @@
       "role": "pending",
       "status": "Pending",
       "verified_at": null,
-      "verified_by": null
+      "verified_by": null,
+      "user_friendly_id": 24
     }
   },
   {
@@ -273,7 +297,8 @@
       "role": "pending",
       "status": "Pending",
       "verified_at": null,
-      "verified_by": null
+      "verified_by": null,
+      "user_friendly_id": 25
     }
   },
   {
@@ -284,7 +309,8 @@
       "role": "pending",
       "status": "Pending",
       "verified_at": null,
-      "verified_by": null
+      "verified_by": null,
+      "user_friendly_id": 26
     }
   },
   {
@@ -295,7 +321,8 @@
       "role": "pending",
       "status": "Pending",
       "verified_at": null,
-      "verified_by": null
+      "verified_by": null,
+      "user_friendly_id": 27
     }
   }
 ]
