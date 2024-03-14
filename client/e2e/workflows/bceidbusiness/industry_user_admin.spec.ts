@@ -116,8 +116,8 @@ test.describe("Test Workflow industry_user_admin", () => {
 
     const pageContent = page.locator("html");
     await happoPlaywright.screenshot(operationPage.page, pageContent, {
-      component: `${UserRole.INDUSTRY_USER_ADMIN} - Operation Form Page 1`,
-      variant: "default",
+      component: "Operation Form Page 1",
+      variant: UserRole.INDUSTRY_USER_ADMIN,
     });
 
     await operationPage.clickSaveAndContinue();
@@ -126,8 +126,8 @@ test.describe("Test Workflow industry_user_admin", () => {
     // Fill page 2, take screenshot and click save and continue to move to the next step
     await operationPage.fillOperationFormPage2();
     await happoPlaywright.screenshot(operationPage.page, pageContent, {
-      component: `${UserRole.INDUSTRY_USER_ADMIN} - Operation Form Page 2`,
-      variant: "default",
+      component: "Operation Form Page 2",
+      variant: UserRole.INDUSTRY_USER_ADMIN,
     });
 
     await operationPage.clickSaveAndContinue();
@@ -136,8 +136,8 @@ test.describe("Test Workflow industry_user_admin", () => {
     // Fill page 3, take screenshot and click save and continue to move to the next step
     await operationPage.addFile();
     await happoPlaywright.screenshot(operationPage.page, pageContent, {
-      component: `${UserRole.INDUSTRY_USER_ADMIN} - Operation Form Page 3`,
-      variant: "default",
+      component: "Operation Form Page 3",
+      variant: UserRole.INDUSTRY_USER_ADMIN,
     });
 
     await operationPage.clickSubmitButton();
@@ -146,8 +146,8 @@ test.describe("Test Workflow industry_user_admin", () => {
     await operationPage.operationSuccessfulSubmissionIsVisible();
     await operationPage.addFile();
     await happoPlaywright.screenshot(operationPage.page, pageContent, {
-      component: `${UserRole.INDUSTRY_USER_ADMIN} - Operation Form Submission Successful`,
-      variant: "default",
+      component: "Operation Form Submission Successful",
+      variant: UserRole.INDUSTRY_USER_ADMIN,
     });
 
     await operationPage.clickReturnToOperationsList();
@@ -232,8 +232,8 @@ test.describe("Test Workflow industry_user_admin", () => {
 
     const pageContent = page.locator("html");
     await happoPlaywright.screenshot(userPage.page, pageContent, {
-      component: `${UserRole.INDUSTRY_USER_ADMIN} - User Access Management`,
-      variant: "default",
+      component: "User Access Management",
+      variant: UserRole.INDUSTRY_USER_ADMIN,
     });
   });
 });
