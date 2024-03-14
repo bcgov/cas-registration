@@ -394,6 +394,7 @@ def update_user_operator_status(request, payload: UserOperatorStatusUpdate):
         return 400, {"message": "Operator must be approved before approving or declining users."}
     try:
         with transaction.atomic():
+            print(payload.status)
             user_operator.status = payload.status
 
             operator: Operator = user_operator.operator
@@ -423,6 +424,7 @@ def update_user_operator_status(request, payload: UserOperatorStatusUpdate):
                 user_operator.operator.contacts.filter(
                     created_by=user_operator.user, business_role=BusinessRole.objects.get(role_name='Senior Officer')
                 ).delete()
+
             return UserOperatorOut.from_orm(user_operator)
     except ValidationError as e:
         return 400, {"message": generate_useful_error(e)}

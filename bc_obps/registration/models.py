@@ -680,7 +680,7 @@ class UserOperator(TimeStampedModel):
         # Add a user_friendly_id to the UserOperator if it doesn't already have one
         if not self.user_friendly_id:
             self.user_friendly_id = UserOperator.objects.count() + 1
-            super().save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
 
 class OperationAndFacilityCommonInfo(TimeStampedModel):
