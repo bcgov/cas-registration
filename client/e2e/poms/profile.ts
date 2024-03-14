@@ -56,17 +56,10 @@ export class ProfilePOM {
   }
 
   async userFullNameIsCorrect(expectedText: string) {
-    // Get the element handle
-    const elementHandle: ElementHandle | null = await this.page.$(
-      DataTestID.PROFILE,
+    // Waits for the selector to appear with the expected text
+    await this.page.waitForSelector(
+      `${DataTestID.PROFILE}:has-text("${expectedText}")`
     );
-    // If elementHandle is null, return false
-    if (!elementHandle) {
-      return false;
-    }
-    // Get the text value of the profile link
-    const actualText = (await elementHandle.textContent()) as string;
-    await expect(actualText.toLowerCase()).toMatch(expectedText.toLowerCase());
   }
 
   async urlIsCorrect() {
