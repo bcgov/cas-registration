@@ -9,13 +9,6 @@ import { statusStyle } from "@/app/components/datagrid/helpers";
 
 const columns: GridColDef[] = [
   {
-    field: "id",
-    headerName: "User ID",
-    align: "center",
-    headerAlign: "center",
-    width: 120,
-  },
-  {
     field: "name",
     headerName: "Name",
     align: "center",
@@ -83,7 +76,6 @@ const UserOperatorDataGrid = ({
       business: operator.legal_name,
       accessType: status === OperatorStatus.DECLINED ? "N/A" : accessType,
       status: status,
-      userOperatorId: id,
     };
   });
 
