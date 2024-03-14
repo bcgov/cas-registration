@@ -1,4 +1,4 @@
-import { Page } from "@playwright/test";
+import { Locator, Page, expect } from "@playwright/test";
 
 // 🛠️ Function: get all label elements with required field character * within form fieldset
 export async function getFieldRequired(page: Page) {
@@ -29,8 +29,8 @@ export async function fieldsClear(page: Page) {
   }
   return requiredFields?.length;
 }
-// 🛠️ Function: completes required form fields correctly
-export async function fieldsUpdate(page: Page) {
+// 🛠️ Function: fills required form fields correctly
+export async function fillRequiredFormFields(page: Page) {
   // Locate all required fields within the fieldset
   const requiredFields = await getFieldRequired(page);
   if (requiredFields) {
@@ -44,22 +44,58 @@ export async function fieldsUpdate(page: Page) {
         case "Phone Number*":
           await page.getByLabel(labelText).fill("604 401 5432"); //Format should be ### ### ####
           break;
+        default:
+          await inputField.fill(`E2E ${labelText}`);
+          break;
+      }
+    }
+  }
+}
+
+// 🛠️ Function: fills all form fields with correct formatting. Selector argument is used to selectively fill parts of the form. Use "fieldset#root" as the argument if filling the entire form, otherwise use the a section's fieldset.
+export async function fillAllFormFields(page: Page, selector: string) {
+  // Locate all fields within the fieldset
+  const fieldset = await page.$(selector);
+  const fields = await fieldset?.$$("label");
+  if (fields) {
+    for (const input of fields) {
+      const labelText = await input.textContent();
+      // We use the same labels multiple times in some forms (e.g., the parent operator section in the operator form has a Legal Name field, as does the main operator form), so this ensures we only getByLabel in the desired section of the form
+      const formSection = page.locator(selector);
+      const inputField = await formSection.getByLabel(labelText as string);
+      if (
+        labelText ===
+        "Is the business mailing address the same as the physical address?"
+      ) {
+        break;
+      }
+      // Click the field to focus it
+      await inputField.click();
+      switch (labelText) {
+        case "Phone Number*":
+          await formSection.getByLabel(labelText).fill("604 401 5432");
+          break;
         case "CRA Business Number*":
-          await page.getByLabel(labelText).fill("123454321");
+          await formSection.getByLabel(labelText).fill("123454321");
           break;
         case "BC Corporate Registry Number*":
-          await page.getByLabel(labelText).fill("AAA1111111");
+          await formSection.getByLabel(labelText).fill("AAA1111111");
           break;
         case "Business Structure*":
-          await page.getByLabel(labelText).fill("General Partnership");
-          await page.getByText(/General Partnership/i).click();
+          await formSection.getByLabel(labelText).fill("General Partnership");
+          await formSection.getByText(/General Partnership/i).click();
           break;
         case "Province*":
-          await page.getByLabel(labelText).fill("Alberta");
-          await page.getByText(/Alberta/i).click();
+          await formSection.getByLabel(labelText).fill("Alberta");
+          await formSection.getByText(/Alberta/i).click();
           break;
         case "Postal Code*":
-          await page.getByLabel(labelText).fill("H0H 0H0");
+          await formSection.getByLabel(labelText).fill("H0H 0H0");
+          break;
+        case "Website (optional)":
+          await formSection
+            .getByLabel(labelText)
+            .fill("https://www.website.com");
           break;
         default:
           await inputField.fill(`E2E ${labelText}`);
@@ -67,4 +103,62 @@ export async function fieldsUpdate(page: Page) {
       }
     }
   }
+}
+
+export async function checkRequiredFieldValidationErrors(
+  page: Page,
+  submitButton: Locator,
+) {
+  // Locate all required fields
+  const requiredFields = await getFieldRequired(page);
+  // Submit
+  await submitButton.click();
+  // Locate all alert elements within the fieldset
+  const alertElements = await getFieldAlerts(page);
+  // 🔍 Assert there to be exactly the same number of required fields and alert elements
+  await expect(requiredFields?.length).toBe(alertElements.length);
+}
+
+export async function triggerFormatValidationErrors(
+  page: Page,
+  submitButton: Locator,
+) {
+  // Locate all fields within the fieldset
+  const fieldset = await page.$("fieldset#root");
+  const fields = await fieldset?.$$("label");
+  if (fields) {
+    for (const input of fields) {
+      const labelText = await input.textContent();
+      const inputField = await page.getByLabel(labelText as string);
+      if (
+        labelText ===
+        "Is the business mailing address the same as the physical address?"
+      ) {
+        break;
+      }
+      // Click the field to focus it
+      await inputField.click();
+      switch (labelText) {
+        case "Phone Number*":
+          await page.getByLabel(labelText).fill("111");
+          break;
+        case "CRA Business Number*":
+          await page.getByLabel(labelText).fill("123");
+          break;
+        case "BC Corporate Registry Number*":
+          await page.getByLabel(labelText).fill("234rtf");
+          break;
+        case "Postal Code*":
+          await page.getByLabel(labelText).fill("garbage");
+          break;
+        case "Website (optional)":
+          await page.getByLabel(labelText).fill("bad website");
+          break;
+        default:
+          break;
+      }
+    }
+  }
+  // Submit
+  await submitButton.click();
 }

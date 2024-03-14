@@ -7,7 +7,11 @@ import { DashboardPOM } from "@/e2e/poms/dashboard";
 // ℹ️ Environment variables
 import * as dotenv from "dotenv";
 import { OperatorPOM } from "@/e2e/poms/operator";
-import { fieldsUpdate } from "@/e2e/utils/helpers";
+import {
+  fillAllFormFields,
+  checkRequiredFieldValidationErrors,
+  triggerFormatValidationErrors,
+} from "@/e2e/utils/helpers";
 import { deleteUserOperatorRecord } from "@/e2e/utils/queries";
 dotenv.config({ path: "./e2e/.env.local" });
 const happoPlaywright = require("happo-playwright");
@@ -61,7 +65,6 @@ test.describe("Test Workflow industry_user", () => {
     await dashboardPage.route();
     // 🔍 Assert that the current URL ends with "(authenticated)/dashboard"
     await dashboardPage.urlIsCorrect();
-    // brianna you need to clear the user_operator table for this, Sepehr is working on it
     await dashboardPage.clickSelectOperatorTile();
     await selectOperatorPage.urlIsCorrect();
 
@@ -74,7 +77,6 @@ test.describe("Test Workflow industry_user", () => {
     await page.getByPlaceholder("Enter Business Legal Name").click();
     await page.getByPlaceholder("Enter Business Legal Name").fill("Operator");
     await page.getByText(/Operator 1 Legal Name/i).click();
-    // happo--debatable here
     await selectOperatorPage.buttonSelectOperator.click();
     await expect(
       page.getByText(selectOperatorPage.confirmationMessage)
@@ -144,7 +146,7 @@ test.describe("Test Workflow industry_user", () => {
     });
   });
 
-  test("Add a new operator", async ({ page }) => {
+  test("Add a new operator with parent operators", async ({ page }) => {
     let pageContent;
     // 🛸 Navigate directly to the operator page (already tested navigating from the dashboard in the first test)
     const selectOperatorPage = new OperatorPOM(page);
@@ -159,16 +161,38 @@ test.describe("Test Workflow industry_user", () => {
       variant: "default",
     });
 
-    await selectOperatorPage.triggerValidationErrors();
+    await checkRequiredFieldValidationErrors(
+      page,
+      selectOperatorPage.buttonSubmit,
+    );
 
     pageContent = page.locator("html");
     await happoPlaywright.screenshot(page, pageContent, {
       component: "Add a new operator",
-      variant: "errors",
+      variant: "required errors",
     });
 
-    // Fill the form
-    await fieldsUpdate(page);
+    await triggerFormatValidationErrors(page, selectOperatorPage.buttonSubmit);
+
+    pageContent = page.locator("html");
+    await happoPlaywright.screenshot(page, pageContent, {
+      component: "Add a new operator",
+      variant: "format errors",
+    });
+
+    // Fill all operator form fields
+    await fillAllFormFields(page, "fieldset#root");
+    // Add a parent operator
+    await page.locator("#root_operator_has_parent_operators-0").check();
+
+    // Fill the parent operator form
+    await fillAllFormFields(page, "fieldset#root_parent_operators_array_0");
+
+    // Add a second parent operator
+    await page.locator("#root_operator_has_parent_operators-1").check();
+
+    // Fill the second parent operator form
+    await fillAllFormFields(page, "fieldset#root_parent_operators_array_0");
 
     pageContent = page.locator("html");
     await happoPlaywright.screenshot(page, pageContent, {
@@ -210,15 +234,4 @@ test.describe("Test Workflow industry_user", () => {
       page.getByText(/Which operator would you like to log in to?/i)
     ).toBeVisible();
   });
-
-  //   assert "My Operator\create new Operator"
-  //  is able to search for their operator by operator legal name (fuzzy search) or CRA business number (exact matches only), or has the option of adding a new operator
-  //  is able to select an operator from the search results and sees operator preview, with options to go back to the search screen, or confirm "Yes this is my operator"
-  //  once they've selected their operator from the search and confirmed "Yes this is my operator", there's 2 scenarios:
-  // - [ ] no other user has requested admin access for the operator, in which case industry_user should be prompted whether they want to request to be admin
-  // - [ ] some other user has already requested admin access for the same operator, in which case the industry_user can request access to the Operator, but they won't automatically be the admin for the operator
-  //  is able to create a new operator from the Select Operator page, and populate all form fields, with different scenarios:
-  // - [ ] operator has no parent company
-  // - [ ] operator has 1 parent company
-  // - [ ] operator has multiple parent companies
 });
