@@ -584,7 +584,6 @@ class UserOperator(TimeStampedModel):
     id = models.UUIDField(
         primary_key=True, default=uuid.uuid4, db_comment="Primary key to identify the user operator", verbose_name="ID"
     )
-
     user_friendly_id = models.IntegerField(
         null=True, blank=True, db_comment="A user-friendly ID to identify the user operator"
     )
