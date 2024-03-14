@@ -210,7 +210,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        shard: [1, 2]
+        shardIndex: [1, 2, 3, 4]
+        shardTotal: [4]
     steps:
       - uses: actions/checkout@v3
       - name: dev env setup
@@ -264,12 +265,42 @@ jobs:
           HAPPO_API_KEY: ${{ secrets.HAPPO_API_KEY }}
           HAPPO_API_SECRET: ${{ secrets.HAPPO_API_SECRET }}
         working-directory: ./client
-      - uses: actions/upload-artifact@v3
+      - name: Upload blob report to GitHub Actions Artifacts
         if: always()
+        uses: actions/upload-artifact@v4
         with:
-          name: playwright-report-${{ matrix.shard }}_${{ strategy.job-total }}
-          path: client/playwright-report
-          retention-days: 30
+          name: blob-report-${{ matrix.shardIndex }}
+          path: blob-report
+          retention-days: 1
+  merge-reports:
+    # Merge reports after e2e, even if some shards have failed
+    if: always()
+    needs: [e2e]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Download blob reports from GitHub Actions Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: all-blob-reports
+          pattern: blob-report-*
+          merge-multiple: true
+
+      - name: Merge into HTML Report
+        run: npx playwright merge-reports --reporter html ./all-blob-reports
+
+      - name: Upload HTML report
+        uses: actions/upload-artifact@v4
+        with:
+          name: html-report--attempt-${{ github.run_attempt }}
+          path: playwright-report
+          retention-days: 14
   backend-tests:
     needs:
       ["backend-docker-build", "frontend-docker-build", "install-dev-tools"]
