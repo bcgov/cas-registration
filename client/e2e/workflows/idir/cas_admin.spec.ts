@@ -37,7 +37,7 @@ test.beforeAll(async () => {
   const browser = await chromium.launch();
   const context = await browser.newContext();
   let response: APIResponse = await context.request.get(
-    "http://localhost:8000/api/registration/test-setup",
+    "http://localhost:8000/api/registration/test-setup?workflow=cas_admin",
   );
 
   // Wait for the response and check for success status text and code (e.g., 200)
