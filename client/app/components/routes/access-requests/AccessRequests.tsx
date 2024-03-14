@@ -8,6 +8,7 @@ export const formatUserOperatorRows = (rows: GridRowsProp) => {
   return rows?.map(
     ({
       id,
+      user_friendly_id,
       status,
       first_name,
       last_name,
@@ -16,7 +17,8 @@ export const formatUserOperatorRows = (rows: GridRowsProp) => {
       bceid_business_name,
     }) => {
       return {
-        id,
+        id, // This unique ID is needed for DataGrid to work properly
+        user_friendly_id,
         status,
         first_name,
         last_name,
@@ -24,7 +26,7 @@ export const formatUserOperatorRows = (rows: GridRowsProp) => {
         legal_name,
         bceid_business_name,
       };
-    },
+    }
   );
 };
 
@@ -52,7 +54,7 @@ const AccessRequests = ({
         rowCount={rowCount}
         columns={[
           {
-            field: "id",
+            field: "user_friendly_id",
             headerName: "Request\n ID",
             width: 100,
           },
