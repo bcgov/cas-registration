@@ -202,10 +202,15 @@ jobs:
           fail_action: false
 
   e2e:
+    name: 🧪 e2e test (${{ matrix.shard }}/${{ strategy.job-total }})
     needs:
       ["backend-docker-build", "frontend-docker-build", "install-dev-tools"]
     timeout-minutes: 60
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2]
     steps:
       - uses: actions/checkout@v3
       - name: dev env setup
@@ -229,7 +234,7 @@ jobs:
         working-directory: ./client
       - name: Run Playwright Tests
         run: |
-          DEBUG=pw:browser npx happo-e2e -- npx playwright test --trace=on --workers=1 client/e2e/*
+          DEBUG=pw:browser npx happo-e2e -- npx playwright test --shard=${{ matrix.shard }}/${{ strategy.job-total }} client/e2e/*
         env:
           API_URL: http://127.0.0.1:8000/api/
           DB_USER: postgres
@@ -262,7 +267,7 @@ jobs:
       - uses: actions/upload-artifact@v3
         if: always()
         with:
-          name: playwright-report
+          name: playwright-report-${{ matrix.shard }}_${{ strategy.job-total }}
           path: client/playwright-report
           retention-days: 30
   backend-tests:
