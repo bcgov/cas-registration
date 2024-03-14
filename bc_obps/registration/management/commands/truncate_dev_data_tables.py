@@ -20,7 +20,9 @@ class Command(BaseCommand):
                 cursor.execute("SELECT tablename FROM pg_tables WHERE schemaname = %s;", [schema])
                 for row in cursor.fetchall():
                     table_name = schema + "." + row[0]
-                    if table_name not in tables_with_production_data:
-                        cursor.execute('TRUNCATE TABLE ' + table_name + ' RESTART IDENTITY CASCADE;')
+                    if row[0] not in tables_with_production_data:
+                        truncate_statement = """ TRUNCATE TABLE %s RESTART IDENTITY CASCADE; """
+                        full_truncate_statement = truncate_statement % table_name
+                        cursor.execute(full_truncate_statement)
 
         self.stdout.write(self.style.SUCCESS('All tables have been truncated.'))
