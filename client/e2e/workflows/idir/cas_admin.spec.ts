@@ -358,23 +358,37 @@ test.describe("Test Workflow cas_admin", () => {
       modalConfirmButton,
       modalCancelButton,
     ]);
+    const requestPromise = operationsPage.page.waitForRequest(
+      (request) =>
+        !!(
+          request.url() === operationsPage.page.url() &&
+          request.method() === "POST" &&
+          request.postData()?.includes("Approved")
+        ),
+    );
+
     await modalConfirmButton.click();
+    await requestPromise; // wait for the POST request to complete
+
     await expect(modal).not.toBeVisible();
     await expect(operationsPage.page.locator(".MuiAlert-message")).toHaveText(
       "You have approved the request for carbon tax exemption.",
     );
 
-    // Adding a wait to ensure the message is visible
-    await operationsPage.page.waitForSelector(
-      DataTestID.CAS_ADMIN_OPERATION_APPROVED_MESSAGE,
-      { timeout: 10000 }, // flaky test fix
-    );
-    // Approved operation message on top of the form
     await expect(
-      operationsPage.page.locator(
-        DataTestID.CAS_ADMIN_OPERATION_APPROVED_MESSAGE,
-      ),
+      operationsPage.page.getByTestId("cas-admin-operation-approved-message"),
     ).toBeVisible();
+
+    // Adding a wait to ensure the message is visible
+    // await operationsPage.page.waitForSelector(
+    //   DataTestID.CAS_ADMIN_OPERATION_APPROVED_MESSAGE,
+    // );
+    // // Approved operation message on top of the form
+    // await expect(
+    //   operationsPage.page.locator(
+    //     DataTestID.CAS_ADMIN_OPERATION_APPROVED_MESSAGE,
+    //   ),
+    // ).toBeVisible();
 
     // 🔙 Navigate back to the operations table
     operationsPage.clickOperationsLink();
