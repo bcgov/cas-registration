@@ -12,7 +12,16 @@ import { tableColumnNamesAreCorrect } from "@/e2e/utils/helpers";
 import * as dotenv from "dotenv";
 dotenv.config({ path: "./e2e/.env.local" });
 // ☰ Enums
-import { UserOperatorStatus } from "@/e2e/utils/enums";
+import { UserOperatorStatus, UserRole } from "@/e2e/utils/enums";
+import happoPlaywright from "happo-playwright";
+
+test.beforeEach(async ({ context }) => {
+  await happoPlaywright.init(context);
+});
+
+test.afterEach(async () => {
+  await happoPlaywright.finish();
+});
 
 // 🏷 Annotate test suite as serial
 test.describe.configure({ mode: "serial" });
@@ -102,22 +111,45 @@ test.describe("Test Workflow industry_user_admin", () => {
     // Verify that we are on the operation detail page
     await operationPage.operationFormIsVisible();
 
-    // Fill page 1 and click save and continue to move to the next step
+    // Fill page 1, take screenshot and click save and continue to move to the next step
     await operationPage.fillOperationFormPage1();
+
+    const pageContent = page.locator("html");
+    await happoPlaywright.screenshot(operationPage.page, pageContent, {
+      component: `${UserRole.INDUSTRY_USER_ADMIN} - Operation Form Page 1`,
+      variant: "default",
+    });
+
     await operationPage.clickSaveAndContinue();
     await operationPage.operationFormStep2IsVisible();
 
-    // Fill page 2 and click save and continue to move to the next step
+    // Fill page 2, take screenshot and click save and continue to move to the next step
     await operationPage.fillOperationFormPage2();
+    await happoPlaywright.screenshot(operationPage.page, pageContent, {
+      component: `${UserRole.INDUSTRY_USER_ADMIN} - Operation Form Page 2`,
+      variant: "default",
+    });
+
     await operationPage.clickSaveAndContinue();
     await operationPage.operationFormStep3IsVisible();
 
-    // Fill page 3 and click save and continue to move to the next step
+    // Fill page 3, take screenshot and click save and continue to move to the next step
     await operationPage.addFile();
+    await happoPlaywright.screenshot(operationPage.page, pageContent, {
+      component: `${UserRole.INDUSTRY_USER_ADMIN} - Operation Form Page 3`,
+      variant: "default",
+    });
+
     await operationPage.clickSubmitButton();
 
-    // Verify that the submission was successful
+    // Verify that the submission was successful and take a screenshot
     await operationPage.operationSuccessfulSubmissionIsVisible();
+    await operationPage.addFile();
+    await happoPlaywright.screenshot(operationPage.page, pageContent, {
+      component: `${UserRole.INDUSTRY_USER_ADMIN} - Operation Form Submission Successful`,
+      variant: "default",
+    });
+
     await operationPage.clickReturnToOperationsList();
 
     // Verify that we have returned to the operations table
@@ -197,5 +229,11 @@ test.describe("Test Workflow industry_user_admin", () => {
 
     //  Undo user status change - doing this so we can re-run test locally with no errors
     await userPage.undoUserStatusChange(UserOperatorStatus.DECLINED, 2);
+
+    const pageContent = page.locator("html");
+    await happoPlaywright.screenshot(userPage.page, pageContent, {
+      component: `${UserRole.INDUSTRY_USER_ADMIN} - User Access Management`,
+      variant: "default",
+    });
   });
 });
