@@ -635,6 +635,18 @@ class UserOperatorModelTest(BaseTestCase):
         ):
             invalid_user_operator_record.save()
 
+    def test_user_friendly_id_generation(self):
+        user_operator_1 = user_operator_baker()
+        user_operator_2 = user_operator_baker()
+        user_operator_1_friendly_id = user_operator_1.user_friendly_id
+        user_operator_2_friendly_id = user_operator_2.user_friendly_id
+        self.assertNotEqual(
+            user_operator_1_friendly_id, user_operator_2_friendly_id, "User friendly IDs should be unique."
+        )
+        self.assertEqual(
+            user_operator_2_friendly_id, user_operator_1_friendly_id + 1, "User friendly IDs should increment"
+        )
+
 
 class OperationModelTest(BaseTestCase):
     fixtures = [
