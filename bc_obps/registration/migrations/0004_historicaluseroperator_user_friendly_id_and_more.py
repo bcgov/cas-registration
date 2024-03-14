@@ -3,6 +3,7 @@
 from django.db import migrations, models
 
 
+# This migration adds a user-friendly ID to existing user operators
 def add_user_friendly_id(apps, schema_editor):
     UserOperator = apps.get_model('registration', 'UserOperator')
     for index, user_operator in enumerate(UserOperator.objects.order_by('created_at'), start=1):
