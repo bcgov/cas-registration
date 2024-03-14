@@ -46,11 +46,12 @@ class EmailService:
         self._get_token()
         try:
             response = self._make_request("/health")
-            for dependency in response.json().get('dependencies'):
-                if dependency.get('healthy') != True:
-                    print(f'{dependency.get("name")} is not healthy')
-                    return False
-            return True
+            return response.json()
+            # for dependency in response.json().get('dependencies'):
+            #     if dependency.get('healthy') != True:
+            #         print(f'{dependency.get("name")} is not healthy')
+            #         return False
+            # return True
         except Exception as exc:
             print("Exception in /email/health_check ", str(exc))
 

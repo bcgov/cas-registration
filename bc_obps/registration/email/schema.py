@@ -1,5 +1,6 @@
 from typing import List, Optional
 from enum import Enum
+from ninja import Schema
 
 
 class BodyType(Enum):
@@ -13,14 +14,14 @@ class MessagePriority(Enum):
     LOW = 'low'
 
 
-class AttachmentObject:
+class AttachmentObject(Schema):
     content: str
     content_type: str
     encoding: Optional[str]
     filename: str
 
 
-class ContextObject:
+class ContextObject(Schema):
     bcc: Optional[List[str]]
     cc: Optional[List[str]]
     context: dict
@@ -29,10 +30,10 @@ class ContextObject:
     to: List[str]
 
 
-class EmailOutData:
+class EmailOutData(Schema):
     attachments: Optional[List[AttachmentObject]]
     bcc: Optional[List[str]]
-    bodyType: BodyType = 'text'
+    bodyType: BodyType
     body: str
     cc: Optional[List[str]]
     delayTS: Optional[int] = 0

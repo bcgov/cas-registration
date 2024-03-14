@@ -1,35 +1,26 @@
 from uuid import UUID
+from registration.decorators import authorize
 from registration.email.schema import EmailOutData
 from registration.email.emailService import EmailService
 from .api_base import router
 from ninja.responses import codes_4xx
 from registration.schema import Message
+from registration.models import AppRole
 
 email_service = EmailService()
 
 
 ##### GET #####
-@router.get("/email/health-check", response={200: bool, codes_4xx: Message}, url_name="email_health_check")
+@router.get("/email/health-check", response={codes_4xx: Message}, url_name="email_health_check")
+@authorize(AppRole.get_authorized_irc_roles())
 def get_email_health_check(request):
-    print("Requesting health check")
-    return email_service.health_check()
+    response = email_service.health_check()
+    print("response from endpoint ", response)
+    return response
 
 
-# TODO : delete this route - only used for testing POC
-@router.get("/email/send-to-dev", response={200: dict, codes_4xx: Message}, url_name="email_dev")
-def send_dev_email(_):
-    print("Sending test email to dev")
-    email_data: EmailOutData = {
-        'to': ['andrea.williams@gov.bc.ca'],
-        'subject': 'Test Email 4',
-        'body': "This is a CHES test email from me to me.",
-        'bodyType': "text",
-        'from': "andrea.williams@gov.bc.ca",
-    }
-    return email_service.send_email(email_data)
-
-
-@router.get("/email/check-status/{message_id}", response={200: str, codes_4xx: Message}, url_name="email_check_status")
+@router.get("/email/check-status/{message_id}", response={codes_4xx: Message}, url_name="email_check_status")
+@authorize(AppRole.get_authorized_irc_roles())
 def check_email_status(request, message_id: UUID):
     response = email_service.get_message_status(msgId=message_id)
     return response.get('status')
@@ -48,6 +39,11 @@ def send_email_from_template(request):
 
 
 ##### POST #####
+@router.post("/email/send", response={201: dict, codes_4xx: Message}, url_name="send_email")
+@authorize(AppRole.get_all_authorized_app_roles())
+def send_email(request, email_data: EmailOutData):
+    response = email_service.send_email(email_data)
+    return response.json()
 
 
 ##### DELETE #####
