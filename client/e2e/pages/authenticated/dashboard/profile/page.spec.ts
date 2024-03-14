@@ -51,7 +51,7 @@ test.describe("Test Profile Page", () => {
         await profilePage.updateSuccess();
         //🔍 Assert profile name reflects the updated user profile full name
         await profilePage.userFullNameIsCorrect(
-          "e2e first name* e2e last name*",
+          "e2e first name* e2e last name*"
         );
 
         switch (value) {

@@ -37,7 +37,7 @@ test.beforeAll(async () => {
     await deleteUserRecord(process.env.E2E_NEW_USER_GUID as string);
     // 👤 delete user operator
     await deleteUserOperatorRecord(
-      process.env.E2E_INDUSTRY_USER_GUID as string,
+      process.env.E2E_INDUSTRY_USER_GUID as string
     );
   } catch (error) {
     // eslint-disable-next-line no-console
@@ -146,7 +146,7 @@ test.describe("Test Route Access", () => {
                         state: "hidden",
                       });
                       const notFoundSelector = await page.$(
-                        DataTestID.NOTFOUND,
+                        DataTestID.NOTFOUND
                       );
                       expect(notFoundSelector).toBeFalsy();
                       break;
