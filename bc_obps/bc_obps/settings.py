@@ -163,8 +163,9 @@ DATA_UPLOAD_MAX_MEMORY_SIZE = 20000000
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
 
-USE_SENTRY = os.environ.get('SENTRY_ENVRIONMENT')
-if USE_SENTRY == 'prod' and DEBUG == 'False':
+# Only enable sentry in production
+SENTRY_ENVIRONMENT = os.environ.get('SENTRY_ENVIRONMENT')
+if SENTRY_ENVIRONMENT == 'prod' and DEBUG == 'False':
     sentry_sdk.init(
         dsn="https://c097ce7d51760bab348fa0608eea9870@o646776.ingest.sentry.io/4506621387407360",
         integrations=[DjangoIntegration()],
