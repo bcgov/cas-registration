@@ -609,6 +609,7 @@ class UserOperatorModelTest(BaseTestCase):
         cls.field_data = [
             *timestamp_common_fields,
             ("id", "ID", None, None),
+            ("user_friendly_id", "user friendly id", None, None),
             ("user", "user", None, None),
             ("operator", "operator", None, None),
             ("role", "role", 1000, None),
