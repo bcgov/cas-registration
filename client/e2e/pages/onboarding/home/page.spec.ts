@@ -1,5 +1,4 @@
 // 🧪 Suite to test `client/app/(onboarding)/home/page.tsx`
-
 import { test, expect } from "@playwright/test";
 // 🪄 Page Object Models
 import { DashboardPOM } from "@/e2e/poms/dashboard";
@@ -18,6 +17,8 @@ import {
 import * as dotenv from "dotenv";
 dotenv.config({ path: "./e2e/.env.local" });
 import happoPlaywright from "happo-playwright";
+// 🛠️ Helpers
+import { setupTestEnvironment } from "@/e2e/utils/helpers";
 
 // 🏷 Annotate test suite as serial
 test.describe.configure({ mode: "serial" });
@@ -90,6 +91,10 @@ test.describe("Test Page - Home", () => {
   });
 
   test.describe(`Test User Role`, () => {
+    // Hit the test setup endpoint before running the tests to ensure there's no data dependency when deleting user
+    test.beforeAll(async () => {
+      await setupTestEnvironment(undefined, true);
+    });
     // ➰ Loop through the entries of UserRole enum
     for (let [role, value] of Object.entries(UserRole)) {
       test(`Test Login - ${value}`, async ({ page }) => {
