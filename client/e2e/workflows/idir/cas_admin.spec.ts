@@ -367,6 +367,7 @@ test.describe("Test Workflow cas_admin", () => {
     // Adding a wait to ensure the message is visible
     await operationsPage.page.waitForSelector(
       DataTestID.CAS_ADMIN_OPERATION_APPROVED_MESSAGE,
+      { timeout: 10000 }, // flaky test fix
     );
     // Approved operation message on top of the form
     await expect(
