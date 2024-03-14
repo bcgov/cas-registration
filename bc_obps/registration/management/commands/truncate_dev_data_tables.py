@@ -27,7 +27,7 @@ class Command(BaseCommand):
             for row in cursor.fetchall():
                 table_name = row[0]
                 cursor.execute(
-                    'TRUNCATE TABLE erc_history."{}" RESTART IDENTITY CASCADE;'.format(table_name)
-                )  # NOSONAR
+                    'TRUNCATE TABLE erc_history."{}" RESTART IDENTITY CASCADE;'.format(table_name)  # NOSONAR
+                )
 
         self.stdout.write(self.style.SUCCESS('All tables have been truncated.'))
