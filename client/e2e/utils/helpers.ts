@@ -1,4 +1,4 @@
-import { Page, expect, Locator } from "@playwright/test";
+import { Page, expect, Locator, APIResponse, chromium } from "@playwright/test";
 // ☰ Enums
 import { DataTestID } from "@/e2e/utils/enums";
 
@@ -273,4 +273,23 @@ export async function checkAlertMessage(
   index: number = 0,
 ) {
   await expect(page.getByRole("alert").nth(index)).toHaveText(alertMessage);
+}
+
+export async function setupTestEnvironment(
+  workFlow?: string,
+  truncateOnly?: boolean,
+) {
+  const browser = await chromium.launch();
+  const context = await browser.newContext();
+  const baseUrl = "http://localhost:8000/api/registration/test-setup";
+  const url = workFlow
+    ? `${baseUrl}?workflow=${workFlow}`
+    : truncateOnly
+    ? `${baseUrl}?truncate_only=true`
+    : baseUrl;
+  let response: APIResponse = await context.request.get(url);
+
+  // Wait for the response and check for success status text and code (e.g., 200)
+  expect(await response.text()).toBe("Test setup complete.");
+  expect(response.status()).toBe(200);
 }

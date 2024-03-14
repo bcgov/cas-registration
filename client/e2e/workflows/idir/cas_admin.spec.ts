@@ -1,12 +1,11 @@
-import { chromium } from "@playwright/test";
 // 🧪 Suite to test the cas_admin workflows using storageState
-import { test, expect, APIResponse } from "@playwright/test";
+import { test, expect } from "@playwright/test";
 // 🪄 Page Object Models
 import { DashboardPOM } from "@/e2e/poms/dashboard";
 import { OperationsPOM } from "@/e2e/poms/operations";
 import { OperatorsPOM } from "@/e2e/poms/operators";
 // ☰ Enums
-import { DataTestID } from "@/e2e/utils/enums";
+import { DataTestID, UserRole } from "@/e2e/utils/enums";
 // 🛠️ Helpers
 import {
   getAllFormInputs,
@@ -23,9 +22,13 @@ import {
   getModalCancelButton,
   checkAlertMessage,
   checkFormHeaderIsCollapsed,
+  setupTestEnvironment,
 } from "@/e2e/utils/helpers";
 // ℹ️ Environment variables
 import * as dotenv from "dotenv";
+
+// ⚙️ SQL Queries
+import { upsertUserRecord } from "@/e2e/utils/queries";
 
 dotenv.config({ path: "./e2e/.env.local" });
 
@@ -34,15 +37,8 @@ test.describe.configure({ mode: "serial" });
 
 // Hit the test setup endpoint before running the tests to ensure the test data is set up
 test.beforeAll(async () => {
-  const browser = await chromium.launch();
-  const context = await browser.newContext();
-  let response: APIResponse = await context.request.get(
-    "http://localhost:8000/api/registration/test-setup?workflow=cas_admin",
-  );
-
-  // Wait for the response and check for success status text and code (e.g., 200)
-  expect(await response.text()).toBe("Test setup complete.");
-  expect(response.status()).toBe(200);
+  await setupTestEnvironment("cas_admin");
+  await upsertUserRecord(UserRole.CAS_ADMIN); // upsert cas_admin user in case it was deleted by another test
 });
 
 test.describe("Test Workflow cas_admin", () => {
@@ -459,7 +455,7 @@ test.describe("Test Workflow cas_admin", () => {
     // 🧪 Assert that the current URL ends with "(authenticated)/dashboard"
     await dashboardPage.urlIsCorrect();
     // 🧪 has a mailto: link on it
-    expect(dashboardPage.reportProblemLink).toHaveAttribute(
+    await expect(dashboardPage.reportProblemLink).toHaveAttribute(
       "href",
       /mailto:GHGRegulator@gov.bc.ca/i,
     );
