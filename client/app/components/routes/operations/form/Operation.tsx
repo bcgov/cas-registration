@@ -12,6 +12,7 @@ import OperationReview from "./OperationReview";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 import ErrorIcon from "@mui/icons-material/Error";
+import { Fade } from "@mui/material";
 import { Status } from "@/app/utils/enums";
 import { Operation as OperationInt } from "@/app/components/routes/operations/types";
 import Link from "next/link";
@@ -319,8 +320,11 @@ export default async function Operation({ numRow }: { numRow?: string }) {
   return (
     <>
       <OperationReview operation={operation} />
-      {showRegistrationRequestResult &&
-        registrationRequestResultJSX && { registrationRequestResultJSX }}
+      {showRegistrationRequestResult && registrationRequestResultJSX && (
+        <Fade in={showRegistrationRequestResult}>
+          {registrationRequestResultJSX}
+        </Fade>
+      )}
       {isCasInternal ? (
         <OperationReviewForm
           schema={createOperationSchema(
