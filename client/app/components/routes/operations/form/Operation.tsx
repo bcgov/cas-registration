@@ -209,7 +209,7 @@ export default async function Operation({ numRow }: { numRow?: string }) {
       />
       <div>
         {isCasInternal ? (
-          <p data-testid="cas-admin-operation-approved-message">
+          <p>
             This operation’s application for a B.C. OBPS Regulated Operation ID
             was approved.
           </p>
@@ -319,6 +319,7 @@ export default async function Operation({ numRow }: { numRow?: string }) {
   // Render the OperationsForm component with schema and formData if the operation already exists
   return (
     <>
+      {isCasInternal && <h4>THIS IS A CAS INTERNAL USER</h4>}
       <OperationReview operation={operation} />
       {showRegistrationRequestResult && registrationRequestResultJSX && (
         <Fade in={showRegistrationRequestResult}>
