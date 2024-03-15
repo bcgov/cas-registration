@@ -19,7 +19,6 @@ from django.utils import timezone
 from django.core.exceptions import ValidationError
 from django.core.files.storage import default_storage
 from django.core.cache import cache
-from django.utils.translation import gettext as _
 
 
 class BaseModel(models.Model):
