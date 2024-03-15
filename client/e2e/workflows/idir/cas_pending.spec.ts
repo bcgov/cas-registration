@@ -14,7 +14,7 @@ test.describe.configure({ mode: "serial" });
 test.describe("Test Workflow cas_pending", () => {
   // 👤 run test using the storageState for this role
   const storageState = JSON.parse(
-    process.env.E2E_CAS_PENDING_STORAGE as string
+    process.env.E2E_CAS_PENDING_STORAGE as string,
   );
   // Note: specify storageState for each test file or test group, instead of setting it in the config. https://playwright.dev/docs/next/auth#reuse-signed-in-state
   test.use({ storageState: storageState }); // this will error if no such file or directory
@@ -26,7 +26,7 @@ test.describe("Test Workflow cas_pending", () => {
     await homePage.route();
     // 🔍 Assert that the pending message is displayed
     await homePage.page.waitForSelector(
-      '[data-testid="dashboard-pending-message"]'
+      '[data-testid="dashboard-pending-message"]',
     );
   });
   test("Test Redirect to Dashboard", async ({ page }) => {

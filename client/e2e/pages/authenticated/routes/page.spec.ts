@@ -29,7 +29,7 @@ For industry_user: create scenario for Operator Select\1 action pending
 test.beforeAll(async () => {
   try {
     await deleteUserOperatorRecord(
-      process.env.E2E_INDUSTRY_USER_GUID as string
+      process.env.E2E_INDUSTRY_USER_GUID as string,
     );
   } catch (error) {
     // eslint-disable-next-line no-console
@@ -137,7 +137,7 @@ for (let [role, value] of Object.entries(UserRole)) {
                       state: "hidden",
                     });
                     const notFoundSelector = await page.$(
-                      '[data-testid="not-found"]'
+                      '[data-testid="not-found"]',
                     );
                     expect(notFoundSelector).toBeFalsy();
                     break;
