@@ -27,7 +27,7 @@ export enum DataTestID {
   NOTFOUND = '[data-testid="not-found"]',
   PROFILE = '[data-testid="nav-user-profile"]',
   OPERATION_APPROVED_MESSAGE = '[data-testid="operation-approved-message"]',
-  CAS_ADMIN_OPERATION_DECLINED_MESSAGE = '[data-testid="cas-admin-operation-declined-message"]',
+  OPERATION_DECLINED_MESSAGE = '[data-testid="operation-declined-message"]',
   MODAL = '[data-testid="modal"]',
 }
 
