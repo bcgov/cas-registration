@@ -171,6 +171,7 @@ class ExternalDashboardUsersTileData(ModelSchema):
 
 class UserOperatorListOut(Schema):
     id: UUID
+    user_friendly_id: int
     status: str
     first_name: str
     last_name: str
