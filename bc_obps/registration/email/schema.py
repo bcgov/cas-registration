@@ -1,6 +1,7 @@
 from typing import List, Optional
 from enum import Enum
 from ninja import Schema
+from pydantic import BaseModel
 
 
 class BodyType(Enum):
@@ -14,14 +15,14 @@ class MessagePriority(Enum):
     LOW = 'low'
 
 
-class AttachmentObject(Schema):
+class AttachmentObject(dict):
     content: str
     content_type: str
     encoding: Optional[str]
     filename: str
 
 
-class ContextObject(Schema):
+class ContextObject(dict):
     bcc: Optional[List[str]]
     cc: Optional[List[str]]
     context: dict
@@ -30,14 +31,14 @@ class ContextObject(Schema):
     to: List[str]
 
 
-class EmailOutData(Schema):
-    attachments: Optional[List[AttachmentObject]]
-    bcc: Optional[List[str]]
+class EmailIn(BaseModel):
+    attachments: Optional[List[AttachmentObject]] = []
+    bcc: Optional[List[str]] = []
     bodyType: BodyType
     body: str
-    cc: Optional[List[str]]
+    cc: Optional[List[str]] = []
     delayTS: Optional[int] = 0
-    encoding: Optional[str]
+    encoding: Optional[str] = 'utf-8'
     send_from: str
     priority: Optional[MessagePriority]
     subject: str

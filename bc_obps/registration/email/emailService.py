@@ -1,9 +1,10 @@
+import json
 from typing import List
 import requests
 from uuid import UUID
 from django.conf import settings
 
-from registration.email.schema import EmailOutData, ContextObject
+from registration.email.schema import EmailIn, ContextObject, BodyType
 
 
 class EmailService:
@@ -28,7 +29,7 @@ class EmailService:
             else:
                 raise Exception("Failed to retrieve CHES access token")
 
-    def _make_request(self, endpoint, method='GET', data=None):
+    def _make_request(self, endpoint, method='GET', data: any = None):
         headers = {"Authorization": f'Bearer {self.token}'} if self.token else {}
         print(f'Received request to {method} to {endpoint} with payload {data}')
         if method == 'GET':
@@ -63,15 +64,21 @@ class EmailService:
         except Exception as exc:
             print(f'Exception retrieving message status for {msgId} - ', str(exc))
 
-    def send_email(self, email_data: EmailOutData):
+    def send_email(self, email_data: EmailIn):
         self._get_token()
         try:
+            email_data_dict = email_data.dict()
+            # CHES API wants payload with keyword 'from', which Python doesn't allow because 'from' is a reserved keyword,
+            # hence this hack.
+            email_data_dict['from'] = email_data_dict.pop('send_from')
+            # must convert the BodyType enum to a string because "BodyType is not JSON serializable"
+            email_data_dict['bodyType'] = BodyType(email_data_dict['bodyType']).value
             response = self._make_request(
                 '/email',
                 method='POST',
-                data=email_data,
+                data=email_data_dict,
             )
-            return response.json()
+            return response
         except Exception as exc:
             print("Exception in send_email ", str(exc))
 
@@ -83,7 +90,7 @@ class EmailService:
         except Exception as exc:
             print(f'Exception in cancelling email {msgId} - ', str(exc))
 
-    def merge_template_and_send(self, email_data: EmailOutData, contexts: List[ContextObject]):
+    def merge_template_and_send(self, email_data: EmailIn, contexts: List[ContextObject]):
         self._get_token()
         try:
             response = self._make_request("/emailMerge", method='POST', data={'contexts': contexts, **email_data})

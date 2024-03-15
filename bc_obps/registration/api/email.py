@@ -1,6 +1,6 @@
 from uuid import UUID
 from registration.decorators import authorize
-from registration.email.schema import EmailOutData
+from registration.email.schema import EmailIn
 from registration.email.emailService import EmailService
 from .api_base import router
 from ninja.responses import codes_4xx
@@ -11,7 +11,7 @@ email_service = EmailService()
 
 
 ##### GET #####
-@router.get("/email/health-check", response={codes_4xx: Message}, url_name="email_health_check")
+@router.get("/email/health-check", response={200: dict, codes_4xx: Message}, url_name="email_health_check")
 @authorize(AppRole.get_authorized_irc_roles())
 def get_email_health_check(request):
     response = email_service.health_check()
@@ -19,7 +19,7 @@ def get_email_health_check(request):
     return response
 
 
-@router.get("/email/check-status/{message_id}", response={codes_4xx: Message}, url_name="email_check_status")
+@router.get("/email/check-status/{message_id}", response={200: str, codes_4xx: Message}, url_name="email_check_status")
 @authorize(AppRole.get_authorized_irc_roles())
 def check_email_status(request, message_id: UUID):
     response = email_service.get_message_status(msgId=message_id)
@@ -39,10 +39,13 @@ def send_email_from_template(request):
 
 
 ##### POST #####
-@router.post("/email/send", response={201: dict, codes_4xx: Message}, url_name="send_email")
-@authorize(AppRole.get_all_authorized_app_roles())
-def send_email(request, email_data: EmailOutData):
-    response = email_service.send_email(email_data)
+@router.post("/email/send", response={200: dict, codes_4xx: Message}, url_name="send_email")
+# NOTE: the CHES system does not allow external users (i.e., `industry_user`) to send emails.
+@authorize(AppRole.get_authorized_irc_roles())
+def send_email(request, payload: EmailIn):
+    response = email_service.send_email(payload)
+    print('Returning response:')
+    print(response.status_code, response.json())
     return response.json()
 
 
