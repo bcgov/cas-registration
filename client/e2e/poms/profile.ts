@@ -18,12 +18,14 @@ export class ProfilePOM {
   readonly url: string = process.env.E2E_BASEURL + AppRoute.PROFILE;
 
   readonly buttonSubmit: Locator;
+  readonly errorList: Locator;
 
   constructor(page: Page) {
     this.page = page;
     this.buttonSubmit = this.page.getByRole("button", {
       name: ActionButton.SUBMIT,
     });
+    this.errorList = this.page.locator(DataTestID.ERROR_PROFILE);
   }
 
   async route() {
@@ -51,11 +53,7 @@ export class ProfilePOM {
     await this.buttonSubmit.isEditable();
     // Response from submit either shows errors or triggeres handleSubmit which handles state changes on submit button etc.
     // 🔍 Assert that the error selector is not available
-    await this.page.waitForSelector(DataTestID.ERROR_PROFILE, {
-      state: "hidden",
-    });
-    const notFoundSelector = await this.page.$(DataTestID.ERROR_PROFILE);
-    expect(notFoundSelector).toBeFalsy();
+    return !(await this.errorList.isVisible());
   }
 
   async userFullNameIsCorrect(expectedText: string) {
