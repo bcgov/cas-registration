@@ -176,6 +176,7 @@ class UserOperatorListOut(Schema):
     last_name: str
     email: str
     legal_name: str
+    bceid_business_name: str
 
 
 class UserOperatorPaginatedOut(Schema):

@@ -6,7 +6,15 @@ import { statusStyle } from "@/app/components/datagrid/helpers";
 
 export const formatUserOperatorRows = (rows: GridRowsProp) => {
   return rows?.map(
-    ({ id, status, first_name, last_name, email, legal_name }) => {
+    ({
+      id,
+      status,
+      first_name,
+      last_name,
+      email,
+      legal_name,
+      bceid_business_name,
+    }) => {
       return {
         id,
         status,
@@ -14,6 +22,7 @@ export const formatUserOperatorRows = (rows: GridRowsProp) => {
         last_name,
         email,
         legal_name,
+        bceid_business_name,
       };
     },
   );
@@ -47,15 +56,20 @@ const AccessRequests = ({
             headerName: "Request\n ID",
             width: 100,
           },
-          { field: "first_name", headerName: "First\n Name", width: 180 },
-          { field: "last_name", headerName: "Last\n Name", width: 180 },
-          { field: "email", headerName: "Email", width: 300 },
+          { field: "first_name", headerName: "First\n Name", width: 150 },
+          { field: "last_name", headerName: "Last\n Name", width: 150 },
+          { field: "email", headerName: "Email", width: 200 },
+
+          {
+            field: "bceid_business_name",
+            headerName: "BCeID Business Name",
+            width: 280,
+          },
           {
             field: "legal_name",
-            headerName: "Operator",
-            width: 380,
+            headerName: "Operator Legal Name",
+            width: 280,
           },
-
           {
             field: "status",
             headerName: "Status",
