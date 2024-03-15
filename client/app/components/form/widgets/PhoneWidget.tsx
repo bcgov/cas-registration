@@ -34,7 +34,7 @@ const PhoneWidget: React.FC<WidgetProps> = ({
       onChange={handleChange}
       forceCallingCode
       defaultCountry="CA"
-      onlyCountries={["CA"]}
+      onlyCountries={["CA", "US"]}
       sx={styles}
     />
   );
