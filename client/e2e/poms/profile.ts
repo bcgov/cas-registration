@@ -3,7 +3,7 @@
  * Page objects model (POM) simplify test authoring by creating a higher-level API
  * POM simplify maintenance by capturing element selectors in one place and create reusable code to avoid repetition. *
  */
-import { ElementHandle, Locator, Page, expect } from "@playwright/test";
+import { Locator, Page, expect } from "@playwright/test";
 // ⛏️ Helpers
 import { fieldsClear, fieldsUpdate, getFieldAlerts } from "@/e2e/utils/helpers";
 // ☰ Enums
@@ -19,11 +19,14 @@ export class ProfilePOM {
 
   readonly buttonSubmit: Locator;
 
+  readonly errorList: Locator;
+
   constructor(page: Page) {
     this.page = page;
     this.buttonSubmit = this.page.getByRole("button", {
       name: ActionButton.SUBMIT,
     });
+    this.errorList = this.page.locator(DataTestID.ERROR_PROFILE);
   }
 
   async route() {
@@ -37,7 +40,7 @@ export class ProfilePOM {
     await this.buttonSubmit.click();
     // Locate all alert elements within the fieldset
     const alertElements = await getFieldAlerts(this.page);
-    // 🔍 Assert there to be exactly the same number of required fields and alert elements
+    // Assert there to be exactly the same number of required fields and alert elements
     await expect(clearedFields).toBe(alertElements.length);
   }
 
@@ -46,26 +49,18 @@ export class ProfilePOM {
     await fieldsUpdate(this.page);
     // Click the Submit button
     await this.buttonSubmit.click();
-    // Wait for the success message to appear
-    await this.page.waitForSelector('div:has-text("✅ Success")', {
-      timeout: 15000,
-    });
-    // If all actions succeed, return true
-    return true;
+    // Wait for API request/response
+    await this.buttonSubmit.isDisabled();
+    await this.buttonSubmit.isEditable();
+    // Assert that the error selector is not available
+    return !(await this.errorList.isVisible());
   }
 
   async userFullNameIsCorrect(expectedText: string) {
-    // Get the element handle
-    const elementHandle: ElementHandle | null = await this.page.$(
-      DataTestID.PROFILE,
+    // Waits for the selector to appear with the expected text
+    await this.page.waitForSelector(
+      `${DataTestID.PROFILE}:has-text("${expectedText}")`,
     );
-    // If elementHandle is null, return false
-    if (!elementHandle) {
-      return false;
-    }
-    // Get the text value of the profile link
-    const actualText = (await elementHandle.textContent()) as string;
-    await expect(actualText.toLowerCase()).toMatch(expectedText.toLowerCase());
   }
 
   async urlIsCorrect() {
