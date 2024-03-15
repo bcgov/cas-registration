@@ -27,7 +27,7 @@ export class DashboardPOM {
   }
 
   async hasMessagePending() {
-    return await this.msgPending.isVisible();
+    await expect(this.msgPending.isVisible());
   }
 
   async urlIsCorrect() {
