@@ -398,9 +398,7 @@ test.describe("Test Workflow cas_admin", () => {
 
     // Approved operation message on top of the form
     await expect(
-      operationsPage.page.locator(
-        DataTestID.CAS_ADMIN_OPERATION_APPROVED_MESSAGE,
-      ),
+      operationsPage.page.locator(DataTestID.OPERATION_APPROVED_MESSAGE),
     ).toBeVisible();
 
     // // Make sure the review buttons are not visible when viewing an approved operation
