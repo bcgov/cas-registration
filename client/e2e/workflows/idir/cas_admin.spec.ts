@@ -360,15 +360,10 @@ test.describe("Test Workflow cas_admin", () => {
     ]);
 
     await modalConfirmButton.click();
-    // await requestPromise; // wait for the POST request to complete
-
     await expect(modal).not.toBeVisible();
     await expect(operationsPage.page.locator(".MuiAlert-message")).toHaveText(
       "You have approved the request for carbon tax exemption.",
     );
-
-    // Approved operation message on top of the form
-    await operationsPage.operationApprovedMessageIsVisible();
 
     // 🔙 Navigate back to the operations table
     await operationsPage.clickOperationsLink();
@@ -401,6 +396,9 @@ test.describe("Test Workflow cas_admin", () => {
     await downloadPDF(operationsPage.page, "Preview", "mock_file.pdf");
 
     await operationsPage.clickCollapseAllButton();
+
+    // Approved operation message on top of the form
+    await operationsPage.operationApprovedMessageIsVisible();
 
     // 🔙 Navigate back to the operations table
     await operationsPage.clickOperationsLink();
