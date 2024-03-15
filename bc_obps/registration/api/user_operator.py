@@ -223,6 +223,7 @@ def list_user_operators(request, page: int = 1, sort_field: str = "created_at", 
             user_operator,
             fields=[
                 "id",
+                "user_friendly_id",
                 "status",
             ],
         )

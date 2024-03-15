@@ -609,6 +609,7 @@ class UserOperatorModelTest(BaseTestCase):
         cls.field_data = [
             *timestamp_common_fields,
             ("id", "ID", None, None),
+            ("user_friendly_id", "user friendly id", None, None),
             ("user", "user", None, None),
             ("operator", "operator", None, None),
             ("role", "role", 1000, None),
@@ -633,6 +634,18 @@ class UserOperatorModelTest(BaseTestCase):
             ValidationError, msg="A UserOperator record with this user-operator pair already exists."
         ):
             invalid_user_operator_record.save()
+
+    def test_user_friendly_id_generation(self):
+        user_operator_1 = user_operator_baker()
+        user_operator_2 = user_operator_baker()
+        user_operator_1_friendly_id = user_operator_1.user_friendly_id
+        user_operator_2_friendly_id = user_operator_2.user_friendly_id
+        self.assertNotEqual(
+            user_operator_1_friendly_id, user_operator_2_friendly_id, "User friendly IDs should be unique."
+        )
+        self.assertEqual(
+            user_operator_2_friendly_id, user_operator_1_friendly_id + 1, "User friendly IDs should increment"
+        )
 
 
 class OperationModelTest(BaseTestCase):
