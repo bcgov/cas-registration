@@ -318,9 +318,6 @@ export default async function Operation({ numRow }: { numRow?: string }) {
   // Render the OperationsForm component with schema and formData if the operation already exists
   return (
     <>
-      {operation?.bc_obps_regulated_operation && (
-        <h4>{operation.bc_obps_regulated_operation}</h4>
-      )}
       <OperationReview operation={operation} />
       {showRegistrationRequestResult && registrationRequestResultJSX}
       {isCasInternal ? (
