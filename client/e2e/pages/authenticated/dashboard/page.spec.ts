@@ -41,7 +41,7 @@ test.beforeAll(async () => {
     await upsertUserOperatorRecord(
       process.env.E2E_INDUSTRY_USER_ADMIN_GUID as string,
       AppRole.ADMIN,
-      UserOperatorStatus.APPROVED,
+      UserOperatorStatus.APPROVED
     );
     // Scenario FrontEndRoles.INDUSTRY_USER where userOperatorStatus !== UserOperatorStatus.APPROVED
     // Shows "Select Operator\...1 pending action(s) required" bceidSelectOperatorTile
@@ -49,7 +49,7 @@ test.beforeAll(async () => {
     // Upsert a User record: bc-cas-dev-secondary
     await upsertUserRecord(UserRole.INDUSTRY_USER);
     await deleteUserOperatorRecord(
-      process.env.E2E_INDUSTRY_USER_GUID as string,
+      process.env.E2E_INDUSTRY_USER_GUID as string
     );
   } catch (error) {
     // eslint-disable-next-line no-console
@@ -68,35 +68,38 @@ test.afterEach(async () => {
 
 // 🏷 Annotate test suite as serial
 test.describe.configure({ mode: "serial" });
-// ➰ Loop through the entries of UserRole enum
-for (let [role, value] of Object.entries(UserRole)) {
-  role = "E2E_" + role;
-  const storageState = JSON.parse(process.env[role + "_STORAGE"] as string);
-  test.describe(`Test Dashboard for ${value}`, () => {
-    // 👤 run test as this role
-    test.use({ storageState: storageState });
-    test("Test Selfie", async ({ page }) => {
-      // 🛸 Navigate to dashboard page
-      const dashboardPage = new DashboardPOM(page);
+test.describe("Test Dashboard Page", () => {
+  // ➰ Loop through the entries of UserRole enum
+  for (let [role, value] of Object.entries(UserRole)) {
+    role = "E2E_" + role;
+    const storageState = JSON.parse(process.env[role + "_STORAGE"] as string);
+    test.describe(`Test Role ${value}`, () => {
+      // 👤 run test as this role
+      test.use({ storageState: storageState });
+      test("Test Selfie", async ({ page }) => {
+        // 🛸 Navigate to dashboard page
+        const dashboardPage = new DashboardPOM(page);
 
-      await dashboardPage.route();
-      switch (value) {
-        case UserRole.NEW_USER:
-          // 🔍 Assert that the current URL ends with "/profile"
-          const profilePage = new ProfilePOM(page);
-          await profilePage.urlIsCorrect();
-          break;
-        default:
-          // 🔍 Assert that the current URL ends with "/dashboard"
-          await dashboardPage.urlIsCorrect();
+        await dashboardPage.route();
+        switch (value) {
+          case UserRole.NEW_USER:
+            // 🔍 Assert that the current URL ends with "/profile"
+            const profilePage = new ProfilePOM(page);
+            await profilePage.urlIsCorrect();
+            break;
+          default:
+            // 🔍 Assert that the current URL ends with "/dashboard"
+            await dashboardPage.urlIsCorrect();
 
-          const pageContent = page.locator("html");
-          await happoPlaywright.screenshot(dashboardPage.page, pageContent, {
-            component: `${role} Dashboard page`,
-            variant: "default",
-          });
-          break;
-      }
+            const pageContent = page.locator("html");
+            await happoPlaywright.screenshot(dashboardPage.page, pageContent, {
+              component: `${role} Dashboard page`,
+              variant: "default",
+            });
+
+            break;
+        }
+      });
     });
-  });
-}
+  }
+});

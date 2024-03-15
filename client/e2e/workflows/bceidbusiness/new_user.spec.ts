@@ -1,5 +1,4 @@
 // 🧪 Suite to test the bceidbusiness new user workflow using storageState
-// 🔍 Asserts new user is redirected to profile
 
 import { test } from "@playwright/test";
 // 🪄 Page Object Models
