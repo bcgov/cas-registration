@@ -26,7 +26,7 @@ export const formatUserOperatorRows = (rows: GridRowsProp) => {
         legal_name,
         bceid_business_name,
       };
-    }
+    },
   );
 };
 
