@@ -28,6 +28,8 @@ export class OperationsPOM {
 
   readonly operationApprovedMessage: Locator;
 
+  readonly operationDeclinedMessage: Locator;
+
   constructor(page: Page) {
     this.page = page;
     this.buttonAdd = page.getByRole("button", {
@@ -41,6 +43,9 @@ export class OperationsPOM {
     });
     this.operationApprovedMessage = page.locator(
       DataTestID.OPERATION_APPROVED_MESSAGE,
+    );
+    this.operationDeclinedMessage = page.locator(
+      DataTestID.OPERATION_DECLINED_MESSAGE,
     );
   }
 
@@ -124,6 +129,10 @@ export class OperationsPOM {
   }
 
   async operationApprovedMessageIsVisible() {
-    await expect(this.operationApprovedMessage).toBeVisible();
+    await this.operationApprovedMessage.waitFor({ state: "visible" });
+  }
+
+  async operationDeclinedMessageIsVisible() {
+    await this.operationDeclinedMessage.waitFor({ state: "visible" });
   }
 }
