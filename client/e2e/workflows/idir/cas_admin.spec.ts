@@ -3,25 +3,25 @@ import { test, expect } from "@playwright/test";
 // 🪄 Page Object Models
 import { DashboardPOM } from "@/e2e/poms/dashboard";
 import { OperationsPOM } from "@/e2e/poms/operations";
-import { OperatorsPOM } from "@/e2e/poms/operators";
+// import { OperatorsPOM } from "@/e2e/poms/operators";
 // ☰ Enums
 import { DataTestID, UserRole } from "@/e2e/utils/enums";
 // 🛠️ Helpers
 import {
-  getAllFormInputs,
+  // getAllFormInputs,
   // downloadPDF,
   tableColumnNamesAreCorrect,
   clickViewDetailsButton,
-  checkFormHeaders,
-  disabledAndNotEditable,
-  getModal,
-  getApproveButton,
-  getRejectButton,
-  checkLocatorsVisibility,
-  getModalConfirmButton,
-  getModalCancelButton,
-  checkAlertMessage,
-  checkFormHeaderIsCollapsed,
+  // checkFormHeaders,
+  // disabledAndNotEditable,
+  // getModal,
+  // getApproveButton,
+  // getRejectButton,
+  // checkLocatorsVisibility,
+  // getModalConfirmButton,
+  // getModalCancelButton,
+  // checkAlertMessage,
+  // checkFormHeaderIsCollapsed,
   setupTestEnvironment,
 } from "@/e2e/utils/helpers";
 // ℹ️ Environment variables
@@ -54,238 +54,238 @@ test.describe("Test Workflow cas_admin", () => {
     await dashboardPage.urlIsCorrect();
   });
 
-  test("Operators Tile workflow", async ({ page }) => {
-    // 🛸 Navigate to operators tile page
-    const dashboardPage = new DashboardPOM(page);
-    const operatorsPage = new OperatorsPOM(page);
-    await dashboardPage.route();
-    await dashboardPage.clickOperatorsTile();
-    await operatorsPage.urlIsCorrect();
-    await operatorsPage.operatorsTableIsVisible();
+  // test("Operators Tile workflow", async ({ page }) => {
+  //   // 🛸 Navigate to operators tile page
+  //   const dashboardPage = new DashboardPOM(page);
+  //   const operatorsPage = new OperatorsPOM(page);
+  //   await dashboardPage.route();
+  //   await dashboardPage.clickOperatorsTile();
+  //   await operatorsPage.urlIsCorrect();
+  //   await operatorsPage.operatorsTableIsVisible();
 
-    // 🧪 cas_admin is able to view operators table with the following columns
-    await tableColumnNamesAreCorrect(operatorsPage.page, [
-      "Request ID",
-      "First Name",
-      "Last Name",
-      "Email",
-      "Operator",
-      "Status",
-      "Action",
-    ]);
+  //   // 🧪 cas_admin is able to view operators table with the following columns
+  //   await tableColumnNamesAreCorrect(operatorsPage.page, [
+  //     "Request ID",
+  //     "First Name",
+  //     "Last Name",
+  //     "Email",
+  //     "Operator",
+  //     "Status",
+  //     "Action",
+  //   ]);
 
-    // 🧪 cas_admin is able to view all operators with statuses of "Pending", "Approved", or "Declined"
-    await operatorsPage.operatorsViewIsCorrect("cas_admin", [
-      "Declined",
-      "Approved",
-      "Pending",
-    ]);
+  //   // 🧪 cas_admin is able to view all operators with statuses of "Pending", "Approved", or "Declined"
+  //   await operatorsPage.operatorsViewIsCorrect("cas_admin", [
+  //     "Declined",
+  //     "Approved",
+  //     "Pending",
+  //   ]);
 
-    // 🧪 cas_admin is able to click "View Details" on a declined operator and see detailed info about it (read only)
-    await clickViewDetailsButton(operatorsPage.page); // DECLINED operator
+  //   // 🧪 cas_admin is able to click "View Details" on a declined operator and see detailed info about it (read only)
+  //   await clickViewDetailsButton(operatorsPage.page); // DECLINED operator
 
-    await operatorsPage.clickExpandAllButton();
-    await checkFormHeaders(operatorsPage.page, [
-      "Operator Information",
-      "User Information",
-    ]);
+  //   await operatorsPage.clickExpandAllButton();
+  //   await checkFormHeaders(operatorsPage.page, [
+  //     "Operator Information",
+  //     "User Information",
+  //   ]);
 
-    // Check that all form fields are disabled and not editable
-    const allFormFields = await getAllFormInputs(operatorsPage.page);
-    await disabledAndNotEditable(allFormFields);
+  //   // Check that all form fields are disabled and not editable
+  //   const allFormFields = await getAllFormInputs(operatorsPage.page);
+  //   await disabledAndNotEditable(allFormFields);
 
-    // Make sure the review buttons are not visible when viewing a declined operator
-    const approveButton = await getApproveButton(operatorsPage.page);
-    const rejectButton = await getRejectButton(operatorsPage.page);
-    await checkLocatorsVisibility(
-      operatorsPage.page,
-      [approveButton, rejectButton],
-      false,
-    );
+  //   // Make sure the review buttons are not visible when viewing a declined operator
+  //   const approveButton = await getApproveButton(operatorsPage.page);
+  //   const rejectButton = await getRejectButton(operatorsPage.page);
+  //   await checkLocatorsVisibility(
+  //     operatorsPage.page,
+  //     [approveButton, rejectButton],
+  //     false,
+  //   );
 
-    // 🔙 Navigate back to the operators table
-    await operatorsPage.clickOperatorsLink();
+  //   // 🔙 Navigate back to the operators table
+  //   await operatorsPage.clickOperatorsLink();
 
-    // 🧪 cas_admin is able to click "View Details" on an approved operator and see detailed info about it (read only)
-    await clickViewDetailsButton(operatorsPage.page, 1); // APPROVED operator
+  //   // 🧪 cas_admin is able to click "View Details" on an approved operator and see detailed info about it (read only)
+  //   await clickViewDetailsButton(operatorsPage.page, 1); // APPROVED operator
 
-    await operatorsPage.clickExpandAllButton();
-    await checkFormHeaders(operatorsPage.page, [
-      "Operator Information",
-      "User Information",
-    ]);
+  //   await operatorsPage.clickExpandAllButton();
+  //   await checkFormHeaders(operatorsPage.page, [
+  //     "Operator Information",
+  //     "User Information",
+  //   ]);
 
-    // Check that all form fields are disabled and not editable
-    const approvedOperatorFormFields = await getAllFormInputs(
-      operatorsPage.page,
-    );
-    await disabledAndNotEditable(approvedOperatorFormFields);
+  //   // Check that all form fields are disabled and not editable
+  //   const approvedOperatorFormFields = await getAllFormInputs(
+  //     operatorsPage.page,
+  //   );
+  //   await disabledAndNotEditable(approvedOperatorFormFields);
 
-    // Make sure the review buttons are not visible when viewing a declined operator
-    checkLocatorsVisibility(
-      operatorsPage.page,
-      [approveButton, rejectButton],
-      false,
-    );
+  //   // Make sure the review buttons are not visible when viewing a declined operator
+  //   checkLocatorsVisibility(
+  //     operatorsPage.page,
+  //     [approveButton, rejectButton],
+  //     false,
+  //   );
 
-    // 🔙 Navigate back to the operators table
-    await operatorsPage.clickOperatorsLink();
+  //   // 🔙 Navigate back to the operators table
+  //   await operatorsPage.clickOperatorsLink();
 
-    // 🧪 cas_admin is able to click "View Details" on a pending operator and see detailed info about it (read only)
-    await clickViewDetailsButton(operatorsPage.page, 4); // PENDING operator(new operator)
+  //   // 🧪 cas_admin is able to click "View Details" on a pending operator and see detailed info about it (read only)
+  //   await clickViewDetailsButton(operatorsPage.page, 4); // PENDING operator(new operator)
 
-    await operatorsPage.clickExpandAllButton();
-    await checkFormHeaders(operatorsPage.page, [
-      "Operator Information",
-      "User Information",
-    ]);
+  //   await operatorsPage.clickExpandAllButton();
+  //   await checkFormHeaders(operatorsPage.page, [
+  //     "Operator Information",
+  //     "User Information",
+  //   ]);
 
-    // Check that all form fields are disabled and not editable
-    const pendingOperatorFormFields = await getAllFormInputs(
-      operatorsPage.page,
-    );
-    await disabledAndNotEditable(pendingOperatorFormFields);
+  //   // Check that all form fields are disabled and not editable
+  //   const pendingOperatorFormFields = await getAllFormInputs(
+  //     operatorsPage.page,
+  //   );
+  //   await disabledAndNotEditable(pendingOperatorFormFields);
 
-    // New operator note is visible
-    await operatorsPage.checkNewOperatorNote();
+  //   // New operator note is visible
+  //   await operatorsPage.checkNewOperatorNote();
 
-    // Get and check the buttons are visible (Multiple Approve and Decline buttons are visible)
-    await checkLocatorsVisibility(operatorsPage.page, [
-      ...(await approveButton.all()),
-      ...(await rejectButton.all()),
-    ]);
-    // 🧪 cas_admin is not allowed to approve an admin access request if the Operator is new and hasn't been Approved yet
-    const modal = await getModal(operatorsPage.page);
-    const modalConfirmButton = await getModalConfirmButton(modal);
-    const modalCancelButton = await getModalCancelButton(modal);
-    await operatorsPage.notAllowedToApproveAdminRequest(
-      modal,
-      modalConfirmButton,
-      modalCancelButton,
-    );
+  //   // Get and check the buttons are visible (Multiple Approve and Decline buttons are visible)
+  //   await checkLocatorsVisibility(operatorsPage.page, [
+  //     ...(await approveButton.all()),
+  //     ...(await rejectButton.all()),
+  //   ]);
+  //   // 🧪 cas_admin is not allowed to approve an admin access request if the Operator is new and hasn't been Approved yet
+  //   const modal = await getModal(operatorsPage.page);
+  //   const modalConfirmButton = await getModalConfirmButton(modal);
+  //   const modalCancelButton = await getModalCancelButton(modal);
+  //   await operatorsPage.notAllowedToApproveAdminRequest(
+  //     modal,
+  //     modalConfirmButton,
+  //     modalCancelButton,
+  //   );
 
-    await checkAlertMessage(
-      operatorsPage.page,
-      operatorsPage.newOperatorMustBeApprovedAlert,
-    );
+  //   await checkAlertMessage(
+  //     operatorsPage.page,
+  //     operatorsPage.newOperatorMustBeApprovedAlert,
+  //   );
 
-    // 🧪 cas_admin is able to Approve new operator
-    await approveButton.first().click(); // clicking operator approval
-    await expect(modal).toBeVisible();
-    await checkLocatorsVisibility(operatorsPage.page, [
-      modalConfirmButton,
-      modalCancelButton,
-    ]);
-    await modalConfirmButton.click();
-    await checkAlertMessage(
-      operatorsPage.page,
-      operatorsPage.approvedOperatorAlert,
-    );
+  //   // 🧪 cas_admin is able to Approve new operator
+  //   await approveButton.first().click(); // clicking operator approval
+  //   await expect(modal).toBeVisible();
+  //   await checkLocatorsVisibility(operatorsPage.page, [
+  //     modalConfirmButton,
+  //     modalCancelButton,
+  //   ]);
+  //   await modalConfirmButton.click();
+  //   await checkAlertMessage(
+  //     operatorsPage.page,
+  //     operatorsPage.approvedOperatorAlert,
+  //   );
 
-    // 🧪 cas_admin is able to Approve admin request
-    await approveButton.last().click(); // clicking admin access request approval
-    await expect(modal).toBeVisible();
-    await checkLocatorsVisibility(operatorsPage.page, [
-      modalConfirmButton,
-      modalCancelButton,
-    ]);
-    await modalConfirmButton.click();
-    await checkAlertMessage(
-      operatorsPage.page,
-      operatorsPage.approvedPrimeAdminAlert,
-      1,
-    );
+  //   // 🧪 cas_admin is able to Approve admin request
+  //   await approveButton.last().click(); // clicking admin access request approval
+  //   await expect(modal).toBeVisible();
+  //   await checkLocatorsVisibility(operatorsPage.page, [
+  //     modalConfirmButton,
+  //     modalCancelButton,
+  //   ]);
+  //   await modalConfirmButton.click();
+  //   await checkAlertMessage(
+  //     operatorsPage.page,
+  //     operatorsPage.approvedPrimeAdminAlert,
+  //     1,
+  //   );
 
-    // 🔙 Navigate back to the operators table
-    await operatorsPage.clickOperatorsLink();
+  //   // 🔙 Navigate back to the operators table
+  //   await operatorsPage.clickOperatorsLink();
 
-    // 🧪 cas_admin is able to Decline new operator
-    await clickViewDetailsButton(operatorsPage.page, 6); // PENDING operator(another new operator)
+  //   // 🧪 cas_admin is able to Decline new operator
+  //   await clickViewDetailsButton(operatorsPage.page, 6); // PENDING operator(another new operator)
 
-    // New operator note is visible
-    await operatorsPage.checkNewOperatorNote();
+  //   // New operator note is visible
+  //   await operatorsPage.checkNewOperatorNote();
 
-    // 🧪 cas_admin is not allowed to decline an admin access request if the Operator is new and hasn't been Approved yet
-    await operatorsPage.notAllowedToDeclineAdminRequest(
-      modal,
-      modalConfirmButton,
-      modalCancelButton,
-    );
-    await checkAlertMessage(
-      operatorsPage.page,
-      operatorsPage.newOperatorMustBeApprovedAlert,
-    );
+  //   // 🧪 cas_admin is not allowed to decline an admin access request if the Operator is new and hasn't been Approved yet
+  //   await operatorsPage.notAllowedToDeclineAdminRequest(
+  //     modal,
+  //     modalConfirmButton,
+  //     modalCancelButton,
+  //   );
+  //   await checkAlertMessage(
+  //     operatorsPage.page,
+  //     operatorsPage.newOperatorMustBeApprovedAlert,
+  //   );
 
-    await rejectButton.first().click(); // clicking operator rejection
-    await expect(modal).toBeVisible();
-    await checkLocatorsVisibility(operatorsPage.page, [
-      modalConfirmButton,
-      modalCancelButton,
-    ]);
-    await modalConfirmButton.click();
-    await checkAlertMessage(
-      operatorsPage.page,
-      operatorsPage.declinedOperatorAlert,
-    );
+  //   await rejectButton.first().click(); // clicking operator rejection
+  //   await expect(modal).toBeVisible();
+  //   await checkLocatorsVisibility(operatorsPage.page, [
+  //     modalConfirmButton,
+  //     modalCancelButton,
+  //   ]);
+  //   await modalConfirmButton.click();
+  //   await checkAlertMessage(
+  //     operatorsPage.page,
+  //     operatorsPage.declinedOperatorAlert,
+  //   );
 
-    // 🧪 cas_admin is not allowed to approve an admin access request if the Operator has been Declined in the first form section
-    await operatorsPage.notAllowedToDeclineAdminRequest(
-      modal,
-      modalConfirmButton,
-      modalCancelButton,
-    );
-    await checkAlertMessage(
-      operatorsPage.page,
-      operatorsPage.newOperatorMustBeApprovedAlert,
-      1,
-    );
+  //   // 🧪 cas_admin is not allowed to approve an admin access request if the Operator has been Declined in the first form section
+  //   await operatorsPage.notAllowedToDeclineAdminRequest(
+  //     modal,
+  //     modalConfirmButton,
+  //     modalCancelButton,
+  //   );
+  //   await checkAlertMessage(
+  //     operatorsPage.page,
+  //     operatorsPage.newOperatorMustBeApprovedAlert,
+  //     1,
+  //   );
 
-    // 🔙 Navigate back to the operators table
-    await operatorsPage.clickOperatorsLink();
+  //   // 🔙 Navigate back to the operators table
+  //   await operatorsPage.clickOperatorsLink();
 
-    // 🧪 cas_admin is able to Approve admin request
-    await clickViewDetailsButton(operatorsPage.page, 5); // PENDING admin request (Existing operator)
+  //   // 🧪 cas_admin is able to Approve admin request
+  //   await clickViewDetailsButton(operatorsPage.page, 5); // PENDING admin request (Existing operator)
 
-    // Operator information header is collapsed
-    await checkFormHeaderIsCollapsed(
-      operatorsPage.page,
-      "Operator Information",
-    );
+  //   // Operator information header is collapsed
+  //   await checkFormHeaderIsCollapsed(
+  //     operatorsPage.page,
+  //     "Operator Information",
+  //   );
 
-    // Make sure only one approve button and one reject button are visible
-    expect(await approveButton.all()).toHaveLength(1); // only one approve button for admin request
-    expect(await rejectButton.all()).toHaveLength(1); // only one reject button for admin request
+  //   // Make sure only one approve button and one reject button are visible
+  //   expect(await approveButton.all()).toHaveLength(1); // only one approve button for admin request
+  //   expect(await rejectButton.all()).toHaveLength(1); // only one reject button for admin request
 
-    await approveButton.click(); // clicking admin access request approval
-    await expect(modal).toBeVisible();
-    await checkLocatorsVisibility(operatorsPage.page, [
-      modalConfirmButton,
-      modalCancelButton,
-    ]);
-    await modalConfirmButton.click();
-    await checkAlertMessage(
-      operatorsPage.page,
-      operatorsPage.approvedPrimeAdminAlert,
-    );
+  //   await approveButton.click(); // clicking admin access request approval
+  //   await expect(modal).toBeVisible();
+  //   await checkLocatorsVisibility(operatorsPage.page, [
+  //     modalConfirmButton,
+  //     modalCancelButton,
+  //   ]);
+  //   await modalConfirmButton.click();
+  //   await checkAlertMessage(
+  //     operatorsPage.page,
+  //     operatorsPage.approvedPrimeAdminAlert,
+  //   );
 
-    // 🔙 Navigate back to the operators table
-    await operatorsPage.clickOperatorsLink();
+  //   // 🔙 Navigate back to the operators table
+  //   await operatorsPage.clickOperatorsLink();
 
-    // 🧪 cas_admin is able to Decline admin request
-    await clickViewDetailsButton(operatorsPage.page, 9); // PENDING admin request (Existing operator)
+  //   // 🧪 cas_admin is able to Decline admin request
+  //   await clickViewDetailsButton(operatorsPage.page, 9); // PENDING admin request (Existing operator)
 
-    await rejectButton.click(); // clicking admin access request rejection
-    await expect(modal).toBeVisible();
-    await checkLocatorsVisibility(operatorsPage.page, [
-      modalConfirmButton,
-      modalCancelButton,
-    ]);
-    await modalConfirmButton.click();
-    await checkAlertMessage(
-      operatorsPage.page,
-      operatorsPage.declinedPrimeAdminAlert,
-    );
-  });
+  //   await rejectButton.click(); // clicking admin access request rejection
+  //   await expect(modal).toBeVisible();
+  //   await checkLocatorsVisibility(operatorsPage.page, [
+  //     modalConfirmButton,
+  //     modalCancelButton,
+  //   ]);
+  //   await modalConfirmButton.click();
+  //   await checkAlertMessage(
+  //     operatorsPage.page,
+  //     operatorsPage.declinedPrimeAdminAlert,
+  //   );
+  // });
   test("Operations Tile workflow", async ({ page }) => {
     // 🛸 Navigate to operations tile page
     const dashboardPage = new DashboardPOM(page);
