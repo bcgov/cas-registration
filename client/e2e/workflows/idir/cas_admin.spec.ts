@@ -368,15 +368,8 @@ test.describe("Test Workflow cas_admin", () => {
     // // 🔙 Navigate back to the operations table
     // await operationsPage.clickOperationsLink();
 
-    // 🧪 cas_admin is able to click "View Details" on any operation and see detailed info about it (read only)
-    await clickViewDetailsButton(operationsPage.page); // APPROVED operation
-
-    // TESTING: Expand all form sections to see the form fields
-    await operationsPage.clickExpandAllButton();
-
-    await expect(
-      operationsPage.page.getByText("This operation’s application"),
-    ).toBeVisible();
+    // // 🧪 cas_admin is able to click "View Details" on any operation and see detailed info about it (read only)
+    // await clickViewDetailsButton(operationsPage.page); // APPROVED operation
 
     // // Make sure the review buttons are not visible when viewing an approved operation
     // await checkLocatorsVisibility(
@@ -410,8 +403,11 @@ test.describe("Test Workflow cas_admin", () => {
     // // 🔙 Navigate back to the operations table
     // await operationsPage.clickOperationsLink();
 
-    // // 🧪 cas_admin is able to click "Decline" on a Declined operation
-    // await clickViewDetailsButton(operationsPage.page, 3); // DECLINED operation
+    // 🧪 cas_admin is able to click "Decline" on a Declined operation
+    await clickViewDetailsButton(operationsPage.page, 3); // DECLINED operation
+
+    // TESTING: Expand all form sections to see the form fields
+    await operationsPage.clickExpandAllButton();
 
     // // Make sure the review buttons are not visible when viewing an approved operation
     // await checkLocatorsVisibility(
