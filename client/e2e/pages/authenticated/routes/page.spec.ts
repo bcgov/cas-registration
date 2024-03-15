@@ -1,4 +1,4 @@
-import { Locator, test, expect } from "@playwright/test";
+import { test, expect } from "@playwright/test";
 // 🪄 Page Object Models
 import { DashboardPOM } from "@/e2e/poms/dashboard";
 import { HomePOM } from "@/e2e/poms/home";
@@ -37,7 +37,7 @@ test.beforeAll(async () => {
     await deleteUserRecord(process.env.E2E_NEW_USER_GUID as string);
     // 👤 delete user operator
     await deleteUserOperatorRecord(
-      process.env.E2E_INDUSTRY_USER_GUID as string
+      process.env.E2E_INDUSTRY_USER_GUID as string,
     );
   } catch (error) {
     // eslint-disable-next-line no-console
