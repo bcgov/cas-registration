@@ -52,8 +52,8 @@ export class ProfilePOM {
     // Wait for API request/response
     await this.buttonSubmit.isDisabled();
     await this.buttonSubmit.isEditable();
-    // Assert that the error selector is not available
-    return await this.errorList.waitFor({ state: "hidden" });
+    // Assert that the error selector is hidden
+    await expect(this.errorList).toBeHidden();
   }
 
   async userFullNameIsCorrect(expectedText: string) {

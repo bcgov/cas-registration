@@ -143,7 +143,7 @@ test.describe("Test Route Access", () => {
                       // 🔍 Assert that the not-found selector is not available
                       const msgNotFound = page.locator(DataTestID.NOTFOUND);
                       // Wait for the selector to not be available
-                      await expect(msgNotFound.waitFor({ state: "hidden" }));
+                      expect(msgNotFound.waitFor({ state: "hidden" }));
                       break;
                   }
                 } else {
@@ -161,7 +161,7 @@ test.describe("Test Route Access", () => {
                   } else {
                     // 🔍 Assert that the role has NO access, not-found message is available
                     const msgNotFound = page.locator(DataTestID.NOTFOUND);
-                    await expect(msgNotFound.waitFor({ state: "visible" }));
+                    expect(msgNotFound.waitFor({ state: "visible" }));
                   }
                 }
                 break;
