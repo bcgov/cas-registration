@@ -5,7 +5,7 @@ import { DashboardPOM } from "@/e2e/poms/dashboard";
 import { OperationsPOM } from "@/e2e/poms/operations";
 // import { OperatorsPOM } from "@/e2e/poms/operators";
 // ☰ Enums
-import { DataTestID, UserRole } from "@/e2e/utils/enums";
+import { UserRole } from "@/e2e/utils/enums";
 // 🛠️ Helpers
 import {
   // getAllFormInputs,
@@ -397,9 +397,7 @@ test.describe("Test Workflow cas_admin", () => {
     await clickViewDetailsButton(operationsPage.page); // APPROVED operation
 
     // Approved operation message on top of the form
-    await expect(
-      operationsPage.page.locator(DataTestID.OPERATION_APPROVED_MESSAGE),
-    ).toBeVisible();
+    await operationsPage.operationApprovedMessageIsVisible();
 
     // // Make sure the review buttons are not visible when viewing an approved operation
     // await checkLocatorsVisibility(

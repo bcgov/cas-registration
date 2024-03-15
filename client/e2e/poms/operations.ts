@@ -5,7 +5,7 @@
  */
 import { Locator, Page, expect } from "@playwright/test";
 // ☰ Enums
-import { AppRoute, UserRole } from "@/e2e/utils/enums";
+import { AppRoute, DataTestID, UserRole } from "@/e2e/utils/enums";
 // 🛠️ Helpers
 import { getAllFormInputs } from "@/e2e/utils/helpers";
 // ℹ️ Environment variables
@@ -26,6 +26,8 @@ export class OperationsPOM {
 
   readonly buttonSubmit: Locator;
 
+  readonly operationApprovedMessage: Locator;
+
   constructor(page: Page) {
     this.page = page;
     this.buttonAdd = page.getByRole("button", {
@@ -37,6 +39,9 @@ export class OperationsPOM {
     this.buttonSubmit = page.getByRole("button", {
       name: /submit/i,
     });
+    this.operationApprovedMessage = page.locator(
+      DataTestID.OPERATION_APPROVED_MESSAGE,
+    );
   }
 
   async route() {
@@ -116,5 +121,9 @@ export class OperationsPOM {
 
   async getUndoChangeRequestButton() {
     return this.page.locator("button[aria-label='Undo Request Changes']");
+  }
+
+  async operationApprovedMessageIsVisible() {
+    await expect(this.operationApprovedMessage).toBeVisible();
   }
 }
