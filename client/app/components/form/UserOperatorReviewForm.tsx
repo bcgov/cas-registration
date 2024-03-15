@@ -7,6 +7,7 @@ import MultiStepAccordion from "@/app/components/form/MultiStepAccordion";
 import { UserOperatorFormData } from "@/app/components/form/formDataTypes";
 import { RJSFSchema } from "@rjsf/utils";
 import UserOperatorReview from "@/app/components/routes/access-requests/form/UserOperatorReview";
+import { OperatorStatus, UserOperatorStatus } from "@/app/utils/enums";
 
 interface Props {
   formData: UserOperatorFormData;
@@ -17,9 +18,14 @@ const UserOperatorReviewForm = ({ formData, schema }: Props) => {
   const params = useParams();
   const userOperatorId = params.id;
   const isNewOperator = formData.is_new;
-  const userOperatorStatus = formData.status;
+  const isUserOperatorPending = formData.status === UserOperatorStatus.PENDING;
+  const isOperatorStatusDeclined =
+    formData.operator_status === OperatorStatus.DECLINED;
   const [rerenderKey, setRerenderKey] = useState(
     crypto.getRandomValues(new Uint32Array(1))[0],
+  );
+  const [isOperatorDeclined, setIsOperatorDeclined] = useState(
+    isOperatorStatusDeclined,
   );
 
   return (
@@ -33,6 +39,9 @@ const UserOperatorReviewForm = ({ formData, schema }: Props) => {
           <UserOperatorReview
             userOperator={formData as UserOperatorFormData}
             userOperatorId={userOperatorId as string}
+            // Set Operator Declined to true if the operator is declined
+            // So that we can hide the Prime Admin Review component
+            onDecline={() => setIsOperatorDeclined(true)}
             // Set rerenderKey to a new random value to force a rerender when the operator is approved
             // So that we can reset the prime admin review if there was an error ie: operator needs to be approved first
             onSuccess={() =>
@@ -44,7 +53,7 @@ const UserOperatorReviewForm = ({ formData, schema }: Props) => {
             showRequestChanges={false}
           />
         ),
-        "User Information": (
+        "User Information": !isOperatorDeclined && (
           <UserOperatorReview
             key={rerenderKey}
             userOperator={formData as UserOperatorFormData}
@@ -58,7 +67,7 @@ const UserOperatorReviewForm = ({ formData, schema }: Props) => {
       // If the user is pending, the second section should be expanded
       expandedSteps={{
         "Operator Information": isNewOperator,
-        "User Information": userOperatorStatus === "Pending",
+        "User Information": isUserOperatorPending && !isOperatorDeclined,
       }}
     />
   );
