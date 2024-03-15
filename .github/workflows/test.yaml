@@ -230,7 +230,6 @@ jobs:
           path: ~/.cache/ms-playwright
           key: ${{ runner.os }}-playwright-${{ hashFiles('client/yarn.lock') }}
       - name: Install Playwright Browsers
-        if: steps.cache-playwright.outputs.cache-hit != 'true'
         run: yarn playwright install --with-deps
         working-directory: ./client
       - name: Run Playwright Tests
