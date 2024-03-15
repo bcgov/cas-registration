@@ -46,6 +46,9 @@ export class ProfilePOM {
     await fieldsUpdate(this.page);
     // Click the Submit button
     await this.buttonSubmit.click();
+    // Wait for API request/response
+    await this.buttonSubmit.isDisabled();
+    await this.buttonSubmit.isEditable();
     // Response from submit either shows errors or triggeres handleSubmit which handles state changes on submit button etc.
     // 🔍 Assert that the error selector is not available
     await this.page.waitForSelector(DataTestID.ERROR_PROFILE, {
@@ -58,7 +61,7 @@ export class ProfilePOM {
   async userFullNameIsCorrect(expectedText: string) {
     // Waits for the selector to appear with the expected text
     await this.page.waitForSelector(
-      `${DataTestID.PROFILE}:has-text("${expectedText}")`,
+      `${DataTestID.PROFILE}:has-text("${expectedText}")`
     );
   }
 
