@@ -18,6 +18,7 @@ export class ProfilePOM {
   readonly url: string = process.env.E2E_BASEURL + AppRoute.PROFILE;
 
   readonly buttonSubmit: Locator;
+
   readonly errorList: Locator;
 
   constructor(page: Page) {
@@ -39,7 +40,7 @@ export class ProfilePOM {
     await this.buttonSubmit.click();
     // Locate all alert elements within the fieldset
     const alertElements = await getFieldAlerts(this.page);
-    // 🔍 Assert there to be exactly the same number of required fields and alert elements
+    // Assert there to be exactly the same number of required fields and alert elements
     await expect(clearedFields).toBe(alertElements.length);
   }
 
@@ -51,15 +52,14 @@ export class ProfilePOM {
     // Wait for API request/response
     await this.buttonSubmit.isDisabled();
     await this.buttonSubmit.isEditable();
-    // Response from submit either shows errors or triggeres handleSubmit which handles state changes on submit button etc.
-    // 🔍 Assert that the error selector is not available
+    // Assert that the error selector is not available
     return !(await this.errorList.isVisible());
   }
 
   async userFullNameIsCorrect(expectedText: string) {
     // Waits for the selector to appear with the expected text
     await this.page.waitForSelector(
-      `${DataTestID.PROFILE}:has-text("${expectedText}")`
+      `${DataTestID.PROFILE}:has-text("${expectedText}")`,
     );
   }
 
