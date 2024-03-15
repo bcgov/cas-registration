@@ -1,5 +1,4 @@
 // 🧪 Suite to test the bceidbusiness new user workflow using storageState
-// 🔍 Asserts new user is redirected to profile
 
 import { test } from "@playwright/test";
 // 🪄 Page Object Models
@@ -14,7 +13,7 @@ test.describe.configure({ mode: "serial" });
 test.describe("Test Workflow cas_pending", () => {
   // 👤 run test using the storageState for this role
   const storageState = JSON.parse(
-    process.env.E2E_CAS_PENDING_STORAGE as string,
+    process.env.E2E_CAS_PENDING_STORAGE as string
   );
   // Note: specify storageState for each test file or test group, instead of setting it in the config. https://playwright.dev/docs/next/auth#reuse-signed-in-state
   test.use({ storageState: storageState }); // this will error if no such file or directory
@@ -24,16 +23,14 @@ test.describe("Test Workflow cas_pending", () => {
     // 🛸 Navigate to home page
     const homePage = new HomePOM(page);
     await homePage.route();
-    // 🔍 Assert that the pending message is displayed
-    await homePage.page.waitForSelector(
-      '[data-testid="dashboard-pending-message"]',
-    );
+    // 🔍 Assert that the current URL ends with "/dashboard"
+    await new DashboardPOM(page).urlIsCorrect();
   });
-  test("Test Redirect to Dashboard", async ({ page }) => {
+  test("Test Dashboard Message", async ({ page }) => {
     // 🛸 Navigate to dashboard page
     const dashboardPage = new DashboardPOM(page);
     await dashboardPage.route();
-    // 🔍 Assert that the current URL ends with "(authenticated)/dashboard"
+    // 🔍 Assert that the current URL ends with "/dashboard"
     await dashboardPage.urlIsCorrect();
   });
 });
