@@ -315,9 +315,6 @@ test.describe("Test Workflow cas_admin", () => {
     // 🧪 cas_admin is able to see "Approve" or "Request Changes" on a Pending operation
     await clickViewDetailsButton(operationsPage.page, 3); // PENDING operation
 
-    // FOR TESTING PURPOSES: Expand all form sections
-    await operationsPage.clickExpandAllButton();
-
     // Check that all form fields are disabled and not editable
     const pendingOperationFormFields = await getAllFormInputs(
       operationsPage.page,
@@ -374,9 +371,6 @@ test.describe("Test Workflow cas_admin", () => {
     // 🧪 cas_admin is able to click "Decline" on a Pending operation
     await clickViewDetailsButton(operationsPage.page, 3); // PENDING operation
 
-    // FOR TESTING PURPOSES: Expand all form sections
-    await operationsPage.clickExpandAllButton();
-
     await rejectButton.click();
     await expect(modal).toBeVisible();
     checkLocatorsVisibility(operationsPage.page, [
@@ -395,9 +389,6 @@ test.describe("Test Workflow cas_admin", () => {
 
     // 🧪 cas_admin is able to click "View Details" on any operation and see detailed info about it (read only)
     await clickViewDetailsButton(operationsPage.page, 2); // DECLINED operation
-
-    // FOR TESTING PURPOSES: Expand all form sections
-    await operationsPage.clickExpandAllButton();
 
     // Make sure the review buttons are not visible when viewing an approved operation
     await checkLocatorsVisibility(
