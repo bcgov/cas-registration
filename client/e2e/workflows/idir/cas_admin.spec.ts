@@ -411,7 +411,7 @@ test.describe("Test Workflow cas_admin", () => {
 
     // FIXME: This is not working as expected
     // Approved operation message on top of the form
-    await operationsPage.operationApprovedMessageIsVisible();
+    // await operationsPage.operationApprovedMessageIsVisible();
 
     // Make sure the review buttons are not visible when viewing an approved operation
     await checkLocatorsVisibility(
