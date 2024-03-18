@@ -19,6 +19,7 @@ import Link from "next/link";
 import OperationReviewForm from "@/app/components/form/OperationReviewForm";
 import { BusinessStructure } from "@/app/components/routes/select-operator/form/types";
 import { validate as isValidUUID } from "uuid";
+import { carbonTaxExemptionLink } from "@/app/utils/urls";
 
 // 🚀 API call: GET user's data
 async function getUserFormData(): Promise<
@@ -223,7 +224,7 @@ export default async function Operation({ numRow }: { numRow?: string }) {
               You will need this B.C. OBPS Regulated Operation ID to claim an
               exemption from carbon tax. For information about the exemption and
               how to claim it, please see the{" "}
-              <Link href="https://www2.gov.bc.ca/gov/content?id=3EAC7D1EBBDA41F6937BA1F1A8A202F3">
+              <Link href={carbonTaxExemptionLink}>
                 carbon tax exemption page
               </Link>
               .

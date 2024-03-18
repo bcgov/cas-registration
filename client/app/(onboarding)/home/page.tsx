@@ -6,6 +6,11 @@ import Grid from "@mui/material/Grid/Grid";
 import events from "@/app/data/home/events.json";
 import { signIn } from "next-auth/react";
 import { getEnvValue } from "@/app/utils/actions";
+import {
+  bcObpsLink,
+  bcObpsGuidanceLink,
+  carbonTaxExemptionLink,
+} from "@/app/utils/urls";
 /*
 📚
 In the app directory, nested folders are normally mapped to URL paths.
@@ -88,7 +93,7 @@ export default function Page() {
           <p>
             Before getting started, take a moment to review the detailed{" "}
             <a
-              href="https://www2.gov.bc.ca/assets/gov/environment/climate-change/ind/obps/guidance/bc_obps_guidance.pdf"
+              href={bcObpsGuidanceLink}
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -122,20 +127,14 @@ export default function Page() {
           <p>
             To check eligibility, and for further information about the B.C.
             OBPS, please visit the{" "}
-            <a
-              href="https://www2.gov.bc.ca/gov/content/environment/climate-change/industry/bc-output-based-pricing-system"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+            <a href={bcObpsLink} target="_blank" rel="noopener noreferrer">
               program website.
             </a>
           </p>
-          {/*
-          This section is commented out because the link will not be available until post MVP.
           <p>
             Please visit the{" "}
             <a
-              href="https://www2.gov.bc.ca/gov/content?id=3EAC7D1EBBDA41F6937BA1F1A8A202F3"
+              href={carbonTaxExemptionLink}
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -143,7 +142,7 @@ export default function Page() {
             </a>{" "}
             webpage to learn more about claiming an exemption from the carbon
             tax.
-          </p>*/}
+          </p>
         </section>
         <section className="flex flex-col items-center bg-bc-bg-light-grey my-10 py-8">
           <h2 className={headerStyle}>Contact us</h2>
