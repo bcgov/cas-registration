@@ -13,6 +13,8 @@ backend:
 
   deployRoute: false
 
+  environment: ~
+
   service:
     type: ClusterIP
     port: 8000
@@ -43,6 +45,8 @@ frontend:
     pullPolicy: Always
     # Overrides the image tag whose default is the chart appVersion.
     tag: "latest"
+
+  environment: ~
 
   auth:
     keycloakAuthUrl: ~
@@ -81,6 +85,8 @@ reportingFrontend:
     pullPolicy: Always
     # Overrides the image tag whose default is the chart appVersion.
     tag: "latest"
+
+  environment: ~
 
   service:
     type: ClusterIP
