@@ -223,17 +223,15 @@ jobs:
           keycloak_client_id: ${{ env.KEYCLOAK_CLIENT_ID }}
           keycloak_client_secret: ${{ env.KEYCLOAK_CLIENT_SECRET }}
           nextauth_secret: ${{ env.NEXTAUTH_SECRET }}
-      - uses: actions/cache@v3
-        id: playwright-cache
+      - name: Cache Playwright binaries
+        uses: actions/cache@v3
+        id: cache-playwright
         with:
-          path: |
-            ~/.cache/ms-playwright
+          path: ~/.cache/ms-playwright
           key: ${{ runner.os }}-playwright-${{ hashFiles('client/yarn.lock') }}
-      - run: npm ci
-      - run: npx playwright install --with-deps
-        if: steps.playwright-cache.outputs.cache-hit != 'true'
-      - run: npx playwright install-deps
-        if: steps.playwright-cache.outputs.cache-hit == 'true'
+      - name: Install Playwright Browsers # Install Playwright browsers if cache miss
+        if: steps.cache-playwright.outputs.cache-hit != 'true'
+        run: yarn playwright install --with-deps
         working-directory: ./client
       - name: Run Playwright Tests
         # Configure Playwright to split the tests into the shard matrix
