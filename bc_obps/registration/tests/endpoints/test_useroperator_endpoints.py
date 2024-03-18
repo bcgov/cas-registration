@@ -619,7 +619,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         assert response.status_code == 404
 
         # Additional Assertions
-        assert response_json == {"detail": "Not Found"}
+        assert response_json == {"message": "Not Found"}
 
     # GET USER OPERATOR OPERATOR ID 200
     def test_get_user_operator_operator(self):
@@ -702,7 +702,6 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         assert post_response_duplicate_legal_name.json() == {
             'message': 'Legal Name: Operator with this Legal name already exists.'
         }
-
         # duplicate BC corporate registry number
         payload_with_duplicate_bc_corporate_registry_number = {
             "legal_name": "a name",
