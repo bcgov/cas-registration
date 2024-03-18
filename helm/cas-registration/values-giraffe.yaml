@@ -1,0 +1,44 @@
+
+backend:
+  replicaCount: 2
+
+  image:
+    tag: "latest"
+
+  route:
+    host: cas-reg-backend-dev.apps.silver.devops.gov.bc.ca
+
+  environment: develop
+
+  deployRoute: true
+
+  resources:
+    limits:
+      cpu: 200m
+      memory: 512Mi
+    requests:
+      cpu: 60m
+      memory: 256Mi
+
+frontend:
+  replicaCount: 2
+
+  image:
+    tag: "latest"
+
+  route:
+    host: cas-reg-giraffe-dev.apps.silver.devops.gov.bc.ca # Should be changed to correct route. Something like cas-reg-giraffe-dev.apps.silver.devops.gov.bc.ca
+
+  environment: develop
+
+  auth:
+    keycloakAuthUrl: https://dev.loginproxy.gov.bc.ca/auth
+    siteminderAuthUrl: https://logontest7.gov.bc.ca
+
+  resources:
+    limits:
+      cpu: 200m
+      memory: 512Mi
+    requests:
+      cpu: 60m
+      memory: 256Mi
