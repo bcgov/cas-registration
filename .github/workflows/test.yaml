@@ -289,7 +289,6 @@ jobs:
   e2e:
     if: ${{ always() }}
     runs-on: ubuntu-latest
-    name: e2e Final Results
     needs: [e2e-tests, e2e-report]
     steps:
       - run: exit 1
