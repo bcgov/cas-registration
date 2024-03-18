@@ -62,7 +62,7 @@ test.describe("Test Route Access", () => {
   // ➰ Loop through the entries of UserRole enum
   for (let [role, value] of Object.entries(UserRole)) {
     role = "E2E_" + role;
-    const storageState = process.env[role + "_STORAGE"] as string;
+    const storageState = JSON.parse(process.env[role + "_STORAGE"] as string);
     test.describe(`Test Role ${value}`, () => {
       // 👤 Run test as this role
       test.use({ storageState: storageState });
@@ -141,14 +141,8 @@ test.describe("Test Route Access", () => {
                       // 🔍 Assert that the current URL is correct
                       await pomPage.urlIsCorrect();
                       // 🔍 Assert that the not-found selector is not available
-                      // Wait for the selector to not be available
-                      await page.waitForSelector(DataTestID.NOTFOUND, {
-                        state: "hidden",
-                      });
-                      const notFoundSelector = await page.$(
-                        DataTestID.NOTFOUND,
-                      );
-                      expect(notFoundSelector).toBeFalsy();
+                      const msgNotFound = page.locator(DataTestID.NOTFOUND);
+                      await expect(msgNotFound).toBeHidden();
                       break;
                   }
                 } else {
@@ -164,8 +158,9 @@ test.describe("Test Route Access", () => {
                     const dashboardPage = new DashboardPOM(page);
                     dashboardPage.urlIsCorrect();
                   } else {
-                    // 🔍 Assert that the role has NO access, not-found selector is available
-                    await pomPage.page.waitForSelector(DataTestID.NOTFOUND);
+                    // 🔍 Assert that the role has NO access, not-found message is available
+                    const msgNotFound = page.locator(DataTestID.NOTFOUND);
+                    await expect(msgNotFound).toBeVisible();
                   }
                 }
                 break;

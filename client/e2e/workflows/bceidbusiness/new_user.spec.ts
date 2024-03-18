@@ -1,5 +1,4 @@
 // 🧪 Suite to test the bceidbusiness new user workflow using storageState
-// 🔍 Asserts new user is redirected to profile
 
 import { test } from "@playwright/test";
 // 🪄 Page Object Models
@@ -13,7 +12,7 @@ dotenv.config({ path: "./e2e/.env.local" });
 test.describe.configure({ mode: "serial" });
 test.describe("Test Workflow new user", () => {
   // 👤 run test using the storageState for this role
-  const storageState = process.env.E2E_NEW_USER_STORAGE;
+  const storageState = JSON.parse(process.env.E2E_NEW_USER_STORAGE as string);
   test.use({ storageState: storageState }); // this will error if no such file or directory
   test("Test Redirect to Profile", async ({ page }) => {
     // 🛸 Navigate to dashboard page
