@@ -223,17 +223,10 @@ jobs:
           keycloak_client_id: ${{ env.KEYCLOAK_CLIENT_ID }}
           keycloak_client_secret: ${{ env.KEYCLOAK_CLIENT_SECRET }}
           nextauth_secret: ${{ env.NEXTAUTH_SECRET }}
-      - name: Cache Playwright binaries
-        uses: actions/cache@v3
-        id: cache-playwright
-        with:
-          path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-playwright-${{ hashFiles('client/yarn.lock') }}
-      - name: Install Playwright Browsers # Install Playwright browsers if cache miss
-        if: steps.cache-playwright.outputs.cache-hit != 'true'
-        run: yarn playwright install --with-deps
-        working-directory: ./client
       - name: Run Playwright Tests
+        uses: docker://mcr.microsoft.com/playwright:v1.34.3-jammy
+        with:
+          args: npx playwright test
         # Configure Playwright to split the tests into the shard matrix
         run: |
           DEBUG=pw:browser npx happo-e2e -- npx playwright test --shard=${{ matrix.shardIndex }}/${{ strategy.job-total }} client/e2e/*
