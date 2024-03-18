@@ -1,5 +1,4 @@
 // 🧪 Suite to test the bceidbusiness new user workflow using storageState
-// 🔍 Asserts new user is redirected to profile
 
 import { test } from "@playwright/test";
 // 🪄 Page Object Models
@@ -12,7 +11,7 @@ dotenv.config({ path: "./e2e/.env.local" });
 test.describe.configure({ mode: "serial" });
 test.describe("Test Workflow cas_admin", () => {
   // 👤 run test using the storageState for this role
-  const storageState = process.env.E2E_CAS_ADMIN_STORAGE;
+  const storageState = JSON.parse(process.env.E2E_CAS_ADMIN_STORAGE as string);
   // Note: specify storageState for each test file or test group, instead of setting it in the config. https://playwright.dev/docs/next/auth#reuse-signed-in-state
   test.use({ storageState: storageState }); // this will error if no such file or directory
   test("Test Redirect to Dashboard", async ({ page }) => {
