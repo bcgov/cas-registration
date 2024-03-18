@@ -206,6 +206,8 @@ jobs:
       ["backend-docker-build", "frontend-docker-build", "install-dev-tools"]
     timeout-minutes: 60
     runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright/python:v1.42.0-jammy
     # Run the tests in different projects on different machines in parallel.
     strategy:
       fail-fast: false
@@ -224,9 +226,6 @@ jobs:
           keycloak_client_secret: ${{ env.KEYCLOAK_CLIENT_SECRET }}
           nextauth_secret: ${{ env.NEXTAUTH_SECRET }}
       - name: Run Playwright Tests
-        uses: docker://mcr.microsoft.com/playwright:v1.34.3-jammy
-        with:
-          args: npx playwright test
         # Configure Playwright to split the tests into the shard matrix
         run: |
           DEBUG=pw:browser npx happo-e2e -- npx playwright test --shard=${{ matrix.shardIndex }}/${{ strategy.job-total }} client/e2e/*
