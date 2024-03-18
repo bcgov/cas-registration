@@ -1,6 +1,6 @@
 from uuid import UUID
 from registration.decorators import authorize
-from registration.email.schema import EmailIn
+from registration.email.schema import EmailIn, TemplateMergeIn
 from registration.email.emailService import EmailService
 from .api_base import router
 from ninja.responses import codes_4xx
@@ -32,20 +32,20 @@ def cancel_email_send(request, message_id: UUID):
     return response.json()
 
 
-@router.get("/email/send-from-template", response={201: dict, codes_4xx: Message}, url_name="send_email_from_template")
-def send_email_from_template(request):
-    response = email_service.merge_template_and_send()
-    return response.json()
-
-
 ##### POST #####
 @router.post("/email/send", response={200: dict, codes_4xx: Message}, url_name="send_email")
 # NOTE: the CHES system does not allow external users (i.e., `industry_user`) to send emails.
 @authorize(AppRole.get_authorized_irc_roles())
 def send_email(request, payload: EmailIn):
     response = email_service.send_email(payload)
-    print('Returning response:')
-    print(response.status_code, response.json())
+    return response.json()
+
+
+@router.post("/email/send-from-template", response={200: dict, codes_4xx: Message}, url_name="send_email_from_template")
+# NOTE: the CHES system does not allow external users (i.e., `industry_user`) to send emails.
+@authorize(AppRole.get_authorized_irc_roles())
+def send_email_from_template(request, payload: TemplateMergeIn):
+    response = email_service.merge_template_and_send(payload)
     return response.json()
 
 

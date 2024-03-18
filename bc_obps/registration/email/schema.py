@@ -22,7 +22,7 @@ class AttachmentObject(dict):
     filename: str
 
 
-class ContextObject(dict):
+class ContextObject(BaseModel):
     bcc: Optional[List[str]]
     cc: Optional[List[str]]
     context: dict
@@ -44,3 +44,14 @@ class EmailIn(BaseModel):
     subject: str
     tag: Optional[str]
     to: List[str]
+
+
+class TemplateMergeIn(BaseModel):
+    attachments: Optional[List[AttachmentObject]] = []
+    bodyType: BodyType
+    body: str
+    contexts: List[ContextObject]
+    encoding: Optional[str] = 'utf-8'
+    send_from: str
+    priority: Optional[MessagePriority]
+    subject: str

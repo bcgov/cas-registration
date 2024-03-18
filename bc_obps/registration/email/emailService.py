@@ -4,7 +4,7 @@ import requests
 from uuid import UUID
 from django.conf import settings
 
-from registration.email.schema import EmailIn, ContextObject, BodyType
+from registration.email.schema import EmailIn, BodyType, TemplateMergeIn
 
 
 class EmailService:
@@ -90,10 +90,13 @@ class EmailService:
         except Exception as exc:
             print(f'Exception in cancelling email {msgId} - ', str(exc))
 
-    def merge_template_and_send(self, email_data: EmailIn, contexts: List[ContextObject]):
+    def merge_template_and_send(self, email_template_data: TemplateMergeIn):
         self._get_token()
         try:
-            response = self._make_request("/emailMerge", method='POST', data={'contexts': contexts, **email_data})
-            return response.json()
+            email_template_dict = email_template_data.dict()
+            email_template_dict['from'] = email_template_dict.pop('send_from')
+            email_template_dict['bodyType'] = BodyType(email_template_dict['bodyType']).value
+            response = self._make_request("/emailMerge", method='POST', data=email_template_dict)
+            return response
         except Exception as exc:
-            print(f'Exception in merging template and sending! ', str(exc))
+            print('Exception in merging template and sending! ', str(exc))

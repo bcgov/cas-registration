@@ -1,5 +1,5 @@
 import json
-from registration.email.schema import BodyType, EmailIn
+from registration.email.schema import BodyType, EmailIn, TemplateMergeIn, ContextObject
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
 from registration.models import AppRole
@@ -34,7 +34,8 @@ class TestEmailEndpoint(CommonTestSetup):
         assert response.status_code == 401
 
     def test_send_email_all_authorized_roles(self):
-        all_roles = AppRole.get_authorized_irc_roles()
+        all_irc_roles = AppRole.get_authorized_irc_roles()
+        # not going to test for external roles because CHES API doesn't allow external users to send emails using their system
         email_data = EmailIn(
             to=['andrea.williams@gov.bc.ca'],
             subject='Automated Test Email',
@@ -48,7 +49,7 @@ class TestEmailEndpoint(CommonTestSetup):
         email_data_dict['from'] = email_data_dict['send_from']
         # must convert the BodyType enum to a string because "BodyType is not JSON serializable"
         email_data_dict['bodyType'] = BodyType(email_data_dict['bodyType']).value
-        for role_name in all_roles:
+        for role_name in all_irc_roles:
             print(f'Testing role {role_name}...')
             email_data_dict['body'] = f'This is a CHES test email from me to me as a {role_name} user'
             response = TestUtils.mock_post_with_auth_role(
@@ -57,5 +58,52 @@ class TestEmailEndpoint(CommonTestSetup):
                 'application/json',
                 json.dumps(email_data_dict),
                 endpoint=custom_reverse_lazy("send_email"),
+            )
+            assert response.status_code == 200
+
+    def test_merge_template_and_send(self):
+        all_irc_roles = AppRole.get_authorized_irc_roles()
+        # not going to test for external roles because CHES API doesn't allow external users to send emails using their system
+
+        context_1 = ContextObject(
+            to=['andrea.williams@gov.bc.ca'],
+            tag='unit_test',
+            context={'something': {'greeting': 'Howdy', 'target': 'Pardner'}, 'someone': {'user': 'Woody'}},
+        ).dict()
+
+        context_2 = ContextObject(
+            to=['andrea.williams@gov.bc.ca'],
+            tag='template_unit_test',
+            context={
+                'something': {'greeting': 'To Infinity and Beyond', 'target': 'Earthlings'},
+                'someone': {'user': 'Buzz Lightyear'},
+            },
+        ).dict()
+
+        email_template = TemplateMergeIn(
+            bodyType='text',
+            send_from='andrea.williams@gov.bc.ca',
+            subject='Automated Test - Email Template Merge',
+            body='{{ something.greeting }} {{ something.target }}\n\nMoooooooo\n\nFrom {{ someone.user }} the {{ someone.role }}',
+            contexts=[context_1, context_2],
+        )
+        email_template_dict = email_template.dict()
+        # CHES API wants payload with keyword 'from', which Python doesn't allow because 'from' is a reserved keyword,
+        # hence this hack.
+        email_template_dict['from'] = email_template_dict['send_from']
+        # must convert the BodyType enum to a string because "BodyType is not JSON serializable"
+        email_template_dict['bodyType'] = BodyType(email_template_dict['bodyType']).value
+
+        for role_name in all_irc_roles:
+            print(f'Testing role {role_name}...')
+            for context in email_template_dict.get('contexts'):
+                context['context']['someone']['role'] = role_name
+
+            response = TestUtils.mock_post_with_auth_role(
+                self,
+                role_name,
+                'application/json',
+                json.dumps(email_template_dict),
+                endpoint=custom_reverse_lazy("send_email_from_template"),
             )
             assert response.status_code == 200
