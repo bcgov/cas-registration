@@ -206,6 +206,9 @@ jobs:
       ["backend-docker-build", "frontend-docker-build", "install-dev-tools"]
     timeout-minutes: 60
     runs-on: ubuntu-latest
+    #  Use an official Playwright Docker image that has all of the browsers installed already: keep the version of this image in sync with the version of @playwright/test in package.json
+    container:
+      image: mcr.microsoft.com/playwright:v1.38.1
     strategy:
       fail-fast: false
       matrix:
@@ -222,9 +225,6 @@ jobs:
           keycloak_client_id: ${{ env.KEYCLOAK_CLIENT_ID }}
           keycloak_client_secret: ${{ env.KEYCLOAK_CLIENT_SECRET }}
           nextauth_secret: ${{ env.NEXTAUTH_SECRET }}
-      - name: Install Playwright Browsers
-        run: yarn playwright install --with-deps
-        working-directory: ./client
       - name: Run Playwright Tests
         run: |
           DEBUG=pw:browser npx happo-e2e -- npx playwright test --shard=${{ matrix.shardIndex }}/${{ strategy.job-total }} client/e2e/*
