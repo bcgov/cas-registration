@@ -1,9 +1,11 @@
+import functools
 from http import HTTPStatus
 from typing import Any, Callable, List
 from ninja.errors import HttpError
 from functools import wraps
 from registration.utils import raise_401_if_user_not_authorized
 from django.http import HttpRequest
+from registration.service.handle_exception import handle_exception
 
 
 def authorize(
@@ -30,6 +32,25 @@ def authorize(
             except HttpError as e:
                 raise HttpError(HTTPStatus.UNAUTHORIZED, str(e))
             return func(request, *args, **kwargs)
+
+        return wrapper
+
+    return decorator
+
+
+def try_except_wrapper():
+    """
+    Decorator to wrap a function in a try-except block and handle exceptions.
+
+    """
+
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            try:
+                return func(*args, **kwargs)
+            except Exception as e:
+                return handle_exception(e)
 
         return wrapper
 
