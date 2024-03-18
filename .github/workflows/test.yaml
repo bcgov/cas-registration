@@ -202,7 +202,6 @@ jobs:
           fail_action: false
 
   e2e:
-    name: 🧪 e2e test shard (${{ matrix.shardIndex }}/${{ strategy.job-total }})
     needs:
       ["backend-docker-build", "frontend-docker-build", "install-dev-tools"]
     timeout-minutes: 60
