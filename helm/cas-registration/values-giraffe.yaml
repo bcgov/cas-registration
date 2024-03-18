@@ -1,6 +1,9 @@
 # Temporary values for Monorepo-supported cas registration with cas-reporting.
 # This should deploy into a namespace to trial the side-by-side deployments.
 
+# This forces {include "cas-registration.fullname"} to use our temporary naming.
+fullnameOverride: cas-bciers
+
 backend:
   replicaCount: 2
 
@@ -8,7 +11,7 @@ backend:
     tag: "latest"
 
   route:
-    host: cas-reg-backend-dev.apps.silver.devops.gov.bc.ca
+    host: cas-bciers-backend-dev.apps.silver.devops.gov.bc.ca
 
   environment: develop
 
@@ -29,7 +32,7 @@ frontend:
     tag: "latest"
 
   route:
-    host: cas-reg-giraffe-dev.apps.silver.devops.gov.bc.ca
+    host: cas-bciers-frontend-dev.apps.silver.devops.gov.bc.ca
 
   environment: develop
 
@@ -49,7 +52,7 @@ reportingFrontend:
   enabled: true
 
   route:
-    host: gir-cas-rep-frontend-dev.apps.silver.devops.gov.bc.ca
+    host: cas-bciers-rep-frontend-dev.apps.silver.devops.gov.bc.ca
 
   resources:
     limits:
