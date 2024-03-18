@@ -15,7 +15,6 @@ email_service = EmailService()
 @authorize(AppRole.get_authorized_irc_roles())
 def get_email_health_check(request):
     response = email_service.health_check()
-    print("response from endpoint ", response)
     return response
 
 

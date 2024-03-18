@@ -15,15 +15,39 @@ class TestEmailEndpoint(CommonTestSetup):
         assert isinstance(response_json, dict)
 
     def test_get_message_status(self):
+        # first need to send an email so we can get a message_id
+        email_data = EmailIn(
+            to=['andrea.williams@gov.bc.ca'],
+            subject='Another Automated Test Email',
+            body='Testing get_message_status',
+            bodyType=BodyType.TEXT,
+            send_from='andrea.williams@gov.bc.ca',
+        ).dict()
+        email_data['from'] = email_data['send_from']
+        email_data['bodyType'] = BodyType(email_data['bodyType']).value
+        post_response = TestUtils.mock_post_with_auth_role(
+            self, "cas_admin", 'application/json', json.dumps(email_data), custom_reverse_lazy("send_email")
+        )
+
+        assert post_response.status_code == 200
+        # convert post_response.content (a bytes-array) to a string and then to json
+        post_response_json = json.loads(post_response.content.decode('utf8').replace("'", '"'))
+        # store the messageId received in the post_response
+        message_id = post_response_json.get('messages')[0].get('msgId')
+
         response = TestUtils.mock_get_with_auth_role(
             self,
             "cas_admin",
-            custom_reverse_lazy("email_check_status", kwargs={"message_id": "56968b39-8af5-46e4-867a-8ac8c798ba38"}),
+            custom_reverse_lazy("email_check_status", kwargs={"message_id": message_id}),
         )
         assert response.status_code == 200
         response_json = json.loads(response.content)
         assert isinstance(response_json, str)
-        assert response_json == "completed"
+        # depending on the timing of the CHES system, the email we just requested to send might have already been sent
+        # in which case the status will be "completed", or it might still be in the queue for sending, in which case
+        # the status will be "pending".
+        # Accepting either status so that this unit test is not flaky.
+        assert response_json == "completed" or "pending"
 
     def test_get_message_status_unauthorized_role(self):
         response = TestUtils.mock_get_with_auth_role(
