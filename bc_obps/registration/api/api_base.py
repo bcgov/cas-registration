@@ -11,7 +11,7 @@ router = Router()
 def setup(request):
     if settings.ENVIRONMENT == "develop":
         try:
-            call_command('truncate_all_tables')
+            call_command('truncate_dev_data_tables')
             call_command('load_fixtures')
             return HttpResponse("Test setup complete.", status=200)
         except Exception as e:
