@@ -58,17 +58,19 @@ export class UsersPOM {
     expect(status).toStrictEqual(UserOperatorStatus.PENDING);
     const buttonText =
       action === UserOperatorStatus.APPROVED ? "Approve" : "Decline";
-    const approveButton = await user
+    const actionButton = await user
       .$$(".MuiDataGrid-cell")
       .then((cells) =>
         cells[this.actionColumnIndex].$(`button:has-text('${buttonText}')`),
       );
 
-    await approveButton?.click();
+    await actionButton?.click();
 
-    await this.page.waitForTimeout(2000);
+    await this.page.waitForEvent("response", {
+      timeout: 10000,
+    });
 
-    // Verify that the user status is updated to "Approved"
+    // Verify that the user status is updated
     await this.userStatusIsUpdated(action, rowIndex);
   }
 
@@ -92,7 +94,9 @@ export class UsersPOM {
 
     await undoButton?.click();
 
-    await this.page.waitForTimeout(2000);
+    await this.page.waitForEvent("response", {
+      timeout: 10000,
+    });
 
     // Verify that the user status is updated to "Pending"
     await this.userStatusIsUpdated(UserOperatorStatus.PENDING, rowIndex);
