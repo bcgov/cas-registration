@@ -1,6 +1,6 @@
 // 🧪 Suite to test the bceidbusiness new user workflow using storageState
 
-import { test } from "@playwright/test";
+import { test, APIResponse } from "@playwright/test";
 // 🪄 Page Object Models
 import { DashboardPOM } from "@/e2e/poms/dashboard";
 import { OperationPOM } from "@/e2e/poms/operation";
@@ -16,6 +16,15 @@ import { UserOperatorStatus, UserRole } from "@/e2e/utils/enums";
 import happoPlaywright from "happo-playwright";
 
 test.beforeEach(async ({ context }) => {
+  await happoPlaywright.init(context);
+  let response: APIResponse = await context.request.get(
+    "http://localhost:8000/api/registration/test-setup",
+  );
+  // Wait for the response and check for success status text and code (e.g., 200)
+  expect(await response.text()).toBe("Test setup complete.");
+  expect(response.status()).toBe(200);
+
+  // initialize Happo
   await happoPlaywright.init(context);
 });
 
