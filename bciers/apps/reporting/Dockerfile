@@ -1,14 +1,16 @@
 # Install dependencies only when needed
-FROM docker.io/node:lts-alpine as deps
-# Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
-RUN apk add --no-cache libc6-compat
+FROM docker.io/node:20.11 as deps
 WORKDIR /usr/src/app
 COPY ./package*.json ./
 RUN yarn install --frozen-lockfile --production==false
 
 # Production image, copy all the files and run next
-FROM docker.io/node:lts-alpine as runner
-RUN apk add --no-cache dumb-init
+FROM docker.io/node:20.11 as runner
+
+ADD https://github.com/Yelp/dumb-init/releases/download/v1.2.5/dumb-init_1.2.5_x86_64 /usr/local/bin/dumb-init
+RUN chmod +x /usr/local/bin/dumb-init
+ENTRYPOINT ["dumb-init", "--"]
+
 ENV NODE_ENV production
 ENV PORT 3000
 WORKDIR /usr/src/app
@@ -25,4 +27,4 @@ EXPOSE 3000
 # Learn more here: https://nextjs.org/telemetry
 # Uncomment the following line in case you want to disable telemetry.
 ENV NEXT_TELEMETRY_DISABLED 1
-CMD ["dumb-init", "node_modules/.bin/next", "start"]
+CMD ["node_modules/.bin/next", "start"]
