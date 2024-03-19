@@ -282,7 +282,8 @@ jobs:
           HAPPO_API_SECRET: ${{ secrets.HAPPO_API_SECRET }}
         working-directory: ./client
       - name: 💾 save ${{ matrix.project }} report artifact
-        if: always()
+        # prefer to upload artifacts with the report only in case of test failures.
+        if: failure()
         uses: actions/upload-artifact@v4
         with:
           # Store all of the reports separately by reconfiguring the report name
@@ -291,7 +292,7 @@ jobs:
           retention-days: 1
   # Merge the e2e blob reports to one HTML report
   e2e-report:
-    name: 📊 create HTML report artifact
+    name: 📊 e2e report artifact
     if: always()
     needs: [e2e-tests]
     runs-on: ubuntu-latest
