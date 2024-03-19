@@ -94,6 +94,7 @@ reportingFrontend:
 
   route:
     host: ~
+    path: ~
 
   resources:
     limits:
