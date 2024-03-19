@@ -15,6 +15,7 @@ interface Props {
   userOperator: UserOperatorFormData;
   userOperatorId: string;
   onSuccess?: () => void;
+  onDecline?: () => void;
   operatorId?: number;
   isOperatorNew?: boolean;
   showRequestChanges?: boolean;
@@ -24,6 +25,7 @@ export default function UserOperatorReview({
   note,
   userOperator,
   userOperatorId,
+  onDecline,
   onSuccess,
   operatorId,
   isOperatorNew,
@@ -40,6 +42,9 @@ export default function UserOperatorReview({
           body: JSON.stringify({ status, user_operator_id: userOperatorId }),
         },
       );
+      if (response.status === Status.DECLINED && onDecline) {
+        onDecline();
+      }
       onSuccess?.();
       return response;
     } catch (error) {
