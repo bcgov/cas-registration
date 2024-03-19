@@ -13,6 +13,10 @@ dotenv.config({ path: "./e2e/.env.local" });
 export class UsersPOM {
   readonly page: Page;
 
+  readonly statusColumnIndex: number = 4;
+
+  readonly actionColumnIndex: number = 5;
+
   readonly url: string = process.env.E2E_BASEURL + AppRoute.USERS;
 
   constructor(page: Page) {
@@ -36,7 +40,7 @@ export class UsersPOM {
 
     const status = await user
       .$$(".MuiDataGrid-cell")
-      .then((cells) => cells[5].textContent());
+      .then((cells) => cells[this.statusColumnIndex].textContent());
 
     expect(status).toStrictEqual(expectedStatus);
   }
@@ -49,14 +53,16 @@ export class UsersPOM {
     const user = userRows[rowIndex];
     const status = await user
       .$$(".MuiDataGrid-cell")
-      .then((cells) => cells[5].textContent());
+      .then((cells) => cells[this.statusColumnIndex].textContent());
 
     expect(status).toStrictEqual(UserOperatorStatus.PENDING);
     const buttonText =
       action === UserOperatorStatus.APPROVED ? "Approve" : "Decline";
     const approveButton = await user
       .$$(".MuiDataGrid-cell")
-      .then((cells) => cells[6].$(`button:has-text('${buttonText}')`));
+      .then((cells) =>
+        cells[this.actionColumnIndex].$(`button:has-text('${buttonText}')`),
+      );
 
     await approveButton?.click();
 
@@ -75,12 +81,14 @@ export class UsersPOM {
     const user = userRows[rowIndex];
     const status = await user
       .$$(".MuiDataGrid-cell")
-      .then((cells) => cells[5].textContent());
+      .then((cells) => cells[this.statusColumnIndex].textContent());
 
     expect(status).toStrictEqual(statusToUndo);
     const undoButton = await user
       .$$(".MuiDataGrid-cell")
-      .then((cells) => cells[6].$("button:has-text('Undo')"));
+      .then((cells) =>
+        cells[this.actionColumnIndex].$("button:has-text('Undo')"),
+      );
 
     await undoButton?.click();
 

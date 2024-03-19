@@ -9,6 +9,7 @@ import { AppRoute } from "@/e2e/utils/enums";
 // ℹ️ Environment variables
 import * as dotenv from "dotenv";
 dotenv.config({ path: "./e2e/.env.local" });
+// ☑️ Helpers
 
 export class OperationPOM {
   readonly page: Page;
@@ -161,11 +162,5 @@ export class OperationPOM {
     await this.page.getByLabel("Position Title*").fill("Test Position Title");
     await this.page.getByLabel("Email Address*").fill("test@test.com");
     await this.page.getByLabel("Phone Number*").fill("403 777 7777");
-  }
-
-  async addFile() {
-    const input = this.page.locator('input[type="file"]');
-    await input.setInputFiles("./e2e/assets/test.pdf");
-    expect(this.page.getByText("test.pdf")).toBeVisible();
   }
 }

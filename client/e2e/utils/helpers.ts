@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import { Locator, Page, expect } from "@playwright/test";
+=======
+import { expect, Page } from "@playwright/test";
+>>>>>>> 536d27c2 (refactor: clean up e2e tests)
 
 // 🛠️ Function: get all label elements with required field character * within form fieldset
 export async function getFieldRequired(page: Page) {
@@ -161,4 +165,28 @@ export async function triggerFormatValidationErrors(
   }
   // Submit
   await submitButton.click();
+}
+
+export async function getAllFormInputs(page: Page) {
+  const fields = await page.locator("input").all();
+  return fields;
+}
+
+export async function tableColumnNamesAreCorrect(
+  page: Page,
+  expectedColumnNames: string[],
+) {
+  for (const columnName of expectedColumnNames) {
+    expect(
+      page.locator(".MuiDataGrid-columnHeaderTitle").getByText(columnName),
+    ).toBeVisible();
+  }
+}
+
+export async function addPdf(page: Page, index: number = 0) {
+  // Pass an index if there are multiple file inputs on the page
+  const inputs = await page.locator('input[type="file"]').all();
+  const input = inputs[index];
+  await input.setInputFiles("./e2e/assets/test.pdf");
+  expect(page.getByText("test.pdf")).toBeVisible();
 }
