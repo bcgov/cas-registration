@@ -200,94 +200,94 @@ jobs:
           cmd_options: "-a -d -T 5 -m 2"
           issue_title: OWASP Baseline - Backend
           fail_action: false
-tests:
-  name: 🧪 ${{ matrix.project }} E2E Tests
-  runs-on: ${{ matrix.os }}
-  needs:
-    - backend-docker-build
-    - frontend-docker-build
-    - install-dev-tools
-  timeout-minutes: 60
-  strategy:
-    fail-fast: false
-    matrix:
-      include:
-        - project: chromium
-          os: ubuntu-latest
-          cache_dir: ${{ runner.home }}/.cache/ms-playwright
-        - project: firefox
-          os: ubuntu-latest
-          cache_dir: ${{ runner.home }}/.cache/ms-playwright
-        - project: webkit
-          os: macos-12
-          cache_dir: ${{ runner.home }}/Library/Caches/ms-playwright
-  steps:
-    - uses: actions/checkout@v3
+  tests:
+    name: 🧪 ${{ matrix.project }} E2E Tests
+    runs-on: ${{ matrix.os }}
+    needs:
+      - backend-docker-build
+      - frontend-docker-build
+      - install-dev-tools
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - project: chromium
+            os: ubuntu-latest
+            cache_dir: ${{ runner.home }}/.cache/ms-playwright
+          - project: firefox
+            os: ubuntu-latest
+            cache_dir: ${{ runner.home }}/.cache/ms-playwright
+          - project: webkit
+            os: macos-12
+            cache_dir: ${{ runner.home }}/Library/Caches/ms-playwright
+    steps:
+      - uses: actions/checkout@v3
 
-    - name: 🎁 Setup dev env
-      uses: ./.github/actions/dev-env-setup
+      - name: 🎁 Setup dev env
+        uses: ./.github/actions/dev-env-setup
 
-    - name: 🎁 Setup local app
-      uses: ./.github/actions/local-app-run
-      with:
-        django_secret_key: ${{ env.DJANGO_SECRET_KEY }}
-        keycloak_client_id: ${{ env.KEYCLOAK_CLIENT_ID }}
-        keycloak_client_secret: ${{ env.KEYCLOAK_CLIENT_SECRET }}
-        nextauth_secret: ${{ env.NEXTAUTH_SECRET }}
+      - name: 🎁 Setup local app
+        uses: ./.github/actions/local-app-run
+        with:
+          django_secret_key: ${{ env.DJANGO_SECRET_KEY }}
+          keycloak_client_id: ${{ env.KEYCLOAK_CLIENT_ID }}
+          keycloak_client_secret: ${{ env.KEYCLOAK_CLIENT_SECRET }}
+          nextauth_secret: ${{ env.NEXTAUTH_SECRET }}
 
-    - name: ⚡️ Cache playwright binaries
-      uses: actions/cache@v3
-      id: playwright-cache
-      with:
-        path: ${{ matrix.cache_dir }}
-        key: ${{ runner.os }}-${{ matrix.project }}-pw-${{ hashFiles('**/.playwright-version') }}
+      - name: ⚡️ Cache playwright binaries
+        uses: actions/cache@v3
+        id: playwright-cache
+        with:
+          path: ${{ matrix.cache_dir }}
+          key: ${{ runner.os }}-${{ matrix.project }}-pw-${{ hashFiles('**/.playwright-version') }}
 
-    - name: 📥 Install ${{ matrix.project }} with Playwright
-      if: steps.playwright-cache.outputs.cache-hit != 'true'
-      run: yarn playwright install --with-deps ${{ matrix.project }}
-      working-directory: ./client
+      - name: 📥 Install ${{ matrix.project }} with Playwright
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: yarn playwright install --with-deps ${{ matrix.project }}
+        working-directory: ./client
 
-    - name: 🎭 Playwright tests
-      run: |
-        npx happo-e2e -- npx playwright test --project=${{ matrix.project }} client/e2e/*
-      env:
-        DEBUG: pw:api,pw:browser*
-        API_URL: http://127.0.0.1:8000/api/
-        DB_USER: postgres
-        DB_NAME: registration
-        DB_PORT: 5432
-        DB_HOST: localhost
-        E2E_BASEURL: http://localhost:3000/
-        E2E_CAS_USER: ${{ secrets.E2E_CAS_USER }}
-        E2E_CAS_USER_GUID: ${{ secrets.E2E_CAS_USER_GUID }}
-        E2E_CAS_USER_PASSWORD: ${{ secrets.E2E_CAS_USER_PASSWORD}}
-        E2E_CAS_ADMIN_STORAGE: ${{ secrets.E2E_CAS_ADMIN_STORAGE}}
-        E2E_CAS_ANALYST_STORAGE: ${{ secrets.E2E_CAS_ANALYST_STORAGE}}
-        E2E_CAS_PENDING_STORAGE: ${{ secrets.E2E_CAS_PENDING_STORAGE}}
-        E2E_INDUSTRY_USER_ADMIN: bc-cas-dev
-        E2E_INDUSTRY_USER_ADMIN_GUID: ${{ secrets.E2E_INDUSTRY_USER_ADMIN_GUID }}
-        E2E_INDUSTRY_USER_ADMIN_PASSWORD: ${{ secrets.E2E_INDUSTRY_USER_ADMIN_PASSWORD }}
-        E2E_INDUSTRY_USER_ADMIN_STORAGE: ${{ secrets.E2E_INDUSTRY_USER_ADMIN_STORAGE}}
-        E2E_INDUSTRY_USER: bc-cas-dev-secondary
-        E2E_INDUSTRY_USER_GUID: ${{ secrets.E2E_INDUSTRY_USER_GUID }}
-        E2E_INDUSTRY_USER_PASSWORD: ${{ secrets.E2E_INDUSTRY_USER_PASSWORD }}
-        E2E_INDUSTRY_USER_STORAGE: ${{ secrets.E2E_INDUSTRY_USER_STORAGE}}
-        E2E_NEW_USER: bc-cas-dev-three
-        E2E_NEW_USER_GUID: ${{ secrets.E2E_NEW_USER_GUID }}
-        E2E_NEW_USER_PASSWORD: ${{ secrets.E2E_NEW_USER_PASSWORD }}
-        E2E_NEW_USER_STORAGE: ${{ secrets.E2E_NEW_USER_STORAGE}}
-        HAPPO_ENABLED: true
-        HAPPO_API_KEY: ${{ secrets.HAPPO_API_KEY }}
-        HAPPO_API_SECRET: ${{ secrets.HAPPO_API_SECRET }}
-      working-directory: ./client
+      - name: 🎭 Playwright tests
+        run: |
+          npx happo-e2e -- npx playwright test --project=${{ matrix.project }} client/e2e/*
+        env:
+          DEBUG: pw:api,pw:browser*
+          API_URL: http://127.0.0.1:8000/api/
+          DB_USER: postgres
+          DB_NAME: registration
+          DB_PORT: 5432
+          DB_HOST: localhost
+          E2E_BASEURL: http://localhost:3000/
+          E2E_CAS_USER: ${{ secrets.E2E_CAS_USER }}
+          E2E_CAS_USER_GUID: ${{ secrets.E2E_CAS_USER_GUID }}
+          E2E_CAS_USER_PASSWORD: ${{ secrets.E2E_CAS_USER_PASSWORD}}
+          E2E_CAS_ADMIN_STORAGE: ${{ secrets.E2E_CAS_ADMIN_STORAGE}}
+          E2E_CAS_ANALYST_STORAGE: ${{ secrets.E2E_CAS_ANALYST_STORAGE}}
+          E2E_CAS_PENDING_STORAGE: ${{ secrets.E2E_CAS_PENDING_STORAGE}}
+          E2E_INDUSTRY_USER_ADMIN: bc-cas-dev
+          E2E_INDUSTRY_USER_ADMIN_GUID: ${{ secrets.E2E_INDUSTRY_USER_ADMIN_GUID }}
+          E2E_INDUSTRY_USER_ADMIN_PASSWORD: ${{ secrets.E2E_INDUSTRY_USER_ADMIN_PASSWORD }}
+          E2E_INDUSTRY_USER_ADMIN_STORAGE: ${{ secrets.E2E_INDUSTRY_USER_ADMIN_STORAGE}}
+          E2E_INDUSTRY_USER: bc-cas-dev-secondary
+          E2E_INDUSTRY_USER_GUID: ${{ secrets.E2E_INDUSTRY_USER_GUID }}
+          E2E_INDUSTRY_USER_PASSWORD: ${{ secrets.E2E_INDUSTRY_USER_PASSWORD }}
+          E2E_INDUSTRY_USER_STORAGE: ${{ secrets.E2E_INDUSTRY_USER_STORAGE}}
+          E2E_NEW_USER: bc-cas-dev-three
+          E2E_NEW_USER_GUID: ${{ secrets.E2E_NEW_USER_GUID }}
+          E2E_NEW_USER_PASSWORD: ${{ secrets.E2E_NEW_USER_PASSWORD }}
+          E2E_NEW_USER_STORAGE: ${{ secrets.E2E_NEW_USER_STORAGE}}
+          HAPPO_ENABLED: true
+          HAPPO_API_KEY: ${{ secrets.HAPPO_API_KEY }}
+          HAPPO_API_SECRET: ${{ secrets.HAPPO_API_SECRET }}
+        working-directory: ./client
 
-    - name: 📊 Upload test results
-      if: always()
-      uses: actions/upload-artifact@v3
-      with:
-        name: playwright-report
-        path: client/playwright-report
-        retention-days: 1
+      - name: 📊 Upload test results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: playwright-report
+          path: client/playwright-report
+          retention-days: 1
 
   e2e-tests:
     needs:
