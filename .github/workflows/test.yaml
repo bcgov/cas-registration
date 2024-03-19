@@ -202,6 +202,7 @@ jobs:
           fail_action: false
 
   e2e-tests:
+    name: 🧪 e2e tests ${{ matrix.project }}
     needs:
       - backend-docker-build
       - frontend-docker-build
@@ -314,7 +315,6 @@ jobs:
           retention-days: 14
   # Ensure the e2e tests and e2e report completed successfully
   e2e:
-    name: 📣 e2e status update
     if: ${{ always() }}
     runs-on: ubuntu-latest
     needs: [e2e-tests]
