@@ -214,13 +214,13 @@ jobs:
         include:
           - project: chromium
             os: ubuntu-latest
-            cache_dir: ${{ runner.home }}/.cache/ms-playwright
+            cache_dir: ~/.cache/ms-playwright
           - project: firefox
             os: ubuntu-latest
-            cache_dir: ${{ runner.home }}/.cache/ms-playwright
+            cache_dir: ~/.cache/ms-playwright
           - project: webkit
             os: macos-12
-            cache_dir: ${{ runner.home }}/Library/Caches/ms-playwright
+            cache_dir: ~/Library/Caches/ms-playwright
     steps:
       - uses: actions/checkout@v3
 
@@ -312,7 +312,15 @@ jobs:
           keycloak_client_secret: ${{ env.KEYCLOAK_CLIENT_SECRET }}
           nextauth_secret: ${{ env.NEXTAUTH_SECRET }}
 
+      - name: Cache Playwright binaries
+        uses: actions/cache@v3
+        id: cache-playwright
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('client/yarn.lock') }}
+
       - name: Install Playwright Browsers
+        if: steps.cache-playwright.outputs.cache-hit != 'true'
         run: yarn playwright install --with-deps
         working-directory: ./client
 
