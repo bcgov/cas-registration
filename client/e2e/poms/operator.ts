@@ -43,8 +43,6 @@ export class OperatorPOM {
 
   readonly legalNameField: Locator;
 
-  readonly legalNameField: Locator;
-
   constructor(page: Page) {
     this.page = page;
     this.confirmationMessage =
