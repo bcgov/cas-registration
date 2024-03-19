@@ -220,17 +220,16 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - uses: actions/setup-node@v3
-        with:
-          node-version-file: ".nvmrc"
-          cache: "npm"
+      - name: 🎁 Setup dev env
+        uses: ./.github/actions/dev-env-setup
 
-      - name: ⚡️ Cache NPM dependencies
-        uses: actions/cache@v3
-        id: cache-primes
+      - name: 🎁 Setup local app
+        uses: ./.github/actions/local-app-run
         with:
-          path: node_modules
-          key: ${{ runner.os }}-npm-${{ hashFiles('client/yarn.json') }}
+          django_secret_key: ${{ env.DJANGO_SECRET_KEY }}
+          keycloak_client_id: ${{ env.KEYCLOAK_CLIENT_ID }}
+          keycloak_client_secret: ${{ env.KEYCLOAK_CLIENT_SECRET }}
+          nextauth_secret: ${{ env.NEXTAUTH_SECRET }}
 
       - name: ⚡️ Cache playwright binaries
         uses: actions/cache@v3
@@ -239,20 +238,17 @@ jobs:
           path: ${{ matrix.cache_dir }}
           key: ${{ runner.os }}-${{ matrix.project }}-pw-${{ hashFiles('**/.playwright-version') }}
 
-      - name: 📥 Install deps
-        if: steps.cache-primes.outputs.cache-hit != 'true'
-        run: make install
-
       - name: 📥 Install ${{ matrix.project }} with Playwright
         if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps ${{ matrix.project }}
 
       - name: 🎭 Playwright tests
-        run: npx playwright test --project=${{ matrix.project }}
+        run: |
+          npx happo-e2e -- npx playwright test --project=${{ matrix.project }} client/e2e/*
         env:
           DEBUG: pw:api,pw:browser*
 
-      - name: 📊 Upload test results on Failure
+      - name: 📊 Upload test results on failure
         if: failure()
         uses: actions/upload-artifact@v3
         with:
@@ -280,16 +276,11 @@ jobs:
           keycloak_client_id: ${{ env.KEYCLOAK_CLIENT_ID }}
           keycloak_client_secret: ${{ env.KEYCLOAK_CLIENT_SECRET }}
           nextauth_secret: ${{ env.NEXTAUTH_SECRET }}
-      - name: Cache Playwright binaries
-        uses: actions/cache@v3
-        id: cache-playwright
-        with:
-          path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-playwright-${{ hashFiles('client/yarn.lock') }}
-      - name: Install Playwright Browsers # Install Playwright browsers if cache miss
-        if: steps.cache-playwright.outputs.cache-hit != 'true'
+
+      - name: Install Playwright Browsers
         run: yarn playwright install --with-deps
         working-directory: ./client
+
       - name: Run Playwright Tests
         # Configure Playwright to split the tests into the shard matrix
         run: |
