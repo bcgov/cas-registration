@@ -206,8 +206,6 @@ jobs:
       ["backend-docker-build", "frontend-docker-build", "install-dev-tools"]
     timeout-minutes: 60
     runs-on: ubuntu-latest
-    container:
-      image: mcr.microsoft.com/playwright/python:v1.42.0-jammy
     # Run the tests in different projects on different machines in parallel.
     strategy:
       fail-fast: false
@@ -225,10 +223,20 @@ jobs:
           keycloak_client_id: ${{ env.KEYCLOAK_CLIENT_ID }}
           keycloak_client_secret: ${{ env.KEYCLOAK_CLIENT_SECRET }}
           nextauth_secret: ${{ env.NEXTAUTH_SECRET }}
+      - name: Cache Playwright binaries
+        uses: actions/cache@v3
+        id: cache-playwright
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('client/yarn.lock') }}
+      - name: Install Playwright Browsers # Install Playwright browsers if cache miss
+        if: steps.cache-playwright.outputs.cache-hit != 'true'
+        run: yarn playwright install --with-deps
+        working-directory: ./client
       - name: Run Playwright Tests
         # Configure Playwright to split the tests into the shard matrix
         run: |
-          DEBUG=pw:browser npx happo-e2e -- npx playwright test --shard=${{ matrix.shardIndex }}/${{ strategy.job-total }} client/e2e/*
+          npx happo-e2e -- npx playwright test --shard=${{ matrix.shardIndex }}/${{ strategy.job-total }} client/e2e/*
         env:
           API_URL: http://127.0.0.1:8000/api/
           DB_USER: postgres
