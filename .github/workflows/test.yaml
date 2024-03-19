@@ -282,7 +282,7 @@ jobs:
           HAPPO_API_SECRET: ${{ secrets.HAPPO_API_SECRET }}
         working-directory: ./client
       - name: 💾 save ${{ matrix.project }} report artifact
-        # prefer to upload artifacts with the report only in case of test failures.
+        # prefer to upload the report only in case of test failure
         if: failure()
         uses: actions/upload-artifact@v4
         with:
@@ -293,9 +293,9 @@ jobs:
   # Merge the e2e blob reports to one HTML report
   e2e-report:
     name: 📊 e2e report artifact
-    if: always()
-    needs: [e2e-tests]
     runs-on: ubuntu-latest
+    needs: [e2e-tests]
+    if: ${{ needs.e2e-tests.result == 'failure' }}
     steps:
       - name: Download blob reports from GitHub Actions Artifacts
         uses: actions/download-artifact@v4
@@ -323,7 +323,7 @@ jobs:
       - run: exit 1
         if: >-
           ${{
-              contains(needs.*.result, 'failure')
+               contains(needs.*.result, 'failure')
             || contains(needs.*.result, 'cancelled')
             || contains(needs.*.result, 'skipped')
           }}
