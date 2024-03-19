@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 import { Locator, Page, expect } from "@playwright/test";
-=======
-import { expect, Page } from "@playwright/test";
->>>>>>> 536d27c2 (refactor: clean up e2e tests)
 
 // 🛠️ Function: get all label elements with required field character * within form fieldset
 export async function getFieldRequired(page: Page) {
