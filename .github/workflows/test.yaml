@@ -279,12 +279,13 @@ jobs:
           HAPPO_API_SECRET: ${{ secrets.HAPPO_API_SECRET }}
         working-directory: ./client
 
-      - name: 📊 Upload test results on failure
-        if: failure()
+      - name: 📊 Upload test results
+        if: always()
         uses: actions/upload-artifact@v3
         with:
-          name: playwright-report-${{ matrix.project }}
+          name: playwright-report
           path: playwright-report
+          retention-days: 1
   e2e-tests:
     needs:
       ["backend-docker-build", "frontend-docker-build", "install-dev-tools"]
