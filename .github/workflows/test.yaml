@@ -168,38 +168,56 @@ jobs:
           rm -rf /tmp/.buildx-cache
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
-  zap-owasp:
-    needs:
-      ["backend-docker-build", "frontend-docker-build", "install-dev-tools"]
+  tests-container:
     runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:v1.29.1-focal
+    strategy:
+      fail-fast: false
+      matrix:
+        project: [chromium, webkit]
+        shardIndex: [1, 2, 3, 4]
+        shardTotal: [4]
     steps:
       - uses: actions/checkout@v3
-      - name: dev env setup
-        uses: ./.github/actions/dev-env-setup
-      - name: run app locally
-        uses: ./.github/actions/local-app-run
+      - name: Run tests
+        run: |
+          npx happo-e2e -- npx playwright test --shard=${{ matrix.shardIndex }}/${{ strategy.job-total }} client/e2e/*
+        env:
+          API_URL: http://127.0.0.1:8000/api/
+          DB_USER: postgres
+          DB_NAME: registration
+          DB_PORT: 5432
+          DB_HOST: localhost
+          E2E_BASEURL: http://localhost:3000/
+          E2E_CAS_USER: ${{ secrets.E2E_CAS_USER }}
+          E2E_CAS_USER_GUID: ${{ secrets.E2E_CAS_USER_GUID }}
+          E2E_CAS_USER_PASSWORD: ${{ secrets.E2E_CAS_USER_PASSWORD}}
+          E2E_CAS_ADMIN_STORAGE: ${{ secrets.E2E_CAS_ADMIN_STORAGE}}
+          E2E_CAS_ANALYST_STORAGE: ${{ secrets.E2E_CAS_ANALYST_STORAGE}}
+          E2E_CAS_PENDING_STORAGE: ${{ secrets.E2E_CAS_PENDING_STORAGE}}
+          E2E_INDUSTRY_USER_ADMIN: bc-cas-dev
+          E2E_INDUSTRY_USER_ADMIN_GUID: ${{ secrets.E2E_INDUSTRY_USER_ADMIN_GUID }}
+          E2E_INDUSTRY_USER_ADMIN_PASSWORD: ${{ secrets.E2E_INDUSTRY_USER_ADMIN_PASSWORD }}
+          E2E_INDUSTRY_USER_ADMIN_STORAGE: ${{ secrets.E2E_INDUSTRY_USER_ADMIN_STORAGE}}
+          E2E_INDUSTRY_USER: bc-cas-dev-secondary
+          E2E_INDUSTRY_USER_GUID: ${{ secrets.E2E_INDUSTRY_USER_GUID }}
+          E2E_INDUSTRY_USER_PASSWORD: ${{ secrets.E2E_INDUSTRY_USER_PASSWORD }}
+          E2E_INDUSTRY_USER_STORAGE: ${{ secrets.E2E_INDUSTRY_USER_STORAGE}}
+          E2E_NEW_USER: bc-cas-dev-three
+          E2E_NEW_USER_GUID: ${{ secrets.E2E_NEW_USER_GUID }}
+          E2E_NEW_USER_PASSWORD: ${{ secrets.E2E_NEW_USER_PASSWORD }}
+          E2E_NEW_USER_STORAGE: ${{ secrets.E2E_NEW_USER_STORAGE}}
+          HAPPO_ENABLED: true
+          HAPPO_API_KEY: ${{ secrets.HAPPO_API_KEY }}
+          HAPPO_API_SECRET: ${{ secrets.HAPPO_API_SECRET }}
+        working-directory: ./client
+      - uses: actions/upload-artifact@v3
+        if: always()
         with:
-          django_secret_key: ${{ env.DJANGO_SECRET_KEY }}
-      - name: ZAP Frontend Scan
-        uses: zaproxy/action-baseline@v0.9.0
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          docker_name: "owasp/zap2docker-stable"
-          target: "http://localhost:3000/"
-          rules_file_name: ".zap/rules-frontend.tsv"
-          cmd_options: "-a -d -T 5 -m 2"
-          issue_title: OWASP Baseline - Frontend
-          fail_action: false
-      - name: ZAP Backend Scan
-        uses: zaproxy/action-baseline@v0.9.0
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          docker_name: "owasp/zap2docker-stable"
-          target: "http://0.0.0.0:8000/"
-          rules_file_name: ".zap/rules-backend.tsv"
-          cmd_options: "-a -d -T 5 -m 2"
-          issue_title: OWASP Baseline - Backend
-          fail_action: false
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 1
   tests:
     name: 🧪 ${{ matrix.project }} E2E Tests
     runs-on: ${{ matrix.os }}
