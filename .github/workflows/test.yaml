@@ -242,7 +242,8 @@ jobs:
 
       - name: 📥 Install ${{ matrix.project }} with Playwright
         if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: npx playwright install --with-deps ${{ matrix.project }}
+        run: yarn playwright install --with-deps ${{ matrix.project }}
+        working-directory: ./client
 
       - name: 🎭 Playwright tests
         run: |
