@@ -27,7 +27,7 @@ frontend:
     tag: "latest"
 
   route:
-    host: cas-reg-giraffe-dev.apps.silver.devops.gov.bc.ca # Should be changed to correct route. Something like cas-reg-giraffe-dev.apps.silver.devops.gov.bc.ca
+    host: cas-reg-giraffe-dev.apps.silver.devops.gov.bc.ca
 
   environment: develop
 
