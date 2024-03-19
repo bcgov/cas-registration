@@ -35,7 +35,7 @@ export class DashboardPOM {
     this.page = page;
     this.msgPending = this.page.locator(DataTestID.MESSAGE_PENDING);
     this.selectOperatorTile = this.page.getByText(
-      "1 pending action(s) required"
+      "1 pending action(s) required",
     );
 
     this.page = page;
@@ -71,16 +71,16 @@ export class DashboardPOM {
 
   async dashboardTilesAreVisibleIndustryAdmin() {
     expect(
-      this.page.getByRole("heading", { name: "My Operator" })
+      this.page.getByRole("heading", { name: "My Operator" }),
     ).toBeVisible();
     expect(
-      this.page.getByRole("heading", { name: "My Operations" })
+      this.page.getByRole("heading", { name: "My Operations" }),
     ).toBeVisible();
     expect(
-      this.page.getByRole("heading", { name: "User Access Management" })
+      this.page.getByRole("heading", { name: "User Access Management" }),
     ).toBeVisible();
     expect(
-      this.page.getByRole("heading", { name: "Report a Problem" })
+      this.page.getByRole("heading", { name: "Report a Problem" }),
     ).toBeVisible();
   }
 
