@@ -1,6 +1,6 @@
 // 🧪 Suite to test the bceidbusiness new user workflow using storageState
 
-import { test, APIResponse } from "@playwright/test";
+import { expect, test, APIResponse } from "@playwright/test";
 // 🪄 Page Object Models
 import { DashboardPOM } from "@/e2e/poms/dashboard";
 import { OperationPOM } from "@/e2e/poms/operation";
