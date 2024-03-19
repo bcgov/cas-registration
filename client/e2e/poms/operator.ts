@@ -89,43 +89,4 @@ export class OperatorPOM {
     // 🔍 Assert there to be exactly the same number of required fields and alert elements
     await expect(requiredFields?.length).toBe(alertElements.length);
   }
-
-  // async triggerFormatValidationErrors() {
-  //   // Locate all required fields within the fieldset
-  //   const requiredFields = await getFieldRequired(page);
-  //   if (requiredFields) {
-  //     // ✔️ Set required input fields
-  //     for (const input of requiredFields) {
-  //       const labelText = await input.textContent();
-  //       const inputField = await page.getByLabel(labelText as string);
-  //       // Click the field to focus it
-  //       await inputField.click();
-  //       switch (labelText) {
-  //         case "Phone Number*":
-  //           await page.getByLabel(labelText).fill("604 401 5432"); //Format should be ### ### ####
-  //           break;
-  //         case "CRA Business Number*":
-  //           await page.getByLabel(labelText).fill("123454321");
-  //           break;
-  //         case "BC Corporate Registry Number*":
-  //           await page.getByLabel(labelText).fill("AAA1111111");
-  //           break;
-  //         case "Business Structure*":
-  //           await page.getByLabel(labelText).fill("General Partnership");
-  //           await page.getByText(/General Partnership/i).click();
-  //           break;
-  //         case "Province*":
-  //           await page.getByLabel(labelText).fill("Alberta");
-  //           await page.getByText(/Alberta/i).click();
-  //           break;
-  //         case "Postal Code*":
-  //           await page.getByLabel(labelText).fill("H0H 0H0");
-  //           break;
-  //         default:
-  //           await inputField.fill(`E2E ${labelText}`);
-  //           break;
-  //       }
-  //     }
-  //   }
-  // }
 }
