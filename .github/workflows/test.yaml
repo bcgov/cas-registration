@@ -200,7 +200,64 @@ jobs:
           cmd_options: "-a -d -T 5 -m 2"
           issue_title: OWASP Baseline - Backend
           fail_action: false
+  tests:
+    name: 🧪 ${{ matrix.project }} E2E Tests
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - project: chromium
+            os: ubuntu-latest
+            cache_dir: ~/.cache/ms-playwright
+          - project: firefox
+            os: ubuntu-latest
+            cache_dir: ~/.cache/ms-playwright
+          - project: webkit
+            os: macos-12
+            cache_dir: ~/Library/Caches/ms-playwright
+    steps:
+      - uses: actions/checkout@v3
 
+      - uses: actions/setup-node@v3
+        with:
+          node-version-file: ".nvmrc"
+          cache: "npm"
+
+      - name: ⚡️ Cache NPM dependencies
+        uses: actions/cache@v3
+        id: cache-primes
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-npm-${{ hashFiles('client/yarn.json') }}
+
+      - name: ⚡️ Cache playwright binaries
+        uses: actions/cache@v3
+        id: playwright-cache
+        with:
+          path: ${{ matrix.cache_dir }}
+          key: ${{ runner.os }}-${{ matrix.project }}-pw-${{ hashFiles('**/.playwright-version') }}
+
+      - name: 📥 Install deps
+        if: steps.cache-primes.outputs.cache-hit != 'true'
+        run: make install
+
+      - name: 📥 Install ${{ matrix.project }} with Playwright
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: npx playwright install --with-deps ${{ matrix.project }}
+
+      - name: 🎭 Playwright tests
+        run: npx playwright test --project=${{ matrix.project }}
+        env:
+          DEBUG: pw:api,pw:browser*
+
+      - name: 📊 Upload test results on Failure
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: playwright-report-${{ matrix.project }}
+          path: playwright-report
   e2e-tests:
     needs:
       ["backend-docker-build", "frontend-docker-build", "install-dev-tools"]

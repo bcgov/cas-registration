@@ -97,3 +97,7 @@ perf_test_frontend:
 # 	oc create secret generic gcp-credentials-secret --from-file=sa_json=./credentials.json --from-literal=gcp_project_id="ggl-cas-storage" --from-literal=openshift_namespace=$(OPENSHIFT_NAMESPACE) --from-literal=openshift_nameplate=$(OPENSHIFT_NAMEPLATE) --from-literal=openshift_environment=$(OPENSHIFT_ENVIRONMENT) --from-file=tf_backend=$(OPENSHIFT_ENVIRONMENT).gcs.tfbackend
 # 	@mv $(OPENSHIFT_ENVIRONMENT).gcs.tfbackend ./devops
 # 	@mv credentials.json ./devops
+
+bump-playwright:
+  npm install --save-dev @playwright/test
+  npx playwright --version > .github/.playwright-version
