@@ -191,14 +191,14 @@ test.describe("Test Workflow industry_user_admin", () => {
     await dashboardPage.clickUserAccessManagementTileIndustry();
     await userPage.urlIsCorrect();
 
-    // industry_admin is able to view User Access Management table with the following columns
+    // // industry_admin is able to view User Access Management table with the following columns
     await tableColumnNamesAreCorrect(userPage.page, [
-      "User ID",
       "Name",
       "Email",
       "BCeID Business",
       "Access Type",
       "Status",
+      "Actions",
     ]);
 
     // Approve user
@@ -208,10 +208,10 @@ test.describe("Test Workflow industry_user_admin", () => {
     await userPage.undoUserStatusChange(UserOperatorStatus.APPROVED, 2);
 
     // Decline user
-    await userPage.approveOrDeclineUser(UserOperatorStatus.DECLINED, 3);
+    await userPage.approveOrDeclineUser(UserOperatorStatus.DECLINED, 2);
 
     //  Undo user status change - doing this so we can re-run test locally with no errors
-    await userPage.undoUserStatusChange(UserOperatorStatus.DECLINED, 3);
+    await userPage.undoUserStatusChange(UserOperatorStatus.DECLINED, 2);
 
     const pageContent = page.locator("html");
     await happoPlaywright.screenshot(userPage.page, pageContent, {
