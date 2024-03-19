@@ -70,12 +70,12 @@ install_giraffe: check_environment
 install_giraffe:
 install_giraffe: GIT_SHA1=$(shell git rev-parse HEAD)
 install_giraffe: IMAGE_TAG=$(GIT_SHA1)
-install_giraffe: NAMESPACE=$(OBPS_NAMESPACE_PREFIX)-$(ENVIRONMENT)
+install_giraffe: NAMESPACE=$(CIF_NAMESPACE_PREFIX)-tools
 install_giraffe: CHART_DIR=./helm/cas-registration
 install_giraffe: CHART_INSTANCE=cas-registration
 install_giraffe: HELM_OPTS=--atomic --wait-for-jobs --timeout 2400s --namespace $(NAMESPACE) \
 										--set defaultImageTag=$(IMAGE_TAG) \
-										--values $(CHART_DIR)/values-giraffe.yaml # Find where to change $(ENVIRONMENT) source
+										--values $(CHART_DIR)/values-giraffe.yaml
 install_giraffe:
 	@set -euo pipefail; \
 	helm dep up $(CHART_DIR); \
