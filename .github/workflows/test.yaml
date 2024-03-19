@@ -220,8 +220,8 @@ jobs:
             os: ubuntu-latest
             cache_dir: ~/.cache/ms-playwright
           - project: webkit
-            os: macos-12
-            cache_dir: ~/Library/Caches/ms-playwright
+            os: ubuntu-latest
+            cache_dir: ~/.cache/ms-playwright
     steps:
       - uses: actions/checkout@v3
 
