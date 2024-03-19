@@ -200,7 +200,7 @@ test.describe("Test Workflow industry_user_admin", () => {
     await dashboardPage.clickUserAccessManagementTileIndustry();
     await userPage.urlIsCorrect();
 
-    // // industry_admin is able to view User Access Management table with the following columns
+    // industry_admin is able to view User Access Management table with the following columns
     await tableColumnNamesAreCorrect(userPage.page, [
       "Name",
       "Email",
@@ -213,7 +213,7 @@ test.describe("Test Workflow industry_user_admin", () => {
     // Approve user
     await userPage.approveOrDeclineUser(UserOperatorStatus.APPROVED, 2);
 
-    // // Undo user status change - doing this so we can re-run test locally with no errors
+    // Undo user status change - doing this so we can re-run test locally with no errors
     await userPage.undoUserStatusChange(UserOperatorStatus.APPROVED, 2);
 
     // Decline user
