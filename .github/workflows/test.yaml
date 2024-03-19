@@ -220,7 +220,7 @@ jobs:
             os: ubuntu-latest
             cache_dir: ~/.cache/ms-playwright
           - project: webkit
-            os: ubuntu-latest
+            os: macos-12
             cache_dir: ~/Library/Caches/ms-playwright
     steps:
       - uses: actions/checkout@v3
@@ -241,7 +241,7 @@ jobs:
         id: playwright-cache
         with:
           path: ${{ matrix.cache_dir }}
-          key: ${{ runner.os }}-${{ matrix.project }}-pw-${{ hashFiles('**/.playwright-version') }}
+          key: ${{ runner.os }}-${{ matrix.project }}-playwright
 
       - name: 📥 install Playwright ${{ matrix.project }}
         if: steps.playwright-cache.outputs.cache-hit != 'true'
