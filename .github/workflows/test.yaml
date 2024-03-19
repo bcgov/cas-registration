@@ -203,7 +203,9 @@ jobs:
   tests:
     name: 🧪 ${{ matrix.project }} E2E Tests
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 20
+    needs:
+      ["backend-docker-build", "frontend-docker-build", "install-dev-tools"]
+    timeout-minutes: 60
     strategy:
       fail-fast: false
       matrix:
