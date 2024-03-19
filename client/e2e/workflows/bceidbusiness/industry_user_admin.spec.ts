@@ -8,7 +8,7 @@ import { OperationsPOM } from "@/e2e/poms/operations";
 import { OperatorPOM } from "@/e2e/poms/operator";
 import { UsersPOM } from "@/e2e/poms/users";
 // 🛠️ Helpers
-import { tableColumnNamesAreCorrect } from "@/e2e/utils/helpers";
+import { addPdf, tableColumnNamesAreCorrect } from "@/e2e/utils/helpers";
 import * as dotenv from "dotenv";
 dotenv.config({ path: "./e2e/.env.local" });
 // ☰ Enums
@@ -59,10 +59,11 @@ test.describe("Test Workflow industry_user_admin", () => {
     await operatorPage.editOperatorInformation();
     await operatorPage.clickSaveAndReturn();
 
-    await dashboardPage.dashboardTilesAreVisibleIndustryAdmin();
-
+    await page.waitForURL(dashboardPage.url);
     // Verify that we have returned to the dashboard
     await dashboardPage.urlIsCorrect();
+
+    await dashboardPage.dashboardTilesAreVisibleIndustryAdmin();
   });
 
   test("Operations Tile Add Operation workflow", async ({ page }) => {
@@ -86,24 +87,6 @@ test.describe("Test Workflow industry_user_admin", () => {
       "Application Status",
       "Action",
     ]);
-
-    // commenting this out as it breaks if we re-run the test locally due to status changes
-    // await operationsPage.operationsViewIsCorrect(UserRole.INDUSTRY_USER_ADMIN, [
-    //   "Not Started",
-    //   "Approved",
-    //   "Draft",
-    //   "Pending",
-    //   "Pending",
-    //   "Pending",
-    //   "Pending",
-    //   "Pending",
-    //   "Pending",
-    //   "Pending",
-    //   "Pending",
-    //   "Pending",
-    //  "Pending",
-    //   "Pending",
-    // ]);
 
     // industry_user_admin is able to click the Add Operation button
     await operationsPage.clickAddOperationButton();
@@ -134,7 +117,7 @@ test.describe("Test Workflow industry_user_admin", () => {
     await operationPage.operationFormStep3IsVisible();
 
     // Fill page 3, take screenshot and click save and continue to move to the next step
-    await operationPage.addFile();
+    await addPdf(operationPage.page);
     await happoPlaywright.screenshot(operationPage.page, pageContent, {
       component: "Operation Form Page 3",
       variant: UserRole.INDUSTRY_USER_ADMIN,
@@ -144,7 +127,6 @@ test.describe("Test Workflow industry_user_admin", () => {
 
     // Verify that the submission was successful and take a screenshot
     await operationPage.operationSuccessfulSubmissionIsVisible();
-    await operationPage.addFile();
     await happoPlaywright.screenshot(operationPage.page, pageContent, {
       component: "Operation Form Submission Successful",
       variant: UserRole.INDUSTRY_USER_ADMIN,
@@ -178,7 +160,8 @@ test.describe("Test Workflow industry_user_admin", () => {
     ]);
 
     // industry_user_admin is able to click the View Details button
-    await operationsPage.clickViewDetailsButton();
+    // Click the second view details button for an operation with pending status
+    await operationsPage.clickViewDetailsButton(1);
 
     // Verify that we are on the operation detail page
     await operationPage.operationFormIsVisible();
@@ -219,16 +202,16 @@ test.describe("Test Workflow industry_user_admin", () => {
     ]);
 
     // Approve user
-    await userPage.approveOrDeclineUser(UserOperatorStatus.APPROVED, 1);
+    await userPage.approveOrDeclineUser(UserOperatorStatus.APPROVED, 2);
 
     // // Undo user status change - doing this so we can re-run test locally with no errors
-    await userPage.undoUserStatusChange(UserOperatorStatus.APPROVED, 1);
+    await userPage.undoUserStatusChange(UserOperatorStatus.APPROVED, 2);
 
     // Decline user
-    await userPage.approveOrDeclineUser(UserOperatorStatus.DECLINED, 2);
+    await userPage.approveOrDeclineUser(UserOperatorStatus.DECLINED, 3);
 
     //  Undo user status change - doing this so we can re-run test locally with no errors
-    await userPage.undoUserStatusChange(UserOperatorStatus.DECLINED, 2);
+    await userPage.undoUserStatusChange(UserOperatorStatus.DECLINED, 3);
 
     const pageContent = page.locator("html");
     await happoPlaywright.screenshot(userPage.page, pageContent, {
