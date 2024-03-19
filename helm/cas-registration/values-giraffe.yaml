@@ -52,7 +52,8 @@ reportingFrontend:
   enabled: true
 
   route:
-    host: cas-bciers-rep-frontend-dev.apps.silver.devops.gov.bc.ca
+    host: cas-bciers-frontend-dev.apps.silver.devops.gov.bc.ca
+    path: "/reportingpath"
 
   resources:
     limits:
