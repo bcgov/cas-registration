@@ -17,9 +17,14 @@ export class DashboardPOM {
 
   readonly msgPending: Locator;
 
+  readonly selectOperatorTile: Locator;
+
   constructor(page: Page) {
     this.page = page;
     this.msgPending = this.page.locator(DataTestID.MESSAGE_PENDING);
+    this.selectOperatorTile = this.page.getByText(
+      "1 pending action(s) required",
+    );
   }
 
   async route() {
@@ -34,5 +39,9 @@ export class DashboardPOM {
     const path = this.url;
     const currentUrl = await this.page.url();
     await expect(currentUrl.toLowerCase()).toMatch(path.toLowerCase());
+  }
+
+  async clickSelectOperatorTile() {
+    await this.selectOperatorTile.click();
   }
 }
