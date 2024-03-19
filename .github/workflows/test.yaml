@@ -318,7 +318,7 @@ jobs:
     name: 📣 e2e status update
     if: ${{ always() }}
     runs-on: ubuntu-latest
-    needs: [e2e-tests, e2e-report]
+    needs: [e2e-tests]
     steps:
       - run: exit 1
         if: >-
