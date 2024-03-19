@@ -202,33 +202,57 @@ jobs:
           fail_action: false
 
   e2e-tests:
-    needs:
-      ["backend-docker-build", "frontend-docker-build", "install-dev-tools"]
-    timeout-minutes: 60
+    name: 🧪 e2e tests ${{ matrix.project }}
     runs-on: ubuntu-latest
+    needs:
+      - backend-docker-build
+      - frontend-docker-build
+      - install-dev-tools
+    timeout-minutes: 60
     strategy:
       fail-fast: false
       matrix:
-        shardIndex: [1, 2, 3, 4]
-        shardTotal: [4]
+        include:
+          - project: chromium
+            os: ubuntu-latest
+            cache_dir: ~/.cache/ms-playwright
+          - project: firefox
+            os: ubuntu-latest
+            cache_dir: ~/.cache/ms-playwright
+          - project: webkit
+            os: macos-12
+            cache_dir: ~/Library/Caches/ms-playwright
     steps:
       - uses: actions/checkout@v3
-      - name: dev env setup
+
+      - name: 🎁 setup dev env
         uses: ./.github/actions/dev-env-setup
-      - name: run app locally
+
+      - name: 🎁 setup local app
         uses: ./.github/actions/local-app-run
         with:
           django_secret_key: ${{ env.DJANGO_SECRET_KEY }}
           keycloak_client_id: ${{ env.KEYCLOAK_CLIENT_ID }}
           keycloak_client_secret: ${{ env.KEYCLOAK_CLIENT_SECRET }}
           nextauth_secret: ${{ env.NEXTAUTH_SECRET }}
-      - name: Install Playwright Browsers
-        run: yarn playwright install --with-deps
+
+      - name: ⚡️ cache Playwright binaries
+        uses: actions/cache@v3
+        id: playwright-cache
+        with:
+          path: ${{ matrix.cache_dir }}
+          key: ${{ runner.os }}-${{ matrix.project }}-playwright
+
+      - name: 📥 install Playwright ${{ matrix.project }}
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: yarn playwright install --with-deps ${{ matrix.project }}
         working-directory: ./client
-      - name: Run Playwright Tests
+
+      - name: 🎭 run Playwright
         run: |
-          DEBUG=pw:browser npx happo-e2e -- npx playwright test --shard=${{ matrix.shardIndex }}/${{ strategy.job-total }} client/e2e/*
+          npx happo-e2e -- npx playwright test --project=${{ matrix.project }} client/e2e/*
         env:
+          DEBUG: pw:api,pw:browser*
           API_URL: http://127.0.0.1:8000/api/
           DB_USER: postgres
           DB_NAME: registration
@@ -257,18 +281,21 @@ jobs:
           HAPPO_API_KEY: ${{ secrets.HAPPO_API_KEY }}
           HAPPO_API_SECRET: ${{ secrets.HAPPO_API_SECRET }}
         working-directory: ./client
-      - name: Upload blob report to GitHub Actions Artifacts
-        if: always()
+      - name: 💾 save ${{ matrix.project }} report artifact
+        # prefer to upload the report only in case of test failure
+        if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: blob-report-${{ matrix.shardIndex }}
+          # Store all of the reports separately by reconfiguring the report name
+          name: blob-report-${{ matrix.project }}
           path: client/blob-report
           retention-days: 1
+  # Merge the e2e blob reports to one HTML report
   e2e-report:
-    name: e2e report
-    if: always()
-    needs: [e2e-tests]
+    name: 📊 e2e report artifact
     runs-on: ubuntu-latest
+    needs: [e2e-tests]
+    if: ${{ needs.e2e-tests.result == 'failure' }}
     steps:
       - name: Download blob reports from GitHub Actions Artifacts
         uses: actions/download-artifact@v4
@@ -286,10 +313,12 @@ jobs:
           name: playwright-report
           path: playwright-report
           retention-days: 14
+  # Ensure the e2e tests and e2e report completed successfully
   e2e:
+    name: 📣 e2e status update
     if: ${{ always() }}
     runs-on: ubuntu-latest
-    needs: [e2e-tests, e2e-report]
+    needs: [e2e-tests]
     steps:
       - run: exit 1
         if: >-
@@ -298,6 +327,7 @@ jobs:
             || contains(needs.*.result, 'cancelled')
             || contains(needs.*.result, 'skipped')
           }}
+
   backend-tests:
     needs:
       ["backend-docker-build", "frontend-docker-build", "install-dev-tools"]
