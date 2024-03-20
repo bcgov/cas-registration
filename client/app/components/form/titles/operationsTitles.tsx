@@ -1,3 +1,5 @@
+import { bcObpsLink } from "@/app/utils/urls";
+
 export const PointOfContactTitle = (
   <>
     Please provide information about the <b>point of contact</b> of the B.C.
@@ -21,11 +23,7 @@ export const OptInOperationTitle = (
     <br />
     <br />
     Further information and opt-in application forms can be found on the &nbsp;
-    <a
-      href="https://www2.gov.bc.ca/gov/content/environment/climate-change/industry/bc-output-based-pricing-system"
-      target="_blank"
-      rel="noopener noreferrer"
-    >
+    <a href={bcObpsLink} target="_blank" rel="noopener noreferrer">
       B.C. OBPS website
     </a>
     .
