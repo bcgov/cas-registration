@@ -27,7 +27,6 @@ from registration.schema import (
     OperationCreateIn,
     OperationUpdateIn,
     OperationPaginatedOut,
-    OperationListOut,
     OperationOut,
     OperationCreateOut,
     OperationUpdateOut,
@@ -127,10 +126,10 @@ def list_operations(request, page: int = 1, sort_field: str = "created_at", sort
         )
         paginator = Paginator(qs, PAGE_SIZE)
 
-        return 200, OperationPaginatedOut(
-            data=[OperationListOut.from_orm(operation) for operation in paginator.page(page).object_list],
-            row_count=paginator.count,
-        )
+        return 200, {
+            "data": [(operation) for operation in paginator.page(page).object_list],
+            "row_count": paginator.count,
+        }
     # Industry users can only see their companies' operations (industry user must be approved)
     user_operator = get_current_user_approved_user_operator_or_raise(user)
     # order by created_at to get the latest one first
@@ -141,10 +140,10 @@ def list_operations(request, page: int = 1, sort_field: str = "created_at", sort
         .only(*OperationListOut.Config.model_fields, "operator__legal_name", "bc_obps_regulated_operation__id")
     )
     paginator = Paginator(operators_operations, PAGE_SIZE)
-    return 200, OperationPaginatedOut(
-        data=[OperationListOut.from_orm(operation) for operation in paginator.page(page).object_list],
-        row_count=paginator.count,
-    )
+    return 200, {
+        "data": [(operation) for operation in paginator.page(page).object_list],
+        "row_count": paginator.count,
+    }
 
 
 @router.get(
@@ -188,9 +187,10 @@ def get_operation(request, operation_id: UUID):
     if user.is_industry_user():
         if not operation.user_has_access(user.user_guid):
             raise HttpError(401, UNAUTHORIZED_MESSAGE)
-        return 200, OperationOut.from_orm(operation)
+        return 200, operation
     # Use the OperationWithOperatorOut schema to include the operator details
-    return 200, OperationWithOperatorOut.from_orm(operation)
+    # brianna this one
+    return 200, (operation)
 
 
 ##### POST #####
