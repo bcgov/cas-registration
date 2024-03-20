@@ -120,16 +120,15 @@ export class OperationPOM {
     await this.buttonNext.click();
   }
 
-  async clickReturnToOperationsList() {
-    await this.returnToOperationsListButton.click();
-  }
-
   async clickSaveAndContinue() {
     await this.buttonSaveAndContinue.click();
   }
 
   async clickSubmitButton() {
     await this.buttonSubmit.click();
+    await this.page.waitForResponse((response) => response.status() === 200, {
+      timeout: 30000,
+    });
   }
 
   async fillOperationFormPage1() {

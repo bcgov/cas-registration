@@ -47,6 +47,7 @@ test.describe("Test Workflow industry_user_admin", () => {
     await dashboardPage.route();
     // 🔍 Assert that the current URL ends with "(authenticated)/dashboard"
     await dashboardPage.urlIsCorrect();
+    await dashboardPage.dashboardTilesAreVisibleIndustryAdmin();
   });
 
   test("Operators Tile view and edit operator workflow", async ({ page }) => {
@@ -54,6 +55,8 @@ test.describe("Test Workflow industry_user_admin", () => {
     const dashboardPage = new DashboardPOM(page);
     const operatorPage = new OperatorPOM(page);
     await dashboardPage.route();
+    await dashboardPage.urlIsCorrect();
+    await dashboardPage.dashboardTilesAreVisibleIndustryAdmin();
 
     // Click Operator tile and view the Operator form
     await dashboardPage.clickOperatorsTileIndustry();
@@ -140,10 +143,6 @@ test.describe("Test Workflow industry_user_admin", () => {
       component: "Operation Form Submission Successful",
       variant: UserRole.INDUSTRY_USER_ADMIN,
     });
-
-    await operationPage.clickReturnToOperationsList();
-
-    // Verify that we have returned to the operations table
   });
 
   test("Operations Tile View Details workflow", async ({ page }) => {
@@ -152,6 +151,8 @@ test.describe("Test Workflow industry_user_admin", () => {
     const operationPage = new OperationPOM(page);
     const operationsPage = new OperationsPOM(page);
     await dashboardPage.route();
+    await dashboardPage.urlIsCorrect();
+    await dashboardPage.dashboardTilesAreVisibleIndustryAdmin();
 
     // Click Operations tile and view the Operations form
     await dashboardPage.clickOperationsTileIndustry();
@@ -195,6 +196,8 @@ test.describe("Test Workflow industry_user_admin", () => {
     const dashboardPage = new DashboardPOM(page);
     const userPage = new UsersPOM(page);
     await dashboardPage.route();
+    await dashboardPage.urlIsCorrect();
+    await dashboardPage.dashboardTilesAreVisibleIndustryAdmin();
 
     // Click User Access Management tile and view the User Access Management form
     await dashboardPage.clickUserAccessManagementTileIndustry();
