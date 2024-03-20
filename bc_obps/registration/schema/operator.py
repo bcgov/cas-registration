@@ -11,6 +11,7 @@ class OperatorSearchOut(ModelSchema):
     class Config:
         model = Operator
         model_fields = ["id", "legal_name"]
+        from_attributes = True
 
 
 class ConfirmSelectedOperatorOut(ModelSchema):
@@ -95,7 +96,7 @@ class OperatorForOperationOut(ModelSchema):
     def resolve_parent_operators_array(obj: Operator):
         if obj.parent_operators.exists():
             return [
-                ParentOperatorOut.from_orm(parent_operator)
+                (parent_operator)
                 for parent_operator in obj.parent_operators.select_related(
                     "physical_address", "mailing_address", "business_structure"
                 )
