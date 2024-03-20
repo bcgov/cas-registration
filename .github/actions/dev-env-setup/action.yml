@@ -19,13 +19,8 @@ runs:
           ~/.asdf
           ./bc_obps/.tool-versions
         key: ${{ runner.os }}-asdf-cache-backend-${{ hashFiles('bc_obps/.tool-versions') }}
-    - uses: actions/cache@v3
-      id: yarn-cache
-      with:
-        path: |
-          ~/.cache/yarn
-          ./client/node_modules
-        key: ${{ runner.os }}-yarn-cache-${{ hashFiles('client/yarn.lock') }}-v2
+    - name: yarn cache
+      uses: ./.github/actions/yarn-cache
     - name: Set up python
       id: setup-python
       uses: actions/setup-python@v4
