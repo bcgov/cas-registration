@@ -166,6 +166,8 @@ test.describe("Test Workflow industry_user", () => {
       selectOperatorPage.buttonSubmit,
     );
 
+    await page.waitForTimeout(500);
+
     pageContent = page.locator("html");
     await happoPlaywright.screenshot(page, pageContent, {
       component: "Add a new operator",
