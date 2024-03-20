@@ -19,7 +19,6 @@ export default function Index() {
           marginBottom: '48px',
         }}
       >
-        Login:
         <Button
           variant="outlined"
           className="w-full md:max-w-[70%]"
