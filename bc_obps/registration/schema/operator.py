@@ -96,7 +96,7 @@ class OperatorForOperationOut(ModelSchema):
     def resolve_parent_operators_array(obj: Operator):
         if obj.parent_operators.exists():
             return [
-                (parent_operator)
+                parent_operator
                 for parent_operator in obj.parent_operators.select_related(
                     "physical_address", "mailing_address", "business_structure"
                 )
