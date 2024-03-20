@@ -1,3 +1,25 @@
+# [1.2.0](https://github.com/bcgov/cas-registration/compare/v1.0.0...v1.2.0) (2024-03-20)
+
+### Bug Fixes
+
+- e2e dashboard screenshot diffs due to role difference ([d975c4d](https://github.com/bcgov/cas-registration/commit/d975c4d7d6e0a0db2b2b72d11c74146b819d7720))
+- hide prime admin review when operator is declined ([e4079f4](https://github.com/bcgov/cas-registration/commit/e4079f4fbb4f78776124b109505876faf81a4bd2))
+- industry user review uuid ([657e1a3](https://github.com/bcgov/cas-registration/commit/657e1a31cf7102be20749df45e8fd295510fc66c))
+- phone widget lockout error ([9dd2982](https://github.com/bcgov/cas-registration/commit/9dd29828ae6e37c183f32edec2e2ef51793a0904))
+- store the state to prevent losing it when switching tabs ([2e8a25b](https://github.com/bcgov/cas-registration/commit/2e8a25b80810108947dc99e7f0a176be87f9685b))
+
+### Features
+
+- add carbon tax exemption link ([3b21fe5](https://github.com/bcgov/cas-registration/commit/3b21fe5ce173ab7663dce6c1a7cd613c4703fe0c))
+- add db setup for IO ([a02aa75](https://github.com/bcgov/cas-registration/commit/a02aa75a889cc37d88c44692117491dfa105ec1e))
+- add happo e2e finalize job ([c1b1f63](https://github.com/bcgov/cas-registration/commit/c1b1f63fa19d0bca29e9953873f565d322d58a84))
+- breadcrumb UUID transforms to text ([ad7c00f](https://github.com/bcgov/cas-registration/commit/ad7c00ffd773dc34f15ece2c6e09319296ce5f95))
+- configure session maxAge ([b348fe1](https://github.com/bcgov/cas-registration/commit/b348fe175f2cf948225d9da4f5e423df30a1adc0))
+- e2e ci cache ([d18e0df](https://github.com/bcgov/cas-registration/commit/d18e0dfca0a7dde20d169a0f17d36944ec2fdebc))
+- home route test ([f3470b2](https://github.com/bcgov/cas-registration/commit/f3470b2b2437a34c34b2f2422c23ff43fcba88f8))
+- replace uuid with user_friendly_id in user operator datagrid ([a648ff1](https://github.com/bcgov/cas-registration/commit/a648ff1776768ab67437c9d7accfff09825290da))
+- setup happo ([f0b5c6e](https://github.com/bcgov/cas-registration/commit/f0b5c6ec91d81880c4f25726daf1736e37b97847))
+
 # [1.1.0](https://github.com/bcgov/cas-registration/compare/v1.0.0...v1.1.0) (2024-03-12)
 
 ### Bug Fixes
