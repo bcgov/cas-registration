@@ -281,9 +281,9 @@ jobs:
           E2E_NEW_USER_GUID: ${{ secrets.E2E_NEW_USER_GUID }}
           E2E_NEW_USER_PASSWORD: ${{ secrets.E2E_NEW_USER_PASSWORD }}
           E2E_NEW_USER_STORAGE: ${{ secrets.E2E_NEW_USER_STORAGE}}
-          HAPPO_ENABLED: true
           HAPPO_API_KEY: ${{ secrets.HAPPO_API_KEY }}
           HAPPO_API_SECRET: ${{ secrets.HAPPO_API_SECRET }}
+          HAPPO_NONCE: ${{ github.event.pull_request.head.sha }}
         working-directory: ./client
       - name: 💾 save ${{ matrix.project }} report artifact
         # prefer to upload the report only in case of test failure
@@ -330,6 +330,21 @@ jobs:
             || contains(needs.*.result, 'cancelled')
             || contains(needs.*.result, 'skipped')
           }}
+
+  happo-finalize:
+    runs-on: ubuntu-latest
+    needs: [e2e-tests]
+    steps:
+      - uses: actions/checkout@v4
+      - name: dev env setup
+        uses: ./.github/actions/dev-env-setup
+      - name: finalize happo e2e tests
+        env:
+          HAPPO_API_KEY: ${{ secrets.HAPPO_API_KEY }}
+          HAPPO_API_SECRET: ${{ secrets.HAPPO_API_SECRET }}
+          HAPPO_NONCE: ${{ github.event.pull_request.head.sha }}
+        run: npx happo-e2e finalize
+        working-directory: ./client
 
   backend-tests:
     needs:
