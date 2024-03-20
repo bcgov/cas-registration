@@ -15,7 +15,7 @@ class ParentOperatorIn(Schema):
     po_legal_name: str
     po_trade_name: Optional[str] = ""
     po_cra_business_number: int
-    po_bc_corporate_registry_number: str = Field(regex=BC_CORPORATE_REGISTRY_REGEX)
+    po_bc_corporate_registry_number: str = Field(pattern=BC_CORPORATE_REGISTRY_REGEX)
     po_business_structure: str
     po_website: Optional[
         str
