@@ -26,11 +26,11 @@ class ParentOperatorIn(Schema):
     po_physical_postal_code: str
     po_mailing_address_same_as_physical: bool
     # below are optional fields because we might use physical address as mailing address
-    po_mailing_street_address: Optional[str]
-    po_mailing_municipality: Optional[str]
-    po_mailing_province: Optional[str]
-    po_mailing_postal_code: Optional[str]
-    operator_index: Optional[int]
+    po_mailing_street_address: Optional[str] = None
+    po_mailing_municipality: Optional[str] = None
+    po_mailing_province: Optional[str] = None
+    po_mailing_postal_code: Optional[str] = None
+    operator_index: Optional[int] = None
 
     @validator("po_business_structure")
     @classmethod
