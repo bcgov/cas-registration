@@ -18,8 +18,6 @@ export class DashboardPOM {
   readonly operationsUrl: string =
     process.env.E2E_BASEURL + AppRoute.OPERATIONS;
 
-  readonly operatorsUrl: string = process.env.E2E_BASEURL + AppRoute.OPERATORS;
-
   readonly msgPending: Locator;
 
   readonly selectOperatorTile: Locator;
@@ -34,7 +32,7 @@ export class DashboardPOM {
 
   readonly reportProblemLink: Locator;
 
-  readonly userAccessManagementTile: Locator;
+  readonly userAccessManagementTileIndustry: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -51,7 +49,7 @@ export class DashboardPOM {
     this.reportProblemLink = page.getByRole("link", {
       name: "Report problems to GHGRegulator@gov.bc.ca",
     });
-    this.userAccessManagementTile = page.locator(
+    this.userAccessManagementTileIndustry = page.locator(
       "#User-Access-Management-link",
     );
   }
@@ -75,18 +73,11 @@ export class DashboardPOM {
   }
 
   async dashboardTilesAreVisibleIndustryAdmin() {
-    expect(
-      this.page.getByRole("heading", { name: "My Operator" }),
-    ).toBeVisible();
-    expect(
-      this.page.getByRole("heading", { name: "My Operations" }),
-    ).toBeVisible();
-    expect(
-      this.page.getByRole("heading", { name: "User Access Management" }),
-    ).toBeVisible();
-    expect(
-      this.page.getByRole("heading", { name: "Report a Problem" }),
-    ).toBeVisible();
+    await this.page.waitForSelector(".dashboard-tile-container");
+    await this.page.waitForSelector("#My-Operator-link");
+    await this.page.waitForSelector("#My-Operations-link");
+    await this.page.waitForSelector("#User-Access-Management-link");
+    await this.page.waitForSelector("#Report-a-Problem-link");
   }
 
   async clickOperationsTile() {
@@ -106,6 +97,6 @@ export class DashboardPOM {
   }
 
   async clickUserAccessManagementTileIndustry() {
-    await this.userAccessManagementTile.click();
+    await this.userAccessManagementTileIndustry.click();
   }
 }
