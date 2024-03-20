@@ -1,8 +1,14 @@
-import { Sample } from '@bciers/components';
-import { Grid } from '@mui/material';
+'use client';
+
+import { Button, Grid } from '@mui/material';
+import { signIn } from 'next-auth/react';
 import Main from 'registration/components/layout/Main';
 
 export default function Index() {
+  const handleIdirLogin = () => {
+    signIn('keycloak', undefined, { kc_idp_hint: 'idir' });
+  };
+
   return (
     <Main>
       <Grid
@@ -13,8 +19,14 @@ export default function Index() {
           marginBottom: '48px',
         }}
       >
-        Here is a sample shared component, to prove the work!
-        <Sample />
+        Login:
+        <Button
+          variant="outlined"
+          className="w-full md:max-w-[70%]"
+          onClick={handleIdirLogin}
+        >
+          Log in with IDIR
+        </Button>
       </Grid>
     </Main>
   );
