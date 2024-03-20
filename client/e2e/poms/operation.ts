@@ -114,27 +114,22 @@ export class OperationPOM {
 
   async clickCancelButton() {
     await this.buttonCancel.click();
-    await this.page.waitForLoadState("networkidle");
   }
 
   async clickNextButton() {
     await this.buttonNext.click();
-    await this.page.waitForLoadState("networkidle");
   }
 
   async clickReturnToOperationsList() {
     await this.returnToOperationsListButton.click();
-    await this.page.waitForLoadState("networkidle");
   }
 
   async clickSaveAndContinue() {
     await this.buttonSaveAndContinue.click();
-    await this.page.waitForLoadState("networkidle");
   }
 
   async clickSubmitButton() {
     await this.buttonSubmit.click();
-    await this.page.waitForLoadState("networkidle");
   }
 
   async fillOperationFormPage1() {
