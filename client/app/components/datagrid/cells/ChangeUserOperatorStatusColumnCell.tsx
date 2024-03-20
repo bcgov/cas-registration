@@ -17,7 +17,7 @@ interface UserOperatorStatusAction {
 }
 
 const handleUpdateStatus = async (
-  userOperatorId: number,
+  userOperatorId: string,
   statusUpdate: Status,
   roleUpdate: UserOperatorRoles,
 ) => {
@@ -43,7 +43,7 @@ const ChangeUserOperatorStatusColumnCell = (
   params: UserOperatorRenderCellParams,
 ) => {
   const userOperatorStatus = params.row.status;
-  const userOperatorId = params.row.userOperatorId;
+  const userOperatorId = params.row.id;
   const accessType = params.row.accessType;
   const userOperatorRole = accessType;
   const buttonsToShow = (status: Status): UserOperatorStatusAction[] => {
