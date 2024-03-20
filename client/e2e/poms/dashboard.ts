@@ -15,6 +15,11 @@ export class DashboardPOM {
 
   readonly url: string = process.env.E2E_BASEURL + AppRoute.DASHBOARD;
 
+  readonly operationsUrl: string =
+    process.env.E2E_BASEURL + AppRoute.OPERATIONS;
+
+  readonly operatorsUrl: string = process.env.E2E_BASEURL + AppRoute.OPERATORS;
+
   readonly msgPending: Locator;
 
   readonly selectOperatorTile: Locator;
@@ -86,26 +91,21 @@ export class DashboardPOM {
 
   async clickOperationsTile() {
     await this.operationsTile.click();
-    await this.page.waitForLoadState("networkidle");
   }
 
   async clickOperationsTileIndustry() {
     await this.operationsTileIndustry.click();
-    await this.page.waitForLoadState("networkidle");
   }
 
   async clickOperatorsTile() {
     await this.operatorsTile.click();
-    await this.page.waitForLoadState("networkidle");
   }
 
   async clickOperatorsTileIndustry() {
     await this.operatorsTileIndustry.click();
-    await this.page.waitForLoadState("networkidle");
   }
 
   async clickUserAccessManagementTileIndustry() {
     await this.userAccessManagementTile.click();
-    await this.page.waitForLoadState("networkidle");
   }
 }

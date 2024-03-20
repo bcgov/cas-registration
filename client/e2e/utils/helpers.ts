@@ -172,6 +172,7 @@ export async function tableColumnNamesAreCorrect(
   page: Page,
   expectedColumnNames: string[],
 ) {
+  await page.waitForSelector(".MuiDataGrid-root");
   for (const columnName of expectedColumnNames) {
     expect(
       page.locator(".MuiDataGrid-columnHeaderTitle").getByText(columnName),
