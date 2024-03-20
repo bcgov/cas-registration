@@ -10,14 +10,13 @@ const SENTRY_DSN =
   SENTRY_ENVIRONMENT === "prod"
     ? "https://c097ce7d51760bab348fa0608eea9870@o646776.ingest.sentry.io/4506621387407360"
     : undefined;
+const SENTRY_TRACE_SAMPLE_RATE = process.env.SENTRY_TRACE_SAMPLE_RATE ?? "0";
 
 Sentry.init({
   dsn: SENTRY_DSN,
   environment: SENTRY_ENVIRONMENT,
   release: process.env.SENTRY_RELEASE,
-
-  // Adjust this value in production, or use tracesSampler for greater control
-  tracesSampleRate: 1,
+  tracesSampleRate: parseFloat(SENTRY_TRACE_SAMPLE_RATE),
 
   // Setting this option to true will print useful information to the console while you're setting up Sentry.
   debug: false,
