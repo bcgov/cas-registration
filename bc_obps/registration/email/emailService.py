@@ -3,6 +3,7 @@ from typing import List
 import requests
 from uuid import UUID
 from django.conf import settings
+from datetime import datetime, timedelta
 
 from registration.email.schema import EmailIn, BodyType, TemplateMergeIn
 
@@ -14,10 +15,11 @@ class EmailService:
         self.clientSecret = settings.CHES_CLIENT_SECRET
         self.tokenEndpoint = settings.CHES_TOKEN_ENDPOINT
         self.token = None
+        self.tokenExpiry = datetime.now()
         print(f'Initializing EmailService for clientID {self.clientID} to connect to {self.apiUrl}')
 
     def _get_token(self):
-        if not self.token:
+        if not self.token or self.tokenExpiry < datetime.now():
             response = requests.post(
                 self.tokenEndpoint,
                 auth=(self.clientID, self.clientSecret),
@@ -26,12 +28,14 @@ class EmailService:
             )
             if response.status_code == 200:
                 self.token = response.json()["access_token"]
+                self.tokenExpiry = datetime.now() + timedelta(seconds=response.json()["expires_in"])
             else:
                 raise Exception("Failed to retrieve CHES access token")
 
     def _make_request(self, endpoint, method='GET', data: any = None):
         headers = {"Authorization": f'Bearer {self.token}'} if self.token else {}
         print(f'Received request to {method} to {endpoint} with payload {data}')
+        print(f'Using headers {headers}')
         if method == 'GET':
             response = requests.get(self.apiUrl + endpoint, headers=headers, timeout=10)
         elif method == 'POST':
@@ -62,16 +66,10 @@ class EmailService:
     def send_email(self, email_data: EmailIn):
         self._get_token()
         try:
-            email_data_dict = email_data.dict()
-            # CHES API wants payload with keyword 'from', which Python doesn't allow because 'from' is a reserved keyword,
-            # hence this hack.
-            email_data_dict['from'] = email_data_dict.pop('send_from')
-            # must convert the BodyType enum to a string because "BodyType is not JSON serializable"
-            email_data_dict['bodyType'] = BodyType(email_data_dict['bodyType']).value
             response = self._make_request(
                 '/email',
                 method='POST',
-                data=email_data_dict,
+                data=email_data.dict(),
             )
             return response
         except Exception as exc:
@@ -88,10 +86,7 @@ class EmailService:
     def merge_template_and_send(self, email_template_data: TemplateMergeIn):
         self._get_token()
         try:
-            email_template_dict = email_template_data.dict()
-            email_template_dict['from'] = email_template_dict.pop('send_from')
-            email_template_dict['bodyType'] = BodyType(email_template_dict['bodyType']).value
-            response = self._make_request("/emailMerge", method='POST', data=email_template_dict)
+            response = self._make_request("/emailMerge", method='POST', data=email_template_data.dict())
             return response
         except Exception as exc:
             print('Exception in merging template and sending! ', str(exc))

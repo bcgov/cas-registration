@@ -1,28 +1,27 @@
 from typing import List, Optional
 from enum import Enum
 from ninja import Schema
-from pydantic import BaseModel
 
 
-class BodyType(Enum):
+class BodyType(str, Enum):
     HTML = "html"
     TEXT = "text"
 
 
-class MessagePriority(Enum):
+class MessagePriority(str, Enum):
     HIGH = 'high'
     NORMAL = 'normal'
     LOW = 'low'
 
 
-class AttachmentObject(dict):
+class AttachmentObject(Schema):
     content: str
     content_type: str
     encoding: Optional[str]
     filename: str
 
 
-class ContextObject(BaseModel):
+class ContextObject(Schema):
     bcc: Optional[List[str]]
     cc: Optional[List[str]]
     context: dict
@@ -31,7 +30,7 @@ class ContextObject(BaseModel):
     to: List[str]
 
 
-class EmailIn(BaseModel):
+class EmailIn(Schema):
     attachments: Optional[List[AttachmentObject]] = []
     bcc: Optional[List[str]] = []
     bodyType: BodyType
@@ -46,7 +45,7 @@ class EmailIn(BaseModel):
     to: List[str]
 
 
-class TemplateMergeIn(BaseModel):
+class TemplateMergeIn(Schema):
     attachments: Optional[List[AttachmentObject]] = []
     bodyType: BodyType
     body: str

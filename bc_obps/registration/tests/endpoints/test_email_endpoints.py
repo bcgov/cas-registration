@@ -12,6 +12,7 @@ class TestEmailEndpoint(CommonTestSetup):
         response = TestUtils.mock_get_with_auth_role(self, "cas_admin", custom_reverse_lazy("email_health_check"))
         assert response.status_code == 200
         response_json = json.loads(response.content)
+        print('Health check output: ', response_json)
         assert isinstance(response_json, dict)
 
     def test_get_message_status(self):
@@ -21,17 +22,27 @@ class TestEmailEndpoint(CommonTestSetup):
             subject='Another Automated Test Email',
             body='Testing get_message_status',
             bodyType=BodyType.TEXT,
-            send_from='andrea.williams@gov.bc.ca',
-        ).dict()
-        email_data['from'] = email_data['send_from']
-        email_data['bodyType'] = BodyType(email_data['bodyType']).value
+            send_from="andrea.williams@gov.bc.ca",
+        )
+        # CHES API wants payload with keyword 'from', which Python doesn't allow because 'from' is a reserved keyword,
+        # hence this hack.
+        email_data_dict = email_data.dict()
+        email_data_dict["from"] = email_data_dict["send_from"]
+        print('email_data_dict in get_message_status ', email_data_dict)
         post_response = TestUtils.mock_post_with_auth_role(
-            self, "cas_admin", 'application/json', json.dumps(email_data), custom_reverse_lazy("send_email")
+            self,
+            "cas_admin",
+            'application/json',
+            json.dumps(email_data_dict),
+            endpoint=custom_reverse_lazy("send_email"),
         )
 
         assert post_response.status_code == 200
+        print('post response')
+        print(post_response)
         # convert post_response.content (a bytes-array) to a string and then to json
         post_response_json = json.loads(post_response.content.decode('utf8').replace("'", '"'))
+        print(post_response_json)
         # store the messageId received in the post_response
         message_id = post_response_json.get('messages')[0].get('msgId')
 
@@ -58,8 +69,8 @@ class TestEmailEndpoint(CommonTestSetup):
         assert response.status_code == 401
 
     def test_send_email_all_authorized_roles(self):
-        all_irc_roles = AppRole.get_authorized_irc_roles()
-        # not going to test for external roles because CHES API doesn't allow external users to send emails using their system
+        all_app_roles = AppRole.get_all_app_roles()
+        print(f'App roles: {all_app_roles}')
         email_data = EmailIn(
             to=['andrea.williams@gov.bc.ca'],
             subject='Automated Test Email',
@@ -71,9 +82,7 @@ class TestEmailEndpoint(CommonTestSetup):
         # CHES API wants payload with keyword 'from', which Python doesn't allow because 'from' is a reserved keyword,
         # hence this hack.
         email_data_dict['from'] = email_data_dict['send_from']
-        # must convert the BodyType enum to a string because "BodyType is not JSON serializable"
-        email_data_dict['bodyType'] = BodyType(email_data_dict['bodyType']).value
-        for role_name in all_irc_roles:
+        for role_name in all_app_roles:
             print(f'Testing role {role_name}...')
             email_data_dict['body'] = f'This is a CHES test email from me to me as a {role_name} user'
             response = TestUtils.mock_post_with_auth_role(
@@ -83,11 +92,13 @@ class TestEmailEndpoint(CommonTestSetup):
                 json.dumps(email_data_dict),
                 endpoint=custom_reverse_lazy("send_email"),
             )
+            print('send_email response')
+            print(response)
+            print(response.content)
             assert response.status_code == 200
 
     def test_merge_template_and_send(self):
         all_irc_roles = AppRole.get_authorized_irc_roles()
-        # not going to test for external roles because CHES API doesn't allow external users to send emails using their system
 
         context_1 = ContextObject(
             to=['andrea.williams@gov.bc.ca'],
@@ -115,8 +126,6 @@ class TestEmailEndpoint(CommonTestSetup):
         # CHES API wants payload with keyword 'from', which Python doesn't allow because 'from' is a reserved keyword,
         # hence this hack.
         email_template_dict['from'] = email_template_dict['send_from']
-        # must convert the BodyType enum to a string because "BodyType is not JSON serializable"
-        email_template_dict['bodyType'] = BodyType(email_template_dict['bodyType']).value
 
         for role_name in all_irc_roles:
             print(f'Testing role {role_name}...')

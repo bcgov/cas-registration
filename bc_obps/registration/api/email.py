@@ -25,24 +25,16 @@ def check_email_status(request, message_id: UUID):
     return response.get('status')
 
 
-@router.get("/email/cancel-email/{message_id}", response={202: dict, codes_4xx: Message}, url_name="cancel_email")
-def cancel_email_send(request, message_id: UUID):
-    response = email_service.cancel_email(msgId=message_id)
-    return response.json()
-
-
 ##### POST #####
 @router.post("/email/send", response={200: dict, codes_4xx: Message}, url_name="send_email")
-# NOTE: the CHES system does not allow external users (i.e., `industry_user`) to send emails.
-@authorize(AppRole.get_authorized_irc_roles())
+@authorize(AppRole.get_all_app_roles())
 def send_email(request, payload: EmailIn):
     response = email_service.send_email(payload)
-    return response.json()
+    return response
 
 
 @router.post("/email/send-from-template", response={200: dict, codes_4xx: Message}, url_name="send_email_from_template")
-# NOTE: the CHES system does not allow external users (i.e., `industry_user`) to send emails.
-@authorize(AppRole.get_authorized_irc_roles())
+@authorize(AppRole.get_all_app_roles())
 def send_email_from_template(request, payload: TemplateMergeIn):
     response = email_service.merge_template_and_send(payload)
     return response.json()
