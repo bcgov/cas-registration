@@ -106,6 +106,10 @@ export async function actionHandler(
         if (!response.ok) {
           const res = await response.json();
 
+          // if we have an error message, we want to capture it in Sentry otherwise we want to capture the status code
+          const error = res.message || `HTTP error! Status: ${response.status}`;
+          Sentry.captureException(new Error(error));
+
           // Handle API errors, if any
           if ("message" in res) return { error: res.message };
 
@@ -119,6 +123,7 @@ export async function actionHandler(
 
         return data;
       } catch (error: unknown) {
+        Sentry.captureException(error as Error);
         // Handle any errors, including network issues
         if (error instanceof Error) {
           // eslint-disable-next-line no-console
