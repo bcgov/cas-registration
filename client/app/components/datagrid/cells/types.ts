@@ -10,6 +10,5 @@ export interface UserOperatorRenderCellParams extends GridRenderCellParams {
     accessType: string;
     status: Status;
     actions: string;
-    userOperatorId: number;
   };
 }
