@@ -72,6 +72,8 @@ spec:
               value: {{ include "cas-registration.namespaceSuffix" . }}
             - name: SENTRY_RELEASE
               value: {{ .Values.backend.image.tag }}
+            - name: SENTRY_TRACE_SAMPLE_RATE
+              value: {{ .Values.backend.sentry.traceSampleRate }}
             {{- end }}
           ports:
             - containerPort: {{ .Values.backend.service.port }}
