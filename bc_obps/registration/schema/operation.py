@@ -25,7 +25,7 @@ class OperationCreateIn(ModelSchema):
     class Config:
         model = Operation
         model_fields = ['name', 'type', 'naics_code', 'opt_in', 'regulated_products', 'bcghg_id']
-        allow_population_by_field_name = True
+        populate_by_name = True
 
 
 class OperationUpdateOut(ModelSchema):
@@ -58,7 +58,7 @@ class OperationUpdateIn(ModelSchema):
     class Config:
         model = Operation
         model_fields = ['name', 'type', 'naics_code', 'opt_in', 'point_of_contact', 'regulated_products']
-        allow_population_by_field_name = True
+        populate_by_name = True
 
 
 class OperationListOut(ModelSchema):
