@@ -167,7 +167,9 @@ test.describe("Test Workflow industry_user", () => {
     );
 
     // Add short timeout to mitigate the Firefox text rendering issue causing spurious screenshot failures
-    await page.waitForTimeout(500);
+    if (test.info().project.name === "firefox") {
+      await page.waitForTimeout(500);
+    }
 
     pageContent = page.locator("html");
     await happoPlaywright.screenshot(page, pageContent, {
