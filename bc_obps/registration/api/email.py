@@ -27,17 +27,25 @@ def check_email_status(request, message_id: UUID):
 
 ##### POST #####
 @router.post("/email/send", response={200: dict, codes_4xx: Message}, url_name="send_email")
-@authorize(AppRole.get_all_app_roles())
+@authorize(AppRole.get_authorized_irc_roles())
 def send_email(request, payload: EmailIn):
-    response = email_service.send_email(payload)
+    # CHES API wants payload with keyword 'from', which Python doesn't allow because 'from' is a reserved keyword,
+    # hence this hack.
+    payload_dict = payload.dict()
+    payload_dict['from'] = payload_dict['send_from']
+    response = email_service.send_email(payload_dict)
     return response
 
 
 @router.post("/email/send-from-template", response={200: dict, codes_4xx: Message}, url_name="send_email_from_template")
-@authorize(AppRole.get_all_app_roles())
+@authorize(AppRole.get_authorized_irc_roles())
 def send_email_from_template(request, payload: TemplateMergeIn):
-    response = email_service.merge_template_and_send(payload)
-    return response.json()
+    # CHES API wants payload with keyword 'from', which Python doesn't allow because 'from' is a reserved keyword,
+    # hence this hack.
+    payload_dict = payload.dict()
+    payload_dict['from'] = payload_dict['send_from']
+    response = email_service.merge_template_and_send(payload_dict)
+    return response
 
 
 ##### DELETE #####

@@ -35,13 +35,10 @@ class EmailService:
     def _make_request(self, endpoint, method='GET', data: any = None):
         headers = {"Authorization": f'Bearer {self.token}'} if self.token else {}
         print(f'Received request to {method} to {endpoint} with payload {data}')
-        print(f'Using headers {headers}')
         if method == 'GET':
             response = requests.get(self.apiUrl + endpoint, headers=headers, timeout=10)
         elif method == 'POST':
             response = requests.post(self.apiUrl + endpoint, headers=headers, json=data, timeout=10)
-        elif method == 'DELETE':
-            response = requests.delete(self.apiUrl + endpoint, headers=headers, timeout=10)
         else:
             raise ValueError("Invalid HTTP method")
 
@@ -63,30 +60,22 @@ class EmailService:
         except Exception as exc:
             print(f'Exception retrieving message status for {msgId} - ', str(exc))
 
-    def send_email(self, email_data: EmailIn):
+    def send_email(self, email_data: dict):
         self._get_token()
         try:
             response = self._make_request(
                 '/email',
                 method='POST',
-                data=email_data.dict(),
+                data=email_data,
             )
-            return response
+            return response.json()
         except Exception as exc:
             print("Exception in send_email ", str(exc))
 
-    def cancel_email(self, msgId: UUID):
+    def merge_template_and_send(self, email_template_data: dict):
         self._get_token()
         try:
-            response = self._make_request(f'/cancel/{msgId}', method='DELETE')
+            response = self._make_request("/emailMerge", method='POST', data=email_template_data)
             return response.json()
-        except Exception as exc:
-            print(f'Exception in cancelling email {msgId} - ', str(exc))
-
-    def merge_template_and_send(self, email_template_data: TemplateMergeIn):
-        self._get_token()
-        try:
-            response = self._make_request("/emailMerge", method='POST', data=email_template_data.dict())
-            return response
         except Exception as exc:
             print('Exception in merging template and sending! ', str(exc))
