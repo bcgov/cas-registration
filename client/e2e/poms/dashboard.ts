@@ -75,11 +75,10 @@ export class DashboardPOM {
   }
 
   async dashboardTilesAreVisibleIndustryAdmin() {
-    await this.page.waitForSelector(".dashboard-tile-container");
-    await this.page.waitForSelector("#My-Operator-link");
-    await this.page.waitForSelector("#My-Operations-link");
-    await this.page.waitForSelector("#User-Access-Management-link");
-    await this.page.waitForSelector("#Report-a-Problem-link");
+    expect(this.page.locator("#My-Operator-link")).toBeVisible();
+    expect(this.page.locator("#My-Operations-link")).toBeVisible();
+    expect(this.page.locator("#User-Access-Management-link")).toBeVisible();
+    expect(this.page.locator("#Report-a-Problem-link")).toBeVisible();
   }
 
   async clickOperationsTile() {
