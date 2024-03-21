@@ -164,10 +164,7 @@ export async function triggerFormatValidationErrors(
   // Submit
   await submitButton.click();
 }
-export async function getAllFields(page: Page) {
-  const fields = await page.$$("fieldset#root");
-  return fields;
-}
+
 export async function getAllFormInputs(page: Page) {
   const fields = await page.locator("input").all();
   return fields;
