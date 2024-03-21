@@ -44,6 +44,8 @@ export class DashboardPOM {
     this.page = page;
     this.operationsTile = page.getByRole("link", { name: /.*operations.*/i });
     this.operatorsTile = page.getByRole("link", { name: /.*operator.*/i });
+    // the id to select these as these as we will start adding notifications to the tiles
+    // the operators tile link text is just `0 pending action(s) required`
     this.operatorsTileIndustry = page.locator("#My-Operator-link");
     this.operationsTileIndustry = page.locator("#My-Operations-link");
     this.reportProblemLink = page.getByRole("link", {
