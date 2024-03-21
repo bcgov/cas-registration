@@ -4,12 +4,9 @@ import { test, expect } from "@playwright/test";
 import { DashboardPOM } from "@/e2e/poms/dashboard";
 import { OperationsPOM } from "@/e2e/poms/operations";
 import { OperatorsPOM } from "@/e2e/poms/operators";
-// ☰ Enums
-import { UserRole } from "@/e2e/utils/enums";
 // 🛠️ Helpers
 import {
   getAllFormInputs,
-  // downloadPDF,
   tableColumnNamesAreCorrect,
   clickViewDetailsButton,
   checkFormHeaders,
@@ -26,10 +23,6 @@ import {
 } from "@/e2e/utils/helpers";
 // ℹ️ Environment variables
 import * as dotenv from "dotenv";
-
-// ⚙️ SQL Queries
-import { upsertUserRecord } from "@/e2e/utils/queries";
-
 dotenv.config({ path: "./e2e/.env.local" });
 
 // 🏷 Annotate test suite as serial
@@ -38,7 +31,6 @@ test.describe.configure({ mode: "serial" });
 // Hit the test setup endpoint before running the tests to ensure the test data is set up
 test.beforeAll(async () => {
   await setupTestEnvironment("cas_admin");
-  await upsertUserRecord(UserRole.CAS_ADMIN); // upsert cas_admin user in case it was deleted by another test
 });
 
 test.describe("Test Workflow cas_admin", () => {
@@ -82,7 +74,7 @@ test.describe("Test Workflow cas_admin", () => {
     ]);
 
     // 🧪 cas_admin is able to click "View Details" on a declined operator and see detailed info about it (read only)
-    await clickViewDetailsButton(operatorsPage.page); // DECLINED operator
+    await clickViewDetailsButton(operatorsPage.page, 1); // DECLINED operator
 
     await operatorsPage.clickExpandAllButton();
     await checkFormHeaders(operatorsPage.page, [
@@ -107,7 +99,7 @@ test.describe("Test Workflow cas_admin", () => {
     await operatorsPage.clickOperatorsLink();
 
     // 🧪 cas_admin is able to click "View Details" on an approved operator and see detailed info about it (read only)
-    await clickViewDetailsButton(operatorsPage.page, 1); // APPROVED operator
+    await clickViewDetailsButton(operatorsPage.page); // APPROVED operator
 
     await operatorsPage.clickExpandAllButton();
     await checkFormHeaders(operatorsPage.page, [
@@ -132,7 +124,7 @@ test.describe("Test Workflow cas_admin", () => {
     await operatorsPage.clickOperatorsLink();
 
     // 🧪 cas_admin is able to click "View Details" on a pending operator and see detailed info about it (read only)
-    await clickViewDetailsButton(operatorsPage.page, 4); // PENDING operator(new operator)
+    await clickViewDetailsButton(operatorsPage.page, 2); // PENDING operator(new operator)
 
     await operatorsPage.clickExpandAllButton();
     await checkFormHeaders(operatorsPage.page, [
@@ -200,7 +192,7 @@ test.describe("Test Workflow cas_admin", () => {
     await operatorsPage.clickOperatorsLink();
 
     // 🧪 cas_admin is able to Decline new operator
-    await clickViewDetailsButton(operatorsPage.page, 6); // PENDING operator(another new operator)
+    await clickViewDetailsButton(operatorsPage.page, 3); // PENDING operator(another new operator)
 
     // New operator note is visible
     await operatorsPage.checkNewOperatorNote();
@@ -228,16 +220,11 @@ test.describe("Test Workflow cas_admin", () => {
       operatorsPage.declinedOperatorAlert,
     );
 
-    // 🧪 cas_admin is not allowed to approve an admin access request if the Operator has been Declined in the first form section
-    await operatorsPage.notAllowedToDeclineAdminRequest(
-      modal,
-      modalConfirmButton,
-      modalCancelButton,
-    );
-    await checkAlertMessage(
+    // 🧪 cas_admin can't see Approve/Decline buttons if the Operator has been Declined in the first form section
+    await checkLocatorsVisibility(
       operatorsPage.page,
-      operatorsPage.newOperatorMustBeApprovedAlert,
-      1,
+      [approveButton, rejectButton],
+      false,
     );
 
     // 🔙 Navigate back to the operators table
@@ -272,7 +259,7 @@ test.describe("Test Workflow cas_admin", () => {
     await operatorsPage.clickOperatorsLink();
 
     // 🧪 cas_admin is able to Decline admin request
-    await clickViewDetailsButton(operatorsPage.page, 9); // PENDING admin request (Existing operator)
+    await clickViewDetailsButton(operatorsPage.page, 15); // PENDING admin request (Existing operator)
 
     await rejectButton.click(); // clicking admin access request rejection
     await expect(modal).toBeVisible();
