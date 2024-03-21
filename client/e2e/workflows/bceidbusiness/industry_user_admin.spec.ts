@@ -55,12 +55,24 @@ test.describe("Test Workflow industry_user_admin", () => {
     await operatorPage.urlIsCorrect();
     await operatorPage.operatorViewIsCorrect();
 
+    const pageContent = page.locator("html");
+    await happoPlaywright.screenshot(operatorPage.page, pageContent, {
+      component: "Operator Form Page",
+      variant: "read only",
+    });
+
     // industry_user_admin is able to view read only user operator form
     await operatorPage.operatorFormIsDisabled();
 
     // industry_user_admin is able to edit the operator form
     await operatorPage.clickEditInformation();
     await operatorPage.editOperatorInformation();
+
+    await happoPlaywright.screenshot(operatorPage.page, pageContent, {
+      component: "Operator Form Page",
+      variant: "edit mode",
+    });
+
     await operatorPage.clickSaveAndReturn();
 
     await page.waitForURL(dashboardPage.url);
@@ -92,6 +104,12 @@ test.describe("Test Workflow industry_user_admin", () => {
       "Action",
     ]);
 
+    const pageContent = page.locator("html");
+    await happoPlaywright.screenshot(operationPage.page, pageContent, {
+      component: "Operation table",
+      variant: UserRole.INDUSTRY_USER_ADMIN,
+    });
+
     // industry_user_admin is able to click the Add Operation button
     await operationsPage.clickAddOperationButton();
 
@@ -101,10 +119,9 @@ test.describe("Test Workflow industry_user_admin", () => {
     // Fill page 1, take screenshot and click save and continue to move to the next step
     await operationPage.fillOperationFormPage1();
 
-    const pageContent = page.locator("html");
     await happoPlaywright.screenshot(operationPage.page, pageContent, {
       component: "Operation Form Page 1",
-      variant: UserRole.INDUSTRY_USER_ADMIN,
+      variant: "filled",
     });
 
     await operationPage.clickSaveAndContinue();
@@ -114,7 +131,7 @@ test.describe("Test Workflow industry_user_admin", () => {
     await operationPage.fillOperationFormPage2();
     await happoPlaywright.screenshot(operationPage.page, pageContent, {
       component: "Operation Form Page 2",
-      variant: UserRole.INDUSTRY_USER_ADMIN,
+      variant: "filled",
     });
 
     await operationPage.clickSaveAndContinue();
@@ -124,7 +141,7 @@ test.describe("Test Workflow industry_user_admin", () => {
     await addPdf(operationPage.page);
     await happoPlaywright.screenshot(operationPage.page, pageContent, {
       component: "Operation Form Page 3",
-      variant: UserRole.INDUSTRY_USER_ADMIN,
+      variant: "filled",
     });
 
     await operationPage.clickSubmitButton();
@@ -133,21 +150,16 @@ test.describe("Test Workflow industry_user_admin", () => {
     await operationPage.operationSuccessfulSubmissionIsVisible();
     await happoPlaywright.screenshot(operationPage.page, pageContent, {
       component: "Operation Form Submission Successful",
-      variant: UserRole.INDUSTRY_USER_ADMIN,
+      variant: "default",
     });
   });
 
   test("Operations Tile View Details workflow", async ({ page }) => {
-    // 🛸 Navigate to operations tile page
-    const dashboardPage = new DashboardPOM(page);
     const operationPage = new OperationPOM(page);
     const operationsPage = new OperationsPOM(page);
-    await dashboardPage.route();
-    await dashboardPage.urlIsCorrect();
-    await dashboardPage.dashboardTilesAreVisibleIndustryAdmin();
 
-    // Click Operations tile and view the Operations form
-    await dashboardPage.clickOperationsTileIndustry();
+    // Navigate to operations table page
+    await operationsPage.route();
     await operationsPage.urlIsCorrect();
     await operationsPage.operationsTableIsVisible();
 
@@ -167,6 +179,12 @@ test.describe("Test Workflow industry_user_admin", () => {
 
     // Verify that we are on the operation detail page
     await operationPage.operationFormIsVisible();
+    const pageContent = page.locator("html");
+    await happoPlaywright.screenshot(operationPage.page, pageContent, {
+      component: "Operation Form Page 1",
+      variant: "read only",
+    });
+
     await operationPage.clickNextButton();
 
     // Verify that we are on the operation detail page step 2
