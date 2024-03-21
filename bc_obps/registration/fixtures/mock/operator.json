@@ -283,8 +283,8 @@
     "model": "registration.operator",
     "pk": "4a792f0f-cf9d-48c8-9a95-f504c5f84b12",
     "fields": {
-      "legal_name": "New Operator 14 Legal Name",
-      "trade_name": "New Operator 14 Trade Name",
+      "legal_name": "Existing Operator 14 Legal Name",
+      "trade_name": "Existing Operator 14 Trade Name",
       "cra_business_number": 987654334,
       "bc_corporate_registry_number": "pqz1234567",
       "business_structure": "BC Corporation",
@@ -292,11 +292,11 @@
       "mailing_address": 4,
       "website": "http://www.example2.com",
       "documents": [],
-      "contacts": [1],
-      "status": "Pending",
-      "is_new": true,
-      "verified_at": null,
-      "verified_by": null
+      "contacts": [],
+      "status": "Approved",
+      "is_new": false,
+      "verified_at": "2024-01-03 08:09:51.133556-08",
+      "verified_by": "00000000-0000-0000-0000-000000000002"
     }
   }
 ]
