@@ -1,0 +1,12 @@
+name: "Yarn cache"
+description: "Cache Yarn dependencies"
+runs:
+  using: composite
+  steps:
+    - uses: actions/cache@v4
+      id: yarn-cache
+      with:
+        path: |
+          ~/.cache/yarn
+          ./client/node_modules
+        key: ${{ runner.os }}-yarn-cache-${{ hashFiles('client/yarn.lock') }}-v2

@@ -283,7 +283,7 @@ jobs:
           E2E_NEW_USER_STORAGE: ${{ secrets.E2E_NEW_USER_STORAGE}}
           HAPPO_API_KEY: ${{ secrets.HAPPO_API_KEY }}
           HAPPO_API_SECRET: ${{ secrets.HAPPO_API_SECRET }}
-          HAPPO_NONCE: ${{ github.event.pull_request.head.sha }}
+          HAPPO_NONCE: ${{ github.sha }}
         working-directory: ./client
       - name: 💾 save ${{ matrix.project }} report artifact
         # prefer to upload the report only in case of test failure
@@ -336,13 +336,13 @@ jobs:
     needs: [e2e-tests]
     steps:
       - uses: actions/checkout@v4
-      - name: dev env setup
-        uses: ./.github/actions/dev-env-setup
+      - name: yarn cache
+        uses: ./.github/actions/yarn-cache
       - name: finalize happo e2e tests
         env:
           HAPPO_API_KEY: ${{ secrets.HAPPO_API_KEY }}
           HAPPO_API_SECRET: ${{ secrets.HAPPO_API_SECRET }}
-          HAPPO_NONCE: ${{ github.event.pull_request.head.sha }}
+          HAPPO_NONCE: ${{ github.sha }}
         run: npx happo-e2e finalize
         working-directory: ./client
 
