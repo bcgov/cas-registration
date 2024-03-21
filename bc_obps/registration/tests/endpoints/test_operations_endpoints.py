@@ -136,7 +136,8 @@ class TestOperationsEndpoint(CommonTestSetup):
             'statutory_declaration',
             'bc_obps_regulated_operation',
         }
-        assert response_data.keys() == response_keys_for_industry_users
+
+        assert sorted(response_data.keys()) == sorted(response_keys_for_industry_users)
 
         response_2 = TestUtils.mock_get_with_auth_role(
             self, "cas_admin", custom_reverse_lazy("get_operation", kwargs={"operation_id": users_operation.id})
@@ -146,8 +147,34 @@ class TestOperationsEndpoint(CommonTestSetup):
         assert response_data.get('id') == str(users_operation.id)  # string representation of UUID
         assert response_data.get('name') == users_operation.name
         # Make sure the response has the expected keys based on the role
-        response_keys_for_industry_users.update({'operator'})
-        assert response_data.keys() == response_keys_for_industry_users
+        # brianna the response does not include the operator key which should be added here
+        response_keys_for_cas_admin_users = {
+            'operator',
+            'id',
+            'name',
+            'type',
+            'bcghg_id',
+            'opt_in',
+            'regulated_products',
+            'previous_year_attributable_emissions',
+            'status',
+            'naics_code_id',
+            'first_name',
+            'last_name',
+            'email',
+            'phone_number',
+            'position_title',
+            'street_address',
+            'municipality',
+            'province',
+            'postal_code',
+            'statutory_declaration',
+            'bc_obps_regulated_operation',
+        }
+        print('sorted(response_data.keys()):', sorted(response_data.keys()))
+        print('sorted(response_keys_for_cas_admin_users):', sorted(response_keys_for_cas_admin_users))
+        breakpoint()
+        assert sorted(response_data.keys()) == sorted(response_keys_for_cas_admin_users)
 
     def test_unauthorized_roles_cannot_create_new_operation(self):
         mock_operation = TestUtils.mock_OperationCreateIn()
@@ -276,10 +303,13 @@ class TestOperationsEndpoint(CommonTestSetup):
 
     def test_get_operation_with_invalid_operation_id(self):
         response = TestUtils.mock_get_with_auth_role(
-            self, endpoint=custom_reverse_lazy("get_operation", kwargs={"operation_id": 99999}), role_name="cas_admin"
+            self, endpoint=custom_reverse_lazy("get_operation", kwargs={"operation_id": '99999'}), role_name="cas_admin"
         )
         assert response.status_code == 422
-        assert response.json().get('detail')[0].get('msg') == "value is not a valid uuid"
+        assert (
+            response.json().get('detail')[0].get('msg')
+            == 'Input should be a valid UUID, invalid length: expected length 32 for simple format, found 5'
+        )
 
     def test_operations_endpoint_get_method_with_mock_data(self):
         # IRC users can get all operations except ones with a not Started status
@@ -507,10 +537,10 @@ class TestOperationsEndpoint(CommonTestSetup):
 
     def test_post_existing_operation_with_same_bcghg_id(self):
         operation_instance = operation_baker()
-        operation_instance.bcghg_id = 123
+        operation_instance.bcghg_id = 'aaa1234567'
         operation_instance.save(update_fields=['bcghg_id'])
         mock_operation2 = TestUtils.mock_OperationCreateIn()
-        mock_operation2.bcghg_id = 123
+        mock_operation2.bcghg_id = 'aaa1234567'
         operator = operator_baker()
         TestUtils.authorize_current_user_as_operator_user(self, operator)
         post_response = TestUtils.mock_post_with_auth_role(
@@ -552,7 +582,10 @@ class TestOperationsEndpoint(CommonTestSetup):
             custom_reverse_lazy("update_operation_status", kwargs={"operation_id": 99999999999}),
         )
         assert put_response.status_code == 422
-        assert put_response.json().get('detail')[0].get('msg') == "value is not a valid uuid"
+        assert (
+            put_response.json().get('detail')[0].get('msg')
+            == 'Input should be a valid UUID, invalid length: expected length 32 for simple format, found 11'
+        )
 
     def test_put_operation_update_status_approved(self):
         operation = operation_baker()

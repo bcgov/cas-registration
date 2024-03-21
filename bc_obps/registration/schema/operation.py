@@ -68,6 +68,7 @@ class OperationListOut(ModelSchema):
     class Config:
         model = Operation
         model_fields = ['id', 'name', 'bcghg_id', 'submission_date', 'status']
+        from_attributes = True
 
 
 class OperationOut(ModelSchema):
@@ -117,6 +118,7 @@ class OperationOut(ModelSchema):
             'previous_year_attributable_emissions',
             'status',
         ]
+        from_attributes = True
 
 
 class OperationWithOperatorOut(OperationOut):  # used for irc users
@@ -132,6 +134,7 @@ class OperationUpdateStatusIn(ModelSchema):
     class Config:
         model = Operation
         model_fields = ["status"]
+        from_attributes = True
 
 
 class OperationUpdateStatusOut(ModelSchema):
