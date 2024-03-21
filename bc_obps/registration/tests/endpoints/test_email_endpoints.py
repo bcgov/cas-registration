@@ -12,7 +12,6 @@ class TestEmailEndpoint(CommonTestSetup):
         response = TestUtils.mock_get_with_auth_role(self, "cas_admin", custom_reverse_lazy("email_health_check"))
         assert response.status_code == 200
         response_json = json.loads(response.content)
-        print('Health check output: ', response_json)
         assert isinstance(response_json, dict)
 
     def test_get_message_status(self):
@@ -28,7 +27,6 @@ class TestEmailEndpoint(CommonTestSetup):
         # hence this hack.
         email_data_dict = email_data.dict()
         email_data_dict["from"] = email_data_dict["send_from"]
-        print('email_data_dict in get_message_status ', email_data_dict)
         post_response = TestUtils.mock_post_with_auth_role(
             self,
             "cas_admin",
@@ -38,11 +36,8 @@ class TestEmailEndpoint(CommonTestSetup):
         )
 
         assert post_response.status_code == 200
-        print('post response')
-        print(post_response)
         # convert post_response.content (a bytes-array) to a string and then to json
         post_response_json = json.loads(post_response.content.decode('utf8').replace("'", '"'))
-        print(post_response_json)
         # store the messageId received in the post_response
         message_id = post_response_json.get('messages')[0].get('msgId')
 
@@ -70,7 +65,6 @@ class TestEmailEndpoint(CommonTestSetup):
 
     def test_send_email_all_authorized_irc_roles(self):
         all_irc_roles = AppRole.get_authorized_irc_roles()
-        print(f'App roles: {all_irc_roles}')
         email_data = EmailIn(
             to=['andrea.williams@gov.bc.ca'],
             subject='Automated Test Email',
