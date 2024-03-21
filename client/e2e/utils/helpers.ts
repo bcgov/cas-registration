@@ -1,4 +1,13 @@
-import { Page, expect, Locator, APIResponse, chromium } from "@playwright/test";
+import {
+  Page,
+  expect,
+  Locator,
+  APIResponse,
+  chromium,
+  firefox,
+  webkit,
+  Browser,
+} from "@playwright/test";
 // ☰ Enums
 import { DataTestID } from "@/e2e/utils/enums";
 
@@ -276,7 +285,35 @@ export async function setupTestEnvironment(
   workFlow?: string,
   truncateOnly?: boolean,
 ) {
-  const browser = await chromium.launch();
+  let browser: Browser | null = null;
+
+  // Attempt launching browsers in order of preference
+  for (const browserType of ["chromium", "firefox", "webkit"]) {
+    try {
+      browser = await (async () => {
+        switch (browserType) {
+          case "chromium":
+            return chromium.launch();
+          case "firefox":
+            return firefox.launch();
+          case "webkit":
+            return webkit.launch();
+          default:
+            throw new Error(`Unsupported browser: ${browserType}`);
+        }
+      })();
+      // Browser launched successfully, break the loop
+      break;
+    } catch (error: any) {
+      // eslint-disable-next-line no-console
+      console.warn(`Failed to launch ${browserType}: ${error.message}`);
+    }
+  }
+
+  if (!browser) {
+    throw new Error("No compatible browser found");
+  }
+
   const context = await browser.newContext();
   const baseUrl = "http://localhost:8000/api/registration/test-setup";
   const url = workFlow
