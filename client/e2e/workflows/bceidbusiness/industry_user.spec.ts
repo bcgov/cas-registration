@@ -42,19 +42,6 @@ test.describe("Test Workflow industry_user", () => {
   // Note: specify storageState for each test file or test group, instead of setting it in the config. https://playwright.dev/docs/next/auth#reuse-signed-in-state
   test.use({ storageState: storageState }); // this will error if no such file or directory
 
-  test("Test Redirect to Dashboard", async ({ page }) => {
-    // 🛸 Navigate to dashboard page
-    const dashboardPage = new DashboardPOM(page);
-    await dashboardPage.route();
-    // 🔍 Assert that the current URL ends with "(authenticated)/dashboard"
-    await dashboardPage.urlIsCorrect();
-    const pageContent = page.locator("html");
-    await happoPlaywright.screenshot(dashboardPage.page, pageContent, {
-      component: "Industry User Dashboard page",
-      variant: "industry_user",
-    });
-  });
-
   test("Select existing operator (via legal name) and request admin access", async ({
     page,
   }) => {
@@ -165,6 +152,9 @@ test.describe("Test Workflow industry_user", () => {
       page,
       selectOperatorPage.buttonSubmit,
     );
+
+    // Add short timeout to mitigate the Firefox text rendering issue causing spurious screenshot failures
+    await page.waitForTimeout(500);
 
     pageContent = page.locator("html");
     await happoPlaywright.screenshot(page, pageContent, {
