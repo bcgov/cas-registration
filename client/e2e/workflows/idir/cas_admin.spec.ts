@@ -33,6 +33,10 @@ test.beforeAll(async () => {
   await setupTestEnvironment("cas_admin");
 });
 
+test.afterAll(async () => {
+  await setupTestEnvironment(undefined, true); // clean up test data after all tests are done
+});
+
 test.describe("Test Workflow cas_admin", () => {
   // 👤 run test using the storageState for this role
   const storageState = JSON.parse(process.env.E2E_CAS_ADMIN_STORAGE as string);
