@@ -30,7 +30,7 @@ export class OperationPOM {
 
   readonly operationPage3Title: Locator;
 
-  readonly returnToOperationsListButton: Locator;
+  readonly buttonToOperationsList: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -55,7 +55,7 @@ export class OperationPOM {
     this.buttonSubmit = page.getByRole("button", {
       name: /submit/i,
     });
-    this.returnToOperationsListButton = page.getByRole("button", {
+    this.buttonToOperationsList = page.getByRole("button", {
       name: /return to operations list/i,
     });
   }

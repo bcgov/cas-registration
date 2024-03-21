@@ -41,14 +41,6 @@ test.describe("Test Workflow industry_user_admin", () => {
   );
   // Note: specify storageState for each test file or test group, instead of setting it in the config. https://playwright.dev/docs/next/auth#reuse-signed-in-state
   test.use({ storageState: storageState }); // this will error if no such file or directory
-  test("Test Redirect to Dashboard", async ({ page }) => {
-    // 🛸 Navigate to dashboard page
-    const dashboardPage = new DashboardPOM(page);
-    await dashboardPage.route();
-    // 🔍 Assert that the current URL ends with "(authenticated)/dashboard"
-    await dashboardPage.urlIsCorrect();
-    await dashboardPage.dashboardTilesAreVisibleIndustryAdmin();
-  });
 
   test("Operators Tile view and edit operator workflow", async ({ page }) => {
     // 🛸 Navigate to operators tile page

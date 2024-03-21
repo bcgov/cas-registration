@@ -58,12 +58,12 @@ export class OperationsPOM {
   }
 
   async operationsViewIsCorrect(role: string, expectedStatuses: string[]) {
-    let statusIndex = 5;
+    let statusColumnIndex = 5;
     switch (role) {
       case UserRole.INDUSTRY_USER_ADMIN:
       case UserRole.INDUSTRY_USER:
         // The status column is different for industry users
-        statusIndex = 4;
+        statusColumnIndex = 4;
         break;
       default:
         await expect(this.page.getByText(this.internalNote)).toBeVisible();
@@ -80,7 +80,7 @@ export class OperationsPOM {
       // Get the status of the operation (5th column in the table)
       const status = await operation
         .$$(".MuiDataGrid-cell")
-        .then((cells) => cells[statusIndex].textContent());
+        .then((cells) => cells[statusColumnIndex].textContent());
       if (status) statuses.push(status.trim());
     }
 
