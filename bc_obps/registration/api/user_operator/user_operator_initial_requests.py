@@ -1,7 +1,7 @@
 from uuid import UUID
 from registration.service.user_operator.ListUserOperatorsService import ListUserOperatorsService
 
-from registration.decorators import authorize, try_except_wrapper
+from registration.decorators import authorize, handle_http_errors
 from registration.schema import (
     UserOperatorOut,
     Message,
@@ -24,6 +24,6 @@ from ninja.responses import codes_4xx
 
 @router.get("/user-operator-initial-requests", response=UserOperatorPaginatedOut, url_name="list_user_operators")
 @authorize(AppRole.get_authorized_irc_roles())
-@try_except_wrapper()
+@handle_http_errors()
 def list_user_operators(request, page: int = 1, sort_field: str = "created_at", sort_order: str = "desc"):
     return ListUserOperatorsService.list_user_operators(request, page, sort_field, sort_order)

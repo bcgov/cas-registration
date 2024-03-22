@@ -1,5 +1,5 @@
 from registration.service.select_operator.RequestAccessService import RequestAccessService
-from registration.decorators import authorize, try_except_wrapper
+from registration.decorators import authorize, handle_http_errors
 from registration.schema import (
     SelectOperatorIn,
     Message,
@@ -17,7 +17,7 @@ from ninja.responses import codes_4xx
     "/select-operator/request-access", response={201: RequestAccessOut, codes_4xx: Message}, url_name="request_access"
 )
 @authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles(), False)
-@try_except_wrapper()
+@handle_http_errors()
 def request_access(request, payload: SelectOperatorIn):
 
     return RequestAccessService.request_access(request, payload)

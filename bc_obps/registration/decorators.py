@@ -38,7 +38,7 @@ def authorize(
     return decorator
 
 
-def try_except_wrapper():
+def handle_http_errors():
     """
     Decorator to wrap a function in a try-except block and handle exceptions.
 

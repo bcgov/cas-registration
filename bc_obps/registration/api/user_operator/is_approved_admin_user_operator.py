@@ -1,6 +1,6 @@
 from registration.service.user_operator.IsApprovedAdminUserOperatorService import IsApprovedAdminUserOperatorService
 
-from registration.decorators import authorize, try_except_wrapper
+from registration.decorators import authorize, handle_http_errors
 from registration.schema import (
     Message,
     IsApprovedUserOperator,
@@ -19,6 +19,6 @@ from ninja.responses import codes_4xx
     url_name="is_approved_admin_user_operator",
 )
 @authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
-@try_except_wrapper()
+@handle_http_errors()
 def is_approved_admin_user_operator(request, user_guid: str):
     return IsApprovedAdminUserOperatorService.is_approved_admin_user_operator(request, user_guid)

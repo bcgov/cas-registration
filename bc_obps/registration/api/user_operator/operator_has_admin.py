@@ -1,7 +1,7 @@
 from uuid import UUID
 from registration.service.user_operator.GetUserOperatorAdminExistsService import GetUserOperatorAdminExistsService
 
-from registration.decorators import authorize, try_except_wrapper
+from registration.decorators import authorize, handle_http_errors
 from registration.schema import (
     Message,
 )
@@ -20,6 +20,6 @@ from ninja.responses import codes_4xx
     url_name="get_user_operator_admin_exists",
 )
 @authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles(), False)
-@try_except_wrapper()
+@handle_http_errors()
 def get_user_operator_admin_exists(request, operator_id: UUID):
     return GetUserOperatorAdminExistsService.get_user_operator_admin_exists(request, operator_id)
