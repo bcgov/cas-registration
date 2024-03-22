@@ -2,9 +2,7 @@ from typing import List, Optional
 from registration.schema.operator import OperatorForOperationOut
 from registration.utils import file_to_data_url, data_url_to_file
 from ninja import Field, ModelSchema, Schema
-from registration.constants import AUDIT_FIELDS
-from registration.models import Operation
-from datetime import date
+from registration.models import Operation, User
 from pydantic import field_validator
 
 
@@ -107,7 +105,19 @@ class OperationOut(ModelSchema):
             return
         return str(obj.point_of_contact.phone_number)
 
-    class Config:
+    @staticmethod
+    def resolve_operator(obj, context):
+        """
+        Only return operator details if the user is an IRC user
+        """
+        request = context.get('request')
+        if request:
+            user: User = request.current_user
+            if user.is_irc_user():
+                return obj.operator
+        return None
+
+    class Meta:
         model = Operation
         model_fields = [
             "id",
@@ -119,10 +129,6 @@ class OperationOut(ModelSchema):
             'status',
         ]
         from_attributes = True
-
-
-class OperationWithOperatorOut(OperationOut):  # used for irc users
-    operator: OperatorForOperationOut = Field(..., alias="operator")
 
 
 # Not using Multiple operators for MVP

@@ -115,41 +115,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         assert response_1_data.get('id') == str(users_operation.id)  # string representation of UUID
         assert response_1_data.get('name') == users_operation.name
         # Make sure the response has the expected keys based on the role
-        response_keys_for_industry_users = {
-            'id',
-            'name',
-            'type',
-            'bcghg_id',
-            'opt_in',
-            'regulated_products',
-            'previous_year_attributable_emissions',
-            'status',
-            'naics_code_id',
-            'first_name',
-            'last_name',
-            'email',
-            'phone_number',
-            'position_title',
-            'street_address',
-            'municipality',
-            'province',
-            'postal_code',
-            'statutory_declaration',
-            'bc_obps_regulated_operation',
-        }
-
-        assert sorted(response_1_data.keys()) == sorted(response_keys_for_industry_users)
-
-        response_2 = TestUtils.mock_get_with_auth_role(
-            self, "cas_admin", custom_reverse_lazy("get_operation", kwargs={"operation_id": users_operation.id})
-        )
-        assert response_2.status_code == 200
-        response_2_data = response_2.json()
-        assert response_2_data.get('id') == str(users_operation.id)  # string representation of UUID
-        assert response_2_data.get('name') == users_operation.name
-        # Make sure the response has the expected keys based on the role
-        # brianna the response does not include the operator key which should be added here, you broke something in the schema
-        response_keys_for_cas_admin_users = {
+        response_keys = {
             'operator',
             'id',
             'name',
@@ -172,8 +138,20 @@ class TestOperationsEndpoint(CommonTestSetup):
             'statutory_declaration',
             'bc_obps_regulated_operation',
         }
-        breakpoint()
-        assert sorted(response_2_data.keys()) == sorted(response_keys_for_cas_admin_users)
+        assert sorted(response_1_data.keys()) == sorted(response_keys)
+        # Make sure the `operator` key has None value for industry users
+        assert response_1_data.get('operator') is None
+
+        response_2 = TestUtils.mock_get_with_auth_role(
+            self, "cas_admin", custom_reverse_lazy("get_operation", kwargs={"operation_id": users_operation.id})
+        )
+        assert response_2.status_code == 200
+        response_2_data = response_2.json()
+        assert response_2_data.get('id') == str(users_operation.id)  # string representation of UUID
+        assert response_2_data.get('name') == users_operation.name
+        assert sorted(response_2_data.keys()) == sorted(response_keys)
+        # Make sure the `operator` key has a value for IRC users
+        assert response_2_data.get('operator') is not None
 
     def test_unauthorized_roles_cannot_create_new_operation(self):
         mock_operation = TestUtils.mock_OperationCreateIn()
