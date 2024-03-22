@@ -449,6 +449,7 @@ class TestOperatorHelpers:
             business_structure=BusinessStructure.objects.first(),
             status=Operator.Statuses.PENDING,
         )
+        # brianna this is tricky... we need to send it to the backend as a schema because that's what it's expecting, but we get validation errors
         payload = UserOperatorOperatorIn(
             legal_name="Example Legal Name",
             trade_name="Example Trade Name",
@@ -465,7 +466,10 @@ class TestOperatorHelpers:
             mailing_postal_code="H0H 0H0",
             mailing_address_same_as_physical=False,
             operator_has_parent_operators=True,
-            parent_operators_array=[
+            
+        )
+
+        payload.parent_operators_array=[
                 ParentOperatorIn(
                     po_legal_name="Example Parent Legal Name",
                     po_trade_name="Example Parent Trade Name",
@@ -484,7 +488,6 @@ class TestOperatorHelpers:
                     operator_index=1,
                 )
             ],
-        )
         save_operator(payload, operator_instance, user)
         assert len(UserOperator.objects.all()) == 1
         assert len(Operator.objects.all()) == 1

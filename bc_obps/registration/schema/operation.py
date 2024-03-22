@@ -76,7 +76,7 @@ class OperationOut(ModelSchema):
     first_name: Optional[str] = Field(None, alias="point_of_contact.first_name")
     last_name: Optional[str] = Field(None, alias="point_of_contact.last_name")
     email: Optional[str] = Field(None, alias="point_of_contact.email")
-    phone_number: Optional[str]  # can't use resolvers with aliases, so handling everything in the resolver
+    phone_number: Optional[str] = None # can't use resolvers with aliases, so handling everything in the resolver
     position_title: Optional[str] = Field(None, alias="point_of_contact.position_title")
     street_address: Optional[str] = Field(None, alias="point_of_contact.address.street_address")
     municipality: Optional[str] = Field(None, alias="point_of_contact.address.municipality")
