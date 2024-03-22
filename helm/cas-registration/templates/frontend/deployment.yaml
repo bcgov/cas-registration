@@ -65,6 +65,8 @@ spec:
               value: {{ include "cas-registration.namespaceSuffix" . }}
             - name: SENTRY_RELEASE
               value: {{ .Values.frontend.image.tag }}
+            - name: SENTRY_TRACE_SAMPLE_RATE
+              value: {{ .Values.frontend.sentry.traceSampleRate }}
             {{- end }}
           image: "{{ .Values.frontend.image.repository }}:{{ .Values.defaultImageTag | default .Values.frontend.image.tag }}"
           imagePullPolicy: {{ .Values.frontend.image.pullPolicy }}

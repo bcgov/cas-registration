@@ -7,6 +7,9 @@ backend:
 
   environment: production
 
+  sentry:
+    traceSampleRate: 0.1
+
   resources:
     limits:
       cpu: 1000m
@@ -29,6 +32,9 @@ frontend:
   auth:
     keycloakAuthUrl: https://loginproxy.gov.bc.ca/auth
     siteminderAuthUrl: https://logon7.gov.bc.ca
+
+  sentry:
+    traceSampleRate: 0.1
 
   resources:
     limits:
