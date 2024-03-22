@@ -5,7 +5,7 @@ from ninja import Field, ModelSchema, Schema
 from registration.constants import AUDIT_FIELDS
 from registration.models import Operation
 from datetime import date
-from pydantic import validator
+from pydantic import field_validator
 
 
 #### Operation schemas
@@ -49,7 +49,7 @@ class OperationUpdateIn(ModelSchema):
     is_external_point_of_contact: Optional[bool] = None
     statutory_declaration: Optional[str] = None
 
-    @validator("statutory_declaration")
+    @field_validator("statutory_declaration")
     @classmethod
     def validate_statutory_declaration(cls, value: str):
         if value:
