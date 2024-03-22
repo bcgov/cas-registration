@@ -124,7 +124,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
             self,
             'cas_pending',
             self.content_type,
-            mock_data.json(),
+            mock_data.model_dump_json(),
             custom_reverse_lazy('create_operator_and_user_operator'),
         )
         assert response.status_code == 401
@@ -132,7 +132,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
             self,
             'cas_analyst',
             self.content_type,
-            mock_data.json(),
+            mock_data.model_dump_json(),
             custom_reverse_lazy('create_operator_and_user_operator'),
         )
         assert response.status_code == 401
@@ -140,7 +140,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
             self,
             'cas_admin',
             self.content_type,
-            mock_data.json(),
+            mock_data.model_dump_json(),
             custom_reverse_lazy('create_operator_and_user_operator'),
         )
         assert response.status_code == 401
