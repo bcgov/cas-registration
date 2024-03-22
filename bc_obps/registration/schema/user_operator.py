@@ -4,7 +4,7 @@ from registration.schema.validators import validate_cra_business_number
 from registration.schema.operator import OperatorExternalDashboardUsersTileData
 from registration.schema.user import UserExternalDashboardUsersTileData
 from ninja import ModelSchema, Schema, Field
-from pydantic import validator
+from pydantic import field_validator
 from registration.constants import AUDIT_FIELDS, BC_CORPORATE_REGISTRY_REGEX
 from registration.models import BusinessStructure, Contact, UserOperator
 from .parent_operator import ParentOperatorIn, ParentOperatorOut
@@ -121,12 +121,12 @@ class UserOperatorOperatorIn(Schema):
     operator_has_parent_operators: bool
     parent_operators_array: Optional[List[ParentOperatorIn]] = None
 
-    @validator("business_structure")
+    @field_validator("business_structure")
     @classmethod
     def validate_business_structure(cls, value: str) -> BusinessStructure:
         return validate_business_structure(value)
 
-    @validator("cra_business_number")
+    @field_validator("cra_business_number")
     @classmethod
     def validate_cra_business_number(cls, value: int):
         return validate_cra_business_number(value)
