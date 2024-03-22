@@ -8,18 +8,18 @@ from .parent_operator import ParentOperatorOut
 
 
 class OperatorSearchOut(ModelSchema):
-    class Config:
+    class Meta:
         model = Operator
-        model_fields = ["id", "legal_name"]
+        fields = ["id", "legal_name"]
         from_attributes = True
 
 
 class ConfirmSelectedOperatorOut(ModelSchema):
     physical_street_address: Optional[str] = Field(None, alias="physical_address.street_address")
 
-    class Config:
+    class Meta:
         model = Operator
-        model_fields = ["id", "legal_name", "trade_name", "cra_business_number"]
+        fields = ["id", "legal_name", "trade_name", "cra_business_number"]
 
 
 class OperatorOut(ModelSchema):
@@ -42,9 +42,9 @@ class OperatorOut(ModelSchema):
     def resolve_operator_has_parent_operators(obj: Operator) -> bool:
         return obj.parent_operators.exists()
 
-    class Config:
+    class Meta:
         model = Operator
-        model_exclude = [*AUDIT_FIELDS]
+        exclude = [*AUDIT_FIELDS]
 
 
 class OperatorIn(ModelSchema):
@@ -54,9 +54,9 @@ class OperatorIn(ModelSchema):
 
     user_operator_id: UUID
 
-    class Config:
+    class Meta:
         model = Operator
-        model_fields = ['status']
+        fields = ['status']
 
 
 class SelectOperatorIn(Schema):
@@ -69,9 +69,9 @@ class OperatorExternalDashboardUsersTileData(ModelSchema):
     Schema for fields from the Operator model that are needed in ExternalDashboardUsersTileData
     """
 
-    class Config:
+    class Meta:
         model = Operator
-        model_fields = ["legal_name"]
+        fields = ["legal_name"]
 
 
 class OperatorForOperationOut(ModelSchema):
@@ -112,9 +112,9 @@ class OperatorForOperationOut(ModelSchema):
     def resolve_operator_has_parent_operators(obj: Operator) -> bool:
         return obj.parent_operators.exists()
 
-    class Config:
+    class Meta:
         model = Operator
-        model_fields = [
+        fields = [
             "id",
             "legal_name",
             "trade_name",
@@ -132,6 +132,6 @@ class OperatorFromUserOperatorOut(ModelSchema):
 
     operator_id: UUID = Field(..., alias="id")
 
-    class Config:
+    class Meta:
         model = Operator
-        model_fields = ["status"]
+        fields = ["status"]

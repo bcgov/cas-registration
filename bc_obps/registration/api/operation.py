@@ -120,7 +120,7 @@ def list_operations(request, page: int = 1, sort_field: str = "created_at", sort
             Operation.objects.select_related("operator", "bc_obps_regulated_operation")
             .exclude(status=Operation.Statuses.NOT_STARTED)
             .exclude(status=Operation.Statuses.DRAFT)
-            .only(*OperationListOut.Config.model_fields, "operator__legal_name", "bc_obps_regulated_operation__id")
+            .only(*OperationListOut.Meta.fields, "operator__legal_name", "bc_obps_regulated_operation__id")
             .order_by(f"{sort_direction}{sort_field}")
         )
         paginator = Paginator(qs, PAGE_SIZE)
@@ -136,7 +136,7 @@ def list_operations(request, page: int = 1, sort_field: str = "created_at", sort
         Operation.objects.select_related("operator", "bc_obps_regulated_operation")
         .filter(operator_id=user_operator.operator_id)
         .order_by(f"{sort_direction}{sort_field}")
-        .only(*OperationListOut.Config.model_fields, "operator__legal_name", "bc_obps_regulated_operation__id")
+        .only(*OperationListOut.Meta.fields, "operator__legal_name", "bc_obps_regulated_operation__id")
     )
     paginator = Paginator(operators_operations, PAGE_SIZE)
     return 200, {
@@ -157,7 +157,7 @@ def get_operation(request, operation_id: UUID):
     try:
         operation = (
             Operation.objects.only(
-                *OperationOut.Config.model_fields,
+                *OperationOut.Meta.fields,
                 "naics_code",
                 "point_of_contact__address",
                 "point_of_contact__first_name",

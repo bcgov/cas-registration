@@ -32,9 +32,9 @@ class MultipleOperatorOut(ModelSchema):
     def resolve_business_structure(mo: MultipleOperator):
         return mo.business_structure.name
 
-    class Config:
+    class Meta:
         model = MultipleOperator
-        model_exclude = [
+        exclude = [
             *AUDIT_FIELDS,
             # exclude the following fields since they are handled by the aliases above
             "legal_name",

@@ -19,12 +19,12 @@ class ContactSchema(ModelSchema):
             return
         return str(obj.phone_number)
 
-    class Config:
+    class Meta:
         model = Contact
         contact_id: int = Field(..., alias="id")
         address_id: Optional[int] = Field(None, alias="address.id")
 
-        model_exclude = [
+        exclude = [
             # exclude fields that are included as aliases above
             *AUDIT_FIELDS,
             "id",

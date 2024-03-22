@@ -17,7 +17,7 @@ def list_reporting_activities(request):
     if cached_data:
         return cached_data
     else:
-        reporting_activities = ReportingActivity.objects.only(*ReportingActivitySchema.Config.model_fields)
+        reporting_activities = ReportingActivity.objects.only(*ReportingActivitySchema.Meta.fields)
         cache.set("reporting_activities", reporting_activities, 60 * 60 * 24 * 1)
         return reporting_activities
 
