@@ -184,13 +184,13 @@ def get_operation(request, operation_id: UUID):
         )
     except Operation.DoesNotExist:
         raise HttpError(404, "Not Found")
-    # brianna this one fails the test if I remove OperationOut.model_validate, and fails other tests if I leave it in
     if user.is_industry_user():
         if not operation.user_has_access(user.user_guid):
             raise HttpError(401, UNAUTHORIZED_MESSAGE)
         return 200, OperationOut.model_validate(operation)
     # Use the OperationWithOperatorOut schema to include the operator details
-    # brianna this one
+    # brianna when I log OperationWithOperatorOut.model_validate(operation) I see the operator key, but it doesn't make it to the test response
+    breakpoint()
     return 200, OperationWithOperatorOut.model_validate(operation)
 
 
