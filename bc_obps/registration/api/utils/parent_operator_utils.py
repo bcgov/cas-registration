@@ -38,7 +38,6 @@ def handle_parent_operators(updated_parent_operators, operator_instance, user):
                 archive_parent_operators(
                     existing_parent_operator_indices, updated_parent_operators, operator_instance, user
                 )
-            breakpoint()
             # assign an operator_index to new parent operators
             if not po_operator.operator_index:
                 po_operator.operator_index = assign_index(existing_parent_operator_indices)

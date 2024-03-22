@@ -449,7 +449,6 @@ class TestOperatorHelpers:
             business_structure=BusinessStructure.objects.first(),
             status=Operator.Statuses.PENDING,
         )
-        # brianna this is tricky... we need to send it to the backend as a schema because that's what it's expecting, but we get validation errors
         payload = UserOperatorOperatorIn(
             legal_name="Example Legal Name",
             trade_name="Example Trade Name",
@@ -466,28 +465,29 @@ class TestOperatorHelpers:
             mailing_postal_code="H0H 0H0",
             mailing_address_same_as_physical=False,
             operator_has_parent_operators=True,
-            
+            parent_operators_array=[],
         )
+        # need to set this outside of UserOperatorOperatorIn because otherwise the two schemas interfere with each other and one expects business_structure to be a str while the other expects BusinessStructure
+        payload.parent_operators_array = [
+            ParentOperatorIn(
+                po_legal_name="Example Parent Legal Name",
+                po_trade_name="Example Parent Trade Name",
+                po_cra_business_number=987654321,
+                po_bc_corporate_registry_number="bbb2222222",
+                po_business_structure='BC Corporation',
+                po_physical_street_address="Example Parent Physical Street Address",
+                po_physical_municipality="Example Parent Physical Municipality",
+                po_physical_province="BC",
+                po_physical_postal_code="H0H 0H0",
+                po_mailing_address_same_as_physical=False,
+                mailing_street_address="Example Parent Mailing Street Address",
+                po_mailing_municipality="Example Parent Mailing Municipality",
+                po_mailing_province="ON",
+                po_mailing_postal_code="H0H 0H0",
+                operator_index=1,
+            )
+        ]
 
-        payload.parent_operators_array=[
-                ParentOperatorIn(
-                    po_legal_name="Example Parent Legal Name",
-                    po_trade_name="Example Parent Trade Name",
-                    po_cra_business_number=987654321,
-                    po_bc_corporate_registry_number="bbb2222222",
-                    po_business_structure='BC Corporation',
-                    po_physical_street_address="Example Parent Physical Street Address",
-                    po_physical_municipality="Example Parent Physical Municipality",
-                    po_physical_province="BC",
-                    po_physical_postal_code="H0H 0H0",
-                    po_mailing_address_same_as_physical=False,
-                    mailing_street_address="Example Parent Mailing Street Address",
-                    po_mailing_municipality="Example Parent Mailing Municipality",
-                    po_mailing_province="ON",
-                    po_mailing_postal_code="H0H 0H0",
-                    operator_index=1,
-                )
-            ],
         save_operator(payload, operator_instance, user)
         assert len(UserOperator.objects.all()) == 1
         assert len(Operator.objects.all()) == 1
