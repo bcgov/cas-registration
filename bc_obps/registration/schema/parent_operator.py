@@ -1,7 +1,7 @@
 from typing import Optional
 from registration.schema.validators import validate_cra_business_number
 from ninja import ModelSchema, Schema, Field
-from pydantic import validator
+from pydantic import field_validator
 from registration.constants import BC_CORPORATE_REGISTRY_REGEX
 from registration.models import BusinessStructure, ParentOperator
 from .business_structure import validate_business_structure
@@ -32,12 +32,12 @@ class ParentOperatorIn(Schema):
     po_mailing_postal_code: Optional[str] = None
     operator_index: Optional[int] = None
 
-    @validator("po_business_structure")
+    @field_validator("po_business_structure")
     @classmethod
     def validate_po_business_structure(cls, value: str) -> BusinessStructure:
         return validate_business_structure(value)
 
-    @validator("po_cra_business_number")
+    @field_validator("po_cra_business_number")
     @classmethod
     def validate_cra_business_number(cls, value: int):
         return validate_cra_business_number(value)
