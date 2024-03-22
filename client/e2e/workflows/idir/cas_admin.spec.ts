@@ -7,8 +7,6 @@ import { DashboardPOM } from "@/e2e/poms/dashboard";
 import * as dotenv from "dotenv";
 dotenv.config({ path: "./e2e/.env.local" });
 
-// 🏷 Annotate test suite as serial
-test.describe.configure({ mode: "serial" });
 test.describe("Test Workflow cas_admin", () => {
   // 👤 run test using the storageState for this role
   const storageState = JSON.parse(process.env.E2E_CAS_ADMIN_STORAGE as string);

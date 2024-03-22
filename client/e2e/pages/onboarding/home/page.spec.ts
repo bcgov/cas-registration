@@ -19,9 +19,6 @@ import * as dotenv from "dotenv";
 dotenv.config({ path: "./e2e/.env.local" });
 import happoPlaywright from "happo-playwright";
 
-// 🏷 Annotate test suite as serial
-test.describe.configure({ mode: "serial" });
-
 // 📚 Declare a beforeAll hook that is executed once per worker process before all tests.
 // 🥞 Set DB for e2e login roles
 /*
@@ -45,7 +42,7 @@ test.beforeAll(async () => {
     await upsertUserOperatorRecord(
       process.env.E2E_INDUSTRY_USER_ADMIN_GUID as string,
       AppRole.ADMIN,
-      UserOperatorStatus.APPROVED,
+      UserOperatorStatus.APPROVED
     );
 
     // 👤 industry_user

@@ -29,8 +29,6 @@ test.beforeAll(async () => {
   }
 });
 
-// 🏷 Annotate test suite as serial
-test.describe.configure({ mode: "serial" });
 test.describe("Test Profile Page", () => {
   // ➰ Loop through the entries of UserRole enum
   for (let [role, value] of Object.entries(UserRole)) {
@@ -51,7 +49,7 @@ test.describe("Test Profile Page", () => {
         await profilePage.updateSuccess();
         //🔍 Assert profile name reflects the updated user profile full name
         await profilePage.userFullNameIsCorrect(
-          "e2e first name* e2e last name*",
+          "e2e first name* e2e last name*"
         );
 
         switch (value) {

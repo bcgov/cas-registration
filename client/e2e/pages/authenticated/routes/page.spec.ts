@@ -37,7 +37,7 @@ test.beforeAll(async () => {
     await deleteUserRecord(process.env.E2E_NEW_USER_GUID as string);
     // 👤 delete user operator
     await deleteUserOperatorRecord(
-      process.env.E2E_INDUSTRY_USER_GUID as string,
+      process.env.E2E_INDUSTRY_USER_GUID as string
     );
   } catch (error) {
     // eslint-disable-next-line no-console
@@ -56,8 +56,6 @@ function buildAccessLists(currentRole: UserRole): AppRoute[] {
   }, [] as AppRoute[]);
 }
 
-// 🏷 Annotate test suite as serial
-test.describe.configure({ mode: "serial" });
 test.describe("Test Route Access", () => {
   // ➰ Loop through the entries of UserRole enum
   for (let [role, value] of Object.entries(UserRole)) {

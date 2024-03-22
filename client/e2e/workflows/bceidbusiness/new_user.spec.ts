@@ -8,8 +8,6 @@ import { ProfilePOM } from "@/e2e/poms/profile";
 import * as dotenv from "dotenv";
 dotenv.config({ path: "./e2e/.env.local" });
 
-// 🏷 Annotate test suite as serial
-test.describe.configure({ mode: "serial" });
 test.describe("Test Workflow new user", () => {
   // 👤 run test using the storageState for this role
   const storageState = JSON.parse(process.env.E2E_NEW_USER_STORAGE as string);

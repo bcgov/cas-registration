@@ -1,5 +1,4 @@
 // 🧪 Suite to test the bceidbusiness new user workflow using storageState
-// 🔍 Asserts new user is redirected to profile
 
 import { test, expect, APIResponse } from "@playwright/test";
 // 🪄 Page Object Models
@@ -19,7 +18,7 @@ const happoPlaywright = require("happo-playwright");
 test.beforeEach(async ({ context }) => {
   await happoPlaywright.init(context);
   let response: APIResponse = await context.request.get(
-    "http://localhost:8000/api/registration/test-setup",
+    "http://localhost:8000/api/registration/test-setup"
   );
   // Wait for the response and check for success status text and code (e.g., 200)
   expect(await response.text()).toBe("Test setup complete.");
@@ -37,7 +36,7 @@ test.describe.configure({ mode: "serial" });
 test.describe("Test Workflow industry_user", () => {
   // 👤 run test using the storageState for this role
   const storageState = JSON.parse(
-    process.env.E2E_INDUSTRY_USER_STORAGE as string,
+    process.env.E2E_INDUSTRY_USER_STORAGE as string
   );
   // Note: specify storageState for each test file or test group, instead of setting it in the config. https://playwright.dev/docs/next/auth#reuse-signed-in-state
   test.use({ storageState: storageState }); // this will error if no such file or directory
@@ -66,7 +65,7 @@ test.describe("Test Workflow industry_user", () => {
     await page.getByText(/Operator 1 Legal Name/i).click();
     await selectOperatorPage.buttonSelectOperator.click();
     await expect(
-      page.getByText(selectOperatorPage.confirmationMessage),
+      page.getByText(selectOperatorPage.confirmationMessage)
     ).toBeVisible();
 
     pageContent = page.locator("html");
@@ -77,7 +76,7 @@ test.describe("Test Workflow industry_user", () => {
 
     await selectOperatorPage.buttonYesThisIsMyOperator.click();
     await expect(
-      page.getByText(/does not have Administrator access set up./i),
+      page.getByText(/does not have Administrator access set up./i)
     ).toBeVisible();
 
     pageContent = page.locator("html");
@@ -88,7 +87,7 @@ test.describe("Test Workflow industry_user", () => {
 
     await selectOperatorPage.buttonRequestAdministratorAccess.click();
     await expect(
-      page.getByText(/has been received and will be reviewed./i),
+      page.getByText(/has been received and will be reviewed./i)
     ).toBeVisible();
 
     pageContent = page.locator("html");
@@ -108,11 +107,11 @@ test.describe("Test Workflow industry_user", () => {
     await selectOperatorPage.urlIsCorrect();
     await selectOperatorPage.selectByCraNumber("987654321");
     await expect(
-      page.getByText(selectOperatorPage.confirmationMessage),
+      page.getByText(selectOperatorPage.confirmationMessage)
     ).toBeVisible();
     await selectOperatorPage.buttonYesThisIsMyOperator.click();
     await expect(
-      page.getByText(/Looks like you do not have access to/i),
+      page.getByText(/Looks like you do not have access to/i)
     ).toBeVisible();
 
     pageContent = page.locator("html");
@@ -123,7 +122,7 @@ test.describe("Test Workflow industry_user", () => {
 
     await selectOperatorPage.buttonRequestAccess.click();
     await expect(
-      page.getByText(/Your access request has been sent/i),
+      page.getByText(/Your access request has been sent/i)
     ).toBeVisible();
 
     pageContent = page.locator("html");
@@ -150,7 +149,7 @@ test.describe("Test Workflow industry_user", () => {
 
     await checkRequiredFieldValidationErrors(
       page,
-      selectOperatorPage.buttonSubmit,
+      selectOperatorPage.buttonSubmit
     );
 
     // Add short timeout to mitigate the Firefox text rendering issue causing spurious screenshot failures
@@ -209,19 +208,19 @@ test.describe("Test Workflow industry_user", () => {
     await selectOperatorPage.urlIsCorrect();
     await selectOperatorPage.selectByCraNumber("987654321");
     await expect(
-      page.getByText(selectOperatorPage.confirmationMessage),
+      page.getByText(selectOperatorPage.confirmationMessage)
     ).toBeVisible();
     await selectOperatorPage.buttonYesThisIsMyOperator.click();
     await expect(
-      page.getByText(/Looks like you do not have access to/i),
+      page.getByText(/Looks like you do not have access to/i)
     ).toBeVisible();
     await page.getByText(/go back/i).click();
     await expect(
-      page.getByText(selectOperatorPage.confirmationMessage),
+      page.getByText(selectOperatorPage.confirmationMessage)
     ).toBeVisible();
     await page.getByText(/return/i).click();
     await expect(
-      page.getByText(/Which operator would you like to log in to?/i),
+      page.getByText(/Which operator would you like to log in to?/i)
     ).toBeVisible();
   });
 });
