@@ -33,7 +33,6 @@ from registration.schema import (
     Message,
     OperationUpdateStatusIn,
     OperationListOut,
-    OperationWithOperatorOut,
     OperationUpdateStatusOut,
 )
 from registration.utils import generate_useful_error, get_current_user_approved_user_operator_or_raise
@@ -148,7 +147,7 @@ def list_operations(request, page: int = 1, sort_field: str = "created_at", sort
 
 @router.get(
     "/operations/{operation_id}",
-    response={200: Union[OperationOut, OperationWithOperatorOut], codes_4xx: Message},
+    response={200: OperationOut, codes_4xx: Message},
     url_name="get_operation",
 )
 @authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles())
@@ -187,11 +186,8 @@ def get_operation(request, operation_id: UUID):
     if user.is_industry_user():
         if not operation.user_has_access(user.user_guid):
             raise HttpError(401, UNAUTHORIZED_MESSAGE)
-        return 200, OperationOut.model_validate(operation)
-    # Use the OperationWithOperatorOut schema to include the operator details
-    # brianna when I log OperationWithOperatorOut.model_validate(operation) I see the operator key, but it doesn't make it to the test response
-    breakpoint()
-    return 200, OperationWithOperatorOut.model_validate(operation)
+        return 200, operation
+    return 200, operation
 
 
 ##### POST #####
