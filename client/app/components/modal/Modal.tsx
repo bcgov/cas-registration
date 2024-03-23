@@ -20,6 +20,7 @@ const Modal: React.FC<Props> = ({ children, id, onClose, open, title }) => {
       closeAfterTransition
       aria-labelledby={title}
       maxWidth="xl"
+      data-testid="modal"
     >
       <DialogTitle
         sx={{
