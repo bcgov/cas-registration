@@ -2,10 +2,16 @@
   "name": "@bciers/source",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "dev": "nx dev reporting"
+  },
   "private": true,
   "dependencies": {
-    "next": "14.0.4",
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.0",
+    "@mui/material": "^5.15.13",
+    "next": "^14.0.3",
+    "next-auth": "^4.24.5",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "tslib": "^2.3.0"

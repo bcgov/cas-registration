@@ -1,7 +1,7 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "rootDir": ".",
+    "rootDirs": [".", "../client/app"],
     "sourceMap": true,
     "declaration": false,
     "moduleResolution": "node",
@@ -15,7 +15,9 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@bciers/components": ["libs/shared/components/src/index.ts"]
+      "@bciers/components": ["libs/shared/components/src/index.ts"],
+      "registration/*": ["../client/app/*"],
+      "@/*": ["../client/*"]
     }
   },
   "exclude": ["node_modules", "tmp"]
