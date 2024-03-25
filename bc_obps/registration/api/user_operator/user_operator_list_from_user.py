@@ -1,4 +1,4 @@
-from service.user_operator.GetUserOperatorListFromUserService import GetUserOperatorListFromUserService
+from service.user_operator.get_user_operator_list_from_user_service import GetUserOperatorListFromUserService
 
 from registration.decorators import authorize
 from registration.schema import ExternalDashboardUsersTileData, Message

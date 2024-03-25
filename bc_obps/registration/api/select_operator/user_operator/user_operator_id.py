@@ -1,5 +1,5 @@
 from uuid import UUID
-from service.select_operator.user_operator.GetUserOperatorService import GetUserOperatorService
+from service.select_operator.user_operator.get_user_operator_service import GetUserOperatorService
 
 from registration.decorators import authorize
 from registration.schema import (

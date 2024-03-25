@@ -1,4 +1,4 @@
-from service.user_operator.IsApprovedAdminUserOperatorService import IsApprovedAdminUserOperatorService
+from service.user_operator.is_approved_admin_user_operator_service import IsApprovedAdminUserOperatorService
 
 from registration.decorators import authorize
 from registration.schema import (

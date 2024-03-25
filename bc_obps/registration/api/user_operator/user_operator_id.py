@@ -1,4 +1,4 @@
-from service.user_operator.GetUserOperatorIdService import GetUserOperatorIdService
+from service.user_operator.get_user_operator_id_service import GetUserOperatorIdService
 
 from registration.decorators import authorize
 from registration.schema import (

@@ -1,4 +1,4 @@
-from service.user_operator.ListUserOperatorsService import ListUserOperatorsService
+from service.user_operator.list_user_operators_service import ListUserOperatorsService
 
 from registration.decorators import authorize
 from registration.schema import UserOperatorPaginatedOut, Message

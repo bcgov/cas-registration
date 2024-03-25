@@ -1,4 +1,4 @@
-from service.select_operator.user_operator.UpdateStatus import UpdateStatusService
+from service.select_operator.user_operator.update_status_service import UpdateStatusService
 from registration.decorators import authorize
 from registration.schema import (
     UserOperatorOut,

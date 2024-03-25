@@ -1,4 +1,4 @@
-from service.user_operator.OperatorService import OperatorService
+from service.user_operator.operator_service import OperatorService
 from registration.decorators import authorize
 from registration.schema import (
     Message,
