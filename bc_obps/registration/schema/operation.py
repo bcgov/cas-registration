@@ -20,9 +20,9 @@ class OperationCreateIn(ModelSchema):
     # operation_has_multiple_operators: Optional[bool] = False
     # multiple_operators_array: Optional[list] = None
 
-    class Meta:
+    class Config:
         model = Operation
-        fields = ['name', 'type', 'naics_code', 'opt_in', 'regulated_products', 'bcghg_id']
+        model_fields = ['name', 'type', 'naics_code', 'opt_in', 'regulated_products', 'bcghg_id']
         populate_by_name = True
 
 
