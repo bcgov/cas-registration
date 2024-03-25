@@ -4,9 +4,7 @@ Description: This module handles http exceptions.
 """
 from django.http import Http404
 from django.core.exceptions import ValidationError
-from registration.utils import (
-    generate_useful_error,
-)
+from registration.utils import generate_useful_error
 
 
 def handle_exception(error):
