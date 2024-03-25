@@ -188,10 +188,6 @@ jobs:
         uses: ./.github/actions/local-app-run
         with:
           django_secret_key: ${{ env.DJANGO_SECRET_KEY }}
-          ches_client_id: ${{ env.CLIENT_ID }}
-          ches_client_secret: ${{ env.CLIENT_SECRET }}
-          ches_auth_endpoint: ${{ env.TOKEN_ENDPOINT }}
-          ches_api_url: ${{ env.CHES_API_URL }}
       - name: ZAP Frontend Scan
         uses: zaproxy/action-baseline@v0.9.0
         with:

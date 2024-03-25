@@ -74,7 +74,6 @@ class TestEmailEndpoint(CommonTestSetup):
         )
         email_data_dict = email_data.dict()
         for role_name in all_irc_roles:
-            print(f'Testing role {role_name}...')
             email_data_dict['body'] = f'This is a CHES test email from me to me as a {role_name} user'
             response = TestUtils.mock_post_with_auth_role(
                 self,
@@ -114,7 +113,6 @@ class TestEmailEndpoint(CommonTestSetup):
         email_template_dict = email_template.dict()
 
         for role_name in all_irc_roles:
-            print(f'Testing role {role_name}...')
             for context in email_template_dict.get('contexts'):
                 context['context']['someone']['role'] = role_name
 
