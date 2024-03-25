@@ -13,9 +13,10 @@ from django.forms import model_to_dict
 from registration.constants import PAGE_SIZE
 from registration.decorators import handle_http_errors
 
+
 class ListUserOperatorsService:
-    @staticmethod 
-    @handle_http_errors() 
+    @staticmethod
+    @handle_http_errors()
     def list_user_operators(request, page: int = 1, sort_field: str = "created_at", sort_order: str = "desc"):
         sort_direction = "-" if sort_order == "desc" else ""
 
