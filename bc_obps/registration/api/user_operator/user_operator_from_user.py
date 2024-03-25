@@ -1,3 +1,4 @@
+from service.user_operator.get_user_operator_from_user_service import UserOperatorFromUserService
 from registration.decorators import authorize
 from registration.schema import (
     Message,
