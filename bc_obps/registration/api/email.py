@@ -1,7 +1,7 @@
 from uuid import UUID
 from registration.decorators import authorize
 from registration.email.schema import EmailIn, TemplateMergeIn
-from registration.email.emailService import EmailService
+from common_utils.email.email_service import EmailService
 from .api_base import router
 from ninja.responses import codes_4xx
 from registration.schema import Message

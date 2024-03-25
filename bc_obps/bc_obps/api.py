@@ -1,5 +1,6 @@
 from ninja import NinjaAPI
 from registration.api import router as registration_router
+from common_utils.common_utils_base import router as common_utils_router
 from ninja.errors import ValidationError
 
 api = NinjaAPI()
@@ -13,3 +14,4 @@ def custom_validation_errors(request, exc):
 
 
 api.add_router("/registration/", registration_router)
+api.add_router("/common/", common_utils_router)
