@@ -40,7 +40,7 @@ resource "google_storage_bucket" "database_backups" {
 }
 
 resource "google_service_account" "backups_sa" {
-  account_id = "${var.openshift_namespace}-obps-backups-sa"
+  account_id = "${var.openshift_namespace}-pg-backups-sa"
   display_name = "${var.openshift_namespace}-obps-backups-sa"
   depends_on = [ google_storage_bucket.database_backups ]
 }
@@ -90,7 +90,7 @@ resource "google_storage_bucket" "reg_attachments" {
 }
 
 resource "google_service_account" "reg_attachments_sa" {
-  account_id = "${var.openshift_namespace}-reg-attachments-sa"
+  account_id = "${var.openshift_namespace}-reg-attach-sa"
   display_name = "${var.openshift_namespace}-reg-attachments-service-account"
   depends_on = [ google_storage_bucket.reg_attachments ]
 }
