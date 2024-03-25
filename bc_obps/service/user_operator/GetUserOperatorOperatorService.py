@@ -2,9 +2,12 @@ from registration.models import (
     User,
     UserOperator,
 )
+from registration.decorators import handle_http_errors
 
 
 class GetUserOperatorOperatorService:
+    @staticmethod 
+    @handle_http_errors() 
     def get_user_operator_operator(request):
         try:
             user: User = request.current_user

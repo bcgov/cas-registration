@@ -28,10 +28,12 @@ from registration.models import (
     UserOperator,
 )
 from datetime import datetime
-
+from registration.decorators import handle_http_errors
 
 class OperatorService:
-    @transaction.atomic
+    @staticmethod 
+    @handle_http_errors() 
+    @transaction.atomic()
     def create_operator_and_user_operator(request, payload: UserOperatorOperatorIn):
 
         cra_business_number: str = payload.cra_business_number
@@ -51,6 +53,8 @@ class OperatorService:
         # save operator data
         return save_operator(payload, operator_instance, user)
 
+    @staticmethod 
+    @handle_http_errors() 
     @transaction.atomic()
     def update_operator_and_user_operator(request, payload: UserOperatorOperatorIn, user_operator_id: UUID):
         user: User = request.current_user
@@ -70,6 +74,8 @@ class OperatorService:
         # save operator data
         return save_operator(payload, operator_instance, user)
 
+    @staticmethod 
+    @handle_http_errors() 
     @transaction.atomic()
     def update_user_operator_status(request, payload: UserOperatorStatusUpdate):
 

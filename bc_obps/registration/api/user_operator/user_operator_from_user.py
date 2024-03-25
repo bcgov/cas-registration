@@ -1,4 +1,4 @@
-from registration.decorators import authorize, handle_http_errors
+from registration.decorators import authorize
 from registration.schema import (
     Message,
     PendingUserOperatorOut,
@@ -17,6 +17,5 @@ from ninja.responses import codes_4xx
     url_name="get_user_operator_from_user",
 )
 @authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles(), False)
-@handle_http_errors()
 def get_user_operator_from_user(request):
     return UserOperatorFromUserService.get_user_operator_from_user(request)

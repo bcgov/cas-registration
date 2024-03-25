@@ -1,7 +1,7 @@
 from uuid import UUID
 from service.select_operator.user_operator.GetUserOperatorService import GetUserOperatorService
 
-from registration.decorators import authorize, handle_http_errors
+from registration.decorators import authorize
 from registration.schema import (
     UserOperatorOut,
     Message,
@@ -22,6 +22,5 @@ from ninja.responses import codes_4xx
     url_name="get_user_operator",
 )
 @authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles())
-@handle_http_errors()
 def get_user_operator(request, user_operator_id: UUID):
     return GetUserOperatorService.get_user_operator(request, user_operator_id)

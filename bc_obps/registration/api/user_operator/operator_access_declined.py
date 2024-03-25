@@ -1,7 +1,7 @@
 from uuid import UUID
 from service.user_operator.GetUserOperatorAccessDeclinedService import GetUserOperatorAccessDeclinedService
 
-from registration.decorators import authorize, handle_http_errors
+from registration.decorators import authorize
 from registration.schema import (
     Message,
 )
@@ -19,6 +19,5 @@ from ninja.responses import codes_4xx
     url_name="operator_access_declined",
 )
 @authorize(['industry_user'], UserOperator.get_all_industry_user_operator_roles(), False)
-@handle_http_errors()
 def get_user_operator_access_declined(request, operator_id: UUID):
     return GetUserOperatorAccessDeclinedService.get_user_operator_access_declined(request, operator_id)
