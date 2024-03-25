@@ -1,4 +1,4 @@
-from registration.service.user_operator.OperatorService import OperatorService
+from service.user_operator.OperatorService import OperatorService
 from registration.decorators import authorize, handle_http_errors
 from registration.schema import (
     Message,

@@ -1,18 +1,9 @@
-from uuid import UUID
-from registration.service.user_operator.ListUserOperatorsService import ListUserOperatorsService
+from service.user_operator.ListUserOperatorsService import ListUserOperatorsService
 
 from registration.decorators import authorize, handle_http_errors
 from registration.schema import (
-    UserOperatorOut,
-    Message,
     UserOperatorPaginatedOut,
-    IsApprovedUserOperator,
-    UserOperatorIdOut,
-    ExternalDashboardUsersTileData,
-    PendingUserOperatorOut,
-    OperatorFromUserOperatorOut,
 )
-from typing import List
 from registration.api.api_base import router
 
 from registration.models import (

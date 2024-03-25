@@ -1,4 +1,4 @@
-from registration.service.select_operator.RequestAccessService import RequestAccessService
+from service.select_operator.RequestAccessService import RequestAccessService
 from registration.decorators import authorize, handle_http_errors
 from registration.schema import (
     SelectOperatorIn,

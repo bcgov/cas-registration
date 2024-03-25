@@ -1,5 +1,5 @@
 from uuid import UUID
-from registration.service.user_operator.GetUserOperatorAccessDeclinedService import GetUserOperatorAccessDeclinedService
+from service.user_operator.GetUserOperatorAccessDeclinedService import GetUserOperatorAccessDeclinedService
 
 from registration.decorators import authorize, handle_http_errors
 from registration.schema import (
