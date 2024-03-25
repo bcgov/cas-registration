@@ -10,12 +10,12 @@ from registration.api.api_base import router
 from registration.models import (
     UserOperator,
 )
-from ninja.responses import codes_4xx
+from registration.api.custom_codes_4xx import custom_codes_4xx
 
 
 @router.get(
     "/user-operator-operator",
-    response={200: OperatorFromUserOperatorOut, codes_4xx: Message},
+    response={200: OperatorFromUserOperatorOut, custom_codes_4xx: Message},
     url_name="get_user_operator_operator",
 )
 @authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())

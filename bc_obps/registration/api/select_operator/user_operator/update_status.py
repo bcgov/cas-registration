@@ -9,13 +9,13 @@ from registration.schema import (
 from registration.models import (
     AppRole,
 )
-from ninja.responses import codes_4xx
+from registration.api.custom_codes_4xx import custom_codes_4xx
 from registration.api.api_base import router
 
 
 @router.put(
     "/select-operator/user-operator/update-status",
-    response={200: UserOperatorOut, codes_4xx: Message},
+    response={200: UserOperatorOut, custom_codes_4xx: Message},
     url_name="update_user_operator_status",
 )
 @authorize(AppRole.get_all_authorized_app_roles(), ["admin"])

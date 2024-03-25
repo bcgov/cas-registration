@@ -13,12 +13,12 @@ from registration.models import (
     AppRole,
     UserOperator,
 )
-from ninja.responses import codes_4xx
+from registration.api.custom_codes_4xx import custom_codes_4xx
 
 
 @router.get(
     "/select-operator/user-operator/{uuid:user_operator_id}",
-    response={200: UserOperatorOut, codes_4xx: Message},
+    response={200: UserOperatorOut, custom_codes_4xx: Message},
     url_name="get_user_operator",
 )
 @authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles())

@@ -10,13 +10,13 @@ from registration.api.api_base import router
 from registration.models import (
     UserOperator,
 )
-from ninja.responses import codes_4xx
 from uuid import UUID
+from registration.api.custom_codes_4xx import custom_codes_4xx
 
 ## POST
 @router.post(
     "/user-operator/operator",
-    response={200: RequestAccessOut, codes_4xx: Message},
+    response={200: RequestAccessOut, custom_codes_4xx: Message},
     url_name="create_operator_and_user_operator",
 )
 @authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles(), False)
@@ -27,7 +27,7 @@ def create_operator_and_user_operator(request, payload: UserOperatorOperatorIn):
 ## PUT
 @router.put(
     "/user-operator/operator/{uuid:user_operator_id}",
-    response={200: RequestAccessOut, codes_4xx: Message},
+    response={200: RequestAccessOut, custom_codes_4xx: Message},
     url_name="update_operator_and_user_operator",
 )
 @authorize(["industry_user"], ["admin"])

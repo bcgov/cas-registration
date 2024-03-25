@@ -698,7 +698,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
             payload_with_duplicate_legal_name,
             custom_reverse_lazy('create_operator_and_user_operator'),
         )
-        assert post_response_duplicate_legal_name.status_code == 400
+        assert post_response_duplicate_legal_name.status_code == 422
         assert post_response_duplicate_legal_name.json() == {
             'message': 'Legal Name: Operator with this Legal name already exists.'
         }
@@ -722,7 +722,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
             payload_with_duplicate_bc_corporate_registry_number,
             custom_reverse_lazy('create_operator_and_user_operator'),
         )
-        assert post_response_duplicate_bc_corporate_registry_number.status_code == 400
+        assert post_response_duplicate_bc_corporate_registry_number.status_code == 422
         assert post_response_duplicate_bc_corporate_registry_number.json() == {
             'message': 'Bc Corporate Registry Number: Operator with this Bc corporate registry number already exists.'
         }
@@ -1281,7 +1281,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
             payload_with_duplicate_legal_name,
             custom_reverse_lazy('update_operator_and_user_operator', kwargs={'user_operator_id': user_operator.id}),
         )
-        assert put_response_duplicate_legal_name.status_code == 400
+        assert put_response_duplicate_legal_name.status_code == 422
         assert put_response_duplicate_legal_name.json() == {
             'message': 'Legal Name: Operator with this Legal name already exists.'
         }
