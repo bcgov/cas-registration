@@ -8,7 +8,7 @@ deploy:
   override:
     - |
       CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
-      if [ "$CURRENT_BRANCH" = "164-shipit-target-for-cif-tools" ]; then
+      if [ "$CURRENT_BRANCH" = "giraffe-develop" ]; then
         make install-giraffe
       else
         make install
