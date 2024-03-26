@@ -40,7 +40,7 @@ export enum AriaLabel {
 // 👋 playwright selectors targeting an HTML element
 export enum DataTestID {
   ERROR_PROFILE = '[data-testid="alert-error-user-profile"]',
-  GRID = '[data-testid="grid-root"]',
+  GRID = ".MuiDataGrid-root", // '[data-testid="grid-root"]',
   MESSAGE_PENDING = '[data-testid="dashboard-pending-message"]',
   NOTFOUND = '[data-testid="grid-root"]',
   PROFILE = '[data-testid="nav-user-profile"]',
