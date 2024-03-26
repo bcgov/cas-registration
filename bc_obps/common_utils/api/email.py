@@ -2,7 +2,7 @@ from uuid import UUID
 from registration.decorators import authorize
 from common_utils.email.schema import EmailIn, TemplateMergeIn
 from common_utils.email.email_service import EmailService
-from common_utils.common_utils_base import common_router
+from common_utils.api.common_utils_base import common_router
 from ninja.responses import codes_4xx
 from registration.schema import Message
 from registration.models import AppRole
@@ -11,7 +11,9 @@ email_service = EmailService()
 
 
 ##### GET #####
-@common_router.get("/email/health-check", response={200: dict, codes_4xx: Message}, url_name="email_health_check")
+@common_router.get(
+    "/email/health-check", response={200: dict, codes_4xx: Message}, url_name="email_health_check", tags=["Email"]
+)
 @authorize(AppRole.get_authorized_irc_roles())
 def get_email_health_check(request):
     response = email_service.health_check()
