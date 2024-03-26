@@ -3,7 +3,7 @@ from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 
 
 class TestNaicsCodeEndpoint(CommonTestSetup):
-    endpoint = CommonTestSetup.base_endpoint + "naics_codes"
+    endpoint = CommonTestSetup.base_registration_endpoint + "naics_codes"
 
     # AUTHORIZATION
     def test_unauthorized_users_cannot_get_naics_codes(self):

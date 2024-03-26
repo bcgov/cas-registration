@@ -1,3 +1,3 @@
 from ninja import Router
 
-router = Router()
+common_router = Router()

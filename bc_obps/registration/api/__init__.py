@@ -7,6 +7,5 @@ from . import (
     business_structure,
     regulated_products,
     reporting_activities,
-    email,
 )
 from .api_base import router  # django_ninja router object

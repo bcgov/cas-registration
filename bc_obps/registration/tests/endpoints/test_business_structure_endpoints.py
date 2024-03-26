@@ -3,7 +3,7 @@ from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 
 
 class TestBusinessStructureEndpoint(CommonTestSetup):
-    endpoint = CommonTestSetup.base_endpoint + "business_structures"
+    endpoint = CommonTestSetup.base_registration_endpoint + "business_structures"
 
     # AUTHORIZATION
     def test_unauthorized_users_cannot_get_business_structure(self):

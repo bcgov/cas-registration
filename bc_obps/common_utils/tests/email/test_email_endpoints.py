@@ -1,12 +1,12 @@
 import json
-from registration.email.schema import BodyType, EmailIn, TemplateMergeIn, ContextObject
+from common_utils.email.schema import BodyType, EmailIn, TemplateMergeIn, ContextObject
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
 from registration.models import AppRole
 
 
 class TestEmailEndpoint(CommonTestSetup):
-    endpoint = CommonTestSetup.base_endpoint + 'email'
+    endpoint = CommonTestSetup.base_common_endpoint + "email"
 
     def test_email_service_health_check(self):
         response = TestUtils.mock_get_with_auth_role(self, "cas_admin", custom_reverse_lazy("email_health_check"))

@@ -1,8 +1,8 @@
 from uuid import UUID
 from registration.decorators import authorize
-from registration.email.schema import EmailIn, TemplateMergeIn
+from common_utils.email.schema import EmailIn, TemplateMergeIn
 from common_utils.email.email_service import EmailService
-from .api_base import router
+from common_utils.common_utils_base import common_router
 from ninja.responses import codes_4xx
 from registration.schema import Message
 from registration.models import AppRole
@@ -11,14 +11,16 @@ email_service = EmailService()
 
 
 ##### GET #####
-@router.get("/email/health-check", response={200: dict, codes_4xx: Message}, url_name="email_health_check")
+@common_router.get("/email/health-check", response={200: dict, codes_4xx: Message}, url_name="email_health_check")
 @authorize(AppRole.get_authorized_irc_roles())
 def get_email_health_check(request):
     response = email_service.health_check()
     return response
 
 
-@router.get("/email/check-status/{message_id}", response={200: str, codes_4xx: Message}, url_name="email_check_status")
+@common_router.get(
+    "/email/check-status/{message_id}", response={200: str, codes_4xx: Message}, url_name="email_check_status"
+)
 @authorize(AppRole.get_authorized_irc_roles())
 def check_email_status(request, message_id: UUID):
     response = email_service.get_message_status(msgId=message_id)
@@ -26,7 +28,7 @@ def check_email_status(request, message_id: UUID):
 
 
 ##### POST #####
-@router.post("/email/send", response={200: dict, codes_4xx: Message}, url_name="send_email")
+@common_router.post("/email/send", response={200: dict, codes_4xx: Message}, url_name="send_email")
 @authorize(AppRole.get_authorized_irc_roles())
 def send_email(request, payload: EmailIn):
     # CHES API wants payload with keyword 'from', which Python doesn't allow because 'from' is a reserved keyword,
@@ -37,7 +39,9 @@ def send_email(request, payload: EmailIn):
     return response
 
 
-@router.post("/email/send-from-template", response={200: dict, codes_4xx: Message}, url_name="send_email_from_template")
+@common_router.post(
+    "/email/send-from-template", response={200: dict, codes_4xx: Message}, url_name="send_email_from_template"
+)
 @authorize(AppRole.get_authorized_irc_roles())
 def send_email_from_template(request, payload: TemplateMergeIn):
     # CHES API wants payload with keyword 'from', which Python doesn't allow because 'from' is a reserved keyword,

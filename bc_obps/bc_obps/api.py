@@ -1,6 +1,6 @@
 from ninja import NinjaAPI
 from registration.api import router as registration_router
-from common_utils.common_utils_base import router as common_utils_router
+from common_utils.common_utils_base import common_router as common_utils_router
 from ninja.errors import ValidationError
 
 api = NinjaAPI()
