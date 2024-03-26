@@ -1,7 +1,7 @@
 from uuid import UUID
 from service.user_operator.get_user_operator_admin_exists_service import GetUserOperatorAdminExistsService
 
-from registration.decorators import authorize
+from registration.decorators import authorize, handle_http_errors
 from registration.schema import (
     Message,
 )
@@ -20,5 +20,6 @@ from registration.api.custom_codes_4xx import custom_codes_4xx
     url_name="get_user_operator_admin_exists",
 )
 @authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles(), False)
+@handle_http_errors()
 def get_user_operator_admin_exists(request, operator_id: UUID):
     return GetUserOperatorAdminExistsService.get_user_operator_admin_exists(request, operator_id)

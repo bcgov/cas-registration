@@ -1,5 +1,5 @@
 from service.select_operator.request_admin_access_service import RequestAdminAccessService
-from registration.decorators import authorize
+from registration.decorators import authorize, handle_http_errors
 from registration.schema import (
     SelectOperatorIn,
     Message,
@@ -19,6 +19,7 @@ from registration.api.custom_codes_4xx import custom_codes_4xx
     url_name="request_admin_access",
 )
 @authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles(), False)
+@handle_http_errors()
 def request_admin_access(request, payload: SelectOperatorIn):
 
     return RequestAdminAccessService.request_admin_access(request, payload)

@@ -1,6 +1,6 @@
 from service.user_operator.get_user_operator_operator_service import GetUserOperatorOperatorService
 
-from registration.decorators import authorize
+from registration.decorators import authorize, handle_http_errors
 from registration.schema import (
     Message,
     OperatorFromUserOperatorOut,
@@ -19,5 +19,6 @@ from registration.api.custom_codes_4xx import custom_codes_4xx
     url_name="get_user_operator_operator",
 )
 @authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
+@handle_http_errors()
 def get_user_operator_operator(request):
     return GetUserOperatorOperatorService.get_user_operator_operator(request)
