@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "test": "jest",
+    "test": "vitest",
     "format": "prettier --write .",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx . && next lint",
     "e2e": "happo-e2e -- yarn playwright test",
@@ -60,12 +60,14 @@
     "@babel/core": "^7.22.11",
     "@babel/preset-env": "^7.22.10",
     "@babel/preset-typescript": "^7.22.11",
-    "@testing-library/react": "^14.0.0",
+    "@testing-library/react": "^14.2.2",
     "@types/jest": "^29.5.5",
     "@types/lodash.debounce": "^4.0.9",
     "@types/uuid": "^9.0.8",
     "@typescript-eslint/eslint-plugin": "^6.5.0",
     "@typescript-eslint/parser": "^6.5.0",
+    "@vitejs/plugin-react": "^4.2.1",
+    "@vitest/expect": "^1.4.0",
     "babel-jest": "^29.6.4",
     "eslint-config-prettier": "^9.0.0",
     "happo-e2e": "^2.4.1",
@@ -76,6 +78,9 @@
     "jest-environment-jsdom": "^29.7.0",
     "jest-extended": "^4.0.1",
     "prettier": "^3.0.3",
-    "ts-jest": "^29.1.1"
+    "ts-jest": "^29.1.1",
+    "vite-tsconfig-paths": "^4.3.2",
+    "vitest": "^1.4.0",
+    "vitest-fetch-mock": "^0.2.2"
   }
 }
