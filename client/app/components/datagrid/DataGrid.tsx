@@ -14,7 +14,7 @@ interface Props {
   fetchPageData?: (
     page: number,
     sortField?: string,
-    sortOrder?: string
+    sortOrder?: string,
   ) => Promise<any>;
   rows: GridRowsProp;
   rowCount?: number;
@@ -91,7 +91,7 @@ const DataGrid: React.FC<Props> = ({
       const pageData = await fetchPageData(
         paginationModel.page + 1,
         sortModelField,
-        sortModelOrder
+        sortModelOrder,
       );
       setRows(pageData);
     };

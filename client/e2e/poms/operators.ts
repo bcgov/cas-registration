@@ -83,13 +83,13 @@ export class OperatorsPOM {
   constructor(page: Page) {
     this.page = page;
     this.btnsApprove = page.locator(
-      `button[aria-label="${AriaLabel.APPLICATION_APPROVE}"]`
+      `button[aria-label="${AriaLabel.APPLICATION_APPROVE}"]`,
     );
     this.btnExpandAll = page.getByRole("button", {
       name: ActionClick.EXPAND_ALL,
     });
     this.btnsDecline = page.locator(
-      `button[aria-label="${AriaLabel.APPLICATION_REJECT}"]`
+      `button[aria-label="${AriaLabel.APPLICATION_REJECT}"]`,
     );
     this.btnViewDetail = page.getByRole("link", {
       name: ActionClick.VIEW_DETAILS,
@@ -102,10 +102,10 @@ export class OperatorsPOM {
     });
     this.modal = page.locator(DataTestID.MODAL);
     this.btnCancelModal = this.modal.locator(
-      `button[aria-label="${AriaLabel.MODAL_CANCEL}"]`
+      `button[aria-label="${AriaLabel.MODAL_CANCEL}"]`,
     );
     this.btnConfirmModal = this.modal.locator(
-      `button[aria-label="${AriaLabel.MODAL_CONFIRM}"]`
+      `button[aria-label="${AriaLabel.MODAL_CONFIRM}"]`,
     );
     this.msgInternal = page.getByText(this.internalNote);
     this.msgNewOperator = page.getByText(this.newOperatorNote);
@@ -174,7 +174,7 @@ export class OperatorsPOM {
     // Locate row containing the status
     const row = await getTableRow(
       this.table,
-      `[role="cell"][data-field="${TableDataField.STATUS}"]:has-text("${status}")`
+      `[role="cell"][data-field="${TableDataField.STATUS}"]:has-text("${status}")`,
     );
 
     // Click the `View Detail` for this status row
@@ -199,7 +199,7 @@ export class OperatorsPOM {
         await checkLocatorsVisibility(
           this.page,
           [this.btnsApprove, this.btnsDecline],
-          false
+          false,
         );
         break;
       case UserOperatorStatus.PENDING:
@@ -240,20 +240,20 @@ export class OperatorsPOM {
             await this.workflowReviewAction(
               this.btnsApprove.last(),
               this.btnConfirmModal,
-              this.alertNewOperatorMustBeApproved
+              this.alertNewOperatorMustBeApproved,
             );
             // cas_admin is able to Approve new operator
             await this.workflowReviewAction(
               this.btnsApprove.first(),
               this.btnConfirmModal,
-              this.alertApprovedOperator
+              this.alertApprovedOperator,
             );
             // cas_admin is able to Approve admin request
             await this.workflowReviewAction(
               this.btnsApprove.last(),
               this.btnConfirmModal,
               this.alertApprovedPrimeAdmin,
-              1
+              1,
             );
             break;
           case 3:
@@ -267,21 +267,21 @@ export class OperatorsPOM {
             await this.workflowReviewAction(
               this.btnsDecline.last(),
               this.btnConfirmModal,
-              this.alertNewOperatorMustBeApproved
+              this.alertNewOperatorMustBeApproved,
             );
 
             // cas_admin is able to Reject new operator
             await this.workflowReviewAction(
               this.btnsDecline.first(),
               this.btnConfirmModal,
-              this.alertDeclinedOperator
+              this.alertDeclinedOperator,
             );
 
             // cas_admin can't see Approve/Decline buttons if the Operator has been Declined in the first form section
             await checkLocatorsVisibility(
               this.page,
               [this.btnsApprove, this.btnsDecline],
-              false
+              false,
             );
             break;
           case 5:
@@ -298,7 +298,7 @@ export class OperatorsPOM {
             // Operator information header is collapsed
             await expect(this.formSectionOperator).toHaveAttribute(
               "aria-expanded",
-              "false"
+              "false",
             );
 
             // Make sure only admin approve/reject button are visible
@@ -309,7 +309,7 @@ export class OperatorsPOM {
             await this.workflowReviewAction(
               this.btnsApprove.last(),
               this.btnConfirmModal,
-              this.alertApprovedPrimeAdmin
+              this.alertApprovedPrimeAdmin,
             );
             break;
           case 15:
@@ -324,7 +324,7 @@ export class OperatorsPOM {
             await this.workflowReviewAction(
               this.btnsDecline.last(),
               this.btnConfirmModal,
-              this.alertDeclinedPrimeAdmin
+              this.alertDeclinedPrimeAdmin,
             );
 
             break;
@@ -340,7 +340,7 @@ export class OperatorsPOM {
     btnApplication: Locator,
     btnModal: Locator,
     alertMessage: string | RegExp,
-    index: number = 0
+    index: number = 0,
   ) {
     await btnApplication.click();
     await expect(this.modal).toBeVisible();

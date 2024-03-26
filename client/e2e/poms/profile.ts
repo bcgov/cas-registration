@@ -65,7 +65,7 @@ export class ProfilePOM {
   async userFullNameIsCorrect(expectedText: string) {
     // Waits for the selector to appear with the expected text
     await this.page.waitForSelector(
-      `${DataTestID.PROFILE}:has-text("${expectedText}")`
+      `${DataTestID.PROFILE}:has-text("${expectedText}")`,
     );
   }
 

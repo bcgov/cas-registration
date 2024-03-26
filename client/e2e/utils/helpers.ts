@@ -13,7 +13,7 @@ import {
 export async function checkAlertMessage(
   page: Page,
   alertMessage: string | RegExp,
-  index: number = 0
+  index: number = 0,
 ) {
   await expect(page.getByRole("alert").nth(index)).toHaveText(alertMessage);
 }
@@ -22,7 +22,7 @@ export async function checkAlertMessage(
 export async function checkColumnTextVisibility(
   table: Locator,
   columnIdentifier: number | string,
-  columnText: string[]
+  columnText: string[],
 ): Promise<void> {
   let columnSelector: string;
   if (typeof columnIdentifier === "number") {
@@ -54,7 +54,7 @@ export async function checkFormFieldsReadOnly(fields: Locator[]) {
       await expect(visible).toBeTruthy();
       await expect(disabled).toBeTruthy();
       await expect(editable).toBeFalsy();
-    })
+    }),
   );
 }
 
@@ -63,7 +63,7 @@ export async function checkFormHeaders(page: Page, formHeaders: string[]) {
   await Promise.all(
     formHeaders.map(async (header) => {
       await expect(page.getByRole("button", { name: header })).toBeVisible();
-    })
+    }),
   );
 }
 
@@ -71,7 +71,7 @@ export async function checkFormHeaders(page: Page, formHeaders: string[]) {
 export async function checkLocatorsVisibility(
   page: Page,
   locators: Locator[],
-  visible: boolean = true
+  visible: boolean = true,
 ) {
   for (const locator of locators) {
     if (visible) {
@@ -85,7 +85,7 @@ export async function checkLocatorsVisibility(
 // 🛠️ Function: check if there are any validation errors related to required fields after form submission
 export async function checkRequiredFieldValidationErrors(
   page: Page,
-  submitButton: Locator
+  submitButton: Locator,
 ) {
   // Locate all required fields
   const requiredFields = await getFieldRequired(page);
@@ -100,7 +100,7 @@ export async function checkRequiredFieldValidationErrors(
 export async function downloadPDF(
   page: Page,
   linkName: string,
-  fileName: string
+  fileName: string,
 ) {
   const downloadPromise = page.waitForEvent("download"); // Start waiting for download before clicking.
   await page.getByRole("link", { name: linkName }).click();
@@ -230,7 +230,7 @@ export async function fillAllFormFields(page: Page, selector: string) {
 // 🛠️ Function: verifies whether the column names displayed on the page match the expected column names provided as input
 export async function tableColumnNamesAreCorrect(
   page: Page,
-  expectedColumnNames: string[]
+  expectedColumnNames: string[],
 ) {
   const columnHeaders = page.locator(".MuiDataGrid-columnHeaderTitle");
   const actualColumnNames = await columnHeaders.allTextContents();
@@ -239,7 +239,7 @@ export async function tableColumnNamesAreCorrect(
 
 export async function triggerFormatValidationErrors(
   page: Page,
-  submitButton: Locator
+  submitButton: Locator,
 ) {
   // Locate all fields within the fieldset
   const fieldset = await page.$("fieldset#root");
@@ -284,7 +284,7 @@ export async function triggerFormatValidationErrors(
 // 🛠️ Function: calls api to seed database with data for workflow tests
 export async function setupTestEnvironment(
   workFlow?: string,
-  truncateOnly?: boolean
+  truncateOnly?: boolean,
 ) {
   let browser: Browser | null = null;
 
@@ -321,8 +321,8 @@ export async function setupTestEnvironment(
   const url = workFlow
     ? `${baseUrl}?workflow=${workFlow}`
     : truncateOnly
-      ? `${baseUrl}?truncate_only=true`
-      : baseUrl;
+    ? `${baseUrl}?truncate_only=true`
+    : baseUrl;
   let response: APIResponse = await context.request.get(url);
 
   // Wait for the response and check for success status text and code (e.g., 200)
