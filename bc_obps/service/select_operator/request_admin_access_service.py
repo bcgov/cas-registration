@@ -12,12 +12,9 @@ from registration.models import (
     UserOperator,
 )
 from django.db import transaction
-from registration.decorators import handle_http_errors
 
 
 class RequestAdminAccessService:
-    @staticmethod 
-    @handle_http_errors() 
     @transaction.atomic()
     def request_admin_access(request, payload: SelectOperatorIn):
         user: User = request.current_user
