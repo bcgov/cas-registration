@@ -202,7 +202,7 @@ def list_user_operators(request, page: int = 1, sort_field: str = "created_at", 
         .order_by(f"{sort_direction}{sort_field}")
         .exclude(
             # exclude pending user_operators that belong to operators that already have approved admins
-            status=Operation.Statuses.PENDING,
+            status=UserOperator.Statuses.PENDING,
             operator_id__in=UserOperator.objects.filter(
                 role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.APPROVED
             ).values_list("operator_id", flat=True),

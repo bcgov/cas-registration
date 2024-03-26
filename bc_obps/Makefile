@@ -89,7 +89,7 @@ superuser:
 
 loadfixtures: ## add all registration fixture files to the db
 loadfixtures:
-	$(POETRY_RUN) python $(MANAGE_PY) loaddata ./registration/fixtures/*/*.json
+	$(POETRY_RUN) python $(MANAGE_PY) load_fixtures $(ARGS)
 
 .PHONY: reset_db
 reset_db: ## drop and recreate the db
@@ -124,4 +124,4 @@ pythontests_coverage:
 .PHONY: clear_db
 clear_db: ## Clear all data in the datbase
 clear_db:
-	$(POETRY_RUN) python $(MANAGE_PY) truncate_all_tables
+	$(POETRY_RUN) python $(MANAGE_PY) truncate_dev_data_tables

@@ -1,7 +1,6 @@
 from registration.schema.parent_operator import ParentOperatorIn
 from registration.schema.user_operator import UserOperatorOperatorIn
-import pytest
-import tempfile
+import pytest, base64, tempfile
 from model_bakery import baker
 from registration.models import Address, BusinessStructure, Operator, ParentOperator, User, UserOperator, AppRole
 from registration.utils import (
@@ -19,7 +18,6 @@ from django.core.exceptions import ValidationError
 from ninja.errors import HttpError
 from django.test import RequestFactory, TestCase
 from registration.tests.utils.helpers import TestUtils, MOCK_DATA_URL
-
 
 pytestmark = pytest.mark.django_db
 
@@ -492,3 +490,15 @@ class TestOperatorHelpers:
         assert len(ParentOperator.objects.all()) == 1
         assert ParentOperator.objects.first().legal_name == "Example Parent Legal Name"
         assert len(Address.objects.all()) == 4
+
+
+def mock_file_to_data_url() -> str:
+    """
+    This util utilizes a mock file to be used in e2e tests
+    NOTE: Only be used in DEBUG mode
+    """
+    mock_pdf_path = "registration/fixtures/mock/mock_file.pdf"
+    with open(mock_pdf_path, "rb") as f:
+        mock_pdf_content = f.read()
+        encoded_content = base64.b64encode(mock_pdf_content).decode("utf-8")
+        return "data:application/pdf;name=" + f.name.split("/")[-1] + ";base64," + encoded_content

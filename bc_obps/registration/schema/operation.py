@@ -1,10 +1,9 @@
 from typing import List, Optional
+from bc_obps.settings import ENVIRONMENT
 from registration.schema.operator import OperatorForOperationOut
 from registration.utils import file_to_data_url, data_url_to_file
 from ninja import Field, ModelSchema, Schema
-from registration.constants import AUDIT_FIELDS
 from registration.models import Operation
-from datetime import date
 from pydantic import validator
 
 
@@ -90,9 +89,15 @@ class OperationOut(ModelSchema):
 
     @staticmethod
     def resolve_statutory_declaration(obj: Operation):
+        # Using a mock file for e2e testing
+        use_mock_file = ENVIRONMENT == "develop" and not obj.documents.exists() and obj.status == obj.Statuses.APPROVED
+        if use_mock_file:
+            from registration.tests.test_utils import mock_file_to_data_url  # to avoid circular import
+
+            return mock_file_to_data_url()
         statutory_declaration = obj.get_statutory_declaration()
         if statutory_declaration:
-            return file_to_data_url(statutory_declaration)
+            return file_to_data_url(statutory_declaration, use_mock_file)
         return None
 
     @staticmethod
