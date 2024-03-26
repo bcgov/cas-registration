@@ -1,4 +1,4 @@
-from service.user_operator.is_approved_admin_user_operator_service import IsApprovedAdminUserOperatorService
+from service.current_user_service import CurrentUserService
 
 from registration.decorators import authorize, handle_http_errors
 from registration.schema import (
@@ -20,5 +20,5 @@ from registration.api.custom_codes_4xx import custom_codes_4xx
 )
 @authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
 @handle_http_errors()
-def is_approved_admin_user_operator(request, user_guid: str):
-    return IsApprovedAdminUserOperatorService.is_approved_admin_user_operator(request, user_guid)
+def is_approved_admin_user_operator():
+    return CurrentUserService.is_user_an_approved_admin_user_operator(CurrentUserService.get_user_guid())

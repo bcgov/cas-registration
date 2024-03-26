@@ -1,4 +1,4 @@
-from service.user_operator.get_user_operator_from_user_service import UserOperatorFromUserService
+from service.current_user_service import CurrentUserService
 from registration.decorators import authorize, handle_http_errors
 from registration.schema import (
     Message,
@@ -19,5 +19,5 @@ from registration.api.custom_codes_4xx import custom_codes_4xx
 )
 @authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles(), False)
 @handle_http_errors()
-def get_user_operator_from_user(request):
-    return UserOperatorFromUserService.get_user_operator_from_user(request)
+def get_user_operator_from_user():
+    return CurrentUserService.get_users_user_operator(CurrentUserService.get_user_guid())
