@@ -10,6 +10,10 @@ on:
 env:
   PGUSER: postgres
   DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+  CLIENT_ID: ${{ secrets.CLIENT_ID }}
+  CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+  TOKEN_ENDPOINT: ${{ secrets.TOKEN_ENDPOINT }}
+  CHES_API_URL: ${{ secrets.CHES_API_URL }}
   KEYCLOAK_CLIENT_ID: ${{ secrets.KEYCLOAK_CLIENT_ID }}
   KEYCLOAK_CLIENT_SECRET: ${{ secrets.KEYCLOAK_CLIENT_SECRET }}
   NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
@@ -184,6 +188,10 @@ jobs:
         uses: ./.github/actions/local-app-run
         with:
           django_secret_key: ${{ env.DJANGO_SECRET_KEY }}
+          ches_client_id: ${{ env.CLIENT_ID }}
+          ches_client_secret: ${{ env.CLIENT_SECRET }}
+          ches_auth_endpoint: ${{ env.TOKEN_ENDPOINT }}
+          ches_api_url: ${{ env.CHES_API_URL }}
       - name: ZAP Frontend Scan
         uses: zaproxy/action-baseline@v0.9.0
         with:
@@ -358,6 +366,10 @@ jobs:
         uses: ./.github/actions/local-app-run
         with:
           django_secret_key: ${{ env.DJANGO_SECRET_KEY }}
+          ches_client_id: ${{ env.CLIENT_ID }}
+          ches_client_secret: ${{ env.CLIENT_SECRET }}
+          ches_auth_endpoint: ${{ env.TOKEN_ENDPOINT }}
+          ches_api_url: ${{ env.CHES_API_URL }}
       - name: Run pytest
         working-directory: ./bc_obps
         run: make pythontests

@@ -31,6 +31,26 @@ spec:
                 secretKeyRef:
                   key: django-secret-key
                   name: {{ .Release.Name }}-backend
+            - name: CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  key: ches-client-secret
+                  name: {{ .Release.Name }}-backend
+            - name: CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  key: ches-client-id
+                  name: {{ .Release.Name }}-backend
+            - name: TOKEN_ENDPOINT
+              valueFrom:
+                secretKeyRef:
+                  key: ches-auth-endpoint
+                  name: {{ .Release.Name }}-backend
+            - name: CHES_API_URL
+              valueFrom:
+                secretKeyRef:
+                  key: ches-api-url
+                  name: {{ .Release.Name }}-backend
             - name: DB_USER
               valueFrom:
                 secretKeyRef:

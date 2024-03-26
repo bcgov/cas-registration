@@ -25,7 +25,7 @@ fake_timestamp_from_past_str_format = '%Y-%m-%d %H:%M:%S.%f%z'
 
 
 class TestOperationsEndpoint(CommonTestSetup):
-    endpoint = CommonTestSetup.base_endpoint + "operations"
+    endpoint = CommonTestSetup.base_registration_endpoint + "operations"
 
     # AUTHORIZATION
     def test_operations_endpoint_unauthorized_users_cannot_get(self):

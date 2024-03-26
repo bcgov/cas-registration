@@ -3,7 +3,7 @@ from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 
 
 class TestRegulatedProductsEndpoint(CommonTestSetup):
-    endpoint = CommonTestSetup.base_endpoint + "regulated_products"
+    endpoint = CommonTestSetup.base_registration_endpoint + "regulated_products"
 
     def test_unauthorized_users_cannot_get_regulated_products(self):
         response = TestUtils.mock_get_with_auth_role(self, "cas_pending")

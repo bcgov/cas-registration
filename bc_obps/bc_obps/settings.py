@@ -35,6 +35,12 @@ DEBUG = os.environ.get("DEBUG")
 ENVIRONMENT = os.environ.get("ENVIRONMENT")
 BYPASS_ROLE_ASSIGNMENT = os.environ.get("BYPASS_ROLE_ASSIGNMENT", False) == "True"
 
+# CHES-specific variables
+CHES_CLIENT_ID = os.environ.get("CLIENT_ID")
+CHES_CLIENT_SECRET = os.environ.get("CLIENT_SECRET")
+CHES_TOKEN_ENDPOINT = os.environ.get("TOKEN_ENDPOINT")
+CHES_API_URL = os.environ.get("CHES_API_URL")
+
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "localhost").split(",")
 
 

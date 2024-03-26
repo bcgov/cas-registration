@@ -3,7 +3,7 @@ from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 
 
 class TestReportingActivitiesEndpoint(CommonTestSetup):
-    endpoint = CommonTestSetup.base_endpoint + "reporting_activities"
+    endpoint = CommonTestSetup.base_registration_endpoint + "reporting_activities"
 
     def test_unauthorized_users_cannot_get_reporting_activities(self):
         response = TestUtils.mock_get_with_auth_role(self, "cas_pending")
