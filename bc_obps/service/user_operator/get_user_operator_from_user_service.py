@@ -7,10 +7,9 @@ from registration.models import (
 )
 from registration.decorators import handle_http_errors
 
-
 class UserOperatorFromUserService:
-    @staticmethod
-    @handle_http_errors()
+    @staticmethod 
+    @handle_http_errors() 
     def get_user_operator_from_user(request):
         try:
             user_operator = (
