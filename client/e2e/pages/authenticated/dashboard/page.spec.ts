@@ -41,7 +41,7 @@ test.beforeAll(async () => {
     await upsertUserOperatorRecord(
       process.env.E2E_INDUSTRY_USER_ADMIN_GUID as string,
       AppRole.ADMIN,
-      UserOperatorStatus.APPROVED,
+      UserOperatorStatus.APPROVED
     );
     // Scenario FrontEndRoles.INDUSTRY_USER where userOperatorStatus !== UserOperatorStatus.APPROVED
     // Shows "Select Operator\...1 pending action(s) required" bceidSelectOperatorTile
@@ -49,7 +49,7 @@ test.beforeAll(async () => {
     // Upsert a User record: bc-cas-dev-secondary
     await upsertUserRecord(UserRole.INDUSTRY_USER);
     await deleteUserOperatorRecord(
-      process.env.E2E_INDUSTRY_USER_GUID as string,
+      process.env.E2E_INDUSTRY_USER_GUID as string
     );
   } catch (error) {
     // eslint-disable-next-line no-console
@@ -99,6 +99,18 @@ test.describe("Test Dashboard Page", () => {
 
             break;
         }
+      });
+      test("Report a Problem Tile workflow", async ({ page }) => {
+        // 🛸 Navigate to dashboard page
+        const dashboardPage = new DashboardPOM(page);
+        await dashboardPage.route();
+        // 🧪 Assert that the current URL ends with "(authenticated)/dashboard"
+        await dashboardPage.urlIsCorrect();
+        // 🧪 has a mailto: link on it
+        await expect(dashboardPage.reportProblemLink).toHaveAttribute(
+          "href",
+          /mailto:GHGRegulator@gov.bc.ca/i
+        );
       });
     });
   }
