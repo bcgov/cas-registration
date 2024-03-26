@@ -20,5 +20,8 @@ from registration.api.custom_codes_4xx import custom_codes_4xx
 )
 @authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
 @handle_http_errors()
-def is_approved_admin_user_operator():
-    return CurrentUserService.is_user_an_approved_admin_user_operator(CurrentUserService.get_user_guid())
+def is_approved_admin_user_operator(request):
+
+# CurrentUserService.get_user_guid(request)--this is a uitlity api funciton and should be api helper, not in any service layer
+
+    return CurrentUserService.is_user_an_approved_admin_user_operator(CurrentUserService.get_user_guid(request))

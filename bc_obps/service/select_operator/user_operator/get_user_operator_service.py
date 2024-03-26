@@ -10,6 +10,7 @@ from registration.models import (
 
 
 class GetUserOperatorService:
+    # brianna this is to get an indiviudal user operator
     def get_user_operator(request, user_operator_id: UUID):
         user: User = request.current_user
         if user.is_industry_user():

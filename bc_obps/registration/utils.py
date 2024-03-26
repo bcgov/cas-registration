@@ -127,6 +127,7 @@ def check_access_request_matches_business_guid(
     admin_user = get_object_or_404(User, user_guid=admin_user_operator_data.user.user_guid)
     current_user = get_object_or_404(User, user_guid=user_guid)
 
+# brianna this function should ask db service for the admin and verify that the guid matches and then return yes/no or something. parameters should be the operator id and current user business guid, should live in application_access_service
     if admin_user.business_guid != current_user.business_guid:
         return 403, {"message": "Your business bceid does not match that of the approved admin."}
 

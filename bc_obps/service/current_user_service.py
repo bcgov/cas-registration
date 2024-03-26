@@ -5,22 +5,33 @@ from registration.schema.user_operator import PendingUserOperatorOut
 
 NO_USER_OPERATOR_MESSAGE = "User is not associated with any operator"
 
+
+# can make an error service
+# anything to do with request or http codes goes in the api endpoints
+
+# this would be better as a general user service
 class CurrentUserService:
 # brianna if http requests aren't service layer, does that mean we move this function to ... where?
+
+# getting the user from the request is api
     def get_user_guid(request):
         return request.current_user.user_guid
 
+# looking up stuff about a user is a db concern
     def get_users_operator(user_guid: str):
         # brianna  how to do this/self
         try:
             user_operator = this.get_users_user_operator(user_guid: str)
             # b will this except still work?
+            # this shouldn't be a django-specific ORM exception, do something more general for errors
         except UserOperator.DoesNotExist:
             return 404, {"message": NO_USER_OPERATOR_MESSAGE}
         return 200, user_operator.operator
 
     def get_users_user_operator(user_guid: str):
         try:
+            # here this should just be the data access layer
+            # the things in only could be an array argument for the db access layer, later
             user_operator = (
                 UserOperator.objects.only("id", "status", "operator__id", "operator__is_new", "operator__status")
                 .exclude(status=UserOperator.Statuses.DECLINED) # We exclude declined user_operators because the user may have previously requested access and been declined and therefore have multiple records in the user_operator table
