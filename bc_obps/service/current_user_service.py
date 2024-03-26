@@ -6,7 +6,7 @@ from registration.schema.user_operator import PendingUserOperatorOut
 NO_USER_OPERATOR_MESSAGE = "User is not associated with any operator"
 
 class CurrentUserService:
-
+# brianna if http requests aren't service layer, does that mean we move this function to ... where?
     def get_user_guid(request):
         return request.current_user.user_guid
 
