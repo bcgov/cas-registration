@@ -3,6 +3,7 @@ from datetime import datetime, timedelta, timezone
 from model_bakery import baker
 from localflavor.ca.models import CAPostalCodeField
 from registration.models import (
+    Document,
     NaicsCode,
     Contact,
     Operation,
@@ -22,6 +23,7 @@ baker.generators.add(CAPostalCodeField, TestUtils.mock_postal_code)
 
 fake_timestamp_from_past = '2024-01-09 14:13:08.888903-0800'
 fake_timestamp_from_past_str_format = '%Y-%m-%d %H:%M:%S.%f%z'
+from registration.tests.utils.helpers import TestUtils, MOCK_DATA_URL
 
 
 class TestOperationsEndpoint(CommonTestSetup):
@@ -1215,3 +1217,50 @@ class TestOperationsEndpoint(CommonTestSetup):
             + "?submit=false&form_section=1",
         )
         assert put_response_3.status_code == 200
+
+    def test_audit_columns_are_set_on_create_and_update(self):
+        operator = operator_baker()
+        TestUtils.authorize_current_user_as_operator_user(self, operator)
+        mock_operation = TestUtils.mock_OperationCreateIn()
+        post_response = TestUtils.mock_post_with_auth_role(
+            self, "industry_user", self.content_type, mock_operation.json(), custom_reverse_lazy("create_operation")
+        )
+
+        operation_id = post_response.json().get('id')
+        operation = Operation.objects.get(id=operation_id)
+        assert operation.created_at is not None
+        assert operation.created_by is not None
+        assert operation.updated_at is None
+        assert operation.updated_by is None
+        assert operation.archived_at is None
+        assert operation.archived_by is None
+
+        updated_mock_operation = TestUtils.mock_OperationUpdateIn()
+        updated_mock_operation.statutory_declaration = MOCK_DATA_URL
+
+        TestUtils.mock_put_with_auth_role(
+            self,
+            'industry_user',
+            self.content_type,
+            updated_mock_operation.json(),
+            custom_reverse_lazy("update_operation", kwargs={"operation_id": operation.id})
+            + "?submit=false&form_section=1",
+        )
+
+        # check operation audit columns
+        operation.refresh_from_db()  # refresh the operation object to get the updated audit columns
+        assert operation.created_at is not None
+        assert operation.created_by is not None
+        assert operation.updated_at is not None
+        assert operation.updated_by is not None
+        assert operation.archived_at is None
+        assert operation.archived_by is None
+
+        # check document audit columns
+        document = Document.objects.all().first()  # only one document in the test
+        assert document.created_at is not None
+        assert document.created_by is not None
+        assert document.updated_at is None
+        assert document.updated_by is None
+        assert document.archived_at is None
+        assert document.archived_by is None
