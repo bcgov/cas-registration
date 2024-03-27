@@ -7,12 +7,7 @@ review:
 deploy:
   override:
     - |
-      CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
-      if [ "$CURRENT_BRANCH" = "giraffe-develop" ]; then
-        make install-giraffe
-      else
-        make install
-      fi
+      bash deploy.sh
       timeout: 5000
 
 ci:
