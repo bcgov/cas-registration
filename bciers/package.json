@@ -6,6 +6,7 @@
     "dev": "nx dev reporting"
   },
   "private": true,
+  "module": "commonjs",
   "dependencies": {
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.0",
@@ -52,9 +53,9 @@
     "jest": "^29.4.1",
     "jest-environment-jsdom": "^29.4.1",
     "nx": "18.0.7",
-    "postcss": "8.4.21",
+    "postcss": "8.4.30",
     "prettier": "^2.6.2",
-    "tailwindcss": "3.2.7",
+    "tailwindcss": "3.3.3",
     "ts-jest": "^29.1.0",
     "ts-node": "10.9.1",
     "typescript": "~5.3.2"
