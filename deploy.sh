@@ -4,7 +4,7 @@
 current_branch=$(git rev-parse --abbrev-ref HEAD)
 
 # Check if the current branch is 'develop'
-if [ "$current_branch" == "create-deploy-script" ]; then # Change to "giraffe-develop" before merging
+if [ "$current_branch" == "giraffe-develop" ]; then
     echo "Running giraffe make target..."
     make install-giraffe
 else
