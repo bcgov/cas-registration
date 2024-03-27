@@ -1,3 +1,4 @@
+import os
 from uuid import UUID
 from registration.constants import PAGE_SIZE, UNAUTHORIZED_MESSAGE
 from django.db import transaction
@@ -218,11 +219,12 @@ def create_operation(request, payload: OperationCreateIn):
     try:
         with transaction.atomic():
             operation = Operation.objects.create(
-                **payload_dict, operator_id=user_operator.operator_id, naics_code_id=payload.naics_code
+                **payload_dict,
+                operator_id=user_operator.operator_id,
+                naics_code_id=payload.naics_code,
+                created_by_id=user.pk,
             )
             operation.regulated_products.set(payload.regulated_products)
-            operation.set_create_or_update(user.pk)
-
             # Not needed for MVP
             # operation.reporting_activities.set(payload.reporting_activities)
             # if payload.operation_has_multiple_operators:
@@ -272,8 +274,9 @@ def update_operation(request, operation_id: UUID, submit: str, form_section: int
                 for attr, value in payload_dict.items():
                     setattr(operation, attr, value)
                 operation.naics_code_id = payload.naics_code
-                operation.save(update_fields=[*payload_dict.keys(), 'naics_code_id', 'status'])
+                operation.save_dirty_fields()
                 operation.regulated_products.set(payload.regulated_products)
+
             elif form_section == 2:
                 point_of_contact_id = operation.point_of_contact_id or None
                 is_external_point_of_contact = payload.is_external_point_of_contact
@@ -307,7 +310,35 @@ def update_operation(request, operation_id: UUID, submit: str, form_section: int
                     )
                     external_poc.set_create_or_update(user.pk)
                     operation.point_of_contact = external_poc
-                operation.save(update_fields=['point_of_contact'])
+                operation.save_dirty_fields()
+
+            elif form_section == 3 and payload.statutory_declaration:
+                existing_statutory_document: Document = operation.documents.filter(
+                    type=DocumentType.objects.get(name="signed_statutory_declaration")
+                ).first()
+                # if there is an existing statutory declaration document, check if the new one is different
+                if existing_statutory_document:
+                    # if the new statutory declaration is different from the existing one, delete the existing one and create a new one
+                    # otherwise, do nothing
+                    if (
+                        payload.statutory_declaration.name != os.path.basename(existing_statutory_document.file.name)
+                        or payload.statutory_declaration.size != existing_statutory_document.file.size
+                    ):
+                        existing_statutory_document.delete()
+                        document = Document.objects.create(
+                            file=payload.statutory_declaration,
+                            type=DocumentType.objects.get(name="signed_statutory_declaration"),
+                            created_by_id=user.pk,
+                        )
+                        operation.documents.set([document])
+                else:
+                    # if there is no existing statutory declaration document, create a new one
+                    document = Document.objects.create(
+                        file=payload.statutory_declaration,
+                        type=DocumentType.objects.get(name="signed_statutory_declaration"),
+                        created_by_id=user.pk,
+                    )
+                    operation.documents.set([document])
 
             if submit == "true":
                 """
@@ -322,17 +353,7 @@ def update_operation(request, operation_id: UUID, submit: str, form_section: int
                 if operation.status != Operation.Statuses.APPROVED:
                     operation.status = Operation.Statuses.PENDING
                     operation.submission_date = datetime.now(pytz.utc)
-                    operation.save(update_fields=['status', 'submission_date'])
-
-            if payload.statutory_declaration:
-                operation.documents.filter(type=DocumentType.objects.get(name="signed_statutory_declaration")).delete()
-
-                document = Document.objects.create(
-                    file=payload.statutory_declaration,
-                    type=DocumentType.objects.get(name="signed_statutory_declaration"),
-                )
-                operation.documents.set([document])
-
+                    operation.save_dirty_fields()
             operation.set_create_or_update(user.pk)
             return 200, operation
     except ValidationError as e:
@@ -371,7 +392,7 @@ def update_operation_status(request, operation_id: UUID, payload: OperationUpdat
                         operator.save(update_fields=["status", "is_new", "verified_at", "verified_by_id"])
                         operator.set_create_or_update(user.pk)
             operation.status = status
-            operation.save(update_fields=['status', 'verified_at', 'verified_by_id', 'bc_obps_regulated_operation'])
+            operation.save_dirty_fields()
             operation.set_create_or_update(user.pk)
             return 200, operation
     except ValidationError as e:
