@@ -1,3 +1,4 @@
+import os
 from uuid import UUID
 from registration.constants import PAGE_SIZE, UNAUTHORIZED_MESSAGE
 from django.db import transaction
@@ -308,6 +309,34 @@ def update_operation(request, operation_id: UUID, submit: str, form_section: int
                     operation.point_of_contact = external_poc
                 operation.save_dirty_fields()
 
+            elif form_section == 3 and payload.statutory_declaration:
+                existing_statutory_document: Document = operation.documents.filter(
+                    type=DocumentType.objects.get(name="signed_statutory_declaration")
+                ).first()
+                # if there is an existing statutory declaration document, check if the new one is different
+                if existing_statutory_document:
+                    # if the new statutory declaration is different from the existing one, delete the existing one and create a new one
+                    # otherwise, do nothing
+                    if (
+                        payload.statutory_declaration.name != os.path.basename(existing_statutory_document.file.name)
+                        or payload.statutory_declaration.size != existing_statutory_document.file.size
+                    ):
+                        existing_statutory_document.delete()
+                        document = Document.objects.create(
+                            file=payload.statutory_declaration,
+                            type=DocumentType.objects.get(name="signed_statutory_declaration"),
+                            created_by_id=user.pk,
+                        )
+                        operation.documents.set([document])
+                else:
+                    # if there is no existing statutory declaration document, create a new one
+                    document = Document.objects.create(
+                        file=payload.statutory_declaration,
+                        type=DocumentType.objects.get(name="signed_statutory_declaration"),
+                        created_by_id=user.pk,
+                    )
+                    operation.documents.set([document])
+
             if submit == "true":
                 """
                 if the PUT request has submit == "true" (i.e., user has clicked Submit button in UI form), the desired behaviour depends on
@@ -322,17 +351,6 @@ def update_operation(request, operation_id: UUID, submit: str, form_section: int
                     operation.status = Operation.Statuses.PENDING
                     operation.submission_date = datetime.now(pytz.utc)
                     operation.save(update_fields=['status', 'submission_date'])
-
-            if payload.statutory_declaration:
-                operation.documents.filter(type=DocumentType.objects.get(name="signed_statutory_declaration")).delete()
-
-                document = Document.objects.create(
-                    file=payload.statutory_declaration,
-                    type=DocumentType.objects.get(name="signed_statutory_declaration"),
-                )
-                document.set_create_or_update(user.pk)
-                operation.documents.set([document])
-
             operation.set_create_or_update(user.pk)
             return 200, operation
     except ValidationError as e:
