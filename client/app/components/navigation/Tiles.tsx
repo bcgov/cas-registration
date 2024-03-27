@@ -150,6 +150,7 @@ export default function Tiles({
                     <a
                       key={i}
                       href={link.href}
+                      id={`${title.split(" ").join("-")}-link`}
                       className={`flex items-center mt-6 no-underline ${
                         isNotification && "font-bold"
                       }`}
