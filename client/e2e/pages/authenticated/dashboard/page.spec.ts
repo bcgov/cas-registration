@@ -5,7 +5,12 @@ import { test } from "@playwright/test";
 import { DashboardPOM } from "@/e2e/poms/dashboard";
 import { ProfilePOM } from "@/e2e/poms/profile";
 // ☰ Enums
-import { AppRole, UserRole, UserOperatorStatus } from "@/e2e/utils/enums";
+import {
+  AppRole,
+  UserRole,
+  UserOperatorStatus,
+  E2EValue,
+} from "@/e2e/utils/enums";
 // 🥞 DB CRUD
 import {
   deleteUserOperatorRecord,
@@ -71,8 +76,10 @@ test.describe.configure({ mode: "serial" });
 test.describe("Test Dashboard Page", () => {
   // ➰ Loop through the entries of UserRole enum
   for (let [role, value] of Object.entries(UserRole)) {
-    role = "E2E_" + role;
-    const storageState = JSON.parse(process.env[role + "_STORAGE"] as string);
+    role = E2EValue.ROLE + role;
+    const storageState = JSON.parse(
+      process.env[role + E2EValue.STORAGE] as string,
+    );
     test.describe(`Test Role ${value}`, () => {
       // 👤 run test as this role
       test.use({ storageState: storageState });
@@ -107,6 +114,7 @@ test.describe("Test Dashboard Page", () => {
         // 🧪 Assert that the current URL ends with "(authenticated)/dashboard"
         await dashboardPage.urlIsCorrect();
         // 🧪 has a mailto: link on it
+        await dashboardPage.problemLinkIsCorrect();
       });
     });
   }

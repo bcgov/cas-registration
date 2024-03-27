@@ -6,11 +6,9 @@
 import { Locator, Page, expect } from "@playwright/test";
 // ☰ Enums
 import {
-  ActionClick,
   AppRoute,
+  ButtonText,
   DataTestID,
-  Login,
-  Logout,
   Keycloak,
   UserRole,
 } from "@/e2e/utils/enums";
@@ -41,18 +39,18 @@ export class HomePOM {
     this.page = page;
 
     this.buttonContinue = page.getByRole("button", {
-      name: ActionClick.CONTINUE,
+      name: ButtonText.CONTINUE,
     });
-    this.buttonLoginBCeID = this.page.getByRole("button", {
-      name: Login.INDUSTRY_USER,
+    this.buttonLoginBCeID = page.getByRole("button", {
+      name: ButtonText.LOGIN_INDUSTRY_USER,
     });
-    this.buttonLoginIDIR = this.page.getByRole("button", {
-      name: Login.CAS,
+    this.buttonLoginIDIR = page.getByRole("button", {
+      name: ButtonText.LOGIN_CAS,
     });
-    this.linkLogout = page.getByRole("button", { name: Logout.OUT });
-    this.fieldUser = this.page.locator(Keycloak.FIELD_USER_LOCATOR);
-    this.fieldUserPassword = this.page.getByLabel(Keycloak.FIELD_PW_LOCATOR);
-    this.textSSOLogout = page.locator("p", { hasText: Logout.SSO });
+    this.linkLogout = page.getByRole("button", { name: ButtonText.LOGOUT });
+    this.fieldUser = page.locator(Keycloak.FIELD_USER_LOCATOR);
+    this.fieldUserPassword = page.getByLabel(Keycloak.FIELD_PW_LOCATOR);
+    this.textSSOLogout = page.locator("p", { hasText: ButtonText.LOGOUT_SSO });
   }
 
   async route() {

@@ -4,13 +4,17 @@
  * POM simplify maintenance by capturing element selectors in one place and create reusable code to avoid repetition. *
  */
 import { Locator, Page, expect } from "@playwright/test";
+// 🧩  Constants
+import { headersOperations } from "@/e2e/utils/constants";
 // ☰ Enums
 import {
-  ActionClick,
   AppRoute,
   AriaLabel,
+  ButtonText,
   DataTestID,
   FormSection,
+  LinkSrc,
+  MessageTextOperations,
   OperationStatus,
   TableDataField,
   UserRole,
@@ -36,25 +40,25 @@ export class OperationsPOM {
 
   readonly url: string = process.env.E2E_BASEURL + AppRoute.OPERATIONS;
 
-  readonly btnApprove: Locator;
+  readonly buttonApprove: Locator;
 
-  readonly btnDecline: Locator;
+  readonly buttonDecline: Locator;
 
-  readonly btnExpandAll: Locator;
+  readonly buttonExpandAll: Locator;
 
-  readonly btnRequestChange: Locator;
+  readonly buttonRequestChange: Locator;
 
-  readonly btnRequestChangeCancel: Locator;
+  readonly buttonRequestChangeCancel: Locator;
 
-  readonly btnRequestChangeConfirm: Locator;
+  readonly buttonRequestChangeConfirm: Locator;
 
-  readonly btnRequestChangeUndo: Locator;
+  readonly buttonRequestChangeUndo: Locator;
 
-  readonly btnViewDetail: Locator;
+  readonly buttonViewDetail: Locator;
 
-  readonly btnCancelModal: Locator;
+  readonly buttonCancelModal: Locator;
 
-  readonly btnConfirmModal: Locator;
+  readonly buttonConfirmModal: Locator;
 
   readonly buttonAdd: Locator;
 
@@ -74,7 +78,7 @@ export class OperationsPOM {
 
   readonly modal: Locator;
 
-  readonly msgInternal: Locator;
+  readonly messageInternal: Locator;
 
   readonly operationApprovedMessage: Locator;
 
@@ -82,49 +86,48 @@ export class OperationsPOM {
 
   readonly table: Locator;
 
-  readonly internalNote =
-    /Once “Approved,” a B.C. OBPS Regulated Operation ID will be issued for the operation/i;
+  readonly internalNote = MessageTextOperations.NOTE_INTERNAL;
 
   readonly alertApproved =
-    /You have approved the request for carbon tax exemption./i;
+    MessageTextOperations.ALERT_CARBON_TAX_EXEMPTION_APPROVED;
 
-  readonly alertDecline =
-    /You have declined the request for carbon tax exemption./i;
+  readonly alertDeclined =
+    MessageTextOperations.ALERT_CARBON_TAX_EXEMPTION_DECLINED;
 
   constructor(page: Page) {
     this.page = page;
-    this.btnApprove = page.locator(
+    this.buttonApprove = page.locator(
       `button[aria-label="${AriaLabel.APPLICATION_APPROVE}"]`,
     );
-    this.btnDecline = page.locator(
+    this.buttonDecline = page.locator(
       `button[aria-label="${AriaLabel.APPLICATION_REJECT}"]`,
     );
-    this.btnExpandAll = page.getByRole("button", {
-      name: ActionClick.EXPAND_ALL,
+    this.buttonExpandAll = page.getByRole("button", {
+      name: ButtonText.EXPAND_ALL,
     });
-    this.btnRequestChange = page.locator(
+    this.buttonRequestChange = page.locator(
       `button[aria-label="${AriaLabel.APPLICATION_REQUEST_CHANGE}"]`,
     );
-    this.btnRequestChangeCancel = page.locator(
+    this.buttonRequestChangeCancel = page.locator(
       `button[aria-label="${AriaLabel.APPLICATION_REQUEST_CHANGE_CANCEL}"]`,
     );
-    this.btnRequestChangeConfirm = page.locator(
+    this.buttonRequestChangeConfirm = page.locator(
       `button[aria-label="${AriaLabel.APPLICATION_REQUEST_CHANGE_CONFIRM}"]`,
     );
-    this.btnRequestChangeUndo = page.locator(
+    this.buttonRequestChangeUndo = page.locator(
       `button[aria-label="${AriaLabel.APPLICATION_REQUEST_CHANGE_UNDO}"]`,
     );
-    this.btnViewDetail = page.getByRole("link", {
-      name: ActionClick.VIEW_DETAILS,
+    this.buttonViewDetail = page.getByRole("link", {
+      name: ButtonText.VIEW_DETAILS,
     });
     this.buttonAdd = page.getByRole("button", {
-      name: /add operation/i,
+      name: ButtonText.ADD_OPERATION,
     });
     this.buttonSaveAndContinue = page.getByRole("button", {
-      name: /save and continue/i,
+      name: ButtonText.SAVE_CONTINUE,
     });
     this.buttonSubmit = page.getByRole("button", {
-      name: /submit/i,
+      name: ButtonText.SUBMIT,
     });
     this.formSectionOperation = page.getByRole("button", {
       name: FormSection.INFO_OPERATION,
@@ -139,16 +142,16 @@ export class OperationsPOM {
       name: FormSection.INFO_STATUTORY,
     });
     this.linkOperations = page.getByRole("link", {
-      name: ActionClick.OPERATIONS,
+      name: ButtonText.OPERATIONS,
     });
     this.modal = page.locator(DataTestID.MODAL);
-    this.btnCancelModal = this.modal.locator(
+    this.buttonCancelModal = this.modal.locator(
       `button[aria-label="${AriaLabel.MODAL_CANCEL}"]`,
     );
-    this.btnConfirmModal = this.modal.locator(
+    this.buttonConfirmModal = this.modal.locator(
       `button[aria-label="${AriaLabel.MODAL_CONFIRM}"]`,
     );
-    this.msgInternal = page.getByText(this.internalNote);
+    this.messageInternal = page.getByText(this.internalNote);
     this.operationApprovedMessage = page.locator(
       DataTestID.OPERATION_APPROVED_MESSAGE,
     );
@@ -174,15 +177,7 @@ export class OperationsPOM {
   }
 
   async tableHasExpectedColumns() {
-    await tableColumnNamesAreCorrect(this.page, [
-      "BC GHG ID",
-      "Operator",
-      "Operation",
-      "Submission Date",
-      "BORO ID",
-      "Application Status",
-      "Action",
-    ]);
+    await tableColumnNamesAreCorrect(this.page, headersOperations);
   }
 
   async tableHasExpectedColumnValues(role: string, column: string) {
@@ -212,7 +207,7 @@ export class OperationsPOM {
         // later
         break;
       case UserRole.CAS_ADMIN:
-        await expect(this.msgInternal).toBeVisible();
+        await expect(this.messageInternal).toBeVisible();
         await expect(this.buttonAdd).not.toBeVisible();
         break;
     }
@@ -226,7 +221,7 @@ export class OperationsPOM {
     );
 
     // Click the `View Detail` for this row
-    await row.getByRole("link", { name: ActionClick.VIEW_DETAILS }).click();
+    await row.getByRole("link", { name: ButtonText.VIEW_DETAILS }).click();
 
     // Assert headers are visible
     await checkFormHeaders(this.page, [
@@ -248,7 +243,7 @@ export class OperationsPOM {
     }
 
     // Assert that all form fields are visible, disabled and not editable
-    await this.btnExpandAll.click();
+    await this.buttonExpandAll.click();
     const allFormFields = await getAllFormInputs(this.page);
     // Last input is the file widget input, which is not visible
     allFormFields.pop(); // Deletes the last item from the array
@@ -261,16 +256,16 @@ export class OperationsPOM {
         // Make sure the review buttons are not visible
         await checkLocatorsVisibility(
           this.page,
-          [this.btnApprove, this.btnDecline, this.btnRequestChange],
+          [this.buttonApprove, this.buttonDecline, this.buttonRequestChange],
           false,
         );
         break;
       case OperationStatus.PENDING:
         // Get and check the buttons are visible
         await checkLocatorsVisibility(this.page, [
-          this.btnApprove,
-          this.btnDecline,
-          this.btnRequestChange,
+          this.buttonApprove,
+          this.buttonDecline,
+          this.buttonRequestChange,
         ]);
         break;
     }
@@ -290,7 +285,7 @@ export class OperationsPOM {
       this.table,
       `[role="cell"][data-field="${TableDataField.STATUS}"]:has-text("${status}")`,
     );
-    await row.getByRole("link", { name: ActionClick.VIEW_DETAILS }).click();
+    await row.getByRole("link", { name: ButtonText.VIEW_DETAILS }).click();
 
     switch (role) {
       case UserRole.CAS_ADMIN:
@@ -303,22 +298,22 @@ export class OperationsPOM {
             // - can approve
 
             // cas_admin can Request Changes
-            await this.btnRequestChange.click();
+            await this.buttonRequestChange.click();
             await checkLocatorsVisibility(this.page, [
-              this.btnRequestChangeConfirm,
-              this.btnRequestChangeCancel,
+              this.buttonRequestChangeConfirm,
+              this.buttonRequestChangeCancel,
             ]);
-            await this.btnRequestChangeConfirm.click();
-            await expect(this.btnRequestChangeUndo).toBeVisible();
+            await this.buttonRequestChangeConfirm.click();
+            await expect(this.buttonRequestChangeUndo).toBeVisible();
 
             // cas_admin can undo Request Changes
-            await this.btnRequestChangeUndo.click();
-            await expect(this.btnRequestChange).toBeVisible();
+            await this.buttonRequestChangeUndo.click();
+            await expect(this.buttonRequestChange).toBeVisible();
 
             // cas_admin can Approve and triggers the generation of a BORO ID
             await this.workflowReviewAction(
-              this.btnApprove,
-              this.btnConfirmModal,
+              this.buttonApprove,
+              this.buttonConfirmModal,
               this.alertApproved,
             );
             await expect(this.operationApprovedMessage).toBeVisible();
@@ -330,9 +325,9 @@ export class OperationsPOM {
 
             // cas_admin can Decline
             await this.workflowReviewAction(
-              this.btnDecline,
-              this.btnConfirmModal,
-              this.alertDecline,
+              this.buttonDecline,
+              this.buttonConfirmModal,
+              this.alertDeclined,
             );
             await expect(this.operationDeclinedMessage).toBeVisible();
             break;
@@ -342,7 +337,11 @@ export class OperationsPOM {
 
             // cas_admin is able to Preview the Statutory Declaration PDF in any Operation form
             await this.formSectionStatutory.click();
-            await downloadPDF(this.page, "Preview", "mock_file.pdf");
+            await downloadPDF(
+              this.page,
+              ButtonText.PDF_PREVIEW,
+              LinkSrc.PDF_FILE,
+            );
             break;
         }
     }
@@ -361,8 +360,8 @@ export class OperationsPOM {
     await btnApplication.click();
     await expect(this.modal).toBeVisible();
     await checkLocatorsVisibility(this.page, [
-      this.btnConfirmModal,
-      this.btnCancelModal,
+      this.buttonConfirmModal,
+      this.buttonCancelModal,
     ]);
     await btnModal.click();
     await checkAlertMessage(this.page, alertMessage, index);

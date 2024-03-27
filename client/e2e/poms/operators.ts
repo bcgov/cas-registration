@@ -4,9 +4,11 @@
  * POM simplify maintenance by capturing element selectors in one place and create reusable code to avoid repetition. *
  */
 import { Locator, Page, expect } from "@playwright/test";
+// 🧩  Constants
+import { headersOperators } from "@/e2e/utils/constants";
 // ☰ Enums
 import {
-  ActionClick,
+  ButtonText,
   AriaLabel,
   AppRoute,
   FormSection,
@@ -14,6 +16,7 @@ import {
   UserOperatorStatus,
   UserRole,
   DataTestID,
+  MessageTextOperators,
 } from "@/e2e/utils/enums";
 // 🛠️ Helpers
 import {
@@ -35,17 +38,17 @@ export class OperatorsPOM {
 
   readonly url: string = process.env.E2E_BASEURL + AppRoute.OPERATORS;
 
-  readonly btnsApprove: Locator;
+  readonly buttonsApprove: Locator;
 
-  readonly btnsDecline: Locator;
+  readonly buttonsDecline: Locator;
 
-  readonly btnExpandAll: Locator;
+  readonly buttonExpandAll: Locator;
 
-  readonly btnViewDetail: Locator;
+  readonly buttonViewDetail: Locator;
 
-  readonly btnCancelModal: Locator;
+  readonly buttonCancelModal: Locator;
 
-  readonly btnConfirmModal: Locator;
+  readonly buttonConfirmModal: Locator;
 
   readonly formSectionOperator: Locator;
 
@@ -53,62 +56,41 @@ export class OperatorsPOM {
 
   readonly modal: Locator;
 
-  readonly msgInternal: Locator;
+  readonly messageInternal: Locator;
 
-  readonly msgNewOperator: Locator;
+  readonly messageNewOperator: Locator;
 
   readonly table: Locator;
 
-  readonly internalNote =
-    /Once “Approved,” the user will have access to their operator dashboard with full admin permissions, and can grant access and designate permissions to other authorized users there./i;
-
-  readonly newOperatorNote =
-    /Note: This is a new operator. You must approve this operator before approving its admin./i;
-
-  readonly alertNewOperatorMustBeApproved =
-    /Operator must be approved before approving or declining users./i;
-
-  readonly alertApprovedOperator =
-    /You have approved the creation of the new operator./i;
-
-  readonly alertDeclinedOperator =
-    /You have declined the creation of the new operator./i;
-
-  readonly alertApprovedPrimeAdmin =
-    /You have approved the prime admin request./i;
-
-  readonly alertDeclinedPrimeAdmin =
-    /You have declined the prime admin request./i;
-
   constructor(page: Page) {
     this.page = page;
-    this.btnsApprove = page.locator(
+    this.buttonsApprove = page.locator(
       `button[aria-label="${AriaLabel.APPLICATION_APPROVE}"]`,
     );
-    this.btnExpandAll = page.getByRole("button", {
-      name: ActionClick.EXPAND_ALL,
+    this.buttonExpandAll = page.getByRole("button", {
+      name: ButtonText.EXPAND_ALL,
     });
-    this.btnsDecline = page.locator(
+    this.buttonsDecline = page.locator(
       `button[aria-label="${AriaLabel.APPLICATION_REJECT}"]`,
     );
-    this.btnViewDetail = page.getByRole("link", {
-      name: ActionClick.VIEW_DETAILS,
+    this.buttonViewDetail = page.getByRole("link", {
+      name: ButtonText.VIEW_DETAILS,
     });
     this.formSectionOperator = page.getByRole("button", {
       name: FormSection.INFO_OPERATOR,
     });
     this.linkOperators = page.getByRole("link", {
-      name: ActionClick.OPERATORS,
+      name: ButtonText.OPERATORS,
     });
     this.modal = page.locator(DataTestID.MODAL);
-    this.btnCancelModal = this.modal.locator(
+    this.buttonCancelModal = this.modal.locator(
       `button[aria-label="${AriaLabel.MODAL_CANCEL}"]`,
     );
-    this.btnConfirmModal = this.modal.locator(
+    this.buttonConfirmModal = this.modal.locator(
       `button[aria-label="${AriaLabel.MODAL_CONFIRM}"]`,
     );
-    this.msgInternal = page.getByText(this.internalNote);
-    this.msgNewOperator = page.getByText(this.newOperatorNote);
+    this.messageInternal = page.getByText(MessageTextOperators.NOTE_INTERNAL);
+    this.messageNewOperator = page.getByText(MessageTextOperators.NOTE_NEW);
     this.table = page.locator(DataTestID.GRID);
   }
 
@@ -127,16 +109,7 @@ export class OperatorsPOM {
   }
 
   async tableHasExpectedColumns() {
-    await tableColumnNamesAreCorrect(this.page, [
-      "Request\n ID",
-      "First\n Name",
-      "Last\n Name",
-      "Email",
-      "BCeID Business Name",
-      "Operator Legal Name",
-      "Status",
-      "Action",
-    ]);
+    await tableColumnNamesAreCorrect(this.page, headersOperators);
   }
 
   async tableHasExpectedColumnValues(role: string, column: string) {
@@ -165,7 +138,7 @@ export class OperatorsPOM {
         // later
         break;
       case UserRole.CAS_ADMIN:
-        await expect(this.msgInternal).toBeVisible();
+        await expect(this.messageInternal).toBeVisible();
         break;
     }
   }
@@ -178,7 +151,7 @@ export class OperatorsPOM {
     );
 
     // Click the `View Detail` for this status row
-    await row.getByRole("link", { name: ActionClick.VIEW_DETAILS }).click();
+    await row.getByRole("link", { name: ButtonText.VIEW_DETAILS }).click();
 
     // Assert headers are visible
     await checkFormHeaders(this.page, [
@@ -187,7 +160,7 @@ export class OperatorsPOM {
     ]);
 
     // Assert that all form fields are visible, disabled and not editable
-    await this.btnExpandAll.click();
+    await this.buttonExpandAll.click();
     const allFormFields = await getAllFormInputs(this.page);
     await checkFormFieldsReadOnly(allFormFields);
 
@@ -198,18 +171,18 @@ export class OperatorsPOM {
         // Make sure the review buttons are not visible
         await checkLocatorsVisibility(
           this.page,
-          [this.btnsApprove, this.btnsDecline],
+          [this.buttonsApprove, this.buttonsDecline],
           false,
         );
         break;
       case UserOperatorStatus.PENDING:
         // Get and check the buttons are visible (Multiple Approve and Decline buttons are visible)
         await checkLocatorsVisibility(this.page, [
-          ...(await this.btnsApprove.all()),
-          ...(await this.btnsDecline.all()),
+          ...(await this.buttonsApprove.all()),
+          ...(await this.buttonsDecline.all()),
         ]);
-        expect(await this.btnsApprove.count()).toBe(2);
-        expect(await this.btnsDecline.count()).toBe(2);
+        expect(await this.buttonsApprove.count()).toBe(2);
+        expect(await this.buttonsDecline.count()).toBe(2);
         break;
     }
 
@@ -220,7 +193,7 @@ export class OperatorsPOM {
 
   async detailsHasExpectedWorkflow(role: string, rowIndex: number) {
     // view details form for this row
-    await this.btnViewDetail.nth(rowIndex).click();
+    await this.buttonViewDetail.nth(rowIndex).click();
 
     switch (role) {
       case UserRole.CAS_ADMIN:
@@ -234,25 +207,25 @@ export class OperatorsPOM {
             // - can approve admin access request
 
             // New operator note is visible
-            await expect(this.msgNewOperator).toBeVisible();
+            await expect(this.messageNewOperator).toBeVisible();
 
             // cas_admin is not allowed to approve an admin access request if the Operator is new and hasn't been Approved yet
             await this.workflowReviewAction(
-              this.btnsApprove.last(),
-              this.btnConfirmModal,
-              this.alertNewOperatorMustBeApproved,
+              this.buttonsApprove.last(),
+              this.buttonConfirmModal,
+              MessageTextOperators.ALERT_NEW_OPERATOR_NEEDS_APPROVE,
             );
             // cas_admin is able to Approve new operator
             await this.workflowReviewAction(
-              this.btnsApprove.first(),
-              this.btnConfirmModal,
-              this.alertApprovedOperator,
+              this.buttonsApprove.first(),
+              this.buttonConfirmModal,
+              MessageTextOperators.ALERT_OPERATOR_APPROVED,
             );
             // cas_admin is able to Approve admin request
             await this.workflowReviewAction(
-              this.btnsApprove.last(),
-              this.btnConfirmModal,
-              this.alertApprovedPrimeAdmin,
+              this.buttonsApprove.last(),
+              this.buttonConfirmModal,
+              MessageTextOperators.ALERT_ADMIN_APPROVED,
               1,
             );
             break;
@@ -265,22 +238,22 @@ export class OperatorsPOM {
 
             // cas_admin is not allowed to decline an admin access request if the Operator is new and hasn't been Approved yet
             await this.workflowReviewAction(
-              this.btnsDecline.last(),
-              this.btnConfirmModal,
-              this.alertNewOperatorMustBeApproved,
+              this.buttonsDecline.last(),
+              this.buttonConfirmModal,
+              MessageTextOperators.ALERT_NEW_OPERATOR_NEEDS_APPROVE,
             );
 
             // cas_admin is able to Reject new operator
             await this.workflowReviewAction(
-              this.btnsDecline.first(),
-              this.btnConfirmModal,
-              this.alertDeclinedOperator,
+              this.buttonsDecline.first(),
+              this.buttonConfirmModal,
+              MessageTextOperators.ALERT_OPERATOR_DECLINED,
             );
 
             // cas_admin can't see Approve/Decline buttons if the Operator has been Declined in the first form section
             await checkLocatorsVisibility(
               this.page,
-              [this.btnsApprove, this.btnsDecline],
+              [this.buttonsApprove, this.buttonsDecline],
               false,
             );
             break;
@@ -293,7 +266,7 @@ export class OperatorsPOM {
             // - can reject admin access request
 
             //  New operator note is NOT visible
-            await expect(this.msgNewOperator).not.toBeVisible();
+            await expect(this.messageNewOperator).not.toBeVisible();
 
             // Operator information header is collapsed
             await expect(this.formSectionOperator).toHaveAttribute(
@@ -302,14 +275,14 @@ export class OperatorsPOM {
             );
 
             // Make sure only admin approve/reject button are visible
-            expect(await this.btnsApprove.count()).toBe(1);
-            expect(await this.btnsDecline.count()).toBe(1);
+            expect(await this.buttonsApprove.count()).toBe(1);
+            expect(await this.buttonsDecline.count()).toBe(1);
 
             // cas_admin is able to Approve admin request
             await this.workflowReviewAction(
-              this.btnsApprove.last(),
-              this.btnConfirmModal,
-              this.alertApprovedPrimeAdmin,
+              this.buttonsApprove.last(),
+              this.buttonConfirmModal,
+              MessageTextOperators.ALERT_ADMIN_APPROVED,
             );
             break;
           case 15:
@@ -322,9 +295,9 @@ export class OperatorsPOM {
 
             // cas_admin is able to Reject admin request
             await this.workflowReviewAction(
-              this.btnsDecline.last(),
-              this.btnConfirmModal,
-              this.alertDeclinedPrimeAdmin,
+              this.buttonsDecline.last(),
+              this.buttonConfirmModal,
+              MessageTextOperators.ALERT_ADMIN_DECLINED,
             );
 
             break;
@@ -345,8 +318,8 @@ export class OperatorsPOM {
     await btnApplication.click();
     await expect(this.modal).toBeVisible();
     await checkLocatorsVisibility(this.page, [
-      this.btnConfirmModal,
-      this.btnCancelModal,
+      this.buttonConfirmModal,
+      this.buttonCancelModal,
     ]);
     await btnModal.click();
     await checkAlertMessage(this.page, alertMessage, index);

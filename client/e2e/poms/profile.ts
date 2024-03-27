@@ -12,7 +12,7 @@ import {
   getFieldRequired,
 } from "@/e2e/utils/helpers";
 // ☰ Enums
-import { AppRoute, ActionClick, DataTestID } from "@/e2e/utils/enums";
+import { AppRoute, ButtonText, DataTestID } from "@/e2e/utils/enums";
 // ℹ️ Environment variables
 import * as dotenv from "dotenv";
 dotenv.config({ path: "./e2e/.env.local" });
@@ -28,10 +28,10 @@ export class ProfilePOM {
 
   constructor(page: Page) {
     this.page = page;
-    this.buttonSubmit = this.page.getByRole("button", {
-      name: ActionClick.SUBMIT,
+    this.buttonSubmit = page.getByRole("button", {
+      name: ButtonText.SUBMIT,
     });
-    this.errorList = this.page.locator(DataTestID.ERROR_PROFILE);
+    this.errorList = page.locator(DataTestID.ERROR_PROFILE);
   }
 
   async route() {

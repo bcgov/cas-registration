@@ -8,6 +8,8 @@ import {
   webkit,
   Browser,
 } from "@playwright/test";
+import { baseUrlSetup } from "./constants";
+import { MessageTexResponse } from "./enums";
 
 // 🛠️ Function: checks expected alert mesage
 export async function checkAlertMessage(
@@ -317,15 +319,14 @@ export async function setupTestEnvironment(
   }
 
   const context = await browser.newContext();
-  const baseUrl = "http://localhost:8000/api/registration/test-setup";
   const url = workFlow
-    ? `${baseUrl}?workflow=${workFlow}`
+    ? `${baseUrlSetup}?workflow=${workFlow}`
     : truncateOnly
-    ? `${baseUrl}?truncate_only=true`
-    : baseUrl;
+    ? `${baseUrlSetup}?truncate_only=true`
+    : baseUrlSetup;
   let response: APIResponse = await context.request.get(url);
 
   // Wait for the response and check for success status text and code (e.g., 200)
-  expect(await response.text()).toBe("Test setup complete.");
+  expect(await response.text()).toBe(MessageTexResponse.SETUP_SUCCESS);
   expect(response.status()).toBe(200);
 }

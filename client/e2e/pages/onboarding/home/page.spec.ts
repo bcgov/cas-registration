@@ -5,7 +5,12 @@ import { DashboardPOM } from "@/e2e/poms/dashboard";
 import { HomePOM } from "@/e2e/poms/home";
 import { ProfilePOM } from "@/e2e/poms/profile";
 // ☰ Enums
-import { AppRole, UserRole, UserOperatorStatus } from "@/e2e/utils/enums";
+import {
+  AppRole,
+  UserRole,
+  UserOperatorStatus,
+  E2EValue,
+} from "@/e2e/utils/enums";
 // 🥞 DB CRUD
 import {
   deleteUserRecord,
@@ -95,13 +100,13 @@ test.describe("Test Page - Home", () => {
         // 👤 Set user and password based on the user role
         let user = process.env.E2E_CAS_USER as string;
         let password = process.env.E2E_CAS_USER_PASSWORD as string;
-        role = "E2E_" + role;
+        role = E2EValue.ROLE + role;
         switch (value) {
           case UserRole.INDUSTRY_USER_ADMIN:
           case UserRole.INDUSTRY_USER:
           case UserRole.NEW_USER:
             user = process.env[`${role}`] || "";
-            password = process.env[`${role}_PASSWORD`] || "";
+            password = process.env[`${role}${E2EValue.PASSWORD}`] || "";
             break;
           case UserRole.CAS_ADMIN:
           case UserRole.CAS_ANALYST:
