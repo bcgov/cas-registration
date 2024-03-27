@@ -446,6 +446,20 @@ files = [
 django = ">=3.0"
 
 [[package]]
+name = "django-dirtyfields"
+version = "1.9.2"
+description = "Tracking dirty fields on a Django model instance."
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "django-dirtyfields-1.9.2.tar.gz", hash = "sha256:eb2dbed51c2a9bc23e84d19797f4cd074f59c935f8f39bb716d185dc6b86401a"},
+    {file = "django_dirtyfields-1.9.2-py3-none-any.whl", hash = "sha256:93b272eab993f813faabf3ea842ebfad63a03712e7213291aebdbddc5a012a5d"},
+]
+
+[package.dependencies]
+Django = ">=2.0"
+
+[[package]]
 name = "django-extensions"
 version = "3.2.3"
 description = "Extensions for Django"
