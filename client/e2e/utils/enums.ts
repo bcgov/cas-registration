@@ -1,9 +1,14 @@
 // 🔘 button text
-export enum ActionButton {
+export enum ActionClick {
   CONTINUE = "Continue",
+  EXPAND_ALL = "Expand All",
+  OPERATORS = "Operators",
+  OPERATIONS = "Operations",
   SUBMIT = "Submit",
+  VIEW_DETAILS = "View Details",
 }
 
+// 🤳 app roles
 export enum AppRole {
   ADMIN = "admin",
 }
@@ -20,15 +25,37 @@ export enum AppRoute {
   USERS = "dashboard/users",
 }
 
+// 👋 playwright selectors
+export enum AriaLabel {
+  APPLICATION_APPROVE = "Approve application",
+  APPLICATION_REJECT = "Reject application",
+  APPLICATION_REQUEST_CHANGE = "Request Changes",
+  APPLICATION_REQUEST_CHANGE_CANCEL = "Cancel Change Request",
+  APPLICATION_REQUEST_CHANGE_CONFIRM = "Confirm Change Request",
+  APPLICATION_REQUEST_CHANGE_UNDO = "Undo Request Changes",
+  MODAL_CANCEL = "Confirm",
+  MODAL_CONFIRM = "Confirm",
+}
+
 // 👋 playwright selectors targeting an HTML element
 export enum DataTestID {
   ERROR_PROFILE = '[data-testid="alert-error-user-profile"]',
+  GRID = '[data-testid="grid-root"]',
   MESSAGE_PENDING = '[data-testid="dashboard-pending-message"]',
-  NOTFOUND = '[data-testid="not-found"]',
+  NOTFOUND = '[data-testid="grid-root"]',
   PROFILE = '[data-testid="nav-user-profile"]',
   OPERATION_APPROVED_MESSAGE = '[data-testid="operation-approved-message"]',
   OPERATION_DECLINED_MESSAGE = '[data-testid="operation-declined-message"]',
   MODAL = '[data-testid="modal"]',
+}
+
+// 🏁 Form sections
+export enum FormSection {
+  INFO_OPERATOR = "Operator Information",
+  INFO_OPERATION = "Operation Information",
+  INFO_CONTACT = "Point Of Contact",
+  INFO_STATUTORY = "Statutory Declaration and Disclaimer",
+  INFO_USER = "User Information",
 }
 
 // 👋 keycloak selectors
@@ -63,6 +90,13 @@ export enum OperatorUUID {
   DEFAULT = "4242ea9d-b917-4129-93c2-db00b7451051",
 }
 
+// 📝 Status LOV Operation
+export enum OperationStatus {
+  PENDING = "Pending",
+  APPROVED = "Approved",
+  DECLINED = "Declined",
+}
+
 // 📝 Status LOV UserOperator
 export enum UserOperatorStatus {
   PENDING = "Pending",
@@ -73,6 +107,11 @@ export enum UserOperatorStatus {
 // 🤳 UUIDs UserOperator
 export enum UserOperatorUUID {
   INDUSTRY_USER_ADMIN = "9bb541e6-41f5-47d3-8359-2fab4f5bc4c0",
+}
+
+// 🏁 Table data field
+export enum TableDataField {
+  STATUS = "status",
 }
 
 //  // 👤  User roles

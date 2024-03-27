@@ -100,6 +100,14 @@ test.describe("Test Dashboard Page", () => {
             break;
         }
       });
+      test("Report a Problem Tile workflow", async ({ page }) => {
+        // 🛸 Navigate to dashboard page
+        const dashboardPage = new DashboardPOM(page);
+        await dashboardPage.route();
+        // 🧪 Assert that the current URL ends with "(authenticated)/dashboard"
+        await dashboardPage.urlIsCorrect();
+        // 🧪 has a mailto: link on it
+      });
     });
   }
 });

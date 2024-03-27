@@ -27,10 +27,8 @@ export class DashboardPOM {
 
   constructor(page: Page) {
     this.page = page;
-    this.msgPending = this.page.locator(DataTestID.MESSAGE_PENDING);
-    this.selectOperatorTile = this.page.getByText(
-      "1 pending action(s) required",
-    );
+    this.msgPending = page.locator(DataTestID.MESSAGE_PENDING);
+    this.selectOperatorTile = page.getByText("1 pending action(s) required");
     this.operationsTile = page.getByRole("link", { name: "Operations ➤" });
     this.operatorsTile = page.getByRole("link", { name: "Operators ➤" });
 
@@ -51,6 +49,13 @@ export class DashboardPOM {
     const path = this.url;
     const currentUrl = await this.page.url();
     await expect(currentUrl.toLowerCase()).toMatch(path.toLowerCase());
+  }
+
+  async problemLinkIsCorrect() {
+    await expect(this.reportProblemLink).toHaveAttribute(
+      "href",
+      /mailto:GHGRegulator@gov.bc.ca/i,
+    );
   }
 
   async clickSelectOperatorTile() {

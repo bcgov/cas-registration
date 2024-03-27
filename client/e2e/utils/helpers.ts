@@ -8,38 +8,150 @@ import {
   webkit,
   Browser,
 } from "@playwright/test";
-// ☰ Enums
-import { DataTestID } from "@/e2e/utils/enums";
+
+// 🛠️ Function: checks expected alert mesage
+export async function checkAlertMessage(
+  page: Page,
+  alertMessage: string | RegExp,
+  index: number = 0,
+) {
+  await expect(page.getByRole("alert").nth(index)).toHaveText(alertMessage);
+}
+
+// 🛠️ Function: checks the visibility of each text within the specified column of the provided table
+export async function checkColumnTextVisibility(
+  table: Locator,
+  columnIdentifier: number | string,
+  columnText: string[],
+): Promise<void> {
+  let columnSelector: string;
+  if (typeof columnIdentifier === "number") {
+    columnSelector = `[data-colindex="${columnIdentifier}"]`; // Use data-colindex
+  } else {
+    columnSelector = `[data-field="${columnIdentifier}"]`; // Use data-field
+  }
+  // Check for visibility of each text within the column
+  for (const text of columnText) {
+    const cell = await table
+      .locator(`[role="cell"]${columnSelector}:has-text("${text}")`)
+      .first();
+    await expect(cell).toBeVisible();
+  }
+}
+
+// 🛠️ Function: checks read only of form inputs
+export async function checkFormFieldsReadOnly(fields: Locator[]) {
+  // perform checks simultaneously
+  await Promise.all(
+    fields.map(async (field) => {
+      // Combine multiple assertions for efficiency
+      const [visible, disabled, editable] = await Promise.all([
+        field.isVisible(),
+        field.isDisabled(),
+        field.isEditable(),
+      ]);
+      // Assert visibility to be true
+      await expect(visible).toBeTruthy();
+      await expect(disabled).toBeTruthy();
+      await expect(editable).toBeFalsy();
+    }),
+  );
+}
+
+// 🛠️ Function: checks all visibility of form headers
+export async function checkFormHeaders(page: Page, formHeaders: string[]) {
+  await Promise.all(
+    formHeaders.map(async (header) => {
+      await expect(page.getByRole("button", { name: header })).toBeVisible();
+    }),
+  );
+}
+
+// 🛠️ Function: check locator visiblity true or false
+export async function checkLocatorsVisibility(
+  page: Page,
+  locators: Locator[],
+  visible: boolean = true,
+) {
+  for (const locator of locators) {
+    if (visible) {
+      await expect(locator).toBeVisible();
+    } else {
+      await expect(locator).not.toBeVisible();
+    }
+  }
+}
+
+// 🛠️ Function: get all alert elements within form fieldset
+export async function getFieldAlerts(page: Page) {
+  const fieldset = page.locator("fieldset#root");
+  const alertElements = await fieldset.locator('div[role="alert"]').all();
+  return alertElements;
+}
 
 // 🛠️ Function: get all label elements with required field character * within form fieldset
 export async function getFieldRequired(page: Page) {
-  const fieldset = await page.$("fieldset#root");
-  const requiredFields = await fieldset?.$$('label:has-text("*")');
+  const fieldset = page.locator("fieldset#root");
+  const requiredFields = await fieldset.locator('label:has-text("*")').all();
   return requiredFields;
 }
-// 🛠️ Function: get all alert elements within form fieldset
-export async function getFieldAlerts(page: Page) {
-  const fieldset = await page.$("fieldset#root");
-  const alertElements = await fieldset!.$$(`div[role="alert"]`);
-  return alertElements;
-}
-// 🛠️ Function: clears required form fields
-export async function fieldsClear(page: Page) {
-  // Locate all required fields within the fieldset
+
+// 🛠️ Function: check if there are any validation errors related to required fields after form submission
+export async function checkRequiredFieldValidationErrors(
+  page: Page,
+  submitButton: Locator,
+) {
+  // Locate all required fields
   const requiredFields = await getFieldRequired(page);
-  if (requiredFields) {
-    // 📛 Clear the required input fields
-    for (const input of requiredFields) {
-      const labelText = await input.textContent();
-      const inputField = await page.getByLabel(labelText as string);
-      // Click the field to focus it
-      await inputField.click();
-      // Clear the field
-      await inputField.clear();
-    }
-  }
-  return requiredFields?.length;
+  // Submit
+  await submitButton.click();
+  // Locate all alert elements within the fieldset
+  const alertElements = await getFieldAlerts(page);
+  // 🔍 Assert there to be exactly the same number of required fields and alert elements
+  await expect(requiredFields?.length).toBe(alertElements);
 }
+
+export async function downloadPDF(
+  page: Page,
+  linkName: string,
+  fileName: string,
+) {
+  const downloadPromise = page.waitForEvent("download"); // Start waiting for download before clicking.
+  await page.getByRole("link", { name: linkName }).click();
+  const download = await downloadPromise;
+  expect(download.suggestedFilename()).toContain(fileName);
+  await download.delete(); // Delete the downloaded file (cleanup)
+}
+
+// 🛠️ Function: get all form inputs
+export async function getAllFormInputs(page: Page) {
+  const fields = await page.locator("input").all();
+  return fields;
+}
+
+// 🛠️ Function: gets table row by selector
+export async function getTableRow(table: Locator, selector: string) {
+  const row = await table
+    .locator(selector)
+    .first()
+    .locator('xpath=ancestor::div[@role="row"]')
+    .first();
+  return row;
+}
+
+// 🛠️ Function: clears form fields
+export async function fieldsClear(page: Page, formFields: string | any[]) {
+  // 📛 Clear the required input fields
+  for (const input of formFields) {
+    const labelText = await input.textContent();
+    const inputField = await page.getByLabel(labelText as string);
+    // Click the field to focus it
+    await inputField.click();
+    // Clear the field
+    await inputField.clear();
+  }
+}
+
 // 🛠️ Function: fills required form fields correctly
 export async function fillRequiredFormFields(page: Page) {
   // Locate all required fields within the fieldset
@@ -115,19 +227,14 @@ export async function fillAllFormFields(page: Page, selector: string) {
     }
   }
 }
-
-export async function checkRequiredFieldValidationErrors(
+// 🛠️ Function: verifies whether the column names displayed on the page match the expected column names provided as input
+export async function tableColumnNamesAreCorrect(
   page: Page,
-  submitButton: Locator,
+  expectedColumnNames: string[],
 ) {
-  // Locate all required fields
-  const requiredFields = await getFieldRequired(page);
-  // Submit
-  await submitButton.click();
-  // Locate all alert elements within the fieldset
-  const alertElements = await getFieldAlerts(page);
-  // 🔍 Assert there to be exactly the same number of required fields and alert elements
-  await expect(requiredFields?.length).toBe(alertElements.length);
+  const columnHeaders = page.locator(".MuiDataGrid-columnHeaderTitle");
+  const actualColumnNames = await columnHeaders.allTextContents();
+  expect(actualColumnNames).toEqual(expectedColumnNames);
 }
 
 export async function triggerFormatValidationErrors(
@@ -174,113 +281,7 @@ export async function triggerFormatValidationErrors(
   await submitButton.click();
 }
 
-export async function getAllFormInputs(page: Page) {
-  const fields = await page.locator("input").all();
-  return fields;
-}
-
-export async function downloadPDF(
-  page: Page,
-  linkName: string,
-  fileName: string,
-) {
-  const downloadPromise = page.waitForEvent("download"); // Start waiting for download before clicking.
-  await page.getByRole("link", { name: linkName }).click();
-  const download = await downloadPromise;
-  expect(download.suggestedFilename()).toContain(fileName);
-  await download.delete(); // Delete the downloaded file (cleanup)
-}
-
-export async function tableColumnNamesAreCorrect(
-  page: Page,
-  expectedColumnNames: string[],
-) {
-  for (const columnName of expectedColumnNames) {
-    expect(
-      page.locator(".MuiDataGrid-columnHeaderTitle").getByText(columnName),
-    ).toBeVisible();
-  }
-}
-
-export async function clickViewDetailsButton(
-  page: Page,
-  childIndex: number = 0,
-) {
-  const viewDetailsButtons = page.getByRole("link", {
-    name: /view details/i,
-  });
-  await viewDetailsButtons.nth(childIndex).click();
-}
-
-export async function checkFormHeaders(page: Page, formHeaders: string[]) {
-  for (const header of formHeaders) {
-    await expect(page.getByRole("button", { name: header })).toBeVisible();
-  }
-}
-
-export async function checkFormHeaderIsCollapsed(
-  page: Page,
-  formHeader: string,
-) {
-  await expect(page.getByRole("button", { name: formHeader })).toHaveAttribute(
-    "aria-expanded",
-    "false",
-  );
-}
-
-export async function disabledAndNotEditable(fields: Locator[]) {
-  for (const field of fields) {
-    await expect(field).toBeDisabled();
-    await expect(field).not.toBeEditable();
-  }
-}
-
-export async function getModal(page: Page) {
-  return page.locator(DataTestID.MODAL);
-}
-
-export async function getModalConfirmButton(modal: Locator) {
-  return modal.locator("button[aria-label='Confirm']");
-}
-
-export async function getModalCancelButton(modal: Locator) {
-  return modal.locator("button[aria-label='Cancel']");
-}
-
-export async function getApproveButton(page: Page) {
-  const approveButton = page.locator(
-    "button[aria-label='Approve application']",
-  );
-  return approveButton;
-}
-
-export async function getRejectButton(page: Page) {
-  const rejectButton = page.locator("button[aria-label='Reject application']");
-  return rejectButton;
-}
-
-export async function checkLocatorsVisibility(
-  page: Page,
-  locators: Locator[],
-  visible: boolean = true,
-) {
-  for (const locator of locators) {
-    if (visible) {
-      await expect(locator).toBeVisible();
-    } else {
-      await expect(locator).not.toBeVisible();
-    }
-  }
-}
-
-export async function checkAlertMessage(
-  page: Page,
-  alertMessage: string | RegExp,
-  index: number = 0,
-) {
-  await expect(page.getByRole("alert").nth(index)).toHaveText(alertMessage);
-}
-
+// 🛠️ Function: calls api to seed database with data for workflow tests
 export async function setupTestEnvironment(
   workFlow?: string,
   truncateOnly?: boolean,
@@ -289,6 +290,7 @@ export async function setupTestEnvironment(
 
   // Attempt launching browsers in order of preference
   for (const browserType of ["chromium", "firefox", "webkit"]) {
+    //    console.log(browserType);  // ? always Chromium in e2e:ui
     try {
       browser = await (async () => {
         switch (browserType) {

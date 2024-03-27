@@ -6,7 +6,7 @@
 import { Locator, Page, expect } from "@playwright/test";
 // ☰ Enums
 import {
-  ActionButton,
+  ActionClick,
   AppRoute,
   DataTestID,
   Login,
@@ -41,7 +41,7 @@ export class HomePOM {
     this.page = page;
 
     this.buttonContinue = page.getByRole("button", {
-      name: ActionButton.CONTINUE,
+      name: ActionClick.CONTINUE,
     });
     this.buttonLoginBCeID = this.page.getByRole("button", {
       name: Login.INDUSTRY_USER,
