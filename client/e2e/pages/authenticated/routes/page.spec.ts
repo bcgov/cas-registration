@@ -13,6 +13,7 @@ import {
   AppRoute,
   appRouteRoles,
   DataTestID,
+  E2EValue,
   UserRole,
 } from "@/e2e/utils/enums";
 // ℹ️ Environment variables
@@ -61,8 +62,10 @@ test.describe.configure({ mode: "serial" });
 test.describe("Test Route Access", () => {
   // ➰ Loop through the entries of UserRole enum
   for (let [role, value] of Object.entries(UserRole)) {
-    role = "E2E_" + role;
-    const storageState = JSON.parse(process.env[role + "_STORAGE"] as string);
+    role = E2EValue.ROLE + role;
+    const storageState = JSON.parse(
+      process.env[role + E2EValue.STORAGE] as string,
+    );
     test.describe(`Test Role ${value}`, () => {
       // 👤 Run test as this role
       test.use({ storageState: storageState });

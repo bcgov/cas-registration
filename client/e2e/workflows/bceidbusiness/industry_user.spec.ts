@@ -13,16 +13,16 @@ import {
   triggerFormatValidationErrors,
 } from "@/e2e/utils/helpers";
 import { deleteUserOperatorRecord } from "@/e2e/utils/queries";
+import { baseUrlSetup } from "@/e2e/utils/constants";
+import { E2EValue, MessageTexResponse } from "@/e2e/utils/enums";
 dotenv.config({ path: "./e2e/.env.local" });
 const happoPlaywright = require("happo-playwright");
 
 test.beforeEach(async ({ context }) => {
   await happoPlaywright.init(context);
-  let response: APIResponse = await context.request.get(
-    "http://localhost:8000/api/registration/test-setup",
-  );
+  let response: APIResponse = await context.request.get(baseUrlSetup);
   // Wait for the response and check for success status text and code (e.g., 200)
-  expect(await response.text()).toBe("Test setup complete.");
+  expect(await response.text()).toBe(MessageTexResponse.SETUP_SUCCESS);
   expect(response.status()).toBe(200);
 
   await deleteUserOperatorRecord(process.env.E2E_INDUSTRY_USER_GUID as string);
@@ -50,9 +50,11 @@ test.describe("Test Workflow industry_user", () => {
     const dashboardPage = new DashboardPOM(page);
     const selectOperatorPage = new OperatorPOM(page);
     await dashboardPage.route();
-    // 🔍 Assert that the current URL ends with "(authenticated)/dashboard"
+    // 🔍 Assert current URL
     await dashboardPage.urlIsCorrect();
+    // 🛸 Navigates to select operator
     await dashboardPage.clickSelectOperatorTile();
+    // 🔍 Assert current URL
     await selectOperatorPage.urlIsCorrect();
 
     pageContent = page.locator("html");
@@ -61,13 +63,13 @@ test.describe("Test Workflow industry_user", () => {
       variant: "default",
     });
 
-    await page.getByPlaceholder("Enter Business Legal Name").click();
-    await page.getByPlaceholder("Enter Business Legal Name").fill("Operator");
-    await page.getByText(/Operator 1 Legal Name/i).click();
-    await selectOperatorPage.buttonSelectOperator.click();
-    await expect(
-      page.getByText(selectOperatorPage.confirmationMessage),
-    ).toBeVisible();
+    // Action search by legal name
+    await selectOperatorPage.selectByLegalName(
+      E2EValue.INPUT_LEGAL_NAME,
+      E2EValue.FIXTURE_LEGAL_NAME,
+    );
+    // 🔍 Assert operator confirmation message
+    await selectOperatorPage.msgConfirmationIsVisible();
 
     pageContent = page.locator("html");
     await happoPlaywright.screenshot(page, pageContent, {
@@ -75,16 +77,21 @@ test.describe("Test Workflow industry_user", () => {
       variant: "default",
     });
 
-    await selectOperatorPage.buttonYesThisIsMyOperator.click();
-    await expect(
-      page.getByText(/does not have Administrator access set up./i),
-    ).toBeVisible();
+    // Action accept operator
+    await selectOperatorPage.acceptOperator();
+    // 🔍 Assert no administrator set up message
+    await selectOperatorPage.msgNoAdminSetupIsVisible();
 
     pageContent = page.locator("html");
     await happoPlaywright.screenshot(page, pageContent, {
       component: "Select operator no administrator message",
       variant: "default",
     });
+
+    // Action request administrator access
+    await selectOperatorPage.requestAdmin();
+    // 🔍 Assert access requested message
+    await selectOperatorPage.msgAdminRequestedIsVisible();
 
     await selectOperatorPage.buttonRequestAdministratorAccess.click();
     await expect(
@@ -105,15 +112,18 @@ test.describe("Test Workflow industry_user", () => {
     // 🛸 Navigate directly to the operator page (already tested navigating from the dashboard in the first test)
     const selectOperatorPage = new OperatorPOM(page);
     await selectOperatorPage.route();
+    // 🔍 Assert current URL
     await selectOperatorPage.urlIsCorrect();
-    await selectOperatorPage.selectByCraNumber("987654321");
-    await expect(
-      page.getByText(selectOperatorPage.confirmationMessage),
-    ).toBeVisible();
-    await selectOperatorPage.buttonYesThisIsMyOperator.click();
-    await expect(
-      page.getByText(/Looks like you do not have access to/i),
-    ).toBeVisible();
+
+    // Action select by CRA
+    await selectOperatorPage.selectByCraNumber(E2EValue.INPUT_CRA);
+    // 🔍 Assert operator confirmation message
+    await selectOperatorPage.msgConfirmationIsVisible();
+
+    // Action accept operator
+    await selectOperatorPage.acceptOperator();
+    // 🔍 Assert no access message
+    await selectOperatorPage.msgNoAccessIsVisible();
 
     pageContent = page.locator("html");
     await happoPlaywright.screenshot(page, pageContent, {
@@ -121,10 +131,10 @@ test.describe("Test Workflow industry_user", () => {
       variant: "default",
     });
 
-    await selectOperatorPage.buttonRequestAccess.click();
-    await expect(
-      page.getByText(/Your access request has been sent/i),
-    ).toBeVisible();
+    // Action request access
+    await selectOperatorPage.requestAccess();
+    // 🔍 Assert access requested message
+    await selectOperatorPage.msgAccessRequestedIsVisible();
 
     pageContent = page.locator("html");
     await happoPlaywright.screenshot(page, pageContent, {
@@ -206,22 +216,27 @@ test.describe("Test Workflow industry_user", () => {
     // 🛸 Navigate directly to the operator page (already tested navigating from the dashboard in the first test)
     const selectOperatorPage = new OperatorPOM(page);
     await selectOperatorPage.route();
+    // 🔍 Assert current URL
     await selectOperatorPage.urlIsCorrect();
-    await selectOperatorPage.selectByCraNumber("987654321");
-    await expect(
-      page.getByText(selectOperatorPage.confirmationMessage),
-    ).toBeVisible();
-    await selectOperatorPage.buttonYesThisIsMyOperator.click();
-    await expect(
-      page.getByText(/Looks like you do not have access to/i),
-    ).toBeVisible();
-    await page.getByText(/go back/i).click();
-    await expect(
-      page.getByText(selectOperatorPage.confirmationMessage),
-    ).toBeVisible();
-    await page.getByText(/return/i).click();
-    await expect(
-      page.getByText(/Which operator would you like to log in to?/i),
-    ).toBeVisible();
+
+    // Action select by CRA
+    await selectOperatorPage.selectByCraNumber(E2EValue.INPUT_CRA);
+    // 🔍 Assert operator confirmation message
+    await selectOperatorPage.msgConfirmationIsVisible();
+
+    // Action accept operator
+    await selectOperatorPage.acceptOperator();
+    // 🔍 Assert no access message
+    await selectOperatorPage.msgNoAccessIsVisible();
+
+    // Action route go back
+    await selectOperatorPage.routeBack();
+    // 🔍 Assert operator confirmation message
+    await selectOperatorPage.msgConfirmationIsVisible();
+
+    // Action route return
+    await selectOperatorPage.routeReturn();
+    // 🔍 Assert operator confirmation message
+    await selectOperatorPage.msgSelectOpertorIsVisible();
   });
 });

@@ -14,7 +14,7 @@ class CurrentUserMiddleware:
         auth_header = request.headers.get('Authorization')
         if auth_header:
             try:
-                user_guid = UUID(json.loads(auth_header).get('user_guid'))
+                user_guid = UUID(json.loads(auth_header).get('user_guid'), version=4)
 
                 # Try to get the user from cache
                 cache_key = f"{USER_CACHE_PREFIX}{user_guid}"

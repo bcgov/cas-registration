@@ -5,7 +5,12 @@
  */
 import { Locator, Page, expect } from "@playwright/test";
 // ☰ Enums
-import { AppRoute, DataTestID } from "@/e2e/utils/enums";
+import {
+  AppRoute,
+  DataTestID,
+  LinkSrc,
+  MessageTextDashboard,
+} from "@/e2e/utils/enums";
 // ℹ️ Environment variables
 import * as dotenv from "dotenv";
 dotenv.config({ path: "./e2e/.env.local" });
@@ -15,16 +20,32 @@ export class DashboardPOM {
 
   readonly url: string = process.env.E2E_BASEURL + AppRoute.DASHBOARD;
 
-  readonly msgPending: Locator;
+  readonly messagePending: Locator;
 
   readonly selectOperatorTile: Locator;
 
+  readonly operationsTile: Locator;
+
+  readonly operatorsTile: Locator;
+
+  readonly reportProblemLink: Locator;
+
   constructor(page: Page) {
     this.page = page;
-    this.msgPending = this.page.locator(DataTestID.MESSAGE_PENDING);
-    this.selectOperatorTile = this.page.getByText(
-      "1 pending action(s) required",
+    this.messagePending = page.locator(DataTestID.MESSAGE_PENDING);
+    this.selectOperatorTile = page.getByText(
+      MessageTextDashboard.DASHBOARD_TILE_OPERATOR_SELECT,
     );
+    this.operationsTile = page.getByRole("link", {
+      name: MessageTextDashboard.DASHBOARD_TILE_OPERATIONS,
+    });
+    this.operatorsTile = page.getByRole("link", {
+      name: MessageTextDashboard.DASHBOARD_TILE_OPERATORS,
+    });
+
+    this.reportProblemLink = page.getByRole("link", {
+      name: MessageTextDashboard.REPORT_PROBLEM,
+    });
   }
 
   async route() {
@@ -32,7 +53,7 @@ export class DashboardPOM {
   }
 
   async hasMessagePending() {
-    await expect(this.msgPending).toBeVisible();
+    await expect(this.messagePending).toBeVisible();
   }
 
   async urlIsCorrect() {
@@ -41,7 +62,22 @@ export class DashboardPOM {
     await expect(currentUrl.toLowerCase()).toMatch(path.toLowerCase());
   }
 
+  async problemLinkIsCorrect() {
+    await expect(this.reportProblemLink).toHaveAttribute(
+      "href",
+      LinkSrc.REPORT_PROBLEM,
+    );
+  }
+
   async clickSelectOperatorTile() {
     await this.selectOperatorTile.click();
+  }
+
+  async clickOperationsTile() {
+    await this.operationsTile.click();
+  }
+
+  async clickOperatorsTile() {
+    await this.operatorsTile.click();
   }
 }
