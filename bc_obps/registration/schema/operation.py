@@ -117,7 +117,7 @@ class OperationOut(ModelSchema):
                 return obj.operator
         return None
 
-    class Meta:
+    class Config:
         model = Operation
         model_fields = [
             "id",
