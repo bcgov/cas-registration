@@ -18,4 +18,4 @@ from registration.api.custom_codes_4xx import custom_codes_4xx
 @authorize(AppRole.get_authorized_irc_roles())
 @handle_http_errors()
 def list_user_operators(request, page: int = 1, sort_field: str = "created_at", sort_order: str = "desc"):
-    return ListUserOperatorsService.list_user_operators(request, page, sort_field, sort_order)
+    return 200, ListUserOperatorsService.list_user_operators(request, page, sort_field, sort_order)

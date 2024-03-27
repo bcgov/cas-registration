@@ -1,4 +1,6 @@
-from service.user_operator.operator_service import OperatorService
+from registration.api.utils.current_user_utils import get_current_user_guid
+from service.user_operator_service import UserOperatorDataAccessService
+from service.operator_service import OperatorDataAccessService
 from registration.decorators import authorize, handle_http_errors
 from registration.schema import (
     Message,
@@ -22,7 +24,7 @@ from registration.api.custom_codes_4xx import custom_codes_4xx
 @authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles(), False)
 @handle_http_errors()
 def create_operator_and_user_operator(request, payload: UserOperatorOperatorIn):
-    return OperatorService.create_operator_and_user_operator(request, payload)
+    return UserOperatorDataAccessService.create_operator_and_user_operator(payload, get_current_user_guid(request))
 
 
 ## PUT
@@ -34,5 +36,6 @@ def create_operator_and_user_operator(request, payload: UserOperatorOperatorIn):
 @authorize(["industry_user"], ["admin"])
 @handle_http_errors()
 def update_operator_and_user_operator(request, payload: UserOperatorOperatorIn, user_operator_id: UUID):
-
-    return OperatorService.update_operator_and_user_operator(request, payload, user_operator_id)
+    return 200, UserOperatorDataAccessService.update_operator_and_user_operator(
+        user_operator_id, payload, get_current_user_guid(request)
+    )

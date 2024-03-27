@@ -26,40 +26,6 @@ from registration.models import (
 )
 
 
-def check_users_admin_request_eligibility(user: User, operator: Operator) -> Union[None, tuple[int, dict]]:
-    """
-    Check if a user is eligible to request admin access to an operator.
-
-    Args:
-        user (User): The user for whom eligibility is being checked.
-        operator (Operator): The operator to which admin access is being requested.
-
-    Returns:
-        Union[None, Tuple[int, str]]: Eligibility status. None if eligible, (400, error message) if not.
-    """
-    # User already has an admin user for this operator
-    if UserOperator.objects.filter(
-        user=user, operator=operator, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.APPROVED
-    ).exists():
-        return 400, {"message": "You are already an admin for this Operator!"}
-
-    # Operator already has an admin user
-    if UserOperator.objects.filter(
-        operator=operator, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.APPROVED
-    ).exists():
-        return 400, {"message": "This Operator already has an admin user!"}
-
-    # User already has a pending request for this operator
-    # NOTE: This is a bit of a weird case, but it's possible for a user to have a pending request for an operator
-    #       and if we show the UserOperator request form, they could submit another request and end up with two Contact
-    if UserOperator.objects.filter(
-        user=user, operator=operator, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.PENDING
-    ).exists():
-        return 400, {"message": "You already have a pending request for this Operator!"}
-
-    return 200, None
-
-
 def update_model_instance(
     instance: Type[models.Model],
     fields_to_update: Union[Iterable[str], Dict[str, str]],
@@ -105,33 +71,6 @@ def generate_useful_error(error):
     for key, value in error.message_dict.items():
         formatted_key = ' '.join(word.capitalize() for word in key.split('_'))
         return f"{formatted_key}: {value[0]}"
-
-
-def check_access_request_matches_business_guid(
-    user_guid: str, operator: Operator
-) -> Tuple[int, Optional[Union[dict[str, str], None]]]:
-    """
-    Check if a the business_guid of a subsequent user who is requesting access matches the business_guid of the admin
-
-    Args:
-        user_guid (User): The guid of the user for whom eligibility is being checked.
-        operator (Operator): The operator to which access is being requested.
-
-    Returns:
-        Union[None, Tuple[int, str]]: Eligibility status. None if eligible, (400, error message) if not.
-    """
-    admin_user_operator_data = UserOperator.objects.filter(
-        operator=operator, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.APPROVED
-    ).first()
-    # Operator already has an admin user
-    admin_user = get_object_or_404(User, user_guid=admin_user_operator_data.user.user_guid)
-    current_user = get_object_or_404(User, user_guid=user_guid)
-
-# brianna this function should ask db service for the admin and verify that the guid matches and then return yes/no or something. parameters should be the operator id and current user business guid, should live in application_access_service
-    if admin_user.business_guid != current_user.business_guid:
-        return 403, {"message": "Your business bceid does not match that of the approved admin."}
-
-    return 200, None
 
 
 def raise_401_if_user_not_authorized(

@@ -1,4 +1,4 @@
-from service.current_user_service import CurrentUserService
+from service.user_service import UserDataAccessService
 from registration.models import (
     User,
     UserOperator,
@@ -18,7 +18,7 @@ class GetUserOperatorListFromUserService:
         #     .get(user=user.user_guid)
         #     .operator
         # )
-        operator = CurrentUserService.get_users_operator(CurrentUserService.get_user(request))
+        operator = UserDataAccessService.get_users_operator(UserDataAccessService.get_user_by_guid(request))
         user_operator_list = UserOperator.objects.select_related("user").filter(
             operator_id=operator, user__business_guid=user.business_guid
         )

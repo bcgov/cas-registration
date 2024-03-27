@@ -1,4 +1,4 @@
-from service.select_operator.user_operator.update_status_service import UpdateStatusService
+from service.user_operator_service import UserOperatorDataAccessService
 from registration.decorators import authorize, handle_http_errors
 from registration.schema import (
     UserOperatorOut,
@@ -21,4 +21,4 @@ from registration.api.api_base import router
 @authorize(AppRole.get_all_authorized_app_roles(), ["admin"])
 @handle_http_errors()
 def update_user_operator_status(request, payload: UserOperatorStatusUpdate):
-    return UpdateStatusService.update_user_operator_status(request, payload)
+    return 200, UserOperatorDataAccessService.update_user_operator_status(request, payload)

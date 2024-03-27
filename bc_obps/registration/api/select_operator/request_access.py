@@ -1,4 +1,4 @@
-from service.select_operator.request_access_service import RequestAccessService
+from registration.api.utils.current_user_utils import get_current_user_guid
 from registration.decorators import authorize, handle_http_errors
 from registration.schema import (
     SelectOperatorIn,
@@ -11,6 +11,7 @@ from registration.models import (
     UserOperator,
 )
 from registration.api.custom_codes_4xx import custom_codes_4xx
+from service.application_access_service import ApplicationAccessService
 
 
 @router.post(
@@ -22,4 +23,4 @@ from registration.api.custom_codes_4xx import custom_codes_4xx
 @handle_http_errors()
 def request_access(request, payload: SelectOperatorIn):
 
-    return RequestAccessService.request_access(request, payload)
+    return 201, ApplicationAccessService.request_access(payload.operator_id, get_current_user_guid(request))

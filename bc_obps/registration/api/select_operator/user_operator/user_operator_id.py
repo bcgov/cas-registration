@@ -1,5 +1,5 @@
 from uuid import UUID
-from service.select_operator.user_operator.get_user_operator_service import GetUserOperatorService
+from service.user_operator_service import UserOperatorDataAccessService
 
 from registration.decorators import authorize, handle_http_errors
 from registration.schema import (
@@ -23,5 +23,5 @@ from registration.api.custom_codes_4xx import custom_codes_4xx
 )
 @authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles())
 @handle_http_errors()
-def get_user_operator(request, user_operator_id: UUID):
-    return GetUserOperatorService.get_user_operator(request, user_operator_id)
+def get_user_operator_by_id(request, user_operator_id: UUID):
+    return 200, UserOperatorDataAccessService.get_user_operator_by_id(user_operator_id)

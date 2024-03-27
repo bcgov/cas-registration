@@ -15,4 +15,4 @@ from registration.api.custom_codes_4xx import custom_codes_4xx
 @authorize(["industry_user"], ["admin"])
 @handle_http_errors()
 def get_user_operator_list_from_user(request):
-    return GetUserOperatorListFromUserService.get_user_operator_list_from_user(request)
+    return 200, GetUserOperatorListFromUserService.get_user_operator_list_from_user(request)
