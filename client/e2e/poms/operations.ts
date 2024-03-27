@@ -54,7 +54,8 @@ export class OperationsPOM {
   }
 
   async operationsTableIsVisible() {
-    await this.page.waitForSelector(".MuiDataGrid-root");
+    const dataGrid = this.page.locator(".MuiDataGrid-root");
+    await dataGrid.waitFor();
   }
 
   async operationsViewIsCorrect(role: string, expectedStatuses: string[]) {
@@ -115,7 +116,7 @@ export class OperationsPOM {
   async clickOperationsLink() {
     // Click Operations link on the breadcrumb and wait for the operations table to load
     await this.page.getByRole("link", { name: "Operations" }).click();
-    await this.page.waitForSelector(".MuiDataGrid-root");
+    expect(this.page.locator(".MuiDataGrid-root")).toBeTruthy();
   }
 
   async clickStartRegistrationLink() {
