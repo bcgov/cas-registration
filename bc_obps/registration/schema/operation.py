@@ -1,4 +1,5 @@
 from typing import List, Optional
+from uuid import UUID
 from registration.schema.operator import OperatorForOperationOut
 from registration.utils import file_to_data_url, data_url_to_file
 from ninja import Field, ModelSchema, Schema
@@ -86,6 +87,7 @@ class OperationOut(ModelSchema):
     statutory_declaration: Optional[str] = None
     bc_obps_regulated_operation: Optional[str] = Field(None, alias="bc_obps_regulated_operation.id")
     bcghg_id: Optional[str] = None
+    # operator_id: Optional[UUID] = Field(None, alias="operator.id")
 
     @staticmethod
     def resolve_statutory_declaration(obj: Operation):
@@ -110,6 +112,7 @@ class OperationOut(ModelSchema):
         """
         Only return operator details if the user is an IRC user
         """
+        breakpoint()
         request = context.get('request')
         if request:
             user: User = request.current_user
