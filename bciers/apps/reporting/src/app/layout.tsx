@@ -8,4 +8,14 @@ import {
 export const metadata = regMetadata;
 export const viewport = regViewport;
 
-export default RegRootLayout;
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang="en">
+      <body id="__next">{children}</body>
+    </html>
+  );
+}
