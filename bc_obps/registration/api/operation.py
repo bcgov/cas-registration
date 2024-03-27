@@ -215,11 +215,12 @@ def create_operation(request, payload: OperationCreateIn):
     try:
         with transaction.atomic():
             operation = Operation.objects.create(
-                **payload_dict, operator_id=user_operator.operator_id, naics_code_id=payload.naics_code
+                **payload_dict,
+                operator_id=user_operator.operator_id,
+                naics_code_id=payload.naics_code,
+                created_by_id=user.pk,
             )
             operation.regulated_products.set(payload.regulated_products)
-            operation.set_create_or_update(user.pk)
-
             # Not needed for MVP
             # operation.reporting_activities.set(payload.reporting_activities)
             # if payload.operation_has_multiple_operators:
