@@ -71,7 +71,8 @@ export class OperationPOM {
   }
 
   async operationFormIsVisible() {
-    await this.page.waitForSelector("form");
+    const form = this.page.locator("form");
+    await form.waitFor();
     await expect(this.operationPage1Title).toBeVisible();
 
     // Check for the presence of the multistep form headers
