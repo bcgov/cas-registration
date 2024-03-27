@@ -19,15 +19,15 @@ vi.mock("next/navigation", () => ({
   }),
 }));
 
-vi.mock("useSession", () => ({
-  useSession: () => ({
-    data: {
-      user: {
-        app_role: ["industry_admin"],
-      },
-    },
-  }),
-}));
+// vi.mock("useSession", () => ({
+//   useSession: () => ({
+//     data: {
+//       user: {
+//         app_role: ["industry_admin"],
+//       },
+//     },
+//   }),
+// }));
 
 vi.mock("next/headers", () => ({
   cookies: vi.fn(),
@@ -42,7 +42,7 @@ describe("Operations component", () => {
   beforeEach(async () => {
     vi.restoreAllMocks();
     fetchMock.resetMocks();
-    fetchMock.enableMocks(); // Enable fetch mocking
+    fetchMock.enableMocks();
     // mock getUserFormData response
     fetchMock.mockResponseOnce(
       JSON.stringify({
@@ -126,6 +126,7 @@ describe("Operations component", () => {
   });
 
   it("renders existing form data for existing operations", async () => {
+    // mock getOperation response
     fetchMock.mockResponseOnce(
       JSON.stringify({
         id: "9a8aae6a-d711-42d4-aa7a-c8d37ff814c4",
@@ -151,7 +152,6 @@ describe("Operations component", () => {
       }),
     );
 
-    fetchMock.mockResponseOnce(JSON.stringify([]));
     render(
       <SessionProvider>
         {await Operation({ numRow: "9a8aae6a-d711-42d4-aa7a-c8d37ff814c4" })}

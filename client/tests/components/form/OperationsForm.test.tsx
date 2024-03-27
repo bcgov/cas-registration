@@ -1,15 +1,56 @@
 import OperationsForm from "@/app/components/form/OperationsForm";
 import { createOperationSchema } from "@/app/components/routes/operations/form/Operation";
 import { operationSchema } from "@/app/utils/jsonSchema/operations";
-import { render, screen } from "@testing-library/react";
+import createFetchMock from "vitest-fetch-mock";
+import { act, render, screen } from "@testing-library/react";
 import { SessionProvider } from "next-auth/react";
 import { describe, expect, vi } from "vitest";
 import React from "react";
+
+const fetchMock = createFetchMock(vi);
+fetchMock.enableMocks();
 
 // Mock useFormStatus
 vi.mock("react-dom", () => ({
   useFormStatus: jest.fn().mockReturnValue({ pending: false }),
 }));
+
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({
+    query: { operation: "create" },
+  }),
+  useParams: () => ({
+    formSection: "1",
+    operation: "create",
+  }),
+}));
+
+vi.mock("next-auth/react", async (importOriginal) => {
+  const actual = importOriginal();
+  return {
+    ...actual,
+    useSession: vi.fn(() => ({
+      data: {
+        user: {
+          app_role: "industry_admin",
+        },
+      },
+    })),
+    SessionProvider: ({ children }: { children: React.ReactNode }) => (
+      <>{children}</>
+    ),
+  };
+});
+
+vi.mock("next/headers", () => ({
+  cookies: vi.fn(),
+}));
+
+vi.mock("next/cache", () => ({
+  revalidateTag: vi.fn(() => Promise.resolve()),
+  revalidatePath: vi.fn(() => Promise.resolve()),
+}));
+
 const testFormData = {
   id: 1,
   name: "Operation 1",
@@ -29,13 +70,26 @@ const testFormData = {
   current_year_estimated_emissions: null,
 };
 
+const testOperationSchema = createOperationSchema(
+  operationSchema,
+  [{ id: 1, naics_code: "string", naics_description: "string" }],
+  [{ id: 1, name: "string" }],
+  [{ id: "test-id", label: "string" }],
+);
+
 // TODO: Remove skip and fix this test
-describe.skip("Operations component", () => {
+describe("Operations component", () => {
   beforeEach(() => {
     vi.restoreAllMocks();
+    fetchMock.resetMocks();
+    fetchMock.enableMocks();
   });
-  it("renders the empty OperationsForm when no formData is passed", async () => {
-    render(<OperationsForm schema={operationSchema} />);
+  it.skip("renders the empty OperationsForm when no formData is passed", async () => {
+    render(
+      <SessionProvider>
+        <OperationsForm schema={testOperationSchema} />
+      </SessionProvider>,
+    );
 
     // Test for Legend elements
     expect(
@@ -105,14 +159,7 @@ describe.skip("Operations component", () => {
     expect(screen.getByRole("button", { name: /Submit/i })).toBeInTheDocument();
   });
 
-  it("loads an existing OperationsForm", async () => {
-    const testOperationSchema = createOperationSchema(
-      operationSchema,
-      [{ id: 1, naics_code: "string", naics_description: "string" }],
-      [{ id: 1, name: "string" }],
-      [{ id: "asd", label: "string" }],
-    );
-
+  it.skip("loads an existing OperationsForm", async () => {
     render(
       <SessionProvider>
         <OperationsForm schema={testOperationSchema} formData={testFormData} />
@@ -178,14 +225,81 @@ describe.skip("Operations component", () => {
   });
 
   it("shows the success message when operationName is defined", async () => {
-    React.useState = vi.fn().mockReturnValue(["Operation 1", {}]);
+    vi.mock("next/navigation", () => ({
+      useRouter: () => ({
+        query: { operation: "test-id" },
+        replace: vi.fn(),
+      }),
+      useParams: () => ({
+        formSection: "3",
+        operation: "test-id",
+      }),
+    }));
+
+    const mockFormData = {
+      id: "025328a0-f9e8-4e1a-888d-aa192cb053db",
+      name: "Operation 5",
+      type: "Single Facility Operation",
+      opt_in: false,
+      regulated_products: [],
+      previous_year_attributable_emissions: null,
+      status: "Draft",
+      naics_code_id: 21,
+      first_name: "John",
+      last_name: "Doe",
+      email: "john.doe@example.com",
+      phone_number: "+16044011234",
+      position_title: "Senior Officer",
+      street_address: "123 Main St",
+      municipality: "Cityville",
+      province: "ON",
+      postal_code: "A1B 2C3",
+      statutory_declaration: "data:text/plain;base64,SGVsbG8gV29ybGQ=",
+      bc_obps_regulated_operation: null,
+      bcghg_id: "23219990001",
+      external_point_of_contact_first_name: "John",
+      external_point_of_contact_last_name: "Doe",
+      external_point_of_contact_email: "john.doe@example.com",
+      external_point_of_contact_phone_number: "+16044011234",
+      external_point_of_contact_position_title: "Senior Officer",
+      "Did you submit a GHG emissions report for reporting year 2022?": false,
+      is_external_point_of_contact: true,
+      multiple_operators_array: [{}],
+    };
+
     render(
       <SessionProvider>
-        <OperationsForm schema={operationSchema} />
+        <OperationsForm schema={testOperationSchema} formData={mockFormData} />
       </SessionProvider>,
     );
+
+    const submitButton = screen.getByText(/Submit/i);
+
+    act(() => {
+      submitButton.click();
+    });
+
+    act(() => {
+      fetchMock.mockResponseOnce(
+        JSON.stringify({
+          id: "025328a0-f9e8-4e1a-888d-aa192cb053db",
+          name: "Operation 5",
+        }),
+      );
+    });
+
+    // TODO: Find alternate way to wait for the success message to appea
+    await act(async () => {
+      setTimeout(() => {}, 1000);
+    });
+
+    // Get the success message using the text content since it returns broken up text error
     expect(
-      screen.getByText(/Your request to register Operation 1/i),
+      screen.getByText(
+        (_, element) =>
+          element?.textContent ===
+          "Your application for the B.C. OBPS Regulated Operation ID for Operation 5 has been received.",
+      ),
     ).toBeInTheDocument();
   });
 });
