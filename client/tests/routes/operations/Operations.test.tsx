@@ -2,19 +2,32 @@ import Operations from "@/app/components/routes/operations/Operations";
 import "@testing-library/jest-dom";
 import { render, screen } from "@testing-library/react";
 import createFetchMock from "vitest-fetch-mock";
+import { SessionProvider } from "next-auth/react";
 
 const fetchMock = createFetchMock(vi);
 fetchMock.enableMocks();
 
-// Mock useFormStatus
-vi.mock("react-dom", () => ({
-  useFormStatus: jest.fn().mockReturnValue({ pending: false }),
+// Needed to mock all this stuff for server components to work
+// Will need to look into making them reusable
+vi.mock("next/navigation", () => ({
+  useRouter: vi.fn(),
+  useParams: vi.fn(),
+}));
+
+vi.mock("next/headers", () => ({
+  cookies: vi.fn(),
+}));
+
+vi.mock("next/cache", () => ({
+  revalidateTag: vi.fn(() => Promise.resolve()),
+  revalidatePath: vi.fn(() => Promise.resolve()),
 }));
 
 // TODO: Remove skip and fix this test
-describe.skip("Operations component", () => {
+describe("Operations component", () => {
   beforeEach(() => {
     vi.restoreAllMocks();
+    fetchMock.resetMocks();
     fetchMock.enableMocks(); // Enable fetch mocking
   });
   it("renders the Operations grid", async () => {
@@ -60,7 +73,8 @@ describe.skip("Operations component", () => {
         },
       ]),
     );
-    render(await Operations());
+    render(<SessionProvider>{await Operations()}</SessionProvider>);
+
     // Check if the grid of mock data is present
     expect(screen.getByText(/Operation 1/i)).toBeVisible();
     expect(screen.getByText(/Operation 2/i)).toBeVisible();
