@@ -32,6 +32,17 @@ export class OperatorPOM {
 
   readonly confirmationMessage: RegExp;
 
+  readonly buttonEdit: Locator;
+
+  readonly buttonSaveAndReturn: Locator;
+
+  readonly editInformationNote =
+    /Please click on the "Edit Information" button/i;
+
+  readonly operatorFormTitle = /Operator Information/i;
+
+  readonly legalNameField: Locator;
+
   constructor(page: Page) {
     this.page = page;
     this.confirmationMessage =
@@ -57,6 +68,15 @@ export class OperatorPOM {
     this.buttonSubmit = this.page.getByRole("button", {
       name: /submit/i,
     });
+
+    this.buttonEdit = page.getByRole("button", {
+      name: /edit information/i,
+    });
+    this.buttonSaveAndReturn = page.getByRole("button", {
+      name: /save and return to dashboard/i,
+    });
+
+    this.legalNameField = page.getByLabel(/Legal Name*/i);
   }
 
   async route() {
@@ -88,5 +108,35 @@ export class OperatorPOM {
     const alertElements = await getFieldAlerts(this.page);
     // 🔍 Assert there to be exactly the same number of required fields and alert elements
     await expect(requiredFields?.length).toBe(alertElements.length);
+  }
+
+  async operatorViewIsCorrect() {
+    await expect(this.page.getByText(this.editInformationNote)).toBeVisible();
+    await expect(this.page.getByText(this.operatorFormTitle)).toBeVisible();
+    await expect(this.buttonEdit).toBeVisible();
+    await expect(this.buttonSaveAndReturn).toBeVisible();
+  }
+
+  async operatorFormIsDisabled() {
+    await expect(this.legalNameField).toBeDisabled();
+  }
+
+  async operatorFormIsEnabled() {
+    await expect(this.legalNameField).toBeEnabled();
+  }
+
+  async clickEditInformation() {
+    expect(this.buttonEdit).toBeEnabled();
+    await this.buttonEdit.click();
+    expect(this.operatorFormIsEnabled).toBeTruthy();
+  }
+
+  async clickSaveAndReturn() {
+    expect(this.buttonSaveAndReturn).toBeEnabled();
+    await this.buttonSaveAndReturn.click();
+  }
+
+  async editOperatorInformation() {
+    await this.legalNameField.fill("New Legal Name");
   }
 }

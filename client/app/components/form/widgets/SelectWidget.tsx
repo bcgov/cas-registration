@@ -48,9 +48,7 @@ const SelectWidget: React.FC<WidgetProps> = (props) => {
         width: "100%",
       }}
     >
-      <InputLabel id={id} shrink={false}>
-        {!value && placeholder}
-      </InputLabel>
+      <InputLabel shrink={false}>{!value && placeholder}</InputLabel>
       <Select
         labelId={id}
         value={value || ""}

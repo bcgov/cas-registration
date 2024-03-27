@@ -162,3 +162,29 @@ export async function triggerFormatValidationErrors(
   // Submit
   await submitButton.click();
 }
+
+export async function getAllFormInputs(page: Page) {
+  const fields = await page.locator("input").all();
+  return fields;
+}
+
+export async function tableColumnNamesAreCorrect(
+  page: Page,
+  expectedColumnNames: string[],
+) {
+  const dataGrid = page.locator(".MuiDataGrid-root");
+  await dataGrid.waitFor();
+  for (const columnName of expectedColumnNames) {
+    expect(
+      page.locator(".MuiDataGrid-columnHeaderTitle").getByText(columnName),
+    ).toBeVisible();
+  }
+}
+
+export async function addPdf(page: Page, index: number = 0) {
+  // Pass an index if there are multiple file inputs on the page
+  const inputs = await page.locator('input[type="file"]').all();
+  const input = inputs[index];
+  await input.setInputFiles("./e2e/assets/test.pdf");
+  expect(page.getByText("test.pdf")).toBeVisible();
+}

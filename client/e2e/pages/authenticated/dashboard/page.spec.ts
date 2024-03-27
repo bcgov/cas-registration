@@ -93,10 +93,9 @@ test.describe("Test Dashboard Page", () => {
 
             const pageContent = page.locator("html");
             await happoPlaywright.screenshot(dashboardPage.page, pageContent, {
-              component: `${role} Dashboard page`,
-              variant: "default",
+              component: "Dashboard page",
+              variant: role,
             });
-
             break;
         }
       });

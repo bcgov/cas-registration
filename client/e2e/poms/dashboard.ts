@@ -15,15 +15,44 @@ export class DashboardPOM {
 
   readonly url: string = process.env.E2E_BASEURL + AppRoute.DASHBOARD;
 
+  readonly operationsUrl: string =
+    process.env.E2E_BASEURL + AppRoute.OPERATIONS;
+
   readonly msgPending: Locator;
 
   readonly selectOperatorTile: Locator;
+
+  readonly operationsTile: Locator;
+
+  readonly operationsTileIndustry: Locator;
+
+  readonly operatorsTile: Locator;
+
+  readonly operatorsTileIndustry: Locator;
+
+  readonly reportProblemLink: Locator;
+
+  readonly userAccessManagementTileIndustry: Locator;
 
   constructor(page: Page) {
     this.page = page;
     this.msgPending = this.page.locator(DataTestID.MESSAGE_PENDING);
     this.selectOperatorTile = this.page.getByText(
       "1 pending action(s) required",
+    );
+
+    this.page = page;
+    this.operationsTile = page.getByRole("link", { name: /.*operations.*/i });
+    this.operatorsTile = page.getByRole("link", { name: /.*operator.*/i });
+    // the id to select these as these as we will start adding notifications to the tiles
+    // the operators tile link text is just `0 pending action(s) required`
+    this.operatorsTileIndustry = page.locator("#My-Operator-link");
+    this.operationsTileIndustry = page.locator("#My-Operations-link");
+    this.reportProblemLink = page.getByRole("link", {
+      name: "Report problems to GHGRegulator@gov.bc.ca",
+    });
+    this.userAccessManagementTileIndustry = page.locator(
+      "#User-Access-Management-link",
     );
   }
 
@@ -37,11 +66,38 @@ export class DashboardPOM {
 
   async urlIsCorrect() {
     const path = this.url;
-    const currentUrl = await this.page.url();
-    await expect(currentUrl.toLowerCase()).toMatch(path.toLowerCase());
+    const currentUrl = this.page.url();
+    expect(currentUrl.toLowerCase()).toMatch(path.toLowerCase());
   }
 
   async clickSelectOperatorTile() {
     await this.selectOperatorTile.click();
+  }
+
+  async dashboardTilesAreVisibleIndustryAdmin() {
+    expect(this.page.locator("#My-Operator-link")).toBeVisible();
+    expect(this.page.locator("#My-Operations-link")).toBeVisible();
+    expect(this.page.locator("#User-Access-Management-link")).toBeVisible();
+    expect(this.page.locator("#Report-a-Problem-link")).toBeVisible();
+  }
+
+  async clickOperationsTile() {
+    await this.operationsTile.click();
+  }
+
+  async clickOperationsTileIndustry() {
+    await this.operationsTileIndustry.click();
+  }
+
+  async clickOperatorsTile() {
+    await this.operatorsTile.click();
+  }
+
+  async clickOperatorsTileIndustry() {
+    await this.operatorsTileIndustry.click();
+  }
+
+  async clickUserAccessManagementTileIndustry() {
+    await this.userAccessManagementTileIndustry.click();
   }
 }
