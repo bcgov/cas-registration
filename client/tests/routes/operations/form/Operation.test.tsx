@@ -1,5 +1,5 @@
-import Operation from "@/app/components/routes/operations/form/operation";
-import { render, screen } from "@testing-library/react";
+import Operation from "@/app/components/routes/operations/form/Operation";
+import { act, render, screen } from "@testing-library/react";
 import createFetchMock from "vitest-fetch-mock";
 import { describe, expect, vi } from "vitest";
 import { SessionProvider } from "next-auth/react";
@@ -7,11 +7,8 @@ import { SessionProvider } from "next-auth/react";
 const fetchMock = createFetchMock(vi);
 fetchMock.enableMocks();
 
-// Mock useFormStatus
-vi.mock("react-dom", () => ({
-  useFormStatus: jest.fn().mockReturnValue({ pending: false }),
-}));
-
+// Needed to mock all this stuff for server components to work
+// Will need to look into making them reusable
 vi.mock("next/navigation", () => ({
   useRouter: () => ({
     query: { operation: "create" },
@@ -92,7 +89,9 @@ describe("Operations component", () => {
     const naicsCode = screen.getByPlaceholderText(/NAICS code/i).closest("div");
     expect(naicsCode).toBeInTheDocument();
 
-    await naicsCode.click();
+    act(() => {
+      naicsCode?.click();
+    });
 
     const naicsCodeOptions = screen.getAllByRole("combobox");
     expect(screen.getByText(/211110/i)).toBeVisible();
@@ -105,7 +104,9 @@ describe("Operations component", () => {
       .closest("div");
     expect(regulatedProducts).toBeInTheDocument();
 
-    await regulatedProducts.click();
+    act(() => {
+      regulatedProducts?.click();
+    });
 
     const regulatedProductsOptions = screen.getAllByRole("combobox");
     expect(
@@ -124,14 +125,39 @@ describe("Operations component", () => {
     expect(screen.getByLabelText(/Operation Name+/i)).not.toHaveValue();
   });
 
-  // it("renders existing form data for existing operations", async () => {
-  //   fetchMock.mockResponseOnce(JSON.stringify({ id: 1, name: "test" }));
-  //   render(
-  //     <SessionProvider>
-  //       {await Operation({ numRow: "create" })}
-  //     </SessionProvider>,
-  //   );
-  //
-  //   expect(screen.getByLabelText(/Operation Name+/i)).toHaveValue();
-  // });
+  it("renders existing form data for existing operations", async () => {
+    fetchMock.mockResponseOnce(
+      JSON.stringify({
+        id: "9a8aae6a-d711-42d4-aa7a-c8d37ff814c4",
+        name: "Operation 3",
+        type: "Single Facility Operation",
+        opt_in: false,
+        regulated_products: [],
+        previous_year_attributable_emissions: null,
+        status: "Approved",
+        naics_code_id: 21,
+        first_name: "John",
+        last_name: "Doe",
+        email: "john.doe@example.com",
+        phone_number: "+16044011234",
+        position_title: "Senior Officer",
+        street_address: "123 Main St",
+        municipality: "Cityville",
+        province: "ON",
+        postal_code: "A1B 2C3",
+        statutory_declaration: null,
+        bc_obps_regulated_operation: "21-0001",
+        bcghg_id: "23219990003",
+      }),
+    );
+
+    fetchMock.mockResponseOnce(JSON.stringify([]));
+    render(
+      <SessionProvider>
+        {await Operation({ numRow: "9a8aae6a-d711-42d4-aa7a-c8d37ff814c4" })}
+      </SessionProvider>,
+    );
+
+    expect(screen.getByLabelText(/Operation Name+/i)).toHaveValue();
+  });
 });
