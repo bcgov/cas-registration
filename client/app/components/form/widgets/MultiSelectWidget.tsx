@@ -59,6 +59,7 @@ const MultiSelectWidget: React.FC<WidgetProps> = ({
   return (
     <Autocomplete
       id={id}
+      data-testid="autocomplete"
       disabled={disabled || readonly}
       disablePortal
       multiple

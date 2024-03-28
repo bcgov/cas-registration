@@ -98,9 +98,19 @@ const mockFormData = {
 
 const testOperationSchema = createOperationSchema(
   operationSchema,
-  [{ id: 1, naics_code: "12345", naics_description: "naics description" }],
-  [{ id: 1, name: "string" }],
-  [{ id: "test-id", label: "string" }],
+  [
+    {
+      id: 1,
+      naics_code: "211110",
+      naics_description: "Oil and gas extraction (except oil sands)",
+    },
+  ],
+  [
+    { id: 1, name: "BC-specific refinery complexity throughput" },
+    { id: 2, name: "Cement equivalent" },
+    { id: 3, name: "Chemicals: pure hydrogen peroxide" },
+  ],
+  [],
 );
 
 describe("Operations component", () => {
@@ -110,62 +120,40 @@ describe("Operations component", () => {
     fetchMock.enableMocks();
   });
 
-  it.skip("renders the empty OperationsForm when no formData is passed", async () => {
+  it("renders the empty OperationsForm when no formData is passed", async () => {
+    mocks.useRouter.mockReturnValue({
+      query: { operation: "create" },
+      replace: vi.fn(),
+    });
+    mocks.useParams.mockReturnValue({
+      formSection: "1",
+      operation: "create",
+    });
+
     render(
       <SessionProvider>
-        <OperationsForm schema={testOperationSchema} />
+        <OperationsForm schema={testOperationSchema} formData={{}} />
       </SessionProvider>,
     );
 
-    // Test for Legend elements
-    expect(
-      screen.getByText(/Step 1: Operation Information/i),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(
-        /Step 2: Operation Operator Information - If operation has multiple operators/i,
-      ),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(/Step 3: Operation Representative \(OR\) Information/i),
-    ).toBeInTheDocument();
-
-    /* Test for Input elements */
+    // Test for the Operation Information form heaer
+    expect(screen.getByTestId("field-template-label")).toBeVisible();
     // Operation Name
-    expect(screen.getByLabelText(/Operation Name+/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/Operation Name+/i)).toHaveValue("");
 
-    // Operation Type
-    expect(screen.getByLabelText(/Operation Type+/i)).toBeInTheDocument();
+    // // Operation Type
+    expect(screen.getByLabelText(/Operation Type+/i)).toHaveValue(""); // Select widget returns undefined when empty */
 
     // Primary NAICS Code
-    expect(screen.getByLabelText(/Primary NAICS Code+/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/Primary NAICS Code+/i)).toHaveValue("");
 
-    // GHG Emissions Report
-    expect(
-      screen.getByLabelText(
-        /Did you submit a GHG emissions report for reporting year 2022\?+/i,
-      ),
-    ).toBeInTheDocument();
-
-    // Opt-in Operation
-    expect(
-      screen.getByLabelText(/Is the operation an opt-in operation\?+/i),
-    ).toBeInTheDocument();
-
-    // Does the operation have multiple operators?
-    expect(
-      screen.getByLabelText(/Does the operation have multiple operators\?+/i),
-    ).toBeInTheDocument();
-
-    // Would you like to add an exemption ID point of contact?
-    expect(
-      screen.getByLabelText(
-        /Would you like to add an exemption ID point of contact\?+/i,
-      ),
-    ).toBeInTheDocument();
+    // Bcghg ID
+    expect(screen.getByLabelText(/BCGHG ID/i)).toHaveValue("");
 
     // Submit button
-    expect(screen.getByRole("button", { name: /Submit/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /Save and Continue/i }),
+    ).toBeInTheDocument();
   });
 
   it("loads an existing OperationsForm", async () => {
@@ -190,16 +178,21 @@ describe("Operations component", () => {
     );
 
     // // Operation Type
-    // expect(screen.getByLabelText(/Operation Type+/i)).toHaveValue("0");
-    //
+    expect(screen.getByLabelText(/Operation Type+/i)).toHaveValue(
+      "Single Facility Operation",
+    );
+
     // Primary NAICS Code
     expect(screen.getByLabelText(/Primary NAICS Code+/i)).toHaveValue(
-      "12345 - naics description",
+      "211110 - Oil and gas extraction (except oil sands)",
     );
 
     // Regulated product names
-    // expect(screen.getByLabelText(/Regulated Product/i)).toHaveValue("1");
-    //
+    // TODO: Find a better way to test the multi-select widget/mui autocomplete
+    // Just verifying that the option in the form data is visible
+    expect(
+      screen.getByText("BC-specific refinery complexity throughput"),
+    ).toBeVisible();
     // Bcghg ID
     expect(screen.getByLabelText(/BCGHG ID/i)).toHaveValue("23219990001");
 
@@ -240,7 +233,7 @@ describe("Operations component", () => {
       );
     });
 
-    // TODO: Find alternate way to wait for the success message to appea
+    // TODO: Find alternate way to wait for the success message to appear
     await act(async () => {
       setTimeout(() => {}, 1000);
     });
