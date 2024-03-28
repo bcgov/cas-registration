@@ -1,5 +1,4 @@
-from service.user_operator.list_user_operators_service import ListUserOperatorsService
-
+from service.user_operator_service import UserOperatorService
 from registration.decorators import authorize, handle_http_errors
 from registration.schema import UserOperatorPaginatedOut, Message
 from registration.api.api_base import router
@@ -18,4 +17,4 @@ from registration.api.custom_codes_4xx import custom_codes_4xx
 @authorize(AppRole.get_authorized_irc_roles())
 @handle_http_errors()
 def list_user_operators(request, page: int = 1, sort_field: str = "created_at", sort_order: str = "desc"):
-    return 200, ListUserOperatorsService.list_user_operators(request, page, sort_field, sort_order)
+    return 200, UserOperatorService.list_user_operators(request, page, sort_field, sort_order)

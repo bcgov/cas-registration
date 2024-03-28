@@ -1,4 +1,4 @@
-from service.user_service import UserDataAccessService
+from service.data_access_service.user_service import UserDataAccessService
 
 from registration.decorators import authorize, handle_http_errors
 from registration.schema import (

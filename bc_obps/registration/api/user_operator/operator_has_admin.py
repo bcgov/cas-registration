@@ -1,6 +1,6 @@
 from uuid import UUID
-from service.user_operator_service import UserOperatorDataAccessService
-from service.user_service import UserDataAccessService
+from service.data_access_service.user_operator_service import UserOperatorDataAccessService
+from service.data_access_service.user_service import UserDataAccessService
 
 from registration.decorators import authorize, handle_http_errors
 from registration.schema import (
@@ -25,7 +25,7 @@ from registration.api.utils.current_user_utils import get_current_user_guid
 @handle_http_errors()
 def get_user_operator_admin_exists(request, operator_id: UUID):
     # this is maybe going to be a length check instead
-    if UserOperatorDataAccessService.get_approved_admins(operator_id):
+    if UserOperatorDataAccessService.get_approved_admin_users(operator_id):
         # brianna what is this actually going to return
         return 200, True
     else:

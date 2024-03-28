@@ -1,4 +1,5 @@
-from service.user_operator.get_user_operator_list_from_user_service import GetUserOperatorListFromUserService
+from service.data_access_service.user_operator_service import UserOperatorDataAccessService
+from service.user_operator_service import UserOperatorService
 
 from registration.decorators import authorize, handle_http_errors
 from registration.schema import ExternalDashboardUsersTileData, Message
@@ -14,5 +15,7 @@ from registration.api.custom_codes_4xx import custom_codes_4xx
 )
 @authorize(["industry_user"], ["admin"])
 @handle_http_errors()
+# Used to show industry_user admins the list of user_operators to approve/deny
 def get_user_operator_list_from_user(request):
-    return 200, GetUserOperatorListFromUserService.get_user_operator_list_from_user(request)
+    user = request.current_user
+    return 200, UserOperatorDataAccessService.get_an_operators_user_operators_by_user_guid(user.business_guid)

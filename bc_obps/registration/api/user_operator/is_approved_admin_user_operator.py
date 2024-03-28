@@ -1,4 +1,4 @@
-from service.user_service import UserDataAccessService
+from service.data_access_service.user_service import UserDataAccessService
 
 from registration.decorators import authorize, handle_http_errors
 from registration.schema import (
@@ -21,8 +21,5 @@ from registration.api.utils.current_user_utils import get_current_user_guid
 )
 @authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
 @handle_http_errors()
-def is_approved_admin_user_operator(request):
-
-    # UserDataAccessService.get_user_guid(request)--this is a uitlity api funciton and should be api helper, not in any service layer
-
-    return 200, UserDataAccessService.is_user_an_approved_admin_user_operator(get_current_user_guid(request))
+def is_approved_admin_user_operator(request, user_guid):
+    return 200, UserDataAccessService.is_user_an_approved_admin_user_operator(user_guid)

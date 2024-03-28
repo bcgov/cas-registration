@@ -13,7 +13,7 @@ class UserDataAccessService:
         user_operator = UserDataAccessService.get_users_user_operator(user_guid)
         return user_operator.operator
 
-    # brianna I think django will throw if it doesn't find anything and that **might already get caught in the try/catch decorator?? or maybe a more general ObjectDoesNotExist decorator
+    # brianna I think django will throw if it doesn't find anything and that **might already get caught in the try/catch decorator??
     def get_users_user_operator(user_guid: str):
         user_operator = (
             UserOperator.objects.only("id", "status", "operator__id", "operator__is_new", "operator__status")
@@ -27,9 +27,8 @@ class UserDataAccessService:
 
     def get_users_user_operator_id(user_guid: str):
         user_operator = UserOperator.objects.get(user_id=user_guid)
-        return user_operator.id
+        return {"user_operator_id": user_operator.id}
 
-    # brianna next two return yes/no, better to return something else??
     def is_user_an_approved_admin_user_operator(user_guid: str):
         approved_user_operator: bool = UserOperator.objects.filter(
             user_id=user_guid, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.APPROVED
