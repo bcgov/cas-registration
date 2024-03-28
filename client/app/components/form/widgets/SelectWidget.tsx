@@ -52,11 +52,14 @@ const SelectWidget: React.FC<WidgetProps> = (props) => {
       <Select
         labelId={id}
         value={value || ""}
-        id={id}
         disabled={disabled || readonly}
         name={id}
         onChange={handleChange}
         sx={styles}
+        inputProps={{
+          id: id,
+          "aria-label": id,
+        }}
       >
         {placeholder && (
           <MenuItem disabled value="">
