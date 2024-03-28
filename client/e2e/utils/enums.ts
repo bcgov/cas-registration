@@ -69,7 +69,7 @@ export enum E2EValue {
   FIXTURE_LEGAL_NAME = "Operator 1 Legal Name",
   PROFILE_UPDATE_USERNAME = "e2e first name* e2e last name*",
   PASSWORD = "_PASSWORD",
-  STORAGE = "STORAGE_",
+  STORAGE = "_STORAGE",
   ROLE = "E2E_",
 }
 

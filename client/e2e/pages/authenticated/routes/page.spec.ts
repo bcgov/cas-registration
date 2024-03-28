@@ -38,7 +38,7 @@ test.beforeAll(async () => {
     await deleteUserRecord(process.env.E2E_NEW_USER_GUID as string);
     // 👤 delete user operator
     await deleteUserOperatorRecord(
-      process.env.E2E_INDUSTRY_USER_GUID as string,
+      process.env.E2E_INDUSTRY_USER_GUID as string
     );
   } catch (error) {
     // eslint-disable-next-line no-console
@@ -64,7 +64,7 @@ test.describe("Test Route Access", () => {
   for (let [role, value] of Object.entries(UserRole)) {
     role = E2EValue.ROLE + role;
     const storageState = JSON.parse(
-      process.env[role + E2EValue.STORAGE] as string,
+      process.env[role + E2EValue.STORAGE] as string
     );
     test.describe(`Test Role ${value}`, () => {
       // 👤 Run test as this role
@@ -144,6 +144,7 @@ test.describe("Test Route Access", () => {
                       // 🔍 Assert that the current URL is correct
                       await pomPage.urlIsCorrect();
                       // 🔍 Assert that the not-found selector is not available
+                      // 📌 Assert within this test spec so to not have to repeat across each POM
                       const msgNotFound = page.locator(DataTestID.NOTFOUND);
                       await expect(msgNotFound).toBeHidden();
                       break;
@@ -162,6 +163,7 @@ test.describe("Test Route Access", () => {
                     dashboardPage.urlIsCorrect();
                   } else {
                     // 🔍 Assert that the role has NO access, not-found message is available
+                    // 📌 Assert within this test spec so to not have to repeat across each POM
                     const msgNotFound = page.locator(DataTestID.NOTFOUND);
                     await expect(msgNotFound).toBeVisible();
                   }
