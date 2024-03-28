@@ -2,21 +2,45 @@ import Operations from "@/app/components/routes/operations/Operations";
 import "@testing-library/jest-dom";
 import { render, screen } from "@testing-library/react";
 import createFetchMock from "vitest-fetch-mock";
-import { SessionProvider } from "next-auth/react";
 
 const fetchMock = createFetchMock(vi);
 fetchMock.enableMocks();
 
 // Needed to mock all this stuff for server components to work
 // Will need to look into making them reusable
-vi.mock("next/navigation", () => ({
-  useRouter: vi.fn(),
-  useParams: vi.fn(),
+vi.mock("next-auth/react", async () => {
+  return {
+    SessionProvider: ({ children }: { children: React.ReactNode }) => (
+      <>{children}</>
+    ),
+    useSession: vi.fn(() => ({
+      data: {
+        user: {
+          app_role: ["cas_admin"],
+        },
+      },
+    })),
+  };
+});
+
+vi.mock("next-auth", () => ({
+  default: vi.fn(),
+  getServerSession: vi.fn(
+    () =>
+      new Promise((resolve) => {
+        resolve({
+          user: {
+            app_role: "cas_admin",
+          },
+        });
+      }),
+  ),
 }));
 
-vi.mock("next/headers", () => ({
-  cookies: vi.fn(),
-}));
+// TODO: Correctly mock cookies to remove stderr warnings
+// vi.mock("next/headers", () => ({
+//   cookies: vi.fn(),
+// }));
 
 vi.mock("next/cache", () => ({
   revalidateTag: vi.fn(() => Promise.resolve()),
@@ -24,56 +48,39 @@ vi.mock("next/cache", () => ({
 }));
 
 // TODO: Remove skip and fix this test
-describe.skip("Operations component", () => {
-  beforeEach(() => {
+describe("Operations component", () => {
+  beforeEach(async () => {
     vi.restoreAllMocks();
     fetchMock.resetMocks();
     fetchMock.enableMocks(); // Enable fetch mocking
   });
   it("renders the Operations grid", async () => {
     fetchMock.mockResponse(
-      JSON.stringify([
-        {
-          id: 1,
-          name: "Operation 1",
-          type: "Single Facility Operation",
-          naics_code: 1,
-          previous_year_attributable_emissions: "100",
-          swrs_facility_id: "1001",
-          bcghg_id: "123",
-          opt_in: false,
-          operator: 1,
-          status: "Not Started",
-          reporting_activities: [],
-          regulated_products: [],
-          documents: [],
-          contacts: [],
-          operator_id: 1,
-          naics_code_id: 1,
-        },
-        {
-          id: 2,
-          name: "Operation 2",
-          type: "Type B",
-          naics_code: 2,
-          permit_issuing_agency: "authority",
-          permit_number: "256",
-          previous_year_attributable_emissions: null,
-          swrs_facility_id: null,
-          bcghg_id: null,
-          opt_in: false,
-          operator: 2,
-          status: "Not Started",
-          reporting_activities: [],
-          regulated_products: [],
-          documents: [],
-          contacts: [],
-          operator_id: 2,
-          naics_code_id: 2,
-        },
-      ]),
+      JSON.stringify({
+        data: [
+          {
+            id: "1",
+            bc_obps_regulated_operation: "1",
+            operator: "1",
+            submission_date: "2021-10-01T00:00:00",
+            status: "Not Started",
+            name: "Operation 1",
+            bcghg_id: "1",
+          },
+          {
+            id: "2",
+            bc_obps_regulated_operation: "2",
+            operator: "2",
+            submission_date: "2021-10-01T00:00:00",
+            status: "Not Started",
+            name: "Operation 2",
+            bcghg_id: "2",
+          },
+        ],
+        row_count: 2,
+      }),
     );
-    render(<SessionProvider>{await Operations()}</SessionProvider>);
+    render(await Operations());
 
     // Check if the grid of mock data is present
     expect(screen.getByText(/Operation 1/i)).toBeVisible();
@@ -81,7 +88,7 @@ describe.skip("Operations component", () => {
     // temporarily commented out because render only renders half the grid
     expect(screen.getAllByText(/not Started/i)).toHaveLength(2);
     expect(
-      screen.getAllByRole("button", { name: /start registration/i }),
+      screen.getAllByRole("link", { name: /start registration/i }),
     ).toHaveLength(2);
   });
 });
