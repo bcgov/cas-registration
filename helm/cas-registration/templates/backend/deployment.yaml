@@ -31,6 +31,27 @@ spec:
                 secretKeyRef:
                   key: django-secret-key
                   name: {{ include "cas-registration.fullname" . }}-backend
+            - name: CHES_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  key: ches-client-secret
+                  name: {{ include "cas-registration.fullname" . }}-backend
+            - name: CHES_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  key: ches-client-id
+                  name: {{ include "cas-registration.fullname" . }}-backend
+            - name: CHES_TOKEN_ENDPOINT
+              valueFrom:
+                secretKeyRef:
+                  key: ches-token-endpoint
+                  name: {{ include "cas-registration.fullname" . }}-backend
+            - name: CHES_API_URL
+              valueFrom:
+                secretKeyRef:
+                  key: ches-api-url
+                  name: {{ include "cas-registration.fullname" . }}-backend
+>>>>>>> 4be37c3f (Chore: added CHES env vars to more yamls)
             - name: DB_USER
               valueFrom:
                 secretKeyRef:
