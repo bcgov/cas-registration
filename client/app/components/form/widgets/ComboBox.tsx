@@ -16,7 +16,6 @@ const ComboBox: React.FC<WidgetProps> = ({
   uiSchema,
 }) => {
   const handleChange = (e: React.ChangeEvent<{}>, option: any) => {
-    console.log(value);
     onChange(option?.const || option?.value);
   };
 
