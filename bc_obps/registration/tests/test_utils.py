@@ -1,3 +1,4 @@
+from service.application_access_service import ApplicationAccessService
 from registration.schema.parent_operator import ParentOperatorIn
 from registration.schema.user_operator import UserOperatorOperatorIn
 import pytest
@@ -5,12 +6,10 @@ import tempfile
 from model_bakery import baker
 from registration.models import Address, BusinessStructure, Operator, ParentOperator, User, UserOperator, AppRole
 from registration.utils import (
-    check_users_admin_request_eligibility,
     file_to_data_url,
     data_url_to_file,
     update_model_instance,
     generate_useful_error,
-    check_access_request_matches_business_guid,
     raise_401_if_user_not_authorized,
     get_an_operators_approved_users,
 )
@@ -135,10 +134,7 @@ class TestCheckUserAdminRequestEligibility:
     def test_user_eligible_for_admin_request():
         user = baker.make(User)
         operator = operator_baker()
-        status_code, message = check_users_admin_request_eligibility(user, operator)
-
-        assert status_code == 200
-        assert message is None
+        assert ApplicationAccessService.is_user_eligible_to_request_admin_access(user.user_guid, operator.id) is True
 
     @staticmethod
     def test_user_already_admin_for_operator():
@@ -152,27 +148,24 @@ class TestCheckUserAdminRequestEligibility:
             status=UserOperator.Statuses.APPROVED,
         )
 
-        status_code, message = check_users_admin_request_eligibility(user, operator)
-
-        assert status_code == 400
-        assert message == {"message": "You are already an admin for this Operator!"}
+        with pytest.raises(Exception, match="You are already an admin for this Operator!"):
+            ApplicationAccessService.is_user_eligible_to_request_admin_access(user.user_guid, operator.id)
 
     @staticmethod
     def test_operator_already_has_admin():
         user = baker.make(User)
+        admin_user = baker.make(User)
         operator = operator_baker()
         baker.make(
             UserOperator,
-            user=user,
+            user=admin_user,
             operator=operator,
             role=UserOperator.Roles.ADMIN,
             status=UserOperator.Statuses.APPROVED,
         )
 
-        status_code, message = check_users_admin_request_eligibility(None, operator)
-
-        assert status_code == 400
-        assert message == {"message": "This Operator already has an admin user!"}
+        with pytest.raises(Exception, match="This Operator already has an admin user!"):
+            ApplicationAccessService.is_user_eligible_to_request_admin_access(user.user_guid, operator.id)
 
     @staticmethod
     def test_user_already_has_pending_request():
@@ -186,10 +179,8 @@ class TestCheckUserAdminRequestEligibility:
             status=UserOperator.Statuses.PENDING,
         )
 
-        status_code, message = check_users_admin_request_eligibility(user, operator)
-
-        assert status_code == 400
-        assert message == {"message": "You already have a pending request for this Operator!"}
+        with pytest.raises(Exception, match="You already have a pending request for this Operator!"):
+            ApplicationAccessService.is_user_eligible_to_request_admin_access(user.user_guid, operator.id)
 
     @staticmethod
     def test_user_business_guid_matches_admin():
@@ -208,10 +199,13 @@ class TestCheckUserAdminRequestEligibility:
             status=UserOperator.Statuses.APPROVED,
         )
 
-        status_code, message = check_access_request_matches_business_guid(user.user_guid, operator)
-
-        assert status_code == 200
-        assert message is None
+        assert (
+            ApplicationAccessService.does_user_belong_to_operator(
+                operator.id,
+                user.user_guid,
+            )
+            is True
+        )
 
     @staticmethod
     def test_user_business_guid_not_match_admin():
@@ -226,11 +220,8 @@ class TestCheckUserAdminRequestEligibility:
             role=UserOperator.Roles.ADMIN,
             status=UserOperator.Statuses.APPROVED,
         )
-
-        status_code, message = check_access_request_matches_business_guid(user.user_guid, operator)
-
-        assert status_code == 403
-        assert message == {"message": "Your business bceid does not match that of the approved admin."}
+        with pytest.raises(Exception, match="Your business bceid does not match that of the approved admin."):
+            ApplicationAccessService.does_user_belong_to_operator(operator.id, user.user_guid)
 
 
 class TestCheckIfRoleAuthorized(TestCase):
