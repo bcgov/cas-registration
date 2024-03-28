@@ -19,7 +19,6 @@ test.describe("Test Workflow new user", () => {
     const dashboardPage = new DashboardPOM(page);
     await dashboardPage.route();
     // 🔍 Assert that the current URL ends with "/profile"
-    const profilePage = new ProfilePOM(page);
-    await profilePage.urlIsCorrect();
+    await new ProfilePOM(page).urlIsCorrect();
   });
 });

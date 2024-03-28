@@ -23,9 +23,13 @@ export class UsersPOM {
     this.page = page;
   }
 
+  // ###  Actions ###
+
   async route() {
     await this.page.goto(this.url);
   }
+
+  // ###  Assertions ###
 
   async urlIsCorrect() {
     const path = this.url;

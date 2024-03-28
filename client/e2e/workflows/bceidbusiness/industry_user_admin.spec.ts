@@ -8,7 +8,11 @@ import { OperationsPOM } from "@/e2e/poms/operations";
 import { OperatorPOM } from "@/e2e/poms/operator";
 import { UsersPOM } from "@/e2e/poms/users";
 // 🛠️ Helpers
-import { addPdf, tableColumnNamesAreCorrect } from "@/e2e/utils/helpers";
+import {
+  addPdf,
+  setupTestEnvironment,
+  tableColumnNamesAreCorrect,
+} from "@/e2e/utils/helpers";
 import * as dotenv from "dotenv";
 dotenv.config({ path: "./e2e/.env.local" });
 // ☰ Enums
@@ -16,16 +20,10 @@ import { UserOperatorStatus, UserRole } from "@/e2e/utils/enums";
 import happoPlaywright from "happo-playwright";
 
 test.beforeEach(async ({ context }) => {
-  await happoPlaywright.init(context);
-  let response: APIResponse = await context.request.get(
-    "http://localhost:8000/api/registration/test-setup",
-  );
-  // Wait for the response and check for success status text and code (e.g., 200)
-  expect(await response.text()).toBe("Test setup complete.");
-  expect(response.status()).toBe(200);
-
   // initialize Happo
   await happoPlaywright.init(context);
+
+  await setupTestEnvironment(UserRole.CAS_ADMIN);
 });
 
 test.afterEach(async () => {
@@ -66,6 +64,7 @@ test.describe("Test Workflow industry_user_admin", () => {
 
     // industry_user_admin is able to edit the operator form
     await operatorPage.clickEditInformation();
+    await operatorPage.operatorFormIsEnabled();
     await operatorPage.editOperatorInformation();
 
     await happoPlaywright.screenshot(operatorPage.page, pageContent, {
@@ -92,17 +91,8 @@ test.describe("Test Workflow industry_user_admin", () => {
     // Click Operations tile and view the Operations form
     await dashboardPage.clickOperationsTileIndustry();
     await operationsPage.urlIsCorrect();
-    await operationsPage.operationsTableIsVisible();
-
-    // industry_admin is able to view operations table with the following columns
-    await tableColumnNamesAreCorrect(operationsPage.page, [
-      "BC GHG ID",
-      "Operation",
-      "Submission Date",
-      "BORO ID",
-      "Application Status",
-      "Action",
-    ]);
+    await operationsPage.tableIsVisible();
+    await operationsPage.tableHasExpectedColumns(UserRole.INDUSTRY_USER_ADMIN);
 
     const pageContent = page.locator("html");
     await happoPlaywright.screenshot(operationPage.page, pageContent, {
@@ -161,17 +151,9 @@ test.describe("Test Workflow industry_user_admin", () => {
     // Navigate to operations table page
     await operationsPage.route();
     await operationsPage.urlIsCorrect();
-    await operationsPage.operationsTableIsVisible();
-
-    // industry_admin is able to view operations table with the following columns
-    await tableColumnNamesAreCorrect(operationsPage.page, [
-      "BC GHG ID",
-      "Operation",
-      "Submission Date",
-      "BORO ID",
-      "Application Status",
-      "Action",
-    ]);
+    // 🧪 `Operations` view, table and data reflect role `industry_user_admin`
+    await operationsPage.tableIsVisible();
+    await operationsPage.tableHasExpectedColumns(UserRole.INDUSTRY_USER_ADMIN);
 
     // industry_user_admin is able to click the View Details button
     // Click the second view details button for an operation with pending status
@@ -196,7 +178,7 @@ test.describe("Test Workflow industry_user_admin", () => {
     await operationPage.clickCancelButton();
 
     // Verify that we have returned to the operations table
-    await operationsPage.operationsTableIsVisible();
+    await operationsPage.tableIsVisible();
   });
 
   test("User Access Management Tile workflow - Approve and Decline users", async ({

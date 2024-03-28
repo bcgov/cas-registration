@@ -5,7 +5,14 @@
  */
 import { expect, Locator, Page } from "@playwright/test";
 // ☰ Enums
-import { AppRoute } from "@/e2e/utils/enums";
+import {
+  AppRoute,
+  ButtonText,
+  DataTestID,
+  E2EValue,
+  FormSection,
+  FormTextOperation,
+} from "@/e2e/utils/enums";
 // ℹ️ Environment variables
 import * as dotenv from "dotenv";
 dotenv.config({ path: "./e2e/.env.local" });
@@ -24,94 +31,76 @@ export class OperationPOM {
 
   readonly buttonSubmit: Locator;
 
+  readonly buttonToOperationsList: Locator;
+
+  readonly fieldOperationName: Locator;
+
+  readonly fieldPOCYes;
+
+  readonly fieldPOCFirstName;
+
+  readonly fieldPOCLastName;
+
+  readonly fieldPOCPosition;
+
+  readonly fieldPOCEmail;
+
+  readonly fieldPOCPhone;
+
+  readonly fieldSFO: Locator;
+
   readonly operationPage1Title: Locator;
 
   readonly operationPage2Title: Locator;
 
   readonly operationPage3Title: Locator;
 
-  readonly buttonToOperationsList: Locator;
+  readonly table: Locator;
 
   constructor(page: Page) {
     this.page = page;
-    this.buttonSaveAndContinue = page.getByRole("button", {
-      name: /save and continue/i,
-    });
-    this.operationPage1Title = page
-      .getByTestId("field-template-label")
-      .getByText("Operation Information");
-    this.operationPage2Title = page
-      .getByTestId("field-template-label")
-      .getByText("Point of Contact");
-    this.operationPage3Title = page
-      .getByTestId("field-template-label")
-      .getByText("Statutory Declaration");
     this.buttonCancel = page.getByRole("button", {
-      name: /cancel/i,
+      name: ButtonText.CANCEL,
     });
     this.buttonNext = page.getByRole("button", {
-      name: /next/i,
+      name: ButtonText.NEXT,
+    });
+    this.buttonSaveAndContinue = page.getByRole("button", {
+      name: ButtonText.SAVE_CONTINUE,
     });
     this.buttonSubmit = page.getByRole("button", {
-      name: /submit/i,
+      name: ButtonText.SUBMIT,
     });
     this.buttonToOperationsList = page.getByRole("button", {
-      name: /return to operations list/i,
+      name: ButtonText.RETURN_OPERATIONS,
     });
+    this.fieldOperationName = page.getByPlaceholder(FormTextOperation.NAME);
+    this.fieldSFO = page.getByPlaceholder(FormTextOperation.SFO);
+    this.fieldSFO = page.fieldPOCYes.getByLabel;
+
+    this.fieldSFO = page.fieldPOCFirstName.getByLabel;
+
+    this.fieldSFO = page.fieldPOCLastName.getByLabel;
+
+    this.fieldSFO = page.ieldPOCPosition.getByLabel;
+
+    this.fieldSFO = page.fieldPOCEmail.getByLabel;
+
+    this.fieldSFO = page.fieldPOCPhone.getByLabel;
+    this.operationPage1Title = page
+      .getByTestId("field-template-label")
+      .getByText(FormSection.INFO_OPERATION);
+    this.operationPage2Title = page
+      .getByTestId("field-template-label")
+      .getByText(FormSection.INFO_POINT_CONTACT);
+    this.operationPage3Title = page
+      .getByTestId("field-template-label")
+      .getByText(FormSection.INFO_STATUTORY);
+
+    this.table = page.locator(DataTestID.GRID);
   }
 
-  async route() {
-    await this.page.goto(this.url);
-  }
-
-  async urlIsCorrect() {
-    const path = this.url;
-    const currentUrl = this.page.url();
-    expect(currentUrl.toLowerCase()).toMatch(path.toLowerCase());
-  }
-
-  async operationFormIsVisible() {
-    const form = this.page.locator("form");
-    await form.waitFor();
-    await expect(this.operationPage1Title).toBeVisible();
-
-    // Check for the presence of the multistep form headers
-    expect(
-      this.page
-        .getByTestId("multistep-header-title")
-        .getByText("Operation Information"),
-    ).toBeVisible();
-    expect(
-      this.page
-        .getByTestId("multistep-header-title")
-        .getByText("Point of Contact"),
-    ).toBeVisible();
-    expect(
-      this.page
-        .getByTestId("multistep-header-title")
-        .getByText("Statutory Declaration"),
-    ).toBeVisible();
-  }
-
-  async operationFormStep2IsVisible() {
-    await expect(this.operationPage2Title).toBeVisible();
-  }
-
-  async operationFormStep3IsVisible() {
-    await expect(this.operationPage3Title).toBeVisible();
-  }
-
-  async operationSuccessfulSubmissionIsVisible() {
-    this.page.getByText(
-      "Your application for the B.C. OBPS Regulated Operation ID for Test Operation Name has been received.",
-    );
-    this.page.getByText(
-      "Once approved, you will receive a confirmation email.",
-    );
-    this.page.getByText(
-      "You can then log back in and view the B.C. OBPS Regulated Operation ID for Test Operation Name.",
-    );
-  }
+  // ###  Actions ###
 
   async clickCancelButton() {
     await this.buttonCancel.click();
@@ -134,28 +123,81 @@ export class OperationPOM {
 
   async fillOperationFormPage1() {
     // Fill out the operation information form
-    await this.page.getByLabel("Operation Name*").fill("Test Operation Name");
+    await this.fieldOperationName.fill(E2EValue.INPUT_OPERATION_NAME);
 
     await this.page.locator("#root_type").click();
-    await this.page
-      .getByRole("option", { name: "Single Facility Operation" })
-      .click();
+    await this.fieldSFO.click();
 
     await this.page.getByTestId("root_naics_code_id").click();
     await this.page
       .getByRole("option", {
-        name: "211110 - Oil and gas extraction (except oil sands)",
+        name: E2EValue.FIXTURE_NAICS,
       })
       .click();
   }
 
   async fillOperationFormPage2() {
     // Fill out the point of contact form
-    await this.page.getByLabel("Yes").click();
-    await this.page.getByLabel("First Name*").fill("Test First Name");
-    await this.page.getByLabel("Last Name*").fill("Test Last Name");
-    await this.page.getByLabel("Position Title*").fill("Test Position Title");
-    await this.page.getByLabel("Email Address*").fill("test@test.com");
-    await this.page.getByLabel("Phone Number*").fill("403 777 7777");
+    await this.fieldPOCYes.click();
+    await this.fieldPOCFirstName.fill(E2EValue.INPUT_FIRST_NAME);
+    await this.fieldPOCLastName.fill(E2EValue.INPUT_LAST_NAME);
+    await this.fieldPOCPosition.fill(E2EValue.INPUT_POSITION);
+    await this.fieldPOCEmail.fill(E2EValue.INPUT_EMAIL);
+    await this.fieldPOCPhone.fill(E2EValue.INPUT_PHONE);
+  }
+
+  async route() {
+    await this.page.goto(this.url);
+  }
+
+  // ###  Assertions ###
+
+  async operationFormIsVisible() {
+    const form = this.page.locator("form");
+    await form.waitFor();
+    await expect(this.operationPage1Title).toBeVisible();
+
+    // Check for the presence of the multistep form headers
+    expect(
+      this.page
+        .getByTestId("multistep-header-title")
+        .getByText("Operation Information")
+    ).toBeVisible();
+    expect(
+      this.page
+        .getByTestId("multistep-header-title")
+        .getByText("Point of Contact")
+    ).toBeVisible();
+    expect(
+      this.page
+        .getByTestId("multistep-header-title")
+        .getByText("Statutory Declaration")
+    ).toBeVisible();
+  }
+
+  async operationFormStep2IsVisible() {
+    await expect(this.operationPage2Title).toBeVisible();
+  }
+
+  async operationFormStep3IsVisible() {
+    await expect(this.operationPage3Title).toBeVisible();
+  }
+
+  async operationSuccessfulSubmissionIsVisible() {
+    this.page.getByText(
+      "Your application for the B.C. OBPS Regulated Operation ID for Test Operation Name has been received."
+    );
+    this.page.getByText(
+      "Once approved, you will receive a confirmation email."
+    );
+    this.page.getByText(
+      "You can then log back in and view the B.C. OBPS Regulated Operation ID for Test Operation Name."
+    );
+  }
+
+  async urlIsCorrect() {
+    const path = this.url;
+    const currentUrl = this.page.url();
+    expect(currentUrl.toLowerCase()).toMatch(path.toLowerCase());
   }
 }

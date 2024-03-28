@@ -1,12 +1,16 @@
 // 🧪 Suite to test `client/app/(onboarding)/home/page.tsx`
-
 import { test, expect } from "@playwright/test";
 // 🪄 Page Object Models
 import { DashboardPOM } from "@/e2e/poms/dashboard";
 import { HomePOM } from "@/e2e/poms/home";
 import { ProfilePOM } from "@/e2e/poms/profile";
 // ☰ Enums
-import { AppRole, UserRole, UserOperatorStatus } from "@/e2e/utils/enums";
+import {
+  AppRole,
+  UserRole,
+  UserOperatorStatus,
+  E2EValue,
+} from "@/e2e/utils/enums";
 // 🥞 DB CRUD
 import {
   deleteUserRecord,
@@ -96,13 +100,13 @@ test.describe("Test Page - Home", () => {
         // 👤 Set user and password based on the user role
         let user = process.env.E2E_CAS_USER as string;
         let password = process.env.E2E_CAS_USER_PASSWORD as string;
-        role = "E2E_" + role;
+        role = E2EValue.PREFIX + role;
         switch (value) {
           case UserRole.INDUSTRY_USER_ADMIN:
           case UserRole.INDUSTRY_USER:
           case UserRole.NEW_USER:
             user = process.env[`${role}`] || "";
-            password = process.env[`${role}_PASSWORD`] || "";
+            password = process.env[`${role}${E2EValue.PASSWORD}`] || "";
             break;
           case UserRole.CAS_ADMIN:
           case UserRole.CAS_ANALYST:
@@ -129,13 +133,11 @@ test.describe("Test Page - Home", () => {
           case UserRole.NEW_USER:
           case UserRole.CAS_PENDING:
             // 🔍 Assert that the current URL ends with "/profile"
-            const profilePage = new ProfilePOM(page);
-            await profilePage.urlIsCorrect();
+            await new ProfilePOM(page).urlIsCorrect();
             break;
           default:
             // 🔍 Assert that the current URL ends with "/dashboard"
-            const dashboardPage = new DashboardPOM(page);
-            await dashboardPage.urlIsCorrect();
+            await new DashboardPOM(page).urlIsCorrect();
             break;
         }
       });
