@@ -72,6 +72,9 @@ test.describe("Test Route Access", () => {
       // 🛸 Navigate to all routes
       for (let route of Object.values(AppRoute)) {
         test(`Test Route ${route}`, async ({ page }) => {
+          // 🚩 Create a common pom pages used below
+          const dashboardPage = new DashboardPOM(page);
+          const profilePage = new ProfilePOM(page);
           // 🚨 Build routes allowed list for this user role
           const accessLists = buildAccessLists(value);
           // 🧩 Create instance of this route's POM
@@ -113,18 +116,15 @@ test.describe("Test Route Access", () => {
                 // 👤 Authenticated cas_pending have no role; so, redirected to dashboard for all routes except `profile`
                 if (route === AppRoute.PROFILE) {
                   // 🔍 Assert that the current URL ends with "/profile"
-                  const profilePage = new ProfilePOM(page);
                   profilePage.urlIsCorrect();
                 } else {
                   // 🔍 Assert that the current URL ends with "/dashboard"
-                  const dashboardPage = new DashboardPOM(page);
                   dashboardPage.urlIsCorrect();
                 }
                 break;
               case UserRole.NEW_USER:
                 // 👤 Authenticated new user is redirected to  `profile` for all routes
                 // 🔍 Assert that the current URL ends with "/profile"
-                const profilePage = new ProfilePOM(page);
                 profilePage.urlIsCorrect();
                 break;
               default:
@@ -136,7 +136,6 @@ test.describe("Test Route Access", () => {
                     case AppRoute.HOME:
                       // 👤 Authenticated users never get to home, redirected to dashboard
                       // 🔍 Assert that the current URL ends with "/dashboard"
-                      const dashboardPage = new DashboardPOM(page);
                       dashboardPage.urlIsCorrect();
                       break;
                     default:
@@ -157,9 +156,7 @@ test.describe("Test Route Access", () => {
                     (route === AppRoute.OPERATION ||
                       route === AppRoute.OPERATIONS)
                   ) {
-                    // 👤 Authenticated INDUSTRY_USER with 1 action pending get redirected to dashboard
-                    // 🔍 Assert that the current URL ends with "/dashboard"
-                    const dashboardPage = new DashboardPOM(page);
+                    // 👤 Authenticated INDUSTRY_USER with 1 action pending get redirected to dashboard                    // 🔍 Assert that the current URL ends with "/dashboard"
                     dashboardPage.urlIsCorrect();
                   } else {
                     // 🔍 Assert that the role has NO access, not-found message is available

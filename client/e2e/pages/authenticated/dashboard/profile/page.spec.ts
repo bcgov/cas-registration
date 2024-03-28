@@ -36,7 +36,7 @@ test.describe("Test Profile Page", () => {
   for (let [role, value] of Object.entries(UserRole)) {
     role = E2EValue.ROLE + role;
     const storageState = JSON.parse(
-      process.env[role + E2EValue.STORAGE] as string,
+      process.env[role + E2EValue.STORAGE] as string
     );
     test.describe(`Test Role ${value}`, () => {
       // 👤 run test as this role
@@ -53,13 +53,14 @@ test.describe("Test Profile Page", () => {
         await profilePage.updateSuccess();
         //🔍 Assert profile name reflects the updated user profile full name
         await profilePage.userFullNameIsCorrect(
-          E2EValue.PROFILE_UPDATE_USERNAME,
+          E2EValue.PROFILE_UPDATE_USERNAME
         );
 
         switch (value) {
           case UserRole.NEW_USER:
-            // 🔍 Assert that the current URL
+            // Init a dashboard POM
             const dashboardPage = new DashboardPOM(page);
+            // 🔍 Assert the current URL for dashboard pom
             await dashboardPage.urlIsCorrect();
             break;
         }

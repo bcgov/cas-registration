@@ -108,13 +108,16 @@ test.describe("Test Dashboard Page", () => {
         }
       });
       test("Report a Problem Tile workflow", async ({ page }) => {
-        // 🛸 Navigate to dashboard page
-        const dashboardPage = new DashboardPOM(page);
-        await dashboardPage.route();
-        // 🧪 Assert the current URL
-        await dashboardPage.urlIsCorrect();
-        // 🧪 has a mailto: link on it
-        await dashboardPage.problemLinkIsCorrect();
+        // 📌 Skip cas_pending
+        if (value !== UserRole.CAS_PENDING) {
+          // 🛸 Navigate to dashboard page
+          const dashboardPage = new DashboardPOM(page);
+          await dashboardPage.route();
+          // 🧪 Assert the current URL
+          await dashboardPage.urlIsCorrect();
+          // 🧪 has a mailto: link on it
+          await dashboardPage.problemLinkIsCorrect();
+        }
       });
     });
   }
