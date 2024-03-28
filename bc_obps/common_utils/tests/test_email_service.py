@@ -71,6 +71,23 @@ def test_health_check(email_service):
         assert dep.get('healthy') is not None
 
 
+@pytest.mark.skip(reason="only run this if you want to receive an actual email")
+def test_send_real_email(email_service):
+    real_recipient = 'andrea.williams@gov.bc.ca'
+    real_email_data = {
+        'bodyType': 'text',
+        'body': 'This is the body of a test email for BCIERS Email Service',
+        'from': 'ggircs@gov.bc.ca',
+        'subject': 'Automated Test of Email_Service',
+        'to': [real_recipient],
+    }
+    response = email_service.send_email(real_email_data)
+    assert len(response['messages']) == 1
+    assert response['messages'][0]['to'] == [real_recipient]
+    assert response['messages'][0]['msgId'] is not None
+    assert response['txId'] is not None
+
+
 def test_send_email(email_service, email_data):
     with patch.object(email_service, '_make_request') as mock_send_email_request:
         mock_send_email_request.return_value.json.return_value = {
