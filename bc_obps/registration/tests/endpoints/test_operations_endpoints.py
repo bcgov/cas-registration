@@ -105,16 +105,16 @@ class TestOperationsEndpoint(CommonTestSetup):
         )
 
         users_operation = operation_baker(user_operator.operator.id)
-
         response_1 = TestUtils.mock_get_with_auth_role(
             self, "industry_user", custom_reverse_lazy("get_operation", kwargs={"operation_id": users_operation.id})
         )
         assert response_1.status_code == 200
-        response_data = response_1.json()
-        assert response_data.get('id') == str(users_operation.id)  # string representation of UUID
-        assert response_data.get('name') == users_operation.name
+        response_1_data = response_1.json()
+        assert response_1_data.get('id') == str(users_operation.id)  # string representation of UUID
+        assert response_1_data.get('name') == users_operation.name
         # Make sure the response has the expected keys based on the role
-        response_keys_for_industry_users = {
+        response_keys = {
+            'operator',
             'id',
             'name',
             'type',
@@ -136,25 +136,27 @@ class TestOperationsEndpoint(CommonTestSetup):
             'statutory_declaration',
             'bc_obps_regulated_operation',
         }
-        assert response_data.keys() == response_keys_for_industry_users
+        assert sorted(response_1_data.keys()) == sorted(response_keys)
+        # Make sure the `operator` key has None value for industry users
+        assert response_1_data.get('operator') is None
 
         response_2 = TestUtils.mock_get_with_auth_role(
             self, "cas_admin", custom_reverse_lazy("get_operation", kwargs={"operation_id": users_operation.id})
         )
         assert response_2.status_code == 200
-        response_data = response_2.json()
-        assert response_data.get('id') == str(users_operation.id)  # string representation of UUID
-        assert response_data.get('name') == users_operation.name
-        # Make sure the response has the expected keys based on the role
-        response_keys_for_industry_users.update({'operator'})
-        assert response_data.keys() == response_keys_for_industry_users
+        response_2_data = response_2.json()
+        assert response_2_data.get('id') == str(users_operation.id)  # string representation of UUID
+        assert response_2_data.get('name') == users_operation.name
+        assert sorted(response_2_data.keys()) == sorted(response_keys)
+        # Make sure the `operator` key has a value for IRC users
+        assert response_2_data.get('operator') is not None
 
     def test_unauthorized_roles_cannot_create_new_operation(self):
         mock_operation = TestUtils.mock_OperationCreateIn()
         # IRC users can't post
         for role in ['cas_pending', 'cas_admin', 'cas_analyst']:
             response = TestUtils.mock_post_with_auth_role(
-                self, role, self.content_type, mock_operation.json(), custom_reverse_lazy("create_operation")
+                self, role, self.content_type, mock_operation.model_dump_json(), custom_reverse_lazy("create_operation")
             )
             assert response.status_code == 401
 
@@ -169,7 +171,7 @@ class TestOperationsEndpoint(CommonTestSetup):
                 self,
                 role,
                 self.content_type,
-                mock_operation.json(),
+                mock_operation.model_dump_json(),
                 custom_reverse_lazy("update_operation", kwargs={"operation_id": operation.id})
                 + "?submit=false&form_section=1",
             )
@@ -193,7 +195,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             self,
             "industry_user",
             self.content_type,
-            mock_payload.json(),
+            mock_payload.model_dump_json(),
             custom_reverse_lazy("update_operation", kwargs={"operation_id": random_operation.id})
             + "?submit=false&form_section=1",
         )
@@ -276,10 +278,13 @@ class TestOperationsEndpoint(CommonTestSetup):
 
     def test_get_operation_with_invalid_operation_id(self):
         response = TestUtils.mock_get_with_auth_role(
-            self, endpoint=custom_reverse_lazy("get_operation", kwargs={"operation_id": 99999}), role_name="cas_admin"
+            self, endpoint=custom_reverse_lazy("get_operation", kwargs={"operation_id": '99999'}), role_name="cas_admin"
         )
         assert response.status_code == 422
-        assert response.json().get('detail')[0].get('msg') == "value is not a valid uuid"
+        assert (
+            response.json().get('detail')[0].get('msg')
+            == 'Input should be a valid UUID, invalid length: expected length 32 for simple format, found 5'
+        )
 
     def test_operations_endpoint_get_method_with_mock_data(self):
         # IRC users can get all operations except ones with a not Started status
@@ -399,7 +404,11 @@ class TestOperationsEndpoint(CommonTestSetup):
         TestUtils.authorize_current_user_as_operator_user(self, operator)
         mock_operation = TestUtils.mock_OperationCreateIn()
         post_response = TestUtils.mock_post_with_auth_role(
-            self, "industry_user", self.content_type, mock_operation.json(), custom_reverse_lazy("create_operation")
+            self,
+            "industry_user",
+            self.content_type,
+            mock_operation.model_dump_json(),
+            custom_reverse_lazy("create_operation"),
         )
         assert post_response.status_code == 201
         assert post_response.json().get('name') == "Springfield Nuclear Power Plant"
@@ -418,7 +427,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         TestUtils.authorize_current_user_as_operator_user(self, operator)
         mock_operation = TestUtils.mock_OperationCreateIn()
         post_response = TestUtils.mock_post_with_auth_role(
-            self, "industry_user", self.content_type, mock_operation.json()
+            self, "industry_user", self.content_type, mock_operation.model_dump_json()
         )
         assert post_response.status_code == 201
         assert post_response.json().get('name') == "Springfield Nuclear Power Plant"
@@ -428,7 +437,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         get_response_data = get_response.get('data')[0]
         assert 'status' in get_response_data and get_response_data['status'] == 'Not Started'
         post_response = TestUtils.mock_post_with_auth_role(
-            self, "industry_user", self.content_type, mock_operation.json(), endpoint=None
+            self, "industry_user", self.content_type, mock_operation.model_dump_json(), endpoint=None
         )
         assert post_response.status_code == 201
 
@@ -485,7 +494,7 @@ class TestOperationsEndpoint(CommonTestSetup):
     #         operator_id=operator.id,
     #     )
     #     post_response = TestUtils.mock_post_with_auth_role(
-    #         self, 'industry_user', content_type, mock_operation.json()
+    #         self, 'industry_user', content_type, mock_operation.model_dump_json()
     #     )
     #     assert post_response.status_code == 201
     #     assert post_response.json().get('id') is not None
@@ -507,14 +516,18 @@ class TestOperationsEndpoint(CommonTestSetup):
 
     def test_post_existing_operation_with_same_bcghg_id(self):
         operation_instance = operation_baker()
-        operation_instance.bcghg_id = 123
+        operation_instance.bcghg_id = 'aaa1234567'
         operation_instance.save(update_fields=['bcghg_id'])
         mock_operation2 = TestUtils.mock_OperationCreateIn()
-        mock_operation2.bcghg_id = 123
+        mock_operation2.bcghg_id = 'aaa1234567'
         operator = operator_baker()
         TestUtils.authorize_current_user_as_operator_user(self, operator)
         post_response = TestUtils.mock_post_with_auth_role(
-            self, "industry_user", self.content_type, mock_operation2.json(), custom_reverse_lazy("create_operation")
+            self,
+            "industry_user",
+            self.content_type,
+            mock_operation2.model_dump_json(),
+            custom_reverse_lazy("create_operation"),
         )
         assert post_response.status_code == 400
         assert post_response.json().get('message') == "Operation with this BCGHG ID already exists."
@@ -533,7 +546,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         operator = operator_baker()
         TestUtils.authorize_current_user_as_operator_user(self, operator)
         post_response = TestUtils.mock_post_with_auth_role(
-            self, "industry_user", self.content_type, data=new_operation.json()
+            self, "industry_user", self.content_type, data=new_operation.model_dump_json()
         )
         assert post_response.status_code == 201
         assert Operation.objects.count() == 1
@@ -552,7 +565,10 @@ class TestOperationsEndpoint(CommonTestSetup):
             custom_reverse_lazy("update_operation_status", kwargs={"operation_id": 99999999999}),
         )
         assert put_response.status_code == 422
-        assert put_response.json().get('detail')[0].get('msg') == "value is not a valid uuid"
+        assert (
+            put_response.json().get('detail')[0].get('msg')
+            == 'Input should be a valid UUID, invalid length: expected length 32 for simple format, found 11'
+        )
 
     def test_put_operation_update_status_approved(self):
         operation = operation_baker()
@@ -690,7 +706,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             self,
             'industry_user',
             self.content_type,
-            payload.json(),
+            payload.model_dump_json(),
             custom_reverse_lazy("update_operation", kwargs={"operation_id": operation.id})
             + "?submit=false&form_section=1",
         )
@@ -721,7 +737,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             self,
             'industry_user',
             self.content_type,
-            payload.json(),
+            payload.model_dump_json(),
             custom_reverse_lazy("update_operation", kwargs={"operation_id": operation.id})
             + "?submit=true&form_section=1",
         )
@@ -784,7 +800,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             self,
             'industry_user',
             self.content_type,
-            update.json(),
+            update.model_dump_json(),
             custom_reverse_lazy("update_operation", kwargs={"operation_id": operation.id})
             + "?submit=true&form_section=2",
         )
@@ -832,7 +848,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             self,
             'industry_user',
             self.content_type,
-            update.json(),
+            update.model_dump_json(),
             custom_reverse_lazy("update_operation", kwargs={"operation_id": operation.id})
             + "?submit=true&form_section=2",
         )
@@ -879,7 +895,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             self,
             'industry_user',
             self.content_type,
-            update.json(),
+            update.model_dump_json(),
             custom_reverse_lazy("update_operation", kwargs={"operation_id": operation.id})
             + "?submit=true&form_section=1",
         )
@@ -914,7 +930,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             self,
             'industry_user',
             self.content_type,
-            update.json(),
+            update.model_dump_json(),
             custom_reverse_lazy("update_operation", kwargs={"operation_id": operation.id})
             + "?submit=true&form_section=1",
         )
@@ -954,7 +970,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             self,
             'industry_user',
             self.content_type,
-            update.json(),
+            update.model_dump_json(),
             custom_reverse_lazy("update_operation", kwargs={"operation_id": operation.id})
             + "?submit=true&form_section=1",
         )
@@ -985,7 +1001,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             self,
             'industry_user',
             self.content_type,
-            update.json(),
+            update.model_dump_json(),
             custom_reverse_lazy("update_operation", kwargs={"operation_id": operation.id})
             + "?submit=true&form_section=1",
         )
@@ -1023,7 +1039,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             self,
             'industry_user',
             self.content_type,
-            update.json(),
+            update.model_dump_json(),
             custom_reverse_lazy("update_operation", kwargs={"operation_id": operation.id})
             + "?submit=true&form_section=1",
         )
@@ -1062,7 +1078,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             self,
             'industry_user',
             self.content_type,
-            update.json(),
+            update.model_dump_json(),
             custom_reverse_lazy("update_operation", kwargs={"operation_id": operation.id})
             + "?submit=true&form_section=1",
         )
@@ -1101,7 +1117,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             self,
             'industry_user',
             self.content_type,
-            update_from_form_section_1.json(),
+            update_from_form_section_1.model_dump_json(),
             custom_reverse_lazy("update_operation", kwargs={"operation_id": operation.id})
             + "?submit=false&form_section=1",
         )
@@ -1130,7 +1146,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             self,
             'industry_user',
             self.content_type,
-            update_from_form_section_2.json(),
+            update_from_form_section_2.model_dump_json(),
             custom_reverse_lazy("update_operation", kwargs={"operation_id": operation.id})
             + "?submit=false&form_section=2",
         )
@@ -1157,7 +1173,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             self,
             "industry_user",
             self.content_type,
-            mock_create_operation.json(),
+            mock_create_operation.model_dump_json(),
             custom_reverse_lazy("create_operation"),
         )
         assert post_response_1.status_code == 401
@@ -1166,7 +1182,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             self,
             "industry_user",
             self.content_type,
-            mock_update_operation.json(),
+            mock_update_operation.model_dump_json(),
             custom_reverse_lazy("update_operation", kwargs={"operation_id": operation.id})
             + "?submit=false&form_section=1",
         )
@@ -1179,7 +1195,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             self,
             "industry_user",
             self.content_type,
-            mock_create_operation.json(),
+            mock_create_operation.model_dump_json(),
             custom_reverse_lazy("create_operation"),
         )
         assert post_response_2.status_code == 401
@@ -1188,7 +1204,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             self,
             "industry_user",
             self.content_type,
-            mock_update_operation.json(),
+            mock_update_operation.model_dump_json(),
             custom_reverse_lazy("update_operation", kwargs={"operation_id": operation.id})
             + "?submit=false&form_section=1",
         )
@@ -1201,7 +1217,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             self,
             "industry_user",
             self.content_type,
-            mock_create_operation.json(),
+            mock_create_operation.model_dump_json(),
             custom_reverse_lazy("create_operation"),
         )
         assert post_response_3.status_code == 201
@@ -1210,7 +1226,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             self,
             "industry_user",
             self.content_type,
-            mock_update_operation.json(),
+            mock_update_operation.model_dump_json(),
             custom_reverse_lazy("update_operation", kwargs={"operation_id": operation.id})
             + "?submit=false&form_section=1",
         )

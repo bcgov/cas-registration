@@ -573,7 +573,7 @@ class OperationListOut(ModelSchema):
 
     class Config:
         model = Operation
-        model_fields = ['id', 'name', 'bcghg_id', 'submission_date', 'status']
+        fields = ['id', 'name', 'bcghg_id', 'submission_date', 'status']
 ```
 
 ## Common Utils

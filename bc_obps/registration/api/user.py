@@ -30,11 +30,7 @@ def get_user_profile(request):
     user = get_object_or_404(User, user_guid=json.loads(request.headers.get('Authorization')).get('user_guid'))
     try:
         user_guid: Optional[UUID] = json.loads(request.headers.get('Authorization')).get('user_guid')
-        user = (
-            User.objects.only(*UserOut.Config.model_fields, "app_role")
-            .select_related('app_role')
-            .get(user_guid=user_guid)
-        )
+        user = User.objects.only(*UserOut.Meta.fields, "app_role").select_related('app_role').get(user_guid=user_guid)
     except User.DoesNotExist:
         return 404, {"message": "No matching user found"}
     return 200, user

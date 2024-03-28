@@ -17,7 +17,7 @@ def list_regulated_products(request):
     if cached_data:
         return cached_data
     else:
-        regulated_products = RegulatedProduct.objects.only(*RegulatedProductSchema.Config.model_fields)
+        regulated_products = RegulatedProduct.objects.only(*RegulatedProductSchema.Meta.fields)
         cache.set("regulated_products", regulated_products, 60 * 60 * 24 * 1)  # 1 day
         return regulated_products
 

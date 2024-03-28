@@ -7,7 +7,7 @@ class AddressSchema(ModelSchema):
     Schema for the Address model
     """
 
-    class Config:
+    class Meta:
         model = Address
         address_id: int = Field(..., alias="id")
-        model_exclude = ["id"]
+        exclude = ["id"]
