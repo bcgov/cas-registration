@@ -2,6 +2,7 @@
 
 # Get the current git branch
 current_branch=$(git rev-parse --abbrev-ref HEAD)
+echo "Current branch: $current_branch"
 
 # Check if the current branch is 'develop'
 if [ "$current_branch" == "giraffe-develop" ]; then
