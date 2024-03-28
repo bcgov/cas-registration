@@ -59,7 +59,7 @@ def get_user_operator_from_user(request):
         )
     except UserOperator.DoesNotExist:
         return 404, {"message": "User is not associated with any operator"}
-    return 200, PendingUserOperatorOut.from_orm(user_operator)
+    return 200, user_operator
 
 
 @router.get(
@@ -119,13 +119,13 @@ def get_user_operator(request, user_operator_id: UUID):
             )
         except UserOperator.DoesNotExist:
             return 404, {"message": "No matching userOperator found"}
-        return UserOperatorOut.from_orm(user_operator)
+        return user_operator
     else:
         try:
             user_operator = UserOperator.objects.select_related('operator').get(id=user_operator_id)
         except UserOperator.DoesNotExist:
             return 404, {"message": "No matching userOperator found"}
-        return UserOperatorOut.from_orm(user_operator)
+        return user_operator
 
 
 @router.get(
@@ -424,7 +424,7 @@ def update_user_operator_status(request, payload: UserOperatorStatusUpdate):
                 user_operator.operator.contacts.filter(
                     created_by=user_operator.user, business_role=BusinessRole.objects.get(role_name='Senior Officer')
                 ).delete()
-            return UserOperatorOut.from_orm(user_operator)
+            return user_operator
     except ValidationError as e:
         return 400, {"message": generate_useful_error(e)}
     except Exception as e:

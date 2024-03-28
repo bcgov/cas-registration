@@ -4,7 +4,7 @@ from registration.schema.validators import validate_cra_business_number
 from registration.schema.operator import OperatorExternalDashboardUsersTileData
 from registration.schema.user import UserExternalDashboardUsersTileData
 from ninja import ModelSchema, Schema, Field
-from pydantic import validator
+from pydantic import field_validator
 from registration.constants import AUDIT_FIELDS, BC_CORPORATE_REGISTRY_REGEX
 from registration.models import BusinessStructure, Contact, UserOperator
 from .parent_operator import ParentOperatorIn, ParentOperatorOut
@@ -54,7 +54,7 @@ class UserOperatorOut(ModelSchema):
     trade_name: Optional[str] = Field("", alias="operator.trade_name")
     cra_business_number: Optional[int] = Field(None, alias="operator.cra_business_number")
     bc_corporate_registry_number: Optional[str] = Field(
-        None, regex=BC_CORPORATE_REGISTRY_REGEX, alias="operator.bc_corporate_registry_number"
+        None, pattern=BC_CORPORATE_REGISTRY_REGEX, alias="operator.bc_corporate_registry_number"
     )
     business_structure: Optional[str] = Field(None, alias="operator.business_structure.name")
     physical_street_address: Optional[str] = Field(None, alias="operator.physical_address.street_address")
@@ -105,7 +105,7 @@ class UserOperatorOperatorIn(Schema):
     legal_name: str
     trade_name: Optional[str] = ""
     cra_business_number: int
-    bc_corporate_registry_number: str = Field(regex=BC_CORPORATE_REGISTRY_REGEX)
+    bc_corporate_registry_number: str = Field(pattern=BC_CORPORATE_REGISTRY_REGEX)
     business_structure: str
     physical_street_address: str
     physical_municipality: str
@@ -121,12 +121,12 @@ class UserOperatorOperatorIn(Schema):
     operator_has_parent_operators: bool
     parent_operators_array: Optional[List[ParentOperatorIn]] = None
 
-    @validator("business_structure")
+    @field_validator("business_structure")
     @classmethod
     def validate_business_structure(cls, value: str) -> BusinessStructure:
         return validate_business_structure(value)
 
-    @validator("cra_business_number")
+    @field_validator("cra_business_number")
     @classmethod
     def validate_cra_business_number(cls, value: int):
         return validate_cra_business_number(value)
@@ -153,7 +153,7 @@ class UserOperatorContactIn(ModelSchema):
         model = Contact
         model_exclude = ["id", "documents", "business_role", "address", "email", "phone_number", *AUDIT_FIELDS]
         # whether an aliased field may be populated by its name as given by the model attribute, as well as the alias
-        allow_population_by_field_name = True
+        populate_by_name = True
 
 
 class ExternalDashboardUsersTileData(ModelSchema):

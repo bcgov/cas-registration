@@ -72,7 +72,7 @@ class TestUserEndpoint(CommonTestSetup):
         response = TestUtils.client.post(
             custom_reverse_lazy('create_user_profile', kwargs={'identity_provider': IdPs.BCEIDBUSINESS.value}),
             content_type=self.content_type,
-            data=mock_payload.json(),
+            data=mock_payload.model_dump_json(),
             HTTP_AUTHORIZATION=json.dumps({'user_guid': str(uuid.uuid4())}),
         )
         content = response.json()
@@ -119,7 +119,7 @@ class TestUserEndpoint(CommonTestSetup):
         response = TestUtils.client.post(
             custom_reverse_lazy('create_user_profile', kwargs={'identity_provider': IdPs.IDIR.value}),
             content_type=self.content_type,
-            data=mock_payload.json(),
+            data=mock_payload.model_dump_json(),
             HTTP_AUTHORIZATION=json.dumps({'user_guid': str(uuid.uuid4())}),
         )
         content = response.json()
@@ -155,7 +155,11 @@ class TestUserEndpoint(CommonTestSetup):
         )
 
         response = TestUtils.mock_put_with_auth_role(
-            self, 'industry_user', self.content_type, mock_payload.json(), custom_reverse_lazy('update_user_profile')
+            self,
+            'industry_user',
+            self.content_type,
+            mock_payload.model_dump_json(),
+            custom_reverse_lazy('update_user_profile'),
         )
         content = response.json()
 
@@ -194,7 +198,7 @@ class TestUserEndpoint(CommonTestSetup):
             self,
             'industry_user',
             self.content_type,
-            mock_payload.json(),
+            mock_payload.model_dump_json(),
             custom_reverse_lazy('update_user_profile'),
         )
         content = response.json()

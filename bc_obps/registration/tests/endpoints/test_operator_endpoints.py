@@ -6,6 +6,8 @@ from registration.models import Operator, UserOperator
 from registration.schema.operator import OperatorOut, OperatorSearchOut, ConfirmSelectedOperatorOut
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
+import pytest
+from django.core.exceptions import ValidationError
 
 baker.generators.add(CAPostalCodeField, TestUtils.mock_postal_code)
 
@@ -145,12 +147,15 @@ class TestOperatorsEndpoint(CommonTestSetup):
 
     def test_select_operator_with_invalid_id(self):
         invalid_operator_id = 99999  # Invalid operator ID
-
+        # with pytest.raises(Exception):
         response = TestUtils.mock_get_with_auth_role(
             self, "cas_analyst", custom_reverse_lazy('get_operator', kwargs={"operator_id": invalid_operator_id})
         )
         assert response.status_code == 422
-        assert response.json().get('detail')[0].get('msg') == "value is not a valid uuid"
+        assert (
+            response.json().get('detail')[0].get('msg')
+            == 'Input should be a valid UUID, invalid length: expected length 32 for simple format, found 5'
+        )
 
     def test_put_approve_operator(self):
         operator = operator_baker({'status': Operator.Statuses.PENDING, 'is_new': True})

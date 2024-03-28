@@ -1,11 +1,10 @@
 from typing import List, Optional
+from uuid import UUID
 from registration.schema.operator import OperatorForOperationOut
 from registration.utils import file_to_data_url, data_url_to_file
 from ninja import Field, ModelSchema, Schema
-from registration.constants import AUDIT_FIELDS
-from registration.models import Operation
-from datetime import date
-from pydantic import validator
+from registration.models import Operation, User
+from pydantic import field_validator
 
 
 #### Operation schemas
@@ -25,7 +24,7 @@ class OperationCreateIn(ModelSchema):
     class Config:
         model = Operation
         model_fields = ['name', 'type', 'naics_code', 'opt_in', 'regulated_products', 'bcghg_id']
-        allow_population_by_field_name = True
+        populate_by_name = True
 
 
 class OperationUpdateOut(ModelSchema):
@@ -49,7 +48,7 @@ class OperationUpdateIn(ModelSchema):
     is_external_point_of_contact: Optional[bool] = None
     statutory_declaration: Optional[str] = None
 
-    @validator("statutory_declaration")
+    @field_validator("statutory_declaration")
     @classmethod
     def validate_statutory_declaration(cls, value: str):
         if value:
@@ -58,7 +57,7 @@ class OperationUpdateIn(ModelSchema):
     class Config:
         model = Operation
         model_fields = ['name', 'type', 'naics_code', 'opt_in', 'point_of_contact', 'regulated_products']
-        allow_population_by_field_name = True
+        populate_by_name = True
 
 
 class OperationListOut(ModelSchema):
@@ -68,6 +67,7 @@ class OperationListOut(ModelSchema):
     class Config:
         model = Operation
         model_fields = ['id', 'name', 'bcghg_id', 'submission_date', 'status']
+        from_attributes = True
 
 
 class OperationOut(ModelSchema):
@@ -75,7 +75,7 @@ class OperationOut(ModelSchema):
     first_name: Optional[str] = Field(None, alias="point_of_contact.first_name")
     last_name: Optional[str] = Field(None, alias="point_of_contact.last_name")
     email: Optional[str] = Field(None, alias="point_of_contact.email")
-    phone_number: Optional[str]  # can't use resolvers with aliases, so handling everything in the resolver
+    phone_number: Optional[str] = None  # can't use resolvers with aliases, so handling everything in the resolver
     position_title: Optional[str] = Field(None, alias="point_of_contact.position_title")
     street_address: Optional[str] = Field(None, alias="point_of_contact.address.street_address")
     municipality: Optional[str] = Field(None, alias="point_of_contact.address.municipality")
@@ -87,6 +87,7 @@ class OperationOut(ModelSchema):
     statutory_declaration: Optional[str] = None
     bc_obps_regulated_operation: Optional[str] = Field(None, alias="bc_obps_regulated_operation.id")
     bcghg_id: Optional[str] = None
+    operator: Optional[OperatorForOperationOut] = None
 
     @staticmethod
     def resolve_statutory_declaration(obj: Operation):
@@ -106,6 +107,18 @@ class OperationOut(ModelSchema):
             return
         return str(obj.point_of_contact.phone_number)
 
+    @staticmethod
+    def resolve_operator(obj, context):
+        """
+        Only return operator details if the user is an IRC user
+        """
+        request = context.get('request')
+        if request:
+            user: User = request.current_user
+            if user.is_irc_user():
+                return obj.operator
+        return None
+
     class Config:
         model = Operation
         model_fields = [
@@ -117,10 +130,7 @@ class OperationOut(ModelSchema):
             'previous_year_attributable_emissions',
             'status',
         ]
-
-
-class OperationWithOperatorOut(OperationOut):  # used for irc users
-    operator: OperatorForOperationOut = Field(..., alias="operator")
+        from_attributes = True
 
 
 # Not using Multiple operators for MVP
@@ -132,6 +142,7 @@ class OperationUpdateStatusIn(ModelSchema):
     class Config:
         model = Operation
         model_fields = ["status"]
+        from_attributes = True
 
 
 class OperationUpdateStatusOut(ModelSchema):
