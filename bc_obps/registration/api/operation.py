@@ -331,6 +331,7 @@ def update_operation(request, operation_id: UUID, submit: str, form_section: int
                     file=payload.statutory_declaration,
                     type=DocumentType.objects.get(name="signed_statutory_declaration"),
                 )
+                document.set_create_or_update(user.pk)
                 operation.documents.set([document])
 
             operation.set_create_or_update(user.pk)
