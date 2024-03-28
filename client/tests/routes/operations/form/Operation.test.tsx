@@ -2,13 +2,32 @@ import Operation from "@/app/components/routes/operations/form/Operation";
 import { act, render, screen } from "@testing-library/react";
 import createFetchMock from "vitest-fetch-mock";
 import { describe, expect, vi } from "vitest";
-import { SessionProvider } from "next-auth/react";
 
 const fetchMock = createFetchMock(vi);
 fetchMock.enableMocks();
 
 // Needed to mock all this stuff for server components to work
 // Will need to look into making them reusable
+vi.mock("next-auth/react", async () => {
+  return {
+    SessionProvider: ({ children }: { children: React.ReactNode }) => (
+      <>{children}</>
+    ),
+    useSession: vi.fn(() => ({
+      data: {
+        user: {
+          app_role: ["industry_admin"],
+        },
+      },
+    })),
+  };
+});
+
+// TODO: Correctly mock cookies to remove stderr warnings
+// vi.mock("next/headers", () => ({
+//   cookies: vi.fn(),
+// }));
+
 vi.mock("next/navigation", () => ({
   useRouter: () => ({
     query: { operation: "create" },
@@ -17,20 +36,6 @@ vi.mock("next/navigation", () => ({
     formSection: "1",
     operation: "create",
   }),
-}));
-
-// vi.mock("useSession", () => ({
-//   useSession: () => ({
-//     data: {
-//       user: {
-//         app_role: ["industry_admin"],
-//       },
-//     },
-//   }),
-// }));
-
-vi.mock("next/headers", () => ({
-  cookies: vi.fn(),
 }));
 
 vi.mock("next/cache", () => ({
@@ -80,11 +85,7 @@ describe("Operations component", () => {
   });
 
   it("renders the dropdown options for fields that require a fetch (e.g. NAICS codes)", async () => {
-    render(
-      <SessionProvider>
-        {await Operation({ numRow: undefined })}
-      </SessionProvider>,
-    );
+    render(await Operation({ numRow: undefined }));
 
     const naicsCode = screen.getByPlaceholderText(/NAICS code/i).closest("div");
     expect(naicsCode).toBeInTheDocument();
@@ -116,11 +117,7 @@ describe("Operations component", () => {
   });
 
   it("renders a blank form when there is no existing form data", async () => {
-    render(
-      <SessionProvider>
-        {await Operation({ numRow: undefined })}
-      </SessionProvider>,
-    );
+    render(await Operation({ numRow: undefined }));
 
     expect(screen.getByLabelText(/Operation Name+/i)).not.toHaveValue();
   });
@@ -152,11 +149,7 @@ describe("Operations component", () => {
       }),
     );
 
-    render(
-      <SessionProvider>
-        {await Operation({ numRow: "9a8aae6a-d711-42d4-aa7a-c8d37ff814c4" })}
-      </SessionProvider>,
-    );
+    render(await Operation({ numRow: "9a8aae6a-d711-42d4-aa7a-c8d37ff814c4" }));
 
     expect(screen.getByLabelText(/Operation Name+/i)).toHaveValue();
   });
