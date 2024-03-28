@@ -51,6 +51,7 @@ const SelectWidget: React.FC<WidgetProps> = (props) => {
       <InputLabel shrink={false}>{!value && placeholder}</InputLabel>
       <Select
         labelId={id}
+        id={`${id}_select`}
         value={value || ""}
         disabled={disabled || readonly}
         name={id}
