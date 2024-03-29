@@ -7,7 +7,7 @@ review:
 deploy:
   override:
     - |
-      echo $(BRANCH)
+      echo $BRANCH
       bash deploy.sh
       timeout: 5000
 
