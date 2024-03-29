@@ -6,7 +6,7 @@ echo "Branch: $BRANCH"
 # Check if the current branch is 'giraffe-develop'
 if [ "$BRANCH" == "create-deploy-script" ]; then
     echo "Running giraffe make target..."
-    make install-giraffe
+    make install_giraffe
 else
     echo "Running default make target..."
     make install
