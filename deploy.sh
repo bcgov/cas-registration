@@ -3,8 +3,8 @@
 # Get the current git branch
 echo "Branch: $BRANCH"
 
-# Check if the current branch is 'develop'
-if [ "$BRANCH" == "giraffe-develop" ]; then
+# Check if the current branch is 'giraffe-develop'
+if [ "$BRANCH" == "create-deploy-script" ]; then
     echo "Running giraffe make target..."
     make install-giraffe
 else
