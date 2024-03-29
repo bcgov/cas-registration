@@ -7,7 +7,6 @@ review:
 deploy:
   override:
     - |
-      echo "Current branch: $BRANCH"
       bash deploy.sh
       timeout: 5000
 
