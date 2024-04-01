@@ -91,7 +91,7 @@ describe("Operations component", () => {
     expect(screen.getByLabelText(/Operation Name+/i)).toHaveValue("");
 
     // // Operation Type
-    expect(screen.getByLabelText(/Operation Type+/i)).toHaveValue(""); // Select widget returns undefined when empty */
+    expect(screen.getByLabelText(/Operation Type+/i)).toHaveValue("");
 
     // Primary NAICS Code
     expect(screen.getByLabelText(/Primary NAICS Code+/i)).toHaveValue("");
