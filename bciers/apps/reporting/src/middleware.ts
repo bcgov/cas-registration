@@ -1,6 +1,6 @@
 // eslint-disable-next-line
-import { stackMiddlewares } from '@/middlewares/stackMiddlewares';
-import { withReportingAuthorization } from './middlewares/withReportingAuthorization';
+import { stackMiddlewares } from "@/middlewares/stackMiddlewares";
+import { withReportingAuthorization } from "./middlewares/withReportingAuthorization";
 
 // This needed copy-pasting because next tries to parse this file differentely somehow
 export const config = {
@@ -15,7 +15,7 @@ export const config = {
     // "/((?!_next).*)",
     // Optional: only run on root (/) URL
     // '/'
-    '/((?!static|.*\\..*|_next).*)', //matcher solution for public assets, url.extension, _next exclusion:
+    "/((?!static|.*\\..*|_next).*)", //matcher solution for public assets, url.extension, _next exclusion:
   ],
 };
 
