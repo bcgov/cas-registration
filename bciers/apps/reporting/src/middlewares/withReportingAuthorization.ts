@@ -1,12 +1,12 @@
 // eslint-disable-next-line
-import { MiddlewareFactory } from '@/middlewares/types';
-import { NextResponse } from 'next/server';
-import { getToken } from 'next-auth/jwt';
+import { MiddlewareFactory } from "@/middlewares/types";
+import { NextResponse } from "next/server";
+import { getToken } from "next-auth/jwt";
 
 const isNextAuthPath = (path: string) => {
-  return path.startsWith('/api/auth/');
+  return path.startsWith("/api/auth/");
 };
-const authenticatedRoot = '/authenticated';
+const authenticatedRoot = "/authenticated";
 const isAuthenticatedPath = (path: string) => {
   return path.startsWith(authenticatedRoot);
 };
@@ -36,9 +36,9 @@ export const withReportingAuthorization: MiddlewareFactory = (next) => {
     }
 
     // If we don't have a valid token we redirect to "/"
-    if (pathname === '/') {
+    if (pathname === "/") {
       return next(request, _next);
     }
-    return NextResponse.redirect(new URL('/', request.url));
+    return NextResponse.redirect(new URL("/", request.url));
   };
 };

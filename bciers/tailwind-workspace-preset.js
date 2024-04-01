@@ -12,33 +12,33 @@ import {
   LIGHT_GREY_BG_COLOR,
   BC_GOV_SEMANTICS_RED,
   BC_GOV_SEMANTICS_GREEN,
-} from './libs/shared/styles/src/index.ts';
+} from "./libs/shared/styles/src/index.ts";
 
 module.exports = {
   corePlugins: {
     preflight: false,
   },
   // Add the important option, using the id of the app wrapper in layout.tsx
-  important: '#__next',
+  important: "#__next",
   //It is best practice while using Tailwind and MUI together to add a prefix in the tailwind class
   //After adding a prefix you can use your classes for padding like this way: tw-p-4 and for text size
   //prefix: 'tw-',   //👈 Use your desired prefix
   theme: {
     extend: {
       colors: {
-        'bc-text': BC_GOV_TEXT,
-        'bc-primary-blue': BC_GOV_PRIMARY_BRAND_COLOR_BLUE,
-        'bc-bg-blue': BC_GOV_BACKGROUND_COLOR_BLUE,
-        'bc-link-blue': BC_GOV_LINKS_COLOR,
-        'bc-yellow': BC_GOV_YELLOW,
-        'bc-bg-dark-grey': DARK_GREY_BG_COLOR,
-        'bc-bg-light-grey': LIGHT_GREY_BG_COLOR,
-        'bc-component-grey': BC_GOV_COMPONENTS_GREY,
-        'bc-success-green': BC_GOV_SEMANTICS_GREEN,
-        'bc-error-red': BC_GOV_SEMANTICS_RED,
+        "bc-text": BC_GOV_TEXT,
+        "bc-primary-blue": BC_GOV_PRIMARY_BRAND_COLOR_BLUE,
+        "bc-bg-blue": BC_GOV_BACKGROUND_COLOR_BLUE,
+        "bc-link-blue": BC_GOV_LINKS_COLOR,
+        "bc-yellow": BC_GOV_YELLOW,
+        "bc-bg-dark-grey": DARK_GREY_BG_COLOR,
+        "bc-bg-light-grey": LIGHT_GREY_BG_COLOR,
+        "bc-component-grey": BC_GOV_COMPONENTS_GREY,
+        "bc-success-green": BC_GOV_SEMANTICS_GREEN,
+        "bc-error-red": BC_GOV_SEMANTICS_RED,
       },
       lineHeight: {
-        12: '48px',
+        12: "48px",
       },
     },
   },
