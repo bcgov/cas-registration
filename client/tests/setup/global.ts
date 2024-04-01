@@ -2,7 +2,8 @@ import type { TestingLibraryMatchers } from "@testing-library/jest-dom/matchers"
 import * as matchers from "@testing-library/jest-dom/matchers";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { expect } from "vitest";
-import SessionProvider from "@/tests/mocks/SessionProviderMock";
+import SessionProvider from "@/tests/setup/SessionProviderMock";
+import mocks from "@/tests/setup/mocks";
 
 declare module "vitest" {
   interface Assertion<T = any>
@@ -11,28 +12,6 @@ declare module "vitest" {
 }
 
 expect.extend(matchers);
-
-export const mocks = {
-  useRouter: vi.fn(() => ({
-    query: {
-      formSection: "1",
-      operation: "create",
-    },
-    replace: vi.fn(),
-  })),
-  useParams: vi.fn(() => ({
-    formSection: "1",
-    operation: "create",
-  })),
-  useSession: vi.fn(() => ({
-    data: {
-      user: {
-        app_role: "cas_admin",
-      },
-    },
-  })),
-  getServerSession: vi.fn(),
-};
 
 vi.mock("next/navigation", () => {
   return {

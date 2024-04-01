@@ -2,7 +2,7 @@ import Operation from "@/app/components/routes/operations/form/Operation";
 import { act, render, screen } from "@testing-library/react";
 import createFetchMock from "vitest-fetch-mock";
 import { describe, expect, vi } from "vitest";
-import { mocks } from "@/tests/setup";
+import mocks from "@/tests/setup/mocks";
 
 const fetchMock = createFetchMock(vi);
 fetchMock.enableMocks();
