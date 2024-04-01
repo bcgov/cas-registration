@@ -171,7 +171,7 @@ describe("Operations component", () => {
             element?.textContent ===
             "Your application for the B.C. OBPS Regulated Operation ID for Operation 1 has been received.",
         ),
-      ).toBeInTheDocument();
+      ).toBeVisible();
     });
   });
 });
