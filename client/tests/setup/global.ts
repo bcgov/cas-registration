@@ -11,6 +11,7 @@ declare module "vitest" {
       TestingLibraryMatchers<T, void> {}
 }
 
+// Extend the global expect object with the custom matchers from jest-dom
 expect.extend(matchers);
 
 vi.mock("next/navigation", () => {
@@ -31,11 +32,6 @@ vi.mock("next-auth", () => ({
   default: vi.fn(),
   getServerSession: mocks.getServerSession,
 }));
-
-// TODO: Correctly mock cookies to remove stderr warnings
-// vi.mock("next/headers", () => ({
-//   cookies: vi.fn(),
-// }));
 
 vi.mock("next/cache", () => ({
   revalidateTag: vi.fn(() => Promise.resolve()),

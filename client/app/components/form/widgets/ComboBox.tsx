@@ -43,6 +43,7 @@ const ComboBox: React.FC<WidgetProps> = ({
       borderColor: borderColor,
     },
   };
+
   return (
     <Autocomplete
       disablePortal
