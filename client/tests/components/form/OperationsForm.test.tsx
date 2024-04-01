@@ -2,7 +2,7 @@ import OperationsForm from "@/app/components/form/OperationsForm";
 import { createOperationSchema } from "@/app/components/routes/operations/form/Operation";
 import { operationSchema } from "@/app/utils/jsonSchema/operations";
 import createFetchMock from "vitest-fetch-mock";
-import { act, render, screen } from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, vi } from "vitest";
 import React from "react";
 import mocks from "@/tests/setup/mocks";
@@ -163,18 +163,15 @@ describe("Operations component", () => {
       );
     });
 
-    // TODO: Find alternate way to wait for the success message to appear
-    await act(async () => {
-      setTimeout(() => {}, 1000);
-    });
-
     // Get the success message using the text content since it returns broken up text error
-    expect(
-      screen.getByText(
-        (_, element) =>
-          element?.textContent ===
-          "Your application for the B.C. OBPS Regulated Operation ID for Operation 1 has been received.",
-      ),
-    ).toBeInTheDocument();
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          (_, element) =>
+            element?.textContent ===
+            "Your application for the B.C. OBPS Regulated Operation ID for Operation 1 has been received.",
+        ),
+      ).toBeInTheDocument();
+    });
   });
 });
