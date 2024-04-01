@@ -2,50 +2,22 @@ import Operation from "@/app/components/routes/operations/form/Operation";
 import { act, render, screen } from "@testing-library/react";
 import createFetchMock from "vitest-fetch-mock";
 import { describe, expect, vi } from "vitest";
+import { mocks } from "@/tests/setup";
 
 const fetchMock = createFetchMock(vi);
 fetchMock.enableMocks();
 
-// Needed to mock all this stuff for server components to work
-// Will need to look into making them reusable
-vi.mock("next-auth/react", async () => {
-  return {
-    SessionProvider: ({ children }: { children: React.ReactNode }) => (
-      <>{children}</>
-    ),
-    useSession: vi.fn(() => ({
-      data: {
-        user: {
-          app_role: ["industry_admin"],
-        },
-      },
-    })),
-  };
+mocks.useSession.mockReturnValue({
+  data: {
+    user: {
+      app_role: "industry_user_admin",
+    },
+  },
 });
 
-// TODO: Correctly mock cookies to remove stderr warnings
-// vi.mock("next/headers", () => ({
-//   cookies: vi.fn(),
-// }));
-
-vi.mock("next/navigation", () => ({
-  useRouter: () => ({
-    query: { operation: "create" },
-  }),
-  useParams: () => ({
-    formSection: "1",
-    operation: "create",
-  }),
-}));
-
-vi.mock("next/cache", () => ({
-  revalidateTag: vi.fn(() => Promise.resolve()),
-  revalidatePath: vi.fn(() => Promise.resolve()),
-}));
-
-describe("Operations component", () => {
+describe("Operation component", () => {
   beforeEach(async () => {
-    vi.restoreAllMocks();
+    vi.clearAllMocks();
     fetchMock.resetMocks();
     fetchMock.enableMocks();
     // mock getUserFormData response
@@ -151,6 +123,8 @@ describe("Operations component", () => {
 
     render(await Operation({ numRow: "9a8aae6a-d711-42d4-aa7a-c8d37ff814c4" }));
 
-    expect(screen.getByLabelText(/Operation Name+/i)).toHaveValue();
+    expect(screen.getByLabelText(/Operation Name+/i)).toHaveValue(
+      "Operation 3",
+    );
   });
 });

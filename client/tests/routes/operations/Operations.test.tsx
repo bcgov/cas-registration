@@ -6,51 +6,9 @@ import createFetchMock from "vitest-fetch-mock";
 const fetchMock = createFetchMock(vi);
 fetchMock.enableMocks();
 
-// Needed to mock all this stuff for server components to work
-// Will need to look into making them reusable
-vi.mock("next-auth/react", async () => {
-  return {
-    SessionProvider: ({ children }: { children: React.ReactNode }) => (
-      <>{children}</>
-    ),
-    useSession: vi.fn(() => ({
-      data: {
-        user: {
-          app_role: ["cas_admin"],
-        },
-      },
-    })),
-  };
-});
-
-vi.mock("next-auth", () => ({
-  default: vi.fn(),
-  getServerSession: vi.fn(
-    () =>
-      new Promise((resolve) => {
-        resolve({
-          user: {
-            app_role: "cas_admin",
-          },
-        });
-      }),
-  ),
-}));
-
-// TODO: Correctly mock cookies to remove stderr warnings
-// vi.mock("next/headers", () => ({
-//   cookies: vi.fn(),
-// }));
-
-vi.mock("next/cache", () => ({
-  revalidateTag: vi.fn(() => Promise.resolve()),
-  revalidatePath: vi.fn(() => Promise.resolve()),
-}));
-
-// TODO: Remove skip and fix this test
 describe("Operations component", () => {
   beforeEach(async () => {
-    vi.restoreAllMocks();
+    vi.clearAllMocks();
     fetchMock.resetMocks();
     fetchMock.enableMocks(); // Enable fetch mocking
   });
