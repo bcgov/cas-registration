@@ -3,67 +3,20 @@ import { createOperationSchema } from "@/app/components/routes/operations/form/O
 import { operationSchema } from "@/app/utils/jsonSchema/operations";
 import createFetchMock from "vitest-fetch-mock";
 import { act, render, screen } from "@testing-library/react";
-import { SessionProvider } from "next-auth/react";
 import { describe, expect, vi } from "vitest";
 import React from "react";
+import { mocks } from "@/tests/setup";
 
 const fetchMock = createFetchMock(vi);
 fetchMock.enableMocks();
 
-// Mock useFormStatus
-vi.mock("react-dom", () => ({
-  useFormStatus: jest.fn().mockReturnValue({ pending: false }),
-}));
-
-const mocks = vi.hoisted(() => {
-  return {
-    useRouter: vi.fn(),
-    useParams: vi.fn(),
-  };
+mocks.useSession.mockReturnValue({
+  data: {
+    user: {
+      app_role: "industry_user_admin",
+    },
+  },
 });
-
-vi.mock("next-auth/react", async (importOriginal) => {
-  const actual = importOriginal();
-  return {
-    ...actual,
-    useSession: vi.fn(() => ({
-      data: {
-        user: {
-          app_role: "industry_admin",
-        },
-      },
-    })),
-    SessionProvider: ({ children }: { children: React.ReactNode }) => (
-      <>{children}</>
-    ),
-  };
-});
-
-vi.mock("next/navigation", () => ({
-  useRouter: () => ({
-    query: { operation: "025328a0-f9e8-4e1a-888d-aa192cb053db" },
-  }),
-  useParams: () => ({
-    formSection: "1",
-    operation: "025328a0-f9e8-4e1a-888d-aa192cb053db",
-  }),
-}));
-
-vi.mock("next/navigation", () => {
-  return {
-    useRouter: mocks.useRouter,
-    useParams: mocks.useParams,
-  };
-});
-
-vi.mock("next/headers", () => ({
-  cookies: vi.fn(),
-}));
-
-vi.mock("next/cache", () => ({
-  revalidateTag: vi.fn(() => Promise.resolve()),
-  revalidatePath: vi.fn(() => Promise.resolve()),
-}));
 
 const mockFormData = {
   id: "025328a0-f9e8-4e1a-888d-aa192cb053db",
@@ -122,7 +75,7 @@ describe("Operations component", () => {
 
   it("renders the empty OperationsForm when no formData is passed", async () => {
     mocks.useRouter.mockReturnValue({
-      query: { operation: "create" },
+      query: { operation: "create", formSection: "1" },
       replace: vi.fn(),
     });
     mocks.useParams.mockReturnValue({
@@ -130,11 +83,7 @@ describe("Operations component", () => {
       operation: "create",
     });
 
-    render(
-      <SessionProvider>
-        <OperationsForm schema={testOperationSchema} formData={{}} />
-      </SessionProvider>,
-    );
+    render(<OperationsForm schema={testOperationSchema} formData={{}} />);
 
     // Test for the Operation Information form heaer
     expect(screen.getByTestId("field-template-label")).toBeVisible();
@@ -157,19 +106,8 @@ describe("Operations component", () => {
   });
 
   it("loads an existing OperationsForm", async () => {
-    mocks.useRouter.mockReturnValue({
-      query: { operation: "test-id" },
-      replace: vi.fn(),
-    });
-    mocks.useParams.mockReturnValue({
-      formSection: "1",
-      operation: "test-id",
-    });
-
     render(
-      <SessionProvider>
-        <OperationsForm schema={testOperationSchema} formData={mockFormData} />
-      </SessionProvider>,
+      <OperationsForm schema={testOperationSchema} formData={mockFormData} />,
     );
 
     // Operation Name
@@ -188,8 +126,6 @@ describe("Operations component", () => {
     );
 
     // Regulated product names
-    // TODO: Find a better way to test the multi-select widget/mui autocomplete
-    // Just verifying that the option in the form data is visible
     expect(
       screen.getByText("BC-specific refinery complexity throughput"),
     ).toBeVisible();
@@ -203,19 +139,13 @@ describe("Operations component", () => {
   });
 
   it("shows the success message when operationName is defined", async () => {
-    mocks.useRouter.mockReturnValue({
-      query: { operation: "test-id" },
-      replace: vi.fn(),
-    });
     mocks.useParams.mockReturnValue({
       formSection: "3",
       operation: "test-id",
     });
 
     render(
-      <SessionProvider>
-        <OperationsForm schema={testOperationSchema} formData={mockFormData} />
-      </SessionProvider>,
+      <OperationsForm schema={testOperationSchema} formData={mockFormData} />,
     );
 
     const submitButton = screen.getByText(/Submit/i);
