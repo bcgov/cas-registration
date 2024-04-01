@@ -1,4 +1,4 @@
-import { createTheme } from '@mui/material/styles';
+import { createTheme } from "@mui/material/styles";
 import {
   BC_GOV_PRIMARY_BRAND_COLOR_BLUE,
   BC_GOV_BACKGROUND_COLOR_BLUE,
@@ -10,12 +10,12 @@ import {
   BC_GOV_SEMANTICS_RED,
   BC_GOV_SEMANTICS_GREEN,
   DARK_GREY_BG_COLOR,
-} from '@bciers/styles';
-import '@bcgov/bc-sans/css/BCSans.css';
+} from "@bciers/styles";
+import "@bcgov/bc-sans/css/BCSans.css";
 
 const theme = createTheme({
   typography: {
-    fontFamily: 'BCSans, sans-serif',
+    fontFamily: "BCSans, sans-serif",
     // Include "sans-serif" as a fallback font family.
     allVariants: {
       color: BC_GOV_TEXT,
@@ -51,15 +51,15 @@ const theme = createTheme({
     MuiButton: {
       styleOverrides: {
         root: {
-          fontSize: '1rem',
-          textTransform: 'capitalize',
+          fontSize: "1rem",
+          textTransform: "capitalize",
         },
       },
     },
     MuiTypography: {
       styleOverrides: {
         root: {
-          '& a': {
+          "& a": {
             color: BC_GOV_LINKS_COLOR,
           },
         },
@@ -69,11 +69,11 @@ const theme = createTheme({
     MuiTextField: {
       styleOverrides: {
         root: {
-          '& .MuiOutlinedInput-root': {
-            '&:hover fieldset': {
+          "& .MuiOutlinedInput-root": {
+            "&:hover fieldset": {
               borderColor: BC_GOV_LINKS_COLOR,
             },
-            '&.Mui-focused fieldset': {
+            "&.Mui-focused fieldset": {
               borderColor: BC_GOV_LINKS_COLOR,
             },
           },
@@ -83,11 +83,11 @@ const theme = createTheme({
     MuiSelect: {
       styleOverrides: {
         root: {
-          '&:hover .MuiOutlinedInput-notchedOutline': {
+          "&:hover .MuiOutlinedInput-notchedOutline": {
             borderColor: BC_GOV_LINKS_COLOR,
-            borderWidth: '1px',
+            borderWidth: "1px",
           },
-          '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+          "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
             borderColor: BC_GOV_LINKS_COLOR,
           },
         },
@@ -96,14 +96,14 @@ const theme = createTheme({
     MuiOutlinedInput: {
       styleOverrides: {
         root: {
-          '& .MuiOutlinedInput-root': {
-            '& fieldset': {
+          "& .MuiOutlinedInput-root": {
+            "& fieldset": {
               borderColor: DARK_GREY_BG_COLOR,
             },
-            '&:hover fieldset': {
+            "&:hover fieldset": {
               borderColor: BC_GOV_LINKS_COLOR,
             },
-            '&.Mui-focused fieldset': {
+            "&.Mui-focused fieldset": {
               borderColor: BC_GOV_LINKS_COLOR,
             },
           },

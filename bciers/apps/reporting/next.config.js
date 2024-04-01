@@ -1,9 +1,9 @@
 //@ts-check
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const { composePlugins, withNx } = require('@nx/next');
+const { composePlugins, withNx } = require("@nx/next");
 // Next.js doesn't use TS's paths, so we need to use the relative path
-const nextConfigBase = require('../../next.config.base');
+const nextConfigBase = require("../../next.config.base");
 
 /**
  * @type {import('@nx/next/plugins/with-nx').WithNxOptions}
