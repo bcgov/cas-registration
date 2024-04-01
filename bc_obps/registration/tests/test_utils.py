@@ -200,7 +200,7 @@ class TestCheckUserAdminRequestEligibility:
         )
 
         assert (
-            ApplicationAccessService.does_user_belong_to_operator(
+            ApplicationAccessService.is_user_eligible_to_request_access(
                 operator.id,
                 user.user_guid,
             )
@@ -221,7 +221,7 @@ class TestCheckUserAdminRequestEligibility:
             status=UserOperator.Statuses.APPROVED,
         )
         with pytest.raises(Exception, match="Your business bceid does not match that of the approved admin."):
-            ApplicationAccessService.does_user_belong_to_operator(operator.id, user.user_guid)
+            ApplicationAccessService.is_user_eligible_to_request_access(operator.id, user.user_guid)
 
 
 class TestCheckIfRoleAuthorized(TestCase):

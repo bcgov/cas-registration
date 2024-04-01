@@ -9,7 +9,7 @@ class ApplicationAccessService:
         # all approved admins will have the same business_guid so we can use first one
         return UserOperatorDataAccessService.get_approved_admin_users(operator_id).first().business_guid
 
-    def does_user_belong_to_operator(operator_id: int, user_guid: UUID):
+    def is_user_eligible_to_request_access(operator_id: int, user_guid: UUID):
         """
         Check if the business_guid of a user who is requesting access to an operator matches the business_guid of the operator's admin
 
@@ -24,7 +24,6 @@ class ApplicationAccessService:
         users_business_bceid = UserDataAccessService.get_user_by_guid(user_guid).business_guid
 
         if operators_business_bceid != users_business_bceid:
-            # brianna this worked great
             raise Exception("Your business bceid does not match that of the approved admin.")
         return True
 
@@ -57,13 +56,11 @@ class ApplicationAccessService:
         return True
 
     def request_access(operator_id: UUID, user_guid: UUID):
-        if ApplicationAccessService.does_user_belong_to_operator(operator_id, user_guid):
+        if ApplicationAccessService.is_user_eligible_to_request_access(operator_id, user_guid):
             # Making a draft UserOperator instance if one doesn't exist
             user_operator = UserOperatorDataAccessService.get_or_create_user_operator(user_guid, operator_id)
 
         return {"user_operator_id": user_operator.id, "operator_id": user_operator.operator.id}
-
-    # this function could just return boolean or throw exception or whatever, if we control flow with throwing errors we don't need to return anything probably better, success/fail/array of errors also an option
 
     def request_admin_access(operator_id: UUID, user_guid: UUID):
         if ApplicationAccessService.is_user_eligible_to_request_admin_access(user_guid, operator_id):
