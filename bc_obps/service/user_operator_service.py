@@ -20,7 +20,6 @@ class UserOperatorService:
     # Function to create/update an operator when creating/updating a user_operator
     @transaction.atomic()
     def save_operator(updated_data: UserOperatorOperatorIn, operator_instance, user_guid: UUID):
-
         user = UserDataAccessService.get_user_by_guid(user_guid)
 
         existing_physical_address = getattr(getattr(operator_instance, 'physical_address', None), 'id', None)
@@ -44,7 +43,6 @@ class UserOperatorService:
             "cra_business_number",
             "bc_corporate_registry_number",
         ]
-        # brianna update_model_instance probably belongs in a service somewhere
         created_or_updated_operator_instance: Operator = update_model_instance(
             operator_instance, operator_related_fields, updated_data.dict()
         )

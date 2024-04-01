@@ -42,11 +42,9 @@ class ApplicationAccessService:
         """
 
         approved_admins = UserOperatorDataAccessService.get_approved_admin_users(operator_id)
-
         if approved_admins.filter(user_guid=user_guid).exists():
             raise Exception("You are already an admin for this Operator!")
-
-        if len(approved_admins) > 1:
+        if len(approved_admins) > 0:
             raise Exception("This Operator already has an admin user!")
 
         # User already has a pending request for this operator
