@@ -5,7 +5,7 @@ import createFetchMock from "vitest-fetch-mock";
 import { act, render, screen } from "@testing-library/react";
 import { describe, expect, vi } from "vitest";
 import React from "react";
-import { mocks } from "@/tests/setup";
+import mocks from "@/tests/setup/mocks";
 
 const fetchMock = createFetchMock(vi);
 fetchMock.enableMocks();
