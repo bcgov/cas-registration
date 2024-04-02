@@ -1,4 +1,4 @@
-import styles from './Sample.module.css';
+import styles from "./Sample.module.css";
 
 /* eslint-disable-next-line */
 export interface SampleProps {
