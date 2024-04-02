@@ -133,6 +133,7 @@ class TestInitialData(TestCase):
                 ('325120', 'Industrial gas manufacturing'),
                 ('325181', 'Alkali and chlorine manufacturing'),
                 ('325189', 'All other basic inorganic chemical manufacturing'),
+                ('325190', 'Other basic organic chemical manufacturing'),
                 ('327310', 'Cement manufacturing'),
                 ('327410', 'Lime manufacturing'),
                 ('327420', 'Gypsum product manufacturing'),
