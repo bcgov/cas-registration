@@ -33,7 +33,6 @@ vi.mock("next-auth", () => ({
   getServerSession: mocks.getServerSession,
 }));
 
-vi.mock("next/cache", () => ({
-  revalidateTag: vi.fn(() => Promise.resolve()),
-  revalidatePath: vi.fn(() => Promise.resolve()),
+vi.mock("@/app/utils/actions", () => ({
+  actionHandler: mocks.actionHandler,
 }));
