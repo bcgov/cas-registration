@@ -3,6 +3,7 @@ import { act, render, screen } from "@testing-library/react";
 import createFetchMock from "vitest-fetch-mock";
 import { describe, expect, vi } from "vitest";
 import mocks from "@/tests/setup/mocks";
+import { QueryParams, Session } from "@/tests/setup/types";
 
 const fetchMock = createFetchMock(vi);
 fetchMock.enableMocks();
@@ -13,7 +14,12 @@ mocks.useSession.mockReturnValue({
       app_role: "industry_user_admin",
     },
   },
-});
+} as Session);
+
+mocks.useParams.mockReturnValue({
+  formSection: "1",
+  operation: "create",
+} as QueryParams);
 
 describe("Operation component", () => {
   beforeEach(async () => {

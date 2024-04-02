@@ -6,6 +6,7 @@ import { act, render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, vi } from "vitest";
 import React from "react";
 import mocks from "@/tests/setup/mocks";
+import { QueryParams, Router, Session } from "@/tests/setup/types";
 
 const fetchMock = createFetchMock(vi);
 fetchMock.enableMocks();
@@ -16,7 +17,7 @@ mocks.useSession.mockReturnValue({
       app_role: "industry_user_admin",
     },
   },
-});
+} as Session);
 
 const mockFormData = {
   id: "025328a0-f9e8-4e1a-888d-aa192cb053db",
@@ -77,11 +78,11 @@ describe("Operations component", () => {
     mocks.useRouter.mockReturnValue({
       query: { operation: "create", formSection: "1" },
       replace: vi.fn(),
-    });
+    } as Router);
     mocks.useParams.mockReturnValue({
       formSection: "1",
       operation: "create",
-    });
+    } as QueryParams);
 
     render(<OperationsForm schema={testOperationSchema} formData={{}} />);
 
@@ -142,7 +143,7 @@ describe("Operations component", () => {
     mocks.useParams.mockReturnValue({
       formSection: "3",
       operation: "test-id",
-    });
+    } as QueryParams);
 
     render(
       <OperationsForm schema={testOperationSchema} formData={mockFormData} />,

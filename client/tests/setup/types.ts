@@ -1,11 +1,11 @@
-export interface Query {
+export interface QueryParams {
   formSection?: string;
   operation?: string;
   operator?: string;
 }
 
 export interface Router {
-  query: Query;
+  query: QueryParams;
   replace: () => void;
 }
 

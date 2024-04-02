@@ -2,6 +2,16 @@ import Operations from "@/app/components/routes/operations/Operations";
 import "@testing-library/jest-dom";
 import { render, screen } from "@testing-library/react";
 import createFetchMock from "vitest-fetch-mock";
+import mocks from "@/tests/setup/mocks";
+import { Session } from "@/tests/setup/types";
+
+mocks.useSession.mockReturnValue({
+  data: {
+    user: {
+      app_role: "cas_admin",
+    },
+  },
+} as Session);
 
 const fetchMock = createFetchMock(vi);
 fetchMock.enableMocks();
