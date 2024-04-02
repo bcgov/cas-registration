@@ -214,7 +214,7 @@ const userOperator = () => {
 
   check(
     http.put(
-      HOST + "/select-operator/user-operator/update-status",
+      HOST + "/user-operator/update-status",
       JSON.stringify({
         user_guid: newUserGuid,
         status: "Pending",

@@ -12,7 +12,7 @@ class TestUserEndpoint(CommonTestSetup):
         assert response.status_code == 401
 
     # GET USER
-    def test_get_user(self):
+    def test_get_user_by_guid(self):
         # Act
         response = TestUtils.mock_get_with_auth_role(self, 'industry_user', custom_reverse_lazy('get_user'))
         content = response.json()
