@@ -1,10 +1,10 @@
 import Operations from "@/app/components/routes/operations/Operations";
 import "@testing-library/jest-dom";
 import { render, screen } from "@testing-library/react";
-import mocks from "@/tests/setup/mocks";
+import { actionHandler, useSession } from "@/tests/setup/mocks";
 import { Session } from "@/tests/setup/types";
 
-mocks.useSession.mockReturnValue({
+useSession.mockReturnValue({
   data: {
     user: {
       app_role: "cas_admin",
@@ -17,7 +17,7 @@ describe("Operations component", () => {
     vi.clearAllMocks();
   });
   it("renders the Operations grid", async () => {
-    mocks.actionHandler.mockReturnValueOnce({
+    actionHandler.mockReturnValueOnce({
       data: [
         {
           id: "1",

@@ -1,10 +1,10 @@
 import Operation from "@/app/components/routes/operations/form/Operation";
 import { act, render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, vi } from "vitest";
-import mocks from "@/tests/setup/mocks";
+import { actionHandler, useParams, useSession } from "@/tests/setup/mocks";
 import { QueryParams, Session } from "@/tests/setup/types";
 
-mocks.useSession.mockReturnValue({
+useSession.mockReturnValue({
   data: {
     user: {
       app_role: "industry_user_admin",
@@ -12,7 +12,7 @@ mocks.useSession.mockReturnValue({
   },
 } as Session);
 
-mocks.useParams.mockReturnValue({
+useParams.mockReturnValue({
   formSection: "1",
   operation: "create",
 } as QueryParams);
@@ -21,7 +21,7 @@ describe("Operation component", () => {
   beforeEach(async () => {
     vi.clearAllMocks();
     // mock getUserFormData response
-    mocks.actionHandler.mockReturnValueOnce({
+    actionHandler.mockReturnValueOnce({
       first_name: "bc-cas-dev",
       last_name: "Industry User",
       position_title: "Code Monkey",
@@ -33,7 +33,7 @@ describe("Operation component", () => {
     });
 
     // mock getNaicsCodes response
-    mocks.actionHandler.mockReturnValueOnce([
+    actionHandler.mockReturnValueOnce([
       {
         id: 1,
         naics_code: "211110",
@@ -47,7 +47,7 @@ describe("Operation component", () => {
     ]);
 
     // mock getRegulatedProducts response
-    mocks.actionHandler.mockReturnValueOnce([
+    actionHandler.mockReturnValueOnce([
       { id: 1, name: "BC-specific refinery complexity throughput" },
       { id: 2, name: "Cement equivalent" },
     ]);
@@ -93,7 +93,7 @@ describe("Operation component", () => {
 
   it("renders existing form data for existing operations", async () => {
     // mock getOperation response
-    mocks.actionHandler.mockReturnValueOnce({
+    actionHandler.mockReturnValueOnce({
       id: "9a8aae6a-d711-42d4-aa7a-c8d37ff814c4",
       name: "Operation 3",
       type: "Single Facility Operation",
