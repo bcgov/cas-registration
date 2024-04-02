@@ -1,13 +1,13 @@
-import { render, screen } from '@testing-library/react';
-import Page from '../../src/app/page';
+import { render, screen } from "@testing-library/react";
+import Page from "../../src/app/page";
 
 const mockSignIn = jest.fn();
-jest.mock('next-auth/react', () => ({
+jest.mock("next-auth/react", () => ({
   signIn: mockSignIn,
 }));
 
-describe('The landing page', () => {
-  it('renders a login button', () => {
+describe("The landing page", () => {
+  it("renders a login button", () => {
     render(<Page />);
     screen.getByText(/Log in with IDIR/).click();
     expect(mockSignIn).toHaveBeenCalled();
