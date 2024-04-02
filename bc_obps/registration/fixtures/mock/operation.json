@@ -9,7 +9,6 @@
       "name": "Operation 1",
       "type": "Single Facility Operation",
       "naics_code": 19,
-      "previous_year_attributable_emissions": "10001",
       "swrs_facility_id": 1001,
       "bcghg_id": "23219990005",
       "regulated_products": [],
