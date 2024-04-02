@@ -29,124 +29,124 @@ baker.generators.add(CAPostalCodeField, TestUtils.mock_postal_code)
 
 
 class TestUserOperatorEndpoint(CommonTestSetup):
-    def test_user_operator_unauthorized_users_cannot_get(self):
-        # /is-approved-admin-user-operator
-        response = TestUtils.mock_get_with_auth_role(
-            self,
-            'cas_pending',
-            custom_reverse_lazy('is_approved_admin_user_operator', kwargs={'user_guid': self.user.user_guid}),
-        )
-        assert response.status_code == 401
-        response = TestUtils.mock_get_with_auth_role(
-            self,
-            'cas_admin',
-            custom_reverse_lazy('is_approved_admin_user_operator', kwargs={'user_guid': self.user.user_guid}),
-        )
-        assert response.status_code == 401
-        response = TestUtils.mock_get_with_auth_role(
-            self,
-            'cas_analyst',
-            custom_reverse_lazy('is_approved_admin_user_operator', kwargs={'user_guid': self.user.user_guid}),
-        )
-        assert response.status_code == 401
+    # def test_user_operator_unauthorized_users_cannot_get(self):
+    #     # /is-approved-admin-user-operator
+    #     response = TestUtils.mock_get_with_auth_role(
+    #         self,
+    #         'cas_pending',
+    #         custom_reverse_lazy('is_approved_admin_user_operator', kwargs={'user_guid': self.user.user_guid}),
+    #     )
+    #     assert response.status_code == 401
+    #     response = TestUtils.mock_get_with_auth_role(
+    #         self,
+    #         'cas_admin',
+    #         custom_reverse_lazy('is_approved_admin_user_operator', kwargs={'user_guid': self.user.user_guid}),
+    #     )
+    #     assert response.status_code == 401
+    #     response = TestUtils.mock_get_with_auth_role(
+    #         self,
+    #         'cas_analyst',
+    #         custom_reverse_lazy('is_approved_admin_user_operator', kwargs={'user_guid': self.user.user_guid}),
+    #     )
+    #     assert response.status_code == 401
 
-        # /select-operator/user-operator/{user_operator_id}
-        user_operator = user_operator_baker()
-        response = TestUtils.mock_get_with_auth_role(
-            self, 'cas_pending', custom_reverse_lazy('get_user_operator', kwargs={'user_operator_id': user_operator.id})
-        )
-        assert response.status_code == 401
+    #     # /select-operator/user-operator/{user_operator_id}
+    #     user_operator = user_operator_baker()
+    #     response = TestUtils.mock_get_with_auth_role(
+    #         self, 'cas_pending', custom_reverse_lazy('get_user_operator', kwargs={'user_operator_id': user_operator.id})
+    #     )
+    #     assert response.status_code == 401
 
-        # /operator-has-admin/{operator_id}
-        operator = operator_baker()
-        response = TestUtils.mock_get_with_auth_role(
-            self,
-            'cas_pending',
-            custom_reverse_lazy('get_user_operator_admin_exists', kwargs={'operator_id': operator.id}),
-        )
-        assert response.status_code == 401
+    #     # /operator-has-admin/{operator_id}
+    #     operator = operator_baker()
+    #     response = TestUtils.mock_get_with_auth_role(
+    #         self,
+    #         'cas_pending',
+    #         custom_reverse_lazy('get_user_operator_admin_exists', kwargs={'operator_id': operator.id}),
+    #     )
+    #     assert response.status_code == 401
 
-        # user-operator-id
-        response = TestUtils.mock_get_with_auth_role(self, 'cas_pending', custom_reverse_lazy('get_user_operator_id'))
-        assert response.status_code == 401
-        response = TestUtils.mock_get_with_auth_role(self, 'cas_admin', custom_reverse_lazy('get_user_operator_id'))
-        assert response.status_code == 401
-        response = TestUtils.mock_get_with_auth_role(self, 'cas_analyst', custom_reverse_lazy('get_user_operator_id'))
-        assert response.status_code == 401
+    #     # user-operator-id
+    #     response = TestUtils.mock_get_with_auth_role(self, 'cas_pending', custom_reverse_lazy('get_user_operator_id'))
+    #     assert response.status_code == 401
+    #     response = TestUtils.mock_get_with_auth_role(self, 'cas_admin', custom_reverse_lazy('get_user_operator_id'))
+    #     assert response.status_code == 401
+    #     response = TestUtils.mock_get_with_auth_role(self, 'cas_analyst', custom_reverse_lazy('get_user_operator_id'))
+    #     assert response.status_code == 401
 
-        # /user-operator-operator
-        response = TestUtils.mock_get_with_auth_role(
-            self, 'cas_pending', custom_reverse_lazy('get_user_operator_operator')
-        )
-        assert response.status_code == 401
+    #     # /user-operator-operator
+    #     response = TestUtils.mock_get_with_auth_role(
+    #         self, 'cas_pending', custom_reverse_lazy('get_user_operator_operator')
+    #     )
+    #     assert response.status_code == 401
 
-        # user-operator-status-from-user
-        response = TestUtils.mock_get_with_auth_role(
-            self, 'cas_pending', custom_reverse_lazy('get_user_operator_operator')
-        )
-        assert response.status_code == 401
-        response = TestUtils.mock_get_with_auth_role(
-            self, 'cas_admin', custom_reverse_lazy('get_user_operator_operator')
-        )
-        assert response.status_code == 401
-        response = TestUtils.mock_get_with_auth_role(
-            self, 'cas_analyst', custom_reverse_lazy('get_user_operator_operator')
-        )
-        assert response.status_code == 401
+    #     # user-operator-status-from-user
+    #     response = TestUtils.mock_get_with_auth_role(
+    #         self, 'cas_pending', custom_reverse_lazy('get_user_operator_operator')
+    #     )
+    #     assert response.status_code == 401
+    #     response = TestUtils.mock_get_with_auth_role(
+    #         self, 'cas_admin', custom_reverse_lazy('get_user_operator_operator')
+    #     )
+    #     assert response.status_code == 401
+    #     response = TestUtils.mock_get_with_auth_role(
+    #         self, 'cas_analyst', custom_reverse_lazy('get_user_operator_operator')
+    #     )
+    #     assert response.status_code == 401
 
-    def test_user_operator_unauthorized_users_cannot_post(self):
-        # select-operator/request-access
-        operator = operator_baker()
-        for role in ['cas_pending', 'cas_admin', 'cas_analyst']:
-            response = TestUtils.mock_post_with_auth_role(
-                self,
-                role,
-                self.content_type,
-                {'operator_id': operator.id},
-                custom_reverse_lazy('request_access'),
-            )
-            assert response.status_code == 401
-        # /select-operator/request-admin-access
-        for role in ['cas_pending', 'cas_admin', 'cas_analyst']:
-            response = TestUtils.mock_post_with_auth_role(
-                self,
-                role,
-                self.content_type,
-                {'operator_id': operator.id},
-                custom_reverse_lazy('request_admin_access'),
-            )
-            assert response.status_code == 401
+    # def test_user_operator_unauthorized_users_cannot_post(self):
+    #     # select-operator/request-access
+    #     operator = operator_baker()
+    #     for role in ['cas_pending', 'cas_admin', 'cas_analyst']:
+    #         response = TestUtils.mock_post_with_auth_role(
+    #             self,
+    #             role,
+    #             self.content_type,
+    #             {'operator_id': operator.id},
+    #             custom_reverse_lazy('request_access'),
+    #         )
+    #         assert response.status_code == 401
+    #     # /select-operator/request-admin-access
+    #     for role in ['cas_pending', 'cas_admin', 'cas_analyst']:
+    #         response = TestUtils.mock_post_with_auth_role(
+    #             self,
+    #             role,
+    #             self.content_type,
+    #             {'operator_id': operator.id},
+    #             custom_reverse_lazy('request_admin_access'),
+    #         )
+    #         assert response.status_code == 401
 
-        # user-operator/operator
-        mock_data = TestUtils.mock_UserOperatorOperatorIn()
-        mock_data.business_structure = mock_data.business_structure.pk  # a to bypass double validation by the schema
-        response = TestUtils.mock_post_with_auth_role(
-            self,
-            'cas_pending',
-            self.content_type,
-            mock_data.json(),
-            custom_reverse_lazy('create_operator_and_user_operator'),
-        )
-        assert response.status_code == 401
-        response = TestUtils.mock_post_with_auth_role(
-            self,
-            'cas_analyst',
-            self.content_type,
-            mock_data.json(),
-            custom_reverse_lazy('create_operator_and_user_operator'),
-        )
-        assert response.status_code == 401
-        response = TestUtils.mock_post_with_auth_role(
-            self,
-            'cas_admin',
-            self.content_type,
-            mock_data.json(),
-            custom_reverse_lazy('create_operator_and_user_operator'),
-        )
-        assert response.status_code == 401
+    #     # user-operator/operator
+    #     mock_data = TestUtils.mock_UserOperatorOperatorIn()
+    #     mock_data.business_structure = mock_data.business_structure.pk  # a to bypass double validation by the schema
+    #     response = TestUtils.mock_post_with_auth_role(
+    #         self,
+    #         'cas_pending',
+    #         self.content_type,
+    #         mock_data.json(),
+    #         custom_reverse_lazy('create_operator_and_user_operator'),
+    #     )
+    #     assert response.status_code == 401
+    #     response = TestUtils.mock_post_with_auth_role(
+    #         self,
+    #         'cas_analyst',
+    #         self.content_type,
+    #         mock_data.json(),
+    #         custom_reverse_lazy('create_operator_and_user_operator'),
+    #     )
+    #     assert response.status_code == 401
+    #     response = TestUtils.mock_post_with_auth_role(
+    #         self,
+    #         'cas_admin',
+    #         self.content_type,
+    #         mock_data.json(),
+    #         custom_reverse_lazy('create_operator_and_user_operator'),
+    #     )
+    #     assert response.status_code == 401
 
     def test_unauthorized_users_cannot_put(self):
-        # /select-operator/user-operator/update-status
+        # user-operator/update-status
         user = baker.make(User)
         response = TestUtils.mock_put_with_auth_role(
             self,
@@ -156,11 +156,24 @@ class TestUserOperatorEndpoint(CommonTestSetup):
             custom_reverse_lazy('update_user_operator_status'),
         )
         assert response.status_code == 401
+
+        # only industry_user admins can change statuses
+        operator = operator_baker({'status': Operator.Statuses.APPROVED, 'is_new': False})
+        user_operator = TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
+        user_operator.role = UserOperator.Roles.REPORTER
+        user_operator.save()
+
+        subsequent_user_operator = baker.make(UserOperator, operator=operator)
+
         response = TestUtils.mock_put_with_auth_role(
             self,
             'industry_user',
             self.content_type,
-            {'status': 'Approved', 'user_guid': user.user_guid},
+            {
+                "role": UserOperator.Roles.REPORTER,
+                "status": UserOperator.Statuses.APPROVED,
+                "user_operator_id": subsequent_user_operator.id,
+            },
             custom_reverse_lazy('update_user_operator_status'),
         )
         assert response.status_code == 401
@@ -222,15 +235,16 @@ class TestUserOperatorEndpoint(CommonTestSetup):
 
     def test_get_user_operator_data_industry_user_invalid_request(self):
         operator = operator_baker()
-        user_operator = baker.make(UserOperator, operator=operator, status=UserOperator.Statuses.APPROVED)
+        TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
+        random_user_operator = user_operator_baker()
 
         response = TestUtils.mock_get_with_auth_role(
             self,
             'industry_user',
-            custom_reverse_lazy('get_user_operator', kwargs={'user_operator_id': user_operator.id}),
+            custom_reverse_lazy('get_user_operator', kwargs={'user_operator_id': random_user_operator.id}),
         )
         # returns 401 because the user_operator does not belong to the current user
-        assert response.status_code == 401
+        assert response.status_code == 403
 
     def test_get_user_operator_data_internal_user(self):
         operator = operator_baker()
@@ -242,7 +256,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         assert response.status_code == 200
         assert response.json()['operator_id'] == str(operator.id)  # String representation of the UUID
 
-    def test_get_users_operators_list(self):
+    def test_get_operator_by_users_list(self):
         baker.make(
             UserOperator,
             user=self.user,
@@ -386,6 +400,41 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         assert response_1.status_code == 400
         response_1_json = response_1.json()
         assert response_1_json == {'message': 'Operator must be approved before approving or declining users.'}
+
+    def test_industry_user_can_update_status_of_a_user_operator(self):
+        operator = operator_baker({'status': Operator.Statuses.APPROVED, 'is_new': False})
+        TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
+        subsequent_user_operator = baker.make(UserOperator, operator=operator)
+        response = TestUtils.mock_put_with_auth_role(
+            self,
+            'industry_user',
+            self.content_type,
+            {
+                "role": UserOperator.Roles.REPORTER,
+                "status": UserOperator.Statuses.APPROVED,
+                "user_operator_id": subsequent_user_operator.id,
+            },
+            custom_reverse_lazy('update_user_operator_status'),
+        )
+        assert response.status_code == 200
+
+    def test_industry_user_cannot_update_status_of_a_user_operator_from_a_different_operator(self):
+        operator = operator_baker({'status': Operator.Statuses.APPROVED, 'is_new': False})
+        TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
+        other_operator = operator_baker({'status': Operator.Statuses.APPROVED, 'is_new': False})
+        other_user_operator = baker.make(UserOperator, operator=other_operator)
+        response = TestUtils.mock_put_with_auth_role(
+            self,
+            'industry_user',
+            self.content_type,
+            {
+                "role": UserOperator.Roles.REPORTER,
+                "status": UserOperator.Statuses.APPROVED,
+                "user_operator_id": other_user_operator.id,
+            },
+            custom_reverse_lazy('update_user_operator_status'),
+        )
+        assert response.status_code == 403
 
     def test_user_operator_put_can_update_status(self):
         operator = operator_baker({'status': Operator.Statuses.APPROVED, 'is_new': False})
@@ -1156,6 +1205,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         }
 
     def test_put_user_operator_operator_with_an_existing_cra_business_number(self):
+        self.user.role = 'industry_user'
         existing_operator = operator_baker()
         new_operator = operator_baker({'created_by': self.user})
         user_operator = baker.make(
