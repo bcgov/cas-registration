@@ -11,10 +11,10 @@ def handle_exception(error):
     """
     This function handles exceptions for BCEIRS. Returns a 4xx status.
     """
-    if isinstance(error, ObjectDoesNotExist):
+    if isinstance(error, (Http404, ObjectDoesNotExist)):
         return 404, {"message": "Not Found"}
     if isinstance(error, ValidationError):
         return 422, {"message": generate_useful_error(error)}
-    if isinstance(error, Http404):
-        return 404, {"message": "Not Found"}
+    if isinstance(error, PermissionError):
+        return 403, {"message": "Permission denied."}
     return 400, {"message": str(error)}
