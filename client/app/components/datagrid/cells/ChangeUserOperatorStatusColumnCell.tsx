@@ -23,7 +23,7 @@ const handleUpdateStatus = async (
 ) => {
   try {
     return await actionHandler(
-      `registration/select-operator/user-operator/update-status`,
+      `registration/user-operator/update-status`,
       "PUT",
       "",
       {

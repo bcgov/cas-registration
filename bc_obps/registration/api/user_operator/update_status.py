@@ -15,7 +15,7 @@ from registration.api.api_base import router
 
 
 @router.put(
-    "/select-operator/user-operator/update-status",
+    "/user-operator/update-status",
     response={200: UserOperatorOut, custom_codes_4xx: Message},
     url_name="update_user_operator_status",
 )

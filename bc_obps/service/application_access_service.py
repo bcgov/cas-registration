@@ -1,14 +1,11 @@
 from uuid import UUID
+from service.data_access_service.operator_service import OperatorDataAccessService
 from registration.schema.user_operator import UserOperatorOut
 from service.data_access_service.user_operator_service import UserOperatorDataAccessService
 from service.data_access_service.user_service import UserDataAccessService
 
 
 class ApplicationAccessService:
-    def get_operators_business_guid(operator_id: UUID):
-        # all approved admins will have the same business_guid so we can use first one
-        return UserOperatorDataAccessService.get_approved_admin_users(operator_id).first().business_guid
-
     def is_user_eligible_to_request_access(operator_id: int, user_guid: UUID):
         """
         Check if the business_guid of a user who is requesting access to an operator matches the business_guid of the operator's admin
@@ -20,7 +17,7 @@ class ApplicationAccessService:
         Returns:
             True or raises an exception.
         """
-        operators_business_bceid = ApplicationAccessService.get_operators_business_guid(operator_id)
+        operators_business_bceid = OperatorDataAccessService.get_operators_business_guid(operator_id)
         users_business_bceid = UserDataAccessService.get_user_by_guid(user_guid).business_guid
 
         if operators_business_bceid != users_business_bceid:
@@ -67,14 +64,3 @@ class ApplicationAccessService:
             # Making a draft UserOperator instance if one doesn't exist
             user_operator = UserOperatorDataAccessService.get_or_create_user_operator(user_guid, operator_id)
         return {"user_operator_id": user_operator.id, "operator_id": user_operator.operator.id}
-
-    def get_allowed_user_operator(user_guid: UUID, user_operator_id: UUID):
-        user = UserDataAccessService.get_user_by_guid(user_guid)
-        user_operator = UserOperatorDataAccessService.get_user_operator_by_id(user_operator_id)
-        # brianna not sure how this fits into service layer, method could be on data access instead of model
-        if user.is_industry_user():
-            # Industry users can only get their own UserOperator instance
-            if user_operator.user.user_guid != user_guid:
-                # brianna better message?
-                raise Exception("Your user is not associated with this operator.")
-            return UserOperatorOut.from_orm(user_operator)

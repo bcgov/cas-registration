@@ -87,7 +87,6 @@ def raise_401_if_user_not_authorized(
     """
     if not hasattr(request, 'current_user'):
         raise HttpError(401, UNAUTHORIZED_MESSAGE)
-
     user: User = request.current_user
     role_name = getattr(user.app_role, "role_name")
     if role_name not in authorized_app_roles:
@@ -97,12 +96,10 @@ def raise_401_if_user_not_authorized(
         # We always need to pass authorized_user_operator_roles if the user is an industry user
         if not authorized_user_operator_roles:
             raise HttpError(401, UNAUTHORIZED_MESSAGE)
-
         if industry_user_must_be_approved:
             approved_user_operator = user.user_operators.filter(status=UserOperator.Statuses.APPROVED).exists()
             if not approved_user_operator:
                 raise HttpError(401, UNAUTHORIZED_MESSAGE)
-
         # If authorized_user_operator_roles is the same as all industry user operator roles, then we can skip the check (Means all industry user roles are authorized)
         if sorted(authorized_user_operator_roles) != sorted(UserOperator.get_all_industry_user_operator_roles()):
             user_operator_role = None
@@ -115,7 +112,6 @@ def raise_401_if_user_not_authorized(
                 user_operator_role = user_operator.role
             except UserOperator.DoesNotExist:
                 pass
-
             if not user_operator_role or user_operator_role not in authorized_user_operator_roles:
                 raise HttpError(401, UNAUTHORIZED_MESSAGE)
 

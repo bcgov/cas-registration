@@ -24,9 +24,7 @@ from registration.api.utils.current_user_utils import get_current_user_guid
 @authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles(), False)
 @handle_http_errors()
 def get_user_operator_admin_exists(request, operator_id: UUID):
-    # this is maybe going to be a length check instead
     if UserOperatorDataAccessService.get_approved_admin_users(operator_id):
-        # brianna what is this actually going to return
         return 200, True
     else:
         return 200, False

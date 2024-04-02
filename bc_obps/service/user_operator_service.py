@@ -16,6 +16,26 @@ from registration.constants import PAGE_SIZE
 
 
 class UserOperatorService:
+    def check_if_user_eligible_to_access_user_operator(user_guid: UUID, user_operator_id: UUID):
+        """
+        Check if a user is eligible to access a user_operator (i.e., they're allowed to access their own information (user_operator, operations, etc.) but not other people's).
+
+        Args:
+            user_guid (uuid): The user for whom eligibility is being checked.
+            user_operator_id (uuid): The id of the user_operator to which access is being requested.
+
+        Returns:
+            True or raises an exception.
+        """
+
+        user = UserDataAccessService.get_user_by_guid(user_guid)
+        user_operator = UserOperatorDataAccessService.get_user_operator_by_id(user_operator_id)
+        if not user.is_industry_user():
+            # internal users are always allowed to access user operators. (Though the @authorize decorator prevents them from accessing certain external-only endpoints)
+            return True
+        if user_operator.user.user_guid != user_guid:
+            raise PermissionError("Your user is not associated with this operator.")
+        return True
 
     # Function to create/update an operator when creating/updating a user_operator
     @transaction.atomic()
@@ -160,11 +180,21 @@ class UserOperatorService:
         return UserOperatorService.save_operator(updated_data, operator_instance, user_guid)
 
     @transaction.atomic()
-    def update_user_operator_status(user_operator_id: UUID, updated_data, user_guid: UUID):
+    def update_user_operator_status(user_operator_id: UUID, updated_data, current_user_guid: UUID):
         "Function to update only the user_operator status (operator is already in the system and therefore doesn't need to be approved/denied)"
+        current_user = UserDataAccessService.get_user_by_guid(current_user_guid)
+        operator = OperatorDataAccessService.get_operator_by_user_operator_id(user_operator_id)
+        # industry users can only update the status of user_operators from the same operator as themselves
+        if current_user.is_industry_user():
+            # operator_business_guid can be None if no admins are approved yet (business_guids come from admin users)
+            try:
+                operator_business_guid = OperatorDataAccessService.get_operators_business_guid(operator.id)
+            except:
+                operator_business_guid = None
+            if operator_business_guid != current_user.business_guid:
+                raise PermissionError("Your user is not associated with this operator.")
 
         # We can't update the status of a user_operator if the operator has been declined or is awaiting review, or if the operator is new
-        operator = OperatorDataAccessService.get_operator_by_user_operator_id(user_operator_id)
         if operator.status == Operator.Statuses.DECLINED or operator.is_new:
             raise Exception("Operator must be approved before approving or declining users.")
 
@@ -176,7 +206,7 @@ class UserOperatorService:
 
         if user_operator.status in [UserOperator.Statuses.APPROVED, UserOperator.Statuses.DECLINED]:
             user_operator.verified_at = datetime.now(pytz.utc)
-            user_operator.verified_by_id = user_guid
+            user_operator.verified_by_id = current_user_guid
 
             if user_operator.status == UserOperator.Statuses.APPROVED and updated_role != UserOperator.Roles.PENDING:
                 user_operator.role = updated_role
@@ -187,7 +217,7 @@ class UserOperatorService:
             user_operator.role = UserOperator.Roles.PENDING
 
         user_operator.save(update_fields=["status", "verified_at", "verified_by_id", "role"])
-        user_operator.set_create_or_update(user_guid)
+        user_operator.set_create_or_update(current_user_guid)
         if user_operator.status == UserOperator.Statuses.DECLINED:
             # Set role to pending for now but we may want to add a new role for declined
             user_operator.role = UserOperator.Roles.PENDING

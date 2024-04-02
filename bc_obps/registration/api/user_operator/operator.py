@@ -35,6 +35,9 @@ def create_operator_and_user_operator(request, payload: UserOperatorOperatorIn):
 @authorize(["industry_user"], ["admin"])
 @handle_http_errors()
 def update_operator_and_user_operator(request, payload: UserOperatorOperatorIn, user_operator_id: UUID):
+    UserOperatorService.check_if_user_eligible_to_access_user_operator(
+        get_current_user_guid(request), user_operator_id
+    )  # industry users can only update their own user_operators
     return 200, UserOperatorService.update_operator_and_user_operator(
         user_operator_id, payload, get_current_user_guid(request)
     )

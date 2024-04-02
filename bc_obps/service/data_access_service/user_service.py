@@ -9,12 +9,11 @@ class UserDataAccessService:
     def get_user_by_guid(user_guid: str):
         return User.objects.get(user_guid=user_guid)
 
-    def get_users_operator(user_guid: str):
-        user_operator = UserDataAccessService.get_users_user_operator(user_guid)
+    def get_operator_by_user(user_guid: str):
+        user_operator = UserDataAccessService.get_user_operator_by_user(user_guid)
         return user_operator.operator
 
-    # brianna I think django will throw if it doesn't find anything and that **might already get caught in the try/catch decorator??
-    def get_users_user_operator(user_guid: str):
+    def get_user_operator_by_user(user_guid: str):
         user_operator = (
             UserOperator.objects.only("id", "status", "operator__id", "operator__is_new", "operator__status")
             .exclude(
@@ -24,10 +23,6 @@ class UserDataAccessService:
             .get(user_id=user_guid)
         )
         return user_operator
-
-    def get_users_user_operator_id(user_guid: str):
-        user_operator = UserOperator.objects.get(user_id=user_guid)
-        return {"user_operator_id": user_operator.id}
 
     def is_user_an_approved_admin_user_operator(user_guid: str):
         approved_user_operator: bool = UserOperator.objects.filter(
