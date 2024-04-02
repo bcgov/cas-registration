@@ -1,5 +1,5 @@
-import { Grid } from '@mui/material';
-import Main from 'registration/components/layout/Main';
+import { Grid } from "@mui/material";
+import { Main } from "@bciers/components/server";
 
 export default function Index() {
   return (
@@ -8,8 +8,8 @@ export default function Index() {
         container
         spacing={2}
         sx={{
-          marginTop: '24px',
-          marginBottom: '48px',
+          marginTop: "24px",
+          marginBottom: "48px",
         }}
       >
         You have been signed in!
