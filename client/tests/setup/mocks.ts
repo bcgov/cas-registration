@@ -11,6 +11,7 @@
 //  });
 
 const mocks = {
+  actionHandler: vi.fn(),
   useRouter: vi.fn(),
   useParams: vi.fn(),
   useSession: vi.fn(),

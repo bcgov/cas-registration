@@ -1,12 +1,8 @@
 import Operation from "@/app/components/routes/operations/form/Operation";
-import { act, render, screen } from "@testing-library/react";
-import createFetchMock from "vitest-fetch-mock";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, vi } from "vitest";
 import mocks from "@/tests/setup/mocks";
 import { QueryParams, Session } from "@/tests/setup/types";
-
-const fetchMock = createFetchMock(vi);
-fetchMock.enableMocks();
 
 mocks.useSession.mockReturnValue({
   data: {
@@ -24,42 +20,37 @@ mocks.useParams.mockReturnValue({
 describe("Operation component", () => {
   beforeEach(async () => {
     vi.clearAllMocks();
-    fetchMock.resetMocks();
-    fetchMock.enableMocks();
     // mock getUserFormData response
-    fetchMock.mockResponseOnce(
-      JSON.stringify({
-        first_name: "bc-cas-dev",
-        last_name: "Industry User",
-        position_title: "Code Monkey",
-        email: "email@email.com",
-        phone_number: "+16044015432",
-        bceid_business_name: "Existing Operator 2 Legal Name",
-        app_role: { role_name: "industry_user" },
-      }),
-    );
+    mocks.actionHandler.mockReturnValueOnce({
+      first_name: "bc-cas-dev",
+      last_name: "Industry User",
+      position_title: "Code Monkey",
+      email: "email@email.com",
+      phone_number: "+16044015432",
+      bceid_business_name: "Existing Operator 2 Legal Name",
+      app_role: { role_name: "industry_user" },
+      error: null,
+    });
+
     // mock getNaicsCodes response
-    fetchMock.mockResponseOnce(
-      JSON.stringify([
-        {
-          id: 1,
-          naics_code: "211110",
-          naics_description: "Oil and gas extraction (except oil sands)",
-        },
-        {
-          id: 2,
-          naics_code: "212114",
-          naics_description: "Bituminous coal mining",
-        },
-      ]),
-    );
+    mocks.actionHandler.mockReturnValueOnce([
+      {
+        id: 1,
+        naics_code: "211110",
+        naics_description: "Oil and gas extraction (except oil sands)",
+      },
+      {
+        id: 2,
+        naics_code: "212114",
+        naics_description: "Bituminous coal mining",
+      },
+    ]);
+
     // mock getRegulatedProducts response
-    fetchMock.mockResponseOnce(
-      JSON.stringify([
-        { id: 1, name: "BC-specific refinery complexity throughput" },
-        { id: 2, name: "Cement equivalent" },
-      ]),
-    );
+    mocks.actionHandler.mockReturnValueOnce([
+      { id: 1, name: "BC-specific refinery complexity throughput" },
+      { id: 2, name: "Cement equivalent" },
+    ]);
   });
 
   it("renders the dropdown options for fields that require a fetch (e.g. NAICS codes)", async () => {
@@ -102,35 +93,35 @@ describe("Operation component", () => {
 
   it("renders existing form data for existing operations", async () => {
     // mock getOperation response
-    fetchMock.mockResponseOnce(
-      JSON.stringify({
-        id: "9a8aae6a-d711-42d4-aa7a-c8d37ff814c4",
-        name: "Operation 3",
-        type: "Single Facility Operation",
-        opt_in: false,
-        regulated_products: [],
-        previous_year_attributable_emissions: null,
-        status: "Approved",
-        naics_code_id: 21,
-        first_name: "John",
-        last_name: "Doe",
-        email: "john.doe@example.com",
-        phone_number: "+16044011234",
-        position_title: "Senior Officer",
-        street_address: "123 Main St",
-        municipality: "Cityville",
-        province: "ON",
-        postal_code: "A1B 2C3",
-        statutory_declaration: null,
-        bc_obps_regulated_operation: "21-0001",
-        bcghg_id: "23219990003",
-      }),
-    );
+    mocks.actionHandler.mockReturnValueOnce({
+      id: "9a8aae6a-d711-42d4-aa7a-c8d37ff814c4",
+      name: "Operation 3",
+      type: "Single Facility Operation",
+      opt_in: false,
+      regulated_products: [],
+      previous_year_attributable_emissions: null,
+      status: "Approved",
+      naics_code_id: 21,
+      first_name: "John",
+      last_name: "Doe",
+      email: "john.doe@example.com",
+      phone_number: "+16044011234",
+      position_title: "Senior Officer",
+      street_address: "123 Main St",
+      municipality: "Cityville",
+      province: "ON",
+      postal_code: "A1B 2C3",
+      statutory_declaration: null,
+      bc_obps_regulated_operation: "21-0001",
+      bcghg_id: "23219990003",
+    });
 
     render(await Operation({ numRow: "9a8aae6a-d711-42d4-aa7a-c8d37ff814c4" }));
 
-    expect(screen.getByLabelText(/Operation Name+/i)).toHaveValue(
-      "Operation 3",
-    );
+    waitFor(() => {
+      expect(screen.getByLabelText(/Operation Name+/i)).toHaveValue(
+        "Operation 3",
+      );
+    });
   });
 });

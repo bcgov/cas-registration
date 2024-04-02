@@ -1,15 +1,11 @@
 import OperationsForm from "@/app/components/form/OperationsForm";
 import { createOperationSchema } from "@/app/components/routes/operations/form/Operation";
 import { operationSchema } from "@/app/utils/jsonSchema/operations";
-import createFetchMock from "vitest-fetch-mock";
 import { act, render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, vi } from "vitest";
 import React from "react";
 import mocks from "@/tests/setup/mocks";
 import { QueryParams, Router, Session } from "@/tests/setup/types";
-
-const fetchMock = createFetchMock(vi);
-fetchMock.enableMocks();
 
 mocks.useSession.mockReturnValue({
   data: {
@@ -70,8 +66,6 @@ const testOperationSchema = createOperationSchema(
 describe("Operations component", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    fetchMock.resetMocks();
-    fetchMock.enableMocks();
   });
 
   it("renders the empty OperationsForm when no formData is passed", async () => {
@@ -153,15 +147,11 @@ describe("Operations component", () => {
 
     act(() => {
       submitButton.click();
-    });
-
-    act(() => {
-      fetchMock.mockResponseOnce(
-        JSON.stringify({
-          id: "025328a0-f9e8-4e1a-888d-aa192cb053db",
-          name: "Operation 1",
-        }),
-      );
+      mocks.actionHandler.mockReturnValueOnce({
+        id: "025328a0-f9e8-4e1a-888d-aa192cb053db",
+        name: "Operation 1",
+        error: null,
+      });
     });
 
     // Get the success message using the text content since it returns broken up text error
