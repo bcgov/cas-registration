@@ -15,6 +15,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
+      "@bciers/components/server": ["libs/shared/components/src/server.ts"],
       "@bciers/components": ["libs/shared/components/src/index.ts"],
       "@bciers/img/*": ["libs/shared/img/*"],
       "@bciers/styles": ["libs/shared/styles/src/index.ts"],
