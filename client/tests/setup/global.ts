@@ -20,19 +20,15 @@ declare module "vitest" {
 // Extend the global expect object with the custom matchers from jest-dom
 expect.extend(matchers);
 
-vi.mock("next/navigation", () => {
-  return {
-    useRouter,
-    useParams,
-  };
-});
+vi.mock("next/navigation", () => ({
+  useRouter,
+  useParams,
+}));
 
-vi.mock("next-auth/react", async () => {
-  return {
-    SessionProvider,
-    useSession,
-  };
-});
+vi.mock("next-auth/react", async () => ({
+  SessionProvider,
+  useSession,
+}));
 
 vi.mock("next-auth", () => ({
   default: vi.fn(),
