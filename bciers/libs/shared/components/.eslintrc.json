@@ -1,5 +1,6 @@
 {
   "extends": ["plugin:@nx/react", "../../../.eslintrc.json"],
+  "globals": { "vi": true },
   "ignorePatterns": ["!**/*"],
   "overrides": [
     {
