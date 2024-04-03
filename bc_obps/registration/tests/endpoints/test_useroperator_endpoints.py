@@ -124,7 +124,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
             self,
             'cas_pending',
             self.content_type,
-            mock_data.json(),
+            mock_data.model_dump_json(),
             custom_reverse_lazy('create_operator_and_user_operator'),
         )
         assert response.status_code == 401
@@ -132,7 +132,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
             self,
             'cas_analyst',
             self.content_type,
-            mock_data.json(),
+            mock_data.model_dump_json(),
             custom_reverse_lazy('create_operator_and_user_operator'),
         )
         assert response.status_code == 401
@@ -140,7 +140,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
             self,
             'cas_admin',
             self.content_type,
-            mock_data.json(),
+            mock_data.model_dump_json(),
             custom_reverse_lazy('create_operator_and_user_operator'),
         )
         assert response.status_code == 401
@@ -474,7 +474,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
             self, 'industry_user', self.content_type, invalid_payload, custom_reverse_lazy('request_admin_access')
         )
         assert response.status_code == 422
-        assert response.json().get('detail')[0].get('msg') == 'value is not a valid uuid'
+        assert response.json().get('detail')[0].get('msg') == 'UUID input should be a string, bytes or UUID object'
 
     def test_is_approved_admin_user_operator_with_approved_user(self):
         # self is an approved user_operator (this endpoint requires approval to access)
