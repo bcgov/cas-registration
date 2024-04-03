@@ -80,9 +80,9 @@ export class OperationsPOM {
 
   readonly messageInternal: Locator;
 
-  readonly operationApprovedMessage: Locator;
+  readonly messageOperationApproved: Locator;
 
-  readonly operationDeclinedMessage: Locator;
+  readonly messageOperationDeclined: Locator;
 
   readonly table: Locator;
 
@@ -100,25 +100,25 @@ export class OperationsPOM {
       name: ButtonText.ADD_OPERATION,
     });
     this.buttonApprove = page.locator(
-      `button[aria-label="${AriaLabel.APPLICATION_APPROVE}"]`,
+      `button[aria-label="${AriaLabel.APPLICATION_APPROVE}"]`
     );
     this.buttonDecline = page.locator(
-      `button[aria-label="${AriaLabel.APPLICATION_REJECT}"]`,
+      `button[aria-label="${AriaLabel.APPLICATION_REJECT}"]`
     );
     this.buttonExpandAll = page.getByRole("button", {
       name: ButtonText.EXPAND_ALL,
     });
     this.buttonRequestChange = page.locator(
-      `button[aria-label="${AriaLabel.APPLICATION_REQUEST_CHANGE}"]`,
+      `button[aria-label="${AriaLabel.APPLICATION_REQUEST_CHANGE}"]`
     );
     this.buttonRequestChangeCancel = page.locator(
-      `button[aria-label="${AriaLabel.APPLICATION_REQUEST_CHANGE_CANCEL}"]`,
+      `button[aria-label="${AriaLabel.APPLICATION_REQUEST_CHANGE_CANCEL}"]`
     );
     this.buttonRequestChangeConfirm = page.locator(
-      `button[aria-label="${AriaLabel.APPLICATION_REQUEST_CHANGE_CONFIRM}"]`,
+      `button[aria-label="${AriaLabel.APPLICATION_REQUEST_CHANGE_CONFIRM}"]`
     );
     this.buttonRequestChangeUndo = page.locator(
-      `button[aria-label="${AriaLabel.APPLICATION_REQUEST_CHANGE_UNDO}"]`,
+      `button[aria-label="${AriaLabel.APPLICATION_REQUEST_CHANGE_UNDO}"]`
     );
     this.buttonViewDetail = page.getByRole("link", {
       name: ButtonText.VIEW_DETAILS,
@@ -146,17 +146,17 @@ export class OperationsPOM {
     });
     this.modal = page.locator(DataTestID.MODAL);
     this.buttonCancelModal = this.modal.locator(
-      `button[aria-label="${ButtonText.CANCEL}"]`,
+      `button[aria-label="${ButtonText.CANCEL}"]`
     );
     this.buttonConfirmModal = this.modal.locator(
-      `button[aria-label="${ButtonText.CONFIRM}"]`,
+      `button[aria-label="${ButtonText.CONFIRM}"]`
     );
     this.messageInternal = page.getByText(this.internalNote);
-    this.operationApprovedMessage = page.locator(
-      DataTestID.OPERATION_APPROVED_MESSAGE,
+    this.messageOperationApproved = page.locator(
+      DataTestID.OPERATION_APPROVED_MESSAGE
     );
-    this.operationDeclinedMessage = page.locator(
-      DataTestID.OPERATION_DECLINED_MESSAGE,
+    this.messageOperationDeclined = page.locator(
+      DataTestID.OPERATION_DECLINED_MESSAGE
     );
 
     this.table = page.locator(DataTestID.GRID);
@@ -194,7 +194,7 @@ export class OperationsPOM {
     // Locate row containing the status
     const row = await getTableRowByCellSelector(
       this.table,
-      `[data-field="${TableDataField.STATUS}"]:has-text("${status}")`,
+      `[data-field="${TableDataField.STATUS}"]:has-text("${status}")`
     );
 
     // Click the `View Detail` for this row
@@ -234,7 +234,7 @@ export class OperationsPOM {
         await checkLocatorsVisibility(
           this.page,
           [this.buttonApprove, this.buttonDecline, this.buttonRequestChange],
-          false,
+          false
         );
         break;
       case OperationStatus.PENDING:
@@ -256,12 +256,12 @@ export class OperationsPOM {
   async formHasExpectedWorkflow(
     role: string,
     status: string,
-    caseIndex: number,
+    caseIndex: number
   ) {
     // Find a row by status
     const row = await getTableRowByCellSelector(
       this.table,
-      `[data-field="${TableDataField.STATUS}"]:has-text("${status}")`,
+      `[data-field="${TableDataField.STATUS}"]:has-text("${status}")`
     );
     await row.getByRole("link", { name: ButtonText.VIEW_DETAILS }).click();
 
@@ -292,9 +292,9 @@ export class OperationsPOM {
             await this.workflowReviewAction(
               this.buttonApprove,
               this.buttonConfirmModal,
-              this.alertApproved,
+              this.alertApproved
             );
-            await expect(this.operationApprovedMessage).toBeVisible();
+            await expect(this.messageOperationApproved).toBeVisible();
             break;
           case 2:
             // Status Pending
@@ -305,9 +305,9 @@ export class OperationsPOM {
             await this.workflowReviewAction(
               this.buttonDecline,
               this.buttonConfirmModal,
-              this.alertDeclined,
+              this.alertDeclined
             );
-            await expect(this.operationDeclinedMessage).toBeVisible();
+            await expect(this.messageOperationDeclined).toBeVisible();
             break;
           case 3:
             // Status Approved
@@ -318,7 +318,7 @@ export class OperationsPOM {
             await downloadPDF(
               this.page,
               ButtonText.PDF_PREVIEW,
-              LinkSrc.PDF_FILE,
+              LinkSrc.PDF_FILE
             );
             break;
         }
@@ -381,7 +381,7 @@ export class OperationsPOM {
     btnApplication: Locator,
     btnModal: Locator,
     alertMessage: string | RegExp,
-    index: number = 0,
+    index: number = 0
   ) {
     await btnApplication.click();
     await expect(this.modal).toBeVisible();
