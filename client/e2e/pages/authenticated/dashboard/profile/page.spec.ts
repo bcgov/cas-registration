@@ -36,7 +36,7 @@ test.describe("Test Profile Page", () => {
   for (let [role, value] of Object.entries(UserRole)) {
     role = E2EValue.PREFIX + role;
     const storageState = JSON.parse(
-      process.env[role + E2EValue.STORAGE] as string
+      process.env[role + E2EValue.STORAGE] as string,
     );
     test.describe(`Test Role ${value}`, () => {
       // 👤 run test as this role
@@ -53,7 +53,7 @@ test.describe("Test Profile Page", () => {
         await profilePage.updateSuccess();
         //🔍 Assert profile name reflects the updated user profile full name
         await profilePage.userFullNameIsCorrect(
-          E2EValue.INPUT_PROFILE_USERNAME
+          E2EValue.INPUT_PROFILE_USERNAME,
         );
 
         switch (value) {

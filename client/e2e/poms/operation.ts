@@ -11,7 +11,7 @@ import {
   DataTestID,
   E2EValue,
   FormSection,
-  FormTextOperation,
+  FormField,
 } from "@/e2e/utils/enums";
 // ℹ️ Environment variables
 import * as dotenv from "dotenv";
@@ -35,6 +35,14 @@ export class OperationPOM {
 
   readonly fieldOperationName: Locator;
 
+  readonly fieldOperationType: Locator;
+
+  readonly fieldOperationTypeOption: Locator;
+
+  readonly fieldNAICSCode: Locator;
+
+  readonly fieldNAICSCodeOption: Locator;
+
   readonly fieldPOCYes;
 
   readonly fieldPOCFirstName;
@@ -47,13 +55,11 @@ export class OperationPOM {
 
   readonly fieldPOCPhone;
 
-  readonly fieldSFO: Locator;
+  readonly formPage1Title: Locator;
 
-  readonly operationPage1Title: Locator;
+  readonly formPage2Title: Locator;
 
-  readonly operationPage2Title: Locator;
-
-  readonly operationPage3Title: Locator;
+  readonly formPage3Title: Locator;
 
   readonly table: Locator;
 
@@ -74,26 +80,28 @@ export class OperationPOM {
     this.buttonToOperationsList = page.getByRole("button", {
       name: ButtonText.RETURN_OPERATIONS,
     });
-    this.fieldOperationName = page.getByPlaceholder(FormTextOperation.NAME);
-    this.fieldSFO = page.getByPlaceholder(FormTextOperation.SFO);
-    this.fieldSFO = page.fieldPOCYes.getByLabel;
-
-    this.fieldSFO = page.fieldPOCFirstName.getByLabel;
-
-    this.fieldSFO = page.fieldPOCLastName.getByLabel;
-
-    this.fieldSFO = page.ieldPOCPosition.getByLabel;
-
-    this.fieldSFO = page.fieldPOCEmail.getByLabel;
-
-    this.fieldSFO = page.fieldPOCPhone.getByLabel;
-    this.operationPage1Title = page
+    this.fieldNAICSCode = page.getByTestId(FormField.NAICS_CODE);
+    this.fieldNAICSCodeOption = page.getByRole("option", {
+      name: E2EValue.FIXTURE_NAICS,
+    });
+    this.fieldOperationName = page.getByLabel(FormField.OPERATION_NAME);
+    this.fieldOperationType = page.locator(FormField.OPERATION_TYPE);
+    this.fieldOperationTypeOption = page.getByRole("option", {
+      name: E2EValue.FIXTURE_SFO,
+    });
+    this.fieldPOCYes = page.getByLabel(FormField.YES);
+    this.fieldPOCFirstName = page.getByLabel(FormField.FIRST_NAME);
+    this.fieldPOCLastName = page.getByLabel(FormField.LAST_NAME);
+    this.fieldPOCPosition = page.getByLabel(FormField.POSITION);
+    this.fieldPOCEmail = page.getByLabel(FormField.EMAIL);
+    this.fieldPOCPhone = page.getByLabel(FormField.PHONE);
+    this.formPage1Title = page
       .getByTestId("field-template-label")
       .getByText(FormSection.INFO_OPERATION);
-    this.operationPage2Title = page
+    this.formPage2Title = page
       .getByTestId("field-template-label")
       .getByText(FormSection.INFO_POINT_CONTACT);
-    this.operationPage3Title = page
+    this.formPage3Title = page
       .getByTestId("field-template-label")
       .getByText(FormSection.INFO_STATUTORY);
 
@@ -121,22 +129,16 @@ export class OperationPOM {
     });
   }
 
-  async fillOperationFormPage1() {
+  async formFillPage1() {
     // Fill out the operation information form
     await this.fieldOperationName.fill(E2EValue.INPUT_OPERATION_NAME);
-
-    await this.page.locator("#root_type").click();
-    await this.fieldSFO.click();
-
-    await this.page.getByTestId("root_naics_code_id").click();
-    await this.page
-      .getByRole("option", {
-        name: E2EValue.FIXTURE_NAICS,
-      })
-      .click();
+    await this.fieldOperationType.click();
+    await this.fieldOperationTypeOption.click();
+    await this.fieldNAICSCode.click();
+    await this.fieldNAICSCodeOption.click();
   }
 
-  async fillOperationFormPage2() {
+  async formFillPage2() {
     // Fill out the point of contact form
     await this.fieldPOCYes.click();
     await this.fieldPOCFirstName.fill(E2EValue.INPUT_FIRST_NAME);
@@ -152,46 +154,46 @@ export class OperationPOM {
 
   // ###  Assertions ###
 
-  async operationFormIsVisible() {
+  async formIsVisible() {
     const form = this.page.locator("form");
     await form.waitFor();
-    await expect(this.operationPage1Title).toBeVisible();
+    await expect(this.formPage1Title).toBeVisible();
 
     // Check for the presence of the multistep form headers
     expect(
       this.page
         .getByTestId("multistep-header-title")
-        .getByText("Operation Information")
+        .getByText("Operation Information"),
     ).toBeVisible();
     expect(
       this.page
         .getByTestId("multistep-header-title")
-        .getByText("Point of Contact")
+        .getByText("Point of Contact"),
     ).toBeVisible();
     expect(
       this.page
         .getByTestId("multistep-header-title")
-        .getByText("Statutory Declaration")
+        .getByText("Statutory Declaration"),
     ).toBeVisible();
   }
 
-  async operationFormStep2IsVisible() {
-    await expect(this.operationPage2Title).toBeVisible();
+  async formStep2IsVisible() {
+    await expect(this.formPage2Title).toBeVisible();
   }
 
-  async operationFormStep3IsVisible() {
-    await expect(this.operationPage3Title).toBeVisible();
+  async formStep3IsVisible() {
+    await expect(this.formPage3Title).toBeVisible();
   }
 
-  async operationSuccessfulSubmissionIsVisible() {
+  async successfulSubmissionIsVisible() {
     this.page.getByText(
-      "Your application for the B.C. OBPS Regulated Operation ID for Test Operation Name has been received."
+      "Your application for the B.C. OBPS Regulated Operation ID for Test Operation Name has been received.",
     );
     this.page.getByText(
-      "Once approved, you will receive a confirmation email."
+      "Once approved, you will receive a confirmation email.",
     );
     this.page.getByText(
-      "You can then log back in and view the B.C. OBPS Regulated Operation ID for Test Operation Name."
+      "You can then log back in and view the B.C. OBPS Regulated Operation ID for Test Operation Name.",
     );
   }
 

@@ -3,11 +3,25 @@
  * Page objects model (POM) simplify test authoring by creating a higher-level API
  * POM simplify maintenance by capturing element selectors in one place and create reusable code to avoid repetition. *
  */
-import { Page, expect } from "@playwright/test";
+import { Locator, Page, expect } from "@playwright/test";
+// 🧩  Constants
+import { headersUser } from "@/e2e/utils/constants";
 // ☰ Enums
-import { AppRoute, UserOperatorStatus } from "@/e2e/utils/enums";
+import {
+  AppRoute,
+  ButtonText,
+  DataTestID,
+  TableDataField,
+  UserOperatorStatus,
+} from "@/e2e/utils/enums";
 // ℹ️ Environment variables
 import * as dotenv from "dotenv";
+import {
+  getRowCellBySelector,
+  getTableRowByCellSelector,
+  getTableRowById,
+  tableColumnNamesAreCorrect,
+} from "@/e2e/utils/helpers";
 dotenv.config({ path: "./e2e/.env.local" });
 
 export class UsersPOM {
@@ -19,17 +33,59 @@ export class UsersPOM {
 
   readonly url: string = process.env.E2E_BASEURL + AppRoute.USERS;
 
+  readonly table: Locator;
+
+  readonly tableRows: Locator;
+
   constructor(page: Page) {
     this.page = page;
+    this.table = page.locator(DataTestID.GRID);
+    this.tableRows = this.table.locator("tr");
   }
 
   // ###  Actions ###
+  async approveOrDeclineUser(action: string) {
+    // Find first row by pending status (option over using get row by rows index which is a potentially fragile structural assumption)
+    const row = await getTableRowByCellSelector(
+      this.table,
+      `[data-field="${TableDataField.STATUS}"]:has-text("${UserOperatorStatus.PENDING}")`,
+    );
+    // get a handle on the actual rowId of this row
+    const rowId = row.getAttribute("data-id");
+    // click the row's button with action value
+    await this.clickActionButtonInRow(row, action);
+    // return the updated row's id
+    return rowId;
+  }
+
+  async clickActionButtonInRow(row: Locator, buttonText: string) {
+    await row.getByRole("button", { name: new RegExp(buttonText) }).click();
+    await this.page.waitForEvent("response", { timeout: 10000 });
+  }
 
   async route() {
     await this.page.goto(this.url);
   }
 
+  async undoUserStatusChange(rowId: string | null) {
+    // If rowId is null, throw an error indicating that rowId is required
+    if (rowId === null) {
+      throw new Error("rowId is required.");
+    }
+    const row = await getTableRowById(this.table, rowId);
+    // click the row's button with action value
+    await this.clickActionButtonInRow(row, ButtonText.UNDO);
+  }
+
   // ###  Assertions ###
+
+  async tableHasExpectedColumns(role: string) {
+    await tableColumnNamesAreCorrect(this.page, headersUser[role]);
+  }
+
+  async tableIsVisible() {
+    await expect(this.table).toBeVisible();
+  }
 
   async urlIsCorrect() {
     const path = this.url;
@@ -37,72 +93,20 @@ export class UsersPOM {
     expect(currentUrl.toLowerCase()).toMatch(path.toLowerCase());
   }
 
-  async userStatusIsUpdated(expectedStatus: string, rowIndex: number = 0) {
-    // Get all users from the table
-    const userRows = await this.page.$$(".MuiDataGrid-row");
-    const user = userRows[rowIndex];
-
-    const status = await user
-      .$$(".MuiDataGrid-cell")
-      .then((cells) => cells[this.statusColumnIndex].textContent());
-
-    expect(status).toStrictEqual(expectedStatus);
-  }
-
-  async approveOrDeclineUser(
-    action: UserOperatorStatus.APPROVED | UserOperatorStatus.DECLINED,
-    rowIndex: number = 0,
+  async rowHasCorrectStatusValue(
+    rowId: string | null,
+    status: string = UserOperatorStatus.APPROVED || UserOperatorStatus.DECLINED,
   ) {
-    const userRows = await this.page.$$(".MuiDataGrid-row");
-    const user = userRows[rowIndex];
-    const status = await user
-      .$$(".MuiDataGrid-cell")
-      .then((cells) => cells[this.statusColumnIndex].textContent());
-
-    expect(status).toStrictEqual(UserOperatorStatus.PENDING);
-    const buttonText =
-      action === UserOperatorStatus.APPROVED ? "Approve" : "Decline";
-    const actionButton = await user
-      .$$(".MuiDataGrid-cell")
-      .then((cells) =>
-        cells[this.actionColumnIndex].$(`button:has-text('${buttonText}')`),
-      );
-
-    await actionButton?.click();
-
-    await this.page.waitForEvent("response", {
-      timeout: 10000,
-    });
-
-    // Verify that the user status is updated
-    await this.userStatusIsUpdated(action, rowIndex);
-  }
-
-  async undoUserStatusChange(
-    statusToUndo: string = UserOperatorStatus.APPROVED ||
-      UserOperatorStatus.DECLINED,
-    rowIndex: number = 0,
-  ) {
-    const userRows = await this.page.$$(".MuiDataGrid-row");
-    const user = userRows[rowIndex];
-    const status = await user
-      .$$(".MuiDataGrid-cell")
-      .then((cells) => cells[this.statusColumnIndex].textContent());
-
-    expect(status).toStrictEqual(statusToUndo);
-    const undoButton = await user
-      .$$(".MuiDataGrid-cell")
-      .then((cells) =>
-        cells[this.actionColumnIndex].$("button:has-text('Undo')"),
-      );
-
-    await undoButton?.click();
-
-    await this.page.waitForEvent("response", {
-      timeout: 10000,
-    });
-
-    // Verify that the user status is updated to "Pending"
-    await this.userStatusIsUpdated(UserOperatorStatus.PENDING, rowIndex);
+    // If rowId is null, throw an error indicating that rowId is required
+    if (rowId === null) {
+      throw new Error("rowId is required.");
+    }
+    const row = await getTableRowById(this.table, rowId);
+    const statusCell = await getRowCellBySelector(
+      row,
+      `[data-field="${TableDataField.STATUS}"]:has-text("${status}")`,
+    );
+    const statusText = await statusCell.textContent();
+    await expect(statusText).toBe(status);
   }
 }

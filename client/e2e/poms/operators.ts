@@ -17,6 +17,7 @@ import {
   UserRole,
   DataTestID,
   MessageTextOperators,
+  E2EValue,
 } from "@/e2e/utils/enums";
 // 🛠️ Helpers
 import {
@@ -27,7 +28,7 @@ import {
   tableColumnNamesAreCorrect,
   checkFormFieldsReadOnly,
   checkAlertMessage,
-  getTableRow,
+  getTableRowByCellSelector,
 } from "@/e2e/utils/helpers";
 // ℹ️ Environment variables
 import * as dotenv from "dotenv";
@@ -84,10 +85,10 @@ export class OperatorsPOM {
     });
     this.modal = page.locator(DataTestID.MODAL);
     this.buttonCancelModal = this.modal.locator(
-      `button[aria-label="${AriaLabel.MODAL_CANCEL}"]`,
+      `button[aria-label="${ButtonText.CANCEL}"]`,
     );
     this.buttonConfirmModal = this.modal.locator(
-      `button[aria-label="${AriaLabel.MODAL_CONFIRM}"]`,
+      `button[aria-label="${ButtonText.CONFIRM}"]`,
     );
     this.messageInternal = page.getByText(MessageTextOperators.NOTE_INTERNAL);
     this.messageNewOperator = page.getByText(MessageTextOperators.NOTE_NEW);
@@ -95,17 +96,22 @@ export class OperatorsPOM {
   }
 
   // ###  Actions ###
+  async navigateBack() {
+    // Navigate back to the table
+    await this.linkOperators.click();
+  }
+
   async route() {
     await this.page.goto(this.url);
   }
 
   // ###  Assertions ###
 
-  async detailsHasExpectedUX(status: string) {
+  async formHasExpectedUX(status: string) {
     // Locate row containing the status
-    const row = await getTableRow(
+    const row = await getTableRowByCellSelector(
       this.table,
-      `[role="cell"][data-field="${TableDataField.STATUS}"]:has-text("${status}")`,
+      `[data-field="${TableDataField.STATUS}"]:has-text("${status}")`,
     );
 
     // Click the `View Detail` for this status row
@@ -144,25 +150,34 @@ export class OperatorsPOM {
         break;
     }
 
-    // Navigate back to the table
-    await this.linkOperators.click();
-    await this.table;
+    // 🛸 Navigate back
+    await this.navigateBack();
+    // 🔍 Assert table is visible
+    await this.tableIsVisible();
   }
 
-  async detailsHasExpectedWorkflow(role: string, rowIndex: number) {
-    // view details form for this row
-    await this.buttonViewDetail.nth(rowIndex).click();
-
+  async formHasExpectedWorkflow(role: string, caseIndex: number) {
     switch (role) {
       case UserRole.CAS_ADMIN:
-        switch (rowIndex) {
-          case 2:
-            // Status Pending, Operator New
+        // Find first row by operator, status
+        // option over using get row by rows index which is a potentially fragile structural assumption
+        switch (caseIndex) {
+          case 1:
+            // Row: Operator New, Status Pending
             // Workflow: Approve new operator and admin request
             // - new operator message is visible
             // - cannot approve admin access request
             // - can approve operator
             // - can approve admin access request
+
+            // Click the `View Detail` for first row by new operator, pending status
+            await this.table
+              .getByRole("row")
+              .filter({ hasText: E2EValue.FIXTURE_OPERATOR_NEW })
+              .filter({ hasText: UserOperatorStatus.PENDING })
+              .getByRole("link", { name: ButtonText.VIEW_DETAILS })
+              .first()
+              .click();
 
             // New operator note is visible
             await expect(this.messageNewOperator).toBeVisible();
@@ -187,12 +202,21 @@ export class OperatorsPOM {
               1,
             );
             break;
-          case 3:
-            // Status Pending, Operator New
+          case 2:
+            // Row: Operator New, Status Pending
             // Workflow: Reject new operator
             // - new operator message is visible (tested with row index 2)
             // - cannot reject admin access request
             // - can reject operator
+
+            // Click the `View Detail` for first row by new operator, pending status
+            await this.table
+              .getByRole("row")
+              .filter({ hasText: E2EValue.FIXTURE_OPERATOR_NEW })
+              .filter({ hasText: UserOperatorStatus.PENDING })
+              .getByRole("link", { name: ButtonText.VIEW_DETAILS })
+              .first()
+              .click();
 
             // cas_admin is not allowed to decline an admin access request if the Operator is new and hasn't been Approved yet
             await this.workflowReviewAction(
@@ -215,13 +239,22 @@ export class OperatorsPOM {
               false,
             );
             break;
-          case 5:
-            // Status Pending, Operator Existing
+          case 3:
+            // Row: Operator Existing, Status Pending
             // Workflow: Approve existing operator admin request
             // - new operator message is NOT visible
             // - Operator info section header is collapsed
             // - only admin request approve button/reject button are visible
             // - can reject admin access request
+
+            // Click the `View Detail` for first row by existing operator, pending status
+            await this.table
+              .getByRole("row")
+              .filter({ hasText: E2EValue.FIXTURE_OPERATOR_EXISTING })
+              .filter({ hasText: UserOperatorStatus.PENDING })
+              .getByRole("link", { name: ButtonText.VIEW_DETAILS })
+              .first()
+              .click();
 
             //  New operator note is NOT visible
             await expect(this.messageNewOperator).not.toBeVisible();
@@ -243,28 +276,35 @@ export class OperatorsPOM {
               MessageTextOperators.ALERT_ADMIN_APPROVED,
             );
             break;
-          case 15:
-            // Status Pending, Operator Existing
+          case 4:
+            // Row: Operator Existing, Status Pending
             // Workflow: Reject existing operator admin request
             // - new operator message is NOT visible (tested with row index 5)
             // - Operator info section header is collapsed (tested with row index 5)
             // - only admin request approve button/reject button are visible (tested with row index 5)
             // - can reject admin access request
 
+            // Click the `View Detail` for first row by existing operator, pending status
+            await this.table
+              .getByRole("row")
+              .filter({ hasText: E2EValue.FIXTURE_OPERATOR_EXISTING })
+              .filter({ hasText: UserOperatorStatus.PENDING })
+              .getByRole("link", { name: ButtonText.VIEW_DETAILS })
+              .first()
+              .click();
             // cas_admin is able to Reject admin request
             await this.workflowReviewAction(
               this.buttonsDecline.last(),
               this.buttonConfirmModal,
               MessageTextOperators.ALERT_ADMIN_DECLINED,
             );
-
             break;
         }
+        // 🛸 Navigate back
+        await this.navigateBack();
+        // 🔍 Assert table is visible
+        await this.tableIsVisible();
     }
-
-    // Navigate back to the table
-    await this.linkOperators.click();
-    await this.table;
   }
 
   async tableIsVisible() {

@@ -9,20 +9,25 @@ import {
   AppRoute,
   ButtonText,
   E2EValue,
-  FormTextOperator,
-  FormTextOperatorSelect,
+  FormField,
   MessageTextOperator,
   MessageTextOperatorSelect,
 } from "@/e2e/utils/enums";
 // ℹ️ Environment variables
 import * as dotenv from "dotenv";
-import { getFieldAlerts, getFieldRequired } from "@/e2e/utils/helpers";
+import {
+  checkFormFieldsReadOnly,
+  fillAllFormFields,
+  getAllFormInputs,
+} from "@/e2e/utils/helpers";
 dotenv.config({ path: "./e2e/.env.local" });
 
 export class OperatorPOM {
   readonly page: Page;
 
   readonly url: string = process.env.E2E_BASEURL + AppRoute.OPERATOR;
+
+  readonly buttonAddParentCompany: Locator;
 
   readonly buttonEdit: Locator;
 
@@ -40,11 +45,21 @@ export class OperatorPOM {
 
   readonly buttonYesThisIsMyOperator: Locator;
 
-  readonly fieldCRA: Locator;
+  readonly fieldBCCrn: Locator;
+
+  readonly fieldHasParentCompany: Locator;
 
   readonly fieldLegalName: Locator;
 
+  readonly fieldPostal: Locator;
+
+  readonly fieldSelectCRA: Locator;
+
+  readonly fieldSelectLegalName: Locator;
+
   readonly fieldSearchByCRA: Locator;
+
+  readonly fieldWebSite: Locator;
 
   readonly formTitle: Locator;
 
@@ -55,6 +70,8 @@ export class OperatorPOM {
   readonly linkReturn: Locator;
 
   readonly messageAccessRequested: Locator;
+
+  readonly messageAddOperatorRequested: Locator;
 
   readonly messageEditInformation: Locator;
 
@@ -70,6 +87,9 @@ export class OperatorPOM {
 
   constructor(page: Page) {
     this.page = page;
+    this.buttonAddParentCompany = page.getByRole("button", {
+      name: ButtonText.ADD_PARENT_COMPANY,
+    });
     this.buttonEdit = page.getByRole("button", {
       name: ButtonText.EDIT,
     });
@@ -94,50 +114,62 @@ export class OperatorPOM {
     this.buttonYesThisIsMyOperator = page.getByRole("button", {
       name: ButtonText.YES_OPERATOR,
     });
+    this.fieldBCCrn = page.getByLabel(FormField.BC_CRN);
+    this.fieldLegalName = page.getByLabel(FormField.LEGAL_NAME);
+    this.fieldHasParentCompany = page.locator(FormField.HAS_PARENT_COMPANY);
+    this.fieldPostal = page.getByLabel(FormField.POSTAL_CODE);
+    this.fieldSelectCRA = page.getByPlaceholder(FormField.PLACEHOLDER_CRA);
+    this.fieldSelectLegalName = page.getByPlaceholder(
+      FormField.PLACEHOLDER_LEGAL_NAME,
+    );
+    this.fieldSearchByCRA = page.getByLabel(FormField.SEARCH_BY_CANADA_REVENUE);
+    this.fieldWebSite = page.getByLabel(FormField.WEB_SITE);
+    this.formTitle = page.getByText(FormField.TITLE);
+
     this.linkAddOperator = page.getByRole("link", {
-      name: ButtonText.ADD_OPERATION,
+      name: ButtonText.ADD_OPERATOR,
     });
     this.linkGoBack = page.getByRole("link", {
       name: ButtonText.GO_BACK,
     });
     this.linkReturn = page.getByText(ButtonText.RETURN);
-    this.fieldCRA = page.getByPlaceholder(FormTextOperatorSelect.INPUT_CRA);
-    this.fieldLegalName = page.getByPlaceholder(
-      FormTextOperatorSelect.INPUT_LEGAL_NAME
-    );
-    this.fieldSearchByCRA = page.getByLabel(
-      FormTextOperatorSelect.SEARCH_BY_CANADA_REVENUE
-    );
-    this.formTitle = page.getByText(FormTextOperator.TITLE);
     this.messageAccessRequested = page.getByText(
-      new RegExp(`(${MessageTextOperatorSelect.REQUEST_ACCESS})`, "i")
+      new RegExp(MessageTextOperatorSelect.REQUEST_ACCESS, "i"),
+    );
+    this.messageAddOperatorRequested = page.getByText(
+      new RegExp(MessageTextOperatorSelect.REQUEST_ADD, "i"),
     );
     this.messageAdministratorRequested = page.getByText(
-      new RegExp(`(${MessageTextOperatorSelect.REQUEST_ADMIN})`, "i")
+      new RegExp(MessageTextOperatorSelect.REQUEST_ADMIN, "i"),
     );
     this.messageConfirmation = page.getByText(
-      new RegExp(`(${MessageTextOperatorSelect.OPERATOR_CONFIRM})`, "i")
+      new RegExp(MessageTextOperatorSelect.OPERATOR_CONFIRM, "i"),
     );
     this.messageEditInformation = page.getByText(
-      new RegExp(`(${MessageTextOperator.EDIT_INFO})`, "i")
+      new RegExp(MessageTextOperator.EDIT_INFO, "i"),
     );
     this.messageNoAccess = page.getByText(
-      new RegExp(`(${MessageTextOperatorSelect.NO_ACCESS})`, "i")
+      new RegExp(MessageTextOperatorSelect.NO_ACCESS, "i"),
     );
     this.messageNoAdminSetup = page.getByText(
-      new RegExp(`(${MessageTextOperatorSelect.NO_ADMIN})`, "i")
+      new RegExp(MessageTextOperatorSelect.NO_ADMIN, "i"),
     );
     this.messageSelectOperator = page.getByText(
-      new RegExp(`(${MessageTextOperatorSelect.SELECT_OPERATOR})`, "i")
+      new RegExp(MessageTextOperatorSelect.SELECT_OPERATOR, "i"),
     );
   }
+
   // # Actions
 
   async acceptOperator() {
     await this.buttonYesThisIsMyOperator.click();
   }
 
-  async addOperator() {
+  async clickEditInformation() {
+    await this.buttonEdit.click();
+  }
+
+  async clickAddOperator() {
     await this.linkAddOperator.click();
   }
 
@@ -146,12 +178,12 @@ export class OperatorPOM {
     await this.buttonSaveAndReturn.click();
   }
 
-  async clickEditInformation() {
-    await this.buttonEdit.click();
+  async clickSubmitButton() {
+    await this.buttonSubmit.click();
   }
 
-  async editOperatorInformation() {
-    await this.fieldLegalName.fill(E2EValue.INPUT_LEGAL_NAME_NEW);
+  async fillInformation(selector: string) {
+    await fillAllFormFields(this.page, selector);
   }
 
   async requestAccess() {
@@ -176,29 +208,68 @@ export class OperatorPOM {
 
   async selectByCraNumber(craNumber: string) {
     await this.fieldSearchByCRA.click();
-    await this.fieldCRA.click();
-    await this.fieldCRA.fill(craNumber);
+    await this.fieldSelectCRA.click();
+    await this.fieldSelectCRA.fill(craNumber);
     await this.buttonSearchOperator.click();
   }
 
   async selectByLegalName(name: string, legalName: string) {
-    await this.fieldLegalName.click();
-    await this.fieldLegalName.fill(name);
-    await this.page.getByText(legalName).click();
-    await this.buttonSelectOperator.click();
+    await this.fieldSelectLegalName.click();
+    await this.fieldSelectLegalName.fill(name);
+    // const actualValue = await this.fieldSelectLegalName.getAttribute("value");
+    // expect(actualValue).toBe(name);
+    // Dispatch a change event to simulate ensure downstream triggers
+    // await this.fieldSelectLegalName.dispatchEvent("change");
+    await this.page.getByRole("option", { name: legalName }).click();
+    this.buttonSelectOperator.click();
+  }
+
+  async triggerErrorsFieldFormat() {
+    await this.fieldBCCrn.fill(E2EValue.INPUT_BAD_BC_CRN);
+    await this.fieldPostal.fill(E2EValue.INPUT_BAD_POSTAL);
+    await this.fieldWebSite.fill(E2EValue.INPUT_BAD_WEB_SITE);
+    await this.clickSubmitButton();
+  }
+
+  async triggerErrorsFieldRequired() {
+    await this.clickSubmitButton();
+    // ❗ Add short timeout to mitigate the Firefox text rendering issue causing spurious screenshot failures
+    await this.page.waitForTimeout(500);
   }
 
   // # Assertions
 
-  async checkRequiredFieldValidationErrors() {
-    // Locate all required fields
-    const requiredFields = await getFieldRequired(this.page);
-    // Submit
-    await this.buttonSubmit.click();
-    // Locate all alert elements within the fieldset
-    const alertElements = await getFieldAlerts(this.page);
-    // 🔍 Assert there to be exactly the same number of required fields and alert elements
-    await expect(requiredFields?.length).toBe(alertElements.length);
+  async formIsDisabled() {
+    const allFormFields = await getAllFormInputs(this.page);
+    await checkFormFieldsReadOnly(allFormFields);
+  }
+
+  async formIsEnabled() {
+    const allFormFields = await getAllFormInputs(this.page);
+    await checkFormFieldsReadOnly(allFormFields, false);
+  }
+
+  async formIsSubmitted() {
+    await this.clickSubmitButton();
+    await this.page.waitForResponse((response) => response.status() === 200, {
+      timeout: 30000,
+    });
+    await this.msgAddOperatorIsVisible();
+  }
+
+  async formViewIsCorrect() {
+    await expect(this.messageEditInformation).toBeVisible();
+    await expect(this.formTitle).toBeVisible();
+    await expect(this.buttonEdit).toBeVisible();
+    await expect(this.buttonSaveAndReturn).toBeVisible();
+  }
+
+  async msgAccessRequestedIsVisible() {
+    await expect(this.messageAccessRequested).toBeVisible();
+  }
+
+  async msgAddOperatorIsVisible() {
+    await expect(this.messageAddOperatorRequested).toBeVisible();
   }
 
   async msgAdminRequestedIsVisible() {
@@ -217,27 +288,8 @@ export class OperatorPOM {
     await expect(this.messageNoAdminSetup).toBeVisible();
   }
 
-  async msgAccessRequestedIsVisible() {
-    await expect(this.messageAccessRequested).toBeVisible();
-  }
-
   async msgSelectOpertorIsVisible() {
     await expect(this.messageSelectOperator).toBeVisible();
-  }
-
-  async operatorViewIsCorrect() {
-    await expect(this.messageEditInformation).toBeVisible();
-    await expect(this.formTitle).toBeVisible();
-    await expect(this.buttonEdit).toBeVisible();
-    await expect(this.buttonSaveAndReturn).toBeVisible();
-  }
-
-  async operatorFormIsDisabled() {
-    await expect(this.fieldLegalName).toBeDisabled();
-  }
-
-  async operatorFormIsEnabled() {
-    await expect(this.fieldLegalName).toBeDisabled();
   }
 
   async urlIsCorrect() {

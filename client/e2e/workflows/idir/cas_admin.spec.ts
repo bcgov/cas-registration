@@ -40,11 +40,11 @@ test.describe("Test Workflow cas_admin", () => {
     const operatorsPage = new OperatorsPOM(page);
     // 🛸 Navigate to dashboard page
     await dashboardPage.route();
-    // Click the `Operators` tile
-    await dashboardPage.clickOperatorsTile();
     // 🛸 Navigates to operators tile page
+    await dashboardPage.clickOperatorsTile();
+    // 🔍 Assert that the current URL is operators
     await operatorsPage.urlIsCorrect();
-    // 🧪 `Operators` view, table and data reflect role `cas_admin`
+    // 🔍 Assert `Operators` view, table and data reflect role `cas_admin`
     await operatorsPage.viewIsCorrect(UserRole.CAS_ADMIN);
     await operatorsPage.tableIsVisible();
     await operatorsPage.tableHasExpectedColumns(UserRole.CAS_ADMIN);
@@ -52,28 +52,34 @@ test.describe("Test Workflow cas_admin", () => {
       UserRole.CAS_ADMIN,
       TableDataField.STATUS,
     );
-    // 🧪 cas_admin is able to click "View Details" on each status and see detailed info related to that status
-    await operatorsPage.detailsHasExpectedUX(UserOperatorStatus.DECLINED);
-    await operatorsPage.detailsHasExpectedUX(UserOperatorStatus.APPROVED);
-    await operatorsPage.detailsHasExpectedUX(UserOperatorStatus.PENDING);
-    // 🧪 cas_admin workflow Pending, New Operator, Approve
-    await operatorsPage.detailsHasExpectedWorkflow(UserRole.CAS_ADMIN, 2);
-    // 🧪 cas_admin workflow Pending, New Operator, Reject
-    await operatorsPage.detailsHasExpectedWorkflow(UserRole.CAS_ADMIN, 3);
-    // 🧪 cas_admin workflow Pending, Existing Operator, Approve workflow
-    await operatorsPage.detailsHasExpectedWorkflow(UserRole.CAS_ADMIN, 5);
-    // 🧪 cas_admin workflow Pending, Existing Operator, Reject workflow
-    await operatorsPage.detailsHasExpectedWorkflow(UserRole.CAS_ADMIN, 15);
+    // 🧪 Detail Form UX by Status
+    // 🔍 Assert cas_admin is able to click "View Details" on see detailed info related Declined
+    await operatorsPage.formHasExpectedUX(UserOperatorStatus.DECLINED);
+    // 🔍 Assert cas_admin is able to click "View Details" on see detailed info related Approved
+    await operatorsPage.formHasExpectedUX(UserOperatorStatus.APPROVED);
+    // 🔍 Assert cas_admin is able to click "View Details" on see detailed info related Pending
+    await operatorsPage.formHasExpectedUX(UserOperatorStatus.PENDING);
+    // 🧪 Detail Form Workflows
+    // 🔍 Assert cas_admin workflow New Operator, Pending: Reject
+    await operatorsPage.formHasExpectedWorkflow(UserRole.CAS_ADMIN, 1);
+    // 🔍 Assert cas_admin workflow New Operator, Pending: Reject
+    await operatorsPage.formHasExpectedWorkflow(UserRole.CAS_ADMIN, 2);
+    // 🔍 Assert cas_admin workflow Existing Operator, Pending: Approve
+    await operatorsPage.formHasExpectedWorkflow(UserRole.CAS_ADMIN, 3);
+    // 🔍 Assert cas_admin workflow Existing Operator,  Pending: Reject
+    await operatorsPage.formHasExpectedWorkflow(UserRole.CAS_ADMIN, 4);
   });
+
   test("Operations Tile workflow", async ({ page }) => {
     const dashboardPage = new DashboardPOM(page);
     const operationsPage = new OperationsPOM(page);
     // 🛸 Navigate to dashboard page
     await dashboardPage.route();
-    await dashboardPage.clickOperationsTile();
     // 🛸 Navigates to operations tile page
+    await dashboardPage.clickOperationsTile();
+    // 🔍 Assert that the current URL is operations
     await operationsPage.urlIsCorrect();
-    // 🧪 `Operations` view, table and data reflect role `cas_admin`
+    // 🔍 Assert `Operations` view, table and data reflect role `cas_admin`
     await operationsPage.viewIsCorrect(UserRole.CAS_ADMIN);
     await operationsPage.tableIsVisible();
     await operationsPage.tableHasExpectedColumns(UserRole.CAS_ADMIN);
@@ -81,24 +87,24 @@ test.describe("Test Workflow cas_admin", () => {
       UserRole.CAS_ADMIN,
       TableDataField.STATUS,
     );
-    // 🧪 cas_admin is able to click "View Details" on each status and see detailed info related to that status
-    await operationsPage.detailsHasExpectedUX(OperationStatus.DECLINED);
-    await operationsPage.detailsHasExpectedUX(OperationStatus.APPROVED);
-    await operationsPage.detailsHasExpectedUX(OperationStatus.PENDING);
-    // 🧪 cas_admin workflow Pending, Request Changes, Undo (Request Changes), Approve
-    await operationsPage.detailsHasExpectedWorkflow(
+    // 🔍 Assert cas_admin is able to click "View Details" on each status and see detailed info related to that status
+    await operationsPage.formHasExpectedUX(OperationStatus.DECLINED);
+    await operationsPage.formHasExpectedUX(OperationStatus.APPROVED);
+    await operationsPage.formHasExpectedUX(OperationStatus.PENDING);
+    // 🔍 Assert cas_admin workflow Pending, Request Changes, Undo (Request Changes), Approve
+    await operationsPage.formHasExpectedWorkflow(
       UserRole.CAS_ADMIN,
       OperationStatus.PENDING,
       1,
     );
-    // 🧪 cas_admin workflow Pending, Decline
-    await operationsPage.detailsHasExpectedWorkflow(
+    // 🔍 Assert cas_admin workflow Pending, Decline
+    await operationsPage.formHasExpectedWorkflow(
       UserRole.CAS_ADMIN,
       OperationStatus.PENDING,
       2,
     );
-    // 🧪 cas_admin workflow Approved, Preview the Statutory Declaration PDF
-    await operationsPage.detailsHasExpectedWorkflow(
+    // 🔍 Assert cas_admin workflow Approved, Preview the Statutory Declaration PDF
+    await operationsPage.formHasExpectedWorkflow(
       UserRole.CAS_ADMIN,
       OperationStatus.APPROVED,
       3,

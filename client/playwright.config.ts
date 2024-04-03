@@ -1,8 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
-// 👌 Best Practice:
-// prefer user-facing attributes to XPath or CSS selectors
-// this verifies that the application code works for the end users
-// find locators using codegen to record user actions, e.g.: npx playwright codegen http://localhost:3000
+// Find locators using codegen to record user actions
+// Best Practice: prefer user-facing attributes to XPath or CSS locator selectors
+// cd client && npx playwright codegen http://localhost:3000
 
 /**
  * Read environment variables from file.

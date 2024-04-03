@@ -2,12 +2,17 @@
 export enum AppRole {
   ADMIN = "admin",
 }
+
 // 🔘 button text
 export enum ButtonText {
+  ADD_PARENT_COMPANY = "Add another parent company",
+  APPROVE = "Approve",
   ADD_OPERATION = "Add Operation",
+  ADD_OPERATOR = "Add Operator",
   CANCEL = "Cancel",
   CONFIRM = "Confirm",
   CONTINUE = "Continue",
+  DECLINE = "Decline",
   EDIT = "Edit Information",
   EXPAND_ALL = "Expand All",
   GO_BACK = "Go Back",
@@ -28,6 +33,7 @@ export enum ButtonText {
   SEARCH_OPERATOR = "Search Operator",
   SELECT_OPERATOR = "Select Operator",
   SUBMIT = "Submit",
+  UNDO = "Undo",
   VIEW_DETAILS = "View Details",
   YES_OPERATOR = "Yes this is my operator",
 }
@@ -44,7 +50,7 @@ export enum AppRoute {
   USERS = "dashboard/users",
 }
 
-// 👋 playwright selectors
+// 👋 playwright aria selectors
 export enum AriaLabel {
   APPLICATION_APPROVE = "Approve application",
   APPLICATION_REJECT = "Reject application",
@@ -54,10 +60,10 @@ export enum AriaLabel {
   APPLICATION_REQUEST_CHANGE_UNDO = "Undo Request Changes",
 }
 
-// 👋 playwright selectors targeting an HTML element
+// 👋 playwright ID selectors targeting an HTML element
 export enum DataTestID {
   ERROR_PROFILE = '[data-testid="alert-error-user-profile"]',
-  GRID = ".MuiDataGrid-root", //'[data-testid="grid-root"]',
+  GRID = ".MuiDataGrid-root", //'[data-testid="grid-root"]' not working?
   MESSAGE_PENDING = '[data-testid="dashboard-pending-message"]',
   NOTFOUND = '[data-testid="not-found"]',
   PROFILE = '[data-testid="nav-user-profile"]',
@@ -68,24 +74,39 @@ export enum DataTestID {
 
 // E2E values
 export enum E2EValue {
+  FIXTURE_EXISTING = "Existing",
   FIXTURE_LEGAL_NAME = "Operator 1 Legal Name",
   FIXTURE_NAICS = "211110 - Oil and gas extraction (except oil sands)",
-  INPUT_CRA = "987654321",
+  FIXTURE_OPERATOR_NEW = "New Operator",
+  FIXTURE_OPERATOR_EXISTING = "Existing Operator",
+  FIXTURE_SFO = "Single Facility Operation",
+  INPUT_BAD_BC_CRN = "234rtf",
+  INPUT_BAD_CRA = "123",
+  INPUT_BAD_PHONE = "111",
+  INPUT_BAD_POSTAL = "garbage",
+  INPUT_BAD_WEB_SITE = "bad website",
+  INPUT_BC_CRN = "AAA1111111",
+  INPUT_BUSINESS_STRUCTRE = "General Partnership",
+  INPUT_CRA = "123454321",
   INPUT_EMAIL = "test@test.com",
   INPUT_FIRST_NAME = "Test First Name",
   INPUT_LAST_NAME = "Test Last Name",
   INPUT_LEGAL_NAME = "Operator",
-  INPUT_LEGAL_NAME_NEW = "New Legal Name",
   INPUT_OPERATION_NAME = "Test Operation Name",
   INPUT_PHONE = "604 401 5432",
   INPUT_PROFILE_USERNAME = "e2e_ first name* e2e_ last name*",
   INPUT_POSITION = "Test Position Title",
+  INPUT_POSTAL_CODE = "H0H 0H0",
+  INPUT_PROVINCE = "Alberta",
+  INPUT_WEB_SITE = "https://www.website.com",
   PASSWORD = "_PASSWORD",
   PREFIX = "E2E_",
+  SEARCH_CRA = "987654321",
+  SEARCH_LEGAL_NAME = "Operator",
   STORAGE = "_STORAGE",
 }
 
-// 🏁 Form sections
+// 👋 Form sections selectors
 export enum FormSection {
   INFO_OPERATOR = "Operator Information",
   INFO_OPERATION = "Operation Information",
@@ -93,24 +114,42 @@ export enum FormSection {
   INFO_STATUTORY = "Statutory Declaration and Disclaimer",
   INFO_USER = "User Information",
 }
-// 🔍 pom locators
-export enum FormTextOperatorSelect {
-  INPUT_CRA = "Enter CRA Business Number",
-  INPUT_LEGAL_NAME = "Enter Business Legal Name",
+
+// 👋 Form fields selectors
+export enum FormField {
+  BC_CRN = "BC Corporate Registry Number*",
+  BUSINESS_STRUCTURE = "Business Structure*",
+  CRA = "CRA Business Number*",
+  EMAIL = "Email Address*",
+  FIELDSET_OPERATOR = "fieldset#root",
+  FIELDSET_PARENT_COMPANY_0 = "fieldset#root_parent_operators_array_0",
+  FIELDSET_PARENT_COMPANY_1 = "fieldset#root_parent_operators_array_1",
+  FIRST_NAME = "First Name*",
+  HAS_PARENT_COMPANY = "#root_operator_has_parent_operators-0",
+  IS_BUSINESS_ADDRESS_SAME = "Is the business mailing address the same as the physical address?",
+  LAST_NAME = "Last Name*",
+  LEGAL_NAME = "Legal Name*",
+  MUNICIPALITY = "Municipality*",
+  MUNICIPALITY_PHYSICAL = "#root_physical_municipality",
+  MUNICIPALITY_MAILING = "#root_mailing_municipality",
+  NAICS_CODE = "root_naics_code_id",
+  OPERATION_NAME = "Operation Name*",
+  OPERATION_TYPE = "#root_type",
+  PHONE = "Phone Number*",
+  PLACEHOLDER_LEGAL_NAME = "Enter Business Legal Name",
+  PLACEHOLDER_CRA = "Enter CRA Business Number",
+  POSITION = "Position Title*",
+  POSTAL_CODE = "Postal Code*",
+  POSTAL_CODE_PHYSICAL = "#root_physical_postal_code",
+  POSTAL_CODE_MAILING = "#root_mailing_postal_code",
+  PROVINCE = "Province*",
+  PROVINCE_PHYSICAL = "#root_physical_province",
+  PROVINCE_MAILING = "#root_mailing_province",
   SEARCH_BY_CANADA_REVENUE = "Search by Canada Revenue Agency (CRA) Business Number",
   SEARCH_BY_LEGAL_NAME = "Search by Business Legal Name",
-}
-export enum FormTextOperator {
   TITLE = "Operator Information",
-}
-export enum FormTextOperation {
-  NAME = "Operation Name*",
-  POC_FIRST_NAME = "First Name*",
-  POC_LAST_NAME = "Last Name*",
-  POC_POSITION = "Position Title*",
-  POC_EMAIL = "Email Address*",
-  POC_PHONE = "Phone Number*",
-  SFO = "Single Facility Operation",
+  WEB_SITE = "Website (optional)",
+  YES = "Yes",
 }
 
 // 👋 keycloak selectors
@@ -122,18 +161,7 @@ export enum Keycloak {
 // 🔗 link src
 export enum LinkSrc {
   PDF_FILE = "mock_file.pdf",
-  REPORT_PROBLEM = "mailto:GHGRegulator@gov.bc.ca",
-}
-
-// 💬 Dashboard messages
-export enum MessageTextDashboard {
-  DASHBOARD_TILE_OPERATIONS = "Operations ➤",
-  DASHBOARD_TILE_OPERATIONS_MINE = "My Operations",
-  DASHBOARD_TILE_OPERATOR_MINE = "My Operator",
-  DASHBOARD_TILE_OPERATOR_SELECT = "1 pending action(s) required",
-  DASHBOARD_TILE_OPERATORS = "Operators ➤",
-  DASHBOARD_TILE_INDUSTRY_USERS = "User Access Management",
-  REPORT_PROBLEM = "Report problems to GHGRegulator@gov.bc.ca",
+  TILE_REPORT_PROBLEM = "mailto:GHGRegulator@gov.bc.ca",
 }
 
 // 💬 Operations messages
@@ -150,6 +178,7 @@ export enum MessageTextOperatorSelect {
   NO_ADMIN = "does not have Administrator access set up",
   OPERATOR_CONFIRM = "Kindly confirm if this is the operator that you represent.",
   REQUEST_ACCESS = "Your access request has been sent",
+  REQUEST_ADD = "Your request to add",
   REQUEST_ADMIN = "has been received and will be reviewed",
   SELECT_OPERATOR = "Which operator would you like to log in to?",
   SEARCH_BY_CANADA_REVENUE = "Search by Canada Revenue Agency (CRA) Business Number",
@@ -199,11 +228,22 @@ export enum OperationStatus {
   DECLINED = "Declined",
 }
 
+// 💬 Dashboard tiles
+export enum TileTextDashboard {
+  TILE_OPERATIONS = "Operations ➤",
+  TILE_OPERATIONS_MINE = "My Operations",
+  TILE_OPERATOR_MINE = "0 pending action(s) required",
+  TILE_OPERATOR_SELECT = "1 pending action(s) required",
+  TILE_OPERATORS = "Operators ➤",
+  TILE_INDUSTRY_USERS = "User Access Management ➤",
+  TILE_REPORT_PROBLEM = "Report problems to GHGRegulator@gov.bc.ca",
+}
+
 // 📝 Status LOV UserOperator
 export enum UserOperatorStatus {
-  PENDING = "Pending",
   APPROVED = "Approved",
   DECLINED = "Declined",
+  PENDING = "Pending",
 }
 
 // 🤳 UUIDs UserOperator
@@ -211,9 +251,10 @@ export enum UserOperatorUUID {
   INDUSTRY_USER_ADMIN = "9bb541e6-41f5-47d3-8359-2fab4f5bc4c0",
 }
 
-// 🏁 Table data field
+// 👋  Table data field selectors
 export enum TableDataField {
   STATUS = "status",
+  BCEID_BUSINESS_NAME = "bceid_business_name",
 }
 
 //  // 👤  User roles

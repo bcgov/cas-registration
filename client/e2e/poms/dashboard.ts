@@ -9,7 +9,8 @@ import {
   AppRoute,
   DataTestID,
   LinkSrc,
-  MessageTextDashboard,
+  TileTextDashboard,
+  UserRole,
 } from "@/e2e/utils/enums";
 // ℹ️ Environment variables
 import * as dotenv from "dotenv";
@@ -43,33 +44,29 @@ export class DashboardPOM {
     this.page = page;
     this.messagePending = page.locator(DataTestID.MESSAGE_PENDING);
     this.operationsTile = page.getByRole("link", {
-      name: MessageTextDashboard.DASHBOARD_TILE_OPERATIONS,
+      name: TileTextDashboard.TILE_OPERATIONS,
     });
-    this.operationsTileIndustry = page.getByText(
-      MessageTextDashboard.DASHBOARD_TILE_OPERATIONS_MINE,
-    );
+    this.operationsTileIndustry = page.getByRole("link", {
+      name: TileTextDashboard.TILE_OPERATIONS,
+    });
     this.operatorsTile = page.getByRole("link", {
-      name: MessageTextDashboard.DASHBOARD_TILE_OPERATORS,
+      name: TileTextDashboard.TILE_OPERATORS,
     });
     this.operatorsTileIndustry = page.getByText(
-      MessageTextDashboard.DASHBOARD_TILE_OPERATOR_MINE,
+      TileTextDashboard.TILE_OPERATOR_MINE,
     );
     this.reportProblemLink = page.getByRole("link", {
-      name: MessageTextDashboard.REPORT_PROBLEM,
+      name: TileTextDashboard.TILE_REPORT_PROBLEM,
     });
     this.selectOperatorTile = page.getByText(
-      MessageTextDashboard.DASHBOARD_TILE_OPERATOR_SELECT,
+      TileTextDashboard.TILE_OPERATOR_SELECT,
     );
-    this.userAccessManagementTileIndustry = page.getByText(
-      MessageTextDashboard.DASHBOARD_TILE_INDUSTRY_USERS,
-    );
+    this.userAccessManagementTileIndustry = page.getByRole("link", {
+      name: TileTextDashboard.TILE_INDUSTRY_USERS,
+    });
   }
 
   // ###  Actions ###
-
-  async clickSelectOperatorTile() {
-    await this.selectOperatorTile.click();
-  }
 
   async clickOperationsTile() {
     await this.operationsTile.click();
@@ -87,6 +84,10 @@ export class DashboardPOM {
     await this.operatorsTileIndustry.click();
   }
 
+  async clickSelectOperatorTile() {
+    await this.selectOperatorTile.click();
+  }
+
   async clickUserAccessManagementTileIndustry() {
     await this.userAccessManagementTileIndustry.click();
   }
@@ -97,11 +98,15 @@ export class DashboardPOM {
 
   // ###  Assertions ###
 
-  async dashboardTilesAreVisibleIndustryAdmin() {
-    await expect(this.operatorsTileIndustry).toBeVisible();
-    await expect(this.operationsTileIndustry).toBeVisible();
-    await expect(this.userAccessManagementTileIndustry).toBeVisible();
-    await expect(this.operationsTileIndustry).toBeVisible();
+  async dashboardTilesAreVisible(role: string) {
+    switch (role) {
+      case UserRole.INDUSTRY_USER_ADMIN:
+        await expect(this.operatorsTileIndustry).toBeVisible();
+        await expect(this.operationsTileIndustry).toBeVisible();
+        await expect(this.userAccessManagementTileIndustry).toBeVisible();
+        await expect(this.operationsTileIndustry).toBeVisible();
+        break;
+    }
     await expect(this.reportProblemLink).toBeVisible();
   }
 
@@ -112,7 +117,7 @@ export class DashboardPOM {
   async problemLinkIsCorrect() {
     await expect(this.reportProblemLink).toHaveAttribute(
       "href",
-      LinkSrc.REPORT_PROBLEM,
+      LinkSrc.TILE_REPORT_PROBLEM,
     );
   }
 

@@ -1,4 +1,4 @@
-import { AppRole, AppRoute, UserRole } from "@/e2e/utils/enums";
+import { AppRoute, UserRole } from "@/e2e/utils/enums";
 
 export const baseUrlSetup = "http://localhost:8000/api/registration/test-setup";
 
@@ -43,6 +43,17 @@ export const headersOperators: Record<string, string[]> = {
     "Operator Legal Name",
     "Status",
     "Action",
+  ],
+};
+
+export const headersUser: Record<string, string[]> = {
+  [UserRole.INDUSTRY_USER_ADMIN]: [
+    "Name",
+    "Email",
+    "BCeID Business",
+    "Access Type",
+    "Status",
+    "Actions",
   ],
 };
 

@@ -28,7 +28,7 @@ import {
   checkLocatorsVisibility,
   downloadPDF,
   getAllFormInputs,
-  getTableRow,
+  getTableRowByCellSelector,
   tableColumnNamesAreCorrect,
 } from "@/e2e/utils/helpers";
 // ℹ️ Environment variables
@@ -100,25 +100,25 @@ export class OperationsPOM {
       name: ButtonText.ADD_OPERATION,
     });
     this.buttonApprove = page.locator(
-      `button[aria-label="${AriaLabel.APPLICATION_APPROVE}"]`
+      `button[aria-label="${AriaLabel.APPLICATION_APPROVE}"]`,
     );
     this.buttonDecline = page.locator(
-      `button[aria-label="${AriaLabel.APPLICATION_REJECT}"]`
+      `button[aria-label="${AriaLabel.APPLICATION_REJECT}"]`,
     );
     this.buttonExpandAll = page.getByRole("button", {
       name: ButtonText.EXPAND_ALL,
     });
     this.buttonRequestChange = page.locator(
-      `button[aria-label="${AriaLabel.APPLICATION_REQUEST_CHANGE}"]`
+      `button[aria-label="${AriaLabel.APPLICATION_REQUEST_CHANGE}"]`,
     );
     this.buttonRequestChangeCancel = page.locator(
-      `button[aria-label="${AriaLabel.APPLICATION_REQUEST_CHANGE_CANCEL}"]`
+      `button[aria-label="${AriaLabel.APPLICATION_REQUEST_CHANGE_CANCEL}"]`,
     );
     this.buttonRequestChangeConfirm = page.locator(
-      `button[aria-label="${AriaLabel.APPLICATION_REQUEST_CHANGE_CONFIRM}"]`
+      `button[aria-label="${AriaLabel.APPLICATION_REQUEST_CHANGE_CONFIRM}"]`,
     );
     this.buttonRequestChangeUndo = page.locator(
-      `button[aria-label="${AriaLabel.APPLICATION_REQUEST_CHANGE_UNDO}"]`
+      `button[aria-label="${AriaLabel.APPLICATION_REQUEST_CHANGE_UNDO}"]`,
     );
     this.buttonViewDetail = page.getByRole("link", {
       name: ButtonText.VIEW_DETAILS,
@@ -146,17 +146,17 @@ export class OperationsPOM {
     });
     this.modal = page.locator(DataTestID.MODAL);
     this.buttonCancelModal = this.modal.locator(
-      `button[aria-label="${ButtonText.CANCEL}"]`
+      `button[aria-label="${ButtonText.CANCEL}"]`,
     );
     this.buttonConfirmModal = this.modal.locator(
-      `button[aria-label="${ButtonText.CONFIRM}"]`
+      `button[aria-label="${ButtonText.CONFIRM}"]`,
     );
     this.messageInternal = page.getByText(this.internalNote);
     this.operationApprovedMessage = page.locator(
-      DataTestID.OPERATION_APPROVED_MESSAGE
+      DataTestID.OPERATION_APPROVED_MESSAGE,
     );
     this.operationDeclinedMessage = page.locator(
-      DataTestID.OPERATION_DECLINED_MESSAGE
+      DataTestID.OPERATION_DECLINED_MESSAGE,
     );
 
     this.table = page.locator(DataTestID.GRID);
@@ -169,27 +169,32 @@ export class OperationsPOM {
     await this.buttonAdd.click();
   }
 
+  async clickViewDetailsButton(index: number = 0) {
+    // Optionally pass the index since there are multiple view details buttons in the fixtures
+    const viewDetailsButtons = await this.page
+      .getByRole("link", {
+        name: ButtonText.VIEW_DETAILS,
+      })
+      .all();
+    await viewDetailsButtons[index].click();
+  }
+
+  async navigateBack() {
+    // Navigate back to the table
+    await this.linkOperations.click();
+  }
+
   async route() {
     await this.page.goto(this.url);
   }
 
   // ### Assertions ###
 
-  async clickViewDetailsButton(index: number = 0) {
-    // Optionally pass the index since there are multiple view details buttons in the fixtures
-    const viewDetailsButtons = await this.page
-      .getByRole("link", {
-        name: /view details/i,
-      })
-      .all();
-    await viewDetailsButtons[index].click();
-  }
-
-  async detailsHasExpectedUX(status: string) {
+  async formHasExpectedUX(status: string) {
     // Locate row containing the status
-    const row = await getTableRow(
+    const row = await getTableRowByCellSelector(
       this.table,
-      `[role="cell"][data-field="${TableDataField.STATUS}"]:has-text("${status}")`
+      `[data-field="${TableDataField.STATUS}"]:has-text("${status}")`,
     );
 
     // Click the `View Detail` for this row
@@ -229,7 +234,7 @@ export class OperationsPOM {
         await checkLocatorsVisibility(
           this.page,
           [this.buttonApprove, this.buttonDecline, this.buttonRequestChange],
-          false
+          false,
         );
         break;
       case OperationStatus.PENDING:
@@ -242,20 +247,21 @@ export class OperationsPOM {
         break;
     }
 
-    // 🔙 Navigate back to the table
-    await this.linkOperations.click();
-    await this.table;
+    // 🛸 Navigate back
+    await this.navigateBack();
+    // 🔍 Assert table is visible
+    await this.tableIsVisible();
   }
 
-  async detailsHasExpectedWorkflow(
+  async formHasExpectedWorkflow(
     role: string,
     status: string,
-    caseIndex: number
+    caseIndex: number,
   ) {
-    // Find a Pending row
-    const row = await getTableRow(
+    // Find a row by status
+    const row = await getTableRowByCellSelector(
       this.table,
-      `[role="cell"][data-field="${TableDataField.STATUS}"]:has-text("${status}")`
+      `[data-field="${TableDataField.STATUS}"]:has-text("${status}")`,
     );
     await row.getByRole("link", { name: ButtonText.VIEW_DETAILS }).click();
 
@@ -286,7 +292,7 @@ export class OperationsPOM {
             await this.workflowReviewAction(
               this.buttonApprove,
               this.buttonConfirmModal,
-              this.alertApproved
+              this.alertApproved,
             );
             await expect(this.operationApprovedMessage).toBeVisible();
             break;
@@ -299,7 +305,7 @@ export class OperationsPOM {
             await this.workflowReviewAction(
               this.buttonDecline,
               this.buttonConfirmModal,
-              this.alertDeclined
+              this.alertDeclined,
             );
             await expect(this.operationDeclinedMessage).toBeVisible();
             break;
@@ -312,15 +318,16 @@ export class OperationsPOM {
             await downloadPDF(
               this.page,
               ButtonText.PDF_PREVIEW,
-              LinkSrc.PDF_FILE
+              LinkSrc.PDF_FILE,
             );
             break;
         }
     }
 
-    // Navigate back to the table
-    await this.linkOperations.click();
-    await this.table;
+    // 🛸 Navigate back
+    await this.navigateBack();
+    // 🔍 Assert table is visible
+    await this.tableIsVisible();
   }
 
   async tableHasExpectedColumns(role: string) {
@@ -347,14 +354,14 @@ export class OperationsPOM {
     await checkColumnTextVisibility(this.table, column, expectedValues);
   }
 
+  async tableIsVisible() {
+    await expect(this.table).toBeVisible();
+  }
+
   async urlIsCorrect() {
     const path = this.url;
     const currentUrl = this.page.url();
     expect(currentUrl.toLowerCase()).toMatch(path.toLowerCase());
-  }
-
-  async tableIsVisible() {
-    await expect(this.table).toBeVisible();
   }
 
   async viewIsCorrect(role: string) {
@@ -374,7 +381,7 @@ export class OperationsPOM {
     btnApplication: Locator,
     btnModal: Locator,
     alertMessage: string | RegExp,
-    index: number = 0
+    index: number = 0,
   ) {
     await btnApplication.click();
     await expect(this.modal).toBeVisible();
