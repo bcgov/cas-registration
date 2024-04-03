@@ -56,6 +56,9 @@
       "application": {
         "style": "css",
         "linter": "eslint"
+      },
+      "component": {
+        "style": "css"
       }
     },
     "@nx/react": {
