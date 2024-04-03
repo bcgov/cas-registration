@@ -182,6 +182,10 @@ export class OperatorPOM {
     await this.buttonSubmit.click();
   }
 
+  async editOperatorInformation() {
+    await this.fieldLegalName.fill(E2EValue.INPUT_LEGAL_NAME);
+  }
+
   async fillInformation(selector: string) {
     await fillAllFormFields(this.page, selector);
   }

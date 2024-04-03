@@ -181,7 +181,7 @@ export async function fillRequiredFormFields(page: Page) {
       await inputField.click();
       switch (labelText) {
         case FormField.PHONE:
-          await page.getByLabel(labelText).fill(E2EValue.INPUT_PHONE); //Format should be ### ### ####
+          await inputField.fill(E2EValue.INPUT_PHONE); //Format should be ### ### ####
           break;
         default:
           await inputField.fill(`${E2EValue.PREFIX} ${labelText}`);
@@ -199,7 +199,6 @@ export async function fillAllFormFields(page: Page, selector: string) {
     throw new Error("Fieldset not found");
   }
   const fields = await fieldset.locator("label").all();
-  console.log(fields);
   if (fields) {
     for (const input of fields) {
       const labelText = await input.textContent();
@@ -215,72 +214,31 @@ export async function fillAllFormFields(page: Page, selector: string) {
       await inputField.click();
       switch (labelText) {
         case FormField.PHONE:
-          await formSection.getByLabel(labelText).fill(E2EValue.INPUT_PHONE);
+          await inputField.fill(E2EValue.INPUT_PHONE);
           break;
         case FormField.CRA:
-          await formSection.getByLabel(labelText).fill(E2EValue.INPUT_CRA);
+          await inputField.fill(E2EValue.INPUT_CRA);
           break;
         case FormField.BC_CRN:
-          await formSection.getByLabel(labelText).fill(E2EValue.INPUT_BC_CRN);
+          await inputField.fill(E2EValue.INPUT_BC_CRN);
           break;
         case FormField.BUSINESS_STRUCTURE:
+          await inputField.fill(E2EValue.INPUT_BUSINESS_STRUCTRE);
           await formSection
             .getByRole("option", { name: E2EValue.INPUT_BUSINESS_STRUCTRE })
             .click();
           break;
-        case FormField.MUNICIPALITY:
-          // multiple inputs possible
-          const municipalityFieldPhysical = await formSection.locator(
-            FormField.MUNICIPALITY_PHYSICAL,
-          );
-          const municipalityFieldMailing = await formSection.locator(
-            FormField.MUNICIPALITY_MAILING,
-          );
-          // Check if the field is visible before filling
-          if (await municipalityFieldPhysical.isVisible()) {
-            await municipalityFieldPhysical.fill(`E2E ${labelText}`);
-          }
-          // Check if the field is visible before filling
-          if (await municipalityFieldMailing.isVisible()) {
-            await municipalityFieldMailing.fill(`E2E ${labelText}`);
-          }
-          break;
         case FormField.PROVINCE:
-          // multiple inputs possible
-          const provinceFieldPhysical = await formSection.locator(
-            FormField.PROVINCE_PHYSICAL,
-          );
-          const provinceFieldMailing = await formSection.locator(
-            FormField.PROVINCE_MAILING,
-          );
-          // Check if the field is visible before filling
-          if (await provinceFieldPhysical.isVisible()) {
-            await provinceFieldPhysical.fill(E2EValue.INPUT_PROVINCE);
-          }
-          // Check if the field is visible before filling
-          if (await provinceFieldMailing.isVisible()) {
-            await provinceFieldMailing.fill(E2EValue.INPUT_PROVINCE);
-          }
+          await inputField.fill(E2EValue.INPUT_PROVINCE);
+          await formSection
+            .getByRole("option", { name: E2EValue.INPUT_PROVINCE })
+            .click();
           break;
         case FormField.POSTAL_CODE:
-          // multiple inputs possible
-          const postalcodeFieldPhysical = await formSection.locator(
-            FormField.POSTAL_CODE_PHYSICAL,
-          );
-          const postalcodeFieldMailing = await formSection.locator(
-            FormField.POSTAL_CODE_MAILING,
-          );
-          // Check if the field is visible before filling
-          if (await postalcodeFieldPhysical.isVisible()) {
-            await postalcodeFieldPhysical.fill(E2EValue.INPUT_POSTAL_CODE);
-          }
-          // Check if the field is visible before filling
-          if (await postalcodeFieldMailing.isVisible()) {
-            await postalcodeFieldMailing.fill(E2EValue.INPUT_POSTAL_CODE);
-          }
+          await inputField.fill(E2EValue.INPUT_POSTAL_CODE);
           break;
         case FormField.WEB_SITE:
-          await formSection.getByLabel(labelText).fill(E2EValue.INPUT_WEB_SITE);
+          await inputField.fill(E2EValue.INPUT_WEB_SITE);
           break;
         default:
           await inputField.fill(`E2E ${labelText}`);

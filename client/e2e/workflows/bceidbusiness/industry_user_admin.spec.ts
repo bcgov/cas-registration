@@ -12,12 +12,7 @@ import { addPdf, setupTestEnvironment } from "@/e2e/utils/helpers";
 import * as dotenv from "dotenv";
 dotenv.config({ path: "./e2e/.env.local" });
 // ☰ Enums
-import {
-  ButtonText,
-  FormField,
-  UserOperatorStatus,
-  UserRole,
-} from "@/e2e/utils/enums";
+import { ButtonText, UserOperatorStatus, UserRole } from "@/e2e/utils/enums";
 import happoPlaywright from "happo-playwright";
 
 test.beforeEach(async ({ context }) => {
@@ -66,8 +61,8 @@ test.describe("Test Workflow industry_user_admin", () => {
     // 🔍 Assert industry_user_admin is able to edit the operator form
     await operatorPage.clickEditInformation();
     await operatorPage.formIsEnabled();
-    // 👉 Action fill all operator form fields
-    await operatorPage.fillInformation(FormField.FIELDSET_OPERATOR);
+    // 👉 Action edit operator form field(s)
+    await operatorPage.editOperatorInformation();
     // 📷 Cheese!
     await happoPlaywright.screenshot(operatorPage.page, pageContent, {
       component: "Operator Form Page",

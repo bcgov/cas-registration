@@ -91,7 +91,7 @@ export enum E2EValue {
   INPUT_EMAIL = "test@test.com",
   INPUT_FIRST_NAME = "Test First Name",
   INPUT_LAST_NAME = "Test Last Name",
-  INPUT_LEGAL_NAME = "Operator",
+  INPUT_LEGAL_NAME = "New Legal Name",
   INPUT_OPERATION_NAME = "Test Operation Name",
   INPUT_PHONE = "604 401 5432",
   INPUT_PROFILE_USERNAME = "e2e_ first name* e2e_ last name*",
