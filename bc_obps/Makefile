@@ -82,6 +82,11 @@ migrations: ## create the migrations
 migrations:
 	$(POETRY_RUN) python $(MANAGE_PY) makemigrations
 
+.PHONY: migrations_empty
+migrations_empty: ## create a new empty migration file under specified APP_NAME
+migrations_empty:
+	$(POETRY_RUN) python $(MANAGE_PY) makemigrations --empty $(APP_NAME)
+
 .PHONY: superuser
 superuser: ## create a superuser
 superuser:
