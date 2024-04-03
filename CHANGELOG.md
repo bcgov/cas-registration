@@ -1,3 +1,9 @@
+## [1.2.1](https://github.com/bcgov/cas-registration/compare/v1.2.0...v1.2.1) (2024-04-03)
+
+### Bug Fixes
+
+- set user audit columns for documents ([570f6d8](https://github.com/bcgov/cas-registration/commit/570f6d8a3bd0e1b2c1a06958bdb3cefb2e8964ca))
+
 # [1.2.0](https://github.com/bcgov/cas-registration/compare/v1.0.0...v1.2.0) (2024-03-20)
 
 ### Bug Fixes
