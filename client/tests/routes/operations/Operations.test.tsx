@@ -45,7 +45,6 @@ describe("Operations component", () => {
     // Check if the grid of mock data is present
     expect(screen.getByText(/Operation 1/i)).toBeVisible();
     expect(screen.getByText(/Operation 2/i)).toBeVisible();
-    // temporarily commented out because render only renders half the grid
     expect(screen.getAllByText(/not Started/i)).toHaveLength(2);
     expect(
       screen.getAllByRole("link", { name: /start registration/i }),

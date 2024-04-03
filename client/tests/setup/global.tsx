@@ -2,7 +2,6 @@ import type { TestingLibraryMatchers } from "@testing-library/jest-dom/matchers"
 import * as matchers from "@testing-library/jest-dom/matchers";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { expect } from "vitest";
-import SessionProvider from "@/tests/setup/SessionProviderMock";
 import {
   actionHandler,
   getServerSession,
@@ -26,7 +25,9 @@ vi.mock("next/navigation", () => ({
 }));
 
 vi.mock("next-auth/react", async () => ({
-  SessionProvider,
+  SessionProvider: ({ children }: { children: React.ReactNode }) => (
+    <>{children}</>
+  ),
   useSession,
 }));
 

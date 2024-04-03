@@ -85,7 +85,7 @@ describe("Operations component", () => {
 
     render(<OperationsForm schema={testOperationSchema} formData={{}} />);
 
-    // Test for the Operation Information form heaer
+    // Test for the Operation Information form here
     expect(screen.getByTestId("field-template-label")).toBeVisible();
     // Operation Name
     expect(screen.getByLabelText(/Operation Name+/i)).toHaveValue("");
