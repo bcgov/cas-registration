@@ -4,7 +4,7 @@ import { Status } from "@/app/utils/enums";
 import { Chip, ChipOwnProps } from "@mui/material";
 import { GridRenderCellParams } from "@mui/x-data-grid";
 
-export const statusStyle = (params: GridRenderCellParams) => {
+export const StatusStyleColumnCell = (params: GridRenderCellParams) => {
   const colorMap = new Map<string, ChipOwnProps["color"]>([
     [Status.MYSELF, "primary"],
     [Status.PENDING, "primary"],

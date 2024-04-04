@@ -2,9 +2,9 @@ import { GridRowsProp } from "@mui/x-data-grid";
 
 import { actionHandler } from "@/app/utils/actions";
 import OperationDataGrid from "@/app/components/datagrid/OperationDataGrid";
-import { statusStyle } from "@/app/components/datagrid/helpers";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { StatusStyleColumnCell } from "../../datagrid/cells/StatusStyleColumnCell";
 
 // 🛠️ Function to fetch operations
 async function getOperations() {
@@ -117,7 +117,7 @@ export default async function Operations() {
       field: "status",
       headerName: "Application Status",
       width: 130,
-      renderCell: statusStyle,
+      renderCell: StatusStyleColumnCell,
     },
     {
       field: "action",
