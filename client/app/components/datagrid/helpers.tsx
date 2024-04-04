@@ -14,7 +14,9 @@ export const statusStyle = (params: GridRenderCellParams) => {
     [Status.DRAFT, "secondary"],
     [Status.DECLINED, "error"],
   ]);
-  const status = params.value as string;
+  const status = (params.value = Status.MYSELF
+    ? Status.APPROVED
+    : (params.value as string));
   const statusColor = colorMap.get(params.value) || "primary";
   const isMultiLineStatus =
     status === Status.CHANGES_REQUESTED || status === Status.NOT_STARTED;
