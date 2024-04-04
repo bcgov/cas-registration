@@ -1,5 +1,9 @@
 # Our Monorepo supported by Nx
 
+## Nx Commands 🧑‍💻
+
+- `nx test components`: Run vitest for component library.
+
 ## Nx builds 🔨
 
 The _Reporting_ application container is built using Nx. Automation is in place in GitHub workflows (`{repo}/.github/workflows/test.yaml`) to build NextJS with Nx, containerize, then push the container to GitHub Container Registry.
@@ -26,9 +30,9 @@ A set of helm templates have been created in `{repo}/helm/cas-registration/templ
   - There's a chance we might have to re-think how we handle tagging, purely due to the fact that Nx can be used to only build what changes. We generally build _everything_ and tag it.
 - I've documented some possible optimizations from Nx we could utilize, will share those in a [GitHub Project issue](https://github.com/orgs/bcgov/projects/123/views/1?filterQuery=-status%3Adone+nx&pane=issue&itemId=55856106) for future investigation.
 
-## Nx Generators
+## Nx Generators 🦾
 
-### Creating new components
+### Creating new components 📻
 
 For further information, see the [Nx docs about @nx/next generators](https://nx.dev/nx-api/next/generators/component).
 
