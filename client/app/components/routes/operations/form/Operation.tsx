@@ -12,7 +12,6 @@ import OperationReview from "./OperationReview";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 import ErrorIcon from "@mui/icons-material/Error";
-import { Fade } from "@mui/material";
 import { Status } from "@/app/utils/enums";
 import { Operation as OperationInt } from "@/app/components/routes/operations/types";
 import Link from "next/link";
@@ -34,7 +33,7 @@ async function getNaicsCodes() {
     return await actionHandler(
       "registration/naics_codes",
       "GET",
-      "/dashboard/operations",
+      "/dashboard/operations"
     );
   } catch (error) {
     // Handle the error here or rethrow it to handle it at a higher level
@@ -47,7 +46,7 @@ export async function getRegulatedProducts() {
     return await actionHandler(
       "registration/regulated_products",
       "GET",
-      "/operations",
+      "/operations"
     );
   } catch (error) {
     // Handle the error here or rethrow it to handle it at a higher level
@@ -74,7 +73,7 @@ async function getBusinessStructures() {
   return actionHandler(
     `registration/business_structures`,
     "GET",
-    `/dashboard/select-operator/user-operator`,
+    `/dashboard/select-operator/user-operator`
   );
 }
 
@@ -84,7 +83,7 @@ async function getOperation(id: string) {
     return await actionHandler(
       `registration/operations/${id}`,
       "GET",
-      `/operations/${id}`,
+      `/operations/${id}`
     );
   } catch (error) {
     // Handle the error here or rethrow it to handle it at a higher level
@@ -104,7 +103,7 @@ export const createOperationSchema = (
   //   id: number;
   //   name: string;
   // }[],
-  businessStructureList: { id: string; label: string }[],
+  businessStructureList: { id: string; label: string }[]
 ) => {
   const localSchema = JSON.parse(JSON.stringify(schema));
   // naics codes
@@ -141,7 +140,7 @@ export const createOperationSchema = (
       title: businessStructure.label,
       enum: [businessStructure.id],
       value: businessStructure.id,
-    }),
+    })
   );
 
   if (Array.isArray(businessStructureOptions)) {
@@ -197,7 +196,7 @@ export default async function Operation({ numRow }: { numRow?: string }) {
     (businessStructure: BusinessStructure) => ({
       id: businessStructure.name,
       label: businessStructure.name,
-    }),
+    })
   );
 
   const boroIdJSX: JSX.Element = (
@@ -209,7 +208,7 @@ export default async function Operation({ numRow }: { numRow?: string }) {
       />
       <div>
         {isCasInternal ? (
-          <p>
+          <p data-testid="operation-approved-message">
             This operation’s application for a B.C. OBPS Regulated Operation ID
             was approved.
           </p>
@@ -239,7 +238,7 @@ export default async function Operation({ numRow }: { numRow?: string }) {
     <div className="flex items-start gap-3 mt-4">
       <CancelIcon fontSize="large" color="error" />
       <div>
-        <p className="mt-0">
+        <p className="mt-0" data-testid="operation-declined-message">
           This operation’s application for a B.C. OBPS Regulated Operation ID
           was declined.
         </p>
@@ -260,7 +259,7 @@ export default async function Operation({ numRow }: { numRow?: string }) {
   const showRegistrationRequestResult: boolean | undefined =
     operation &&
     [Status.DECLINED, Status.APPROVED, Status.CHANGES_REQUESTED].includes(
-      operation?.status as Status,
+      operation?.status as Status
     );
 
   const pointOfContactEmail = operation?.email ?? undefined;
@@ -320,18 +319,14 @@ export default async function Operation({ numRow }: { numRow?: string }) {
   return (
     <>
       <OperationReview operation={operation} />
-      {showRegistrationRequestResult && registrationRequestResultJSX && (
-        <Fade in={showRegistrationRequestResult}>
-          {registrationRequestResultJSX}
-        </Fade>
-      )}
+      {showRegistrationRequestResult && registrationRequestResultJSX}
       {isCasInternal ? (
         <OperationReviewForm
           schema={createOperationSchema(
             operationInternalUserSchema,
             codes,
             products,
-            businessStructuresList,
+            businessStructuresList
           )}
           formData={transformedFormData as OperationsFormData}
         />
@@ -341,7 +336,7 @@ export default async function Operation({ numRow }: { numRow?: string }) {
             operationSchema,
             codes,
             products,
-            [],
+            []
             // activities,
             // businessStructuresList,
           )}

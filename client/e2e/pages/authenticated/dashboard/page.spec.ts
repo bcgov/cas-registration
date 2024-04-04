@@ -5,7 +5,12 @@ import { test } from "@playwright/test";
 import { DashboardPOM } from "@/e2e/poms/dashboard";
 import { ProfilePOM } from "@/e2e/poms/profile";
 // ☰ Enums
-import { AppRole, UserRole, UserOperatorStatus } from "@/e2e/utils/enums";
+import {
+  AppRole,
+  UserRole,
+  UserOperatorStatus,
+  E2EValue,
+} from "@/e2e/utils/enums";
 // 🥞 DB CRUD
 import {
   deleteUserOperatorRecord,
@@ -71,32 +76,44 @@ test.describe.configure({ mode: "serial" });
 test.describe("Test Dashboard Page", () => {
   // ➰ Loop through the entries of UserRole enum
   for (let [role, value] of Object.entries(UserRole)) {
-    role = "E2E_" + role;
-    const storageState = JSON.parse(process.env[role + "_STORAGE"] as string);
+    role = E2EValue.PREFIX + role;
+    const storageState = JSON.parse(
+      process.env[role + E2EValue.STORAGE] as string,
+    );
     test.describe(`Test Role ${value}`, () => {
       // 👤 run test as this role
       test.use({ storageState: storageState });
       test("Test Selfie", async ({ page }) => {
-        // 🛸 Navigate to dashboard page
         const dashboardPage = new DashboardPOM(page);
-
+        // 🛸 Navigate to dashboard page
         await dashboardPage.route();
         switch (value) {
           case UserRole.NEW_USER:
             // 🔍 Assert that the current URL ends with "/profile"
-            const profilePage = new ProfilePOM(page);
-            await profilePage.urlIsCorrect();
+            await new ProfilePOM(page).urlIsCorrect();
             break;
           default:
             // 🔍 Assert that the current URL ends with "/dashboard"
             await dashboardPage.urlIsCorrect();
-
+            // 📷 Cheese!
             const pageContent = page.locator("html");
             await happoPlaywright.screenshot(dashboardPage.page, pageContent, {
-              component: "Dashboard page",
-              variant: role,
+              component: `${role} Dashboard page`,
+              variant: "default",
             });
             break;
+        }
+      });
+      test("Report a Problem Tile workflow", async ({ page }) => {
+        // 📌 Skip roles: cas_pending; new user
+        if (value !== UserRole.CAS_PENDING && value !== UserRole.NEW_USER) {
+          // 🛸 Navigate to dashboard page
+          const dashboardPage = new DashboardPOM(page);
+          await dashboardPage.route();
+          // 🔍 Assert  the current URL
+          await dashboardPage.urlIsCorrect();
+          // 🔍 Assert has a mailto: link on it
+          await dashboardPage.problemLinkIsCorrect();
         }
       });
     });

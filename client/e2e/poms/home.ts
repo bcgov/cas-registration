@@ -6,11 +6,9 @@
 import { Locator, Page, expect } from "@playwright/test";
 // ☰ Enums
 import {
-  ActionButton,
   AppRoute,
+  ButtonText,
   DataTestID,
-  Login,
-  Logout,
   Keycloak,
   UserRole,
 } from "@/e2e/utils/enums";
@@ -29,7 +27,7 @@ export class HomePOM {
 
   readonly buttonLoginIDIR: Locator;
 
-  readonly linkLogout: Locator;
+  readonly linkProfile: Locator;
 
   readonly fieldUser: Locator;
 
@@ -41,23 +39,21 @@ export class HomePOM {
     this.page = page;
 
     this.buttonContinue = page.getByRole("button", {
-      name: ActionButton.CONTINUE,
+      name: ButtonText.CONTINUE,
     });
-    this.buttonLoginBCeID = this.page.getByRole("button", {
-      name: Login.INDUSTRY_USER,
+    this.buttonLoginBCeID = page.getByRole("button", {
+      name: ButtonText.LOGIN_INDUSTRY_USER,
     });
-    this.buttonLoginIDIR = this.page.getByRole("button", {
-      name: Login.CAS,
+    this.buttonLoginIDIR = page.getByRole("button", {
+      name: ButtonText.LOGIN_CAS,
     });
-    this.linkLogout = page.getByRole("button", { name: Logout.OUT });
-    this.fieldUser = this.page.locator(Keycloak.FIELD_USER_LOCATOR);
-    this.fieldUserPassword = this.page.getByLabel(Keycloak.FIELD_PW_LOCATOR);
-    this.textSSOLogout = page.locator("p", { hasText: Logout.SSO });
+    this.linkProfile = page.getByTestId(DataTestID.PROFILE);
+    this.fieldUser = page.locator(Keycloak.FIELD_USER_LOCATOR);
+    this.fieldUserPassword = page.getByLabel(Keycloak.FIELD_PW_LOCATOR);
+    this.textSSOLogout = page.locator("p", { hasText: ButtonText.LOGOUT_SSO });
   }
 
-  async route() {
-    await this.page.goto(this.url);
-  }
+  // ###  Actions ###
 
   async login(user: string, password: string, role: string) {
     // Determine the login button based on the user role
@@ -81,10 +77,11 @@ export class HomePOM {
     await this.buttonContinue.click();
   }
 
-  async logout() {
-    await this.linkLogout.click();
-    await expect(this.textSSOLogout).toBeVisible();
+  async route() {
+    await this.page.goto(this.url);
   }
+
+  // ###  Assertions ###
 
   async urlIsCorrect() {
     const path = AppRoute.HOME;
@@ -93,8 +90,6 @@ export class HomePOM {
   }
 
   async userIsLoggedIn() {
-    await this.page.waitForSelector(DataTestID.PROFILE, {
-      timeout: 11000, // flaky keycloak!
-    });
+    this.linkProfile.isVisible();
   }
 }

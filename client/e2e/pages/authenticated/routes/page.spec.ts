@@ -9,12 +9,8 @@ import { OperatorsPOM } from "@/e2e/poms/operators";
 import { ProfilePOM } from "@/e2e/poms/profile";
 import { UsersPOM } from "@/e2e/poms/users";
 // ☰ Enums
-import {
-  AppRoute,
-  appRouteRoles,
-  DataTestID,
-  UserRole,
-} from "@/e2e/utils/enums";
+import { AppRoute, DataTestID, E2EValue, UserRole } from "@/e2e/utils/enums";
+import { appRouteRoles } from "@/e2e/utils/constants";
 // ℹ️ Environment variables
 import * as dotenv from "dotenv";
 import {
@@ -61,14 +57,19 @@ test.describe.configure({ mode: "serial" });
 test.describe("Test Route Access", () => {
   // ➰ Loop through the entries of UserRole enum
   for (let [role, value] of Object.entries(UserRole)) {
-    role = "E2E_" + role;
-    const storageState = JSON.parse(process.env[role + "_STORAGE"] as string);
+    role = E2EValue.PREFIX + role;
+    const storageState = JSON.parse(
+      process.env[role + E2EValue.STORAGE] as string,
+    );
     test.describe(`Test Role ${value}`, () => {
       // 👤 Run test as this role
       test.use({ storageState: storageState });
       // 🛸 Navigate to all routes
       for (let route of Object.values(AppRoute)) {
         test(`Test Route ${route}`, async ({ page }) => {
+          // 🚩 Create a common pom pages used below
+          const dashboardPage = new DashboardPOM(page);
+          const profilePage = new ProfilePOM(page);
           // 🚨 Build routes allowed list for this user role
           const accessLists = buildAccessLists(value);
           // 🧩 Create instance of this route's POM
@@ -110,18 +111,15 @@ test.describe("Test Route Access", () => {
                 // 👤 Authenticated cas_pending have no role; so, redirected to dashboard for all routes except `profile`
                 if (route === AppRoute.PROFILE) {
                   // 🔍 Assert that the current URL ends with "/profile"
-                  const profilePage = new ProfilePOM(page);
                   profilePage.urlIsCorrect();
                 } else {
                   // 🔍 Assert that the current URL ends with "/dashboard"
-                  const dashboardPage = new DashboardPOM(page);
                   dashboardPage.urlIsCorrect();
                 }
                 break;
               case UserRole.NEW_USER:
                 // 👤 Authenticated new user is redirected to  `profile` for all routes
                 // 🔍 Assert that the current URL ends with "/profile"
-                const profilePage = new ProfilePOM(page);
                 profilePage.urlIsCorrect();
                 break;
               default:
@@ -133,7 +131,6 @@ test.describe("Test Route Access", () => {
                     case AppRoute.HOME:
                       // 👤 Authenticated users never get to home, redirected to dashboard
                       // 🔍 Assert that the current URL ends with "/dashboard"
-                      const dashboardPage = new DashboardPOM(page);
                       dashboardPage.urlIsCorrect();
                       break;
                     default:
@@ -141,7 +138,8 @@ test.describe("Test Route Access", () => {
                       // 🔍 Assert that the current URL is correct
                       await pomPage.urlIsCorrect();
                       // 🔍 Assert that the not-found selector is not available
-                      const msgNotFound = page.locator(DataTestID.NOTFOUND);
+                      // 📌 Assert within this test spec so to not have to repeat across each POM
+                      const msgNotFound = page.getByTestId(DataTestID.NOTFOUND);
                       await expect(msgNotFound).toBeHidden();
                       break;
                   }
@@ -153,13 +151,12 @@ test.describe("Test Route Access", () => {
                     (route === AppRoute.OPERATION ||
                       route === AppRoute.OPERATIONS)
                   ) {
-                    // 👤 Authenticated INDUSTRY_USER with 1 action pending get redirected to dashboard
-                    // 🔍 Assert that the current URL ends with "/dashboard"
-                    const dashboardPage = new DashboardPOM(page);
+                    // 👤 Authenticated INDUSTRY_USER with 1 action pending get redirected to dashboard                    // 🔍 Assert that the current URL ends with "/dashboard"
                     dashboardPage.urlIsCorrect();
                   } else {
                     // 🔍 Assert that the role has NO access, not-found message is available
-                    const msgNotFound = page.locator(DataTestID.NOTFOUND);
+                    // 📌 Assert within this test spec so to not have to repeat across each POM
+                    const msgNotFound = page.getByTestId(DataTestID.NOTFOUND);
                     await expect(msgNotFound).toBeVisible();
                   }
                 }
