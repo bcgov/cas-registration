@@ -51,12 +51,16 @@ const SelectWidget: React.FC<WidgetProps> = (props) => {
       <InputLabel shrink={false}>{!value && placeholder}</InputLabel>
       <Select
         labelId={id}
+        id={`${id}_select`}
         value={value || ""}
-        id={id}
         disabled={disabled || readonly}
         name={id}
         onChange={handleChange}
         sx={styles}
+        inputProps={{
+          id: id,
+          "aria-label": id,
+        }}
       >
         {placeholder && (
           <MenuItem disabled value="">

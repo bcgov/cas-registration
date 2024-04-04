@@ -1,47 +1,88 @@
 import Operation from "@/app/components/routes/operations/form/Operation";
-import "@testing-library/jest-dom";
-import { render, screen } from "@testing-library/react";
-import fetchMock from "jest-fetch-mock";
+import { act, render, screen, waitFor } from "@testing-library/react";
+import { describe, expect, vi } from "vitest";
+import { actionHandler, useParams, useSession } from "@/tests/setup/mocks";
+import { QueryParams, Session } from "@/tests/setup/types";
 
-// Mock useFormStatus
-jest.mock("react-dom", () => ({
-  ...jest.requireActual("react-dom"),
-  useFormStatus: jest.fn().mockReturnValue({ pending: false }),
-}));
+useSession.mockReturnValue({
+  data: {
+    user: {
+      app_role: "industry_user_admin",
+    },
+  },
+} as Session);
 
-describe("Operations component", () => {
-  beforeEach(() => {
-    jest.restoreAllMocks();
-    fetchMock.resetMocks();
-    fetchMock.enableMocks(); // Enable fetch mocking
-    fetchMock.mockResponseOnce(
-      JSON.stringify([
-        {
-          id: 1,
-          naics_code: "string",
-          ciip_sector: "string",
-          naics_description: "string",
-        },
-      ]),
-    );
+useParams.mockReturnValue({
+  formSection: "1",
+  operation: "create",
+} as QueryParams);
+
+describe("Operation component", () => {
+  beforeEach(async () => {
+    vi.clearAllMocks();
+    // mock getUserFormData response
+    actionHandler.mockReturnValueOnce({
+      first_name: "bc-cas-dev",
+      last_name: "Industry User",
+      position_title: "Code Monkey",
+      email: "email@email.com",
+      phone_number: "+16044015432",
+      bceid_business_name: "Existing Operator 2 Legal Name",
+      app_role: { role_name: "industry_user" },
+      error: null,
+    });
+
+    // mock getNaicsCodes response
+    actionHandler.mockReturnValueOnce([
+      {
+        id: 1,
+        naics_code: "211110",
+        naics_description: "Oil and gas extraction (except oil sands)",
+      },
+      {
+        id: 2,
+        naics_code: "212114",
+        naics_description: "Bituminous coal mining",
+      },
+    ]);
+
+    // mock getRegulatedProducts response
+    actionHandler.mockReturnValueOnce([
+      { id: 1, name: "BC-specific refinery complexity throughput" },
+      { id: 2, name: "Cement equivalent" },
+    ]);
   });
 
   it("renders the dropdown options for fields that require a fetch (e.g. NAICS codes)", async () => {
     render(await Operation({ numRow: undefined }));
 
-    // check NAICS codes came in properly
-    const codes = screen
-      .getByLabelText(/Primary NAICS Code+/i)
-      .querySelectorAll("option"); // Get all option elements within the select
+    const naicsCode = screen.getByPlaceholderText(/NAICS code/i).closest("div");
+    expect(naicsCode).toBeInTheDocument();
 
-    expect(codes.length).toBe(2); // One code plus empty string blank
+    act(() => {
+      naicsCode?.click();
+    });
 
-    // check NAICS categories came in properly
-    const categories = screen
-      .getByLabelText(/NAICS Category+/i)
-      .querySelectorAll("option");
+    const naicsCodeOptions = screen.getAllByRole("combobox");
+    expect(screen.getByText(/211110/i)).toBeVisible();
+    expect(screen.getByText(/212114/i)).toBeVisible();
+    expect(naicsCodeOptions).toHaveLength(3); // 2 options + empty string
 
-    expect(categories.length).toBe(4);
+    // check Regulated Products came in properly
+    const regulatedProducts = screen
+      .getByPlaceholderText(/Regulated Products/i)
+      .closest("div");
+    expect(regulatedProducts).toBeInTheDocument();
+
+    act(() => {
+      regulatedProducts?.click();
+    });
+
+    const regulatedProductsOptions = screen.getAllByRole("combobox");
+    expect(
+      screen.getByText(/BC-specific refinery complexity throughput/i),
+    ).toBeVisible();
+    expect(regulatedProductsOptions).toHaveLength(3); // 2 options + empty string
   });
 
   it("renders a blank form when there is no existing form data", async () => {
@@ -51,9 +92,36 @@ describe("Operations component", () => {
   });
 
   it("renders existing form data for existing operations", async () => {
-    fetchMock.mockResponseOnce(JSON.stringify({ id: 1, name: "test" }));
-    render(await Operation({ numRow: 1 }));
+    // mock getOperation response
+    actionHandler.mockReturnValueOnce({
+      id: "9a8aae6a-d711-42d4-aa7a-c8d37ff814c4",
+      name: "Operation 3",
+      type: "Single Facility Operation",
+      opt_in: false,
+      regulated_products: [],
+      previous_year_attributable_emissions: null,
+      status: "Approved",
+      naics_code_id: 21,
+      first_name: "John",
+      last_name: "Doe",
+      email: "john.doe@example.com",
+      phone_number: "+16044011234",
+      position_title: "Senior Officer",
+      street_address: "123 Main St",
+      municipality: "Cityville",
+      province: "ON",
+      postal_code: "A1B 2C3",
+      statutory_declaration: null,
+      bc_obps_regulated_operation: "21-0001",
+      bcghg_id: "23219990003",
+    });
 
-    expect(screen.getByLabelText(/Operation Name+/i)).toHaveValue();
+    render(await Operation({ numRow: "9a8aae6a-d711-42d4-aa7a-c8d37ff814c4" }));
+
+    waitFor(() => {
+      expect(screen.getByLabelText(/Operation Name+/i)).toHaveValue(
+        "Operation 3",
+      );
+    });
   });
 });

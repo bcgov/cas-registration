@@ -1,119 +1,113 @@
 import OperationsForm from "@/app/components/form/OperationsForm";
 import { createOperationSchema } from "@/app/components/routes/operations/form/Operation";
 import { operationSchema } from "@/app/utils/jsonSchema/operations";
-import "@testing-library/jest-dom";
-import { render, screen } from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
+import { describe, expect, vi } from "vitest";
 import React from "react";
+import {
+  actionHandler,
+  useSession,
+  useParams,
+  useRouter,
+} from "@/tests/setup/mocks";
+import { QueryParams, Router, Session } from "@/tests/setup/types";
 
-// Mock useFormStatus
-jest.mock("react-dom", () => ({
-  ...jest.requireActual("react-dom"),
-  useFormStatus: jest.fn().mockReturnValue({ pending: false }),
-}));
+useSession.mockReturnValue({
+  data: {
+    user: {
+      app_role: "industry_user_admin",
+    },
+  },
+} as Session);
 
-const testFormData = {
-  id: 1,
+const mockFormData = {
+  id: "025328a0-f9e8-4e1a-888d-aa192cb053db",
   name: "Operation 1",
   type: "Single Facility Operation",
-  naics_code: 45,
-  previous_year_attributable_emissions: "1000",
-  swrs_facility_id: "1001",
-  bcghg_id: "123",
-  opt_in: null,
-  operator: 1,
-  status: "Not Started",
-  regulated_products: [],
-  reporting_activities: [],
-  contacts: [],
-  operator_id: 1,
+  opt_in: false,
+  regulated_products: [1],
+  previous_year_attributable_emissions: null,
+  status: "Draft",
   naics_code_id: 1,
-  current_year_estimated_emissions: null,
+  first_name: "John",
+  last_name: "Doe",
+  email: "john.doe@example.com",
+  phone_number: "+16044011234",
+  position_title: "Senior Officer",
+  street_address: "123 Main St",
+  municipality: "Cityville",
+  province: "ON",
+  postal_code: "A1B 2C3",
+  statutory_declaration: "data:text/plain;base64,SGVsbG8gV29ybGQ=",
+  bc_obps_regulated_operation: null,
+  bcghg_id: "23219990001",
+  external_point_of_contact_first_name: "John",
+  external_point_of_contact_last_name: "Doe",
+  external_point_of_contact_email: "john.doe@example.com",
+  external_point_of_contact_phone_number: "+16044011234",
+  external_point_of_contact_position_title: "Senior Officer",
+  "Did you submit a GHG emissions report for reporting year 2022?": false,
+  is_external_point_of_contact: true,
+  multiple_operators_array: [{}],
 };
+
+const testOperationSchema = createOperationSchema(
+  operationSchema,
+  [
+    {
+      id: 1,
+      naics_code: "211110",
+      naics_description: "Oil and gas extraction (except oil sands)",
+    },
+  ],
+  [
+    { id: 1, name: "BC-specific refinery complexity throughput" },
+    { id: 2, name: "Cement equivalent" },
+    { id: 3, name: "Chemicals: pure hydrogen peroxide" },
+  ],
+  [],
+);
 
 describe("Operations component", () => {
   beforeEach(() => {
-    jest.restoreAllMocks();
+    vi.clearAllMocks();
   });
+
   it("renders the empty OperationsForm when no formData is passed", async () => {
-    render(<OperationsForm schema={operationSchema} />);
+    useRouter.mockReturnValue({
+      query: { operation: "create", formSection: "1" },
+      replace: vi.fn(),
+    } as Router);
+    useParams.mockReturnValue({
+      formSection: "1",
+      operation: "create",
+    } as QueryParams);
 
-    // Test for Legend elements
-    expect(
-      screen.getByText(/Step 1: Operation Information/i),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(
-        /Step 2: Operation Operator Information - If operation has multiple operators/i,
-      ),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(/Step 3: Operation Representative \(OR\) Information/i),
-    ).toBeInTheDocument();
+    render(<OperationsForm schema={testOperationSchema} formData={{}} />);
 
-    /* Test for Input elements */
+    // Test for the Operation Information form here
+    expect(screen.getByTestId("field-template-label")).toBeVisible();
     // Operation Name
-    expect(screen.getByLabelText(/Operation Name+/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/Operation Name+/i)).toHaveValue("");
 
-    // Operation Type
-    expect(screen.getByLabelText(/Operation Type+/i)).toBeInTheDocument();
+    // // Operation Type
+    expect(screen.getByLabelText(/Operation Type+/i)).toHaveValue("");
 
     // Primary NAICS Code
-    expect(screen.getByLabelText(/Primary NAICS Code+/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/Primary NAICS Code+/i)).toHaveValue("");
 
-    // NAICS Category
-    expect(screen.getByLabelText(/NAICS Category+/i)).toBeInTheDocument();
-
-    // Regulated Product Name(s)
-    expect(
-      screen.getByLabelText(/Regulated Product Name\(s\)+/i),
-    ).toBeInTheDocument();
-
-    // Reporting Activities
-    expect(screen.getByLabelText(/Reporting Activities+/i)).toBeInTheDocument();
-
-    // Process Flow Diagram
-    expect(screen.getByLabelText(/Process Flow Diagram+/i)).toBeInTheDocument();
-
-    // Boundary Map
-    expect(screen.getByLabelText(/Boundary Map+/i)).toBeInTheDocument();
-
-    // GHG Emissions Report
-    expect(
-      screen.getByLabelText(
-        /Did you submit a GHG emissions report for reporting year 2022\?+/i,
-      ),
-    ).toBeInTheDocument();
-
-    // Opt-in Operation
-    expect(
-      screen.getByLabelText(/Is the operation an opt-in operation\?+/i),
-    ).toBeInTheDocument();
-
-    // Does the operation have multiple operators?
-    expect(
-      screen.getByLabelText(/Does the operation have multiple operators\?+/i),
-    ).toBeInTheDocument();
-
-    // Would you like to add an exemption ID point of contact?
-    expect(
-      screen.getByLabelText(
-        /Would you like to add an exemption ID point of contact\?+/i,
-      ),
-    ).toBeInTheDocument();
+    // Bcghg ID
+    expect(screen.getByLabelText(/BCGHG ID/i)).toHaveValue("");
 
     // Submit button
-    expect(screen.getByRole("button", { name: /Submit/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /Save and Continue/i }),
+    ).toBeInTheDocument();
   });
 
   it("loads an existing OperationsForm", async () => {
-    const testOperationSchema = createOperationSchema(
-      operationSchema,
-      [{ id: 1 }],
-      [{ id: 1 }],
-    );
-
     render(
-      <OperationsForm schema={testOperationSchema} formData={testFormData} />,
+      <OperationsForm schema={testOperationSchema} formData={mockFormData} />,
     );
 
     // Operation Name
@@ -121,64 +115,59 @@ describe("Operations component", () => {
       "Operation 1",
     );
 
-    // Operation Type
-    expect(screen.getByLabelText(/Operation Type+/i)).toHaveValue("0");
+    // // Operation Type
+    expect(screen.getByLabelText(/Operation Type+/i)).toHaveValue(
+      "Single Facility Operation",
+    );
 
     // Primary NAICS Code
-    expect(screen.getByLabelText(/Primary NAICS Code+/i)).toHaveValue("0");
-
-    // NAICS Category
-    expect(screen.getByLabelText(/NAICS Category+/i)).toHaveValue("0");
-
-    // Regulated Product Name(s)
-    expect(screen.getByLabelText(/Regulated Product Name\(s\)+/i)).toHaveValue(
-      "",
+    expect(screen.getByLabelText(/Primary NAICS Code+/i)).toHaveValue(
+      "211110 - Oil and gas extraction (except oil sands)",
     );
 
-    // Reporting Activities
-    expect(screen.getByLabelText(/Reporting Activities+/i)).toHaveValue("");
-
-    // Process Flow Diagram
-    expect(screen.getByLabelText(/Process Flow Diagram+/i)).toHaveValue("");
-
-    // Boundary Map
-    expect(screen.getByLabelText(/Boundary Map+/i)).toHaveValue("");
-
-    // GHG Emissions Report
+    // Regulated product names
     expect(
-      screen.getByLabelText(
-        /Did you submit a GHG emissions report for reporting year 2022\?+/i,
-      ),
-    ).toHaveValue("0");
-
-    expect(screen.getByLabelText(/2022 attributable emissions/i)).toHaveValue(
-      100.345,
-    );
-
-    expect(screen.getByLabelText(/SWRS Facility ID/i)).toHaveValue(1001);
-    expect(screen.getByLabelText(/BCGHG ID/i)).toHaveValue(123);
-
-    // Does the operation have multiple operators?
-    expect(
-      screen.getByLabelText(/Does the operation have multiple operators\?+/i),
-    ).toHaveValue("1");
-
-    // Would you like to add an exemption ID point of contact?
-    expect(
-      screen.getByLabelText(
-        /Would you like to add an exemption ID point of contact\?+/i,
-      ),
-    ).toHaveValue("1");
+      screen.getByText("BC-specific refinery complexity throughput"),
+    ).toBeVisible();
+    // Bcghg ID
+    expect(screen.getByLabelText(/BCGHG ID/i)).toHaveValue("23219990001");
 
     // Submit button
-    expect(screen.getByRole("button", { name: /Submit/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /Save and continue/i }),
+    ).toBeInTheDocument();
   });
 
   it("shows the success message when operationName is defined", async () => {
-    React.useState = jest.fn().mockReturnValue(["Operation 1", {}]);
-    render(<OperationsForm schema={operationSchema} />);
-    expect(
-      screen.getByText(/Your request to register Operation 1/i),
-    ).toBeInTheDocument();
+    useParams.mockReturnValue({
+      formSection: "3",
+      operation: "test-id",
+    } as QueryParams);
+
+    render(
+      <OperationsForm schema={testOperationSchema} formData={mockFormData} />,
+    );
+
+    const submitButton = screen.getByText(/Submit/i);
+
+    act(() => {
+      submitButton.click();
+      actionHandler.mockReturnValueOnce({
+        id: "025328a0-f9e8-4e1a-888d-aa192cb053db",
+        name: "Operation 1",
+        error: null,
+      });
+    });
+
+    // Get the success message using the text content since it returns broken up text error
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          (_, element) =>
+            element?.textContent ===
+            "Your application for the B.C. OBPS Regulated Operation ID for Operation 1 has been received.",
+        ),
+      ).toBeVisible();
+    });
   });
 });

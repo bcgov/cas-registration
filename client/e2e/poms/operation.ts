@@ -136,7 +136,7 @@ export class OperationPOM {
     // Fill out the operation information form
     await this.page.getByLabel("Operation Name*").fill("Test Operation Name");
 
-    await this.page.locator("#root_type").click();
+    await this.page.locator("#root_type_select").click();
     await this.page
       .getByRole("option", { name: "Single Facility Operation" })
       .click();
