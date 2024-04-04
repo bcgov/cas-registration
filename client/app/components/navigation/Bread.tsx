@@ -159,6 +159,7 @@ export default function Bread({
                 return (
                   <li
                     key={link}
+                    id="breadcrumb-last-item"
                     style={{
                       fontWeight: isLastItem ? "bold" : "normal",
                       ...liStyle,
