@@ -58,6 +58,7 @@ export enum AppRoute {
 
 // 👋 playwright ID selectors targeting an HTML element
 export enum DataTestID {
+  BREADCRUMB_LAST = "breadcrumb-last-item",
   ERROR_PROFILE = "alert-error-user-profile",
   GRID = ".MuiDataGrid-root", // not working: "grid-root",
   MESSAGE_PENDING = "dashboard-pending-message",
