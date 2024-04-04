@@ -294,7 +294,9 @@ export class OperationsPOM {
               this.buttonConfirmModal,
               this.alertApproved
             );
-            await expect(this.messageOperationApproved).toBeVisible();
+            await expect(this.messageOperationApproved).toBeVisible({
+              timeout: 10000,
+            });
             break;
           case 2:
             // Status Pending

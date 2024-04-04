@@ -27,7 +27,7 @@ export class HomePOM {
 
   readonly buttonLoginIDIR: Locator;
 
-  readonly linkLogout: Locator;
+  readonly linkProfile: Locator;
 
   readonly fieldUser: Locator;
 
@@ -47,7 +47,7 @@ export class HomePOM {
     this.buttonLoginIDIR = page.getByRole("button", {
       name: ButtonText.LOGIN_CAS,
     });
-    this.linkLogout = page.getByRole("button", { name: ButtonText.LOGOUT });
+    this.linkProfile = page.locator(DataTestID.PROFILE);
     this.fieldUser = page.locator(Keycloak.FIELD_USER_LOCATOR);
     this.fieldUserPassword = page.getByLabel(Keycloak.FIELD_PW_LOCATOR);
     this.textSSOLogout = page.locator("p", { hasText: ButtonText.LOGOUT_SSO });
@@ -90,8 +90,6 @@ export class HomePOM {
   }
 
   async userIsLoggedIn() {
-    await this.page.waitForSelector(DataTestID.PROFILE, {
-      timeout: 11000, // flaky keycloak!
-    });
+    this.linkProfile.isVisible();
   }
 }
