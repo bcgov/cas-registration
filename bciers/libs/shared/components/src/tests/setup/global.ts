@@ -1,4 +1,5 @@
 import type { TestingLibraryMatchers } from "@testing-library/jest-dom/matchers";
+// eslint-disable-next-line import/no-extraneous-dependencies
 import * as matchers from "@testing-library/jest-dom/matchers";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { expect } from "vitest";
