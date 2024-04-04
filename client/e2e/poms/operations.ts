@@ -279,6 +279,7 @@ export class OperationsPOM {
               this.buttonConfirmModal,
               this.alertApproved
             );
+            // FIXME
             //   await expect(this.messageOperationApproved).toBeVisible();
             break;
           case 2:

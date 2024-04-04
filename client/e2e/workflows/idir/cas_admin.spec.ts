@@ -50,7 +50,7 @@ test.describe("Test Workflow cas_admin", () => {
     await operatorsPage.tableHasExpectedColumns(UserRole.CAS_ADMIN);
     await operatorsPage.tableHasExpectedColumnValues(
       UserRole.CAS_ADMIN,
-      TableDataField.STATUS,
+      TableDataField.STATUS
     );
     // 🧪 Detail Form UX by Status
     // 🔍 Assert cas_admin is able to click "View Details" on see detailed info related Declined
@@ -85,7 +85,7 @@ test.describe("Test Workflow cas_admin", () => {
     await operationsPage.tableHasExpectedColumns(UserRole.CAS_ADMIN);
     await operationsPage.tableHasExpectedColumnValues(
       UserRole.CAS_ADMIN,
-      TableDataField.STATUS,
+      TableDataField.STATUS
     );
     // 🔍 Assert cas_admin is able to click "View Details" on each status and see detailed info related to that status
     await operationsPage.formHasExpectedUX(OperationStatus.DECLINED);
@@ -95,19 +95,19 @@ test.describe("Test Workflow cas_admin", () => {
     await operationsPage.formHasExpectedWorkflow(
       UserRole.CAS_ADMIN,
       OperationStatus.PENDING,
-      1,
+      1
     );
     // 🔍 Assert cas_admin workflow Pending, Decline
     await operationsPage.formHasExpectedWorkflow(
       UserRole.CAS_ADMIN,
       OperationStatus.PENDING,
-      2,
+      2
     );
     // 🔍 Assert cas_admin workflow Approved, Preview the Statutory Declaration PDF
     await operationsPage.formHasExpectedWorkflow(
       UserRole.CAS_ADMIN,
       OperationStatus.APPROVED,
-      3,
+      3
     );
   });
 });
