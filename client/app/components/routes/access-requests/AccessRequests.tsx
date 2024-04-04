@@ -2,7 +2,7 @@ import { GridRowsProp } from "@mui/x-data-grid";
 import Note from "@/app/components/datagrid/Note";
 import OperatorDataGrid from "@/app/components/datagrid/OperatorDataGrid";
 import { UserOperatorPaginated } from "./types";
-import { statusStyle } from "@/app/components/datagrid/helpers";
+import { StatusStyleColumnCell } from "../../datagrid/cells/StatusStyleColumnCell";
 
 export const formatUserOperatorRows = (rows: GridRowsProp) => {
   return rows?.map(
@@ -76,7 +76,7 @@ const AccessRequests = ({
             field: "status",
             headerName: "Status",
             width: 130,
-            renderCell: statusStyle,
+            renderCell: StatusStyleColumnCell,
           },
           {
             field: "action",
