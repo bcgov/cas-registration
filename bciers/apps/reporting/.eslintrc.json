@@ -5,6 +5,7 @@
     "next/core-web-vitals",
     "../../.eslintrc.json"
   ],
+  "globals": { "vi": true },
   "ignorePatterns": ["!**/*", ".next/**/*"],
   "overrides": [
     {
@@ -24,7 +25,8 @@
     {
       "files": ["*.spec.ts", "*.spec.tsx", "*.spec.js", "*.spec.jsx"],
       "env": {
-        "jest": true
+        "jest": true,
+        "vitest": true
       }
     }
   ]
