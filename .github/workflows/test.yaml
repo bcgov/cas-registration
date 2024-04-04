@@ -22,7 +22,7 @@ jobs:
   install-dev-tools:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: dev env setup
         uses: ./.github/actions/dev-env-setup
       - run: yarn install --frozen-lockfile
@@ -31,7 +31,7 @@ jobs:
     needs: install-dev-tools
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: dev env setup
         uses: ./.github/actions/dev-env-setup
       - run: yarn test
@@ -40,7 +40,7 @@ jobs:
     needs: install-dev-tools
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: dev env setup
         uses: ./.github/actions/dev-env-setup
       - run: yarn audit-deps
@@ -49,7 +49,7 @@ jobs:
     needs: install-dev-tools
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: dev env setup
         uses: ./.github/actions/dev-env-setup
       - name: set pre-commit cache directory
@@ -64,25 +64,25 @@ jobs:
           else
               touch .git/COMMIT_EDITMSG
           fi
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
             ./.pre-commit-cache
           key: pre-commit-${{ env.PY }}-${{ hashFiles('.pre-commit-config.yaml') }}-v3
       - run: pip install -r requirements.txt
-      - uses: pre-commit/action@v3.0.0
+      - uses: pre-commit/action@v3.0.1
   backend-docker-build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up Docker Buildx
         id: buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v3
         with:
           install: true
       - name: Docker meta
         id: meta
-        uses: docker/metadata-action@v3
+        uses: docker/metadata-action@v5
         with:
           images: ghcr.io/bcgov/cas-reg-backend
           tags: |
@@ -90,20 +90,20 @@ jobs:
             latest
             type=ref,event=pr
       - name: Login to GitHub Container Registry
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Cache Docker layers
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: /tmp/.buildx-cache
           key: ${{ runner.os }}-buildx-bc_obps-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-buildx-bc_obps
       - name: Build image
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v5
         with:
           context: bc_obps
           builder: ${{ steps.buildx.outputs.name }}
@@ -125,15 +125,15 @@ jobs:
     runs-on: ubuntu-latest
     needs: backend-docker-build # Necessary to ensure backend image is built first
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up Docker Buildx
         id: buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v3
         with:
           install: true
       - name: Docker meta
         id: meta
-        uses: docker/metadata-action@v3
+        uses: docker/metadata-action@v5
         with:
           images: ghcr.io/bcgov/cas-reg-frontend
           tags: |
@@ -141,20 +141,20 @@ jobs:
             latest
             type=ref,event=pr
       - name: Login to GitHub Container Registry
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Cache Docker layers
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: /tmp/.buildx-cache
           key: ${{ runner.os }}-buildx-client-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-buildx-client
       - name: Build image
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v5
         with:
           context: client
           builder: ${{ steps.buildx.outputs.name }}
@@ -177,7 +177,7 @@ jobs:
       ["backend-docker-build", "frontend-docker-build", "install-dev-tools"]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: dev env setup
         uses: ./.github/actions/dev-env-setup
       - name: run app locally
@@ -185,7 +185,7 @@ jobs:
         with:
           django_secret_key: ${{ env.DJANGO_SECRET_KEY }}
       - name: ZAP Frontend Scan
-        uses: zaproxy/action-baseline@v0.9.0
+        uses: zaproxy/action-baseline@v0.12.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           docker_name: "owasp/zap2docker-stable"
@@ -195,7 +195,7 @@ jobs:
           issue_title: OWASP Baseline - Frontend
           fail_action: false
       - name: ZAP Backend Scan
-        uses: zaproxy/action-baseline@v0.9.0
+        uses: zaproxy/action-baseline@v0.12.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           docker_name: "owasp/zap2docker-stable"
@@ -227,7 +227,7 @@ jobs:
             os: macos-12
             cache_dir: ~/Library/Caches/ms-playwright
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: 🎁 setup dev env
         uses: ./.github/actions/dev-env-setup
@@ -241,7 +241,7 @@ jobs:
           nextauth_secret: ${{ env.NEXTAUTH_SECRET }}
 
       - name: ⚡️ cache Playwright binaries
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         id: playwright-cache
         with:
           path: ${{ matrix.cache_dir }}
@@ -351,7 +351,7 @@ jobs:
       ["backend-docker-build", "frontend-docker-build", "install-dev-tools"]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: dev env setup
         uses: ./.github/actions/dev-env-setup
       - name: run app locally
@@ -365,7 +365,7 @@ jobs:
     needs: install-dev-tools
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: dev env setup
         uses: ./.github/actions/dev-env-setup
       - run: poetry run python manage.py makemigrations --check --dry-run
