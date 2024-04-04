@@ -23,6 +23,8 @@ export class OperationPOM {
 
   readonly url: string = process.env.E2E_BASEURL + AppRoute.OPERATION;
 
+  readonly breadCrumbLast: Locator;
+
   readonly buttonCancel: Locator;
 
   readonly buttonNext: Locator;
@@ -73,6 +75,7 @@ export class OperationPOM {
 
   constructor(page: Page) {
     this.page = page;
+    this.breadCrumbLast = page.getByTestId(DataTestID.BREADCRUMB_LAST);
     this.buttonCancel = page.getByRole("button", {
       name: ButtonText.CANCEL,
     });
@@ -170,7 +173,7 @@ export class OperationPOM {
   async lastBreadcrumbIsVisible() {
     // Check for the presence of the breadcrumb since it
     // can take a second to load in and cause screenshot diffs
-    await this.page.locator("#breadcrumb-last-item").waitFor();
+    await this.breadCrumbLast.waitFor();
   }
 
   async route() {
