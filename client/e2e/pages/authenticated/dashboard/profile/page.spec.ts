@@ -5,7 +5,7 @@ import { test } from "@playwright/test";
 import { DashboardPOM } from "@/e2e/poms/dashboard";
 import { ProfilePOM } from "@/e2e/poms/profile";
 // ☰ Enums
-import { UserRole } from "@/e2e/utils/enums";
+import { E2EValue, UserRole } from "@/e2e/utils/enums";
 // 🥞 DB CRUD
 import { deleteUserRecord } from "@/e2e/utils/queries";
 // ℹ️ Environment variables
@@ -34,8 +34,10 @@ test.describe.configure({ mode: "serial" });
 test.describe("Test Profile Page", () => {
   // ➰ Loop through the entries of UserRole enum
   for (let [role, value] of Object.entries(UserRole)) {
-    role = "E2E_" + role;
-    const storageState = JSON.parse(process.env[role + "_STORAGE"] as string);
+    role = E2EValue.PREFIX + role;
+    const storageState = JSON.parse(
+      process.env[role + E2EValue.STORAGE] as string,
+    );
     test.describe(`Test Role ${value}`, () => {
       // 👤 run test as this role
       test.use({ storageState: storageState });
@@ -51,13 +53,14 @@ test.describe("Test Profile Page", () => {
         await profilePage.updateSuccess();
         //🔍 Assert profile name reflects the updated user profile full name
         await profilePage.userFullNameIsCorrect(
-          "e2e first name* e2e last name*",
+          E2EValue.INPUT_PROFILE_USERNAME,
         );
 
         switch (value) {
           case UserRole.NEW_USER:
-            // 🔍 Assert that the current URL
+            // Init a dashboard POM
             const dashboardPage = new DashboardPOM(page);
+            // 🔍 Assert the current URL for dashboard pom
             await dashboardPage.urlIsCorrect();
             break;
         }

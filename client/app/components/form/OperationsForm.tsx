@@ -45,7 +45,10 @@ export default function OperationsForm({ formData, schema }: Readonly<Props>) {
   return (
     <>
       {operationName ? (
-        <section className="w-full text-center text-2xl mt-20">
+        <section
+          data-testid="operation-boro-id-message"
+          className="w-full text-center text-2xl mt-20"
+        >
           <p>
             Your application for the B.C. OBPS Regulated Operation ID for{" "}
             <b>{operationName}</b> has been received.

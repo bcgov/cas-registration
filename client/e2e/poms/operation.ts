@@ -5,7 +5,14 @@
  */
 import { expect, Locator, Page } from "@playwright/test";
 // ☰ Enums
-import { AppRoute } from "@/e2e/utils/enums";
+import {
+  AppRoute,
+  ButtonText,
+  DataTestID,
+  E2EValue,
+  FormSection,
+  FormField,
+} from "@/e2e/utils/enums";
 // ℹ️ Environment variables
 import * as dotenv from "dotenv";
 dotenv.config({ path: "./e2e/.env.local" });
@@ -24,103 +31,103 @@ export class OperationPOM {
 
   readonly buttonSubmit: Locator;
 
-  readonly operationPage1Title: Locator;
-
-  readonly operationPage2Title: Locator;
-
-  readonly operationPage3Title: Locator;
-
   readonly buttonToOperationsList: Locator;
+
+  readonly fieldOperationName: Locator;
+
+  readonly fieldOperationType: Locator;
+
+  readonly fieldOperationTypeOption: Locator;
+
+  readonly fieldNAICSCode: Locator;
+
+  readonly fieldNAICSCodeOption: Locator;
+
+  readonly fieldPOCYes;
+
+  readonly fieldPOCFirstName;
+
+  readonly fieldPOCLastName;
+
+  readonly fieldPOCPosition;
+
+  readonly fieldPOCEmail;
+
+  readonly fieldPOCPhone;
+
+  readonly formHeaderOperation: Locator;
+
+  readonly formHeaderPOC: Locator;
+
+  readonly formHeaderStatutory: Locator;
+
+  readonly formPage1Title: Locator;
+
+  readonly formPage2Title: Locator;
+
+  readonly formPage3Title: Locator;
+
+  readonly messageBoroIdRequested: Locator;
+
+  readonly table: Locator;
 
   constructor(page: Page) {
     this.page = page;
-    this.buttonSaveAndContinue = page.getByRole("button", {
-      name: /save and continue/i,
-    });
-    this.operationPage1Title = page
-      .getByTestId("field-template-label")
-      .getByText("Operation Information");
-    this.operationPage2Title = page
-      .getByTestId("field-template-label")
-      .getByText("Point of Contact");
-    this.operationPage3Title = page
-      .getByTestId("field-template-label")
-      .getByText("Statutory Declaration");
     this.buttonCancel = page.getByRole("button", {
-      name: /cancel/i,
+      name: ButtonText.CANCEL,
     });
     this.buttonNext = page.getByRole("button", {
-      name: /next/i,
+      name: ButtonText.NEXT,
+    });
+    this.buttonSaveAndContinue = page.getByRole("button", {
+      name: ButtonText.SAVE_CONTINUE,
     });
     this.buttonSubmit = page.getByRole("button", {
-      name: /submit/i,
+      name: ButtonText.SUBMIT,
     });
     this.buttonToOperationsList = page.getByRole("button", {
-      name: /return to operations list/i,
+      name: ButtonText.RETURN_OPERATIONS,
     });
-  }
 
-  async route() {
-    await this.page.goto(this.url);
-  }
-
-  async urlIsCorrect() {
-    const path = this.url;
-    const currentUrl = this.page.url();
-    expect(currentUrl.toLowerCase()).toMatch(path.toLowerCase());
-  }
-
-  async operationBreadcrumbIsVisible() {
-    // Check for the presence of the breadcrumb since it
-    // can take a second to load in and cause screenshot diffs
-    await this.page.locator("#breadcrumb-last-item").waitFor();
-  }
-
-  async operationFormIsVisible() {
-    await this.operationBreadcrumbIsVisible();
-    const form = this.page.locator("form");
-    await form.waitFor();
-    await expect(this.operationPage1Title).toBeVisible();
-
-    // Check for the presence of the multistep form headers
-    expect(
-      this.page
-        .getByTestId("multistep-header-title")
-        .getByText("Operation Information"),
-    ).toBeVisible();
-    expect(
-      this.page
-        .getByTestId("multistep-header-title")
-        .getByText("Point of Contact"),
-    ).toBeVisible();
-    expect(
-      this.page
-        .getByTestId("multistep-header-title")
-        .getByText("Statutory Declaration"),
-    ).toBeVisible();
-  }
-
-  async operationFormStep2IsVisible() {
-    await this.operationBreadcrumbIsVisible();
-    await expect(this.operationPage2Title).toBeVisible();
-  }
-
-  async operationFormStep3IsVisible() {
-    await this.operationBreadcrumbIsVisible();
-    await expect(this.operationPage3Title).toBeVisible();
-  }
-
-  async operationSuccessfulSubmissionIsVisible() {
-    this.page.getByText(
-      "Your application for the B.C. OBPS Regulated Operation ID for Test Operation Name has been received.",
-    );
-    this.page.getByText(
-      "Once approved, you will receive a confirmation email.",
-    );
-    this.page.getByText(
-      "You can then log back in and view the B.C. OBPS Regulated Operation ID for Test Operation Name.",
+    this.fieldNAICSCode = page.getByTestId(FormField.NAICS_CODE);
+    this.fieldNAICSCodeOption = page.getByRole("option", {
+      name: E2EValue.FIXTURE_NAICS,
+    });
+    this.fieldOperationName = page.getByLabel(FormField.OPERATION_NAME);
+    this.fieldOperationType = page.locator(FormField.OPERATION_TYPE);
+    this.fieldOperationTypeOption = page.getByRole("option", {
+      name: E2EValue.FIXTURE_SFO,
+    });
+    this.fieldPOCYes = page.getByLabel(FormField.YES);
+    this.fieldPOCFirstName = page.getByLabel(FormField.FIRST_NAME);
+    this.fieldPOCLastName = page.getByLabel(FormField.LAST_NAME);
+    this.fieldPOCPosition = page.getByLabel(FormField.POSITION);
+    this.fieldPOCEmail = page.getByLabel(FormField.EMAIL);
+    this.fieldPOCPhone = page.getByLabel(FormField.PHONE);
+    this.formHeaderOperation = page
+      .getByTestId(DataTestID.OPERATION_HEADER_TEMPLATE)
+      .getByText(FormSection.INFO_OPERATION);
+    this.formHeaderPOC = page
+      .getByTestId(DataTestID.OPERATION_HEADER_TEMPLATE)
+      .getByText(FormSection.INFO_POINT_CONTACT);
+    this.formHeaderStatutory = page
+      .getByTestId(DataTestID.OPERATION_HEADER_TEMPLATE)
+      .getByText(FormSection.INFO_STATUTORY_DECLARATION);
+    this.formPage1Title = page
+      .getByTestId(DataTestID.OPERATION_FIELD_TEMPLATE)
+      .getByText(FormSection.INFO_OPERATION);
+    this.formPage2Title = page
+      .getByTestId(DataTestID.OPERATION_FIELD_TEMPLATE)
+      .getByText(FormSection.INFO_POINT_CONTACT);
+    this.formPage3Title = page
+      .getByTestId(DataTestID.OPERATION_FIELD_TEMPLATE)
+      .getByText(FormSection.INFO_STATUTORY_DECLARATION);
+    this.messageBoroIdRequested = this.table = page.getByTestId(
+      DataTestID.OPERATION_BORO_ID_MESSAGE
     );
   }
+
+  // ###  Actions ###
 
   async clickCancelButton() {
     await this.buttonCancel.click();
@@ -141,30 +148,63 @@ export class OperationPOM {
     });
   }
 
-  async fillOperationFormPage1() {
+  async formFillPage1() {
     // Fill out the operation information form
-    await this.page.getByLabel("Operation Name*").fill("Test Operation Name");
-
-    await this.page.locator("#root_type_select").click();
-    await this.page
-      .getByRole("option", { name: "Single Facility Operation" })
-      .click();
-
-    await this.page.getByTestId("root_naics_code_id").click();
-    await this.page
-      .getByRole("option", {
-        name: "211110 - Oil and gas extraction (except oil sands)",
-      })
-      .click();
+    await this.fieldOperationName.fill(E2EValue.INPUT_OPERATION_NAME);
+    await this.fieldOperationType.click();
+    await this.fieldOperationTypeOption.click();
+    await this.fieldNAICSCode.click();
+    await this.fieldNAICSCodeOption.click();
   }
 
-  async fillOperationFormPage2() {
+  async formFillPage2() {
     // Fill out the point of contact form
-    await this.page.getByLabel("Yes").click();
-    await this.page.getByLabel("First Name*").fill("Test First Name");
-    await this.page.getByLabel("Last Name*").fill("Test Last Name");
-    await this.page.getByLabel("Position Title*").fill("Test Position Title");
-    await this.page.getByLabel("Email Address*").fill("test@test.com");
-    await this.page.getByLabel("Phone Number*").fill("403 777 7777");
+    await this.fieldPOCYes.click();
+    await this.fieldPOCFirstName.fill(E2EValue.INPUT_FIRST_NAME);
+    await this.fieldPOCLastName.fill(E2EValue.INPUT_LAST_NAME);
+    await this.fieldPOCPosition.fill(E2EValue.INPUT_POSITION);
+    await this.fieldPOCEmail.fill(E2EValue.INPUT_EMAIL);
+    await this.fieldPOCPhone.fill(E2EValue.INPUT_PHONE);
+  }
+
+  async lastBreadcrumbIsVisible() {
+    // Check for the presence of the breadcrumb since it
+    // can take a second to load in and cause screenshot diffs
+    await this.page.locator("#breadcrumb-last-item").waitFor();
+  }
+
+  async route() {
+    await this.page.goto(this.url);
+  }
+
+  // ###  Assertions ###
+
+  async formIsVisible() {
+    await this.lastBreadcrumbIsVisible();
+    await expect(this.formPage1Title).toBeVisible();
+    // Check for the presence of the multistep form headers
+    await expect(this.formHeaderOperation).toBeVisible();
+    await expect(this.formHeaderPOC).toBeVisible();
+    await expect(this.formHeaderStatutory).toBeVisible();
+  }
+
+  async formStep2IsVisible() {
+    await this.lastBreadcrumbIsVisible();
+    await expect(this.formPage2Title).toBeVisible();
+  }
+
+  async formStep3IsVisible() {
+    await this.lastBreadcrumbIsVisible();
+    await expect(this.formPage3Title).toBeVisible();
+  }
+
+  async successfulSubmissionIsVisible() {
+    this.messageBoroIdRequested.isVisible();
+  }
+
+  async urlIsCorrect() {
+    const path = this.url;
+    const currentUrl = this.page.url();
+    expect(currentUrl.toLowerCase()).toMatch(path.toLowerCase());
   }
 }

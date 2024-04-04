@@ -9,9 +9,10 @@ import {
   fieldsClear,
   fillRequiredFormFields,
   getFieldAlerts,
+  getFieldRequired,
 } from "@/e2e/utils/helpers";
 // ☰ Enums
-import { AppRoute, ActionButton, DataTestID } from "@/e2e/utils/enums";
+import { AppRoute, ButtonText, DataTestID } from "@/e2e/utils/enums";
 // ℹ️ Environment variables
 import * as dotenv from "dotenv";
 dotenv.config({ path: "./e2e/.env.local" });
@@ -27,25 +28,29 @@ export class ProfilePOM {
 
   constructor(page: Page) {
     this.page = page;
-    this.buttonSubmit = this.page.getByRole("button", {
-      name: ActionButton.SUBMIT,
+    this.buttonSubmit = page.getByRole("button", {
+      name: ButtonText.SUBMIT,
     });
-    this.errorList = this.page.locator(DataTestID.ERROR_PROFILE);
+    this.errorList = page.getByTestId(DataTestID.ERROR_PROFILE);
   }
 
+  // ###  Actions ###
   async route() {
     await this.page.goto(this.url);
   }
 
+  // ###  Assertions ###
+
   async updateFail() {
     // Clear all required fields
-    const clearedFields = await fieldsClear(this.page);
+    const requiredFields = await getFieldRequired(this.page);
+    await fieldsClear(this.page, requiredFields);
     // Click the Submit button
     await this.buttonSubmit.click();
     // Locate all alert elements within the fieldset
     const alertElements = await getFieldAlerts(this.page);
     // Assert there to be exactly the same number of required fields and alert elements
-    await expect(clearedFields).toBe(alertElements.length);
+    await expect(requiredFields.length).toBe(alertElements.length);
   }
 
   async updateSuccess() {
@@ -61,8 +66,8 @@ export class ProfilePOM {
   }
 
   async userFullNameIsCorrect(expectedText: string) {
-    // Waits for the selector to appear with the expected text
-    await this.page.waitForSelector(
+    // Waits for the profile link to appear with the expected text
+    await this.page.getByTestId(
       `${DataTestID.PROFILE}:has-text("${expectedText}")`,
     );
   }
