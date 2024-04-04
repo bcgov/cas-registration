@@ -27,7 +27,6 @@
     "@nx/devkit": "18.2.1",
     "@nx/eslint": "18.2.1",
     "@nx/eslint-plugin": "18.2.1",
-    "@nx/jest": "18.2.1",
     "@nx/js": "18.2.1",
     "@nx/next": "18.2.1",
     "@nx/playwright": "18.2.1",
