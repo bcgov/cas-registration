@@ -13,7 +13,7 @@ export default function Index() {
 
   return (
     <Main>
-      <Image src={Logo} alt="testing" width="200" height="42.67" />
+      <Image src={Logo} alt="testing" width="200" height="43" />
       <Grid
         container
         spacing={2}
