@@ -1,12 +1,11 @@
 from registration.api.utils.current_user_utils import get_current_user_guid
 from service.data_access_service.user_operator_service import UserOperatorDataAccessService
-from service.user_operator_service import UserOperatorService
 
 from registration.decorators import authorize, handle_http_errors
 from registration.schema import ExternalDashboardUsersTileData, Message
 from typing import List
 from registration.api.api_base import router
-from registration.api.custom_codes_4xx import custom_codes_4xx
+from service.error_service.custom_codes_4xx import custom_codes_4xx
 
 
 @router.get(

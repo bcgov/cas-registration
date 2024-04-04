@@ -12,7 +12,7 @@ from registration.models import (
     AppRole,
     UserOperator,
 )
-from registration.api.custom_codes_4xx import custom_codes_4xx
+from service.error_service.custom_codes_4xx import custom_codes_4xx
 
 
 @router.get(
@@ -23,7 +23,4 @@ from registration.api.custom_codes_4xx import custom_codes_4xx
 @authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles(), False)
 @handle_http_errors()
 def get_user_operator_admin_exists(request, operator_id: UUID):
-    if UserOperatorDataAccessService.get_approved_admin_users(operator_id):
-        return 200, True
-    else:
-        return 200, False
+    return 200, UserOperatorDataAccessService.get_admin_users(operator_id, UserOperator.Statuses.APPROVED).exists()

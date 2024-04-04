@@ -1,10 +1,10 @@
 from http import HTTPStatus
 from typing import Any, Callable, List
+from service.error_service.handle_exception import handle_exception
 from ninja.errors import HttpError
 from functools import wraps
 from registration.utils import raise_401_if_user_not_authorized
 from django.http import HttpRequest
-from handle_exception import handle_exception
 
 
 def authorize(

@@ -15,7 +15,7 @@ from registration.models import (
     AppRole,
     UserOperator,
 )
-from registration.api.custom_codes_4xx import custom_codes_4xx
+from service.error_service.custom_codes_4xx import custom_codes_4xx
 
 
 @router.get(

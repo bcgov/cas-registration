@@ -132,7 +132,13 @@ class TestCheckUserAdminRequestEligibility:
     def test_user_eligible_for_admin_request():
         user = baker.make(User)
         operator = operator_baker()
-        assert ApplicationAccessService.is_user_eligible_to_request_admin_access(user.user_guid, operator.id) is True
+        assert (
+            ApplicationAccessService.is_user_eligible_to_request_admin_access(
+                operator.id,
+                user.user_guid,
+            )
+            is True
+        )
 
     @staticmethod
     def test_user_already_admin_for_operator():
@@ -147,7 +153,10 @@ class TestCheckUserAdminRequestEligibility:
         )
 
         with pytest.raises(Exception, match="You are already an admin for this Operator!"):
-            ApplicationAccessService.is_user_eligible_to_request_admin_access(user.user_guid, operator.id)
+            ApplicationAccessService.is_user_eligible_to_request_admin_access(
+                operator.id,
+                user.user_guid,
+            )
 
     @staticmethod
     def test_operator_already_has_admin():
@@ -163,7 +172,10 @@ class TestCheckUserAdminRequestEligibility:
         )
 
         with pytest.raises(Exception, match="This Operator already has an admin user!"):
-            ApplicationAccessService.is_user_eligible_to_request_admin_access(user.user_guid, operator.id)
+            ApplicationAccessService.is_user_eligible_to_request_admin_access(
+                operator.id,
+                user.user_guid,
+            )
 
     @staticmethod
     def test_user_already_has_pending_request():
@@ -178,7 +190,10 @@ class TestCheckUserAdminRequestEligibility:
         )
 
         with pytest.raises(Exception, match="You already have a pending request for this Operator!"):
-            ApplicationAccessService.is_user_eligible_to_request_admin_access(user.user_guid, operator.id)
+            ApplicationAccessService.is_user_eligible_to_request_admin_access(
+                operator.id,
+                user.user_guid,
+            )
 
     @staticmethod
     def test_user_business_guid_matches_admin():
@@ -354,8 +369,8 @@ class TestFileHelpers:
 
 class TestOperatorHelpers:
     @staticmethod
-    def test_handle_operator_addresses_create_without_prefix():
-        from service.handle_addresses_service import HandleAddressesService
+    def test_upsert_addresses_from_data_create_without_prefix():
+        from service.addresses_service import AddressesService
 
         address_data = {
             "physical_street_address": "123 Main St",
@@ -369,7 +384,7 @@ class TestOperatorHelpers:
             "mailing_postal_code": "X1Y 2Z3",
         }
 
-        result = HandleAddressesService.handle_operator_addresses(address_data, None, None)
+        result = AddressesService.upsert_addresses_from_data(address_data, None, None)
 
         assert len(Address.objects.all()) == 2
         assert Address.objects.all()[0] == result['physical_address']
@@ -378,8 +393,8 @@ class TestOperatorHelpers:
         assert Address.objects.all()[1].postal_code == "X1Y 2Z3"
 
     @staticmethod
-    def test_handle_operator_addresses_update_with_prefix():
-        from service.handle_addresses_service import HandleAddressesService
+    def test_upsert_addresses_from_data_update_with_prefix():
+        from service.addresses_service import AddressesService
 
         existing_physical_address = baker.make(Address)
         existing_mailing_address = baker.make(Address)
@@ -396,7 +411,7 @@ class TestOperatorHelpers:
             "po_mailing_postal_code": "X1Y 2Z3",
         }
 
-        HandleAddressesService.handle_operator_addresses(
+        AddressesService.upsert_addresses_from_data(
             address_data, existing_physical_address.id, existing_mailing_address.id, 'po_'
         )
 
@@ -405,8 +420,8 @@ class TestOperatorHelpers:
         assert Address.objects.get(id=existing_mailing_address.id).postal_code == "X1Y 2Z3"
 
     @staticmethod
-    def test_handle_operator_addresses__add_mailing_address():
-        from service.handle_addresses_service import HandleAddressesService
+    def test_upsert_addresses_from_data__add_mailing_address():
+        from service.addresses_service import AddressesService
 
         existing_physical_address = baker.make(Address)
         existing_mailing_address = existing_physical_address
@@ -423,7 +438,7 @@ class TestOperatorHelpers:
             "po_mailing_postal_code": "D4E 5F6",
         }
 
-        HandleAddressesService.handle_operator_addresses(
+        AddressesService.upsert_addresses_from_data(
             address_data, existing_physical_address.id, existing_mailing_address.id, 'po_'
         )
 
