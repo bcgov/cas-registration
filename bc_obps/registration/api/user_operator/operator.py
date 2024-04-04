@@ -12,7 +12,7 @@ from registration.models import (
     UserOperator,
 )
 from uuid import UUID
-from registration.api.custom_codes_4xx import custom_codes_4xx
+from service.error_service.custom_codes_4xx import custom_codes_4xx
 
 ## POST
 @router.post(

@@ -256,10 +256,28 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         assert response.status_code == 200
         assert response.json()['operator_id'] == str(operator.id)  # String representation of the UUID
 
-    def test_get_operator_by_users_list(self):
+    def test_get_an_operators_user_operators_by_users_list(self):
+
+        operator = operator_baker()
+        # two UserOperator with the same operator
         baker.make(
             UserOperator,
             user=self.user,
+            operator=operator,
+            role=UserOperator.Roles.ADMIN,
+            status=UserOperator.Statuses.APPROVED,
+        )
+        baker.make(
+            UserOperator,
+            user=baker.make(User, business_guid=self.user.business_guid),
+            operator=operator,
+            role=UserOperator.Roles.ADMIN,
+            status=UserOperator.Statuses.APPROVED,
+        )
+        # a UserOperator with a different operator
+        baker.make(
+            UserOperator,
+            user=user_baker(),
             operator=operator_baker(),
             role=UserOperator.Roles.ADMIN,
             status=UserOperator.Statuses.APPROVED,
@@ -269,7 +287,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
             self, 'industry_user', custom_reverse_lazy('get_user_operator_list_from_user')
         )
 
-        assert len(json.loads(response.content)) == 1
+        assert len(json.loads(response.content)) == 2
 
     def test_get_user_operators_paginated(self):
         for i in range(60):
@@ -617,6 +635,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         print(response_json)
         assert response_json == True
 
+    # brianna here
     # /user-operator-list-from-user ignores DECLINED records
     def test_get_user_operator(self):
         operator = operator_baker()

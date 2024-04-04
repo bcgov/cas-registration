@@ -1,8 +1,8 @@
 from uuid import UUID
 from registration.utils import update_model_instance
-from service.handle_addresses_service import HandleAddressesService
+from service.addresses_service import AddressesService
 from service.data_access_service.user_operator_service import UserOperatorDataAccessService
-from registration.schema.user_operator import UserOperatorOperatorIn, UserOperatorOut, UserOperatorPaginatedOut
+from registration.schema.user_operator import UserOperatorOperatorIn, UserOperatorPaginatedOut
 from service.data_access_service.user_service import UserDataAccessService
 from service.data_access_service.operator_service import OperatorDataAccessService
 from registration.models import Operator, User, UserOperator, BusinessRole, Operation
@@ -45,7 +45,7 @@ class UserOperatorService:
         existing_physical_address = getattr(getattr(operator_instance, 'physical_address', None), 'id', None)
         existing_mailing_address = getattr(getattr(operator_instance, 'mailing_address', None), 'id', None)
 
-        physical_address, mailing_address = HandleAddressesService.handle_operator_addresses(
+        physical_address, mailing_address = AddressesService.upsert_addresses_from_data(
             updated_data.dict(), existing_physical_address, existing_mailing_address
         ).values()
 

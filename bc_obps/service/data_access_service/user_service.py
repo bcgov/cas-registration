@@ -9,6 +9,9 @@ class UserDataAccessService:
     def get_user_by_guid(user_guid: str):
         return User.objects.get(user_guid=user_guid)
 
+    def get_user_business_guid(user_guid: str):
+        return User.objects.get(user_guid=user_guid).business_guid
+
     def get_operator_by_user(user_guid: str):
         user_operator = UserDataAccessService.get_user_operator_by_user(user_guid)
         return user_operator.operator

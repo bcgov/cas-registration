@@ -56,9 +56,9 @@ def handle_parent_operators(updated_parent_operators, operator_instance, user):
             existing_po_mailing_address_id = (
                 existing_po_mailing_address.mailing_address_id if existing_po_mailing_address else None
             )
-            from service.handle_addresses_service import HandleAddressesService
+            from service.addresses_service import AddressesService
 
-            physical_address, mailing_address = HandleAddressesService.handle_operator_addresses(
+            physical_address, mailing_address = AddressesService.upsert_addresses_from_data(
                 po_operator.dict(), existing_po_physical_address_id, existing_po_mailing_address_id, 'po_'
             ).values()
 

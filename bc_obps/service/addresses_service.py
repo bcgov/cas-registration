@@ -2,9 +2,21 @@ from registration.api.utils.operator_utils import AddressesData
 from registration.models import Address
 
 
-class HandleAddressesService:
-    # brianna we need a data access service for addresses
-    def handle_operator_addresses(address_data: AddressesData, physical_address_id, mailing_address_id, prefix=""):
+class AddressesService:
+    """
+    This function creates or updates addresses. It handles records that have different physical or mailing addresses. It also handles address data that comes in with a prefix (e.g. physical_street_address vs. po_physical_street_address).
+
+    Arguments:
+        address_data: This is the address information including street, postal code, etc.
+        physical_address_id: This is the id of the physical address record if an address record already exists.
+        mailing_address_id: This is the id of the mailing address record if an address record already exists. If physical and mailing address are the same, this id is the same as the physical_address_id
+        prefix: Sometimes address data contains a prefix. For example, parent operator address keys contain `po` (e.g. po_mailing_street_address). This function strips out the prefix if included.
+
+    Returns the physical and mailing address information.
+
+    """
+
+    def upsert_addresses_from_data(address_data: AddressesData, physical_address_id, mailing_address_id, prefix=""):
         # create or update physical address record
         physical_address, _ = Address.objects.update_or_create(
             id=physical_address_id,

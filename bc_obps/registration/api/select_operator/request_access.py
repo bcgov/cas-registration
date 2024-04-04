@@ -10,7 +10,7 @@ from registration.api.api_base import router
 from registration.models import (
     UserOperator,
 )
-from registration.api.custom_codes_4xx import custom_codes_4xx
+from service.error_service.custom_codes_4xx import custom_codes_4xx
 from service.application_access_service import ApplicationAccessService
 
 

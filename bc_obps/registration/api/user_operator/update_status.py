@@ -10,7 +10,7 @@ from registration.schema import (
 from registration.models import (
     AppRole,
 )
-from registration.api.custom_codes_4xx import custom_codes_4xx
+from service.error_service.custom_codes_4xx import custom_codes_4xx
 from registration.api.api_base import router
 
 

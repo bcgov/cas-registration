@@ -11,7 +11,7 @@ from registration.api.api_base import router
 from registration.models import (
     UserOperator,
 )
-from registration.api.custom_codes_4xx import custom_codes_4xx
+from service.error_service.custom_codes_4xx import custom_codes_4xx
 
 
 @router.post(
@@ -22,4 +22,5 @@ from registration.api.custom_codes_4xx import custom_codes_4xx
 @authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles(), False)
 @handle_http_errors()
 def request_admin_access(request, payload: SelectOperatorIn):
-    return 201, ApplicationAccessService.request_admin_access(payload.operator_id, get_current_user_guid(request))
+    user_guid = get_current_user_guid(request)
+    return 201, ApplicationAccessService.request_admin_access(payload.operator_id, user_guid)
