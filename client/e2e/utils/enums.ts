@@ -56,16 +56,6 @@ export enum AppRoute {
   USERS = "dashboard/users",
 }
 
-// 👋 playwright aria selectors
-export enum AriaLabel {
-  APPLICATION_APPROVE = "Approve application",
-  APPLICATION_REJECT = "Reject application",
-  APPLICATION_REQUEST_CHANGE = "Request Changes",
-  APPLICATION_REQUEST_CHANGE_CANCEL = "Cancel Change Request",
-  APPLICATION_REQUEST_CHANGE_CONFIRM = "Confirm Change Request",
-  APPLICATION_REQUEST_CHANGE_UNDO = "Undo Request Changes",
-}
-
 // 👋 playwright ID selectors targeting an HTML element
 export enum DataTestID {
   ERROR_PROFILE = "alert-error-user-profile",
