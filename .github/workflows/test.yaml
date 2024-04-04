@@ -70,7 +70,7 @@ jobs:
             ./.pre-commit-cache
           key: pre-commit-${{ env.PY }}-${{ hashFiles('.pre-commit-config.yaml') }}-v3
       - run: pip install -r requirements.txt
-      - uses: pre-commit/action@v3.0.0
+      - uses: pre-commit/action@v3.0.1
   backend-docker-build:
     runs-on: ubuntu-latest
     steps:
@@ -185,7 +185,7 @@ jobs:
         with:
           django_secret_key: ${{ env.DJANGO_SECRET_KEY }}
       - name: ZAP Frontend Scan
-        uses: zaproxy/action-baseline@v0.9.0
+        uses: zaproxy/action-baseline@v0.12.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           docker_name: "owasp/zap2docker-stable"
@@ -195,7 +195,7 @@ jobs:
           issue_title: OWASP Baseline - Frontend
           fail_action: false
       - name: ZAP Backend Scan
-        uses: zaproxy/action-baseline@v0.9.0
+        uses: zaproxy/action-baseline@v0.12.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           docker_name: "owasp/zap2docker-stable"
