@@ -4,15 +4,15 @@ runs:
   using: composite
   steps:
     - name: asdf setup
-      uses: asdf-vm/actions/setup@v1
-    - uses: actions/cache@v3
+      uses: asdf-vm/actions/setup@v3
+    - uses: actions/cache@v4
       id: asdf-cache-client
       with:
         path: |
           ~/.asdf
           ./client/.tool-versions
         key: ${{ runner.os }}-asdf-cache-client-${{ hashFiles('client/.tool-versions') }}
-    - uses: actions/cache@v3
+    - uses: actions/cache@v4
       id: asdf-cache-backend
       with:
         path: |
@@ -23,14 +23,14 @@ runs:
       uses: ./.github/actions/yarn-cache
     - name: Set up python
       id: setup-python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: "3.9.16"
     - name: Install Poetry
       uses: snok/install-poetry@v1
     - name: Load cached venv
       id: cached-poetry-dependencies
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: .venv
         key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
