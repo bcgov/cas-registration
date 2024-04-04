@@ -70,7 +70,14 @@ export class OperationPOM {
     expect(currentUrl.toLowerCase()).toMatch(path.toLowerCase());
   }
 
+  async operationBreadcrumbIsVisible() {
+    // Check for the presence of the breadcrumb since it
+    // can take a second to load in and cause screenshot diffs
+    await this.page.locator("#breadcrumb-last-item").waitFor();
+  }
+
   async operationFormIsVisible() {
+    await this.operationBreadcrumbIsVisible();
     const form = this.page.locator("form");
     await form.waitFor();
     await expect(this.operationPage1Title).toBeVisible();
@@ -94,10 +101,12 @@ export class OperationPOM {
   }
 
   async operationFormStep2IsVisible() {
+    await this.operationBreadcrumbIsVisible();
     await expect(this.operationPage2Title).toBeVisible();
   }
 
   async operationFormStep3IsVisible() {
+    await this.operationBreadcrumbIsVisible();
     await expect(this.operationPage3Title).toBeVisible();
   }
 

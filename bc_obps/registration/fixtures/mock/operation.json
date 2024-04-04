@@ -13,7 +13,8 @@
       "swrs_facility_id": 1001,
       "bcghg_id": "23219990005",
       "regulated_products": [],
-      "status": "Not Started"
+      "status": "Not Started",
+      "created_at": "2024-2-01T15:27:00.000Z"
     }
   },
   {
@@ -27,7 +28,8 @@
       "opt_in": false,
       "bcghg_id": "23219990004",
       "regulated_products": [],
-      "status": "Not Started"
+      "status": "Not Started",
+      "created_at": "2024-2-02T15:27:00.000Z"
     }
   },
   {
@@ -44,7 +46,8 @@
       "bcghg_id": "23219990003",
       "regulated_products": [],
       "status": "Approved",
-      "bc_obps_regulated_operation": "21-0001"
+      "bc_obps_regulated_operation": "21-0001",
+      "created_at": "2024-1-31T15:27:00.000Z"
     }
   },
   {
@@ -61,7 +64,8 @@
       "opt_in": false,
       "bcghg_id": "23219990002",
       "regulated_products": [],
-      "status": "Approved"
+      "status": "Approved",
+      "created_at": "2024-1-30T15:27:00.000Z"
     }
   },
   {
@@ -77,7 +81,8 @@
       "opt_in": false,
       "bcghg_id": "23219990001",
       "regulated_products": [],
-      "status": "Draft"
+      "status": "Draft",
+      "created_at": "2024-1-29T15:27:00.000Z"
     }
   },
   {
@@ -93,7 +98,8 @@
       "opt_in": false,
       "bcghg_id": "23219990000",
       "regulated_products": [],
-      "status": "Pending"
+      "status": "Pending",
+      "created_at": "2024-1-28T15:27:00.000Z"
     }
   },
   {
@@ -109,7 +115,8 @@
       "opt_in": false,
       "bcghg_id": "23219990006",
       "regulated_products": [],
-      "status": "Pending"
+      "status": "Pending",
+      "created_at": "2024-1-27T15:27:00.000Z"
     }
   },
   {
@@ -125,7 +132,8 @@
       "opt_in": false,
       "bcghg_id": "23219990007",
       "regulated_products": [],
-      "status": "Pending"
+      "status": "Pending",
+      "created_at": "2024-1-26T15:27:00.000Z"
     }
   },
   {
@@ -141,7 +149,8 @@
       "opt_in": false,
       "bcghg_id": "23219990008",
       "regulated_products": [],
-      "status": "Pending"
+      "status": "Pending",
+      "created_at": "2024-1-25T15:27:00.000Z"
     }
   },
   {
@@ -157,7 +166,8 @@
       "opt_in": false,
       "bcghg_id": "23219990009",
       "regulated_products": [],
-      "status": "Pending"
+      "status": "Pending",
+      "created_at": "2024-1-24T15:27:00.000Z"
     }
   },
   {
@@ -173,7 +183,8 @@
       "opt_in": false,
       "bcghg_id": "23219990010",
       "regulated_products": [],
-      "status": "Pending"
+      "status": "Pending",
+      "created_at": "2024-1-23T15:27:00.000Z"
     }
   },
   {
@@ -189,7 +200,8 @@
       "opt_in": false,
       "bcghg_id": "23219990011",
       "regulated_products": [],
-      "status": "Pending"
+      "status": "Pending",
+      "created_at": "2024-1-22T15:27:00.000Z"
     }
   },
   {
@@ -205,7 +217,8 @@
       "opt_in": false,
       "bcghg_id": "23219990012",
       "regulated_products": [],
-      "status": "Pending"
+      "status": "Pending",
+      "created_at": "2024-1-21T15:27:00.000Z"
     }
   },
   {
@@ -221,7 +234,8 @@
       "opt_in": false,
       "bcghg_id": "23219990013",
       "regulated_products": [],
-      "status": "Pending"
+      "status": "Pending",
+      "created_at": "2024-1-20T15:27:00.000Z"
     }
   },
   {
@@ -237,7 +251,8 @@
       "opt_in": false,
       "bcghg_id": "23219990014",
       "regulated_products": [],
-      "status": "Pending"
+      "status": "Pending",
+      "created_at": "2024-1-19T15:27:00.000Z"
     }
   },
   {
@@ -253,7 +268,8 @@
       "opt_in": false,
       "bcghg_id": "23219990015",
       "regulated_products": [],
-      "status": "Pending"
+      "status": "Pending",
+      "created_at": "2024-1-18T15:27:00.000Z"
     }
   },
   {
@@ -269,7 +285,8 @@
       "opt_in": false,
       "bcghg_id": "23219990016",
       "regulated_products": [],
-      "status": "Pending"
+      "status": "Pending",
+      "created_at": "2024-1-17T15:27:00.000Z"
     }
   },
   {
@@ -285,7 +302,8 @@
       "opt_in": false,
       "bcghg_id": "23219990017",
       "regulated_products": [],
-      "status": "Pending"
+      "status": "Pending",
+      "created_at": "2024-1-16T15:27:00.000Z"
     }
   },
   {
@@ -301,7 +319,8 @@
       "opt_in": false,
       "bcghg_id": "23219990018",
       "regulated_products": [],
-      "status": "Pending"
+      "status": "Pending",
+      "created_at": "2024-1-15T15:27:00.000Z"
     }
   },
   {
@@ -316,7 +335,8 @@
       "opt_in": false,
       "bcghg_id": "23219990019",
       "regulated_products": [],
-      "status": "Pending"
+      "status": "Pending",
+      "created_at": "2024-1-14T15:27:00.000Z"
     }
   },
   {
@@ -330,7 +350,8 @@
       "opt_in": false,
       "bcghg_id": "23219990020",
       "regulated_products": [],
-      "status": "Pending"
+      "status": "Pending",
+      "created_at": "2024-1-13T15:27:00.000Z"
     }
   },
   {
@@ -344,7 +365,8 @@
       "opt_in": false,
       "bcghg_id": "23219990021",
       "regulated_products": [],
-      "status": "Pending"
+      "status": "Pending",
+      "created_at": "2024-1-12T15:27:00.000Z"
     }
   },
   {
@@ -358,7 +380,8 @@
       "opt_in": false,
       "bcghg_id": "23219990022",
       "regulated_products": [],
-      "status": "Pending"
+      "status": "Pending",
+      "created_at": "2024-1-11T15:27:00.000Z"
     }
   },
   {
@@ -372,7 +395,8 @@
       "opt_in": false,
       "bcghg_id": "23219990023",
       "regulated_products": [],
-      "status": "Pending"
+      "status": "Pending",
+      "created_at": "2024-1-10T15:27:00.000Z"
     }
   }
 ]
