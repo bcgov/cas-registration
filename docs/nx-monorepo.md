@@ -2,7 +2,9 @@
 
 ## Nx Commands 🧑‍💻
 
-- `nx test components`: Run vitest for component library.
+- `nx test components` or `nx run components:test`: Run vitest for component library.
+- `nx test reporting` or `nx run reporting:test`: Run vitest for reporting app.
+- `nx run-many --all --target=test` run vitest for all projects with tests in the monorepo.
 
 ## Nx builds 🔨
 
