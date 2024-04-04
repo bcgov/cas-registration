@@ -1654,7 +1654,7 @@
     "@jest/types" "^29.6.3"
     jest-mock "^29.7.0"
 
-"@jest/reporters@^29.4.1", "@jest/reporters@^29.7.0":
+"@jest/reporters@^29.7.0":
   version "29.7.0"
   resolved "https://registry.yarnpkg.com/@jest/reporters/-/reporters-29.7.0.tgz#04b262ecb3b8faa83b0b3d321623972393e8f4c7"
   integrity sha512-DApq0KJbJOEzAFYjHADNNxAE3KbhxQB1y5Kplb5Waqw6zVbuWatSnMjE5gs8FUgEPmNsnZA3NCWl9NG0ia04Pg==
@@ -1700,7 +1700,7 @@
     callsites "^3.0.0"
     graceful-fs "^4.2.9"
 
-"@jest/test-result@^29.4.1", "@jest/test-result@^29.7.0":
+"@jest/test-result@^29.7.0":
   version "29.7.0"
   resolved "https://registry.yarnpkg.com/@jest/test-result/-/test-result-29.7.0.tgz#8db9a80aa1a097bb2262572686734baed9b1657c"
   integrity sha512-Fdx+tv6x1zlkJPcWXmMDAG2HBnaR9XPSd5aDWQVsfrZmLVT3lU1cwyxLgRmXR9yrq4NBoEm9BMsfgFzTQAbJYA==
@@ -2015,13 +2015,6 @@
   dependencies:
     "@nx/eslint-plugin" "18.2.1"
 
-"@nrwl/jest@18.2.1":
-  version "18.2.1"
-  resolved "https://registry.yarnpkg.com/@nrwl/jest/-/jest-18.2.1.tgz#84891f3fc24e8283c3b7677376789e0412acaa8f"
-  integrity sha512-ZB9HZ0Jtc8iltk9yiuJ+Zd5MB51bXFFm2YCDxRgqcs7XuuzjjtwCnl7cOY0nw4lbL893UNOA5dH1RYg4Pk1WNw==
-  dependencies:
-    "@nx/jest" "18.2.1"
-
 "@nrwl/js@18.2.1":
   version "18.2.1"
   resolved "https://registry.yarnpkg.com/@nrwl/js/-/js-18.2.1.tgz#d9dce1bf7f11426646fca76a3b6a3e2daf564745"
@@ -2140,27 +2133,6 @@
     eslint "^8.0.0"
     tslib "^2.3.0"
     typescript "~5.4.2"
-
-"@nx/jest@18.2.1":
-  version "18.2.1"
-  resolved "https://registry.yarnpkg.com/@nx/jest/-/jest-18.2.1.tgz#301b4e7046fa1f3fe53a3a3f2ae193aaa373d1b8"
-  integrity sha512-qgGWyeE6POJGbSdYM5FuccoCHwv818/tiWrjfESlv2aY+X4uEozZqtFQ8drR3hgCvuU4/MFfaU/y31SC4WDKTA==
-  dependencies:
-    "@jest/reporters" "^29.4.1"
-    "@jest/test-result" "^29.4.1"
-    "@nrwl/jest" "18.2.1"
-    "@nx/devkit" "18.2.1"
-    "@nx/js" "18.2.1"
-    "@phenomnomnominal/tsquery" "~5.0.1"
-    chalk "^4.1.0"
-    identity-obj-proxy "3.0.0"
-    jest-config "^29.4.1"
-    jest-resolve "^29.4.1"
-    jest-util "^29.4.1"
-    minimatch "9.0.3"
-    resolve.exports "1.1.0"
-    tslib "^2.3.0"
-    yargs-parser "21.1.1"
 
 "@nx/js@18.2.1":
   version "18.2.1"
@@ -6511,11 +6483,6 @@ handlebars@4.7.7:
   optionalDependencies:
     uglify-js "^3.1.4"
 
-harmony-reflect@^1.4.6:
-  version "1.6.2"
-  resolved "https://registry.yarnpkg.com/harmony-reflect/-/harmony-reflect-1.6.2.tgz#31ecbd32e648a34d030d86adb67d4d47547fe710"
-  integrity sha512-HIp/n38R9kQjDEziXyDTuW3vvoxxyxjxFzXLrBr18uB47GnSt+G9D29fqrpM5ZkspMcPICud3XsBJQ4Y2URg8g==
-
 has-bigints@^1.0.1, has-bigints@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/has-bigints/-/has-bigints-1.0.2.tgz#0871bd3e3d51626f6ca0966668ba35d5602d6eaa"
@@ -6741,13 +6708,6 @@ icss-utils@^5.0.0, icss-utils@^5.1.0:
   version "5.1.0"
   resolved "https://registry.yarnpkg.com/icss-utils/-/icss-utils-5.1.0.tgz#c6be6858abd013d768e98366ae47e25d5887b1ae"
   integrity sha512-soFhflCVWLfRNOPU3iv5Z9VUdT44xFRbzjLsEzSr5AQmgqPMTHdU3PMT1Cf1ssx8fLNJDA1juftYl+PUcv3MqA==
-
-identity-obj-proxy@3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/identity-obj-proxy/-/identity-obj-proxy-3.0.0.tgz#94d2bda96084453ef36fbc5aaec37e0f79f1fc14"
-  integrity sha512-00n6YnVHKrinT9t0d9+5yZC6UBNJANpYEQvL2LlX6Ab9lnmxzIRcEmTPuyGScvl1+jKuCICX1Z0Ab1pPKKdikA==
-  dependencies:
-    harmony-reflect "^1.4.6"
 
 ieee754@^1.1.13, ieee754@^1.2.1:
   version "1.2.1"
@@ -7253,7 +7213,7 @@ jest-cli@^29.7.0:
     jest-validate "^29.7.0"
     yargs "^17.3.1"
 
-jest-config@^29.4.1, jest-config@^29.7.0:
+jest-config@^29.7.0:
   version "29.7.0"
   resolved "https://registry.yarnpkg.com/jest-config/-/jest-config-29.7.0.tgz#bcbda8806dbcc01b1e316a46bb74085a84b0245f"
   integrity sha512-uXbpfeQ7R6TZBqI3/TxCU4q4ttk3u0PJeC+E0zbfSoSjq6bJ7buBPxzQPL0ifrkY4DNu4JUdk0ImlBUYi840eQ==
@@ -7419,7 +7379,7 @@ jest-resolve-dependencies@^29.7.0:
     jest-regex-util "^29.6.3"
     jest-snapshot "^29.7.0"
 
-jest-resolve@^29.4.1, jest-resolve@^29.7.0:
+jest-resolve@^29.7.0:
   version "29.7.0"
   resolved "https://registry.yarnpkg.com/jest-resolve/-/jest-resolve-29.7.0.tgz#64d6a8992dd26f635ab0c01e5eef4399c6bcbc30"
   integrity sha512-IOVhZSrg+UvVAshDSDtHyFCCBUl/Q3AAJv8iZ6ZjnZ74xzvwuzLXid9IIIPgTnY62SJjfuupMKZsZQRsCvxEgA==
@@ -7515,7 +7475,7 @@ jest-snapshot@^29.7.0:
     pretty-format "^29.7.0"
     semver "^7.5.3"
 
-jest-util@^29.0.0, jest-util@^29.4.1, jest-util@^29.7.0:
+jest-util@^29.0.0, jest-util@^29.7.0:
   version "29.7.0"
   resolved "https://registry.yarnpkg.com/jest-util/-/jest-util-29.7.0.tgz#23c2b62bfb22be82b44de98055802ff3710fc0bc"
   integrity sha512-z6EbKajIpqGKU56y5KBUgy1dt1ihhQJgWzUlZHArA/+X2ad7Cb5iF+AK1EWVL/Bo7Rz9uurpqw6SiBCefUbCGA==
@@ -9600,11 +9560,6 @@ resolve-pkg-maps@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/resolve-pkg-maps/-/resolve-pkg-maps-1.0.0.tgz#616b3dc2c57056b5588c31cdf4b3d64db133720f"
   integrity sha512-seS2Tj26TBVOC2NIc2rOe2y2ZO7efxITtLZcGSOnHHNOQ7CkiUBfw0Iw2ck6xkIhPwLhKNLS8BO+hEpngQlqzw==
-
-resolve.exports@1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/resolve.exports/-/resolve.exports-1.1.0.tgz#5ce842b94b05146c0e03076985d1d0e7e48c90c9"
-  integrity sha512-J1l+Zxxp4XK3LUDZ9m60LRJF/mAe4z6a4xyabPHk7pvK5t35dACV32iIjJDFeWZFfZlO29w6SZ67knR0tHzJtQ==
 
 resolve.exports@^2.0.0:
   version "2.0.2"
