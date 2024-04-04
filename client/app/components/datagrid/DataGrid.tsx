@@ -146,10 +146,10 @@ const DataGrid: React.FC<Props> = ({
           "& .MuiDataGrid-columnHeaders": {
             backgroundColor: BC_GOV_BACKGROUND_COLOR_BLUE,
           },
-          "& .MuiDataGrid-columnHeader:first-child": {
+          "& .MuiDataGrid-columnHeader:first-of-type": {
             borderLeft: "none",
           },
-          "& .MuiDataGrid-columnHeader:last-child": {
+          "& .MuiDataGrid-columnHeader:last-of-type": {
             borderRight: "none",
           },
           "& .MuiDataGrid-columnHeaderTitleContainer": {

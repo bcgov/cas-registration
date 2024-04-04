@@ -129,7 +129,7 @@ module.exports = {
 
 ## Testing
 
-### Unit Tests with Jest
+### Unit Tests with Vitest
 
 ```bash
 cd client && yarn test
@@ -147,8 +147,17 @@ Front-end unit tests include snapshots. Work that changes the DOM will result in
 
 React Testing Library isn't entirely compatible with Next 13 yet, so a few things to note:
 
-- To mock `fetch`,in `beforeEach`, add `fetchMock.enableMocks();`, and in the test, mock the fetch values with `fetchMock.mockResponse([...whatever response you want])`
 - If you're testing a simple async component, you can use `render(await Operations());` instead of `render(<Operations />)`. If the component is more complicated (e.g., it imports other async components, or a mix of client/server), it appears there isn't yet a solution: https://github.com/testing-library/react-testing-library/issues/1209#issuecomment-1673372612
+
+- To mock fetching data which uses our `actionHandler` you can import the action handler mock and mock the response values using `mockReturnValue` or `mockReturnValueOnce`:
+
+```
+import { actionHandler } from "@/tests/setup/mocks";
+
+actionHandler.mockReturnValueOnce({
+  ...mocked response data
+});
+```
 
 ### Backend unit tests (for API endpoints) with Pytest
 
