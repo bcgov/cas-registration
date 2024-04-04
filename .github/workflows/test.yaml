@@ -77,12 +77,12 @@ jobs:
       - uses: actions/checkout@v4
       - name: Set up Docker Buildx
         id: buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v3
         with:
           install: true
       - name: Docker meta
         id: meta
-        uses: docker/metadata-action@v3
+        uses: docker/metadata-action@v5
         with:
           images: ghcr.io/bcgov/cas-reg-backend
           tags: |
@@ -103,7 +103,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-buildx-bc_obps
       - name: Build image
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v5
         with:
           context: bc_obps
           builder: ${{ steps.buildx.outputs.name }}
@@ -128,12 +128,12 @@ jobs:
       - uses: actions/checkout@v4
       - name: Set up Docker Buildx
         id: buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v3
         with:
           install: true
       - name: Docker meta
         id: meta
-        uses: docker/metadata-action@v3
+        uses: docker/metadata-action@v5
         with:
           images: ghcr.io/bcgov/cas-reg-frontend
           tags: |
@@ -154,7 +154,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-buildx-client
       - name: Build image
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v5
         with:
           context: client
           builder: ${{ steps.buildx.outputs.name }}
