@@ -47,7 +47,7 @@ export class HomePOM {
     this.buttonLoginIDIR = page.getByRole("button", {
       name: ButtonText.LOGIN_CAS,
     });
-    this.linkProfile = page.locator(DataTestID.PROFILE);
+    this.linkProfile = page.getByTestId(DataTestID.PROFILE);
     this.fieldUser = page.locator(Keycloak.FIELD_USER_LOCATOR);
     this.fieldUserPassword = page.getByLabel(Keycloak.FIELD_PW_LOCATOR);
     this.textSSOLogout = page.locator("p", { hasText: ButtonText.LOGOUT_SSO });

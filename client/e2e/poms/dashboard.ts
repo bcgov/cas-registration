@@ -42,7 +42,7 @@ export class DashboardPOM {
 
   constructor(page: Page) {
     this.page = page;
-    this.messagePending = page.locator(DataTestID.MESSAGE_PENDING);
+    this.messagePending = page.getByTestId(DataTestID.MESSAGE_PENDING);
     this.operationsTile = page.getByRole("link", {
       name: TileTextDashboard.TILE_OPERATIONS,
     });

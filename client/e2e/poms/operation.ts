@@ -55,11 +55,19 @@ export class OperationPOM {
 
   readonly fieldPOCPhone;
 
+  readonly formHeaderOperation: Locator;
+
+  readonly formHeaderPOC: Locator;
+
+  readonly formHeaderStatutory: Locator;
+
   readonly formPage1Title: Locator;
 
   readonly formPage2Title: Locator;
 
   readonly formPage3Title: Locator;
+
+  readonly messageBoroIdRequested: Locator;
 
   readonly table: Locator;
 
@@ -95,17 +103,27 @@ export class OperationPOM {
     this.fieldPOCPosition = page.getByLabel(FormField.POSITION);
     this.fieldPOCEmail = page.getByLabel(FormField.EMAIL);
     this.fieldPOCPhone = page.getByLabel(FormField.PHONE);
+    this.formHeaderOperation = page
+      .getByTestId(DataTestID.OPERATION_HEADER_TEMPLATE)
+      .getByText(FormSection.INFO_OPERATION);
+    this.formHeaderPOC = page
+      .getByTestId(DataTestID.OPERATION_HEADER_TEMPLATE)
+      .getByText(FormSection.INFO_POINT_CONTACT);
+    this.formHeaderStatutory = page
+      .getByTestId(DataTestID.OPERATION_HEADER_TEMPLATE)
+      .getByText(FormSection.INFO_STATUTORY_DECLARATION);
     this.formPage1Title = page
-      .getByTestId("field-template-label")
+      .getByTestId(DataTestID.OPERATION_FIELD_TEMPLATE)
       .getByText(FormSection.INFO_OPERATION);
     this.formPage2Title = page
-      .getByTestId("field-template-label")
+      .getByTestId(DataTestID.OPERATION_FIELD_TEMPLATE)
       .getByText(FormSection.INFO_POINT_CONTACT);
     this.formPage3Title = page
-      .getByTestId("field-template-label")
-      .getByText(FormSection.INFO_STATUTORY);
-
-    this.table = page.locator(DataTestID.GRID);
+      .getByTestId(DataTestID.OPERATION_FIELD_TEMPLATE)
+      .getByText(FormSection.INFO_STATUTORY_DECLARATION);
+    this.messageBoroIdRequested = this.table = page.getByTestId(
+      DataTestID.OPERATION_BORO_ID_MESSAGE,
+    );
   }
 
   // ###  Actions ###
@@ -155,26 +173,11 @@ export class OperationPOM {
   // ###  Assertions ###
 
   async formIsVisible() {
-    const form = this.page.locator("form");
-    await form.waitFor();
     await expect(this.formPage1Title).toBeVisible();
-
     // Check for the presence of the multistep form headers
-    expect(
-      this.page
-        .getByTestId("multistep-header-title")
-        .getByText("Operation Information"),
-    ).toBeVisible();
-    expect(
-      this.page
-        .getByTestId("multistep-header-title")
-        .getByText("Point of Contact"),
-    ).toBeVisible();
-    expect(
-      this.page
-        .getByTestId("multistep-header-title")
-        .getByText("Statutory Declaration"),
-    ).toBeVisible();
+    await expect(this.formHeaderOperation).toBeVisible();
+    await expect(this.formHeaderPOC).toBeVisible();
+    await expect(this.formHeaderStatutory).toBeVisible();
   }
 
   async formStep2IsVisible() {
@@ -186,15 +189,7 @@ export class OperationPOM {
   }
 
   async successfulSubmissionIsVisible() {
-    this.page.getByText(
-      "Your application for the B.C. OBPS Regulated Operation ID for Test Operation Name has been received.",
-    );
-    this.page.getByText(
-      "Once approved, you will receive a confirmation email.",
-    );
-    this.page.getByText(
-      "You can then log back in and view the B.C. OBPS Regulated Operation ID for Test Operation Name.",
-    );
+    this.messageBoroIdRequested.isVisible();
   }
 
   async urlIsCorrect() {

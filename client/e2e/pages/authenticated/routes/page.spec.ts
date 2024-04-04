@@ -139,7 +139,7 @@ test.describe("Test Route Access", () => {
                       await pomPage.urlIsCorrect();
                       // 🔍 Assert that the not-found selector is not available
                       // 📌 Assert within this test spec so to not have to repeat across each POM
-                      const msgNotFound = page.locator(DataTestID.NOTFOUND);
+                      const msgNotFound = page.getByTestId(DataTestID.NOTFOUND);
                       await expect(msgNotFound).toBeHidden();
                       break;
                   }
@@ -156,7 +156,7 @@ test.describe("Test Route Access", () => {
                   } else {
                     // 🔍 Assert that the role has NO access, not-found message is available
                     // 📌 Assert within this test spec so to not have to repeat across each POM
-                    const msgNotFound = page.locator(DataTestID.NOTFOUND);
+                    const msgNotFound = page.getByTestId(DataTestID.NOTFOUND);
                     await expect(msgNotFound).toBeVisible();
                   }
                 }

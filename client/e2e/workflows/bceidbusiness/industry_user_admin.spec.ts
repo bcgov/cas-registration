@@ -1,4 +1,4 @@
-// 🧪 Suite to test the bceidbusiness new user workflow using storageState
+// 🧪 Suite to test the industry_user_admin workflows using storageState
 
 import { test } from "@playwright/test";
 // 🪄 Page Object Models

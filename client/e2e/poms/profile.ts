@@ -31,7 +31,7 @@ export class ProfilePOM {
     this.buttonSubmit = page.getByRole("button", {
       name: ButtonText.SUBMIT,
     });
-    this.errorList = page.locator(DataTestID.ERROR_PROFILE);
+    this.errorList = page.getByTestId(DataTestID.ERROR_PROFILE);
   }
 
   // ###  Actions ###
@@ -67,8 +67,8 @@ export class ProfilePOM {
 
   async userFullNameIsCorrect(expectedText: string) {
     // Waits for the profile link to appear with the expected text
-    await this.page.locator(
-      `${DataTestID.PROFILE}:has-text("${expectedText}")`
+    await this.page.getByTestId(
+      `${DataTestID.PROFILE}:has-text("${expectedText}")`,
     );
   }
 

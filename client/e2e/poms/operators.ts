@@ -9,7 +9,6 @@ import { headersOperators } from "@/e2e/utils/constants";
 // ☰ Enums
 import {
   ButtonText,
-  AriaLabel,
   AppRoute,
   FormSection,
   TableDataField,
@@ -22,7 +21,6 @@ import {
 // 🛠️ Helpers
 import {
   checkColumnTextVisibility,
-  checkFormHeaders,
   checkLocatorsVisibility,
   getAllFormInputs,
   tableColumnNamesAreCorrect,
@@ -53,6 +51,8 @@ export class OperatorsPOM {
 
   readonly formSectionOperator: Locator;
 
+  readonly formSectionUsers: Locator;
+
   readonly linkOperators: Locator;
 
   readonly modal: Locator;
@@ -65,31 +65,34 @@ export class OperatorsPOM {
 
   constructor(page: Page) {
     this.page = page;
-    this.buttonsApprove = page.locator(
-      `button[aria-label="${AriaLabel.APPLICATION_APPROVE}"]`,
-    );
+    this.buttonsApprove = page.getByRole("button", {
+      name: ButtonText.APPLICATION_APPROVE,
+    });
     this.buttonExpandAll = page.getByRole("button", {
       name: ButtonText.EXPAND_ALL,
     });
-    this.buttonsDecline = page.locator(
-      `button[aria-label="${AriaLabel.APPLICATION_REJECT}"]`,
-    );
+    this.buttonsDecline = page.getByRole("button", {
+      name: ButtonText.APPLICATION_REJECT,
+    });
     this.buttonViewDetail = page.getByRole("link", {
       name: ButtonText.VIEW_DETAILS,
     });
     this.formSectionOperator = page.getByRole("button", {
       name: FormSection.INFO_OPERATOR,
     });
+    this.formSectionUsers = page.getByRole("button", {
+      name: FormSection.INFO_USER,
+    });
     this.linkOperators = page.getByRole("link", {
       name: ButtonText.OPERATORS,
     });
-    this.modal = page.locator(DataTestID.MODAL);
-    this.buttonCancelModal = this.modal.locator(
-      `button[aria-label="${ButtonText.CANCEL}"]`,
-    );
-    this.buttonConfirmModal = this.modal.locator(
-      `button[aria-label="${ButtonText.CONFIRM}"]`,
-    );
+    this.modal = page.getByTestId(DataTestID.MODAL);
+    this.buttonCancelModal = page.getByRole("button", {
+      name: ButtonText.CANCEL,
+    });
+    this.buttonConfirmModal = page.getByRole("button", {
+      name: ButtonText.CONFIRM,
+    });
     this.messageInternal = page.getByText(MessageTextOperators.NOTE_INTERNAL);
     this.messageNewOperator = page.getByText(MessageTextOperators.NOTE_NEW);
     this.table = page.locator(DataTestID.GRID);
@@ -118,10 +121,7 @@ export class OperatorsPOM {
     await row.getByRole("link", { name: ButtonText.VIEW_DETAILS }).click();
 
     // Assert headers are visible
-    await checkFormHeaders(this.page, [
-      FormSection.INFO_OPERATOR,
-      FormSection.INFO_USER,
-    ]);
+    await this.formHasHeaders();
 
     // Assert that all form fields are visible, disabled and not editable
     await this.buttonExpandAll.click();
@@ -305,6 +305,11 @@ export class OperatorsPOM {
         // 🔍 Assert table is visible
         await this.tableIsVisible();
     }
+  }
+
+  async formHasHeaders() {
+    await expect(this.formSectionUsers).toBeVisible();
+    await expect(this.formSectionUsers).toBeVisible();
   }
 
   async tableIsVisible() {

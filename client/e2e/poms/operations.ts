@@ -9,7 +9,6 @@ import { headersOperations } from "@/e2e/utils/constants";
 // ☰ Enums
 import {
   AppRoute,
-  AriaLabel,
   ButtonText,
   DataTestID,
   FormSection,
@@ -24,7 +23,6 @@ import {
   checkAlertMessage,
   checkColumnTextVisibility,
   checkFormFieldsReadOnly,
-  checkFormHeaders,
   checkLocatorsVisibility,
   downloadPDF,
   getAllFormInputs,
@@ -72,7 +70,7 @@ export class OperationsPOM {
 
   readonly formSectionContact: Locator;
 
-  readonly formSectionStatutory: Locator;
+  readonly formSectionStatutoryDisclaimer: Locator;
 
   readonly linkOperations: Locator;
 
@@ -99,27 +97,27 @@ export class OperationsPOM {
     this.buttonAdd = page.getByRole("button", {
       name: ButtonText.ADD_OPERATION,
     });
-    this.buttonApprove = page.locator(
-      `button[aria-label="${AriaLabel.APPLICATION_APPROVE}"]`
-    );
-    this.buttonDecline = page.locator(
-      `button[aria-label="${AriaLabel.APPLICATION_REJECT}"]`
-    );
+    this.buttonApprove = page.getByRole("button", {
+      name: ButtonText.APPLICATION_APPROVE,
+    });
+    this.buttonDecline = page.getByRole("button", {
+      name: ButtonText.APPLICATION_REJECT,
+    });
     this.buttonExpandAll = page.getByRole("button", {
       name: ButtonText.EXPAND_ALL,
     });
-    this.buttonRequestChange = page.locator(
-      `button[aria-label="${AriaLabel.APPLICATION_REQUEST_CHANGE}"]`
-    );
-    this.buttonRequestChangeCancel = page.locator(
-      `button[aria-label="${AriaLabel.APPLICATION_REQUEST_CHANGE_CANCEL}"]`
-    );
-    this.buttonRequestChangeConfirm = page.locator(
-      `button[aria-label="${AriaLabel.APPLICATION_REQUEST_CHANGE_CONFIRM}"]`
-    );
-    this.buttonRequestChangeUndo = page.locator(
-      `button[aria-label="${AriaLabel.APPLICATION_REQUEST_CHANGE_UNDO}"]`
-    );
+    this.buttonRequestChange = page.getByRole("button", {
+      name: ButtonText.APPLICATION_REQUEST_CHANGE,
+    });
+    this.buttonRequestChangeCancel = page.getByRole("button", {
+      name: ButtonText.APPLICATION_REQUEST_CHANGE_CANCEL,
+    });
+    this.buttonRequestChangeConfirm = page.getByRole("button", {
+      name: ButtonText.APPLICATION_REQUEST_CHANGE_CONFIRM,
+    });
+    this.buttonRequestChangeUndo = page.getByRole("button", {
+      name: ButtonText.APPLICATION_REQUEST_CHANGE_UNDO,
+    });
     this.buttonViewDetail = page.getByRole("link", {
       name: ButtonText.VIEW_DETAILS,
     });
@@ -138,25 +136,25 @@ export class OperationsPOM {
     this.formSectionContact = page.getByRole("button", {
       name: FormSection.INFO_POINT_CONTACT,
     });
-    this.formSectionStatutory = page.getByRole("button", {
-      name: FormSection.INFO_STATUTORY,
+    this.formSectionStatutoryDisclaimer = page.getByRole("button", {
+      name: FormSection.INFO_STATUTORY_DISCLAIMER,
     });
     this.linkOperations = page.getByRole("link", {
       name: ButtonText.OPERATIONS,
     });
-    this.modal = page.locator(DataTestID.MODAL);
-    this.buttonCancelModal = this.modal.locator(
-      `button[aria-label="${ButtonText.CANCEL}"]`
-    );
-    this.buttonConfirmModal = this.modal.locator(
-      `button[aria-label="${ButtonText.CONFIRM}"]`
-    );
+    this.modal = page.getByTestId(DataTestID.MODAL);
+    this.buttonCancelModal = page.getByRole("button", {
+      name: ButtonText.CANCEL,
+    });
+    this.buttonConfirmModal = page.getByRole("button", {
+      name: ButtonText.CONFIRM,
+    });
     this.messageInternal = page.getByText(this.internalNote);
-    this.messageOperationApproved = page.locator(
-      DataTestID.OPERATION_APPROVED_MESSAGE
+    this.messageOperationApproved = page.getByTestId(
+      DataTestID.OPERATION_APPROVED_MESSAGE,
     );
-    this.messageOperationDeclined = page.locator(
-      DataTestID.OPERATION_DECLINED_MESSAGE
+    this.messageOperationDeclined = page.getByTestId(
+      DataTestID.OPERATION_DECLINED_MESSAGE,
     );
 
     this.table = page.locator(DataTestID.GRID);
@@ -194,30 +192,17 @@ export class OperationsPOM {
     // Locate row containing the status
     const row = await getTableRowByCellSelector(
       this.table,
-      `[data-field="${TableDataField.STATUS}"]:has-text("${status}")`
+      `[data-field="${TableDataField.STATUS}"]:has-text("${status}")`,
     );
 
     // Click the `View Detail` for this row
     await row.getByRole("link", { name: ButtonText.VIEW_DETAILS }).click();
 
     // Assert headers are visible
-    await checkFormHeaders(this.page, [
-      FormSection.INFO_OPERATION,
-      FormSection.INFO_OPERATOR,
-      FormSection.INFO_POINT_CONTACT,
-      FormSection.INFO_STATUTORY,
-    ]);
+    await this.formHasHeaders();
 
     // Assert headers are collapsed
-    const sections = [
-      this.formSectionOperation,
-      this.formSectionOperator,
-      this.formSectionContact,
-      this.formSectionStatutory,
-    ];
-    for (const section of sections) {
-      await expect(section).toHaveAttribute("aria-expanded", "false");
-    }
+    await this.formHasHeadersCollapsed();
 
     // Assert that all form fields are visible, disabled and not editable
     await this.buttonExpandAll.click();
@@ -234,7 +219,7 @@ export class OperationsPOM {
         await checkLocatorsVisibility(
           this.page,
           [this.buttonApprove, this.buttonDecline, this.buttonRequestChange],
-          false
+          false,
         );
         break;
       case OperationStatus.PENDING:
@@ -256,12 +241,12 @@ export class OperationsPOM {
   async formHasExpectedWorkflow(
     role: string,
     status: string,
-    caseIndex: number
+    caseIndex: number,
   ) {
     // Find a row by status
     const row = await getTableRowByCellSelector(
       this.table,
-      `[data-field="${TableDataField.STATUS}"]:has-text("${status}")`
+      `[data-field="${TableDataField.STATUS}"]:has-text("${status}")`,
     );
     await row.getByRole("link", { name: ButtonText.VIEW_DETAILS }).click();
 
@@ -292,8 +277,9 @@ export class OperationsPOM {
             await this.workflowReviewAction(
               this.buttonApprove,
               this.buttonConfirmModal,
-              this.alertApproved
+              this.alertApproved,
             );
+
             await expect(this.messageOperationApproved).toBeVisible({
               timeout: 10000,
             });
@@ -307,7 +293,7 @@ export class OperationsPOM {
             await this.workflowReviewAction(
               this.buttonDecline,
               this.buttonConfirmModal,
-              this.alertDeclined
+              this.alertDeclined,
             );
             await expect(this.messageOperationDeclined).toBeVisible();
             break;
@@ -316,11 +302,11 @@ export class OperationsPOM {
             // Workflow: Preview the Statutory Declaration PDF
 
             // cas_admin is able to Preview the Statutory Declaration PDF in any Operation form
-            await this.formSectionStatutory.click();
+            await this.formSectionStatutoryDisclaimer.click();
             await downloadPDF(
               this.page,
               ButtonText.PDF_PREVIEW,
-              LinkSrc.PDF_FILE
+              LinkSrc.PDF_FILE,
             );
             break;
         }
@@ -330,6 +316,26 @@ export class OperationsPOM {
     await this.navigateBack();
     // 🔍 Assert table is visible
     await this.tableIsVisible();
+  }
+
+  async formHasHeaders() {
+    await expect(this.formSectionOperation).toBeVisible();
+    await expect(this.formSectionOperator).toBeVisible();
+    await expect(this.formSectionContact).toBeVisible();
+    await expect(this.formSectionStatutoryDisclaimer).toBeVisible();
+  }
+
+  async formHasHeadersCollapsed() {
+    // Assert headers are collapsed
+    const sections = [
+      this.formSectionOperation,
+      this.formSectionOperator,
+      this.formSectionContact,
+      this.formSectionStatutoryDisclaimer,
+    ];
+    for (const section of sections) {
+      await expect(section).toHaveAttribute("aria-expanded", "false");
+    }
   }
 
   async tableHasExpectedColumns(role: string) {
@@ -383,7 +389,7 @@ export class OperationsPOM {
     btnApplication: Locator,
     btnModal: Locator,
     alertMessage: string | RegExp,
-    index: number = 0
+    index: number = 0,
   ) {
     await btnApplication.click();
     await expect(this.modal).toBeVisible();

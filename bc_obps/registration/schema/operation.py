@@ -12,7 +12,6 @@ from registration.utils import file_to_data_url, data_url_to_file
 from registration.models import Operation
 
 
-
 #### Operation schemas
 
 

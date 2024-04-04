@@ -76,15 +76,6 @@ export async function checkFormFieldsReadOnly(
   );
 }
 
-// 🛠️ Function: checks all visibility of form headers
-export async function checkFormHeaders(page: Page, formHeaders: string[]) {
-  await Promise.all(
-    formHeaders.map(async (header) => {
-      await expect(page.getByRole("button", { name: header })).toBeVisible();
-    }),
-  );
-}
-
 // 🛠️ Function: check locator visiblity true or false
 export async function checkLocatorsVisibility(
   page: Page,

@@ -5,10 +5,16 @@ export enum AppRole {
 
 // 🔘 button text
 export enum ButtonText {
-  ADD_PARENT_COMPANY = "Add another parent company",
-  APPROVE = "Approve",
   ADD_OPERATION = "Add Operation",
   ADD_OPERATOR = "Add Operator",
+  ADD_PARENT_COMPANY = "Add another parent company",
+  APPLICATION_APPROVE = "Approve application",
+  APPLICATION_REJECT = "Reject application",
+  APPLICATION_REQUEST_CHANGE = "Request Changes",
+  APPLICATION_REQUEST_CHANGE_CANCEL = "Cancel Change Request",
+  APPLICATION_REQUEST_CHANGE_CONFIRM = "Confirm Change Request",
+  APPLICATION_REQUEST_CHANGE_UNDO = "Undo Request Changes",
+  APPROVE = "Approve",
   CANCEL = "Cancel",
   CONFIRM = "Confirm",
   CONTINUE = "Continue",
@@ -62,14 +68,17 @@ export enum AriaLabel {
 
 // 👋 playwright ID selectors targeting an HTML element
 export enum DataTestID {
-  ERROR_PROFILE = '[data-testid="alert-error-user-profile"]',
-  GRID = ".MuiDataGrid-root", //'[data-testid="grid-root"]' not working?
-  MESSAGE_PENDING = '[data-testid="dashboard-pending-message"]',
-  NOTFOUND = '[data-testid="not-found"]',
-  PROFILE = '[data-testid="nav-user-profile"]',
-  OPERATION_APPROVED_MESSAGE = '[data-testid="operation-approved-message"]',
-  OPERATION_DECLINED_MESSAGE = '[data-testid="operation-declined-message"]',
-  MODAL = '[data-testid="modal"]',
+  ERROR_PROFILE = "alert-error-user-profile",
+  GRID = ".MuiDataGrid-root", // not working: "grid-root",
+  MESSAGE_PENDING = "dashboard-pending-message",
+  NOTFOUND = "not-found",
+  PROFILE = "nav-user-profile",
+  OPERATION_APPROVED_MESSAGE = "operation-approved-message",
+  OPERATION_BORO_ID_MESSAGE = "operation-boro-id-message",
+  OPERATION_DECLINED_MESSAGE = "operation-declined-message",
+  OPERATION_FIELD_TEMPLATE = "field-template-label",
+  OPERATION_HEADER_TEMPLATE = "multistep-header-title",
+  MODAL = "modal",
 }
 
 // E2E values
@@ -111,7 +120,8 @@ export enum FormSection {
   INFO_OPERATOR = "Operator Information",
   INFO_OPERATION = "Operation Information",
   INFO_POINT_CONTACT = "Point Of Contact",
-  INFO_STATUTORY = "Statutory Declaration and Disclaimer",
+  INFO_STATUTORY_DECLARATION = "Statutory Declaration",
+  INFO_STATUTORY_DISCLAIMER = "Statutory Declaration and Disclaimer",
   INFO_USER = "User Information",
 }
 
