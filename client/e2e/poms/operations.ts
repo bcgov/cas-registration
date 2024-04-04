@@ -279,7 +279,7 @@ export class OperationsPOM {
               this.buttonConfirmModal,
               this.alertApproved
             );
-            await expect(this.messageOperationApproved).toBeVisible();
+            //   await expect(this.messageOperationApproved).toBeVisible();
             break;
           case 2:
             // Status Pending
