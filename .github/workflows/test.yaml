@@ -2,9 +2,9 @@ name: Test Registration App
 
 on:
   push:
-    branches: [develop, main, giraffe-develop]
+    branches: [develop, main, giraffe-develop, create-deploy-script]
   pull_request:
-    branches: [develop, main, giraffe-develop]
+    branches: [develop, main, giraffe-develop, create-deploy-script]
   workflow_dispatch:
 
 env:
