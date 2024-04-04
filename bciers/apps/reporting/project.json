@@ -3,6 +3,7 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/reporting",
   "projectType": "application",
+  "tags": [],
   "targets": {
     "build": {
       "executor": "@nx/next:build",
@@ -24,6 +25,5 @@
         "tags": ["cas-reporting:latest"]
       }
     }
-  },
-  "tags": []
+  }
 }
