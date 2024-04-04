@@ -1,6 +1,9 @@
 {
   "extends": ["plugin:@nx/react", "../../../.eslintrc.json"],
   "globals": { "vi": true },
+  "parserOptions": {
+    "project": ["./tsconfig(.*)?.json"]
+  },
   "ignorePatterns": ["!**/*"],
   "overrides": [
     {
