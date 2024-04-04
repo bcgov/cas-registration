@@ -34,6 +34,18 @@ class BaseModel(models.Model):
         # if `update_fields` is passed, we only clean them otherwise we clean all fields(except audit fields)
         # This is to optimize the performance of the save method by only validating the fields that are being updated
         fields_to_update = kwargs.get('update_fields')
+        if fields_to_update and not self._state.adding:
+            # Get the original values from the database (if instance exists)
+            original_instance = self.__class__.objects.get(pk=self.pk)
+
+            # Check for changes in any of the update_fields
+            has_changed = any(getattr(self, field) != getattr(original_instance, field) for field in fields_to_update)
+
+            # If no fields have changed, return and don't call save
+            # This is to prevent creating a new history record if no fields have changed
+            if not has_changed:
+                return
+
         if fields_to_update:
             self.full_clean(
                 exclude=[field.name for field in self._meta.fields if field.name not in fields_to_update]
