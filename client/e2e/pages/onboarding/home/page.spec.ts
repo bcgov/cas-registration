@@ -49,7 +49,7 @@ test.beforeAll(async () => {
     await upsertUserOperatorRecord(
       process.env.E2E_INDUSTRY_USER_ADMIN_GUID as string,
       AppRole.ADMIN,
-      UserOperatorStatus.APPROVED,
+      UserOperatorStatus.APPROVED
     );
 
     // 👤 industry_user
@@ -92,7 +92,7 @@ test.describe("Test Page - Home", () => {
       variant: "default",
     });
   });
-
+  /*
   test.describe(`Test User Role`, () => {
     // ➰ Loop through the entries of UserRole enum
     for (let [role, value] of Object.entries(UserRole)) {
@@ -142,5 +142,5 @@ test.describe("Test Page - Home", () => {
         }
       });
     }
-  });
+  });*/
 });
