@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from typing import Optional
 from uuid import UUID
 import logging
 
@@ -10,12 +11,12 @@ logger = logging.getLogger(__name__)
 
 class EmailService:
     def __init__(self):
-        self.api_url = settings.CHES_API_URL
-        self.client_id = settings.CHES_CLIENT_ID
-        self.client_secret = settings.CHES_CLIENT_SECRET
-        self.token_endpoint = settings.CHES_TOKEN_ENDPOINT
-        self.token = None
-        self.token_expiry = datetime.now()
+        self.api_url: str = settings.CHES_API_URL
+        self.client_id: str = settings.CHES_CLIENT_ID
+        self.client_secret: str = settings.CHES_CLIENT_SECRET
+        self.token_endpoint: str = settings.CHES_TOKEN_ENDPOINT
+        self.token: Optional[str] = None
+        self.token_expiry: datetime = datetime.now()
         logger.info(f'Initializing EmailService for clientID {self.client_id} to connect to {self.api_url}')
 
     def _get_token(self):
