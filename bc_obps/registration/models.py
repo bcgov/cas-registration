@@ -2,7 +2,6 @@ from typing import List, Optional
 import re
 from uuid import UUID
 import uuid
-from dirtyfields import DirtyFieldsMixin
 from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
 from localflavor.ca.models import CAPostalCodeField, CAProvinceField
@@ -724,7 +723,7 @@ class OperationAndFacilityCommonInfo(TimeStampedModel):
         db_table = 'erc"."operation'
 
 
-class Operation(DirtyFieldsMixin, OperationAndFacilityCommonInfo):
+class Operation(OperationAndFacilityCommonInfo):
     """Operation model"""
 
     class Statuses(models.TextChoices):
