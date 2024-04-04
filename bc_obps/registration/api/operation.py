@@ -271,7 +271,7 @@ def update_operation(request, operation_id: UUID, submit: str, form_section: int
                 for attr, value in payload_dict.items():
                     setattr(operation, attr, value)
                 operation.naics_code_id = payload.naics_code
-                operation.save_dirty_fields()
+                operation.save(update_fields=[*payload_dict.keys(), 'naics_code_id', 'status'])
                 operation.regulated_products.set(payload.regulated_products)
 
             elif form_section == 2:
@@ -307,7 +307,7 @@ def update_operation(request, operation_id: UUID, submit: str, form_section: int
                     )
                     external_poc.set_create_or_update(user.pk)
                     operation.point_of_contact = external_poc
-                operation.save_dirty_fields()
+                operation.save(update_fields=['point_of_contact'])
 
             elif form_section == 3 and payload.statutory_declaration:
                 existing_statutory_document: Document = operation.documents.filter(
@@ -389,7 +389,7 @@ def update_operation_status(request, operation_id: UUID, payload: OperationUpdat
                         operator.save(update_fields=["status", "is_new", "verified_at", "verified_by_id"])
                         operator.set_create_or_update(user.pk)
             operation.status = status
-            operation.save_dirty_fields()
+            operation.save(update_fields=['status', 'verified_at', 'verified_by_id', 'bc_obps_regulated_operation'])
             operation.set_create_or_update(user.pk)
             return 200, operation
     except ValidationError as e:
