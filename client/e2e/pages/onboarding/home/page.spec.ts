@@ -92,7 +92,7 @@ test.describe("Test Page - Home", () => {
       variant: "default",
     });
   });
-  /*
+
   test.describe(`Test User Role`, () => {
     // ➰ Loop through the entries of UserRole enum
     for (let [role, value] of Object.entries(UserRole)) {
@@ -142,5 +142,5 @@ test.describe("Test Page - Home", () => {
         }
       });
     }
-  });*/
+  });
 });
