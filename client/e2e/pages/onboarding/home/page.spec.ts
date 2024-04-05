@@ -49,7 +49,7 @@ test.beforeAll(async () => {
     await upsertUserOperatorRecord(
       process.env.E2E_INDUSTRY_USER_ADMIN_GUID as string,
       AppRole.ADMIN,
-      UserOperatorStatus.APPROVED,
+      UserOperatorStatus.APPROVED
     );
 
     // 👤 industry_user
@@ -131,7 +131,6 @@ test.describe("Test Page - Home", () => {
         // 🔍 Assert that the current URL is correct
         switch (value) {
           case UserRole.NEW_USER:
-          case UserRole.CAS_PENDING:
             // 🔍 Assert that the current URL ends with "/profile"
             await new ProfilePOM(page).urlIsCorrect();
             break;
