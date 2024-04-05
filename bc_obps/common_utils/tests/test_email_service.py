@@ -55,12 +55,14 @@ def email_template():
     }
 
 
+# TODO: replace this with mock request to CHES API instead (so we're not getting a real token), instead just assert we're sending the right parameters
 def test_get_token(email_service):
     email_service._get_token()
     assert email_service.token is not None
     assert email_service.token_expiry > datetime.now()
 
 
+# TODO: replace this with mock request to CHES API instead, instead assert we're forming the request correctly
 def test_health_check(email_service):
     resp = email_service.health_check()
     assert isinstance(resp, dict)

@@ -131,12 +131,6 @@ class EmailService:
 
         Required input data:
             {
-                'attachments': List[{
-                    'content': str,
-                    'encoding': str,
-                    'filename': str,
-                    'contentType': str
-                }],
                 'bodyType': 'text' | 'html',
                 'body': str,
                 'contexts': [
