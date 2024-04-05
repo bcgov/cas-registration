@@ -151,17 +151,6 @@ export class OperationPOM {
     // Fill out the operation information form
     await this.fieldOperationName.fill(E2EValue.INPUT_OPERATION_NAME);
     await this.fieldOperationType.fill(E2EValue.FIXTURE_SFO);
-    /**Error: locator.selectOption: Error: Element is not a <select> element
-Call log:
-  - waiting for getByLabel('Operation Type*')
-  -   locator resolved to <input value="" tabindex="-1" id="root_type" name="root…/>
-  - attempting select option action
-  -   waiting for element to be visible and enabled */
-    //  await this.fieldOperationType.selectOption("Single Facility Operation");
-    /*  await this.fieldOperationType.selectOption({
-      label: "Single Facility Operation",
-    });
-    */
     await this.fieldNAICSCode.click();
     await this.fieldNAICSCodeOption.click();
   }
