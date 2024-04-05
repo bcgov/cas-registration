@@ -179,7 +179,11 @@ export class OperatorPOM {
   }
 
   async clickSubmitButton() {
+    const responsePromise = this.page.waitForResponse(
+      (response) => response.status() === 200,
+    );
     await this.buttonSubmit.click();
+    await responsePromise;
   }
 
   async editOperatorInformation() {
@@ -238,7 +242,7 @@ export class OperatorPOM {
   async triggerErrorsFieldRequired() {
     await this.clickSubmitButton();
     // ❗ Add short timeout to mitigate the Firefox text rendering issue causing spurious screenshot failures
-    await this.page.waitForTimeout(500);
+    // await this.page.waitForTimeout(500);
   }
 
   // # Assertions

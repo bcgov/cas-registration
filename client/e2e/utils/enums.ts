@@ -135,7 +135,7 @@ export enum FormField {
   MUNICIPALITY_MAILING = "#root_mailing_municipality",
   NAICS_CODE = "root_naics_code_id",
   OPERATION_NAME = "Operation Name*",
-  OPERATION_TYPE = "#root_type",
+  OPERATION_TYPE = "Operation Type*", //"#root_type",
   PHONE = "Phone Number*",
   PLACEHOLDER_LEGAL_NAME = "Enter Business Legal Name",
   PLACEHOLDER_CRA = "Enter CRA Business Number",

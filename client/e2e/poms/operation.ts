@@ -39,8 +39,6 @@ export class OperationPOM {
 
   readonly fieldOperationType: Locator;
 
-  readonly fieldOperationTypeOption: Locator;
-
   readonly fieldNAICSCode: Locator;
 
   readonly fieldNAICSCodeOption: Locator;
@@ -97,10 +95,7 @@ export class OperationPOM {
       name: E2EValue.FIXTURE_NAICS,
     });
     this.fieldOperationName = page.getByLabel(FormField.OPERATION_NAME);
-    this.fieldOperationType = page.locator(FormField.OPERATION_TYPE);
-    this.fieldOperationTypeOption = page.getByRole("option", {
-      name: E2EValue.FIXTURE_SFO,
-    });
+    this.fieldOperationType = page.getByLabel(FormField.OPERATION_TYPE);
     this.fieldPOCYes = page.getByLabel(FormField.YES);
     this.fieldPOCFirstName = page.getByLabel(FormField.FIRST_NAME);
     this.fieldPOCLastName = page.getByLabel(FormField.LAST_NAME);
@@ -126,7 +121,7 @@ export class OperationPOM {
       .getByTestId(DataTestID.OPERATION_FIELD_TEMPLATE)
       .getByText(FormSection.INFO_STATUTORY_DECLARATION);
     this.messageBoroIdRequested = this.table = page.getByTestId(
-      DataTestID.OPERATION_BORO_ID_MESSAGE
+      DataTestID.OPERATION_BORO_ID_MESSAGE,
     );
   }
 
@@ -145,17 +140,28 @@ export class OperationPOM {
   }
 
   async clickSubmitButton() {
+    const responsePromise = this.page.waitForResponse(
+      (response) => response.status() === 200,
+    );
     await this.buttonSubmit.click();
-    await this.page.waitForResponse((response) => response.status() === 200, {
-      timeout: 30000,
-    });
+    await responsePromise;
   }
 
   async formFillPage1() {
     // Fill out the operation information form
     await this.fieldOperationName.fill(E2EValue.INPUT_OPERATION_NAME);
-    await this.fieldOperationType.click();
-    await this.fieldOperationTypeOption.click();
+    await this.fieldOperationType.fill(E2EValue.FIXTURE_SFO);
+    /**Error: locator.selectOption: Error: Element is not a <select> element
+Call log:
+  - waiting for getByLabel('Operation Type*')
+  -   locator resolved to <input value="" tabindex="-1" id="root_type" name="root…/>
+  - attempting select option action
+  -   waiting for element to be visible and enabled */
+    //  await this.fieldOperationType.selectOption("Single Facility Operation");
+    /*  await this.fieldOperationType.selectOption({
+      label: "Single Facility Operation",
+    });
+    */
     await this.fieldNAICSCode.click();
     await this.fieldNAICSCodeOption.click();
   }
@@ -173,7 +179,7 @@ export class OperationPOM {
   async lastBreadcrumbIsVisible() {
     // Check for the presence of the breadcrumb since it
     // can take a second to load in and cause screenshot diffs
-    await this.breadCrumbLast.waitFor();
+    await expect(this.breadCrumbLast).toBeVisible();
   }
 
   async route() {
