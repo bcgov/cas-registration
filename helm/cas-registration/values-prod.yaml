@@ -43,3 +43,6 @@ frontend:
     requests:
       cpu: 200m
       memory: 250Mi
+
+growthbook:
+  clientKey: sdk-GUXYZ3Z60wN04tHG
