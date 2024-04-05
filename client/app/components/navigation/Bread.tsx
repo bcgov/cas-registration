@@ -92,7 +92,7 @@ export default function Bread({
   // and useState which is maintained between renders of a top-level React component (required for next\back) navigations
   const searchParams = useSearchParams();
   const paramTitle = searchParams.get("title") as string;
-  const [crumbTitle, setCrumbTitle] = useState<string>("");
+  const [crumbTitle, setCrumbTitle] = useState<string>(paramTitle ?? "");
   useEffect(() => {
     // Set the title state to rowTitle if it exists
     if (paramTitle) {
