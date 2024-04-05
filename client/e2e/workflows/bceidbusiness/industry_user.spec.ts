@@ -149,6 +149,7 @@ test.describe("Test Workflow industry_user", () => {
       component: "Add a new operator",
       variant: "required errors",
     });
+
     // 👉 Action trigger form fields format errors
     await selectOperatorPage.triggerErrorsFieldFormat();
     // 📷 Cheese!

@@ -179,11 +179,7 @@ export class OperatorPOM {
   }
 
   async clickSubmitButton() {
-    const responsePromise = this.page.waitForResponse(
-      (response) => response.status() === 200,
-    );
     await this.buttonSubmit.click();
-    await responsePromise;
   }
 
   async editOperatorInformation() {
@@ -191,6 +187,8 @@ export class OperatorPOM {
   }
 
   async fillInformation(selector: string) {
+    console.log("fillInformation");
+    console.log(selector);
     await fillAllFormFields(this.page, selector);
   }
 
