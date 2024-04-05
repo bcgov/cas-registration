@@ -36,7 +36,11 @@ from registration.schema import (
     OperationListOut,
     OperationUpdateStatusOut,
 )
-from registration.utils import generate_useful_error, get_current_user_approved_user_operator_or_raise
+from registration.utils import (
+    files_have_same_hash,
+    generate_useful_error,
+    get_current_user_approved_user_operator_or_raise,
+)
 from ninja.responses import codes_4xx, codes_5xx
 from ninja.errors import HttpError
 
@@ -314,12 +318,8 @@ def update_operation(request, operation_id: UUID, submit: str, form_section: int
                 ).first()
                 # if there is an existing statutory declaration document, check if the new one is different
                 if existing_statutory_document:
-                    # if the new statutory declaration is different from the existing one, delete the existing one and create a new one
-                    # otherwise, do nothing
-                    if (
-                        payload.statutory_declaration.name != os.path.basename(existing_statutory_document.file.name)
-                        or payload.statutory_declaration.size != existing_statutory_document.file.size
-                    ):
+                    # We need to check if the file has changed, if it has, we need to delete the old one and create a new one
+                    if not files_have_same_hash(payload.statutory_declaration, existing_statutory_document.file):
                         existing_statutory_document.delete()
                         document = Document.objects.create(
                             file=payload.statutory_declaration,
