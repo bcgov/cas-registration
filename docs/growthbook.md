@@ -112,6 +112,8 @@ const ServerComponentPage = async () => {
 export default ServerComponentPage;
 
 ```
+
 ## Other Resources
+
 [Growthbook NextJS Docs](https://docs.growthbook.io/guide/nextjs-and-growthbook)
 [NextJS Hydration Error](https://nextjs.org/docs/messages/react-hydration-error#solution-1-using-useeffect-to-run-on-the-client-only)
