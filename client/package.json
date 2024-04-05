@@ -15,6 +15,7 @@
     "audit-deps": "improved-yarn-audit"
   },
   "dependencies": {
+    "@axe-core/playwright": "^4.9.0",
     "@babel/traverse": "^7.23.2",
     "@bcgov/bc-sans": "^2.0.0",
     "@emotion/cache": "^11.11.0",
