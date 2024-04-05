@@ -1,7 +1,5 @@
 import NextAuth, { NextAuthOptions } from 'next-auth';
-import { authOptions as regAuthOptions } from 'registration/api/auth/[...nextauth]/route';
-
-export const authOptions = regAuthOptions as NextAuthOptions;
+import { authOptions } from './authOptions';
 
 const handler = NextAuth(authOptions);
 

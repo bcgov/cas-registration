@@ -1,9 +1,10 @@
 import { Session } from "next-auth";
 
 export const getUserFullName = (session?: Session | null) => {
-  const fullName = session?.user?.full_name;
-  const givenName = session?.user?.given_name;
-  const familyName = session?.user?.family_name;
+  const user = session?.user as { full_name?: string; given_name?: string; family_name?: string; name?: string } | undefined;
+  const fullName = user?.full_name;
+  const givenName = user?.given_name;
+  const familyName = user?.family_name;
   let userFullName;
 
   if (fullName) {
@@ -15,7 +16,7 @@ export const getUserFullName = (session?: Session | null) => {
   } else if (!givenName && familyName) {
     userFullName = familyName;
   } else {
-    userFullName = session?.user?.name || "";
+    userFullName = user?.name || "";
   }
 
   return userFullName;
