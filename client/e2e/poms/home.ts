@@ -63,6 +63,8 @@ export class HomePOM {
       case UserRole.NEW_USER:
         await this.buttonLoginBCeID.click();
         break;
+      case UserRole.CAS_PENDING:
+        break;
       default:
         await this.buttonLoginIDIR.click();
         break;
