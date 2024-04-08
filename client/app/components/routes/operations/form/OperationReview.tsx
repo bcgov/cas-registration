@@ -60,10 +60,10 @@ const OperationReview = ({ operation }: Props) => {
 
   return (
     <Review
-      approvedMessage="You have approved the request for carbon tax exemption."
-      declinedMessage="You have declined the request for carbon tax exemption."
-      confirmApproveMessage="Are you sure you want to approve this request for carbon tax exemption?"
-      confirmRejectMessage="Are you sure you want to decline this request for carbon tax exemption?"
+      approvedMessage="You have approved the application for a B.C. OBPS Regulated Operation ID."
+      declinedMessage="You have declined the application for a B.C. OBPS Regulated Operation ID."
+      confirmApproveMessage="Are you sure you want to approve this application for a B.C. OBPS Regulated Operation ID?"
+      confirmRejectMessage="Are you sure you want to decline this application for a B.C. OBPS Regulated Operation ID?"
       isStatusPending={operation.status === Status.PENDING}
       operationStatus={operation.status as Status}
       onApprove={approveRequest}
