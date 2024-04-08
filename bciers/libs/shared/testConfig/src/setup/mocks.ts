@@ -12,6 +12,8 @@
 //    replace: vi.fn(),
 //  });
 
+import { vi } from 'vitest';
+
 const actionHandler = vi.fn();
 const useRouter = vi.fn();
 const useParams = vi.fn();
