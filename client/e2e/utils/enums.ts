@@ -106,22 +106,13 @@ export enum E2EValue {
   STORAGE = "_STORAGE",
 }
 
-// 👋 Form sections selectors
-export enum FormSection {
-  INFO_OPERATOR = "Operator Information",
-  INFO_OPERATION = "Operation Information",
-  INFO_POINT_CONTACT = "Point Of Contact",
-  INFO_STATUTORY_DECLARATION = "Statutory Declaration",
-  INFO_STATUTORY_DISCLAIMER = "Statutory Declaration and Disclaimer",
-  INFO_USER = "User Information",
-}
-
 // 👋 Form fields selectors
 export enum FormField {
   BC_CRN = "BC Corporate Registry Number*",
   BUSINESS_STRUCTURE = "Business Structure*",
   CRA = "CRA Business Number*",
   EMAIL = "Email Address*",
+  FORM = "form",
   FIELDSET_OPERATOR = "fieldset#root",
   FIELDSET_PARENT_COMPANY_0 = "fieldset#root_parent_operators_array_0",
   FIELDSET_PARENT_COMPANY_1 = "fieldset#root_parent_operators_array_1",
@@ -151,6 +142,16 @@ export enum FormField {
   TITLE = "Operator Information",
   WEB_SITE = "Website (optional)",
   YES = "Yes",
+}
+
+// 👋 Form sections selectors
+export enum FormSection {
+  INFO_OPERATOR = "Operator Information",
+  INFO_OPERATION = "Operation Information",
+  INFO_POINT_CONTACT = "Point Of Contact",
+  INFO_STATUTORY_DECLARATION = "Statutory Declaration",
+  INFO_STATUTORY_DISCLAIMER = "Statutory Declaration and Disclaimer",
+  INFO_USER = "User Information",
 }
 
 // 👋 keycloak selectors
