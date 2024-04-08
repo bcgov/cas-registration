@@ -31,6 +31,9 @@
   .read-only-widget {
     @apply w-full px-[14px] py-4 flex items-center;
   }
+  .link-button-blue {
+    @apply w-fit no-underline text-lg text-white py-[6px] px-[16px] rounded flex items-center bg-bc-primary-blue;
+  }
 }
 
 /* CSS resets */

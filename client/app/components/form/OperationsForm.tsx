@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { operationUiSchema } from "@/app/utils/jsonSchema/operations";
 import MultiStepFormBase from "@/app/components/form/MultiStepFormBase";
-import { Button } from "@mui/material";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { actionHandler } from "@/app/utils/actions";
@@ -61,8 +60,12 @@ export default function OperationsForm({ formData, schema }: Readonly<Props>) {
           <p>
             <Link href="#">Have not received the confirmation email yet?</Link>
           </p>
-          <Link href="/dashboard/operations">
-            <Button variant="contained">Return to Operations List</Button>
+          <Link
+            className="m-auto link-button-blue"
+            href="/dashboard/operations"
+            aria-label="Return to Operations List"
+          >
+            Return to Operations List{" "}
           </Link>
         </section>
       ) : (
