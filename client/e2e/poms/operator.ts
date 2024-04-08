@@ -122,7 +122,7 @@ export class OperatorPOM {
     this.fieldPostal = page.getByLabel(FormField.POSTAL_CODE);
     this.fieldSelectCRA = page.getByPlaceholder(FormField.PLACEHOLDER_CRA);
     this.fieldSelectLegalName = page.getByPlaceholder(
-      FormField.PLACEHOLDER_LEGAL_NAME
+      FormField.PLACEHOLDER_LEGAL_NAME,
     );
     this.fieldSearchByCRA = page.getByLabel(FormField.SEARCH_BY_CANADA_REVENUE);
     this.fieldWebSite = page.getByLabel(FormField.WEB_SITE);
@@ -137,28 +137,28 @@ export class OperatorPOM {
     });
     this.linkReturn = page.getByText(ButtonText.RETURN);
     this.messageAccessRequested = page.getByText(
-      new RegExp(MessageTextOperatorSelect.REQUEST_ACCESS, "i")
+      new RegExp(MessageTextOperatorSelect.REQUEST_ACCESS, "i"),
     );
     this.messageAddOperatorRequested = page.getByText(
-      new RegExp(MessageTextOperatorSelect.REQUEST_ADD, "i")
+      new RegExp(MessageTextOperatorSelect.REQUEST_ADD, "i"),
     );
     this.messageAdministratorRequested = page.getByText(
-      new RegExp(MessageTextOperatorSelect.REQUEST_ADMIN, "i")
+      new RegExp(MessageTextOperatorSelect.REQUEST_ADMIN, "i"),
     );
     this.messageConfirmation = page.getByText(
-      new RegExp(MessageTextOperatorSelect.OPERATOR_CONFIRM, "i")
+      new RegExp(MessageTextOperatorSelect.OPERATOR_CONFIRM, "i"),
     );
     this.messageEditInformation = page.getByText(
-      new RegExp(MessageTextOperator.EDIT_INFO, "i")
+      new RegExp(MessageTextOperator.EDIT_INFO, "i"),
     );
     this.messageNoAccess = page.getByText(
-      new RegExp(MessageTextOperatorSelect.NO_ACCESS, "i")
+      new RegExp(MessageTextOperatorSelect.NO_ACCESS, "i"),
     );
     this.messageNoAdminSetup = page.getByText(
-      new RegExp(MessageTextOperatorSelect.NO_ADMIN, "i")
+      new RegExp(MessageTextOperatorSelect.NO_ADMIN, "i"),
     );
     this.messageSelectOperator = page.getByText(
-      new RegExp(MessageTextOperatorSelect.SELECT_OPERATOR, "i")
+      new RegExp(MessageTextOperatorSelect.SELECT_OPERATOR, "i"),
     );
   }
 
@@ -266,12 +266,15 @@ export class OperatorPOM {
 
   async formIsVisible() {
     await expect(this.form).toBeVisible();
+  }
+
+  async formTitleIsVisible() {
     await expect(this.formTitle).toBeVisible();
   }
 
   async formViewIsCorrect() {
-    await expect(this.messageEditInformation).toBeVisible();
-    await expect(this.formTitle).toBeVisible();
+    await this.msgEditInformationIsVisible();
+    await this.formTitleIsVisible();
     await expect(this.buttonEdit).toBeVisible();
     await expect(this.buttonSaveAndReturn).toBeVisible();
   }
@@ -290,6 +293,14 @@ export class OperatorPOM {
 
   async msgConfirmationIsVisible() {
     await expect(this.messageConfirmation).toBeVisible();
+  }
+
+  async msgEditInformationIsVisible() {
+    await expect(this.messageEditInformation).toBeVisible();
+  }
+
+  async msgEditInformationIsNotVisible() {
+    await expect(this.messageEditInformation).toBeHidden();
   }
 
   async msgNoAccessIsVisible() {
