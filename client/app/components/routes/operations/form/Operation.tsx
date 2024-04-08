@@ -12,7 +12,6 @@ import OperationReview from "./OperationReview";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 import ErrorIcon from "@mui/icons-material/Error";
-import { Fade } from "@mui/material";
 import { Status } from "@/app/utils/enums";
 import { Operation as OperationInt } from "@/app/components/routes/operations/types";
 import Link from "next/link";
@@ -209,7 +208,7 @@ export default async function Operation({ numRow }: { numRow?: string }) {
       />
       <div>
         {isCasInternal ? (
-          <p>
+          <p data-testid="operation-approved-message">
             This operation’s application for a B.C. OBPS Regulated Operation ID
             was approved.
           </p>
@@ -239,7 +238,7 @@ export default async function Operation({ numRow }: { numRow?: string }) {
     <div className="flex items-start gap-3 mt-4">
       <CancelIcon fontSize="large" color="error" />
       <div>
-        <p className="mt-0">
+        <p className="mt-0" data-testid="operation-declined-message">
           This operation’s application for a B.C. OBPS Regulated Operation ID
           was declined.
         </p>
@@ -320,11 +319,7 @@ export default async function Operation({ numRow }: { numRow?: string }) {
   return (
     <>
       <OperationReview operation={operation} />
-      {showRegistrationRequestResult && registrationRequestResultJSX && (
-        <Fade in={showRegistrationRequestResult}>
-          {registrationRequestResultJSX}
-        </Fade>
-      )}
+      {showRegistrationRequestResult && registrationRequestResultJSX}
       {isCasInternal ? (
         <OperationReviewForm
           schema={createOperationSchema(

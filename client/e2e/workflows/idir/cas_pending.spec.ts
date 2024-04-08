@@ -1,4 +1,4 @@
-// 🧪 Suite to test the bceidbusiness new user workflow using storageState
+// 🧪 Suite to test the cas_pending workflows using storageState
 
 import { test } from "@playwright/test";
 // 🪄 Page Object Models
@@ -20,15 +20,15 @@ test.describe("Test Workflow cas_pending", () => {
   test("Test Navigation to `home` is redirected to Dashboard page", async ({
     page,
   }) => {
-    // 🛸 Navigate to home page
     const homePage = new HomePOM(page);
+    // 🛸 Navigate to home page
     await homePage.route();
     // 🔍 Assert that the current URL ends with "/dashboard"
     await new DashboardPOM(page).urlIsCorrect();
   });
   test("Test Dashboard Message", async ({ page }) => {
-    // 🛸 Navigate to dashboard page
     const dashboardPage = new DashboardPOM(page);
+    // 🛸 Navigate to dashboard page
     await dashboardPage.route();
     // 🔍 Assert that the current URL ends with "/dashboard"
     await dashboardPage.urlIsCorrect();

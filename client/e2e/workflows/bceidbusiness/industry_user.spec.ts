@@ -1,35 +1,29 @@
-// 🧪 Suite to test the bceidbusiness new user workflow using storageState
-// 🔍 Asserts new user is redirected to profile
+// 🧪 Suite to test the industry_user workflows using storageState
 
-import { test, expect, APIResponse } from "@playwright/test";
+import { test } from "@playwright/test";
 // 🪄 Page Object Models
 import { DashboardPOM } from "@/e2e/poms/dashboard";
 // ℹ️ Environment variables
 import * as dotenv from "dotenv";
 import { OperatorPOM } from "@/e2e/poms/operator";
-import {
-  fillAllFormFields,
-  checkRequiredFieldValidationErrors,
-  triggerFormatValidationErrors,
-} from "@/e2e/utils/helpers";
 import { deleteUserOperatorRecord } from "@/e2e/utils/queries";
+import { E2EValue, FormField, UserRole } from "@/e2e/utils/enums";
+import { setupTestEnvironment } from "@/e2e/utils/helpers";
 dotenv.config({ path: "./e2e/.env.local" });
 const happoPlaywright = require("happo-playwright");
 
 test.beforeEach(async ({ context }) => {
   await happoPlaywright.init(context);
-  let response: APIResponse = await context.request.get(
-    "http://localhost:8000/api/registration/test-setup",
-  );
-  // Wait for the response and check for success status text and code (e.g., 200)
-  expect(await response.text()).toBe("Test setup complete.");
-  expect(response.status()).toBe(200);
-
+  await setupTestEnvironment(UserRole.INDUSTRY_USER);
   await deleteUserOperatorRecord(process.env.E2E_INDUSTRY_USER_GUID as string);
 });
 
 test.afterEach(async () => {
   await happoPlaywright.finish();
+});
+
+test.afterAll(async () => {
+  await setupTestEnvironment(undefined, true); // clean up test data after all tests are done
 });
 
 // 🏷 Annotate test suite as serial
@@ -50,47 +44,46 @@ test.describe("Test Workflow industry_user", () => {
     const dashboardPage = new DashboardPOM(page);
     const selectOperatorPage = new OperatorPOM(page);
     await dashboardPage.route();
-    // 🔍 Assert that the current URL ends with "(authenticated)/dashboard"
+    // 🔍 Assert current URL
     await dashboardPage.urlIsCorrect();
+    // 🛸 Navigates to select operator
     await dashboardPage.clickSelectOperatorTile();
+    // 🔍 Assert current URL is select operator
     await selectOperatorPage.urlIsCorrect();
-
+    // 📷 Cheese!
     pageContent = page.locator("html");
     await happoPlaywright.screenshot(page, pageContent, {
       component: "Select operator page",
       variant: "default",
     });
-
-    await page.getByPlaceholder("Enter Business Legal Name").click();
-    await page.getByPlaceholder("Enter Business Legal Name").fill("Operator");
-    await page.getByText(/Operator 1 Legal Name/i).click();
-    await selectOperatorPage.buttonSelectOperator.click();
-    await expect(
-      page.getByText(selectOperatorPage.confirmationMessage),
-    ).toBeVisible();
-
+    // 👉 Action search by legal name
+    await selectOperatorPage.selectByLegalName(
+      E2EValue.SEARCH_LEGAL_NAME,
+      E2EValue.FIXTURE_LEGAL_NAME,
+    );
+    // 🔍 Assert operator confirmation message
+    await selectOperatorPage.msgConfirmationIsVisible();
+    // 📷 Cheese!
     pageContent = page.locator("html");
     await happoPlaywright.screenshot(page, pageContent, {
       component: "Select operator confirmation message",
       variant: "default",
     });
-
-    await selectOperatorPage.buttonYesThisIsMyOperator.click();
-    await expect(
-      page.getByText(/does not have Administrator access set up./i),
-    ).toBeVisible();
-
+    // 👉 Action accept operator
+    await selectOperatorPage.acceptOperator();
+    // 🔍 Assert no administrator set up message
+    await selectOperatorPage.msgNoAdminSetupIsVisible();
+    // 📷 Cheese!
     pageContent = page.locator("html");
     await happoPlaywright.screenshot(page, pageContent, {
       component: "Select operator no administrator message",
       variant: "default",
     });
-
-    await selectOperatorPage.buttonRequestAdministratorAccess.click();
-    await expect(
-      page.getByText(/has been received and will be reviewed./i),
-    ).toBeVisible();
-
+    // 👉 Action request administrator access
+    await selectOperatorPage.requestAdmin();
+    // 🔍 Assert access requested message
+    await selectOperatorPage.msgAdminRequestedIsVisible();
+    // 📷 Cheese!
     pageContent = page.locator("html");
     await happoPlaywright.screenshot(page, pageContent, {
       component: "Select operator admin access request confirmation",
@@ -105,27 +98,27 @@ test.describe("Test Workflow industry_user", () => {
     // 🛸 Navigate directly to the operator page (already tested navigating from the dashboard in the first test)
     const selectOperatorPage = new OperatorPOM(page);
     await selectOperatorPage.route();
+    // 🔍 Assert current URL
     await selectOperatorPage.urlIsCorrect();
-    await selectOperatorPage.selectByCraNumber("987654321");
-    await expect(
-      page.getByText(selectOperatorPage.confirmationMessage),
-    ).toBeVisible();
-    await selectOperatorPage.buttonYesThisIsMyOperator.click();
-    await expect(
-      page.getByText(/Looks like you do not have access to/i),
-    ).toBeVisible();
-
+    // 👉 Action select by CRA
+    await selectOperatorPage.selectByCraNumber(E2EValue.SEARCH_CRA);
+    // 🔍 Assert operator confirmation message
+    await selectOperatorPage.msgConfirmationIsVisible();
+    // 👉 Action accept operator
+    await selectOperatorPage.acceptOperator();
+    // 🔍 Assert no access message
+    await selectOperatorPage.msgNoAccessIsVisible();
+    // 📷 Cheese!
     pageContent = page.locator("html");
     await happoPlaywright.screenshot(page, pageContent, {
       component: "Select operator existing admin message",
       variant: "default",
     });
-
-    await selectOperatorPage.buttonRequestAccess.click();
-    await expect(
-      page.getByText(/Your access request has been sent/i),
-    ).toBeVisible();
-
+    // 👉 Action request access
+    await selectOperatorPage.requestAccess();
+    // 🔍 Assert access requested message
+    await selectOperatorPage.msgAccessRequestedIsVisible();
+    // 📷 Cheese!
     pageContent = page.locator("html");
     await happoPlaywright.screenshot(page, pageContent, {
       component: "Select operator non-admin access request confirmation",
@@ -138,60 +131,60 @@ test.describe("Test Workflow industry_user", () => {
     // 🛸 Navigate directly to the operator page (already tested navigating from the dashboard in the first test)
     const selectOperatorPage = new OperatorPOM(page);
     await selectOperatorPage.route();
+    // 🔍 Assert current URL
     await selectOperatorPage.urlIsCorrect();
-    await selectOperatorPage.linkAddOperator.click();
-    await expect(page.getByText(/Operator Information/i)).toBeVisible();
-
+    // 👉 Action create a new operator
+    await selectOperatorPage.clickAddOperator();
+    // 🔍 Assert the form is visible
+    await selectOperatorPage.formIsVisible();
+    // 🔍 Assert the form title is visible
+    await selectOperatorPage.formTitleIsVisible();
+    // 🔍 Assert edit information message is not visible
+    //  await selectOperatorPage.msgEditInformationIsNotVisible();
+    // 📷 Cheese!
     pageContent = page.locator("html");
     await happoPlaywright.screenshot(page, pageContent, {
       component: "Add a new operator",
       variant: "default",
     });
-
-    await checkRequiredFieldValidationErrors(
-      page,
-      selectOperatorPage.buttonSubmit,
-    );
-
+    // 👉 Action trigger form required fields errors
+    await selectOperatorPage.triggerErrorsFieldRequired();
+    // 📷 Cheese!
     pageContent = page.locator("html");
     await happoPlaywright.screenshot(page, pageContent, {
       component: "Add a new operator",
       variant: "required errors",
     });
 
-    await triggerFormatValidationErrors(page, selectOperatorPage.buttonSubmit);
-
+    // 👉 Action trigger form fields format errors
+    await selectOperatorPage.triggerErrorsFieldFormat();
+    // 📷 Cheese!
     pageContent = page.locator("html");
     await happoPlaywright.screenshot(page, pageContent, {
       component: "Add a new operator",
       variant: "format errors",
     });
-
-    // Fill all operator form fields
-    await fillAllFormFields(page, "fieldset#root");
-    // Add a parent operator
-    await page.locator("#root_operator_has_parent_operators-0").check();
-
-    // Fill the parent operator form
-    await fillAllFormFields(page, "fieldset#root_parent_operators_array_0");
-
-    // Add a second parent operator
-    await page.locator("#root_operator_has_parent_operators-1").check();
-
-    // Fill the second parent operator form
-    await fillAllFormFields(page, "fieldset#root_parent_operators_array_0");
-
+    // 👉 Action fill all operator form fields
+    await selectOperatorPage.fillInformation(FormField.FIELDSET_OPERATOR);
+    // 👉 Action fill parent operation form fields - first section
+    await selectOperatorPage.fieldHasParentCompany.check();
+    await selectOperatorPage.fillInformation(
+      FormField.FIELDSET_PARENT_COMPANY_0,
+    );
+    // 👉 Action fill parent operation form fields - second section
+    await selectOperatorPage.buttonAddParentCompany.click();
+    await selectOperatorPage.fillInformation(
+      FormField.FIELDSET_PARENT_COMPANY_1,
+    );
+    // 📷 Cheese!
     pageContent = page.locator("html");
     await happoPlaywright.screenshot(page, pageContent, {
       component: "Add a new operator",
       variant: "filled",
     });
-
-    // Click the Submit button
-    await selectOperatorPage.buttonSubmit.click();
-
-    await expect(page.getByText(/Your request to add/i)).toBeVisible();
-
+    // 🔍 Assert New Operator request form is submitted
+    await selectOperatorPage.formIsSubmitted();
+    // 📷 Cheese!
     pageContent = page.locator("html");
     await happoPlaywright.screenshot(page, pageContent, {
       component: "New operator confirmation",
@@ -203,22 +196,23 @@ test.describe("Test Workflow industry_user", () => {
     // 🛸 Navigate directly to the operator page (already tested navigating from the dashboard in the first test)
     const selectOperatorPage = new OperatorPOM(page);
     await selectOperatorPage.route();
+    // 🔍 Assert current URL
     await selectOperatorPage.urlIsCorrect();
-    await selectOperatorPage.selectByCraNumber("987654321");
-    await expect(
-      page.getByText(selectOperatorPage.confirmationMessage),
-    ).toBeVisible();
-    await selectOperatorPage.buttonYesThisIsMyOperator.click();
-    await expect(
-      page.getByText(/Looks like you do not have access to/i),
-    ).toBeVisible();
-    await page.getByText(/go back/i).click();
-    await expect(
-      page.getByText(selectOperatorPage.confirmationMessage),
-    ).toBeVisible();
-    await page.getByText(/return/i).click();
-    await expect(
-      page.getByText(/Which operator would you like to log in to?/i),
-    ).toBeVisible();
+    // 👉 Action select by CRA
+    await selectOperatorPage.selectByCraNumber(E2EValue.SEARCH_CRA);
+    // 🔍 Assert operator confirmation message
+    await selectOperatorPage.msgConfirmationIsVisible();
+    // 👉 Action accept operator
+    await selectOperatorPage.acceptOperator();
+    // 🔍 Assert no access message
+    await selectOperatorPage.msgNoAccessIsVisible();
+    // 👉 Action route go back
+    await selectOperatorPage.routeBack();
+    // 🔍 Assert operator confirmation message
+    await selectOperatorPage.msgConfirmationIsVisible();
+    // 👉 Action route return
+    await selectOperatorPage.routeReturn();
+    // 🔍 Assert operator confirmation message
+    await selectOperatorPage.msgSelectOpertorIsVisible();
   });
 });
