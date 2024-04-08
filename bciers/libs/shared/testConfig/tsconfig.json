@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "allowJs": false,
+    "esModuleInterop": false,
+    "allowSyntheticDefaultImports": true,
+    "types": ["vitest/globals"],
+    "strict": true
+  },
+  "files": [],
+  "include": [],
+  "extends": "../../../tsconfig.base.json"
+}
