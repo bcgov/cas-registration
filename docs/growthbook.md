@@ -16,7 +16,8 @@ that should be hidden behind the flag is.
 
 We have noticed some instances where growthbook objects in different components can override each other which can cause problems if one growthbook instance (particularly in a server component) is instantiated improperly it can break the functionality in other components. To make sure the growthbook object being created in each component is perfoming in isolation, append the name of the file to your variable when instantiating a new Growthbook object.
 Ex:
-``` typescript
+
+```typescript
 const growthbook_fileName = new Growthbook(...
 ```
 
