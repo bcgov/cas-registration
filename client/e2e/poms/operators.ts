@@ -4,6 +4,7 @@
  * POM simplify maintenance by capturing element selectors in one place and create reusable code to avoid repetition. *
  */
 import { Locator, Page, expect } from "@playwright/test";
+// import AxeBuilder from "@axe-core/playwright";
 // 🧩  Constants
 import { headersOperators } from "@/e2e/utils/constants";
 // ☰ Enums
@@ -99,6 +100,15 @@ export class OperatorsPOM {
   }
 
   // ###  Actions ###
+
+  async checkAccessibility() {
+    // const accessibilityScanResults = await new AxeBuilder({
+    //   page: this.page,
+    // }).analyze();
+    // TODO: Fix datagrid accessibility
+    //  expect(accessibilityScanResults.violations).toEqual([]);
+  }
+
   async navigateBack() {
     // Navigate back to the table
     await this.linkOperators.click();

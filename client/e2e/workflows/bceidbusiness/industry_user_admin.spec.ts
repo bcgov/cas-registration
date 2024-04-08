@@ -56,6 +56,9 @@ test.describe("Test Workflow industry_user_admin", () => {
       component: "Operator Form Page",
       variant: "read only",
     });
+    // ♿️ Check accessibility
+    await operatorPage.checkAccessibility();
+
     // 🔍 Assert the form is default read-only
     await operatorPage.formIsDisabled();
     // 🔍 Assert industry_user_admin is able to edit the operator form
@@ -68,6 +71,9 @@ test.describe("Test Workflow industry_user_admin", () => {
       component: "Operator Form Page",
       variant: "edit mode",
     });
+    // ♿️ Check accessibility
+    await operatorPage.checkAccessibility();
+
     // 🛸 Navigates to operator
     await operatorPage.clickSaveAndReturn();
     await page.waitForURL(dashboardPage.url);
@@ -95,6 +101,10 @@ test.describe("Test Workflow industry_user_admin", () => {
       component: "Operation table",
       variant: UserRole.INDUSTRY_USER_ADMIN,
     });
+
+    // ♿️ Check accessibility
+    await operationsPage.checkAccessibility();
+
     // 🛸 Navigate to new operation form
     await operationsPage.clickAddOperationButton();
     // 🔍 Assert we are on the operation detail page 1
@@ -106,6 +116,9 @@ test.describe("Test Workflow industry_user_admin", () => {
       component: "Operation Form Page 1",
       variant: "filled",
     });
+    // ♿️ Check accessibility
+    await operationPage.checkAccessibility();
+
     // 🛸 Navigates to next page
     await operationPage.clickSaveAndContinue();
     // 🔍 Assert we are on the operation detail page 2
@@ -117,6 +130,8 @@ test.describe("Test Workflow industry_user_admin", () => {
       component: "Operation Form Page 2",
       variant: "filled",
     });
+    // ♿️ Check accessibility
+    await operationPage.checkAccessibility();
     // 🛸 Navigates to next page
     await operationPage.clickSaveAndContinue();
     // 🔍 Assert we are on the operation detail page 3
@@ -128,6 +143,8 @@ test.describe("Test Workflow industry_user_admin", () => {
       component: "Operation Form Page 3",
       variant: "filled",
     });
+    // ♿️ Check accessibility
+    await operationPage.checkAccessibility();
     // 🛸 Navigates to next page
     await operationPage.clickSubmitButton();
     // 🔍 Assert that the submission was successful and take a screenshot
@@ -137,6 +154,8 @@ test.describe("Test Workflow industry_user_admin", () => {
       component: "Operation Form Submission Successful",
       variant: "default",
     });
+
+    await operationPage.checkAccessibility();
   });
 
   test("Operations Tile View Details workflow", async ({ page }) => {
@@ -159,6 +178,8 @@ test.describe("Test Workflow industry_user_admin", () => {
       component: "Operation Form Page 1",
       variant: "read only",
     });
+    // ♿️ Check accessibility
+    await operationPage.checkAccessibility();
     // 🛸 Navigate to next page
     await operationPage.clickNextButton();
     // 🔍 Assert that we are on the operation detail page step 2
@@ -210,5 +231,7 @@ test.describe("Test Workflow industry_user_admin", () => {
       component: "User Access Management",
       variant: UserRole.INDUSTRY_USER_ADMIN,
     });
+    // ♿️ Check accessibility
+    await userPage.checkAccessibility();
   });
 });

@@ -101,6 +101,8 @@ test.describe("Test Dashboard Page", () => {
               component: `${role} Dashboard page`,
               variant: "default",
             });
+            // ♿️ Check accessibility
+            await dashboardPage.checkAccessibility();
             break;
         }
       });
