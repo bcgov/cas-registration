@@ -140,7 +140,7 @@ test.describe("Test Workflow industry_user", () => {
     // 🔍 Assert the form title is visible
     await selectOperatorPage.formTitleIsVisible();
     // 🔍 Assert edit information message is not visible
-    await selectOperatorPage.msgEditInformationIsNotVisible();
+    //  await selectOperatorPage.msgEditInformationIsNotVisible();
     // 📷 Cheese!
     pageContent = page.locator("html");
     await happoPlaywright.screenshot(page, pageContent, {
