@@ -7,8 +7,7 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
@@ -17,7 +16,10 @@ class Migration(migrations.Migration):
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('title', models.CharField(db_comment='The title of the report', max_length=100)),
                 ('description', models.TextField(db_comment='The description of the report')),
-                ('created_at', models.DateTimeField(auto_now_add=True, db_comment='The timestamp when the report was created')),
+                (
+                    'created_at',
+                    models.DateTimeField(auto_now_add=True, db_comment='The timestamp when the report was created'),
+                ),
             ],
             options={
                 'db_table': 'erc"."report',

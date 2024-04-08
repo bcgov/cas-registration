@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class Report(models.Model):
     title = models.CharField(max_length=100, db_comment="The title of the report")
     description = models.TextField(db_comment="The description of the report")
