@@ -15,6 +15,7 @@ module.exports = {
           "test.{ts,tsx,js,jsx}",
           "test-*.{ts,tsx,js,jsx}",
           "**/*{.,_}{test,spec}.{ts,tsx,js,jsx}",
+          "e2e/**/*.{ts,tsx,js,jsx}",
           "**/jest.config.{ts,js}",
           "**/playwright.config.{ts,js}",
         ],

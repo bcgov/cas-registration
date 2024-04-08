@@ -91,6 +91,8 @@ test.describe("Test Page - Home", () => {
       component: "Home page",
       variant: "default",
     });
+    // ♿️ Check accessibility
+    await homePage.checkAccessibility();
   });
 
   test.describe(`Test User Role`, () => {
