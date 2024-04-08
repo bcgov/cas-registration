@@ -1,7 +1,8 @@
 import defaultTheme from "./defaultTheme";
-import ReadOnlyWidget from "./widgets/readOnlyWidgets/ReadOnlyWidget";
-import ReadOnlyBooleanWidget from "./widgets/readOnlyWidgets/ReadOnlyBooleanWidget";
-import ReadOnlyFileWidget from "./widgets/readOnlyWidgets/ReadOnlyFileWidget";
+import ReadOnlyWidget from "./widgets/readOnly/ReadOnlyWidget";
+import ReadOnlyBooleanWidget from "./widgets/readOnly/ReadOnlyBooleanWidget";
+import ReadOnlyFileWidget from "./widgets/readOnly/ReadOnlyFileWidget";
+import ReadOnlyMultiSelectWidget from "./widgets/readOnly/ReadOnlyMultiSelectWidget";
 
 const readOnlyTheme = {
   ...defaultTheme,
@@ -10,7 +11,7 @@ const readOnlyTheme = {
     ComboBox: ReadOnlyWidget,
     EmailWidget: ReadOnlyWidget,
     FileWidget: ReadOnlyFileWidget,
-    MultiSelectWidget: ReadOnlyWidget,
+    MultiSelectWidget: ReadOnlyMultiSelectWidget,
     PhoneWidget: ReadOnlyWidget,
     PostalCodeWidget: ReadOnlyWidget,
     RadioWidget: ReadOnlyBooleanWidget,
