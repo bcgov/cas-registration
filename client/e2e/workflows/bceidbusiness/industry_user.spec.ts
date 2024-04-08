@@ -135,6 +135,8 @@ test.describe("Test Workflow industry_user", () => {
     await selectOperatorPage.urlIsCorrect();
     // 👉 Action create a new operator
     await selectOperatorPage.clickAddOperator();
+    // 🔍 Assert the form looks correct
+    await selectOperatorPage.formIsEnabled();
     // 📷 Cheese!
     pageContent = page.locator("html");
     await happoPlaywright.screenshot(page, pageContent, {
