@@ -56,6 +56,8 @@ test.describe("Test Workflow industry_user", () => {
       component: "Select operator page",
       variant: "default",
     });
+    // ♿️ Check accessibility
+    await selectOperatorPage.checkAccessibility();
     // 👉 Action search by legal name
     await selectOperatorPage.selectByLegalName(
       E2EValue.SEARCH_LEGAL_NAME,
@@ -69,6 +71,8 @@ test.describe("Test Workflow industry_user", () => {
       component: "Select operator confirmation message",
       variant: "default",
     });
+    // ♿️ Check accessibility
+    await selectOperatorPage.checkAccessibility();
     // 👉 Action accept operator
     await selectOperatorPage.acceptOperator();
     // 🔍 Assert no administrator set up message
@@ -79,6 +83,8 @@ test.describe("Test Workflow industry_user", () => {
       component: "Select operator no administrator message",
       variant: "default",
     });
+    // ♿️ Check accessibility
+    await selectOperatorPage.checkAccessibility();
     // 👉 Action request administrator access
     await selectOperatorPage.requestAdmin();
     // 🔍 Assert access requested message
@@ -89,6 +95,8 @@ test.describe("Test Workflow industry_user", () => {
       component: "Select operator admin access request confirmation",
       variant: "default",
     });
+    // ♿️ Check accessibility
+    await selectOperatorPage.checkAccessibility();
   });
 
   test("Select existing operator (via CRA business number) and request non-admin access", async ({
@@ -114,6 +122,8 @@ test.describe("Test Workflow industry_user", () => {
       component: "Select operator existing admin message",
       variant: "default",
     });
+    // ♿️ Check accessibility
+    await selectOperatorPage.checkAccessibility();
     // 👉 Action request access
     await selectOperatorPage.requestAccess();
     // 🔍 Assert access requested message
@@ -124,6 +134,8 @@ test.describe("Test Workflow industry_user", () => {
       component: "Select operator non-admin access request confirmation",
       variant: "default",
     });
+    // ♿️ Check accessibility
+    await selectOperatorPage.checkAccessibility();
   });
 
   test("Add a new operator with parent operators", async ({ page }) => {
@@ -147,6 +159,8 @@ test.describe("Test Workflow industry_user", () => {
       component: "Add a new operator",
       variant: "default",
     });
+    // ♿️ Check accessibility
+    await selectOperatorPage.checkAccessibility();
     // 👉 Action trigger form required fields errors
     await selectOperatorPage.triggerErrorsFieldRequired();
     // 📷 Cheese!
@@ -155,6 +169,8 @@ test.describe("Test Workflow industry_user", () => {
       component: "Add a new operator",
       variant: "required errors",
     });
+    // ♿️ Check accessibility
+    await selectOperatorPage.checkAccessibility();
 
     // 👉 Action trigger form fields format errors
     await selectOperatorPage.triggerErrorsFieldFormat();
@@ -164,6 +180,8 @@ test.describe("Test Workflow industry_user", () => {
       component: "Add a new operator",
       variant: "format errors",
     });
+    // ♿️ Check accessibility
+    await selectOperatorPage.checkAccessibility();
     // 👉 Action fill all operator form fields
     await selectOperatorPage.fillInformation(FormField.FIELDSET_OPERATOR);
     // 👉 Action fill parent operation form fields - first section
@@ -182,6 +200,8 @@ test.describe("Test Workflow industry_user", () => {
       component: "Add a new operator",
       variant: "filled",
     });
+    // ♿️ Check accessibility
+    await selectOperatorPage.checkAccessibility();
     // 🔍 Assert New Operator request form is submitted
     await selectOperatorPage.formIsSubmitted();
     // 📷 Cheese!
@@ -190,6 +210,8 @@ test.describe("Test Workflow industry_user", () => {
       component: "New operator confirmation",
       variant: "default",
     });
+    // ♿️ Check accessibility
+    await selectOperatorPage.checkAccessibility();
   });
 
   test("Go back and return navigation works", async ({ page }) => {
