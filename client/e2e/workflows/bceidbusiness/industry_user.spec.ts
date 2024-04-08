@@ -137,6 +137,10 @@ test.describe("Test Workflow industry_user", () => {
     await selectOperatorPage.clickAddOperator();
     // 🔍 Assert the form is visible
     await selectOperatorPage.formIsVisible();
+    // 🔍 Assert the form title is visible
+    await selectOperatorPage.formTitleIsVisible();
+    // 🔍 Assert edit information message is not visible
+    await selectOperatorPage.msgEditInformationIsNotVisible();
     // 📷 Cheese!
     pageContent = page.locator("html");
     await happoPlaywright.screenshot(page, pageContent, {
@@ -178,7 +182,7 @@ test.describe("Test Workflow industry_user", () => {
       component: "Add a new operator",
       variant: "filled",
     });
-    // 🔍 New Operator request form is submitted
+    // 🔍 Assert New Operator request form is submitted
     await selectOperatorPage.formIsSubmitted();
     // 📷 Cheese!
     pageContent = page.locator("html");
