@@ -5,7 +5,7 @@ import { nxViteTsPaths } from "@nx/vite/plugins/nx-tsconfig-paths.plugin";
 
 export default defineConfig({
   root: __dirname,
-  cacheDir: "../../node_modules/.vite/apps/reporting",
+  cacheDir: "../../../node_modules/.vite/libs/shared/components",
 
   plugins: [react(), nxViteTsPaths()],
 
@@ -17,13 +17,12 @@ export default defineConfig({
   test: {
     globals: true,
     environment: "jsdom",
-    include: [
-      "{test,src,spec}**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}",
-    ],
+    include: ["src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
     reporters: ["default"],
     coverage: {
-      reportsDirectory: "../../coverage/apps/reporting",
+      reportsDirectory: "../../../coverage/libs/shared/components",
       provider: "v8",
     },
+    setupFiles: ["../testConfig/src/setup/global.ts"],
   },
 });
