@@ -172,6 +172,25 @@ jobs:
           rm -rf /tmp/.buildx-cache
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
+  nx-tests:
+    # Only run on giraffe-develop branch for now
+    if: github.ref == 'refs/heads/giraffe-develop' || 'refs/heads/task/nx-deploy'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./bciers
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: dev env setup
+        uses: ./.github/actions/dev-env-setup
+      - run: yarn install --frozen-lockfile
+        working-directory: ./bciers
+      - name: Run Nx Tests
+        run: yarn nx run-many -t test --skipNxCache
+
   nx-docker-build:
     # Only run on giraffe-develop branch for now
     if: github.ref == 'refs/heads/giraffe-develop' || 'refs/heads/task/nx-deploy'
