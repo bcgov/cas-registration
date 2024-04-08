@@ -11,7 +11,6 @@ export interface Operation {
   archived_by?: string;
   archived_at?: string;
   naics_code: number;
-  previous_year_attributable_emissions?: number;
   swrs_facility_id?: number;
   bcghg_id?: string;
   opt_in?: boolean;

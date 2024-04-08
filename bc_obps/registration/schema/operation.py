@@ -138,7 +138,6 @@ class OperationOut(ModelSchema):
             'type',
             'opt_in',
             'regulated_products',
-            'previous_year_attributable_emissions',
             'status',
         ]
         from_attributes = True
