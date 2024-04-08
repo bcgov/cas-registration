@@ -266,6 +266,7 @@ export class OperatorPOM {
 
   async formIsVisible() {
     await expect(this.form).toBeVisible();
+    await expect(this.formTitle).toBeVisible();
   }
 
   async formViewIsCorrect() {
