@@ -31,7 +31,7 @@ test.describe.configure({ mode: "serial" });
 test.describe("Test Workflow industry_user", () => {
   // 👤 run test using the storageState for this role
   const storageState = JSON.parse(
-    process.env.E2E_INDUSTRY_USER_STORAGE as string
+    process.env.E2E_INDUSTRY_USER_STORAGE as string,
   );
   // Note: specify storageState for each test file or test group, instead of setting it in the config. https://playwright.dev/docs/next/auth#reuse-signed-in-state
   test.use({ storageState: storageState }); // this will error if no such file or directory
@@ -59,7 +59,7 @@ test.describe("Test Workflow industry_user", () => {
     // 👉 Action search by legal name
     await selectOperatorPage.selectByLegalName(
       E2EValue.SEARCH_LEGAL_NAME,
-      E2EValue.FIXTURE_LEGAL_NAME
+      E2EValue.FIXTURE_LEGAL_NAME,
     );
     // 🔍 Assert operator confirmation message
     await selectOperatorPage.msgConfirmationIsVisible();
@@ -169,12 +169,12 @@ test.describe("Test Workflow industry_user", () => {
     // 👉 Action fill parent operation form fields - first section
     await selectOperatorPage.fieldHasParentCompany.check();
     await selectOperatorPage.fillInformation(
-      FormField.FIELDSET_PARENT_COMPANY_0
+      FormField.FIELDSET_PARENT_COMPANY_0,
     );
     // 👉 Action fill parent operation form fields - second section
     await selectOperatorPage.buttonAddParentCompany.click();
     await selectOperatorPage.fillInformation(
-      FormField.FIELDSET_PARENT_COMPANY_1
+      FormField.FIELDSET_PARENT_COMPANY_1,
     );
     // 📷 Cheese!
     pageContent = page.locator("html");
