@@ -693,12 +693,6 @@ class OperationAndFacilityCommonInfo(TimeStampedModel):
         db_comment="An operation or facility's NAICS code",
         related_name='%(class)ss',
     )
-
-    previous_year_attributable_emissions = models.IntegerField(
-        db_comment="An operation or facility's attributable emissions from the previous year. Only needed if the operation/facility submitted a report the previous year.",
-        blank=True,
-        null=True,
-    )
     swrs_facility_id = models.IntegerField(
         db_comment="An operation or facility's SWRS facility ID. Only needed if the operation/facility submitted a report the previous year.",
         blank=True,

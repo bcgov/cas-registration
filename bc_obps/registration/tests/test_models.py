@@ -691,12 +691,6 @@ class OperationModelTest(BaseTestCase):
             ("naics_code", "naics code", None, None),
             ("regulated_products", "regulated products", None, 2),
             ("reporting_activities", "reporting activities", None, 2),
-            (
-                "previous_year_attributable_emissions",
-                "previous year attributable emissions",
-                None,
-                None,
-            ),
             ("swrs_facility_id", "swrs facility id", None, None),
             ("bcghg_id", "bcghg id", None, None),
             ("opt_in", "opt in", None, None),

@@ -296,8 +296,6 @@ export default async function Operation({ numRow }: { numRow?: string }) {
       external_point_of_contact_position_title: formData?.position_title,
     }),
 
-    "Did you submit a GHG emissions report for reporting year 2022?":
-      formData?.previous_year_attributable_emissions ? true : false,
     is_external_point_of_contact: isExternalPointOfContact,
     // fix for null values not opening the multiple operators form if loading a previously saved form
     multiple_operators_array: isMultipleOperatorsArray

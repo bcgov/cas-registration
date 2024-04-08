@@ -123,7 +123,6 @@ class TestOperationsEndpoint(CommonTestSetup):
             'bcghg_id',
             'opt_in',
             'regulated_products',
-            'previous_year_attributable_emissions',
             'status',
             'naics_code_id',
             'first_name',
