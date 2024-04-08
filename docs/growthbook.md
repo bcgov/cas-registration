@@ -4,13 +4,21 @@ Documentation on how to implement a growthbook feature flag for our NextJS appli
 
 ## Client Key
 
-The client key for local development can be retrieved by logging into https://app.growthbook.io/ and navigating to `SDK Connections`. Use the dev key for local development.
+The client key for local development can be retrieved by logging into https://app.growthbook.io/ and navigating to `SDK Connections`. Add the dev key to your .env file for local development.
 
 ## Using a feature flag
 
-Feature flags are created using the growthbook UI at https://app.growthbook.io/ the credentials to log into this service can be found in the team 1Password.
+Feature flags are created using the growthbook UI at https://app.growthbook.io/. The credentials to log into this service can be found in the team 1Password.
 In order to use a feature flag that was created in growthbook, the following code will need to be added to the file where the feature
 that should be hidden behind the flag is.
+
+### Naming your variables
+
+We have noticed some instances where growthbook objects in different components can override each other which can cause problems if one growthbook instance (particularly in a server component) is instantiated improperly it can break the functionality in other components. To make sure the growthbook object being created in each component is perfoming in isolation, append the name of the file to your variable when instantiating a new Growthbook object.
+Ex:
+``` typescript
+const growthbook_fileName = new Growthbook(...
+```
 
 ### Client components
 
@@ -25,13 +33,13 @@ import { useMemo, useEffect, useState } from "react";
 import { env } from 'next-runtime-env';
 
 const CLIENT_KEY = env('NEXT_PUBLIC_GROWTHBOOK_CLIENT_KEY')
-const growthbook = new GrowthBook({
+const growthbook_clientPage = new GrowthBook({
   apiHost: "https://cdn.growthbook.io",
   clientKey: CLIENT_KEY,
   enableDevMode: true,
 });
 
-export default function Page() {
+export default function ClientPage() {
   const [isClient, setIsClient] = useState(false)
 
   /*
@@ -48,7 +56,7 @@ export default function Page() {
         )
           .then((res) => res.json())
           .then((res) => {
-            growthbook.setFeatures(res.features);
+            growthbook_clientPage.setFeatures(res.features);
           });
         return data;
       } catch (e) {
@@ -67,9 +75,9 @@ export default function Page() {
   }, [])
 
   return (
-    <GrowthBookProvider growthbook>
+    <GrowthBookProvider>
       <div>
-        {growthbook.isOn("test-obps") && isClient && (
+        {growthbook_clientPage.isOn("test-obps") && isClient && (
           <h1>This header will only show if the "test-obps" feature in growthbook is toggled "on"</h1>
         )}
         <p>
@@ -91,7 +99,7 @@ import { Suspense } from "react";
 import { GrowthBook } from "@growthbook/growthbook";
 
 const CLIENT_KEY = process.env.NEXT_PUBLIC_GROWTHBOOK_CLIENT_KEY;
-const growthbook = new GrowthBook({
+const growthbook_serverComponentPage = new GrowthBook({
   apiHost: "https://cdn.growthbook.io",
   clientKey: CLIENT_KEY,
   enableDevMode: true,
@@ -99,11 +107,11 @@ const growthbook = new GrowthBook({
 
 const ServerComponentPage = async () => {
   // Load growthbook features
-  await growthbook.loadFeatures();
+  await growthbook_serverComponentPage.loadFeatures(); // NOTE: This has to be added after the call to getServerSession()
 
   return (
     <Suspense fallback={<Loading />}>
-      {growthbook.isOn('test-obps') && <h1>I am toggled by the growthbook feature flag</h1>}
+      {growthbook_serverComponentPage.isOn('test-obps') && <h1>I am toggled by the growthbook feature flag</h1>}
       <p>I am not toggled by the growthbook feature flag</p>
     </Suspense>
   );
