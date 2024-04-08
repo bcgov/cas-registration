@@ -14,15 +14,19 @@ const ReadOnlyFileWidget: React.FC<WidgetProps> = ({
 }) => {
   return (
     <div id={id} className="w-full min-h-[50px] flex items-center">
-      <FilesInfo
-        filesInfo={
-          Array.isArray(value)
-            ? extractFileInfo(value)
-            : extractFileInfo([value])
-        }
-        preview={options.filePreview}
-        registry={registry}
-      />
+      {value ? (
+        <FilesInfo
+          filesInfo={
+            Array.isArray(value)
+              ? extractFileInfo(value)
+              : extractFileInfo([value])
+          }
+          preview={options.filePreview}
+          registry={registry}
+        />
+      ) : (
+        <>No attachment was uploaded</>
+      )}
     </div>
   );
 };
