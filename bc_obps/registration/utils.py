@@ -26,40 +26,6 @@ from registration.models import (
 )
 
 
-def check_users_admin_request_eligibility(user: User, operator: Operator) -> Union[None, tuple[int, dict]]:
-    """
-    Check if a user is eligible to request admin access to an operator.
-
-    Args:
-        user (User): The user for whom eligibility is being checked.
-        operator (Operator): The operator to which admin access is being requested.
-
-    Returns:
-        Union[None, Tuple[int, str]]: Eligibility status. None if eligible, (400, error message) if not.
-    """
-    # User already has an admin user for this operator
-    if UserOperator.objects.filter(
-        user=user, operator=operator, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.APPROVED
-    ).exists():
-        return 400, {"message": "You are already an admin for this Operator!"}
-
-    # Operator already has an admin user
-    if UserOperator.objects.filter(
-        operator=operator, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.APPROVED
-    ).exists():
-        return 400, {"message": "This Operator already has an admin user!"}
-
-    # User already has a pending request for this operator
-    # NOTE: This is a bit of a weird case, but it's possible for a user to have a pending request for an operator
-    #       and if we show the UserOperator request form, they could submit another request and end up with two Contact
-    if UserOperator.objects.filter(
-        user=user, operator=operator, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.PENDING
-    ).exists():
-        return 400, {"message": "You already have a pending request for this Operator!"}
-
-    return 200, None
-
-
 def update_model_instance(
     instance: Type[models.Model],
     fields_to_update: Union[Iterable[str], Dict[str, str]],
@@ -107,32 +73,6 @@ def generate_useful_error(error):
         return f"{formatted_key}: {value[0]}"
 
 
-def check_access_request_matches_business_guid(
-    user_guid: str, operator: Operator
-) -> Tuple[int, Optional[Union[dict[str, str], None]]]:
-    """
-    Check if a the business_guid of a subsequent user who is requesting access matches the business_guid of the admin
-
-    Args:
-        user_guid (User): The guid of the user for whom eligibility is being checked.
-        operator (Operator): The operator to which access is being requested.
-
-    Returns:
-        Union[None, Tuple[int, str]]: Eligibility status. None if eligible, (400, error message) if not.
-    """
-    admin_user_operator_data = UserOperator.objects.filter(
-        operator=operator, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.APPROVED
-    ).first()
-    # Operator already has an admin user
-    admin_user = get_object_or_404(User, user_guid=admin_user_operator_data.user.user_guid)
-    current_user = get_object_or_404(User, user_guid=user_guid)
-
-    if admin_user.business_guid != current_user.business_guid:
-        return 403, {"message": "Your business bceid does not match that of the approved admin."}
-
-    return 200, None
-
-
 def raise_401_if_user_not_authorized(
     request,
     authorized_app_roles: List[str],
@@ -147,7 +87,6 @@ def raise_401_if_user_not_authorized(
     """
     if not hasattr(request, 'current_user'):
         raise HttpError(401, UNAUTHORIZED_MESSAGE)
-
     user: User = request.current_user
     role_name = getattr(user.app_role, "role_name")
     if role_name not in authorized_app_roles:
@@ -157,12 +96,10 @@ def raise_401_if_user_not_authorized(
         # We always need to pass authorized_user_operator_roles if the user is an industry user
         if not authorized_user_operator_roles:
             raise HttpError(401, UNAUTHORIZED_MESSAGE)
-
         if industry_user_must_be_approved:
             approved_user_operator = user.user_operators.filter(status=UserOperator.Statuses.APPROVED).exists()
             if not approved_user_operator:
                 raise HttpError(401, UNAUTHORIZED_MESSAGE)
-
         # If authorized_user_operator_roles is the same as all industry user operator roles, then we can skip the check (Means all industry user roles are authorized)
         if sorted(authorized_user_operator_roles) != sorted(UserOperator.get_all_industry_user_operator_roles()):
             user_operator_role = None
@@ -175,7 +112,6 @@ def raise_401_if_user_not_authorized(
                 user_operator_role = user_operator.role
             except UserOperator.DoesNotExist:
                 pass
-
             if not user_operator_role or user_operator_role not in authorized_user_operator_roles:
                 raise HttpError(401, UNAUTHORIZED_MESSAGE)
 

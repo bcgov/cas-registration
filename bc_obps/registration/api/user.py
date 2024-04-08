@@ -17,9 +17,9 @@ from django.core.exceptions import ValidationError
 ##### GET #####
 
 
-@router.get("/user", response=UserOut, url_name="get_user")
+@router.get("/user", response=UserOut, url_name="get_user_by_guid")
 @authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles(), False)
-def get_user(request):
+def get_user_by_guid(request):
     user: User = request.current_user
     return user
 

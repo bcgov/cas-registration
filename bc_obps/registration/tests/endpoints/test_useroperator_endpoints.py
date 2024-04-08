@@ -146,7 +146,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         assert response.status_code == 401
 
     def test_unauthorized_users_cannot_put(self):
-        # /select-operator/user-operator/update-status
+        # user-operator/update-status
         user = baker.make(User)
         response = TestUtils.mock_put_with_auth_role(
             self,
@@ -156,11 +156,24 @@ class TestUserOperatorEndpoint(CommonTestSetup):
             custom_reverse_lazy('update_user_operator_status'),
         )
         assert response.status_code == 401
+
+        # only industry_user admins can change statuses
+        operator = operator_baker({'status': Operator.Statuses.APPROVED, 'is_new': False})
+        user_operator = TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
+        user_operator.role = UserOperator.Roles.REPORTER
+        user_operator.save()
+
+        subsequent_user_operator = baker.make(UserOperator, operator=operator)
+
         response = TestUtils.mock_put_with_auth_role(
             self,
             'industry_user',
             self.content_type,
-            {'status': 'Approved', 'user_guid': user.user_guid},
+            {
+                "role": UserOperator.Roles.REPORTER,
+                "status": UserOperator.Statuses.APPROVED,
+                "user_operator_id": subsequent_user_operator.id,
+            },
             custom_reverse_lazy('update_user_operator_status'),
         )
         assert response.status_code == 401
@@ -222,15 +235,16 @@ class TestUserOperatorEndpoint(CommonTestSetup):
 
     def test_get_user_operator_data_industry_user_invalid_request(self):
         operator = operator_baker()
-        user_operator = baker.make(UserOperator, operator=operator, status=UserOperator.Statuses.APPROVED)
+        TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
+        random_user_operator = user_operator_baker()
 
         response = TestUtils.mock_get_with_auth_role(
             self,
             'industry_user',
-            custom_reverse_lazy('get_user_operator', kwargs={'user_operator_id': user_operator.id}),
+            custom_reverse_lazy('get_user_operator', kwargs={'user_operator_id': random_user_operator.id}),
         )
         # returns 401 because the user_operator does not belong to the current user
-        assert response.status_code == 401
+        assert response.status_code == 403
 
     def test_get_user_operator_data_internal_user(self):
         operator = operator_baker()
@@ -242,10 +256,28 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         assert response.status_code == 200
         assert response.json()['operator_id'] == str(operator.id)  # String representation of the UUID
 
-    def test_get_users_operators_list(self):
+    def test_get_an_operators_user_operators_by_users_list(self):
+
+        operator = operator_baker()
+        # two UserOperator with the same operator
         baker.make(
             UserOperator,
             user=self.user,
+            operator=operator,
+            role=UserOperator.Roles.ADMIN,
+            status=UserOperator.Statuses.APPROVED,
+        )
+        baker.make(
+            UserOperator,
+            user=baker.make(User, business_guid=self.user.business_guid),
+            operator=operator,
+            role=UserOperator.Roles.ADMIN,
+            status=UserOperator.Statuses.APPROVED,
+        )
+        # a UserOperator with a different operator
+        baker.make(
+            UserOperator,
+            user=user_baker(),
             operator=operator_baker(),
             role=UserOperator.Roles.ADMIN,
             status=UserOperator.Statuses.APPROVED,
@@ -255,7 +287,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
             self, 'industry_user', custom_reverse_lazy('get_user_operator_list_from_user')
         )
 
-        assert len(json.loads(response.content)) == 1
+        assert len(json.loads(response.content)) == 2
 
     def test_get_user_operators_paginated(self):
         for i in range(60):
@@ -274,7 +306,6 @@ class TestUserOperatorEndpoint(CommonTestSetup):
                 role=UserOperator.Roles.ADMIN,
                 status=UserOperator.Statuses.PENDING,
             )
-
         response = TestUtils.mock_get_with_auth_role(self, 'cas_admin', custom_reverse_lazy('list_user_operators'))
         assert response.status_code == 200
         response_data = response.json().get('data')
@@ -386,6 +417,41 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         assert response_1.status_code == 400
         response_1_json = response_1.json()
         assert response_1_json == {'message': 'Operator must be approved before approving or declining users.'}
+
+    def test_industry_user_can_update_status_of_a_user_operator(self):
+        operator = operator_baker({'status': Operator.Statuses.APPROVED, 'is_new': False})
+        TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
+        subsequent_user_operator = baker.make(UserOperator, operator=operator)
+        response = TestUtils.mock_put_with_auth_role(
+            self,
+            'industry_user',
+            self.content_type,
+            {
+                "role": UserOperator.Roles.REPORTER,
+                "status": UserOperator.Statuses.APPROVED,
+                "user_operator_id": subsequent_user_operator.id,
+            },
+            custom_reverse_lazy('update_user_operator_status'),
+        )
+        assert response.status_code == 200
+
+    def test_industry_user_cannot_update_status_of_a_user_operator_from_a_different_operator(self):
+        operator = operator_baker({'status': Operator.Statuses.APPROVED, 'is_new': False})
+        TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
+        other_operator = operator_baker({'status': Operator.Statuses.APPROVED, 'is_new': False})
+        other_user_operator = baker.make(UserOperator, operator=other_operator)
+        response = TestUtils.mock_put_with_auth_role(
+            self,
+            'industry_user',
+            self.content_type,
+            {
+                "role": UserOperator.Roles.REPORTER,
+                "status": UserOperator.Statuses.APPROVED,
+                "user_operator_id": other_user_operator.id,
+            },
+            custom_reverse_lazy('update_user_operator_status'),
+        )
+        assert response.status_code == 403
 
     def test_user_operator_put_can_update_status(self):
         operator = operator_baker({'status': Operator.Statuses.APPROVED, 'is_new': False})
@@ -569,6 +635,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         print(response_json)
         assert response_json == True
 
+    # brianna here
     # /user-operator-list-from-user ignores DECLINED records
     def test_get_user_operator(self):
         operator = operator_baker()
@@ -619,7 +686,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         assert response.status_code == 404
 
         # Additional Assertions
-        assert response_json == {"detail": "Not Found"}
+        assert response_json == {"message": "Not Found"}
 
     # GET USER OPERATOR OPERATOR ID 200
     def test_get_user_operator_operator(self):
@@ -698,11 +765,10 @@ class TestUserOperatorEndpoint(CommonTestSetup):
             payload_with_duplicate_legal_name,
             custom_reverse_lazy('create_operator_and_user_operator'),
         )
-        assert post_response_duplicate_legal_name.status_code == 400
+        assert post_response_duplicate_legal_name.status_code == 422
         assert post_response_duplicate_legal_name.json() == {
             'message': 'Legal Name: Operator with this Legal name already exists.'
         }
-
         # duplicate BC corporate registry number
         payload_with_duplicate_bc_corporate_registry_number = {
             "legal_name": "a name",
@@ -723,7 +789,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
             payload_with_duplicate_bc_corporate_registry_number,
             custom_reverse_lazy('create_operator_and_user_operator'),
         )
-        assert post_response_duplicate_bc_corporate_registry_number.status_code == 400
+        assert post_response_duplicate_bc_corporate_registry_number.status_code == 422
         assert post_response_duplicate_bc_corporate_registry_number.json() == {
             'message': 'Bc Corporate Registry Number: Operator with this Bc corporate registry number already exists.'
         }
@@ -1157,6 +1223,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         }
 
     def test_put_user_operator_operator_with_an_existing_cra_business_number(self):
+        self.user.role = 'industry_user'
         existing_operator = operator_baker()
         new_operator = operator_baker({'created_by': self.user})
         user_operator = baker.make(
@@ -1282,7 +1349,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
             payload_with_duplicate_legal_name,
             custom_reverse_lazy('update_operator_and_user_operator', kwargs={'user_operator_id': user_operator.id}),
         )
-        assert put_response_duplicate_legal_name.status_code == 400
+        assert put_response_duplicate_legal_name.status_code == 422
         assert put_response_duplicate_legal_name.json() == {
             'message': 'Legal Name: Operator with this Legal name already exists.'
         }

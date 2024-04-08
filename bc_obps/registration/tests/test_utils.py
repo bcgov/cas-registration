@@ -1,15 +1,14 @@
+from service.application_access_service import ApplicationAccessService
 from registration.schema.parent_operator import ParentOperatorIn
 from registration.schema.user_operator import UserOperatorOperatorIn
 import pytest, base64, tempfile
 from model_bakery import baker
 from registration.models import Address, BusinessStructure, Operator, ParentOperator, User, UserOperator, AppRole
 from registration.utils import (
-    check_users_admin_request_eligibility,
     file_to_data_url,
     data_url_to_file,
     update_model_instance,
     generate_useful_error,
-    check_access_request_matches_business_guid,
     raise_401_if_user_not_authorized,
     get_an_operators_approved_users,
 )
@@ -133,10 +132,13 @@ class TestCheckUserAdminRequestEligibility:
     def test_user_eligible_for_admin_request():
         user = baker.make(User)
         operator = operator_baker()
-        status_code, message = check_users_admin_request_eligibility(user, operator)
-
-        assert status_code == 200
-        assert message is None
+        assert (
+            ApplicationAccessService.is_user_eligible_to_request_admin_access(
+                operator.id,
+                user.user_guid,
+            )
+            is True
+        )
 
     @staticmethod
     def test_user_already_admin_for_operator():
@@ -150,27 +152,30 @@ class TestCheckUserAdminRequestEligibility:
             status=UserOperator.Statuses.APPROVED,
         )
 
-        status_code, message = check_users_admin_request_eligibility(user, operator)
-
-        assert status_code == 400
-        assert message == {"message": "You are already an admin for this Operator!"}
+        with pytest.raises(Exception, match="You are already an admin for this Operator!"):
+            ApplicationAccessService.is_user_eligible_to_request_admin_access(
+                operator.id,
+                user.user_guid,
+            )
 
     @staticmethod
     def test_operator_already_has_admin():
         user = baker.make(User)
+        admin_user = baker.make(User)
         operator = operator_baker()
         baker.make(
             UserOperator,
-            user=user,
+            user=admin_user,
             operator=operator,
             role=UserOperator.Roles.ADMIN,
             status=UserOperator.Statuses.APPROVED,
         )
 
-        status_code, message = check_users_admin_request_eligibility(None, operator)
-
-        assert status_code == 400
-        assert message == {"message": "This Operator already has an admin user!"}
+        with pytest.raises(Exception, match="This Operator already has an admin user!"):
+            ApplicationAccessService.is_user_eligible_to_request_admin_access(
+                operator.id,
+                user.user_guid,
+            )
 
     @staticmethod
     def test_user_already_has_pending_request():
@@ -184,10 +189,11 @@ class TestCheckUserAdminRequestEligibility:
             status=UserOperator.Statuses.PENDING,
         )
 
-        status_code, message = check_users_admin_request_eligibility(user, operator)
-
-        assert status_code == 400
-        assert message == {"message": "You already have a pending request for this Operator!"}
+        with pytest.raises(Exception, match="You already have a pending request for this Operator!"):
+            ApplicationAccessService.is_user_eligible_to_request_admin_access(
+                operator.id,
+                user.user_guid,
+            )
 
     @staticmethod
     def test_user_business_guid_matches_admin():
@@ -206,10 +212,13 @@ class TestCheckUserAdminRequestEligibility:
             status=UserOperator.Statuses.APPROVED,
         )
 
-        status_code, message = check_access_request_matches_business_guid(user.user_guid, operator)
-
-        assert status_code == 200
-        assert message is None
+        assert (
+            ApplicationAccessService.is_user_eligible_to_request_access(
+                operator.id,
+                user.user_guid,
+            )
+            is True
+        )
 
     @staticmethod
     def test_user_business_guid_not_match_admin():
@@ -224,11 +233,8 @@ class TestCheckUserAdminRequestEligibility:
             role=UserOperator.Roles.ADMIN,
             status=UserOperator.Statuses.APPROVED,
         )
-
-        status_code, message = check_access_request_matches_business_guid(user.user_guid, operator)
-
-        assert status_code == 403
-        assert message == {"message": "Your business bceid does not match that of the approved admin."}
+        with pytest.raises(Exception, match="Your business bceid does not match that of the approved admin."):
+            ApplicationAccessService.is_user_eligible_to_request_access(operator.id, user.user_guid)
 
 
 class TestCheckIfRoleAuthorized(TestCase):
@@ -363,8 +369,8 @@ class TestFileHelpers:
 
 class TestOperatorHelpers:
     @staticmethod
-    def test_handle_operator_addresses_create_without_prefix():
-        from registration.api.utils.operator_utils import handle_operator_addresses
+    def test_upsert_addresses_from_data_create_without_prefix():
+        from service.addresses_service import AddressesService
 
         address_data = {
             "physical_street_address": "123 Main St",
@@ -378,7 +384,7 @@ class TestOperatorHelpers:
             "mailing_postal_code": "X1Y 2Z3",
         }
 
-        result = handle_operator_addresses(address_data, None, None)
+        result = AddressesService.upsert_addresses_from_data(address_data, None, None)
 
         assert len(Address.objects.all()) == 2
         assert Address.objects.all()[0] == result['physical_address']
@@ -387,8 +393,8 @@ class TestOperatorHelpers:
         assert Address.objects.all()[1].postal_code == "X1Y 2Z3"
 
     @staticmethod
-    def test_handle_operator_addresses_update_with_prefix():
-        from registration.api.utils.operator_utils import handle_operator_addresses
+    def test_upsert_addresses_from_data_update_with_prefix():
+        from service.addresses_service import AddressesService
 
         existing_physical_address = baker.make(Address)
         existing_mailing_address = baker.make(Address)
@@ -405,15 +411,17 @@ class TestOperatorHelpers:
             "po_mailing_postal_code": "X1Y 2Z3",
         }
 
-        handle_operator_addresses(address_data, existing_physical_address.id, existing_mailing_address.id, 'po_')
+        AddressesService.upsert_addresses_from_data(
+            address_data, existing_physical_address.id, existing_mailing_address.id, 'po_'
+        )
 
         assert len(Address.objects.all()) == 2
         assert Address.objects.get(id=existing_physical_address.id).street_address == "123 Main St"
         assert Address.objects.get(id=existing_mailing_address.id).postal_code == "X1Y 2Z3"
 
     @staticmethod
-    def test_handle_operator_addresses__add_mailing_address():
-        from registration.api.utils.operator_utils import handle_operator_addresses
+    def test_upsert_addresses_from_data__add_mailing_address():
+        from service.addresses_service import AddressesService
 
         existing_physical_address = baker.make(Address)
         existing_mailing_address = existing_physical_address
@@ -430,7 +438,9 @@ class TestOperatorHelpers:
             "po_mailing_postal_code": "D4E 5F6",
         }
 
-        handle_operator_addresses(address_data, existing_physical_address.id, existing_mailing_address.id, 'po_')
+        AddressesService.upsert_addresses_from_data(
+            address_data, existing_physical_address.id, existing_mailing_address.id, 'po_'
+        )
 
         assert len(Address.objects.all()) == 2
         assert Address.objects.get(street_address="Physical address") is not None
@@ -438,7 +448,7 @@ class TestOperatorHelpers:
 
     @staticmethod
     def test_save_operator():
-        from registration.api.utils.operator_utils import save_operator
+        from service.user_operator_service import UserOperatorService
 
         user = baker.make(User)
         operator_instance: Operator = Operator(
@@ -486,7 +496,7 @@ class TestOperatorHelpers:
             )
         ]
 
-        save_operator(payload, operator_instance, user)
+        UserOperatorService.save_operator(payload, operator_instance, user.user_guid)
         assert len(UserOperator.objects.all()) == 1
         assert len(Operator.objects.all()) == 1
         assert Operator.objects.first().legal_name == "Example Legal Name"
