@@ -2,7 +2,7 @@ import { WidgetProps } from "@rjsf/utils/lib/types";
 
 const ReadOnlyBooleanWidget: React.FC<WidgetProps> = ({ id, value }) => {
   return (
-    <div id={id} className="w-full min-h-[50px] flex items-center">
+    <div id={id} className="read-only-widget py-[9px]">
       {value ? "Yes" : "No"}
     </div>
   );

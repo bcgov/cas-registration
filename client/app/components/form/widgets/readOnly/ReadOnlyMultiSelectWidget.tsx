@@ -20,7 +20,7 @@ const ReadOnlyMultiSelectWidget: React.FC<WidgetProps> = ({
     <div
       id={id}
       // Use whitespace-pre-line to display items with \n line breaks
-      className="w-full min-h-[50px] flex items-center whitespace-pre-line"
+      className="read-only-widget whitespace-pre-line"
     >
       {displayOptions}
     </div>

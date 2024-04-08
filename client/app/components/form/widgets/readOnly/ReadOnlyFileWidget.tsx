@@ -13,7 +13,7 @@ const ReadOnlyFileWidget: React.FC<WidgetProps> = ({
   value,
 }) => {
   return (
-    <div id={id} className="w-full min-h-[50px] flex items-center">
+    <div id={id} className="read-only-widget">
       {value ? (
         <FilesInfo
           filesInfo={
