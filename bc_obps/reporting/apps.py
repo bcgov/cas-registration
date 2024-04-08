@@ -8,6 +8,7 @@ def create_erc_schemas(sender, app_config, **kwargs):
     cursor.execute("CREATE SCHEMA IF NOT EXISTS erc")
     cursor.execute("CREATE SCHEMA IF NOT EXISTS erc_history")
 
+
 class ReportingConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'reporting'

@@ -1,13 +1,12 @@
 #!/bin/bash
 
 # Get the current git branch
-current_branch=$(git rev-parse --abbrev-ref HEAD)
-echo "Current branch: $current_branch"
+echo "Branch: $BRANCH"
 
-# Check if the current branch is 'develop'
-if [ "$current_branch" == "giraffe-develop" ]; then
+# Check if the current branch is 'giraffe-develop'
+if [ "$BRANCH" == "giraffe-develop" ]; then
     echo "Running giraffe make target..."
-    make install-giraffe
+    make install_giraffe
 else
     echo "Running default make target..."
     make install
