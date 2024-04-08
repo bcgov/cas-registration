@@ -204,18 +204,13 @@ export enum MessageTextOperators {
 }
 
 // 💬 Response messages
-export enum MessageTexResponse {
+export enum MessageTextResponse {
   SETUP_SUCCESS = "Test setup complete.",
 }
 
 // 📝 Status LOV Operator
-export enum OperatorStatus {
-  DRAFT = "Draft",
-  PENDING = "Pending",
-  APPROVED = "Approved",
-  DECLINED = "Declined",
-  CHANGES_REQUESTED = "Changes Requested",
-}
+import { OperatorStatus } from "@/app/utils/enums";
+export { OperatorStatus };
 
 // 🤳 UUIDs Operator
 export enum OperatorUUID {
@@ -223,11 +218,8 @@ export enum OperatorUUID {
 }
 
 // 📝 Status LOV Operation
-export enum OperationStatus {
-  PENDING = "Pending",
-  APPROVED = "Approved",
-  DECLINED = "Declined",
-}
+import { OperationStatus } from "@/app/utils/enums";
+export { OperationStatus };
 
 // 💬 Dashboard tiles
 export enum TileTextDashboard {
@@ -241,11 +233,8 @@ export enum TileTextDashboard {
 }
 
 // 📝 Status LOV UserOperator
-export enum UserOperatorStatus {
-  APPROVED = "Approved",
-  DECLINED = "Declined",
-  PENDING = "Pending",
-}
+import { UserOperatorStatus } from "@/app/utils/enums";
+export { UserOperatorStatus };
 
 // 🤳 UUIDs UserOperator
 export enum UserOperatorUUID {

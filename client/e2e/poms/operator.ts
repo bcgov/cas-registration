@@ -187,8 +187,6 @@ export class OperatorPOM {
   }
 
   async fillInformation(selector: string) {
-    console.log("fillInformation");
-    console.log(selector);
     await fillAllFormFields(this.page, selector);
   }
 
@@ -240,7 +238,7 @@ export class OperatorPOM {
   async triggerErrorsFieldRequired() {
     await this.clickSubmitButton();
     // ❗ Add short timeout to mitigate the Firefox text rendering issue causing spurious screenshot failures
-    // await this.page.waitForTimeout(500);
+    await this.page.waitForTimeout(500);
   }
 
   // # Assertions

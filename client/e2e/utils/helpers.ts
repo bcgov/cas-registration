@@ -9,7 +9,7 @@ import {
   Browser,
 } from "@playwright/test";
 import { baseUrlSetup } from "@/e2e/utils/constants";
-import { E2EValue, FormField, MessageTexResponse } from "@/e2e/utils/enums";
+import { E2EValue, FormField, MessageTextResponse } from "@/e2e/utils/enums";
 
 export async function addPdf(page: Page, index: number = 0) {
   // Pass an index if there are multiple file inputs on the page
@@ -300,6 +300,6 @@ export async function setupTestEnvironment(
   let response: APIResponse = await context.request.get(url);
 
   // Wait for the response and check for success status text and code (e.g., 200)
-  expect(await response.text()).toBe(MessageTexResponse.SETUP_SUCCESS);
+  expect(await response.text()).toBe(MessageTextResponse.SETUP_SUCCESS);
   expect(response.status()).toBe(200);
 }

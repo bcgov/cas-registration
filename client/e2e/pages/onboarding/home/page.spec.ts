@@ -49,7 +49,7 @@ test.beforeAll(async () => {
     await upsertUserOperatorRecord(
       process.env.E2E_INDUSTRY_USER_ADMIN_GUID as string,
       AppRole.ADMIN,
-      UserOperatorStatus.APPROVED
+      UserOperatorStatus.APPROVED,
     );
 
     // 👤 industry_user
