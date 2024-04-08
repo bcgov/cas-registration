@@ -1,0 +1,20 @@
+"""
+Module: handle_exception.py
+Description: This module handles http exceptions.
+"""
+from django.http import Http404
+from django.core.exceptions import ValidationError, ObjectDoesNotExist
+from registration.utils import generate_useful_error
+
+
+def handle_exception(error):
+    """
+    This function handles exceptions for BCEIRS. Returns a 4xx status.
+    """
+    if isinstance(error, (Http404, ObjectDoesNotExist)):
+        return 404, {"message": "Not Found"}
+    if isinstance(error, ValidationError):
+        return 422, {"message": generate_useful_error(error)}
+    if isinstance(error, PermissionError):
+        return 403, {"message": "Permission denied."}
+    return 400, {"message": str(error)}
