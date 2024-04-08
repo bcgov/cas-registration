@@ -4,7 +4,7 @@ import { actionHandler } from "@/app/utils/actions";
 import OperationDataGrid from "@/app/components/datagrid/OperationDataGrid";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { StatusStyleColumnCell } from "../../datagrid/cells/StatusStyleColumnCell";
+import StatusStyleColumnCell from "../../datagrid/cells/StatusStyleColumnCell";
 
 // 🛠️ Function to fetch operations
 async function getOperations() {
