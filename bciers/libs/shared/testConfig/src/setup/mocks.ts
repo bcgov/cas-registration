@@ -1,9 +1,14 @@
-// To return a different value for each test, you can import this file and use mockReturnValue
-// to set the return value for the function you want to mock using mockReturnValue
-// or mockReturnValueOnce. Example:
+// To reduce code duplication and simplify mocking you can import these common mocks from this file
+// and use them in your test files with custom return values
 //
 // import { useRouter } from "@/tests/setup/mocks";
 //
+// beforeEach(() => {
+//   vi.clearAllMocks();
+// });
+//
+// This can be set at the top of the test file or within the test itself
+// if you need to mock different values for different tests
 // useRouter.mockReturnValue({
 //  query: {
 //      formSection: "3",
@@ -11,8 +16,6 @@
 //    },
 //    replace: vi.fn(),
 //  });
-
-import { vi } from 'vitest';
 
 const actionHandler = vi.fn();
 const useRouter = vi.fn();
