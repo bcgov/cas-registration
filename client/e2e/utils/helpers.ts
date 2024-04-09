@@ -10,6 +10,16 @@ import {
 } from "@playwright/test";
 import { baseUrlSetup } from "@/e2e/utils/constants";
 import { E2EValue, FormField, MessageTextResponse } from "@/e2e/utils/enums";
+import AxeBuilder from "@axe-core/playwright";
+
+// 🛠️ Function: checks the accessibility of the page
+export async function checkAccessibility(page: Page) {
+  const accessibilityScanResults = await new AxeBuilder({
+    page,
+  }).analyze();
+
+  expect(accessibilityScanResults.violations).toEqual([]);
+}
 
 export async function addPdf(page: Page, index: number = 0) {
   // Pass an index if there are multiple file inputs on the page
