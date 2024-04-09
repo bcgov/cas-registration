@@ -14,7 +14,7 @@ from registration.api.utils.current_user_utils import get_current_user_guid
 
 
 @router.get(
-    "/user-operator-from-user",
+    "/user_operator/user-operator-from-user",
     response={200: PendingUserOperatorOut, custom_codes_4xx: Message},
     url_name="get_user_operator_from_user",
 )

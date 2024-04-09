@@ -72,7 +72,7 @@ export const authOptions: NextAuthOptions = {
         }
         // 🚀 API call: Get user name from user table
         const response = await actionHandler(
-          "registration/user-profile",
+          "registration/user/user-profile",
           "GET",
         );
         const { first_name: firstName, last_name: lastName } = response || {};
@@ -85,7 +85,7 @@ export const authOptions: NextAuthOptions = {
         if (!token.app_role) {
           // 🚀 API call: Get user app_role by user_guid from user table
           const responseRole = await actionHandler(
-            `registration/user-app-role/${token.user_guid}`,
+            `registration/user/user-app-role/${token.user_guid}`,
             "GET",
           );
           if (responseRole?.role_name) {
@@ -96,7 +96,7 @@ export const authOptions: NextAuthOptions = {
               try {
                 // 🚀 API call: check if user is admin approved
                 const responseAdmin = await actionHandler(
-                  `registration/is-approved-admin-user-operator/${token.user_guid}`,
+                  `registration/user_operator/is-approved-admin-user-operator/${token.user_guid}`,
                   "GET",
                 );
                 if (responseAdmin?.approved) {

@@ -1,10 +1,10 @@
+from .user import user, user_profile, user_app_role
 from . import (
     e2e_test_setup,
-    naics,
+    naics_codes,
     operation,
     operator,
     user_operator,
-    user,
     business_structure,
     regulated_products,
     reporting_activities,

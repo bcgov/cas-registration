@@ -15,7 +15,9 @@ from registration.api.utils.current_user_utils import get_current_user_guid
 
 
 @router.get(
-    "/user-operator-id", response={200: UserOperatorIdOut, custom_codes_4xx: Message}, url_name="get_user_operator_id"
+    "/user_operator/user-operator-id",
+    response={200: UserOperatorIdOut, custom_codes_4xx: Message},
+    url_name="get_user_operator_id",
 )
 @authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles(), False)
 @handle_http_errors()

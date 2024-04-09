@@ -23,7 +23,8 @@ const userOperator = () => {
 
   check(
     http.get(
-      HOST + `/is-approved-admin-user-operator/${INDUSTRY_USER_GUID}`,
+      HOST +
+        `/user_operator/is-approved-admin-user-operator/${INDUSTRY_USER_GUID}`,
       industryUserParams,
     ),
     {
@@ -41,7 +42,7 @@ const userOperator = () => {
   });
 
   const getUserOperatorId = http.get(
-    HOST + "/user-operator-id",
+    HOST + "/user_operator/user-operator-id",
     industryUserParams,
   );
 
@@ -69,9 +70,15 @@ const userOperator = () => {
     },
   );
 
-  check(http.get(HOST + "/user-operator-list-from-user", industryUserParams), {
-    "is status 200": (r) => r.status === 200,
-  });
+  check(
+    http.get(
+      HOST + "/user_operator/user-operator-list-from-user",
+      industryUserParams,
+    ),
+    {
+      "is status 200": (r) => r.status === 200,
+    },
+  );
 
   check(http.get(HOST + "/user-operators", internalUserParams), {
     "is status 200": (r) => r.status === 200,
@@ -111,7 +118,7 @@ const userOperator = () => {
 
   check(
     http.post(
-      HOST + `/user-profile/bceidbusiness`,
+      HOST + `/user/user-profile/bceidbusiness`,
       JSON.stringify({
         first_name: "Test",
         last_name: "User",
