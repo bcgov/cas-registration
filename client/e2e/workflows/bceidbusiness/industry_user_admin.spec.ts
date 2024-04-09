@@ -62,7 +62,6 @@ test.describe("Test Workflow industry_user_admin", () => {
     });
     // ♿️ Check accessibility
     await checkAccessibility(page);
-
     // 🔍 Assert the form is default read-only
     await operatorPage.formIsDisabled();
     // 🔍 Assert industry_user_admin is able to edit the operator form
@@ -77,7 +76,6 @@ test.describe("Test Workflow industry_user_admin", () => {
     });
     // ♿️ Check accessibility
     await checkAccessibility(page);
-
     // 🛸 Navigates to operator
     await operatorPage.clickSaveAndReturn();
     await page.waitForURL(dashboardPage.url);
@@ -105,11 +103,8 @@ test.describe("Test Workflow industry_user_admin", () => {
       component: "Operation table",
       variant: UserRole.INDUSTRY_USER_ADMIN,
     });
-
     // ♿️ Check accessibility
-    // TODO: Fix datagrid accessibility issues
-    // await checkAccessibility(page);
-
+    await checkAccessibility(page);
     // 🛸 Navigate to new operation form
     await operationsPage.clickAddOperationButton();
     // 🔍 Assert we are on the operation detail page 1
