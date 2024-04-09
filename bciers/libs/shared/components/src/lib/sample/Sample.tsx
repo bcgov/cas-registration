@@ -13,5 +13,3 @@ export function Sample(props: SampleProps) {
     </div>
   );
 }
-
-export default Sample;
