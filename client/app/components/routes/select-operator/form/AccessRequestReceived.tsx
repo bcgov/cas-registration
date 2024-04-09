@@ -5,7 +5,7 @@ import { actionHandler } from "@/app/utils/actions";
 
 export async function getOperatorHasAdmin(id: string) {
   return actionHandler(
-    `registration/operator-has-admin/${id}`,
+    `registration/operator/operator-has-admin/${id}`,
     "GET",
     `dashboard/select-operator/confirm/${id}`,
   );

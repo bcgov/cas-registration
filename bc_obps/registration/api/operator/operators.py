@@ -1,7 +1,7 @@
 from typing import List, Optional, Union
 from uuid import UUID
 from registration.decorators import authorize
-from .api_base import router
+from ..api_base import router
 from django.shortcuts import get_object_or_404
 from registration.models import AppRole, Operator, UserOperator, User
 from ninja.responses import codes_4xx, codes_5xx

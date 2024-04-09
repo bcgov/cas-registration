@@ -57,7 +57,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         )
         assert response.status_code == 401
 
-        # /operator-has-admin/{operator_id}
+        # operator/operator-has-admin/{operator_id}
         operator = operator_baker()
         response = TestUtils.mock_get_with_auth_role(
             self,
@@ -74,7 +74,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         response = TestUtils.mock_get_with_auth_role(self, 'cas_analyst', custom_reverse_lazy('get_user_operator_id'))
         assert response.status_code == 401
 
-        # /user-operator-operator
+        # user-operator/user-operator-operator
         response = TestUtils.mock_get_with_auth_role(
             self, 'cas_pending', custom_reverse_lazy('get_user_operator_operator')
         )

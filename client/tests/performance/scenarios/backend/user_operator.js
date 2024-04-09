@@ -33,7 +33,7 @@ const userOperator = () => {
   );
 
   const getUserOperatorOperator = http.get(
-    HOST + "/user-operator-operator",
+    HOST + "user-operator/user-operator-operator",
     industryUser2Params,
   );
 
@@ -64,7 +64,10 @@ const userOperator = () => {
   );
 
   check(
-    http.get(HOST + `/operator-has-admin/${operatorId}`, industryUserParams),
+    http.get(
+      HOST + `operator/operator-has-admin/${operatorId}`,
+      industryUserParams,
+    ),
     {
       "is status 200": (r) => r.status === 200,
     },
