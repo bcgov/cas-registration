@@ -1,3 +1,5 @@
+// TODO(Nx Migration): Module example usage in another app in Monorepo at `bciers/apps/reporting/vitest.config.mts`
+
 /* eslint-disable import/no-extraneous-dependencies */
 import { defineConfig } from "vitest/config";
 import react from "@vitejs/plugin-react";
