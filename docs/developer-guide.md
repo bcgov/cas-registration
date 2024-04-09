@@ -380,8 +380,25 @@ In the HTML report click on the trace icon next to the test name file name to di
 
 ```bash
 cd client &&  npx playwright show-trace test-results/setup-trace.zip
+```
+
+### Accessibility testing with Playwright and Axe
+
+[Playwright accessiblity testing ocumentation](https://playwright.dev/docs/accessibility-testing)
+
+Accessiblity is important. To test a page for accessibility issues import the `analyzeAccessibility` helper function in a playwright e2e test and pass it the page object:
 
 ```
+import { analyzeAccessibility, setupTestEnvironment } from "@/e2e/utils/helpers";
+
+...
+
+// ♿️ Analyze accessibility
+await analyzeAccessibility(page);
+
+```
+
+If this step fails the library will provide details about why it failed and how to fix it.
 
 ### Debugging Django using Shell Plus
 
