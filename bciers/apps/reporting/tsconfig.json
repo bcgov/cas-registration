@@ -15,14 +15,6 @@
       {
         "name": "next"
       }
-    ],
-    "types": [
-      "jest",
-      "vitest/globals",
-      "vitest/importMeta",
-      "vite/client",
-      "node",
-      "vitest"
     ]
   },
   "include": [
