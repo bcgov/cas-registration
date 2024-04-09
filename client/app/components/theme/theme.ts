@@ -1,3 +1,5 @@
+// TODO(Nx Migration): Component added to Monorepo at `@bciers/components/src/lib/theme/theme.ts`
+
 import { createTheme } from "@mui/material/styles";
 import {
   BC_GOV_PRIMARY_BRAND_COLOR_BLUE,
