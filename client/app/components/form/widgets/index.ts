@@ -1,3 +1,5 @@
+// If creating a new widget don't forget about the read only theme
+
 export { default as CheckboxWidget } from "./CheckboxWidget";
 export { default as ComboBox } from "./ComboBox";
 export { default as EmailWidget } from "./EmailWidget";
