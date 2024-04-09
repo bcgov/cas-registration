@@ -12,8 +12,8 @@ import { baseUrlSetup } from "@/e2e/utils/constants";
 import { E2EValue, FormField, MessageTextResponse } from "@/e2e/utils/enums";
 import AxeBuilder from "@axe-core/playwright";
 
-// 🛠️ Function: checks the accessibility of the page
-export async function checkAccessibility(page: Page) {
+// 🛠️ Function: analyze the accessibility of the page
+export async function analyzeAccessibility(page: Page) {
   const accessibilityScanResults = await new AxeBuilder({
     page,
   }).analyze();
