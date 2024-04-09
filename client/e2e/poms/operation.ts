@@ -4,7 +4,6 @@
  * POM simplify maintenance by capturing element selectors in one place and create reusable code to avoid repetition. *
  */
 import { expect, Locator, Page } from "@playwright/test";
-import AxeBuilder from "@axe-core/playwright";
 // ☰ Enums
 import {
   AppRoute,
@@ -127,14 +126,6 @@ export class OperationPOM {
   }
 
   // ###  Actions ###
-
-  async checkAccessibility() {
-    const accessibilityScanResults = await new AxeBuilder({
-      page: this.page,
-    }).analyze();
-
-    expect(accessibilityScanResults.violations).toEqual([]);
-  }
 
   async clickCancelButton() {
     await this.buttonCancel.click();

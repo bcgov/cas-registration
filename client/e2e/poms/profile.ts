@@ -4,7 +4,6 @@
  * POM simplify maintenance by capturing element selectors in one place and create reusable code to avoid repetition. *
  */
 import { Locator, Page, expect } from "@playwright/test";
-import AxeBuilder from "@axe-core/playwright";
 // ⛏️ Helpers
 import {
   fieldsClear,
@@ -36,14 +35,6 @@ export class ProfilePOM {
   }
 
   // ###  Actions ###
-
-  async checkAccessibility() {
-    const accessibilityScanResults = await new AxeBuilder({
-      page: this.page,
-    }).analyze();
-
-    expect(accessibilityScanResults.violations).toEqual([]);
-  }
 
   async route() {
     await this.page.goto(this.url);
