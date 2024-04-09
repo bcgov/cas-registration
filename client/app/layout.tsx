@@ -15,6 +15,7 @@ import Header from "@/app/components/layout/Header";
 import Box from "@mui/material/Box";
 import { getServerSession } from "next-auth";
 import { authOptions } from "./api/auth/[...nextauth]/route";
+import { PublicEnvScript } from "next-runtime-env";
 
 export const metadata: Metadata = {
   title: "CAS OBPS REGISTRATION",
@@ -44,6 +45,9 @@ export default async function RootLayout({
       {
         //👇️ Used to mark the root element where Next.js will mount the client-side React application
       }
+      <head>
+        <PublicEnvScript />
+      </head>
       <body id="__next">
         {/* 👇️  NextAuth SessionProvider available to client children via useSession */}
         <SessionProvider session={session}>
