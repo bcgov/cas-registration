@@ -25,6 +25,6 @@ export default defineConfig({
       reportsDirectory: "../../coverage/apps/reporting",
       provider: "v8",
     },
-    setupFiles: ["../../libs/shared/testConfig/src/setup/global.ts"],
+    setupFiles: ["../../libs/shared/testConfig/src/setup/global.tsx"],
   },
 });
