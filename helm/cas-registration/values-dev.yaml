@@ -45,6 +45,7 @@ frontend:
 
 growthbook:
   clientKey: sdk-YMBcx9KglRDGzGTE
+
 mailhog:
   enable: true
   securityContext:

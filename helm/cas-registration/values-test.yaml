@@ -46,7 +46,7 @@ growthbook:
 mailhog:
   enable: true
   securityContext:
-    runAsUser: 1001650000
-    fsGroup: 1001650000
+    runAsUser: 1016800000
+    fsGroup: 1016800000
     runAsNonRoot: true
   host: cas-obps-mailhog-test.apps.silver.devops.gov.bc.ca
