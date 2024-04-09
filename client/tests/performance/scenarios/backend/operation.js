@@ -64,7 +64,7 @@ const operation = () => {
 
   check(
     http.put(
-      HOST + `/operations/${operationId}/update-status`,
+      HOST + `/operation/${operationId}/update-status`,
       JSON.stringify({
         status: "Approved",
       }),
