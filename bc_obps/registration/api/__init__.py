@@ -1,9 +1,9 @@
+from .operator import operators, operator_access_declined, operator_has_admin
 from .user import user, user_profile, user_app_role
 from . import (
     e2e_test_setup,
     naics_codes,
     operation,
-    operator,
     user_operator,
     business_structure,
     regulated_products,
@@ -12,10 +12,8 @@ from . import (
 
 from .user_operator import (
     operator,
-    is_approved_admin_user_operator,
-    operator_access_declined,
     operator_from_user,
-    operator_has_admin,
+    is_approved_admin_user_operator,
     user_operator_from_user,
     user_operator_id,
     user_operator_id_from_user,
