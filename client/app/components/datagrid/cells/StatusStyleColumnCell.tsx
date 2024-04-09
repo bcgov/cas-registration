@@ -6,7 +6,7 @@ import { GridRenderCellParams } from "@mui/x-data-grid";
 
 export default function StatusStyleColumnCell(params: GridRenderCellParams) {
   const colorMap = new Map<string, ChipOwnProps["color"]>([
-    [Status.MYSELF, "primary"],
+    [Status.MYSELF, "success"],
     [Status.PENDING, "primary"],
     [Status.APPROVED, "success"],
     [Status.CHANGES_REQUESTED, "info"],
