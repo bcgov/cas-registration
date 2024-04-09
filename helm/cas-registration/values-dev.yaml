@@ -45,10 +45,11 @@ frontend:
 
 growthbook:
   clientKey: sdk-YMBcx9KglRDGzGTE
+
 mailhog:
   enable: true
   securityContext:
-    runAsUser: 1001650000
-    fsGroup: 1001650000
+    runAsUser: 1016800000
+    fsGroup: 1016800000
     runAsNonRoot: true
   host: cas-obps-mailhog-dev.apps.silver.devops.gov.bc.ca
