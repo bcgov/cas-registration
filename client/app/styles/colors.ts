@@ -1,3 +1,5 @@
+// TODO(Nx Migration): Module added to Monorepo at `@bciers/styles/src/lib/colors.ts`
+
 // BC GOV colors
 export const BC_GOV_LINKS_COLOR: string = "#1A5A96";
 export const BC_GOV_PRIMARY_BRAND_COLOR_BLUE: string = "#003366";
