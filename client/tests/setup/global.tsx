@@ -1,3 +1,5 @@
+// TODO(Nx Migration): Module added to Monorepo at `bciers/libs/shared/testConfig/src/setup/global.ts`
+
 import type { TestingLibraryMatchers } from "@testing-library/jest-dom/matchers";
 import * as matchers from "@testing-library/jest-dom/matchers";
 // eslint-disable-next-line import/no-extraneous-dependencies
