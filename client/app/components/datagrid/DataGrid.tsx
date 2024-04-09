@@ -117,6 +117,9 @@ const DataGrid: React.FC<Props> = ({
         paginationMode={paginationMode}
         onPaginationModelChange={setPaginationModel}
         onSortModelChange={setSortModel}
+        // Enable the ariaV7 experimental feature to fix accessibility test error:
+        // "message": "Element has children which are not allowed: nav[aria-label]"
+        experimentalFeatures={{ ariaV7: true }}
         // Set the row height to "auto" so that the row height will adjust to the content
         getRowHeight={() => "auto"}
         slots={{
