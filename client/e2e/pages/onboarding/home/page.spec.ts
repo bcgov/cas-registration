@@ -23,7 +23,7 @@ import * as dotenv from "dotenv";
 dotenv.config({ path: "./e2e/.env.local" });
 import happoPlaywright from "happo-playwright";
 // Helpers
-import { checkAccessibility } from "@/e2e/utils/helpers";
+import { analyzeAccessibility } from "@/e2e/utils/helpers";
 
 // 🏷 Annotate test suite as serial
 test.describe.configure({ mode: "serial" });
@@ -93,8 +93,8 @@ test.describe("Test Page - Home", () => {
       component: "Home page",
       variant: "default",
     });
-    // ♿️ Check accessibility
-    await checkAccessibility(page);
+    // ♿️ Analyze accessibility
+    await analyzeAccessibility(page);
   });
 
   test.describe(`Test User Role`, () => {
