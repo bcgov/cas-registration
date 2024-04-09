@@ -12,7 +12,7 @@ import { getUserFullName } from "@/app/utils/getUserFullName";
 async function getUserFormData(): Promise<
   UserProfileFormData | { error: string }
 > {
-  return actionHandler(`registration/user-profile`, "GET", "");
+  return actionHandler(`registration/user/user-profile`, "GET", "");
 }
 
 // 🏗️ Async server component: dashboard\profile
