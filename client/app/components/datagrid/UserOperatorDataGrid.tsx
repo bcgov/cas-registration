@@ -5,7 +5,7 @@ import DataGrid from "@/app/components/datagrid/DataGrid";
 import { OperatorStatus, UserOperatorRoles } from "@/app/utils/enums";
 import AccessTypeColumnCell from "@/app/components/datagrid/cells/AccessTypeColumnCell";
 import ChangeUserOperatorStatusColumnCell from "@/app/components/datagrid/cells/ChangeUserOperatorStatusColumnCell";
-import { statusStyle } from "@/app/components/datagrid/helpers";
+import StatusStyleColumnCell from "./cells/StatusStyleColumnCell";
 
 const columns: GridColDef[] = [
   {
@@ -41,7 +41,7 @@ const columns: GridColDef[] = [
   {
     field: "status",
     headerName: "Status",
-    renderCell: statusStyle,
+    renderCell: StatusStyleColumnCell,
     align: "center",
     headerAlign: "center",
     width: 140,

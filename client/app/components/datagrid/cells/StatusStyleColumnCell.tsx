@@ -4,9 +4,9 @@ import { Status } from "@/app/utils/enums";
 import { Chip, ChipOwnProps } from "@mui/material";
 import { GridRenderCellParams } from "@mui/x-data-grid";
 
-export const statusStyle = (params: GridRenderCellParams) => {
+export default function StatusStyleColumnCell(params: GridRenderCellParams) {
   const colorMap = new Map<string, ChipOwnProps["color"]>([
-    [Status.MYSELF, "primary"],
+    [Status.MYSELF, "success"],
     [Status.PENDING, "primary"],
     [Status.APPROVED, "success"],
     [Status.CHANGES_REQUESTED, "info"],
@@ -14,7 +14,8 @@ export const statusStyle = (params: GridRenderCellParams) => {
     [Status.DRAFT, "secondary"],
     [Status.DECLINED, "error"],
   ]);
-  const status = params.value as string;
+  const status =
+    params.value === Status.MYSELF ? Status.APPROVED : (params.value as string);
   const statusColor = colorMap.get(params.value) || "primary";
   const isMultiLineStatus =
     status === Status.CHANGES_REQUESTED || status === Status.NOT_STARTED;
@@ -39,4 +40,4 @@ export const statusStyle = (params: GridRenderCellParams) => {
       }}
     />
   );
-};
+}
