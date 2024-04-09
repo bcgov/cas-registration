@@ -15,6 +15,7 @@ const formTheme: ThemeProps = {
   },
   widgets: {
     ...defaultWidgets,
+    // If creating a new widget don't forget to handle it in the readonly theme
     ...widgets,
   },
   templates: {
