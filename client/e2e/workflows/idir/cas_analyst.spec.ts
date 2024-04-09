@@ -32,7 +32,7 @@ test.afterAll(async () => {
 test.describe("Test Workflow cas_analyst", () => {
   // 👤 run test using the storageState for this role
   const storageState = JSON.parse(
-    process.env.E2E_CAS_ANALYST_STORAGE as string,
+    process.env.E2E_CAS_ANALYST_STORAGE as string
   );
   // Note: specify storageState for each test file or test group, instead of setting it in the config. https://playwright.dev/docs/next/auth#reuse-signed-in-state
   test.use({ storageState: storageState }); // this will error if no such file or directory
@@ -52,7 +52,7 @@ test.describe("Test Workflow cas_analyst", () => {
     await operatorsPage.tableHasExpectedColumns(UserRole.CAS_ANALYST);
     await operatorsPage.tableHasExpectedColumnValues(
       UserRole.CAS_ANALYST,
-      TableDataField.STATUS,
+      TableDataField.STATUS
     );
     // 🧪 Detail Form UX by Status
     // 🔍 Assert cas_analyst is able to click "View Details" on see detailed info related Declined
@@ -62,7 +62,7 @@ test.describe("Test Workflow cas_analyst", () => {
     // 🔍 Assert cas_analyst is able to click "View Details" on see detailed info related Pending
     await operatorsPage.formHasExpectedUX(UserOperatorStatus.PENDING);
     // 🧪 Detail Form Workflows
-    // 🔍 Assert cas_analyst workflow New Operator, Pending: Reject
+    // 🔍 Assert cas_analyst workflow New Operator, Pending: Approve
     await operatorsPage.formHasExpectedWorkflow(UserRole.CAS_ANALYST, 1);
     // 🔍 Assert cas_analyst workflow New Operator, Pending: Reject
     await operatorsPage.formHasExpectedWorkflow(UserRole.CAS_ANALYST, 2);
@@ -87,7 +87,7 @@ test.describe("Test Workflow cas_analyst", () => {
     await operationsPage.tableHasExpectedColumns(UserRole.CAS_ANALYST);
     await operationsPage.tableHasExpectedColumnValues(
       UserRole.CAS_ANALYST,
-      TableDataField.STATUS,
+      TableDataField.STATUS
     );
     // 🔍 Assert cas_analyst is able to click "View Details" on each status and see detailed info related to that status
     await operationsPage.formHasExpectedUX(OperationStatus.DECLINED);
@@ -97,19 +97,19 @@ test.describe("Test Workflow cas_analyst", () => {
     await operationsPage.formHasExpectedWorkflow(
       UserRole.CAS_ANALYST,
       OperationStatus.PENDING,
-      1,
+      1
     );
     // 🔍 Assert cas_analyst workflow Pending, Decline
     await operationsPage.formHasExpectedWorkflow(
       UserRole.CAS_ANALYST,
       OperationStatus.PENDING,
-      2,
+      2
     );
     // 🔍 Assert cas_analyst workflow Approved, Preview the Statutory Declaration PDF
     await operationsPage.formHasExpectedWorkflow(
       UserRole.CAS_ANALYST,
       OperationStatus.APPROVED,
-      3,
+      3
     );
   });
 });
