@@ -51,6 +51,8 @@ test.describe("Test Workflow industry_user", () => {
     await dashboardPage.clickSelectOperatorTile();
     // 🔍 Assert current URL is select operator
     await selectOperatorPage.urlIsCorrect();
+    // 🔍 Assert the form is visible - needed to prevent checkAccessibility from failing
+    await selectOperatorPage.formIsVisible();
     // 📷 Cheese!
     pageContent = page.locator("html");
     await happoPlaywright.screenshot(page, pageContent, {
@@ -58,8 +60,7 @@ test.describe("Test Workflow industry_user", () => {
       variant: "default",
     });
     // ♿️ Check accessibility
-    // TOODO: Fix accessibility issue
-    // await checkAccessibility(page);
+    await checkAccessibility(page);
     // 👉 Action search by legal name
     await selectOperatorPage.selectByLegalName(
       E2EValue.SEARCH_LEGAL_NAME,
@@ -125,8 +126,7 @@ test.describe("Test Workflow industry_user", () => {
       variant: "default",
     });
     // ♿️ Check accessibility
-    // TODO: Fix date picker accessibility issue
-    // await checkAccessibility(page);
+    await checkAccessibility(page);
     // 👉 Action request access
     await selectOperatorPage.requestAccess();
     // 🔍 Assert access requested message
