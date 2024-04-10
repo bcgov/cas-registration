@@ -19,7 +19,10 @@ interface Props {
   formData?: OperationsFormData;
 }
 
-export default function OperationsForm({ formData, schema }: Readonly<Props>) {
+export default function OperationExternalForm({
+  formData,
+  schema,
+}: Readonly<Props>) {
   const { data: session } = useSession();
 
   const [operationName, setOperationName] = useState("");
@@ -100,7 +103,7 @@ export default function OperationsForm({ formData, schema }: Readonly<Props>) {
               pathToRevalidate,
               {
                 body: JSON.stringify(body),
-              },
+              }
             );
 
             const operation = response?.id || operationId;
@@ -116,13 +119,13 @@ export default function OperationsForm({ formData, schema }: Readonly<Props>) {
               paramTitle = response.name;
             }
             router.replace(
-              `/dashboard/operations/${operation}/${formSection}?title=${paramTitle}`,
+              `/dashboard/operations/${operation}/${formSection}?title=${paramTitle}`
             );
             if (isNotFinalStep) {
               router.push(
                 `/dashboard/operations/${operation}/${
                   formSection + 1
-                }?title=${paramTitle}`,
+                }?title=${paramTitle}`
               );
               return;
             }

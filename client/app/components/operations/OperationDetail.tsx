@@ -1,6 +1,3 @@
-import OperationsForm, {
-  OperationsFormData,
-} from "@/app/components/form/OperationsForm";
 import {
   operationSchema,
   operationInternalUserSchema,
@@ -13,12 +10,15 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 import ErrorIcon from "@mui/icons-material/Error";
 import { Status } from "@/app/utils/enums";
-import { Operation as OperationInt } from "@/app/components/routes/operations/types";
 import Link from "next/link";
-import OperationReviewForm from "@/app/components/form/OperationReviewForm";
-import { BusinessStructure } from "@/app/components/routes/select-operator/form/types";
 import { validate as isValidUUID } from "uuid";
 import { carbonTaxExemptionLink } from "@/app/utils/urls";
+import OperationInternalForm from "./OperationInternalForm";
+import OperationExternalForm, {
+  OperationsFormData,
+} from "./OperationExternalForm";
+import { BusinessStructure } from "../routes/select-operator/form/types";
+import { Operation as OperationInt } from "@/app/components/operations/types";
 
 // 🚀 API call: GET user's data
 async function getUserFormData(): Promise<
@@ -161,7 +161,7 @@ export const createOperationSchema = (
 };
 
 // 🧩 Main component
-export default async function Operation({ numRow }: { numRow?: string }) {
+export default async function OperationDetail({ numRow }: { numRow?: string }) {
   let userProfileFormData: UserProfileFormData | { error: string } =
     await getUserFormData();
   const currentUserAppRole = (userProfileFormData as UserProfileFormData)
@@ -319,7 +319,7 @@ export default async function Operation({ numRow }: { numRow?: string }) {
       <OperationReview operation={operation} />
       {showRegistrationRequestResult && registrationRequestResultJSX}
       {isCasInternal ? (
-        <OperationReviewForm
+        <OperationInternalForm
           schema={createOperationSchema(
             operationInternalUserSchema,
             codes,
@@ -329,7 +329,7 @@ export default async function Operation({ numRow }: { numRow?: string }) {
           formData={transformedFormData as OperationsFormData}
         />
       ) : (
-        <OperationsForm
+        <OperationExternalForm
           schema={createOperationSchema(
             operationSchema,
             codes,

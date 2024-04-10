@@ -2,11 +2,11 @@
 import Link from "next/link";
 import { Button } from "@mui/material";
 import { Suspense } from "react";
-import Operations from "@/app/components/routes/operations/Operations";
 import Loading from "@/app/components/loading/SkeletonGrid";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import Note, { registrationRequestNote } from "../../datagrid/Note";
+import Note, { registrationRequestNote } from "../datagrid/Note";
+import Operations from "./Operations";
 
 export default async function OperationsPage() {
   // 👤 Use NextAuth.js hook to get information about the user's session

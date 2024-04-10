@@ -4,7 +4,7 @@ import { actionHandler } from "@/app/utils/actions";
 import OperationDataGrid from "@/app/components/datagrid/OperationDataGrid";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import StatusStyleColumnCell from "../../datagrid/cells/StatusStyleColumnCell";
+import StatusStyleColumnCell from "../datagrid/cells/StatusStyleColumnCell";
 
 // 🛠️ Function to fetch operations
 async function getOperations() {
@@ -13,7 +13,7 @@ async function getOperations() {
       // Fetch page one of the operations data on initial load
       "registration/operations",
       "GET",
-      "/dashboard/operations",
+      "/dashboard/operations"
     );
   } catch (error) {
     // Handle the error here or rethrow it to handle it at a higher level
@@ -63,7 +63,7 @@ export const formatOperationRows = (rows: GridRowsProp) => {
         submission_date: formatTimestamp(submission_date) ?? status,
         status,
       };
-    },
+    }
   );
 };
 

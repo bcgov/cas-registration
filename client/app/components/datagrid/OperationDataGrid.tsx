@@ -4,21 +4,21 @@ import DataGrid from "./DataGrid";
 import Link from "next/link";
 import { GridRenderCellParams } from "@mui/x-data-grid";
 import { actionHandler } from "@/app/utils/actions";
-import { formatOperationRows } from "@/app/components/routes/operations/Operations";
 import { useSession } from "next-auth/react";
 import { OperationStatus } from "@/app/utils/enums";
+import { formatOperationRows } from "../operations/Operations";
 
 const fetchOperationPageData = async (
   page: number,
   sortField?: string,
-  sortOrder?: string,
+  sortOrder?: string
 ) => {
   try {
     // fetch data from server
     const pageData = await actionHandler(
       `registration/operations?page=${page}&sort_field=${sortField}&sort_order=${sortOrder}`,
       "GET",
-      "",
+      ""
     );
     return formatOperationRows(pageData.data);
   } catch (error) {
