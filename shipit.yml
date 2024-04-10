@@ -6,8 +6,9 @@ review:
 
 deploy:
   override:
-    - make install:
-        timeout: 5000
+    - |
+      bash deploy.sh
+      timeout: 5000
 
 ci:
   allow_failures:
