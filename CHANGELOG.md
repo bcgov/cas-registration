@@ -1,3 +1,14 @@
+## [1.2.3](https://github.com/bcgov/cas-registration/compare/v1.2.2...v1.2.3) (2024-04-10)
+
+### Bug Fixes
+
+- cas_pending login ([55d0265](https://github.com/bcgov/cas-registration/commit/55d02653c975bd586243b5c523c737922f234b09))
+- click submit ([c95f309](https://github.com/bcgov/cas-registration/commit/c95f309c28c78d94e4b4c34d23f3618a29ec3c8e))
+- happo Add a new operator ([7554566](https://github.com/bcgov/cas-registration/commit/75545661fa2209742a14d2160c6ef9afcca0012d))
+- happo Add a new operator\default ([007e0f2](https://github.com/bcgov/cas-registration/commit/007e0f2cf7d49b8152672d46098047a4f6bd965f))
+- happo create a new operator ([cfc8fa1](https://github.com/bcgov/cas-registration/commit/cfc8fa17bfb73d12ef2bf30bec10c66beaa85ff2))
+- run e2e report always ([60c787e](https://github.com/bcgov/cas-registration/commit/60c787e96a1e108cf1356c82b4357eeb5abc5214))
+
 ## [1.2.2](https://github.com/bcgov/cas-registration/compare/v1.2.0...v1.2.2) (2024-04-04)
 
 ### Bug Fixes
