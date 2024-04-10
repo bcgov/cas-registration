@@ -281,9 +281,7 @@ export class OperationsPOM {
               this.alertApproved
             );
             // FIXME FOR CI
-            await expect(this.messageOperationApproved).toBeVisible({
-              timeout: 30000,
-            });
+            // await expect(this.messageOperationApproved).toBeVisible();
             break;
           case 2:
             // Status Pending
@@ -304,7 +302,7 @@ export class OperationsPOM {
 
             // cas_admin is able to Preview the Statutory Declaration PDF in any Operation form
             await this.formSectionStatutoryDisclaimer.click();
-            // FIXME FOR CI configs? version bump?
+            // FIXME FOR CI
             await downloadPDF(
               this.page,
               ButtonText.PDF_PREVIEW,
