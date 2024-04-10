@@ -250,6 +250,7 @@ export class OperationsPOM {
 
     switch (role) {
       case UserRole.CAS_ADMIN:
+      case UserRole.CAS_ANALYST:
         switch (caseIndex) {
           case 1:
             // Status Pending
@@ -278,7 +279,7 @@ export class OperationsPOM {
               this.alertApproved,
             );
             // FIXME FOR CI
-            //   await expect(this.messageOperationApproved).toBeVisible();
+            // await expect(this.messageOperationApproved).toBeVisible();
             break;
           case 2:
             // Status Pending
@@ -346,6 +347,7 @@ export class OperationsPOM {
       case TableDataField.STATUS:
         switch (role) {
           case UserRole.CAS_ADMIN:
+          case UserRole.CAS_ANALYST:
             expectedValues = [
               OperationStatus.PENDING,
               OperationStatus.APPROVED,
@@ -377,6 +379,7 @@ export class OperationsPOM {
         // later
         break;
       case UserRole.CAS_ADMIN:
+      case UserRole.CAS_ANALYST:
         await expect(this.messageInternal).toBeVisible();
         await expect(this.buttonAdd).not.toBeVisible();
         break;

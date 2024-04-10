@@ -21,6 +21,15 @@ class Command(BaseCommand):
                 f'{fixture_base_dir}/operation.json',
                 f'{fixture_base_dir}/user_operator.json',
             ],
+            "cas_analyst": [
+                f'{fixture_base_dir}/address.json',
+                f'{fixture_base_dir}/user.json',
+                f'{fixture_base_dir}/contact.json',
+                f'{fixture_base_dir}/bc_obps_regulated_operation.json',
+                f'{fixture_base_dir}/operator.json',
+                f'{fixture_base_dir}/operation.json',
+                f'{fixture_base_dir}/user_operator.json',
+            ],
             # Add more workflows here
         }
 

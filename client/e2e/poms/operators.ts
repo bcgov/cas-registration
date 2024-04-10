@@ -159,6 +159,7 @@ export class OperatorsPOM {
   async formHasExpectedWorkflow(role: string, caseIndex: number) {
     switch (role) {
       case UserRole.CAS_ADMIN:
+      case UserRole.CAS_ANALYST:
         // Find first row by operator, status
         // option over using get row by rows index which is a potentially fragile structural assumption
         switch (caseIndex) {
@@ -326,6 +327,7 @@ export class OperatorsPOM {
       case TableDataField.STATUS:
         switch (role) {
           case UserRole.CAS_ADMIN:
+          case UserRole.CAS_ANALYST:
             expectedValues = [
               UserOperatorStatus.PENDING,
               UserOperatorStatus.APPROVED,
@@ -346,6 +348,7 @@ export class OperatorsPOM {
         // later
         break;
       case UserRole.CAS_ADMIN:
+      case UserRole.CAS_ANALYST:
         await expect(this.messageInternal).toBeVisible();
         break;
     }
