@@ -46,12 +46,12 @@ test.describe("Test Workflow cas_analyst", () => {
       await dashboardPage.clickOperatorsTile();
       // 🔍 Assert that the current URL is operators
       await operatorsPage.urlIsCorrect();
-      // 🔍 Assert `Operators` view, table and data reflect role `cas_admin`
-      await operatorsPage.viewIsCorrect(UserRole.CAS_ADMIN);
+      // 🔍 Assert `Operators` view, table and data reflect role `cas_analyst`
+      await operatorsPage.viewIsCorrect(UserRole.CAS_ANALYST);
       await operatorsPage.tableIsVisible();
-      await operatorsPage.tableHasExpectedColumns(UserRole.CAS_ADMIN);
+      await operatorsPage.tableHasExpectedColumns(UserRole.CAS_ANALYST);
       await operatorsPage.tableHasExpectedColumnValues(
-        UserRole.CAS_ADMIN,
+        UserRole.CAS_ANALYST,
         TableDataField.STATUS,
       );
     });
@@ -60,11 +60,11 @@ test.describe("Test Workflow cas_analyst", () => {
       const operatorsPage = new OperatorsPOM(page);
       // 🛸 Navigate to operators page
       operatorsPage.route();
-      // 🔍 Assert cas_admin is able to click "View Details" on see detailed info related Declined
+      // 🔍 Assert cas_analyst is able to click "View Details" on see detailed info related Declined
       await operatorsPage.formHasExpectedUX(UserOperatorStatus.DECLINED);
-      // 🔍 Assert cas_admin is able to click "View Details" on see detailed info related Approved
+      // 🔍 Assert cas_analyst is able to click "View Details" on see detailed info related Approved
       await operatorsPage.formHasExpectedUX(UserOperatorStatus.APPROVED);
-      // 🔍 Assert cas_admin is able to click "View Details" on see detailed info related Pending
+      // 🔍 Assert cas_analyst is able to click "View Details" on see detailed info related Pending
       await operatorsPage.formHasExpectedUX(UserOperatorStatus.PENDING);
     });
 
@@ -72,14 +72,14 @@ test.describe("Test Workflow cas_analyst", () => {
       const operatorsPage = new OperatorsPOM(page);
       // 🛸 Navigate to operators page
       operatorsPage.route();
-      // 🔍 Assert cas_admin workflow New Operator, Pending: Reject
-      await operatorsPage.formHasExpectedWorkflow(UserRole.CAS_ADMIN, 1);
-      // 🔍 Assert cas_admin workflow New Operator, Pending: Reject
-      await operatorsPage.formHasExpectedWorkflow(UserRole.CAS_ADMIN, 2);
-      // 🔍 Assert cas_admin workflow Existing Operator, Pending: Approve
-      await operatorsPage.formHasExpectedWorkflow(UserRole.CAS_ADMIN, 3);
-      // 🔍 Assert cas_admin workflow Existing Operator,  Pending: Reject
-      await operatorsPage.formHasExpectedWorkflow(UserRole.CAS_ADMIN, 4);
+      // 🔍 Assert cas_analyst workflow New Operator, Pending: Reject
+      await operatorsPage.formHasExpectedWorkflow(UserRole.CAS_ANALYST, 1);
+      // 🔍 Assert cas_analyst workflow New Operator, Pending: Reject
+      await operatorsPage.formHasExpectedWorkflow(UserRole.CAS_ANALYST, 2);
+      // 🔍 Assert cas_analyst workflow Existing Operator, Pending: Approve
+      await operatorsPage.formHasExpectedWorkflow(UserRole.CAS_ANALYST, 3);
+      // 🔍 Assert cas_analyst workflow Existing Operator,  Pending: Reject
+      await operatorsPage.formHasExpectedWorkflow(UserRole.CAS_ANALYST, 4);
     });
   });
 
@@ -93,12 +93,12 @@ test.describe("Test Workflow cas_analyst", () => {
       await dashboardPage.clickOperationsTile();
       // 🔍 Assert that the current URL is operations
       await operationsPage.urlIsCorrect();
-      // 🔍 Assert `Operations` view, table and data reflect role `cas_admin`
-      await operationsPage.viewIsCorrect(UserRole.CAS_ADMIN);
+      // 🔍 Assert `Operations` view, table and data reflect role `cas_analyst`
+      await operationsPage.viewIsCorrect(UserRole.CAS_ANALYST);
       await operationsPage.tableIsVisible();
-      await operationsPage.tableHasExpectedColumns(UserRole.CAS_ADMIN);
+      await operationsPage.tableHasExpectedColumns(UserRole.CAS_ANALYST);
       await operationsPage.tableHasExpectedColumnValues(
-        UserRole.CAS_ADMIN,
+        UserRole.CAS_ANALYST,
         TableDataField.STATUS,
       );
     });
@@ -107,7 +107,7 @@ test.describe("Test Workflow cas_analyst", () => {
       const operationsPage = new OperationsPOM(page);
       // 🛸 Navigate to operations page
       operationsPage.route();
-      // 🔍 Assert cas_admin is able to click "View Details" on each status and see detailed info related to that status
+      // 🔍 Assert cas_analyst is able to click "View Details" on each status and see detailed info related to that status
       await operationsPage.formHasExpectedUX(OperationStatus.DECLINED);
       await operationsPage.formHasExpectedUX(OperationStatus.APPROVED);
       await operationsPage.formHasExpectedUX(OperationStatus.PENDING);
@@ -117,21 +117,21 @@ test.describe("Test Workflow cas_analyst", () => {
       const operationsPage = new OperationsPOM(page);
       // 🛸 Navigate to operations page
       operationsPage.route();
-      // 🔍 Assert cas_admin workflow Pending, Request Changes, Undo (Request Changes), Approve
+      // 🔍 Assert cas_analyst workflow Pending, Request Changes, Undo (Request Changes), Approve
       await operationsPage.formHasExpectedWorkflow(
-        UserRole.CAS_ADMIN,
+        UserRole.CAS_ANALYST,
         OperationStatus.PENDING,
         1,
       );
-      // 🔍 Assert cas_admin workflow Pending, Decline
+      // 🔍 Assert cas_analyst workflow Pending, Decline
       await operationsPage.formHasExpectedWorkflow(
-        UserRole.CAS_ADMIN,
+        UserRole.CAS_ANALYST,
         OperationStatus.PENDING,
         2,
       );
-      // 🔍 Assert cas_admin workflow Approved, Preview the Statutory Declaration PDF
+      // 🔍 Assert cas_analyst workflow Approved, Preview the Statutory Declaration PDF
       await operationsPage.formHasExpectedWorkflow(
-        UserRole.CAS_ADMIN,
+        UserRole.CAS_ANALYST,
         OperationStatus.APPROVED,
         3,
       );

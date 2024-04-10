@@ -239,7 +239,7 @@ export class OperationsPOM {
   async formHasExpectedWorkflow(
     role: string,
     status: string,
-    caseIndex: number,
+    workflowNumber: number,
   ) {
     // Find a row by status
     const row = await getTableRowByCellSelector(
@@ -251,7 +251,7 @@ export class OperationsPOM {
     switch (role) {
       case UserRole.CAS_ADMIN:
       case UserRole.CAS_ANALYST:
-        switch (caseIndex) {
+        switch (workflowNumber) {
           case 1:
             // Status Pending
             // Workflow: Request Changes, Undo (Request Changes), Approve

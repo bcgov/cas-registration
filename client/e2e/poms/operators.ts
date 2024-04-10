@@ -156,13 +156,13 @@ export class OperatorsPOM {
     await this.tableIsVisible();
   }
 
-  async formHasExpectedWorkflow(role: string, caseIndex: number) {
+  async formHasExpectedWorkflow(role: string, workflowNumber: number) {
     switch (role) {
       case UserRole.CAS_ADMIN:
       case UserRole.CAS_ANALYST:
         // Find first row by operator, status
         // option over using get row by rows index which is a potentially fragile structural assumption
-        switch (caseIndex) {
+        switch (workflowNumber) {
           case 1:
             // Row: Operator New, Status Pending
             // Workflow: Approve new operator and admin request
