@@ -1,4 +1,4 @@
-import SelectOperatorRequestAccessConfirmPage from "@/app/components/routes/select-operator/request-access/confirm/Page";
+import SelectOperatorRequestAccessConfirmPage from "@/app/components/routes/select-operator/request-access/confirm/SelectOperatorRequestAccessConfirmPage";
 
 export default async function Page({
   params,

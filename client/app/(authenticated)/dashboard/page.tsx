@@ -1,6 +1,6 @@
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import Tiles from "@/app/components/navigation/Tiles";
-import { getUserOperator } from "@/app/components/routes/select-operator/Page";
+import { getUserOperator } from "@/app/components/routes/select-operator/MyOperatorPage";
 import { actionHandler } from "@/app/utils/actions";
 import { FrontEndRoles } from "@/app/utils/enums";
 import Card from "@mui/material/Card";
