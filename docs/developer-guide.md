@@ -11,7 +11,7 @@ Architectural design using Next.js 14 includes employing a hierarchical structur
 Next.js 14 foundation is the App Router which boasts a range of features, including:
 
 [Routing](https://nextjs.org/docs/app/building-your-application/routing)
-Creating routes involves creating folders within the app directory and nesting a page.tsx file within the appropriate folder to define your route.
+Creating routes involves creating folders within the app directory and nesting a page.tsx file within the appropriate folder to define your route. Note: our `withAuthorization` middleware removes the first three folders (e.g. authenticated/bceidbudiness/industry_user) from the route, so all the URLs within the app will start with `dashboard` instead of `authenticated/.../dashboard`.
 
 [Server Components](https://nextjs.org/docs/app/building-your-application/rendering/server-components)
 By default, all app router components are react server components and if you want to write a client component you need to mark them explicitly using the "use client"; directive.
