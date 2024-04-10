@@ -168,8 +168,8 @@ export enum LinkSrc {
 
 // 💬 Operations messages
 export enum MessageTextOperations {
-  ALERT_CARBON_TAX_EXEMPTION_APPROVED = "You have approved the request for carbon tax exemption.",
-  ALERT_CARBON_TAX_EXEMPTION_DECLINED = "You have declined the request for carbon tax exemption.",
+  ALERT_CARBON_TAX_EXEMPTION_APPROVED = "You have approved the application for a B.C. OBPS Regulated Operation ID.",
+  ALERT_CARBON_TAX_EXEMPTION_DECLINED = "You have declined the application for a B.C. OBPS Regulated Operation ID.",
   NOTE_INTERNAL = "Once “Approved,” a B.C. OBPS Regulated Operation ID will be issued for the operation",
 }
 
