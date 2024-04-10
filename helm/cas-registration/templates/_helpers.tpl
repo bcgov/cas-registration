@@ -67,7 +67,7 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 Selector labels
 */}}
 {{- define "cas-registration.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "cas-registration.name" . }}
+app.kubernetes.io/name: {{ include "cas-registration.fullname" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 

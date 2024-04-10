@@ -1,0 +1,28 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "rootDirs": [".", "../client/app"],
+    "sourceMap": true,
+    "declaration": false,
+    "moduleResolution": "bundler",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "target": "es2015",
+    "module": "esnext",
+    "lib": ["esnext", "dom", "dom.iterable"],
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "baseUrl": ".",
+    "types": ["vitest/globals"],
+    "paths": {
+      "@bciers/components/server": ["libs/shared/components/src/server.ts"],
+      "@bciers/components": ["libs/shared/components/src/index.ts"],
+      "@bciers/img/*": ["libs/shared/img/*"],
+      "@bciers/styles": ["libs/shared/styles/src/index.ts"],
+      "registration/*": ["../client/app/*"],
+      "@/*": ["../client/*"]
+    }
+  },
+  "exclude": ["node_modules", "tmp"]
+}

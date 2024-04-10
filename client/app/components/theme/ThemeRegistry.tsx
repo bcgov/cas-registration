@@ -1,4 +1,5 @@
 "use client";
+// TODO(Nx Migration): Component added to Monorepo at `@bciers/components/src/lib/theme/ThemeRegistry.tsx`
 
 import React from "react";
 import { ThemeProvider } from "@mui/material/styles";

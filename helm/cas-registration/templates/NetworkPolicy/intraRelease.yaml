@@ -1,17 +1,17 @@
 kind: NetworkPolicy
 apiVersion: networking.k8s.io/v1
 metadata:
-  name: cas-registration-dev-intra-release-by-name
+  name: {{ include "cas-registration.fullname" . }}-dev-intra-release-by-name
   labels: {{ include "cas-registration.labels" . | nindent 4 }}
 spec:
   podSelector:
     matchLabels:
-      app.kubernetes.io/name: {{ .Release.Name }}
+      app.kubernetes.io/name: {{ include "cas-registration.fullname" . }}
   ingress:
   - from:
     - podSelector:
         matchLabels:
-          release: {{ .Release.Name }}
+          release: {{ include "cas-registration.fullname" . }}
     - podSelector:
         matchLabels:
-          app.kubernetes.io/name: {{ .Release.Name }}
+          app.kubernetes.io/name: {{ include "cas-registration.fullname" . }}

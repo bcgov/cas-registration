@@ -16,7 +16,6 @@ downloads/
 eggs/
 .eggs/
 k6_results
-lib/
 lib64/
 node_modules/
 parts/

@@ -1,4 +1,5 @@
 yarn 1.22.19
+nodejs 20.11.0
 nodejs 16.20.1
 terraform 1.5.3
 gcloud 450.0.0
