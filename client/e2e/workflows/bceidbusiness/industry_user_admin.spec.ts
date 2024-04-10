@@ -232,7 +232,6 @@ test.describe("Test Workflow industry_user_admin", () => {
       variant: UserRole.INDUSTRY_USER_ADMIN,
     });
     // ♿️ Analyze accessibility
-    // TODO: Fix accessibility issues
-    // await analyzeAccessibility(page);
+    await analyzeAccessibility(page);
   });
 });
