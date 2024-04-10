@@ -35,7 +35,6 @@ export class ProfilePOM {
   }
 
   // ###  Actions ###
-
   async route() {
     await this.page.goto(this.url);
   }

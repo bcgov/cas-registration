@@ -99,7 +99,6 @@ export class OperatorsPOM {
   }
 
   // ###  Actions ###
-
   async navigateBack() {
     // Navigate back to the table
     await this.linkOperators.click();

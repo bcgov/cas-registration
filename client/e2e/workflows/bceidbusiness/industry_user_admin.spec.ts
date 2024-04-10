@@ -179,8 +179,7 @@ test.describe("Test Workflow industry_user_admin", () => {
       variant: "read only",
     });
     // ♿️ Analyze accessibility
-    // TODO: Fix datagrid accessibility issues
-    // await analyzeAccessibility(page);
+    await analyzeAccessibility(page);
     // 🛸 Navigate to next page
     await operationPage.clickNextButton();
     // 🔍 Assert that we are on the operation detail page step 2
@@ -233,7 +232,7 @@ test.describe("Test Workflow industry_user_admin", () => {
       variant: UserRole.INDUSTRY_USER_ADMIN,
     });
     // ♿️ Analyze accessibility
-    // TODO: Fix datagrid accessibility issues
+    // TODO: Fix accessibility issues
     // await analyzeAccessibility(page);
   });
 });
