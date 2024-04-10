@@ -53,7 +53,7 @@ export async function checkColumnTextVisibility(
   // Check for visibility of each text within the column
   for (const text of columnText) {
     const cell = await table
-      .locator(`[role="cell"]${columnSelector}:has-text("${text}")`)
+      .locator(`[role="gridcell"]${columnSelector}:has-text("${text}")`)
       .first();
     await expect(cell).toBeVisible();
   }
@@ -142,7 +142,7 @@ export async function getAllFormInputs(page: Page) {
 
 // 🛠️ Function: gets table row's cell value
 export async function getRowCellBySelector(row: Locator, selector: string) {
-  const cell = await row.locator(`[role="cell"]${selector}`).first();
+  const cell = await row.locator(`[role="gridcell"]${selector}`).first();
   return cell;
 }
 // 🛠️ Function: gets table row by cell value selector
@@ -151,7 +151,7 @@ export async function getTableRowByCellSelector(
   selector: string,
 ) {
   const row = await table
-    .locator(`[role="cell"]${selector}`)
+    .locator(`[role="gridcell"]${selector}`)
     .first()
     .locator('xpath=ancestor::div[@role="row"]')
     .first();
