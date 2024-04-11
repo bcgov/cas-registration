@@ -1,12 +1,13 @@
 from service.application_access_service import ApplicationAccessService
 from registration.schema.parent_operator import ParentOperatorIn
 from registration.schema.user_operator import UserOperatorOperatorIn
-import pytest, base64, tempfile
+import pytest, tempfile
 from model_bakery import baker
 from registration.models import Address, BusinessStructure, Operator, ParentOperator, User, UserOperator, AppRole
 from registration.utils import (
     file_to_data_url,
     data_url_to_file,
+    files_have_same_hash,
     update_model_instance,
     generate_useful_error,
     raise_401_if_user_not_authorized,
@@ -17,6 +18,7 @@ from django.core.exceptions import ValidationError
 from ninja.errors import HttpError
 from django.test import RequestFactory, TestCase
 from registration.tests.utils.helpers import TestUtils, MOCK_DATA_URL
+from django.core.files.base import ContentFile
 
 pytestmark = pytest.mark.django_db
 
@@ -505,13 +507,41 @@ class TestOperatorHelpers:
         assert len(Address.objects.all()) == 4
 
 
-def mock_file_to_data_url() -> str:
-    """
-    This util utilizes a mock file to be used in e2e tests
-    NOTE: Only be used in DEBUG mode
-    """
-    mock_pdf_path = "registration/fixtures/mock/mock_file.pdf"
-    with open(mock_pdf_path, "rb") as f:
-        mock_pdf_content = f.read()
-        encoded_content = base64.b64encode(mock_pdf_content).decode("utf-8")
-        return "data:application/pdf;name=" + f.name.split("/")[-1] + ";base64," + encoded_content
+class TestFileHashComparison(TestCase):
+    def test_same_content(self):
+        """Tests if the function returns True for files with identical content."""
+        content = b"This is some sample content."
+        file1 = ContentFile(content, "test_file1.txt")
+        file2 = ContentFile(content, "test_file2.txt")
+
+        self.assertTrue(files_have_same_hash(file1, file2))
+
+    def test_different_content(self):
+        """Tests if the function returns False for files with different content."""
+        content1 = b"This is some content."
+        content2 = b"This is different content."
+        file1 = ContentFile(content1, "test_file1.txt")
+        file2 = ContentFile(content2, "test_file2.txt")
+
+        self.assertFalse(files_have_same_hash(file1, file2))
+
+    def test_empty_file(self):
+        """Tests if the function handles empty files."""
+        empty_content = b""
+        file1 = ContentFile(empty_content, "empty_file.txt")
+        file2 = ContentFile(empty_content, "empty_file2.txt")
+
+        self.assertTrue(files_have_same_hash(file1, file2))
+
+    def test_none_values(self):
+        """Tests if the function raises a ValueError when None is passed as a file."""
+        content = b"This is some sample content."
+        file1 = ContentFile(content, "test_file.txt")
+        file2 = ContentFile(content, "test_file2.txt")
+        with self.assertRaises(ValueError) as context:
+            files_have_same_hash(None, file2)
+        self.assertEqual(str(context.exception), "Both files must be provided to compare hashes.")
+
+        with self.assertRaises(ValueError) as context:
+            files_have_same_hash(file1, None)
+        self.assertEqual(str(context.exception), "Both files must be provided to compare hashes.")
