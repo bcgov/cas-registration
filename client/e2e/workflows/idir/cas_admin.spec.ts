@@ -13,6 +13,7 @@ import {
   UserOperatorStatus,
   UserRole,
 } from "@/e2e/utils/enums";
+import happoPlaywright from "happo-playwright";
 // ℹ️ Environment variables
 import * as dotenv from "dotenv";
 dotenv.config({ path: "./e2e/.env.local" });
@@ -25,8 +26,13 @@ test.beforeAll(async () => {
   await setupTestEnvironment(UserRole.CAS_ADMIN);
 });
 
+test.beforeEach(async ({ context }) => {
+  // initialize Happo
+  await happoPlaywright.init(context);
+  await setupTestEnvironment(UserRole.INDUSTRY_USER_ADMIN);
+});
 test.afterAll(async () => {
-  await setupTestEnvironment(undefined, true); // clean up test data after all tests are done
+  await happoPlaywright.finish();
 });
 
 test.describe("Test Workflow cas_admin", () => {
@@ -50,8 +56,14 @@ test.describe("Test Workflow cas_admin", () => {
       await operatorsPage.tableHasExpectedColumns(UserRole.CAS_ADMIN);
       await operatorsPage.tableHasExpectedColumnValues(
         UserRole.CAS_ADMIN,
-        TableDataField.STATUS,
+        TableDataField.STATUS
       );
+      // 📷 Cheese!
+      const pageContent = page.locator("html");
+      await happoPlaywright.screenshot(operatorsPage.page, pageContent, {
+        component: "Operators Grid cas_admin",
+        variant: "default",
+      });
     });
 
     test("Test details view by status", async ({ page }) => {
@@ -60,10 +72,28 @@ test.describe("Test Workflow cas_admin", () => {
       operatorsPage.route();
       // 🔍 Assert cas_admin is able to click "View Details" on see detailed info related Declined
       await operatorsPage.formHasExpectedUX(UserOperatorStatus.DECLINED);
+      // 📷 Cheese!
+      let pageContent = page.locator("html");
+      await happoPlaywright.screenshot(operatorsPage.page, pageContent, {
+        component: "Operators Details Page cas_admin",
+        variant: "declined",
+      });
       // 🔍 Assert cas_admin is able to click "View Details" on see detailed info related Approved
       await operatorsPage.formHasExpectedUX(UserOperatorStatus.APPROVED);
+      // 📷 Cheese!
+      pageContent = page.locator("html");
+      await happoPlaywright.screenshot(operatorsPage.page, pageContent, {
+        component: "Operators Details Page cas_admin",
+        variant: "approved",
+      });
       // 🔍 Assert cas_admin is able to click "View Details" on see detailed info related Pending
       await operatorsPage.formHasExpectedUX(UserOperatorStatus.PENDING);
+      // 📷 Cheese!
+      pageContent = page.locator("html");
+      await happoPlaywright.screenshot(operatorsPage.page, pageContent, {
+        component: "Operators Details Page cas_admin",
+        variant: "pending",
+      });
     });
 
     test("Test details form by workflow", async ({ page }) => {
@@ -97,8 +127,14 @@ test.describe("Test Workflow cas_admin", () => {
       await operationsPage.tableHasExpectedColumns(UserRole.CAS_ADMIN);
       await operationsPage.tableHasExpectedColumnValues(
         UserRole.CAS_ADMIN,
-        TableDataField.STATUS,
+        TableDataField.STATUS
       );
+      // 📷 Cheese!
+      const pageContent = page.locator("html");
+      await happoPlaywright.screenshot(operationsPage.page, pageContent, {
+        component: "Operations Grid cas_admin",
+        variant: "default",
+      });
     });
 
     test("Test details view by status", async ({ page }) => {
@@ -107,8 +143,26 @@ test.describe("Test Workflow cas_admin", () => {
       operationsPage.route();
       // 🔍 Assert cas_admin is able to click "View Details" on each status and see detailed info related to that status
       await operationsPage.formHasExpectedUX(OperationStatus.DECLINED);
+      // 📷 Cheese!
+      let pageContent = page.locator("html");
+      await happoPlaywright.screenshot(operationsPage.page, pageContent, {
+        component: "Operations Details Page cas_admin",
+        variant: "declined",
+      });
       await operationsPage.formHasExpectedUX(OperationStatus.APPROVED);
+      // 📷 Cheese!
+      pageContent = page.locator("html");
+      await happoPlaywright.screenshot(operationsPage.page, pageContent, {
+        component: "Operations Details Page cas_admin",
+        variant: "approved",
+      });
       await operationsPage.formHasExpectedUX(OperationStatus.PENDING);
+      // 📷 Cheese!
+      pageContent = page.locator("html");
+      await happoPlaywright.screenshot(operationsPage.page, pageContent, {
+        component: "Operations Details Page cas_admin",
+        variant: "pending",
+      });
     });
 
     test("Test details form by workflow", async ({ page }) => {
@@ -119,19 +173,19 @@ test.describe("Test Workflow cas_admin", () => {
       await operationsPage.formHasExpectedWorkflow(
         UserRole.CAS_ADMIN,
         OperationStatus.PENDING,
-        1,
+        1
       );
       // 🔍 Assert cas_admin workflow Pending, Decline
       await operationsPage.formHasExpectedWorkflow(
         UserRole.CAS_ADMIN,
         OperationStatus.PENDING,
-        2,
+        2
       );
       // 🔍 Assert cas_admin workflow Approved, Preview the Statutory Declaration PDF
       await operationsPage.formHasExpectedWorkflow(
         UserRole.CAS_ADMIN,
         OperationStatus.APPROVED,
-        3,
+        3
       );
     });
   });
