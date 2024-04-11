@@ -5,9 +5,9 @@ import { useRouter } from "next/navigation";
 
 import {
   DataGrid as MuiGrid,
-  GridRowsProp,
   GridColDef,
   GridColumnGroupingModel,
+  GridSortDirection,
   GridSortItem,
 } from "@mui/x-data-grid";
 import { BC_GOV_BACKGROUND_COLOR_BLUE } from "@/app/styles/colors";
@@ -19,10 +19,12 @@ interface Props {
     sortField?: string,
     sortOrder?: string
   ) => Promise<any>;
-  rows: GridRowsProp;
-  rowCount?: number;
   columns: GridColDef[];
   columnGroupModel?: GridColumnGroupingModel;
+  initialData: {
+    rows: any;
+    row_count?: number;
+  };
   paginationMode?: "client" | "server";
 }
 
@@ -67,10 +69,10 @@ const DataGrid: React.FC<Props> = ({
   columnGroupModel,
   fetchPageData,
   paginationMode = "client",
-  rows: initialRows,
-  rowCount,
+  initialData,
 }) => {
-  const [rows, setRows] = useState(initialRows ?? []);
+  const [rows, setRows] = useState(initialData.rows ?? []);
+  const [rowCount, setRowCount] = useState(rows.row_count ?? 0);
   const [loading, setLoading] = useState(false);
   const [isComponentMounted, setIsComponentMounted] = useState(false);
   const [paginationModel, setPaginationModel] = useState({
@@ -101,7 +103,8 @@ const DataGrid: React.FC<Props> = ({
         sortModelField,
         sortModelOrder
       );
-      setRows(pageData);
+      setRows(pageData.rows);
+      setRowCount(pageData.rowCount);
     };
 
     fetchData().then(() => setLoading(false));
@@ -139,6 +142,16 @@ const DataGrid: React.FC<Props> = ({
         disableColumnMenu
         initialState={{
           pagination: { paginationModel: { pageSize: PAGE_SIZE } },
+          sorting: {
+            sortModel: [
+              {
+                field: searchParams.get("sort_field") ?? "created_at",
+                sort:
+                  (searchParams.get("sort_order") as GridSortDirection) ??
+                  "desc",
+              },
+            ],
+          },
         }}
         pagination
         pageSizeOptions={[PAGE_SIZE]}

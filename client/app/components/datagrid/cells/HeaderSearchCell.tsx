@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 
@@ -7,6 +10,7 @@ const HeaderSearchCell = ({ field }: { field: string }) => {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const { replace } = useRouter();
+  const [searchState, setSearchState] = useState(searchParams.get(field) || "");
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const params = new URLSearchParams(searchParams);
@@ -22,6 +26,7 @@ const HeaderSearchCell = ({ field }: { field: string }) => {
 
     // Update the URL with the new search term
     replace(`${pathname}?${params.toString()}`);
+    setSearchState(searchTerm);
   };
   return (
     <div className="w-full flex items-center background-black">
@@ -29,6 +34,7 @@ const HeaderSearchCell = ({ field }: { field: string }) => {
         className="w-full px-2 py-1"
         placeholder="Search"
         onChange={handleChange}
+        value={searchState}
         type="text"
         sx={{
           backgroundColor: "white",

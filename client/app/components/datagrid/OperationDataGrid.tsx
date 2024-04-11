@@ -6,39 +6,21 @@ import {
   GridColumnGroupingModel,
   GridRenderCellParams,
 } from "@mui/x-data-grid";
-import { actionHandler } from "@/app/utils/actions";
-import { formatOperationRows } from "@/app/components/routes/operations/Operations";
+import { fetchOperationsPageData } from "@/app/components/routes/operations/Operations";
 import { useSession } from "next-auth/react";
 import { OperationStatus } from "@/app/utils/enums";
 import StatusStyleColumnCell from "@/app/components/datagrid/cells/StatusStyleColumnCell";
 import HeaderSearchCell from "@/app/components/datagrid/cells/HeaderSearchCell";
 
-const fetchOperationPageData = async (
-  page: number,
-  sortField?: string,
-  sortOrder?: string,
-) => {
-  try {
-    // fetch data from server
-    const pageData = await actionHandler(
-      `registration/operations?page=${page}&sort_field=${sortField}&sort_order=${sortOrder}`,
-      "GET",
-      "",
-    );
-    return formatOperationRows(pageData.data);
-  } catch (error) {
-    throw error;
-  }
-};
-
 const OperationDataGrid = ({
-  rows,
-  rowCount,
+  initialData,
   isOperatorColumn = false,
 }: {
   isOperatorColumn?: boolean;
-  rows: any[];
-  rowCount: number;
+  initialData: {
+    rows: any;
+    row_count: number;
+  };
 }) => {
   const { data: session } = useSession();
   const isIndustryUser = session?.user.app_role?.includes("industry");
@@ -184,10 +166,9 @@ const OperationDataGrid = ({
     <DataGrid
       columns={updatedColumnsOperations}
       columnGroupModel={columnGroup}
-      fetchPageData={fetchOperationPageData}
+      fetchPageData={fetchOperationsPageData}
       paginationMode="server"
-      rows={rows}
-      rowCount={rowCount}
+      initialData={initialData}
     />
   );
 };

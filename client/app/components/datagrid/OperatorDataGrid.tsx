@@ -18,19 +18,20 @@ const fetchUserOperatorPageData = async (
       "GET",
       "",
     );
-    return formatUserOperatorRows(pageData.data);
+    return {
+      rows: formatUserOperatorRows(pageData.data),
+      rowCount: pageData.row_count,
+    };
   } catch (error) {
     throw error;
   }
 };
 
 const OperatorDataGrid = ({
-  rows,
-  rowCount,
+  initialData,
   columns,
 }: {
-  rows: any[];
-  rowCount: number;
+  initialData: any;
   columns: any[];
 }) => {
   const updatedColumnsUserOperators = columns.map((column) => {
@@ -64,8 +65,7 @@ const OperatorDataGrid = ({
       columns={updatedColumnsUserOperators}
       fetchPageData={fetchUserOperatorPageData}
       paginationMode="server"
-      rows={rows}
-      rowCount={rowCount}
+      initialData={initialData}
     />
   );
 };

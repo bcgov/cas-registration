@@ -4,21 +4,8 @@ import { actionHandler } from "@/app/utils/actions";
 import OperationDataGrid from "@/app/components/datagrid/OperationDataGrid";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { OperationSearchParams } from "@/app/components/routes/operations/types";
 
-// 🛠️ Function to fetch operations
-async function getOperations() {
-  try {
-    return await actionHandler(
-      // Fetch page one of the operations data on initial load
-      "registration/operations",
-      "GET",
-      "/dashboard/operations",
-    );
-  } catch (error) {
-    // Handle the error here or rethrow it to handle it at a higher level
-    throw error;
-  }
-}
 const formatTimestamp = (timestamp: string) => {
   if (!timestamp) return undefined;
 
@@ -66,12 +53,40 @@ export const formatOperationRows = (rows: GridRowsProp) => {
   );
 };
 
+// 🛠️ Function to fetch operations
+export const fetchOperationsPageData = async (
+  page: number,
+  sortField?: string,
+  sortOrder?: string,
+) => {
+  try {
+    // fetch data from server
+    const pageData = await actionHandler(
+      `registration/operations?page=${page}&sort_field=${sortField}&sort_order=${sortOrder}`,
+      "GET",
+      "",
+    );
+    return {
+      rows: formatOperationRows(pageData.data),
+      row_count: pageData.row_count,
+    };
+  } catch (error) {
+    throw error;
+  }
+};
+
 // 🧩 Main component
-export default async function Operations() {
+export default async function Operations({
+  searchParams,
+}: {
+  searchParams: OperationSearchParams;
+}) {
   const session = await getServerSession(authOptions);
+  const sortField = searchParams?.sort_field ?? "created_at";
+  const sortOrder = searchParams?.sort_order ?? "desc";
   // Fetch operations data
   const operations: {
-    data: {
+    rows: {
       id: number;
       bcghg_id: string;
       bc_obps_regulated_operation: string;
@@ -81,15 +96,11 @@ export default async function Operations() {
       status: string;
     }[];
     row_count: number;
-  } = await getOperations();
+  } = await fetchOperationsPageData(1, sortField, sortOrder);
   if (!operations) {
     return <div>No operations data in database.</div>;
   }
 
-  const { row_count: rowCount } = operations;
-  // Transform the fetched data into rows for the DataGrid component
-
-  const rows = formatOperationRows(operations.data);
   // Show the operator column if the user is CAS internal
   const isOperatorColumn =
     session?.user.app_role?.includes("cas") &&
@@ -99,8 +110,7 @@ export default async function Operations() {
   return (
     <div className="mt-5">
       <OperationDataGrid
-        rows={rows}
-        rowCount={rowCount}
+        initialData={operations}
         isOperatorColumn={isOperatorColumn}
       />
     </div>
