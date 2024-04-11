@@ -1,3 +1,9 @@
+export interface OperatorsSearchParams {
+  page?: number;
+  sort_field?: string;
+  sort_order?: string;
+}
+
 export interface UserOperator {
   id: number;
   status: string;
@@ -8,7 +14,7 @@ export interface UserOperator {
 }
 
 export interface UserOperatorPaginated {
-  data: UserOperator[];
+  rows: UserOperator[];
   row_count: number;
-  page: number;
+  page?: number;
 }

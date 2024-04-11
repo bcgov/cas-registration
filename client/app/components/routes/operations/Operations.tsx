@@ -4,7 +4,7 @@ import { actionHandler } from "@/app/utils/actions";
 import OperationDataGrid from "@/app/components/datagrid/OperationDataGrid";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { OperationSearchParams } from "@/app/components/routes/operations/types";
+import { OperationsSearchParams } from "@/app/components/routes/operations/types";
 
 const formatTimestamp = (timestamp: string) => {
   if (!timestamp) return undefined;
@@ -79,7 +79,7 @@ export const fetchOperationsPageData = async (
 export default async function Operations({
   searchParams,
 }: {
-  searchParams: OperationSearchParams;
+  searchParams: OperationsSearchParams;
 }) {
   const session = await getServerSession(authOptions);
   const sortField = searchParams?.sort_field ?? "created_at";

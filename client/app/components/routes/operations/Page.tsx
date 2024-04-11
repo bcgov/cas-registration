@@ -7,12 +7,12 @@ import Loading from "@/app/components/loading/SkeletonGrid";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import Note, { registrationRequestNote } from "../../datagrid/Note";
-import { OperationSearchParams } from "@/app/components/routes/operations/types";
+import { OperationsSearchParams } from "@/app/components/routes/operations/types";
 
 export default async function OperationsPage({
   searchParams,
 }: {
-  searchParams: OperationSearchParams;
+  searchParams: OperationsSearchParams;
 }) {
   // 👤 Use NextAuth.js hook to get information about the user's session
   /* When calling from the server-side i.e., in Route Handlers, React Server Components, API routes,
