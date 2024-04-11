@@ -57,7 +57,7 @@ const columns: GridColDef[] = [
   },
 ];
 
-const UserOperatorDataGrid = ({
+const ExternalUserOperatorDataGrid = ({
   userOperatorData,
 }: {
   userOperatorData: any[];
@@ -82,4 +82,4 @@ const UserOperatorDataGrid = ({
   return <DataGrid rows={rowData} columns={columns} />;
 };
 
-export default UserOperatorDataGrid;
+export default ExternalUserOperatorDataGrid;

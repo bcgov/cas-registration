@@ -9,14 +9,14 @@ import { formatUserOperatorRows } from "@/app/components/routes/access-requests/
 const fetchUserOperatorPageData = async (
   page: number,
   sortField?: string,
-  sortOrder?: string,
+  sortOrder?: string
 ) => {
   try {
     // fetch data from server
     const pageData = await actionHandler(
       `registration/user-operator-initial-requests?page=${page}&sort_field=${sortField}&sort_order=${sortOrder}`,
       "GET",
-      "",
+      ""
     );
     return formatUserOperatorRows(pageData.data);
   } catch (error) {
@@ -24,7 +24,7 @@ const fetchUserOperatorPageData = async (
   }
 };
 
-const OperatorDataGrid = ({
+const InternalUserOperatorDataGrid = ({
   rows,
   rowCount,
   columns,
@@ -70,4 +70,4 @@ const OperatorDataGrid = ({
   );
 };
 
-export default OperatorDataGrid;
+export default InternalUserOperatorDataGrid;

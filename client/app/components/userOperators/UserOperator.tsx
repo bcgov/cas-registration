@@ -9,7 +9,7 @@ export default async function SelectOperatorRequestAccessReceivedUserOperatorPag
 }) {
   return (
     <Suspense fallback={<Loading />}>
-      <UserOperator params={params} />
+      <UserOperatorDetail params={params} />
     </Suspense>
   );
 }
