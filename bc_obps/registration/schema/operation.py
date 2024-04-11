@@ -99,7 +99,7 @@ class OperationOut(ModelSchema):
         # Using a mock file for e2e testing
         use_mock_file = ENVIRONMENT == "develop" and not obj.documents.exists() and obj.status == obj.Statuses.APPROVED
         if use_mock_file:
-            from registration.tests.test_utils import mock_file_to_data_url  # to avoid circular import
+            from registration.tests.utils.helpers import mock_file_to_data_url  # to avoid circular import
 
             return mock_file_to_data_url()
         statutory_declaration = obj.get_statutory_declaration()
