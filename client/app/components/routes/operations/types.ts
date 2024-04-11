@@ -36,7 +36,7 @@ export interface Operation {
   multiple_operators_array?: Array<any>; // Change this once we have the MultipleOperator type
 }
 
-export interface OperationSearchParams {
+export interface OperationsSearchParams {
   bcghg_id?: string;
   bc_obps_regulated_operation?: string;
   name?: string;
