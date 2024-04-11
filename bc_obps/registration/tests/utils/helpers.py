@@ -1,4 +1,4 @@
-import pytest, json
+import pytest, json, base64
 from registration.models import (
     Address,
     AppRole,
@@ -153,3 +153,15 @@ class CommonTestSetup:
         )  # Passing _fill_optional to fill all fields with random data
         self.auth_header = {'user_guid': str(self.user.user_guid)}
         self.auth_header_dumps = json.dumps(self.auth_header)
+
+
+def mock_file_to_data_url() -> str:
+    """
+    This util utilizes a mock file to be used in e2e tests
+    NOTE: Only be used in DEBUG mode
+    """
+    mock_pdf_path = "registration/fixtures/mock/mock_file.pdf"
+    with open(mock_pdf_path, "rb") as f:
+        mock_pdf_content = f.read()
+        encoded_content = base64.b64encode(mock_pdf_content).decode("utf-8")
+        return "data:application/pdf;name=" + f.name.split("/")[-1] + ";base64," + encoded_content
