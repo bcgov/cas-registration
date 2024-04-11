@@ -79,63 +79,45 @@ const OperationDataGrid = ({
   const columnGroup = [
     {
       groupId: "bcghg_id",
-      renderHeaderGroup: (params) => (
-        <HeaderSearchCell
-          onChange={(e) => console.log(e.target.value)}
-          params={params}
-        />
-      ),
+      renderHeaderGroup: (params) => {
+        return <HeaderSearchCell field={params.groupId as string} />;
+      },
       children: [{ field: "bcghg_id" }],
     },
     {
       groupId: "operator",
-      renderHeaderGroup: (params) => (
-        <HeaderSearchCell
-          onChange={(e) => console.log(e.target.value)}
-          params={params}
-        />
-      ),
+      renderHeaderGroup: (params) => {
+        return <HeaderSearchCell field={params.groupId as string} />;
+      },
       children: [{ field: "operator" }],
     },
     {
       groupId: "name",
-      renderHeaderGroup: (params) => (
-        <HeaderSearchCell
-          onChange={(e) => console.log(e.target.value)}
-          params={params}
-        />
-      ),
+      renderHeaderGroup: (params) => {
+        return <HeaderSearchCell field={params.groupId as string} />;
+      },
       children: [{ field: "name" }],
     },
     {
       groupId: "submission_date",
-      renderHeaderGroup: (params) => (
-        <HeaderSearchCell
-          onChange={(e) => console.log(e.target.value)}
-          params={params}
-        />
-      ),
+      renderHeaderGroup: (params) => {
+        return <HeaderSearchCell field={params.groupId as string} />;
+      },
 
       children: [{ field: "submission_date" }],
     },
     {
       groupId: "bc_obps_regulated_operation",
-      renderHeaderGroup: (params) => (
-        <HeaderSearchCell
-          onChange={(e) => console.log(e.target.value)}
-          params={params}
-        />
-      ),
+      renderHeaderGroup: (params) => {
+        return <HeaderSearchCell field={params.groupId as string} />;
+      },
       children: [{ field: "bc_obps_regulated_operation" }],
     },
     {
       groupId: "status",
-      renderHeaderGroup: (params) => (
-        <HeaderSearchCell
-          onChange={(e) => console.log(e.target.value)}
-          params={params}
-        />
-      ),
+      renderHeaderGroup: (params) => {
+        return <HeaderSearchCell field={params.groupId as string} />;
+      },
       children: [{ field: "status" }],
     },
     {
