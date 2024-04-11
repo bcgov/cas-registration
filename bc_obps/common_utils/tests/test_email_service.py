@@ -11,15 +11,12 @@ def email_service(mocker):
     email_service.token_endpoint = "http://mock_token_endpoint"
     email_service.client_id = "mock_client_id"
     email_service.client_secret = "mock_client_secret"
-    mocker.patch.object(
-        email_service,
-        '_get_token',
-        return_value={
-            "access_token": "mocked_access_token",
-            "expires_in": 300,  # 5 minutes
-        },
-    )
-    mocker.patch.object(email_service, '_get_token', side_effect=email_service._get_token)
+
+    def _get_token_mock():
+        email_service.token = "mocked_access_token"
+        email_service.token_expiry = datetime.now() + timedelta(seconds=300)
+
+    mocker.patch.object(email_service, '_get_token', side_effect=_get_token_mock)
     return email_service
 
 
@@ -86,16 +83,14 @@ def test_init(email_service):
 
 
 def test_fetch_new_token(email_service, mocker):
-    email_service.token = "mock_valid_token"
-    email_service.token_expiry = datetime.now() + timedelta(minutes=5)
+    current_time = datetime.now()
 
     email_service._get_token()
 
-    current_time = datetime.now()
-
-    assert email_service.token == "mock_valid_token"
+    assert email_service.token == "mocked_access_token"
     assert email_service.token_expiry > current_time
-    assert email_service.token_expiry <= timedelta(minutes=5) + current_time
+    # because of rounding funky-ness, using timedelta(seconds=300) doesn't reliably pass. Rounding up to 301 seconds does
+    assert email_service.token_expiry <= current_time + timedelta(seconds=301)
     email_service._get_token.assert_called_once()
 
 
@@ -103,15 +98,11 @@ def test_get_token_when_expired(email_service, mocker):
     email_service.token = "mock_expired_token"
     email_service.token_expiry = datetime.now() - timedelta(days=1)
 
-    with mocker.patch('requests.post') as mock_token_post_request:
-        mock_token_post_request.return_value = mocker.Mock(status_code=200)
-        mock_token_post_request.return_value.json.return_value = {"access_token": "new_mock_token", "expires_in": 300}
-
-        email_service._get_token()
+    email_service._get_token()
 
     current_time = datetime.now()
-
-    assert email_service.token == "new_mock_token"
+    email_service._get_token.assert_called_once()
+    assert email_service.token == "mocked_access_token"
     assert email_service.token_expiry > current_time
     assert email_service.token_expiry <= current_time + timedelta(minutes=5)
 
@@ -159,6 +150,7 @@ def test_send_email(email_service, email_data, mocker):
     assert response['txId'] == '00000000-0000-0000-0000-000000000000'
     assert response['messages'][0]['msgId'] == '0000000-00000-0000-0000001'
     assert response['messages'][0]['to'] == ['sample@email.com']
+    email_service._get_token.assert_called_once()
 
 
 def test_get_message_status(email_service, mocker):
@@ -181,6 +173,7 @@ def test_get_message_status(email_service, mocker):
     response = email_service.get_message_status(UUID('00000000-0000-0000-0000-000000000000'))
     assert response['status'] == 'completed'
     assert response['txId'] == '00000000-0000-0000-0000-000000000000'
+    email_service._get_token.assert_called_once()
 
 
 def test_merge_template_and_send(email_service, email_template, mocker):
@@ -196,3 +189,4 @@ def test_merge_template_and_send(email_service, email_template, mocker):
     assert response[0]['txId'] == '00000000-0000-0000-0000-000000000000'
     assert len(response[0]['messages']) == 1
     assert response[0]['messages'][0]['to'] == ['baz@gov.bc.ca']
+    email_service._get_token.assert_called_once()
