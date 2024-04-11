@@ -1,3 +1,27 @@
+# [1.3.0](https://github.com/bcgov/cas-registration/compare/v1.2.3...v1.3.0) (2024-04-11)
+
+### Bug Fixes
+
+- change version compatability for vite to match vitest ([41326a2](https://github.com/bcgov/cas-registration/commit/41326a2cff82717f0b7140ccabe0b8c848922bbc))
+- force nx to build each time ([1df9e56](https://github.com/bcgov/cas-registration/commit/1df9e5614b29a5560748ae7b50771830ff7eba57))
+- global vi not being recognized by eslint/ts ([bf1b674](https://github.com/bcgov/cas-registration/commit/bf1b6746bdcc6d0ca605a47581c44ec3be4bcff8))
+- next css not working without id ([c43398b](https://github.com/bcgov/cas-registration/commit/c43398b510735349928e3043f32b8ad6ae5c0099))
+- remove testing branch from workflow ([9fdddfd](https://github.com/bcgov/cas-registration/commit/9fdddfde8a0e561f120806882884fa220adc55ea))
+- shorten service name ([f0524d1](https://github.com/bcgov/cas-registration/commit/f0524d1fbbfdd0897da2655c3b0d375087df233f))
+- test failing due to float in place of int ([551f0eb](https://github.com/bcgov/cas-registration/commit/551f0eb885f8597088d7e3f8ab3bb20a15b82044))
+- test failing due to missing prop/child ([f224ee5](https://github.com/bcgov/cas-registration/commit/f224ee5a423a793ab989a1fb50aba27a1cf4fae8))
+- update config to handle depricated key ([0ea4380](https://github.com/bcgov/cas-registration/commit/0ea43803c49a5ece55124961ed69c4df6e381ee5))
+- use only named exports for components ([8af6986](https://github.com/bcgov/cas-registration/commit/8af698614d934dd1d753aa05b75256b8a1bacafc))
+- vitest CJS depricatation ([b7dcae1](https://github.com/bcgov/cas-registration/commit/b7dcae11b8163f66fec4e8ae4ef092320b79de1f))
+
+### Features
+
+- add Nx project reporting app and shared_components placeholders ([07a5147](https://github.com/bcgov/cas-registration/commit/07a514707b50f3730a9ad52cb285600e8fba3c38))
+- add Nx project reporting app and shared_components placeholders ([cfc8043](https://github.com/bcgov/cas-registration/commit/cfc80435f439e46df1aa2b320f1e52fb1ea2ac17))
+- add tailwindcss config to monorepo ([bc4cf11](https://github.com/bcgov/cas-registration/commit/bc4cf11c6c129d0e1aaf22dfa98c229066ec7032))
+- main page with BC headers ([4089161](https://github.com/bcgov/cas-registration/commit/408916149b22b724d63792b2219d3cb4bd455734))
+- middleware to redirect auth and non-auth pages ([9a1e5d4](https://github.com/bcgov/cas-registration/commit/9a1e5d401d335d322910d2c802da2279ba8c2e1e))
+
 ## [1.2.3](https://github.com/bcgov/cas-registration/compare/v1.2.2...v1.2.3) (2024-04-10)
 
 ### Bug Fixes
