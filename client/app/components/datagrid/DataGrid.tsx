@@ -5,6 +5,7 @@ import {
   DataGrid as MuiGrid,
   GridRowsProp,
   GridColDef,
+  GridColumnGroupingModel,
   GridSortItem,
 } from "@mui/x-data-grid";
 import { BC_GOV_BACKGROUND_COLOR_BLUE } from "@/app/styles/colors";
@@ -19,6 +20,7 @@ interface Props {
   rows: GridRowsProp;
   rowCount?: number;
   columns: GridColDef[];
+  columnGroupModel?: GridColumnGroupingModel;
   paginationMode?: "client" | "server";
 }
 
@@ -60,6 +62,7 @@ const PAGE_SIZE = 20;
 
 const DataGrid: React.FC<Props> = ({
   columns,
+  columnGroupModel,
   fetchPageData,
   paginationMode = "client",
   rows: initialRows,
@@ -73,6 +76,7 @@ const DataGrid: React.FC<Props> = ({
     pageSize: PAGE_SIZE,
   });
   const [sortModel, setSortModel] = useState([] as GridSortItem[]);
+  const isColumnGroups = columnGroupModel && columnGroupModel?.length > 0;
 
   useEffect(() => {
     setIsComponentMounted(true);
@@ -105,9 +109,11 @@ const DataGrid: React.FC<Props> = ({
       <MuiGrid
         rows={rows}
         columns={columns}
+        columnGroupingModel={columnGroupModel}
         loading={loading}
         rowCount={rowCount}
         showCellVerticalBorder
+        disableColumnMenu
         initialState={{
           pagination: { paginationModel: { pageSize: PAGE_SIZE } },
         }}
@@ -146,6 +152,18 @@ const DataGrid: React.FC<Props> = ({
           },
           "& .MuiDataGrid-columnHeaders": {
             backgroundColor: BC_GOV_BACKGROUND_COLOR_BLUE,
+            display: "flex",
+            flexDirection: "column-reverse",
+            // If column group headers are present, make the background white
+            // We are selecting the first-of-type because we are using flexDirection: column-reverse
+            "& [role=row]:first-of-type": isColumnGroups
+              ? {
+                  "& .MuiDataGrid-columnHeader": {
+                    backgroundColor: "white",
+                    borderRight: "1px rgba(224, 224, 224, 1) solid",
+                  },
+                }
+              : null,
           },
           "& .MuiDataGrid-columnHeader:first-of-type": {
             borderLeft: "none",
@@ -175,6 +193,8 @@ const DataGrid: React.FC<Props> = ({
             display: "none",
           },
           "& .MuiDataGrid-cell": {
+            display: "flex",
+            alignItems: "center",
             justifyContent: "center",
             textAlign: "center",
             whiteSpace: "pre-line",
@@ -185,11 +205,6 @@ const DataGrid: React.FC<Props> = ({
           },
           "& .MuiDataGrid-sortIcon": {
             opacity: "inherit !important",
-          },
-          // This hides the 3 dots menu that had additional options for each row
-          // We may want to renable this menu though it's not in the design
-          ".MuiDataGrid-menuIcon": {
-            display: "none",
           },
         }}
         disableVirtualization
