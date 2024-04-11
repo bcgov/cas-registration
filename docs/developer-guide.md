@@ -192,21 +192,11 @@ TestUtils.mock_postal_code()
 
 ### End-to-end Tests with Playwright
 
-#### Run Playwright Specs
-
-Certainly! Below is a simple template for documentation on writing Playwright tests, including best practices and tips. Feel free to customize it based on your specific needs:
-
-## 1.0 Ensure the server is running:
-
-Start server from new terminal command:
-
-# Playwright Testing Documentation
-
-## Introduction
+### Introduction
 
 Playwright is a powerful end-to-end testing library for web applications. It provides a simple API to automate browser actions, allowing developers to create robust and maintainable tests.
 
-## Getting Started
+### Getting Started
 
 To get started with Playwright, you'll need to install it as a dependency in your project:
 
@@ -217,9 +207,9 @@ npm install @playwright/test
 
 2.0 Ensure the client app is running:
 
-## Writing Tests
+### Writing Tests
 
-### Basic Test Structure
+#### Basic Test Structure
 
 Playwright tests follow a simple structure. Each test case is a JavaScript or TypeScript function with Playwright APIs for interacting with the browser.
 
@@ -230,7 +220,7 @@ test("Example Test", async ({ page }) => {
 });
 ```
 
-### Locators
+#### Locators
 
 #### Prefer User-Facing Attributes
 

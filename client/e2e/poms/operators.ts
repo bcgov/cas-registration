@@ -27,6 +27,7 @@ import {
   checkFormFieldsReadOnly,
   checkAlertMessage,
   getTableRowByCellSelector,
+  getTableColumnTextValues,
 } from "@/e2e/utils/helpers";
 // ℹ️ Environment variables
 import * as dotenv from "dotenv";
@@ -333,13 +334,21 @@ export class OperatorsPOM {
               UserOperatorStatus.APPROVED,
               UserOperatorStatus.DECLINED,
             ];
+            // Check for visibility of values in the column
+            await checkColumnTextVisibility(this.table, column, expectedValues);
+            // Ensure only expected values are in grid
+            const allStatusValues = await getTableColumnTextValues(
+              this.table,
+              TableDataField.STATUS,
+            );
+            const unexpectedValues = allStatusValues.filter(
+              (value) => !expectedValues.includes(value),
+            );
+            await expect(unexpectedValues.length).toBe(0);
             break;
         }
         break;
     }
-
-    // Check for visibility of values in the column
-    await checkColumnTextVisibility(this.table, column, expectedValues);
   }
 
   async viewIsCorrect(role: string) {
