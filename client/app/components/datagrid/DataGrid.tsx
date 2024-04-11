@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
-
+import debounce from "lodash.debounce";
 import {
   DataGrid as MuiGrid,
   GridColDef,
@@ -95,21 +95,24 @@ const DataGrid: React.FC<Props> = ({
     // Don't fetch data if the component is not mounted
     // Since we will grab the first page using the server side props
     if (!isComponentMounted || !fetchPageData) return;
-    setLoading(true);
-    const fetchData = async () => {
-      // fetch data from server
-      const pageData = await fetchPageData(
-        paginationModel.page + 1,
-        sortModelField,
-        sortModelOrder
-      );
-      setRows(pageData.rows);
-      setRowCount(pageData.rowCount);
-    };
+    const debouncedFetchData = debounce(async () => {
+      setLoading(true);
+      const fetchData = async () => {
+        // fetch data from server
+        const pageData = await fetchPageData(
+          paginationModel.page + 1,
+          sortModelField,
+          sortModelOrder
+        );
+        setRows(pageData.rows);
+        setRowCount(pageData.rowCount);
+      };
 
-    fetchData().then(() => setLoading(false));
+      fetchData().then(() => setLoading(false));
+    }, 200);
+    return debouncedFetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paginationModel, searchParams]);
+  }, [searchParams]);
 
   const handleSortModelChange = (newSortModel: GridSortItem[]) => {
     const params = new URLSearchParams(searchParams);
