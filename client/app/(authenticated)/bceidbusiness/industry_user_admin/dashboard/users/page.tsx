@@ -8,11 +8,11 @@ import {
 } from "@/app/utils/users/adminUserOperators";
 
 const UserOperatorsPage = async () => {
-  const userOperatorData: ExternalDashboardUsersTile[] =
+  const userOperatorData: { rows: ExternalDashboardUsersTile[] } =
     await processExternalDashboardUsersTileData();
   return (
     <Suspense fallback={<Loading />}>
-      <UserOperatorDataGrid userOperatorData={userOperatorData} />
+      <UserOperatorDataGrid initialData={userOperatorData} />
     </Suspense>
   );
 };
