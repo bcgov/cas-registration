@@ -1,5 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
+import { usePathname, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 import {
   DataGrid as MuiGrid,
@@ -15,7 +17,7 @@ interface Props {
   fetchPageData?: (
     page: number,
     sortField?: string,
-    sortOrder?: string,
+    sortOrder?: string
   ) => Promise<any>;
   rows: GridRowsProp;
   rowCount?: number;
@@ -75,16 +77,18 @@ const DataGrid: React.FC<Props> = ({
     page: 0,
     pageSize: PAGE_SIZE,
   });
-  const [sortModel, setSortModel] = useState([] as GridSortItem[]);
   const isColumnGroups = columnGroupModel && columnGroupModel?.length > 0;
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const { replace } = useRouter();
 
   useEffect(() => {
     setIsComponentMounted(true);
   }, []);
 
   useEffect(() => {
-    const sortModelField = sortModel[0]?.field ?? "created_at";
-    const sortModelOrder = sortModel[0]?.sort ?? "desc";
+    const sortModelField = searchParams.get("sort_field") ?? "created_at";
+    const sortModelOrder = searchParams.get("sort_order") ?? "desc";
 
     // Don't fetch data if the component is not mounted
     // Since we will grab the first page using the server side props
@@ -95,14 +99,33 @@ const DataGrid: React.FC<Props> = ({
       const pageData = await fetchPageData(
         paginationModel.page + 1,
         sortModelField,
-        sortModelOrder,
+        sortModelOrder
       );
       setRows(pageData);
     };
 
     fetchData().then(() => setLoading(false));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paginationModel, sortModel]);
+  }, [paginationModel, searchParams]);
+
+  const handleSortModelChange = (newSortModel: GridSortItem[]) => {
+    const params = new URLSearchParams(searchParams);
+
+    const sortField = newSortModel[0]?.field;
+
+    if (sortField) {
+      // Set the sort field and order in the URL
+      params.set("sort_field", sortField);
+      params.set("sort_order", newSortModel[0].sort === "asc" ? "asc" : "desc");
+    } else {
+      // Remove the sort field and order from the URL
+      params.delete("sort_field");
+      params.delete("sort_order");
+    }
+
+    // Update the URL with the new sort field and order
+    replace(`${pathname}?${params.toString()}`);
+  };
 
   return (
     <div style={{ height: "auto", width: "100%" }}>
@@ -122,8 +145,8 @@ const DataGrid: React.FC<Props> = ({
         sortingMode={paginationMode}
         paginationMode={paginationMode}
         onPaginationModelChange={setPaginationModel}
-        onSortModelChange={setSortModel}
         experimentalFeatures={{ ariaV7: true }}
+        onSortModelChange={handleSortModelChange}
         // Set the row height to "auto" so that the row height will adjust to the content
         getRowHeight={() => "auto"}
         slots={{
