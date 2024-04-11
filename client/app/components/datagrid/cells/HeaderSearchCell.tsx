@@ -11,12 +11,16 @@ const HeaderSearchCell = ({ field }: { field: string }) => {
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const params = new URLSearchParams(searchParams);
     const searchTerm = event.target.value;
+
     if (searchTerm) {
+      // Set the search term in the URL
       params.set(field, searchTerm);
     } else {
+      // Remove the search term from the URL
       params.delete(field);
     }
 
+    // Update the URL with the new search term
     replace(`${pathname}?${params.toString()}`);
   };
   return (
