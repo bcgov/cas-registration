@@ -9,6 +9,23 @@ interface Option {
   label: string | number;
 }
 
+export interface FieldSchema {
+  enum: Array<string | number>;
+  enumNames?: Array<string | number>;
+  type: string;
+}
+
+export const mapOptions = (fieldSchema: FieldSchema) => {
+  // Using enum and enumNames as anyOf was triggering a lot of validation errors for multiselect
+  // If no enumNames are provided, use the enum values as the names. The enumNames will not be saved in the formData.
+  const enumValues = fieldSchema?.enum;
+  const enumNames = fieldSchema?.enumNames;
+  return enumValues.map((enumValue: string | number, index: number) => ({
+    id: enumValue,
+    label: enumNames?.[index] || enumValue,
+  }));
+};
+
 const MultiSelectWidget: React.FC<WidgetProps> = ({
   disabled,
   id,
@@ -19,22 +36,9 @@ const MultiSelectWidget: React.FC<WidgetProps> = ({
   value,
   uiSchema,
 }) => {
-  const fieldSchema = schema.items as {
-    enum: Array<string | number>;
-    enumNames?: Array<string | number>;
-    type: string;
-  };
+  const fieldSchema = schema.items as FieldSchema;
 
-  // Using enum and enumNames as anyOf was triggering a lot of validation errors for multiselect
-  // If no enumNames are provided, use the enum values as the names. The enumNames will not be saved in the formData.
-  const enumValues = fieldSchema?.enum;
-  const enumNames = fieldSchema?.enumNames;
-  const options = enumValues.map(
-    (enumValue: string | number, index: number) => ({
-      id: enumValue,
-      label: enumNames?.[index] || enumValue,
-    }),
-  );
+  const options = mapOptions(fieldSchema);
 
   const handleChange = (e: React.ChangeEvent<{}>, option: Array<Option>) => {
     onChange(option.map((o: Option) => o.id));

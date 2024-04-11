@@ -1,4 +1,5 @@
 import defaultTheme from "./defaultTheme";
+import readOnlyTheme from "./readOnlyTheme";
 import { useMemo, useState } from "react";
 import { customizeValidator } from "@rjsf/validator-ajv8";
 import { FormProps, IChangeEvent, withTheme, ThemeProps } from "@rjsf/core";
@@ -36,8 +37,17 @@ interface FormPropsWithTheme<T> extends Omit<FormProps<T>, "validator"> {
 }
 
 const FormBase: React.FC<FormPropsWithTheme<any>> = (props) => {
-  const { theme, formData, omitExtraData, onSubmit, setErrorReset } = props;
-  const Form = useMemo(() => withTheme(theme ?? defaultTheme), [theme]);
+  const {
+    disabled,
+    formData,
+    omitExtraData,
+    onSubmit,
+    readonly,
+    setErrorReset,
+    theme,
+  } = props;
+  const formTheme = disabled || readonly ? readOnlyTheme : defaultTheme;
+  const Form = useMemo(() => withTheme(theme ?? formTheme), [theme, formTheme]);
   const [formState, setFormState] = useState(formData ?? {});
 
   // Handling form state externally as RJSF was resetting the form data on submission and

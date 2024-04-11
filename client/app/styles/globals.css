@@ -28,6 +28,9 @@
   .box-shadow-tile {
     @apply shadow-[1px_11px_15px_0px_#00000040];
   }
+  .read-only-widget {
+    @apply w-full px-[14px] py-4 flex items-center;
+  }
 }
 
 /* CSS resets */

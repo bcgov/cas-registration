@@ -232,9 +232,9 @@
       "naics_code": 21,
       "opt_in": false,
       "bcghg_id": "23219990013",
-      "regulated_products": [],
-      "status": "Pending",
-      "created_at": "2024-1-20T15:27:00.000Z"
+      "created_at": "2024-1-20T15:27:00.000Z",
+      "regulated_products": [1, 2, 3, 4],
+      "status": "Pending"
     }
   },
   {

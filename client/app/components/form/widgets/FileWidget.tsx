@@ -90,7 +90,7 @@ function FileInfoPreview<
   );
 }
 
-function FilesInfo<
+export function FilesInfo<
   T = any,
   S extends StrictRJSFSchema = RJSFSchema,
   F extends FormContextType = any,
@@ -126,7 +126,7 @@ function FilesInfo<
   );
 }
 
-const extractFileInfo = (dataURLs: string[]): FileInfoType[] => {
+export const extractFileInfo = (dataURLs: string[]): FileInfoType[] => {
   return dataURLs
     .filter((dataURL) => dataURL)
     .map((dataURL) => {
