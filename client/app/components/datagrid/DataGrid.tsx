@@ -197,6 +197,7 @@ const DataGrid: React.FC<Props> = ({
                   "& .MuiDataGrid-columnHeader": {
                     backgroundColor: "white",
                     borderRight: "1px rgba(224, 224, 224, 1) solid",
+                    padding: 0,
                   },
                 }
               : null,

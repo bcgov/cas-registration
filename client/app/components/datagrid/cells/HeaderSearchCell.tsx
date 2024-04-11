@@ -3,8 +3,7 @@
 import { useState } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
-
-import TextField from "@mui/material/Input";
+import { TextField } from "@mui/material";
 
 const HeaderSearchCell = ({ field }: { field: string }) => {
   const searchParams = useSearchParams();
@@ -28,8 +27,9 @@ const HeaderSearchCell = ({ field }: { field: string }) => {
     replace(`${pathname}?${params.toString()}`);
     setSearchState(searchTerm);
   };
+
   return (
-    <div className="w-full flex items-center background-black">
+    <div className="w-full">
       <TextField
         className="w-full px-2 py-1"
         placeholder="Search"
@@ -37,7 +37,9 @@ const HeaderSearchCell = ({ field }: { field: string }) => {
         value={searchState}
         type="text"
         sx={{
-          backgroundColor: "white",
+          input: {
+            padding: "8px",
+          },
         }}
       />
     </div>
