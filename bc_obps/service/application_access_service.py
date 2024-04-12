@@ -57,12 +57,12 @@ class ApplicationAccessService:
     def request_access(operator_id: UUID, user_guid: UUID):
         if ApplicationAccessService.is_user_eligible_to_request_access(operator_id, user_guid):
             # Making a draft UserOperator instance if one doesn't exist
-            user_operator = UserOperatorDataAccessService.get_or_create_user_operator(user_guid, operator_id)
+            user_operator, _ = UserOperatorDataAccessService.get_or_create_user_operator(user_guid, operator_id)
 
         return {"user_operator_id": user_operator.id, "operator_id": user_operator.operator.id}
 
     def request_admin_access(operator_id: UUID, user_guid: UUID):
         if ApplicationAccessService.is_user_eligible_to_request_admin_access(operator_id, user_guid):
             # Making a draft UserOperator instance if one doesn't exist
-            user_operator = UserOperatorDataAccessService.get_or_create_user_operator(user_guid, operator_id)
+            user_operator, created = UserOperatorDataAccessService.get_or_create_user_operator(user_guid, operator_id)
         return {"user_operator_id": user_operator.id, "operator_id": user_operator.operator.id}
