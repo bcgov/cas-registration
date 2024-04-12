@@ -6,7 +6,7 @@ review:
 
 deploy:
   override:
-    - ./deploy:
+    - ./deploy.sh:
         timeout: 1800
 
 ci:
