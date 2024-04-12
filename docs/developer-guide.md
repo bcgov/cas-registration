@@ -661,7 +661,7 @@ For example:
 
 ```
 @transaction.atomic()
-    def get_or_create_user_operator(user_guid: UUID, operator_id: UUID):
+    def get_or_create_user_operator(user_guid: UUID, operator_id: UUID) -> Tuple[UserOperator, bool]:
         "Function to create a user_operator"
         user = UserDataAccessService.get_user_by_guid(user_guid)
         operator = OperatorDataAccessService.get_operator_by_id(operator_id)
@@ -670,7 +670,7 @@ For example:
         )
         if created:
             user_operator.set_create_or_update(user.pk)
-        return user_operator
+        return user_operator, created
 ```
 
 ### Intermediary services

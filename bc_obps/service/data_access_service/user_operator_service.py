@@ -1,3 +1,4 @@
+from typing import Tuple
 from uuid import UUID
 from service.data_access_service.user_service import UserDataAccessService
 from service.data_access_service.operator_service import OperatorDataAccessService
@@ -38,8 +39,8 @@ class UserOperatorDataAccessService:
         return user_operator_list
 
     @transaction.atomic()
-    def get_or_create_user_operator(user_guid: UUID, operator_id: UUID):
-        """Function to create a user_operator. (Used when an operator already exists. If you need to create a user_operator and operator at the same time, see the user_operator_service.)"""
+    def get_or_create_user_operator(user_guid: UUID, operator_id: UUID) -> Tuple[UserOperator, bool]:
+        """Function to get or create a user_operator. (Used when an operator already exists. If you need to create a user_operator and operator at the same time, see the user_operator_service.)"""
         operator = OperatorDataAccessService.get_operator_by_id(operator_id)
         user_operator, created = UserOperator.objects.get_or_create(
             user_id=user_guid,
@@ -49,4 +50,4 @@ class UserOperatorDataAccessService:
         )
         if created:
             user_operator.set_create_or_update(user_guid)
-        return user_operator
+        return user_operator, created
