@@ -1,3 +1,3 @@
-import OperatorsPage from "@/app/components/routes/operators/OperatorsPage";
+import OperatorsPage from "@/app/components/routes/operators/Page";
 
 export default OperatorsPage;

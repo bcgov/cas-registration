@@ -4,7 +4,7 @@ import DataGrid from "../datagrid/DataGrid";
 import { actionHandler } from "@/app/utils/actions";
 import Link from "next/link";
 import { GridRenderCellParams } from "@mui/x-data-grid";
-import { formatUserOperatorRows } from "../routes/operators/OperatorsPage";
+import { formatUserOperatorRows } from "../routes/operators/Page";
 
 const fetchUserOperatorPageData = async (
   page: number,
