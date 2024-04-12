@@ -408,6 +408,10 @@ class UserModelTest(BaseTestCase):
         with self.assertRaises(ValidationError, msg="This field cannot be blank."):
             user2.save()
 
+    def test_get_user_full_name(self):
+        user = User.objects.first()
+        self.assertEqual(user.get_full_name(), f"{user.first_name} {user.last_name}")
+
 
 class ContactModelTest(BaseTestCase):
     fixtures = [ADDRESS_FIXTURE, USER_FIXTURE, CONTACT_FIXTURE, DOCUMENT_FIXTURE]
