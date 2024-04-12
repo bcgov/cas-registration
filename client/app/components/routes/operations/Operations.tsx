@@ -56,7 +56,6 @@ export const formatOperationRows = (rows: GridRowsProp) => {
 
 // 🛠️ Function to fetch operations
 export const fetchOperationsPageData = async (
-  page: number,
   searchParams: OperationsSearchParams,
 ) => {
   try {
@@ -66,7 +65,7 @@ export const fetchOperationsPageData = async (
 
     // fetch data from server
     const pageData = await actionHandler(
-      `registration/operations?page=${page}${queryParams}`,
+      `registration/operations${queryParams}`,
       "GET",
       "",
     );
@@ -98,7 +97,7 @@ export default async function Operations({
       status: string;
     }[];
     row_count: number;
-  } = await fetchOperationsPageData(1, searchParams);
+  } = await fetchOperationsPageData(searchParams);
   if (!operations) {
     return <div>No operations data in database.</div>;
   }
