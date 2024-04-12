@@ -34,14 +34,13 @@ export const formatUserOperatorRows = (rows: GridRowsProp) => {
 
 // 🛠️ Function to fetch user-operators
 export const fetchUserOperatorPageData = async (
-  page: number,
   params: OperatorsSearchParams
 ) => {
   try {
     const queryParams = buildQueryParams(params as { [key: string]: string });
     // fetch data from server
     const pageData = await actionHandler(
-      `registration/user-operator/user-operator-initial-requests?page=${page}${queryParams}`,
+      `registration/user-operator/user-operator-initial-requests${queryParams}`,
       "GET",
       ""
     );
@@ -60,7 +59,7 @@ const OperatorsPage = async ({
   searchParams: OperatorsSearchParams;
 }) => {
   // Fetch userOperator data
-  const initialData = await fetchUserOperatorPageData(1, searchParams);
+  const initialData = await fetchUserOperatorPageData(searchParams);
 
   return (
     <Suspense fallback={<Loading />}>

@@ -8,7 +8,7 @@ const buildQueryParams = (params: { [key: string]: string }) => {
     .filter(([_, value]) => value !== "")
     .map(([key, value]) => `${key}=${value}`)
     .join("&");
-  return `&${query}`;
+  return `?${query}`;
 };
 
 export default buildQueryParams;

@@ -14,15 +14,7 @@ import { BC_GOV_BACKGROUND_COLOR_BLUE } from "@/app/styles/colors";
 import Pagination from "@/app/components/datagrid/Pagination";
 
 interface Props {
-  fetchPageData?: (
-    page: number,
-<<<<<<< HEAD
-    sortField?: string,
-    sortOrder?: string
-=======
-    params: { [key: string]: string },
->>>>>>> 0af40d33 (chore: add build query params util)
-  ) => Promise<any>;
+  fetchPageData?: (params: { [key: string]: string }) => Promise<any>;
   columns: GridColDef[];
   columnGroupModel?: GridColumnGroupingModel;
   initialData: {
@@ -79,10 +71,6 @@ const DataGrid: React.FC<Props> = ({
   const [rowCount, setRowCount] = useState(initialData.row_count ?? 0);
   const [loading, setLoading] = useState(false);
   const [isComponentMounted, setIsComponentMounted] = useState(false);
-  const [paginationModel, setPaginationModel] = useState({
-    page: 0,
-    pageSize: PAGE_SIZE,
-  });
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const { replace } = useRouter();
@@ -104,9 +92,9 @@ const DataGrid: React.FC<Props> = ({
         const params = Object.fromEntries(newParams.entries());
 
         // fetch data from server
-        const pageData = await fetchPageData(paginationModel.page + 1, params);
+        const pageData = await fetchPageData(params);
         setRows(pageData.rows);
-        setRowCount(pageData.rowCount);
+        setRowCount(pageData.row_count);
       };
 
       fetchData().then(() => setLoading(false));
@@ -131,6 +119,20 @@ const DataGrid: React.FC<Props> = ({
     }
 
     // Update the URL with the new sort field and order
+    replace(`${pathname}?${params.toString()}`);
+  };
+
+  const handlePaginationModelChange = (newPaginationModel: {
+    page: number;
+    pageSize: number;
+  }) => {
+    const params = new URLSearchParams(searchParams);
+    const newPageNumber = newPaginationModel.page + 1;
+
+    // Set the page and page size in the URL
+    params.set("page", newPageNumber.toString());
+
+    // Update the URL with the new page number
     replace(`${pathname}?${params.toString()}`);
   };
 
@@ -161,8 +163,8 @@ const DataGrid: React.FC<Props> = ({
         pageSizeOptions={[PAGE_SIZE]}
         sortingMode={paginationMode}
         paginationMode={paginationMode}
-        onPaginationModelChange={setPaginationModel}
         experimentalFeatures={{ ariaV7: true }}
+        onPaginationModelChange={handlePaginationModelChange})
         onSortModelChange={handleSortModelChange}
         // Set the row height to "auto" so that the row height will adjust to the content
         getRowHeight={() => "auto"}
