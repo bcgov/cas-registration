@@ -16,8 +16,12 @@ import Pagination from "@/app/components/datagrid/Pagination";
 interface Props {
   fetchPageData?: (
     page: number,
+<<<<<<< HEAD
     sortField?: string,
     sortOrder?: string
+=======
+    params: { [key: string]: string },
+>>>>>>> 0af40d33 (chore: add build query params util)
   ) => Promise<any>;
   columns: GridColDef[];
   columnGroupModel?: GridColumnGroupingModel;
@@ -91,21 +95,17 @@ const DataGrid: React.FC<Props> = ({
   }, []);
 
   useEffect(() => {
-    const sortModelField = searchParams.get("sort_field") ?? "created_at";
-    const sortModelOrder = searchParams.get("sort_order") ?? "desc";
-
     // Don't fetch data if the component is not mounted
     // Since we will grab the first page using the server side props
     if (!isComponentMounted || !fetchPageData) return;
     const debouncedFetchData = debounce(async () => {
       setLoading(true);
       const fetchData = async () => {
+        const newParams = new URLSearchParams(searchParams);
+        const params = Object.fromEntries(newParams.entries());
+
         // fetch data from server
-        const pageData = await fetchPageData(
-          paginationModel.page + 1,
-          sortModelField,
-          sortModelOrder
-        );
+        const pageData = await fetchPageData(paginationModel.page + 1, params);
         setRows(pageData.rows);
         setRowCount(pageData.rowCount);
       };
