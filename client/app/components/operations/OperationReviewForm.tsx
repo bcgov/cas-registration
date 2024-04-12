@@ -2,7 +2,7 @@
 
 import { operationInternalUserUiSchema } from "@/app/utils/jsonSchema/operations";
 import MultiStepAccordion from "@/app/components/form/MultiStepAccordion";
-import { OperationsFormData } from "@/app/components/form/OperationsForm";
+import { OperationsFormData } from "@/app/components/operations/OperationsForm";
 import { RJSFSchema } from "@rjsf/utils";
 
 interface Props {

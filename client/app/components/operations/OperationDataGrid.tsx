@@ -1,12 +1,12 @@
 "use client";
 
-import DataGrid from "./DataGrid";
+import DataGrid from "../datagrid/DataGrid";
 import Link from "next/link";
 import { GridRenderCellParams } from "@mui/x-data-grid";
 import { actionHandler } from "@/app/utils/actions";
-import { formatOperationRows } from "@/app/components/routes/operations/Operations";
 import { useSession } from "next-auth/react";
 import { OperationStatus } from "@/app/utils/enums";
+import { formatOperationRows } from "../routes/operations/Page";
 
 const fetchOperationPageData = async (
   page: number,
