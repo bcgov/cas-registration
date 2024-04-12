@@ -99,7 +99,7 @@ const DataGrid: React.FC<Props> = ({
 
       fetchData().then(() => setLoading(false));
     }, 200);
-    return debouncedFetchData();
+    debouncedFetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
 
@@ -164,7 +164,11 @@ const DataGrid: React.FC<Props> = ({
         sortingMode={paginationMode}
         paginationMode={paginationMode}
         experimentalFeatures={{ ariaV7: true }}
-        onPaginationModelChange={handlePaginationModelChange})
+        onPaginationModelChange={handlePaginationModelChange}
+        paginationModel={{
+          pageSize: PAGE_SIZE,
+          page: Number(searchParams.get("page")) - 1 || 0,
+        }}
         onSortModelChange={handleSortModelChange}
         // Set the row height to "auto" so that the row height will adjust to the content
         getRowHeight={() => "auto"}
@@ -245,6 +249,9 @@ const DataGrid: React.FC<Props> = ({
           },
           "& .MuiDataGrid-sortIcon": {
             opacity: "inherit !important",
+          },
+          "& .MuiDataGrid-filler": {
+            display: "none",
           },
         }}
         disableVirtualization
