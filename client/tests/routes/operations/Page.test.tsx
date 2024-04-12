@@ -1,4 +1,4 @@
-import Operations from "@/app/components/routes/operations/Operations";
+import Operations from "@/app/components/routes/operations/Page";
 import "@testing-library/jest-dom";
 import { render, screen } from "@testing-library/react";
 import { actionHandler, useSession } from "@/tests/setup/mocks";

@@ -1,5 +1,3 @@
-import OperationsForm from "@/app/components/form/OperationsForm";
-import { createOperationSchema } from "@/app/components/routes/operations/form/Operation";
 import { operationSchema } from "@/app/utils/jsonSchema/operations";
 import { act, render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, vi } from "vitest";
@@ -11,6 +9,8 @@ import {
   useRouter,
 } from "@/tests/setup/mocks";
 import { QueryParams, Router, Session } from "@/tests/setup/types";
+import { createOperationSchema } from "@/app/components/routes/operations/operation/Page";
+import OperationsForm from "@/app/components/operations/OperationsForm";
 
 useSession.mockReturnValue({
   data: {

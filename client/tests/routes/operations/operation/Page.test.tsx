@@ -1,8 +1,8 @@
-import Operation from "@/app/components/routes/operations/form/Operation";
 import { act, render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, vi } from "vitest";
 import { actionHandler, useParams, useSession } from "@/tests/setup/mocks";
 import { QueryParams, Session } from "@/tests/setup/types";
+import OperationsOperationPage from "@/app/components/routes/operations/operation/Page";
 
 useSession.mockReturnValue({
   data: {
@@ -54,7 +54,7 @@ describe("Operation component", () => {
   });
 
   it("renders the dropdown options for fields that require a fetch (e.g. NAICS codes)", async () => {
-    render(await Operation({ numRow: undefined }));
+    render(await OperationsOperationPage({ params: { operation: "" } }));
 
     const naicsCode = screen.getByPlaceholderText(/NAICS code/i).closest("div");
     expect(naicsCode).toBeInTheDocument();
@@ -86,7 +86,7 @@ describe("Operation component", () => {
   });
 
   it("renders a blank form when there is no existing form data", async () => {
-    render(await Operation({ numRow: undefined }));
+    render(await OperationsOperationPage({ params: { operation: "" } }));
 
     expect(screen.getByLabelText(/Operation Name+/i)).not.toHaveValue();
   });
@@ -116,7 +116,11 @@ describe("Operation component", () => {
       bcghg_id: "23219990003",
     });
 
-    render(await Operation({ numRow: "9a8aae6a-d711-42d4-aa7a-c8d37ff814c4" }));
+    render(
+      await OperationsOperationPage({
+        params: { operation: "9a8aae6a-d711-42d4-aa7a-c8d37ff814c4" },
+      }),
+    );
 
     waitFor(() => {
       expect(screen.getByLabelText(/Operation Name+/i)).toHaveValue(
