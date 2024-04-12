@@ -2,6 +2,7 @@ import os
 from uuid import UUID
 from registration.constants import PAGE_SIZE, UNAUTHORIZED_MESSAGE
 from django.db import transaction
+from django.db.models import Q
 from registration.decorators import authorize
 from .api_base import router
 from datetime import datetime
@@ -113,7 +114,18 @@ def create_or_update_multiple_operators(
 
 @router.get("/operations", response={200: OperationPaginatedOut, codes_4xx: Message}, url_name="list_operations")
 @authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles())
-def list_operations(request, page: int = 1, sort_field: str = "created_at", sort_order: str = "desc"):
+def list_operations(
+    request,
+    page: int = 1,
+    sort_field: str = "created_at",
+    sort_order: str = "desc",
+    bcghg_id=None,
+    bc_obps_regulated_operation=None,
+    name=None,
+    operator=None,
+    status=None,
+    submission_date=None,
+):
     user: User = request.current_user
     sort_direction = "-" if sort_order == "desc" else ""
     # IRC users can see all operations except ones with status of "Not Started" or "Draft"
@@ -122,6 +134,16 @@ def list_operations(request, page: int = 1, sort_field: str = "created_at", sort
             Operation.objects.select_related("operator", "bc_obps_regulated_operation")
             .exclude(status=Operation.Statuses.NOT_STARTED)
             .exclude(status=Operation.Statuses.DRAFT)
+            .filter(
+                Q(bcghg_id__icontains=bcghg_id) if bcghg_id else Q(),
+                Q(bc_obps_regulated_operation__id__icontains=bc_obps_regulated_operation)
+                if bc_obps_regulated_operation
+                else Q(),
+                Q(name__icontains=name) if name else Q(),
+                Q(operator__legal_name__icontains=operator) if operator else Q(),
+                Q(status__icontains=status) if status else Q(),
+                Q(submission_date__icontains=submission_date) if submission_date else Q(),
+            )
             .only(*OperationListOut.Config.model_fields, "operator__legal_name", "bc_obps_regulated_operation__id")
             .order_by(f"{sort_direction}{sort_field}")
         )
