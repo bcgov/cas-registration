@@ -7,13 +7,12 @@ from .api_base import router
 from datetime import datetime
 from django.core.exceptions import ValidationError
 import pytz
-from typing import List, Union
+from typing import List
 from django.core.paginator import Paginator
 from registration.models import (
     AppRole,
     MultipleOperator,
     Operation,
-    Operator,
     Contact,
     BusinessRole,
     BusinessStructure,
@@ -32,9 +31,7 @@ from registration.schema import (
     OperationCreateOut,
     OperationUpdateOut,
     Message,
-    OperationUpdateStatusIn,
     OperationListOut,
-    OperationUpdateStatusOut,
 )
 from registration.utils import (
     files_have_same_hash,

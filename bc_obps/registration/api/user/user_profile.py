@@ -2,6 +2,7 @@ import json
 from typing import Optional
 from uuid import UUID
 from django.conf import settings
+from django.http import JsonResponse
 from registration.decorators import authorize
 from registration.models import AppRole, User
 from registration.schema import UserOut, UserIn, Message, UserOperator, UserUpdateIn
@@ -15,7 +16,7 @@ from registration.utils import (
 from django.core.exceptions import ValidationError
 
 # endpoint to return user data if user exists in user table
-@router.get("user/user-profile", response={200: UserOut, codes_4xx: Message}, url_name="get_user_profile")
+@router.get("/user/user-profile", response={200: UserOut, codes_4xx: Message}, url_name="get_user_profile")
 def get_user_profile(request):
     user = get_object_or_404(User, user_guid=json.loads(request.headers.get('Authorization')).get('user_guid'))
     try:
@@ -35,7 +36,9 @@ def get_user_profile(request):
 
 # Endpoint to create a new user
 @router.post(
-    "user/user-profile/{identity_provider}", response={200: UserOut, codes_4xx: Message}, url_name="create_user_profile"
+    "/user/user-profile/{identity_provider}",
+    response={200: UserOut, codes_4xx: Message},
+    url_name="create_user_profile",
 )
 def create_user_profile(request, identity_provider: str, payload: UserIn):
     try:
@@ -69,7 +72,7 @@ def create_user_profile(request, identity_provider: str, payload: UserIn):
 
 
 # Endpoint to update a user
-@router.put("user/user-profile", response={200: UserOut, codes_4xx: Message}, url_name="update_user_profile")
+@router.put("/user/user-profile", response={200: UserOut, codes_4xx: Message}, url_name="update_user_profile")
 @authorize(AppRole.get_all_app_roles(), UserOperator.get_all_industry_user_operator_roles(), False)
 def update_user_profile(request, payload: UserUpdateIn):
     user: User = request.current_user

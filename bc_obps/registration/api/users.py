@@ -1,3 +1,4 @@
+from django.http import JsonResponse
 from registration.decorators import authorize
 from registration.models import AppRole, User
 from registration.schema import UserOut, UserOperator
