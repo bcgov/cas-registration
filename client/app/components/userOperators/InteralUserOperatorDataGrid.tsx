@@ -24,7 +24,7 @@ const fetchUserOperatorPageData = async (
   }
 };
 
-const OperatorDataGrid = ({
+const InternalUserOperatorDataGrid = ({
   rows,
   rowCount,
   columns,
@@ -70,4 +70,4 @@ const OperatorDataGrid = ({
   );
 };
 
-export default OperatorDataGrid;
+export default InternalUserOperatorDataGrid;

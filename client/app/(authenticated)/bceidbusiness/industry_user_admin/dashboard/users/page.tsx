@@ -5,14 +5,14 @@ import {
   ExternalDashboardUsersTile,
   processExternalDashboardUsersTileData,
 } from "@/app/utils/users/adminUserOperators";
-import UserOperatorDataGrid from "@/app/components/userOperators/UserOperatorDataGrid";
+import ExternalUserOperatorDataGrid from "@/app/components/userOperators/ExternalUserOperatorDataGrid";
 
 const UserOperatorsPage = async () => {
   const userOperatorData: ExternalDashboardUsersTile[] =
     await processExternalDashboardUsersTileData();
   return (
     <Suspense fallback={<Loading />}>
-      <UserOperatorDataGrid userOperatorData={userOperatorData} />
+      <ExternalUserOperatorDataGrid userOperatorData={userOperatorData} />
     </Suspense>
   );
 };

@@ -5,7 +5,7 @@ import { GridRowsProp } from "@mui/x-data-grid";
 import Note from "@/app/components/datagrid/Note";
 import StatusStyleColumnCell from "../../datagrid/cells/StatusStyleColumnCell";
 import { UserOperatorPaginated } from "../../userOperators/types";
-import OperatorDataGrid from "../../userOperators/OperatorDataGrid";
+import InternalUserOperatorDataGrid from "../../userOperators/InteralUserOperatorDataGrid";
 
 export const formatUserOperatorRows = (rows: GridRowsProp) => {
   return rows?.map(
@@ -62,7 +62,7 @@ const OperatorsPage = async () => {
           classNames="mb-4 mt-6"
           message="Once “Approved,” the user will have access to their operator dashboard with full admin permissions, and can grant access and designate permissions to other authorized users there."
         />
-        <OperatorDataGrid
+        <InternalUserOperatorDataGrid
           rows={rows}
           rowCount={rowCount}
           columns={[
