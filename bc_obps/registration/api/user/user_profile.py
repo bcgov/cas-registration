@@ -2,10 +2,11 @@ import json
 from typing import Optional
 from uuid import UUID
 from django.conf import settings
+from django.http import JsonResponse
 from registration.decorators import authorize
 from registration.models import AppRole, User
-from registration.schema import UserAppRoleOut, UserOut, UserIn, Message, UserOperator, UserUpdateIn
-from .api_base import router
+from registration.schema import UserOut, UserIn, Message, UserOperator, UserUpdateIn
+from registration.api.api_base import router
 from django.shortcuts import get_object_or_404
 from ninja.responses import codes_4xx
 from registration.enums.enums import IdPs
@@ -14,18 +15,8 @@ from registration.utils import (
 )
 from django.core.exceptions import ValidationError
 
-##### GET #####
-
-
-@router.get("/user", response=UserOut, url_name="get_user_by_guid")
-@authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles(), False)
-def get_user_by_guid(request):
-    user: User = request.current_user
-    return user
-
-
 # endpoint to return user data if user exists in user table
-@router.get("/user-profile", response={200: UserOut, codes_4xx: Message}, url_name="get_user_profile")
+@router.get("/user/user-profile", response={200: UserOut, codes_4xx: Message}, url_name="get_user_profile")
 def get_user_profile(request):
     user = get_object_or_404(User, user_guid=json.loads(request.headers.get('Authorization')).get('user_guid'))
     try:
@@ -40,22 +31,14 @@ def get_user_profile(request):
     return 200, user
 
 
-# endpoint to return user's role_name if user exists in user table
-@router.get("/user-app-role/{user_guid}", response={200: UserAppRoleOut, codes_4xx: Message}, url_name="get_user_role")
-def get_user_role(request, user_guid: str):
-    try:
-        user = User.objects.only('app_role').select_related('app_role').get(user_guid=user_guid)
-    except User.DoesNotExist:
-        return 404, {"message": "No matching user found"}
-    return 200, user.app_role
-
-
 ##### POST #####
 
 
 # Endpoint to create a new user
 @router.post(
-    "/user-profile/{identity_provider}", response={200: UserOut, codes_4xx: Message}, url_name="create_user_profile"
+    "/user/user-profile/{identity_provider}",
+    response={200: UserOut, codes_4xx: Message},
+    url_name="create_user_profile",
 )
 def create_user_profile(request, identity_provider: str, payload: UserIn):
     try:
@@ -89,7 +72,7 @@ def create_user_profile(request, identity_provider: str, payload: UserIn):
 
 
 # Endpoint to update a user
-@router.put("/user-profile", response={200: UserOut, codes_4xx: Message}, url_name="update_user_profile")
+@router.put("/user/user-profile", response={200: UserOut, codes_4xx: Message}, url_name="update_user_profile")
 @authorize(AppRole.get_all_app_roles(), UserOperator.get_all_industry_user_operator_roles(), False)
 def update_user_profile(request, payload: UserUpdateIn):
     user: User = request.current_user
@@ -102,6 +85,3 @@ def update_user_profile(request, payload: UserUpdateIn):
         return 400, {"message": generate_useful_error(e)}
     except Exception as e:
         return 400, {"message": str(e)}
-
-
-##### DELETE #####

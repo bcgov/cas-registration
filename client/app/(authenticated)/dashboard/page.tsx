@@ -16,7 +16,7 @@ export default async function Page() {
     case FrontEndRoles.INDUSTRY_USER:
     case FrontEndRoles.INDUSTRY_USER_ADMIN:
       const operator = await actionHandler(
-        "registration/user-operator-operator",
+        "registration/user-operator/user-operator-operator",
         "GET",
         "",
       );

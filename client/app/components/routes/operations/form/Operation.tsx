@@ -24,7 +24,7 @@ import { carbonTaxExemptionLink } from "@/app/utils/urls";
 async function getUserFormData(): Promise<
   UserProfileFormData | { error: string }
 > {
-  return actionHandler(`registration/user-profile`, "GET", "");
+  return actionHandler(`registration/user/user-profile`, "GET", "");
 }
 
 // 🛠️ Function to fetch NAICS codes
