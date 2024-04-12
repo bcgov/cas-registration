@@ -33,6 +33,7 @@ from registration.schema import (
     OperationUpdateOut,
     Message,
     OperationListOut,
+    OperationFilterSchema,
 )
 from registration.utils import (
     files_have_same_hash,
@@ -41,6 +42,7 @@ from registration.utils import (
 )
 from ninja.responses import codes_4xx, codes_5xx
 from ninja.errors import HttpError
+from ninja import Query
 
 
 # Function to save multiple operators so we can reuse it in put/post routes
@@ -114,20 +116,19 @@ def create_or_update_multiple_operators(
 
 @router.get("/operations", response={200: OperationPaginatedOut, codes_4xx: Message}, url_name="list_operations")
 @authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles())
-def list_operations(
-    request,
-    page: int = 1,
-    sort_field: str = "created_at",
-    sort_order: str = "desc",
-    bcghg_id=None,
-    bc_obps_regulated_operation=None,
-    name=None,
-    operator=None,
-    status=None,
-    submission_date=None,
-):
+def list_operations(request, filters: OperationFilterSchema = Query(...)):
     user: User = request.current_user
+    page = filters.page
+    bcghg_id = filters.bcghg_id
+    bc_obps_regulated_operation = filters.bc_obps_regulated_operation
+    name = filters.name
+    operator = filters.operator
+    sort_field = filters.sort_field
+    sort_order = filters.sort_order
+    status = filters.status
+    submission_date = filters.submission_date
     sort_direction = "-" if sort_order == "desc" else ""
+
     # IRC users can see all operations except ones with status of "Not Started" or "Draft"
     if user.is_irc_user():
         qs = (
