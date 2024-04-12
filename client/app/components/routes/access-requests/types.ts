@@ -1,4 +1,5 @@
 export interface OperatorsSearchParams {
+  [key: string]: string | number | undefined;
   page?: number;
   sort_field?: string;
   sort_order?: string;

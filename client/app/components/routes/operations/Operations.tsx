@@ -59,9 +59,7 @@ export const fetchOperationsPageData = async (
   searchParams: OperationsSearchParams,
 ) => {
   try {
-    const queryParams = buildQueryParams(
-      searchParams as { [key: string]: string },
-    );
+    const queryParams = buildQueryParams(searchParams);
 
     // fetch data from server
     const pageData = await actionHandler(

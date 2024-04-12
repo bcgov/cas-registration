@@ -15,7 +15,9 @@ import SortIcon from "@/app/components/icons/SortIcon";
 import styles from "@/app/components/datagrid/styles";
 
 interface Props {
-  fetchPageData?: (params: { [key: string]: string }) => Promise<any>;
+  fetchPageData?: (params: {
+    [key: string]: string | number | undefined;
+  }) => Promise<any>;
   columns: GridColDef[];
   columnGroupModel?: GridColumnGroupingModel;
   initialData: {

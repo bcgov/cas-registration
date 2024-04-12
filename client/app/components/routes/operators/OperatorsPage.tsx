@@ -37,7 +37,7 @@ export const fetchUserOperatorPageData = async (
   params: OperatorsSearchParams
 ) => {
   try {
-    const queryParams = buildQueryParams(params as { [key: string]: string });
+    const queryParams = buildQueryParams(params);
     // fetch data from server
     const pageData = await actionHandler(
       `registration/user-operator/user-operator-initial-requests${queryParams}`,
