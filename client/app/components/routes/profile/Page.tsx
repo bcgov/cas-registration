@@ -1,5 +1,4 @@
 import { actionHandler } from "@/app/utils/actions";
-import UserForm from "@/app/components/routes/profile/form/UserForm";
 import {
   UserProfileFormData,
   UserProfilePartialFormData,
@@ -7,6 +6,7 @@ import {
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { getUserFullName } from "@/app/utils/getUserFullName";
+import UserForm from "../../users/UserForm";
 
 // 🚀 API call: GET user's data
 async function getUserFormData(): Promise<
