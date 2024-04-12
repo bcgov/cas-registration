@@ -76,9 +76,6 @@ const styles = {
   "& .MuiDataGrid-filler": {
     display: "none",
   },
-  "& .MuiDataGrid-overlayWrapper": {
-    height: "40vh",
-  },
 };
 
 export default styles;
