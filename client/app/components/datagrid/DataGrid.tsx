@@ -83,7 +83,6 @@ const DataGrid: React.FC<Props> = ({
     page: 0,
     pageSize: PAGE_SIZE,
   });
-  const isColumnGroups = columnGroupModel && columnGroupModel?.length > 0;
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const { replace } = useRouter();
@@ -196,16 +195,13 @@ const DataGrid: React.FC<Props> = ({
             display: "flex",
             flexDirection: "column-reverse",
             // If column group headers are present, make the background white
-            // We are selecting the first-of-type because we are using flexDirection: column-reverse
-            "& [role=row]:first-of-type": isColumnGroups
-              ? {
-                  "& .MuiDataGrid-columnHeader": {
-                    backgroundColor: "white",
-                    borderRight: "1px rgba(224, 224, 224, 1) solid",
-                    padding: 0,
-                  },
-                }
-              : null,
+            "& [role=row]:first-child:not(:only-child)": {
+              "& .MuiDataGrid-columnHeader": {
+                backgroundColor: "white",
+                borderRight: "1px rgba(224, 224, 224, 1) solid",
+                padding: 0,
+              },
+            },
           },
           "& .MuiDataGrid-columnHeader:first-of-type": {
             borderLeft: "none",
