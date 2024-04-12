@@ -41,6 +41,7 @@ export interface OperationsSearchParams {
   bc_obps_regulated_operation?: string;
   name?: string;
   operator?: string;
+  page?: number;
   sort_field?: string;
   sort_order?: string;
   status?: string;
