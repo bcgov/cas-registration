@@ -1,7 +1,7 @@
 from typing import List, Optional
 from registration.schema.operator import OperatorForOperationOut
 from registration.utils import file_to_data_url, data_url_to_file
-from ninja import Field, ModelSchema, Schema
+from ninja import Field, FilterSchema, ModelSchema, Schema
 from registration.models import Operation, User
 from pydantic import field_validator
 from bc_obps.settings import ENVIRONMENT
@@ -162,3 +162,16 @@ class OperationUpdateStatusOut(ModelSchema):
 class OperationPaginatedOut(Schema):
     data: List[OperationListOut]
     row_count: int
+
+
+class OperationFilterSchema(FilterSchema):
+    bcghg_id: Optional[str] = None
+    bc_obps_regulated_operation: Optional[str] = None
+    name: Optional[str] = None
+    operator: Optional[str] = None
+    status: Optional[str] = None
+    page: Optional[int] = 1
+    sort_field: Optional[str] = "created_at"
+    sort_order: Optional[str] = "desc"
+    status: Optional[str] = None
+    submission_date: Optional[str] = None
