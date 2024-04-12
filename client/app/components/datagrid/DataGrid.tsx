@@ -85,14 +85,8 @@ const DataGrid: React.FC<Props> = ({
   const { replace } = useRouter();
 
   useEffect(() => {
-    return () => {
-      setIsComponentMounted(true);
+    setIsComponentMounted(true);
 
-      // Remove the last focused param from the URL when the component is unmounted
-      const params = new URLSearchParams(searchParams);
-      params.delete("last_focused");
-      replace(`${pathname}?${params.toString()}`);
-    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -136,9 +130,6 @@ const DataGrid: React.FC<Props> = ({
       params.delete("sort_field");
       params.delete("sort_order");
     }
-
-    // Remove the last focused param when the sort field is changed
-    params.delete("last_focused");
 
     // Update the URL with the new sort field and order
     replace(`${pathname}?${params.toString()}`);
