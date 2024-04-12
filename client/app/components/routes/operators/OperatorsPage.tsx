@@ -4,6 +4,7 @@ import Loading from "@/app/components/loading/SkeletonGrid";
 import { actionHandler } from "@/app/utils/actions";
 import { OperatorsSearchParams } from "@/app/components/routes/access-requests/types";
 import { GridRowsProp } from "@mui/x-data-grid";
+import buildQueryParams from "@/app/utils/buildQueryParams";
 
 export const formatUserOperatorRows = (rows: GridRowsProp) => {
   return rows?.map(
@@ -34,13 +35,13 @@ export const formatUserOperatorRows = (rows: GridRowsProp) => {
 // 🛠️ Function to fetch user-operators
 export const fetchUserOperatorPageData = async (
   page: number,
-  sortField?: string,
-  sortOrder?: string
+  params: OperatorsSearchParams
 ) => {
   try {
+    const queryParams = buildQueryParams(params as { [key: string]: string });
     // fetch data from server
     const pageData = await actionHandler(
-      `registration/user-operator/user-operator-initial-requests?page=${page}&sort_field=${sortField}&sort_order=${sortOrder}`,
+      `registration/user-operator/user-operator-initial-requests?page=${page}${queryParams}`,
       "GET",
       ""
     );
@@ -58,10 +59,8 @@ const OperatorsPage = async ({
 }: {
   searchParams: OperatorsSearchParams;
 }) => {
-  const sortField = searchParams?.sort_field ?? "created_at";
-  const sortOrder = searchParams?.sort_order ?? "desc";
   // Fetch userOperator data
-  const initialData = await fetchUserOperatorPageData(1, sortField, sortOrder);
+  const initialData = await fetchUserOperatorPageData(1, searchParams);
 
   return (
     <Suspense fallback={<Loading />}>

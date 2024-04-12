@@ -5,6 +5,7 @@ import OperationDataGrid from "@/app/components/datagrid/OperationDataGrid";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { OperationsSearchParams } from "@/app/components/routes/operations/types";
+import buildQueryParams from "@/app/utils/buildQueryParams";
 
 const formatTimestamp = (timestamp: string) => {
   if (!timestamp) return undefined;
@@ -56,13 +57,16 @@ export const formatOperationRows = (rows: GridRowsProp) => {
 // 🛠️ Function to fetch operations
 export const fetchOperationsPageData = async (
   page: number,
-  sortField?: string,
-  sortOrder?: string,
+  searchParams: OperationsSearchParams,
 ) => {
   try {
+    const queryParams = buildQueryParams(
+      searchParams as { [key: string]: string },
+    );
+
     // fetch data from server
     const pageData = await actionHandler(
-      `registration/operations?page=${page}&sort_field=${sortField}&sort_order=${sortOrder}`,
+      `registration/operations?page=${page}${queryParams}`,
       "GET",
       "",
     );
@@ -82,8 +86,6 @@ export default async function Operations({
   searchParams: OperationsSearchParams;
 }) {
   const session = await getServerSession(authOptions);
-  const sortField = searchParams?.sort_field ?? "created_at";
-  const sortOrder = searchParams?.sort_order ?? "desc";
   // Fetch operations data
   const operations: {
     rows: {
@@ -96,7 +98,7 @@ export default async function Operations({
       status: string;
     }[];
     row_count: number;
-  } = await fetchOperationsPageData(1, sortField, sortOrder);
+  } = await fetchOperationsPageData(1, searchParams);
   if (!operations) {
     return <div>No operations data in database.</div>;
   }
