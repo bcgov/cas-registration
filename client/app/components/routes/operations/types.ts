@@ -37,6 +37,7 @@ export interface Operation {
 }
 
 export interface OperationsSearchParams {
+  [key: string]: string | number | undefined;
   bcghg_id?: string;
   bc_obps_regulated_operation?: string;
   name?: string;
