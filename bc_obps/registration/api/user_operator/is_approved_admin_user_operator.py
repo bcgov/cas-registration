@@ -15,7 +15,7 @@ from registration.api.utils.current_user_utils import get_current_user_guid
 
 
 @router.get(
-    "user-operator/is-approved-admin-user-operator/{user_guid}",
+    "/user-operator/is-approved-admin-user-operator/{user_guid}",
     response={200: IsApprovedUserOperator, custom_codes_4xx: Message},
     url_name="is_approved_admin_user_operator",
 )

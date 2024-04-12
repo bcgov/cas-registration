@@ -33,7 +33,7 @@ const userOperator = () => {
   );
 
   const getUserOperatorOperator = http.get(
-    HOST + "user-operator/user-operator-operator",
+    HOST + "/user-operator/user-operator-operator",
     industryUser2Params,
   );
 
@@ -65,7 +65,7 @@ const userOperator = () => {
 
   check(
     http.get(
-      HOST + `operator/operator-has-admin/${operatorId}`,
+      HOST + `/operator/operator-has-admin/${operatorId}`,
       industryUserParams,
     ),
     {
