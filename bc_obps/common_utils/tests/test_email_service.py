@@ -122,7 +122,9 @@ def test_health_check(email_service, health_check_data, mocker):
 
 
 @pytest.mark.skip(reason="only run this if you want to receive an actual email")
-def test_send_real_email(email_service):
+def test_send_real_email():
+    # creates a real instance of EmailService, instead of using the fixture
+    email_service = EmailService()
     real_recipient = 'andrea.williams@gov.bc.ca'
     real_email_data = {
         'bodyType': 'text',
