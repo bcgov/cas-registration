@@ -5,7 +5,7 @@ import DataGrid from "@/app/components/datagrid/DataGrid";
 import { OperatorStatus, UserOperatorRoles } from "@/app/utils/enums";
 import AccessTypeColumnCell from "@/app/components/datagrid/cells/AccessTypeColumnCell";
 import ChangeUserOperatorStatusColumnCell from "@/app/components/datagrid/cells/ChangeUserOperatorStatusColumnCell";
-import StatusStyleColumnCell from "./cells/StatusStyleColumnCell";
+import StatusStyleColumnCell from "../datagrid/cells/StatusStyleColumnCell";
 
 const columns: GridColDef[] = [
   {

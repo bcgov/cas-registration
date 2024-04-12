@@ -12,9 +12,8 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 import ErrorIcon from "@mui/icons-material/Error";
 import { Status } from "@/app/utils/enums";
-import { Operation as OperationInt } from "@/app/components/routes/operations/types";
+import { Operation as OperationInt } from "@/app/components/userOperators/types";
 import Link from "next/link";
-import { BusinessStructure } from "@/app/components/routes/select-operator/form/types";
 import { validate as isValidUUID } from "uuid";
 import { carbonTaxExemptionLink } from "@/app/utils/urls";
 import OperationReview from "../../../operations/OperationReview";
@@ -22,6 +21,7 @@ import OperationReviewForm from "@/app/components/operations/OperationReviewForm
 import OperationsForm, {
   OperationsFormData,
 } from "@/app/components/operations/OperationsForm";
+import { BusinessStructure } from "@/app/components/userOperators/types";
 
 // 🚀 API call: GET user's data
 async function getUserFormData(): Promise<
