@@ -17,12 +17,15 @@ const user = () => {
     "is status 200": (r) => r.status === 200,
   });
 
-  check(http.get(HOST + "/user-profile", industryUserParams), {
+  check(http.get(HOST + "/user/user-profile", industryUserParams), {
     "is status 200": (r) => r.status === 200,
   });
 
   check(
-    http.get(HOST + `/user-app-role/${INDUSTRY_USER_GUID}`, industryUserParams),
+    http.get(
+      HOST + `/user/user-app-role/${INDUSTRY_USER_GUID}`,
+      industryUserParams,
+    ),
     {
       "is status 200": (r) => r.status === 200,
     },
@@ -32,7 +35,7 @@ const user = () => {
 
   check(
     http.post(
-      HOST + `/user-profile/idir`,
+      HOST + `/user/user-profile/idir`,
       JSON.stringify({
         first_name: "Test",
         last_name: "User",
@@ -61,7 +64,7 @@ const user = () => {
 
   check(
     http.put(
-      HOST + "/user-profile",
+      HOST + "/user/user-profile",
       JSON.stringify({
         first_name: "Updated First Name",
         last_name: "Updated Last Name",
