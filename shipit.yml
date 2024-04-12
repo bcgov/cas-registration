@@ -6,8 +6,8 @@ review:
 
 deploy:
   override:
-    - bash deploy.sh:
-      timeout: 1800
+    - ./deploy:
+        timeout: 1800
 
 ci:
   allow_failures:
