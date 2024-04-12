@@ -152,6 +152,11 @@ const DataGrid: React.FC<Props> = ({
           columnSortedDescendingIcon: DescendingIcon,
           columnUnsortedIcon: SortIcon,
           pagination: Pagination,
+          noRowsOverlay: () => (
+            <div className="flex items-center w-full h-full justify-center text-2xl">
+              No records found
+            </div>
+          ),
         }}
         sx={styles}
         disableVirtualization
