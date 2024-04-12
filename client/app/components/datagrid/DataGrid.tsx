@@ -49,6 +49,7 @@ const DataGrid: React.FC<Props> = ({
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const { replace } = useRouter();
+  const isRowsEmpty = rows.length === 0;
 
   useEffect(() => {
     setIsComponentMounted(true);
@@ -60,8 +61,9 @@ const DataGrid: React.FC<Props> = ({
     // Don't fetch data if the component is not mounted
     // Since we will grab the first page using the server side props
     if (!isComponentMounted || !fetchPageData) return;
+
+    setLoading(true);
     const debouncedFetchData = debounce(async () => {
-      setLoading(true);
       const fetchData = async () => {
         const newParams = new URLSearchParams(searchParams);
         const params = Object.fromEntries(newParams.entries());
@@ -158,7 +160,13 @@ const DataGrid: React.FC<Props> = ({
             </div>
           ),
         }}
-        sx={styles}
+        sx={{
+          ...styles,
+          "& .MuiDataGrid-overlayWrapper": {
+            height: isRowsEmpty && !loading ? "40vh" : "0",
+            display: isRowsEmpty && !loading ? "block" : "none",
+          },
+        }}
         disableVirtualization
       />
     </div>
