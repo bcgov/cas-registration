@@ -46,5 +46,4 @@ export interface OperationsSearchParams {
   sort_field?: string;
   sort_order?: string;
   status?: string;
-  submission_date?: string;
 }

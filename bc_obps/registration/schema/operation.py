@@ -174,4 +174,3 @@ class OperationFilterSchema(FilterSchema):
     sort_field: Optional[str] = "created_at"
     sort_order: Optional[str] = "desc"
     status: Optional[str] = None
-    submission_date: Optional[str] = None
