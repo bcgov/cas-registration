@@ -1,11 +1,11 @@
+from service.data_access_service.regulated_product_service import RegulatedProductDataAccessService
 from registration.decorators import authorize
 from .api_base import router
 from typing import List
-from registration.models import AppRole, RegulatedProduct, UserOperator
+from registration.models import AppRole, UserOperator
 from registration.schema import (
     RegulatedProductSchema,
 )
-from django.core.cache import cache
 
 ##### GET #####
 
@@ -13,13 +13,7 @@ from django.core.cache import cache
 @router.get("/regulated_products", response=List[RegulatedProductSchema], url_name="list_regulated_products")
 @authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles(), False)
 def list_regulated_products(request):
-    cached_data = cache.get("regulated_products")
-    if cached_data:
-        return cached_data
-    else:
-        regulated_products = RegulatedProduct.objects.only(*RegulatedProductSchema.Config.model_fields)
-        cache.set("regulated_products", regulated_products, 60 * 60 * 24 * 1)  # 1 day
-        return regulated_products
+    return RegulatedProductDataAccessService.get_regulated_products()
 
 
 ##### POST #####
