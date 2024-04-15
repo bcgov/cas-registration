@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import DataGrid from "./DataGrid";
 import Link from "next/link";
 import {
@@ -24,6 +25,7 @@ const OperationDataGrid = ({
 }) => {
   const { data: session } = useSession();
   const isIndustryUser = session?.user.app_role?.includes("industry");
+  const [lastFocusedField, setLastFocusedField] = useState<string | null>(null);
 
   const columns = [
     { field: "bcghg_id", headerName: "BC GHG ID", width: 160 },
@@ -60,7 +62,13 @@ const OperationDataGrid = ({
 
   const SearchCell = (params: any) => {
     const field = params.groupId as string;
-    return <HeaderSearchCell field={field} />;
+    return (
+      <HeaderSearchCell
+        field={field}
+        isFocused={lastFocusedField === field}
+        setLastFocusedField={setLastFocusedField}
+      />
+    );
   };
 
   const columnGroup = [
