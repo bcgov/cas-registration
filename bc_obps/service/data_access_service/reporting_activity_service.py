@@ -6,7 +6,8 @@ from django.core.cache import cache
 
 
 class ReportingActivityDataAccessService:
-    def get_reporting_activities():
+    @classmethod
+    def get_reporting_activities(cls):
         cached_data = cache.get("reporting_activities")
         if cached_data:
             return cached_data

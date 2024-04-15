@@ -4,7 +4,8 @@ from django.core.cache import cache
 
 
 class BusinessStructureDataAccessService:
-    def get_business_structures():
+    @classmethod
+    def get_business_structures(cls):
         cached_data = cache.get("business_structures")
         if cached_data:
             return cached_data

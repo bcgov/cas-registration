@@ -8,7 +8,8 @@ from django.core.cache import cache
 
 
 class RegulatedProductDataAccessService:
-    def get_regulated_products():
+    @classmethod
+    def get_regulated_products(cls):
         cached_data = cache.get("regulated_products")
         if cached_data:
             return cached_data
