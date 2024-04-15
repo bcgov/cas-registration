@@ -30,7 +30,7 @@ baker.generators.add(CAPostalCodeField, TestUtils.mock_postal_code)
 
 class TestUserOperatorEndpoint(CommonTestSetup):
     def test_user_operator_unauthorized_users_cannot_get(self):
-        # /user_operator/is-approved-admin-user-operator
+        # /user-operator/is-approved-admin-user-operator
         response = TestUtils.mock_get_with_auth_role(
             self,
             'cas_pending',
@@ -257,7 +257,6 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         assert response.json()['operator_id'] == str(operator.id)  # String representation of the UUID
 
     def test_get_an_operators_user_operators_by_users_list(self):
-
         operator = operator_baker()
         # two UserOperator with the same operator
         baker.make(
@@ -608,7 +607,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
 
         assert user_operator_exists, "UserOperator object was not created"
 
-    # /user_operator/user-operator-from-user ignores DECLINED records
+    # /user-operator/user-operator-from-user ignores DECLINED records
     def test_get_user_operator(self):
         user_operator = user_operator_baker()
         user_operator.user_id = self.user.user_guid
@@ -635,7 +634,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         print(response_json)
         assert response_json == True
 
-    # /user_operator/user-operator-list-from-user ignores DECLINED records
+    # /user-operator/user-operator-list-from-user ignores DECLINED records
     def test_get_user_operator(self):
         operator = operator_baker()
         operator.status = 'Approved'
