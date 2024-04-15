@@ -1,10 +1,10 @@
 from . import (
+    business_structures,
     e2e_test_setup,
     naics_codes,
     operators,
-    user_operator,
-    business_structure,
     regulated_products,
+    user_operator,
     reporting_activities,
     users,
     operations,
