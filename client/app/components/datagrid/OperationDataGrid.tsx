@@ -81,7 +81,7 @@ const OperationDataGrid = ({
     },
     {
       groupId: "submission_date",
-      renderHeaderGroup: SearchCell,
+      renderHeaderGroup: () => null,
       children: [{ field: "submission_date" }],
     },
     {
@@ -96,7 +96,7 @@ const OperationDataGrid = ({
     },
     {
       groupId: "action",
-      headerName: "Action",
+      renderHeaderGroup: () => null,
       children: [{ field: "action" }],
     },
   ] as GridColumnGroupingModel;

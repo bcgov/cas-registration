@@ -126,7 +126,6 @@ def list_operations(request, filters: OperationFilterSchema = Query(...)):
     sort_field = filters.sort_field
     sort_order = filters.sort_order
     status = filters.status
-    submission_date = filters.submission_date
     sort_direction = "-" if sort_order == "desc" else ""
 
     # IRC users can see all operations except ones with status of "Not Started" or "Draft"
@@ -143,7 +142,6 @@ def list_operations(request, filters: OperationFilterSchema = Query(...)):
                 Q(name__icontains=name) if name else Q(),
                 Q(operator__legal_name__icontains=operator) if operator else Q(),
                 Q(status__icontains=status) if status else Q(),
-                Q(submission_date__icontains=submission_date) if submission_date else Q(),
             )
             .only(*OperationListOut.Config.model_fields, "operator__legal_name", "bc_obps_regulated_operation__id")
             .order_by(f"{sort_direction}{sort_field}")
