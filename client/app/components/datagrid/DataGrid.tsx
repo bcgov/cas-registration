@@ -164,6 +164,7 @@ const DataGrid: React.FC<Props> = ({
         }}
         sx={{
           ...styles,
+          // Add dynamic styles here
           "& .MuiDataGrid-overlayWrapper": {
             height: isRowsEmpty && !loading ? "40vh" : "0",
             display: isRowsEmpty && !loading ? "block" : "none",

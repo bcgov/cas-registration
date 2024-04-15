@@ -11,7 +11,6 @@ const styles = {
     minHeight: "60px!important",
   },
   "& .MuiDataGrid-columnHeader": {
-    border: "1px white solid",
     borderBottom: "none",
     borderTop: "none",
     color: "white",
@@ -29,6 +28,9 @@ const styles = {
         backgroundColor: "white",
         borderRight: "1px rgba(224, 224, 224, 1) solid",
         padding: 0,
+      },
+      "& .MuiDataGrid-columnHeader:nth-last-child(3)": {
+        borderRight: "none",
       },
     },
   },
