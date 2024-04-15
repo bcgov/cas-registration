@@ -43,7 +43,7 @@ class EmailService:
                 self.token = response.json()["access_token"]
                 self.token_expiry = datetime.now() + timedelta(seconds=response.json()["expires_in"])
             else:
-                logger.error("Failed to retrieve CHES access token")
+                logger.error("Logger: Failed to retrieve CHES access token")
 
     def _make_request(self, endpoint, method='GET', data: any = None):
         """
@@ -70,7 +70,7 @@ class EmailService:
             response = self._make_request("/health")
             return response.json()
         except Exception as exc:
-            logger.error(f'Exception in /email/health_check {str(exc)}')
+            logger.error(f'Logger: Exception in /email/health_check {str(exc)}')
             raise
 
     def get_message_status(self, message_id: UUID):
@@ -91,7 +91,7 @@ class EmailService:
             response = self._make_request(f'/status/{message_id}')
             return response.json()
         except Exception as exc:
-            logger.error(f'Exception retrieving message status for {message_id} - {str(exc)}')
+            logger.error(f'Logger: Exception retrieving message status for {message_id} - {str(exc)}')
             raise
 
     def send_email(self, email_data: dict):
@@ -120,7 +120,7 @@ class EmailService:
             )
             return response.json()
         except Exception as exc:
-            logger.error(f'Exception in send_email {str(exc)}')
+            logger.error(f'Logger: Exception in send_email {str(exc)}')
             raise
 
     def merge_template_and_send(self, email_template_data: dict):
@@ -151,5 +151,5 @@ class EmailService:
             response = self._make_request("/emailMerge", method='POST', data=email_template_data)
             return response.json()
         except Exception as exc:
-            logger.error(f'Exception in merging template and sending! - {str(exc)}')
+            logger.error(f'Logger: Exception in merging template and sending! - {str(exc)}')
             raise
