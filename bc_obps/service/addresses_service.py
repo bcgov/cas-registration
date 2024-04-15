@@ -27,7 +27,10 @@ class AddressesService:
 
     """
 
-    def upsert_addresses_from_data(address_data: AddressesData, physical_address_id, mailing_address_id, prefix=""):
+    @classmethod
+    def upsert_addresses_from_data(
+        cls, address_data: AddressesData, physical_address_id, mailing_address_id, prefix=""
+    ):
         # create or update physical address record
         physical_address, _ = Address.objects.update_or_create(
             id=physical_address_id,
