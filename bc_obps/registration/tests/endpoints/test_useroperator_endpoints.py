@@ -1,5 +1,6 @@
 from typing import List
 import json
+from common_utils.email.email_service import EmailService
 from model_bakery import baker
 from localflavor.ca.models import CAPostalCodeField
 from registration.models import (
@@ -507,8 +508,11 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         assert user_operator.operator.contacts.count() == 0
         assert Contact.objects.count() == 0
 
-    def test_request_admin_access_with_valid_payload(self):
+    def test_request_admin_access_with_valid_payload(self, mocker):
         operator = operator_baker()
+        mock_send_admin_access_request_confirmation_email = mocker.patch.object(
+            EmailService, 'send_admin_access_request_confirmation_email'
+        )
         response = TestUtils.mock_post_with_auth_role(
             self,
             'industry_user',
@@ -516,6 +520,9 @@ class TestUserOperatorEndpoint(CommonTestSetup):
             {"operator_id": operator.id},
             custom_reverse_lazy('request_admin_access'),
         )
+
+        # Assert that the email notification was sent
+        mock_send_admin_access_request_confirmation_email.assert_called_once()
 
         response_json = response.json()
 
