@@ -60,89 +60,47 @@ const OperationDataGrid = ({
     },
   ];
 
+  const SearchCell = (params: any) => {
+    const field = params.groupId as string;
+    return (
+      <HeaderSearchCell
+        field={field}
+        isFocused={lastFocusedField === field}
+        onFocus={() => setLastFocusedField(field)}
+        onBlur={() => setLastFocusedField("")}
+      />
+    );
+  };
+
   const columnGroup = [
     {
       groupId: "bcghg_id",
-      renderHeaderGroup: (params) => {
-        return (
-          <HeaderSearchCell
-            field={params.groupId as string}
-            isFocused={lastFocusedField === params.groupId}
-            onBlur={() => setLastFocusedField("")}
-            onFocus={setLastFocusedField}
-          />
-        );
-      },
+      renderHeaderGroup: SearchCell,
       children: [{ field: "bcghg_id" }],
     },
     {
       groupId: "operator",
-      renderHeaderGroup: (params) => {
-        return (
-          <HeaderSearchCell
-            field={params.groupId as string}
-            isFocused={lastFocusedField === params.groupId}
-            onBlur={() => setLastFocusedField("")}
-            onFocus={setLastFocusedField}
-          />
-        );
-      },
+      renderHeaderGroup: SearchCell,
       children: [{ field: "operator" }],
     },
     {
       groupId: "name",
-      renderHeaderGroup: (params) => {
-        return (
-          <HeaderSearchCell
-            field={params.groupId as string}
-            isFocused={lastFocusedField === params.groupId}
-            onBlur={() => setLastFocusedField("")}
-            onFocus={setLastFocusedField}
-          />
-        );
-      },
+      renderHeaderGroup: SearchCell,
       children: [{ field: "name" }],
     },
     {
       groupId: "submission_date",
-      renderHeaderGroup: (params) => {
-        return (
-          <HeaderSearchCell
-            field={params.groupId as string}
-            isFocused={lastFocusedField === params.groupId}
-            onBlur={() => setLastFocusedField("")}
-            onFocus={setLastFocusedField}
-          />
-        );
-      },
+      renderHeaderGroup: SearchCell,
       children: [{ field: "submission_date" }],
     },
     {
       groupId: "bc_obps_regulated_operation",
-      renderHeaderGroup: (params) => {
-        return (
-          <HeaderSearchCell
-            field={params.groupId as string}
-            isFocused={lastFocusedField === params.groupId}
-            onBlur={() => setLastFocusedField("")}
-            onFocus={setLastFocusedField}
-          />
-        );
-      },
+      renderHeaderGroup: SearchCell,
       children: [{ field: "bc_obps_regulated_operation" }],
     },
     {
       groupId: "status",
-      renderHeaderGroup: (params) => {
-        return (
-          <HeaderSearchCell
-            field={params.groupId as string}
-            isFocused={lastFocusedField === params.groupId}
-            onBlur={() => setLastFocusedField("")}
-            onFocus={setLastFocusedField}
-          />
-        );
-      },
+      renderHeaderGroup: SearchCell,
       children: [{ field: "status" }],
     },
     {
@@ -212,7 +170,6 @@ const OperationDataGrid = ({
       fetchPageData={fetchOperationsPageData}
       paginationMode="server"
       initialData={initialData}
-      onSearchFieldBlur={() => setLastFocusedField("")}
     />
   );
 };
