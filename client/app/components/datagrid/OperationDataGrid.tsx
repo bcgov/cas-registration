@@ -70,11 +70,6 @@ const OperationDataGrid = ({
       children: [{ field: "bcghg_id" }],
     },
     {
-      groupId: "operator",
-      renderHeaderGroup: SearchCell,
-      children: [{ field: "operator" }],
-    },
-    {
       groupId: "name",
       renderHeaderGroup: SearchCell,
       children: [{ field: "name" }],
@@ -109,6 +104,12 @@ const OperationDataGrid = ({
       field: "operator",
       headerName: "Operator",
       width: 320,
+    });
+
+    columnGroup.splice(operatorColumnIndex, 0, {
+      groupId: "operator",
+      renderHeaderGroup: SearchCell,
+      children: [{ field: "operator" }],
     });
   }
 

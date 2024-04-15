@@ -157,7 +157,16 @@ def list_operations(request, filters: OperationFilterSchema = Query(...)):
     # order by created_at to get the latest one first
     operators_operations = (
         Operation.objects.select_related("operator", "bc_obps_regulated_operation")
-        .filter(operator_id=user_operator.operator_id)
+        .filter(
+            Q(bcghg_id__icontains=bcghg_id) if bcghg_id else Q(),
+            Q(bc_obps_regulated_operation__id__icontains=bc_obps_regulated_operation)
+            if bc_obps_regulated_operation
+            else Q(),
+            Q(name__icontains=name) if name else Q(),
+            Q(operator__legal_name__icontains=operator) if operator else Q(),
+            Q(status__icontains=status) if status else Q(),
+            operator_id=user_operator.operator_id,
+        )
         .order_by(f"{sort_direction}{sort_field}")
         .only(*OperationListOut.Config.model_fields, "operator__legal_name", "bc_obps_regulated_operation__id")
     )
