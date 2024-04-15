@@ -1,27 +1,36 @@
 from datetime import datetime, timedelta
-from typing import Optional
+from typing import List, Optional
 from uuid import UUID
-import logging
-
-import requests
+import logging, requests
+from common.models import EmailNotification, EmailNotificationTemplate
 from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
+SENDER_EMAIL = 'no-reply.cas@gov.bc.ca'
 
-class EmailService:
+
+class EmailService(object):
     """
     EmailService uses Common Hosted Email Service (CHES) API to enqueue emails for delivery. Uses BC Government-hosted SMTP server to send emails.
     """
 
-    def __init__(self):
-        self.api_url: str = settings.CHES_API_URL
-        self.client_id: str = settings.CHES_CLIENT_ID
-        self.client_secret: str = settings.CHES_CLIENT_SECRET
-        self.token_endpoint: str = settings.CHES_TOKEN_ENDPOINT
-        self.token: Optional[str] = None
-        self.token_expiry: datetime = datetime.now()
-        logger.info(f'Initializing EmailService for clientID {self.client_id} to connect to {self.api_url}')
+    _instance = None
+
+    # Singleton pattern to ensure only one instance of EmailService is created
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super(EmailService, cls).__new__(cls)
+            cls._instance.api_url = settings.CHES_API_URL
+            cls._instance.client_id = settings.CHES_CLIENT_ID
+            cls._instance.client_secret = settings.CHES_CLIENT_SECRET
+            cls._instance.token_endpoint = settings.CHES_TOKEN_ENDPOINT
+            cls._instance.token = None
+            cls._instance.token_expiry = datetime.now()
+            logger.info(
+                f'Logger: Initializing EmailService for clientID {cls._instance.client_id} to connect to {cls._instance.api_url}'
+            )
+        return cls._instance
 
     def _get_token(self):
         """
