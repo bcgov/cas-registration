@@ -4,23 +4,13 @@ import { useState } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { TextField } from "@mui/material";
-import OutsideClickHandler from "react-outside-click-handler";
 
-const HeaderSearchCell = ({
-  field,
-  isFocused,
-  onBlur,
-  onFocus,
-}: {
-  field: string;
-  isFocused: boolean;
-  onBlur: () => void;
-  onFocus: () => void;
-}) => {
+const HeaderSearchCell = ({ field }: { field: string }) => {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const { replace } = useRouter();
   const [searchState, setSearchState] = useState(searchParams.get(field) || "");
+  const isFocused = searchParams.get("last_focused") === field;
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const params = new URLSearchParams(searchParams);
@@ -34,42 +24,48 @@ const HeaderSearchCell = ({
       params.delete(field);
     }
 
-    // Save the last focused field so we can restore focus when the DataGrid is re-rendered
-    // (e.g. when the user searches or sorts the grid)
-    onFocus();
+    // Set the last focused field so we can keep focus on the field
+    // after the component re-renders eg when fetching new data
+    params.set("last_focused", field);
 
     // Update the URL with the new search term
     replace(`${pathname}?${params.toString()}`);
     setSearchState(searchTerm);
   };
 
+  const handleResetFocus = () => {
+    const params = new URLSearchParams(searchParams);
+    params.delete("last_focused");
+    replace(`${pathname}?${params.toString()}`);
+  };
+
   return (
     <div className="w-full">
-      <OutsideClickHandler onOutsideClick={() => onBlur()}>
-        <TextField
-          className="w-full px-2 py-1"
-          placeholder="Search"
-          onChange={handleChange}
-          value={searchState}
-          type="text"
-          inputRef={(input) => {
-            if (isFocused) {
-              input?.focus();
-            }
-          }}
-          onFocus={(e) => {
-            e.currentTarget.setSelectionRange(
-              e.currentTarget.value.length,
-              e.currentTarget.value.length,
-            );
-          }}
-          sx={{
-            input: {
-              padding: "8px",
-            },
-          }}
-        />
-      </OutsideClickHandler>
+      <TextField
+        className="w-full px-2 py-1"
+        placeholder="Search"
+        onBlur={handleResetFocus}
+        onChange={handleChange}
+        value={searchState}
+        type="text"
+        inputRef={(input) => {
+          if (isFocused) {
+            input?.focus();
+          }
+        }}
+        onFocus={(e) => {
+          // Move the cursor to the end of the input field when focused
+          e.currentTarget.setSelectionRange(
+            e.currentTarget.value.length,
+            e.currentTarget.value.length,
+          );
+        }}
+        sx={{
+          input: {
+            padding: "8px",
+          },
+        }}
+      />
     </div>
   );
 };
