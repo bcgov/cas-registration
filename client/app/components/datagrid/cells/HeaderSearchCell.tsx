@@ -15,7 +15,7 @@ const HeaderSearchCell = ({
   field: string;
   isFocused: boolean;
   onBlur: () => void;
-  onFocus: (field: string) => void;
+  onFocus: () => void;
 }) => {
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -34,6 +34,10 @@ const HeaderSearchCell = ({
       params.delete(field);
     }
 
+    // Save the last focused field so we can restore focus when the DataGrid is re-rendered
+    // (e.g. when the user searches or sorts the grid)
+    onFocus();
+
     // Update the URL with the new search term
     replace(`${pathname}?${params.toString()}`);
     setSearchState(searchTerm);
@@ -45,7 +49,6 @@ const HeaderSearchCell = ({
         <TextField
           className="w-full px-2 py-1"
           placeholder="Search"
-          onBlur={onBlur}
           onChange={handleChange}
           value={searchState}
           type="text"
@@ -55,9 +58,6 @@ const HeaderSearchCell = ({
             }
           }}
           onFocus={(e) => {
-            // Save the last focused field so we can restore focus when the DataGrid is re-rendered
-            // (e.g. when the user searches or sorts the grid)
-            onFocus(field);
             e.currentTarget.setSelectionRange(
               e.currentTarget.value.length,
               e.currentTarget.value.length,
