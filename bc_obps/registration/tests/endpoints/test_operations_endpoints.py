@@ -3,7 +3,7 @@ from datetime import datetime, timedelta, timezone
 from model_bakery import baker
 from localflavor.ca.models import CAPostalCodeField
 from registration.models import (
-    Document,
+    BcObpsRegulatedOperation,
     NaicsCode,
     Contact,
     Operation,
@@ -398,6 +398,85 @@ class TestOperationsEndpoint(CommonTestSetup):
         assert len(response_data) == PAGE_SIZE
         # assert that the first item in the page 2 response is not the same as the first item in the page 2 response with reversed order
         assert page_2_response_id != page_2_response_id_reverse
+
+    def test_operations_endpoint_get_method_with_filter(self):
+        operator1 = operator_baker()
+        operator2 = operator_baker()
+        baker.make(
+            BcObpsRegulatedOperation,
+            id='21-0001',
+        )
+        baker.make(
+            Operation,
+            operator_id=operator1.id,
+            name='Springfield Nuclear Power Plant',
+            status=Operation.Statuses.PENDING,
+            naics_code=baker.make(NaicsCode, naics_code=123456, naics_description='desc'),
+            _quantity=10,
+        )
+        baker.make(
+            Operation,
+            operator_id=operator2.id,
+            name='Krusty Burger',
+            status=Operation.Statuses.APPROVED,
+            naics_code=baker.make(NaicsCode, naics_code=123456, naics_description='desc'),
+            _quantity=10,
+        )
+        baker.make(
+            Operation,
+            operator_id=operator2.id,
+            name='Kwik-E-Mart',
+            status=Operation.Statuses.DECLINED,
+            bcghg_id=23219990023,
+            bc_obps_regulated_operation_id='21-0001',
+            naics_code=baker.make(NaicsCode, naics_code=123456, naics_description='desc'),
+        )
+
+        # Get the default page 1 response
+        response = TestUtils.mock_get_with_auth_role(
+            self, "cas_admin", custom_reverse_lazy('list_operations') + "?status=approved"
+        )
+        assert response.status_code == 200
+        response_data = response.json().get('data')
+        assert len(response_data) == 10
+        for item in response_data:
+            assert item.get('status') == 'Approved'
+
+        # Test with a status filter that doesn't exist
+        response = TestUtils.mock_get_with_auth_role(
+            self, "cas_admin", custom_reverse_lazy('list_operations') + "?status=abc"
+        )
+        assert response.status_code == 200
+        response_data = response.json().get('data')
+        print(response_data)
+        assert len(response_data) == 0
+
+        # Test with a name filter
+        response = TestUtils.mock_get_with_auth_role(
+            self, "cas_admin", custom_reverse_lazy('list_operations') + "?name=kwik-e-mart"
+        )
+        assert response.status_code == 200
+        response_data = response.json().get('data')
+        assert len(response_data) == 1
+
+        # Test with a name filter that doesn't exist
+        response = TestUtils.mock_get_with_auth_role(
+            self, "cas_admin", custom_reverse_lazy('list_operations') + "?name=abc"
+        )
+        assert response.status_code == 200
+        response_data = response.json().get('data')
+        assert len(response_data) == 0
+
+        # Test with multiple filters
+        response = TestUtils.mock_get_with_auth_role(
+            self,
+            "cas_admin",
+            custom_reverse_lazy('list_operations')
+            + "?name=kwik&status=dec&bcghg_id=23219990023&bc_obps_regulated_operation=0001",
+        )
+        assert response.status_code == 200
+        response_data = response.json().get('data')
+        assert len(response_data) == 1
 
     # POST
     def test_authorized_roles_can_post_new_operation(self):
