@@ -2,7 +2,9 @@ import pytest
 from datetime import datetime, timedelta
 from uuid import UUID
 from common_utils.email.email_service import EmailService
-from pytest_mock import mocker
+from common.models import EmailNotification, EmailNotificationTemplate
+
+pytestmark = pytest.mark.django_db
 
 
 @pytest.fixture
@@ -76,7 +78,19 @@ def email_template():
     }
 
 
-def test_init(email_service):
+def test_singleton_service(email_service: EmailService):
+    """
+    Test that the EmailService is a singleton
+    """
+    email_service._get_token()
+    # Create a new instance of the EmailService
+    new_email_service = EmailService()
+    new_email_service._get_token()
+    # Assert that the token and expiry are the same
+    assert email_service.__dict__ == new_email_service.__dict__
+
+
+def test_new_instance_attributes(email_service: EmailService):
     email_service_attributes = ['api_url', 'client_id', 'client_secret', 'token_endpoint', 'token_expiry']
     for key_name in email_service_attributes:
         assert hasattr(email_service, key_name)
