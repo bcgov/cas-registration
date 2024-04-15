@@ -1,8 +1,6 @@
 from uuid import UUID
-from registration.models import UserOperator, User
-from registration.schema.user_operator import PendingUserOperatorOut
-
-NO_USER_OPERATOR_MESSAGE = "User is not associated with any operator"
+from registration.schema.user import UserIn, UserOut, UserUpdateIn
+from registration.models import AppRole, UserOperator, User
 
 
 class UserDataAccessService:
@@ -38,3 +36,33 @@ class UserDataAccessService:
             operator_id=operator_id, user_id=user_guid, status=UserOperator.Statuses.DECLINED
         ).exists()
         return is_declined
+
+    def get_user_app_role(user_guid):
+        return User.objects.only('app_role').select_related('app_role').get(user_guid=user_guid)
+
+    def get_user_profile(user_guid):
+        return (
+            User.objects.only(*UserOut.Config.model_fields, "app_role")
+            .select_related('app_role')
+            .get(user_guid=user_guid)
+        )
+
+    def create_user(user_guid, role: AppRole, user_data: UserIn):
+        return User.objects.create(
+            user_guid=user_guid,
+            business_guid=user_data.business_guid,
+            bceid_business_name=user_data.bceid_business_name,
+            app_role=role,
+            first_name=user_data.first_name,
+            last_name=user_data.last_name,
+            email=user_data.email,
+            position_title=user_data.position_title,
+            phone_number=user_data.phone_number,
+        )
+
+    def update_user(user_guid, updated_data: UserUpdateIn):
+        user: User = UserDataAccessService.get_user_by_guid(user_guid)
+        for attr, value in updated_data.dict().items():
+            setattr(user, attr, value)
+        user.save()
+        return user
