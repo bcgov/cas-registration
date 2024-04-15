@@ -6,7 +6,8 @@ from django.core.cache import cache
 
 
 class NaicsCodeDataAccessService:
-    def get_naics_codes():
+    @classmethod
+    def get_naics_codes(cls):
         cached_data = cache.get("naics_codes")
         if cached_data:
             return cached_data
