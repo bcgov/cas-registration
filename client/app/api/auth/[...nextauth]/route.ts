@@ -96,7 +96,7 @@ export const authOptions: NextAuthOptions = {
               try {
                 // 🚀 API call: check if user is admin approved
                 const responseAdmin = await actionHandler(
-                  `registration/user_operator/is-approved-admin-user-operator/${token.user_guid}`,
+                  `registration/user-operator/is-approved-admin-user-operator/${token.user_guid}`,
                   "GET",
                 );
                 if (responseAdmin?.approved) {
