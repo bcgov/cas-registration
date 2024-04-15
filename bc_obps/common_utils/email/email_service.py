@@ -162,3 +162,90 @@ class EmailService(object):
         except Exception as exc:
             logger.error(f'Logger: Exception in merging template and sending! - {str(exc)}')
             raise
+
+    def send_email_by_template(
+        self, template_instance: EmailNotificationTemplate, email_context: dict, recipients_email: List[str]
+    ) -> Optional[dict]:
+        """
+        Sends an email using the provided email template, email context, and recipient email addresses.
+
+        Args:
+            template_instance: An instance of the EmailNotificationTemplate class representing the email template.
+            email_context: A dictionary containing the context variables to be used in the email template.
+            recipients_email: A list of recipient email addresses.
+
+        Returns:
+            Optional[dict]: A dictionary containing the response from the email service provider, or None if the email sending fails.
+        """
+        email_data = {
+            'bodyType': 'html',
+            'body': template_instance.body,
+            'contexts': [
+                {
+                    'context': email_context,
+                    'to': recipients_email,
+                }
+            ],
+            'from': SENDER_EMAIL,
+            'subject': template_instance.subject,
+        }
+        return self.merge_template_and_send(email_data)
+
+    def create_email_notification_record(
+        self, transaction_id: UUID, message_id: UUID, recipients_email: List[str], template_id: int
+    ) -> None:
+        """
+        Creates a new email notification record in the database.
+
+        Args:
+            transaction_id: The ID of the transaction associated with the email notification.
+            message_id: The ID of the email message.
+            recipients_email: A list of email addresses of the recipients.
+            template_id: The ID of the email template.
+
+        Returns:
+            None
+        """
+        EmailNotification.objects.create(
+            transaction_id=transaction_id,
+            message_id=message_id,
+            recipients_email=recipients_email,
+            template_id=template_id,
+        )
+
+    def send_admin_access_request_confirmation_email(
+        self, operator_legal_name: str, external_user_full_name: str, external_user_email_address: str
+    ) -> None:
+        """
+        Sends an email to the external user confirming their admin access request.
+
+        Args:
+            operator_legal_name: The legal name of the operator.
+            external_user_full_name: The full name of the external user.
+            external_user_email_address: The email address of the external user.
+
+        Raises:
+            ValueError: If the email template is not found.
+
+        Returns:
+            None
+        """
+        try:
+            template = EmailNotificationTemplate.objects.get(name='Admin Access Request Confirmation')
+        except EmailNotificationTemplate.DoesNotExist:
+            raise ValueError("Email template not found")
+
+        email_context = {
+            "operator_legal_name": operator_legal_name,
+            "external_user_full_name": external_user_full_name,
+            "external_user_email_address": external_user_email_address,
+        }
+
+        try:
+            response_json = self.send_email_by_template(template, email_context, [external_user_email_address])
+            # Create email notification record to store the transaction and message IDs
+            self.create_email_notification_record(
+                response_json['txId'], response_json['messages'][0]['msgId'], [external_user_email_address], template.id
+            )
+        except Exception as exc:  # not raising exception here to avoid breaking the flow of the application
+            logger.error(f'Logger: Exception sending admin access request email - {str(exc)}')
