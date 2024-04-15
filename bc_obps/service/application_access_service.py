@@ -1,9 +1,12 @@
 from uuid import UUID
+from common_utils.email.email_service import EmailService
 from registration.models import UserOperator
 from service.data_access_service.operator_service import OperatorDataAccessService
-from registration.schema.user_operator import UserOperatorOut
 from service.data_access_service.user_operator_service import UserOperatorDataAccessService
 from service.data_access_service.user_service import UserDataAccessService
+
+
+email_service = EmailService()
 
 
 class ApplicationAccessService:
@@ -65,4 +68,8 @@ class ApplicationAccessService:
         if ApplicationAccessService.is_user_eligible_to_request_admin_access(operator_id, user_guid):
             # Making a draft UserOperator instance if one doesn't exist
             user_operator, created = UserOperatorDataAccessService.get_or_create_user_operator(user_guid, operator_id)
+            if created:
+                email_service.send_admin_access_request_confirmation_email(
+                    user_operator.operator.legal_name, user_operator.user.get_full_name(), user_operator.user.email
+                )
         return {"user_operator_id": user_operator.id, "operator_id": user_operator.operator.id}
