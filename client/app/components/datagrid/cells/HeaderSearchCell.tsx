@@ -5,12 +5,19 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { TextField } from "@mui/material";
 
-const HeaderSearchCell = ({ field }: { field: string }) => {
+const HeaderSearchCell = ({
+  field,
+  isFocused,
+  setLastFocusedField,
+}: {
+  field: string;
+  isFocused: boolean;
+  setLastFocusedField: (field: string | null) => void;
+}) => {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const { replace } = useRouter();
   const [searchState, setSearchState] = useState(searchParams.get(field) || "");
-  const isFocused = searchParams.get("last_focused") === field;
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const params = new URLSearchParams(searchParams);
@@ -26,7 +33,7 @@ const HeaderSearchCell = ({ field }: { field: string }) => {
 
     // Set the last focused field so we can keep focus on the field
     // after the component re-renders eg when fetching new data
-    params.set("last_focused", field);
+    setLastFocusedField(field);
 
     // Update the URL with the new search term
     replace(`${pathname}?${params.toString()}`);
@@ -34,9 +41,7 @@ const HeaderSearchCell = ({ field }: { field: string }) => {
   };
 
   const handleResetFocus = () => {
-    const params = new URLSearchParams(searchParams);
-    params.delete("last_focused");
-    replace(`${pathname}?${params.toString()}`);
+    setLastFocusedField(null);
   };
 
   return (
