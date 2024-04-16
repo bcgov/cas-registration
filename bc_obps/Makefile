@@ -25,7 +25,7 @@ install_backend_asdf_tools:
 	@MAKELEVEL=0 POSTGRES_EXTRA_CONFIGURE_OPTIONS='--with-libxml' asdf install
 	@asdf reshim
 	@echo "Done installing backend asdf tools"
-	@sudo apt-get install postgis --with-pgconfig=/.asdf/installs/postgres/14.0/share
+	@sudo apt install postgresql-14-postgis-3
 	@echo "Done installing POSTGIS maybe"
 
 .PHONY: install_poetry
