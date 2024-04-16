@@ -686,6 +686,30 @@ class OperationAndFacilityCommonInfo(TimeStampedModel):
 
     name = models.CharField(max_length=1000, db_comment="An operation or facility's name")
     type = models.CharField(max_length=1000, db_comment="An operation or facility's type")
+    address = models.ForeignKey(
+        Address, on_delete=models.DO_NOTHING, db_comment="The address of the operation or facility"
+    )
+
+    class Meta:
+        abstract = True
+        db_table_comment = "An abstract base class (used for putting common information into a number of other models) containing fields for operations and facilities"
+
+
+class Operation(OperationAndFacilityCommonInfo):
+    """Operation model"""
+
+    class Statuses(models.TextChoices):
+        NOT_STARTED = "Not Started"
+        DRAFT = "Draft"
+        PENDING = "Pending"
+        APPROVED = "Approved"
+        DECLINED = "Declined"
+        CHANGES_REQUESTED = "Changes Requested"
+
+    id = models.UUIDField(
+        primary_key=True, default=uuid.uuid4, db_comment="Primary key to identify the operation", verbose_name="ID"
+    )
+
     naics_code = models.ForeignKey(
         NaicsCode,
         on_delete=models.DO_NOTHING,
@@ -711,26 +735,6 @@ class OperationAndFacilityCommonInfo(TimeStampedModel):
         null=True,
     )
 
-    class Meta:
-        abstract = True
-        db_table_comment = "An abstract base class (used for putting common information into a number of other models) containing fields for operations and facilities"
-        db_table = 'erc"."operation'
-
-
-class Operation(OperationAndFacilityCommonInfo):
-    """Operation model"""
-
-    class Statuses(models.TextChoices):
-        NOT_STARTED = "Not Started"
-        DRAFT = "Draft"
-        PENDING = "Pending"
-        APPROVED = "Approved"
-        DECLINED = "Declined"
-        CHANGES_REQUESTED = "Changes Requested"
-
-    id = models.UUIDField(
-        primary_key=True, default=uuid.uuid4, db_comment="Primary key to identify the operation", verbose_name="ID"
-    )
     operator = models.ForeignKey(
         Operator,
         on_delete=models.DO_NOTHING,
@@ -802,7 +806,7 @@ class Operation(OperationAndFacilityCommonInfo):
     )
 
     class Meta:
-        db_table_comment = "Operations (also called facilities)"
+        db_table_comment = "Operations "
         db_table = 'erc"."operation'
         constraints = [
             models.UniqueConstraint(
@@ -875,6 +879,39 @@ class Operation(OperationAndFacilityCommonInfo):
     def __str__(self) -> str:
         fields = [f"{field.name}={getattr(self, field.name)}" for field in self._meta.fields]
         return ' - '.join(fields)
+
+
+class Facility(OperationAndFacilityCommonInfo):
+    id = models.UUIDField(
+        primary_key=True, default=uuid.uuid4, db_comment="Primary key to identify the facility", verbose_name="ID"
+    )
+    new_entrant = models.BooleanField(db_comment="Whether or not the facility is a new entrant")
+    history = HistoricalRecords(
+        table_name='erc_history"."facility_history',
+        history_user_id_field=models.UUIDField(null=True, blank=True),
+    )
+
+    class Meta:
+        db_table_comment = "Facilities "
+        db_table = 'erc"."facility'
+
+
+class WellAuthorizationNumber(TimeStampedModel):
+    well_authorization_number = models.IntegerField(
+        db_comment="A well authorization number from the BC Energy Regulator"
+    )
+    facility = models.ForeignKey(Facility, on_delete=models.DO_NOTHING, related_name="well_authorization_numbers")
+
+    history = HistoricalRecords(
+        table_name='erc_history"."well_authorization_number_history',
+        history_user_id_field=models.UUIDField(null=True, blank=True),
+    )
+
+    class Meta:
+        db_table_comment = (
+            "A table containing well authorization numbers. Facilities can have multiple well authorization numbers."
+        )
+        db_table = 'erc"."well_authorization_number'
 
 
 class MultipleOperator(TimeStampedModel):
