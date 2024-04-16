@@ -11,17 +11,25 @@ const styles = {
     minHeight: "60px!important",
   },
   "& .MuiDataGrid-columnHeader": {
+    border: "1px white solid",
     borderBottom: "none",
     borderTop: "none",
     color: "white",
     backgroundColor: BC_GOV_BACKGROUND_COLOR_BLUE,
     fontWeight: "bold",
+  },
+  "& .MuiDataGrid-columnHeadersInner": {
+    flexDirection: "column-reverse",
+  },
+  "&. MuiDataGrid-columnHeaderTitleContainerContent": {
+    display: "flex",
     justifyContent: "center",
+    alignItems: "center",
+    height: "100%",
   },
   "& .MuiDataGrid-columnHeaders": {
     backgroundColor: BC_GOV_BACKGROUND_COLOR_BLUE,
     display: "flex",
-    flexDirection: "column-reverse",
     // If column group headers are present, make the background white
     "& [role=row]:first-of-type:not(:only-child)": {
       "& .MuiDataGrid-columnHeader": {
@@ -29,7 +37,7 @@ const styles = {
         borderRight: "1px rgba(224, 224, 224, 1) solid",
         padding: 0,
       },
-      "& .MuiDataGrid-columnHeader:nth-last-of-type(3)": {
+      "& .MuiDataGrid-columnHeader:last-of-type": {
         borderRight: "none",
       },
     },
@@ -38,6 +46,9 @@ const styles = {
     borderLeft: "none",
   },
   "& .MuiDataGrid-columnHeader:last-of-type": {
+    borderRight: "none",
+  },
+  "& .MuiDataGrid-cell--withRightBorder:last-of-type": {
     borderRight: "none",
   },
   "& .MuiDataGrid-columnHeaderTitleContainer": {
