@@ -1,6 +1,5 @@
 from registration.decorators import handle_http_errors
 from service.data_access_service.user_service import UserDataAccessService
-from registration.models import User
 from registration.schema import UserAppRoleOut, Message
 from registration.api.api_base import router
 from ninja.responses import codes_4xx
