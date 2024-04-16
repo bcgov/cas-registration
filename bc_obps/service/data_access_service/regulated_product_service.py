@@ -3,13 +3,14 @@ from registration.schema import (
     RegulatedProductSchema,
 )
 from django.core.cache import cache
+from typing import List
 
 ##### GET #####
 
 
 class RegulatedProductDataAccessService:
     @classmethod
-    def get_regulated_products(cls):
+    def get_regulated_products(cls) -> List[RegulatedProduct]:
         cached_data = cache.get("regulated_products")
         if cached_data:
             return cached_data
