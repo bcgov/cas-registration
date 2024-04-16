@@ -2,7 +2,10 @@ from typing import List, Optional
 import re
 from uuid import UUID
 import uuid
-from django.db import models
+from django.contrib.gis.db import models
+from django.contrib.gis.geos import Point
+
+# from django.db import modelss
 from phonenumber_field.modelfields import PhoneNumberField
 from localflavor.ca.models import CAPostalCodeField, CAProvinceField
 from registration.constants import (
@@ -97,6 +100,7 @@ class AppRole(BaseModel):
         db_comment='The name identifying the role assigned to a user. This role defines their permissions within the app. Also acts as the primary key.',
         max_length=100,
     )
+    location = models.PointField(geography=True, default=Point(0.0, 0.0))
     role_description = models.CharField(db_comment='Description of the app role', max_length=1000)
     history = HistoricalRecords(
         table_name='erc_history"."app_role_history',
