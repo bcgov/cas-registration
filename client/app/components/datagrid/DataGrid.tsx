@@ -124,6 +124,7 @@ const DataGrid: React.FC<Props> = ({
         loading={loading}
         rowCount={rowCount}
         showCellVerticalBorder
+        experimentalFeatures={{ columnGrouping: true, ariaV7: true }}
         disableColumnMenu
         initialState={{
           pagination: { paginationModel: { pageSize: PAGE_SIZE } },

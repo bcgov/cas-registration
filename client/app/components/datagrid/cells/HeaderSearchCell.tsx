@@ -45,33 +45,31 @@ const HeaderSearchCell = ({
   };
 
   return (
-    <div className="w-full">
-      <TextField
-        className="w-full px-2 py-1"
-        placeholder="Search"
-        onBlur={handleResetFocus}
-        onChange={handleChange}
-        value={searchState}
-        type="text"
-        inputRef={(input) => {
-          if (isFocused) {
-            input?.focus();
-          }
-        }}
-        onFocus={(e) => {
-          // Move the cursor to the end of the input field when focused
-          e.currentTarget.setSelectionRange(
-            e.currentTarget.value.length,
-            e.currentTarget.value.length,
-          );
-        }}
-        sx={{
-          input: {
-            padding: "8px",
-          },
-        }}
-      />
-    </div>
+    <TextField
+      className="w-full px-2 py-1"
+      placeholder="Search"
+      onBlur={handleResetFocus}
+      onChange={handleChange}
+      value={searchState}
+      type="text"
+      inputRef={(input) => {
+        if (isFocused) {
+          input?.focus();
+        }
+      }}
+      onFocus={(e) => {
+        // Move the cursor to the end of the input field when focused
+        e.currentTarget.setSelectionRange(
+          e.currentTarget.value.length,
+          e.currentTarget.value.length,
+        );
+      }}
+      sx={{
+        input: {
+          padding: "8px",
+        },
+      }}
+    />
   );
 };
 
