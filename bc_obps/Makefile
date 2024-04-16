@@ -24,6 +24,7 @@ install_backend_asdf_tools:
 	@#MAKELEVEL=0 is required because of https://www.postgresql.org/message-id/1118.1538056039%40sss.pgh.pa.us
 	@MAKELEVEL=0 POSTGRES_EXTRA_CONFIGURE_OPTIONS='--with-libxml' asdf install
 	@asdf reshim
+	@apt-get install postgis
 	@echo "Done installing backend asdf tools"
 
 .PHONY: install_poetry
