@@ -26,5 +26,5 @@
     }
   },
   "include": ["../**/*", "./.eslintrc.js", ".next/types/**/*.ts"],
-  "exclude": [".next", "node_modules", "public", "../bc_obps"]
+  "exclude": [".next", "node_modules", "public", "../bc_obps", "../bciers"]
 }
