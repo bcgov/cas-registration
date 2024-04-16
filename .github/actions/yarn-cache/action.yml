@@ -10,3 +10,8 @@ runs:
           ~/.cache/yarn
           ./client/node_modules
         key: ${{ runner.os }}-yarn-cache-${{ hashFiles('client/yarn.lock') }}-v2
+    - name: Install yarn dependencies
+      if: steps.yarn-cache.outputs.cache-hit != 'true'
+      run: yarn install
+      working-directory: ./client
+      shell: bash
