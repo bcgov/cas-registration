@@ -23,6 +23,7 @@ django-simple-history = "^3.4"
 gunicorn = "^21.2.0"
 sentry-sdk = {extras = ["django"], version = "^1.39.2"}
 dj-database-url = "^2.1.0"
+pytest-mock = "^3.14.0"
 
 [tool.poetry.group.dev.dependencies]
 black = "^24.3.0"
