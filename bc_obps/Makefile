@@ -26,6 +26,7 @@ install_backend_asdf_tools:
 	@asdf reshim
 	@echo "Done installing backend asdf tools"
 	@sudo apt-get install postgis
+	@echo "Done installing POSTGIS maybe"
 
 .PHONY: install_poetry
 install_poetry: ## install poetry (MacOS/Linux only)
