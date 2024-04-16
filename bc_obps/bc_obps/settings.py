@@ -37,6 +37,10 @@ BYPASS_ROLE_ASSIGNMENT = os.environ.get("BYPASS_ROLE_ASSIGNMENT", False) == "Tru
 
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "localhost").split(",")
 
+CHES_CLIENT_ID = os.environ.get("CHES_CLIENT_ID")
+CHES_CLIENT_SECRET = os.environ.get("CHES_CLIENT_SECRET")
+CHES_TOKEN_ENDPOINT = os.environ.get("CHES_TOKEN_ENDPOINT")
+CHES_API_URL = os.environ.get("CHES_API_URL")
 
 # Application definition
 
