@@ -10,7 +10,7 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 
 
 @router.get(
-    "/user_operator/user-operator-initial-requests",
+    "/user-operator/user-operator-initial-requests",
     response={200: UserOperatorPaginatedOut, custom_codes_4xx: Message},
     url_name="list_user_operators",
 )

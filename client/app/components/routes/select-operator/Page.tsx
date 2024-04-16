@@ -13,7 +13,7 @@ import { getUserFullName } from "@/app/utils/getUserFullName";
 export const getUserOperator = async () => {
   try {
     return await actionHandler(
-      `registration/user_operator/user-operator-from-user`,
+      `registration/user-operator/user-operator-from-user`,
       "GET",
       "",
     );

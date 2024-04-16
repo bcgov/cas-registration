@@ -9,7 +9,7 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 
 
 @router.get(
-    "/user_operator/user-operator-list-from-user",
+    "/user-operator/user-operator-list-from-user",
     response={200: List[ExternalDashboardUsersTileData], custom_codes_4xx: Message},
     url_name="get_user_operator_list_from_user",
 )

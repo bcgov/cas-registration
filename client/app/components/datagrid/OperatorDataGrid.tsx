@@ -14,7 +14,7 @@ const fetchUserOperatorPageData = async (
   try {
     // fetch data from server
     const pageData = await actionHandler(
-      `registration/user_operator/user-operator-initial-requests?page=${page}&sort_field=${sortField}&sort_order=${sortOrder}`,
+      `registration/user-operator/user-operator-initial-requests?page=${page}&sort_field=${sortField}&sort_order=${sortOrder}`,
       "GET",
       "",
     );

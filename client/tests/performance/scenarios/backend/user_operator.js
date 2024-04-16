@@ -24,7 +24,7 @@ const userOperator = () => {
   check(
     http.get(
       HOST +
-        `/user_operator/is-approved-admin-user-operator/${INDUSTRY_USER_GUID}`,
+        `/user-operator/is-approved-admin-user-operator/${INDUSTRY_USER_GUID}`,
       industryUserParams,
     ),
     {
@@ -42,7 +42,7 @@ const userOperator = () => {
   });
 
   const getUserOperatorId = http.get(
-    HOST + "/user_operator/user-operator-id",
+    HOST + "/user-operator/user-operator-id",
     industryUserParams,
   );
 
@@ -75,7 +75,7 @@ const userOperator = () => {
 
   check(
     http.get(
-      HOST + "/user_operator/user-operator-list-from-user",
+      HOST + "/user-operator/user-operator-list-from-user",
       industryUserParams,
     ),
     {
