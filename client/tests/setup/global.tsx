@@ -8,7 +8,9 @@ import {
   actionHandler,
   getServerSession,
   useParams,
+  usePathname,
   useRouter,
+  useSearchParams,
   useSession,
 } from "@/tests/setup/mocks";
 
@@ -24,6 +26,8 @@ expect.extend(matchers);
 vi.mock("next/navigation", () => ({
   useRouter,
   useParams,
+  usePathname,
+  useSearchParams,
 }));
 
 vi.mock("next-auth/react", async () => ({
