@@ -384,7 +384,7 @@ cd client &&  npx playwright show-trace test-results/setup-trace.zip
 
 ### Accessibility testing with Playwright and Axe
 
-[Playwright accessiblity testing ocumentation](https://playwright.dev/docs/accessibility-testing)
+[Playwright accessiblity testing documentation](https://playwright.dev/docs/accessibility-testing)
 
 Accessiblity is important. To test a page for accessibility issues import the `analyzeAccessibility` helper function in a playwright e2e test and pass it the page object:
 
