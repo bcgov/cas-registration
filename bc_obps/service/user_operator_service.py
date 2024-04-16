@@ -1,18 +1,21 @@
 from uuid import UUID
+from common_utils.email.email_service import EmailService
+from common_utils.enums import AdminAccessRequestStates
 from registration.utils import update_model_instance
 from service.addresses_service import AddressesService
 from service.data_access_service.user_operator_service import UserOperatorDataAccessService
 from registration.schema.user_operator import UserOperatorOperatorIn, UserOperatorPaginatedOut
 from service.data_access_service.user_service import UserDataAccessService
 from service.data_access_service.operator_service import OperatorDataAccessService
-from registration.models import Operator, User, UserOperator, BusinessRole, Operation
+from registration.models import Operator, User, UserOperator, BusinessRole
 from django.db import transaction
 import pytz
 from datetime import datetime
-from typing import List
 from django.core.paginator import Paginator
 from django.forms import model_to_dict
 from registration.constants import PAGE_SIZE
+
+email_service = EmailService()
 
 
 class UserOperatorService:
@@ -211,6 +214,14 @@ class UserOperatorService:
 
             if user_operator.status == UserOperator.Statuses.APPROVED and updated_role != UserOperator.Roles.PENDING:
                 user_operator.role = updated_role
+
+            # Send email to user if their request was approved or declined(using the appropriate email template)
+            email_service.send_admin_access_request_email(
+                AdminAccessRequestStates(user_operator.status),
+                operator.legal_name,
+                user_operator.user.get_full_name(),
+                user_operator.user.email,
+            )
 
         elif user_operator.status == UserOperator.Statuses.PENDING:
             user_operator.verified_at = None
