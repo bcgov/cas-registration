@@ -15,6 +15,15 @@ export interface ExternalDashboardUsersTile {
   id: string;
 }
 
+export interface UserOperatorDataGridRow {
+  id: string;
+  name: string;
+  email: string;
+  business: string;
+  accessType: string;
+  status: string | Status;
+}
+
 export async function getExternalDashboardUsersTileData(): Promise<
   ExternalDashboardUsersTile[]
 > {
@@ -74,6 +83,6 @@ export async function processExternalDashboardUsersTileData() {
   });
 
   return {
-    rows: rowData,
+    rows: rowData as UserOperatorDataGridRow[],
   };
 }
