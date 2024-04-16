@@ -23,13 +23,13 @@ const styles = {
     display: "flex",
     flexDirection: "column-reverse",
     // If column group headers are present, make the background white
-    "& [role=row]:first-child:not(:only-child)": {
+    "& [role=row]:first-of-type:not(:only-child)": {
       "& .MuiDataGrid-columnHeader": {
         backgroundColor: "white",
         borderRight: "1px rgba(224, 224, 224, 1) solid",
         padding: 0,
       },
-      "& .MuiDataGrid-columnHeader:nth-last-child(3)": {
+      "& .MuiDataGrid-columnHeader:nth-last-of-type(3)": {
         borderRight: "none",
       },
     },
