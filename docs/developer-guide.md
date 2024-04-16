@@ -241,6 +241,12 @@ To find locators, leverage Playwright's code generation feature. Use the followi
 cd client && npx playwright codegen http://localhost:3000
 ```
 
+### Authenticated State
+
+Playwright executes tests in isolated environments called browser contexts. This isolation model improves reproducibility and prevents cascading test failures. Tests can load existing authenticated state. This eliminates the need to authenticate in every test and speeds up test execution.
+
+Our strategy for createing and loading authenticated states of the app's user by role is documented [here](https://github.com/bcgov/cas-registration/issues/1101).
+
 ### Visual Comparisons
 
 [Happo](https://happo.io/) is a cross browser screenshot testing library used to test for visual regressions. It is integrated with Playwright to capture screenshots of your application and compare them against a baseline to detect any visual changes and will upload the screenshots to the happo servers.
@@ -330,7 +336,6 @@ Note: you can uncomment the `webServer` array in `playwright.config.ts` to run t
 3.0 Run the tests:
 
 Run tests from new terminal command:
-Run tests in the background using terminal command:
 
 ```bash
 cd client && yarn e2e
