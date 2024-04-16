@@ -45,7 +45,7 @@ const DataGrid: React.FC<Props> = ({
   initialData,
 }) => {
   const [rows, setRows] = useState(initialData.rows ?? []);
-  const [rowCount, setRowCount] = useState(initialData.row_count ?? 0);
+  const [rowCount, setRowCount] = useState(initialData.row_count ?? undefined);
   const [loading, setLoading] = useState(false);
   const [isComponentMounted, setIsComponentMounted] = useState(false);
   const searchParams = useSearchParams();
