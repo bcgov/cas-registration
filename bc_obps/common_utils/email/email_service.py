@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from typing import List, Optional
 from uuid import UUID
+from common_utils.enums import AdminAccessRequestStates
 import logging, requests
 from common.models import EmailNotification, EmailNotificationTemplate
 from django.conf import settings
@@ -213,16 +214,21 @@ class EmailService(object):
             template_id=template_id,
         )
 
-    def send_admin_access_request_confirmation_email(
-        self, operator_legal_name: str, external_user_full_name: str, external_user_email_address: str
+    def send_admin_access_request_email(
+        self,
+        state: AdminAccessRequestStates,
+        operator_legal_name: str,
+        external_user_full_name: str,
+        external_user_email_address: str,
     ) -> None:
         """
-        Sends an email to the external user confirming their admin access request.
+        Sends an email for an admin access request.
 
         Args:
-            operator_legal_name: The legal name of the operator.
-            external_user_full_name: The full name of the external user.
-            external_user_email_address: The email address of the external user.
+            state: The state of the admin access request.
+            operator_legal_name: The legal name of the operator to use in the email template.
+            external_user_full_name: The full name of the external user to use in the email template.
+            external_user_email_address: The email address of the external user to use in the email template.
 
         Raises:
             ValueError: If the email template is not found.
@@ -231,7 +237,12 @@ class EmailService(object):
             None
         """
         try:
-            template = EmailNotificationTemplate.objects.get(name='Admin Access Request Confirmation')
+            template_name = {
+                AdminAccessRequestStates.CONFIRMATION: 'Admin Access Request Confirmation',
+                AdminAccessRequestStates.APPROVED: 'Admin Access Request Approved',
+                AdminAccessRequestStates.DECLINED: 'Admin Access Request Declined',
+            }
+            template = EmailNotificationTemplate.objects.get(name=template_name[state])
         except EmailNotificationTemplate.DoesNotExist:
             raise ValueError("Email template not found")
 
