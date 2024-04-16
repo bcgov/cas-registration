@@ -1,20 +1,20 @@
 from uuid import UUID
 from registration.schema.user import UserIn, UserOut, UserUpdateIn
-from registration.models import AppRole, UserOperator, User
+from registration.models import AppRole, Operator, UserOperator, User
 
 
 class UserDataAccessService:
-    def get_user_by_guid(user_guid: str):
+    def get_user_by_guid(user_guid: UUID) -> User:
         return User.objects.get(user_guid=user_guid)
 
-    def get_user_business_guid(user_guid: str):
+    def get_user_business_guid(user_guid: UUID) -> UUID:
         return User.objects.get(user_guid=user_guid).business_guid
 
-    def get_operator_by_user(user_guid: str):
+    def get_operator_by_user(user_guid: UUID) -> Operator:
         user_operator = UserDataAccessService.get_user_operator_by_user(user_guid)
         return user_operator.operator
 
-    def get_user_operator_by_user(user_guid: str):
+    def get_user_operator_by_user(user_guid: UUID) -> UserOperator:
         user_operator = (
             UserOperator.objects.only("id", "status", "operator__id", "operator__is_new", "operator__status")
             .exclude(
@@ -31,23 +31,23 @@ class UserDataAccessService:
         ).exists()
         return {"approved": approved_user_operator}
 
-    def is_users_user_operator_declined(user_guid: str, operator_id: UUID):
+    def is_users_user_operator_declined(user_guid: UUID, operator_id: UUID) -> bool:
         is_declined = UserOperator.objects.filter(
             operator_id=operator_id, user_id=user_guid, status=UserOperator.Statuses.DECLINED
         ).exists()
         return is_declined
 
-    def get_user_app_role(user_guid):
+    def get_user_app_role(user_guid: UUID) -> AppRole:
         return User.objects.only('app_role').select_related('app_role').get(user_guid=user_guid)
 
-    def get_user_profile(user_guid):
+    def get_user_profile(user_guid: UUID):
         return (
             User.objects.only(*UserOut.Config.model_fields, "app_role")
             .select_related('app_role')
             .get(user_guid=user_guid)
         )
 
-    def create_user(user_guid, role: AppRole, user_data: UserIn):
+    def create_user(user_guid: UUID, role: AppRole, user_data: UserIn) -> User:
         return User.objects.create(
             user_guid=user_guid,
             business_guid=user_data.business_guid,
@@ -60,7 +60,7 @@ class UserDataAccessService:
             phone_number=user_data.phone_number,
         )
 
-    def update_user(user_guid, updated_data: UserUpdateIn):
+    def update_user(user_guid: UUID, updated_data: UserUpdateIn) -> User:
         user: User = UserDataAccessService.get_user_by_guid(user_guid)
         for attr, value in updated_data.dict().items():
             setattr(user, attr, value)

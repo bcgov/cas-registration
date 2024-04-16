@@ -1,11 +1,13 @@
 from django.conf import settings
+from registration.schema.user import UserIn
 from service.data_access_service.user_service import UserDataAccessService
 from registration.models import AppRole
 from registration.enums.enums import IdPs
+from uuid import UUID
 
 
 class UserService:
-    def create_user_profile(user_guid, identity_provider, user_data):
+    def create_user_profile(user_guid: UUID, identity_provider: str, user_data: UserIn):
         # Determine the role based on the identity provider
         role_mapping = {
             IdPs.IDIR.value: AppRole.objects.get(role_name="cas_admin")
