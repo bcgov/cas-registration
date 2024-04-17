@@ -204,33 +204,31 @@ class TestOperatorsEndpoint(CommonTestSetup):
     # declining a new operator declines the prime admin request too
     def test_put_decline_new_operator(self):
         operator = operator_baker({'status': Operator.Statuses.PENDING, 'is_new': True})
-        user_operator = user_operator_baker({'operator': operator})
-        user_operator_2 = user_operator_baker({'operator': operator})
-        user_operator_3 = user_operator_baker({'operator': operator})
+        user_operators = [
+            user_operator_baker({'operator': operator}) for _ in range(3)
+        ]  # Create a list of user operators
 
         response = TestUtils.mock_put_with_auth_role(
             self,
             'cas_admin',
             self.content_type,
-            {"status": Operator.Statuses.DECLINED, 'user_operator_id': user_operator.id},
+            {
+                "status": Operator.Statuses.DECLINED,
+                'user_operator_id': user_operators[0].id,
+            },  # Setting status for the first user operator
             custom_reverse_lazy('update_operator_status', kwargs={'operator_id': operator.id}),
         )
 
         assert response.status_code == 200
-
         assert response.json().get('status') == Operator.Statuses.DECLINED
         assert response.json().get('is_new') == False
         assert response.json().get("verified_by") == str(self.user.user_guid)
+
         # Verify that all user operators tied to this operator are declined
-        user_operator.refresh_from_db()  # refresh the user_operator object to get the updated status
-        user_operator_2.refresh_from_db()
-        user_operator_3.refresh_from_db()
-        assert user_operator.status == UserOperator.Statuses.DECLINED
-        assert user_operator.verified_by == self.user
-        assert user_operator_2.status == UserOperator.Statuses.DECLINED
-        assert user_operator_2.verified_by == self.user
-        assert user_operator_3.status == UserOperator.Statuses.DECLINED
-        assert user_operator_3.verified_by == self.user
+        for user_operator in user_operators:
+            user_operator.refresh_from_db()  # Refresh the user_operator object to get the updated status
+            assert user_operator.status == UserOperator.Statuses.DECLINED
+            assert user_operator.verified_by == self.user
 
     # declining an existing operator only declines the operator, not the user_operator
     def test_put_decline_existing_operator(self):
