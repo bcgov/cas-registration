@@ -10,16 +10,12 @@ import { UsersPOM } from "@/e2e/poms/users";
 // 🛠️ Helpers
 import {
   addPdf,
-<<<<<<< HEAD
   analyzeAccessibility,
-  setupTestEnvironment,
-=======
   clearTableFilter,
   filterTableByFieldId,
   setupTestEnvironment,
   sortTableByColumnLabel,
   tableRowCount,
->>>>>>> 93412d8e (test: add industry admin operation table sorting and filtering tests)
 } from "@/e2e/utils/helpers";
 import * as dotenv from "dotenv";
 dotenv.config({ path: "./e2e/.env.local" });
