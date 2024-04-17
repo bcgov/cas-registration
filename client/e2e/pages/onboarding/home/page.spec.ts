@@ -23,7 +23,7 @@ import * as dotenv from "dotenv";
 dotenv.config({ path: "./e2e/.env.local" });
 import happoPlaywright from "happo-playwright";
 // Helpers
-import { analyzeAccessibility } from "@/e2e/utils/helpers";
+import { happoWithAxe } from "@/e2e/utils/helpers";
 
 // 🏷 Annotate test suite as serial
 test.describe.configure({ mode: "serial" });
@@ -87,14 +87,7 @@ test.describe("Test Page - Home", () => {
     const homePage = new HomePOM(page);
     await homePage.route();
 
-    const pageContent = page.locator("html");
-
-    await happoPlaywright.screenshot(homePage.page, pageContent, {
-      component: "Home page",
-      variant: "default",
-    });
-    // ♿️ Analyze accessibility
-    await analyzeAccessibility(page);
+    await happoWithAxe(page, "Home page", "default");
   });
 
   test.describe(`Test User Role`, () => {

@@ -23,7 +23,7 @@ import * as dotenv from "dotenv";
 dotenv.config({ path: "./e2e/.env.local" });
 const happoPlaywright = require("happo-playwright");
 // Helpers
-import { analyzeAccessibility } from "@/e2e/utils/helpers";
+import { happoWithAxe } from "@/e2e/utils/helpers";
 
 // 📚 Declare a beforeAll hook that is executed once per worker process before all tests.
 // 🥞 Set DB for dashboard tiles
@@ -98,13 +98,7 @@ test.describe("Test Dashboard Page", () => {
             // 🔍 Assert that the current URL ends with "/dashboard"
             await dashboardPage.urlIsCorrect();
             // 📷 Cheese!
-            const pageContent = page.locator("html");
-            await happoPlaywright.screenshot(dashboardPage.page, pageContent, {
-              component: `${role} Dashboard page`,
-              variant: "default",
-            });
-            // ♿️ Analyze accessibility
-            await analyzeAccessibility(page);
+            await happoWithAxe(page, `${role} Dashboard page`, "default");
             break;
         }
       });

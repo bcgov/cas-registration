@@ -16,6 +16,7 @@ import {
   MessageTextResponse,
 } from "@/e2e/utils/enums";
 import AxeBuilder from "@axe-core/playwright";
+const happoPlaywright = require("happo-playwright");
 
 // 🛠️ Function: analyze the accessibility of the page
 export async function analyzeAccessibility(page: Page) {
@@ -24,6 +25,19 @@ export async function analyzeAccessibility(page: Page) {
   }).analyze();
 
   expect(accessibilityScanResults.violations).toEqual([]);
+}
+
+export async function happoWithAxe(
+  page: Page,
+  component: string,
+  variant: string,
+) {
+  const pageContent = page.locator("html");
+  await happoPlaywright.screenshot(page, pageContent, {
+    component: component,
+    variant: variant,
+  });
+  await analyzeAccessibility(page);
 }
 
 export async function addPdf(page: Page, index: number = 0) {
