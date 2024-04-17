@@ -698,7 +698,7 @@ class OperationAndFacilityCommonInfo(TimeStampedModel):
         db_comment="The address of the operation or facility",
         blank=True,
         null=True,
-        related_name="operation_or_facility_address",
+        related_name='%(class)s_address',
     )
 
     class Meta:
@@ -891,6 +891,39 @@ class Operation(OperationAndFacilityCommonInfo):
     def __str__(self) -> str:
         fields = [f"{field.name}={getattr(self, field.name)}" for field in self._meta.fields]
         return ' - '.join(fields)
+
+
+class Facility(OperationAndFacilityCommonInfo):
+    id = models.UUIDField(
+        primary_key=True, default=uuid.uuid4, db_comment="Primary key to identify the facility", verbose_name="ID"
+    )
+    new_entrant = models.BooleanField(db_comment="Whether or not the facility is a new entrant")
+    history = HistoricalRecords(
+        table_name='erc_history"."facility_history',
+        history_user_id_field=models.UUIDField(null=True, blank=True),
+    )
+
+    class Meta:
+        db_table_comment = "Facilities "
+        db_table = 'erc"."facility'
+
+
+class WellAuthorizationNumber(TimeStampedModel):
+    well_authorization_number = models.IntegerField(
+        db_comment="A well authorization number from the BC Energy Regulator"
+    )
+    facility = models.ForeignKey(Facility, on_delete=models.DO_NOTHING, related_name="well_authorization_numbers")
+
+    history = HistoricalRecords(
+        table_name='erc_history"."well_authorization_number_history',
+        history_user_id_field=models.UUIDField(null=True, blank=True),
+    )
+
+    class Meta:
+        db_table_comment = (
+            "A table containing well authorization numbers. Facilities can have multiple well authorization numbers."
+        )
+        db_table = 'erc"."well_authorization_number'
 
 
 class MultipleOperator(TimeStampedModel):
