@@ -343,16 +343,18 @@ export async function sortTableByColumnLabel(
   // wait for response to complete
   await page.waitForResponse((response) => response.status() === 200);
 
+  // TODO: Find a better way to wait for the table to be sorted
   await page.waitForTimeout(1000);
 
   const table = page.locator(DataTestID.GRID);
 
-  const sortedCell = await getRowCellBySelector(
+  // Get the first row cell that was sorted
+  const firstSortedCell = await getRowCellBySelector(
     table,
     `[aria-colindex="${colIndex}"]`
   );
 
-  expect(await sortedCell.textContent()).toBe(sortedCellTextContent);
+  expect(firstSortedCell).toHaveText(sortedCellTextContent);
 }
 export async function filterTableByFieldId(
   page: Page,
@@ -368,6 +370,7 @@ export async function filterTableByFieldId(
   // wait for response to complete
   await page.waitForResponse((response) => response.status() === 200);
 
+  // TODO: Find a better way to wait for the table to be filtered
   await page.waitForTimeout(1000);
 
   if (expectEmptyTable) {
@@ -381,12 +384,14 @@ export async function filterTableByFieldId(
     .getAttribute("aria-colindex");
 
   const table = page.locator(DataTestID.GRID);
-  const filteredCell = await getRowCellBySelector(
+
+  // get the first row cell that was filtered
+  const firstFilteredCell = await getRowCellBySelector(
     table,
     `[aria-colindex="${colIndex}"]`
   );
 
-  expect(await filteredCell.textContent()).toContain(filterValue);
+  expect(firstFilteredCell).toContainText(filterValue);
 }
 
 export async function tableRowCount(page: Page, expectedRowCount: number) {
