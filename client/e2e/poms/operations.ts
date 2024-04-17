@@ -150,10 +150,10 @@ export class OperationsPOM {
     });
     this.messageInternal = page.getByText(this.internalNote);
     this.messageOperationApproved = page.getByTestId(
-      DataTestID.OPERATION_APPROVED_MESSAGE,
+      DataTestID.OPERATION_APPROVED_MESSAGE
     );
     this.messageOperationDeclined = page.getByTestId(
-      DataTestID.OPERATION_DECLINED_MESSAGE,
+      DataTestID.OPERATION_DECLINED_MESSAGE
     );
 
     this.table = page.locator(DataTestID.GRID);
@@ -191,7 +191,7 @@ export class OperationsPOM {
     // Locate row containing the status
     const row = await getTableRowByCellSelector(
       this.table,
-      `[data-field="${TableDataField.STATUS}"]:has-text("${status}")`,
+      `[data-field="${TableDataField.STATUS}"]:has-text("${status}")`
     );
 
     // Click the `View Detail` for this row
@@ -218,7 +218,7 @@ export class OperationsPOM {
         await checkLocatorsVisibility(
           this.page,
           [this.buttonApprove, this.buttonDecline, this.buttonRequestChange],
-          false,
+          false
         );
         break;
       case OperationStatus.PENDING:
@@ -240,12 +240,12 @@ export class OperationsPOM {
   async formHasExpectedWorkflow(
     role: string,
     status: string,
-    workflowNumber: number,
+    workflowNumber: number
   ) {
     // Find a row by status
     const row = await getTableRowByCellSelector(
       this.table,
-      `[data-field="${TableDataField.STATUS}"]:has-text("${status}")`,
+      `[data-field="${TableDataField.STATUS}"]:has-text("${status}")`
     );
     await row.getByRole("link", { name: ButtonText.VIEW_DETAILS }).click();
 
@@ -260,7 +260,7 @@ export class OperationsPOM {
             // - can undo request changes
             // - can approve
 
-            // cas_admin can Request Changes
+            // cas_admin; cas_analyst can Request Changes
             await this.buttonRequestChange.click();
             await checkLocatorsVisibility(this.page, [
               this.buttonRequestChangeConfirm,
@@ -269,15 +269,15 @@ export class OperationsPOM {
             await this.buttonRequestChangeConfirm.click();
             await expect(this.buttonRequestChangeUndo).toBeVisible();
 
-            // cas_admin can undo Request Changes
+            // cas_admin; cas_analyst can undo Request Changes
             await this.buttonRequestChangeUndo.click();
             await expect(this.buttonRequestChange).toBeVisible();
 
-            // cas_admin can Approve and triggers the generation of a BORO ID
+            // cas_admin; cas_analyst can Approve and triggers the generation of a BORO ID
             await this.workflowReviewAction(
               this.buttonApprove,
               this.buttonConfirmModal,
-              this.alertApproved,
+              this.alertApproved
             );
             // FIXME FOR CI
             // await expect(this.messageOperationApproved).toBeVisible();
@@ -287,11 +287,11 @@ export class OperationsPOM {
             // Workflow: Decline
             // - can decline
 
-            // cas_admin can Decline
+            // cas_admin; cas_analyst can Decline
             await this.workflowReviewAction(
               this.buttonDecline,
               this.buttonConfirmModal,
-              this.alertDeclined,
+              this.alertDeclined
             );
             await expect(this.messageOperationDeclined).toBeVisible();
             break;
@@ -299,7 +299,7 @@ export class OperationsPOM {
             // Status Approved
             // Workflow: Preview the Statutory Declaration PDF
 
-            // cas_admin is able to Preview the Statutory Declaration PDF in any Operation form
+            // cas_admin; cas_analyst is able to Preview the Statutory Declaration PDF in any Operation form
             await this.formSectionStatutoryDisclaimer.click();
             // FIXME FOR CI configs? version bump?
             /* await downloadPDF(
@@ -365,7 +365,7 @@ export class OperationsPOM {
     // Ensure only expected values are in grid
     const allStatusValues = await getTableColumnTextValues(this.table, column);
     const unexpectedValues = allStatusValues.filter(
-      (value) => !expectedValues.includes(value),
+      (value) => !expectedValues.includes(value)
     );
     await expect(unexpectedValues.length).toBe(0);
   }
@@ -398,7 +398,7 @@ export class OperationsPOM {
     btnApplication: Locator,
     btnModal: Locator,
     alertMessage: string | RegExp,
-    index: number = 0,
+    index: number = 0
   ) {
     await btnApplication.click();
     await expect(this.modal).toBeVisible();
