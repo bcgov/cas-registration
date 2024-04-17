@@ -669,6 +669,7 @@ class OperationModelTest(BaseTestCase):
             ("operator", "operator", None, None),
             ("status", "status", 1000, None),
             ("multiple_operator", "multiple operator", None, None),
+            ("address", "address", None, None),
         ]
 
     def test_unique_boro_id_per_operation(self):
@@ -883,6 +884,7 @@ class TestAddressModel(BaseTestCase):
             ("multiple_operator_mailing", "multiple operator", None, None),
             ("parent_operators_physical", "parent operator", None, None),
             ("parent_operators_mailing", "parent operator", None, None),
+            ("operation_or_facility_address", "operation", None, None),
         ]
 
 
