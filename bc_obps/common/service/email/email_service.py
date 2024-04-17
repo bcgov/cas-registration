@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from typing import List, Optional
 from uuid import UUID
-from common_utils.enums import AdminAccessRequestStates
+from common.enums import AdminAccessRequestStates
 import logging, requests
 from common.models import EmailNotification, EmailNotificationTemplate
 from django.conf import settings
