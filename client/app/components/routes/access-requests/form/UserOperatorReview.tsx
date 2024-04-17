@@ -39,7 +39,7 @@ export default function UserOperatorReview({
         "PUT",
         "",
         {
-          body: JSON.stringify({ status, user_operator_id: userOperatorId }),
+          body: JSON.stringify({ status }),
         },
       );
       if (response.status === Status.DECLINED && onDecline) {
