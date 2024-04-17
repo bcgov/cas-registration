@@ -143,7 +143,6 @@ const DataGrid: React.FC<Props> = ({
         pageSizeOptions={[PAGE_SIZE]}
         sortingMode={paginationMode}
         paginationMode={paginationMode}
-        experimentalFeatures={{ ariaV7: true }}
         onPaginationModelChange={handlePaginationModelChange}
         paginationModel={{
           pageSize: PAGE_SIZE,
