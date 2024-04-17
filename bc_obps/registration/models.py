@@ -818,7 +818,7 @@ class Operation(OperationAndFacilityCommonInfo):
     )
 
     class Meta:
-        db_table_comment = "Operations (also called facilities)"
+        db_table_comment = "Operations"
         db_table = 'erc"."operation'
         constraints = [
             models.UniqueConstraint(
