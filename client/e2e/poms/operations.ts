@@ -230,11 +230,6 @@ export class OperationsPOM {
         ]);
         break;
     }
-
-    // 🛸 Navigate back
-    await this.navigateBack();
-    // 🔍 Assert table is visible
-    await this.tableIsVisible();
   }
 
   async formHasExpectedWorkflow(

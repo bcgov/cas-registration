@@ -162,6 +162,11 @@ test.describe("Test Workflow cas_admin", () => {
         component: "Operations Details Page cas_admin",
         variant: "declined",
       });
+      // 🛸 Navigate back
+      await operationsPage.navigateBack();
+      // 🔍 Assert table is visible
+      await operationsPage.tableIsVisible();
+
       await operationsPage.formHasExpectedUX(OperationStatus.APPROVED);
       // 📷 Cheese!
       pageContent = page.locator("html");
@@ -169,6 +174,11 @@ test.describe("Test Workflow cas_admin", () => {
         component: "Operations Details Page cas_admin",
         variant: "approved",
       });
+      // 🛸 Navigate back
+      await operationsPage.navigateBack();
+      // 🔍 Assert table is visible
+      await operationsPage.tableIsVisible();
+
       await operationsPage.formHasExpectedUX(OperationStatus.PENDING);
       // 📷 Cheese!
       pageContent = page.locator("html");
@@ -176,6 +186,10 @@ test.describe("Test Workflow cas_admin", () => {
         component: "Operations Details Page cas_admin",
         variant: "pending",
       });
+      // 🛸 Navigate back
+      await operationsPage.navigateBack();
+      // 🔍 Assert table is visible
+      await operationsPage.tableIsVisible();
     });
 
     test("Test details form by workflow", async ({ page }) => {
