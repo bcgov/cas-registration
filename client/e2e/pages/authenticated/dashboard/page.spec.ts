@@ -48,7 +48,7 @@ test.beforeAll(async () => {
     await upsertUserOperatorRecord(
       process.env.E2E_INDUSTRY_USER_ADMIN_GUID as string,
       AppRole.ADMIN,
-      UserOperatorStatus.APPROVED,
+      UserOperatorStatus.APPROVED
     );
     // Scenario FrontEndRoles.INDUSTRY_USER where userOperatorStatus !== UserOperatorStatus.APPROVED
     // Shows "Select Operator\...1 pending action(s) required" bceidSelectOperatorTile
@@ -56,7 +56,7 @@ test.beforeAll(async () => {
     // Upsert a User record: bc-cas-dev-secondary
     await upsertUserRecord(UserRole.INDUSTRY_USER);
     await deleteUserOperatorRecord(
-      process.env.E2E_INDUSTRY_USER_GUID as string,
+      process.env.E2E_INDUSTRY_USER_GUID as string
     );
   } catch (error) {
     // eslint-disable-next-line no-console
@@ -80,7 +80,7 @@ test.describe("Test Dashboard Page", () => {
   for (let [role, value] of Object.entries(UserRole)) {
     role = E2EValue.PREFIX + role;
     const storageState = JSON.parse(
-      process.env[role + E2EValue.STORAGE] as string,
+      process.env[role + E2EValue.STORAGE] as string
     );
     test.describe(`Test Role ${value}`, () => {
       // 👤 run test as this role
@@ -100,7 +100,7 @@ test.describe("Test Dashboard Page", () => {
             // 📷 Cheese!
             const pageContent = page.locator("html");
             await happoPlaywright.screenshot(dashboardPage.page, pageContent, {
-              component: `${role} Dashboard page`,
+              component: `Dashboard page ${role}`,
               variant: "default",
             });
             // ♿️ Analyze accessibility

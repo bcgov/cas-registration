@@ -21,15 +21,14 @@ dotenv.config({ path: "./e2e/.env.local" });
 // 🏷 Annotate test suite as serial
 test.describe.configure({ mode: "serial" });
 
-// Hit the test setup endpoint before running the tests to ensure the test data is set up
 test.beforeAll(async () => {
+  // Hit the test setup endpoint before running the tests to ensure the test data is set up
   await setupTestEnvironment(UserRole.CAS_ADMIN);
 });
 
 test.beforeEach(async ({ context }) => {
   // initialize Happo
   await happoPlaywright.init(context);
-  await setupTestEnvironment(UserRole.INDUSTRY_USER_ADMIN);
 });
 test.afterAll(async () => {
   await happoPlaywright.finish();
@@ -56,7 +55,7 @@ test.describe("Test Workflow cas_admin", () => {
       await operatorsPage.tableHasExpectedColumns(UserRole.CAS_ADMIN);
       await operatorsPage.tableHasExpectedColumnValues(
         UserRole.CAS_ADMIN,
-        TableDataField.STATUS,
+        TableDataField.STATUS
       );
       // 📷 Cheese!
       const pageContent = page.locator("html");
@@ -127,7 +126,7 @@ test.describe("Test Workflow cas_admin", () => {
       await operationsPage.tableHasExpectedColumns(UserRole.CAS_ADMIN);
       await operationsPage.tableHasExpectedColumnValues(
         UserRole.CAS_ADMIN,
-        TableDataField.STATUS,
+        TableDataField.STATUS
       );
       // 📷 Cheese!
       const pageContent = page.locator("html");
@@ -173,19 +172,19 @@ test.describe("Test Workflow cas_admin", () => {
       await operationsPage.formHasExpectedWorkflow(
         UserRole.CAS_ADMIN,
         OperationStatus.PENDING,
-        1,
+        1
       );
       // 🔍 Assert cas_admin workflow Pending, Decline
       await operationsPage.formHasExpectedWorkflow(
         UserRole.CAS_ADMIN,
         OperationStatus.PENDING,
-        2,
+        2
       );
       // 🔍 Assert cas_admin workflow Approved, Preview the Statutory Declaration PDF
       await operationsPage.formHasExpectedWorkflow(
         UserRole.CAS_ADMIN,
         OperationStatus.APPROVED,
-        3,
+        3
       );
     });
   });

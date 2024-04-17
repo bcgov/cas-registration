@@ -20,15 +20,14 @@ dotenv.config({ path: "./e2e/.env.local" });
 // 🏷 Annotate test suite as serial
 test.describe.configure({ mode: "serial" });
 
-// Hit the test setup endpoint before running the tests to ensure the test data is set up
 test.beforeAll(async () => {
+  // Hit the test setup endpoint before running the tests to ensure the test data is set up
   await setupTestEnvironment(UserRole.CAS_ANALYST);
 });
 
 test.beforeEach(async ({ context }) => {
   // initialize Happo
   await happoPlaywright.init(context);
-  await setupTestEnvironment(UserRole.INDUSTRY_USER_ADMIN);
 });
 
 test.afterAll(async () => {
@@ -38,7 +37,7 @@ test.afterAll(async () => {
 test.describe("Test Workflow cas_analyst", () => {
   // 👤 run test using the storageState for this role
   const storageState = JSON.parse(
-    process.env.E2E_CAS_ANALYST_STORAGE as string,
+    process.env.E2E_CAS_ANALYST_STORAGE as string
   );
   // Note: specify storageState for each test file
   test.use({ storageState: storageState });
@@ -58,7 +57,7 @@ test.describe("Test Workflow cas_analyst", () => {
       await operatorsPage.tableHasExpectedColumns(UserRole.CAS_ANALYST);
       await operatorsPage.tableHasExpectedColumnValues(
         UserRole.CAS_ANALYST,
-        TableDataField.STATUS,
+        TableDataField.STATUS
       );
       // 📷 Cheese!
       const pageContent = page.locator("html");
@@ -129,7 +128,7 @@ test.describe("Test Workflow cas_analyst", () => {
       await operationsPage.tableHasExpectedColumns(UserRole.CAS_ANALYST);
       await operationsPage.tableHasExpectedColumnValues(
         UserRole.CAS_ANALYST,
-        TableDataField.STATUS,
+        TableDataField.STATUS
       );
       // 📷 Cheese!
       const pageContent = page.locator("html");
@@ -175,19 +174,19 @@ test.describe("Test Workflow cas_analyst", () => {
       await operationsPage.formHasExpectedWorkflow(
         UserRole.CAS_ANALYST,
         OperationStatus.PENDING,
-        1,
+        1
       );
       // 🔍 Assert cas_analyst workflow Pending, Decline
       await operationsPage.formHasExpectedWorkflow(
         UserRole.CAS_ANALYST,
         OperationStatus.PENDING,
-        2,
+        2
       );
       // 🔍 Assert cas_analyst workflow Approved, Preview the Statutory Declaration PDF
       await operationsPage.formHasExpectedWorkflow(
         UserRole.CAS_ANALYST,
         OperationStatus.APPROVED,
-        3,
+        3
       );
     });
   });
