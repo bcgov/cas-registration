@@ -11,7 +11,7 @@ pytestmark = pytest.mark.django_db
 @pytest.fixture
 def email_service(mocker):
     email_service = EmailService()
-    email_service.token_endpoint = "http://mock_token_endpoint"
+    email_service.token_endpoint = "https://mock_token_endpoint"
     email_service.client_id = "mock_client_id"
     email_service.client_secret = "mock_client_secret"
 
