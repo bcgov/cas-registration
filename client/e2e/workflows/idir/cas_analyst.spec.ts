@@ -29,7 +29,7 @@ test.beforeEach(async ({ context }) => {
   await happoPlaywright.init(context);
 });
 
-test.afterAll(async () => {
+test.afterEach(async () => {
   await happoPlaywright.finish();
 });
 
