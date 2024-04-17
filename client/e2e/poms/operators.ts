@@ -150,11 +150,6 @@ export class OperatorsPOM {
         expect(await this.buttonsDecline.count()).toBe(2);
         break;
     }
-
-    // 🛸 Navigate back
-    await this.navigateBack();
-    // 🔍 Assert table is visible
-    await this.tableIsVisible();
   }
 
   async formHasExpectedWorkflow(role: string, workflowNumber: number) {
