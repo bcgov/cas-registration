@@ -359,6 +359,12 @@ class UserModelTest(BaseTestCase):
             ("parentoperator_created", "parent operator", None, None),
             ("parentoperator_updated", "parent operator", None, None),
             ("parentoperator_archived", "parent operator", None, None),
+            ("facility_created", "facility", None, None),
+            ("facility_updated", "facility", None, None),
+            ("facility_archived", "facility", None, None),
+            ("wellauthorizationnumber_created", "well authorization number", None, None),
+            ("wellauthorizationnumber_updated", "well authorization number", None, None),
+            ("wellauthorizationnumber_archived", "well authorization number", None, None),
         ]
 
     def test_unique_user_guid_and_business_guid_constraint(self):
@@ -884,7 +890,8 @@ class TestAddressModel(BaseTestCase):
             ("multiple_operator_mailing", "multiple operator", None, None),
             ("parent_operators_physical", "parent operator", None, None),
             ("parent_operators_mailing", "parent operator", None, None),
-            ("operation_or_facility_address", "operation", None, None),
+            ("facility_address", "facility", None, None),
+            ("operation_address", "operation", None, None),
         ]
 
 
