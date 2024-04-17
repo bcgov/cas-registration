@@ -21,12 +21,6 @@ const styles = {
   "& .MuiDataGrid-columnHeadersInner": {
     flexDirection: "column-reverse",
   },
-  "&. MuiDataGrid-columnHeaderTitleContainerContent": {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    height: "100%",
-  },
   "& .MuiDataGrid-columnHeaders": {
     backgroundColor: BC_GOV_BACKGROUND_COLOR_BLUE,
     display: "flex",
