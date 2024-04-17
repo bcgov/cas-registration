@@ -692,29 +692,13 @@ class OperationAndFacilityCommonInfo(TimeStampedModel):
 
     name = models.CharField(max_length=1000, db_comment="An operation or facility's name")
     type = models.CharField(max_length=1000, db_comment="An operation or facility's type")
-    naics_code = models.ForeignKey(
-        NaicsCode,
+    address = models.ForeignKey(
+        Address,
         on_delete=models.DO_NOTHING,
-        null=True,
-        db_comment="An operation or facility's NAICS code",
-        related_name='%(class)ss',
-    )
-    swrs_facility_id = models.IntegerField(
-        db_comment="An operation or facility's SWRS facility ID. Only needed if the operation/facility submitted a report the previous year.",
+        db_comment="The address of the operation or facility",
         blank=True,
         null=True,
-    )
-    bcghg_id = models.CharField(
-        max_length=1000,
-        db_comment="An operation or facility's BCGHG identifier. Only needed if the operation/facility submitted a report the previous year.",
-        blank=True,
-        null=True,
-    )
-
-    opt_in = models.BooleanField(
-        db_comment="Whether or not the operation/facility is required to register or is simply opting in. Only needed if the operation/facility did not report the previous year.",
-        blank=True,
-        null=True,
+        related_name="operation_or_facility_address",
     )
 
     class Meta:
@@ -746,6 +730,32 @@ class Operation(OperationAndFacilityCommonInfo):
     operation_has_multiple_operators = models.BooleanField(
         db_comment="Whether or not the operation has multiple operators", default=False
     )
+
+    naics_code = models.ForeignKey(
+        NaicsCode,
+        on_delete=models.DO_NOTHING,
+        null=True,
+        db_comment="An operation or facility's NAICS code",
+        related_name='%(class)ss',
+    )
+    swrs_facility_id = models.IntegerField(
+        db_comment="An operation or facility's SWRS facility ID. Only needed if the operation/facility submitted a report the previous year.",
+        blank=True,
+        null=True,
+    )
+    bcghg_id = models.CharField(
+        max_length=1000,
+        db_comment="An operation or facility's BCGHG identifier. Only needed if the operation/facility submitted a report the previous year.",
+        blank=True,
+        null=True,
+    )
+
+    opt_in = models.BooleanField(
+        db_comment="Whether or not the operation/facility is required to register or is simply opting in. Only needed if the operation/facility did not report the previous year.",
+        blank=True,
+        null=True,
+    )
+
     verified_at = models.DateTimeField(
         db_comment="The time the operation was verified by an IRC user. If exists, the operation is registered for OBPS.",
         blank=True,
