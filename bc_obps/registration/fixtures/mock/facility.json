@@ -1,0 +1,11 @@
+[
+  {
+    "model": "registration.facility",
+    "fields": {
+      "name": "Facility 1",
+      "type": "type",
+      "address": 1,
+      "new_entrant": true
+    }
+  }
+]
