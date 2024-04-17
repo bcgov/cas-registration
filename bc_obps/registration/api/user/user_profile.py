@@ -1,4 +1,6 @@
 import json
+from typing import Optional
+from uuid import UUID
 
 from django.shortcuts import get_object_or_404
 from service.user_profile_service import UserService
@@ -15,11 +17,9 @@ from ninja.responses import codes_4xx
 @router.get("/user/user-profile", response={200: UserOut, codes_4xx: Message}, url_name="get_user_profile")
 @handle_http_errors()
 def get_user_profile(request):
-    # brianna here?
-    # return UserDataAccessService.get_user_profile(json.loads(request.headers.get('Authorization')).get('user_guid'))
     user = get_object_or_404(User, user_guid=json.loads(request.headers.get('Authorization')).get('user_guid'))
     try:
-        user_guid = json.loads(request.headers.get('Authorization')).get('user_guid')
+        user_guid: Optional[UUID] = json.loads(request.headers.get('Authorization')).get('user_guid')
         user = (
             User.objects.only(*UserOut.Config.model_fields, "app_role")
             .select_related('app_role')
