@@ -685,4 +685,4 @@ Sometimes, an endpoint needs to do something more complicated than simply call a
 Email notifications are an essential part of the application's communication strategy. They provide users with important information, updates, and alerts. We use CHES (Common Hosted Email Service) to send email notifications to users.
 To send real emails, you need to set up CHES credentials in your environment variables. You can find the required CHES credentials in the 1Password document `OBPS backend ENV`.
 
-**Note**: Make sure to not send real emails in the development environment by commenting out the CHES credentials in the `.env` file.
+**Note**: Make sure to not send real emails in the development environment by commenting out the CHES credentials in the `bc_obps/.env` file.
