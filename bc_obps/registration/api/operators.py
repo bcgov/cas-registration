@@ -19,6 +19,7 @@ from registration.schema import Message, OperatorOut, OperatorIn, OperatorSearch
     url_name="get_operators_by_cra_number_or_legal_name",
 )
 @authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles(), False)
+@handle_http_errors()
 def get_operators_by_cra_number_or_legal_name(
     request, cra_business_number: Optional[int] = None, legal_name: Optional[str] = ""
 ):
