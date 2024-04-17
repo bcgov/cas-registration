@@ -19,7 +19,7 @@ class ApplicationAccessService:
             True or raises an exception.
         """
         operators_business_bceid = OperatorDataAccessService.get_operators_business_guid(operator_id)
-        users_business_bceid = UserDataAccessService.get_user_by_guid(user_guid).business_guid
+        users_business_bceid = UserDataAccessService.get_by_guid(user_guid).business_guid
 
         if operators_business_bceid != users_business_bceid:
             raise Exception("Your business bceid does not match that of the approved admin.")

@@ -4,7 +4,7 @@ from registration.models import AppRole, Operator, UserOperator, User
 
 
 class UserDataAccessService:
-    def get_user_by_guid(user_guid: UUID) -> User:
+    def get_by_guid(user_guid: UUID) -> User:
         return User.objects.get(user_guid=user_guid)
 
     def get_user_business_guid(user_guid: UUID) -> UUID:
@@ -37,7 +37,7 @@ class UserDataAccessService:
         ).exists()
         return is_declined
 
-    def get_user_app_role(user_guid: UUID) -> AppRole:
+    def get_app_role(user_guid: UUID) -> AppRole:
         return User.objects.only('app_role').select_related('app_role').get(user_guid=user_guid)
 
     def get_user_profile(user_guid: UUID):
@@ -61,7 +61,7 @@ class UserDataAccessService:
         )
 
     def update_user(user_guid: UUID, updated_data: UserUpdateIn) -> User:
-        user: User = UserDataAccessService.get_user_by_guid(user_guid)
+        user: User = UserDataAccessService.get_by_guid(user_guid)
         for attr, value in updated_data.dict().items():
             setattr(user, attr, value)
         user.save()

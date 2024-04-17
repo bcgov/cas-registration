@@ -10,4 +10,4 @@ from ninja.responses import codes_4xx
 )
 @handle_http_errors()
 def get_user_role(request, user_guid: str):
-    return UserDataAccessService.get_user_app_role(user_guid)
+    return UserDataAccessService.get_app_role(user_guid)

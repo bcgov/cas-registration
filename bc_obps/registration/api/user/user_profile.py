@@ -1,5 +1,5 @@
 import json
-from service.user_service import UserService
+from service.user_profile_service import UserService
 from registration.api.utils.current_user_utils import get_current_user_guid
 from service.data_access_service.user_service import UserDataAccessService
 from registration.decorators import authorize, handle_http_errors
