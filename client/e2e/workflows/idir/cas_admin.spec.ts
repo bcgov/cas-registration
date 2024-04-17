@@ -16,10 +16,8 @@ import {
 // ℹ️ Environment variables
 import * as dotenv from "dotenv";
 dotenv.config({ path: "./e2e/.env.local" });
-
+// 📷 happo visual testing
 const happoPlaywright = require("happo-playwright");
-// 🏷 Annotate test suite as serial
-test.describe.configure({ mode: "serial" });
 
 test.beforeAll(async () => {
   // Hit the test setup endpoint before running the tests to ensure the test data is set up
@@ -34,6 +32,8 @@ test.afterAll(async () => {
   await happoPlaywright.finish();
 });
 
+// 🏷 Annotate test suite as serial
+test.describe.configure({ mode: "serial" });
 test.describe("Test Workflow cas_admin", () => {
   // 👤 run test using the storageState for this role
   const storageState = JSON.parse(process.env.E2E_CAS_ADMIN_STORAGE as string);
