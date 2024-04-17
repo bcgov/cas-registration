@@ -47,6 +47,7 @@ const ArrayFieldTemplate = ({
                 <button
                   onClick={item.onDropIndexClick(item.index)}
                   className="border-none bg-transparent p-0"
+                  aria-label="Remove item"
                 >
                   <MinusSVG />
                 </button>

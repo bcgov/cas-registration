@@ -40,6 +40,9 @@ const AccessTypeColumnCell = (params: UserOperatorRenderCellParams) => {
         value={accessType as UserOperatorRoles}
         label="Access Type"
         onChange={handleChange}
+        inputProps={{
+          "aria-label": "Access Type",
+        }}
       >
         <MenuItem value="admin">Admin</MenuItem>
         <MenuItem value="reporter">Reporter</MenuItem>
