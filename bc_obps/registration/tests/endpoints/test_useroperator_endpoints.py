@@ -1,7 +1,7 @@
 from typing import List
 import json
-from common_utils.email.email_service import EmailService
-from common_utils.enums import AdminAccessRequestStates
+from common.service.email.email_service import EmailService
+from common.enums import AdminAccessRequestStates
 from model_bakery import baker
 from localflavor.ca.models import CAPostalCodeField
 from registration.models import (

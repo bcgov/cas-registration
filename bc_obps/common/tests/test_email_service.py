@@ -1,9 +1,8 @@
-import uuid
-from common_utils.enums import AdminAccessRequestStates
-import pytest
+import uuid, pytest
+from common.enums import AdminAccessRequestStates
 from datetime import datetime, timedelta
 from uuid import UUID
-from common_utils.email.email_service import EmailService
+from common.service.email.email_service import EmailService
 from common.models import EmailNotification, EmailNotificationTemplate
 
 pytestmark = pytest.mark.django_db
