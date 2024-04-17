@@ -12,6 +12,8 @@ from registration.utils import (
     set_verification_columns,
 )
 from django.core.exceptions import ValidationError
+from datetime import datetime
+import pytz
 
 
 ##### GET #####
@@ -75,12 +77,13 @@ def update_operator_status(request, operator_id: UUID, payload: OperatorIn):
     try:
         with transaction.atomic():
             operator.status = payload.status
-            # when new operators are declined, their prime admin should be declined too
-            user_operator = get_object_or_404(UserOperator, id=payload.user_operator_id)
             if operator.is_new and operator.status == Operator.Statuses.DECLINED:
-                user_operator.status = UserOperator.Statuses.DECLINED
-                set_verification_columns(user_operator, user.user_guid)
-                user_operator.save()
+                # If the operator is new and declined, we need to decline all user operators tied to this operator
+                UserOperator.objects.filter(operator_id=operator_id).update(
+                    status=UserOperator.Statuses.DECLINED,
+                    verified_at=datetime.now(pytz.utc),
+                    verified_by=user.user_guid,
+                )
 
             if operator.status in [Operator.Statuses.APPROVED, Operator.Statuses.DECLINED]:
                 operator.is_new = False
