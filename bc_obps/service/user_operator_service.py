@@ -73,7 +73,7 @@ class UserOperatorService:
         from service.operator_service import OperatorService
 
         OperatorService.handle_parent_operators(
-            updated_data.parent_operators_array, created_or_updated_operator_instance, user
+            updated_data.parent_operators_array, created_or_updated_operator_instance, user_guid
         )
 
         # get an existing user_operator instance or create a new one with the default role

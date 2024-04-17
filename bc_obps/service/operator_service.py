@@ -5,21 +5,17 @@ from typing import List, Optional
 from service.data_access_service.operator_service import OperatorDataAccessService
 
 from registration.schema import OperatorSearchOut
-from service.data_access_service.user_service import UserDataAccessService
 from registration.models import Operator, UserOperator
 from uuid import UUID
 
 
-from django.shortcuts import get_object_or_404
 from registration.models import Operator, UserOperator, User
 
 from registration.schema import OperatorIn
 from django.db import transaction
 from registration.utils import (
-    generate_useful_error,
     set_verification_columns,
 )
-from django.core.exceptions import ValidationError
 
 
 class OperatorService:
@@ -44,44 +40,42 @@ class OperatorService:
 
     @classmethod
     def archive_parent_operators(
-        cls, existing_parent_operator_indices, updated_parent_operators, operator_instance, user
+        cls, existing_parent_operators: List[Operator], updated_parent_operators: List[Operator], user_guid: UUID
     ):
         updated_parent_operator_indices = [po.operator_index for po in updated_parent_operators if po.operator_index]
+
+        existing_parent_operator_indices = [po.operator_index for po in existing_parent_operators if po.operator_index]
 
         indices_to_delete = list(set(existing_parent_operator_indices) - set(updated_parent_operator_indices))
 
         if indices_to_delete:
-            parent_operators_to_delete: List[ParentOperator] = operator_instance.parent_operators.filter(
+            parent_operators_to_delete: List[ParentOperator] = existing_parent_operators.filter(
                 operator_index__in=indices_to_delete
             )
             for po in parent_operators_to_delete:
-                po.set_archive(user.pk)
+                po.set_archive(user_guid)
 
     @classmethod
-    def assign_index(cls, existing_parent_operator_indices):
+    def assign_index(cls, existing_parent_operator_indices: List[int]):
         return (max(existing_parent_operator_indices) if existing_parent_operator_indices else 0) + 1
 
     @classmethod
-    def handle_parent_operators(cls, updated_parent_operators, operator_instance, user):
+    def handle_parent_operators(cls, updated_parent_operators, operator_instance, user_guid):
         existing_parent_operators = operator_instance.parent_operators.all()
 
         # if the user has removed all parent operators, archive them all
         if not updated_parent_operators and existing_parent_operators:
             for po in existing_parent_operators:
-                po.set_archive(user.pk)
+                po.set_archive(user_guid)
             return
 
-        existing_parent_operator_indices = list(
-            operator_instance.parent_operators.values_list('operator_index', flat=True)
-        )
+        existing_parent_operator_indices = list(existing_parent_operators.values_list('operator_index', flat=True))
         # if the user has added, edited, or removed some parent operators
         if updated_parent_operators:
             for po_operator in updated_parent_operators:
                 # archive any parent operators that have been removed
                 if existing_parent_operator_indices:
-                    cls.archive_parent_operators(
-                        existing_parent_operator_indices, updated_parent_operators, operator_instance, user
-                    )
+                    cls.archive_parent_operators(existing_parent_operators, updated_parent_operators, user_guid)
                 # assign an operator_index to new parent operators
                 if not po_operator.operator_index:
                     po_operator.operator_index = cls.assign_index(existing_parent_operator_indices)
@@ -122,10 +116,10 @@ class OperatorService:
                         "mailing_address": mailing_address,
                     },
                 )
-                po_operator_instance.set_create_or_update(user.pk)
+                po_operator_instance.set_create_or_update(user_guid)
 
     @classmethod
-    def update_operator_status(cls, user_guid, operator_id: UUID, updated_data: OperatorIn):
+    def update_operator_status(cls, user_guid: UUID, operator_id: UUID, updated_data: OperatorIn):
         operator = OperatorDataAccessService.get_operator_by_id(operator_id)
         user_operator = UserOperatorDataAccessService.get_user_operator_by_id(updated_data.user_operator_id)
         with transaction.atomic():
