@@ -10,6 +10,7 @@ from registration.models import (
     BusinessStructure,
     DocumentType,
     Document,
+    Facility,
     NaicsCode,
     ReportingActivity,
     RegulatedProduct,
@@ -43,6 +44,7 @@ OPERATION_FIXTURE = ("mock/operation.json",)
 CONTACT_FIXTURE = ("mock/contact.json",)
 DOCUMENT_FIXTURE = ("mock/document.json",)
 BC_OBPS_REGULATED_OPERATION_FIXTURE = ("mock/bc_obps_regulated_operation.json",)
+FACILITY_FIXTURE = ("mock/facility.json",)
 
 
 timestamp_common_fields = [
@@ -694,6 +696,7 @@ class OperationModelTest(BaseTestCase):
             ("swrs_facility_id", "swrs facility id", None, None),
             ("bcghg_id", "bcghg id", None, None),
             ("opt_in", "opt in", None, None),
+            ("address", "address", None, None),
             ("verified_at", "verified at", None, None),
             ("verified_by", "verified by", None, None),
             ("submission_date", "submission date", None, None),
@@ -800,6 +803,38 @@ class OperationModelTest(BaseTestCase):
 
         with self.assertRaises(ValidationError, msg="Operation with this Swrs facility id already exists."):
             invalid_operation.save()
+
+
+class FacilityModelTest(BaseTestCase):
+    fixtures = [ADDRESS_FIXTURE, FACILITY_FIXTURE]
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.test_object = Facility.objects.first()
+        cls.field_data = [
+            *timestamp_common_fields,
+            ("name", "name", None, None),
+            ("type", "type", 1000, None),
+            ("address", "address", None, None),
+            ("new_entrant", "new entrant", None, None),
+        ]
+
+
+class WellAuthorizationNumber(BaseTestCase):
+    fixtures = [
+        FACILITY_FIXTURE,
+    ]
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.test_object = WellAuthorizationNumber.objects.create(
+            well_authorization_number=1,
+            facility=Facility.objects.first(),
+        )
+        cls.field_data = [
+            ("well_authorization_number", "well authorization number", None, None),
+            ("facility", "facility", None, None),
+        ]
 
 
 class AppRoleModelTest(BaseTestCase):
