@@ -13,11 +13,11 @@ import {
   UserOperatorStatus,
   UserRole,
 } from "@/e2e/utils/enums";
-import happoPlaywright from "happo-playwright";
 // ℹ️ Environment variables
 import * as dotenv from "dotenv";
 dotenv.config({ path: "./e2e/.env.local" });
 
+const happoPlaywright = require("happo-playwright");
 // 🏷 Annotate test suite as serial
 test.describe.configure({ mode: "serial" });
 

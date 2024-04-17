@@ -97,16 +97,17 @@ test.describe("Test Dashboard Page", () => {
           default:
             // 🔍 Assert that the current URL ends with "/dashboard"
             await dashboardPage.urlIsCorrect();
-            // 📷 Cheese!
-            const pageContent = page.locator("html");
-            await happoPlaywright.screenshot(dashboardPage.page, pageContent, {
-              component: `Dashboard page ${role}`,
-              variant: "default",
-            });
-            // ♿️ Analyze accessibility
-            await analyzeAccessibility(page);
             break;
         }
+        // 📷 Cheese!
+        const pageContent = page.locator("html");
+        await happoPlaywright.screenshot(dashboardPage.page, pageContent, {
+          component: `Authenticated page ${role}`,
+          variant: "default",
+        });
+
+        // ♿️ Analyze accessibility
+        await analyzeAccessibility(page);
       });
       test("Report a Problem Tile workflow", async ({ page }) => {
         // 📌 Skip roles: cas_pending; new user
