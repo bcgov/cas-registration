@@ -52,6 +52,7 @@ const HeaderSearchCell = ({
       onChange={handleChange}
       value={searchState}
       type="text"
+      id={field}
       inputRef={(input) => {
         if (isFocused) {
           input?.focus();
