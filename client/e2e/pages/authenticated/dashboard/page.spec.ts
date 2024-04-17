@@ -22,6 +22,8 @@ import {
 import * as dotenv from "dotenv";
 dotenv.config({ path: "./e2e/.env.local" });
 const happoPlaywright = require("happo-playwright");
+// Helpers
+import { analyzeAccessibility } from "@/e2e/utils/helpers";
 
 // 📚 Declare a beforeAll hook that is executed once per worker process before all tests.
 // 🥞 Set DB for dashboard tiles
@@ -101,6 +103,8 @@ test.describe("Test Dashboard Page", () => {
               component: `${role} Dashboard page`,
               variant: "default",
             });
+            // ♿️ Analyze accessibility
+            await analyzeAccessibility(page);
             break;
         }
       });
