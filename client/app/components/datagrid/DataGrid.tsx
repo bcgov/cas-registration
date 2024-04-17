@@ -147,7 +147,7 @@ const DataGrid: React.FC<Props> = ({
         onPaginationModelChange={handlePaginationModelChange}
         paginationModel={{
           pageSize: PAGE_SIZE,
-          page: Number(searchParams.get("page")) - 1 || 0,
+          page: Number(searchParams.get("page") ?? 1) - 1,
         }}
         onSortModelChange={handleSortModelChange}
         // Set the row height to "auto" so that the row height will adjust to the content

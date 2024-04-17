@@ -9,7 +9,12 @@ import {
   Browser,
 } from "@playwright/test";
 import { baseUrlSetup } from "@/e2e/utils/constants";
-import { E2EValue, FormField, MessageTextResponse } from "@/e2e/utils/enums";
+import {
+  DataTestID,
+  E2EValue,
+  FormField,
+  MessageTextResponse,
+} from "@/e2e/utils/enums";
 import AxeBuilder from "@axe-core/playwright";
 
 // 🛠️ Function: analyze the accessibility of the page
@@ -33,7 +38,7 @@ export async function addPdf(page: Page, index: number = 0) {
 export async function checkAlertMessage(
   page: Page,
   alertMessage: string | RegExp,
-  index: number = 0,
+  index: number = 0
 ) {
   await expect(page.getByRole("alert").nth(index)).toHaveText(alertMessage);
 }
@@ -42,7 +47,7 @@ export async function checkAlertMessage(
 export async function checkColumnTextVisibility(
   table: Locator,
   columnIdentifier: number | string,
-  columnText: string[],
+  columnText: string[]
 ): Promise<void> {
   let columnSelector: string;
   if (typeof columnIdentifier === "number") {
@@ -62,7 +67,7 @@ export async function checkColumnTextVisibility(
 // 🛠️ Function: checks read only of form inputs
 export async function checkFormFieldsReadOnly(
   fields: Locator[],
-  readonly: boolean = true,
+  readonly: boolean = true
 ) {
   // perform checks simultaneously
   await Promise.all(
@@ -82,7 +87,7 @@ export async function checkFormFieldsReadOnly(
         await expect(disabled).toBeFalsy();
         await expect(editable).toBeTruthy();
       }
-    }),
+    })
   );
 }
 
@@ -90,7 +95,7 @@ export async function checkFormFieldsReadOnly(
 export async function checkLocatorsVisibility(
   page: Page,
   locators: Locator[],
-  visible: boolean = true,
+  visible: boolean = true
 ) {
   for (const locator of locators) {
     if (visible) {
@@ -124,7 +129,7 @@ Download event is emitted once the download starts. Download path becomes availa
 export async function downloadPDF(
   page: Page,
   linkName: string,
-  fileName: string,
+  fileName: string
 ) {
   // Start waiting for download before clicking. Note no await.
   const downloadPromise = page.waitForEvent("download");
@@ -148,7 +153,7 @@ export async function getRowCellBySelector(row: Locator, selector: string) {
 // 🛠️ Function: gets table row by cell value selector
 export async function getTableRowByCellSelector(
   table: Locator,
-  selector: string,
+  selector: string
 ) {
   const row = await table
     .locator(`[role="gridcell"]${selector}`)
@@ -157,6 +162,7 @@ export async function getTableRowByCellSelector(
     .first();
   return row;
 }
+
 // 🛠️ Function: gets table row by row id
 export async function getTableRowById(table: Locator, rowId: string) {
   const row = await table.locator(`[role="row"][data-id="${rowId}"]`).first();
@@ -258,7 +264,7 @@ export async function fillAllFormFields(page: Page, selector: string) {
 // 🛠️ Function: verifies whether the column names displayed on the page match the expected column names provided as input
 export async function tableColumnNamesAreCorrect(
   page: Page,
-  expectedColumnNames: string[],
+  expectedColumnNames: string[]
 ) {
   const columnHeaders = page.locator(".MuiDataGrid-columnHeaderTitle");
   const actualColumnNames = await columnHeaders.allTextContents();
@@ -268,7 +274,7 @@ export async function tableColumnNamesAreCorrect(
 // 🛠️ Function: calls api to seed database with data for workflow tests
 export async function setupTestEnvironment(
   workFlow?: string,
-  truncateOnly?: boolean,
+  truncateOnly?: boolean
 ) {
   let browser: Browser | null = null;
 
@@ -304,12 +310,93 @@ export async function setupTestEnvironment(
   const url = workFlow
     ? `${baseUrlSetup}?workflow=${workFlow}`
     : truncateOnly
-    ? `${baseUrlSetup}?truncate_only=true`
-    : baseUrlSetup;
+      ? `${baseUrlSetup}?truncate_only=true`
+      : baseUrlSetup;
 
   let response: APIResponse = await context.request.get(url);
 
   // Wait for the response and check for success status text and code (e.g., 200)
   expect(await response.text()).toBe(MessageTextResponse.SETUP_SUCCESS);
   expect(response.status()).toBe(200);
+}
+
+export async function sortTableByColumnLabel(
+  page: Page,
+  columnLabel: string,
+  sortedCellTextContent: string,
+  expectedSortDirection: "ascending" | "descending" | "none" = "ascending"
+) {
+  const header = page.getByRole("columnheader").getByText(columnLabel);
+
+  const colIndex = await page
+    .locator(`[aria-label="${columnLabel}"]`)
+    .getAttribute("aria-colindex");
+  await header.click();
+
+  // wait for aria-sort to be set to ascending
+  const ariaSort = await page
+    .locator(`[aria-label="${columnLabel}"]`)
+    .getAttribute("aria-sort");
+
+  expect(ariaSort).toBe(expectedSortDirection);
+
+  // wait for response to complete
+  await page.waitForResponse((response) => response.status() === 200);
+
+  await page.waitForTimeout(1000);
+
+  const table = page.locator(DataTestID.GRID);
+
+  const sortedCell = await getRowCellBySelector(
+    table,
+    `[aria-colindex="${colIndex}"]`
+  );
+
+  expect(await sortedCell.textContent()).toBe(sortedCellTextContent);
+}
+export async function filterTableByFieldId(
+  page: Page,
+  fieldId: string,
+  columnLabel: string,
+  filterValue: string,
+  expectEmptyTable: boolean = false
+) {
+  const filter = page.locator(`[id="${fieldId}"]`);
+  await filter.fill(filterValue);
+  expect(await filter.inputValue()).toBe(filterValue);
+
+  // wait for response to complete
+  await page.waitForResponse((response) => response.status() === 200);
+
+  await page.waitForTimeout(1000);
+
+  if (expectEmptyTable) {
+    const emptyTable = page.getByText("No records found");
+    expect(await emptyTable.isVisible()).toBeTruthy();
+    return;
+  }
+
+  const colIndex = await page
+    .locator(`[aria-label="${columnLabel}"]`)
+    .getAttribute("aria-colindex");
+
+  const table = page.locator(DataTestID.GRID);
+  const filteredCell = await getRowCellBySelector(
+    table,
+    `[aria-colindex="${colIndex}"]`
+  );
+
+  expect(await filteredCell.textContent()).toContain(filterValue);
+}
+
+export async function tableRowCount(page: Page, expectedRowCount: number) {
+  const tableContent = page.locator(`.MuiDataGrid-virtualScroller`);
+  const rows = await tableContent.locator('[role="row"]').count();
+  expect(rows).toBe(expectedRowCount);
+}
+
+export async function clearTableFilter(page: Page, fieldId: string) {
+  const filter = page.locator(`[id="${fieldId}"]`);
+  await filter.clear();
+  expect(await filter.inputValue()).toBe("");
 }
