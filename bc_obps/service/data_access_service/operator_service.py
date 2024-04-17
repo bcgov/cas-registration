@@ -25,7 +25,7 @@ class OperatorDataAccessService:
         # all approved admins will have the same business_guid so we can use first one
         return approved_admin_users.first().business_guid
 
-    def get_operators_by_cra_number(cra_business_number: int) -> List[Operator]:
+    def get_operators_by_cra_number(cra_business_number: int) -> Operator:
         return Operator.objects.exclude(status=Operator.Statuses.DECLINED).get(cra_business_number=cra_business_number)
 
     def get_operators_by_legal_name(legal_name: str) -> List[Operator]:

@@ -1,6 +1,6 @@
 from service.data_access_service.user_operator_service import UserOperatorDataAccessService
 from registration.models import ParentOperator
-from typing import List, Optional
+from typing import List, Optional, Union
 
 from service.data_access_service.operator_service import OperatorDataAccessService
 
@@ -22,7 +22,7 @@ class OperatorService:
     @classmethod
     def get_operators_by_cra_number_or_legal_name(
         cls, cra_business_number: Optional[int] = None, legal_name: Optional[str] = ""
-    ):
+    ) -> Union[Operator, List[Operator]]:
         if not cra_business_number and not legal_name:
             raise Exception("No search value provided")
         if cra_business_number:
@@ -40,8 +40,11 @@ class OperatorService:
 
     @classmethod
     def archive_parent_operators(
-        cls, existing_parent_operators: List[Operator], updated_parent_operators: List[Operator], user_guid: UUID
-    ):
+        cls,
+        existing_parent_operators: List[ParentOperator],
+        updated_parent_operators: List[ParentOperator],
+        user_guid: UUID,
+    ) -> None:
         updated_parent_operator_indices = [po.operator_index for po in updated_parent_operators if po.operator_index]
 
         existing_parent_operator_indices = [po.operator_index for po in existing_parent_operators if po.operator_index]
@@ -56,11 +59,13 @@ class OperatorService:
                 po.set_archive(user_guid)
 
     @classmethod
-    def assign_index(cls, existing_parent_operator_indices: List[int]):
+    def assign_index(cls, existing_parent_operator_indices: List[int]) -> int:
         return (max(existing_parent_operator_indices) if existing_parent_operator_indices else 0) + 1
 
     @classmethod
-    def handle_parent_operators(cls, updated_parent_operators, operator_instance, user_guid):
+    def handle_parent_operators(
+        cls, updated_parent_operators: List[ParentOperator], operator_instance: Operator, user_guid: UUID
+    ) -> None:
         existing_parent_operators = operator_instance.parent_operators.all()
 
         # if the user has removed all parent operators, archive them all
@@ -119,7 +124,7 @@ class OperatorService:
                 po_operator_instance.set_create_or_update(user_guid)
 
     @classmethod
-    def update_operator_status(cls, user_guid: UUID, operator_id: UUID, updated_data: OperatorIn):
+    def update_operator_status(cls, user_guid: UUID, operator_id: UUID, updated_data: OperatorIn) -> Operator:
         operator = OperatorDataAccessService.get_operator_by_id(operator_id)
         user_operator = UserOperatorDataAccessService.get_user_operator_by_id(updated_data.user_operator_id)
         with transaction.atomic():
