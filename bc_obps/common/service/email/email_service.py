@@ -14,6 +14,7 @@ SENDER_EMAIL = 'no-reply.cas@gov.bc.ca'
 class EmailService(object):
     """
     EmailService uses Common Hosted Email Service (CHES) API to enqueue emails for delivery. Uses BC Government-hosted SMTP server to send emails.
+    NOTE: Use `email_service = EmailService()` to access the EmailService singleton object in other .py files
     """
 
     _instance = None
