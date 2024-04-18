@@ -68,6 +68,20 @@ test.describe("Test Workflow cas_analyst", () => {
       });
     });
 
+    test("Test details form by workflow", async ({ page }) => {
+      const operatorsPage = new OperatorsPOM(page);
+      // 🛸 Navigate to operators page
+      operatorsPage.route();
+      // 🔍 Assert cas_analyst workflow New Operator, Pending: Reject
+      await operatorsPage.formHasExpectedWorkflow(UserRole.CAS_ANALYST, 1);
+      // 🔍 Assert cas_analyst workflow New Operator, Pending: Reject
+      await operatorsPage.formHasExpectedWorkflow(UserRole.CAS_ANALYST, 2);
+      // 🔍 Assert cas_analyst workflow Existing Operator, Pending: Approve
+      await operatorsPage.formHasExpectedWorkflow(UserRole.CAS_ANALYST, 3);
+      // 🔍 Assert cas_analyst workflow Existing Operator,  Pending: Reject
+      await operatorsPage.formHasExpectedWorkflow(UserRole.CAS_ANALYST, 4);
+    });
+
     test("Test details view by status", async ({ page }) => {
       const operatorsPage = new OperatorsPOM(page);
       // 🛸 Navigate to operators page
@@ -111,20 +125,6 @@ test.describe("Test Workflow cas_analyst", () => {
       // 🔍 Assert table is visible
       await operatorsPage.tableIsVisible();
     });
-
-    test("Test details form by workflow", async ({ page }) => {
-      const operatorsPage = new OperatorsPOM(page);
-      // 🛸 Navigate to operators page
-      operatorsPage.route();
-      // 🔍 Assert cas_analyst workflow New Operator, Pending: Reject
-      await operatorsPage.formHasExpectedWorkflow(UserRole.CAS_ANALYST, 1);
-      // 🔍 Assert cas_analyst workflow New Operator, Pending: Reject
-      await operatorsPage.formHasExpectedWorkflow(UserRole.CAS_ANALYST, 2);
-      // 🔍 Assert cas_analyst workflow Existing Operator, Pending: Approve
-      await operatorsPage.formHasExpectedWorkflow(UserRole.CAS_ANALYST, 3);
-      // 🔍 Assert cas_analyst workflow Existing Operator,  Pending: Reject
-      await operatorsPage.formHasExpectedWorkflow(UserRole.CAS_ANALYST, 4);
-    });
   });
 
   test.describe("Test Operations workflow", () => {
@@ -151,6 +151,30 @@ test.describe("Test Workflow cas_analyst", () => {
         component: "Operations Grid cas_analyst",
         variant: "default",
       });
+    });
+
+    test("Test details form by workflow", async ({ page }) => {
+      const operationsPage = new OperationsPOM(page);
+      // 🛸 Navigate to operations page
+      operationsPage.route();
+      // 🔍 Assert cas_analyst workflow Pending, Request Changes, Undo (Request Changes), Approve
+      await operationsPage.formHasExpectedWorkflow(
+        UserRole.CAS_ANALYST,
+        OperationStatus.PENDING,
+        1
+      );
+      // 🔍 Assert cas_analyst workflow Pending, Decline
+      await operationsPage.formHasExpectedWorkflow(
+        UserRole.CAS_ANALYST,
+        OperationStatus.PENDING,
+        2
+      );
+      // 🔍 Assert cas_analyst workflow Approved, Preview the Statutory Declaration PDF
+      await operationsPage.formHasExpectedWorkflow(
+        UserRole.CAS_ANALYST,
+        OperationStatus.APPROVED,
+        3
+      );
     });
 
     test("Test details view by status", async ({ page }) => {
@@ -193,30 +217,6 @@ test.describe("Test Workflow cas_analyst", () => {
       await operationsPage.navigateBack();
       // 🔍 Assert table is visible
       await operationsPage.tableIsVisible();
-    });
-
-    test("Test details form by workflow", async ({ page }) => {
-      const operationsPage = new OperationsPOM(page);
-      // 🛸 Navigate to operations page
-      operationsPage.route();
-      // 🔍 Assert cas_analyst workflow Pending, Request Changes, Undo (Request Changes), Approve
-      await operationsPage.formHasExpectedWorkflow(
-        UserRole.CAS_ANALYST,
-        OperationStatus.PENDING,
-        1
-      );
-      // 🔍 Assert cas_analyst workflow Pending, Decline
-      await operationsPage.formHasExpectedWorkflow(
-        UserRole.CAS_ANALYST,
-        OperationStatus.PENDING,
-        2
-      );
-      // 🔍 Assert cas_analyst workflow Approved, Preview the Statutory Declaration PDF
-      await operationsPage.formHasExpectedWorkflow(
-        UserRole.CAS_ANALYST,
-        OperationStatus.APPROVED,
-        3
-      );
     });
   });
 });
