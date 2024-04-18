@@ -12,6 +12,7 @@ import { useSession } from "next-auth/react";
 import { OperationStatus } from "@/app/utils/enums";
 import StatusStyleColumnCell from "@/app/components/datagrid/cells/StatusStyleColumnCell";
 import HeaderSearchCell from "@/app/components/datagrid/cells/HeaderSearchCell";
+import { OperationRow } from "@/app/components/routes/operations/types";
 
 const OperationDataGrid = ({
   initialData,
@@ -19,7 +20,7 @@ const OperationDataGrid = ({
 }: {
   isOperatorColumn?: boolean;
   initialData: {
-    rows: any;
+    rows: OperationRow[];
     row_count: number;
   };
 }) => {
