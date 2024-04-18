@@ -1,6 +1,6 @@
 from uuid import UUID
+from common.enums import AccessRequestStates, AccessRequestTypes
 from common.service.email.email_service import EmailService
-from common.enums import AdminAccessRequestStates
 from registration.utils import update_model_instance
 from service.addresses_service import AddressesService
 from service.data_access_service.user_operator_service import UserOperatorDataAccessService
@@ -211,11 +211,14 @@ class UserOperatorService:
             user_operator.verified_by_id = admin_user_guid
 
             if user_operator.status == UserOperator.Statuses.APPROVED and updated_role != UserOperator.Roles.PENDING:
-                user_operator.role = updated_role
+                user_operator.role = updated_role  # we only update the role if the user_operator is being approved
 
             # Send email to user if their request was approved or declined(using the appropriate email template)
-            email_service.send_admin_access_request_email(
-                AdminAccessRequestStates(user_operator.status),
+            email_service.send_operator_access_request_email(
+                AccessRequestStates(user_operator.status),
+                # If the admin user is an IRC user, the access request type is admin,
+                # otherwise the admin user is an external user and the access request is for an operator with existing admin
+                AccessRequestTypes.ADMIN if admin_user.is_irc_user() else AccessRequestTypes.OPERATOR_WITH_ADMIN,
                 operator.legal_name,
                 user_operator.user.get_full_name(),
                 user_operator.user.email,
