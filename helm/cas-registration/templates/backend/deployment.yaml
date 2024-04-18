@@ -34,23 +34,23 @@ spec:
             - name: CHES_CLIENT_SECRET
               valueFrom:
                 secretKeyRef:
-                  key: ches-client-secret
-                  name: {{ include "cas-registration.fullname" . }}-backend
+                  key: clientSecret
+                  name: ches-integration
             - name: CHES_CLIENT_ID
               valueFrom:
                 secretKeyRef:
-                  key: ches-client-id
-                  name: {{ include "cas-registration.fullname" . }}-backend
+                  key: clientId
+                  name: ches-integration
             - name: CHES_TOKEN_ENDPOINT
               valueFrom:
                 secretKeyRef:
-                  key: ches-token-endpoint
-                  name: {{ include "cas-registration.fullname" . }}-backend
+                  key: tokenEndpoint
+                  name: ches-integration
             - name: CHES_API_URL
               valueFrom:
                 secretKeyRef:
-                  key: ches-api-url
-                  name: {{ include "cas-registration.fullname" . }}-backend
+                  key: apiUrl
+                  name: ches-integration
             - name: DB_USER
               valueFrom:
                 secretKeyRef:
