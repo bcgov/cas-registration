@@ -690,12 +690,12 @@ class UserOperator(TimeStampedModel):
 class OperationAndFacilityCommonInfo(TimeStampedModel):
     """Operation and facility common information abstract base class"""
 
-    name = models.CharField(max_length=1000, db_comment="An operation or facility's name")
-    type = models.CharField(max_length=1000, db_comment="An operation or facility's type")
+    name = models.CharField(max_length=1000, db_comment="The name of a placeholder")
+    type = models.CharField(max_length=1000, db_comment="The type of a placeholder")
     address = models.ForeignKey(
         Address,
         on_delete=models.DO_NOTHING,
-        db_comment="The address of the operation or facility",
+        db_comment="The address of the placeholder",
         blank=True,
         null=True,
         related_name='%(class)s_address',
@@ -704,7 +704,7 @@ class OperationAndFacilityCommonInfo(TimeStampedModel):
     class Meta:
         abstract = True
         db_table_comment = "An abstract base class (used for putting common information into a number of other models) containing fields for operations and facilities"
-        db_table = 'erc"."operation'
+        # db_table = 'erc"."operation'
 
 
 class Operation(OperationAndFacilityCommonInfo):
@@ -735,23 +735,23 @@ class Operation(OperationAndFacilityCommonInfo):
         NaicsCode,
         on_delete=models.DO_NOTHING,
         null=True,
-        db_comment="An operation or facility's NAICS code",
-        related_name='%(class)ss',
+        db_comment="An operation's NAICS code",
+        related_name='operations',
     )
     swrs_facility_id = models.IntegerField(
-        db_comment="An operation or facility's SWRS facility ID. Only needed if the operation/facility submitted a report the previous year.",
+        db_comment="An operation's SWRS facility ID. Only needed if the operation/facility submitted a report the previous year.",
         blank=True,
         null=True,
     )
     bcghg_id = models.CharField(
         max_length=1000,
-        db_comment="An operation or facility's BCGHG identifier. Only needed if the operation/facility submitted a report the previous year.",
+        db_comment="An operation's BCGHG identifier. Only needed if the operation/facility submitted a report the previous year.",
         blank=True,
         null=True,
     )
 
     opt_in = models.BooleanField(
-        db_comment="Whether or not the operation/facility is required to register or is simply opting in. Only needed if the operation/facility did not report the previous year.",
+        db_comment="Whether or not the operation is required to register or is simply opting in. Only needed if the operation did not report the previous year.",
         blank=True,
         null=True,
     )
@@ -898,19 +898,20 @@ class Facility(OperationAndFacilityCommonInfo):
         primary_key=True, default=uuid.uuid4, db_comment="Primary key to identify the facility", verbose_name="ID"
     )
     new_entrant = models.BooleanField(db_comment="Whether or not the facility is a new entrant")
+    operation = models.ForeignKey(Operation, on_delete=models.DO_NOTHING, related_name="facilities")
     history = HistoricalRecords(
         table_name='erc_history"."facility_history',
         history_user_id_field=models.UUIDField(null=True, blank=True),
     )
 
     class Meta:
-        db_table_comment = "Facilities "
+        db_table_comment = "Contains data on facilities that emit carbon emissions and must report them to Clean Growth. A linear facility operation is made up of several different facilities whereas a single facility operation has only one facility. In the case of a single facility operation, much of the data in this table will overlap with the parent record in the operation table"
         db_table = 'erc"."facility'
 
 
 class WellAuthorizationNumber(TimeStampedModel):
     well_authorization_number = models.IntegerField(
-        db_comment="A well authorization number from the BC Energy Regulator"
+        primary_key=True, db_comment="A well authorization number from the BC Energy Regulator"
     )
     facility = models.ForeignKey(Facility, on_delete=models.DO_NOTHING, related_name="well_authorization_numbers")
 
