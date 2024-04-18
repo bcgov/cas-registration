@@ -166,9 +166,9 @@ export default async function Operation({ numRow }: { numRow?: string }) {
     await getUserFormData();
   const currentUserAppRole = (userProfileFormData as UserProfileFormData)
     ?.app_role?.role_name;
-  const isCasInternal = true;
-  //  currentUserAppRole?.includes("cas") &&
-  // !currentUserAppRole?.includes("pending");
+  const isCasInternal =
+    currentUserAppRole?.includes("cas") &&
+    !currentUserAppRole?.includes("pending");
   const codes = await getNaicsCodes();
   const products = await getRegulatedProducts();
   /*   const activities = await getReportingActivities(); */

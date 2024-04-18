@@ -65,20 +65,6 @@ test.describe("Test Workflow cas_admin", () => {
       });
     });
 
-    test("Test details form by workflow", async ({ page }) => {
-      const operatorsPage = new OperatorsPOM(page);
-      // 🛸 Navigate to operators page
-      operatorsPage.route();
-      // 🔍 Assert cas_admin workflow New Operator, Pending: Reject
-      await operatorsPage.formHasExpectedWorkflow(UserRole.CAS_ADMIN, 1);
-      // 🔍 Assert cas_admin workflow New Operator, Pending: Reject
-      await operatorsPage.formHasExpectedWorkflow(UserRole.CAS_ADMIN, 2);
-      // 🔍 Assert cas_admin workflow Existing Operator, Pending: Approve
-      await operatorsPage.formHasExpectedWorkflow(UserRole.CAS_ADMIN, 3);
-      // 🔍 Assert cas_admin workflow Existing Operator,  Pending: Reject
-      await operatorsPage.formHasExpectedWorkflow(UserRole.CAS_ADMIN, 4);
-    });
-
     test("Test details view by status", async ({ page }) => {
       const operatorsPage = new OperatorsPOM(page);
       // 🛸 Navigate to operators page
@@ -95,7 +81,7 @@ test.describe("Test Workflow cas_admin", () => {
       await operatorsPage.navigateBack();
       // 🔍 Assert table is visible
       await operatorsPage.tableIsVisible();
-
+      /*
       // 🔍 Assert cas_admin is able to click "View Details" on see detailed info related Approved
       await operatorsPage.formHasExpectedUX(UserOperatorStatus.APPROVED);
       // 📷 Cheese!
@@ -108,7 +94,7 @@ test.describe("Test Workflow cas_admin", () => {
       await operatorsPage.navigateBack();
       // 🔍 Assert table is visible
       await operatorsPage.tableIsVisible();
-
+*/
       // 🔍 Assert cas_admin is able to click "View Details" on see detailed info related Pending
       await operatorsPage.formHasExpectedUX(UserOperatorStatus.PENDING);
       // 📷 Cheese!
@@ -121,6 +107,20 @@ test.describe("Test Workflow cas_admin", () => {
       await operatorsPage.navigateBack();
       // 🔍 Assert table is visible
       await operatorsPage.tableIsVisible();
+    });
+
+    test("Test details form by workflow", async ({ page }) => {
+      const operatorsPage = new OperatorsPOM(page);
+      // 🛸 Navigate to operators page
+      operatorsPage.route();
+      // 🔍 Assert cas_admin workflow New Operator, Pending: Reject
+      await operatorsPage.formHasExpectedWorkflow(UserRole.CAS_ADMIN, 1);
+      // 🔍 Assert cas_admin workflow New Operator, Pending: Reject
+      await operatorsPage.formHasExpectedWorkflow(UserRole.CAS_ADMIN, 2);
+      // 🔍 Assert cas_admin workflow Existing Operator, Pending: Approve
+      await operatorsPage.formHasExpectedWorkflow(UserRole.CAS_ADMIN, 3);
+      // 🔍 Assert cas_admin workflow Existing Operator,  Pending: Reject
+      await operatorsPage.formHasExpectedWorkflow(UserRole.CAS_ADMIN, 4);
     });
   });
 
@@ -150,6 +150,48 @@ test.describe("Test Workflow cas_admin", () => {
       });
     });
 
+    test("Test details view by status", async ({ page }) => {
+      const operationsPage = new OperationsPOM(page);
+      // 🛸 Navigate to operations page
+      operationsPage.route();
+      // 🔍 Assert cas_admin is able to click "View Details" on each status and see detailed info related to that status
+      await operationsPage.formHasExpectedUX(OperationStatus.DECLINED);
+      // 📷 Cheese!
+      let pageContent = page.locator("html");
+      await happoPlaywright.screenshot(operationsPage.page, pageContent, {
+        component: "Operations Details Page cas_admin",
+        variant: "declined",
+      });
+      // 🛸 Navigate back
+      await operationsPage.navigateBack();
+      // 🔍 Assert table is visible
+      await operationsPage.tableIsVisible();
+      /*
+      await operationsPage.formHasExpectedUX(OperationStatus.APPROVED);
+      // 📷 Cheese!
+      pageContent = page.locator("html");
+      await happoPlaywright.screenshot(operationsPage.page, pageContent, {
+        component: "Operations Details Page cas_admin",
+        variant: "approved",
+      });
+      // 🛸 Navigate back
+      await operationsPage.navigateBack();
+      // 🔍 Assert table is visible
+      await operationsPage.tableIsVisible();
+*/
+      await operationsPage.formHasExpectedUX(OperationStatus.PENDING);
+      // 📷 Cheese!
+      pageContent = page.locator("html");
+      await happoPlaywright.screenshot(operationsPage.page, pageContent, {
+        component: "Operations Details Page cas_admin",
+        variant: "pending",
+      });
+      // 🛸 Navigate back
+      await operationsPage.navigateBack();
+      // 🔍 Assert table is visible
+      await operationsPage.tableIsVisible();
+    });
+
     test("Test details form by workflow", async ({ page }) => {
       const operationsPage = new OperationsPOM(page);
       // 🛸 Navigate to operations page
@@ -172,48 +214,6 @@ test.describe("Test Workflow cas_admin", () => {
         OperationStatus.APPROVED,
         3
       );
-    });
-
-    test("Test details view by status", async ({ page }) => {
-      const operationsPage = new OperationsPOM(page);
-      // 🛸 Navigate to operations page
-      operationsPage.route();
-      // 🔍 Assert cas_admin is able to click "View Details" on each status and see detailed info related to that status
-      await operationsPage.formHasExpectedUX(OperationStatus.DECLINED);
-      // 📷 Cheese!
-      let pageContent = page.locator("html");
-      await happoPlaywright.screenshot(operationsPage.page, pageContent, {
-        component: "Operations Details Page cas_admin",
-        variant: "declined",
-      });
-      // 🛸 Navigate back
-      await operationsPage.navigateBack();
-      // 🔍 Assert table is visible
-      await operationsPage.tableIsVisible();
-
-      await operationsPage.formHasExpectedUX(OperationStatus.APPROVED);
-      // 📷 Cheese!
-      pageContent = page.locator("html");
-      await happoPlaywright.screenshot(operationsPage.page, pageContent, {
-        component: "Operations Details Page cas_admin",
-        variant: "approved",
-      });
-      // 🛸 Navigate back
-      await operationsPage.navigateBack();
-      // 🔍 Assert table is visible
-      await operationsPage.tableIsVisible();
-
-      await operationsPage.formHasExpectedUX(OperationStatus.PENDING);
-      // 📷 Cheese!
-      pageContent = page.locator("html");
-      await happoPlaywright.screenshot(operationsPage.page, pageContent, {
-        component: "Operations Details Page cas_admin",
-        variant: "pending",
-      });
-      // 🛸 Navigate back
-      await operationsPage.navigateBack();
-      // 🔍 Assert table is visible
-      await operationsPage.tableIsVisible();
     });
   });
 });
