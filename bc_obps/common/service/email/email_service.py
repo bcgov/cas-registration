@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from typing import List, Optional
 from uuid import UUID
-from common.enums import AdminAccessRequestStates
+from common.enums import AccessRequestStates, OperatorAccessRequest, AccessRequestTypes
 import logging, requests
 from common.models import EmailNotification, EmailNotificationTemplate
 from django.conf import settings
@@ -215,18 +215,20 @@ class EmailService(object):
             template_id=template_id,
         )
 
-    def send_admin_access_request_email(
+    def send_operator_access_request_email(
         self,
-        state: AdminAccessRequestStates,
+        access_state: AccessRequestStates,
+        access_type: AccessRequestTypes,
         operator_legal_name: str,
         external_user_full_name: str,
         external_user_email_address: str,
     ) -> None:
         """
-        Sends an email for an admin access request.
+        Sends an email for an operator access request.
 
         Args:
-            state: The state of the admin access request.
+            access_state: The state of the operator access request.
+            access_type: The type of the operator for the access request.
             operator_legal_name: The legal name of the operator to use in the email template.
             external_user_full_name: The full name of the external user to use in the email template.
             external_user_email_address: The email address of the external user to use in the email template.
@@ -237,13 +239,12 @@ class EmailService(object):
         Returns:
             None
         """
+
         try:
-            template_name = {
-                AdminAccessRequestStates.CONFIRMATION: 'Admin Access Request Confirmation',
-                AdminAccessRequestStates.APPROVED: 'Admin Access Request Approved',
-                AdminAccessRequestStates.DECLINED: 'Admin Access Request Declined',
-            }
-            template = EmailNotificationTemplate.objects.get(name=template_name[state])
+            template_name = OperatorAccessRequest.generate_access_request_template_name(
+                access_type.value, access_state.value
+            )
+            template = EmailNotificationTemplate.objects.get(name=template_name)
         except EmailNotificationTemplate.DoesNotExist:
             raise ValueError("Email template not found")
 
@@ -260,4 +261,4 @@ class EmailService(object):
                 response_json['txId'], response_json['messages'][0]['msgId'], [external_user_email_address], template.id
             )
         except Exception as exc:  # not raising exception here to avoid breaking the flow of the application
-            logger.error(f'Logger: Exception sending admin access request email - {str(exc)}')
+            logger.error(f'Logger: Exception sending operator access request email - {str(exc)}')
