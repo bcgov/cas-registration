@@ -185,8 +185,9 @@ export async function getTableColumnTextValues(
   const uniqueColumnValues = new Set<string>();
   const rows = await table.locator('[role="row"]').all();
   const rowsLength = rows.length;
-  for (let i = 1; i < rowsLength; i++) {
-    //skip header row
+  const indexStart = 2; //skip header row; skip search row
+
+  for (let i = indexStart; i < rowsLength; i++) {
     const row = rows[i];
     const cell = await getRowCellBySelector(row, `[data-field="${dataField}"]`);
     const text = (await cell.textContent()) || "";

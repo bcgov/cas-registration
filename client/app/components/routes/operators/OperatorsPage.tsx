@@ -28,13 +28,13 @@ export const formatUserOperatorRows = (rows: GridRowsProp) => {
         legal_name,
         bceid_business_name,
       };
-    }
+    },
   );
 };
 
 // 🛠️ Function to fetch user-operators
 export const fetchUserOperatorPageData = async (
-  params: OperatorsSearchParams
+  params: OperatorsSearchParams,
 ) => {
   try {
     const queryParams = buildQueryParams(params);
@@ -42,7 +42,7 @@ export const fetchUserOperatorPageData = async (
     const pageData = await actionHandler(
       `registration/user-operator/user-operator-initial-requests${queryParams}`,
       "GET",
-      ""
+      "",
     );
     return {
       rows: formatUserOperatorRows(pageData.data),
