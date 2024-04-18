@@ -38,7 +38,7 @@ export async function addPdf(page: Page, index: number = 0) {
 export async function checkAlertMessage(
   page: Page,
   alertMessage: string | RegExp,
-  index: number = 0
+  index: number = 0,
 ) {
   await expect(page.getByRole("alert").nth(index)).toHaveText(alertMessage);
 }
@@ -47,7 +47,7 @@ export async function checkAlertMessage(
 export async function checkColumnTextVisibility(
   table: Locator,
   columnIdentifier: number | string,
-  columnText: string[]
+  columnText: string[],
 ): Promise<void> {
   let columnSelector: string;
   if (typeof columnIdentifier === "number") {
@@ -67,7 +67,7 @@ export async function checkColumnTextVisibility(
 // 🛠️ Function: checks read only of form inputs
 export async function checkFormFieldsReadOnly(
   fields: Locator[],
-  readonly: boolean = true
+  readonly: boolean = true,
 ) {
   // perform checks simultaneously
   await Promise.all(
@@ -87,7 +87,7 @@ export async function checkFormFieldsReadOnly(
         await expect(disabled).toBeFalsy();
         await expect(editable).toBeTruthy();
       }
-    })
+    }),
   );
 }
 
@@ -95,7 +95,7 @@ export async function checkFormFieldsReadOnly(
 export async function checkLocatorsVisibility(
   page: Page,
   locators: Locator[],
-  visible: boolean = true
+  visible: boolean = true,
 ) {
   for (const locator of locators) {
     if (visible) {
@@ -129,7 +129,7 @@ Download event is emitted once the download starts. Download path becomes availa
 export async function downloadPDF(
   page: Page,
   linkName: string,
-  fileName: string
+  fileName: string,
 ) {
   // Start waiting for download before clicking. Note no await.
   const downloadPromise = page.waitForEvent("download");
@@ -153,7 +153,7 @@ export async function getRowCellBySelector(row: Locator, selector: string) {
 // 🛠️ Function: gets table row by cell value selector
 export async function getTableRowByCellSelector(
   table: Locator,
-  selector: string
+  selector: string,
 ) {
   const row = await table
     .locator(`[role="gridcell"]${selector}`)
@@ -264,7 +264,7 @@ export async function fillAllFormFields(page: Page, selector: string) {
 // 🛠️ Function: verifies whether the column names displayed on the page match the expected column names provided as input
 export async function tableColumnNamesAreCorrect(
   page: Page,
-  expectedColumnNames: string[]
+  expectedColumnNames: string[],
 ) {
   const columnHeaders = page.locator(".MuiDataGrid-columnHeaderTitle");
   const actualColumnNames = await columnHeaders.allTextContents();
@@ -274,7 +274,7 @@ export async function tableColumnNamesAreCorrect(
 // 🛠️ Function: calls api to seed database with data for workflow tests
 export async function setupTestEnvironment(
   workFlow?: string,
-  truncateOnly?: boolean
+  truncateOnly?: boolean,
 ) {
   let browser: Browser | null = null;
 
@@ -310,8 +310,8 @@ export async function setupTestEnvironment(
   const url = workFlow
     ? `${baseUrlSetup}?workflow=${workFlow}`
     : truncateOnly
-      ? `${baseUrlSetup}?truncate_only=true`
-      : baseUrlSetup;
+    ? `${baseUrlSetup}?truncate_only=true`
+    : baseUrlSetup;
 
   let response: APIResponse = await context.request.get(url);
 
@@ -324,7 +324,7 @@ export async function sortTableByColumnLabel(
   page: Page,
   columnLabel: string,
   sortedCellTextContent: string,
-  expectedSortDirection: "ascending" | "descending" | "none" = "ascending"
+  expectedSortDirection: "ascending" | "descending" | "none" = "ascending",
 ) {
   const header = page.getByRole("columnheader").getByText(columnLabel);
 
@@ -343,25 +343,25 @@ export async function sortTableByColumnLabel(
   // wait for response to complete
   await page.waitForResponse((response) => response.status() === 200);
 
-  // TODO: Find a better way to wait for the table to be sorted
-  await page.waitForTimeout(1000);
-
   const table = page.locator(DataTestID.GRID);
 
   // Get the first row cell that was sorted
   const firstSortedCell = await getRowCellBySelector(
     table,
-    `[aria-colindex="${colIndex}"]`
+    `[aria-colindex="${colIndex}"]`,
   );
 
-  expect(firstSortedCell).toHaveText(sortedCellTextContent);
+  // Longer timeout to wait for sorting to complete
+  await expect(firstSortedCell).toHaveText(sortedCellTextContent, {
+    timeout: 20000,
+  });
 }
 export async function filterTableByFieldId(
   page: Page,
   fieldId: string,
   columnLabel: string,
   filterValue: string,
-  expectEmptyTable: boolean = false
+  expectEmptyTable: boolean = false,
 ) {
   const filter = page.locator(`[id="${fieldId}"]`);
   await filter.fill(filterValue);
@@ -370,12 +370,9 @@ export async function filterTableByFieldId(
   // wait for response to complete
   await page.waitForResponse((response) => response.status() === 200);
 
-  // TODO: Find a better way to wait for the table to be filtered
-  await page.waitForTimeout(1000);
-
   if (expectEmptyTable) {
     const emptyTable = page.getByText("No records found");
-    expect(await emptyTable.isVisible()).toBeTruthy();
+    await expect(emptyTable).toBeVisible({ timeout: 20000 });
     return;
   }
 
@@ -388,16 +385,19 @@ export async function filterTableByFieldId(
   // get the first row cell that was filtered
   const firstFilteredCell = await getRowCellBySelector(
     table,
-    `[aria-colindex="${colIndex}"]`
+    `[aria-colindex="${colIndex}"]`,
   );
 
-  expect(firstFilteredCell).toContainText(filterValue);
+  // Longer timeout to wait for filtering to complete
+  await expect(firstFilteredCell).toContainText(filterValue, {
+    timeout: 20000,
+  });
 }
 
 export async function tableRowCount(page: Page, expectedRowCount: number) {
   const tableContent = page.locator(`.MuiDataGrid-virtualScroller`);
-  const rows = await tableContent.locator('[role="row"]').count();
-  expect(rows).toBe(expectedRowCount);
+  const rows = tableContent.locator('[role="row"]');
+  await expect(rows).toHaveCount(expectedRowCount, { timeout: 20000 });
 }
 
 export async function clearTableFilter(page: Page, fieldId: string) {
