@@ -51,7 +51,7 @@ test.beforeAll(async () => {
     await upsertUserOperatorRecord(
       process.env.E2E_INDUSTRY_USER_ADMIN_GUID as string,
       AppRole.ADMIN,
-      UserOperatorStatus.APPROVED,
+      UserOperatorStatus.APPROVED
     );
 
     // 👤 industry_user
@@ -141,6 +141,8 @@ test.describe("Test Page - Home", () => {
           default:
             // 🔍 Assert that the current URL ends with "/dashboard"
             await new DashboardPOM(page).urlIsCorrect();
+            // 🔍 Assert that the user has correct role
+            await homePage.userRoleIsCorrect(value);
             break;
         }
       });
