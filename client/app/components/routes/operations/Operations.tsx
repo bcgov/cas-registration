@@ -4,7 +4,10 @@ import { actionHandler } from "@/app/utils/actions";
 import OperationDataGrid from "@/app/components/datagrid/OperationDataGrid";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { OperationsSearchParams } from "@/app/components/routes/operations/types";
+import {
+  OperationRow,
+  OperationsSearchParams,
+} from "@/app/components/routes/operations/types";
 import buildQueryParams from "@/app/utils/buildQueryParams";
 
 const formatTimestamp = (timestamp: string) => {
@@ -85,15 +88,7 @@ export default async function Operations({
   const session = await getServerSession(authOptions);
   // Fetch operations data
   const operations: {
-    rows: {
-      id: number;
-      bcghg_id: string;
-      bc_obps_regulated_operation: string;
-      name: string;
-      operator: string;
-      submission_date: string;
-      status: string;
-    }[];
+    rows: OperationRow[];
     row_count: number;
   } = await fetchOperationsPageData(searchParams);
   if (!operations) {

@@ -21,7 +21,7 @@ interface Props {
   columns: GridColDef[];
   columnGroupModel?: GridColumnGroupingModel;
   initialData: {
-    rows: any;
+    rows: { [key: string]: string | number | undefined }[];
     row_count?: number;
   };
   paginationMode?: "client" | "server";

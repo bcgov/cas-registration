@@ -4,12 +4,16 @@ import DataGrid from "./DataGrid";
 import Link from "next/link";
 import { GridRenderCellParams } from "@mui/x-data-grid";
 import { fetchUserOperatorPageData } from "@/app/components/routes/operators/OperatorsPage";
+import { UserOperator } from "@/app/components/routes/access-requests/types";
 
 const OperatorDataGrid = ({
   initialData,
   columns,
 }: {
-  initialData: any;
+  initialData: {
+    rows: UserOperator[];
+    row_count: number;
+  };
   columns: any[];
 }) => {
   const updatedColumnsUserOperators = columns.map((column) => {
