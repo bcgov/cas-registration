@@ -1,11 +1,9 @@
 from typing import List, Optional
-from uuid import UUID
 from registration.schema.operator import OperatorForOperationOut
 from registration.utils import file_to_data_url, data_url_to_file
 from ninja import Field, ModelSchema, Schema
 from registration.models import Operation, User
 from pydantic import field_validator
-from pydantic import validator
 from bc_obps.settings import ENVIRONMENT
 from registration.schema.operator import OperatorForOperationOut
 from registration.utils import file_to_data_url, data_url_to_file

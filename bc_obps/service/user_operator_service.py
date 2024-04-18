@@ -1,18 +1,21 @@
 from uuid import UUID
+from common.service.email.email_service import EmailService
+from common.enums import AdminAccessRequestStates
 from registration.utils import update_model_instance
 from service.addresses_service import AddressesService
 from service.data_access_service.user_operator_service import UserOperatorDataAccessService
 from registration.schema.user_operator import UserOperatorOperatorIn, UserOperatorPaginatedOut
 from service.data_access_service.user_service import UserDataAccessService
 from service.data_access_service.operator_service import OperatorDataAccessService
-from registration.models import Operator, User, UserOperator, BusinessRole, Operation
+from registration.models import Operator, User, UserOperator, BusinessRole
 from django.db import transaction
 import pytz
 from datetime import datetime
-from typing import List
 from django.core.paginator import Paginator
 from django.forms import model_to_dict
 from registration.constants import PAGE_SIZE
+
+email_service = EmailService()
 
 
 class UserOperatorService:
@@ -183,8 +186,9 @@ class UserOperatorService:
     @transaction.atomic()
     def update_user_operator_status(user_operator_id: UUID, updated_data, admin_user_guid: UUID):
         "Function to update only the user_operator status (operator is already in the system and therefore doesn't need to be approved/denied)"
-        admin_user = UserDataAccessService.get_user_by_guid(admin_user_guid)
-        operator = OperatorDataAccessService.get_operator_by_user_operator_id(user_operator_id)
+        admin_user: User = UserDataAccessService.get_user_by_guid(admin_user_guid)
+        user_operator: UserOperator = UserOperatorDataAccessService.get_user_operator_by_id(user_operator_id)
+        operator: Operator = user_operator.operator
         # industry users can only update the status of user_operators from the same operator as themselves
         if admin_user.is_industry_user():
             # operator_business_guid can be None if no admins are approved yet (business_guids come from admin users)
@@ -199,10 +203,7 @@ class UserOperatorService:
         if operator.status == Operator.Statuses.DECLINED or operator.is_new:
             raise Exception("Operator must be approved before approving or declining users.")
 
-        user_operator = UserOperatorDataAccessService.get_user_operator_by_id(user_operator_id)
         user_operator.status = updated_data.status
-
-        operator: Operator = user_operator.operator
         updated_role = updated_data.role
 
         if user_operator.status in [UserOperator.Statuses.APPROVED, UserOperator.Statuses.DECLINED]:
@@ -211,6 +212,14 @@ class UserOperatorService:
 
             if user_operator.status == UserOperator.Statuses.APPROVED and updated_role != UserOperator.Roles.PENDING:
                 user_operator.role = updated_role
+
+            # Send email to user if their request was approved or declined(using the appropriate email template)
+            email_service.send_admin_access_request_email(
+                AdminAccessRequestStates(user_operator.status),
+                operator.legal_name,
+                user_operator.user.get_full_name(),
+                user_operator.user.email,
+            )
 
         elif user_operator.status == UserOperator.Statuses.PENDING:
             user_operator.verified_at = None

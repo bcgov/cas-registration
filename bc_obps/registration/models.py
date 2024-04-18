@@ -297,6 +297,12 @@ class UserAndContactCommonInfo(BaseModel):
         abstract = True
         db_table_comment = "An abstract base class (used for putting common information into a number of other models) containing fields for users and contacts"
 
+    def get_full_name(self) -> str:
+        """
+        Return the full name of the user or contact.
+        """
+        return f"{self.first_name} {self.last_name}"
+
 
 class User(UserAndContactCommonInfo):
     """User model"""
