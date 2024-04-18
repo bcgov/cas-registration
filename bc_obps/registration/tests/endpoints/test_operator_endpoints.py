@@ -44,10 +44,13 @@ class TestOperatorsEndpoint(CommonTestSetup):
             assert response.status_code == 401
 
     def test_get_operators_no_parameters(self):
-        with pytest.raises(Exception, match="No search value provided"):
-            TestUtils.mock_get_with_auth_role(
-                self, 'industry_user', custom_reverse_lazy('get_operators_by_cra_number_or_legal_name')
-            )
+
+        response = TestUtils.mock_get_with_auth_role(
+            self, 'industry_user', custom_reverse_lazy('get_operators_by_cra_number_or_legal_name')
+        )
+
+        assert response.status_code == 400
+        assert response.json().get('message') == "No search value provided"
 
     def test_get_operators_by_legal_name(self):
         response = TestUtils.mock_get_with_auth_role(
@@ -65,18 +68,20 @@ class TestOperatorsEndpoint(CommonTestSetup):
                 assert response_dict[0][key] == OperatorSearchOut.from_orm(self.operator).dict()[key]
 
     def test_get_search_operators_by_legal_name_no_value(self):
-        with pytest.raises(Exception, match="No search value provided"):
-            TestUtils.mock_get_with_auth_role(
-                self, 'industry_user', custom_reverse_lazy('get_operators_by_cra_number_or_legal_name') + '?legal_name='
-            )
+        response = TestUtils.mock_get_with_auth_role(
+            self, 'industry_user', custom_reverse_lazy('get_operators_by_cra_number_or_legal_name') + '?legal_name='
+        )
+        assert response.status_code == 400
+        assert response.json().get('message') == "No search value provided"
 
     def test_get_search_operators_by_cra_business_number_no_value(self):
-        with pytest.raises(Exception, match="No search value provided"):
-            TestUtils.mock_get_with_auth_role(
-                self,
-                'industry_user',
-                custom_reverse_lazy('get_operators_by_cra_number_or_legal_name') + '?cra_business_number=0',
-            )
+        response = TestUtils.mock_get_with_auth_role(
+            self,
+            'industry_user',
+            custom_reverse_lazy('get_operators_by_cra_number_or_legal_name') + '?cra_business_number=0',
+        )
+        assert response.status_code == 400
+        assert response.json().get('message') == "No search value provided"
 
     def test_get_operators_by_cra_number(self):
         response = TestUtils.mock_get_with_auth_role(
@@ -98,23 +103,26 @@ class TestOperatorsEndpoint(CommonTestSetup):
         assert response.json() == []
 
     def test_get_operators_no_matching_operator_cra_number(self):
-        with pytest.raises(Exception, match="No matching operator found. Retry or add operator."):
-            TestUtils.mock_get_with_auth_role(
-                self,
-                'industry_user',
-                custom_reverse_lazy('get_operators_by_cra_number_or_legal_name') + "?cra_business_number=987654321",
-            )
+        response = TestUtils.mock_get_with_auth_role(
+            self,
+            'industry_user',
+            custom_reverse_lazy('get_operators_by_cra_number_or_legal_name') + "?cra_business_number=987654321",
+        )
+        assert response.status_code == 400
+        assert response.json().get('message') == "No matching operator found. Retry or add operator."
 
     def test_get_operators_by_cra_number_or_legal_name_exclude_declined_operators(self):
         operator = operator_baker({'status': Operator.Statuses.DECLINED})
-        with pytest.raises(Exception, match="No matching operator found. Retry or add operator."):
-            # CRA number
-            TestUtils.mock_get_with_auth_role(
-                self,
-                'industry_user',
-                custom_reverse_lazy('get_operators_by_cra_number_or_legal_name')
-                + f'?cra_business_number={operator.cra_business_number}',
-            )
+
+        # CRA number
+        response = TestUtils.mock_get_with_auth_role(
+            self,
+            'industry_user',
+            custom_reverse_lazy('get_operators_by_cra_number_or_legal_name')
+            + f'?cra_business_number={operator.cra_business_number}',
+        )
+        assert response.status_code == 400
+        assert response.json().get('message') == "No matching operator found. Retry or add operator."
 
         # Legal name
         response = TestUtils.mock_get_with_auth_role(
@@ -156,7 +164,6 @@ class TestOperatorsEndpoint(CommonTestSetup):
     def test_put_approve_operator(self):
         operator = operator_baker({'status': Operator.Statuses.PENDING, 'is_new': True})
         user_operator = user_operator_baker({'operator': operator})
-
         response = TestUtils.mock_put_with_auth_role(
             self,
             'cas_admin',

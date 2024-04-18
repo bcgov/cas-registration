@@ -1,6 +1,8 @@
+import pytz
 from service.data_access_service.user_operator_service import UserOperatorDataAccessService
 from registration.models import ParentOperator
 from typing import List, Optional, Union
+from datetime import datetime
 
 from service.data_access_service.operator_service import OperatorDataAccessService
 
@@ -126,14 +128,16 @@ class OperatorService:
     @classmethod
     def update_operator_status(cls, user_guid: UUID, operator_id: UUID, updated_data: OperatorIn) -> Operator:
         operator = OperatorDataAccessService.get_operator_by_id(operator_id)
-        user_operator = UserOperatorDataAccessService.get_user_operator_by_id(updated_data.user_operator_id)
         with transaction.atomic():
+
             operator.status = updated_data.status
-            # when new operators are declined, their prime admin should be declined too
             if operator.is_new and operator.status == Operator.Statuses.DECLINED:
-                user_operator.status = UserOperator.Statuses.DECLINED
-                set_verification_columns(user_operator, user_guid)
-                user_operator.save()
+                # If the operator is new and declined, we need to decline all user operators tied to this operator
+                UserOperator.objects.filter(operator_id=operator_id).update(
+                    status=UserOperator.Statuses.DECLINED,
+                    verified_at=datetime.now(pytz.utc),
+                    verified_by=user_guid,
+                )
 
             if operator.status in [Operator.Statuses.APPROVED, Operator.Statuses.DECLINED]:
                 operator.is_new = False
