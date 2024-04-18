@@ -53,3 +53,9 @@ mailhog:
     fsGroup: 1016800000
     runAsNonRoot: true
   host: cas-obps-mailhog-dev.apps.silver.devops.gov.bc.ca
+
+ches:
+  clientId: "unfetched ches client ID"
+  clientSecret: "unfetched ches client secret"
+  tokenEndpoint: "unfetched ches token endpoint"
+  apiUrl: "unfetched ches api url"
