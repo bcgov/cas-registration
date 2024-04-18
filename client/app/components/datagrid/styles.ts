@@ -85,7 +85,7 @@ const styles = {
   },
   "& .MuiDataGrid-virtualScroller": {
     // Set min height to stop jumping effect when searching and no results are found
-    minHeight: "60vh",
+    minHeight: "40vh",
   },
 };
 
