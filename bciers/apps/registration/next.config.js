@@ -36,5 +36,5 @@ module.exports = withSentryConfig(
     dryRun: true,
     silent: true, // Suppresses source map uploading logs during build
   },
-  sentryOptions,
+  sentryOptions
 );
