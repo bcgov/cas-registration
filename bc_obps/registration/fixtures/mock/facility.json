@@ -1,0 +1,12 @@
+[
+  {
+    "model": "registration.facility",
+    "pk": 1,
+    "fields": {
+      "name": "Facility name",
+      "type": "Facility type",
+      "new_entrant": true,
+      "operation": "e1300fd7-2dee-47d1-b655-2ad3fd10f052"
+    }
+  }
+]

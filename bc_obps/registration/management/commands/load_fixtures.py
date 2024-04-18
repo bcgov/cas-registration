@@ -39,6 +39,7 @@ class Command(BaseCommand):
                 f'{fixture_base_dir}/document.json',
                 f'{fixture_base_dir}/user_operator.json',
                 f'{fixture_base_dir}/parent_operator.json',
+                f'{fixture_base_dir}/facility.json',
             ]
 
         for fixture in fixtures:
