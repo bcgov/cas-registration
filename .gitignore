@@ -140,3 +140,12 @@ terraform.rc
 
 # Ignore /charts helm directory
 helm/**/charts
+
+# Yarn Modern
+# See https://yarnpkg.com/getting-started/qa#which-files-should-be-gitignored
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
