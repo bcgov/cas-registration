@@ -11,6 +11,7 @@ from registration.models import (
     BusinessStructure,
     DocumentType,
     Document,
+    Facility,
     NaicsCode,
     ReportingActivity,
     RegulatedProduct,
@@ -23,6 +24,7 @@ from registration.models import (
     Operation,
     MultipleOperator,
     AppRole,
+    WellAuthorizationNumber,
 )
 from model_bakery import baker
 from django.core.exceptions import ValidationError
@@ -44,6 +46,7 @@ OPERATION_FIXTURE = ("mock/operation.json",)
 CONTACT_FIXTURE = ("mock/contact.json",)
 DOCUMENT_FIXTURE = ("mock/document.json",)
 BC_OBPS_REGULATED_OPERATION_FIXTURE = ("mock/bc_obps_regulated_operation.json",)
+FACILITY_FIXTURE = ("mock/facility.json",)
 
 
 timestamp_common_fields = [
@@ -676,6 +679,7 @@ class OperationModelTest(BaseTestCase):
             ("status", "status", 1000, None),
             ("multiple_operator", "multiple operator", None, None),
             ("address", "address", None, None),
+            ("facilities", "facility", None, None),
         ]
 
     def test_unique_boro_id_per_operation(self):
@@ -772,6 +776,57 @@ class OperationModelTest(BaseTestCase):
 
         with self.assertRaises(ValidationError, msg="Operation with this Swrs facility id already exists."):
             invalid_operation.save()
+
+
+class FacilityModelTest(BaseTestCase):
+    fixtures = [
+        ADDRESS_FIXTURE,
+        USER_FIXTURE,
+        CONTACT_FIXTURE,
+        OPERATOR_FIXTURE,
+        OPERATION_FIXTURE,
+        DOCUMENT_FIXTURE,
+        BC_OBPS_REGULATED_OPERATION_FIXTURE,
+        FACILITY_FIXTURE,
+    ]
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.test_object = Facility.objects.first()
+        cls.field_data = [
+            *timestamp_common_fields,
+            ("id", "ID", None, None),
+            ("name", "name", 1000, None),
+            ("type", "type", 1000, None),
+            ("operation", "operation", None, None),
+            ("address", "address", None, None),
+            ("new_entrant", "new entrant", None, None),
+            ("well_authorization_numbers", "well authorization number", None, None),
+        ]
+
+
+class WellAuthorizationNumberTest(BaseTestCase):
+    fixtures = [
+        ADDRESS_FIXTURE,
+        USER_FIXTURE,
+        CONTACT_FIXTURE,
+        OPERATOR_FIXTURE,
+        OPERATION_FIXTURE,
+        DOCUMENT_FIXTURE,
+        BC_OBPS_REGULATED_OPERATION_FIXTURE,
+        FACILITY_FIXTURE,
+    ]
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.test_object = WellAuthorizationNumber.objects.create(
+            well_authorization_number=1, facility=Facility.objects.first()
+        )
+        cls.field_data = [
+            *timestamp_common_fields,
+            ("well_authorization_number", "well authorization number", None, None),
+            ("facility", "facility", None, None),
+        ]
 
 
 class AppRoleModelTest(BaseTestCase):
