@@ -8,10 +8,12 @@ import OutsideClickHandler from "react-outside-click-handler";
 
 const HeaderSearchCell = ({
   field,
+  fieldLabel,
   isFocused,
   setLastFocusedField,
 }: {
   field: string;
+  fieldLabel: string;
   isFocused: boolean;
   setLastFocusedField: (field: string | null) => void;
 }) => {
@@ -54,6 +56,7 @@ const HeaderSearchCell = ({
           onChange={handleChange}
           value={searchState}
           type="text"
+          aria-label={fieldLabel}
           id={field}
           inputRef={(input) => {
             if (isFocused) {

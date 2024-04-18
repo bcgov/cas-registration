@@ -15,6 +15,20 @@ import StatusStyleColumnCell from "@/app/components/datagrid/cells/StatusStyleCo
 import HeaderSearchCell from "@/app/components/datagrid/cells/HeaderSearchCell";
 import { OperationRow } from "@/app/components/routes/operations/types";
 
+const EmptyGroupCell = (params: GridColumnGroupHeaderParams) => {
+  const { headerName } = params;
+
+  // This was needed to comply with the a11y accessibility rules
+  return (
+    <div
+      aria-label={`${headerName} non-filterable column`}
+      className="select-none"
+    >
+      N/A
+    </div>
+  );
+};
+
 const OperationDataGrid = ({
   initialData,
   isOperatorColumn = false,
@@ -63,11 +77,12 @@ const OperationDataGrid = ({
   ];
 
   const SearchCell = (params: GridColumnGroupHeaderParams) => {
-    const field = params.groupId as string;
+    const { groupId, headerName } = params;
     return (
       <HeaderSearchCell
-        field={field}
-        isFocused={lastFocusedField === field}
+        field={groupId as string}
+        fieldLabel={headerName as string}
+        isFocused={lastFocusedField === groupId}
         setLastFocusedField={setLastFocusedField}
       />
     );
@@ -76,32 +91,38 @@ const OperationDataGrid = ({
   const columnGroup = [
     {
       groupId: "bcghg_id",
+      headerName: "BC GHG ID",
       renderHeaderGroup: SearchCell,
       children: [{ field: "bcghg_id" }],
     },
     {
       groupId: "name",
+      headerName: "Operation",
       renderHeaderGroup: SearchCell,
       children: [{ field: "name" }],
     },
     {
       groupId: "submission_date",
-      renderHeaderGroup: () => null,
+      headerName: "Submission Date",
+      renderHeaderGroup: EmptyGroupCell,
       children: [{ field: "submission_date" }],
     },
     {
       groupId: "bc_obps_regulated_operation",
+      headerName: "BORO ID",
       renderHeaderGroup: SearchCell,
       children: [{ field: "bc_obps_regulated_operation" }],
     },
     {
       groupId: "status",
+      headerName: "Application Status",
       renderHeaderGroup: SearchCell,
       children: [{ field: "status" }],
     },
     {
       groupId: "action",
-      renderHeaderGroup: () => null,
+      headerName: "Action",
+      renderHeaderGroup: EmptyGroupCell,
       children: [{ field: "action" }],
     },
   ] as GridColumnGroupingModel;
@@ -118,6 +139,7 @@ const OperationDataGrid = ({
 
     columnGroup.splice(operatorColumnIndex, 0, {
       groupId: "operator",
+      headerName: "Operator",
       renderHeaderGroup: SearchCell,
       children: [{ field: "operator" }],
     });
