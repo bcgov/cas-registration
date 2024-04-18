@@ -1,8 +1,19 @@
-from registration.api.utils.operator_utils import AddressesData
 from registration.models import Address
+from typing import Optional
 
 
 class AddressesService:
+    class AddressesData:
+        physical_street_address: str
+        physical_municipality: str
+        physical_province: str
+        physical_postal_code: str
+        mailing_address_same_as_physical: bool
+        mailing_street_address: Optional[str]
+        mailing_municipality: Optional[str]
+        mailing_province: Optional[str]
+        mailing_postal_code: Optional[str]
+
     """
     This function creates or updates addresses. It handles records that have different physical or mailing addresses. It also handles address data that comes in with a prefix (e.g. physical_street_address vs. po_physical_street_address).
 
@@ -16,7 +27,10 @@ class AddressesService:
 
     """
 
-    def upsert_addresses_from_data(address_data: AddressesData, physical_address_id, mailing_address_id, prefix=""):
+    @classmethod
+    def upsert_addresses_from_data(
+        cls, address_data: AddressesData, physical_address_id, mailing_address_id, prefix=""
+    ):
         # create or update physical address record
         physical_address, _ = Address.objects.update_or_create(
             id=physical_address_id,
