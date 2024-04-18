@@ -1,7 +1,7 @@
 from typing import List
 import json
+from common.enums import AccessRequestStates, AccessRequestTypes
 from common.service.email.email_service import EmailService
-from common.enums import AdminAccessRequestStates
 from model_bakery import baker
 from localflavor.ca.models import CAPostalCodeField
 from registration.models import (
@@ -414,7 +414,9 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         operator = operator_baker({'status': Operator.Statuses.APPROVED, 'is_new': False})
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
         subsequent_user_operator = baker.make(UserOperator, operator=operator)
-        mock_send_admin_access_request_email = mocker.patch.object(EmailService, 'send_admin_access_request_email')
+        mock_send_operator_access_request_email = mocker.patch.object(
+            EmailService, 'send_operator_access_request_email'
+        )
         response = TestUtils.mock_put_with_auth_role(
             self,
             'industry_user',
@@ -427,8 +429,9 @@ class TestUserOperatorEndpoint(CommonTestSetup):
             custom_reverse_lazy('update_user_operator_status'),
         )
         # Assert that the email notification was called
-        mock_send_admin_access_request_email.assert_called_once_with(
-            AdminAccessRequestStates.APPROVED,
+        mock_send_operator_access_request_email.assert_called_once_with(
+            AccessRequestStates.APPROVED,
+            AccessRequestTypes.OPERATOR_WITH_ADMIN,
             operator.legal_name,
             subsequent_user_operator.user.get_full_name(),
             subsequent_user_operator.user.email,
@@ -456,13 +459,15 @@ class TestUserOperatorEndpoint(CommonTestSetup):
     def test_cas_admin_can_update_status_of_a_user_operator(self, mocker):
         operator = operator_baker({'status': Operator.Statuses.APPROVED, 'is_new': False})
         user_operator = user_operator_baker({'operator': operator})
-        mock_send_admin_access_request_email = mocker.patch.object(EmailService, 'send_admin_access_request_email')
+        mock_send_operator_access_request_email = mocker.patch.object(
+            EmailService, 'send_operator_access_request_email'
+        )
         response_2 = TestUtils.mock_put_with_auth_role(
             self,
             'cas_admin',
             self.content_type,
             {
-                "role": UserOperator.Roles.REPORTER,
+                "role": UserOperator.Roles.ADMIN,
                 "status": UserOperator.Statuses.APPROVED,
                 "user_operator_id": user_operator.id,
             },
@@ -471,11 +476,12 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         assert response_2.status_code == 200
         user_operator.refresh_from_db()  # refresh the user_operator object to get the updated status
         assert user_operator.status == UserOperator.Statuses.APPROVED
-        assert user_operator.role == UserOperator.Roles.REPORTER
+        assert user_operator.role == UserOperator.Roles.ADMIN
         assert user_operator.verified_by == self.user
         # Assert that the email notification was called
-        mock_send_admin_access_request_email.assert_called_once_with(
-            AdminAccessRequestStates.APPROVED,
+        mock_send_operator_access_request_email.assert_called_once_with(
+            AccessRequestStates.APPROVED,
+            AccessRequestTypes.ADMIN,
             operator.legal_name,
             user_operator.user.get_full_name(),
             user_operator.user.email,
@@ -499,16 +505,18 @@ class TestUserOperatorEndpoint(CommonTestSetup):
             business_role=BusinessRole.objects.get(role_name='Senior Officer'),
         )
         user_operator.operator.contacts.set(contacts)
-        mock_send_admin_access_request_email = mocker.patch.object(EmailService, 'send_admin_access_request_email')
+        mock_send_operator_access_request_email = mocker.patch.object(
+            EmailService, 'send_operator_access_request_email'
+        )
         # Now decline the user_operator and make sure the contacts are deleted
-        response_3 = TestUtils.mock_put_with_auth_role(
+        response = TestUtils.mock_put_with_auth_role(
             self,
             'cas_admin',
             self.content_type,
             {"status": UserOperator.Statuses.DECLINED, "user_operator_id": user_operator.id},
             custom_reverse_lazy('update_user_operator_status'),
         )
-        assert response_3.status_code == 200
+        assert response.status_code == 200
         user_operator.refresh_from_db()  # refresh the user_operator object to get the updated status
         assert user_operator.status == UserOperator.Statuses.DECLINED
         assert user_operator.role == UserOperator.Roles.PENDING
@@ -516,8 +524,9 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         assert user_operator.operator.contacts.count() == 0
         assert Contact.objects.count() == 0
         # Assert that the email notification was sent
-        mock_send_admin_access_request_email.assert_called_once_with(
-            AdminAccessRequestStates.DECLINED,
+        mock_send_operator_access_request_email.assert_called_once_with(
+            AccessRequestStates.DECLINED,
+            AccessRequestTypes.ADMIN,
             operator.legal_name,
             user_operator.user.get_full_name(),
             user_operator.user.email,
@@ -525,7 +534,9 @@ class TestUserOperatorEndpoint(CommonTestSetup):
 
     def test_request_admin_access_with_valid_payload(self, mocker):
         operator = operator_baker()
-        mock_send_admin_access_request_email = mocker.patch.object(EmailService, 'send_admin_access_request_email')
+        mock_send_operator_access_request_email = mocker.patch.object(
+            EmailService, 'send_operator_access_request_email'
+        )
         response = TestUtils.mock_post_with_auth_role(
             self,
             'industry_user',
@@ -535,8 +546,12 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         )
 
         # Assert that the email notification was sent
-        mock_send_admin_access_request_email.assert_called_once_with(
-            AdminAccessRequestStates.CONFIRMATION, operator.legal_name, self.user.get_full_name(), self.user.email
+        mock_send_operator_access_request_email.assert_called_once_with(
+            AccessRequestStates.CONFIRMATION,
+            AccessRequestTypes.ADMIN,
+            operator.legal_name,
+            self.user.get_full_name(),
+            self.user.email,
         )
 
         response_json = response.json()
