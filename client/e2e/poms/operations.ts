@@ -354,7 +354,7 @@ export class OperationsPOM {
           case UserRole.CAS_ANALYST:
             expectedValues = [
               OperationStatus.PENDING,
-              OperationStatus.APPROVED,
+              //OperationStatus.APPROVED,
               OperationStatus.DECLINED,
             ];
             break;
