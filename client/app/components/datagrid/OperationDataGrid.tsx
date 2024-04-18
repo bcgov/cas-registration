@@ -4,6 +4,7 @@ import { useState } from "react";
 import DataGrid from "./DataGrid";
 import Link from "next/link";
 import {
+  GridColumnGroupHeaderParams,
   GridColumnGroupingModel,
   GridRenderCellParams,
 } from "@mui/x-data-grid";
@@ -61,7 +62,7 @@ const OperationDataGrid = ({
     },
   ];
 
-  const SearchCell = (params: any) => {
+  const SearchCell = (params: GridColumnGroupHeaderParams) => {
     const field = params.groupId as string;
     return (
       <HeaderSearchCell

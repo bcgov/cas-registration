@@ -51,7 +51,6 @@ const HeaderSearchCell = ({
         <TextField
           className="w-full px-2 py-1"
           placeholder="Search"
-          onBlur={handleResetFocus}
           onChange={handleChange}
           value={searchState}
           type="text"

@@ -15,13 +15,11 @@ import SortIcon from "@/app/components/icons/SortIcon";
 import styles from "@/app/components/datagrid/styles";
 
 interface Props {
-  fetchPageData?: (params: {
-    [key: string]: string | number | undefined;
-  }) => Promise<any>;
+  fetchPageData?: (params: { [key: string]: any }) => Promise<any>;
   columns: GridColDef[];
   columnGroupModel?: GridColumnGroupingModel;
   initialData: {
-    rows: { [key: string]: string | number | undefined }[];
+    rows: { [key: string]: any }[];
     row_count?: number;
   };
   paginationMode?: "client" | "server";
