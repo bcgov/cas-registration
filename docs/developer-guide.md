@@ -661,7 +661,7 @@ For example:
 
 ```
 @transaction.atomic()
-    def get_or_create_user_operator(user_guid: UUID, operator_id: UUID):
+    def get_or_create_user_operator(user_guid: UUID, operator_id: UUID) -> Tuple[UserOperator, bool]:
         "Function to create a user_operator"
         user = UserDataAccessService.get_user_by_guid(user_guid)
         operator = OperatorDataAccessService.get_operator_by_id(operator_id)
@@ -670,7 +670,7 @@ For example:
         )
         if created:
             user_operator.set_create_or_update(user.pk)
-        return user_operator
+        return user_operator, created
 ```
 
 ### Intermediary services
@@ -679,3 +679,12 @@ Sometimes, an endpoint needs to do something more complicated than simply call a
 
 - if multiple database services are called, ensure they're atomic using the @transaction.atomic() decorator
 - check if users should be allowed to do things (in the regisration app, role-based authentication is handled in the endpoints, but anything more specific (e.g., if an operator already has an admin, subsequent users can't request admin access) is handled in an intermediary service)
+
+## Email Notifications
+
+Email notifications are an essential part of the application's communication strategy. They provide users with important information, updates, and alerts. We use CHES (Common Hosted Email Service) to send email notifications to users.
+To send real emails, you need to set up CHES credentials in your environment variables. You can find the required CHES credentials in the 1Password document `OBPS backend ENV`.
+
+You also need to set up the `EmailService` singleton object (like `email_service = EmailService()`) in the `.py` file to access the `EmailService` object.
+
+**Note**: Make sure to not send real emails in the development environment by commenting out the CHES credentials in the `bc_obps/.env` file.

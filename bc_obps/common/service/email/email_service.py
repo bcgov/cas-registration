@@ -1,27 +1,38 @@
 from datetime import datetime, timedelta
-from typing import Optional
+from typing import List, Optional
 from uuid import UUID
-import logging
-
-import requests
+from common.enums import AdminAccessRequestStates
+import logging, requests
+from common.models import EmailNotification, EmailNotificationTemplate
 from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
+SENDER_EMAIL = 'no-reply.cas@gov.bc.ca'
 
-class EmailService:
+
+class EmailService(object):
     """
     EmailService uses Common Hosted Email Service (CHES) API to enqueue emails for delivery. Uses BC Government-hosted SMTP server to send emails.
+    NOTE: Use `email_service = EmailService()` to access the EmailService singleton object in other .py files
     """
 
-    def __init__(self):
-        self.api_url: str = settings.CHES_API_URL
-        self.client_id: str = settings.CHES_CLIENT_ID
-        self.client_secret: str = settings.CHES_CLIENT_SECRET
-        self.token_endpoint: str = settings.CHES_TOKEN_ENDPOINT
-        self.token: Optional[str] = None
-        self.token_expiry: datetime = datetime.now()
-        logger.info(f'Initializing EmailService for clientID {self.client_id} to connect to {self.api_url}')
+    _instance = None
+
+    # Singleton pattern to ensure only one instance of EmailService is created
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super(EmailService, cls).__new__(cls)
+            cls._instance.api_url = settings.CHES_API_URL
+            cls._instance.client_id = settings.CHES_CLIENT_ID
+            cls._instance.client_secret = settings.CHES_CLIENT_SECRET
+            cls._instance.token_endpoint = settings.CHES_TOKEN_ENDPOINT
+            cls._instance.token = None
+            cls._instance.token_expiry = datetime.now()
+            logger.info(
+                f'Logger: Initializing EmailService for clientID {cls._instance.client_id} to connect to {cls._instance.api_url}'
+            )
+        return cls._instance
 
     def _get_token(self):
         """
@@ -43,7 +54,7 @@ class EmailService:
                 self.token = response.json()["access_token"]
                 self.token_expiry = datetime.now() + timedelta(seconds=response.json()["expires_in"])
             else:
-                logger.error("Failed to retrieve CHES access token")
+                logger.error("Logger: Failed to retrieve CHES access token")
 
     def _make_request(self, endpoint, method='GET', data: any = None):
         """
@@ -70,7 +81,7 @@ class EmailService:
             response = self._make_request("/health")
             return response.json()
         except Exception as exc:
-            logger.error(f'Exception in /email/health_check {str(exc)}')
+            logger.error(f'Logger: Exception in /email/health_check {str(exc)}')
             raise
 
     def get_message_status(self, message_id: UUID):
@@ -91,7 +102,7 @@ class EmailService:
             response = self._make_request(f'/status/{message_id}')
             return response.json()
         except Exception as exc:
-            logger.error(f'Exception retrieving message status for {message_id} - {str(exc)}')
+            logger.error(f'Logger: Exception retrieving message status for {message_id} - {str(exc)}')
             raise
 
     def send_email(self, email_data: dict):
@@ -120,7 +131,7 @@ class EmailService:
             )
             return response.json()
         except Exception as exc:
-            logger.error(f'Exception in send_email {str(exc)}')
+            logger.error(f'Logger: Exception in send_email {str(exc)}')
             raise
 
     def merge_template_and_send(self, email_template_data: dict):
@@ -151,5 +162,102 @@ class EmailService:
             response = self._make_request("/emailMerge", method='POST', data=email_template_data)
             return response.json()
         except Exception as exc:
-            logger.error(f'Exception in merging template and sending! - {str(exc)}')
+            logger.error(f'Logger: Exception in merging template and sending! - {str(exc)}')
             raise
+
+    def send_email_by_template(
+        self, template_instance: EmailNotificationTemplate, email_context: dict, recipients_email: List[str]
+    ) -> Optional[dict]:
+        """
+        Sends an email using the provided email template, email context, and recipient email addresses.
+
+        Args:
+            template_instance: An instance of the EmailNotificationTemplate class representing the email template.
+            email_context: A dictionary containing the context variables to be used in the email template.
+            recipients_email: A list of recipient email addresses.
+
+        Returns:
+            Optional[dict]: A dictionary containing the response from the email service provider, or None if the email sending fails.
+        """
+        email_data = {
+            'bodyType': 'html',
+            'body': template_instance.body,
+            'contexts': [
+                {
+                    'context': email_context,
+                    'to': recipients_email,
+                }
+            ],
+            'from': SENDER_EMAIL,
+            'subject': template_instance.subject,
+        }
+        return self.merge_template_and_send(email_data)
+
+    def create_email_notification_record(
+        self, transaction_id: UUID, message_id: UUID, recipients_email: List[str], template_id: int
+    ) -> None:
+        """
+        Creates a new email notification record in the database.
+
+        Args:
+            transaction_id: The ID of the transaction associated with the email notification.
+            message_id: The ID of the email message.
+            recipients_email: A list of email addresses of the recipients.
+            template_id: The ID of the email template.
+
+        Returns:
+            None
+        """
+        EmailNotification.objects.create(
+            transaction_id=transaction_id,
+            message_id=message_id,
+            recipients_email=recipients_email,
+            template_id=template_id,
+        )
+
+    def send_admin_access_request_email(
+        self,
+        state: AdminAccessRequestStates,
+        operator_legal_name: str,
+        external_user_full_name: str,
+        external_user_email_address: str,
+    ) -> None:
+        """
+        Sends an email for an admin access request.
+
+        Args:
+            state: The state of the admin access request.
+            operator_legal_name: The legal name of the operator to use in the email template.
+            external_user_full_name: The full name of the external user to use in the email template.
+            external_user_email_address: The email address of the external user to use in the email template.
+
+        Raises:
+            ValueError: If the email template is not found.
+
+        Returns:
+            None
+        """
+        try:
+            template_name = {
+                AdminAccessRequestStates.CONFIRMATION: 'Admin Access Request Confirmation',
+                AdminAccessRequestStates.APPROVED: 'Admin Access Request Approved',
+                AdminAccessRequestStates.DECLINED: 'Admin Access Request Declined',
+            }
+            template = EmailNotificationTemplate.objects.get(name=template_name[state])
+        except EmailNotificationTemplate.DoesNotExist:
+            raise ValueError("Email template not found")
+
+        email_context = {
+            "operator_legal_name": operator_legal_name,
+            "external_user_full_name": external_user_full_name,
+            "external_user_email_address": external_user_email_address,
+        }
+
+        try:
+            response_json = self.send_email_by_template(template, email_context, [external_user_email_address])
+            # Create email notification record to store the transaction and message IDs
+            self.create_email_notification_record(
+                response_json['txId'], response_json['messages'][0]['msgId'], [external_user_email_address], template.id
+            )
+        except Exception as exc:  # not raising exception here to avoid breaking the flow of the application
+            logger.error(f'Logger: Exception sending admin access request email - {str(exc)}')

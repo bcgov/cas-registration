@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     "localflavor",
     "registration.apps.RegistrationConfig",
     "reporting.apps.ReportingConfig",
+    "common.apps.CommonConfig",
 ]
 
 

@@ -13,10 +13,6 @@ env:
   KEYCLOAK_CLIENT_ID: ${{ secrets.KEYCLOAK_CLIENT_ID }}
   KEYCLOAK_CLIENT_SECRET: ${{ secrets.KEYCLOAK_CLIENT_SECRET }}
   NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
-  CHES_CLIENT_ID: ${{ secrets.CHES_CLIENT_ID }}
-  CHES_CLIENT_SECRET: ${{ secrets.CHES_CLIENT_SECRET }}
-  CHES_API_URL: ${{ secrets.CHES_API_URL }}
-  CHES_TOKEN_ENDPOINT: ${{ secrets.CHES_TOKEN_ENDPOINT }}
 
 # Cancel current job when pushing new commit into the PR
 concurrency:
@@ -452,10 +448,6 @@ jobs:
         uses: ./.github/actions/local-app-run
         with:
           django_secret_key: ${{ env.DJANGO_SECRET_KEY }}
-          ches_client_id: ${{ env.CHES_CLIENT_ID }}
-          ches_client_secret: ${{ env.CHES_CLIENT_SECRET }}
-          ches_token_endpoint: ${{ env.CHES_TOKEN_ENDPOINT }}
-          ches_api_url: ${{ env.CHES_API_URL }}
       - name: Run pytest
         working-directory: ./bc_obps
         run: make pythontests

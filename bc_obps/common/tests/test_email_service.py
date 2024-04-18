@@ -1,14 +1,17 @@
-import pytest
+import uuid, pytest
+from common.enums import AdminAccessRequestStates
 from datetime import datetime, timedelta
 from uuid import UUID
-from common_utils.email.email_service import EmailService
-from pytest_mock import mocker
+from common.service.email.email_service import EmailService
+from common.models import EmailNotification, EmailNotificationTemplate
+
+pytestmark = pytest.mark.django_db
 
 
 @pytest.fixture
 def email_service(mocker):
     email_service = EmailService()
-    email_service.token_endpoint = "http://mock_token_endpoint"
+    email_service.token_endpoint = "https://mock_token_endpoint"
     email_service.client_id = "mock_client_id"
     email_service.client_secret = "mock_client_secret"
 
@@ -76,13 +79,25 @@ def email_template():
     }
 
 
-def test_init(email_service):
+def test_singleton_service(email_service: EmailService):
+    """
+    Test that the EmailService is a singleton
+    """
+    email_service._get_token()
+    # Create a new instance of the EmailService
+    new_email_service = EmailService()
+    new_email_service._get_token()
+    # Assert that the token and expiry are the same
+    assert email_service.__dict__ == new_email_service.__dict__
+
+
+def test_new_instance_attributes(email_service: EmailService):
     email_service_attributes = ['api_url', 'client_id', 'client_secret', 'token_endpoint', 'token_expiry']
     for key_name in email_service_attributes:
         assert hasattr(email_service, key_name)
 
 
-def test_fetch_new_token(email_service, mocker):
+def test_fetch_new_token(email_service: EmailService, mocker):
     current_time = datetime.now()
 
     email_service._get_token()
@@ -94,7 +109,7 @@ def test_fetch_new_token(email_service, mocker):
     email_service._get_token.assert_called_once()
 
 
-def test_get_token_when_expired(email_service, mocker):
+def test_get_token_when_expired(email_service: EmailService, mocker):
     email_service.token = "mock_expired_token"
     email_service.token_expiry = datetime.now() - timedelta(days=1)
 
@@ -107,7 +122,7 @@ def test_get_token_when_expired(email_service, mocker):
     assert email_service.token_expiry <= current_time + timedelta(minutes=5)
 
 
-def test_health_check(email_service, health_check_data, mocker):
+def test_health_check(email_service: EmailService, health_check_data, mocker):
     mock_health_request = mocker.patch.object(email_service, '_make_request')
     mock_health_request.return_value.json.return_value = health_check_data
 
@@ -140,7 +155,7 @@ def test_send_real_email():
     assert response['txId'] is not None
 
 
-def test_send_email(email_service, email_data, mocker):
+def test_send_email(email_service: EmailService, email_data, mocker):
     mock_send_email_request = mocker.patch.object(email_service, '_make_request')
     mock_send_email_request.return_value.json.return_value = {
         'messages': [{'msgId': '0000000-00000-0000-0000001', 'to': ['sample@email.com']}],
@@ -155,7 +170,7 @@ def test_send_email(email_service, email_data, mocker):
     email_service._get_token.assert_called_once()
 
 
-def test_get_message_status(email_service, mocker):
+def test_get_message_status(email_service: EmailService, mocker):
     mock_get_status_request = mocker.patch.object(email_service, '_make_request')
     mock_get_status_request.return_value.json.return_value = {
         'createdTS': 1560000000,
@@ -178,7 +193,7 @@ def test_get_message_status(email_service, mocker):
     email_service._get_token.assert_called_once()
 
 
-def test_merge_template_and_send(email_service, email_template, mocker):
+def test_merge_template_and_send(email_service: EmailService, email_template, mocker):
     mock_merge_template_request = mocker.patch.object(email_service, '_make_request')
     mock_merge_template_request.return_value.json.return_value = [
         {
@@ -192,3 +207,57 @@ def test_merge_template_and_send(email_service, email_template, mocker):
     assert len(response[0]['messages']) == 1
     assert response[0]['messages'][0]['to'] == ['baz@gov.bc.ca']
     email_service._get_token.assert_called_once()
+
+
+def test_send_admin_access_request_email(email_service: EmailService, mocker):
+    template_name = {
+        AdminAccessRequestStates.CONFIRMATION: 'Admin Access Request Confirmation',
+        AdminAccessRequestStates.APPROVED: 'Admin Access Request Approved',
+        AdminAccessRequestStates.DECLINED: 'Admin Access Request Declined',
+    }
+    # Mock the send_email_by_template method to prevent sending real emails
+    mocked_send_email_by_template = mocker.patch.object(email_service, 'send_email_by_template')
+
+    # Sample data
+    operator_legal_name = "Test Operator"
+    external_user_full_name = "John Doe"
+    external_user_email_address = "request-admin-access-email-address@email.test"
+
+    expected_context = {
+        "operator_legal_name": operator_legal_name,
+        "external_user_full_name": external_user_full_name,
+        "external_user_email_address": external_user_email_address,
+    }
+
+    for state in AdminAccessRequestStates:
+        transaction_id = uuid.uuid4()
+        message_id = uuid.uuid4()
+        mocked_send_email_by_template.return_value = {'txId': transaction_id, 'messages': [{'msgId': message_id}]}
+        # Get the template instance
+        template_instance = EmailNotificationTemplate.objects.get(name=template_name[state])
+
+        # Make sure we don't have an email notification for the user before they request admin access
+        assert not EmailNotification.objects.filter(
+            transaction_id=transaction_id,
+            message_id=message_id,
+            template=template_instance,
+            recipients_email=[external_user_email_address],
+        ).exists()
+
+        # Call the function
+        email_service.send_admin_access_request_email(
+            state, operator_legal_name, external_user_full_name, external_user_email_address
+        )
+
+        # Assert that send_email_by_template is called with the correct data
+        mocked_send_email_by_template.assert_called_with(
+            template_instance, expected_context, [external_user_email_address]
+        )
+
+        # Assert that an email notification record was created
+        assert EmailNotification.objects.filter(
+            transaction_id=transaction_id,
+            message_id=message_id,
+            template=template_instance,
+            recipients_email=[external_user_email_address],
+        ).exists()

@@ -1,4 +1,5 @@
 import json, uuid
+from django.conf import settings
 from registration.schema import UserIn, UserUpdateIn
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.enums.enums import IdPs
@@ -127,8 +128,12 @@ class TestUserEndpoint(CommonTestSetup):
         # Assert
         assert response.status_code == 200
 
-        # Additional Assertions
-        assert 'app_role' in content and content["app_role"]["role_name"] == "cas_pending"
+        # Additional Assertions (If BYPASS_ROLE_ASSIGNMENT is True, app_role should be cas_admin, otherwise cas_pending)
+        assert (
+            'app_role' in content and content["app_role"]["role_name"] == 'cas_admin'
+            if settings.BYPASS_ROLE_ASSIGNMENT
+            else 'cas_pending'
+        )
         assert 'first_name' in content and isinstance(content['first_name'], str) and content['first_name'] == 'Idir'
         assert 'last_name' in content and isinstance(content['last_name'], str) and content['last_name'] == 'User'
         assert (
