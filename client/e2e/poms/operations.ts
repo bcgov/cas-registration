@@ -220,6 +220,14 @@ export class OperationsPOM {
           [this.buttonApprove, this.buttonDecline, this.buttonRequestChange],
           false
         );
+        switch (status) {
+          case OperationStatus.APPROVED:
+            await expect(this.messageOperationApproved).toBeVisible();
+            break;
+          case OperationStatus.DECLINED:
+            await expect(this.messageOperationDeclined).toBeVisible();
+            break;
+        }
         break;
       case OperationStatus.PENDING:
         // Get and check the buttons are visible
