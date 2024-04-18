@@ -6,7 +6,7 @@ import {
 } from "@/app/components/form/formDataTypes";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { getUserFullName } from "@/app/utils/getUserFullName";
+import getUserFullName from "@/app/utils/getUserFullName";
 
 // 🚀 API call: GET user's data
 async function getUserFormData(): Promise<
