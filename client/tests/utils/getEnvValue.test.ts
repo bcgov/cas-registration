@@ -3,6 +3,8 @@ import { getEnvValue } from "@/app/utils/actions";
 
 vi.stubEnv("SITEMINDER_KEYCLOAK_LOGOUT_URL", "https://example.com");
 
+vi.unmock("@/app/utils/actions");
+
 describe("getEnvValue", () => {
   it("should return the value of the NODE_ENV environment variable", async () => {
     const result = await getEnvValue("NODE_ENV");
