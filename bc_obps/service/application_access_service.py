@@ -1,6 +1,6 @@
 from uuid import UUID
+from common.enums import AccessRequestStates, AccessRequestTypes
 from common.service.email.email_service import EmailService
-from common.enums import AdminAccessRequestStates
 from registration.models import UserOperator
 from service.data_access_service.operator_service import OperatorDataAccessService
 from service.data_access_service.user_operator_service import UserOperatorDataAccessService
@@ -61,7 +61,15 @@ class ApplicationAccessService:
     def request_access(operator_id: UUID, user_guid: UUID):
         if ApplicationAccessService.is_user_eligible_to_request_access(operator_id, user_guid):
             # Making a draft UserOperator instance if one doesn't exist
-            user_operator, _ = UserOperatorDataAccessService.get_or_create_user_operator(user_guid, operator_id)
+            user_operator, created = UserOperatorDataAccessService.get_or_create_user_operator(user_guid, operator_id)
+            if created:
+                email_service.send_operator_access_request_email(
+                    AccessRequestStates.CONFIRMATION,
+                    AccessRequestTypes.OPERATOR_WITH_ADMIN,
+                    user_operator.operator.legal_name,
+                    user_operator.user.get_full_name(),
+                    user_operator.user.email,
+                )
 
         return {"user_operator_id": user_operator.id, "operator_id": user_operator.operator.id}
 
@@ -70,8 +78,9 @@ class ApplicationAccessService:
             # Making a draft UserOperator instance if one doesn't exist
             user_operator, created = UserOperatorDataAccessService.get_or_create_user_operator(user_guid, operator_id)
             if created:
-                email_service.send_admin_access_request_email(
-                    AdminAccessRequestStates.CONFIRMATION,
+                email_service.send_operator_access_request_email(
+                    AccessRequestStates.CONFIRMATION,
+                    AccessRequestTypes.ADMIN,
                     user_operator.operator.legal_name,
                     user_operator.user.get_full_name(),
                     user_operator.user.email,
