@@ -69,14 +69,39 @@ test.describe("Test Workflow cas_admin", () => {
       const operatorsPage = new OperatorsPOM(page);
       // 🛸 Navigate to operators page
       operatorsPage.route();
-
-      // 🔍 Assert cas_admin is able to click "View Details" on see detailed info related Approved
-      await operatorsPage.formHasExpectedUX(UserOperatorStatus.APPROVED);
+      // 🔍 Assert cas_admin is able to click "View Details" on see detailed info related Declined
+      await operatorsPage.formHasExpectedUX(UserOperatorStatus.DECLINED);
       // 📷 Cheese!
       let pageContent = page.locator("html");
       await happoPlaywright.screenshot(operatorsPage.page, pageContent, {
         component: "Operators Details Page cas_admin",
+        variant: "declined",
+      });
+      // 🛸 Navigate back
+      await operatorsPage.navigateBack();
+      // 🔍 Assert table is visible
+      await operatorsPage.tableIsVisible();
+
+      // 🔍 Assert cas_admin is able to click "View Details" on see detailed info related Approved
+      await operatorsPage.formHasExpectedUX(UserOperatorStatus.APPROVED);
+      // 📷 Cheese!
+      pageContent = page.locator("html");
+      await happoPlaywright.screenshot(operatorsPage.page, pageContent, {
+        component: "Operators Details Page cas_admin",
         variant: "approved",
+      });
+      // 🛸 Navigate back
+      await operatorsPage.navigateBack();
+      // 🔍 Assert table is visible
+      await operatorsPage.tableIsVisible();
+
+      // 🔍 Assert cas_admin is able to click "View Details" on see detailed info related Pending
+      await operatorsPage.formHasExpectedUX(UserOperatorStatus.PENDING);
+      // 📷 Cheese!
+      pageContent = page.locator("html");
+      await happoPlaywright.screenshot(operatorsPage.page, pageContent, {
+        component: "Operators Details Page cas_admin",
+        variant: "pending",
       });
       // 🛸 Navigate back
       await operatorsPage.navigateBack();

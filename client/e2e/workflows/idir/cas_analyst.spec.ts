@@ -157,13 +157,37 @@ test.describe("Test Workflow cas_analyst", () => {
       const operationsPage = new OperationsPOM(page);
       // 🛸 Navigate to operations page
       operationsPage.route();
-
-      await operationsPage.formHasExpectedUX(OperationStatus.APPROVED);
+      // 🔍 Assert cas_analyst is able to click "View Details" on each status and see detailed info related to that status
+      await operationsPage.formHasExpectedUX(OperationStatus.DECLINED);
       // 📷 Cheese!
       let pageContent = page.locator("html");
       await happoPlaywright.screenshot(operationsPage.page, pageContent, {
         component: "Operations Details Page cas_analyst",
+        variant: "declined",
+      });
+      // 🛸 Navigate back
+      await operationsPage.navigateBack();
+      // 🔍 Assert table is visible
+      await operationsPage.tableIsVisible();
+
+      await operationsPage.formHasExpectedUX(OperationStatus.APPROVED);
+      // 📷 Cheese!
+      pageContent = page.locator("html");
+      await happoPlaywright.screenshot(operationsPage.page, pageContent, {
+        component: "Operations Details Page cas_analyst",
         variant: "approved",
+      });
+      // 🛸 Navigate back
+      await operationsPage.navigateBack();
+      // 🔍 Assert table is visible
+      await operationsPage.tableIsVisible();
+
+      await operationsPage.formHasExpectedUX(OperationStatus.PENDING);
+      // 📷 Cheese!
+      pageContent = page.locator("html");
+      await happoPlaywright.screenshot(operationsPage.page, pageContent, {
+        component: "Operations Details Page cas_analyst",
+        variant: "pending",
       });
       // 🛸 Navigate back
       await operationsPage.navigateBack();
