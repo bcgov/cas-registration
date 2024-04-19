@@ -337,8 +337,6 @@ jobs:
         run: yarn playwright install --with-deps ${{ matrix.project }}
         working-directory: ./client
 
-      - name: 🎭 Start Mailhog
-        run: docker run -d -p 1025:1025 -p 8025:8025 mailhog/mailhog # start mailhog
       - name: Run Playwright Tests
         run: |
           npx happo-e2e -- npx playwright test --project=${{ matrix.project }} client/e2e/*
