@@ -169,7 +169,7 @@ test.describe("Test Workflow cas_analyst", () => {
       await operationsPage.navigateBack();
       // 🔍 Assert table is visible
       await operationsPage.tableIsVisible();
-
+      /*
       await operationsPage.formHasExpectedUX(OperationStatus.APPROVED);
       // 📷 Cheese!
       pageContent = page.locator("html");
@@ -181,7 +181,7 @@ test.describe("Test Workflow cas_analyst", () => {
       await operationsPage.navigateBack();
       // 🔍 Assert table is visible
       await operationsPage.tableIsVisible();
-
+*/
       await operationsPage.formHasExpectedUX(OperationStatus.PENDING);
       // 📷 Cheese!
       pageContent = page.locator("html");

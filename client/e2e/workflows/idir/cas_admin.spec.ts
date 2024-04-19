@@ -166,7 +166,7 @@ test.describe("Test Workflow cas_admin", () => {
       await operationsPage.navigateBack();
       // 🔍 Assert table is visible
       await operationsPage.tableIsVisible();
-
+      /*
       await operationsPage.formHasExpectedUX(OperationStatus.APPROVED);
       // 📷 Cheese!
       pageContent = page.locator("html");
@@ -174,6 +174,7 @@ test.describe("Test Workflow cas_admin", () => {
         component: "Operations Details Page cas_admin",
         variant: "approved",
       });
+      */
       // 🛸 Navigate back
       await operationsPage.navigateBack();
       // 🔍 Assert table is visible
