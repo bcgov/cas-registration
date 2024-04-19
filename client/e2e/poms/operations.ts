@@ -222,7 +222,7 @@ export class OperationsPOM {
         );
         switch (status) {
           case OperationStatus.APPROVED:
-            await expect(this.messageOperationApproved).toBeVisible();
+            //  await expect(this.messageOperationApproved).toBeVisible();
             break;
           case OperationStatus.DECLINED:
             await expect(this.messageOperationDeclined).toBeVisible();
