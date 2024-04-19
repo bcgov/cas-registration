@@ -1,4 +1,4 @@
-import { Status } from "@/app/utils/enums";
+import { Status, UserOperatorStatus } from "@/app/utils/enums";
 import { actionHandler, getToken } from "@/app/utils/actions";
 
 export interface ExternalDashboardUsersTile {
@@ -39,17 +39,30 @@ export async function getExternalDashboardUsersTileData(): Promise<
 export async function processExternalDashboardUsersTileData() {
   const tileData = await getExternalDashboardUsersTileData();
 
+  // Ensure tileData is an array before using map
+  const transformedTileData = Array.isArray(tileData)
+    ? tileData.map((userOperator) => {
+        userOperator.status = userOperator.status
+          ? UserOperatorStatus[
+              userOperator.status.toUpperCase() as keyof typeof UserOperatorStatus
+            ]
+          : UserOperatorStatus.PENDING;
+
+        return userOperator;
+      })
+    : [];
+
   // 🤳Identify current admin user in the list
   const token = await getToken();
   const uid = token?.user_guid ?? "";
-  const selfIndex = tileData.findIndex((userOperator) => {
+  const selfIndex = transformedTileData.findIndex((userOperator) => {
     return userOperator.user.user_guid.replace(/-/g, "") === uid;
   });
 
   // Ensure selfIndex is within the valid range before modifying the array
-  if (selfIndex !== -1 && selfIndex < tileData.length) {
-    tileData[selfIndex].status = Status.MYSELF;
+  if (selfIndex !== -1 && selfIndex < transformedTileData.length) {
+    transformedTileData[selfIndex].status = Status.MYSELF;
   }
 
-  return tileData;
+  return transformedTileData;
 }
