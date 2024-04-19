@@ -1,8 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import DataGrid from "./DataGrid";
-import Link from "next/link";
 import {
   GridColumnGroupHeaderParams,
   GridColumnGroupingModel,
@@ -10,39 +9,18 @@ import {
 } from "@mui/x-data-grid";
 import { fetchOperationsPageData } from "@/app/components/routes/operations/Operations";
 import { useSession } from "next-auth/react";
-import { OperationStatus } from "@/app/utils/enums";
-import StatusStyleColumnCell from "@/app/components/datagrid/cells/StatusStyleColumnCell";
+import OperationsActionCell from "@/app/components/datagrid/cells/OperationsActionCell";
+import EmptyGroupCell from "@/app/components/datagrid/cells/EmptyGroupCell";
 import HeaderSearchCell from "@/app/components/datagrid/cells/HeaderSearchCell";
+import StatusStyleColumnCell from "@/app/components/datagrid/cells/StatusStyleColumnCell";
 import { OperationRow } from "@/app/components/routes/operations/types";
 
-const EmptyGroupCell = (params: GridColumnGroupHeaderParams) => {
-  const { headerName } = params;
+const operatorColumnIndex = 1;
 
-  // This was needed to comply with the a11y accessibility rules
-  return (
-    <div
-      aria-label={`${headerName} non-filterable column`}
-      className="select-none"
-    >
-      N/A
-    </div>
-  );
-};
-
-const OperationDataGrid = ({
-  initialData,
-  isOperatorColumn = false,
-}: {
-  isOperatorColumn?: boolean;
-  initialData: {
-    rows: OperationRow[];
-    row_count: number;
-  };
-}) => {
-  const { data: session } = useSession();
-  const isIndustryUser = session?.user.app_role?.includes("industry");
-  const [lastFocusedField, setLastFocusedField] = useState<string | null>(null);
-
+const operationColumns = (
+  isOperatorColumn: boolean,
+  ActionCell: (params: GridRenderCellParams) => JSX.Element,
+) => {
   const columns = [
     { field: "bcghg_id", headerName: "BC GHG ID", width: 160 },
     {
@@ -69,6 +47,7 @@ const OperationDataGrid = ({
     {
       field: "action",
       headerName: "Action",
+      renderCell: ActionCell,
       sortable: false,
       width: 120,
       // Set flex to 1 to make the column take up all the remaining width if user zooms out
@@ -76,19 +55,22 @@ const OperationDataGrid = ({
     },
   ];
 
-  const SearchCell = (params: GridColumnGroupHeaderParams) => {
-    const { groupId, headerName } = params;
-    return (
-      <HeaderSearchCell
-        field={groupId as string}
-        fieldLabel={headerName as string}
-        isFocused={lastFocusedField === groupId}
-        setLastFocusedField={setLastFocusedField}
-      />
-    );
-  };
+  if (isOperatorColumn) {
+    columns.splice(operatorColumnIndex, 0, {
+      field: "operator",
+      headerName: "Operator",
+      width: 320,
+    });
+  }
 
-  const columnGroup = [
+  return columns;
+};
+
+const operationGroupColumns = (
+  isOperatorColumn: boolean,
+  SearchCell: (params: GridColumnGroupHeaderParams) => JSX.Element,
+) => {
+  const columnGroupModel = [
     {
       groupId: "bcghg_id",
       headerName: "BC GHG ID",
@@ -127,17 +109,8 @@ const OperationDataGrid = ({
     },
   ] as GridColumnGroupingModel;
 
-  const operatorColumnIndex = 1;
-
   if (isOperatorColumn) {
-    // Add the operator column if the user is CAS internal
-    columns.splice(operatorColumnIndex, 0, {
-      field: "operator",
-      headerName: "Operator",
-      width: 320,
-    });
-
-    columnGroup.splice(operatorColumnIndex, 0, {
+    columnGroupModel.splice(operatorColumnIndex, 0, {
       groupId: "operator",
       headerName: "Operator",
       renderHeaderGroup: SearchCell,
@@ -145,51 +118,57 @@ const OperationDataGrid = ({
     });
   }
 
-  const updatedColumnsOperations = columns.map((column) => {
-    if (column.field === "action") {
-      return {
-        ...column,
-        renderCell: (params: GridRenderCellParams) => {
-          let actionText;
-          switch (params.row.status) {
-            case OperationStatus.NOT_STARTED:
-              actionText = "Start Registration";
-              break;
-            case OperationStatus.DRAFT:
-              actionText = "Continue";
-              break;
-            default:
-              actionText = "View Details";
-          }
+  return columnGroupModel;
+};
 
-          return (
-            <div>
-              {/* 🔗 Add link with href query parameter with row's descriptive text*/}
-              <Link
-                className="no-underline text-bc-link-blue whitespace-normal"
-                href={{
-                  pathname: `operations/${params.row.id}${
-                    isIndustryUser ? "/1" : ""
-                  }`,
-                  query: {
-                    title: `${params.row.name}`,
-                  },
-                }}
-                replace={true}
-              >
-                {actionText}
-              </Link>
-            </div>
-          );
-        },
-      };
-    }
-    return column;
-  });
+const OperationDataGrid = ({
+  initialData,
+  isOperatorColumn = false,
+}: {
+  isOperatorColumn?: boolean;
+  initialData: {
+    rows: OperationRow[];
+    row_count: number;
+  };
+}) => {
+  const { data: session } = useSession();
+  const isIndustryUser = session?.user.app_role?.includes("industry") ?? false;
+  const [lastFocusedField, setLastFocusedField] = useState<string | null>(null);
+
+  const SearchCell = useMemo(
+    // eslint-disable-next-line react/display-name
+    () => (params: GridColumnGroupHeaderParams) => {
+      const { groupId, headerName } = params;
+      return (
+        <HeaderSearchCell
+          field={groupId as string}
+          fieldLabel={headerName as string}
+          isFocused={lastFocusedField === groupId}
+          setLastFocusedField={setLastFocusedField}
+        />
+      );
+    },
+    [lastFocusedField],
+  );
+
+  const ActionCell = useMemo(
+    () => OperationsActionCell(isIndustryUser),
+    [isIndustryUser],
+  );
+
+  const columns = useMemo(
+    () => operationColumns(isOperatorColumn, ActionCell),
+    [ActionCell, isOperatorColumn],
+  );
+
+  const columnGroup = useMemo(
+    () => operationGroupColumns(isOperatorColumn, SearchCell),
+    [SearchCell, isOperatorColumn],
+  );
 
   return (
     <DataGrid
-      columns={updatedColumnsOperations}
+      columns={columns}
       columnGroupModel={columnGroup}
       fetchPageData={fetchOperationsPageData}
       paginationMode="server"
