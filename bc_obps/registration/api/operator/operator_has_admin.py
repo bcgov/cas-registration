@@ -1,13 +1,8 @@
 from uuid import UUID
 from service.data_access_service.user_operator_service import UserOperatorDataAccessService
-from service.data_access_service.user_service import UserDataAccessService
-
 from registration.decorators import authorize, handle_http_errors
-from registration.schema import (
-    Message,
-)
+from registration.schema import Message
 from registration.api.api_base import router
-
 from registration.models import (
     AppRole,
     UserOperator,
