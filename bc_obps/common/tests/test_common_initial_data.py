@@ -111,3 +111,56 @@ class TestInitialData(TestCase):
             <p>On behalf of the Climate Action Secretariat</p>
         ''',
         )
+        template = EmailNotificationTemplate.objects.get(name='New Operator And Admin Access Request Confirmation')
+        self.assertEqual(
+            template.subject,
+            'BCIERS Receipt Acknowledgement – Addition of {{ operator_legal_name }} and administrator access request',
+        )
+        self.assertEqual(
+            template.body,
+            '''
+            <p style="text-align: center;">Province of British Columbia</p>
+            <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p><br>
+            <p>Dear {{ external_user_full_name }},</p><br>
+            <p>Your request to add {{ operator_legal_name }} and obtain administrator access to its profile in BCIERS has been received by the Climate Action Secretariat (CAS).</p>
+            <p>CAS is reviewing your requests. Please allow 3-5 business days to process this request. Once a decision is made, you may expect a notification email.</p><br>
+            <p>If you have any questions, please contact our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca.</a></p><br>
+            <p>Sent to: {{ external_user_email_address }}</p>
+            <p>On behalf of the Climate Action Secretariat</p>
+        ''',
+        )
+        template = EmailNotificationTemplate.objects.get(name='New Operator And Admin Access Request Approved')
+        self.assertEqual(
+            template.subject,
+            'BCIERS Approval Notification – Addition of {{ operator_legal_name }} and administrator access request',
+        )
+        self.assertEqual(
+            template.body,
+            '''
+            <p style="text-align: center;">Province of British Columbia</p>
+            <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p><br>
+            <p>Dear {{ external_user_full_name }},</p><br>
+            <p>Your request to add {{ operator_legal_name }} and obtain administrator access to its profile in BCIERS has been approved by Climate Action Secretariat.</p>
+            <p>Please log back into <a href="https://registration.industrialemissions.gov.bc.ca">BCIERS</a> to perform additional tasks, such as starting an application for a BC OBPS Regulated Operation ID.</p><br>
+            <p>If you have any questions, please contact our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca.</a></p><br>
+            <p>Sent to: {{ external_user_email_address }}</p>
+            <p>On behalf of the Climate Action Secretariat</p>
+        ''',
+        )
+        template = EmailNotificationTemplate.objects.get(name='New Operator And Admin Access Request Declined')
+        self.assertEqual(
+            template.subject,
+            'BCIERS Decline Notification – Addition of {{ operator_legal_name }} and administrator access request',
+        )
+        self.assertEqual(
+            template.body,
+            '''
+            <p style="text-align: center;">Province of British Columbia</p>
+            <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p><br>
+            <p>Dear {{ external_user_full_name }},</p><br>
+            <p>Your requests to add {{ operator_legal_name }} and obtain administrator access to its profile in BCIERS has been declined by the Climate Action Secretariat.</p><br>
+            <p>If you have any questions, please contact our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca.</a></p><br>
+            <p>Sent to: {{ external_user_email_address }}</p>
+            <p>On behalf of the Climate Action Secretariat</p>
+        ''',
+        )
