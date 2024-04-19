@@ -224,7 +224,7 @@ class EmailService(object):
         external_user_email_address: str,
     ) -> None:
         """
-        Sends an email for an operator access request.
+        Sends an email to a user regarding an operator and their access request based on the access state and type.
 
         Args:
             access_state: The state of the operator access request.
