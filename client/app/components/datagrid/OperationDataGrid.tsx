@@ -11,6 +11,27 @@ import operationColumns from "@/app/components/datagrid/models/operationColumns"
 import operationGroupColumns from "@/app/components/datagrid/models/operationGroupColumns";
 import { OperationRow } from "@/app/components/routes/operations/types";
 
+const OperationSearchCell = ({
+  lastFocusedField,
+  setLastFocusedField,
+}: {
+  lastFocusedField: string | null;
+  setLastFocusedField: (value: string | null) => void;
+}) => {
+  const RenderCell = (params: GridColumnGroupHeaderParams) => {
+    const { groupId, headerName } = params;
+    return (
+      <HeaderSearchCell
+        field={groupId as string}
+        fieldLabel={headerName as string}
+        isFocused={lastFocusedField === groupId}
+        setLastFocusedField={setLastFocusedField}
+      />
+    );
+  };
+  return RenderCell;
+};
+
 const OperationDataGrid = ({
   initialData,
   isOperatorColumn = false,
@@ -26,19 +47,8 @@ const OperationDataGrid = ({
   const [lastFocusedField, setLastFocusedField] = useState<string | null>(null);
 
   const SearchCell = useMemo(
-    // eslint-disable-next-line react/display-name
-    () => (params: GridColumnGroupHeaderParams) => {
-      const { groupId, headerName } = params;
-      return (
-        <HeaderSearchCell
-          field={groupId as string}
-          fieldLabel={headerName as string}
-          isFocused={lastFocusedField === groupId}
-          setLastFocusedField={setLastFocusedField}
-        />
-      );
-    },
-    [lastFocusedField],
+    () => OperationSearchCell({ lastFocusedField, setLastFocusedField }),
+    [lastFocusedField, setLastFocusedField],
   );
 
   const ActionCell = useMemo(
