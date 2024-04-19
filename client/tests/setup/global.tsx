@@ -1,8 +1,8 @@
+/* eslint-disable import/no-extraneous-dependencies */
 // TODO(Nx Migration): Module added to Monorepo at `bciers/libs/shared/testConfig/src/setup/global.ts`
 
 import type { TestingLibraryMatchers } from "@testing-library/jest-dom/matchers";
 import * as matchers from "@testing-library/jest-dom/matchers";
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { expect } from "vitest";
 import {
   actionHandler,
@@ -13,6 +13,8 @@ import {
   useSearchParams,
   useSession,
 } from "@/tests/setup/mocks";
+import createFetchMock from "vitest-fetch-mock";
+import { vi } from "vitest";
 
 declare module "vitest" {
   interface Assertion<T = any>
@@ -45,3 +47,8 @@ vi.mock("next-auth", () => ({
 vi.mock("@/app/utils/actions", () => ({
   actionHandler,
 }));
+
+// mock fetch
+export const fetchMocker = createFetchMock(vi);
+
+fetchMocker.enableMocks();
