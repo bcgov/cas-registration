@@ -169,6 +169,24 @@ export async function getTableRowById(table: Locator, rowId: string) {
   return row;
 }
 
+// 🛠️ Function: get a table column's values
+export async function getTableColumnTextValues(
+  table: Locator,
+  dataField: string,
+): Promise<string[]> {
+  const uniqueColumnValues = new Set<string>();
+  const rows = await table.locator('[role="row"]').all();
+  const rowsLength = rows.length;
+  for (let i = 1; i < rowsLength; i++) {
+    //skip header row
+    const row = rows[i];
+    const cell = await getRowCellBySelector(row, `[data-field="${dataField}"]`);
+    const text = (await cell.textContent()) || "";
+    uniqueColumnValues.add(text.trim());
+  }
+
+  return Array.from(uniqueColumnValues);
+}
 // 🛠️ Function: clears form fields
 export async function fieldsClear(page: Page, formFields: string | any[]) {
   // 📛 Clear the required input fields
