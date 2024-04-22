@@ -4,8 +4,10 @@
  * POM simplify maintenance by capturing element selectors in one place and create reusable code to avoid repetition. *
  */
 import { Locator, Page, expect } from "@playwright/test";
+import { useSession } from "next-auth/react";
 // ☰ Enums
 import {
+  AppRole,
   AppRoute,
   ButtonText,
   DataTestID,
@@ -14,6 +16,7 @@ import {
 } from "@/e2e/utils/enums";
 // ℹ️ Environment variables
 import * as dotenv from "dotenv";
+import { getSession } from "next-auth/react";
 dotenv.config({ path: "./e2e/.env.local" });
 
 export class HomePOM {
@@ -91,5 +94,9 @@ export class HomePOM {
 
   async userIsLoggedIn() {
     await expect(this.linkProfile).toBeVisible();
+  }
+
+  async userRoleIsCorrect(role: UserRole) {
+    await expect(this.page.getByTestId(role).first()).toBeVisible();
   }
 }

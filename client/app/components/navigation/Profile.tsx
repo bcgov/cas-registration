@@ -13,7 +13,12 @@ export default function Profile() {
         href="/dashboard/profile"
         sx={{ color: "white", marginRight: "10px" }}
       >
-        <div className="font-bold text-lg underline">{userFullName}</div>
+        <div
+          data-testid={`${session?.user.app_role}`}
+          className="font-bold text-lg underline"
+        >
+          {userFullName}
+        </div>
       </Link>
       <Link href="#" sx={{ color: "white", marginLeft: "8px" }}>
         <Button
