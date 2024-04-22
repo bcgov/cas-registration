@@ -16,7 +16,7 @@ from registration.utils import custom_reverse_lazy
 baker.generators.add(CAPostalCodeField, TestUtils.mock_postal_code)
 
 
-class TestUserOperatorAuthorizationEndpoint(CommonTestSetup):
+class TestUserOperatorEndpointAuthorization(CommonTestSetup):
     def test_user_operator_unauthorized_users_cannot_get(self):
         # /user-operator/is-approved-admin-user-operator
         response = TestUtils.mock_get_with_auth_role(

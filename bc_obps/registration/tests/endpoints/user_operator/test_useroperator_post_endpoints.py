@@ -19,7 +19,7 @@ from registration.utils import custom_reverse_lazy
 baker.generators.add(CAPostalCodeField, TestUtils.mock_postal_code)
 
 
-class TestUserOperatorEndpoint(CommonTestSetup):
+class TestUserOperatorPostEndpoint(CommonTestSetup):
     def test_request_admin_access_with_valid_payload(self, mocker):
         operator = operator_baker()
         mock_send_operator_access_request_email = mocker.patch.object(
