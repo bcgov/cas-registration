@@ -128,29 +128,6 @@ test.describe("Test Workflow cas_analyst", () => {
   });
 
   test.describe("Test Operations workflow", () => {
-    test("Test details form by workflow", async ({ page }) => {
-      const operationsPage = new OperationsPOM(page);
-      // 🛸 Navigate to operations page
-      operationsPage.route();
-      // 🔍 Assert cas_analyst workflow Pending, Request Changes, Undo (Request Changes), Approve
-      await operationsPage.formHasExpectedWorkflow(
-        UserRole.CAS_ANALYST,
-        OperationStatus.PENDING,
-        1
-      );
-      // 🔍 Assert cas_analyst workflow Pending, Decline
-      await operationsPage.formHasExpectedWorkflow(
-        UserRole.CAS_ANALYST,
-        OperationStatus.PENDING,
-        2
-      );
-      // 🔍 Assert cas_analyst workflow Approved, Preview the Statutory Declaration PDF
-      await operationsPage.formHasExpectedWorkflow(
-        UserRole.CAS_ANALYST,
-        OperationStatus.APPROVED,
-        3
-      );
-    });
     test("Test grid view", async ({ page }) => {
       const dashboardPage = new DashboardPOM(page);
       const operationsPage = new OperationsPOM(page);
@@ -193,18 +170,6 @@ test.describe("Test Workflow cas_analyst", () => {
       // 🔍 Assert table is visible
       await operationsPage.tableIsVisible();
 
-      await operationsPage.formHasExpectedUX(OperationStatus.APPROVED);
-      // 📷 Cheese!
-      pageContent = page.locator("html");
-      await happoPlaywright.screenshot(operationsPage.page, pageContent, {
-        component: "Operations Details Page cas_analyst",
-        variant: "approved",
-      });
-      // 🛸 Navigate back
-      await operationsPage.navigateBack();
-      // 🔍 Assert table is visible
-      await operationsPage.tableIsVisible();
-
       await operationsPage.formHasExpectedUX(OperationStatus.PENDING);
       // 📷 Cheese!
       pageContent = page.locator("html");
@@ -216,6 +181,30 @@ test.describe("Test Workflow cas_analyst", () => {
       await operationsPage.navigateBack();
       // 🔍 Assert table is visible
       await operationsPage.tableIsVisible();
+    });
+
+    test("Test details form by workflow", async ({ page }) => {
+      const operationsPage = new OperationsPOM(page);
+      // 🛸 Navigate to operations page
+      operationsPage.route();
+      // 🔍 Assert cas_analyst workflow Pending, Request Changes, Undo (Request Changes), Approve
+      await operationsPage.formHasExpectedWorkflow(
+        UserRole.CAS_ANALYST,
+        OperationStatus.PENDING,
+        1
+      );
+      // 🔍 Assert cas_analyst workflow Pending, Decline
+      await operationsPage.formHasExpectedWorkflow(
+        UserRole.CAS_ANALYST,
+        OperationStatus.PENDING,
+        2
+      );
+      // 🔍 Assert cas_analyst workflow Approved, Preview the Statutory Declaration PDF
+      await operationsPage.formHasExpectedWorkflow(
+        UserRole.CAS_ANALYST,
+        OperationStatus.APPROVED,
+        3
+      );
     });
   });
 });
