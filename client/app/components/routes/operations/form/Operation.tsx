@@ -69,14 +69,14 @@ export async function getRegulatedProducts() {
 // }
 
 // 🛠️ Function to fetch the business structures
-/*async function getBusinessStructures() {
+async function getBusinessStructures() {
   return actionHandler(
     `registration/business_structures`,
     "GET",
     `/dashboard/select-operator/user-operator`
   );
 }
-*/
+
 // 🛠️ Function to fetch an operation by ID
 async function getOperation(id: string) {
   try {
@@ -189,6 +189,8 @@ export default async function Operation({ numRow }: { numRow?: string }) {
   ) {
     // fetch operator data for internal users
     operator = operation?.operator;
+    businessStructures = await getBusinessStructures();
+    // DEBUG
     businessStructures = [
       { name: "General Partnership" },
       { name: "BC Corporation" },
@@ -198,7 +200,6 @@ export default async function Operation({ numRow }: { numRow?: string }) {
       { name: "BC Incorporated Society" },
       { name: "Extraprovincial Non-Share Corporation" },
     ];
-    //await getBusinessStructures();
   }
 
   const businessStructuresList = businessStructures?.map(
