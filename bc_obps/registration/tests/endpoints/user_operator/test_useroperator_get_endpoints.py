@@ -221,82 +221,6 @@ class TestUserOperatorGetEndpoint(CommonTestSetup):
         # returns 3 since CAS sees all requests if there isn't an approved admin
         assert len(response_data) == 3
 
-    def test_cas_admin_can_update_status_of_a_user_operator(self, mocker):
-        operator = operator_baker({'status': Operator.Statuses.APPROVED, 'is_new': False})
-        user_operator = user_operator_baker({'operator': operator})
-        mock_send_operator_access_request_email = mocker.patch.object(
-            EmailService, 'send_operator_access_request_email'
-        )
-        response_2 = TestUtils.mock_put_with_auth_role(
-            self,
-            'cas_admin',
-            self.content_type,
-            {
-                "role": UserOperator.Roles.ADMIN,
-                "status": UserOperator.Statuses.APPROVED,
-                "user_operator_id": user_operator.id,
-            },
-            custom_reverse_lazy('update_user_operator_status'),
-        )
-        assert response_2.status_code == 200
-        user_operator.refresh_from_db()  # refresh the user_operator object to get the updated status
-        assert user_operator.status == UserOperator.Statuses.APPROVED
-        assert user_operator.role == UserOperator.Roles.ADMIN
-        assert user_operator.verified_by == self.user
-        # Assert that the email notification was called
-        mock_send_operator_access_request_email.assert_called_once_with(
-            AccessRequestStates.APPROVED,
-            AccessRequestTypes.ADMIN,
-            operator.legal_name,
-            user_operator.user.get_full_name(),
-            user_operator.user.email,
-        )
-
-    def test_user_operator_put_decline_rejects_everything(self, mocker):
-        user = baker.make(User)
-        operator = operator_baker()
-        operator.status = Operator.Statuses.APPROVED
-        operator.is_new = False
-        operator.save(update_fields=['status', 'is_new'])
-        user_operator = user_operator_baker()
-        user_operator.user_id = user.user_guid
-        user_operator.operator = operator
-        user_operator.save(update_fields=['user_id', 'operator_id'])
-        # Assigning contacts to the operator of the user_operator
-        contacts = baker.make(
-            Contact,
-            _quantity=2,
-            created_by=user_operator.user,
-            business_role=BusinessRole.objects.get(role_name='Senior Officer'),
-        )
-        user_operator.operator.contacts.set(contacts)
-        mock_send_operator_access_request_email = mocker.patch.object(
-            EmailService, 'send_operator_access_request_email'
-        )
-        # Now decline the user_operator and make sure the contacts are deleted
-        response = TestUtils.mock_put_with_auth_role(
-            self,
-            'cas_admin',
-            self.content_type,
-            {"status": UserOperator.Statuses.DECLINED, "user_operator_id": user_operator.id},
-            custom_reverse_lazy('update_user_operator_status'),
-        )
-        assert response.status_code == 200
-        user_operator.refresh_from_db()  # refresh the user_operator object to get the updated status
-        assert user_operator.status == UserOperator.Statuses.DECLINED
-        assert user_operator.role == UserOperator.Roles.PENDING
-        assert user_operator.verified_by == self.user
-        assert user_operator.operator.contacts.count() == 0
-        assert Contact.objects.count() == 0
-        # Assert that the email notification was sent
-        mock_send_operator_access_request_email.assert_called_once_with(
-            AccessRequestStates.DECLINED,
-            AccessRequestTypes.ADMIN,
-            operator.legal_name,
-            user_operator.user.get_full_name(),
-            user_operator.user.email,
-        )
-
     def test_is_approved_admin_user_operator_with_approved_user(self):
         # self is an approved user_operator (this endpoint requires approval to access)
         user_operator_baker({'user': self.user, 'status': UserOperator.Statuses.APPROVED})
@@ -331,37 +255,6 @@ class TestUserOperatorGetEndpoint(CommonTestSetup):
         )
         assert response.status_code == 200
         assert response.json() == {"approved": False}
-
-    def test_request_subsequent_access_with_valid_payload(self):
-        operator = operator_baker()
-        admin_user = baker.make(User, business_guid=self.user.business_guid)
-        baker.make(
-            UserOperator,
-            user=admin_user,
-            operator=operator,
-            role=UserOperator.Roles.ADMIN,
-            status=UserOperator.Statuses.APPROVED,
-        )
-        response = TestUtils.mock_post_with_auth_role(
-            self,
-            'industry_user',
-            self.content_type,
-            {"operator_id": operator.id},
-            custom_reverse_lazy('request_access'),
-        )
-        response_json = response.json()
-
-        assert response.status_code == 201
-        assert "user_operator_id" in response_json
-
-        user_operator_exists = UserOperator.objects.filter(
-            id=response_json["user_operator_id"],
-            user=self.user,
-            operator=operator,
-            status=UserOperator.Statuses.PENDING,
-        ).exists()
-
-        assert user_operator_exists, "UserOperator object was not created"
 
     # /user-operator/user-operator-from-user ignores DECLINED records
     def test_get_user_operator_declined(self):
