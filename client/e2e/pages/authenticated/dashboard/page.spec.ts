@@ -97,7 +97,7 @@ test.describe("Test Dashboard Page", () => {
           default:
             // 🔍 Assert that the current URL ends with "/dashboard"
             await dashboardPage.urlIsCorrect();
-            // 📷 Cheese!
+            // 📷 Cheese! & ♿️ Analyze accessibility
             await happoWithAxe(page, `${role} Dashboard page`, "default");
             break;
         }

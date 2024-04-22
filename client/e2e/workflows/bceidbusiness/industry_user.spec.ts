@@ -52,7 +52,7 @@ test.describe("Test Workflow industry_user", () => {
     await selectOperatorPage.urlIsCorrect();
     // 🔍 Assert the form is visible - needed to prevent analyzeAccessibility from failing
     await selectOperatorPage.formIsVisible();
-    // 📷 Cheese!
+    // 📷 Cheese! & ♿️ Analyze accessibility
     await happoWithAxe(page, "Select operator page", "default");
     // 👉 Action search by legal name
     await selectOperatorPage.selectByLegalName(
@@ -61,13 +61,13 @@ test.describe("Test Workflow industry_user", () => {
     );
     // 🔍 Assert operator confirmation message
     await selectOperatorPage.msgConfirmationIsVisible();
-    // 📷 Cheese!
+    // 📷 Cheese! & ♿️ Analyze accessibility
     await happoWithAxe(page, "Select operator confirmation message", "default");
     // 👉 Action accept operator
     await selectOperatorPage.acceptOperator();
     // 🔍 Assert no administrator set up message
     await selectOperatorPage.msgNoAdminSetupIsVisible();
-    // 📷 Cheese!
+    // 📷 Cheese! & ♿️ Analyze accessibility
     await happoWithAxe(
       page,
       "Select operator no administrator message",
@@ -77,7 +77,7 @@ test.describe("Test Workflow industry_user", () => {
     await selectOperatorPage.requestAdmin();
     // 🔍 Assert access requested message
     await selectOperatorPage.msgAdminRequestedIsVisible();
-    // 📷 Cheese!
+    // 📷 Cheese! & ♿️ Analyze accessibility
     await happoWithAxe(
       page,
       "Select operator admin access request confirmation",
@@ -101,7 +101,7 @@ test.describe("Test Workflow industry_user", () => {
     await selectOperatorPage.acceptOperator();
     // 🔍 Assert no access message
     await selectOperatorPage.msgNoAccessIsVisible();
-    // 📷 Cheese!
+    // 📷 Cheese! & ♿️ Analyze accessibility
     await happoWithAxe(
       page,
       "Select operator existing admin message",
@@ -111,7 +111,7 @@ test.describe("Test Workflow industry_user", () => {
     await selectOperatorPage.requestAccess();
     // 🔍 Assert access requested message
     await selectOperatorPage.msgAccessRequestedIsVisible();
-    // 📷 Cheese!
+    // 📷 Cheese! & ♿️ Analyze accessibility
     await happoWithAxe(
       page,
       "Select operator non-admin access request confirmation",
@@ -133,15 +133,15 @@ test.describe("Test Workflow industry_user", () => {
     await selectOperatorPage.formTitleIsVisible();
     // 🔍 Assert edit information message is not visible
     //  await selectOperatorPage.msgEditInformationIsNotVisible();
-    // 📷 Cheese!
+    // 📷 Cheese! & ♿️ Analyze accessibility
     await happoWithAxe(page, "Add a new operator", "default");
     // 👉 Action trigger form required fields errors
     await selectOperatorPage.triggerErrorsFieldRequired();
-    // 📷 Cheese!
+    // 📷 Cheese! & ♿️ Analyze accessibility
     await happoWithAxe(page, "Add a new operator", "required errors");
     // 👉 Action trigger form fields format errors
     await selectOperatorPage.triggerErrorsFieldFormat();
-    // 📷 Cheese!
+    // 📷 Cheese! & ♿️ Analyze accessibility
     await happoWithAxe(page, "Add a new operator", "format errors");
     // 👉 Action fill all operator form fields
     await selectOperatorPage.fillInformation(FormField.FIELDSET_OPERATOR);
@@ -155,11 +155,11 @@ test.describe("Test Workflow industry_user", () => {
     await selectOperatorPage.fillInformation(
       FormField.FIELDSET_PARENT_COMPANY_1,
     );
-    // 📷 Cheese!
+    // 📷 Cheese! & ♿️ Analyze accessibility
     await happoWithAxe(page, "Add a new operator", "filled");
     // 🔍 Assert New Operator request form is submitted
     await selectOperatorPage.formIsSubmitted();
-    // 📷 Cheese!
+    // 📷 Cheese! & ♿️ Analyze accessibility
     await happoWithAxe(page, "New operator confirmation", "default");
   });
 

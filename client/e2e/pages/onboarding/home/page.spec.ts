@@ -87,6 +87,7 @@ test.describe("Test Page - Home", () => {
     const homePage = new HomePOM(page);
     await homePage.route();
 
+    // 📷 Cheese! & ♿️ Analyze accessibility
     await happoWithAxe(page, "Home page", "default");
   });
 
