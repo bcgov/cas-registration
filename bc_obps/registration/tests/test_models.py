@@ -678,7 +678,6 @@ class OperationModelTest(BaseTestCase):
             ("operator", "operator", None, None),
             ("status", "status", 1000, None),
             ("multiple_operator", "multiple operator", None, None),
-            ("address", "address", None, None),
             ("facilities", "facility", None, None),
         ]
 
@@ -946,7 +945,6 @@ class TestAddressModel(BaseTestCase):
             ("parent_operators_physical", "parent operator", None, None),
             ("parent_operators_mailing", "parent operator", None, None),
             ("facility_address", "facility", None, None),
-            ("operation_address", "operation", None, None),
         ]
 
 

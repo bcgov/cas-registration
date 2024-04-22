@@ -687,27 +687,7 @@ class UserOperator(TimeStampedModel):
         super().save(*args, **kwargs)
 
 
-class OperationAndFacilityCommonInfo(TimeStampedModel):
-    """Operation and facility common information abstract base class"""
-
-    name = models.CharField(max_length=1000, db_comment="The name of a placeholder")
-    type = models.CharField(max_length=1000, db_comment="The type of a placeholder")
-    address = models.ForeignKey(
-        Address,
-        on_delete=models.DO_NOTHING,
-        db_comment="The address of the placeholder",
-        blank=True,
-        null=True,
-        related_name='%(class)s_address',
-    )
-
-    class Meta:
-        abstract = True
-        db_table_comment = "An abstract base class (used for putting common information into a number of other models) containing fields for operations and facilities"
-        # db_table = 'erc"."operation'
-
-
-class Operation(OperationAndFacilityCommonInfo):
+class Operation(TimeStampedModel):
     """Operation model"""
 
     class Statuses(models.TextChoices):
@@ -721,6 +701,8 @@ class Operation(OperationAndFacilityCommonInfo):
     id = models.UUIDField(
         primary_key=True, default=uuid.uuid4, db_comment="Primary key to identify the operation", verbose_name="ID"
     )
+    name = models.CharField(max_length=1000, db_comment="The name of an operation")
+    type = models.CharField(max_length=1000, db_comment="The type of an operation")
     operator = models.ForeignKey(
         Operator,
         on_delete=models.DO_NOTHING,
@@ -893,9 +875,19 @@ class Operation(OperationAndFacilityCommonInfo):
         return ' - '.join(fields)
 
 
-class Facility(OperationAndFacilityCommonInfo):
+class Facility(TimeStampedModel):
     id = models.UUIDField(
         primary_key=True, default=uuid.uuid4, db_comment="Primary key to identify the facility", verbose_name="ID"
+    )
+    name = models.CharField(max_length=1000, db_comment="The name of a facility")
+    type = models.CharField(max_length=1000, db_comment="The type of a facility")
+    address = models.ForeignKey(
+        Address,
+        on_delete=models.DO_NOTHING,
+        db_comment="The address of the facility",
+        blank=True,
+        null=True,
+        related_name='%(class)s_address',
     )
     new_entrant = models.BooleanField(db_comment="Whether or not the facility is a new entrant")
     operation = models.ForeignKey(Operation, on_delete=models.DO_NOTHING, related_name="facilities")
@@ -903,6 +895,11 @@ class Facility(OperationAndFacilityCommonInfo):
         table_name='erc_history"."facility_history',
         history_user_id_field=models.UUIDField(null=True, blank=True),
     )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Customize db_comment for 'type' field
+        self._meta.get_field('type').db_comment = "The type of facility"
 
     class Meta:
         db_table_comment = "Contains data on facilities that emit carbon emissions and must report them to Clean Growth. A linear facility operation is made up of several different facilities whereas a single facility operation has only one facility. In the case of a single facility operation, much of the data in this table will overlap with the parent record in the operation table"
