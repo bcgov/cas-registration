@@ -3,6 +3,7 @@ import { actionHandler, getToken } from "@/app/utils/actions";
 import { fetch } from "@/tests/setup/mocks";
 import * as Sentry from "@sentry/nextjs";
 
+// disable the global mock since we are testing actions here
 vi.unmock("@/app/utils/actions");
 
 vi.mock("next/headers", () => ({
@@ -50,7 +51,7 @@ describe("getToken function", () => {
     fetch.mockReject(new Error("Fetch failed"));
     const result = await getToken();
 
-    expect(consoleMock).toHaveBeenCalledTimes(1);
+    expect(consoleMock).toHaveBeenCalledOnce();
     expect(consoleMock).toHaveBeenLastCalledWith(
       "An error occurred while fetching token: Error: Fetch failed",
     );
@@ -124,7 +125,7 @@ describe("actionHandler function", () => {
       "GET",
     );
 
-    expect(consoleMock).toHaveBeenCalledTimes(1);
+    expect(consoleMock).toHaveBeenCalledOnce();
     expect(consoleMock).toHaveBeenCalledWith(
       "Failed to fetch token. Status: 400",
     );
