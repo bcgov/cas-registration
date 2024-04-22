@@ -24,7 +24,6 @@ import {
   checkFormFieldsReadOnly,
   checkLocatorsVisibility,
   getAllFormInputs,
-  getTableColumnTextValues,
   getTableRowByCellSelector,
   tableColumnNamesAreCorrect,
 } from "@/e2e/utils/helpers";
