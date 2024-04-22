@@ -16,7 +16,6 @@ import {
 } from "@/e2e/utils/enums";
 // ℹ️ Environment variables
 import * as dotenv from "dotenv";
-import { getSession } from "next-auth/react";
 dotenv.config({ path: "./e2e/.env.local" });
 
 export class HomePOM {
