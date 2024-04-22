@@ -69,14 +69,14 @@ export async function getRegulatedProducts() {
 // }
 
 // 🛠️ Function to fetch the business structures
-async function getBusinessStructures() {
+/*async function getBusinessStructures() {
   return actionHandler(
     `registration/business_structures`,
     "GET",
     `/dashboard/select-operator/user-operator`
   );
 }
-
+*/
 // 🛠️ Function to fetch an operation by ID
 async function getOperation(id: string) {
   try {
