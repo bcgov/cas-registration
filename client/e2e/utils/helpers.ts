@@ -34,8 +34,8 @@ export async function happoWithAxe(
 ) {
   const pageContent = page.locator("html");
   await happoPlaywright.screenshot(page, pageContent, {
-    component: component,
-    variant: variant,
+    component,
+    variant,
   });
   await analyzeAccessibility(page);
 }
