@@ -26,10 +26,6 @@ test.afterEach(async () => {
   await happoPlaywright.finish();
 });
 
-test.afterAll(async () => {
-  await setupTestEnvironment(undefined, true); // clean up test data after all tests are done
-});
-
 // 🏷 Annotate test suite as serial
 test.describe.configure({ mode: "serial" });
 test.describe("Test Workflow industry_user", () => {
