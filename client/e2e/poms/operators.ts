@@ -27,6 +27,7 @@ import {
   checkFormFieldsReadOnly,
   checkAlertMessage,
   getTableRowByCellSelector,
+  getTableColumnTextValues,
 } from "@/e2e/utils/helpers";
 // ℹ️ Environment variables
 import * as dotenv from "dotenv";
