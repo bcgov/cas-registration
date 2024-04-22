@@ -280,6 +280,7 @@ jobs:
           cmd_options: "-a -d -T 5 -m 2"
           issue_title: OWASP Baseline - Frontend
           fail_action: false
+        working-directory: .
       - name: ZAP Backend Scan
         uses: zaproxy/action-baseline@v0.12.0
         with:
@@ -290,6 +291,7 @@ jobs:
           cmd_options: "-a -d -T 5 -m 2"
           issue_title: OWASP Baseline - Backend
           fail_action: false
+        working-directory: .
 
   e2e-tests:
     name: 🧪 e2e tests ${{ matrix.project }}
