@@ -23,7 +23,7 @@ from registration.utils import custom_reverse_lazy
 baker.generators.add(CAPostalCodeField, TestUtils.mock_postal_code)
 
 
-class TestUserOperatorEndpoint(CommonTestSetup):
+class TestUserOperatorPutEndpoint(CommonTestSetup):
     def test_user_operator_put_cannot_update_status_when_operator_not_approved(self):
         user = baker.make(User)
 
