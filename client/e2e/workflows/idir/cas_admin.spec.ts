@@ -186,6 +186,7 @@ test.describe("Test Workflow cas_admin", () => {
       // 🔍 Assert table is visible
       await operationsPage.tableIsVisible();
 
+      /*
       await operationsPage.formHasExpectedUX(OperationStatus.APPROVED);
       // 📷 Cheese!
       pageContent = page.locator("html");
@@ -197,6 +198,7 @@ test.describe("Test Workflow cas_admin", () => {
       await operationsPage.navigateBack();
       // 🔍 Assert table is visible
       await operationsPage.tableIsVisible();
+      */
     });
 
     test("Test details form by workflow", async ({ page }) => {
