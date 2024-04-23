@@ -128,8 +128,19 @@ class OperatorService:
     @classmethod
     def update_operator_status(cls, user_guid: UUID, operator_id: UUID, updated_data: OperatorIn) -> Operator:
         operator = OperatorDataAccessService.get_operator_by_id(operator_id)
-        with transaction.atomic():
+        """
+        Update the status of an operator and perform additional actions based on the new status.
 
+        Args:
+            user_guid: The GUID of the user performing the update.
+            operator_id: The ID of the operator to update.
+            updated_data: The updated data for the operator.
+
+        Returns:
+            Operator: The updated operator object.
+        """
+        operator: Operator = OperatorDataAccessService.get_operator_by_id(operator_id)
+        with transaction.atomic():
             operator.status = updated_data.status
             if operator.is_new and operator.status == Operator.Statuses.DECLINED:
                 # If the operator is new and declined, we need to decline all user operators tied to this operator
