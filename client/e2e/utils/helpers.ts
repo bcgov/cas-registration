@@ -323,7 +323,7 @@ export async function setupTestEnvironment(
 export async function sortTableByColumnLabel(
   page: Page,
   columnLabel: string,
-  sortedCellTextContent: string,
+  expectedFirstSortedCell: string,
   expectedSortDirection: "ascending" | "descending" | "none" = "ascending",
 ) {
   const header = page.getByRole("columnheader").getByText(columnLabel);
@@ -352,7 +352,7 @@ export async function sortTableByColumnLabel(
   );
 
   // Longer timeout to wait for sorting to complete
-  await expect(firstSortedCell).toHaveText(sortedCellTextContent, {
+  await expect(firstSortedCell).toHaveText(expectedFirstSortedCell, {
     timeout: 20000,
   });
 }
