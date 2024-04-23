@@ -1,6 +1,5 @@
 from typing import List
 from model_bakery import baker
-from localflavor.ca.models import CAPostalCodeField
 from registration.models import (
     BusinessStructure,
     Operator,
@@ -35,14 +34,14 @@ class TestUserOperatorOperatorEndpoint(CommonTestSetup):
         }
         post_response_duplicate_cra_business_number = TestUtils.mock_post_with_auth_role(
             self,
-            'industry_user',
+            "industry_user",
             self.content_type,
             payload_with_duplicate_cra_business_number,
-            custom_reverse_lazy('create_operator_and_user_operator'),
+            custom_reverse_lazy("create_operator_and_user_operator"),
         )
         assert post_response_duplicate_cra_business_number.status_code == 400
         assert post_response_duplicate_cra_business_number.json() == {
-            'message': 'Operator with this CRA Business Number already exists.'
+            "message": "Operator with this CRA Business Number already exists."
         }
 
         # duplicate legal name
@@ -60,14 +59,14 @@ class TestUserOperatorOperatorEndpoint(CommonTestSetup):
         }
         post_response_duplicate_legal_name = TestUtils.mock_post_with_auth_role(
             self,
-            'industry_user',
+            "industry_user",
             self.content_type,
             payload_with_duplicate_legal_name,
-            custom_reverse_lazy('create_operator_and_user_operator'),
+            custom_reverse_lazy("create_operator_and_user_operator"),
         )
         assert post_response_duplicate_legal_name.status_code == 422
         assert post_response_duplicate_legal_name.json() == {
-            'message': 'Legal Name: Operator with this Legal name already exists.'
+            "message": "Legal Name: Operator with this Legal name already exists."
         }
         # duplicate BC corporate registry number
         payload_with_duplicate_bc_corporate_registry_number = {
@@ -84,14 +83,14 @@ class TestUserOperatorOperatorEndpoint(CommonTestSetup):
         }
         post_response_duplicate_bc_corporate_registry_number = TestUtils.mock_post_with_auth_role(
             self,
-            'industry_user',
+            "industry_user",
             self.content_type,
             payload_with_duplicate_bc_corporate_registry_number,
-            custom_reverse_lazy('create_operator_and_user_operator'),
+            custom_reverse_lazy("create_operator_and_user_operator"),
         )
         assert post_response_duplicate_bc_corporate_registry_number.status_code == 422
         assert post_response_duplicate_bc_corporate_registry_number.json() == {
-            'message': 'Bc Corporate Registry Number: Operator with this Bc corporate registry number already exists.'
+            "message": "Bc Corporate Registry Number: Operator with this Bc corporate registry number already exists."
         }
 
     # PARENT OPERATORS
@@ -147,10 +146,10 @@ class TestUserOperatorOperatorEndpoint(CommonTestSetup):
 
         post_response_2 = TestUtils.mock_post_with_auth_role(
             self,
-            'industry_user',
+            "industry_user",
             self.content_type,
             mock_payload_2,
-            custom_reverse_lazy('create_operator_and_user_operator'),
+            custom_reverse_lazy("create_operator_and_user_operator"),
         )
         assert post_response_2.status_code == 200
 
@@ -270,7 +269,11 @@ class TestUserOperatorOperatorEndpoint(CommonTestSetup):
     def test_edit_and_archive_parent_operators(self):
         child_operator = operator_baker()
         user_operator = baker.make(
-            UserOperator, operator=child_operator, user=self.user, role='admin', status='Approved'
+            UserOperator,
+            operator=child_operator,
+            user=self.user,
+            role="admin",
+            status="Approved",
         )
 
         parent_operator_1 = parent_operator_baker()
@@ -284,7 +287,7 @@ class TestUserOperatorOperatorEndpoint(CommonTestSetup):
         parent_operator_2.save(update_fields=["child_operator_id", "operator_index"])
 
         unrelated_parent_operator = parent_operator_baker()
-        unrelated_parent_operator.legal_name = 'i should not be deleted'
+        unrelated_parent_operator.legal_name = "i should not be deleted"
         unrelated_parent_operator.operator_index = 1
         unrelated_parent_operator.save(update_fields=["legal_name", "operator_index"])
 
@@ -318,10 +321,13 @@ class TestUserOperatorOperatorEndpoint(CommonTestSetup):
         }
         response = TestUtils.mock_put_with_auth_role(
             self,
-            'industry_user',
+            "industry_user",
             self.content_type,
             mock_payload,
-            custom_reverse_lazy('update_operator_and_user_operator', kwargs={'user_operator_id': user_operator.id}),
+            custom_reverse_lazy(
+                "update_operator_and_user_operator",
+                kwargs={"user_operator_id": user_operator.id},
+            ),
         )
         assert response.status_code == 200
 
@@ -343,7 +349,7 @@ class TestUserOperatorOperatorEndpoint(CommonTestSetup):
 
         # unrelated_parent_operator has the same id as parent_operator_1 and should be left alone as it doesn't belong to the child operator
         unrelated_parent_operator.refresh_from_db()
-        assert unrelated_parent_operator.legal_name == 'i should not be deleted'
+        assert unrelated_parent_operator.legal_name == "i should not be deleted"
 
     def remove_all_parent_operators(self):
         child_operator = operator_baker()
@@ -360,7 +366,7 @@ class TestUserOperatorOperatorEndpoint(CommonTestSetup):
         parent_operator_2.save(update_fields=["child_operator_id", "operator_index"])
 
         unrelated_parent_operator = parent_operator_baker()
-        unrelated_parent_operator.legal_name = 'i should not be deleted'
+        unrelated_parent_operator.legal_name = "i should not be deleted"
         unrelated_parent_operator.operator_index = 1
         unrelated_parent_operator.save(update_fields=["legal_name", "operator_index"])
 
@@ -382,7 +388,7 @@ class TestUserOperatorOperatorEndpoint(CommonTestSetup):
         }
         response = TestUtils.mock_put_with_auth_role(
             self,
-            'industry_user',
+            "industry_user",
             self.content_type,
             mock_payload,
             f"{self.user_operator_endpoint}/operator/{user_operator.id}",
@@ -414,7 +420,7 @@ class TestUserOperatorOperatorEndpoint(CommonTestSetup):
     def test_draft_status_changes_to_pending(self):
         operator = operator_baker()
         operator.created_by = self.user
-        operator.status = 'Draft'
+        operator.status = "Draft"
         operator.save(update_fields=["created_by", "status"])
         user_operator = baker.make(
             UserOperator,
@@ -444,15 +450,18 @@ class TestUserOperatorOperatorEndpoint(CommonTestSetup):
         }
         put_response = TestUtils.mock_put_with_auth_role(
             self,
-            'industry_user',
+            "industry_user",
             self.content_type,
             mock_payload,
-            custom_reverse_lazy('update_operator_and_user_operator', kwargs={'user_operator_id': user_operator.id}),
+            custom_reverse_lazy(
+                "update_operator_and_user_operator",
+                kwargs={"user_operator_id": user_operator.id},
+            ),
         )
 
         assert put_response.status_code == 200
         operator.refresh_from_db()
-        assert operator.status == 'Pending'
+        assert operator.status == "Pending"
 
     def test_put_user_operator_operator(self):
         operator = operator_baker()
@@ -486,10 +495,13 @@ class TestUserOperatorOperatorEndpoint(CommonTestSetup):
         }
         put_response = TestUtils.mock_put_with_auth_role(
             self,
-            'industry_user',
+            "industry_user",
             self.content_type,
             mock_payload,
-            custom_reverse_lazy('update_operator_and_user_operator', kwargs={'user_operator_id': user_operator.id}),
+            custom_reverse_lazy(
+                "update_operator_and_user_operator",
+                kwargs={"user_operator_id": user_operator.id},
+            ),
         )
 
         response_json = put_response.json()
@@ -523,9 +535,9 @@ class TestUserOperatorOperatorEndpoint(CommonTestSetup):
         }
 
     def test_put_user_operator_operator_with_an_existing_cra_business_number(self):
-        self.user.role = 'industry_user'
+        self.user.role = "industry_user"
         existing_operator = operator_baker()
-        new_operator = operator_baker({'created_by': self.user})
+        new_operator = operator_baker({"created_by": self.user})
         user_operator = baker.make(
             UserOperator,
             user=self.user,
@@ -554,10 +566,13 @@ class TestUserOperatorOperatorEndpoint(CommonTestSetup):
         }
         put_response = TestUtils.mock_put_with_auth_role(
             self,
-            'industry_user',
+            "industry_user",
             self.content_type,
             mock_payload,
-            custom_reverse_lazy('update_operator_and_user_operator', kwargs={'user_operator_id': user_operator.id}),
+            custom_reverse_lazy(
+                "update_operator_and_user_operator",
+                kwargs={"user_operator_id": user_operator.id},
+            ),
         )
 
         response_json = put_response.json()
@@ -582,25 +597,35 @@ class TestUserOperatorOperatorEndpoint(CommonTestSetup):
             "operator_has_parent_operators": False,
         }
         user_operator = baker.make(
-            UserOperator, user=self.user, operator=operator, role=UserOperator.Roles.REPORTER, created_by=self.user
+            UserOperator,
+            user=self.user,
+            operator=operator,
+            role=UserOperator.Roles.REPORTER,
+            created_by=self.user,
         )
         # Test REPORTER 401
         put_response = TestUtils.mock_put_with_auth_role(
             self,
-            'industry_user',
+            "industry_user",
             self.content_type,
             mock_payload,
-            custom_reverse_lazy('update_operator_and_user_operator', kwargs={'user_operator_id': user_operator.id}),
+            custom_reverse_lazy(
+                "update_operator_and_user_operator",
+                kwargs={"user_operator_id": user_operator.id},
+            ),
         )
         user_operator.role = UserOperator.Roles.PENDING
         user_operator.save(update_fields=["role"])
         # Test PENDING 401
         put_response = TestUtils.mock_put_with_auth_role(
             self,
-            'industry_user',
+            "industry_user",
             self.content_type,
             mock_payload,
-            custom_reverse_lazy('update_operator_and_user_operator', kwargs={'user_operator_id': user_operator.id}),
+            custom_reverse_lazy(
+                "update_operator_and_user_operator",
+                kwargs={"user_operator_id": user_operator.id},
+            ),
         )
 
         assert put_response.status_code == 401
@@ -609,10 +634,13 @@ class TestUserOperatorOperatorEndpoint(CommonTestSetup):
         operator = operator_baker()
         put_response = TestUtils.mock_put_with_auth_role(
             self,
-            'industry_user',
+            "industry_user",
             self.content_type,
             {"junk_data": "junk"},
-            custom_reverse_lazy('update_operator_and_user_operator', kwargs={'user_operator_id': operator.id}),
+            custom_reverse_lazy(
+                "update_operator_and_user_operator",
+                kwargs={"user_operator_id": operator.id},
+            ),
         )
 
         assert put_response.status_code == 422
@@ -644,12 +672,15 @@ class TestUserOperatorOperatorEndpoint(CommonTestSetup):
         }
         put_response_duplicate_legal_name = TestUtils.mock_put_with_auth_role(
             self,
-            'industry_user',
+            "industry_user",
             self.content_type,
             payload_with_duplicate_legal_name,
-            custom_reverse_lazy('update_operator_and_user_operator', kwargs={'user_operator_id': user_operator.id}),
+            custom_reverse_lazy(
+                "update_operator_and_user_operator",
+                kwargs={"user_operator_id": user_operator.id},
+            ),
         )
         assert put_response_duplicate_legal_name.status_code == 422
         assert put_response_duplicate_legal_name.json() == {
-            'message': 'Legal Name: Operator with this Legal name already exists.'
+            "message": "Legal Name: Operator with this Legal name already exists."
         }

@@ -1,5 +1,4 @@
 from model_bakery import baker
-from localflavor.ca.models import CAPostalCodeField
 from registration.models import (
     UserOperator,
 )

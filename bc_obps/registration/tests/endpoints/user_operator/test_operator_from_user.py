@@ -1,5 +1,3 @@
-from model_bakery import baker
-from localflavor.ca.models import CAPostalCodeField
 from registration.tests.utils.bakers import (
     operator_baker,
 )
@@ -14,7 +12,7 @@ class TestUserOperatorOperatorFromUserEndpoint(CommonTestSetup):
         operator = operator_baker()
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
         response = TestUtils.mock_get_with_auth_role(
-            self, 'industry_user', custom_reverse_lazy('get_user_operator_operator')
+            self, "industry_user", custom_reverse_lazy("get_user_operator_operator")
         )
 
         response_json = response.json()
@@ -30,7 +28,7 @@ class TestUserOperatorOperatorFromUserEndpoint(CommonTestSetup):
     def test_get_user_operator_operator_with_invalid_user(self):
         # Act
         response = TestUtils.mock_get_with_auth_role(
-            self, 'industry_user', custom_reverse_lazy('get_user_operator_operator')
+            self, "industry_user", custom_reverse_lazy("get_user_operator_operator")
         )
 
         # User_operator must be approved to see their operator info

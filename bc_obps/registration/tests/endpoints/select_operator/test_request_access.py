@@ -1,5 +1,4 @@
 from model_bakery import baker
-from localflavor.ca.models import CAPostalCodeField
 from registration.models import (
     User,
     UserOperator,
@@ -24,10 +23,10 @@ class TestSelectOperatorRequestAccess(CommonTestSetup):
         )
         response = TestUtils.mock_post_with_auth_role(
             self,
-            'industry_user',
+            "industry_user",
             self.content_type,
             {"operator_id": operator.id},
-            custom_reverse_lazy('request_access'),
+            custom_reverse_lazy("request_access"),
         )
         response_json = response.json()
 
