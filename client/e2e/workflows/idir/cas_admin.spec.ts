@@ -162,9 +162,22 @@ test.describe("Test Workflow cas_admin", () => {
       // 🛸 Navigate to operations page
       operationsPage.route();
       // 🔍 Assert cas_admin is able to click "View Details" on each status and see detailed info related to that status
-      await operationsPage.formHasExpectedUX(OperationStatus.DECLINED);
+
+      await operationsPage.formHasExpectedUX(OperationStatus.APPROVED);
       // 📷 Cheese!
       let pageContent = page.locator("html");
+      await happoPlaywright.screenshot(operationsPage.page, pageContent, {
+        component: "Operations Details Page cas_admin",
+        variant: "approved",
+      });
+      // 🛸 Navigate back
+      await operationsPage.navigateBack();
+      // 🔍 Assert table is visible
+      await operationsPage.tableIsVisible();
+
+      await operationsPage.formHasExpectedUX(OperationStatus.DECLINED);
+      // 📷 Cheese!
+      pageContent = page.locator("html");
       await happoPlaywright.screenshot(operationsPage.page, pageContent, {
         component: "Operations Details Page cas_admin",
         variant: "declined",
@@ -181,7 +194,6 @@ test.describe("Test Workflow cas_admin", () => {
         component: "Operations Details Page cas_admin",
         variant: "pending",
       });
-
       // 🛸 Navigate back
       await operationsPage.navigateBack();
       // 🔍 Assert table is visible

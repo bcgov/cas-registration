@@ -38,7 +38,7 @@ export async function addPdf(page: Page, index: number = 0) {
 export async function checkAlertMessage(
   page: Page,
   alertMessage: string | RegExp,
-  index: number = 0,
+  index: number = 0
 ) {
   await expect(page.getByRole("alert").nth(index)).toHaveText(alertMessage);
 }
@@ -47,7 +47,7 @@ export async function checkAlertMessage(
 export async function checkColumnTextVisibility(
   table: Locator,
   columnIdentifier: number | string,
-  columnText: string[],
+  columnText: string[]
 ): Promise<void> {
   let columnSelector: string;
   if (typeof columnIdentifier === "number") {
@@ -67,7 +67,7 @@ export async function checkColumnTextVisibility(
 // 🛠️ Function: checks read only of form inputs
 export async function checkFormFieldsReadOnly(
   fields: Locator[],
-  readonly: boolean = true,
+  readonly: boolean = true
 ) {
   // perform checks simultaneously
   await Promise.all(
@@ -87,7 +87,7 @@ export async function checkFormFieldsReadOnly(
         await expect(disabled).toBeFalsy();
         await expect(editable).toBeTruthy();
       }
-    }),
+    })
   );
 }
 
@@ -95,7 +95,7 @@ export async function checkFormFieldsReadOnly(
 export async function checkLocatorsVisibility(
   page: Page,
   locators: Locator[],
-  visible: boolean = true,
+  visible: boolean = true
 ) {
   for (const locator of locators) {
     if (visible) {
@@ -104,6 +104,14 @@ export async function checkLocatorsVisibility(
       await expect(locator).not.toBeVisible();
     }
   }
+}
+// 🛠️ Function: checking required field values
+export async function checkRequiredFieldValue(page: Page) {
+  const requiredFields = await getFieldRequired(page);
+  const allFieldsHaveValue = await Promise.all(
+    requiredFields.map(async (field) => !!field)
+  );
+  return allFieldsHaveValue.every((value) => value);
 }
 
 // 🛠️ Function: get all alert elements within form fieldset
@@ -129,7 +137,7 @@ Download event is emitted once the download starts. Download path becomes availa
 export async function downloadPDF(
   page: Page,
   linkName: string,
-  fileName: string,
+  fileName: string
 ) {
   // Start waiting for download before clicking. Note no await.
   const downloadPromise = page.waitForEvent("download");
@@ -153,7 +161,7 @@ export async function getRowCellBySelector(row: Locator, selector: string) {
 // 🛠️ Function: gets table row by cell value selector
 export async function getTableRowByCellSelector(
   table: Locator,
-  selector: string,
+  selector: string
 ) {
   const row = await table
     .locator(`[role="gridcell"]${selector}`)
@@ -172,7 +180,7 @@ export async function getTableRowById(table: Locator, rowId: string) {
 // 🛠️ Function: get a table column's values
 export async function getTableColumnTextValues(
   table: Locator,
-  dataField: string,
+  dataField: string
 ): Promise<string[]> {
   const uniqueColumnValues = new Set<string>();
   const rows = await table.locator('[role="row"]').all();
@@ -282,7 +290,7 @@ export async function fillAllFormFields(page: Page, selector: string) {
 // 🛠️ Function: verifies whether the column names displayed on the page match the expected column names provided as input
 export async function tableColumnNamesAreCorrect(
   page: Page,
-  expectedColumnNames: string[],
+  expectedColumnNames: string[]
 ) {
   const columnHeaders = page.locator(".MuiDataGrid-columnHeaderTitle");
   const actualColumnNames = await columnHeaders.allTextContents();
@@ -292,7 +300,7 @@ export async function tableColumnNamesAreCorrect(
 // 🛠️ Function: calls api to seed database with data for workflow tests
 export async function setupTestEnvironment(
   workFlow?: string,
-  truncateOnly?: boolean,
+  truncateOnly?: boolean
 ) {
   let browser: Browser | null = null;
 
@@ -328,8 +336,8 @@ export async function setupTestEnvironment(
   const url = workFlow
     ? `${baseUrlSetup}?workflow=${workFlow}`
     : truncateOnly
-    ? `${baseUrlSetup}?truncate_only=true`
-    : baseUrlSetup;
+      ? `${baseUrlSetup}?truncate_only=true`
+      : baseUrlSetup;
 
   let response: APIResponse = await context.request.get(url);
 
