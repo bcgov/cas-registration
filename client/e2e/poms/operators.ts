@@ -28,6 +28,8 @@ import {
   checkAlertMessage,
   getTableRowByCellSelector,
   getTableColumnTextValues,
+  getFieldRequired,
+  checkRequiredFieldValue,
 } from "@/e2e/utils/helpers";
 // ℹ️ Environment variables
 import * as dotenv from "dotenv";
@@ -129,16 +131,18 @@ export class OperatorsPOM {
     const allFormFields = await getAllFormInputs(this.page);
     await checkFormFieldsReadOnly(allFormFields);
 
-    // Check buttons...
+    // Check buttons, required fields
     switch (status) {
       case UserOperatorStatus.APPROVED:
       case UserOperatorStatus.DECLINED:
-        // Make sure the review buttons are not visible
+        // Check the buttons are NOT visible
         await checkLocatorsVisibility(
           this.page,
           [this.buttonsApprove, this.buttonsDecline],
           false
         );
+        // Check required fields have value
+        await checkRequiredFieldValue(this.page);
         break;
       case UserOperatorStatus.PENDING:
         // Get and check the buttons are visible (Multiple Approve and Decline buttons are visible)

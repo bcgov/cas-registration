@@ -23,7 +23,9 @@ import {
   checkColumnTextVisibility,
   checkFormFieldsReadOnly,
   checkLocatorsVisibility,
+  checkRequiredFieldValue,
   getAllFormInputs,
+  getFieldRequired,
   getTableColumnTextValues,
   getTableRowByCellSelector,
   tableColumnNamesAreCorrect,
@@ -210,16 +212,19 @@ export class OperationsPOM {
     allFormFields.pop(); // Deletes the last item from the array
     await checkFormFieldsReadOnly(allFormFields);
 
-    // Check buttons...
+    // Check buttons, required fields, messages
     switch (status) {
       case OperationStatus.APPROVED:
       case OperationStatus.DECLINED:
-        // Make sure the review buttons are not visible
+        // Check the buttons are NOT visible
         await checkLocatorsVisibility(
           this.page,
           [this.buttonApprove, this.buttonDecline, this.buttonRequestChange],
           false
         );
+        // Check required fields have value
+        await checkRequiredFieldValue(this.page);
+        // Check status message
         switch (status) {
           case OperationStatus.APPROVED:
             await expect(this.messageOperationApproved).toBeVisible();
@@ -230,7 +235,7 @@ export class OperationsPOM {
         }
         break;
       case OperationStatus.PENDING:
-        // Get and check the buttons are visible
+        // Check the buttons are visible
         await checkLocatorsVisibility(this.page, [
           this.buttonApprove,
           this.buttonDecline,
