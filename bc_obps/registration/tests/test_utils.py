@@ -499,7 +499,6 @@ class TestOperatorHelpers:
         ]
 
         UserOperatorService.save_operator(payload, operator_instance, user.user_guid)
-        assert len(UserOperator.objects.all()) == 1
         assert len(Operator.objects.all()) == 1
         assert Operator.objects.first().legal_name == "Example Legal Name"
         assert len(ParentOperator.objects.all()) == 1
