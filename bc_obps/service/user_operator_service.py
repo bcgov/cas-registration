@@ -190,6 +190,16 @@ class UserOperatorService:
         operator: Operator = UserOperatorService.save_operator(updated_data, operator_instance, user_guid)
         # get an existing user_operator instance or create a new one with the default role
         user_operator, created = UserOperatorDataAccessService.get_or_create_user_operator(user_guid, operator.id)
+        if created:
+            user_operator.set_create_or_update(user_guid)
+            # Send email to the external user to confirm the creation of the operator and the request for access
+            email_service.send_operator_access_request_email(
+                AccessRequestStates.CONFIRMATION,
+                AccessRequestTypes.NEW_OPERATOR_AND_ADMIN,
+                operator.legal_name,
+                user_operator.user.get_full_name(),
+                user_operator.user.email,
+            )
         return {"user_operator_id": user_operator.id, 'operator_id': user_operator.operator.id}
 
     @transaction.atomic()
@@ -222,12 +232,24 @@ class UserOperatorService:
             if user_operator.status == UserOperator.Statuses.APPROVED and updated_role != UserOperator.Roles.PENDING:
                 user_operator.role = updated_role  # we only update the role if the user_operator is being approved
 
+            access_request_type: AccessRequestTypes = AccessRequestTypes.OPERATOR_WITH_ADMIN
+            if admin_user.is_irc_user():
+                if user_operator.status == UserOperator.Statuses.DECLINED:
+                    access_request_type = AccessRequestTypes.ADMIN
+                else:
+                    # use the email template for new operator and admin approval if the creator of the operator is the same as the user who requested access
+                    # Otherwise, use the email template for admin approval
+                    access_request_type = (
+                        AccessRequestTypes.NEW_OPERATOR_AND_ADMIN
+                        if operator.created_by == user_operator.user
+                        else AccessRequestTypes.ADMIN
+                    )
             # Send email to user if their request was approved or declined(using the appropriate email template)
             email_service.send_operator_access_request_email(
                 AccessRequestStates(user_operator.status),
                 # If the admin user is an IRC user, the access request type is admin,
                 # otherwise the admin user is an external user and the access request is for an operator with existing admin
-                AccessRequestTypes.ADMIN if admin_user.is_irc_user() else AccessRequestTypes.OPERATOR_WITH_ADMIN,
+                access_request_type,
                 operator.legal_name,
                 user_operator.user.get_full_name(),
                 user_operator.user.email,
