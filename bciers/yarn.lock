@@ -52,6 +52,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@axe-core/playwright@npm:^4.9.0":
+  version: 4.9.0
+  resolution: "@axe-core/playwright@npm:4.9.0"
+  dependencies:
+    axe-core: "npm:~4.9.0"
+  peerDependencies:
+    playwright-core: ">= 1.0.0"
+  checksum: 10c0/5d51efc93f6671e091feb98b608a112db8771cd41869280c25cbc1e62a624a69aa09bc0ee13aa8d7a48e7de8906cb64c939ebf56f0557b39c63f3ae9bdc0a05c
+  languageName: node
+  linkType: hard
+
 "@babel/code-frame@npm:^7.0.0, @babel/code-frame@npm:^7.10.4, @babel/code-frame@npm:^7.12.13, @babel/code-frame@npm:^7.16.7, @babel/code-frame@npm:^7.23.5, @babel/code-frame@npm:^7.24.1, @babel/code-frame@npm:^7.24.2":
   version: 7.24.2
   resolution: "@babel/code-frame@npm:7.24.2"
@@ -1530,7 +1541,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:^7.12.5, @babel/runtime@npm:^7.18.3, @babel/runtime@npm:^7.20.13, @babel/runtime@npm:^7.20.7, @babel/runtime@npm:^7.22.6, @babel/runtime@npm:^7.23.2, @babel/runtime@npm:^7.23.9, @babel/runtime@npm:^7.24.0, @babel/runtime@npm:^7.5.5, @babel/runtime@npm:^7.7.2, @babel/runtime@npm:^7.8.4, @babel/runtime@npm:^7.8.7, @babel/runtime@npm:^7.9.2":
+"@babel/runtime@npm:^7.12.5, @babel/runtime@npm:^7.18.3, @babel/runtime@npm:^7.20.13, @babel/runtime@npm:^7.20.7, @babel/runtime@npm:^7.22.6, @babel/runtime@npm:^7.23.2, @babel/runtime@npm:^7.23.9, @babel/runtime@npm:^7.5.5, @babel/runtime@npm:^7.7.2, @babel/runtime@npm:^7.8.4, @babel/runtime@npm:^7.8.7, @babel/runtime@npm:^7.9.2":
   version: 7.24.4
   resolution: "@babel/runtime@npm:7.24.4"
   dependencies:
@@ -1590,6 +1601,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@bciers/source@workspace:."
   dependencies:
+    "@axe-core/playwright": "npm:^4.9.0"
     "@babel/core": "npm:^7.22.11"
     "@babel/preset-env": "npm:^7.22.10"
     "@babel/preset-typescript": "npm:^7.22.11"
@@ -1603,7 +1615,7 @@ __metadata:
     "@mui/material": "npm:^5.15.14"
     "@mui/material-nextjs": "npm:^5.15.11"
     "@mui/system": "npm:^5.15.14"
-    "@mui/x-data-grid": "npm:^7.1.0"
+    "@mui/x-data-grid": "npm:6.19.8"
     "@nx-tools/nx-container": "npm:5.2.0"
     "@nx/devkit": "npm:18.2.1"
     "@nx/eslint": "npm:18.2.1"
@@ -2661,7 +2673,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/utils@npm:^5.15.14":
+"@mui/utils@npm:^5.14.16, @mui/utils@npm:^5.15.14":
   version: 5.15.14
   resolution: "@mui/utils@npm:5.15.14"
   dependencies:
@@ -2679,21 +2691,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/x-data-grid@npm:^7.1.0":
-  version: 7.3.0
-  resolution: "@mui/x-data-grid@npm:7.3.0"
+"@mui/x-data-grid@npm:6.19.8":
+  version: 6.19.8
+  resolution: "@mui/x-data-grid@npm:6.19.8"
   dependencies:
-    "@babel/runtime": "npm:^7.24.0"
-    "@mui/system": "npm:^5.15.14"
-    "@mui/utils": "npm:^5.15.14"
-    clsx: "npm:^2.1.0"
+    "@babel/runtime": "npm:^7.23.2"
+    "@mui/utils": "npm:^5.14.16"
+    clsx: "npm:^2.0.0"
     prop-types: "npm:^15.8.1"
     reselect: "npm:^4.1.8"
   peerDependencies:
-    "@mui/material": ^5.15.14
+    "@mui/material": ^5.4.1
+    "@mui/system": ^5.4.1
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
-  checksum: 10c0/895083a300b1a19d2b147757c8e959ae73ea9accd52875268a35edebf9accba47974b667ad9dab5b3cd1a71efff9df382d0981a151836098a2232f0d0b30c419
+  checksum: 10c0/ef2543367a52b23fbf2721bda357c6aee1646abd0c3ad14b1529c75fd5c0c6a0c22a5b9b6ae7b323378ef38b81432cacf3fdcd7d8649787bf23b457c111efd1e
   languageName: node
   linkType: hard
 
@@ -5994,7 +6006,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axe-core@npm:^4.6.2":
+"axe-core@npm:^4.6.2, axe-core@npm:~4.9.0":
   version: 4.9.0
   resolution: "axe-core@npm:4.9.0"
   checksum: 10c0/0d3ef5f0f8d738b7fa31a869913d9988f04f6e283690d828d7066be2a6661d194ddcb863a9bfa5109600553ffa89faa5f16b5eeee839d1c4135f480458f04d37
@@ -6763,6 +6775,13 @@ __metadata:
   version: 1.0.4
   resolution: "clone@npm:1.0.4"
   checksum: 10c0/2176952b3649293473999a95d7bebfc9dc96410f6cbd3d2595cf12fd401f63a4bf41a7adbfd3ab2ff09ed60cb9870c58c6acdd18b87767366fabfc163700f13b
+  languageName: node
+  linkType: hard
+
+"clsx@npm:^2.0.0":
+  version: 2.1.1
+  resolution: "clsx@npm:2.1.1"
+  checksum: 10c0/c4c8eb865f8c82baab07e71bfa8897c73454881c4f99d6bc81585aecd7c441746c1399d08363dc096c550cceaf97bd4ce1e8854e1771e9998d9f94c4fe075839
   languageName: node
   linkType: hard
 

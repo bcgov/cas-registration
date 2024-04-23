@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import Accordion from "app/components/accordion/Accordion";
+// import Accordion from "app/components/accordion/Accordion";
+import Accordion from "@/app/components/accordion/Accordion";
 import FormBase from "./FormBase";
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
 
