@@ -1,3 +1,19 @@
+# [1.4.0](https://github.com/bcgov/cas-registration/compare/v1.3.0...v1.4.0) (2024-04-23)
+
+### Bug Fixes
+
+- decline all user_operators tied to operator ([a45f6d5](https://github.com/bcgov/cas-registration/commit/a45f6d535747c421485fb741468817e17adc552b))
+- enable experimental aria v7 feature in mui datagrid ([846b584](https://github.com/bcgov/cas-registration/commit/846b584841b7fe72b4d760597659d914de878cca))
+- fix is-approved-admin-user-operator endpoint ([31359e3](https://github.com/bcgov/cas-registration/commit/31359e387817962949de6b9278e4f9687a3ab8be))
+- install yarn dependencies in github actions if cache doesn't exist ([9392ff3](https://github.com/bcgov/cas-registration/commit/9392ff3540072228347f9a900f7ac212322fe563))
+- owasp zap docker image ([d0c79fb](https://github.com/bcgov/cas-registration/commit/d0c79fb6e03153ee2842942f69653c51da9efcb7))
+
+### Features
+
+- add accessibility tests ([0b930d2](https://github.com/bcgov/cas-registration/commit/0b930d2ad07ab4928b76ea544d9aebf1082e877d))
+- add common app files and configs ([22479ad](https://github.com/bcgov/cas-registration/commit/22479ad6be50ae0805484a9da93f9046361d40d1))
+- send access request email for operator with admin ([496e775](https://github.com/bcgov/cas-registration/commit/496e775a4cdb2103ff0c51a101e560308f899962))
+
 # [1.3.0](https://github.com/bcgov/cas-registration/compare/v1.2.3...v1.3.0) (2024-04-11)
 
 ### Bug Fixes
