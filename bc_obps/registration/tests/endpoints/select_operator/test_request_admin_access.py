@@ -1,7 +1,5 @@
 from common.enums import AccessRequestStates, AccessRequestTypes
 from common.service.email.email_service import EmailService
-from model_bakery import baker
-from localflavor.ca.models import CAPostalCodeField
 from registration.models import (
     UserOperator,
 )
@@ -16,14 +14,14 @@ class TestSelectOperatorRequestAccessEndpoint(CommonTestSetup):
     def test_request_admin_access_with_valid_payload(self, mocker):
         operator = operator_baker()
         mock_send_operator_access_request_email = mocker.patch.object(
-            EmailService, 'send_operator_access_request_email'
+            EmailService, "send_operator_access_request_email"
         )
         response = TestUtils.mock_post_with_auth_role(
             self,
-            'industry_user',
+            "industry_user",
             self.content_type,
             {"operator_id": operator.id},
-            custom_reverse_lazy('request_admin_access'),
+            custom_reverse_lazy("request_admin_access"),
         )
 
         # Assert that the email notification was sent
@@ -54,7 +52,11 @@ class TestSelectOperatorRequestAccessEndpoint(CommonTestSetup):
         invalid_payload = {"operator_id": 99999}  # Invalid operator ID
 
         response = TestUtils.mock_post_with_auth_role(
-            self, 'industry_user', self.content_type, invalid_payload, custom_reverse_lazy('request_admin_access')
+            self,
+            "industry_user",
+            self.content_type,
+            invalid_payload,
+            custom_reverse_lazy("request_admin_access"),
         )
         assert response.status_code == 422
-        assert response.json().get('detail')[0].get('msg') == 'UUID input should be a string, bytes or UUID object'
+        assert response.json().get("detail")[0].get("msg") == "UUID input should be a string, bytes or UUID object"
