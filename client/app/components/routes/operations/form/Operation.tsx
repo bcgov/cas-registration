@@ -33,7 +33,7 @@ async function getNaicsCodes() {
     return await actionHandler(
       "registration/naics_codes",
       "GET",
-      "/dashboard/operations",
+      "/dashboard/operations"
     );
   } catch (error) {
     // Handle the error here or rethrow it to handle it at a higher level
@@ -46,7 +46,7 @@ export async function getRegulatedProducts() {
     return await actionHandler(
       "registration/regulated_products",
       "GET",
-      "/operations",
+      "/operations"
     );
   } catch (error) {
     // Handle the error here or rethrow it to handle it at a higher level
@@ -73,7 +73,7 @@ async function getBusinessStructures() {
   return actionHandler(
     `registration/business_structures`,
     "GET",
-    `/dashboard/select-operator/user-operator`,
+    `/dashboard/select-operator/user-operator`
   );
 }
 
@@ -83,7 +83,7 @@ async function getOperation(id: string) {
     return await actionHandler(
       `registration/operations/${id}`,
       "GET",
-      `/operations/${id}`,
+      `/operations/${id}`
     );
   } catch (error) {
     // Handle the error here or rethrow it to handle it at a higher level
@@ -103,7 +103,7 @@ export const createOperationSchema = (
   //   id: number;
   //   name: string;
   // }[],
-  businessStructureList: { id: string; label: string }[],
+  businessStructureList: { id: string; label: string }[]
 ) => {
   const localSchema = JSON.parse(JSON.stringify(schema));
   // naics codes
@@ -140,7 +140,7 @@ export const createOperationSchema = (
       title: businessStructure.label,
       enum: [businessStructure.id],
       value: businessStructure.id,
-    }),
+    })
   );
 
   if (Array.isArray(businessStructureOptions)) {
@@ -190,13 +190,22 @@ export default async function Operation({ numRow }: { numRow?: string }) {
     // fetch operator data for internal users
     operator = operation?.operator;
     businessStructures = await getBusinessStructures();
+    businessStructures = [
+      { name: "General Partnership" },
+      { name: "BC Corporation" },
+      { name: "Extra Provincially Registered Company" },
+      { name: "Sole Proprietorship" },
+      { name: "Limited Liability Partnership" },
+      { name: "BC Incorporated Society" },
+      { name: "Extraprovincial Non-Share Corporation" },
+    ];
   }
 
   const businessStructuresList = businessStructures?.map(
     (businessStructure: BusinessStructure) => ({
       id: businessStructure.name,
       label: businessStructure.name,
-    }),
+    })
   );
 
   const boroIdJSX: JSX.Element = (
@@ -259,7 +268,7 @@ export default async function Operation({ numRow }: { numRow?: string }) {
   const showRegistrationRequestResult: boolean | undefined =
     operation &&
     [Status.DECLINED, Status.APPROVED, Status.CHANGES_REQUESTED].includes(
-      operation?.status as Status,
+      operation?.status as Status
     );
 
   const pointOfContactEmail = operation?.email ?? undefined;
@@ -324,7 +333,7 @@ export default async function Operation({ numRow }: { numRow?: string }) {
             operationInternalUserSchema,
             codes,
             products,
-            businessStructuresList,
+            businessStructuresList
           )}
           formData={transformedFormData as OperationsFormData}
         />
@@ -334,7 +343,7 @@ export default async function Operation({ numRow }: { numRow?: string }) {
             operationSchema,
             codes,
             products,
-            [],
+            []
             // activities,
             // businessStructuresList,
           )}
