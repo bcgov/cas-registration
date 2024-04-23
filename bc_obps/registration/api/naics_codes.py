@@ -11,7 +11,7 @@ from registration.schema import NaicsCodeSchema
 @router.get("/naics_codes", response=List[NaicsCodeSchema], url_name="list_naics_codes")
 @authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles(), False)
 def list_naics_codes(request):
-    return NaicsCodeDataAccessService.get_naics_codes()
+    return 200, NaicsCodeDataAccessService.get_naics_codes()
 
 
 ##### POST #####
