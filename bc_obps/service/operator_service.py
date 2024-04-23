@@ -1,23 +1,21 @@
+from common.enums import AccessRequestStates, AccessRequestTypes
+from common.service.email.email_service import EmailService
 import pytz
-from service.data_access_service.user_operator_service import UserOperatorDataAccessService
-from registration.models import ParentOperator
+from registration.models import ParentOperator, User
 from typing import List, Optional, Union
 from datetime import datetime
-
+from django.db.models import QuerySet
 from service.data_access_service.operator_service import OperatorDataAccessService
-
 from registration.schema import OperatorSearchOut
 from registration.models import Operator, UserOperator
 from uuid import UUID
-
-
-from registration.models import Operator, UserOperator, User
-
+from registration.models import Operator, UserOperator
 from registration.schema import OperatorIn
 from django.db import transaction
-from registration.utils import (
-    set_verification_columns,
-)
+from registration.utils import set_verification_columns
+
+
+email_service = EmailService()
 
 
 class OperatorService:
@@ -127,7 +125,6 @@ class OperatorService:
 
     @classmethod
     def update_operator_status(cls, user_guid: UUID, operator_id: UUID, updated_data: OperatorIn) -> Operator:
-        operator = OperatorDataAccessService.get_operator_by_id(operator_id)
         """
         Update the status of an operator and perform additional actions based on the new status.
 
@@ -144,11 +141,27 @@ class OperatorService:
             operator.status = updated_data.status
             if operator.is_new and operator.status == Operator.Statuses.DECLINED:
                 # If the operator is new and declined, we need to decline all user operators tied to this operator
-                UserOperator.objects.filter(operator_id=operator_id).update(
+                user_operators_to_decline: QuerySet[UserOperator] = UserOperator.objects.filter(operator_id=operator_id)
+                user_operators_to_decline.update(
                     status=UserOperator.Statuses.DECLINED,
                     verified_at=datetime.now(pytz.utc),
                     verified_by=user_guid,
                 )
+                for user_operator in user_operators_to_decline:
+                    user_operator.refresh_from_db()
+                    user_operator.set_create_or_update(user_guid)
+                    user: User = user_operator.user
+                    # Send email to all declined user operators to notify them of the decline of the operator and their access request
+                    email_service.send_operator_access_request_email(
+                        AccessRequestStates.DECLINED,
+                        # We send NEW_OPERATOR_AND_ADMIN email to the user who initially created the operator and ADMIN email to all other users
+                        AccessRequestTypes.NEW_OPERATOR_AND_ADMIN
+                        if operator.created_by == user
+                        else AccessRequestTypes.ADMIN,
+                        operator.legal_name,
+                        user.get_full_name(),
+                        user.email,
+                    )
 
             if operator.status in [Operator.Statuses.APPROVED, Operator.Statuses.DECLINED]:
                 operator.is_new = False
