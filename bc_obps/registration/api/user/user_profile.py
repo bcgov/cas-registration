@@ -3,7 +3,10 @@ from typing import Optional
 from uuid import UUID
 from django.conf import settings
 from django.http import JsonResponse
-from registration.decorators import authorize
+from service.error_service.handle_exception import handle_exception
+from registration.api.utils.current_user_utils import get_current_user_guid
+from service.data_access_service.user_service import UserDataAccessService
+from registration.decorators import authorize, handle_http_errors
 from registration.models import AppRole, User
 from registration.schema import UserOut, UserIn, Message, UserOperator, UserUpdateIn
 from registration.api.api_base import router
@@ -14,21 +17,13 @@ from registration.utils import (
     generate_useful_error,
 )
 from django.core.exceptions import ValidationError
+from service.user_profile_service import UserProfileService
 
 # endpoint to return user data if user exists in user table
 @router.get("/user/user-profile", response={200: UserOut, codes_4xx: Message}, url_name="get_user_profile")
+@handle_http_errors()
 def get_user_profile(request):
-    user = get_object_or_404(User, user_guid=json.loads(request.headers.get('Authorization')).get('user_guid'))
-    try:
-        user_guid: Optional[UUID] = json.loads(request.headers.get('Authorization')).get('user_guid')
-        user = (
-            User.objects.only(*UserOut.Config.model_fields, "app_role")
-            .select_related('app_role')
-            .get(user_guid=user_guid)
-        )
-    except User.DoesNotExist:
-        return 404, {"message": "No matching user found"}
-    return 200, user
+    return UserDataAccessService.get_user_profile(json.loads(request.headers.get('Authorization')).get('user_guid'))
 
 
 ##### POST #####
@@ -40,32 +35,12 @@ def get_user_profile(request):
     response={200: UserOut, codes_4xx: Message},
     url_name="create_user_profile",
 )
+@handle_http_errors()
 def create_user_profile(request, identity_provider: str, payload: UserIn):
-    try:
-        # Determine the role based on the identity provider
-        role_mapping = {
-            IdPs.IDIR.value: AppRole.objects.get(role_name="cas_admin")
-            if settings.BYPASS_ROLE_ASSIGNMENT
-            else AppRole.objects.get(role_name="cas_pending"),
-            IdPs.BCEIDBUSINESS.value: AppRole.objects.get(role_name="industry_user"),
-        }
-        role: AppRole = role_mapping.get(identity_provider, None)
-        new_user = User.objects.create(
-            user_guid=json.loads(request.headers.get('Authorization')).get('user_guid'),
-            business_guid=payload.business_guid,
-            bceid_business_name=payload.bceid_business_name,
-            app_role=role,
-            first_name=payload.first_name,
-            last_name=payload.last_name,
-            email=payload.email,
-            position_title=payload.position_title,
-            phone_number=payload.phone_number,
-        )
-        return 200, new_user
-    except ValidationError as e:
-        return 400, {"message": generate_useful_error(e)}
-    except Exception as e:
-        return 400, {"message": str(e)}
+    # Determine the role based on the identity provider
+    return UserProfileService.create_user_profile(
+        json.loads(request.headers.get('Authorization')).get('user_guid'), identity_provider, payload
+    )
 
 
 ##### PUT #####
@@ -74,14 +49,6 @@ def create_user_profile(request, identity_provider: str, payload: UserIn):
 # Endpoint to update a user
 @router.put("/user/user-profile", response={200: UserOut, codes_4xx: Message}, url_name="update_user_profile")
 @authorize(AppRole.get_all_app_roles(), UserOperator.get_all_industry_user_operator_roles(), False)
+@handle_http_errors()
 def update_user_profile(request, payload: UserUpdateIn):
-    user: User = request.current_user
-    try:
-        for attr, value in payload.dict().items():
-            setattr(user, attr, value)
-        user.save()
-        return 200, user
-    except ValidationError as e:
-        return 400, {"message": generate_useful_error(e)}
-    except Exception as e:
-        return 400, {"message": str(e)}
+    return UserDataAccessService.update_user(get_current_user_guid(request), payload)
