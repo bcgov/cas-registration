@@ -54,6 +54,7 @@ const HeaderSearchCell = ({
           className="w-full px-2 py-1"
           placeholder="Search"
           onChange={handleChange}
+          onClick={() => setLastFocusedField(field)}
           value={searchState}
           type="text"
           aria-label={`${fieldLabel} search field`}
