@@ -190,15 +190,6 @@ export default async function Operation({ numRow }: { numRow?: string }) {
     // fetch operator data for internal users
     operator = operation?.operator;
     businessStructures = await getBusinessStructures();
-    businessStructures = [
-      { name: "General Partnership" },
-      { name: "BC Corporation" },
-      { name: "Extra Provincially Registered Company" },
-      { name: "Sole Proprietorship" },
-      { name: "Limited Liability Partnership" },
-      { name: "BC Incorporated Society" },
-      { name: "Extraprovincial Non-Share Corporation" },
-    ];
   }
 
   const businessStructuresList = businessStructures?.map(
