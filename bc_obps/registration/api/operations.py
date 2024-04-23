@@ -170,6 +170,12 @@ def list_operations(request, filters: OperationFilterSchema = Query(...)):
         )
 
     paginator = Paginator(qs, PAGE_SIZE)
+
+    try:
+        page = paginator.validate_number(page)
+    except:
+        page = 1
+
     return 200, {
         "data": [(operation) for operation in paginator.page(page).object_list],
         "row_count": paginator.count,
