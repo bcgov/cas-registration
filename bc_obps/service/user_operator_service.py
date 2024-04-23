@@ -187,7 +187,10 @@ class UserOperatorService:
             status=Operator.Statuses.PENDING,
         )
         # save operator data
-        return UserOperatorService.save_operator(updated_data, operator_instance, user_guid)
+        operator: Operator = UserOperatorService.save_operator(updated_data, operator_instance, user_guid)
+        # get an existing user_operator instance or create a new one with the default role
+        user_operator, created = UserOperatorDataAccessService.get_or_create_user_operator(user_guid, operator.id)
+        return {"user_operator_id": user_operator.id, 'operator_id': user_operator.operator.id}
 
     @transaction.atomic()
     def update_user_operator_status(user_operator_id: UUID, updated_data, admin_user_guid: UUID):
@@ -265,4 +268,9 @@ class UserOperatorService:
         if operator_instance.status == 'Draft':
             operator_instance.status = 'Pending'
         # save operator data
-        return UserOperatorService.save_operator(updated_data, operator_instance, user_guid)
+        operator: Operator = UserOperatorService.save_operator(updated_data, operator_instance, user_guid)
+        # get an existing user_operator instance or create a new one with the default role
+        user_operator, created = UserOperator.objects.get_or_create(user_id=user_guid, operator=operator)
+        if created:
+            user_operator.set_create_or_update(user_guid)
+        return {"user_operator_id": user_operator.id, 'operator_id': operator.id}
