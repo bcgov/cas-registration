@@ -117,7 +117,7 @@ export class OperatorsPOM {
     // Locate row containing the status
     const row = await getTableRowByCellSelector(
       this.table,
-      `[data-field="${TableDataField.STATUS}"]:has-text("${status}")`
+      `[data-field="${TableDataField.STATUS}"]:has-text("${status}")`,
     );
 
     // Click the `View Detail` for this status row
@@ -139,7 +139,7 @@ export class OperatorsPOM {
         await checkLocatorsVisibility(
           this.page,
           [this.buttonsApprove, this.buttonsDecline],
-          false
+          false,
         );
         // Check required fields have value
         await checkRequiredFieldValue(this.page);
@@ -187,20 +187,20 @@ export class OperatorsPOM {
             await this.workflowReviewAction(
               this.buttonsApprove.last(),
               this.buttonConfirmModal,
-              MessageTextOperators.ALERT_NEW_OPERATOR_NEEDS_APPROVE
+              MessageTextOperators.ALERT_NEW_OPERATOR_NEEDS_APPROVE,
             );
             // cas_admin; cas_analyst is able to Approve new operator
             await this.workflowReviewAction(
               this.buttonsApprove.first(),
               this.buttonConfirmModal,
-              MessageTextOperators.ALERT_OPERATOR_APPROVED
+              MessageTextOperators.ALERT_OPERATOR_APPROVED,
             );
             // cas_admin; cas_analyst is able to Approve admin request
             await this.workflowReviewAction(
               this.buttonsApprove.last(),
               this.buttonConfirmModal,
               MessageTextOperators.ALERT_ADMIN_APPROVED,
-              1
+              1,
             );
             break;
           case 2:
@@ -223,21 +223,21 @@ export class OperatorsPOM {
             await this.workflowReviewAction(
               this.buttonsDecline.last(),
               this.buttonConfirmModal,
-              MessageTextOperators.ALERT_NEW_OPERATOR_NEEDS_APPROVE
+              MessageTextOperators.ALERT_NEW_OPERATOR_NEEDS_APPROVE,
             );
 
             // cas_admin; cas_analyst is able to Reject new operator
             await this.workflowReviewAction(
               this.buttonsDecline.first(),
               this.buttonConfirmModal,
-              MessageTextOperators.ALERT_OPERATOR_DECLINED
+              MessageTextOperators.ALERT_OPERATOR_DECLINED,
             );
 
             // cas_admin; cas_analyst can't see Approve/Decline buttons if the Operator has been Declined in the first form section
             await checkLocatorsVisibility(
               this.page,
               [this.buttonsApprove, this.buttonsDecline],
-              false
+              false,
             );
             break;
           case 3:
@@ -263,7 +263,7 @@ export class OperatorsPOM {
             // Operator information header is collapsed
             await expect(this.formSectionOperator).toHaveAttribute(
               "aria-expanded",
-              "false"
+              "false",
             );
 
             // Make sure only admin approve/reject button are visible
@@ -274,7 +274,7 @@ export class OperatorsPOM {
             await this.workflowReviewAction(
               this.buttonsApprove.last(),
               this.buttonConfirmModal,
-              MessageTextOperators.ALERT_ADMIN_APPROVED
+              MessageTextOperators.ALERT_ADMIN_APPROVED,
             );
             break;
           case 4:
@@ -297,7 +297,7 @@ export class OperatorsPOM {
             await this.workflowReviewAction(
               this.buttonsDecline.last(),
               this.buttonConfirmModal,
-              MessageTextOperators.ALERT_ADMIN_DECLINED
+              MessageTextOperators.ALERT_ADMIN_DECLINED,
             );
             break;
         }
@@ -342,7 +342,7 @@ export class OperatorsPOM {
     // Ensure only expected values are in grid
     const allStatusValues = await getTableColumnTextValues(this.table, column);
     const unexpectedValues = allStatusValues.filter(
-      (value) => !expectedValues.includes(value)
+      (value) => !expectedValues.includes(value),
     );
     await expect(unexpectedValues.length).toBe(0);
   }
@@ -369,7 +369,7 @@ export class OperatorsPOM {
     btnApplication: Locator,
     btnModal: Locator,
     alertMessage: string | RegExp,
-    index: number = 0
+    index: number = 0,
   ) {
     await btnApplication.click();
     await expect(this.modal).toBeVisible();

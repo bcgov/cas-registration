@@ -38,7 +38,7 @@ test.describe.configure({ mode: "serial" });
 test.describe("Test Workflow cas_analyst", () => {
   // 👤 run test using the storageState for this role
   const storageState = JSON.parse(
-    process.env.E2E_CAS_ANALYST_STORAGE as string
+    process.env.E2E_CAS_ANALYST_STORAGE as string,
   );
   // Note: specify storageState for each test file
   test.use({ storageState: storageState });
@@ -58,7 +58,7 @@ test.describe("Test Workflow cas_analyst", () => {
       await operatorsPage.tableHasExpectedColumns(UserRole.CAS_ANALYST);
       await operatorsPage.tableHasExpectedColumnValues(
         UserRole.CAS_ANALYST,
-        TableDataField.STATUS
+        TableDataField.STATUS,
       );
       // 📷 Cheese!
       const pageContent = page.locator("html");
@@ -143,7 +143,7 @@ test.describe("Test Workflow cas_analyst", () => {
       await operationsPage.tableHasExpectedColumns(UserRole.CAS_ANALYST);
       await operationsPage.tableHasExpectedColumnValues(
         UserRole.CAS_ANALYST,
-        TableDataField.STATUS
+        TableDataField.STATUS,
       );
       // 📷 Cheese!
       const pageContent = page.locator("html");
@@ -182,7 +182,7 @@ test.describe("Test Workflow cas_analyst", () => {
       // 🔍 Assert table is visible
       await operationsPage.tableIsVisible();
 
-      /*
+      /* FIXME FOR CI
       await operationsPage.formHasExpectedUX(OperationStatus.APPROVED);
       // 📷 Cheese!
       pageContent = page.locator("html");
@@ -205,19 +205,19 @@ test.describe("Test Workflow cas_analyst", () => {
       await operationsPage.formHasExpectedWorkflow(
         UserRole.CAS_ANALYST,
         OperationStatus.PENDING,
-        1
+        1,
       );
       // 🔍 Assert cas_analyst workflow Pending, Decline
       await operationsPage.formHasExpectedWorkflow(
         UserRole.CAS_ANALYST,
         OperationStatus.PENDING,
-        2
+        2,
       );
       // 🔍 Assert cas_analyst workflow Approved, Preview the Statutory Declaration PDF
       await operationsPage.formHasExpectedWorkflow(
         UserRole.CAS_ANALYST,
         OperationStatus.APPROVED,
-        3
+        3,
       );
     });
   });
