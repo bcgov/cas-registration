@@ -1,3 +1,5 @@
+from common.enums import AccessRequestStates, AccessRequestTypes
+from common.service.email.email_service import EmailService
 from model_bakery import baker
 from localflavor.ca.models import CAPostalCodeField
 from registration.tests.utils.bakers import operator_baker, user_operator_baker
@@ -6,8 +8,6 @@ from registration.models import Operator, UserOperator
 from registration.schema.operator import OperatorOut, OperatorSearchOut, ConfirmSelectedOperatorOut
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
-import pytest
-from django.core.exceptions import ValidationError
 
 baker.generators.add(CAPostalCodeField, TestUtils.mock_postal_code)
 
@@ -205,12 +205,17 @@ class TestOperatorsEndpoint(CommonTestSetup):
         assert response.json().get("verified_by") == None
 
     # declining a new operator declines the prime admin request too
-    def test_put_decline_new_operator(self):
+    def test_put_decline_new_operator(self, mocker):
         operator = operator_baker({'status': Operator.Statuses.PENDING, 'is_new': True})
         user_operators = [
             user_operator_baker({'operator': operator}) for _ in range(3)
         ]  # Create a list of user operators
 
+        operator.created_by = user_operators[0].user  # Set the first user operator as the creator of the operator
+        operator.save(update_fields=['created_by'])
+        mock_send_operator_access_request_email = mocker.patch.object(
+            EmailService, 'send_operator_access_request_email'
+        )
         response = TestUtils.mock_put_with_auth_role(
             self,
             'cas_admin',
@@ -227,11 +232,27 @@ class TestOperatorsEndpoint(CommonTestSetup):
         assert response.json().get('is_new') == False
         assert response.json().get("verified_by") == str(self.user.user_guid)
 
+        assert mock_send_operator_access_request_email.call_count == 3  # one for each user operator
+
+        expected_calls = []
         # Verify that all user operators tied to this operator are declined
         for user_operator in user_operators:
             user_operator.refresh_from_db()  # Refresh the user_operator object to get the updated status
+            expected_calls.append(
+                mocker.call(
+                    AccessRequestStates.DECLINED,
+                    AccessRequestTypes.NEW_OPERATOR_AND_ADMIN
+                    if operator.created_by == user_operator.user
+                    else AccessRequestTypes.ADMIN,
+                    operator.legal_name,
+                    user_operator.user.get_full_name(),
+                    user_operator.user.email,
+                )
+            )
             assert user_operator.status == UserOperator.Statuses.DECLINED
             assert user_operator.verified_by == self.user
+        # Assert that the send_operator_access_request_email method was called with the expected arguments
+        mock_send_operator_access_request_email.assert_has_calls(expected_calls)
 
     # declining an existing operator only declines the operator, not the user_operator
     def test_put_decline_existing_operator(self):
