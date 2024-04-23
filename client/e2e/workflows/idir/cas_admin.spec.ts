@@ -141,6 +141,12 @@ test.describe("Test Workflow cas_admin", () => {
 
     await sortTableByColumnLabel(
       operationsPage.page,
+      OperationTableHeaders.OPERATOR,
+      "Existing Operator 2 Legal Name",
+    );
+
+    await sortTableByColumnLabel(
+      operationsPage.page,
       OperationTableHeaders.SUBMISSION_DATE,
       "Dec 16, 2023\n7:27:00 a.m. PST",
     );
