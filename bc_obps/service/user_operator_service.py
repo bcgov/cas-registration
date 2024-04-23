@@ -42,9 +42,7 @@ class UserOperatorService:
 
     # Function to create/update an operator when creating/updating a user_operator
     @transaction.atomic()
-    def save_operator(updated_data: UserOperatorOperatorIn, operator_instance, user_guid: UUID):
-        user = UserDataAccessService.get_by_guid(user_guid)
-
+    def save_operator(updated_data: UserOperatorOperatorIn, operator_instance, user_guid: UUID) -> Operator:
         existing_physical_address = getattr(getattr(operator_instance, 'physical_address', None), 'id', None)
         existing_mailing_address = getattr(getattr(operator_instance, 'mailing_address', None), 'id', None)
 
@@ -78,14 +76,7 @@ class UserOperatorService:
         OperatorService.handle_parent_operators(
             updated_data.parent_operators_array, created_or_updated_operator_instance, user_guid
         )
-
-        # get an existing user_operator instance or create a new one with the default role
-        user_operator, created = UserOperator.objects.get_or_create(
-            user=user, operator=created_or_updated_operator_instance
-        )
-        if created:
-            user_operator.set_create_or_update(user.pk)
-        return {"user_operator_id": user_operator.id, 'operator_id': user_operator.operator.id}
+        return created_or_updated_operator_instance
 
     # brianna not sure how to fit this into which service
     # Used to show cas_admin the list of user_operators to approve/deny
