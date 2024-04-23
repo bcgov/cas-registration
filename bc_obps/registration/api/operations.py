@@ -128,6 +128,8 @@ def list_operations(request, filters: OperationFilterSchema = Query(...)):
     status = filters.status
     sort_direction = "-" if sort_order == "desc" else ""
 
+    qs = None
+
     # IRC users can see all operations except ones with status of "Not Started" or "Draft"
     if user.is_irc_user():
         qs = (
@@ -146,31 +148,28 @@ def list_operations(request, filters: OperationFilterSchema = Query(...)):
             .only(*OperationListOut.Config.model_fields, "operator__legal_name", "bc_obps_regulated_operation__id")
             .order_by(f"{sort_direction}{sort_field}")
         )
-        paginator = Paginator(qs, PAGE_SIZE)
 
-        return 200, {
-            "data": [(operation) for operation in paginator.page(page).object_list],
-            "row_count": paginator.count,
-        }
-    # Industry users can only see their companies' operations (industry user must be approved)
-    user_operator = get_current_user_approved_user_operator_or_raise(user)
-    # order by created_at to get the latest one first
-    operators_operations = (
-        Operation.objects.select_related("operator", "bc_obps_regulated_operation")
-        .filter(
-            Q(bcghg_id__icontains=bcghg_id) if bcghg_id else Q(),
-            Q(bc_obps_regulated_operation__id__icontains=bc_obps_regulated_operation)
-            if bc_obps_regulated_operation
-            else Q(),
-            Q(name__icontains=name) if name else Q(),
-            Q(operator__legal_name__icontains=operator) if operator else Q(),
-            Q(status__icontains=status) if status else Q(),
-            operator_id=user_operator.operator_id,
+    else:
+        # Industry users can only see their companies' operations (industry user must be approved)
+        user_operator = get_current_user_approved_user_operator_or_raise(user)
+        # order by created_at to get the latest one first
+        qs = (
+            Operation.objects.select_related("operator", "bc_obps_regulated_operation")
+            .filter(
+                Q(bcghg_id__icontains=bcghg_id) if bcghg_id else Q(),
+                Q(bc_obps_regulated_operation__id__icontains=bc_obps_regulated_operation)
+                if bc_obps_regulated_operation
+                else Q(),
+                Q(name__icontains=name) if name else Q(),
+                Q(operator__legal_name__icontains=operator) if operator else Q(),
+                Q(status__icontains=status) if status else Q(),
+                operator_id=user_operator.operator_id,
+            )
+            .order_by(f"{sort_direction}{sort_field}")
+            .only(*OperationListOut.Config.model_fields, "operator__legal_name", "bc_obps_regulated_operation__id")
         )
-        .order_by(f"{sort_direction}{sort_field}")
-        .only(*OperationListOut.Config.model_fields, "operator__legal_name", "bc_obps_regulated_operation__id")
-    )
-    paginator = Paginator(operators_operations, PAGE_SIZE)
+
+    paginator = Paginator(qs, PAGE_SIZE)
     return 200, {
         "data": [(operation) for operation in paginator.page(page).object_list],
         "row_count": paginator.count,
