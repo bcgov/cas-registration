@@ -62,7 +62,7 @@ test.describe("Test Workflow cas_admin", () => {
       await operatorsPage.tableHasExpectedColumns(UserRole.CAS_ADMIN);
       await operatorsPage.tableHasExpectedColumnValues(
         UserRole.CAS_ADMIN,
-        TableDataField.STATUS
+        TableDataField.STATUS,
       );
       // 📷 Cheese!
       const pageContent = page.locator("html");
@@ -147,7 +147,7 @@ test.describe("Test Workflow cas_admin", () => {
       await operationsPage.tableHasExpectedColumns(UserRole.CAS_ADMIN);
       await operationsPage.tableHasExpectedColumnValues(
         UserRole.CAS_ADMIN,
-        TableDataField.STATUS
+        TableDataField.STATUS,
       );
       // 📷 Cheese!
       const pageContent = page.locator("html");
@@ -186,7 +186,7 @@ test.describe("Test Workflow cas_admin", () => {
       // 🔍 Assert table is visible
       await operationsPage.tableIsVisible();
 
-      /*
+      /* FIXME FOR CI
       await operationsPage.formHasExpectedUX(OperationStatus.APPROVED);
       // 📷 Cheese!
       pageContent = page.locator("html");
@@ -209,19 +209,19 @@ test.describe("Test Workflow cas_admin", () => {
       await operationsPage.formHasExpectedWorkflow(
         UserRole.CAS_ADMIN,
         OperationStatus.PENDING,
-        1
+        1,
       );
       // 🔍 Assert cas_admin workflow Pending, Decline
       await operationsPage.formHasExpectedWorkflow(
         UserRole.CAS_ADMIN,
         OperationStatus.PENDING,
-        2
+        2,
       );
       // 🔍 Assert cas_admin workflow Approved, Preview the Statutory Declaration PDF
       await operationsPage.formHasExpectedWorkflow(
         UserRole.CAS_ADMIN,
         OperationStatus.APPROVED,
-        3
+        3,
       );
     });
   });
