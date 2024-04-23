@@ -38,7 +38,7 @@ def get_user_profile(request):
 @handle_http_errors()
 def create_user_profile(request, identity_provider: str, payload: UserIn):
     # Determine the role based on the identity provider
-    return UserProfileService.create_user_profile(
+    return 200, UserProfileService.create_user_profile(
         json.loads(request.headers.get('Authorization')).get('user_guid'), identity_provider, payload
     )
 
@@ -51,4 +51,4 @@ def create_user_profile(request, identity_provider: str, payload: UserIn):
 @authorize(AppRole.get_all_app_roles(), UserOperator.get_all_industry_user_operator_roles(), False)
 @handle_http_errors()
 def update_user_profile(request, payload: UserUpdateIn):
-    return UserDataAccessService.update_user(get_current_user_guid(request), payload)
+    return 200, UserDataAccessService.update_user(get_current_user_guid(request), payload)
