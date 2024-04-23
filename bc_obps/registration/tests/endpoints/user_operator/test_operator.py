@@ -1,173 +1,271 @@
 from typing import List
-from common.enums import AccessRequestStates, AccessRequestTypes
-from common.service.email.email_service import EmailService
 from model_bakery import baker
 from localflavor.ca.models import CAPostalCodeField
 from registration.models import (
-    BusinessRole,
     BusinessStructure,
-    Contact,
     Operator,
     ParentOperator,
-    User,
     UserOperator,
 )
 from registration.tests.utils.bakers import (
     operator_baker,
-    user_operator_baker,
     parent_operator_baker,
 )
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
 
-baker.generators.add(CAPostalCodeField, TestUtils.mock_postal_code)
 
-
-class TestUserOperatorPutEndpoint(CommonTestSetup):
-    def test_user_operator_put_cannot_update_status_when_operator_not_approved(self):
-        user = baker.make(User)
-
+class TestUserOperatorOperatorEndpoint(CommonTestSetup):
+    def test_duplicates_not_allowed(self):
         operator = operator_baker()
-        operator.status = Operator.Statuses.PENDING
-        operator.save(update_fields=['status'])
-        user_operator = user_operator_baker()
-        user_operator.user_id = user.user_guid
-        user_operator.operator = operator
-        user_operator.save(update_fields=['user_id', 'operator_id'])
 
-        response_1 = TestUtils.mock_put_with_auth_role(
-            self,
-            'cas_admin',
-            self.content_type,
-            {"status": UserOperator.Statuses.APPROVED, "user_operator_id": user_operator.id},
-            custom_reverse_lazy('update_user_operator_status'),
-        )
-        # make sure user can't change the status of a user_operator when operator is not approved
-        assert response_1.status_code == 400
-        response_1_json = response_1.json()
-        assert response_1_json == {'message': 'Operator must be approved before approving or declining users.'}
-
-    def test_industry_user_can_update_status_of_a_user_operator(self, mocker):
-        operator = operator_baker({'status': Operator.Statuses.APPROVED, 'is_new': False})
-        TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
-        subsequent_user_operator = baker.make(UserOperator, operator=operator)
-        mock_send_operator_access_request_email = mocker.patch.object(
-            EmailService, 'send_operator_access_request_email'
-        )
-        response = TestUtils.mock_put_with_auth_role(
+        # duplicate CRA business number
+        payload_with_duplicate_cra_business_number = {
+            "legal_name": "a Legal Name",
+            "trade_name": "test trade name",
+            "cra_business_number": operator.cra_business_number,
+            "bc_corporate_registry_number": "adh1234321",
+            "business_structure": BusinessStructure.objects.first().pk,
+            "physical_street_address": "test physical street address",
+            "physical_municipality": "test physical municipality",
+            "physical_province": "BC",
+            "physical_postal_code": "H0H0H0",
+            "mailing_address_same_as_physical": True,
+            "operator_has_parent_operators": False,
+        }
+        post_response_duplicate_cra_business_number = TestUtils.mock_post_with_auth_role(
             self,
             'industry_user',
             self.content_type,
-            {
-                "role": UserOperator.Roles.REPORTER,
-                "status": UserOperator.Statuses.APPROVED,
-                "user_operator_id": subsequent_user_operator.id,
-            },
-            custom_reverse_lazy('update_user_operator_status'),
+            payload_with_duplicate_cra_business_number,
+            custom_reverse_lazy('create_operator_and_user_operator'),
         )
-        # Assert that the email notification was called
-        mock_send_operator_access_request_email.assert_called_once_with(
-            AccessRequestStates.APPROVED,
-            AccessRequestTypes.OPERATOR_WITH_ADMIN,
-            operator.legal_name,
-            subsequent_user_operator.user.get_full_name(),
-            subsequent_user_operator.user.email,
-        )
-        assert response.status_code == 200
+        assert post_response_duplicate_cra_business_number.status_code == 400
+        assert post_response_duplicate_cra_business_number.json() == {
+            'message': 'Operator with this CRA Business Number already exists.'
+        }
 
-    def test_industry_user_cannot_update_status_of_a_user_operator_from_a_different_operator(self):
-        operator = operator_baker({'status': Operator.Statuses.APPROVED, 'is_new': False})
-        TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
-        other_operator = operator_baker({'status': Operator.Statuses.APPROVED, 'is_new': False})
-        other_user_operator = baker.make(UserOperator, operator=other_operator)
-        response = TestUtils.mock_put_with_auth_role(
+        # duplicate legal name
+        payload_with_duplicate_legal_name = {
+            "legal_name": operator.legal_name,
+            "cra_business_number": 963852741,
+            "bc_corporate_registry_number": "adh1234321",
+            "business_structure": BusinessStructure.objects.first().pk,
+            "physical_street_address": "test physical street address",
+            "physical_municipality": "test physical municipality",
+            "physical_province": "BC",
+            "physical_postal_code": "H0H0H0",
+            "mailing_address_same_as_physical": True,
+            "operator_has_parent_operators": False,
+        }
+        post_response_duplicate_legal_name = TestUtils.mock_post_with_auth_role(
             self,
             'industry_user',
             self.content_type,
-            {
-                "role": UserOperator.Roles.REPORTER,
-                "status": UserOperator.Statuses.APPROVED,
-                "user_operator_id": other_user_operator.id,
-            },
-            custom_reverse_lazy('update_user_operator_status'),
+            payload_with_duplicate_legal_name,
+            custom_reverse_lazy('create_operator_and_user_operator'),
         )
-        assert response.status_code == 403
-
-    def test_cas_admin_can_update_status_of_a_user_operator(self, mocker):
-        operator = operator_baker({'status': Operator.Statuses.APPROVED, 'is_new': False})
-        user_operator = user_operator_baker({'operator': operator})
-        mock_send_operator_access_request_email = mocker.patch.object(
-            EmailService, 'send_operator_access_request_email'
-        )
-        response_2 = TestUtils.mock_put_with_auth_role(
+        assert post_response_duplicate_legal_name.status_code == 422
+        assert post_response_duplicate_legal_name.json() == {
+            'message': 'Legal Name: Operator with this Legal name already exists.'
+        }
+        # duplicate BC corporate registry number
+        payload_with_duplicate_bc_corporate_registry_number = {
+            "legal_name": "a name",
+            "cra_business_number": 963852741,
+            "bc_corporate_registry_number": operator.bc_corporate_registry_number,
+            "business_structure": BusinessStructure.objects.first().pk,
+            "physical_street_address": "test physical street address",
+            "physical_municipality": "test physical municipality",
+            "physical_province": "BC",
+            "physical_postal_code": "H0H0H0",
+            "mailing_address_same_as_physical": True,
+            "operator_has_parent_operators": False,
+        }
+        post_response_duplicate_bc_corporate_registry_number = TestUtils.mock_post_with_auth_role(
             self,
-            'cas_admin',
+            'industry_user',
             self.content_type,
-            {
-                "role": UserOperator.Roles.ADMIN,
-                "status": UserOperator.Statuses.APPROVED,
-                "user_operator_id": user_operator.id,
-            },
-            custom_reverse_lazy('update_user_operator_status'),
+            payload_with_duplicate_bc_corporate_registry_number,
+            custom_reverse_lazy('create_operator_and_user_operator'),
         )
-        assert response_2.status_code == 200
-        user_operator.refresh_from_db()  # refresh the user_operator object to get the updated status
-        assert user_operator.status == UserOperator.Statuses.APPROVED
-        assert user_operator.role == UserOperator.Roles.ADMIN
-        assert user_operator.verified_by == self.user
-        # Assert that the email notification was called
-        mock_send_operator_access_request_email.assert_called_once_with(
-            AccessRequestStates.APPROVED,
-            AccessRequestTypes.ADMIN,
-            operator.legal_name,
-            user_operator.user.get_full_name(),
-            user_operator.user.email,
-        )
+        assert post_response_duplicate_bc_corporate_registry_number.status_code == 422
+        assert post_response_duplicate_bc_corporate_registry_number.json() == {
+            'message': 'Bc Corporate Registry Number: Operator with this Bc corporate registry number already exists.'
+        }
 
-    def test_user_operator_put_decline_rejects_everything(self, mocker):
-        user = baker.make(User)
-        operator = operator_baker()
-        operator.status = Operator.Statuses.APPROVED
-        operator.is_new = False
-        operator.save(update_fields=['status', 'is_new'])
-        user_operator = user_operator_baker()
-        user_operator.user_id = user.user_guid
-        user_operator.operator = operator
-        user_operator.save(update_fields=['user_id', 'operator_id'])
-        # Assigning contacts to the operator of the user_operator
-        contacts = baker.make(
-            Contact,
-            _quantity=2,
-            created_by=user_operator.user,
-            business_role=BusinessRole.objects.get(role_name='Senior Officer'),
-        )
-        user_operator.operator.contacts.set(contacts)
-        mock_send_operator_access_request_email = mocker.patch.object(
-            EmailService, 'send_operator_access_request_email'
-        )
-        # Now decline the user_operator and make sure the contacts are deleted
-        response = TestUtils.mock_put_with_auth_role(
+    # PARENT OPERATORS
+    def test_create_operator_and_user_operator_with_parent_operators(self):
+        mock_payload_2 = {
+            "legal_name": "New Operator",
+            "trade_name": "New Operator Trade Name",
+            "cra_business_number": 963852741,
+            "bc_corporate_registry_number": "adh1234321",
+            "business_structure": BusinessStructure.objects.first().pk,
+            "physical_street_address": "test physical street address",
+            "physical_municipality": "test physical municipality",
+            "physical_province": "BC",
+            "physical_postal_code": "H0H0H0",
+            "mailing_address_same_as_physical": False,
+            "mailing_street_address": "test mailing street address",
+            "mailing_municipality": "test mailing municipality",
+            "mailing_province": "BC",
+            "mailing_postal_code": "H0H0H0",
+            "operator_has_parent_operators": True,
+            "parent_operators_array": [
+                {
+                    "po_legal_name": "test po legal name",
+                    "po_trade_name": "test po trade name",
+                    "po_cra_business_number": 123456789,
+                    "po_bc_corporate_registry_number": "poo7654321",
+                    "po_business_structure": BusinessStructure.objects.first().pk,
+                    "po_website": "https://testpo.com",
+                    "po_physical_street_address": "test po physical street address",
+                    "po_physical_municipality": "test po physical municipality",
+                    "po_physical_province": "ON",
+                    "po_physical_postal_code": "H0H0H0",
+                    "po_mailing_address_same_as_physical": True,
+                },
+                {
+                    "po_legal_name": "test po legal name 2",
+                    "po_trade_name": "test po trade name 2",
+                    "po_cra_business_number": 123456789,
+                    "po_bc_corporate_registry_number": "opo7654321",
+                    "po_business_structure": BusinessStructure.objects.first().pk,
+                    "po_physical_street_address": "test po physical street address 2",
+                    "po_physical_municipality": "test po physical municipality 2",
+                    "po_physical_province": "ON",
+                    "po_physical_postal_code": "H0H0H0",
+                    "po_mailing_address_same_as_physical": False,
+                    "po_mailing_street_address": "test po mailing street address 2",
+                    "po_mailing_municipality": "test po mailing municipality 2",
+                    "po_mailing_province": "ON",
+                    "po_mailing_postal_code": "H0H0H0",
+                },
+            ],
+        }
+
+        post_response_2 = TestUtils.mock_post_with_auth_role(
             self,
-            'cas_admin',
+            'industry_user',
             self.content_type,
-            {"status": UserOperator.Statuses.DECLINED, "user_operator_id": user_operator.id},
-            custom_reverse_lazy('update_user_operator_status'),
+            mock_payload_2,
+            custom_reverse_lazy('create_operator_and_user_operator'),
         )
-        assert response.status_code == 200
-        user_operator.refresh_from_db()  # refresh the user_operator object to get the updated status
-        assert user_operator.status == UserOperator.Statuses.DECLINED
+        assert post_response_2.status_code == 200
+
+        user_operator_id = post_response_2.json().get("user_operator_id")
+        assert user_operator_id is not None
+
+        user_operator = UserOperator.objects.get(id=user_operator_id)
+        assert user_operator.operator is not None
+        assert user_operator.user == self.user
         assert user_operator.role == UserOperator.Roles.PENDING
-        assert user_operator.verified_by == self.user
-        assert user_operator.operator.contacts.count() == 0
-        assert Contact.objects.count() == 0
-        # Assert that the email notification was sent
-        mock_send_operator_access_request_email.assert_called_once_with(
-            AccessRequestStates.DECLINED,
-            AccessRequestTypes.ADMIN,
-            operator.legal_name,
-            user_operator.user.get_full_name(),
-            user_operator.user.email,
-        )
+        assert user_operator.status == UserOperator.Statuses.PENDING
+
+        operator: Operator = user_operator.operator
+        assert {
+            "legal_name": operator.legal_name,
+            "cra_business_number": operator.cra_business_number,
+            "bc_corporate_registry_number": operator.bc_corporate_registry_number,
+            "business_structure": operator.business_structure.pk,
+            "website": None,
+            "physical_street_address": operator.physical_address.street_address,
+            "physical_municipality": operator.physical_address.municipality,
+            "physical_province": operator.physical_address.province,
+            "physical_postal_code": operator.physical_address.postal_code,
+            "mailing_street_address": operator.mailing_address.street_address,
+            "mailing_municipality": operator.mailing_address.municipality,
+            "mailing_province": operator.mailing_address.province,
+            "mailing_postal_code": operator.mailing_address.postal_code,
+        } == {
+            "legal_name": "New Operator",
+            "cra_business_number": 963852741,
+            "bc_corporate_registry_number": "adh1234321",
+            "business_structure": BusinessStructure.objects.first().pk,
+            "website": None,
+            "physical_street_address": "test physical street address",
+            "physical_municipality": "test physical municipality",
+            "physical_province": "BC",
+            "physical_postal_code": "H0H0H0",
+            "mailing_street_address": "test mailing street address",
+            "mailing_municipality": "test mailing municipality",
+            "mailing_province": "BC",
+            "mailing_postal_code": "H0H0H0",
+        }
+
+        parent_operators: List[ParentOperator] = operator.parent_operators.all()
+        assert len(parent_operators) == 2
+
+        # Assert that the parent operator 1 is the same as the first object in the parent_operators_array
+        assert {
+            "legal_name": parent_operators[0].legal_name,
+            "trade_name": parent_operators[0].trade_name,
+            "cra_business_number": parent_operators[0].cra_business_number,
+            "bc_corporate_registry_number": parent_operators[0].bc_corporate_registry_number,
+            "business_structure": parent_operators[0].business_structure.pk,
+            "website": parent_operators[0].website,
+            "physical_street_address": parent_operators[0].physical_address.street_address,
+            "physical_municipality": parent_operators[0].physical_address.municipality,
+            "physical_province": parent_operators[0].physical_address.province,
+            "physical_postal_code": parent_operators[0].physical_address.postal_code,
+            "mailing_street_address": parent_operators[0].mailing_address.street_address,
+            "mailing_municipality": parent_operators[0].mailing_address.municipality,
+            "mailing_province": parent_operators[0].mailing_address.province,
+            "mailing_postal_code": parent_operators[0].mailing_address.postal_code,
+        } == {
+            "legal_name": "test po legal name",
+            "trade_name": "test po trade name",
+            "cra_business_number": 123456789,
+            "bc_corporate_registry_number": "poo7654321",
+            "business_structure": BusinessStructure.objects.first().pk,
+            "website": "https://testpo.com",
+            "physical_street_address": "test po physical street address",
+            "physical_municipality": "test po physical municipality",
+            "physical_province": "ON",
+            "physical_postal_code": "H0H0H0",
+            "mailing_street_address": "test po physical street address",
+            "mailing_municipality": "test po physical municipality",
+            "mailing_province": "ON",
+            "mailing_postal_code": "H0H0H0",
+        }
+
+        # Assert that the parent operator 2 is the same as the second object in the parent_operators_array
+        assert {
+            "legal_name": parent_operators[1].legal_name,
+            "trade_name": parent_operators[1].trade_name,
+            "cra_business_number": parent_operators[1].cra_business_number,
+            "bc_corporate_registry_number": parent_operators[1].bc_corporate_registry_number,
+            "business_structure": parent_operators[1].business_structure.pk,
+            "website": None,
+            "physical_street_address": parent_operators[1].physical_address.street_address,
+            "physical_municipality": parent_operators[1].physical_address.municipality,
+            "physical_province": parent_operators[1].physical_address.province,
+            "physical_postal_code": parent_operators[1].physical_address.postal_code,
+            "mailing_street_address": parent_operators[1].mailing_address.street_address,
+            "mailing_municipality": parent_operators[1].mailing_address.municipality,
+            "mailing_province": parent_operators[1].mailing_address.province,
+            "mailing_postal_code": parent_operators[1].mailing_address.postal_code,
+        } == {
+            "legal_name": "test po legal name 2",
+            "trade_name": "test po trade name 2",
+            "cra_business_number": 123456789,
+            "bc_corporate_registry_number": "opo7654321",
+            "business_structure": BusinessStructure.objects.first().pk,
+            "website": None,
+            "physical_street_address": "test po physical street address 2",
+            "physical_municipality": "test po physical municipality 2",
+            "physical_province": "ON",
+            "physical_postal_code": "H0H0H0",
+            "mailing_street_address": "test po mailing street address 2",
+            "mailing_municipality": "test po mailing municipality 2",
+            "mailing_province": "ON",
+            "mailing_postal_code": "H0H0H0",
+        }
+
+        # Assert that the parent operator 1 and 2 have the correct operator index
+        assert parent_operators[0].operator_index == 1
+        assert parent_operators[1].operator_index == 2
 
     def test_edit_and_archive_parent_operators(self):
         child_operator = operator_baker()
