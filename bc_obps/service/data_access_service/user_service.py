@@ -38,7 +38,7 @@ class UserDataAccessService:
         return is_declined
 
     def get_app_role(user_guid: UUID) -> AppRole:
-        return User.objects.only('app_role').select_related('app_role').get(user_guid=user_guid)
+        return User.objects.only('app_role').select_related('app_role').get(user_guid=user_guid).app_role
 
     def get_user_profile(user_guid: UUID):
         return (
