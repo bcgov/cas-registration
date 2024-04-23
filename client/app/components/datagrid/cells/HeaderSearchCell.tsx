@@ -65,6 +65,9 @@ const HeaderSearchCell = ({
             }
           }}
           onFocus={(e) => {
+            if (!isFocused) {
+              setLastFocusedField(field);
+            }
             // Move the cursor to the end of the input field when focused
             e.currentTarget.setSelectionRange(
               e.currentTarget.value.length,
