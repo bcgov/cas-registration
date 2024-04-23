@@ -1,3 +1,4 @@
+from typing import Dict
 from uuid import UUID
 from common.enums import AccessRequestStates, AccessRequestTypes
 from common.service.email.email_service import EmailService
@@ -155,8 +156,22 @@ class UserOperatorService:
         )
 
     @transaction.atomic()
-    def create_operator_and_user_operator(updated_data: UserOperatorOperatorIn, user_guid: UUID):
-        "Function to create a user_operator and an operator (new operator that doesn't exist yet)"
+    def create_operator_and_user_operator(updated_data: UserOperatorOperatorIn, user_guid: UUID) -> Dict:
+        """
+        Function to create a user_operator and an operator (new operator that doesn't exist yet).
+
+        Parameters:
+            updated_data: Updated data for the user operator.
+            user_guid: GUID of the user.
+
+        Returns:
+            dict: A dictionary containing the IDs of the created user_operator and operator.
+                - 'user_operator_id' (UUID): ID of the user_operator.
+                - 'operator_id' (UUID): ID of the operator.
+
+        Raises:
+            Exception: If an operator with the same CRA Business Number already exists.
+        """
         cra_business_number: str = updated_data.cra_business_number
         existing_operator: Operator = Operator.objects.filter(cra_business_number=cra_business_number).first()
         # check if operator with this CRA Business Number already exists
@@ -235,7 +250,7 @@ class UserOperatorService:
     @transaction.atomic()
     def update_operator_and_user_operator(
         user_operator_id: UUID, updated_data: UserOperatorOperatorIn, user_guid: UUID
-    ):
+    ) -> Dict:
         "Function to update both the operator and user_operator"
         user_operator_instance = UserOperatorDataAccessService.get_user_operator_by_id(user_operator_id)
         operator_instance: Operator = user_operator_instance.operator
