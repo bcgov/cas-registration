@@ -1,9 +1,11 @@
-from common.models import EmailNotificationTemplate, EmailNotification
-from common.service.email import EmailService
-from enums.enums import BoroIdApplication, BoroIdApplicationStates
+from common.service.email.email_service import EmailService
+from common.models import EmailNotificationTemplate
+from registration.enums.enums import BoroIdApplication, BoroIdApplicationStates
 import logging
 
 logger = logging.getLogger(__name__)
+
+email_service = EmailService()
 
 
 def send_boro_id_application_email(
@@ -44,7 +46,6 @@ def send_boro_id_application_email(
     }
 
     try:
-        email_service = EmailService()
         response_json = email_service.send_email_by_template(template, email_context, [external_user_email_address])
         # Create email notification record to store transaction and message IDs
         email_service.create_email_notification_record(

@@ -9,7 +9,7 @@ def submit_operation_boro_id_email_notification_templates(apps, schema_editor):
     """
     EmailNotificationTemplate = apps.get_model('common', 'EmailNotificationTemplate')
     EmailNotificationTemplate.objects.create(
-        name='BORO ID Application Submission Confirmation',
+        name='BORO ID Application Confirmation',
         subject='BCIERS Receipt Acknowledgement - BORO ID application for {{ operation_name }} of {{ operator_legal_name }}',
         body='''
             <p style="text-align: center;">Province of British Columbia</p>
