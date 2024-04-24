@@ -1,5 +1,6 @@
 import { Status, UserOperatorStatus } from "@/app/utils/enums";
 import { actionHandler, getToken } from "@/app/utils/actions";
+import { OperatorStatus, UserOperatorRoles } from "@/app/utils/enums";
 
 export interface ExternalDashboardUsersTile {
   user: { [key: string]: any };
@@ -12,6 +13,15 @@ export interface ExternalDashboardUsersTile {
   role: string;
   status: string | Status;
   id: string;
+}
+
+export interface UserOperatorDataGridRow {
+  id: string;
+  name: string;
+  email: string;
+  business: string;
+  accessType: string;
+  status: string | Status;
 }
 
 export async function getExternalDashboardUsersTileData(): Promise<
@@ -55,5 +65,24 @@ export async function processExternalDashboardUsersTileData() {
     transformedTileData[selfIndex].status = Status.MYSELF;
   }
 
-  return transformedTileData;
+  const rowData = transformedTileData.map((uOS) => {
+    const { id, role, status, user, operator } = uOS;
+
+    // If the user is pending, we want to default the access type dropdown to Reporter
+    const accessType =
+      role === UserOperatorRoles.PENDING ? UserOperatorRoles.REPORTER : role;
+
+    return {
+      id: id, // This unique ID is needed for DataGrid to work properly
+      name: `${user.first_name} ${user.last_name}`,
+      email: user.email,
+      business: operator.legal_name,
+      accessType: status === OperatorStatus.DECLINED ? "N/A" : accessType,
+      status: status,
+    };
+  });
+
+  return {
+    rows: rowData as UserOperatorDataGridRow[],
+  };
 }

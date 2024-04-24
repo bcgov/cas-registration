@@ -3,16 +3,16 @@ import { Suspense } from "react";
 import UserOperatorDataGrid from "@/app/components/datagrid/UserOperatorDataGrid";
 import Loading from "@/app/components/loading/SkeletonGrid";
 import {
-  ExternalDashboardUsersTile,
   processExternalDashboardUsersTileData,
+  UserOperatorDataGridRow,
 } from "@/app/utils/users/adminUserOperators";
 
 const UserOperatorsPage = async () => {
-  const userOperatorData: ExternalDashboardUsersTile[] =
+  const userOperatorData: { rows: UserOperatorDataGridRow[] } =
     await processExternalDashboardUsersTileData();
   return (
     <Suspense fallback={<Loading />}>
-      <UserOperatorDataGrid userOperatorData={userOperatorData} />
+      <UserOperatorDataGrid initialData={userOperatorData} />
     </Suspense>
   );
 };

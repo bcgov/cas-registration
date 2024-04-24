@@ -5,10 +5,17 @@ import { DashboardPOM } from "@/e2e/poms/dashboard";
 import { OperationsPOM } from "@/e2e/poms/operations";
 import { OperatorsPOM } from "@/e2e/poms/operators";
 // 🛠️ Helpers
-import { setupTestEnvironment } from "@/e2e/utils/helpers";
+import {
+  filterTableByFieldId,
+  sortTableByColumnLabel,
+  setupTestEnvironment,
+  tableRowCount,
+} from "@/e2e/utils/helpers";
 // ☰ Enums
 import {
   OperationStatus,
+  OperationTableDataField,
+  OperationTableHeaders,
   TableDataField,
   UserOperatorStatus,
   UserRole,
@@ -108,6 +115,34 @@ test.describe("Test Workflow cas_admin", () => {
       UserRole.CAS_ADMIN,
       OperationStatus.APPROVED,
       3,
+    );
+  });
+
+  test("Operations table sorting and filtering", async ({ page }) => {
+    // We do a more thorough test of the operations table in the industry_user_admin.spec.ts file
+    // This test is just to make sure that the sorting and filtering works for the cas_admin role
+    // which also has the extra Operator column
+    const operationsPage = new OperationsPOM(page);
+    // 🛸 Navigate to operations table page
+    await operationsPage.route();
+    // 🔍 Assert that the current URL is operations
+    await operationsPage.urlIsCorrect();
+    // 🔍 Assert `Operations` view, table reflect role `industry_user_admin`
+    await operationsPage.tableIsVisible();
+    await operationsPage.tableHasExpectedColumns(UserRole.CAS_ADMIN);
+
+    await filterTableByFieldId(
+      operationsPage.page,
+      OperationTableDataField.OPERATOR,
+      OperationTableHeaders.OPERATOR,
+      "Existing",
+    );
+    await tableRowCount(operationsPage.page, 12);
+
+    await sortTableByColumnLabel(
+      operationsPage.page,
+      OperationTableHeaders.OPERATOR,
+      "Existing Operator 2 Legal Name",
     );
   });
 });

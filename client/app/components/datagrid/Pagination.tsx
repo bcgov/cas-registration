@@ -20,7 +20,7 @@ const getPageCount = (rowCount: number, pageSize: number): number => {
 // This is a custom pagination component that is used to override the default pagination component
 // It adds numbered pagination buttons to the default pagination component
 const Pagination = ({
-  page,
+  page = 0,
   onPageChange,
   className,
 }: Pick<TablePaginationProps, "page" | "onPageChange" | "className">) => {

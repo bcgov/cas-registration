@@ -1,7 +1,12 @@
 import Operations from "@/app/components/routes/operations/Operations";
 import "@testing-library/jest-dom";
 import { render, screen } from "@testing-library/react";
-import { actionHandler, useSession } from "@/tests/setup/mocks";
+import {
+  actionHandler,
+  useRouter,
+  useSearchParams,
+  useSession,
+} from "@/tests/setup/mocks";
 import { Session } from "@/tests/setup/types";
 
 useSession.mockReturnValue({
@@ -11,6 +16,15 @@ useSession.mockReturnValue({
     },
   },
 } as Session);
+
+useRouter.mockReturnValue({
+  query: {},
+  replace: vi.fn(),
+});
+
+useSearchParams.mockReturnValue({
+  get: vi.fn(),
+});
 
 describe("Operations component", () => {
   beforeEach(async () => {
@@ -40,7 +54,7 @@ describe("Operations component", () => {
       ],
       row_count: 2,
     });
-    render(await Operations());
+    render(await Operations({ searchParams: {} }));
 
     // Check if the grid of mock data is present
     expect(screen.getByText(/Operation 1/i)).toBeVisible();

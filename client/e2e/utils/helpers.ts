@@ -9,7 +9,12 @@ import {
   Browser,
 } from "@playwright/test";
 import { baseUrlSetup } from "@/e2e/utils/constants";
-import { E2EValue, FormField, MessageTextResponse } from "@/e2e/utils/enums";
+import {
+  DataTestID,
+  E2EValue,
+  FormField,
+  MessageTextResponse,
+} from "@/e2e/utils/enums";
 import AxeBuilder from "@axe-core/playwright";
 
 // 🛠️ Function: analyze the accessibility of the page
@@ -157,6 +162,7 @@ export async function getTableRowByCellSelector(
     .first();
   return row;
 }
+
 // 🛠️ Function: gets table row by row id
 export async function getTableRowById(table: Locator, rowId: string) {
   const row = await table.locator(`[role="row"][data-id="${rowId}"]`).first();
@@ -312,4 +318,90 @@ export async function setupTestEnvironment(
   // Wait for the response and check for success status text and code (e.g., 200)
   expect(await response.text()).toBe(MessageTextResponse.SETUP_SUCCESS);
   expect(response.status()).toBe(200);
+}
+
+export async function sortTableByColumnLabel(
+  page: Page,
+  columnLabel: string,
+  expectedFirstSortedCell: string,
+  expectedSortDirection: "ascending" | "descending" | "none" = "ascending",
+) {
+  const header = page.getByRole("columnheader").getByText(columnLabel);
+
+  const colIndex = await page
+    .locator(`[aria-label="${columnLabel}"]`)
+    .getAttribute("aria-colindex");
+  await header.click();
+
+  // wait for aria-sort to be set to ascending
+  const ariaSort = await page
+    .locator(`[aria-label="${columnLabel}"]`)
+    .getAttribute("aria-sort");
+
+  expect(ariaSort).toBe(expectedSortDirection);
+
+  // wait for response to complete
+  await page.waitForResponse((response) => response.status() === 200);
+
+  const table = page.locator(DataTestID.GRID);
+
+  // Get the first row cell that was sorted
+  const firstSortedCell = await getRowCellBySelector(
+    table,
+    `[aria-colindex="${colIndex}"]`,
+  );
+
+  // Longer timeout to wait for sorting to complete
+  await expect(firstSortedCell).toHaveText(expectedFirstSortedCell, {
+    timeout: 20000,
+  });
+}
+export async function filterTableByFieldId(
+  page: Page,
+  fieldId: string,
+  columnLabel: string,
+  filterValue: string,
+  expectEmptyTable: boolean = false,
+) {
+  const filter = page.locator(`[id="${fieldId}"]`);
+  await filter.fill(filterValue);
+  expect(await filter.inputValue()).toBe(filterValue);
+
+  // wait for response to complete
+  await page.waitForResponse((response) => response.status() === 200);
+
+  if (expectEmptyTable) {
+    const emptyTable = page.getByText("No records found");
+    await expect(emptyTable).toBeVisible({ timeout: 20000 });
+    return;
+  }
+
+  const colIndex = await page
+    .locator(`[aria-label="${columnLabel}"]`)
+    .getAttribute("aria-colindex");
+
+  const table = page.locator(DataTestID.GRID);
+
+  // get the first row cell that was filtered
+  const firstFilteredCell = await getRowCellBySelector(
+    table,
+    `[aria-colindex="${colIndex}"]`,
+  );
+
+  // Longer timeout to wait for filtering to complete
+  await expect(firstFilteredCell).toContainText(filterValue, {
+    timeout: 20000,
+  });
+}
+
+export async function tableRowCount(page: Page, expectedRowCount: number) {
+  const tableContent = page.locator(`.MuiDataGrid-virtualScroller`);
+  const rows = tableContent.locator('[role="row"]');
+  await expect(rows).toHaveCount(expectedRowCount, { timeout: 20000 });
+}
+
+export async function clearTableFilter(page: Page, fieldId: string) {
+  const filter = page.locator(`[id="${fieldId}"]`);
+  await filter.clear();
+  expect(await filter.inputValue()).toBe("");
 }

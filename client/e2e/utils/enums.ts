@@ -248,7 +248,27 @@ export enum TableDataField {
   BCEID_BUSINESS_NAME = "bceid_business_name",
 }
 
-//  // 👤  User roles
+export enum OperationTableDataField {
+  STATUS = "status",
+  BCGHG_ID = "bcghg_id",
+  BORO_ID = "bc_obps_regulated_operation",
+  OPERATION = "name",
+  OPERATOR = "operator",
+  SUBMISSION_DATE = "submission_date",
+}
+
+// Operation table header selectors
+export enum OperationTableHeaders {
+  ACTIONS = "Actions",
+  BCGHG_ID = "BC GHG ID",
+  BORO_ID = "BORO ID",
+  OPERATION = "Operation",
+  OPERATOR = "Operator",
+  STATUS = "Application Status",
+  SUBMISSION_DATE = "Submission Date",
+}
+
+// 👤  User roles
 export enum UserRole {
   CAS_PENDING = "cas_pending",
   CAS_ANALYST = "cas_analyst",
