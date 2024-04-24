@@ -3,8 +3,8 @@
 import DataGrid from "../datagrid/DataGrid";
 import Link from "next/link";
 import { GridRenderCellParams } from "@mui/x-data-grid";
-import { fetchUserOperatorPageData } from "@/app/components/routes/operators/OperatorsPage";
 import { UserOperator } from "./types";
+import { fetchUserOperatorPageData } from "../routes/operators/Page";
 
 const OperatorDataGrid = ({
   initialData,
