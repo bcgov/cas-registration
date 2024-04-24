@@ -1,6 +1,6 @@
 {
   "root": true,
-  "extends": ["airbnb-typescript", "prettier"],
+  "extends": ["airbnb", "airbnb-typescript", "prettier"],
   "env": { "es6": true, "browser": true, "node": true},
   "globals": { "vi": true },
   "parser": "@typescript-eslint/parser",
