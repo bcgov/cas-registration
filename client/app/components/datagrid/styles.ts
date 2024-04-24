@@ -22,7 +22,6 @@ const styles = {
     flexDirection: "column-reverse",
   },
   "& .MuiDataGrid-columnHeaders": {
-    backgroundColor: BC_GOV_BACKGROUND_COLOR_BLUE,
     display: "flex",
     // If column group headers are present, make the background white
     "& [role=row]:first-of-type:not(:only-child)": {
