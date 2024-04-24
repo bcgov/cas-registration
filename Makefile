@@ -6,11 +6,10 @@ help: ## Show this help.
 
 .PHONY: release
 release:
-	@RELEASE_VERSION=$$(yarn release-it --release-version); \
-	TEMP_VERSION=$${RELEASE_VERSION//./_}; \
-	echo $$TEMP_VERSION; \
+	@RELEASE_VERSION=$$(yarn release-it --release-version | grep -oE '^[0-9]+\.[0-9]+\.[0-9]+$' | tr '.' '_'); \
+	echo $$RELEASE_VERSION; \
 	echo "Navigating to bc_obps directory..."; \
-	cd bc_obps && poetry run python manage.py create_empty_migrations $$TEMP_VERSION && cd ..; \
+	cd bc_obps && poetry run python manage.py create_empty_migrations $$RELEASE_VERSION && cd ..; \
 	echo "Running yarn setup and release-it..."; \
 	yarn; \
 	yarn release-it
