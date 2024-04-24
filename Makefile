@@ -1,13 +1,17 @@
 SHELL := /usr/bin/env bash
 __FILENAME := $(lastword $(MAKEFILE_LIST))
-__DIRNAME := $(abspath $(realpath $(lastword $(MAKEFILE_LIST)))/../)
 
 help: ## Show this help.
 	@sed -ne '/@sed/!s/## //p' $(MAKEFILE_LIST)
 
 .PHONY: release
-release: ## Tag a release using release-it
 release:
+	@RELEASE_VERSION=$$(yarn release-it --release-version);
+	@TEMP_VERSION=$$(echo $$RELEASE_VERSION | tr '.' '_');
+	@echo $$TEMP_VERSION;
+	@echo "Navigating to bc_obps directory..."
+	@cd bc_obps && poetry run python manage.py create_empty_migrations $$TEMP_VERSION && cd ..
+	@echo "Running yarn setup and release-it..."
 	@yarn
 	@yarn release-it
 
