@@ -19,11 +19,11 @@ runs:
           ~/.asdf
           ./bc_obps/.tool-versions
         key: ${{ runner.os }}-asdf-cache-backend-${{ hashFiles('bc_obps/.tool-versions') }}
-    - name: install yarn
-      shell: bash
-      run: |
-        corepack enable
-        yarn set version berry
+    # - name: install yarn
+    #   shell: bash
+    #   run: |
+    #     corepack enable
+    #     yarn set version berry
     - name: yarn cache
       uses: ./.github/actions/yarn-cache
     - name: Set up python
