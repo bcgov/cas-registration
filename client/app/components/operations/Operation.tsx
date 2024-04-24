@@ -1,6 +1,6 @@
 import OperationsForm, {
   OperationsFormData,
-} from "@/app/components/form/OperationsForm";
+} from "@/app/components/operations/OperationsForm";
 import {
   operationSchema,
   operationInternalUserSchema,
@@ -13,12 +13,12 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 import ErrorIcon from "@mui/icons-material/Error";
 import { Status } from "@/app/utils/enums";
-import { Operation as OperationInt } from "@/app/components/routes/operations/types";
+import { Operation as OperationInt } from "@/app/components/operations/types";
 import Link from "next/link";
-import OperationReviewForm from "@/app/components/form/OperationReviewForm";
 import { BusinessStructure } from "@/app/components/routes/select-operator/form/types";
 import { validate as isValidUUID } from "uuid";
 import { carbonTaxExemptionLink } from "@/app/utils/urls";
+import OperationReviewForm from "./OperationReviewForm";
 
 // 🚀 API call: GET user's data
 async function getUserFormData(): Promise<
