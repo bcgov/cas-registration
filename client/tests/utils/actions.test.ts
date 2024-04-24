@@ -33,7 +33,8 @@ const responseToken = {
   jti: "efb76d57-88b7-4eb6-9f26-ec12b49c14c1",
 };
 
-const mockTokenResponse = () => {
+// Mock the response for the getToken function
+const mockTokenResponse200 = () => {
   fetch.mockResponseOnce(JSON.stringify(responseToken), {
     status: 200,
   });
@@ -45,7 +46,7 @@ describe("getToken function", () => {
   });
 
   it("should return the token", async () => {
-    mockTokenResponse();
+    mockTokenResponse200();
     const result = await getToken();
 
     expect(result).toEqual(responseToken);
@@ -97,7 +98,7 @@ describe("actionHandler function", () => {
   });
 
   it("should return an error if the fetch throws an error", async () => {
-    mockTokenResponse();
+    mockTokenResponse200();
     fetch.mockReject(new Error("Fetch failed"));
     const result = await actionHandler("/endpoint", "GET");
 
@@ -154,7 +155,7 @@ describe("actionHandler function", () => {
   });
 
   it("should return an error if the fetch response is not ok", async () => {
-    mockTokenResponse();
+    mockTokenResponse200();
     fetch.mockReject(new Error("Fetch failed"));
     const result = await actionHandler("/endpoint", "GET");
 
