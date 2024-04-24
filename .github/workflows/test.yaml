@@ -224,10 +224,6 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           cache: "yarn"
-      - name: Install dependencies
-        run: |
-          yarn install --frozen-lockfile
-          cd ../client && yarn install --frozen-lockfile
       - name: Derive appropriate SHAs for base and head for `nx affected` commands
         uses: nrwl/nx-set-shas@v4
         with:
