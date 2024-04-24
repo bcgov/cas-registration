@@ -23,8 +23,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: dev env setup
-        uses: ./.github/actions/dev-env-setup
+      # - name: dev env setup
+      #   uses: ./.github/actions/dev-env-setup
       - run: yarn install --immutable
         working-directory: ./bciers
   yarn-test:
