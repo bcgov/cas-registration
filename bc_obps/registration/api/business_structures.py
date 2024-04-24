@@ -10,4 +10,4 @@ from registration.schema import BusinessStructureOut
 @router.get("/business_structures", response=List[BusinessStructureOut], url_name="list_business_structures")
 @authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles(), False)
 def list_business_structures(request):
-    return BusinessStructureDataAccessService.get_business_structures()
+    return 200, BusinessStructureDataAccessService.get_business_structures()

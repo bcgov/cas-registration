@@ -23,7 +23,7 @@ from registration.schema import Message, OperatorOut, OperatorIn, OperatorSearch
 def get_operators_by_cra_number_or_legal_name(
     request, cra_business_number: Optional[int] = None, legal_name: Optional[str] = ""
 ):
-    return OperatorService.get_operators_by_cra_number_or_legal_name(cra_business_number, legal_name)
+    return 200, OperatorService.get_operators_by_cra_number_or_legal_name(cra_business_number, legal_name)
 
 
 # We have to let unapproved users to reach this endpoint otherwise they can't see operator info when they select it
@@ -48,7 +48,7 @@ def get_operator(request, operator_id: UUID):
 @authorize(AppRole.get_authorized_irc_roles())
 @handle_http_errors()
 def update_operator_status(request, operator_id: UUID, payload: OperatorIn):
-    return OperatorService.update_operator_status(get_current_user_guid(request), operator_id, payload)
+    return 200, OperatorService.update_operator_status(get_current_user_guid(request), operator_id, payload)
 
 
 ##### DELETE #####

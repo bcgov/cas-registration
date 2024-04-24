@@ -23,7 +23,7 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 @authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles(), False)
 @handle_http_errors()
 def create_operator_and_user_operator(request, payload: UserOperatorOperatorIn):
-    return UserOperatorService.create_operator_and_user_operator(payload, get_current_user_guid(request))
+    return 200, UserOperatorService.create_operator_and_user_operator(payload, get_current_user_guid(request))
 
 
 ## PUT
