@@ -2,12 +2,12 @@
 import Link from "next/link";
 import { Button } from "@mui/material";
 import { Suspense } from "react";
-import Operations from "@/app/components/routes/operations/Operations";
 import Loading from "@/app/components/loading/SkeletonGrid";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import Note, { registrationRequestNote } from "../../datagrid/Note";
-import { OperationsSearchParams } from "@/app/components/routes/operations/types";
+import { OperationsSearchParams } from "../../operations/types";
+import Operations from "../../operations/Operations";
 
 export default async function OperationsPage({
   searchParams,
