@@ -1,10 +1,10 @@
 "use client";
 
-import DataGrid from "./DataGrid";
+import DataGrid from "../datagrid/DataGrid";
 import Link from "next/link";
 import { GridRenderCellParams } from "@mui/x-data-grid";
 import { fetchUserOperatorPageData } from "@/app/components/routes/operators/OperatorsPage";
-import { UserOperator } from "@/app/components/routes/access-requests/types";
+import { UserOperator } from "./types";
 
 const OperatorDataGrid = ({
   initialData,

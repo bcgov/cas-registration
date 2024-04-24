@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import Loading from "@/app/components/loading/SkeletonGrid";
-import ConfirmSelectedOperator from "@/app/components/routes/select-operator/form/ConfirmSelectedOperator";
+import ConfirmSelectedOperator from "@/app/components/userOperators/ConfirmSelectedOperator";
 
 export default async function SelectOperatorRequestAccessConfirmPage({
   params,

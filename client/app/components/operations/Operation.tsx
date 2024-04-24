@@ -15,10 +15,10 @@ import ErrorIcon from "@mui/icons-material/Error";
 import { Status } from "@/app/utils/enums";
 import { Operation as OperationInt } from "@/app/components/operations/types";
 import Link from "next/link";
-import { BusinessStructure } from "@/app/components/routes/select-operator/form/types";
 import { validate as isValidUUID } from "uuid";
 import { carbonTaxExemptionLink } from "@/app/utils/urls";
 import OperationReviewForm from "./OperationReviewForm";
+import { BusinessStructure } from "../userOperators/types";
 
 // 🚀 API call: GET user's data
 async function getUserFormData(): Promise<
