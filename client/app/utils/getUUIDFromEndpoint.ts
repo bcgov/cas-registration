@@ -1,5 +1,19 @@
 // 🛠️ Function to get the last non-empty segment as a UUID from an endpoint URL
 function getUUIDFromEndpoint(endpoint: string): string | null {
+  const endpointAllowList = [
+    "registration/user/user-app-role",
+    "registration/user-operator/is-approved-admin-user-operator",
+  ];
+
+  const isEndpointAllowed = endpointAllowList.find((allowedEndpoint) =>
+    endpoint.includes(allowedEndpoint),
+  )
+    ? true
+    : false;
+
+  if (!isEndpointAllowed) {
+    throw new Error("Endpoint is not allowed");
+  }
   // Split the endpoint URL by '/'
   const segments = endpoint.split("/");
 
