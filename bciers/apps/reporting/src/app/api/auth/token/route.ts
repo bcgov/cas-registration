@@ -1,3 +1,3 @@
-import { GET as regGET } from "registration/api/auth/token/route";
+import { GET as regGET } from "@/app/api/auth/token/route";
 
 export const GET = regGET;

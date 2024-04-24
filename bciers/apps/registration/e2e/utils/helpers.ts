@@ -15,6 +15,7 @@ import AxeBuilder from "@axe-core/playwright";
 // 🛠️ Function: analyze the accessibility of the page
 export async function analyzeAccessibility(page: Page) {
   const accessibilityScanResults = await new AxeBuilder({
+    // @ts-ignore
     page,
   }).analyze();
 
