@@ -1,6 +1,7 @@
 [
   {
     "model": "registration.operation",
+    "pk": "e1300fd7-2dee-47d1-b655-2ad3fd10f052",
     "fields": {
       "operator": "685d581b-5698-411f-ae00-de1d97334a71",
       "verified_at": "2023-10-13T15:27:00.000Z",

@@ -687,43 +687,7 @@ class UserOperator(TimeStampedModel):
         super().save(*args, **kwargs)
 
 
-class OperationAndFacilityCommonInfo(TimeStampedModel):
-    """Operation and facility common information abstract base class"""
-
-    name = models.CharField(max_length=1000, db_comment="An operation or facility's name")
-    type = models.CharField(max_length=1000, db_comment="An operation or facility's type")
-    naics_code = models.ForeignKey(
-        NaicsCode,
-        on_delete=models.DO_NOTHING,
-        null=True,
-        db_comment="An operation or facility's NAICS code",
-        related_name='%(class)ss',
-    )
-    swrs_facility_id = models.IntegerField(
-        db_comment="An operation or facility's SWRS facility ID. Only needed if the operation/facility submitted a report the previous year.",
-        blank=True,
-        null=True,
-    )
-    bcghg_id = models.CharField(
-        max_length=1000,
-        db_comment="An operation or facility's BCGHG identifier. Only needed if the operation/facility submitted a report the previous year.",
-        blank=True,
-        null=True,
-    )
-
-    opt_in = models.BooleanField(
-        db_comment="Whether or not the operation/facility is required to register or is simply opting in. Only needed if the operation/facility did not report the previous year.",
-        blank=True,
-        null=True,
-    )
-
-    class Meta:
-        abstract = True
-        db_table_comment = "An abstract base class (used for putting common information into a number of other models) containing fields for operations and facilities"
-        db_table = 'erc"."operation'
-
-
-class Operation(OperationAndFacilityCommonInfo):
+class Operation(TimeStampedModel):
     """Operation model"""
 
     class Statuses(models.TextChoices):
@@ -737,6 +701,8 @@ class Operation(OperationAndFacilityCommonInfo):
     id = models.UUIDField(
         primary_key=True, default=uuid.uuid4, db_comment="Primary key to identify the operation", verbose_name="ID"
     )
+    name = models.CharField(max_length=1000, db_comment="The name of an operation")
+    type = models.CharField(max_length=1000, db_comment="The type of an operation")
     operator = models.ForeignKey(
         Operator,
         on_delete=models.DO_NOTHING,
@@ -746,6 +712,32 @@ class Operation(OperationAndFacilityCommonInfo):
     operation_has_multiple_operators = models.BooleanField(
         db_comment="Whether or not the operation has multiple operators", default=False
     )
+
+    naics_code = models.ForeignKey(
+        NaicsCode,
+        on_delete=models.DO_NOTHING,
+        null=True,
+        db_comment="An operation's NAICS code",
+        related_name='operations',
+    )
+    swrs_facility_id = models.IntegerField(
+        db_comment="An operation's SWRS facility ID. Only needed if the operation/facility submitted a report the previous year.",
+        blank=True,
+        null=True,
+    )
+    bcghg_id = models.CharField(
+        max_length=1000,
+        db_comment="An operation's BCGHG identifier. Only needed if the operation/facility submitted a report the previous year.",
+        blank=True,
+        null=True,
+    )
+
+    opt_in = models.BooleanField(
+        db_comment="Whether or not the operation is required to register or is simply opting in. Only needed if the operation did not report the previous year.",
+        blank=True,
+        null=True,
+    )
+
     verified_at = models.DateTimeField(
         db_comment="The time the operation was verified by an IRC user. If exists, the operation is registered for OBPS.",
         blank=True,
@@ -808,7 +800,7 @@ class Operation(OperationAndFacilityCommonInfo):
     )
 
     class Meta:
-        db_table_comment = "Operations (also called facilities)"
+        db_table_comment = "Operations"
         db_table = 'erc"."operation'
         constraints = [
             models.UniqueConstraint(
@@ -881,6 +873,55 @@ class Operation(OperationAndFacilityCommonInfo):
     def __str__(self) -> str:
         fields = [f"{field.name}={getattr(self, field.name)}" for field in self._meta.fields]
         return ' - '.join(fields)
+
+
+class Facility(TimeStampedModel):
+    id = models.UUIDField(
+        primary_key=True, default=uuid.uuid4, db_comment="Primary key to identify the facility", verbose_name="ID"
+    )
+    name = models.CharField(max_length=1000, db_comment="The name of a facility")
+    type = models.CharField(max_length=1000, db_comment="The type of a facility")
+    address = models.ForeignKey(
+        Address,
+        on_delete=models.DO_NOTHING,
+        db_comment="The address of the facility",
+        blank=True,
+        null=True,
+        related_name='%(class)s_address',
+    )
+    new_entrant = models.BooleanField(db_comment="Whether or not the facility is a new entrant")
+    operation = models.ForeignKey(Operation, on_delete=models.DO_NOTHING, related_name="facilities")
+    history = HistoricalRecords(
+        table_name='erc_history"."facility_history',
+        history_user_id_field=models.UUIDField(null=True, blank=True),
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Customize db_comment for 'type' field
+        self._meta.get_field('type').db_comment = "The type of facility"
+
+    class Meta:
+        db_table_comment = "Contains data on facilities that emit carbon emissions and must report them to Clean Growth. A linear facility operation is made up of several different facilities whereas a single facility operation has only one facility. In the case of a single facility operation, much of the data in this table will overlap with the parent record in the operation table"
+        db_table = 'erc"."facility'
+
+
+class WellAuthorizationNumber(TimeStampedModel):
+    well_authorization_number = models.IntegerField(
+        primary_key=True, db_comment="A well authorization number from the BC Energy Regulator"
+    )
+    facility = models.ForeignKey(Facility, on_delete=models.DO_NOTHING, related_name="well_authorization_numbers")
+
+    history = HistoricalRecords(
+        table_name='erc_history"."well_authorization_number_history',
+        history_user_id_field=models.UUIDField(null=True, blank=True),
+    )
+
+    class Meta:
+        db_table_comment = (
+            "A table containing well authorization numbers. Facilities can have multiple well authorization numbers."
+        )
+        db_table = 'erc"."well_authorization_number'
 
 
 class MultipleOperator(TimeStampedModel):
