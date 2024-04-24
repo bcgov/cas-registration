@@ -6,7 +6,7 @@ help: ## Show this help.
 
 .PHONY: release
 release:
-	@RELEASE_VERSION=$$(yarn release-it --release-version | grep -oE '^[0-9]+\.[0-9]+\.[0-9]+$' | tr '.' '_'); \
+	@RELEASE_VERSION=$$(yarn release-it --release-version | grep -oE '^[0-9]+\.[0-9]+\.[0-9]+' | tr '.' '_'); \
 	echo $$RELEASE_VERSION; \
 	echo "Navigating to bc_obps directory..."; \
 	cd bc_obps && poetry run python manage.py create_empty_migrations $$RELEASE_VERSION && cd ..; \
