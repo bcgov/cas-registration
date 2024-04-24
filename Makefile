@@ -6,15 +6,14 @@ help: ## Show this help.
 
 .PHONY: release
 release:
-	@RELEASE_VERSION := $(shell echo yarn release-it --release-version);
-	@echo RELEASE_VERSION;
-# TEMP_VERSION=$$(echo $$RELEASE_VERSION | tr '.' '_'); \
-# echo $$TEMP_VERSION;
-# echo "Navigating to bc_obps directory..."; \
-# cd bc_obps && poetry run python manage.py create_empty_migrations $$TEMP_VERSION && cd ..; \
-# echo "Running yarn setup and release-it..."; \
-# yarn; \
-# yarn release-it
+	@RELEASE_VERSION=$$(yarn release-it --release-version); \
+	TEMP_VERSION=$${RELEASE_VERSION//./_}; \
+	echo $$TEMP_VERSION; \
+	echo "Navigating to bc_obps directory..."; \
+	cd bc_obps && poetry run python manage.py create_empty_migrations $$TEMP_VERSION && cd ..; \
+	echo "Running yarn setup and release-it..."; \
+	yarn; \
+	yarn release-it
 
 .PHONY: lint_chart
 lint_chart: ## Checks the configured helm chart template definitions against the remote schema
