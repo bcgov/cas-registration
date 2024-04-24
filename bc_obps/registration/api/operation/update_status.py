@@ -1,5 +1,8 @@
 from uuid import UUID
 from django.db import transaction
+from registration.emails import send_boro_id_application_email
+from registration.enums.enums import BoroIdApplicationStates
+from registration.models import Contact
 from registration.decorators import authorize
 from registration.api.api_base import router
 from datetime import datetime
@@ -52,6 +55,26 @@ def update_operation_status(request, operation_id: UUID, payload: OperationUpdat
             operation.status = status
             operation.save(update_fields=['status', 'verified_at', 'verified_by_id', 'bc_obps_regulated_operation'])
             operation.set_create_or_update(user.pk)
+            # send email notification to external user (email template depends on operation.status)
+            if status == 'Pending':
+                # if the operation's status == "Pending", it means that BCIERS has officially received the application submission
+                application_state = BoroIdApplicationStates.CONFIRMATION
+            elif status == 'Approved':
+                application_state = BoroIdApplicationStates.APPROVED
+            elif status == 'Declined':
+                application_state = BoroIdApplicationStates.DECLINED
+            elif status == 'Changes Requested':
+                application_state = BoroIdApplicationStates.CHANGES_REQUESTED
+            else:
+                application_state = ''
+            recipient: Contact = operation.point_of_contact
+            send_boro_id_application_email(
+                application_state=application_state,
+                operator_legal_name=operation.operator.legal_name,
+                operation_name=operation.name,
+                external_user_full_name=f'{recipient.first_name} {recipient.last_name}',
+                external_user_email_address=recipient.email,
+            )
             return 200, operation
     except ValidationError as e:
         return 400, {"message": generate_useful_error(e)}
