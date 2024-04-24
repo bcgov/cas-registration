@@ -112,7 +112,6 @@ describe("actionHandler function", () => {
   });
 
   it("can still return data from an allowed endpoint if fetching token fails", async () => {
-    // Note: this would still likely fail in a real-world scenario if no uuid was in the endpoint url which is grabbed by the getUUIDFromEndpoint function since our API requires a user_guid in the Authorization header
     fetch.mockResponses(
       // getToken fetch
       [JSON.stringify({ message: "Error message" }), { status: 400 }],
