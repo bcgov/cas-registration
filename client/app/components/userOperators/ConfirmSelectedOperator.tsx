@@ -1,9 +1,9 @@
 import { actionHandler } from "@/app/utils/actions";
-import { Operator } from "@/app/components/routes/select-operator/form/types";
-import ConfirmSelectedOperatorForm from "@/app/components/form/ConfirmSelectedOperatorForm";
 import CancelIcon from "@mui/icons-material/Cancel";
 import Link from "next/link";
 import { BC_GOV_LINKS_COLOR } from "@/app/styles/colors";
+import { Operator } from "./types";
+import ConfirmSelectedOperatorForm from "./ConfirmSelectedOperatorForm";
 
 export async function getOperator(id: string) {
   return actionHandler(

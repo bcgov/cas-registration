@@ -4,14 +4,14 @@ import {
   userOperatorInternalUserSchema,
 } from "@/app/utils/jsonSchema/userOperator";
 
-import { BusinessStructure } from "@/app/components/routes/select-operator/form/types";
 import { RJSFSchema } from "@rjsf/utils";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { UserOperatorFormData } from "@/app/components/form/formDataTypes";
-import UserOperatorForm from "@/app/components/form/UserOperatorForm";
-import UserOperatorReviewForm from "@/app/components/form/UserOperatorReviewForm";
 import { validate as isValidUUID } from "uuid";
+import { BusinessStructure } from "./types";
+import UserOperatorReviewForm from "./UserOperatorReviewForm";
+import UserOperatorForm from "./UserOperatorForm";
 
 async function getBusinessStructures() {
   return actionHandler(
