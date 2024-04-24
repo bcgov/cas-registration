@@ -15,6 +15,26 @@ from registration.utils import custom_reverse_lazy
 
 
 class TestUserOperatorOperatorEndpoint(CommonTestSetup):
+    def create_mock_operator_payload(self, business_structure: BusinessStructure):
+        return {
+            "legal_name": "Put Operator Legal Name",
+            "trade_name": "Put Operator Trade Name",
+            "cra_business_number": 963852741,
+            "bc_corporate_registry_number": "abc1234321",
+            "business_structure": business_structure.pk,
+            "physical_street_address": "test physical street address",
+            "physical_municipality": "test physical municipality",
+            "physical_province": "BC",
+            "physical_postal_code": "H0H0H0",
+            "mailing_address_same_as_physical": False,
+            "mailing_street_address": "test mailing street address",
+            "mailing_municipality": "test mailing municipality",
+            "mailing_province": "BC",
+            "mailing_postal_code": "V0V0V0",
+            "operator_has_parent_operators": True,
+            "parent_operators_array": [],
+        }
+
     def test_duplicates_not_allowed(self):
         operator = operator_baker()
 
@@ -370,27 +390,11 @@ class TestUserOperatorOperatorEndpoint(CommonTestSetup):
         unrelated_parent_operator.operator_index = 1
         unrelated_parent_operator.save(update_fields=["legal_name", "operator_index"])
 
-        mock_payload = {
-            "legal_name": "New Operator",
-            "trade_name": "New Operator Trade Name",
-            "cra_business_number": 963852741,
-            "bc_corporate_registry_number": "adh1234321",
-            "business_structure": BusinessStructure.objects.first().pk,
-            "physical_street_address": "test physical street address",
-            "physical_municipality": "test physical municipality",
-            "physical_province": "BC",
-            "physical_postal_code": "H0H0H0",
-            "mailing_address_same_as_physical": True,
-            "operator_has_parent_operators": True,
-            "parent_operators_array": [
-                {},
-            ],
-        }
         response = TestUtils.mock_put_with_auth_role(
             self,
             "industry_user",
             self.content_type,
-            mock_payload,
+            self.create_mock_operator_payload(BusinessStructure.objects.first()),
             f"{self.user_operator_endpoint}/operator/{user_operator.id}",
         )
         assert response.status_code == 200
@@ -430,29 +434,12 @@ class TestUserOperatorOperatorEndpoint(CommonTestSetup):
             created_by=self.user,
             status=UserOperator.Statuses.APPROVED,
         )
-        mock_payload = {
-            "legal_name": "Put Operator Legal Name",
-            "trade_name": "Put Operator Trade Name",
-            "cra_business_number": 963852741,
-            "bc_corporate_registry_number": "abc1234321",
-            "business_structure": BusinessStructure.objects.first().pk,
-            "physical_street_address": "test physical street address",
-            "physical_municipality": "test physical municipality",
-            "physical_province": "BC",
-            "physical_postal_code": "H0H0H0",
-            "mailing_address_same_as_physical": False,
-            "mailing_street_address": "test mailing street address",
-            "mailing_municipality": "test mailing municipality",
-            "mailing_province": "BC",
-            "mailing_postal_code": "V0V0V0",
-            "operator_has_parent_operators": True,
-            "parent_operators_array": [],
-        }
+
         put_response = TestUtils.mock_put_with_auth_role(
             self,
             "industry_user",
             self.content_type,
-            mock_payload,
+            self.create_mock_operator_payload(BusinessStructure.objects.first()),
             custom_reverse_lazy(
                 "update_operator_and_user_operator",
                 kwargs={"user_operator_id": user_operator.id},
@@ -475,24 +462,8 @@ class TestUserOperatorOperatorEndpoint(CommonTestSetup):
             created_by=self.user,
             status=UserOperator.Statuses.APPROVED,
         )
-        mock_payload = {
-            "legal_name": "Put Operator Legal Name",
-            "trade_name": "Put Operator Trade Name",
-            "cra_business_number": 963852741,
-            "bc_corporate_registry_number": "abc1234321",
-            "business_structure": BusinessStructure.objects.first().pk,
-            "physical_street_address": "test physical street address",
-            "physical_municipality": "test physical municipality",
-            "physical_province": "BC",
-            "physical_postal_code": "H0H0H0",
-            "mailing_address_same_as_physical": False,
-            "mailing_street_address": "test mailing street address",
-            "mailing_municipality": "test mailing municipality",
-            "mailing_province": "BC",
-            "mailing_postal_code": "V0V0V0",
-            "operator_has_parent_operators": False,
-            "parent_operators_array": [],
-        }
+        mock_payload = self.create_mock_operator_payload(BusinessStructure.objects.first())
+        mock_payload["operator_has_parent_operators"] = False
         put_response = TestUtils.mock_put_with_auth_role(
             self,
             "industry_user",
