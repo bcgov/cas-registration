@@ -7,11 +7,6 @@
     "strict": true
   },
   "files": [],
-  "include": [
-    "**/*.ts",
-    "**/*.tsx",
-    "**/*.js",
-    "**/*.jsx"
-  ],
+  "include": ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx"],
   "extends": "../../../tsconfig.base.json"
 }

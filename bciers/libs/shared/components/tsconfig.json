@@ -9,13 +9,7 @@
     "strict": true
   },
   "files": [],
-  "include": [
-    "**/*.ts",
-    "**/*.tsx",
-    "**/*.js",
-    "**/*.jsx",
-    "**/*.json"
-  ],
+  "include": ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx", "**/*.json"],
   "references": [
     {
       "path": "./tsconfig.spec.json"
