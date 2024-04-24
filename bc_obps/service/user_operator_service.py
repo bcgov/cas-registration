@@ -79,7 +79,6 @@ class UserOperatorService:
         )
         return created_or_updated_operator_instance
 
-    # brianna not sure how to fit this into which service
     # Used to show cas_admin the list of user_operators to approve/deny
     def list_user_operators(page: int = 1, sort_field: str = "created_at", sort_order: str = "desc"):
         sort_direction = "-" if sort_order == "desc" else ""
@@ -156,12 +155,12 @@ class UserOperatorService:
         )
 
     @transaction.atomic()
-    def create_operator_and_user_operator(updated_data: UserOperatorOperatorIn, user_guid: UUID) -> Dict:
+    def create_operator_and_user_operator(new_data: UserOperatorOperatorIn, user_guid: UUID) -> Dict:
         """
         Function to create a user_operator and an operator (new operator that doesn't exist yet).
 
         Parameters:
-            updated_data: Updated data for the user operator.
+            new_data: Updated data for the user operator.
             user_guid: GUID of the user.
 
         Returns:
@@ -172,7 +171,7 @@ class UserOperatorService:
         Raises:
             Exception: If an operator with the same CRA Business Number already exists.
         """
-        cra_business_number: str = updated_data.cra_business_number
+        cra_business_number: str = new_data.cra_business_number
         existing_operator: Operator = Operator.objects.filter(cra_business_number=cra_business_number).first()
         # check if operator with this CRA Business Number already exists
         if existing_operator:
@@ -180,14 +179,14 @@ class UserOperatorService:
             raise Exception("Operator with this CRA Business Number already exists.")
         operator_instance: Operator = Operator(
             cra_business_number=cra_business_number,
-            bc_corporate_registry_number=updated_data.bc_corporate_registry_number,
+            bc_corporate_registry_number=new_data.bc_corporate_registry_number,
             # treating business_structure as a foreign key
-            business_structure=updated_data.business_structure,
+            business_structure=new_data.business_structure,
             # This used to default to 'Draft' but now defaults to 'Pending' since we removed page 2 of the user operator form
             status=Operator.Statuses.PENDING,
         )
         # save operator data
-        operator: Operator = UserOperatorService.save_operator(updated_data, operator_instance, user_guid)
+        operator: Operator = UserOperatorService.save_operator(new_data, operator_instance, user_guid)
         # get an existing user_operator instance or create a new one with the default role
         user_operator, created = UserOperatorDataAccessService.get_or_create_user_operator(user_guid, operator.id)
         if created:
