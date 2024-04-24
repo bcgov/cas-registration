@@ -24,7 +24,7 @@ export default async function User() {
   let formData: UserProfilePartialFormData | { error: string } =
     await getUserFormData();
   if ("error" in formData) {
-    if (formData.error.includes("404")) {
+    if (formData.error.includes("Not Found")) {
       // No user found, create formData to reflect new user in user table
       isCreate = true;
       // 👤 Use NextAuth.js hook to get information about the user's session

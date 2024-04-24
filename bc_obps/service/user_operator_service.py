@@ -31,7 +31,7 @@ class UserOperatorService:
             True or raises an exception.
         """
 
-        user = UserDataAccessService.get_user_by_guid(user_guid)
+        user = UserDataAccessService.get_by_guid(user_guid)
         user_operator = UserOperatorDataAccessService.get_user_operator_by_id(user_operator_id)
         if not user.is_industry_user():
             # internal users are always allowed to access user operators. (Though the @authorize decorator prevents them from accessing certain external-only endpoints)
@@ -43,7 +43,7 @@ class UserOperatorService:
     # Function to create/update an operator when creating/updating a user_operator
     @transaction.atomic()
     def save_operator(updated_data: UserOperatorOperatorIn, operator_instance, user_guid: UUID):
-        user = UserDataAccessService.get_user_by_guid(user_guid)
+        user = UserDataAccessService.get_by_guid(user_guid)
 
         existing_physical_address = getattr(getattr(operator_instance, 'physical_address', None), 'id', None)
         existing_mailing_address = getattr(getattr(operator_instance, 'mailing_address', None), 'id', None)
@@ -186,7 +186,7 @@ class UserOperatorService:
     @transaction.atomic()
     def update_user_operator_status(user_operator_id: UUID, updated_data, admin_user_guid: UUID):
         "Function to update only the user_operator status (operator is already in the system and therefore doesn't need to be approved/denied)"
-        admin_user: User = UserDataAccessService.get_user_by_guid(admin_user_guid)
+        admin_user: User = UserDataAccessService.get_by_guid(admin_user_guid)
         user_operator: UserOperator = UserOperatorDataAccessService.get_user_operator_by_id(user_operator_id)
         operator: Operator = user_operator.operator
         # industry users can only update the status of user_operators from the same operator as themselves
