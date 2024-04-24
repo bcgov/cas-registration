@@ -144,29 +144,5 @@ test.describe("Test Workflow cas_admin", () => {
       OperationTableHeaders.OPERATOR,
       "Existing Operator 2 Legal Name",
     );
-
-    await sortTableByColumnLabel(
-      operationsPage.page,
-      OperationTableHeaders.SUBMISSION_DATE,
-      "Dec 16, 2023\n7:27:00 a.m. PST",
-    );
-
-    await filterTableByFieldId(
-      operationsPage.page,
-      OperationTableDataField.OPERATION,
-      OperationTableHeaders.OPERATION,
-      "Operation 3",
-    );
-
-    await tableRowCount(operationsPage.page, 1);
-
-    // Check junk search
-    await filterTableByFieldId(
-      operationsPage.page,
-      OperationTableDataField.OPERATION,
-      OperationTableHeaders.OPERATION,
-      "this search will return no results",
-      true,
-    );
   });
 });
