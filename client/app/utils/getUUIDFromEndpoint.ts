@@ -1,10 +1,11 @@
+export const endpointAllowList = [
+  "registration/user/user-app-role",
+  "registration/user-operator/is-approved-admin-user-operator",
+  "registration/user/user-profile",
+];
+
 // 🛠️ Function to get the last non-empty segment as a UUID from an endpoint URL
 function getUUIDFromEndpoint(endpoint: string): string | null {
-  const endpointAllowList = [
-    "registration/user/user-app-role",
-    "registration/user-operator/is-approved-admin-user-operator",
-  ];
-
   const isEndpointAllowed = endpointAllowList.find((allowedEndpoint) =>
     endpoint.includes(allowedEndpoint),
   )
