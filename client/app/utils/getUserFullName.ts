@@ -1,6 +1,6 @@
 import { Session } from "next-auth";
 
-export const getUserFullName = (session?: Session | null) => {
+const getUserFullName = (session?: Session | null) => {
   const fullName = session?.user?.full_name;
   const givenName = session?.user?.given_name;
   const familyName = session?.user?.family_name;
@@ -20,3 +20,5 @@ export const getUserFullName = (session?: Session | null) => {
 
   return userFullName;
 };
+
+export default getUserFullName;
