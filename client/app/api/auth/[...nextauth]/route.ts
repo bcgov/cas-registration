@@ -72,7 +72,7 @@ export const authOptions: NextAuthOptions = {
         }
         // 🚀 API call: Get user name from user table
         const response = await actionHandler(
-          "registration/user/user-profile",
+          `registration/user/user-profile/${token.user_guid}`,
           "GET",
         );
         const { first_name: firstName, last_name: lastName } = response || {};

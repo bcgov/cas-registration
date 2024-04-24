@@ -1,6 +1,6 @@
 import { RJSFValidationError } from "@rjsf/utils";
 
-export const customTransformErrors = (
+const customTransformErrors = (
   errors: RJSFValidationError[],
   customFormatsErrorMessages: { [key: string]: string },
 ) => {
@@ -29,3 +29,5 @@ export const customTransformErrors = (
     return error;
   });
 };
+
+export default customTransformErrors;
