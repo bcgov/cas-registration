@@ -93,10 +93,10 @@ describe("actionHandler function", () => {
   });
 
   it("should return an error if the fetch throws an error", async () => {
-    fetch.mockResponses(
-      // getToken fetch
-      [JSON.stringify(responseToken), { status: 200 }],
-    );
+    // getToken fetch
+    fetch.mockResponseOnce(JSON.stringify(responseToken), {
+      status: 200,
+    });
     fetch.mockReject(new Error("Fetch failed"));
     const result = await actionHandler("/endpoint", "GET");
 
@@ -111,7 +111,7 @@ describe("actionHandler function", () => {
     });
   });
 
-  it("can still return data if fetching token fails", async () => {
+  it("can still return data from an allowed endpoint if fetching token fails", async () => {
     // Note: this would still likely fail in a real-world scenario if no uuid was in the endpoint url which is grabbed by the getUUIDFromEndpoint function since our API requires a user_guid in the Authorization header
     fetch.mockResponses(
       // getToken fetch
@@ -121,7 +121,7 @@ describe("actionHandler function", () => {
     );
 
     const result = await actionHandler(
-      "/endpoint/ba2ba62a121842e0942aab9e92ce8822",
+      "registration/user/user-app-role/ba2ba62a121842e0942aab9e92ce8822",
       "GET",
     );
 
@@ -133,13 +133,35 @@ describe("actionHandler function", () => {
     expect(result).toEqual({ test_data: "test" });
   });
 
-  it("should return an error if the fetch response is not ok", async () => {
-    // Mock the getToken fetch
-    fetch.mockResponse(JSON.stringify(responseToken), { status: 200 });
-    fetch.mockReject(new Error("Fetch failed"));
+  it("should return an error if fetching token fails and the endpoint is not allowed", async () => {
+    // getToken fetch
+    fetch.mockResponseOnce(JSON.stringify({ message: "Error message" }), {
+      status: 400,
+    });
+
     const result = await actionHandler("/endpoint", "GET");
 
     expect(consoleMock).toHaveBeenCalledTimes(2);
+    expect(consoleMock).toHaveBeenCalledWith(
+      "Failed to fetch token. Status: 400",
+    );
+
+    expect(result).toEqual({
+      error:
+        "An error occurred while fetching /endpoint: Endpoint is not allowed",
+    });
+  });
+
+  it("should return an error if the fetch response is not ok", async () => {
+    // getToken fetch
+    fetch.mockResponseOnce(JSON.stringify(responseToken), {
+      status: 200,
+    });
+
+    fetch.mockReject(new Error("Fetch failed"));
+    const result = await actionHandler("/endpoint", "GET");
+
+    expect(consoleMock).toHaveBeenCalledOnce();
     expect(consoleMock).toHaveBeenLastCalledWith(
       "An error occurred while fetching /endpoint:",
       expect.any(Error),
