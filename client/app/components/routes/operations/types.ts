@@ -35,3 +35,25 @@ export interface Operation {
   is_user_point_of_contact?: boolean;
   multiple_operators_array?: Array<any>; // Change this once we have the MultipleOperator type
 }
+
+export interface OperationsSearchParams {
+  [key: string]: string | number | undefined;
+  bcghg_id?: string;
+  bc_obps_regulated_operation?: string;
+  name?: string;
+  operator?: string;
+  page?: number;
+  sort_field?: string;
+  sort_order?: string;
+  status?: string;
+}
+
+export interface OperationRow {
+  id: number;
+  bcghg_id: string;
+  bc_obps_regulated_operation: string;
+  name: string;
+  operator: string;
+  submission_date: string;
+  status: string;
+}

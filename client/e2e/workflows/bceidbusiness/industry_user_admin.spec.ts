@@ -11,12 +11,23 @@ import { UsersPOM } from "@/e2e/poms/users";
 import {
   addPdf,
   analyzeAccessibility,
+  clearTableFilter,
+  filterTableByFieldId,
   setupTestEnvironment,
+  sortTableByColumnLabel,
+  tableRowCount,
 } from "@/e2e/utils/helpers";
 import * as dotenv from "dotenv";
 dotenv.config({ path: "./e2e/.env.local" });
 // ☰ Enums
-import { ButtonText, UserOperatorStatus, UserRole } from "@/e2e/utils/enums";
+import {
+  ButtonText,
+  OperationTableDataField,
+  OperationTableHeaders,
+  OperationStatus,
+  UserOperatorStatus,
+  UserRole,
+} from "@/e2e/utils/enums";
 import happoPlaywright from "happo-playwright";
 
 test.beforeEach(async ({ context }) => {
@@ -233,5 +244,152 @@ test.describe("Test Workflow industry_user_admin", () => {
     });
     // ♿️ Analyze accessibility
     await analyzeAccessibility(page);
+  });
+
+  test("Operations table sorting", async ({ page }) => {
+    const operationsPage = new OperationsPOM(page);
+    // 🛸 Navigate to operations table page
+    await operationsPage.route();
+    // 🔍 Assert that the current URL is operations
+    await operationsPage.urlIsCorrect();
+    // 🔍 Assert `Operations` view, table reflect role `industry_user_admin`
+    await operationsPage.tableIsVisible();
+    await operationsPage.tableHasExpectedColumns(UserRole.INDUSTRY_USER_ADMIN);
+
+    // 👉 Action sort by column
+    await sortTableByColumnLabel(
+      operationsPage.page,
+      OperationTableHeaders.BCGHG_ID,
+      "23219990001",
+    );
+
+    await sortTableByColumnLabel(
+      operationsPage.page,
+      OperationTableHeaders.BCGHG_ID,
+      "23219990023",
+      "descending",
+    );
+
+    await sortTableByColumnLabel(
+      operationsPage.page,
+      OperationTableHeaders.STATUS,
+      OperationStatus.APPROVED,
+    );
+
+    await sortTableByColumnLabel(
+      operationsPage.page,
+      OperationTableHeaders.SUBMISSION_DATE,
+      "Dec 16, 2023\n7:27:00 a.m. PST",
+    );
+
+    await sortTableByColumnLabel(
+      operationsPage.page,
+      OperationTableHeaders.SUBMISSION_DATE,
+      "Not Started",
+      "descending",
+    );
+  });
+
+  test("Operations table filtering", async ({ page }) => {
+    const operationsPage = new OperationsPOM(page);
+    // 🛸 Navigate to operations table page
+    await operationsPage.route();
+    // 🔍 Assert that the current URL is operations
+    await operationsPage.urlIsCorrect();
+    // 🔍 Assert `Operations` view, table reflect role `industry_user_admin`
+    await operationsPage.tableIsVisible();
+    await operationsPage.tableHasExpectedColumns(UserRole.INDUSTRY_USER_ADMIN);
+
+    // 👉 Action filter by column
+    await filterTableByFieldId(
+      operationsPage.page,
+      OperationTableDataField.BCGHG_ID,
+      OperationTableHeaders.BCGHG_ID,
+      "23219990001",
+    );
+
+    await tableRowCount(operationsPage.page, 1);
+
+    await clearTableFilter(
+      operationsPage.page,
+      OperationTableDataField.BCGHG_ID,
+    );
+
+    await filterTableByFieldId(
+      operationsPage.page,
+      OperationTableDataField.STATUS,
+      OperationTableHeaders.STATUS,
+      OperationStatus.PENDING,
+    );
+
+    await tableRowCount(operationsPage.page, 11);
+
+    await clearTableFilter(operationsPage.page, OperationTableDataField.STATUS);
+
+    await filterTableByFieldId(
+      operationsPage.page,
+      OperationTableDataField.OPERATION,
+      OperationTableHeaders.OPERATION,
+      "Operation 2",
+    );
+
+    await tableRowCount(operationsPage.page, 6);
+
+    await clearTableFilter(
+      operationsPage.page,
+      OperationTableDataField.OPERATION,
+    );
+
+    // Check junk search
+    await filterTableByFieldId(
+      operationsPage.page,
+      OperationTableDataField.OPERATION,
+      OperationTableHeaders.OPERATION,
+      "this search will return no results",
+      true,
+    );
+  });
+
+  test("Operations table sorting and filtering", async ({ page }) => {
+    const operationsPage = new OperationsPOM(page);
+    // 🛸 Navigate to operations table page
+    await operationsPage.route();
+    // 🔍 Assert that the current URL is operations
+    await operationsPage.urlIsCorrect();
+    // 🔍 Assert `Operations` view, table reflect role `industry_user_admin`
+    await operationsPage.tableIsVisible();
+    await operationsPage.tableHasExpectedColumns(UserRole.INDUSTRY_USER_ADMIN);
+
+    // 👉 Action filter by column
+    await filterTableByFieldId(
+      operationsPage.page,
+      OperationTableDataField.STATUS,
+      OperationTableHeaders.STATUS,
+      OperationStatus.PENDING,
+    );
+
+    await filterTableByFieldId(
+      operationsPage.page,
+      OperationTableDataField.BCGHG_ID,
+      OperationTableHeaders.BCGHG_ID,
+      "2321999001",
+    );
+
+    await tableRowCount(operationsPage.page, 7);
+
+    await sortTableByColumnLabel(
+      operationsPage.page,
+      OperationTableHeaders.SUBMISSION_DATE,
+      "Jan 22, 2024\n7:27:00 a.m. PST",
+    );
+
+    await filterTableByFieldId(
+      operationsPage.page,
+      OperationTableDataField.OPERATION,
+      OperationTableHeaders.OPERATION,
+      "Operation 2",
+    );
+
+    await tableRowCount(operationsPage.page, 1);
   });
 });

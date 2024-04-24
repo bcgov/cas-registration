@@ -2,29 +2,68 @@ import { Suspense } from "react";
 import AccessRequests from "@/app/components/routes/access-requests/AccessRequests";
 import Loading from "@/app/components/loading/SkeletonGrid";
 import { actionHandler } from "@/app/utils/actions";
-import { UserOperatorPaginated } from "@/app/components/routes/access-requests/types";
+import { OperatorsSearchParams } from "@/app/components/routes/access-requests/types";
+import { GridRowsProp } from "@mui/x-data-grid";
+import buildQueryParams from "@/app/utils/buildQueryParams";
+
+export const formatUserOperatorRows = (rows: GridRowsProp) => {
+  return rows?.map(
+    ({
+      id,
+      user_friendly_id,
+      status,
+      first_name,
+      last_name,
+      email,
+      legal_name,
+      bceid_business_name,
+    }) => {
+      return {
+        id, // This unique ID is needed for DataGrid to work properly
+        user_friendly_id,
+        status,
+        first_name,
+        last_name,
+        email,
+        legal_name,
+        bceid_business_name,
+      };
+    }
+  );
+};
 
 // 🛠️ Function to fetch user-operators
-async function getUserOperators() {
+export const fetchUserOperatorPageData = async (
+  params: OperatorsSearchParams
+) => {
   try {
-    return await actionHandler(
-      "registration/user-operator/user-operator-initial-requests",
+    const queryParams = buildQueryParams(params);
+    // fetch data from server
+    const pageData = await actionHandler(
+      `registration/user-operator/user-operator-initial-requests${queryParams}`,
       "GET",
-      "/dashboard/operators",
+      ""
     );
+    return {
+      rows: formatUserOperatorRows(pageData.data),
+      row_count: pageData.row_count,
+    };
   } catch (error) {
-    // Handle the error here or rethrow it to handle it at a higher level
     throw error;
   }
-}
+};
 
-const OperatorsPage = async () => {
+const OperatorsPage = async ({
+  searchParams,
+}: {
+  searchParams: OperatorsSearchParams;
+}) => {
   // Fetch userOperator data
-  const userOperators: UserOperatorPaginated = await getUserOperators();
+  const initialData = await fetchUserOperatorPageData(searchParams);
 
   return (
     <Suspense fallback={<Loading />}>
-      <AccessRequests userOperators={userOperators} />
+      <AccessRequests initialData={initialData} />
     </Suspense>
   );
 };

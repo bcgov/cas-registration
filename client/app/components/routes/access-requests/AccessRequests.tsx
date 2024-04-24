@@ -1,46 +1,17 @@
-import { GridRowsProp } from "@mui/x-data-grid";
 import Note from "@/app/components/datagrid/Note";
 import OperatorDataGrid from "@/app/components/datagrid/OperatorDataGrid";
 import { UserOperatorPaginated } from "./types";
 import StatusStyleColumnCell from "../../datagrid/cells/StatusStyleColumnCell";
 
-export const formatUserOperatorRows = (rows: GridRowsProp) => {
-  return rows?.map(
-    ({
-      id,
-      user_friendly_id,
-      status,
-      first_name,
-      last_name,
-      email,
-      legal_name,
-      bceid_business_name,
-    }) => {
-      return {
-        id, // This unique ID is needed for DataGrid to work properly
-        user_friendly_id,
-        status,
-        first_name,
-        last_name,
-        email,
-        legal_name,
-        bceid_business_name,
-      };
-    },
-  );
-};
-
 // 🧩 Main component
 const AccessRequests = ({
-  userOperators,
+  initialData,
 }: {
-  userOperators: UserOperatorPaginated;
+  initialData: UserOperatorPaginated;
 }) => {
-  if (!userOperators) {
+  if (!initialData) {
     return <div>No access requests yet.</div>;
   }
-  const { row_count: rowCount } = userOperators;
-  const rows = formatUserOperatorRows(userOperators.data);
 
   // Render the DataGrid component
   return (
@@ -50,8 +21,7 @@ const AccessRequests = ({
         message="Once “Approved,” the user will have access to their operator dashboard with full admin permissions, and can grant access and designate permissions to other authorized users there."
       />
       <OperatorDataGrid
-        rows={rows}
-        rowCount={rowCount}
+        initialData={initialData}
         columns={[
           {
             field: "user_friendly_id",

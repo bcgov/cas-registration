@@ -22,7 +22,17 @@
 const actionHandler = vi.fn();
 const useRouter = vi.fn();
 const useParams = vi.fn();
+const usePathname = vi.fn();
+const useSearchParams = vi.fn();
 const useSession = vi.fn();
 const getServerSession = vi.fn();
 
-export { actionHandler, getServerSession, useRouter, useParams, useSession };
+export {
+  actionHandler,
+  getServerSession,
+  useRouter,
+  useParams,
+  usePathname,
+  useSearchParams,
+  useSession,
+};
