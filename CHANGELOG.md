@@ -1,3 +1,10 @@
+## [1.4.1](https://github.com/bcgov/cas-registration/compare/v1.4.0...v1.4.1) (2024-04-24)
+
+### Bug Fixes
+
+- add operations filtering to industry user query ([3d13f2c](https://github.com/bcgov/cas-registration/commit/3d13f2cc573a6b3792d7755de1c4d4036ab9a988))
+- row count for non server paginated datagrids ([4d18ac4](https://github.com/bcgov/cas-registration/commit/4d18ac4a3e144e6c60fa0e9d8ef253abbbc0dbdb))
+
 # [1.4.0](https://github.com/bcgov/cas-registration/compare/v1.3.0...v1.4.0) (2024-04-23)
 
 ### Bug Fixes
