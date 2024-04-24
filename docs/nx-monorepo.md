@@ -40,12 +40,14 @@ For further information, see the [Nx docs about @nx/next generators](https://nx.
 
 #### Client components
 
-If you are creating a React client component (or a non-React importable), you can scaffold the new component with `nx generate @nx/next:component component-name --directory libs/shared/components/src/lib/component-name`, where `component-name` is the name of the new component. You'll then want to export the module through the `libs/shared/components/src/index.ts` file. This this gets picked up by the root `tsconfig.base.json`. 
+If you are creating a React client component (or a non-React importable), you can scaffold the new component with `nx generate @nx/next:component component-name --directory libs/shared/components/src/lib/component-name`, where `component-name` is the name of the new component. You'll then want to export the module through the `libs/shared/components/src/index.ts` file. This this gets picked up by the root `tsconfig.base.json`.
 
 Components can then be imported with `import { component-name } from "@bciers/components".
 
 #### Server components
 
-If you are creating a React sever component, you can scaffold a new component with `nx generate @nx/next:component component-name --directory libs/shared/components/src/lib/component-name`, where `component-name` is the name of the new component (just like with client components). You'll then want to export the module through the `libs/shared/components/src/server.ts` file. This this gets picked up by the root `tsconfig.base.json`. 
+If you are creating a React sever component, you can scaffold a new component with `nx generate @nx/next:component component-name --directory libs/shared/components/src/lib/component-name`, where `component-name` is the name of the new component (just like with client components). You'll then want to export the module through the `libs/shared/components/src/server.ts` file. This this gets picked up by the root `tsconfig.base.json`.
 
 Components can then be imported with `import { component-name } from "@bciers/components/server"`.
+
+change
