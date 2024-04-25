@@ -89,6 +89,9 @@ describe("RJSF URLWidget", () => {
     // Add invalid URL
     await userEvent.type(urlInput, "example.com");
 
+    // The input should have the default border color since required field is not empty anymore
+    expect(urlBorderElement).toHaveStyle("border-color: rgba(0, 0, 0, 0.23)");
+
     // Trigger the error
     await userEvent.click(submitButton);
     //
