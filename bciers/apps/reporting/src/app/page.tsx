@@ -11,6 +11,10 @@ export default function Index() {
     signIn("keycloak", undefined, { kc_idp_hint: "idir" });
   };
 
+  const handleBceidLogin = () => {
+    signIn("keycloak", undefined, { kc_idp_hint: "bceidbusiness" });
+  };
+
   return (
     <Main>
       <Image src={Logo} alt="testing" width="200" height="43" />
@@ -28,6 +32,14 @@ export default function Index() {
           onClick={handleIdirLogin}
         >
           Log in with IDIR
+        </Button>
+        <div></div>
+        <Button
+          variant="outlined"
+          className="w-full md:max-w-[70%]"
+          onClick={handleBceidLogin}
+        >
+          Log in with Business BCeID
         </Button>
       </Grid>
     </Main>
