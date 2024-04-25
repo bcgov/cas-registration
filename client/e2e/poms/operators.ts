@@ -27,6 +27,9 @@ import {
   checkFormFieldsReadOnly,
   checkAlertMessage,
   getTableRowByCellSelector,
+  getTableColumnTextValues,
+  getFieldRequired,
+  checkRequiredFieldValue,
 } from "@/e2e/utils/helpers";
 // ℹ️ Environment variables
 import * as dotenv from "dotenv";
@@ -128,16 +131,18 @@ export class OperatorsPOM {
     const allFormFields = await getAllFormInputs(this.page);
     await checkFormFieldsReadOnly(allFormFields);
 
-    // Check buttons...
+    // Check buttons, required fields
     switch (status) {
       case UserOperatorStatus.APPROVED:
       case UserOperatorStatus.DECLINED:
-        // Make sure the review buttons are not visible
+        // Check the buttons are NOT visible
         await checkLocatorsVisibility(
           this.page,
           [this.buttonsApprove, this.buttonsDecline],
           false,
         );
+        // Check required fields have value
+        await checkRequiredFieldValue(this.page);
         break;
       case UserOperatorStatus.PENDING:
         // Get and check the buttons are visible (Multiple Approve and Decline buttons are visible)
@@ -149,19 +154,15 @@ export class OperatorsPOM {
         expect(await this.buttonsDecline.count()).toBe(2);
         break;
     }
-
-    // 🛸 Navigate back
-    await this.navigateBack();
-    // 🔍 Assert table is visible
-    await this.tableIsVisible();
   }
 
-  async formHasExpectedWorkflow(role: string, caseIndex: number) {
+  async formHasExpectedWorkflow(role: string, workflowNumber: number) {
     switch (role) {
       case UserRole.CAS_ADMIN:
+      case UserRole.CAS_ANALYST:
         // Find first row by operator, status
         // option over using get row by rows index which is a potentially fragile structural assumption
-        switch (caseIndex) {
+        switch (workflowNumber) {
           case 1:
             // Row: Operator New, Status Pending
             // Workflow: Approve new operator and admin request
@@ -182,19 +183,19 @@ export class OperatorsPOM {
             // New operator note is visible
             await expect(this.messageNewOperator).toBeVisible();
 
-            // cas_admin is not allowed to approve an admin access request if the Operator is new and hasn't been Approved yet
+            // cas_admin; cas_analyst is not allowed to approve an admin access request if the Operator is new and hasn't been Approved yet
             await this.workflowReviewAction(
               this.buttonsApprove.last(),
               this.buttonConfirmModal,
               MessageTextOperators.ALERT_NEW_OPERATOR_NEEDS_APPROVE,
             );
-            // cas_admin is able to Approve new operator
+            // cas_admin; cas_analyst is able to Approve new operator
             await this.workflowReviewAction(
               this.buttonsApprove.first(),
               this.buttonConfirmModal,
               MessageTextOperators.ALERT_OPERATOR_APPROVED,
             );
-            // cas_admin is able to Approve admin request
+            // cas_admin; cas_analyst is able to Approve admin request
             await this.workflowReviewAction(
               this.buttonsApprove.last(),
               this.buttonConfirmModal,
@@ -218,21 +219,21 @@ export class OperatorsPOM {
               .first()
               .click();
 
-            // cas_admin is not allowed to decline an admin access request if the Operator is new and hasn't been Approved yet
+            // cas_admin; cas_analyst is not allowed to decline an admin access request if the Operator is new and hasn't been Approved yet
             await this.workflowReviewAction(
               this.buttonsDecline.last(),
               this.buttonConfirmModal,
               MessageTextOperators.ALERT_NEW_OPERATOR_NEEDS_APPROVE,
             );
 
-            // cas_admin is able to Reject new operator
+            // cas_admin; cas_analyst is able to Reject new operator
             await this.workflowReviewAction(
               this.buttonsDecline.first(),
               this.buttonConfirmModal,
               MessageTextOperators.ALERT_OPERATOR_DECLINED,
             );
 
-            // cas_admin can't see Approve/Decline buttons if the Operator has been Declined in the first form section
+            // cas_admin; cas_analyst can't see Approve/Decline buttons if the Operator has been Declined in the first form section
             await checkLocatorsVisibility(
               this.page,
               [this.buttonsApprove, this.buttonsDecline],
@@ -269,7 +270,7 @@ export class OperatorsPOM {
             expect(await this.buttonsApprove.count()).toBe(1);
             expect(await this.buttonsDecline.count()).toBe(1);
 
-            // cas_admin is able to Approve admin request
+            // cas_admin; cas_analyst is able to Approve admin request
             await this.workflowReviewAction(
               this.buttonsApprove.last(),
               this.buttonConfirmModal,
@@ -292,7 +293,7 @@ export class OperatorsPOM {
               .getByRole("link", { name: ButtonText.VIEW_DETAILS })
               .first()
               .click();
-            // cas_admin is able to Reject admin request
+            // cas_admin; cas_analyst is able to Reject admin request
             await this.workflowReviewAction(
               this.buttonsDecline.last(),
               this.buttonConfirmModal,
@@ -326,6 +327,7 @@ export class OperatorsPOM {
       case TableDataField.STATUS:
         switch (role) {
           case UserRole.CAS_ADMIN:
+          case UserRole.CAS_ANALYST:
             expectedValues = [
               UserOperatorStatus.PENDING,
               UserOperatorStatus.APPROVED,
@@ -335,9 +337,14 @@ export class OperatorsPOM {
         }
         break;
     }
-
     // Check for visibility of values in the column
     await checkColumnTextVisibility(this.table, column, expectedValues);
+    // Ensure only expected values are in grid
+    const allStatusValues = await getTableColumnTextValues(this.table, column);
+    const unexpectedValues = allStatusValues.filter(
+      (value) => !expectedValues.includes(value),
+    );
+    await expect(unexpectedValues.length).toBe(0);
   }
 
   async viewIsCorrect(role: string) {
@@ -346,6 +353,7 @@ export class OperatorsPOM {
         // later
         break;
       case UserRole.CAS_ADMIN:
+      case UserRole.CAS_ANALYST:
         await expect(this.messageInternal).toBeVisible();
         break;
     }

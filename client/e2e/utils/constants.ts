@@ -2,17 +2,18 @@ import { AppRoute, UserRole } from "@/e2e/utils/enums";
 
 export const baseUrlSetup = "http://localhost:8000/api/registration/test-setup";
 
-//
+const headersOperationsCAS = [
+  "BC GHG ID",
+  "Operator",
+  "Operation",
+  "Submission Date",
+  "BORO ID",
+  "Application Status",
+  "Action",
+];
 export const headersOperations: Record<string, string[]> = {
-  [UserRole.CAS_ADMIN]: [
-    "BC GHG ID",
-    "Operator",
-    "Operation",
-    "Submission Date",
-    "BORO ID",
-    "Application Status",
-    "Action",
-  ],
+  [UserRole.CAS_ADMIN]: headersOperationsCAS,
+  [UserRole.CAS_ANALYST]: headersOperationsCAS,
   [UserRole.INDUSTRY_USER_ADMIN]: [
     "BC GHG ID",
     "Operation",
@@ -23,17 +24,19 @@ export const headersOperations: Record<string, string[]> = {
   ],
 };
 
+const headersOperatorsCAS = [
+  "Request\n ID",
+  "First\n Name",
+  "Last\n Name",
+  "Email",
+  "BCeID Business Name",
+  "Operator Legal Name",
+  "Status",
+  "Action",
+];
 export const headersOperators: Record<string, string[]> = {
-  [UserRole.CAS_ADMIN]: [
-    "Request\n ID",
-    "First\n Name",
-    "Last\n Name",
-    "Email",
-    "BCeID Business Name",
-    "Operator Legal Name",
-    "Status",
-    "Action",
-  ],
+  [UserRole.CAS_ADMIN]: headersOperatorsCAS,
+  [UserRole.CAS_ANALYST]: headersOperatorsCAS,
   [UserRole.INDUSTRY_USER_ADMIN]: [
     "Request\n ID",
     "First\n Name",

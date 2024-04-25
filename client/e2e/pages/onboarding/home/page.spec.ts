@@ -135,14 +135,22 @@ test.describe("Test Page - Home", () => {
         // 🔍 Assert that the current URL is correct
         switch (value) {
           case UserRole.NEW_USER:
+          case UserRole.CAS_PENDING:
             // 🔍 Assert that the current URL ends with "/profile"
-            await new ProfilePOM(page).urlIsCorrect();
+            const profilePage = new ProfilePOM(page);
+            await profilePage.urlIsCorrect();
+            // 🔍 Assert profile update success
+            await profilePage.updateSuccess();
             break;
           default:
             // 🔍 Assert that the current URL ends with "/dashboard"
             await new DashboardPOM(page).urlIsCorrect();
             break;
         }
+        // 🔍 Assert that the user has correct role
+        const myRole =
+          value === UserRole.NEW_USER ? UserRole.INDUSTRY_USER : value;
+        await homePage.userRoleIsCorrect(myRole);
       });
     }
   });
