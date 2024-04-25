@@ -105,6 +105,14 @@ export async function checkLocatorsVisibility(
     }
   }
 }
+// 🛠️ Function: checking required field values
+export async function checkRequiredFieldValue(page: Page) {
+  const requiredFields = await getFieldRequired(page);
+  const allFieldsHaveValue = await Promise.all(
+    requiredFields.map(async (field) => !!field),
+  );
+  return allFieldsHaveValue.every((value) => value);
+}
 
 // 🛠️ Function: get all alert elements within form fieldset
 export async function getFieldAlerts(page: Page) {
@@ -169,6 +177,25 @@ export async function getTableRowById(table: Locator, rowId: string) {
   return row;
 }
 
+// 🛠️ Function: get a table column's values
+export async function getTableColumnTextValues(
+  table: Locator,
+  dataField: string,
+): Promise<string[]> {
+  const uniqueColumnValues = new Set<string>();
+  const rows = await table.locator('[role="row"]').all();
+  const rowsLength = rows.length;
+  const indexStart = 2; //skip header row; skip search row
+
+  for (let i = indexStart; i < rowsLength; i++) {
+    const row = rows[i];
+    const cell = await getRowCellBySelector(row, `[data-field="${dataField}"]`);
+    const text = (await cell.textContent()) || "";
+    uniqueColumnValues.add(text.trim());
+  }
+
+  return Array.from(uniqueColumnValues);
+}
 // 🛠️ Function: clears form fields
 export async function fieldsClear(page: Page, formFields: string | any[]) {
   // 📛 Clear the required input fields

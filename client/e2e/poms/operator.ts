@@ -223,10 +223,6 @@ export class OperatorPOM {
   async selectByLegalName(name: string, legalName: string) {
     await this.fieldSelectLegalName.click();
     await this.fieldSelectLegalName.fill(name);
-    // const actualValue = await this.fieldSelectLegalName.getAttribute("value");
-    // expect(actualValue).toBe(name);
-    // Dispatch a change event to simulate ensure downstream triggers
-    // await this.fieldSelectLegalName.dispatchEvent("change");
     await this.page.getByRole("option", { name: legalName }).click();
     this.buttonSelectOperator.click();
   }

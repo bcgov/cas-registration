@@ -23,7 +23,10 @@ import {
   checkColumnTextVisibility,
   checkFormFieldsReadOnly,
   checkLocatorsVisibility,
+  checkRequiredFieldValue,
   getAllFormInputs,
+  getFieldRequired,
+  getTableColumnTextValues,
   getTableRowByCellSelector,
   tableColumnNamesAreCorrect,
 } from "@/e2e/utils/helpers";
@@ -209,19 +212,30 @@ export class OperationsPOM {
     allFormFields.pop(); // Deletes the last item from the array
     await checkFormFieldsReadOnly(allFormFields);
 
-    // Check buttons...
+    // Check buttons, required fields, messages
     switch (status) {
       case OperationStatus.APPROVED:
       case OperationStatus.DECLINED:
-        // Make sure the review buttons are not visible
+        // Check the buttons are NOT visible
         await checkLocatorsVisibility(
           this.page,
           [this.buttonApprove, this.buttonDecline, this.buttonRequestChange],
           false,
         );
+        // Check required fields have value
+        await checkRequiredFieldValue(this.page);
+        // Check status message
+        switch (status) {
+          case OperationStatus.APPROVED:
+            await expect(this.messageOperationApproved).toBeVisible();
+            break;
+          case OperationStatus.DECLINED:
+            await expect(this.messageOperationDeclined).toBeVisible();
+            break;
+        }
         break;
       case OperationStatus.PENDING:
-        // Get and check the buttons are visible
+        // Check the buttons are visible
         await checkLocatorsVisibility(this.page, [
           this.buttonApprove,
           this.buttonDecline,
@@ -229,17 +243,12 @@ export class OperationsPOM {
         ]);
         break;
     }
-
-    // 🛸 Navigate back
-    await this.navigateBack();
-    // 🔍 Assert table is visible
-    await this.tableIsVisible();
   }
 
   async formHasExpectedWorkflow(
     role: string,
     status: string,
-    caseIndex: number,
+    workflowNumber: number,
   ) {
     // Find a row by status
     const row = await getTableRowByCellSelector(
@@ -250,7 +259,8 @@ export class OperationsPOM {
 
     switch (role) {
       case UserRole.CAS_ADMIN:
-        switch (caseIndex) {
+      case UserRole.CAS_ANALYST:
+        switch (workflowNumber) {
           case 1:
             // Status Pending
             // Workflow: Request Changes, Undo (Request Changes), Approve
@@ -258,7 +268,7 @@ export class OperationsPOM {
             // - can undo request changes
             // - can approve
 
-            // cas_admin can Request Changes
+            // cas_admin; cas_analyst can Request Changes
             await this.buttonRequestChange.click();
             await checkLocatorsVisibility(this.page, [
               this.buttonRequestChangeConfirm,
@@ -267,25 +277,25 @@ export class OperationsPOM {
             await this.buttonRequestChangeConfirm.click();
             await expect(this.buttonRequestChangeUndo).toBeVisible();
 
-            // cas_admin can undo Request Changes
+            // cas_admin; cas_analyst can undo Request Changes
             await this.buttonRequestChangeUndo.click();
             await expect(this.buttonRequestChange).toBeVisible();
 
-            // cas_admin can Approve and triggers the generation of a BORO ID
+            // cas_admin; cas_analyst can Approve and triggers the generation of a BORO ID
             await this.workflowReviewAction(
               this.buttonApprove,
               this.buttonConfirmModal,
               this.alertApproved,
             );
             // FIXME FOR CI
-            //   await expect(this.messageOperationApproved).toBeVisible();
+            // await expect(this.messageOperationApproved).toBeVisible();
             break;
           case 2:
             // Status Pending
             // Workflow: Decline
             // - can decline
 
-            // cas_admin can Decline
+            // cas_admin; cas_analyst can Decline
             await this.workflowReviewAction(
               this.buttonDecline,
               this.buttonConfirmModal,
@@ -297,9 +307,9 @@ export class OperationsPOM {
             // Status Approved
             // Workflow: Preview the Statutory Declaration PDF
 
-            // cas_admin is able to Preview the Statutory Declaration PDF in any Operation form
+            // cas_admin; cas_analyst is able to Preview the Statutory Declaration PDF in any Operation form
             await this.formSectionStatutoryDisclaimer.click();
-            // FIXME FOR CI configs? version bump?
+            // FIXME FOR CI
             /* await downloadPDF(
               this.page,
               ButtonText.PDF_PREVIEW,
@@ -346,6 +356,7 @@ export class OperationsPOM {
       case TableDataField.STATUS:
         switch (role) {
           case UserRole.CAS_ADMIN:
+          case UserRole.CAS_ANALYST:
             expectedValues = [
               OperationStatus.PENDING,
               OperationStatus.APPROVED,
@@ -358,6 +369,13 @@ export class OperationsPOM {
 
     // Check for visibility of values in the column
     await checkColumnTextVisibility(this.table, column, expectedValues);
+
+    // Ensure only expected values are in grid
+    const allStatusValues = await getTableColumnTextValues(this.table, column);
+    const unexpectedValues = allStatusValues.filter(
+      (value) => !expectedValues.includes(value),
+    );
+    await expect(unexpectedValues.length).toBe(0);
   }
 
   async tableIsVisible() {
@@ -377,6 +395,7 @@ export class OperationsPOM {
         // later
         break;
       case UserRole.CAS_ADMIN:
+      case UserRole.CAS_ANALYST:
         await expect(this.messageInternal).toBeVisible();
         await expect(this.buttonAdd).not.toBeVisible();
         break;

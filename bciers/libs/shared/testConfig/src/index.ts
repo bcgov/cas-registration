@@ -2,4 +2,4 @@
 
 export * from "./setup/types";
 export * from "./setup/mocks";
-export * from "./setup/global"
+export * from "./setup/global";

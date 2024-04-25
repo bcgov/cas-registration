@@ -4,6 +4,7 @@
  * POM simplify maintenance by capturing element selectors in one place and create reusable code to avoid repetition. *
  */
 import { Locator, Page, expect } from "@playwright/test";
+
 // ☰ Enums
 import {
   AppRoute,
@@ -91,5 +92,9 @@ export class HomePOM {
 
   async userIsLoggedIn() {
     await expect(this.linkProfile).toBeVisible();
+  }
+
+  async userRoleIsCorrect(role: UserRole) {
+    await expect(this.page.getByTestId(role).first()).toBeVisible();
   }
 }
