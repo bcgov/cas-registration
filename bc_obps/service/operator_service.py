@@ -17,6 +17,24 @@ from registration.utils import set_verification_columns
 
 email_service = EmailService()
 
+import os
+from uuid import UUID
+from registration.constants import PAGE_SIZE, UNAUTHORIZED_MESSAGE
+from django.db import transaction
+from datetime import datetime
+import pytz
+from typing import List
+
+from registration.models import (
+    MultipleOperator,
+    Operation,
+    BusinessStructure,
+    User,
+    UserOperator,
+    MultipleOperator,
+    Address,
+)
+
 
 class OperatorService:
     @classmethod
@@ -170,3 +188,69 @@ class OperatorService:
             operator.save()
             operator.set_create_or_update(user_guid)
             return operator
+
+    # Function to save multiple operators so we can reuse it in put/post routes
+    @classmethod
+    def create_or_update_multiple_operators(
+        cls, multiple_operators_array: List[MultipleOperator], operation: Operation, user: User
+    ) -> None:
+        """
+        Creates or updates multiple operators associated with a specific operation.
+
+        Description:
+        This function processes an array of MultipleOperator objects, associating them with a specific operation.
+        It creates new operators if they do not exist or updates existing ones if found, based on the provided details.
+
+        Note:
+        - Addresses are handled: If no mailing address is given, the physical address is considered the mailing address.
+        """
+        multiple_operator_fields_mapping = {
+            "mo_legal_name": "legal_name",
+            "mo_trade_name": "trade_name",
+            "mo_cra_business_number": "cra_business_number",
+            "mo_bc_corporate_registry_number": "bc_corporate_registry_number",
+            "mo_business_structure": "business_structure",
+            "mo_website": "website",
+            "mo_percentage_ownership": "percentage_ownership",
+            "mo_mailing_address_same_as_physical": "mailing_address_same_as_physical",
+        }
+        for idx, operator in enumerate(multiple_operators_array):
+            new_operator = {
+                "operation_id": operation.id,
+                "operator_index": idx + 1,
+            }
+            # This will create a new address every time instead of updating, fix if multiple operators if re-added
+            # handle addresses--if there's no mailing address given, it's the same as the physical address
+            physical_address = Address.objects.create(
+                street_address=operator.get("mo_physical_street_address"),
+                municipality=operator.get("mo_physical_municipality"),
+                province=operator.get("mo_physical_province"),
+                postal_code=operator.get("mo_physical_postal_code"),
+            )
+
+            new_operator["physical_address_id"] = physical_address.id
+
+            if operator.get("mo_mailing_address_same_as_physical"):
+                new_operator["mailing_address_id"] = physical_address.id
+            else:
+                mailing_address = Address.objects.create(
+                    street_address=operator.get("mo_mailing_street_address"),
+                    municipality=operator.get("mo_mailing_municipality"),
+                    province=operator.get("mo_mailing_province"),
+                    postal_code=operator.get("mo_mailing_postal_code"),
+                )
+                new_operator["mailing_address_id"] = mailing_address.id
+
+            for field in operator:
+                if field in multiple_operator_fields_mapping:
+                    new_operator[multiple_operator_fields_mapping[field]] = operator[field]
+
+            new_operator["business_structure"] = BusinessStructure.objects.get(name=operator["mo_business_structure"])
+            # TODO: archive multiple operators in #361 that are not in the array anymore once #326 is done
+
+            # check if there is a multiple_operator with that operation id and number
+            # if there is, update it, if not, create it
+            multiple_operator, _ = MultipleOperator.objects.update_or_create(
+                operation_id=operation.id, operator_index=idx + 1, defaults={**new_operator}
+            )
+            multiple_operator.set_create_or_update(user.pk)
