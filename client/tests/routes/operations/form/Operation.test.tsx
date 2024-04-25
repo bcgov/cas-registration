@@ -1,8 +1,8 @@
-import Operation from "@/app/components/routes/operations/form/Operation";
 import { act, render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, vi } from "vitest";
 import { actionHandler, useParams, useSession } from "@/tests/setup/mocks";
 import { QueryParams, Session } from "@/tests/setup/types";
+import Operation from "@/app/components/operations/Operation";
 
 useSession.mockReturnValue({
   data: {
