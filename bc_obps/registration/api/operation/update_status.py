@@ -58,23 +58,26 @@ def update_operation_status(request, operation_id: UUID, payload: OperationUpdat
             # send email notification to external user (email template depends on operation.status)
             if status == 'Pending':
                 # if the operation's status == "Pending", it means that BCIERS has officially received the application submission
-                application_state = BoroIdApplicationStates.CONFIRMATION
+                application_state = BoroIdApplicationStates.CONFIRMATION.value
             elif status == 'Approved':
-                application_state = BoroIdApplicationStates.APPROVED
+                application_state = BoroIdApplicationStates.APPROVED.value
             elif status == 'Declined':
-                application_state = BoroIdApplicationStates.DECLINED
+                application_state = BoroIdApplicationStates.DECLINED.value
             elif status == 'Changes Requested':
-                application_state = BoroIdApplicationStates.CHANGES_REQUESTED
+                application_state = BoroIdApplicationStates.CHANGES_REQUESTED.value
             else:
-                application_state = ''
-            recipient: Contact = operation.point_of_contact
-            send_boro_id_application_email(
-                application_state=application_state,
-                operator_legal_name=operation.operator.legal_name,
-                operation_name=operation.name,
-                external_user_full_name=f'{recipient.first_name} {recipient.last_name}',
-                external_user_email_address=recipient.email,
-            )
+                application_state = None
+            if application_state is not None:
+                # should only try to send email notification if the status matches one of the valid BoroIdApplicationStates enums;
+                # otherwise, there's no email template available
+                recipient: Contact = operation.point_of_contact
+                send_boro_id_application_email(
+                    application_state=application_state,
+                    operator_legal_name=operation.operator.legal_name,
+                    operation_name=operation.name,
+                    external_user_full_name=f'{recipient.first_name} {recipient.last_name}',
+                    external_user_email_address=recipient.email,
+                )
             return 200, operation
     except ValidationError as e:
         return 400, {"message": generate_useful_error(e)}
