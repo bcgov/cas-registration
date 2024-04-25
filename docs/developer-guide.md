@@ -644,6 +644,11 @@ def request_access(request, payload: SelectOperatorIn):
     return 201, ApplicationAccessService.request_access(payload.operator_id, get_current_user_guid(request))
 ```
 
+The /api file structure is designed to self-document URLs. This means:
+
+- any file in the root of /api has a single-part path, e.g. `/api/operations` refers to the route `registration/api/operations`
+- folders within /api that have the same name as files are prefaced with an underscore to avoid import collisons. E.g., `api/_operations/operation_id` refers to the route `registration/api/operations/{operation_id}`.
+
 ### Services
 
 Services are not app-specific and can be used by any BCIERS app. We have the following categories of services:
