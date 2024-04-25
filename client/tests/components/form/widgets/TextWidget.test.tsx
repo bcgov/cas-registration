@@ -119,13 +119,13 @@ describe("RJSF TextWidget", () => {
     expect(screen.getByText("Required field")).toBeVisible();
   });
 
-  it("should have the correct stlying when a field is required and empty", async () => {
+  it("should have the correct styling when a field is required and empty", async () => {
     render(<FormBase schema={stringFieldSchema} />);
-    const input = screen.getByLabelText(stringLabelRequired).parentElement
+    const textInput = screen.getByLabelText(stringLabelRequired).parentElement
       ?.children[1] as Element;
 
     // The input should have the default border color
-    expect(input).toHaveStyle("border-color: rgba(0, 0, 0, 0.23)");
+    expect(textInput).toHaveStyle("border-color: rgba(0, 0, 0, 0.23)");
 
     const submitButton = screen.getByRole("button", { name: "Submit" });
 
@@ -133,6 +133,6 @@ describe("RJSF TextWidget", () => {
     await userEvent.click(submitButton);
 
     // The input should have the error border color
-    expect(input).toHaveStyle("border-color: #d8292f");
+    expect(textInput).toHaveStyle("border-color: #d8292f");
   });
 });
