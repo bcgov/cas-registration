@@ -2,10 +2,10 @@ name: Trivy Scan Code
 
 on:
   push:
-    branches: [main, develop, giraffe-develop]
-  pull_request:
+    branches: [main, develop]
+  pull_request_target:
     # The branches below must be a subset of the branches above
-    branches: [main, develop, giraffe-develop]
+    branches: [main, develop]
 
 concurrency:
   group: callee-trivy-${{ github.workflow }}-${{ github.ref }}
