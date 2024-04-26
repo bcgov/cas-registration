@@ -201,6 +201,14 @@ To use the helpers, import them from `utils` and use like this:
 TestUtils.mock_postal_code()
 ```
 
+#### Writing backend tests using mock
+
+We use the `mock` library (a.k.a. `unittest.mock`) to patch calls made in our backend. For examples of this in our codebase, search for the keyphrase `mocker.patch`.
+
+When mocking calls, it's very important to insert your patch in the correct place - namely, patch where an object is _called_ (looked up), not where it is defined. For a more detailed explanation, see [Where to patch](https://docs.python.org/3/library/unittest.mock.html#id6).
+
+It's also important to understand the difference between patching a function - done with `patch()` - and patching an object - done with `patch.object()`. Again, refer to unittest.mock's [online docs](https://docs.python.org/3/library/unittest.mock.html#patch) for more detail.
+
 ### End-to-end Tests with Playwright
 
 #### Run Playwright Specs
