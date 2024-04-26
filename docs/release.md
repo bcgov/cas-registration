@@ -10,10 +10,12 @@ To make this process easy, we use [`release-it`](https://github.com/release-it/r
 When you're ready to make a release, apply the following steps:
 
 1. create a `chore/release` branch
-2. create a blank django migration with the release version with this command: `python manage.py makemigrations registration --name V<major>_<minor>_<patch> --empty`
-3. run `make release` and follow the prompts
-4. create a pull request
-5. once the pull request is approved and merged, and all required checks on the merge commit have passed, update your local develop branch and fast-forward the `main` branch using:
+2. run `make release` and follow the prompts - This will:
+   - Create empty migration files for each django app based on the release version
+   - bump the version number
+   - generate a change log
+3. create a pull request
+4. once the pull request is approved and merged, and all required checks on the merge commit have passed, update your local develop branch and fast-forward the `main` branch using:
 
 ```bash
 - git checkout main
