@@ -34,3 +34,23 @@ export const checkTextWidgetValidationStyles = async (
     await userEvent.click(submitButton);
   }
 };
+
+export const checkComboBoxWidgetValidationStyles = async (
+  component: ReactNode,
+) => {
+  render(component);
+
+  const comboBoxInput = screen.getByRole("combobox") as HTMLInputElement;
+  const inputBorderElement = comboBoxInput?.parentElement
+    ?.children[2] as Element;
+  const submitButton = screen.getByRole("button", { name: "Submit" });
+
+  // The input should have the default border color
+  expect(inputBorderElement).toHaveStyle(defaultStyle);
+
+  // Trigger empty field validation
+  await userEvent.click(submitButton);
+
+  // The input should have the error border color
+  expect(inputBorderElement).toHaveStyle(errorStyle);
+};
