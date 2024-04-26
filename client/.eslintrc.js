@@ -12,6 +12,7 @@ module.exports = {
       "error",
       {
         devDependencies: [
+          "tests/**/*",
           "**/*.test.{ts,tsx}",
           "test.{ts,tsx,js,jsx}",
           "test-*.{ts,tsx,js,jsx}",

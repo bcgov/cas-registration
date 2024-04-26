@@ -2,10 +2,10 @@ import { userEvent } from "@testing-library/user-event";
 import { render, screen } from "@testing-library/react";
 import { RJSFSchema } from "@rjsf/utils";
 import FormBase from "@/app/components/form/FormBase";
+import { checkTextWidgetValidationStyles } from "@/tests/helpers/form";
 
 const postalCodeFieldLabel = "Postal code test field";
 const postalCodeLabelRequired = `${postalCodeFieldLabel}*`;
-const errorStyle = "border-color: #d8292f";
 
 const postalCodeFieldSchema = {
   type: "object",
@@ -109,32 +109,13 @@ describe("RJSF PostalCodeWidget", () => {
   });
 
   it("should have the correct styling when validation is triggered", async () => {
-    render(<FormBase schema={postalCodeFieldSchema} />);
-
-    const postalCodeInput = screen.getByLabelText(postalCodeLabelRequired);
-    const inputBorderElement = postalCodeInput.parentElement
-      ?.children[1] as Element;
-    const submitButton = screen.getByRole("button", { name: "Submit" });
-
-    // The input should have the default border color
-    expect(inputBorderElement).toHaveStyle("border-color: rgba(0, 0, 0, 0.23)");
-
-    // Trigger empty field validation
-    await userEvent.click(submitButton);
-
-    // The input should have the error border color
-    expect(inputBorderElement).toHaveStyle(errorStyle);
-
-    // Add invalid postal code
-    await userEvent.type(postalCodeInput, "A1B2CC");
-
-    // The input should have the default border color since required field is not empty anymore
-    expect(inputBorderElement).toHaveStyle("border-color: rgba(0, 0, 0, 0.23)");
-
-    // Trigger the invalid postal code validation
-    await userEvent.click(submitButton);
-
-    // The input should have the error border color
-    expect(inputBorderElement).toHaveStyle(errorStyle);
+    checkTextWidgetValidationStyles(
+      <FormBase
+        schema={postalCodeFieldSchema}
+        uiSchema={postalCodeFieldUiSchema}
+      />,
+      postalCodeLabelRequired,
+      "A1B2CC",
+    );
   });
 });

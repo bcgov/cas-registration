@@ -2,6 +2,7 @@ import { userEvent } from "@testing-library/user-event";
 import { render, screen } from "@testing-library/react";
 import { RJSFSchema } from "@rjsf/utils";
 import FormBase from "@/app/components/form/FormBase";
+import { checkTextWidgetValidationStyles } from "@/tests/helpers/form";
 
 const stringFieldLabel = "String test field";
 const numberFieldLabel = "Number test field";
@@ -120,19 +121,9 @@ describe("RJSF TextWidget", () => {
   });
 
   it("should have the correct styling when a field is required and empty", async () => {
-    render(<FormBase schema={stringFieldSchema} />);
-    const textInput = screen.getByLabelText(stringLabelRequired).parentElement
-      ?.children[1] as Element;
-
-    // The input should have the default border color
-    expect(textInput).toHaveStyle("border-color: rgba(0, 0, 0, 0.23)");
-
-    const submitButton = screen.getByRole("button", { name: "Submit" });
-
-    // trigger the error
-    await userEvent.click(submitButton);
-
-    // The input should have the error border color
-    expect(textInput).toHaveStyle("border-color: #d8292f");
+    await checkTextWidgetValidationStyles(
+      <FormBase schema={stringFieldSchema} />,
+      stringLabelRequired,
+    );
   });
 });
