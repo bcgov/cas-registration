@@ -110,7 +110,6 @@ class TestUserProfileEndpoint(CommonTestSetup):
             if settings.BYPASS_ROLE_ASSIGNMENT
             else 'cas_pending'
         )
-        assert 'app_role' in content and content["app_role"]["role_name"] == "cas_pending"
         assert 'first_name' in content and isinstance(content['first_name'], str) and content['first_name'] == 'Idir'
         assert 'last_name' in content and isinstance(content['last_name'], str) and content['last_name'] == 'User'
         assert (

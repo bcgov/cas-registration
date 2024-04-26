@@ -1,3 +1,4 @@
+from typing import Dict
 from uuid import UUID
 from common.enums import AccessRequestStates, AccessRequestTypes
 from common.service.email.email_service import EmailService
@@ -42,9 +43,7 @@ class UserOperatorService:
 
     # Function to create/update an operator when creating/updating a user_operator
     @transaction.atomic()
-    def save_operator(updated_data: UserOperatorOperatorIn, operator_instance, user_guid: UUID):
-        user = UserDataAccessService.get_by_guid(user_guid)
-
+    def save_operator(updated_data: UserOperatorOperatorIn, operator_instance, user_guid: UUID) -> Operator:
         existing_physical_address = getattr(getattr(operator_instance, 'physical_address', None), 'id', None)
         existing_mailing_address = getattr(getattr(operator_instance, 'mailing_address', None), 'id', None)
 
@@ -78,16 +77,8 @@ class UserOperatorService:
         OperatorService.handle_parent_operators(
             updated_data.parent_operators_array, created_or_updated_operator_instance, user_guid
         )
+        return created_or_updated_operator_instance
 
-        # get an existing user_operator instance or create a new one with the default role
-        user_operator, created = UserOperator.objects.get_or_create(
-            user=user, operator=created_or_updated_operator_instance
-        )
-        if created:
-            user_operator.set_create_or_update(user.pk)
-        return {"user_operator_id": user_operator.id, 'operator_id': user_operator.operator.id}
-
-    # brianna not sure how to fit this into which service
     # Used to show cas_admin the list of user_operators to approve/deny
     def list_user_operators(page: int = 1, sort_field: str = "created_at", sort_order: str = "desc"):
         sort_direction = "-" if sort_order == "desc" else ""
@@ -164,9 +155,23 @@ class UserOperatorService:
         )
 
     @transaction.atomic()
-    def create_operator_and_user_operator(updated_data: UserOperatorOperatorIn, user_guid: UUID):
-        "Function to create a user_operator and an operator (new operator that doesn't exist yet)"
-        cra_business_number: str = updated_data.cra_business_number
+    def create_operator_and_user_operator(new_data: UserOperatorOperatorIn, user_guid: UUID) -> Dict:
+        """
+        Function to create a user_operator and an operator (new operator that doesn't exist yet).
+
+        Parameters:
+            new_data: Updated data for the user operator.
+            user_guid: GUID of the user.
+
+        Returns:
+            dict: A dictionary containing the IDs of the created user_operator and operator.
+                - 'user_operator_id' (UUID): ID of the user_operator.
+                - 'operator_id' (UUID): ID of the operator.
+
+        Raises:
+            Exception: If an operator with the same CRA Business Number already exists.
+        """
+        cra_business_number: str = new_data.cra_business_number
         existing_operator: Operator = Operator.objects.filter(cra_business_number=cra_business_number).first()
         # check if operator with this CRA Business Number already exists
         if existing_operator:
@@ -174,14 +179,27 @@ class UserOperatorService:
             raise Exception("Operator with this CRA Business Number already exists.")
         operator_instance: Operator = Operator(
             cra_business_number=cra_business_number,
-            bc_corporate_registry_number=updated_data.bc_corporate_registry_number,
+            bc_corporate_registry_number=new_data.bc_corporate_registry_number,
             # treating business_structure as a foreign key
-            business_structure=updated_data.business_structure,
+            business_structure=new_data.business_structure,
             # This used to default to 'Draft' but now defaults to 'Pending' since we removed page 2 of the user operator form
             status=Operator.Statuses.PENDING,
         )
         # save operator data
-        return UserOperatorService.save_operator(updated_data, operator_instance, user_guid)
+        operator: Operator = UserOperatorService.save_operator(new_data, operator_instance, user_guid)
+        # get an existing user_operator instance or create a new one with the default role
+        user_operator, created = UserOperatorDataAccessService.get_or_create_user_operator(user_guid, operator.id)
+        if created:
+            user_operator.set_create_or_update(user_guid)
+            # Send email to the external user to confirm the creation of the operator and the request for access
+            email_service.send_operator_access_request_email(
+                AccessRequestStates.CONFIRMATION,
+                AccessRequestTypes.NEW_OPERATOR_AND_ADMIN,
+                operator.legal_name,
+                user_operator.user.get_full_name(),
+                user_operator.user.email,
+            )
+        return {"user_operator_id": user_operator.id, 'operator_id': user_operator.operator.id}
 
     @transaction.atomic()
     def update_user_operator_status(user_operator_id: UUID, updated_data, admin_user_guid: UUID):
@@ -213,12 +231,24 @@ class UserOperatorService:
             if user_operator.status == UserOperator.Statuses.APPROVED and updated_role != UserOperator.Roles.PENDING:
                 user_operator.role = updated_role  # we only update the role if the user_operator is being approved
 
+            access_request_type: AccessRequestTypes = AccessRequestTypes.OPERATOR_WITH_ADMIN
+            if admin_user.is_irc_user():
+                if user_operator.status == UserOperator.Statuses.DECLINED:
+                    access_request_type = AccessRequestTypes.ADMIN
+                else:
+                    # use the email template for new operator and admin approval if the creator of the operator is the same as the user who requested access
+                    # Otherwise, use the email template for admin approval
+                    access_request_type = (
+                        AccessRequestTypes.NEW_OPERATOR_AND_ADMIN
+                        if operator.created_by == user_operator.user
+                        else AccessRequestTypes.ADMIN
+                    )
             # Send email to user if their request was approved or declined(using the appropriate email template)
             email_service.send_operator_access_request_email(
                 AccessRequestStates(user_operator.status),
                 # If the admin user is an IRC user, the access request type is admin,
                 # otherwise the admin user is an external user and the access request is for an operator with existing admin
-                AccessRequestTypes.ADMIN if admin_user.is_irc_user() else AccessRequestTypes.OPERATOR_WITH_ADMIN,
+                access_request_type,
                 operator.legal_name,
                 user_operator.user.get_full_name(),
                 user_operator.user.email,
@@ -244,7 +274,7 @@ class UserOperatorService:
     @transaction.atomic()
     def update_operator_and_user_operator(
         user_operator_id: UUID, updated_data: UserOperatorOperatorIn, user_guid: UUID
-    ):
+    ) -> Dict:
         "Function to update both the operator and user_operator"
         user_operator_instance = UserOperatorDataAccessService.get_user_operator_by_id(user_operator_id)
         operator_instance: Operator = user_operator_instance.operator
@@ -259,4 +289,9 @@ class UserOperatorService:
         if operator_instance.status == 'Draft':
             operator_instance.status = 'Pending'
         # save operator data
-        return UserOperatorService.save_operator(updated_data, operator_instance, user_guid)
+        operator: Operator = UserOperatorService.save_operator(updated_data, operator_instance, user_guid)
+        # get an existing user_operator instance or create a new one with the default role
+        user_operator, created = UserOperator.objects.get_or_create(user_id=user_guid, operator=operator)
+        if created:
+            user_operator.set_create_or_update(user_guid)
+        return {"user_operator_id": user_operator.id, 'operator_id': operator.id}

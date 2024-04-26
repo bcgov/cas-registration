@@ -43,18 +43,21 @@ class EmailService(object):
         {self.client_id} and {self.client_secret}. Then updates stored values
         {self.token} and {self.token_expiry}.
         """
-        if not self.token or self.token_expiry < datetime.now():
-            response = requests.post(
-                self.token_endpoint,
-                auth=(self.client_id, self.client_secret),
-                data={"grant_type": "client_credentials"},
-                timeout=10,
-            )
-            if response.status_code == 200:
-                self.token = response.json()["access_token"]
-                self.token_expiry = datetime.now() + timedelta(seconds=response.json()["expires_in"])
-            else:
-                logger.error("Logger: Failed to retrieve CHES access token")
+        try:
+            if not self.token or self.token_expiry < datetime.now():
+                response = requests.post(
+                    self.token_endpoint,
+                    auth=(self.client_id, self.client_secret),
+                    data={"grant_type": "client_credentials"},
+                    timeout=10,
+                )
+                if response.status_code == 200:
+                    self.token = response.json()["access_token"]
+                    self.token_expiry = datetime.now() + timedelta(seconds=response.json()["expires_in"])
+                else:
+                    logger.error("Logger: Failed to retrieve CHES access token")
+        except Exception as exc:
+            logger.error(f'Logger: Exception in _get_token {str(exc)}')
 
     def _make_request(self, endpoint, method='GET', data: any = None):
         """
@@ -224,7 +227,7 @@ class EmailService(object):
         external_user_email_address: str,
     ) -> None:
         """
-        Sends an email for an operator access request.
+        Sends an email to a user regarding an operator and their access request based on the access state and type.
 
         Args:
             access_state: The state of the operator access request.

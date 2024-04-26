@@ -216,7 +216,7 @@ def test_send_operator_access_request_email(email_service: EmailService, mocker)
     # Sample data
     operator_legal_name = "Test Operator"
     external_user_full_name = "John Doe"
-    external_user_email_address = "request-admin-access-email-address@email.test"
+    external_user_email_address = "send_operator_access_request_email@email.test"
 
     expected_context = {
         "operator_legal_name": operator_legal_name,

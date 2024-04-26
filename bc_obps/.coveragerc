@@ -10,3 +10,4 @@ omit =
   */asgi.py,
   */wsgi.py,
   */schema/*,
+  */api/e2e_test_setup.py,
