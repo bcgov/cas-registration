@@ -1,29 +1,22 @@
-from typing import List, Type, Union, Iterable, Dict, Any, Tuple, Optional
+from typing import List, Type, Union, Iterable, Dict, Any, Optional
 from uuid import UUID
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError, models
 from django.db.models import QuerySet
 from registration.constants import UNAUTHORIZED_MESSAGE, DEFAULT_API_NAMESPACE
-import requests, base64, re, hashlib
+import requests, base64, re, hashlib, pytz
 from django.core.files.base import ContentFile
-from django.shortcuts import get_object_or_404
 from ninja.errors import HttpError
 from registration.models import (
     Document,
     User,
-    Operator,
     User,
     UserOperator,
 )
 from django.urls import reverse_lazy
 from datetime import datetime
-import pytz
 from typing import Optional
-from registration.models import (
-    Operator,
-    User,
-    UserOperator,
-)
+from registration.models import User, UserOperator
 
 
 def update_model_instance(

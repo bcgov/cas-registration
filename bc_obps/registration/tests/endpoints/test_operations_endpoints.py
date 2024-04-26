@@ -1317,7 +1317,11 @@ class TestOperationsEndpoint(CommonTestSetup):
         TestUtils.authorize_current_user_as_operator_user(self, operator)
         mock_operation = TestUtils.mock_OperationCreateIn()
         post_response = TestUtils.mock_post_with_auth_role(
-            self, "industry_user", self.content_type, mock_operation.json(), custom_reverse_lazy("create_operation")
+            self,
+            "industry_user",
+            self.content_type,
+            mock_operation.model_dump_json(),
+            custom_reverse_lazy("create_operation"),
         )
 
         operation_id = post_response.json().get('id')
@@ -1336,7 +1340,7 @@ class TestOperationsEndpoint(CommonTestSetup):
             self,
             'industry_user',
             self.content_type,
-            updated_mock_operation.json(),
+            updated_mock_operation.model_dump_json(),
             custom_reverse_lazy("update_operation", kwargs={"operation_id": operation.id})
             + "?submit=false&form_section=1",
         )
