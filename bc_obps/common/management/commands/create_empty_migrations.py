@@ -13,7 +13,8 @@ class Command(BaseCommand):
         if not migration_name:
             raise CommandError("Migration name is required.")
 
-        for app_label in ['common', 'registration', 'reporting']:
+        # We need to add other apps here if we want to create empty migrations for them(like when they are in PROD)
+        for app_label in ['common', 'registration']:
             try:
                 # This command creates an empty migration with the specified name
                 call_command('makemigrations', app_label, empty=True, name=f'V{migration_name}')
