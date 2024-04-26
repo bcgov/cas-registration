@@ -1,4 +1,6 @@
 from typing import List
+from common.enums import AccessRequestStates, AccessRequestTypes
+from common.service.email.email_service import EmailService
 from model_bakery import baker
 from registration.models import (
     BusinessStructure,
@@ -114,7 +116,7 @@ class TestUserOperatorOperatorEndpoint(CommonTestSetup):
         }
 
     # PARENT OPERATORS
-    def test_create_operator_and_user_operator_with_parent_operators(self):
+    def test_create_operator_and_user_operator_with_parent_operators(self, mocker):
         mock_payload_2 = {
             "legal_name": "New Operator",
             "trade_name": "New Operator Trade Name",
@@ -164,16 +166,20 @@ class TestUserOperatorOperatorEndpoint(CommonTestSetup):
             ],
         }
 
-        post_response_2 = TestUtils.mock_post_with_auth_role(
+        mock_send_operator_access_request_email = mocker.patch.object(
+            EmailService, "send_operator_access_request_email"
+        )
+
+        post_response = TestUtils.mock_post_with_auth_role(
             self,
             "industry_user",
             self.content_type,
             mock_payload_2,
             custom_reverse_lazy("create_operator_and_user_operator"),
         )
-        assert post_response_2.status_code == 200
+        assert post_response.status_code == 200
 
-        user_operator_id = post_response_2.json().get("user_operator_id")
+        user_operator_id = post_response.json().get("user_operator_id")
         assert user_operator_id is not None
 
         user_operator = UserOperator.objects.get(id=user_operator_id)
@@ -183,6 +189,14 @@ class TestUserOperatorOperatorEndpoint(CommonTestSetup):
         assert user_operator.status == UserOperator.Statuses.PENDING
 
         operator: Operator = user_operator.operator
+        # Assert that the email notification was sent
+        mock_send_operator_access_request_email.assert_called_once_with(
+            AccessRequestStates.CONFIRMATION,
+            AccessRequestTypes.NEW_OPERATOR_AND_ADMIN,
+            operator.legal_name,
+            self.user.get_full_name(),
+            self.user.email,
+        )
         assert {
             "legal_name": operator.legal_name,
             "cra_business_number": operator.cra_business_number,
