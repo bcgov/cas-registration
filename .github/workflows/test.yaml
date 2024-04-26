@@ -226,13 +226,15 @@ jobs:
           cache: "yarn"
       - name: Install dependencies
         run: |
-          yarn install --frozen-lockfile
-          cd ../client && yarn install --frozen-lockfile
+          corepack enable
+          yarn set version stable
+          yarn install --immutable
+          cd ../bciers && yarn install --immutable
       - name: Derive appropriate SHAs for base and head for `nx affected` commands
         uses: nrwl/nx-set-shas@v4
         with:
           # This will need to be updated when giraffe-develop merges with develop
-          main-branch-name: "giraffe-develop"
+          main-branch-name: "develop"
       - name: Cache Docker layers
         uses: actions/cache@v3
         with:
