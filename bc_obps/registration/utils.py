@@ -17,7 +17,7 @@ from registration.models import (
 )
 from django.urls import reverse_lazy
 from datetime import datetime
-import pytz
+from zoneinfo import ZoneInfo
 
 
 def update_model_instance(
@@ -170,7 +170,7 @@ def custom_reverse_lazy(view_name, *args, **kwargs) -> str:
 
 
 def set_verification_columns(record, user_guid):
-    record.verified_at = datetime.now(pytz.utc)
+    record.verified_at = datetime.now(ZoneInfo("UTC"))
     record.verified_by_id = user_guid
 
 
