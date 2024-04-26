@@ -17,7 +17,7 @@ from registration.utils import custom_reverse_lazy
 
 
 class TestUserOperatorUpdateStatusEndpoint(CommonTestSetup):
-    def test_user_operator_put_cannot_update_status_when_operator_not_approved(self):
+    def test_cas_admin_cannot_approve_admin_access_request_when_operator_not_approved(self):
         user = baker.make(User)
 
         operator = operator_baker()
@@ -43,7 +43,7 @@ class TestUserOperatorUpdateStatusEndpoint(CommonTestSetup):
         response_1_json = response_1.json()
         assert response_1_json == {"message": "Operator must be approved before approving or declining users."}
 
-    def test_industry_user_can_update_status_of_a_user_operator(self, mocker):
+    def test_industry_user_approves_access_request(self, mocker):
         operator = operator_baker({"status": Operator.Statuses.APPROVED, "is_new": False})
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
         subsequent_user_operator = baker.make(UserOperator, operator=operator)
@@ -71,7 +71,7 @@ class TestUserOperatorUpdateStatusEndpoint(CommonTestSetup):
         )
         assert response.status_code == 200
 
-    def test_industry_user_cannot_update_status_of_a_user_operator_from_a_different_operator(
+    def test_industry_user_cannot_approve_access_request_from_a_different_operator(
         self,
     ):
         operator = operator_baker({"status": Operator.Statuses.APPROVED, "is_new": False})
@@ -91,7 +91,7 @@ class TestUserOperatorUpdateStatusEndpoint(CommonTestSetup):
         )
         assert response.status_code == 403
 
-    def test_cas_admin_can_update_status_of_a_user_operator(self, mocker):
+    def test_cas_admin_approves_access_request_with_existing_operator(self, mocker):
         operator = operator_baker({"status": Operator.Statuses.APPROVED, "is_new": False})
         user_operator = user_operator_baker({"operator": operator})
         mock_send_operator_access_request_email = mocker.patch.object(
@@ -122,7 +122,40 @@ class TestUserOperatorUpdateStatusEndpoint(CommonTestSetup):
             user_operator.user.email,
         )
 
-    def test_user_operator_put_decline_rejects_everything(self, mocker):
+    def test_cas_admin_approves_admin_access_request_with_new_operator(self, mocker):
+        # In this test we are testing the user operator status change and not the operator change,
+        # so we have to mark the operator as is_new=False and status=APPROVED so we can bypass the below part and can get to the email sending part
+        operator = operator_baker({'status': Operator.Statuses.APPROVED, 'is_new': False, 'created_by': self.user})
+        user_operator = user_operator_baker({'operator': operator, 'user': operator.created_by})
+        mock_send_operator_access_request_email = mocker.patch.object(
+            EmailService, 'send_operator_access_request_email'
+        )
+        response_2 = TestUtils.mock_put_with_auth_role(
+            self,
+            'cas_admin',
+            self.content_type,
+            {
+                "role": UserOperator.Roles.ADMIN,
+                "status": UserOperator.Statuses.APPROVED,
+                "user_operator_id": user_operator.id,
+            },
+            custom_reverse_lazy('update_user_operator_status'),
+        )
+        assert response_2.status_code == 200
+        user_operator.refresh_from_db()  # refresh the user_operator object to get the updated status
+        assert user_operator.status == UserOperator.Statuses.APPROVED
+        assert user_operator.role == UserOperator.Roles.ADMIN
+        assert user_operator.verified_by == self.user
+        # Assert that the email notification was called (user associated with the user_operator IS the creator of the operator)
+        mock_send_operator_access_request_email.assert_called_once_with(
+            AccessRequestStates.APPROVED,
+            AccessRequestTypes.NEW_OPERATOR_AND_ADMIN,
+            operator.legal_name,
+            user_operator.user.get_full_name(),
+            user_operator.user.email,
+        )
+
+    def test_cas_admin_declines_access_request(self, mocker):
         user = baker.make(User)
         operator = operator_baker()
         operator.status = Operator.Statuses.APPROVED
