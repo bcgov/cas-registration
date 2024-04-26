@@ -15,7 +15,6 @@ def submit_operation_boro_id_email_notification_templates(apps, schema_editor):
             <p style="text-align: center;">Province of British Columbia</p>
             <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p><br>
             <p>Dear {{ external_user_full_name }},</p><br>
-            <p>Your access request to {{ operator_legal_name }} in BCIERS has been received.</p>
             <p>Your application to obtain a BC OBPS Regulated Operation ID (BORO ID) for {{ operation_name }} of {{ operator_legal_name }} has been received by the Climate Action Secretariat (CAS) through BCIERS.</p>
             <p>CAS is reviewing the application. Please allow 3-5 business days to process this request. Clarifications and changes may be requested as part of the reviewing process. Once a decision is made, you may expect a notification email.</p><br>
             <p>If you have any questions, please contact our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca.</a></p><br>
@@ -72,9 +71,9 @@ def reverse_submit_operation_boro_id_email_notification_templates(apps, schema_e
     """
     EmailNotificationTemplate = apps.get_model('common', 'EmailNotificationTemplate')
     EmailNotificationTemplate.objects.filter(
-        name_in=[
-            'BORO ID Application Submission Confirmation',
-            'BORO ID Application Approval',
+        name__in=[
+            'BORO ID Application Confirmation',
+            'BORO ID Application Approved',
             'BORO ID Application Declined',
             'BORO ID Application Changes Requested',
         ]
