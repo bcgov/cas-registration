@@ -159,6 +159,14 @@ actionHandler.mockReturnValueOnce({
 });
 ```
 
+To maintain test isolation, we should reset (note that this is different from clear) mocks before every test:
+
+````
+beforeEach(() => {
+    vi.resetAllMocks();
+
+  });```
+
 ### Backend unit tests (for API endpoints) with Pytest
 
 #### Running Tests
@@ -173,7 +181,7 @@ The easiest way to run these tests locally is by using commands from the Makefil
 > make pythontests ARGS='registration/tests/<file_name.py>' # run pytest for a specific file
 > make pythontests ARGS='-k <TestClassname>' # run pytest for a specific class, e.g. make pythontests ARGS='-k TestNaicsCodeEndpoint'
 > make pythontests ARGS='-k <test_name>' # run pytest for a specific test, e.g. make pythontests ARGS='-k test_get_method_for_200_status' (note: if any tests have the same name, even if they're within different classes, this command will run them all)
-```
+````
 
 #### Testing Helpers
 
