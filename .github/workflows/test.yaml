@@ -239,9 +239,9 @@ jobs:
         uses: actions/cache@v3
         with:
           path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-client-${{ github.sha }}
+          key: ${{ runner.os }}-buildx-bciers-${{ github.sha }}
           restore-keys: |
-            ${{ runner.os }}-buildx-client
+            ${{ runner.os }}-buildx-bciers
       - name: Build images
         env:
           INPUT_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
