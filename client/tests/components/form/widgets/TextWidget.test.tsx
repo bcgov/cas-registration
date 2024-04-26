@@ -44,6 +44,30 @@ describe("RJSF TextWidget", () => {
     expect(screen.getByLabelText(numberLabelRequired)).toBeVisible();
   });
 
+  it("should render the string value when formData is provided", () => {
+    render(
+      <FormBase
+        schema={stringFieldSchema}
+        formData={{ stringTestField: "test" }}
+      />,
+    );
+
+    const input = screen.getByLabelText(stringLabelRequired);
+    expect(input).toHaveValue("test");
+  });
+
+  it("should render the number value when formData is provided", () => {
+    render(
+      <FormBase
+        schema={numberFieldSchema}
+        formData={{ numberTestField: 123 }}
+      />,
+    );
+
+    const input = screen.getByLabelText(numberLabelRequired);
+    expect(input).toHaveValue(123);
+  });
+
   it("should allow entering text", async () => {
     render(<FormBase schema={stringFieldSchema} />);
     const input = screen.getByLabelText(stringLabelRequired);

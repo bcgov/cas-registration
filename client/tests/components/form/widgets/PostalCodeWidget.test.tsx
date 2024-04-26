@@ -36,6 +36,19 @@ describe("RJSF PostalCodeWidget", () => {
     expect(screen.getByLabelText(postalCodeLabelRequired)).toBeVisible();
   });
 
+  it("should render the postal code value when formData is provided", async () => {
+    render(
+      <FormBase
+        schema={postalCodeFieldSchema}
+        formData={{ postalCodeTestField: "A1B2C3" }}
+        uiSchema={postalCodeFieldUiSchema}
+      />,
+    );
+
+    const input = screen.getByLabelText(postalCodeLabelRequired);
+    expect(input).toHaveValue("A1B 2C3");
+  });
+
   it("should allow entering a postal code", async () => {
     render(
       <FormBase
