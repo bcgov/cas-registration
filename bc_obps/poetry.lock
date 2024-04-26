@@ -1577,17 +1577,6 @@ soap-alt = ["suds"]
 soap-fallback = ["PySimpleSOAP"]
 
 [[package]]
-name = "pytz"
-version = "2023.3.post1"
-description = "World timezone definitions, modern and historical"
-optional = false
-python-versions = "*"
-files = [
-    {file = "pytz-2023.3.post1-py2.py3-none-any.whl", hash = "sha256:ce42d816b81b68506614c11e8937d3aa9e41007ceb50bfdcb0749b921bf646c7"},
-    {file = "pytz-2023.3.post1.tar.gz", hash = "sha256:7b4fddbeb94a1eba4b557da24f19fdf9db575192544270a9101d8509f9f43d7b"},
-]
-
-[[package]]
 name = "pyyaml"
 version = "6.0.1"
 description = "YAML parser and emitter for Python"
@@ -1966,4 +1955,4 @@ brotli = ["Brotli"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "1493809dfdfdb4e7bd42f4c46bd58128581549fde4803c0b6ca45e7fde72d26c"
+content-hash = "a7aa7d0a385dd2cda9908fe389f659ea2b955777aeb31285a68df0e9f2dc7713"

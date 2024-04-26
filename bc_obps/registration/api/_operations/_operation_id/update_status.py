@@ -5,7 +5,7 @@ from registration.decorators import authorize
 from registration.api.api_base import router
 from datetime import datetime
 from django.core.exceptions import ValidationError
-import pytz
+from zoneinfo import ZoneInfo
 from registration.models import (
     AppRole,
     Operation,
@@ -37,7 +37,7 @@ def update_operation_status(request, operation_id: UUID, payload: OperationUpdat
         with transaction.atomic():
             status = Operation.Statuses(payload.status)
             if status in [Operation.Statuses.APPROVED, Operation.Statuses.DECLINED]:
-                operation.verified_at = datetime.now(pytz.utc)
+                operation.verified_at = datetime.now(ZoneInfo("UTC"))
                 operation.verified_by_id = user.pk
                 if status == Operation.Statuses.APPROVED:
                     operation.generate_unique_boro_id()
@@ -46,7 +46,7 @@ def update_operation_status(request, operation_id: UUID, payload: OperationUpdat
                     if operator.status != Operator.Statuses.APPROVED:
                         operator.status = Operator.Statuses.APPROVED
                         operator.is_new = False
-                        operator.verified_at = datetime.now(pytz.utc)
+                        operator.verified_at = datetime.now(ZoneInfo("UTC"))
                         operator.verified_by_id = user.pk
                         operator.save(update_fields=["status", "is_new", "verified_at", "verified_by_id"])
                         operator.set_create_or_update(user.pk)

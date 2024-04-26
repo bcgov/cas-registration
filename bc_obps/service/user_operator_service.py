@@ -10,7 +10,7 @@ from service.data_access_service.user_service import UserDataAccessService
 from service.data_access_service.operator_service import OperatorDataAccessService
 from registration.models import Operator, User, UserOperator, BusinessRole
 from django.db import transaction
-import pytz
+from zoneinfo import ZoneInfo
 from datetime import datetime
 from django.core.paginator import Paginator
 from django.forms import model_to_dict
@@ -225,7 +225,7 @@ class UserOperatorService:
         updated_role = updated_data.role
 
         if user_operator.status in [UserOperator.Statuses.APPROVED, UserOperator.Statuses.DECLINED]:
-            user_operator.verified_at = datetime.now(pytz.utc)
+            user_operator.verified_at = datetime.now(ZoneInfo("UTC"))
             user_operator.verified_by_id = admin_user_guid
 
             if user_operator.status == UserOperator.Statuses.APPROVED and updated_role != UserOperator.Roles.PENDING:

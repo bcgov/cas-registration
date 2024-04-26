@@ -1,4 +1,4 @@
-import pytz
+from zoneinfo import ZoneInfo
 from datetime import datetime, timedelta, timezone
 from model_bakery import baker
 from localflavor.ca.models import CAPostalCodeField
@@ -655,7 +655,7 @@ class TestOperationsEndpoint(CommonTestSetup):
 
         url = custom_reverse_lazy("update_operation_status", kwargs={"operation_id": operation.id})
 
-        now = datetime.now(pytz.utc)
+        now = datetime.now(ZoneInfo("UTC"))
         put_response_1 = TestUtils.mock_put_with_auth_role(
             self, "cas_admin", self.content_type, {"status": "Approved"}, url
         )
@@ -682,7 +682,7 @@ class TestOperationsEndpoint(CommonTestSetup):
 
         # Changing the operator of the operation to a different operator with approved status
         # should not change other fields of the operator
-        random_time = datetime.now(pytz.utc)
+        random_time = datetime.now(ZoneInfo("UTC"))
         random_user = baker.make(User)
         new_operator = operator_baker()
         new_operator.status = Operator.Statuses.APPROVED
