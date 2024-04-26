@@ -221,13 +221,13 @@ jobs:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - uses: actions/setup-node@v3
       - name: Install dependencies
         run: |
           corepack enable
           yarn set version stable
           yarn install --immutable
           cd ../bciers && yarn install --immutable
+      - uses: actions/setup-node@v3
       - name: Derive appropriate SHAs for base and head for `nx affected` commands
         uses: nrwl/nx-set-shas@v4
         with:
