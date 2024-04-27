@@ -9,7 +9,8 @@ from service.data_access_service.operator_service import OperatorDataAccessServi
 from registration.schema import OperatorSearchOut
 from registration.models import Operator, UserOperator
 from uuid import UUID
-from registration.models import Operator, UserOperator
+
+
 from registration.schema import OperatorIn
 from django.db import transaction
 from registration.utils import set_verification_columns

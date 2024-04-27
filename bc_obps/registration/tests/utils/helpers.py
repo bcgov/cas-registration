@@ -1,4 +1,6 @@
-import pytest, json, base64
+import pytest
+import json
+import base64
 from registration.models import (
     Address,
     AppRole,

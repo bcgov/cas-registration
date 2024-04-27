@@ -1,7 +1,7 @@
 from typing import List, Optional
 from uuid import UUID
 from ninja import Field, Schema
-from ninja import ModelSchema, Schema, Field
+from ninja import ModelSchema
 from registration.constants import AUDIT_FIELDS
 from registration.models import Operator
 from .parent_operator import ParentOperatorOut

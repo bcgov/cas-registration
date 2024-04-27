@@ -202,7 +202,7 @@ class TestOperatorsEndpoint(CommonTestSetup):
         assert response.status_code == 200
 
         assert response.json().get('status') == Operator.Statuses.CHANGES_REQUESTED
-        assert response.json().get("verified_by") == None
+        assert response.json().get("verified_by") is None
 
     # declining a new operator declines the prime admin request too
     def test_put_decline_new_operator(self, mocker):
@@ -274,4 +274,4 @@ class TestOperatorsEndpoint(CommonTestSetup):
         assert response.json().get("verified_by") == str(self.user.user_guid)
         user_operator.refresh_from_db()  # refresh the user_operator object to get the updated status
         assert user_operator.status == UserOperator.Statuses.PENDING
-        assert user_operator.verified_by == None
+        assert user_operator.verified_by is None

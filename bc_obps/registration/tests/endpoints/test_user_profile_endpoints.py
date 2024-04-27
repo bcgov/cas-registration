@@ -1,4 +1,5 @@
-import json, uuid
+import json
+import uuid
 from registration.schema import UserIn, UserUpdateIn
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.enums.enums import IdPs

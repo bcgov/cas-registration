@@ -27,7 +27,6 @@ from registration.utils import (
     get_current_user_approved_user_operator_or_raise,
 )
 from ninja.responses import codes_4xx
-
 from ninja import Query
 
 
