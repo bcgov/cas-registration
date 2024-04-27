@@ -2,11 +2,10 @@ from service.data_access_service.reporting_activity_service import ReportingActi
 from registration.decorators import authorize
 from .api_base import router
 from typing import List
-from registration.models import AppRole, ReportingActivity, UserOperator
+from registration.models import AppRole, UserOperator
 from registration.schema import (
     ReportingActivitySchema,
 )
-from django.core.cache import cache
 
 ##### GET #####
 

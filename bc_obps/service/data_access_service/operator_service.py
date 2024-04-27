@@ -1,7 +1,6 @@
 from typing import List
 from registration.models import Operator, UserOperator
 from uuid import UUID
-from registration.models import Operator, UserOperator
 
 
 class OperatorDataAccessService:

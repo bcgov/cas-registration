@@ -1,7 +1,8 @@
 from service.application_access_service import ApplicationAccessService
 from registration.schema.parent_operator import ParentOperatorIn
 from registration.schema.user_operator import UserOperatorOperatorIn
-import pytest, tempfile
+import pytest
+import tempfile
 from model_bakery import baker
 from registration.models import Address, BusinessStructure, Operator, ParentOperator, User, UserOperator, AppRole
 from registration.utils import (
@@ -19,11 +20,11 @@ from ninja.errors import HttpError
 from django.test import RequestFactory, TestCase
 from registration.tests.utils.helpers import TestUtils, MOCK_DATA_URL
 from django.core.files.base import ContentFile
+from registration.tests.utils.bakers import operator_baker, user_operator_baker
 
 pytestmark = pytest.mark.django_db
 
 baker.generators.add(CAPostalCodeField, TestUtils.mock_postal_code)
-from registration.tests.utils.bakers import operator_baker, user_operator_baker
 
 
 class TestUpdateModelInstance:
@@ -256,7 +257,7 @@ class TestCheckIfRoleAuthorized(TestCase):
     def test_does_not_raise_when_app_role_is_authorized(self):
         self.request.current_user = baker.make(User, app_role=AppRole.objects.get(role_name="cas_admin"))
 
-        assert raise_401_if_user_not_authorized(self.request, ['cas_admin']) == None
+        assert raise_401_if_user_not_authorized(self.request, ['cas_admin']) is None
 
     def test_raises_when_app_role_is_not_authorized(self):
         self.request.current_user = baker.make(User, app_role=AppRole.objects.get(role_name="cas_admin"))
@@ -285,7 +286,7 @@ class TestCheckIfRoleAuthorized(TestCase):
             raise_401_if_user_not_authorized(
                 self.request, ['cas_admin', 'industry_user'], ['reporter', 'admin', 'pending'], False
             )
-            == None
+            is None
         )
 
     def test_does_not_raise_when_approved_industry_user_is_authorized_and_approved(self):
@@ -300,7 +301,7 @@ class TestCheckIfRoleAuthorized(TestCase):
 
         user_operator_instance.save(update_fields=['user', 'role', 'status'])
 
-        assert raise_401_if_user_not_authorized(self.request, ['industry_user'], ['reporter', 'admin']) == None
+        assert raise_401_if_user_not_authorized(self.request, ['industry_user'], ['reporter', 'admin']) is None
 
     def test_raises_when_user_operator_does_not_exist_and_approval_is_required(self):
         self.request.current_user = baker.make(

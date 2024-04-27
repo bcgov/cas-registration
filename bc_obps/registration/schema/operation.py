@@ -5,9 +5,6 @@ from ninja import Field, FilterSchema, ModelSchema, Schema
 from registration.models import Operation, User
 from pydantic import field_validator
 from bc_obps.settings import ENVIRONMENT
-from registration.schema.operator import OperatorForOperationOut
-from registration.utils import file_to_data_url, data_url_to_file
-from registration.models import Operation
 
 
 #### Operation schemas

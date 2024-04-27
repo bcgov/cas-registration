@@ -1,3 +1,4 @@
+# ruff: noqa
 from .generic import *
 from .naics import *
 from .operation import *
