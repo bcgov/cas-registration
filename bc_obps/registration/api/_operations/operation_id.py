@@ -1,48 +1,34 @@
-import os
 from uuid import UUID
-from registration.constants import PAGE_SIZE, UNAUTHORIZED_MESSAGE
+from registration.constants import UNAUTHORIZED_MESSAGE
 from django.db import transaction
-from django.db.models import Q
 from registration.decorators import authorize
 from datetime import datetime
 from django.core.exceptions import ValidationError
 import pytz
 from registration.api.api_base import router
-from typing import List
-from django.core.paginator import Paginator
 from registration.models import (
     AppRole,
-    MultipleOperator,
     Operation,
     Contact,
     BusinessRole,
-    BusinessStructure,
     User,
     UserOperator,
-    MultipleOperator,
-    Address,
     Document,
     DocumentType,
 )
 from registration.schema import (
-    OperationCreateIn,
     OperationUpdateIn,
-    OperationPaginatedOut,
     OperationOut,
-    OperationCreateOut,
     OperationUpdateOut,
     Message,
-    OperationListOut,
-    OperationFilterSchema,
 )
 from registration.utils import (
     files_have_same_hash,
     generate_useful_error,
     get_current_user_approved_user_operator_or_raise,
 )
-from ninja.responses import codes_4xx, codes_5xx
+from ninja.responses import codes_4xx
 from ninja.errors import HttpError
-from ninja import Query
 
 
 @router.get(

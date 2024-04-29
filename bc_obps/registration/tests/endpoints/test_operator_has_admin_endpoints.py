@@ -1,13 +1,8 @@
 from model_bakery import baker
 from localflavor.ca.models import CAPostalCodeField
-from registration.tests.utils.bakers import operator_baker, user_operator_baker
-from registration.constants import AUDIT_FIELDS
-from registration.models import Operator, UserOperator
-from registration.schema.operator import OperatorOut, OperatorSearchOut, ConfirmSelectedOperatorOut
+from registration.tests.utils.bakers import operator_baker
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
-import pytest
-from django.core.exceptions import ValidationError
 
 baker.generators.add(CAPostalCodeField, TestUtils.mock_postal_code)
 

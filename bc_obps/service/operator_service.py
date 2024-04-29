@@ -1,39 +1,28 @@
 from common.enums import AccessRequestStates, AccessRequestTypes
 from common.service.email.email_service import EmailService
 import pytz
-from registration.models import ParentOperator, User
 from typing import List, Optional, Union
 from datetime import datetime
 from django.db.models import QuerySet
 from service.data_access_service.operator_service import OperatorDataAccessService
 from registration.schema import OperatorSearchOut
-from registration.models import Operator, UserOperator
 from uuid import UUID
-from registration.models import Operator, UserOperator
 from registration.schema import OperatorIn
 from django.db import transaction
 from registration.utils import set_verification_columns
-
-
-email_service = EmailService()
-
-import os
-from uuid import UUID
-from registration.constants import PAGE_SIZE, UNAUTHORIZED_MESSAGE
-from django.db import transaction
-from datetime import datetime
-import pytz
-from typing import List
-
 from registration.models import (
-    MultipleOperator,
+    ParentOperator,
+    User,
+    Operator,
+    UserOperator,
     Operation,
     BusinessStructure,
-    User,
-    UserOperator,
     MultipleOperator,
     Address,
 )
+
+
+email_service = EmailService()
 
 
 class OperatorService:
@@ -47,13 +36,13 @@ class OperatorService:
             try:
                 operator = OperatorDataAccessService.get_operators_by_cra_number(cra_business_number)
                 return OperatorSearchOut.model_validate(operator)
-            except:
+            except Exception:
                 raise Exception("No matching operator found. Retry or add operator.")
         elif legal_name:
             try:
                 operators = OperatorDataAccessService.get_operators_by_legal_name(legal_name)
                 return [OperatorSearchOut.model_validate(operator) for operator in operators]
-            except:
+            except Exception:
                 raise Exception("No matching operator found. Retry or add operator.")
 
     @classmethod

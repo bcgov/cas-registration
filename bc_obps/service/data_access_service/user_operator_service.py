@@ -5,12 +5,6 @@ from registration.models import Operator, User, UserOperator
 from django.db import transaction
 
 
-from registration.models import (
-    Operator,
-    UserOperator,
-)
-
-
 class UserOperatorDataAccessService:
     def get_user_operator_by_id(user_operator_id: UUID):
         return UserOperator.objects.get(id=user_operator_id)

@@ -12,7 +12,9 @@ from registration.models import (
     User,
     UserOperator,
 )
-import uuid, random, string
+import uuid
+import random
+import string
 
 
 def generate_random_bc_corporate_registry_number():

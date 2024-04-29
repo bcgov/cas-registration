@@ -19,7 +19,6 @@ from registration.schema import (
 )
 from ninja.responses import codes_4xx, codes_5xx
 from ninja.errors import HttpError
-from registration.api.api_base import router
 
 
 @router.put(
