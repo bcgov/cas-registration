@@ -229,7 +229,7 @@ class TestOperatorsEndpoint(CommonTestSetup):
 
         assert response.status_code == 200
         assert response.json().get('status') == Operator.Statuses.DECLINED
-        assert response.json().get('is_new') == False
+        assert response.json().get('is_new') is False
         assert response.json().get("verified_by") == str(self.user.user_guid)
 
         assert mock_send_operator_access_request_email.call_count == 3  # one for each user operator
@@ -270,7 +270,7 @@ class TestOperatorsEndpoint(CommonTestSetup):
         assert response.status_code == 200
 
         assert response.json().get('status') == Operator.Statuses.DECLINED
-        assert response.json().get('is_new') == False
+        assert response.json().get('is_new') is False
         assert response.json().get("verified_by") == str(self.user.user_guid)
         user_operator.refresh_from_db()  # refresh the user_operator object to get the updated status
         assert user_operator.status == UserOperator.Statuses.PENDING

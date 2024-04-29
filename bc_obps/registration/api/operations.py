@@ -92,7 +92,7 @@ def list_operations(request, filters: OperationFilterSchema = Query(...)):
 
     try:
         page = paginator.validate_number(page)
-    except:
+    except Exception:
         page = 1
 
     return 200, {

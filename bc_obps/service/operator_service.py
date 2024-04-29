@@ -48,13 +48,13 @@ class OperatorService:
             try:
                 operator = OperatorDataAccessService.get_operators_by_cra_number(cra_business_number)
                 return OperatorSearchOut.model_validate(operator)
-            except:
+            except Exception:
                 raise Exception("No matching operator found. Retry or add operator.")
         elif legal_name:
             try:
                 operators = OperatorDataAccessService.get_operators_by_legal_name(legal_name)
                 return [OperatorSearchOut.model_validate(operator) for operator in operators]
-            except:
+            except Exception:
                 raise Exception("No matching operator found. Retry or add operator.")
 
     @classmethod
