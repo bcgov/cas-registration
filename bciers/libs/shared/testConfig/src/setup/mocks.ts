@@ -21,6 +21,6 @@ const actionHandler = vi.fn();
 const useRouter = vi.fn();
 const useParams = vi.fn();
 const useSession = vi.fn();
-const getServerSession = vi.fn();
+const auth = vi.fn();
 
-export { actionHandler, getServerSession, useRouter, useParams, useSession };
+export { actionHandler, auth, useRouter, useParams, useSession };

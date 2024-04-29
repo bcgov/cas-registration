@@ -1,14 +1,13 @@
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import Tiles from "@/app/components/navigation/Tiles";
 import { getUserOperator } from "@/app/components/routes/select-operator/Page";
 import { actionHandler } from "@/app/utils/actions";
 import { FrontEndRoles } from "@/app/utils/enums";
 import Card from "@mui/material/Card";
 import Typography from "@mui/material/Typography";
-import { getServerSession } from "next-auth";
+import { auth } from "@/auth";
 
 export default async function Page() {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
   const role = session?.user?.app_role || "";
   let operatorStatus = "";
   let userOperatorStatus = "";
@@ -18,7 +17,7 @@ export default async function Page() {
       const operator = await actionHandler(
         "registration/user-operator/user-operator-operator",
         "GET",
-        "",
+        ""
       );
       const userOperator = await getUserOperator();
       operatorStatus = operator.status;

@@ -1,0 +1,160 @@
+import type { NextAuthConfig } from "next-auth";
+import Keycloak, { KeycloakProfile } from "next-auth/providers/keycloak";
+import { Errors, IDP } from "@/app/utils/enums";
+import { actionHandler } from "@/app/utils/actions";
+
+declare module "next-auth" {
+  /**
+   * Returned by `auth`, `useSession`, `getSession` and received as a prop on the `SessionProvider` React Context
+   */
+  interface Session {
+    error?: string;
+    identity_provider: string | undefined;
+  }
+}
+
+declare module "next-auth" {
+  interface User {
+    // Add additional properties here:
+    user_guid: string | undefined;
+    bceid_business_name: string | undefined;
+    bceid_business_guid: string | undefined;
+    app_role?: string;
+    given_name?: string;
+    family_name?: string;
+    full_name?: string;
+  }
+}
+
+declare module "next-auth/jwt" {
+  /** Returned by the `jwt` callback and `auth`, when using JWT sessions */
+  interface JWT {
+    /** OpenID ID Token */
+    idToken?: string;
+    access_token?: string | undefined;
+    user_guid: string | undefined;
+    identity_provider: string | undefined;
+    error?: string;
+    app_role?: string;
+    given_name?: string;
+    family_name?: string;
+    full_name?: string;
+    bceid_business_name: string | undefined;
+    bceid_business_guid: string | undefined;
+  }
+}
+
+export default {
+  providers: [
+    Keycloak({
+      clientId: process.env.AUTH_KEYCLOAK_CLIENT_ID,
+      clientSecret: process.env.AUTH_KEYCLOAK_CLIENT_SECRET,
+      issuer: process.env.AUTH_KEYCLOAK_ISSUER,
+    }),
+  ],
+  basePath: "/api/auth",
+  secret: process.env.AUTH_SECRET,
+  callbacks: {
+    async jwt({ token, account, profile }) {
+      try {
+        // 🧩 custom properties are configured through module augmentation in client/app/types/next-auth.d.ts
+        if (profile) {
+          token.given_name = (profile as KeycloakProfile).given_name;
+          token.family_name = (profile as KeycloakProfile).family_name;
+          token.bceid_business_name = (
+            profile as KeycloakProfile
+          ).bceid_business_name;
+          token.bceid_business_guid = (
+            profile as KeycloakProfile
+          ).bceid_business_guid;
+        }
+        //📌  Provider account (only available on sign in)
+        if (account) {
+          // ✨  On a new sessions, you can add information to the next-auth created token...
+
+          // 👇️ used for routing and DJANGO API calls
+          token.user_guid = account.providerAccountId.split("@")[0];
+
+          token.identity_provider = account.providerAccountId.split("@")[1];
+        }
+        // 🚀 API call: Get user name from user table
+        const response = await actionHandler(
+          `registration/user/user-profile/${token.user_guid}`,
+          "GET"
+        );
+        const { first_name: firstName, last_name: lastName } = response || {};
+        if (firstName && lastName) {
+          token.full_name = `${firstName} ${lastName}`;
+        } else {
+          token.full_name = `${token.given_name} ${token.family_name}`;
+        }
+        // If no token.app_role, augment the keycloak token with cas registration user app_role
+        if (!token.app_role) {
+          // 🚀 API call: Get user app_role by user_guid from user table
+          const responseRole = await actionHandler(
+            `registration/user/user-app-role/${token.user_guid}`,
+            "GET"
+          );
+          if (responseRole?.role_name) {
+            // user found in table, assign role to token (note: all industry users have the same app role of `industry_user`, and their permissions are further defined by their role in the UserOperator model)
+            token.app_role = responseRole.role_name;
+            //for bceid users, augment with admin based on operator-user table
+            if (token.identity_provider === IDP.BCEIDBUSINESS) {
+              try {
+                // 🚀 API call: check if user is admin approved
+                const responseAdmin = await actionHandler(
+                  `registration/user-operator/is-approved-admin-user-operator/${token.user_guid}`,
+                  "GET"
+                );
+                if (responseAdmin?.approved) {
+                  token.app_role = "industry_user_admin"; // note: industry_user_admin a front-end only role. In the db, all industry users have an industry_user app_role, and their permissions are further defined by UserOperator.role
+                } else {
+                  // Default app_role (industry_user) if the API call fails
+                }
+              } catch (error) {
+                // Default app_role (industry_user) if there's an error in the API call
+              }
+            }
+          } else {
+            // 🛸 Routing: no app_role user found; so, user will be routed to dashboard\profile
+          }
+        }
+      } catch (error) {
+        token.error = Errors.ACCESS_TOKEN;
+      }
+      // 🔒 return encrypted nextauth JWT
+      return token;
+    },
+    async session({ token, session, user }) {
+      // By default, for security, only a subset of the token is returned...
+      //💡 if you want to make a nextauth JWT property available to the client session...
+      // you have to explicitly forward it here to make it available to the client
+      //🚨  Do not expose sensitive information, such as access-tokens.
+      return {
+        ...session,
+        error: token.error,
+        identity_provider: token.identity_provider,
+        user: {
+          ...session.user,
+          // IDIR users will not have a bceid_business guid/name. We set default values here so that the model fields can be not null for all users.
+          // Business BCeID users will have these values set by the token & these values cannot be null or empty in the database.
+          bceid_business_guid:
+            token.identity_provider === "idir"
+              ? "00000000-0000-0000-0000-000000000000"
+              : token.bceid_business_guid,
+          bceid_business_name:
+            token.identity_provider === "idir"
+              ? "BCGOV"
+              : token.bceid_business_name,
+          given_name: token.given_name,
+          family_name: token.family_name,
+          full_name: token.full_name,
+          app_role: token.app_role,
+        },
+      };
+    },
+    async jwt({ token }) {
+      return token;
+    },
+  },
+} satisfies NextAuthConfig;

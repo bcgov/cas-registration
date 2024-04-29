@@ -5,7 +5,7 @@ import {
 } from "@/app/utils/jsonSchema/userOperator";
 
 import { RJSFSchema } from "@rjsf/utils";
-import { getServerSession } from "next-auth";
+import { auth } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { UserOperatorFormData } from "@/app/components/form/formDataTypes";
 import { validate as isValidUUID } from "uuid";
@@ -17,7 +17,7 @@ async function getBusinessStructures() {
   return actionHandler(
     `registration/business_structures`,
     "GET",
-    `/dashboard/select-operator/user-operator`,
+    `/dashboard/select-operator/user-operator`
   );
 }
 
@@ -26,14 +26,14 @@ export async function getUserOperatorFormData(id: string) {
   return actionHandler(
     `registration/user-operator/${id}`,
     "GET",
-    `/user-operator/${id}`,
+    `/user-operator/${id}`
   );
 }
 
 // To populate the options for the business structure select field
 const createUserOperatorSchema = (
   schema: RJSFSchema,
-  businessStructureList: { id: string; label: string }[],
+  businessStructureList: { id: string; label: string }[]
 ): RJSFSchema => {
   const localSchema = JSON.parse(JSON.stringify(schema));
 
@@ -43,7 +43,7 @@ const createUserOperatorSchema = (
       title: businessStructure.label,
       enum: [businessStructure.id],
       value: businessStructure.id,
-    }),
+    })
   );
 
   // for operator
@@ -64,7 +64,7 @@ export default async function UserOperator({
 }: Readonly<{
   params?: { id?: string; readonly?: boolean };
 }>) {
-  const session = await getServerSession(authOptions);
+  const session = await auth(authOptions);
   const isCasInternal =
     session?.user.app_role?.includes("cas") &&
     !session?.user.app_role?.includes("pending");
@@ -83,7 +83,7 @@ export default async function UserOperator({
     (businessStructure: BusinessStructure) => ({
       id: businessStructure.name,
       label: businessStructure.name,
-    }),
+    })
   );
 
   const formData = {
@@ -96,7 +96,7 @@ export default async function UserOperator({
       <UserOperatorReviewForm
         schema={createUserOperatorSchema(
           userOperatorInternalUserSchema,
-          businessStructuresList,
+          businessStructuresList
         )}
         formData={formData}
       />
@@ -107,7 +107,7 @@ export default async function UserOperator({
     <UserOperatorForm
       schema={createUserOperatorSchema(
         userOperatorSchema,
-        businessStructuresList,
+        businessStructuresList
       )}
       formData={formData}
     />

@@ -15,7 +15,7 @@ export default function Profile() {
         sx={{ color: "white", marginRight: "10px" }}
       >
         <div
-          data-testid={`${session?.user.app_role}`}
+          data-testid={`${session?.user?.app_role}`}
           className="font-bold text-lg underline"
         >
           {userFullName}

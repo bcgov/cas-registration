@@ -26,14 +26,11 @@ const growthbook_fileName = new Growthbook(...
 The implementation for Client components vs Server components is slightly different. This is an example for a Client component:
 
 ```typescript
-import {
-  GrowthBook,
-  GrowthBookProvider
-} from "@growthbook/growthbook-react";
+import { GrowthBook, GrowthBookProvider } from "@growthbook/growthbook-react";
 import { useMemo, useEffect, useState } from "react";
-import { env } from 'next-runtime-env';
+import { env } from "next-runtime-env";
 
-const CLIENT_KEY = env('NEXT_PUBLIC_GROWTHBOOK_CLIENT_KEY')
+const CLIENT_KEY = env("NEXT_PUBLIC_GROWTHBOOK_CLIENT_KEY");
 const growthbook_clientPage = new GrowthBook({
   apiHost: "https://cdn.growthbook.io",
   clientKey: CLIENT_KEY,
@@ -41,7 +38,7 @@ const growthbook_clientPage = new GrowthBook({
 });
 
 export default function ClientPage() {
-  const [isClient, setIsClient] = useState(false)
+  const [isClient, setIsClient] = useState(false);
 
   /*
     Running the fetch to the growthbook API inside a useMemo cuts down on the amount of fetches done,
@@ -72,18 +69,19 @@ export default function ClientPage() {
     Using the stateful boolean isClient in this useEffect hook ensures that the code toggled by growthbook is only rendered on the client & avoids the mismatch error.
   */
   useEffect(() => {
-    setIsClient(true)
-  }, [])
+    setIsClient(true);
+  }, []);
 
   return (
     <GrowthBookProvider>
       <div>
         {growthbook_clientPage.isOn("test-obps") && isClient && (
-          <h1>This header will only show if the "test-obps" feature in growthbook is toggled "on"</h1>
+          <h1>
+            This header will only show if the "test-obps" feature in growthbook
+            is toggled "on"
+          </h1>
         )}
-        <p>
-          This text block is unaffected by the growthbook feature flag
-        </p>
+        <p>This text block is unaffected by the growthbook feature flag</p>
       </div>
     </GrowthBookProvider>
   );
@@ -95,7 +93,6 @@ export default function ClientPage() {
 Server components are a bit simpler. Here is an example for a server component:
 
 ```typescript
-
 import { Suspense } from "react";
 import { GrowthBook } from "@growthbook/growthbook";
 
@@ -108,18 +105,19 @@ const growthbook_serverComponentPage = new GrowthBook({
 
 const ServerComponentPage = async () => {
   // Load growthbook features
-  await growthbook_serverComponentPage.loadFeatures(); // NOTE: This has to be added after the call to getServerSession()
+  await growthbook_serverComponentPage.loadFeatures(); // NOTE: This has to be added after the call to auth()
 
   return (
     <Suspense fallback={<Loading />}>
-      {growthbook_serverComponentPage.isOn('test-obps') && <h1>I am toggled by the growthbook feature flag</h1>}
+      {growthbook_serverComponentPage.isOn("test-obps") && (
+        <h1>I am toggled by the growthbook feature flag</h1>
+      )}
       <p>I am not toggled by the growthbook feature flag</p>
     </Suspense>
   );
 };
 
 export default ServerComponentPage;
-
 ```
 
 ## Other Resources
