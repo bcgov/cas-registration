@@ -99,7 +99,7 @@ class OperationOut(ModelSchema):
             return mock_file_to_data_url()
         statutory_declaration = obj.get_statutory_declaration()
         if statutory_declaration:
-            return file_to_data_url(statutory_declaration, use_mock_file)
+            return file_to_data_url(statutory_declaration)
         return None
 
     @staticmethod
