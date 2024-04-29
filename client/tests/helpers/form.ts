@@ -37,12 +37,15 @@ export const checkTextWidgetValidationStyles = async (
 
 export const checkComboBoxWidgetValidationStyles = async (
   component: ReactNode,
+  isDropdownArrowPresent = true,
 ) => {
+  const fieldsetIndex = isDropdownArrowPresent ? 2 : 1;
   render(component);
 
   const comboBoxInput = screen.getByRole("combobox") as HTMLInputElement;
-  const inputBorderElement = comboBoxInput?.parentElement
-    ?.children[2] as Element;
+  const inputBorderElement = comboBoxInput?.parentElement?.children[
+    fieldsetIndex
+  ] as Element;
   const submitButton = screen.getByRole("button", { name: "Submit" });
 
   // The input should have the default border color
