@@ -1,10 +1,10 @@
 import { Suspense } from "react";
-import AccessRequests from "@/app/components/routes/access-requests/AccessRequests";
 import Loading from "@/app/components/loading/SkeletonGrid";
 import { actionHandler } from "@/app/utils/actions";
-import { OperatorsSearchParams } from "@/app/components/routes/access-requests/types";
 import { GridRowsProp } from "@mui/x-data-grid";
 import buildQueryParams from "@/app/utils/buildQueryParams";
+import { OperatorsSearchParams } from "@/app/components/userOperators/types";
+import AccessRequests from "@/app/components/userOperators/AccessRequests";
 
 export const formatUserOperatorRows = (rows: GridRowsProp) => {
   return rows?.map(

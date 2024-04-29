@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import Loading from "@/app/components/loading/SkeletonGrid";
-import AccessRequestReceived from "@/app/components/routes/select-operator/form/AccessRequestReceived";
+import AccessRequestReceived from "@/app/components/userOperators/AccessRequestReceived";
 
 export default async function SelectOperatorRequestAccessReceivedPage({
   params,

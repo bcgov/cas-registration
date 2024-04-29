@@ -4,7 +4,7 @@ import { GridColDef } from "@mui/x-data-grid";
 import DataGrid from "@/app/components/datagrid/DataGrid";
 import AccessTypeColumnCell from "@/app/components/datagrid/cells/AccessTypeColumnCell";
 import ChangeUserOperatorStatusColumnCell from "@/app/components/datagrid/cells/ChangeUserOperatorStatusColumnCell";
-import StatusStyleColumnCell from "./cells/StatusStyleColumnCell";
+import StatusStyleColumnCell from "@/app/components/datagrid/cells/StatusStyleColumnCell";
 import { UserOperatorDataGridRow } from "@/app/utils/users/adminUserOperators";
 
 const columns: GridColDef[] = [

@@ -1,15 +1,15 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import DataGrid from "./DataGrid";
+import DataGrid from "@/app/components/datagrid/DataGrid";
 import { GridColumnGroupHeaderParams } from "@mui/x-data-grid";
-import { fetchOperationsPageData } from "@/app/components/routes/operations/Operations";
 import { useSession } from "next-auth/react";
 import OperationsActionCell from "@/app/components/datagrid/cells/OperationsActionCell";
 import HeaderSearchCell from "@/app/components/datagrid/cells/HeaderSearchCell";
 import operationColumns from "@/app/components/datagrid/models/operationColumns";
 import operationGroupColumns from "@/app/components/datagrid/models/operationGroupColumns";
-import { OperationRow } from "@/app/components/routes/operations/types";
+import { OperationRow } from "./types";
+import { fetchOperationsPageData } from "./Operations";
 
 const OperationSearchCell = ({
   lastFocusedField,

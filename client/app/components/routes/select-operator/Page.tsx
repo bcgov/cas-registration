@@ -1,7 +1,6 @@
 import { Suspense } from "react";
 import { permanentRedirect } from "next/navigation";
 import Loading from "@/app/components/loading/SkeletonField";
-import SelectOperator from "@/app/components/routes/select-operator/form/SelectOperator";
 import { BC_GOV_LINKS_COLOR } from "@/app/styles/colors";
 import Link from "next/link";
 import { getServerSession } from "next-auth";
@@ -9,6 +8,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { actionHandler } from "@/app/utils/actions";
 import { OperatorStatus, UserOperatorStatus } from "@/app/utils/enums";
 import getUserFullName from "@/app/utils/getUserFullName";
+import SelectOperator from "@/app/components/userOperators/SelectOperator";
 
 export const getUserOperator = async () => {
   try {

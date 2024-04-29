@@ -1,14 +1,14 @@
 import { GridRowsProp } from "@mui/x-data-grid";
 
 import { actionHandler } from "@/app/utils/actions";
-import OperationDataGrid from "@/app/components/datagrid/OperationDataGrid";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import {
   OperationRow,
   OperationsSearchParams,
-} from "@/app/components/routes/operations/types";
+} from "@/app/components/operations/types";
 import buildQueryParams from "@/app/utils/buildQueryParams";
+import OperationDataGrid from "./OperationDataGrid";
 
 const formatTimestamp = (timestamp: string) => {
   if (!timestamp) return undefined;

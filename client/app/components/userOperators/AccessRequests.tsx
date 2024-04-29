@@ -1,7 +1,7 @@
 import Note from "@/app/components/datagrid/Note";
-import OperatorDataGrid from "@/app/components/datagrid/OperatorDataGrid";
 import { UserOperatorPaginated } from "./types";
-import StatusStyleColumnCell from "../../datagrid/cells/StatusStyleColumnCell";
+import StatusStyleColumnCell from "@/app/components/datagrid/cells/StatusStyleColumnCell";
+import OperatorDataGrid from "./OperatorDataGrid";
 
 // 🧩 Main component
 const AccessRequests = ({

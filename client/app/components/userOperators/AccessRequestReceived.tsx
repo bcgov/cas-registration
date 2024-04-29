@@ -1,7 +1,7 @@
-import { Operator } from "@/app/components/routes/select-operator/form/types";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
-import { getOperator } from "@/app/components/routes/select-operator/form/ConfirmSelectedOperator";
 import { actionHandler } from "@/app/utils/actions";
+import { Operator } from "./types";
+import { getOperator } from "./ConfirmSelectedOperator";
 
 export async function getOperatorHasAdmin(id: string) {
   return actionHandler(

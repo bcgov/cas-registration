@@ -1,5 +1,5 @@
-import OperatorsPage from "@/app/components/routes/operators/OperatorsPage";
-import { OperatorsSearchParams } from "@/app/components/routes/access-requests/types";
+import OperatorsPage from "@/app/components/routes/operators/Page";
+import { OperatorsSearchParams } from "@/app/components/userOperators/types";
 
 export default async function Page({
   searchParams,
