@@ -100,8 +100,7 @@ describe("RJSF ComboBoxWidget", () => {
     );
 
     const comboBoxInput = screen.getByRole("combobox") as HTMLInputElement;
-    const clearButton = comboBoxInput?.parentElement?.children[1]
-      ?.children[0] as HTMLInputElement;
+    const clearButton = screen.getByTestId("CloseIcon");
 
     await userEvent.click(clearButton);
 
