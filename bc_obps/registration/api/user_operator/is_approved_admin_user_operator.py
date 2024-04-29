@@ -22,6 +22,7 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 @authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
 @handle_http_errors()
 def is_approved_admin_user_operator(request):
+    user_guid = get_current_user_guid(request)
     return 200, UserDataAccessService.is_user_an_approved_admin_user_operator(
-        json.loads(request.headers.get('Authorization')).get('user_guid')
+        user_guid
     )

@@ -12,8 +12,9 @@ from service.user_profile_service import UserProfileService
 @router.get("/user/user-profile", response={200: UserOut, codes_4xx: Message}, url_name="get_user_profile")
 @handle_http_errors()
 def get_user_profile(request):
+    user_guid = get_current_user_guid(request)
     return 200, UserDataAccessService.get_user_profile(
-        json.loads(request.headers.get('Authorization')).get('user_guid')
+        user_guid
     )
 
 
