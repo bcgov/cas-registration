@@ -9,4 +9,5 @@ from ninja.responses import codes_4xx
 @router.get("user/user-app-role", response={200: UserAppRoleOut, codes_4xx: Message}, url_name="get_user_role")
 @handle_http_errors()
 def get_user_role(request):
-    return 200, UserDataAccessService.get_app_role(json.loads(request.headers.get('Authorization')).get('user_guid'))
+    user_guid = get_current_user_guid(request)
+    return 200, UserDataAccessService.get_app_role(user_guid)
