@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import DataGrid from "../datagrid/DataGrid";
+import DataGrid from "@/app/components/datagrid/DataGrid";
 import { GridColumnGroupHeaderParams } from "@mui/x-data-grid";
 import { useSession } from "next-auth/react";
 import OperationsActionCell from "@/app/components/datagrid/cells/OperationsActionCell";

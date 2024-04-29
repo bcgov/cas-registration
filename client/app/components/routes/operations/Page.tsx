@@ -5,9 +5,9 @@ import { Suspense } from "react";
 import Loading from "@/app/components/loading/SkeletonGrid";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import Note, { registrationRequestNote } from "../../datagrid/Note";
-import { OperationsSearchParams } from "../../operations/types";
-import Operations from "../../operations/Operations";
+import { OperationsSearchParams } from "@/app/components/operations/types";
+import Note, { registrationRequestNote } from "@/app/components/datagrid/Note";
+import Operations from "@/app/components/operations/Operations";
 
 export default async function OperationsPage({
   searchParams,

@@ -1,4 +1,4 @@
-import { Operator } from "../userOperators/types";
+import { Operator } from "@/app/components/userOperators/types";
 
 export interface Operation {
   id: number;

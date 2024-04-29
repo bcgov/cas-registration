@@ -8,14 +8,14 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { actionHandler } from "@/app/utils/actions";
 import { OperatorStatus, UserOperatorStatus } from "@/app/utils/enums";
 import getUserFullName from "@/app/utils/getUserFullName";
-import SelectOperator from "../../userOperators/SelectOperator";
+import SelectOperator from "@/app/components/userOperators/SelectOperator";
 
 export const getUserOperator = async () => {
   try {
     return await actionHandler(
       `registration/user-operator/user-operator-from-user`,
       "GET",
-      ""
+      "",
     );
   } catch (error) {
     throw error;
@@ -33,7 +33,7 @@ export default async function MyOperatorPage() {
     // Using permanentRedirect instead of redirect to avoid the double rendering bug
     // https://github.com/vercel/next.js/issues/57257
     return permanentRedirect(
-      `/dashboard/select-operator/user-operator/${id}/1?title=${operatorLegalName}`
+      `/dashboard/select-operator/user-operator/${id}/1?title=${operatorLegalName}`,
     );
   }
 
@@ -43,11 +43,11 @@ export default async function MyOperatorPage() {
   ) {
     if (isNew) {
       return permanentRedirect(
-        `/dashboard/select-operator/received/add-operator/${operatorId}?title=${operatorLegalName}`
+        `/dashboard/select-operator/received/add-operator/${operatorId}?title=${operatorLegalName}`,
       );
     }
     return permanentRedirect(
-      `/dashboard/select-operator/received/request-access/${operatorId}?title=${operatorLegalName}`
+      `/dashboard/select-operator/received/request-access/${operatorId}?title=${operatorLegalName}`,
     );
   }
 
