@@ -33,6 +33,7 @@ def send_boro_id_application_email(
     """
 
     try:
+        print("Fetching template...")
         template_name = BoroIdApplication.generate_boro_id_application_template_name(application_state)
         template = EmailNotificationTemplate.objects.get(name=template_name)
     except EmailNotificationTemplate.DoesNotExist:
@@ -46,6 +47,8 @@ def send_boro_id_application_email(
     }
 
     try:
+        print("SENDING THE EMAIL!!!!")
+        print(email_context)
         response_json = email_service.send_email_by_template(template, email_context, [external_user_email_address])
         # Create email notification record to store transaction and message IDs
         email_service.create_email_notification_record(
