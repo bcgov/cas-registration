@@ -1,5 +1,6 @@
 from uuid import UUID
 from django.db import transaction
+from registration.utils import generate_useful_error
 from registration.decorators import authorize
 from registration.api.api_base import router
 from datetime import datetime
@@ -18,6 +19,7 @@ from registration.schema import (
 )
 from ninja.responses import codes_4xx, codes_5xx
 from ninja.errors import HttpError
+from registration.api.api_base import router
 
 
 @router.put(

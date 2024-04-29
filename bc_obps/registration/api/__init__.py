@@ -9,7 +9,9 @@ from . import (
     users,
     operations,
 )
-from .operation import update_status
+from ._operations import operation_id
+from ._operations._operation_id import update_status
+
 from .operator import operator_access_declined, operator_has_admin
 from .user import user_profile, user_app_role
 from .user_operator import (
