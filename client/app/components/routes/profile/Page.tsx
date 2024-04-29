@@ -6,7 +6,7 @@ import {
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import getUserFullName from "@/app/utils/getUserFullName";
-import UserForm from "../../users/UserForm";
+import UserForm from "@/app/components/users/UserForm";
 
 // 🚀 API call: GET user's data
 async function getUserFormData(): Promise<

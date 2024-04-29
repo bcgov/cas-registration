@@ -18,7 +18,7 @@ import Link from "next/link";
 import { validate as isValidUUID } from "uuid";
 import { carbonTaxExemptionLink } from "@/app/utils/urls";
 import OperationReviewForm from "./OperationReviewForm";
-import { BusinessStructure } from "../userOperators/types";
+import { BusinessStructure } from "@/app/components/userOperators/types";
 
 // 🚀 API call: GET user's data
 async function getUserFormData(): Promise<

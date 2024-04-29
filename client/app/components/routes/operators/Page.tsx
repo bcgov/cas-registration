@@ -3,8 +3,8 @@ import Loading from "@/app/components/loading/SkeletonGrid";
 import { actionHandler } from "@/app/utils/actions";
 import { GridRowsProp } from "@mui/x-data-grid";
 import buildQueryParams from "@/app/utils/buildQueryParams";
-import { OperatorsSearchParams } from "../../userOperators/types";
-import AccessRequests from "../../userOperators/AccessRequests";
+import { OperatorsSearchParams } from "@/app/components/userOperators/types";
+import AccessRequests from "@/app/components/userOperators/AccessRequests";
 
 export const formatUserOperatorRows = (rows: GridRowsProp) => {
   return rows?.map(
