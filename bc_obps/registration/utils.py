@@ -4,19 +4,20 @@ from django.core.exceptions import ValidationError
 from django.db import IntegrityError, models
 from django.db.models import QuerySet
 from registration.constants import UNAUTHORIZED_MESSAGE, DEFAULT_API_NAMESPACE
-import requests, base64, re, hashlib, pytz
+import requests
+import base64
+import re
+import hashlib
 from django.core.files.base import ContentFile
 from ninja.errors import HttpError
 from registration.models import (
     Document,
     User,
-    User,
     UserOperator,
 )
 from django.urls import reverse_lazy
 from datetime import datetime
-from typing import Optional
-from registration.models import User, UserOperator
+import pytz
 
 
 def update_model_instance(

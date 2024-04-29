@@ -30,14 +30,13 @@ repos:
     rev: 22.10.0
     hooks:
       - id: black
-  - repo: local
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    # Ruff version.
+    rev: v0.4.2
     hooks:
-      - id: pylint
-        name: pylint
-        entry: bash -c "cd bc_obps && poetry run pylint --rcfile=.pylintrc *.py"
-        language: system
-        types: [python]
-        require_serial: true
+      # Run the linter.
+      - id: ruff
+        args: ["bc_obps/", --fix]
 
   - repo: https://github.com/python-poetry/poetry
     rev: 1.6.1

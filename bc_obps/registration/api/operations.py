@@ -27,7 +27,6 @@ from registration.utils import (
     get_current_user_approved_user_operator_or_raise,
 )
 from ninja.responses import codes_4xx
-
 from ninja import Query
 
 
@@ -93,7 +92,7 @@ def list_operations(request, filters: OperationFilterSchema = Query(...)):
 
     try:
         page = paginator.validate_number(page)
-    except:
+    except Exception:
         page = 1
 
     return 200, {

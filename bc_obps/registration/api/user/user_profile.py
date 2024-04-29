@@ -1,22 +1,11 @@
 import json
-from typing import Optional
-from uuid import UUID
-from django.conf import settings
-from django.http import JsonResponse
-from service.error_service.handle_exception import handle_exception
 from registration.api.utils.current_user_utils import get_current_user_guid
 from service.data_access_service.user_service import UserDataAccessService
 from registration.decorators import authorize, handle_http_errors
-from registration.models import AppRole, User
+from registration.models import AppRole
 from registration.schema import UserOut, UserIn, Message, UserOperator, UserUpdateIn
 from registration.api.api_base import router
-from django.shortcuts import get_object_or_404
 from ninja.responses import codes_4xx
-from registration.enums.enums import IdPs
-from registration.utils import (
-    generate_useful_error,
-)
-from django.core.exceptions import ValidationError
 from service.user_profile_service import UserProfileService
 
 # endpoint to return user data if user exists in user table

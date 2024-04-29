@@ -23,7 +23,6 @@ baker.generators.add(CAPostalCodeField, TestUtils.mock_postal_code)
 
 fake_timestamp_from_past = '2024-01-09 14:13:08.888903-0800'
 fake_timestamp_from_past_str_format = '%Y-%m-%d %H:%M:%S.%f%z'
-from registration.tests.utils.helpers import TestUtils, MOCK_DATA_URL
 
 
 class TestOperationsEndpoint(CommonTestSetup):

@@ -15,8 +15,11 @@ from google.oauth2 import service_account
 from pathlib import Path
 import dj_database_url
 import urllib.parse
-
 from dotenv import load_dotenv
+
+# Sentry Exception Tracking
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
 
 load_dotenv()
 
@@ -165,9 +168,6 @@ CORS_ALLOWED_ORIGINS = ["http://localhost:3000"]
 
 DATA_UPLOAD_MAX_MEMORY_SIZE = 20000000
 
-# Sentry Exception Tracking
-import sentry_sdk
-from sentry_sdk.integrations.django import DjangoIntegration
 
 # Only enable sentry in production
 SENTRY_ENVIRONMENT = os.environ.get('SENTRY_ENVIRONMENT')

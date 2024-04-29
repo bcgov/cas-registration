@@ -53,13 +53,13 @@ class TestCurrentUserMiddleware:
     def test_no_authorization_header(self):
         middleware = self._get_middleware()
         request = self._get_request()
-        response = middleware(request)
+        middleware(request)
         assert not hasattr(request, 'current_user')
 
     def test_invalid_authorization_header(self):
         middleware = self._get_middleware()
         request = self._get_request(HTTP_AUTHORIZATION='invalid_token')
-        response = middleware(request)
+        middleware(request)
         assert not hasattr(request, 'current_user')
 
     def test_valid_authorization_header(self):
@@ -67,7 +67,7 @@ class TestCurrentUserMiddleware:
         user = baker.make(User)
         auth_header = {'user_guid': str(user.user_guid)}
         request = self._get_request(HTTP_AUTHORIZATION=json.dumps(auth_header))
-        response = middleware(request)
+        middleware(request)
         assert hasattr(request, 'current_user')
         assert request.current_user == user
 
@@ -75,5 +75,5 @@ class TestCurrentUserMiddleware:
         middleware = self._get_middleware()
         auth_header = {'user_guid': 'non_existing_guid'}
         request = self._get_request(HTTP_AUTHORIZATION=json.dumps(auth_header))
-        response = middleware(request)
+        middleware(request)
         assert not hasattr(request, 'current_user')

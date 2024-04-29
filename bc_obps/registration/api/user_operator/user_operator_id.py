@@ -8,7 +8,6 @@ from registration.schema import (
     UserOperatorOut,
     Message,
 )
-from typing import List
 from registration.api.api_base import router
 
 from registration.models import (

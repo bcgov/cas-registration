@@ -212,7 +212,7 @@ class UserOperatorService:
             # operator_business_guid can be None if no admins are approved yet (business_guids come from admin users)
             try:
                 operator_business_guid = OperatorDataAccessService.get_operators_business_guid(operator.id)
-            except:
+            except Exception:
                 operator_business_guid = None
             if operator_business_guid != admin_user.business_guid:
                 raise PermissionError("Your user is not associated with this operator.")

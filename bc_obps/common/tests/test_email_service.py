@@ -1,4 +1,5 @@
-import uuid, pytest
+import uuid
+import pytest
 from common.enums import OperatorAccessRequest, AccessRequestStates, AccessRequestTypes
 from datetime import datetime, timedelta
 from uuid import UUID
