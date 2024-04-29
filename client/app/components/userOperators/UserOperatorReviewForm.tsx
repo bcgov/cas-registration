@@ -6,8 +6,8 @@ import { userOperatorInternalUserUiSchema } from "@/app/utils/jsonSchema/userOpe
 import MultiStepAccordion from "@/app/components/form/MultiStepAccordion";
 import { UserOperatorFormData } from "@/app/components/form/formDataTypes";
 import { RJSFSchema } from "@rjsf/utils";
-import UserOperatorReview from "@/app/components/routes/access-requests/form/UserOperatorReview";
 import { OperatorStatus, UserOperatorStatus } from "@/app/utils/enums";
+import UserOperatorReview from "./UserOperatorReview";
 
 interface Props {
   formData: UserOperatorFormData;

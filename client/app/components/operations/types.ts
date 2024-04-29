@@ -1,4 +1,4 @@
-import { Operator } from "../select-operator/form/types";
+import { Operator } from "@/app/components/userOperators/types";
 
 export interface Operation {
   id: number;

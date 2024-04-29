@@ -1,4 +1,3 @@
-import Operations from "@/app/components/routes/operations/Operations";
 import "@testing-library/jest-dom";
 import { render, screen } from "@testing-library/react";
 import {
@@ -8,6 +7,7 @@ import {
   useSession,
 } from "@/tests/setup/mocks";
 import { Session } from "@/tests/setup/types";
+import Operations from "@/app/components/operations/Operations";
 
 useSession.mockReturnValue({
   data: {

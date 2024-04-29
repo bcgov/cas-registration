@@ -1,5 +1,4 @@
 "use client";
-import { Operator } from "@/app/components/routes/select-operator/form/types";
 
 import {
   Box,
@@ -16,6 +15,7 @@ import RequestAccessButton from "@/app/components/button/RequestAccessButton";
 import Link from "next/link";
 import { BC_GOV_LINKS_COLOR, DARK_GREY_BG_COLOR } from "@/app/styles/colors";
 import Button from "@mui/material/Button";
+import { Operator } from "./types";
 
 interface ConfirmSelectedOperatorFormProps {
   operator: Operator;
