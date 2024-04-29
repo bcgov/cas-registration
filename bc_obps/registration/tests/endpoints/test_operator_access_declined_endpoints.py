@@ -22,4 +22,4 @@ class TestOperatorAccessDeclinedEndpoint(CommonTestSetup):
         )
         response_json = response.json()
         assert response.status_code == 200
-        assert response_json == True
+        assert response_json is True
