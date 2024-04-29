@@ -63,7 +63,8 @@ export async function actionHandler(
         // get the user_guid from the JWT
         const userGuid =
           token?.user_guid || getUUIDFromEndpoint(endpoint) || "";
-
+        // strip any guid param from endpoint url
+        endpoint = endpoint.replace(`/${userGuid}`, "");
         // Add user_guid to Django API Authorization header
         const defaultOptions: RequestInit = {
           cache: "no-store", // Default cache option
