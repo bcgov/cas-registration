@@ -1,4 +1,4 @@
-import json
+from registration.api.utils.current_user_utils import get_current_user_guid
 from registration.decorators import handle_http_errors
 from service.data_access_service.user_service import UserDataAccessService
 from registration.schema import UserAppRoleOut, Message

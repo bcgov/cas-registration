@@ -1,4 +1,4 @@
-import json
+from registration.api.utils.current_user_utils import get_current_user_guid
 from service.data_access_service.user_service import UserDataAccessService
 
 from registration.decorators import authorize, handle_http_errors
@@ -23,6 +23,4 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 @handle_http_errors()
 def is_approved_admin_user_operator(request):
     user_guid = get_current_user_guid(request)
-    return 200, UserDataAccessService.is_user_an_approved_admin_user_operator(
-        user_guid
-    )
+    return 200, UserDataAccessService.is_user_an_approved_admin_user_operator(user_guid)

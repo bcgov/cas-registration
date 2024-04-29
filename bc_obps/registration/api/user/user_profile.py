@@ -1,4 +1,9 @@
-import json
+
+from typing import Optional
+from uuid import UUID
+from django.conf import settings
+from django.http import JsonResponse
+from service.error_service.handle_exception import handle_exception
 from registration.api.utils.current_user_utils import get_current_user_guid
 from service.data_access_service.user_service import UserDataAccessService
 from registration.decorators import authorize, handle_http_errors
@@ -13,9 +18,7 @@ from service.user_profile_service import UserProfileService
 @handle_http_errors()
 def get_user_profile(request):
     user_guid = get_current_user_guid(request)
-    return 200, UserDataAccessService.get_user_profile(
-        user_guid
-    )
+    return 200, UserDataAccessService.get_user_profile(user_guid)
 
 
 ##### POST #####
