@@ -60,8 +60,7 @@ export async function actionHandler(
       try {
         // 🔒 Get the encrypted JWT
         const token = await getToken();
-        console.log(token);
-        // get the user_guid from the JWT
+        // get the user_guid from the JWT, else from the endpoint parameter
         const userGuid =
           token?.user_guid || getUUIDFromEndpoint(endpoint) || "";
 
