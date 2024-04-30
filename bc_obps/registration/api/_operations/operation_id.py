@@ -11,14 +11,12 @@ from service.operation_service import OperationService
 from registration.api.utils.current_user_utils import get_current_user
 
 
-from registration.decorators import authorize, handle_http_errors
+from registration.decorators import handle_http_errors
 
 from registration.api.api_base import router
 from registration.models import (
     AppRole,
-
     UserOperator,
-
 )
 from registration.schema import (
     OperationUpdateIn,
