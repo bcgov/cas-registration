@@ -1,3 +1,16 @@
+# [1.5.0](https://github.com/bcgov/cas-registration/compare/v1.4.0...v1.5.0) (2024-04-30)
+
+### Bug Fixes
+
+- add operations filtering to industry user query ([3d13f2c](https://github.com/bcgov/cas-registration/commit/3d13f2cc573a6b3792d7755de1c4d4036ab9a988))
+- fix passing redundant arg to `file_to_data_url` function ([c164baf](https://github.com/bcgov/cas-registration/commit/c164baf921363c6d98bb0f1548a5f26bf1596baf))
+- row count for non server paginated datagrids ([4d18ac4](https://github.com/bcgov/cas-registration/commit/4d18ac4a3e144e6c60fa0e9d8ef253abbbc0dbdb))
+
+### Features
+
+- check required field value ([a944a7d](https://github.com/bcgov/cas-registration/commit/a944a7de8de12a2c2acd97f4868d4e246df7bb12))
+- send new operator and access request email ([589dcb3](https://github.com/bcgov/cas-registration/commit/589dcb365ee9e80e4c7318cd0cf07d549dea9639))
+
 ## [1.4.1](https://github.com/bcgov/cas-registration/compare/v1.4.0...v1.4.1) (2024-04-24)
 
 ### Bug Fixes
