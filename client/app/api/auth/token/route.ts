@@ -5,7 +5,7 @@ export async function GET(request: NextRequest) {
   const token = await getToken({
     req: request,
     // @ts-expect-error
-    secret: process.env.NEXTAUTH_SECRET,
+    secret: process.env.AUTH_SECRET,
   });
   return NextResponse.json(token, { status: 200 });
 }

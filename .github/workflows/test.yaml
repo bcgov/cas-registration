@@ -12,7 +12,7 @@ env:
   DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
   KEYCLOAK_CLIENT_ID: ${{ secrets.KEYCLOAK_CLIENT_ID }}
   KEYCLOAK_CLIENT_SECRET: ${{ secrets.KEYCLOAK_CLIENT_SECRET }}
-  NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
+  AUTH_SECRET: ${{ secrets.AUTH_SECRET }}
 
 # Cancel current job when pushing new commit into the PR
 concurrency:
@@ -324,7 +324,7 @@ jobs:
           django_secret_key: ${{ env.DJANGO_SECRET_KEY }}
           keycloak_client_id: ${{ env.KEYCLOAK_CLIENT_ID }}
           keycloak_client_secret: ${{ env.KEYCLOAK_CLIENT_SECRET }}
-          nextauth_secret: ${{ env.NEXTAUTH_SECRET }}
+          auth_secret: ${{ env.AUTH_SECRET }}
       - name: ⚡️ cache Playwright binaries
         uses: actions/cache@v4
         id: playwright-cache

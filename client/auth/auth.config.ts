@@ -53,7 +53,7 @@ declare module "next-auth/jwt" {
 }
 
 /*
-📌 Make one central auth config that can be imported to auth.ts or midleware when required
+📌 Make one central auth config that can be imported to auth.ts or middleware when required
 */
 export const AUTH_BASE_PATH = "/api/auth";
 export default {
@@ -65,7 +65,7 @@ export default {
     }),
   ],
   basePath: AUTH_BASE_PATH,
-  secret: process.env.NEXTAUTH_SECRET,
+  secret: process.env.AUTH_SECRET,
   callbacks: {
     async jwt({ token, account, profile }) {
       try {

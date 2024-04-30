@@ -71,7 +71,7 @@ export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
     const token = await getToken({
       req: request,
       // @ts-expect-error
-      secret: process.env.NEXTAUTH_SECRET,
+      secret: process.env.AUTH_SECRET,
     });
     // Check if the path is in the unauthenticated allow list
     if (isUnauthenticatedAllowListedPath(pathname)) {

@@ -17,7 +17,7 @@ export const withReportingAuthorization: MiddlewareFactory = (next) => {
   return async (request, _next) => {
     const token = await getToken({
       req: request,
-      secret: process.env.NEXTAUTH_SECRET,
+      secret: process.env.AUTH_SECRET,
     });
 
     const { pathname } = request.nextUrl;
