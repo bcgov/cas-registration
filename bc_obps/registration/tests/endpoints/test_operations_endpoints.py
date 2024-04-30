@@ -652,7 +652,6 @@ class TestOperationsEndpoint(CommonTestSetup):
     def test_put_operation_update_status_approved(self):
         operation = operation_baker()
         assert operation.status == Operation.Statuses.NOT_STARTED
-
         url = custom_reverse_lazy("update_operation_status", kwargs={"operation_id": operation.id})
 
         now = datetime.now(ZoneInfo("UTC"))

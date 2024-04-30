@@ -110,13 +110,6 @@ def raise_401_if_user_not_authorized(
                 raise HttpError(401, UNAUTHORIZED_MESSAGE)
 
 
-def get_current_user_approved_user_operator_or_raise(user: User) -> Optional[UserOperator]:
-    user_operator = user.get_approved_user_operator()
-    if not user_operator:
-        raise HttpError(401, UNAUTHORIZED_MESSAGE)
-    return user_operator
-
-
 def get_an_operators_approved_users(operator_pk: int) -> QuerySet[UUID]:
     # get a list of all the operator's approved user ids
     user_ids = UserOperator.objects.filter(operator_id=operator_pk, status=UserOperator.Statuses.APPROVED).values_list(
