@@ -182,7 +182,6 @@ describe("RJSF OperatorSearchWidget", () => {
         schema={operatorSearchFieldSchema}
         uiSchema={operatorSearchFieldUiSchema}
       />,
-      false,
     );
   });
 });

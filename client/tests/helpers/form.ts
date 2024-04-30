@@ -13,7 +13,10 @@ export const checkTextWidgetValidationStyles = async (
   render(component);
 
   const input = screen.getByLabelText(labelText);
-  const inputBorderElement = input.parentElement?.children[1] as Element;
+  const inputBorderElement = input.parentElement?.querySelector(
+    "fieldset",
+  ) as Element;
+
   const submitButton = screen.getByRole("button", { name: "Submit" });
 
   // The input should have the default border color
@@ -32,20 +35,21 @@ export const checkTextWidgetValidationStyles = async (
     expect(inputBorderElement).toHaveStyle(defaultStyle);
     // Trigger the error
     await userEvent.click(submitButton);
+
+    // The input should have the error border color
+    expect(inputBorderElement).toHaveStyle(errorStyle);
   }
 };
 
 export const checkComboBoxWidgetValidationStyles = async (
   component: ReactNode,
-  isDropdownArrowPresent = true,
 ) => {
-  const fieldsetIndex = isDropdownArrowPresent ? 2 : 1;
   render(component);
 
   const comboBoxInput = screen.getByRole("combobox") as HTMLInputElement;
-  const inputBorderElement = comboBoxInput?.parentElement?.children[
-    fieldsetIndex
-  ] as Element;
+  const inputBorderElement =
+    comboBoxInput?.parentElement?.querySelector("fieldset");
+
   const submitButton = screen.getByRole("button", { name: "Submit" });
 
   // The input should have the default border color
