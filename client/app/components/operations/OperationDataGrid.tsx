@@ -43,27 +43,27 @@ const OperationDataGrid = ({
   };
 }) => {
   const { data: session } = useSession();
-  const isIndustryUser = session?.user.app_role?.includes("industry") ?? false;
+  const isIndustryUser = session?.user?.app_role?.includes("industry") ?? false;
   const [lastFocusedField, setLastFocusedField] = useState<string | null>(null);
 
   const SearchCell = useMemo(
     () => OperationSearchCell({ lastFocusedField, setLastFocusedField }),
-    [lastFocusedField, setLastFocusedField],
+    [lastFocusedField, setLastFocusedField]
   );
 
   const ActionCell = useMemo(
     () => OperationsActionCell(isIndustryUser),
-    [isIndustryUser],
+    [isIndustryUser]
   );
 
   const columns = useMemo(
     () => operationColumns(isOperatorColumn, ActionCell),
-    [ActionCell, isOperatorColumn],
+    [ActionCell, isOperatorColumn]
   );
 
   const columnGroup = useMemo(
     () => operationGroupColumns(isOperatorColumn, SearchCell),
-    [SearchCell, isOperatorColumn],
+    [SearchCell, isOperatorColumn]
   );
 
   return (

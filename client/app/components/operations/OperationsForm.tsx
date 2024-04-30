@@ -34,8 +34,8 @@ export default function OperationsForm({ formData, schema }: Readonly<Props>) {
   const isFinalStep = formSection === formSectionList.length;
 
   const isCasInternal =
-    session?.user.app_role?.includes("cas") &&
-    !session?.user.app_role?.includes("pending");
+    session?.user?.app_role?.includes("cas") &&
+    !session?.user?.app_role?.includes("pending");
 
   const isFormStatusPending = formData?.status === Status.PENDING;
 
@@ -103,7 +103,7 @@ export default function OperationsForm({ formData, schema }: Readonly<Props>) {
               pathToRevalidate,
               {
                 body: JSON.stringify(body),
-              },
+              }
             );
 
             const operation = response?.id || operationId;
@@ -119,13 +119,13 @@ export default function OperationsForm({ formData, schema }: Readonly<Props>) {
               paramTitle = response.name;
             }
             router.replace(
-              `/dashboard/operations/${operation}/${formSection}?title=${paramTitle}`,
+              `/dashboard/operations/${operation}/${formSection}?title=${paramTitle}`
             );
             if (isNotFinalStep) {
               router.push(
                 `/dashboard/operations/${operation}/${
                   formSection + 1
-                }?title=${paramTitle}`,
+                }?title=${paramTitle}`
               );
               return;
             }

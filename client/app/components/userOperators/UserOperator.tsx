@@ -16,7 +16,7 @@ async function getBusinessStructures() {
   return actionHandler(
     `registration/business_structures`,
     "GET",
-    `/dashboard/select-operator/user-operator`,
+    `/dashboard/select-operator/user-operator`
   );
 }
 
@@ -25,14 +25,14 @@ export async function getUserOperatorFormData(id: string) {
   return actionHandler(
     `registration/user-operator/${id}`,
     "GET",
-    `/user-operator/${id}`,
+    `/user-operator/${id}`
   );
 }
 
 // To populate the options for the business structure select field
 const createUserOperatorSchema = (
   schema: RJSFSchema,
-  businessStructureList: { id: string; label: string }[],
+  businessStructureList: { id: string; label: string }[]
 ): RJSFSchema => {
   const localSchema = JSON.parse(JSON.stringify(schema));
 
@@ -42,7 +42,7 @@ const createUserOperatorSchema = (
       title: businessStructure.label,
       enum: [businessStructure.id],
       value: businessStructure.id,
-    }),
+    })
   );
 
   // for operator
@@ -65,8 +65,8 @@ export default async function UserOperator({
 }>) {
   const session = await auth();
   const isCasInternal =
-    session?.user.app_role?.includes("cas") &&
-    !session?.user.app_role?.includes("pending");
+    session?.user?.app_role?.includes("cas") &&
+    !session?.user?.app_role?.includes("pending");
   const serverError = <div>Server Error. Please try again later.</div>;
   const userOperatorId = params?.id;
   const businessStructures: BusinessStructure[] | { error: string } =
@@ -82,7 +82,7 @@ export default async function UserOperator({
     (businessStructure: BusinessStructure) => ({
       id: businessStructure.name,
       label: businessStructure.name,
-    }),
+    })
   );
 
   const formData = {
@@ -95,7 +95,7 @@ export default async function UserOperator({
       <UserOperatorReviewForm
         schema={createUserOperatorSchema(
           userOperatorInternalUserSchema,
-          businessStructuresList,
+          businessStructuresList
         )}
         formData={formData}
       />
@@ -106,7 +106,7 @@ export default async function UserOperator({
     <UserOperatorForm
       schema={createUserOperatorSchema(
         userOperatorSchema,
-        businessStructuresList,
+        businessStructuresList
       )}
       formData={formData}
     />

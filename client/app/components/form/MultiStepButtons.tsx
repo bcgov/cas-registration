@@ -31,7 +31,7 @@ const SubmitButton: React.FunctionComponent<SubmitButtonProps> = ({
   const isDisabled = disabled || isSubmitting;
   const { data: session } = useSession();
 
-  const isIndustryUser = session?.user.app_role?.includes("industry");
+  const isIndustryUser = session?.user?.app_role?.includes("industry");
   return (
     <div className={`flex w-full mt-8 justify-between ${classNames}`}>
       {cancelUrl && (

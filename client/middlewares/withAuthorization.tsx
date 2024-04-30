@@ -33,7 +33,7 @@ const isAuthenticatedAllowListedPath = (pathname: string): boolean => {
 // Function to check if the path requires authorization
 const isAuthorizationRequiredPath = (
   pathname: string,
-  token: { identity_provider?: string; app_role?: string },
+  token: { identity_provider?: string; app_role?: string }
 ): boolean => {
   if (!token) {
     return false;
@@ -70,6 +70,7 @@ export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
     const { pathname } = request.nextUrl;
     const token = await getToken({
       req: request,
+      // @ts-expect-error
       secret: process.env.NEXTAUTH_SECRET,
     });
     // Check if the path is in the unauthenticated allow list
@@ -86,7 +87,7 @@ export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
           return next(request, _next);
         } else {
           return NextResponse.redirect(
-            new URL(`/dashboard/profile`, request.url),
+            new URL(`/dashboard/profile`, request.url)
           );
         }
       }
@@ -118,7 +119,7 @@ export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
               };
               const response = await fetch(
                 `${process.env.API_URL}registration/user-operator/user-operator-operator`,
-                options,
+                options
               );
               const operator = await response.json();
               if (
@@ -126,7 +127,7 @@ export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
                 operator.status !== "Approved"
               ) {
                 return NextResponse.redirect(
-                  new URL(`/dashboard`, request.url),
+                  new URL(`/dashboard`, request.url)
                 );
               }
             } catch (error) {
@@ -141,7 +142,7 @@ export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
       // Routes with the folder structure break the breadcrumbs
       const pageSegment = pathname.replace(
         `/${token.identity_provider}/${token.app_role}`,
-        "",
+        ""
       );
 
       return NextResponse.redirect(new URL(`${pageSegment}`, request.url));
