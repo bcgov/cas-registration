@@ -1,10 +1,10 @@
 from uuid import UUID
+from zoneinfo import ZoneInfo
 from registration.constants import UNAUTHORIZED_MESSAGE
 from django.db import transaction
 from registration.decorators import authorize
 from datetime import datetime
 from django.core.exceptions import ValidationError
-import pytz
 from registration.api.api_base import router
 from registration.models import (
     AppRole,
@@ -183,7 +183,7 @@ def update_operation(request, operation_id: UUID, submit: str, form_section: int
                 """
                 if operation.status != Operation.Statuses.APPROVED:
                     operation.status = Operation.Statuses.PENDING
-                    operation.submission_date = datetime.now(pytz.utc)
+                    operation.submission_date = datetime.now(ZoneInfo("UTC"))
                     operation.save(update_fields=['status', 'submission_date'])
             operation.set_create_or_update(user.pk)
             return 200, operation
