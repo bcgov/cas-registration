@@ -4,7 +4,6 @@
 
 - add operations filtering to industry user query ([3d13f2c](https://github.com/bcgov/cas-registration/commit/3d13f2cc573a6b3792d7755de1c4d4036ab9a988))
 - fix passing redundant arg to `file_to_data_url` function ([c164baf](https://github.com/bcgov/cas-registration/commit/c164baf921363c6d98bb0f1548a5f26bf1596baf))
-- rebase error ([2cc65be](https://github.com/bcgov/cas-registration/commit/2cc65be026c9d2bcb5e6ab5b686afea8e130524a))
 - row count for non server paginated datagrids ([4d18ac4](https://github.com/bcgov/cas-registration/commit/4d18ac4a3e144e6c60fa0e9d8ef253abbbc0dbdb))
 
 ### Features
