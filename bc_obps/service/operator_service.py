@@ -1,6 +1,5 @@
 from common.enums import AccessRequestStates, AccessRequestTypes
 from common.service.email.email_service import EmailService
-import pytz
 from typing import List, Optional, Union
 from datetime import datetime
 from django.db.models import QuerySet
@@ -20,6 +19,7 @@ from registration.models import (
     MultipleOperator,
     Address,
 )
+from zoneinfo import ZoneInfo
 
 
 email_service = EmailService()
@@ -151,7 +151,7 @@ class OperatorService:
                 user_operators_to_decline: QuerySet[UserOperator] = UserOperator.objects.filter(operator_id=operator_id)
                 user_operators_to_decline.update(
                     status=UserOperator.Statuses.DECLINED,
-                    verified_at=datetime.now(pytz.utc),
+                    verified_at=datetime.now(ZoneInfo("UTC")),
                     verified_by=user_guid,
                 )
                 for user_operator in user_operators_to_decline:

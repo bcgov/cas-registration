@@ -5,8 +5,6 @@ from registration.decorators import authorize
 from .api_base import router
 
 from django.core.exceptions import ValidationError
-
-
 from django.core.paginator import Paginator
 from registration.models import (
     AppRole,
