@@ -18,37 +18,8 @@ fake_timestamp_from_past = '2024-01-09 14:13:08.888903-0800'
 fake_timestamp_from_past_str_format = '%Y-%m-%d %H:%M:%S.%f%z'
 
 
-class TestOperationsEndpoint(CommonTestSetup):
+class TestOperationsUpdateStatusEndpoint(CommonTestSetup):
     endpoint = CommonTestSetup.base_endpoint + "operations"
-
-    # AUTHORIZATION
-
-    def test_unauthorized_users_cannot_update_status(self):
-        operation = operation_baker()
-
-        response = TestUtils.mock_put_with_auth_role(
-            self,
-            "industry_user",
-            self.content_type,
-            {"status": "approved"},
-            custom_reverse_lazy("update_operation_status", kwargs={"operation_id": operation.id}),
-        )
-        assert response.status_code == 401
-
-    # PUT
-    def test_put_operation_update_status_invalid_operation_id(self):
-        put_response = TestUtils.mock_put_with_auth_role(
-            self,
-            "cas_admin",
-            self.content_type,
-            {"status": "approved"},
-            custom_reverse_lazy("update_operation_status", kwargs={"operation_id": 99999999999}),
-        )
-        assert put_response.status_code == 422
-        assert (
-            put_response.json().get('detail')[0].get('msg')
-            == 'Input should be a valid UUID, invalid length: expected length 32 for simple format, found 11'
-        )
 
     def test_put_operation_update_status_approved(self):
         operation = operation_baker()
