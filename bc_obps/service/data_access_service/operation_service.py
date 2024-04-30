@@ -1,14 +1,6 @@
 from registration.models import Operation
 from registration.schema import (
-    OperationCreateIn,
-    OperationUpdateIn,
-    OperationPaginatedOut,
     OperationOut,
-    OperationCreateOut,
-    OperationUpdateOut,
-    Message,
-    OperationListOut,
-    OperationFilterSchema,
 )
 
 

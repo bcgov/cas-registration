@@ -5,7 +5,7 @@ Description: This module handles http exceptions.
 from django.http import Http404
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from registration.utils import generate_useful_error
-from registration.constants import PAGE_SIZE, UNAUTHORIZED_MESSAGE
+from registration.constants import UNAUTHORIZED_MESSAGE
 
 
 def handle_exception(error):

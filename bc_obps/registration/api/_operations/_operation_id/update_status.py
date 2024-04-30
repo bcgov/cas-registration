@@ -1,18 +1,10 @@
 from uuid import UUID
-from django.db import transaction
 from registration.api.utils.current_user_utils import get_current_user
 from service.operation_service import OperationService
-from registration.utils import generate_useful_error
 from registration.decorators import authorize, handle_http_errors
 from registration.api.api_base import router
-from datetime import datetime
-from django.core.exceptions import ValidationError
-from zoneinfo import ZoneInfo
 from registration.models import (
     AppRole,
-    Operation,
-    Operator,
-    User,
 )
 from registration.schema import (
     Message,
@@ -20,7 +12,6 @@ from registration.schema import (
     OperationUpdateStatusOut,
 )
 from ninja.responses import codes_4xx, codes_5xx
-from ninja.errors import HttpError
 
 
 @router.put(
