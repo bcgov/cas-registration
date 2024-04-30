@@ -125,7 +125,7 @@ export default {
       // 🔒 return encrypted nextauth JWT
       return token;
     },
-    async session({ token, session, user }) {
+    async session({ token, session }) {
       // By default, for security, only a subset of the token is returned...
       //💡 if you want to make a nextauth JWT property available to the client session...
       // you have to explicitly forward it here to make it available to the client
@@ -153,8 +153,17 @@ export default {
         },
       };
     },
-    async jwt({ token }) {
-      return token;
+    // 👇️ called anytime the user is redirected to a callback URL (e.g. on signin or signout).
+    // by default only URLs on the same URL as the site are allowed, you can use the redirect callback to customise that behaviour.
+    async redirect({ url, baseUrl }) {
+      // Allows relative callback URLs
+      if (url.startsWith("/")) return `${baseUrl}${url}`;
+      // Allows callback URLs on the same origin
+      else if (new URL(url).origin === baseUrl) return url;
+      // 🛸 Allow callbacks to identity server for federated signout after next-auth SignOut(): client/app/components/navigation/Profile.tsx
+      else if (new URL(url).origin === process.env.SITEMINDER_AUTH_URL)
+        return url;
+      return baseUrl;
     },
   },
 } satisfies NextAuthConfig;
