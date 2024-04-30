@@ -51,13 +51,13 @@ export const formatOperationRows = (rows: GridRowsProp) => {
         submission_date: formatTimestamp(submission_date) ?? status,
         status,
       };
-    }
+    },
   );
 };
 
 // 🛠️ Function to fetch operations
 export const fetchOperationsPageData = async (
-  searchParams: OperationsSearchParams
+  searchParams: OperationsSearchParams,
 ) => {
   try {
     const queryParams = buildQueryParams(searchParams);
@@ -66,7 +66,7 @@ export const fetchOperationsPageData = async (
     const pageData = await actionHandler(
       `registration/operations${queryParams}`,
       "GET",
-      ""
+      "",
     );
     return {
       rows: formatOperationRows(pageData.data),

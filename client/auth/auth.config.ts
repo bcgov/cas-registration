@@ -3,6 +3,14 @@ import Keycloak, { KeycloakProfile } from "next-auth/providers/keycloak";
 import { Errors, IDP } from "@/app/utils/enums";
 import { actionHandler } from "@/app/utils/actions";
 
+/*
+📌 Module Augmentation
+next-auth comes with certain types/interfaces that are shared across submodules, e.g. JWT or Session
+Ideally, you should only need to create these types at a single place, and TS should pick them up in every location where they are referenced.
+Module Augmentation is exactly that-
+define your shared interfaces in a single place, and get type-safety across your application
+*/
+
 declare module "next-auth" {
   /**
    * Returned by `auth`, `useSession`, `getSession` and received as a prop on the `SessionProvider` React Context
@@ -44,6 +52,10 @@ declare module "next-auth/jwt" {
   }
 }
 
+/*
+📌 Make one central auth config that can be imported to auth.ts or midleware when required
+*/
+export const AUTH_BASE_PATH = "/api/auth";
 export default {
   providers: [
     Keycloak({
@@ -52,7 +64,7 @@ export default {
       issuer: process.env.AUTH_KEYCLOAK_ISSUER,
     }),
   ],
-  basePath: "/api/auth",
+  basePath: AUTH_BASE_PATH,
   secret: process.env.AUTH_SECRET,
   callbacks: {
     async jwt({ token, account, profile }) {

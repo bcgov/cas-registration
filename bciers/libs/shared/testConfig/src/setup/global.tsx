@@ -2,13 +2,7 @@ import type { TestingLibraryMatchers } from "@testing-library/jest-dom/matchers"
 import * as matchers from "@testing-library/jest-dom/matchers";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { expect } from "vitest";
-import {
-  actionHandler,
-  auth,
-  useParams,
-  useRouter,
-  useSession,
-} from "./mocks";
+import { actionHandler, auth, useParams, useRouter, useSession } from "./mocks";
 
 declare module "vitest" {
   interface Assertion<T = any>

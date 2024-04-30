@@ -17,7 +17,7 @@ export default async function Page() {
       const operator = await actionHandler(
         "registration/user-operator/user-operator-operator",
         "GET",
-        ""
+        "",
       );
       const userOperator = await getUserOperator();
       operatorStatus = operator.status;
