@@ -689,3 +689,50 @@ class TestOperationsOperationIdEndpoint(CommonTestSetup):
         assert retrieved_op.point_of_contact.first_name == 'Bart'
         assert retrieved_op.point_of_contact_id == original_contact_id
         assert retrieved_op.name == 'New and Improved Legal Name'
+
+    def test_only_approved_industry_users_can_update_operations(self):
+        operator = operator_baker()
+        operation = operation_baker(operator.id)
+        user_operator = user_operator_baker(
+            {'user': self.user, 'operator': operator, 'status': UserOperator.Statuses.PENDING}
+        )
+        mock_update_operation = TestUtils.mock_OperationUpdateIn()
+
+        # PENDING user
+
+        put_response_1 = TestUtils.mock_put_with_auth_role(
+            self,
+            "industry_user",
+            self.content_type,
+            mock_update_operation.model_dump_json(),
+            custom_reverse_lazy("update_operation", kwargs={"operation_id": operation.id})
+            + "?submit=false&form_section=1",
+        )
+        assert put_response_1.status_code == 401
+
+        # DECLINED user
+        user_operator.status = UserOperator.Statuses.DECLINED
+
+        put_response_2 = TestUtils.mock_put_with_auth_role(
+            self,
+            "industry_user",
+            self.content_type,
+            mock_update_operation.model_dump_json(),
+            custom_reverse_lazy("update_operation", kwargs={"operation_id": operation.id})
+            + "?submit=false&form_section=1",
+        )
+        assert put_response_2.status_code == 401
+
+        # APPROVED user
+        user_operator.status = UserOperator.Statuses.APPROVED
+        user_operator.save(update_fields=['status'])
+
+        put_response_3 = TestUtils.mock_put_with_auth_role(
+            self,
+            "industry_user",
+            self.content_type,
+            mock_update_operation.model_dump_json(),
+            custom_reverse_lazy("update_operation", kwargs={"operation_id": operation.id})
+            + "?submit=false&form_section=1",
+        )
+        assert put_response_3.status_code == 200

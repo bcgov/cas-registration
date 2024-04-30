@@ -446,15 +446,12 @@ class TestOperationsEndpoint(CommonTestSetup):
         assert operation.point_of_contact_id is None
 
     # PUT
-
-    def test_unapproved_industry_users_cannot_create_or_update_operations(self):
+    def test_only_approved_industry_users_can_create_operations(self):
         operator = operator_baker()
-        operation = operation_baker(operator.id)
         user_operator = user_operator_baker(
             {'user': self.user, 'operator': operator, 'status': UserOperator.Statuses.PENDING}
         )
         mock_create_operation = TestUtils.mock_OperationCreateIn()
-        mock_update_operation = TestUtils.mock_OperationUpdateIn()
 
         # PENDING user
         post_response_1 = TestUtils.mock_post_with_auth_role(
@@ -465,16 +462,6 @@ class TestOperationsEndpoint(CommonTestSetup):
             custom_reverse_lazy("create_operation"),
         )
         assert post_response_1.status_code == 401
-
-        put_response_1 = TestUtils.mock_put_with_auth_role(
-            self,
-            "industry_user",
-            self.content_type,
-            mock_update_operation.model_dump_json(),
-            custom_reverse_lazy("update_operation", kwargs={"operation_id": operation.id})
-            + "?submit=false&form_section=1",
-        )
-        assert put_response_1.status_code == 401
 
         # DECLINED user
         user_operator.status = UserOperator.Statuses.DECLINED
@@ -488,16 +475,6 @@ class TestOperationsEndpoint(CommonTestSetup):
         )
         assert post_response_2.status_code == 401
 
-        put_response_2 = TestUtils.mock_put_with_auth_role(
-            self,
-            "industry_user",
-            self.content_type,
-            mock_update_operation.model_dump_json(),
-            custom_reverse_lazy("update_operation", kwargs={"operation_id": operation.id})
-            + "?submit=false&form_section=1",
-        )
-        assert put_response_2.status_code == 401
-
         # APPROVED user
         user_operator.status = UserOperator.Statuses.APPROVED
         user_operator.save(update_fields=['status'])
@@ -509,16 +486,6 @@ class TestOperationsEndpoint(CommonTestSetup):
             custom_reverse_lazy("create_operation"),
         )
         assert post_response_3.status_code == 201
-
-        put_response_3 = TestUtils.mock_put_with_auth_role(
-            self,
-            "industry_user",
-            self.content_type,
-            mock_update_operation.model_dump_json(),
-            custom_reverse_lazy("update_operation", kwargs={"operation_id": operation.id})
-            + "?submit=false&form_section=1",
-        )
-        assert put_response_3.status_code == 200
 
     def test_audit_columns_are_set_on_create_and_update(self):
         operator = operator_baker()
