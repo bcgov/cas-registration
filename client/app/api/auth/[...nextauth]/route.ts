@@ -70,6 +70,12 @@ export const authOptions: NextAuthOptions = {
 
           token.identity_provider = account.providerAccountId.split("@")[1];
         }
+
+        //📌 API call notes:
+        // since API calls are made before JWT token is returned
+        // the actionHandler cannot get user_guid from `getToken`
+        // so, add parameter `token.user_guid` for actionHandler to use in Authorization header
+
         // 🚀 API call: Get user name from user table
         const response = await actionHandler(
           `registration/user/user-profile/${token.user_guid}`,

@@ -19,19 +19,19 @@ class TestUserOperatorEndpointAuthorization(CommonTestSetup):
         response = TestUtils.mock_get_with_auth_role(
             self,
             'cas_pending',
-            custom_reverse_lazy('is_approved_admin_user_operator', kwargs={'user_guid': self.user.user_guid}),
+            custom_reverse_lazy('is_approved_admin_user_operator'),
         )
         assert response.status_code == 401
         response = TestUtils.mock_get_with_auth_role(
             self,
             'cas_admin',
-            custom_reverse_lazy('is_approved_admin_user_operator', kwargs={'user_guid': self.user.user_guid}),
+            custom_reverse_lazy('is_approved_admin_user_operator'),
         )
         assert response.status_code == 401
         response = TestUtils.mock_get_with_auth_role(
             self,
             'cas_analyst',
-            custom_reverse_lazy('is_approved_admin_user_operator', kwargs={'user_guid': self.user.user_guid}),
+            custom_reverse_lazy('is_approved_admin_user_operator'),
         )
         assert response.status_code == 401
 
