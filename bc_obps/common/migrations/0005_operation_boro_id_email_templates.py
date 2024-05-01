@@ -38,7 +38,7 @@ def submit_operation_boro_id_email_notification_templates(apps, schema_editor):
     )
     EmailNotificationTemplate.objects.create(
         name='BORO ID Application Declined',
-        subject='BCIERS Decline Notification – BORO ID application for {{ operation_name }} of {{ operator_legal_name }} ',
+        subject='BCIERS Decline Notification – BORO ID application for {{ operation_name }} of {{ operator_legal_name }}',
         body='''
             <p style="text-align: center;">Province of British Columbia</p>
             <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p><br>

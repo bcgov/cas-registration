@@ -1,4 +1,4 @@
-from common.enums import AccessRequestStates, AccessRequestTypes
+from registration.enums.enums import AccessRequestStates, AccessRequestTypes
 from common.service.email.email_service import EmailService
 from typing import List, Optional, Union
 from datetime import datetime

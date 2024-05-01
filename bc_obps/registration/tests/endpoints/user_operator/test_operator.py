@@ -1,5 +1,5 @@
 from typing import List
-from common.enums import AccessRequestStates, AccessRequestTypes
+from registration.enums.enums import AccessRequestStates, AccessRequestTypes
 from common.service.email.email_service import EmailService
 from model_bakery import baker
 from registration.models import (

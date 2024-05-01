@@ -185,7 +185,57 @@ class TestInitialData(TestCase):
         ''',
         )
         template = EmailNotificationTemplate.objects.get(name='BORO ID Application Approved')
+        self.assertEqual(
+            template.subject,
+            'BCIERS Approval Notification – BORO ID application for {{ operation_name }} of {{ operator_legal_name }}',
+        )
+        self.assertEqual(
+            template.body,
+            '''
+            <p style="text-align: center;">Province of British Columbia</p>
+            <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p><br>
+            <p>Dear {{ external_user_full_name }},</p><br>
+            <p>Your application to obtain a BC OBPS Regulated Operation ID (BORO ID) for {{ operation_name }} of {{ operator_legal_name }} has been approved by the Climate Action Secretariat.</p>
+            <p>Please log back into <a href="https://registration.industrialemissions.gov.bc.ca/">BCIERS</a> to see {{ operation_name }}’s assigned BORO ID. For more information on how to use the BORO ID, please refer to <a href="https://www2.gov.bc.ca/assets/gov/environment/climate-change/ind/obps/guidance/bc_obps_guidance.pdf">Getting Started with the B.C. Output-Based Pricing System (gov.bc.ca)</a>.</p><br>
+            <p>If you have any questions, please contact our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca.</a></p><br>
+            <p>Sent to: {{ external_user_email_address }}</p>
+            <p>On behalf of the Climate Action Secretariat</p>
+        ''',
+        )
 
         template = EmailNotificationTemplate.objects.get(name='BORO ID Application Declined')
+        self.assertEqual(
+            template.subject,
+            'BCIERS Decline Notification – BORO ID application for {{ operation_name }} of {{ operator_legal_name }}',
+        )
+        self.assertEqual(
+            template.body,
+            '''
+            <p style="text-align: center;">Province of British Columbia</p>
+            <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p><br>
+            <p>Dear {{ external_user_full_name }},</p><br>
+            <p>Your application to obtain a BC OBPS Regulated Operation ID (BORO ID) for {{ operation_name }} of {{ operator_legal_name }} has been declined by the Climate Action Secretariat.</p><br>
+            <p>If you have any questions, please contact our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca.</a></p><br>
+            <p>Sent to: {{ external_user_email_address }}</p>
+            <p>On behalf of the Climate Action Secretariat</p>
+        ''',
+        )
 
         template = EmailNotificationTemplate.objects.get(name='BORO ID Application Changes Requested')
+        self.assertEqual(
+            template.subject,
+            'BCIERS Changes Request – BORO ID application for {{ operation_name }} of {{ operator_legal_name }}',
+        )
+        self.assertEqual(
+            template.body,
+            '''
+            <p style="text-align: center;">Province of British Columbia</p>
+            <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p><br>
+            <p>Dear {{ external_user_full_name }},</p><br>
+            <p>Changes are requested to your application to obtain a BC OBPS Regulated Operation ID (BORO ID) for {{ operation_name }} of {{ operator_legal_name }}.</p>
+            <p>A staff member of the Climate Action Secretariat has sent, or will send shortly, an email explaining the details of the changes requested. Please revise and resubmit your application accordingly.</p><br>
+            <p>If you have any questions, please contact our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca.</a></p><br>
+            <p>Sent to: {{ external_user_email_address }}</p>
+            <p>On behalf of the Climate Action Secretariat</p>
+        ''',
+        )
