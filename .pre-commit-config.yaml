@@ -12,6 +12,10 @@ repos:
         language: system
         files: \.(j|t)sx?$
         entry: ./.bin/pre-commit-lint.sh
+      - id: django-diagram
+        name: Django Diagram # Generate a diagram of the Django models
+        language: system
+        entry: ./.bin/pre-commit-django-diagram.sh
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v2.3.0
@@ -24,6 +28,7 @@ repos:
       - id: check-yaml
         exclude: (^helm/.*/templates/)
       - id: end-of-file-fixer
+        exclude: (^erd_diagrams/)
       - id: trailing-whitespace
       - id: debug-statements
   - repo: https://github.com/psf/black
