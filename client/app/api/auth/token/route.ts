@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { getToken } from "@auth/core/jwt";
 import { NextRequest, NextResponse } from "next/server";
 

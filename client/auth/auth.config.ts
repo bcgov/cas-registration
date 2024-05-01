@@ -1,4 +1,4 @@
-import type { NextAuthConfig } from "next-auth";
+import type { DefaultSession, NextAuthConfig } from "next-auth";
 import Keycloak, { KeycloakProfile } from "next-auth/providers/keycloak";
 import { Errors, IDP } from "@/app/utils/enums";
 import { actionHandler } from "@/app/utils/actions";
@@ -18,24 +18,25 @@ declare module "next-auth" {
   interface Session {
     error?: string;
     identity_provider: string | undefined;
+    user: {
+      // Add additional properties here:
+      user_guid: string | undefined;
+      bceid_business_name: string | undefined;
+      bceid_business_guid: string | undefined;
+      app_role?: string;
+      given_name?: string;
+      family_name?: string;
+      full_name?: string;
+      /**
+       * By default, TypeScript merges new interface properties and overwrites existing ones.
+       * In this case, the default session user properties will be overwritten,
+       * with the new ones defined above. To keep the default session user properties,
+       * you need to add them back into the newly declared interface.
+       */
+    } & DefaultSession["user"];
   }
-}
-
-declare module "next-auth" {
-  interface User {
-    // Add additional properties here:
-    user_guid: string | undefined;
-    bceid_business_name: string | undefined;
-    bceid_business_guid: string | undefined;
-    app_role?: string;
-    given_name?: string;
-    family_name?: string;
-    full_name?: string;
-  }
-}
-
-declare module "next-auth/jwt" {
   /** Returned by the `jwt` callback and `auth`, when using JWT sessions */
+  /**                                     ^ doesn't seem the case? */
   interface JWT {
     /** OpenID ID Token */
     idToken?: string;
