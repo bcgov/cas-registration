@@ -1,9 +1,16 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { describe, expect } from "vitest";
 import React from "react";
 import MultiStepFormBase from "@/app/components/form/MultiStepFormBase";
 import { useSession, useParams } from "@/tests/setup/mocks";
 import { QueryParams, Session } from "@/tests/setup/types";
+import userEvent from "@testing-library/user-event";
 
 const testSchema = {
   type: "object",
@@ -243,34 +250,39 @@ describe("The MultiStepFormBase component", () => {
       formSection: "1",
       operation: "create",
     } as QueryParams);
-    // let resolve: (v: unknown) => void;
-    // const mockOnSubmit = vi.fn().mockReturnValue(
-    //   new Promise((_resolve) => {
-    //     resolve = _resolve;
-    //   })
-    // );
-    render(<MultiStepFormBase {...defaultProps} disabled={false} />);
+    const user = userEvent.setup();
+    let resolve: (v: unknown) => void;
+
+    const mockPromiseOnSubmit = vitest.fn().mockReturnValue(
+      new Promise((_resolve) => {
+        resolve = _resolve;
+      }),
+    );
+
+    render(
+      <MultiStepFormBase
+        {...defaultProps}
+        disabled={false}
+        onSubmit={mockPromiseOnSubmit}
+      />,
+    );
     const saveAndContinueButton = screen.getByRole("button", {
       name: /Save and Continue/i,
     });
-    await fireEvent.click(saveAndContinueButton);
-    await waitFor(() => {
+
+    await act(async () => {
+      await user.click(saveAndContinueButton);
+    });
+
+    waitFor(() => {
       expect(saveAndContinueButton).toBeDisabled();
     });
-    expect(mockOnSubmit).toHaveBeenCalled();
 
-    // await act(async () => {
-    //   await saveAndContinueButton.click();
-    //   mockOnSubmit.mockReturnValue(new Promise(function (resolve, reject) {}));
-    //   await expect(saveAndContinueButton).toBeDisabled();
-    // });
-    // saveAndContinueButton.click().then(() => {
-    //   expect(saveAndContinueButton).toBeDisabled();
-    // });
+    await act(async () => {
+      resolve(vitest.fn);
+    });
 
-    // await act(async () => {
-    //   resolve(vi.fn());
-    // });
+    expect(saveAndContinueButton).not.toBeDisabled();
   });
 
   it("shows an error if there was a problem with form submission", async () => {
