@@ -1,4 +1,5 @@
-from common.enums import AccessRequestStates, AccessRequestTypes
+from registration.middleware.registration_emails import send_operator_access_request_email
+from registration.enums.enums import AccessRequestStates, AccessRequestTypes
 from common.service.email.email_service import EmailService
 from model_bakery import baker
 from localflavor.ca.models import CAPostalCodeField
@@ -44,7 +45,6 @@ class TestOperatorsEndpoint(CommonTestSetup):
             assert response.status_code == 401
 
     def test_get_operators_no_parameters(self):
-
         response = TestUtils.mock_get_with_auth_role(
             self, 'industry_user', custom_reverse_lazy('get_operators_by_cra_number_or_legal_name')
         )
@@ -213,9 +213,7 @@ class TestOperatorsEndpoint(CommonTestSetup):
 
         operator.created_by = user_operators[0].user  # Set the first user operator as the creator of the operator
         operator.save(update_fields=['created_by'])
-        mock_send_operator_access_request_email = mocker.patch.object(
-            EmailService, 'send_operator_access_request_email'
-        )
+        mock_send_operator_access_request_email = mocker.patch('send_operator_access_request_email')
         response = TestUtils.mock_put_with_auth_role(
             self,
             'cas_admin',

@@ -1,6 +1,6 @@
 from typing import Dict, Optional
 from uuid import UUID
-from common.enums import AccessRequestStates, AccessRequestTypes
+from registration.enums.enums import AccessRequestStates, AccessRequestTypes
 from common.service.email.email_service import EmailService
 from registration.utils import update_model_instance
 from service.addresses_service import AddressesService

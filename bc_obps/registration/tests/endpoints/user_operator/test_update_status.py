@@ -1,5 +1,5 @@
-from common.enums import AccessRequestStates, AccessRequestTypes
-from common.service.email.email_service import EmailService
+from service.application_access_service import ApplicationAccessService
+from registration.enums.enums import AccessRequestStates, AccessRequestTypes
 from model_bakery import baker
 from registration.models import (
     BusinessRole,
@@ -128,7 +128,7 @@ class TestUserOperatorUpdateStatusEndpoint(CommonTestSetup):
         operator = operator_baker({'status': Operator.Statuses.APPROVED, 'is_new': False, 'created_by': self.user})
         user_operator = user_operator_baker({'operator': operator, 'user': operator.created_by})
         mock_send_operator_access_request_email = mocker.patch.object(
-            EmailService, 'send_operator_access_request_email'
+            ApplicationAccessService, "request_admin_access.send_operator_access_request_email", return_value=None
         )
         response_2 = TestUtils.mock_put_with_auth_role(
             self,
