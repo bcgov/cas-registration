@@ -32,6 +32,7 @@ import {
 } from "@/e2e/utils/helpers";
 // ℹ️ Environment variables
 import * as dotenv from "dotenv";
+import { getByText } from "@testing-library/react";
 dotenv.config({ path: "./e2e/.env.local" });
 
 export class OperationsPOM {
@@ -226,7 +227,18 @@ export class OperationsPOM {
         await checkRequiredFieldValue(this.page);
         // Check status message
         switch (status) {
+          // brianna
           case OperationStatus.APPROVED:
+            await expect(
+              this.page.getByText(
+                "You have approved the request for carbon tax exemption.",
+              ),
+            ).toBeVisible();
+            await expect(
+              this.page.getByText(
+                "This operation’s application for a B.C. OBPS Regulated Operation ID was approved.",
+              ),
+            ).toBeVisible();
             await expect(this.messageOperationApproved).toBeVisible();
             break;
           case OperationStatus.DECLINED:
