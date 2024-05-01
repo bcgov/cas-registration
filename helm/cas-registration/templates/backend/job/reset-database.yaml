@@ -69,6 +69,7 @@ spec:
               psql -c "grant all on schema public to $(APP_USER);";
               psql -c "drop schema erc cascade;";
               psql -c "drop schema erc_history cascade;";
+              psql -c "drop schema common cascade;";
 {{ end }}
 {{- if (hasSuffix "-dev" .Release.Namespace)}}
           command:
@@ -81,6 +82,7 @@ spec:
               psql -c "grant all on schema public to $(APP_USER);";
               psql -c "drop schema erc cascade;";
               psql -c "drop schema erc_history cascade;";
+              psql -c "drop schema common cascade;";
 {{ end }}
       restartPolicy: Never
 {{ end }}
