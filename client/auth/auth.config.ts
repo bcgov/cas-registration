@@ -60,13 +60,19 @@ export const AUTH_BASE_PATH = "/api/auth";
 export default {
   providers: [
     Keycloak({
-      clientId: process.env.KEYCLOAK_CLIENT_ID,
-      clientSecret: process.env.KEYCLOAK_CLIENT_SECRET,
-      issuer: process.env.KEYCLOAK_LOGIN_URL,
+      clientId: `${process.env.KEYCLOAK_CLIENT_ID}`,
+      clientSecret: `${process.env.KEYCLOAK_CLIENT_SECRET}`,
+      issuer: `${process.env.KEYCLOAK_LOGIN_URL}`,
+      profile(profile: KeycloakProfile) {
+        return {
+          ...profile,
+          id: profile.sub,
+        };
+      },
     }),
   ],
   basePath: AUTH_BASE_PATH,
-  secret: process.env.NEXTAUTH_SECRET,
+  secret: `${process.env.NEXTAUTH_SECRET}`,
   callbacks: {
     async jwt({ token, account, profile }) {
       try {
