@@ -191,7 +191,4 @@ describe("The MultiStepButtons component", () => {
       "anything.com/3",
     );
   });
-  it("Submit button navigates correctly", () => {
-    // brianna can we actually test this without the form?
-  });
 });

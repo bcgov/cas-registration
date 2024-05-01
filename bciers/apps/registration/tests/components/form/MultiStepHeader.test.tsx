@@ -47,17 +47,4 @@ describe("The MultiStepHeader component", () => {
     render(<MultiStepHeader {...defaultProps} />);
     expect(screen.getAllByRole("separator")).toHaveLength(2);
   });
-
-  it("does something to do with the last step", () => {
-    render(<MultiStepHeader {...defaultProps} />);
-    expect(screen.getAllByRole("brianna fix this test")).toHaveLength(2);
-
-    // B what is this doing, how should I be testing it?
-    // <div
-    //         className={`mb-4 flex flex-row items-center ${
-    //           isLastStep ? "grow-0" : "grow"
-    //         }`}
-    //         key={steps[i]}
-    //       ></div>
-  });
 });
