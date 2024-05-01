@@ -58,9 +58,9 @@ export async function actionHandler(
     { formData },
     async () => {
       try {
-        // 🔒 Get the encrypted JWT
+        // 🔒 Get the server-side encrypted JWT
         const token = await getToken();
-        // get the user_guid from the JWT, else from the endpoint parameter
+        // get the user_guid from the server-side encrypted JWT
         const userGuid =
           token?.user_guid || getUUIDFromEndpoint(endpoint) || "";
 

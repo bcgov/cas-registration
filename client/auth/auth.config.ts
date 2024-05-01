@@ -65,7 +65,7 @@ export default {
     }),
   ],
   basePath: AUTH_BASE_PATH,
-  secret: process.env.AUTH_SECRET,
+  secret: process.env.NEXTNEXTAUTH_SECRET,
   callbacks: {
     async jwt({ token, account, profile }) {
       try {

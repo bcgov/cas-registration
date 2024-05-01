@@ -6,9 +6,9 @@ import {
 } from "next/server";
 
 import { MiddlewareFactory } from "./types";
-import { getToken } from "next-auth/jwt";
-import { IDP } from "@/app/utils/enums";
 
+import { IDP } from "@/app/utils/enums";
+import { getToken } from "@/app/utils/actions";
 /*
 Access control logic is managed using Next.js middleware and NextAuth.js authentication JWT token.
 The middleware intercepts requests, and for restricted areas...
@@ -68,16 +68,12 @@ const isAuthorizedIdirUser = (token: {
 export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
   return async (request: NextRequest, _next: NextFetchEvent) => {
     const { pathname } = request.nextUrl;
-    const token = await getToken({
-      req: request,
-      // @ts-expect-error
-      secret: process.env.AUTH_SECRET,
-    });
     // Check if the path is in the unauthenticated allow list
     if (isUnauthenticatedAllowListedPath(pathname)) {
       return next(request, _next);
     }
-    // Check if the user is authenticated
+    // Check if the user is authenticated via the jwt encoded in server side cookie
+    const token = await getToken();
     if (token) {
       // Check for the existence of token.app_role
       if (!token.app_role || token.app_role === "") {
