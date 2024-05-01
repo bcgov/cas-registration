@@ -98,6 +98,7 @@ class AppRole(BaseModel):
         max_length=100,
     )
     role_description = models.CharField(db_comment='Description of the app role', max_length=1000)
+    brianna = models.CharField(db_comment='Description of the app role', max_length=1000)
     history = HistoricalRecords(
         table_name='erc_history"."app_role_history',
         history_user_id_field=models.UUIDField(null=True, blank=True),
