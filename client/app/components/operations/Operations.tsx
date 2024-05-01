@@ -1,14 +1,12 @@
 import { GridRowsProp } from "@mui/x-data-grid";
-
 import { actionHandler } from "@/app/utils/actions";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import {
   OperationRow,
   OperationsSearchParams,
 } from "@/app/components/operations/types";
 import buildQueryParams from "@/app/utils/buildQueryParams";
 import OperationDataGrid from "./OperationDataGrid";
+import { auth } from "@/auth";
 
 const formatTimestamp = (timestamp: string) => {
   if (!timestamp) return undefined;
@@ -53,13 +51,13 @@ export const formatOperationRows = (rows: GridRowsProp) => {
         submission_date: formatTimestamp(submission_date) ?? status,
         status,
       };
-    },
+    }
   );
 };
 
 // 🛠️ Function to fetch operations
 export const fetchOperationsPageData = async (
-  searchParams: OperationsSearchParams,
+  searchParams: OperationsSearchParams
 ) => {
   try {
     const queryParams = buildQueryParams(searchParams);
@@ -68,7 +66,7 @@ export const fetchOperationsPageData = async (
     const pageData = await actionHandler(
       `registration/operations${queryParams}`,
       "GET",
-      "",
+      ""
     );
     return {
       rows: formatOperationRows(pageData.data),
@@ -85,7 +83,7 @@ export default async function Operations({
 }: {
   searchParams: OperationsSearchParams;
 }) {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
   // Fetch operations data
   const operations: {
     rows: OperationRow[];
@@ -97,8 +95,8 @@ export default async function Operations({
 
   // Show the operator column if the user is CAS internal
   const isOperatorColumn =
-    session?.user.app_role?.includes("cas") &&
-    !session?.user.app_role?.includes("pending");
+    session?.user?.app_role?.includes("cas") &&
+    !session?.user?.app_role?.includes("pending");
 
   // Render the DataGrid component
   return (

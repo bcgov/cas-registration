@@ -3,10 +3,9 @@ import {
   UserProfileFormData,
   UserProfilePartialFormData,
 } from "@/app/components/form/formDataTypes";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import getUserFullName from "@/app/utils/getUserFullName";
 import UserForm from "@/app/components/users/UserForm";
+import { auth } from "@/auth";
 
 // 🚀 API call: GET user's data
 async function getUserFormData(): Promise<
@@ -28,10 +27,7 @@ export default async function User() {
       // No user found, create formData to reflect new user in user table
       isCreate = true;
       // 👤 Use NextAuth.js hook to get information about the user's session
-      /* When calling from the server-side i.e., in Route Handlers, React Server Components, API routes,
-       * getServerSession requires passing the same object you would pass to NextAuth
-       */
-      const session = await getServerSession(authOptions);
+      const session = await auth();
       const names = getUserFullName(session)?.split(" ");
 
       formData = {

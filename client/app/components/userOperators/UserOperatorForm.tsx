@@ -52,7 +52,7 @@ export default function UserOperatorForm({
       }/${formSection}`,
       {
         body: JSON.stringify(newFormData),
-      },
+      }
     );
     if (response.error) {
       setError(response.error);
@@ -62,13 +62,13 @@ export default function UserOperatorForm({
     }
     if (isCreate) {
       return push(
-        `/dashboard/select-operator/received/add-operator/${response.operator_id}`,
+        `/dashboard/select-operator/received/add-operator/${response.operator_id}`
       );
     }
 
     if (isRequestingAccess) {
       return push(
-        `/dashboard/select-operator/received/request-access/${response.operator_id}`,
+        `/dashboard/select-operator/received/request-access/${response.operator_id}`
       );
     }
     return push(`/dashboard`);
@@ -76,9 +76,9 @@ export default function UserOperatorForm({
 
   // page flashes if !isCasInternal or !isIndustryUser is used
   const isCasInternal =
-    session?.user.app_role?.includes("cas") &&
-    !session?.user.app_role?.includes("pending");
-  const isIndustryUser = session?.user.app_role?.includes("industry");
+    session?.user?.app_role?.includes("cas") &&
+    !session?.user?.app_role?.includes("pending");
+  const isIndustryUser = session?.user?.app_role?.includes("industry");
 
   const isFormStatusDisabled =
     formData?.status === Status.PENDING || formData?.status === Status.APPROVED;

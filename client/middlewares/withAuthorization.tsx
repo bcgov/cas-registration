@@ -6,9 +6,9 @@ import {
 } from "next/server";
 
 import { MiddlewareFactory } from "./types";
-import { getToken } from "next-auth/jwt";
-import { IDP } from "@/app/utils/enums";
 
+import { IDP } from "@/app/utils/enums";
+import { getToken } from "@/app/utils/actions";
 /*
 Access control logic is managed using Next.js middleware and NextAuth.js authentication JWT token.
 The middleware intercepts requests, and for restricted areas...
@@ -33,7 +33,7 @@ const isAuthenticatedAllowListedPath = (pathname: string): boolean => {
 // Function to check if the path requires authorization
 const isAuthorizationRequiredPath = (
   pathname: string,
-  token: { identity_provider?: string; app_role?: string },
+  token: { identity_provider?: string; app_role?: string }
 ): boolean => {
   if (!token) {
     return false;
@@ -68,15 +68,12 @@ const isAuthorizedIdirUser = (token: {
 export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
   return async (request: NextRequest, _next: NextFetchEvent) => {
     const { pathname } = request.nextUrl;
-    const token = await getToken({
-      req: request,
-      secret: process.env.NEXTAUTH_SECRET,
-    });
     // Check if the path is in the unauthenticated allow list
     if (isUnauthenticatedAllowListedPath(pathname)) {
       return next(request, _next);
     }
-    // Check if the user is authenticated
+    // Check if the user is authenticated via the jwt encoded in server side cookie
+    const token = await getToken();
     if (token) {
       // Check for the existence of token.app_role
       if (!token.app_role || token.app_role === "") {
@@ -86,7 +83,7 @@ export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
           return next(request, _next);
         } else {
           return NextResponse.redirect(
-            new URL(`/dashboard/profile`, request.url),
+            new URL(`/dashboard/profile`, request.url)
           );
         }
       }
@@ -118,7 +115,7 @@ export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
               };
               const response = await fetch(
                 `${process.env.API_URL}registration/user-operator/user-operator-operator`,
-                options,
+                options
               );
               const operator = await response.json();
               if (
@@ -126,7 +123,7 @@ export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
                 operator.status !== "Approved"
               ) {
                 return NextResponse.redirect(
-                  new URL(`/dashboard`, request.url),
+                  new URL(`/dashboard`, request.url)
                 );
               }
             } catch (error) {
@@ -141,7 +138,7 @@ export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
       // Routes with the folder structure break the breadcrumbs
       const pageSegment = pathname.replace(
         `/${token.identity_provider}/${token.app_role}`,
-        "",
+        ""
       );
 
       return NextResponse.redirect(new URL(`${pageSegment}`, request.url));

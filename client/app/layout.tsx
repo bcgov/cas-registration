@@ -13,9 +13,8 @@ import Footer from "@/app/components/layout/Footer";
 import Header from "@/app/components/layout/Header";
 // 🏷 import {named} can be significantly slower than import default
 import Box from "@mui/material/Box";
-import { getServerSession } from "next-auth";
-import { authOptions } from "./api/auth/[...nextauth]/route";
 import { PublicEnvScript } from "next-runtime-env";
+import { auth } from "@/auth";
 
 export const metadata: Metadata = {
   title: "CAS OBPS REGISTRATION",
@@ -37,8 +36,7 @@ export default async function RootLayout({
   readonly children: React.ReactNode;
 }) {
   //🪝 Wrap the returned auth session in the "use client" version of NextAuth SessionProvider so to expose the useSession() hook in client components
-  // Session properties come from client/app/api/auth/[...nextauth]/route.ts
-  const session = await getServerSession(authOptions);
+  const session = await auth();
 
   return (
     <html lang="en">

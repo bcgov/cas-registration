@@ -3,12 +3,11 @@ import { permanentRedirect } from "next/navigation";
 import Loading from "@/app/components/loading/SkeletonField";
 import { BC_GOV_LINKS_COLOR } from "@/app/styles/colors";
 import Link from "next/link";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { actionHandler } from "@/app/utils/actions";
 import { OperatorStatus, UserOperatorStatus } from "@/app/utils/enums";
 import getUserFullName from "@/app/utils/getUserFullName";
 import SelectOperator from "@/app/components/userOperators/SelectOperator";
+import { auth } from "@/auth";
 
 export const getUserOperator = async () => {
   try {
@@ -23,7 +22,7 @@ export const getUserOperator = async () => {
 };
 
 export default async function MyOperatorPage() {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
   const userName = getUserFullName(session);
   const userOperator = await getUserOperator();
   const isNew = userOperator.is_new;

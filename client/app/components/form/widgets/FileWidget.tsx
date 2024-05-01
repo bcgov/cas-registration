@@ -156,7 +156,7 @@ const FileWidget = ({
   const [filesInfo, setFilesInfo] = useState<FileInfoType[]>(
     Array.isArray(localValue)
       ? extractFileInfo(localValue)
-      : extractFileInfo([localValue]),
+      : extractFileInfo([localValue])
   );
   // 🥷 Prevent resetting the value to null when user switch tabs
   useEffect(() => {
@@ -167,8 +167,8 @@ const FileWidget = ({
 
   const { data: session } = useSession();
   const isCasInternal =
-    session?.user.app_role?.includes("cas") &&
-    !session?.user.app_role?.includes("pending");
+    session?.user?.app_role?.includes("cas") &&
+    !session?.user?.app_role?.includes("pending");
 
   const hiddenFileInput = useRef() as MutableRefObject<HTMLInputElement>;
 
@@ -204,7 +204,7 @@ const FileWidget = ({
         }
       });
     },
-    [multiple, localValue, filesInfo, onChange],
+    [multiple, localValue, filesInfo, onChange]
   );
 
   const disabledColour =
