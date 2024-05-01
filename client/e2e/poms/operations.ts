@@ -229,9 +229,8 @@ export class OperationsPOM {
         switch (status) {
           // brianna
           case OperationStatus.APPROVED:
-            await expect(this.messageOperationApproved).toBeVisible({
-              timeout: 30000,
-            });
+            this.page.reload();
+            await expect(this.messageOperationApproved).toBeVisible();
             break;
           case OperationStatus.DECLINED:
             await expect(this.messageOperationDeclined).toBeVisible();
