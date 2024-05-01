@@ -61,6 +61,18 @@ describe("RJSF PostalCodeWidget", () => {
     expect(input).toHaveValue("A1B 2C3");
   });
 
+  it("should convert lowercase postal code to uppercase", async () => {
+    render(
+      <FormBase
+        schema={postalCodeFieldSchema}
+        uiSchema={postalCodeFieldUiSchema}
+      />,
+    );
+    const input = screen.getByLabelText(postalCodeLabelRequired);
+    await userEvent.type(input, "a1b 2c3");
+    expect(input).toHaveValue("A1B 2C3");
+  });
+
   it("should allow entering a postal code with no spaces", async () => {
     render(
       <FormBase

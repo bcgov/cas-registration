@@ -223,6 +223,7 @@ const FileWidget = ({
         </button>
       )}
       <input
+        id={id}
         name={id}
         ref={hiddenFileInput}
         onChange={handleChange}
