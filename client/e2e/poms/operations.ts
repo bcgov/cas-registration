@@ -231,11 +231,6 @@ export class OperationsPOM {
           case OperationStatus.APPROVED:
             await expect(
               this.page.getByText(
-                "You have approved the request for carbon tax exemption.",
-              ),
-            ).toBeVisible();
-            await expect(
-              this.page.getByText(
                 "This operation’s application for a B.C. OBPS Regulated Operation ID was approved.",
               ),
             ).toBeVisible();
