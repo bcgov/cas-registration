@@ -29,7 +29,7 @@ const operatorSearchFieldUiSchema = {
 
 describe("RJSF OperatorSearchWidget", () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    vi.resetAllMocks();
   });
 
   it("should render the search field", async () => {

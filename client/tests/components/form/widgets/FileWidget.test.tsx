@@ -10,6 +10,8 @@ const fileLabelRequired = `${fileFieldLabel}*`;
 const dummyDataUri = "pdf;name=dummy.pdf;base64,dGVzdA==";
 const mockFile = new File(["test"], "test.pdf", { type: "application/pdf" });
 
+vi.resetAllMocks();
+
 const fileFieldSchema = {
   type: "object",
   required: ["fileTestField"],
@@ -28,17 +30,16 @@ const fileFieldUiSchema = {
   },
 };
 
-useSession.mockReturnValue({
-  data: {
-    user: {
-      app_role: "industry_user_admin",
-    },
-  },
-} as Session);
-
 describe("RJSF FileWidget", () => {
-  afterEach(() => {
-    vi.clearAllMocks();
+  beforeEach(() => {
+    vi.resetAllMocks();
+    useSession.mockReturnValue({
+      data: {
+        user: {
+          app_role: "industry_user_admin",
+        },
+      },
+    } as Session);
   });
 
   it("should render a file field", async () => {
