@@ -159,13 +159,16 @@ actionHandler.mockReturnValueOnce({
 });
 ```
 
-To maintain test isolation, we should reset (note that this is different from clear) mocks before every test:
+To maintain test isolation, we should clear or reset (note that clearing and resetting are [different](https://vitest.dev/api/mock.html#mockreset)) mocks before every test:
 
 ````
 beforeEach(() => {
-    vi.resetAllMocks();
+    vi.resetAllMocks(); // most agressive, clears all calls and resets implementations (any mocked function will return undefined after this)
+    vi.clearAllMocks(); // less agressive, clears calls but does not reset implementations
 
   });```
+
+We have some global mocks set up, so even if you haven't written any mocking code, it's useful to add a `beforeEach` to clean the slate before every test.
 
 ### Backend unit tests (for API endpoints) with Pytest
 
