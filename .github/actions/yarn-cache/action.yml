@@ -8,5 +8,5 @@ runs:
       with:
         path: |
           ~/.cache/yarn
-          ./client/node_modules
-        key: ${{ runner.os }}-yarn-cache-${{ hashFiles('client/yarn.lock') }}-v2
+          ./bciers/node_modules
+        key: ${{ runner.os }}-yarn-cache-${{ hashFiles('bciers/yarn.lock') }}-v2
