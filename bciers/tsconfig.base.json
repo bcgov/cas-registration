@@ -1,7 +1,7 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "rootDirs": [".", "../client/app"],
+    "rootDirs": ["."],
     "sourceMap": true,
     "declaration": false,
     "moduleResolution": "bundler",
@@ -20,8 +20,7 @@
       "@bciers/components": ["libs/shared/components/src/index.ts"],
       "@bciers/img/*": ["libs/shared/img/*"],
       "@bciers/styles": ["libs/shared/styles/src/index.ts"],
-      "registration/*": ["../client/app/*"],
-      "@/*": ["../client/*"]
+      "@/*": ["apps/registration/*"]
     }
   },
   "exclude": ["node_modules", "tmp"]
