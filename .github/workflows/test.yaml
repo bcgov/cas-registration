@@ -3,7 +3,7 @@ name: Test Registration App
 on:
   push:
     branches: [develop, main, dylan/nx-3]
-  pull_request_target:
+  pull_request:
     branches: [develop, main]
   workflow_dispatch:
 
