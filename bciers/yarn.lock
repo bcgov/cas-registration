@@ -1679,6 +1679,7 @@ __metadata:
     vite-tsconfig-paths: "npm:^4.3.2"
     vitest: "npm:^1.4.0"
     vitest-fetch-mock: "npm:^0.2.2"
+    webkit: "npm:^0.0.0"
   languageName: unknown
   linkType: soft
 
@@ -17373,6 +17374,13 @@ __metadata:
   version: 7.0.0
   resolution: "webidl-conversions@npm:7.0.0"
   checksum: 10c0/228d8cb6d270c23b0720cb2d95c579202db3aaf8f633b4e9dd94ec2000a04e7e6e43b76a94509cdb30479bd00ae253ab2371a2da9f81446cc313f89a4213a2c4
+  languageName: node
+  linkType: hard
+
+"webkit@npm:^0.0.0":
+  version: 0.0.0
+  resolution: "webkit@npm:0.0.0"
+  checksum: 10c0/58598ba1a9bcc860658f6be0bfe213b3bc6eaa9e6b1707db2d075660bceb1527133d549d67d60a9a064903c3f362903e2042baa57831fc285a0b69774611c278
   languageName: node
   linkType: hard
 
