@@ -16,7 +16,6 @@ const multiSelectFieldSchema = {
       items: {
         type: "string",
         enum: ["option_1", "option_2", "option_3"],
-
         enumNames: ["Option 1", "Option 2", "Option 3"],
       },
     },
