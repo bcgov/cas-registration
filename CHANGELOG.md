@@ -1,3 +1,13 @@
+## [1.5.1](https://github.com/bcgov/cas-registration/compare/v1.5.0...v1.5.1) (2024-05-02)
+
+### Bug Fixes
+
+- fix django sentry when not passing `DEBUG` env variable ([ed57157](https://github.com/bcgov/cas-registration/commit/ed57157fd55531a505673746a7c687223ec86eff))
+
+### Reverts
+
+- Revert "chore: temp commit to test pre-commit" ([947eb69](https://github.com/bcgov/cas-registration/commit/947eb6935174d2c16a4c0562368fa5ff1605b883))
+
 # [1.5.0](https://github.com/bcgov/cas-registration/compare/v1.4.0...v1.5.0) (2024-04-30)
 
 ### Bug Fixes
