@@ -26,8 +26,7 @@
     "../../dist/apps/reporting/.next/types/**/*.ts",
     "next-env.d.ts",
     ".next/types/**/*.ts",
-    "../../dist/reporting/.next/types/**/*.ts",
-    "../../../client/app/types/*.ts"
+    "../../dist/reporting/.next/types/**/*.ts"
   ],
   "exclude": ["node_modules", "jest.config.ts", "**/*.spec.ts", "**/*.test.ts"]
 }
