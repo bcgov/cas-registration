@@ -1,5 +1,4 @@
 from registration.enums.enums import AccessRequestStates, AccessRequestTypes
-from common.service.email.email_service import EmailService
 from registration.models import (
     UserOperator,
 )
@@ -8,14 +7,13 @@ from registration.tests.utils.bakers import (
 )
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
+from unittest.mock import patch
 
 
 class TestSelectOperatorRequestAccessEndpoint(CommonTestSetup):
-    def test_request_admin_access_with_valid_payload(self, mocker):
+    @patch('registration.middleware.registration_emails.send_operator_access_request_email')
+    def test_request_admin_access_with_valid_payload(self, mock_send_access_request_email):
         operator = operator_baker()
-        mock_send_operator_access_request_email = mocker.patch.object(
-            EmailService, "send_operator_access_request_email"
-        )
         response = TestUtils.mock_post_with_auth_role(
             self,
             "industry_user",
@@ -25,7 +23,7 @@ class TestSelectOperatorRequestAccessEndpoint(CommonTestSetup):
         )
 
         # Assert that the email notification was sent
-        mock_send_operator_access_request_email.assert_called_once_with(
+        mock_send_access_request_email.assert_called_once_with(
             AccessRequestStates.CONFIRMATION,
             AccessRequestTypes.ADMIN,
             operator.legal_name,
