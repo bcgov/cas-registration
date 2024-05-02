@@ -67,19 +67,31 @@ $> sudo -u postgres createdb <<your_local_user>>
 
 - if your admin panel looks ugly, run `python3 manage.py collectstatic` to collect static files and then try again.
 
-## Frontend Environment Setup
+## Monorepo frontend environment setup
 
-In the `client` directory:
+ **See the [Nx Monorepo readme](./nx-monorepo.md)  for more information.**
 
-1. To install depedencies: `yarn`
-2. To run the development server: `yarn dev`
+### First time setup
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+In the `bciers` directory:
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+1. To enable [Corepack](https://nodejs.org/docs/latest-v20.x/api/corepack.html), in order to use Yarn Modern: `corepack enable`.
+2. To install all Monorepo dependencies: `yarn install`.
+3. **Optional**: Run `npm add --global nx@18.2.1` to install `nx` globally. This global instance will use to the project version if it differs.
 
-- To run jest unit tests: `yarn test`
-- To run playwright end-to-end tests: `yarn e2e` (For the first time, you may need to run `yarn playwright install --with-deps` to install the browsers)
+### See the [Nx Monorepo](./nx-monorepo.md) readme for more information
+
+### Development server
+
+1. To run a development server, you can use `yarn nx run {project}:dev`, with `{project}` being the frontend project you are working on. ie. `yarn nx run registration:dev` for the Registration application.
+2. Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+### Testing
+
+- To run Vitest unit tests on a specific project: `yarn nx run {project}:test`.
+- To run Vitest unit tests on all projects: `yarn nx run-many -t test`.
+- To run playwright end-to-end tests: `nx run {project}:e2e` (For the first time, you may need to run `yarn playwright install --with-deps` to install the browsers)
+
 
 ## Pre-Commit
 
