@@ -323,7 +323,11 @@ jobs:
 
   zap-owasp:
     needs:
-      ["backend-docker-build", "nx-docker-build-registration", "install-dev-tools"]
+      [
+        "backend-docker-build",
+        "nx-docker-build-registration",
+        "install-dev-tools",
+      ]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -499,7 +503,11 @@ jobs:
 
   backend-tests:
     needs:
-      ["backend-docker-build", "nx-docker-build-registration", "install-dev-tools"]
+      [
+        "backend-docker-build",
+        "nx-docker-build-registration",
+        "install-dev-tools",
+      ]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
