@@ -11,5 +11,6 @@
   "python.testing.unittestEnabled": false,
   "python.testing.pytestEnabled": true,
   "python.testing.autoTestDiscoverOnSaveEnabled": true,
-  "eslint.workingDirectories": ["bciers"]
+  "eslint.workingDirectories": ["bciers"],
+  "typescript.tsdk": "./bciers/node_modules/typescript/lib"
 }
