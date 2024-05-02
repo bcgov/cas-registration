@@ -401,7 +401,7 @@ jobs:
 
       - name: 📥 install Playwright ${{ matrix.project }}
         if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: npm playwright install --with-deps ${{ matrix.project }}
+        run: npx playwright install --with-deps ${{ matrix.project }}
         working-directory: ./bciers/apps/registration
 
       - name: Run Playwright Tests
