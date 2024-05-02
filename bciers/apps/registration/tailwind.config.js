@@ -6,52 +6,24 @@
  * We need to modify the tailwind.config.js file for MUI and TailwindCSS to work correctly.
  *  You can read more about it here in the MUI documentation: https://mui.com/material-ui/guides/interoperability/#setup.
  * */
+ const { createGlobPatternsForDependencies } = require("@nx/react/tailwind");
+ const { join } = require("path");
 
-/** @type {import('tailwindcss').Config} */
-import {
-  BC_GOV_PRIMARY_BRAND_COLOR_BLUE,
-  BC_GOV_BACKGROUND_COLOR_BLUE,
-  BC_GOV_COMPONENTS_GREY,
-  BC_GOV_TEXT,
-  BC_GOV_LINKS_COLOR,
-  BC_GOV_YELLOW,
-  DARK_GREY_BG_COLOR,
-  LIGHT_GREY_BG_COLOR,
-  BC_GOV_SEMANTICS_RED,
-  BC_GOV_SEMANTICS_GREEN,
-} from "./app/styles/colors";
-
-module.exports = {
-  content: [
-    "./app/**/*.{js,ts,jsx,tsx}",
-    "./app/components/**/*.{js,ts,jsx,tsx}",
-  ],
-  corePlugins: {
-    preflight: false,
-  },
-  // Add the important option, using the id of the app wrapper in layout.tsx
-  important: "#__next",
-  //It is best practice while using Tailwind and MUI together to add a prefix in the tailwind class
-  //After adding a prefix you can use your classes for padding like this way: tw-p-4 and for text size
-  //prefix: 'tw-',   //👈 Use your desired prefix
-  theme: {
-    extend: {
-      colors: {
-        "bc-text": BC_GOV_TEXT,
-        "bc-primary-blue": BC_GOV_PRIMARY_BRAND_COLOR_BLUE,
-        "bc-bg-blue": BC_GOV_BACKGROUND_COLOR_BLUE,
-        "bc-link-blue": BC_GOV_LINKS_COLOR,
-        "bc-yellow": BC_GOV_YELLOW,
-        "bc-bg-dark-grey": DARK_GREY_BG_COLOR,
-        "bc-bg-light-grey": LIGHT_GREY_BG_COLOR,
-        "bc-component-grey": BC_GOV_COMPONENTS_GREY,
-        "bc-success-green": BC_GOV_SEMANTICS_GREEN,
-        "bc-error-red": BC_GOV_SEMANTICS_RED,
-      },
-      lineHeight: {
-        12: "48px",
-      },
-    },
-  },
-  plugins: [],
-};
+ /** @type {import('tailwindcss').Config} */
+ module.exports = {
+   presets: [require("../../tailwind-workspace-preset")],
+   content: [
+     join(__dirname, "./app/**/*.{js,ts,jsx,tsx}"),
+     join(__dirname, "./app/components/**/*.{js,ts,jsx,tsx}"),
+     ...createGlobPatternsForDependencies(__dirname),
+   ],
+   corePlugins: {
+     preflight: false,
+   },
+   // Add the important option, using the id of the app wrapper in layout.tsx
+   important: "#__next",
+   //It is best practice while using Tailwind and MUI together to add a prefix in the tailwind class
+   //After adding a prefix you can use your classes for padding like this way: tw-p-4 and for text size
+   //prefix: 'tw-',   //👈 Use your desired prefix
+   plugins: [],
+ };

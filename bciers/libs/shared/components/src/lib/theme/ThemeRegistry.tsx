@@ -3,8 +3,8 @@
 import React from "react";
 import ThemeProvider from "@mui/material/styles/ThemeProvider";
 import CssBaseline from "@mui/material/CssBaseline";
-import NextAppDirEmotionCacheProvider from "./EmotionCache";
-import theme from "./theme";
+import { NextAppDirEmotionCacheProvider } from "./EmotionCache";
+import { theme } from "./theme";
 
 export function ThemeRegistry({ children }: { children: React.ReactNode }) {
   return (
