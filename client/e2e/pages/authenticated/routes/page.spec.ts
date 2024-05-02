@@ -33,7 +33,7 @@ test.beforeAll(async () => {
     await deleteUserRecord(process.env.E2E_NEW_USER_GUID as string);
     // 👤 delete user operator
     await deleteUserOperatorRecord(
-      process.env.E2E_INDUSTRY_USER_GUID as string,
+      process.env.E2E_INDUSTRY_USER_GUID as string
     );
   } catch (error) {
     // eslint-disable-next-line no-console
@@ -59,7 +59,7 @@ test.describe("Test Route Access", () => {
   for (let [role, value] of Object.entries(UserRole)) {
     role = E2EValue.PREFIX + role;
     const storageState = JSON.parse(
-      process.env[role + E2EValue.STORAGE] as string,
+      process.env[role + E2EValue.STORAGE_STATE] as string
     );
     test.describe(`Test Role ${value}`, () => {
       // 👤 Run test as this role

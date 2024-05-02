@@ -43,7 +43,9 @@ test.afterEach(async () => {
 test.describe.configure({ mode: "serial" });
 test.describe("Test Workflow cas_admin", () => {
   // 👤 run test using the storageState for this role
-  const storageState = JSON.parse(process.env.E2E_CAS_ADMIN_STORAGE as string);
+  const storageState = JSON.parse(
+    process.env.E2E_CAS_ADMIN_STORAGE_STATE as string
+  );
   // Note: specify storageState for each test file
   test.use({ storageState: storageState });
   test.describe("Test Operators workflow", () => {
@@ -62,7 +64,7 @@ test.describe("Test Workflow cas_admin", () => {
       await operatorsPage.tableHasExpectedColumns(UserRole.CAS_ADMIN);
       await operatorsPage.tableHasExpectedColumnValues(
         UserRole.CAS_ADMIN,
-        TableDataField.STATUS,
+        TableDataField.STATUS
       );
       // 📷 Cheese!
       const pageContent = page.locator("html");
@@ -147,7 +149,7 @@ test.describe("Test Workflow cas_admin", () => {
       await operationsPage.tableHasExpectedColumns(UserRole.CAS_ADMIN);
       await operationsPage.tableHasExpectedColumnValues(
         UserRole.CAS_ADMIN,
-        TableDataField.STATUS,
+        TableDataField.STATUS
       );
       // 📷 Cheese!
       const pageContent = page.locator("html");
@@ -209,19 +211,19 @@ test.describe("Test Workflow cas_admin", () => {
       await operationsPage.formHasExpectedWorkflow(
         UserRole.CAS_ADMIN,
         OperationStatus.PENDING,
-        1,
+        1
       );
       // 🔍 Assert cas_admin workflow Pending, Decline
       await operationsPage.formHasExpectedWorkflow(
         UserRole.CAS_ADMIN,
         OperationStatus.PENDING,
-        2,
+        2
       );
       // 🔍 Assert cas_admin workflow Approved, Preview the Statutory Declaration PDF
       await operationsPage.formHasExpectedWorkflow(
         UserRole.CAS_ADMIN,
         OperationStatus.APPROVED,
-        3,
+        3
       );
     });
 
@@ -242,14 +244,14 @@ test.describe("Test Workflow cas_admin", () => {
         operationsPage.page,
         OperationTableDataField.OPERATOR,
         OperationTableHeaders.OPERATOR,
-        "Existing",
+        "Existing"
       );
       await tableRowCount(operationsPage.page, 12);
 
       await sortTableByColumnLabel(
         operationsPage.page,
         OperationTableHeaders.OPERATOR,
-        "Existing Operator 2 Legal Name",
+        "Existing Operator 2 Legal Name"
       );
     });
   });

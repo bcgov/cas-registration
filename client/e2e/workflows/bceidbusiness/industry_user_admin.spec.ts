@@ -46,7 +46,7 @@ test.describe.configure({ mode: "serial" });
 test.describe("Test Workflow industry_user_admin", () => {
   // 👤 run test using the storageState for this role
   const storageState = JSON.parse(
-    process.env.E2E_INDUSTRY_USER_ADMIN_STORAGE as string,
+    process.env.E2E_INDUSTRY_USER_ADMIN_STORAGE_STATE as string
   );
   // Note: specify storageState for each test file or test group, instead of setting it in the config. https://playwright.dev/docs/next/auth#reuse-signed-in-state
   test.use({ storageState: storageState }); // this will error if no such file or directory
@@ -260,33 +260,33 @@ test.describe("Test Workflow industry_user_admin", () => {
     await sortTableByColumnLabel(
       operationsPage.page,
       OperationTableHeaders.BCGHG_ID,
-      "23219990001",
+      "23219990001"
     );
 
     await sortTableByColumnLabel(
       operationsPage.page,
       OperationTableHeaders.BCGHG_ID,
       "23219990023",
-      "descending",
+      "descending"
     );
 
     await sortTableByColumnLabel(
       operationsPage.page,
       OperationTableHeaders.STATUS,
-      OperationStatus.APPROVED,
+      OperationStatus.APPROVED
     );
 
     await sortTableByColumnLabel(
       operationsPage.page,
       OperationTableHeaders.SUBMISSION_DATE,
-      "Dec 16, 2023\n7:27:00 a.m. PST",
+      "Dec 16, 2023\n7:27:00 a.m. PST"
     );
 
     await sortTableByColumnLabel(
       operationsPage.page,
       OperationTableHeaders.SUBMISSION_DATE,
       "Not Started",
-      "descending",
+      "descending"
     );
   });
 
@@ -305,21 +305,21 @@ test.describe("Test Workflow industry_user_admin", () => {
       operationsPage.page,
       OperationTableDataField.BCGHG_ID,
       OperationTableHeaders.BCGHG_ID,
-      "23219990001",
+      "23219990001"
     );
 
     await tableRowCount(operationsPage.page, 1);
 
     await clearTableFilter(
       operationsPage.page,
-      OperationTableDataField.BCGHG_ID,
+      OperationTableDataField.BCGHG_ID
     );
 
     await filterTableByFieldId(
       operationsPage.page,
       OperationTableDataField.STATUS,
       OperationTableHeaders.STATUS,
-      OperationStatus.PENDING,
+      OperationStatus.PENDING
     );
 
     await tableRowCount(operationsPage.page, 11);
@@ -330,14 +330,14 @@ test.describe("Test Workflow industry_user_admin", () => {
       operationsPage.page,
       OperationTableDataField.OPERATION,
       OperationTableHeaders.OPERATION,
-      "Operation 2",
+      "Operation 2"
     );
 
     await tableRowCount(operationsPage.page, 6);
 
     await clearTableFilter(
       operationsPage.page,
-      OperationTableDataField.OPERATION,
+      OperationTableDataField.OPERATION
     );
 
     // Check junk search
@@ -346,7 +346,7 @@ test.describe("Test Workflow industry_user_admin", () => {
       OperationTableDataField.OPERATION,
       OperationTableHeaders.OPERATION,
       "this search will return no results",
-      true,
+      true
     );
   });
 
@@ -365,14 +365,14 @@ test.describe("Test Workflow industry_user_admin", () => {
       operationsPage.page,
       OperationTableDataField.STATUS,
       OperationTableHeaders.STATUS,
-      OperationStatus.PENDING,
+      OperationStatus.PENDING
     );
 
     await filterTableByFieldId(
       operationsPage.page,
       OperationTableDataField.BCGHG_ID,
       OperationTableHeaders.BCGHG_ID,
-      "2321999001",
+      "2321999001"
     );
 
     await tableRowCount(operationsPage.page, 7);
@@ -380,14 +380,14 @@ test.describe("Test Workflow industry_user_admin", () => {
     await sortTableByColumnLabel(
       operationsPage.page,
       OperationTableHeaders.SUBMISSION_DATE,
-      "Jan 22, 2024\n7:27:00 a.m. PST",
+      "Jan 22, 2024\n7:27:00 a.m. PST"
     );
 
     await filterTableByFieldId(
       operationsPage.page,
       OperationTableDataField.OPERATION,
       OperationTableHeaders.OPERATION,
-      "Operation 2",
+      "Operation 2"
     );
 
     await tableRowCount(operationsPage.page, 1);
