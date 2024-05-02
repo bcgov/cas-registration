@@ -2,7 +2,7 @@
 
 import { actionHandler } from "@/app/utils/actions";
 import { useSession } from "next-auth/react";
-import Review from "app/components/button/Review";
+import Review from "@app/components/button/Review";
 import { Status } from "@/app/utils/enums";
 
 interface Props {
