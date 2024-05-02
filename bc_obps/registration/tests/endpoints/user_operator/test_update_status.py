@@ -48,7 +48,7 @@ class TestUserOperatorUpdateStatusEndpoint(CommonTestSetup):
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
         subsequent_user_operator = baker.make(UserOperator, operator=operator)
         mock_send_operator_access_request_email = mocker.patch.object(
-            EmailService, "send_operator_access_request_email"
+            ApplicationAccessService, "send_operator_access_request_email"
         )
         response = TestUtils.mock_put_with_auth_role(
             self,
@@ -95,7 +95,7 @@ class TestUserOperatorUpdateStatusEndpoint(CommonTestSetup):
         operator = operator_baker({"status": Operator.Statuses.APPROVED, "is_new": False})
         user_operator = user_operator_baker({"operator": operator})
         mock_send_operator_access_request_email = mocker.patch.object(
-            EmailService, "send_operator_access_request_email"
+            ApplicationAccessService, "send_operator_access_request_email"
         )
         response_2 = TestUtils.mock_put_with_auth_role(
             self,
@@ -174,7 +174,7 @@ class TestUserOperatorUpdateStatusEndpoint(CommonTestSetup):
         )
         user_operator.operator.contacts.set(contacts)
         mock_send_operator_access_request_email = mocker.patch.object(
-            EmailService, "send_operator_access_request_email"
+            ApplicationAccessService, "send_operator_access_request_email"
         )
         # Now decline the user_operator and make sure the contacts are deleted
         response = TestUtils.mock_put_with_auth_role(

@@ -3,7 +3,6 @@ from typing import List, Optional
 from uuid import UUID
 import logging
 import requests
-from registration.enums.enums import AccessRequestStates, OperatorAccessRequest, AccessRequestTypes
 from common.models import EmailNotification, EmailNotificationTemplate
 from django.conf import settings
 

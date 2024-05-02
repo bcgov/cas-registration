@@ -7,10 +7,10 @@ class IdPs(Enum):
 
 
 class BoroIdApplicationStates(Enum):
-    CHANGES_REQUESTED = "Changes Requested"
     CONFIRMATION = "Confirmation"
     APPROVED = "Approved"
     DECLINED = "Declined"
+    CHANGES_REQUESTED = "Changes Requested"
 
 
 class BoroIdApplication:
