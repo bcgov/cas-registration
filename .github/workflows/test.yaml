@@ -457,7 +457,7 @@ jobs:
       - name: Download blob reports from GitHub Actions Artifacts
         uses: actions/download-artifact@v4
         with:
-          path: all-blob-reports
+          path: bciers/apps/registration/all-blob-reports
           pattern: blob-report-*
           merge-multiple: true
 
@@ -491,7 +491,10 @@ jobs:
       - uses: actions/checkout@v4
       - name: yarn cache
         uses: ./.github/actions/yarn-cache
-      - run: yarn install --frozen-lockfile
+      - run: |
+          corepack enable
+          yarn set version stable
+          yarn install --immutable
         working-directory: ./bciers/apps/registration
       - name: finalize happo e2e tests
         env:

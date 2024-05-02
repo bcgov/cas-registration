@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "dev": "nx dev reporting"
+    "dev": "nx dev reporting",
+    "reg": "nx dev registration"
   },
   "private": true,
   "module": "commonjs",
