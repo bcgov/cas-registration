@@ -52,6 +52,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@axe-core/playwright@npm:^4.9.0":
+  version: 4.9.0
+  resolution: "@axe-core/playwright@npm:4.9.0"
+  dependencies:
+    axe-core: "npm:~4.9.0"
+  peerDependencies:
+    playwright-core: ">= 1.0.0"
+  checksum: 10c0/5d51efc93f6671e091feb98b608a112db8771cd41869280c25cbc1e62a624a69aa09bc0ee13aa8d7a48e7de8906cb64c939ebf56f0557b39c63f3ae9bdc0a05c
+  languageName: node
+  linkType: hard
+
 "@babel/code-frame@npm:^7.0.0, @babel/code-frame@npm:^7.10.4, @babel/code-frame@npm:^7.12.13, @babel/code-frame@npm:^7.16.7, @babel/code-frame@npm:^7.23.5":
   version: 7.23.5
   resolution: "@babel/code-frame@npm:7.23.5"
@@ -2733,6 +2744,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@bciers/source@workspace:."
   dependencies:
+    "@axe-core/playwright": "npm:^4.9.0"
     "@babel/core": "npm:^7.22.11"
     "@babel/preset-env": "npm:^7.22.10"
     "@babel/preset-typescript": "npm:^7.22.11"
@@ -7154,6 +7166,13 @@ __metadata:
   version: 4.8.4
   resolution: "axe-core@npm:4.8.4"
   checksum: 10c0/1100ac42c4b8cde1fb7c428d2b76e5a14e20d9d41fe635c55048e4ba27f1eded729b838379a036b5ef9cf25ba7f7bedeef01ebd3b4accd2afee397b10b0265c4
+  languageName: node
+  linkType: hard
+
+"axe-core@npm:~4.9.0":
+  version: 4.9.0
+  resolution: "axe-core@npm:4.9.0"
+  checksum: 10c0/0d3ef5f0f8d738b7fa31a869913d9988f04f6e283690d828d7066be2a6661d194ddcb863a9bfa5109600553ffa89faa5f16b5eeee839d1c4135f480458f04d37
   languageName: node
   linkType: hard
 
