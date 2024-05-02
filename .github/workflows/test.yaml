@@ -186,14 +186,12 @@ jobs:
           fetch-depth: 0
       - name: dev env setup
         uses: ./.github/actions/dev-env-setup
-      - run: yarn install --frozen-lockfile
+      - run: yarn install --immutable
         working-directory: ./bciers
       - name: Run Nx Tests
         run: yarn nx run-many -t test --skipNxCache
 
   nx-docker-build:
-    # Only run on giraffe-develop branch for now
-    if: github.ref == 'refs/heads/giraffe-develop' || 'refs/heads/task/nx-deploy'
     runs-on: ubuntu-latest
     defaults:
       run:
