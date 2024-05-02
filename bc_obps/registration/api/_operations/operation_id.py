@@ -1,12 +1,6 @@
 from uuid import UUID
-from zoneinfo import ZoneInfo
-from registration.constants import UNAUTHORIZED_MESSAGE
-from django.db import transaction
 from registration.decorators import authorize
-from datetime import datetime
-from django.core.exceptions import ValidationError
 
-from registration.decorators import authorize
 from service.operation_service import OperationService
 from registration.api.utils.current_user_utils import get_current_user_guid
 

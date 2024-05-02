@@ -14,13 +14,12 @@ from registration.utils import (
     files_have_same_hash,
 )
 from datetime import datetime
-import pytz
 from registration.models import (
     Document,
     Operation,
     Operator,
 )
-
+from zoneinfo import ZoneInfo
 
 from registration.constants import PAGE_SIZE, UNAUTHORIZED_MESSAGE
 
@@ -33,7 +32,7 @@ class OperationService:
 
         status = Operation.Statuses(status)
         if status in [Operation.Statuses.APPROVED, Operation.Statuses.DECLINED]:
-            operation.verified_at = datetime.now(pytz.utc)
+            operation.verified_at = datetime.now(ZoneInfo("UTC"))
             operation.verified_by_id = user_guid
             if status == Operation.Statuses.APPROVED:
                 operation.generate_unique_boro_id()
@@ -42,7 +41,7 @@ class OperationService:
                 if operator.status != Operator.Statuses.APPROVED:
                     operator.status = Operator.Statuses.APPROVED
                     operator.is_new = False
-                    operator.verified_at = datetime.now(pytz.utc)
+                    operator.verified_at = datetime.now(ZoneInfo("UTC"))
                     operator.verified_by_id = user_guid
                     operator.save(update_fields=["status", "is_new", "verified_at", "verified_by_id"])
                     operator.set_create_or_update(user_guid)
@@ -148,7 +147,7 @@ class OperationService:
             """
             if operation.status != Operation.Statuses.APPROVED:
                 operation.status = Operation.Statuses.PENDING
-                operation.submission_date = datetime.now(pytz.utc)
+                operation.submission_date = datetime.now(ZoneInfo("UTC"))
                 operation.save(update_fields=['status', 'submission_date'])
         operation.set_create_or_update(user_guid)
         return operation
