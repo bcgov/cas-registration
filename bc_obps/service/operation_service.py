@@ -165,39 +165,18 @@ class OperationService:
         status = filters.status
         sort_direction = "-" if sort_order == "desc" else ""
 
-        qs = None
+        base_qs = OperationDataAccessService.get_all_operations_for_user(user)
+        filters = [
+            Q(bcghg_id__icontains=bcghg_id) if bcghg_id else Q(),
+            Q(bc_obps_regulated_operation__id__icontains=bc_obps_regulated_operation)
+            if bc_obps_regulated_operation
+            else Q(),
+            Q(name__icontains=name) if name else Q(),
+            Q(operator__legal_name__icontains=operator) if operator else Q(),
+            Q(status__icontains=status) if status else Q(),
+        ]
 
-        # IRC users can see all operations except ones with status of "Not Started" or "Draft"
-        if user.is_irc_user():
-            qs = (
-                OperationDataAccessService.get_all_operations_for_irc_user()
-                .filter(
-                    Q(bcghg_id__icontains=bcghg_id) if bcghg_id else Q(),
-                    Q(bc_obps_regulated_operation__id__icontains=bc_obps_regulated_operation)
-                    if bc_obps_regulated_operation
-                    else Q(),
-                    Q(name__icontains=name) if name else Q(),
-                    Q(operator__legal_name__icontains=operator) if operator else Q(),
-                    Q(status__icontains=status) if status else Q(),
-                )
-                .order_by(f"{sort_direction}{sort_field}")
-            )
-
-        else:
-            # order by created_at to get the latest one first
-            qs = (
-                OperationDataAccessService.get_all_operations_for_industry_user(user)
-                .filter(
-                    Q(bcghg_id__icontains=bcghg_id) if bcghg_id else Q(),
-                    Q(bc_obps_regulated_operation__id__icontains=bc_obps_regulated_operation)
-                    if bc_obps_regulated_operation
-                    else Q(),
-                    Q(name__icontains=name) if name else Q(),
-                    Q(operator__legal_name__icontains=operator) if operator else Q(),
-                    Q(status__icontains=status) if status else Q(),
-                )
-                .order_by(f"{sort_direction}{sort_field}")
-            )
+        qs = base_qs.filter(*filters).order_by(f"{sort_direction}{sort_field}")
 
         paginator = Paginator(qs, PAGE_SIZE)
 
