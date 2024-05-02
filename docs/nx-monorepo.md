@@ -8,7 +8,7 @@ Note: The monorepo uses Node v20's Corepack Yarn and assumes a global install of
 
 When running commands, Nx has two patterns you can use
 
-- `nx run {project}:{target}`: ie. `nx run registration:dev` to run the equivalent of `yarn dev` within the registration folder. __Recommended__
+- `nx run {project}:{target}`: ie. `nx run registration:dev` to run the equivalent of `yarn dev` within the registration folder. **Recommended**
   - You can also do things like `nx run-many --target=test` to test _all_ projects in the monorepo in parallel.
 - `nx {target} {project}`: ie. `nx dev registration` to run the equivalent of `yarn dev` within the registration folder.
 
@@ -16,27 +16,27 @@ When running commands, Nx has two patterns you can use
 
 > Replace `{project}` with the application you want to use. ie. `nx run registration:dev`, `nx run reporting:build`.
 
-| Client | Monorepo 🚝 | Notes |
-| - | - | - |
-| `yarn format` | `nx format:check` | Use `--projects {project1},{project2}` to select individual projects |
-| `yarn format --write` | `nx format:write` | Use `--projects {project1},{project2}` to select individual projects |
-| `yarn dev` | `nx run {project}:dev` | |
-| `yarn build` | `nx run {project}:build` | |
-| `yarn start` | `nx run {project}:start` | |
-| `yarn test` | `nx run {project}:test` | |
-| `yarn e2e`, `yarn e2e:ui`, `yarn e2e:sequential` | `nx run {project}:e2e`, `nx run {project}:e2e:ui`, `nx run {project}:e2e:sequential` | |
-| `yarn audit-deps` | `yarn npm audit` | |
+| Client                                           | Monorepo 🚝                                                                          | Notes                                                                |
+| ------------------------------------------------ | ------------------------------------------------------------------------------------ | -------------------------------------------------------------------- |
+| `yarn format`                                    | `nx format:check`                                                                    | Use `--projects {project1},{project2}` to select individual projects |
+| `yarn format --write`                            | `nx format:write`                                                                    | Use `--projects {project1},{project2}` to select individual projects |
+| `yarn dev`                                       | `nx run {project}:dev`                                                               |                                                                      |
+| `yarn build`                                     | `nx run {project}:build`                                                             |                                                                      |
+| `yarn start`                                     | `nx run {project}:start`                                                             |                                                                      |
+| `yarn test`                                      | `nx run {project}:test`                                                              |                                                                      |
+| `yarn e2e`, `yarn e2e:ui`, `yarn e2e:sequential` | `nx run {project}:e2e`, `nx run {project}:e2e:ui`, `nx run {project}:e2e:sequential` |                                                                      |
+| `yarn audit-deps`                                | `yarn npm audit`                                                                     |                                                                      |
 
 #### Current projects
 
-| Project | Location | Type |
-| - | - | - |
-| `registration` | `/bciers/apps/registration` | application |
-| `reporting` | `/bciers/apps/reporting` | application |
-| `components` | `/bciers/libs/shared/components` | library |
-| `img` | `/bciers/libs/shared/img` | library |
-| `styles` | `/bciers/libs/shared/styles` | library |
-| `testConfig` | `/bciers/libs/shared/testConfig` | library |
+| Project        | Location                         | Type        |
+| -------------- | -------------------------------- | ----------- |
+| `registration` | `/bciers/apps/registration`      | application |
+| `reporting`    | `/bciers/apps/reporting`         | application |
+| `components`   | `/bciers/libs/shared/components` | library     |
+| `img`          | `/bciers/libs/shared/img`        | library     |
+| `styles`       | `/bciers/libs/shared/styles`     | library     |
+| `testConfig`   | `/bciers/libs/shared/testConfig` | library     |
 
 ### General tips
 
