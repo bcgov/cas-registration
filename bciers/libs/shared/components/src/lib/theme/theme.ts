@@ -1,3 +1,5 @@
+"use client";
+
 import { createTheme } from "@mui/material/styles";
 import {
   BC_GOV_PRIMARY_BRAND_COLOR_BLUE,
@@ -13,7 +15,7 @@ import {
 } from "@bciers/styles";
 import "@bcgov/bc-sans/css/BCSans.css";
 
-const theme = createTheme({
+export const theme = createTheme({
   typography: {
     fontFamily: "BCSans, sans-serif",
     // Include "sans-serif" as a fallback font family.
@@ -124,5 +126,3 @@ const theme = createTheme({
     },
   },
 });
-
-export default theme;
