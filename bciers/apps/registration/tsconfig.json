@@ -1,21 +1,15 @@
 {
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "target": "es5",
-    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
-    "skipLibCheck": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "noEmit": true,
     "esModuleInterop": true,
-    "module": "esnext",
-    "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
-    "baseUrl": ".",
-    "types": ["vitest/globals"],
     "plugins": [
       {
         "name": "next"
@@ -26,5 +20,5 @@
     }
   },
   "include": ["../**/*", "./.eslintrc.js", ".next/types/**/*.ts"],
-  "exclude": [".next", "node_modules", "public", "../bc_obps", "../bciers"]
+  "exclude": [".next", "public", "../bc_obps", "../bciers"]
 }
