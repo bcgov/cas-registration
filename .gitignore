@@ -140,3 +140,4 @@ terraform.rc
 
 # Ignore /charts helm directory
 helm/**/charts
+.yarn/
