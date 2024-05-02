@@ -1,5 +1,6 @@
 from registration.enums.enums import AccessRequestStates, AccessRequestTypes
 from common.service.email.email_service import EmailService
+from registration.models import ParentOperator, User, Operator, UserOperator
 from typing import List, Optional, Union
 from datetime import datetime
 from django.db.models import QuerySet
@@ -10,10 +11,6 @@ from registration.schema import OperatorIn
 from django.db import transaction
 from registration.utils import set_verification_columns
 from registration.models import (
-    ParentOperator,
-    User,
-    Operator,
-    UserOperator,
     Operation,
     BusinessStructure,
     MultipleOperator,

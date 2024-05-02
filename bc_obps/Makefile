@@ -130,3 +130,8 @@ pythontests_coverage:
 clear_db: ## Clear all data in the datbase
 clear_db:
 	$(POETRY_RUN) python $(MANAGE_PY) truncate_dev_data_tables
+
+.PHONY: shell
+shell: ## run the Django shell plus
+shell:
+	$(POETRY_RUN) python $(MANAGE_PY) shell_plus

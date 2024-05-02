@@ -1,10 +1,7 @@
-import uuid
 import pytest
-from registration.enums.enums import OperatorAccessRequest, AccessRequestStates, AccessRequestTypes
 from datetime import datetime, timedelta
 from uuid import UUID
 from common.service.email.email_service import EmailService
-from common.models import EmailNotification, EmailNotificationTemplate
 
 pytestmark = pytest.mark.django_db
 
@@ -215,10 +212,10 @@ def test_merge_template_and_send(email_service: EmailService, email_template, mo
 #     # Mock the send_email_by_template method to prevent sending real emails
 #     mocked_send_email_by_template = mocker.patch.object(email_service, 'send_email_by_template')
 
-#     # Sample data
-#     operator_legal_name = "Test Operator"
-#     external_user_full_name = "John Doe"
-#     external_user_email_address = "send_operator_access_request_email@email.test"
+# Sample data
+# operator_legal_name = "Test Operator"
+# external_user_full_name = "John Doe"
+# external_user_email_address = "send_operator_access_request_email@email.test"
 
 #     expected_context = {
 #         "operator_legal_name": operator_legal_name,

@@ -1,6 +1,4 @@
-from registration.middleware.registration_emails import send_operator_access_request_email
 from registration.enums.enums import AccessRequestStates, AccessRequestTypes
-from common.service.email.email_service import EmailService
 from model_bakery import baker
 from localflavor.ca.models import CAPostalCodeField
 from registration.tests.utils.bakers import operator_baker, user_operator_baker
