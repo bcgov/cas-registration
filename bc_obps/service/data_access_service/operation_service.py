@@ -60,19 +60,18 @@ class OperationDataAccessService:
         return operation
 
     @classmethod
-    def get_all_operations_for_irc_user(cls):
-        # IRC users can see all operations except ones with status of "Not Started" or "Draft"
-        return (
-            Operation.objects.select_related("operator", "bc_obps_regulated_operation")
-            .exclude(status=Operation.Statuses.NOT_STARTED)
-            .exclude(status=Operation.Statuses.DRAFT)
-            .only(*OperationListOut.Config.model_fields, "operator__legal_name", "bc_obps_regulated_operation__id")
-        )
-
-    @classmethod
-    def get_all_operations_for_industry_user(cls, user):
-        user_operator = UserOperatorService.get_current_user_approved_user_operator_or_raise(user)
-        # order by created_at to get the latest one first
+    def get_all_operations_for_user(cls, user):
+        if user.is_irc_user():
+            # IRC users can see all operations except ones with status of "Not Started" or "Draft"
+            return (
+                Operation.objects.select_related("operator", "bc_obps_regulated_operation")
+                .exclude(status=Operation.Statuses.NOT_STARTED)
+                .exclude(status=Operation.Statuses.DRAFT)
+                .only(*OperationListOut.Config.model_fields, "operator__legal_name", "bc_obps_regulated_operation__id")
+            )
+        else:
+            # Industry users can only see operations associated with their own operator
+            user_operator = UserOperatorService.get_current_user_approved_user_operator_or_raise(user)
         return (
             Operation.objects.select_related("operator", "bc_obps_regulated_operation")
             .filter(operator_id=user_operator.operator_id)
