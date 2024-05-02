@@ -46,3 +46,13 @@ out
 
 # local env files
 .env*.local
+
+# Yarn Modern
+# See https://yarnpkg.com/getting-started/qa#which-files-should-be-gitignored
+.yarn/
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
