@@ -8,7 +8,7 @@ from django.core.exceptions import ValidationError
 
 from registration.decorators import authorize
 from service.operation_service import OperationService
-from registration.api.utils.current_user_utils import get_current_user
+from registration.api.utils.current_user_utils import get_current_user_guid
 
 
 from registration.decorators import handle_http_errors
@@ -36,7 +36,7 @@ from ninja.responses import codes_4xx
 @authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles())
 @handle_http_errors()
 def get_operation(request, operation_id: UUID):
-    return 200, OperationService.get_operation_if_authorized(get_current_user(request), operation_id)
+    return 200, OperationService.get_if_authorized(get_current_user_guid(request), operation_id)
 
 
 @router.put(
@@ -46,5 +46,5 @@ def get_operation(request, operation_id: UUID):
 @handle_http_errors()
 def update_operation(request, operation_id: UUID, submit: str, form_section: int, payload: OperationUpdateIn):
     return 200, OperationService.update_operation(
-        get_current_user(request).user_guid, operation_id, submit, form_section, payload
+        get_current_user_guid(request), operation_id, submit, form_section, payload
     )
