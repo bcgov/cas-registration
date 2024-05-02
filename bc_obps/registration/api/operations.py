@@ -1,4 +1,4 @@
-from registration.api.utils.current_user_utils import get_current_user
+from registration.api.utils.current_user_utils import get_current_user_guid
 from service.operation_service import OperationService
 from registration.decorators import authorize, handle_http_errors
 from .api_base import router
@@ -27,7 +27,7 @@ from ninja import Query
 @authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles())
 @handle_http_errors()
 def list_operations(request, filters: OperationFilterSchema = Query(...)):
-    return 200, OperationService.list_operations(get_current_user(request).user_guid, filters)
+    return 200, OperationService.list_operations(get_current_user_guid(request), filters)
 
 
 ##### POST #####
@@ -37,4 +37,4 @@ def list_operations(request, filters: OperationFilterSchema = Query(...)):
 @authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
 @handle_http_errors()
 def create_operation(request, payload: OperationCreateIn):
-    return 201, OperationService.create_operation(get_current_user(request).user_guid, payload)
+    return 201, OperationService.create_operation(get_current_user_guid(request), payload)

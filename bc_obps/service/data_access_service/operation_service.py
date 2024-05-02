@@ -1,3 +1,5 @@
+from registration.schema.operation import OperationListOut
+from service.user_operator_service import UserOperatorService
 from registration.models import Operation
 from registration.schema import (
     OperationOut,
@@ -10,7 +12,7 @@ class OperationDataAccessService:
         return Operation.objects.select_related('operator', 'bc_obps_regulated_operation').get(id=operation_id)
 
     @classmethod
-    def get_by_id_optimized(cls, operation_id):
+    def get_by_id_for_operation_out_schema(cls, operation_id):
         return (
             Operation.objects.only(
                 *OperationOut.Config.model_fields,
@@ -56,3 +58,23 @@ class OperationDataAccessService:
         )
         operation.regulated_products.set(regulated_products)
         return operation
+
+    @classmethod
+    def get_all_operations_for_irc_user(cls):
+        # IRC users can see all operations except ones with status of "Not Started" or "Draft"
+        return (
+            Operation.objects.select_related("operator", "bc_obps_regulated_operation")
+            .exclude(status=Operation.Statuses.NOT_STARTED)
+            .exclude(status=Operation.Statuses.DRAFT)
+            .only(*OperationListOut.Config.model_fields, "operator__legal_name", "bc_obps_regulated_operation__id")
+        )
+
+    @classmethod
+    def get_all_operations_for_industry_user(cls, user):
+        user_operator = UserOperatorService.get_current_user_approved_user_operator_or_raise(user)
+        # order by created_at to get the latest one first
+        return (
+            Operation.objects.select_related("operator", "bc_obps_regulated_operation")
+            .filter(operator_id=user_operator.operator_id)
+            .only(*OperationListOut.Config.model_fields, "operator__legal_name", "bc_obps_regulated_operation__id")
+        )

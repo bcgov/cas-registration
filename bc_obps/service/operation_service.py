@@ -5,7 +5,7 @@ from service.data_access_service.document_service import DocumentDataAccessServi
 from service.document_service import DocumentService
 from service.data_access_service.user_service import UserDataAccessService
 from service.data_access_service.contact_service import ContactDataAccessService
-from registration.schema.operation import OperationCreateIn, OperationFilterSchema, OperationListOut, OperationUpdateIn
+from registration.schema.operation import OperationCreateIn, OperationFilterSchema, OperationUpdateIn
 from service.data_access_service.operation_service import OperationDataAccessService
 from django.db.models import Q
 from django.core.paginator import Paginator
@@ -27,7 +27,7 @@ from registration.constants import PAGE_SIZE, UNAUTHORIZED_MESSAGE
 
 class OperationService:
     @classmethod
-    def update_operation_status(cls, user_guid, operation_id: UUID, status: Operation.Statuses):
+    def update_status(cls, user_guid, operation_id: UUID, status: Operation.Statuses):
 
         operation = OperationDataAccessService.get_by_id(operation_id)
 
@@ -52,8 +52,9 @@ class OperationService:
         return operation
 
     @classmethod
-    def get_operation_if_authorized(cls, user, operation_id):
-        operation = OperationDataAccessService.get_by_id_optimized(operation_id)
+    def get_if_authorized(cls, user_guid, operation_id):
+        operation = OperationDataAccessService.get_by_id_for_operation_out_schema(operation_id)
+        user = UserDataAccessService.get_by_guid(user_guid)
         if user.is_industry_user():
             if not operation.user_has_access(user.user_guid):
                 raise Exception(UNAUTHORIZED_MESSAGE)
@@ -170,9 +171,7 @@ class OperationService:
         # IRC users can see all operations except ones with status of "Not Started" or "Draft"
         if user.is_irc_user():
             qs = (
-                Operation.objects.select_related("operator", "bc_obps_regulated_operation")
-                .exclude(status=Operation.Statuses.NOT_STARTED)
-                .exclude(status=Operation.Statuses.DRAFT)
+                OperationDataAccessService.get_all_operations_for_irc_user()
                 .filter(
                     Q(bcghg_id__icontains=bcghg_id) if bcghg_id else Q(),
                     Q(bc_obps_regulated_operation__id__icontains=bc_obps_regulated_operation)
@@ -182,16 +181,13 @@ class OperationService:
                     Q(operator__legal_name__icontains=operator) if operator else Q(),
                     Q(status__icontains=status) if status else Q(),
                 )
-                .only(*OperationListOut.Config.model_fields, "operator__legal_name", "bc_obps_regulated_operation__id")
                 .order_by(f"{sort_direction}{sort_field}")
             )
 
         else:
-            # Industry users can only see their companies' operations (industry user must be approved)
-            user_operator = UserOperatorService.get_current_user_approved_user_operator_or_raise(user)
             # order by created_at to get the latest one first
             qs = (
-                Operation.objects.select_related("operator", "bc_obps_regulated_operation")
+                OperationDataAccessService.get_all_operations_for_industry_user(user)
                 .filter(
                     Q(bcghg_id__icontains=bcghg_id) if bcghg_id else Q(),
                     Q(bc_obps_regulated_operation__id__icontains=bc_obps_regulated_operation)
@@ -200,10 +196,8 @@ class OperationService:
                     Q(name__icontains=name) if name else Q(),
                     Q(operator__legal_name__icontains=operator) if operator else Q(),
                     Q(status__icontains=status) if status else Q(),
-                    operator_id=user_operator.operator_id,
                 )
                 .order_by(f"{sort_direction}{sort_field}")
-                .only(*OperationListOut.Config.model_fields, "operator__legal_name", "bc_obps_regulated_operation__id")
             )
 
         paginator = Paginator(qs, PAGE_SIZE)
