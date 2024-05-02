@@ -5,5 +5,56 @@
   "projectType": "application",
   "tags": [],
   "// targets": "to see all targets run: nx show project registration --web",
-  "targets": {}
+  "targets": {
+    "build": {
+      "executor": "@nx/next:build",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "dev",
+      "options": {
+        "outputPath": "dist/registration",
+        "experimentalAppOnly": true
+      }
+    },
+    "container": {
+      "executor": "@nx-tools/nx-container:build",
+      "dependsOn": ["build"],
+      "defaultConfiguration": "dev",
+      "options": {
+        "engine": "docker",
+        "context": "dist/registration",
+        "file": "apps/registration/Dockerfile",
+        "tags": ["cas-registration:latest"]
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "options": {
+        "lintFilePatterns": ["{projectRoot}/**/*.{js,jsx,ts,tsx}"]
+      }
+    },
+    "e2e": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "happo-e2e -- yarn playwright test"
+      }
+    },
+    "e2e:ui": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "happo-e2e -- yarn playwright test --ui"
+      }
+    },
+    "e2e:sequential": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "playwright test --workers=1 client/e2e/*"
+      }
+    },
+    "audit-deps": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "improved-yarn-audit"
+      }
+    }
+  }
 }

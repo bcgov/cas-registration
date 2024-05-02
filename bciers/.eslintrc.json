@@ -17,7 +17,7 @@
           "warn",
           {
             "enforceBuildableLibDependency": true,
-            "allow": [],
+            "allow": ["@/"],
             "depConstraints": [
               {
                 "sourceTag": "*",
