@@ -11,7 +11,7 @@ runs:
         path: |
           ~/.asdf
           ./bciers/.tool-versions
-        key: ${{ runner.os }}-asdf-cache-bciers-${{ hashFiles('client/.tool-versions') }}
+        key: ${{ runner.os }}-asdf-cache-bciers-${{ hashFiles('bciers/.tool-versions') }}
     - uses: actions/cache@v4
       id: asdf-cache-backend
       with:
