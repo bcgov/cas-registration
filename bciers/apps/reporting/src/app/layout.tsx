@@ -6,11 +6,11 @@ You should not manually add <head> tags such as <title> and <meta> to root layou
 */
 
 import "./global.css";
-import {
-  metadata as regMetadata,
-  viewport as regViewport,
-} from "registration/layout";
-import { ThemeRegistry } from "@bciers/components";
+import { metadata as regMetadata, viewport as regViewport } from "@/app/layout";
+import ThemeProvider from "@mui/material/styles/ThemeProvider";
+import { theme } from "@bciers/components";
+import { NextAppDirEmotionCacheProvider } from "@bciers/components";
+import CssBaseline from "@mui/material/CssBaseline";
 
 export const metadata = regMetadata;
 export const viewport = regViewport;
@@ -26,7 +26,12 @@ export default function RootLayout({
         {
           //👇️ provide MUI custom theme to the components within the layout
         }
-        <ThemeRegistry>{children}</ThemeRegistry>
+        <NextAppDirEmotionCacheProvider options={{ key: "mui" }}>
+          <ThemeProvider theme={theme}>
+            <CssBaseline />
+            {children}
+          </ThemeProvider>
+        </NextAppDirEmotionCacheProvider>
       </body>
     </html>
   );
