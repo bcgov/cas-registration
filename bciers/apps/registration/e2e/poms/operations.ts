@@ -178,7 +178,23 @@ export class OperationsPOM {
       .all();
     await viewDetailsButtons[index].click();
   }
-
+  async clickViewDetailsButtonByOperationName(
+    page: any,
+    operationName: string,
+  ) {
+    const row = await getTableRowByCellSelector(
+      this.table,
+      `[data-field="${TableDataField.NAME}"]:has-text("${operationName}")`,
+    );
+    console.log("row is", row);
+    console.log(
+      "link selector",
+      row.getByRole("link", { name: ButtonText.VIEW_DETAILS }),
+    );
+    await page.waitForTimeout(5000);
+    // Click the `View Detail` for this row
+    await row.getByRole("link", { name: ButtonText.VIEW_DETAILS }).click();
+  }
   async navigateBack() {
     // Navigate back to the table
     await this.linkOperations.click();
