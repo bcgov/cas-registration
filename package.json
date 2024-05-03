@@ -25,5 +25,6 @@
     "hooks": {
       "before:git:beforeRelease": "./.bin/pre-commit-format.sh CHANGELOG.md"
     }
-  }
+  },
+  "packageManager": "yarn@4.2.0"
 }

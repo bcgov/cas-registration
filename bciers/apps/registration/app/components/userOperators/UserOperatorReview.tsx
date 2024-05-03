@@ -1,7 +1,7 @@
 "use client";
 
 import { actionHandler } from "@/app/utils/actions";
-import Review from "app/components/button/Review";
+import Review from "@/app/components/button/Review";
 import {
   OperatorStatus,
   Status,
