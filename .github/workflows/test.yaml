@@ -489,14 +489,6 @@ jobs:
     needs: [e2e-tests]
     steps:
       - uses: actions/checkout@v4
-      - name: yarn cache
-        uses: ./.github/actions/yarn-cache
-      - run: |
-          yarn cache clean --all
-          corepack enable
-          yarn set version stable
-          yarn install --immutable
-        working-directory: ./bciers/apps/registration
       - name: finalize happo e2e tests
         env:
           HAPPO_API_KEY: ${{ secrets.HAPPO_API_KEY }}
