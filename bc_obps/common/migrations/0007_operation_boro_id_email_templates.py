@@ -82,7 +82,7 @@ def reverse_submit_operation_boro_id_email_notification_templates(apps, schema_e
 
 class Migration(migrations.Migration):
     dependencies = [
-        ('common', '0005_V1_5_0'),
+        ('common', '0006_V1_5_1'),
     ]
 
     operations = [
