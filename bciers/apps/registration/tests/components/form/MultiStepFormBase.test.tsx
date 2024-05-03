@@ -98,7 +98,7 @@ describe("The MultiStepFormBase component", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("makes the form editable when the Edit button is clicked", async () => {
+  it("makes the form editable when the Edit button is clicked", () => {
     useParams.mockReturnValue({
       formSection: "1",
       operation: "create",
@@ -109,7 +109,7 @@ describe("The MultiStepFormBase component", () => {
       "read-only-widget",
     );
     const editButton = screen.getByRole("button", { name: /Edit/i });
-    await fireEvent.click(editButton);
+    fireEvent.click(editButton);
     // this confirms the form is editable because the label is accompanied by an <input>
     expect(screen.getByLabelText(/field1/i)).toHaveValue("test field1");
   });
@@ -170,7 +170,7 @@ describe("The MultiStepFormBase component", () => {
     );
   });
 
-  it("navigation buttons work on first form page", async () => {
+  it("navigation buttons work on first form page", () => {
     useParams.mockReturnValue({
       formSection: "1",
       operation: "create",
@@ -187,11 +187,11 @@ describe("The MultiStepFormBase component", () => {
       "cancelurl.com",
     );
     expect(saveAndContinueButton).not.toBeDisabled();
-    await fireEvent.click(saveAndContinueButton);
+    fireEvent.click(saveAndContinueButton);
     expect(mockOnSubmit).toHaveBeenCalled();
   });
 
-  it("navigation and submit buttons work on second form page", async () => {
+  it("navigation and submit buttons work on second form page", () => {
     useParams.mockReturnValue({
       formSection: "2",
       operation: "025328a0-f9e8-4e1a-888d-aa192cb053db",
@@ -213,11 +213,11 @@ describe("The MultiStepFormBase component", () => {
       "cancelurl.com",
     );
     expect(saveAndContinueButton).not.toBeDisabled();
-    await fireEvent.click(saveAndContinueButton);
+    fireEvent.click(saveAndContinueButton);
     expect(mockOnSubmit).toHaveBeenCalled();
   });
 
-  it("navigation and submit buttons work on last form page", async () => {
+  it("navigation and submit buttons work on last form page", () => {
     useParams.mockReturnValue({
       formSection: "3",
       operation: "025328a0-f9e8-4e1a-888d-aa192cb053db",
@@ -241,7 +241,7 @@ describe("The MultiStepFormBase component", () => {
     expect(
       screen.getByRole("button", { name: /test submit button text/i }),
     ).not.toBeDisabled();
-    await fireEvent.click(submitButton);
+    fireEvent.click(submitButton);
     expect(mockOnSubmit).toHaveBeenCalled();
   });
 
@@ -285,7 +285,7 @@ describe("The MultiStepFormBase component", () => {
     expect(saveAndContinueButton).not.toBeDisabled();
   });
 
-  it("shows an error if there was a problem with form submission", async () => {
+  it("shows an error if there was a problem with form submission", () => {
     useParams.mockReturnValue({
       formSection: "1",
       operation: "create",
@@ -297,7 +297,7 @@ describe("The MultiStepFormBase component", () => {
     const saveAndContinueButton = screen.getByRole("button", {
       name: /Save and Continue/i,
     });
-    await fireEvent.click(saveAndContinueButton);
+    fireEvent.click(saveAndContinueButton);
     expect(screen.getByRole("alert")).toBeVisible();
     expect(mockOnSubmit).not.toHaveBeenCalled(); // submit function is not called because we hit validation errors first
   });
