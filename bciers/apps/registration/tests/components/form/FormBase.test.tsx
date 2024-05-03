@@ -14,18 +14,14 @@ const testSchema = {
   },
 };
 
-const testUiSchema = {
-  type: {
-    "ui:widget": "TextWidget",
-  },
-};
-
 describe("The FormBase component", () => {
+  beforeEach(() => {
+    vi.resetAllMocks();
+  });
   it("renders a test schema with the default theme", () => {
     const props = {
       schema: testSchema,
       formData: { field: "test field" },
-      uiSchema: testUiSchema,
     } as any;
 
     render(<FormBase {...props} />);
@@ -34,11 +30,26 @@ describe("The FormBase component", () => {
     expect(screen.getByLabelText(/field/i)).toHaveValue("test field");
   });
 
+  it("renders a test schema and a test ui schema", () => {
+    const props = {
+      schema: testSchema,
+      uiSchema: {
+        field: {
+          "ui:widget": "PhoneWidget",
+        },
+      },
+    } as any;
+
+    render(<FormBase {...props} />);
+
+    // // this confirms we're using the custom uiSchema because the phone number widget shows the area code
+    expect(screen.getByText("+1")).toBeInTheDocument();
+  });
+
   it("renders a test schema with the readonly theme", () => {
     const props = {
       schema: testSchema,
       formData: { field: "test field" },
-      uiSchema: testUiSchema,
       theme: readOnlyTheme,
     } as any;
 
@@ -51,7 +62,7 @@ describe("The FormBase component", () => {
     );
   });
 
-  it("maintains form state on unsuccessful submit", async () => {
+  it("maintains form state on unsuccessful submit", () => {
     const mockOnSubmit = vitest.fn();
     const props = {
       schema: {
@@ -74,25 +85,25 @@ describe("The FormBase component", () => {
 
     const submitButton = screen.getByRole("button", { name: /Submit/i });
     const field2 = screen.getByRole("textbox", { name: "field2*" });
-    await fireEvent.click(submitButton);
+    fireEvent.click(submitButton);
     expect(screen.getByText(/required field/i)).toBeVisible(); // field2 is required and was left blank
     expect(screen.getByLabelText(/field1/i)).toHaveValue("test");
-    await fireEvent.change(field2, { target: { value: "anything" } });
-    await fireEvent.click(submitButton);
+    fireEvent.change(field2, { target: { value: "anything" } });
+    fireEvent.click(submitButton);
     expect(screen.queryByText(/required field/i)).not.toBeInTheDocument();
   });
 
-  it("resets errors on submit", async () => {
+  it("resets errors on submit", () => {
     const props = {
       schema: testSchema,
     } as any;
     render(<FormBase {...props} />);
     const submitButton = screen.getByRole("button", { name: /Submit/i });
     const input = screen.getByRole("textbox", { name: "field*" });
-    await fireEvent.click(submitButton);
+    fireEvent.click(submitButton);
     expect(screen.getByText(/required field/i)).toBeVisible();
-    await fireEvent.change(input, { target: { value: "anything" } });
-    await fireEvent.click(submitButton);
+    fireEvent.change(input, { target: { value: "anything" } });
+    fireEvent.click(submitButton);
     expect(screen.queryByText(/required field/i)).not.toBeInTheDocument();
   });
 });
