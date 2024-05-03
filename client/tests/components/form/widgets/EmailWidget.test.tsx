@@ -36,6 +36,16 @@ describe("RJSF EmailWidget", () => {
     expect(screen.getByLabelText(emailLabelRequired)).toBeVisible();
   });
 
+  it("should be empty by default", async () => {
+    render(
+      <FormBase schema={emailFieldSchema} uiSchema={emailFieldUiSchema} />,
+    );
+
+    const input = screen.getByLabelText(emailLabelRequired);
+
+    expect(input).toHaveValue("");
+  });
+
   it("should render the email value when formData is provided", async () => {
     render(
       <FormBase

@@ -30,6 +30,14 @@ describe("RJSF URLWidget", () => {
     expect(screen.getByLabelText(urlLabelRequired)).toBeVisible();
   });
 
+  it("should be empty by default", async () => {
+    render(<FormBase schema={urlFieldSchema} uiSchema={urlFieldUiSchema} />);
+
+    const input = screen.getByLabelText(urlLabelRequired);
+
+    expect(input).toHaveValue("");
+  });
+
   it("should render the URL value when formData is provided", async () => {
     render(
       <FormBase

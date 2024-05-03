@@ -36,6 +36,19 @@ describe("RJSF CheckboxWidget", () => {
     expect(screen.getByLabelText(checkboxFieldLabel)).toBeVisible();
   });
 
+  it("should be unchecked by default", async () => {
+    render(
+      <FormBase
+        schema={checkboxFieldSchema}
+        uiSchema={checkboxFieldUiSchema}
+      />,
+    );
+
+    const checkbox = screen.getByRole("checkbox");
+
+    expect(checkbox).not.toBeChecked();
+  });
+
   it("should render the checkbox value when formData is provided", async () => {
     render(
       <FormBase

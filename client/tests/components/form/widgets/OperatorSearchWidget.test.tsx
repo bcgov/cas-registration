@@ -42,6 +42,19 @@ describe("RJSF OperatorSearchWidget", () => {
     expect(screen.getByLabelText(operatorSearchRequiredLabel)).toBeVisible();
   });
 
+  it("should be empty by default", async () => {
+    render(
+      <FormBase
+        schema={operatorSearchFieldSchema}
+        uiSchema={operatorSearchFieldUiSchema}
+      />,
+    );
+
+    const searchField = screen.getByRole("combobox") as HTMLInputElement;
+
+    expect(searchField).toHaveValue("");
+  });
+
   it("should render the search field placeholder text", async () => {
     render(
       <FormBase

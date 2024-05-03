@@ -33,6 +33,29 @@ describe("RJSF PhoneWidget", () => {
     expect(screen.getByLabelText(phoneRequiredLabel)).toBeVisible();
   });
 
+  it("should be empty by default", async () => {
+    render(
+      <FormBase schema={phoneWidgetSchema} uiSchema={phoneWidgetUiSchema} />,
+    );
+
+    const phoneField = screen.getByLabelText(phoneRequiredLabel);
+
+    expect(phoneField).toHaveValue("");
+  });
+
+  it("should render the phone value when formData is provided", async () => {
+    render(
+      <FormBase
+        schema={phoneWidgetSchema}
+        uiSchema={phoneWidgetUiSchema}
+        formData={{ phoneTestField: "+12345678901" }}
+      />,
+    );
+
+    const phoneField = screen.getByLabelText(phoneRequiredLabel);
+    expect(phoneField).toHaveValue("234 567 8901");
+  });
+
   it("should allow only numbers in the phone field", async () => {
     render(
       <FormBase schema={phoneWidgetSchema} uiSchema={phoneWidgetUiSchema} />,

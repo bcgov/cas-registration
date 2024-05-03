@@ -36,6 +36,19 @@ describe("RJSF PostalCodeWidget", () => {
     expect(screen.getByLabelText(postalCodeLabelRequired)).toBeVisible();
   });
 
+  it("should be empty by default", async () => {
+    render(
+      <FormBase
+        schema={postalCodeFieldSchema}
+        uiSchema={postalCodeFieldUiSchema}
+      />,
+    );
+
+    const input = screen.getByLabelText(postalCodeLabelRequired);
+
+    expect(input).toHaveValue("");
+  });
+
   it("should render the postal code value when formData is provided", async () => {
     render(
       <FormBase

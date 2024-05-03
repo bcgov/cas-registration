@@ -44,6 +44,12 @@ describe("RJSF TextWidget", () => {
     expect(screen.getByLabelText(numberLabelRequired)).toBeVisible();
   });
 
+  it("should be empty by default", () => {
+    render(<FormBase schema={stringFieldSchema} />);
+    const input = screen.getByLabelText(stringLabelRequired);
+    expect(input).toHaveValue("");
+  });
+
   it("should render the string value when formData is provided", () => {
     render(
       <FormBase

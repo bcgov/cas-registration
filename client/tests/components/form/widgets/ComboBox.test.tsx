@@ -40,6 +40,19 @@ describe("RJSF ComboBoxWidget", () => {
     expect(screen.getByLabelText(comboBoxLabelRequired)).toBeVisible();
   });
 
+  it("should be empty by default", async () => {
+    render(
+      <FormBase
+        schema={comboBoxFieldSchema}
+        uiSchema={comboBoxFieldUiSchema}
+      />,
+    );
+
+    const comboBoxInput = screen.getByRole("combobox") as HTMLInputElement;
+
+    expect(comboBoxInput.value).toBe("");
+  });
+
   it("should render the combo box value when formData is provided", async () => {
     render(
       <FormBase
