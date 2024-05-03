@@ -2,7 +2,7 @@
 
 set -euxo pipefail
 
-pushd client || exit 1
+pushd bciers || exit 1
 files=("$@")
 files=("${files[@]/#/../}") # add ../ to each element
 

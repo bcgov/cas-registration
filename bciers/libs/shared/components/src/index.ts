@@ -2,3 +2,5 @@
 
 export * from "./lib/sample/Sample";
 export * from "./lib/theme/ThemeRegistry";
+export * from "./lib/theme/EmotionCache";
+export * from "./lib/theme/theme";

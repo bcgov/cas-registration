@@ -6,12 +6,12 @@ runs:
     - name: asdf setup
       uses: asdf-vm/actions/setup@v3
     - uses: actions/cache@v4
-      id: asdf-cache-client
+      id: asdf-cache-bciers
       with:
         path: |
           ~/.asdf
-          ./client/.tool-versions
-        key: ${{ runner.os }}-asdf-cache-client-${{ hashFiles('client/.tool-versions') }}
+          ./bciers/.tool-versions
+        key: ${{ runner.os }}-asdf-cache-bciers-${{ hashFiles('bciers/.tool-versions') }}
     - uses: actions/cache@v4
       id: asdf-cache-backend
       with:
@@ -19,6 +19,11 @@ runs:
           ~/.asdf
           ./bc_obps/.tool-versions
         key: ${{ runner.os }}-asdf-cache-backend-${{ hashFiles('bc_obps/.tool-versions') }}
+    - name: yarn modern
+      shell: bash
+      run: |
+        corepack enable
+        yarn set version 4.2.0
     - name: yarn cache
       uses: ./.github/actions/yarn-cache
     - name: Set up python
@@ -52,5 +57,5 @@ runs:
     - name: Install yarn dependencies
       if: steps.yarn-cache.outputs.cache-hit != 'true'
       run: yarn install
-      working-directory: ./client
+      working-directory: ./bciers
       shell: bash
