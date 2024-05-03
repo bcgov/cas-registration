@@ -494,6 +494,7 @@ jobs:
       - run: |
           corepack enable
           yarn set version stable
+          yarn cache clean --all
           yarn install --immutable
         working-directory: ./bciers/apps/registration
       - name: finalize happo e2e tests
