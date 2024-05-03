@@ -492,9 +492,9 @@ jobs:
       - name: yarn cache
         uses: ./.github/actions/yarn-cache
       - run: |
+          yarn cache clean --all
           corepack enable
           yarn set version stable
-          yarn cache clean --all
           yarn install --immutable
         working-directory: ./bciers/apps/registration
       - name: finalize happo e2e tests
