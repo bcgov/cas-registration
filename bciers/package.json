@@ -28,6 +28,7 @@
     "@rjsf/validator-ajv8": "^5.12.1",
     "@sentry/nextjs": "^7.94.1",
     "@testing-library/jest-dom": "^6.4.2",
+    "@testing-library/user-event": "^14.5.2",
     "@types/node": "^20.11.25",
     "@types/react": "^18.2.33",
     "@types/react-dom": "^18.2.14",
