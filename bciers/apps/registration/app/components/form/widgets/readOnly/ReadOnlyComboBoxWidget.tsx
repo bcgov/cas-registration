@@ -10,6 +10,7 @@ const ReadOnlyComboBoxWidget: React.FC<WidgetProps> = ({
   ];
   const selectedValue =
     fieldSchema &&
+    value &&
     fieldSchema.find(
       (option) =>
         (option as any).const === value || (option as any).value === value,
