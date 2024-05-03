@@ -177,12 +177,12 @@ export class OperationsPOM {
     await viewDetailsButtons[index].click();
   }
 
-  async clickViewDetailsButtonByOperationName(operationName: string) {
+  async clickViewDetailsButtonByOperationName(page, operationName: string) {
     const row = await getTableRowByCellSelector(
       this.table,
       `[data-field="${TableDataField.NAME}"]:has-text("${operationName}")`,
     );
-
+    await page.waitForTimeout(5000);
     // Click the `View Detail` for this row
     await row.getByRole("link", { name: ButtonText.VIEW_DETAILS }).click();
   }
