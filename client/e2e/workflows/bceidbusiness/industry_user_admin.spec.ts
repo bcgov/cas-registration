@@ -174,6 +174,7 @@ test.describe("Test Workflow industry_user_admin", () => {
     await operationsPage.urlIsCorrect();
     await operationsPage.tableIsVisible();
     await operationsPage.clickViewDetailsButtonByOperationName(
+      page,
       E2EValue.INPUT_OPERATION_NAME,
     );
     await operationPage.formIsVisible();
