@@ -143,6 +143,16 @@ If you want to access the testing playground, add `screen.logTestingPlaygroundUR
 
 Front-end unit tests include snapshots. Work that changes the DOM will result in a diff from the last accepted snapshot and cause related tests to fail. You can update the snapshots and review / accept the diff with `yarn test -u`.
 
+#### Test Coverage
+
+[Vitest coverage documentation](https://vitest.dev/guide/coverage)
+
+To generate a test coverage report, run the following command:
+
+```bash
+cd client && yarn coverage
+```
+
 #### Writing Unit Tests
 
 React Testing Library isn't entirely compatible with Next 13 yet, so a few things to note:
