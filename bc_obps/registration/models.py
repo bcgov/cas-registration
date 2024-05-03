@@ -721,13 +721,13 @@ class Operation(TimeStampedModel):
         related_name='operations',
     )
     swrs_facility_id = models.IntegerField(
-        db_comment="An operation's SWRS facility ID. Only needed if the operation/facility submitted a report the previous year.",
+        db_comment="An operation's SWRS facility ID. Only needed if the operation submitted a report the previous year.",
         blank=True,
         null=True,
     )
     bcghg_id = models.CharField(
         max_length=1000,
-        db_comment="An operation's BCGHG identifier. Only needed if the operation/facility submitted a report the previous year.",
+        db_comment="An operation's BCGHG identifier. Only needed if the operation submitted a report the previous year.",
         blank=True,
         null=True,
     )
@@ -891,6 +891,17 @@ class Facility(TimeStampedModel):
     )
     new_entrant = models.BooleanField(db_comment="Whether or not the facility is a new entrant")
     operation = models.ForeignKey(Operation, on_delete=models.DO_NOTHING, related_name="facilities")
+    swrs_facility_id = models.IntegerField(
+        db_comment="A facility's SWRS facility ID.",
+        blank=True,
+        null=True,
+    )
+    bcghg_id = models.CharField(
+        max_length=1000,
+        db_comment="A facility's BCGHG identifier.",
+        blank=True,
+        null=True,
+    )
     history = HistoricalRecords(
         table_name='erc_history"."facility_history',
         history_user_id_field=models.UUIDField(null=True, blank=True),

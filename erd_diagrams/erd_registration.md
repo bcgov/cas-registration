@@ -408,6 +408,8 @@ HistoricalFacility {
     CharField name
     CharField type
     BooleanField new_entrant
+    IntegerField swrs_facility_id
+    CharField bcghg_id
     UUIDField history_user_id
     ForeignKey created_by
     ForeignKey updated_by
@@ -432,6 +434,8 @@ Facility {
     ForeignKey address
     BooleanField new_entrant
     ForeignKey operation
+    IntegerField swrs_facility_id
+    CharField bcghg_id
 }
 HistoricalWellAuthorizationNumber {
     DateTimeField created_at
