@@ -1,20 +1,9 @@
 import { render } from "@testing-library/react";
-import { RJSFSchema } from "@rjsf/utils";
 import FormBase from "@/app/components/form/FormBase";
-
-const stringFieldSchema = {
-  type: "object",
-  properties: {
-    stringTestField: { type: "string", title: "String test field" },
-  },
-} as RJSFSchema;
-
-const numberFieldSchema = {
-  type: "object",
-  properties: {
-    numberTestField: { type: "number", title: "Number test field" },
-  },
-} as RJSFSchema;
+import {
+  stringFieldSchema,
+  numberFieldSchema,
+} from "@/tests/components/form/widgets/TextWidget.test";
 
 describe("RJSF ReadOnlyWidget", () => {
   it("should render a string value", () => {

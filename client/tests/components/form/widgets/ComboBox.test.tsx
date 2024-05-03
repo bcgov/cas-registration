@@ -7,7 +7,7 @@ import { checkComboBoxWidgetValidationStyles } from "@/tests/helpers/form";
 const comboBoxFieldLabel = "ComboBox test field";
 const comboBoxLabelRequired = `${comboBoxFieldLabel}*`;
 
-const comboBoxFieldSchema = {
+export const comboBoxFieldSchema = {
   type: "object",
   required: ["comboBoxTestField"],
   properties: {
@@ -23,7 +23,7 @@ const comboBoxFieldSchema = {
   },
 } as RJSFSchema;
 
-const comboBoxFieldUiSchema = {
+export const comboBoxFieldUiSchema = {
   comboBoxTestField: {
     "ui:widget": "ComboBox",
   },

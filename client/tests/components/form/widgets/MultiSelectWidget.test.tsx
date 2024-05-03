@@ -6,7 +6,7 @@ import FormBase from "@/app/components/form/FormBase";
 const multiSelectFieldLabel = "MultiSelectWidget test field";
 const multiSelectLabelRequired = `${multiSelectFieldLabel}*`;
 
-const multiSelectFieldSchema = {
+export const multiSelectFieldSchema = {
   type: "object",
   required: ["multiSelectTestField"],
   properties: {
@@ -22,7 +22,7 @@ const multiSelectFieldSchema = {
   },
 } as RJSFSchema;
 
-const multiSelectFieldUiSchema = {
+export const multiSelectFieldUiSchema = {
   multiSelectTestField: {
     "ui:widget": "MultiSelectWidget",
   },

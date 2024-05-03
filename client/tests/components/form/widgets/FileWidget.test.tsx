@@ -7,12 +7,12 @@ import { Session } from "@/tests/setup/types";
 
 const fileFieldLabel = "FileWidget test field";
 const fileLabelRequired = `${fileFieldLabel}*`;
-const dummyDataUri = "pdf;name=dummy.pdf;base64,dGVzdA==";
+export const dummyDataUri = "pdf;name=dummy.pdf;base64,dGVzdA==";
 const mockFile = new File(["test"], "test.pdf", { type: "application/pdf" });
 
 vi.resetAllMocks();
 
-const fileFieldSchema = {
+export const fileFieldSchema = {
   type: "object",
   required: ["fileTestField"],
   properties: {
@@ -24,7 +24,7 @@ const fileFieldSchema = {
   },
 } as RJSFSchema;
 
-const fileFieldUiSchema = {
+export const fileFieldUiSchema = {
   fileTestField: {
     "ui:widget": "FileWidget",
   },

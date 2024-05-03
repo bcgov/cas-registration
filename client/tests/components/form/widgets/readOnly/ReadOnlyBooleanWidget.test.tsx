@@ -53,4 +53,30 @@ describe("RJSF ReadOnlyBooleanWidget", () => {
     expect(readOnlyBooleanWidget).toBeVisible();
     expect(readOnlyBooleanWidget).toHaveTextContent("No");
   });
+
+  it("should work for CheckboxWidget fields", () => {
+    const checkboxUiSchema = {
+      booleanTestField: {
+        "ui:widget": "CheckboxWidget",
+      },
+    };
+
+    const { container } = render(
+      <FormBase
+        disabled
+        formData={{
+          booleanTestField: true,
+        }}
+        schema={booleanFieldSchema}
+        uiSchema={checkboxUiSchema}
+      />,
+    );
+
+    const readOnlyBooleanWidget = container.querySelector(
+      "#root_booleanTestField",
+    );
+
+    expect(readOnlyBooleanWidget).toBeVisible();
+    expect(readOnlyBooleanWidget).toHaveTextContent("Yes");
+  });
 });

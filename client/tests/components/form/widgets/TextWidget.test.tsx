@@ -9,7 +9,7 @@ const numberFieldLabel = "Number test field";
 const stringLabelRequired = `${stringFieldLabel}*`;
 const numberLabelRequired = `${numberFieldLabel}*`;
 
-const stringFieldSchema = {
+export const stringFieldSchema = {
   type: "object",
   required: ["stringTestField"],
   properties: {
@@ -17,7 +17,7 @@ const stringFieldSchema = {
   },
 } as RJSFSchema;
 
-const numberFieldSchema = {
+export const numberFieldSchema = {
   type: "object",
   required: ["numberTestField"],
   properties: {

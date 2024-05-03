@@ -1,27 +1,9 @@
 import { render } from "@testing-library/react";
-import { RJSFSchema } from "@rjsf/utils";
 import FormBase from "@/app/components/form/FormBase";
-
-const multiSelectFieldSchema = {
-  type: "object",
-  properties: {
-    multiSelectTestField: {
-      type: "array",
-      title: "MultiSelectWidget test field",
-      items: {
-        type: "string",
-        enum: ["option_1", "option_2", "option_3"],
-        enumNames: ["Option 1", "Option 2", "Option 3"],
-      },
-    },
-  },
-} as RJSFSchema;
-
-const multiSelectFieldUiSchema = {
-  multiSelectTestField: {
-    "ui:widget": "MultiSelectWidget",
-  },
-};
+import {
+  multiSelectFieldSchema,
+  multiSelectFieldUiSchema,
+} from "@/tests/components/form/widgets/MultiSelectWidget.test";
 
 describe("RJSF ReadOnlyMultiSelectWidget", () => {
   it("should render a multi select field", async () => {
