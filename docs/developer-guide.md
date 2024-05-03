@@ -150,7 +150,7 @@ Front-end unit tests include snapshots. Work that changes the DOM will result in
 To generate a test coverage report, run the following command:
 
 ```bash
-cd client && yarn coverage
+cd bciers && yarn reg:coverage
 ```
 
 #### Writing Unit Tests
