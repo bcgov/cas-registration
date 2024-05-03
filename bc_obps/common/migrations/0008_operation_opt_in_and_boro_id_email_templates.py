@@ -74,17 +74,17 @@ def reverse_opt_in_and_submit_operation_boro_id_email_notification_templates(app
     EmailNotificationTemplate = apps.get_model('common', 'EmailNotificationTemplate')
     EmailNotificationTemplate.objects.filter(
         name_in=[
-            'BORO ID Application Submission Confirmation',
-            'BORO ID Application Approval',
-            'BORO ID Application Declined',
-            'BORO ID Application Changes Requested',
+            'Opt-in And BORO ID Application Confirmation',
+            'Opt-in And BORO ID Application Approval',
+            'Opt-in And BORO ID Application Declined',
+            'Opt-in And BORO ID Application Changes Requested',
         ]
     ).delete()
 
 
 class Migration(migrations.Migration):
     dependencies = [
-        ('common', '0006_operation_boro_id_email_templates'),
+        ('common', '0007_operation_boro_id_email_templates'),
     ]
 
     operations = [
