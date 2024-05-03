@@ -222,7 +222,7 @@ jobs:
       - name: Install dependencies
         run: |
           corepack enable
-          yarn set version stable
+          yarn set version 4.2.0
           yarn install --immutable
           cd ../bciers && yarn install --immutable
       - uses: actions/setup-node@v3
@@ -287,7 +287,7 @@ jobs:
       - name: Install dependencies
         run: |
           corepack enable
-          yarn set version stable
+          yarn set version 4.2.0
           yarn install --immutable
           cd ../bciers && yarn install --immutable
       - uses: actions/setup-node@v3
