@@ -171,7 +171,7 @@ describe("RJSF ComboBoxWidget", () => {
   });
 
   it("should have the correct styles when the validation error is shown", async () => {
-    checkComboBoxWidgetValidationStyles(
+    await checkComboBoxWidgetValidationStyles(
       <FormBase
         schema={comboBoxFieldSchema}
         uiSchema={comboBoxFieldUiSchema}

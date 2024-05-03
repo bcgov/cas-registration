@@ -115,7 +115,7 @@ describe("RJSF FileWidget", () => {
     });
   });
 
-  it("should not render the upload button for internal users", async () => {
+  it("should not render the upload button for internal users", () => {
     useSession.mockReturnValue({
       data: {
         user: {

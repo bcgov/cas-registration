@@ -140,7 +140,7 @@ describe("RJSF PhoneWidget", () => {
   });
 
   it("should have the correct styles when the validation is triggered", async () => {
-    checkTextWidgetValidationStyles(
+    await checkTextWidgetValidationStyles(
       <FormBase schema={phoneWidgetSchema} uiSchema={phoneWidgetUiSchema} />,
       phoneRequiredLabel,
       "12345678",

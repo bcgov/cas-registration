@@ -123,7 +123,7 @@ describe("RJSF EmailWidget", () => {
   });
 
   it("should have the correct styling when validation is triggered", async () => {
-    checkTextWidgetValidationStyles(
+    await checkTextWidgetValidationStyles(
       <FormBase schema={emailFieldSchema} uiSchema={emailFieldUiSchema} />,
       emailLabelRequired,
       "A1B2CC",

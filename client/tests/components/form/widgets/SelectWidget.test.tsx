@@ -96,7 +96,7 @@ describe("RJSF SelectWidget", () => {
   });
 
   it("should have the correct styles when there is a validation error", async () => {
-    checkComboBoxWidgetValidationStyles(
+    await checkComboBoxWidgetValidationStyles(
       <FormBase schema={selectFieldSchema} uiSchema={selectFieldUiSchema} />,
     );
   });

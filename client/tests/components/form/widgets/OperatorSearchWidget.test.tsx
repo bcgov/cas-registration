@@ -190,7 +190,8 @@ describe("RJSF OperatorSearchWidget", () => {
   });
 
   it("should have the correct styles when the validation error is shown", async () => {
-    checkComboBoxWidgetValidationStyles(
+    actionHandler.mockResolvedValueOnce([]);
+    await checkComboBoxWidgetValidationStyles(
       <FormBase
         schema={operatorSearchFieldSchema}
         uiSchema={operatorSearchFieldUiSchema}

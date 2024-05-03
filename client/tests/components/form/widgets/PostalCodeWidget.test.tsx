@@ -147,7 +147,7 @@ describe("RJSF PostalCodeWidget", () => {
   });
 
   it("should have the correct styling when validation is triggered", async () => {
-    checkTextWidgetValidationStyles(
+    await checkTextWidgetValidationStyles(
       <FormBase
         schema={postalCodeFieldSchema}
         uiSchema={postalCodeFieldUiSchema}
