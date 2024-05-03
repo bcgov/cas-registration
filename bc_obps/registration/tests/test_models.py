@@ -801,6 +801,8 @@ class FacilityModelTest(BaseTestCase):
             ("address", "address", None, None),
             ("new_entrant", "new entrant", None, None),
             ("well_authorization_numbers", "well authorization number", None, None),
+            ("swrs_facility_id", "swrs facility id", None, None),
+            ("bcghg_id", "bcghg id", None, None),
         ]
 
 
