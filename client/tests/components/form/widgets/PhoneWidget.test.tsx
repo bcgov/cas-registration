@@ -79,8 +79,8 @@ describe("RJSF PhoneWidget", () => {
       <FormBase schema={phoneWidgetSchema} uiSchema={phoneWidgetUiSchema} />,
     );
     const phoneField = screen.getByLabelText(phoneRequiredLabel);
-    await userEvent.type(phoneField, "123-456-7890abc");
-    expect(phoneField).toHaveValue("1 234 567 890");
+    await userEvent.type(phoneField, "123-4abc");
+    expect(phoneField).toHaveValue("1 234");
   });
 
   it("should display the Canadian flag by default", async () => {

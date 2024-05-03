@@ -118,6 +118,7 @@ describe("RJSF MultiSelectWidget", () => {
   });
 
   // TODO: This is currently broken in MultiSelectWidget
+  // https://github.com/bcgov/cas-registration/issues/1602
   // A required array field required minItems to be set to 1 which currently breaks MultiSelectWidget
   //
   // it("should show an error message when the combo box is required and no value is selected", async () => {
