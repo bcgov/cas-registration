@@ -7,7 +7,8 @@ import { Session } from "@/tests/setup/types";
 
 const fileFieldLabel = "FileWidget test field";
 const fileLabelRequired = `${fileFieldLabel}*`;
-export const dummyDataUri = "pdf;name=dummy.pdf;base64,dGVzdA==";
+export const dummyDataUri =
+  "data:application/pdf;name=dummy.pdf;base64,ZHVtbXk=";
 const mockFile = new File(["test"], "test.pdf", { type: "application/pdf" });
 
 vi.resetAllMocks();
