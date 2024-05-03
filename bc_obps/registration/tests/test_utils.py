@@ -12,7 +12,6 @@ from registration.utils import (
     update_model_instance,
     generate_useful_error,
     raise_401_if_user_not_authorized,
-    get_an_operators_approved_users,
 )
 from localflavor.ca.models import CAPostalCodeField
 from django.core.exceptions import ValidationError
@@ -316,42 +315,6 @@ class TestCheckIfRoleAuthorized(TestCase):
         # note there is no baker.make(User) here
         with pytest.raises(HttpError):
             raise_401_if_user_not_authorized(self.request, ['industry_user'])
-
-
-class TestGetAnOperatorsUsers:
-    @staticmethod
-    def test_operator_has_approved_users():
-        approved_user = baker.make(User)
-        unapproved_user = baker.make(User)
-        other_operator_user = baker.make(User)
-        # creating a user that's not in the user operator table
-        baker.make(User)
-
-        operator1 = operator_baker()
-        operator2 = operator_baker()
-
-        baker.make(
-            UserOperator,
-            user=approved_user,
-            operator=operator1,
-            status=UserOperator.Statuses.APPROVED,
-        )
-        baker.make(
-            UserOperator,
-            user=unapproved_user,
-            operator=operator1,
-            status=UserOperator.Statuses.PENDING,
-        )
-        baker.make(
-            UserOperator,
-            user=other_operator_user,
-            operator=operator2,
-            status=UserOperator.Statuses.APPROVED,
-        )
-        get_an_operators_approved_users(operator1.pk)
-
-        result = User.objects.filter(user_guid=approved_user.user_guid)
-        assert result.exists() and result.count() == 1
 
 
 class TestFileHelpers:

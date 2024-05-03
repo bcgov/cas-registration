@@ -1,8 +1,6 @@
 from typing import List, Type, Union, Iterable, Dict, Any, Optional
-from uuid import UUID
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError, models
-from django.db.models import QuerySet
 from registration.constants import UNAUTHORIZED_MESSAGE, DEFAULT_API_NAMESPACE
 import requests
 import base64
@@ -108,22 +106,6 @@ def raise_401_if_user_not_authorized(
                 pass
             if not user_operator_role or user_operator_role not in authorized_user_operator_roles:
                 raise HttpError(401, UNAUTHORIZED_MESSAGE)
-
-
-def get_current_user_approved_user_operator_or_raise(user: User) -> Optional[UserOperator]:
-    user_operator = user.get_approved_user_operator()
-    if not user_operator:
-        raise HttpError(401, UNAUTHORIZED_MESSAGE)
-    return user_operator
-
-
-def get_an_operators_approved_users(operator_pk: int) -> QuerySet[UUID]:
-    # get a list of all the operator's approved user ids
-    user_ids = UserOperator.objects.filter(operator_id=operator_pk, status=UserOperator.Statuses.APPROVED).values_list(
-        'user_id', flat=True
-    )
-
-    return User.objects.filter(pk__in=user_ids).values_list('user_guid', flat=True)
 
 
 # File helpers

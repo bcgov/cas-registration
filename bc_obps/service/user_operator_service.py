@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, Optional
 from uuid import UUID
 from common.enums import AccessRequestStates, AccessRequestTypes
 from common.service.email.email_service import EmailService
@@ -14,7 +14,7 @@ from zoneinfo import ZoneInfo
 from datetime import datetime
 from django.core.paginator import Paginator
 from django.forms import model_to_dict
-from registration.constants import PAGE_SIZE
+from registration.constants import PAGE_SIZE, UNAUTHORIZED_MESSAGE
 
 email_service = EmailService()
 
@@ -295,3 +295,10 @@ class UserOperatorService:
         if created:
             user_operator.set_create_or_update(user_guid)
         return {"user_operator_id": user_operator.id, 'operator_id': operator.id}
+
+    @classmethod
+    def get_current_user_approved_user_operator_or_raise(cls, user: User) -> Optional[UserOperator]:
+        user_operator = user.get_approved_user_operator()
+        if not user_operator:
+            raise Exception(UNAUTHORIZED_MESSAGE)
+        return user_operator
