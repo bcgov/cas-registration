@@ -23,7 +23,7 @@ runs:
       shell: bash
       run: |
         corepack enable
-        yarn set version stable
+        yarn set version 4.2.0
     - name: yarn cache
       uses: ./.github/actions/yarn-cache
     - name: Set up python
