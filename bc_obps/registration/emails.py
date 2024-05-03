@@ -1,9 +1,10 @@
 from typing import List
-from registration.enums.enums import AccessRequestStates, AccessRequestTypes, OperatorAccessRequest
+from registration.enums.enums import AccessRequestStates, AccessRequestTypes
 from common.service.email.email_service import EmailService
-from common.models import EmailNotificationTemplate
-from registration.enums.enums import BoroIdApplication, BoroIdApplicationStates
+from registration.enums.enums import BoroIdApplicationStates
 import logging
+
+from service.data_access_service.email_template_service import EmailNotificationTemplateService
 
 logger = logging.getLogger(__name__)
 
@@ -15,11 +16,20 @@ class Recipient:
         self.full_name = full_name
         self.email_address = email_address
 
+    def __eq__(self, other):
+        if not isinstance(other, Recipient):
+            return NotImplemented
+        return self.full_name == other.full_name and self.email_address == other.email_address
+
+    def __repr__(self):
+        return f"Recipient(full_name={self.full_name}, email_address={self.email_address})"
+
 
 def send_boro_id_application_email(
     application_state: BoroIdApplicationStates,
     operator_legal_name: str,
     operation_name: str,
+    opted_in: bool,
     external_users: List[Recipient],
 ) -> None:
     """
@@ -28,6 +38,7 @@ def send_boro_id_application_email(
         application_state: The state of the BORO ID application, which is used to determine which email template should be used.
         operator_legal_name: The legal name of the operator to use in the email template.
         operation_name: The name of the operation to use in the email template.
+        opted_in: A boolean indicating whether or not the operation is required to register or is simply opting in.
         external_users: A list of Recipient objects (consisting of full_name and email_address)
 
     Raises:
@@ -35,11 +46,9 @@ def send_boro_id_application_email(
     Returns:
         None
     """
-    try:
-        template_name = BoroIdApplication.generate_boro_id_application_template_name(application_state)
-        template = EmailNotificationTemplate.objects.get(name=template_name)
-    except EmailNotificationTemplate.DoesNotExist:
-        raise ValueError("Email template not found")
+
+    template_name = f"{'Opt-in And ' if opted_in else ''}BORO ID Application {application_state.value}"
+    template = EmailNotificationTemplateService.get_template_by_name(template_name)
 
     email_contexts = []
     for recipient in external_users:
@@ -90,21 +99,14 @@ def send_operator_access_request_email(
     Returns:
         None
     """
-
-    try:
-        template_name = OperatorAccessRequest.generate_access_request_template_name(
-            access_type.value, access_state.value
-        )
-        template = EmailNotificationTemplate.objects.get(name=template_name)
-    except EmailNotificationTemplate.DoesNotExist:
-        raise ValueError("Email template not found")
+    template_name = f"{access_type.value} Access Request {access_state.value}"
+    template = EmailNotificationTemplateService.get_template_by_name(template_name)
 
     email_context = {
         "operator_legal_name": operator_legal_name,
         "external_user_full_name": external_user_full_name,
         "external_user_email_address": external_user_email_address,
     }
-
     try:
         response_json = email_service.send_email_by_template(template, email_context, [external_user_email_address])
         # Create email notification record to store the transaction and message IDs

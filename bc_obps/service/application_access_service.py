@@ -1,6 +1,6 @@
 from uuid import UUID
 from registration.enums.enums import AccessRequestStates, AccessRequestTypes
-from registration.middleware.registration_emails import send_operator_access_request_email
+from registration.emails import send_operator_access_request_email
 from common.service.email.email_service import EmailService
 from registration.models import UserOperator
 from service.data_access_service.operator_service import OperatorDataAccessService

@@ -1,6 +1,6 @@
 from typing import Dict, Optional
 from uuid import UUID
-from registration.middleware.registration_emails import send_operator_access_request_email
+from registration.emails import send_operator_access_request_email
 from registration.enums.enums import AccessRequestStates, AccessRequestTypes
 from registration.utils import update_model_instance
 from service.addresses_service import AddressesService
