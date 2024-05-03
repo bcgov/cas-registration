@@ -25,8 +25,6 @@ import {
   checkLocatorsVisibility,
   checkRequiredFieldValue,
   getAllFormInputs,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  getFieldRequired,
   getTableColumnTextValues,
   getTableRowByCellSelector,
   tableColumnNamesAreCorrect,
@@ -177,6 +175,16 @@ export class OperationsPOM {
       })
       .all();
     await viewDetailsButtons[index].click();
+  }
+
+  async clickViewDetailsButtonByOperationName(operationName: string) {
+    const row = await getTableRowByCellSelector(
+      this.table,
+      `[data-field="${TableDataField.NAME}"]:has-text("${operationName}")`,
+    );
+
+    // Click the `View Detail` for this row
+    await row.getByRole("link", { name: ButtonText.VIEW_DETAILS }).click();
   }
 
   async navigateBack() {
