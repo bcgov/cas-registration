@@ -5,12 +5,15 @@ Description: This module handles http exceptions.
 from django.http import Http404
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from registration.utils import generate_useful_error
+from registration.constants import UNAUTHORIZED_MESSAGE
 
 
 def handle_exception(error):
     """
     This function handles exceptions for BCEIRS. Returns a 4xx status.
     """
+    if error.args and error.args[0] == UNAUTHORIZED_MESSAGE:
+        return 401, {"message": UNAUTHORIZED_MESSAGE}
     if isinstance(error, (Http404, ObjectDoesNotExist)):
         return 404, {"message": "Not Found"}
     if isinstance(error, ValidationError):
