@@ -6,6 +6,8 @@ import { checkTextWidgetValidationStyles } from "@/tests/helpers/form";
 
 const phoneWidgetLabel = "PhoneWidget test field";
 const phoneRequiredLabel = `${phoneWidgetLabel}*`;
+const databaseTelephone = "+17785678901";
+const inputTelephone = "1 778 567 8901";
 
 const phoneWidgetSchema = {
   type: "object",
@@ -61,8 +63,8 @@ describe("RJSF PhoneWidget", () => {
       <FormBase schema={phoneWidgetSchema} uiSchema={phoneWidgetUiSchema} />,
     );
     const phoneField = screen.getByLabelText(phoneRequiredLabel);
-    await userEvent.type(phoneField, "12345678901");
-    expect(phoneField).toHaveValue("1 234 567 8901");
+    await userEvent.type(phoneField, databaseTelephone);
+    expect(phoneField).toHaveValue(inputTelephone);
   });
 
   it("should not allow special characters in the phone field", async () => {
@@ -70,8 +72,8 @@ describe("RJSF PhoneWidget", () => {
       <FormBase schema={phoneWidgetSchema} uiSchema={phoneWidgetUiSchema} />,
     );
     const phoneField = screen.getByLabelText(phoneRequiredLabel);
-    await userEvent.type(phoneField, "123-456-7890");
-    expect(phoneField).toHaveValue("1 234 567 890");
+    await userEvent.type(phoneField, "177-856-78901");
+    expect(phoneField).toHaveValue(inputTelephone);
   });
 
   it("should not allow letters in the phone field", async () => {
@@ -96,7 +98,7 @@ describe("RJSF PhoneWidget", () => {
       <FormBase
         schema={phoneWidgetSchema}
         uiSchema={phoneWidgetUiSchema}
-        formData={{ phoneTestField: "+17785678901" }}
+        formData={{ phoneTestField: databaseTelephone }}
       />,
     );
 
