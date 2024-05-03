@@ -1,7 +1,7 @@
 from typing import Dict, Optional
 from uuid import UUID
+from registration.middleware.registration_emails import send_operator_access_request_email
 from registration.enums.enums import AccessRequestStates, AccessRequestTypes
-from common.service.email.email_service import EmailService
 from registration.utils import update_model_instance
 from service.addresses_service import AddressesService
 from service.data_access_service.user_operator_service import UserOperatorDataAccessService
@@ -15,8 +15,6 @@ from datetime import datetime
 from django.core.paginator import Paginator
 from django.forms import model_to_dict
 from registration.constants import PAGE_SIZE, UNAUTHORIZED_MESSAGE
-
-email_service = EmailService()
 
 
 class UserOperatorService:
@@ -192,7 +190,7 @@ class UserOperatorService:
         if created:
             user_operator.set_create_or_update(user_guid)
             # Send email to the external user to confirm the creation of the operator and the request for access
-            email_service.send_operator_access_request_email(
+            send_operator_access_request_email(
                 AccessRequestStates.CONFIRMATION,
                 AccessRequestTypes.NEW_OPERATOR_AND_ADMIN,
                 operator.legal_name,
@@ -243,8 +241,8 @@ class UserOperatorService:
                         if operator.created_by == user_operator.user
                         else AccessRequestTypes.ADMIN
                     )
-            # Send email to user if their request was approved or declined(using the appropriate email template)
-            email_service.send_operator_access_request_email(
+            # Send email to user if their request was approved or declined (using the appropriate email template)
+            send_operator_access_request_email(
                 AccessRequestStates(user_operator.status),
                 # If the admin user is an IRC user, the access request type is admin,
                 # otherwise the admin user is an external user and the access request is for an operator with existing admin
