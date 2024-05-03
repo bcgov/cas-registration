@@ -6,6 +6,7 @@ import { checkTextWidgetValidationStyles } from "@/tests/helpers/form";
 
 const postalCodeFieldLabel = "Postal code test field";
 const postalCodeLabelRequired = `${postalCodeFieldLabel}*`;
+const postalCode = "A1B 2C3";
 
 const postalCodeFieldSchema = {
   type: "object",
@@ -59,7 +60,7 @@ describe("RJSF PostalCodeWidget", () => {
     );
 
     const input = screen.getByLabelText(postalCodeLabelRequired);
-    expect(input).toHaveValue("A1B 2C3");
+    expect(input).toHaveValue(postalCode);
   });
 
   it("should allow entering a postal code", async () => {
@@ -70,8 +71,8 @@ describe("RJSF PostalCodeWidget", () => {
       />,
     );
     const input = screen.getByLabelText(postalCodeLabelRequired);
-    await userEvent.type(input, "A1B 2C3");
-    expect(input).toHaveValue("A1B 2C3");
+    await userEvent.type(input, postalCode);
+    expect(input).toHaveValue(postalCode);
   });
 
   it("should convert lowercase postal code to uppercase", async () => {
@@ -83,7 +84,7 @@ describe("RJSF PostalCodeWidget", () => {
     );
     const input = screen.getByLabelText(postalCodeLabelRequired);
     await userEvent.type(input, "a1b 2c3");
-    expect(input).toHaveValue("A1B 2C3");
+    expect(input).toHaveValue(postalCode);
   });
 
   it("should allow entering a postal code with no spaces", async () => {
@@ -95,7 +96,7 @@ describe("RJSF PostalCodeWidget", () => {
     );
     const input = screen.getByLabelText(postalCodeLabelRequired);
     await userEvent.type(input, "A1B2C3");
-    expect(input).toHaveValue("A1B 2C3");
+    expect(input).toHaveValue(postalCode);
   });
 
   it("should trigger validation error for required field", async () => {
@@ -137,7 +138,7 @@ describe("RJSF PostalCodeWidget", () => {
       />,
     );
     const input = screen.getByLabelText(postalCodeLabelRequired);
-    await userEvent.type(input, "A1B 2C3");
+    await userEvent.type(input, postalCode);
 
     const submitButton = screen.getByRole("button", { name: "Submit" });
 
