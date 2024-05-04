@@ -105,6 +105,14 @@ export async function checkLocatorsVisibility(
     }
   }
 }
+
+// 🛠️ Function: get all label elements with required field character * within form fieldset
+export async function getFieldRequired(page: Page) {
+  const fieldset = page.locator("fieldset#root");
+  const requiredFields = await fieldset.locator('label:has-text("*")').all();
+  return requiredFields;
+}
+
 // 🛠️ Function: checking required field values
 export async function checkRequiredFieldValue(page: Page) {
   const requiredFields = await getFieldRequired(page);
@@ -119,13 +127,6 @@ export async function getFieldAlerts(page: Page) {
   const fieldset = page.locator("fieldset#root");
   const alertElements = await fieldset.locator('div[role="alert"]').all();
   return alertElements;
-}
-
-// 🛠️ Function: get all label elements with required field character * within form fieldset
-export async function getFieldRequired(page: Page) {
-  const fieldset = page.locator("fieldset#root");
-  const requiredFields = await fieldset.locator('label:has-text("*")').all();
-  return requiredFields;
 }
 
 /**

@@ -5,6 +5,7 @@ The root layout must define <html> and <body> tags.
 You should not manually add <head> tags such as <title> and <meta> to root layouts. Instead, you should use the Metadata API which automatically handles advanced requirements such as streaming and de-duplicating <head> elements.
 */
 
+// eslint-disable-next-line import/extensions
 import "@/app/styles/globals.css";
 import SessionProvider from "@/app/components/auth/SessionProvider";
 import type { Metadata, Viewport } from "next";
