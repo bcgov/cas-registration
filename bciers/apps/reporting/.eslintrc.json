@@ -5,16 +5,46 @@
     "prettier"
   ],
   "ignorePatterns": ["!**/*", ".next/**/*"],
+  "rules": {
+    "import/no-extraneous-dependencies": [
+      "error",
+      {
+        "devDependencies": [
+          "**/test.{ts,tsx,js,jsx}",
+          "**/test-*.{ts,tsx,js,jsx}",
+          "**/*{.,_}{test,spec}.{ts,tsx,js,jsx}",
+          "**/e2e/**/*.{ts,tsx,js,jsx}",
+          "**/jest.config.{ts,js}",
+          "**/playwright.config.{ts,js}",
+          "**/tailwind.config.{ts,js}",
+          "**/next.config.{ts,js}",
+          "**/.happo.{ts,js}"
+        ]
+      }
+    ],
+    "import/extensions": [
+      "error",
+      "never",
+      {
+        "json": "always"
+      }
+    ],
+    "no-console": 1,
+    "no-var": 2,
+    "@next/next/no-html-link-for-pages": ["error", "apps/registration/app"]
+  },
   "overrides": [
     {
       "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
       "rules": {
-        "@next/next/no-html-link-for-pages": ["error", "apps/reporting/pages"]
+        "@typescript-eslint/dot-notation": "error",
+        "@typescript-eslint/naming-convention": "error"
+      },
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+      "project": ["apps/reporting/tsconfig(.*)?.json"],
+      "tsConfigRootDir": "./"
       }
-    },
-    {
-      "files": ["*.ts", "*.tsx"],
-      "rules": {}
     },
     {
       "files": ["*.js", "*.jsx"],
