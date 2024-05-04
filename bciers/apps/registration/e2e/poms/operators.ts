@@ -28,6 +28,7 @@ import {
   checkAlertMessage,
   getTableRowByCellSelector,
   getTableColumnTextValues,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   getFieldRequired,
   checkRequiredFieldValue,
 } from "@/e2e/utils/helpers";
