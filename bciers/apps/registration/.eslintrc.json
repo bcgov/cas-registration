@@ -1,11 +1,9 @@
 {
   "extends": [
-    "plugin:@nx/react-typescript",
     "next",
-    "next/core-web-vitals",
-    "../../.eslintrc.json"
+    "../../.eslintrc.json",
+    "prettier"
   ],
-  "globals": { "vi": true },
   "ignorePatterns": ["!**/*", ".next/**/*"],
   "rules": {
     "import/no-extraneous-dependencies": [
