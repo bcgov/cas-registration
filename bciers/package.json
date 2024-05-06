@@ -4,7 +4,9 @@
   "license": "MIT",
   "scripts": {
     "dev": "nx dev reporting",
-    "reg": "nx dev registration"
+    "reg": "nx dev registration",
+    "reg:e2e": "nx run registration:e2e",
+    "reg:e2e:ui": "nx run registration:e2e:ui"
   },
   "private": true,
   "module": "commonjs",
