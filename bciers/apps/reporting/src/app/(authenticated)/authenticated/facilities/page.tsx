@@ -1,37 +1,45 @@
 "use client"
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { actionHandler } from "@/app/utils/actions";
 
 const Page: React.FC = () => {
-  const [message, setMessage] = useState<string>('');
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await actionHandler(
-          "registration/operations",
-          "GET",
-        );
-        setMessage(JSON.stringify(response.data, null, 2));
-  
-        return;
-      } catch (error) {
-        // Handle the error here or rethrow it to handle it at a higher level
-        throw error;
-      }
-    };
-  
-    fetchData();
-  }, []);
+  const fetchOperators = async () => {
+    try {
+      const operatorList = await actionHandler(
+        "registration/operations",
+        "GET",
+      );
+      return operatorList.data;
+    } catch (error) {
+      // Handle the error here or rethrow it to handle it at a higher level
+      throw error;
+    }
+  };
 
   return (
     <div>
       <h1>Facilities and operators page</h1>
       <h2>Operators:</h2>
-      <p>{message}</p>
+      <OperatorsDisplay fetchOperators={fetchOperators} />
     </div>
   );
+};
+
+const OperatorsDisplay: React.FC<{ fetchOperators: () => Promise<any> }> = ({ fetchOperators }) => {
+  const [operators, setOperators] = React.useState<any>(null);
+
+  React.useEffect(() => {
+    fetchOperators().then((operatorsData) => {
+      setOperators(operatorsData);
+    });
+  }, [fetchOperators]);
+
+  if (!operators) {
+    return <p>Loading...</p>;
+  }
+
+  return <p>{JSON.stringify(operators, null, 2)}</p>;
 };
 
 export default Page;
