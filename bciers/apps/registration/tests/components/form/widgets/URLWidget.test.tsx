@@ -58,15 +58,6 @@ describe("RJSF URLWidget", () => {
     expect(input).toHaveValue(url);
   });
 
-  // it("should trigger validation error for required field", async () => {
-  //   render(<FormBase schema={urlFieldSchema} uiSchema={urlFieldUiSchema} />);
-  //   const submitButton = screen.getByRole("button", { name: "Submit" });
-  //
-  //   await userEvent.click(submitButton);
-  //
-  //   expect(screen.getByText("Required field")).toBeVisible();
-  // });
-
   it("should trigger validation error for invalid URL", async () => {
     render(<FormBase schema={urlFieldSchema} uiSchema={urlFieldUiSchema} />);
     const input = screen.getByLabelText(urlLabelRequired);
@@ -90,6 +81,18 @@ describe("RJSF URLWidget", () => {
 
     expect(screen.queryByText(urlErrorMessage)).toBeNull();
   });
+
+  // Todo: Fix bug preventing required field validation
+  // https://github.com/bcgov/cas-registration/issues/1612
+
+  // it("should trigger validation error for required field", async () => {
+  //   render(<FormBase schema={urlFieldSchema} uiSchema={urlFieldUiSchema} />);
+  //   const submitButton = screen.getByRole("button", { name: "Submit" });
+  //
+  //   await userEvent.click(submitButton);
+  //
+  //   expect(screen.getByText("Required field")).toBeVisible();
+  // });
 
   // it("should have the correct styling when validation is triggered", async () => {
   //   await checkTextWidgetValidationStyles(
