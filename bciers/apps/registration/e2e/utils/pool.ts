@@ -2,7 +2,7 @@ import * as path from "path";
 import * as dotenv from "dotenv";
 
 // Resolve the path to the .env file
-const envFilePath = path.resolve(__dirname, "../../../bc_obps/.env");
+const envFilePath = path.resolve(__dirname, "../../../../../bc_obps/.env");
 
 // Load environment variables from the .env file
 dotenv.config({ path: envFilePath });
