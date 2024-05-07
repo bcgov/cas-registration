@@ -1,3 +1,4 @@
+from registration.emails import send_operator_access_request_email
 from registration.enums.enums import AccessRequestStates, AccessRequestTypes
 from common.service.email.email_service import EmailService
 from registration.models import ParentOperator, User, Operator, UserOperator
@@ -156,7 +157,7 @@ class OperatorService:
                     user_operator.set_create_or_update(user_guid)
                     user: User = user_operator.user
                     # Send email to all declined user operators to notify them of the decline of the operator and their access request
-                    email_service.send_operator_access_request_email(
+                    send_operator_access_request_email(
                         AccessRequestStates.DECLINED,
                         # We send NEW_OPERATOR_AND_ADMIN email to the user who initially created the operator and ADMIN email to all other users
                         AccessRequestTypes.NEW_OPERATOR_AND_ADMIN
