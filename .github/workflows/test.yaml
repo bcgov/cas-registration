@@ -27,15 +27,22 @@ jobs:
         uses: ./.github/actions/dev-env-setup
       - run: yarn install --immutable
         working-directory: ./bciers
-  yarn-test:
+  nx-tests:
     needs: install-dev-tools
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./bciers
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
       - name: dev env setup
         uses: ./.github/actions/dev-env-setup
-      - run: yarn test
-        working-directory: ./bciers
+      - name: Run Nx Tests
+        run: yarn nx run-many -t test --skipNxCache
+
   yarn-audit:
     needs: install-dev-tools
     runs-on: ubuntu-latest
@@ -171,25 +178,6 @@ jobs:
         run: |
           rm -rf /tmp/.buildx-cache
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
-
-  nx-tests:
-    # Only run on giraffe-develop branch for now
-    if: github.ref == 'refs/heads/giraffe-develop' || 'refs/heads/task/nx-deploy'
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./bciers
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - name: dev env setup
-        uses: ./.github/actions/dev-env-setup
-      - run: yarn install --immutable
-        working-directory: ./bciers
-      - name: Run Nx Tests
-        run: yarn nx run-many -t test --skipNxCache
 
   nx-docker-build-registration:
     runs-on: ubuntu-latest
