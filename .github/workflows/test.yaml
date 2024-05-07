@@ -35,7 +35,7 @@ jobs:
       - name: dev env setup
         uses: ./.github/actions/dev-env-setup
       - run: yarn test
-        working-directory: ./client
+        working-directory: ./bciers
   yarn-audit:
     needs: install-dev-tools
     runs-on: ubuntu-latest
@@ -222,7 +222,6 @@ jobs:
       - name: Install dependencies
         run: |
           corepack enable
-          yarn set version 4.2.0
           yarn install --immutable
           cd ../bciers && yarn install --immutable
       - uses: actions/setup-node@v3
@@ -287,7 +286,6 @@ jobs:
       - name: Install dependencies
         run: |
           corepack enable
-          yarn set version 4.2.0
           yarn install --immutable
           cd ../bciers && yarn install --immutable
       - uses: actions/setup-node@v3
