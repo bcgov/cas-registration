@@ -1,6 +1,5 @@
 from typing import List
 from registration.enums.enums import AccessRequestStates, AccessRequestTypes
-from common.service.email.email_service import EmailService
 from model_bakery import baker
 from registration.models import (
     BusinessStructure,
@@ -166,8 +165,8 @@ class TestUserOperatorOperatorEndpoint(CommonTestSetup):
             ],
         }
 
-        mock_send_operator_access_request_email = mocker.patch.object(
-            EmailService, "send_operator_access_request_email"
+        mock_send_operator_access_request_email = mocker.patch(
+            "service.user_operator_service.send_operator_access_request_email"
         )
 
         post_response = TestUtils.mock_post_with_auth_role(
