@@ -4,6 +4,7 @@ from common.service.email.email_service import EmailService
 from registration.enums.enums import BoroIdApplicationStates
 import logging
 
+from registration.models import Contact, User
 from service.data_access_service.email_template_service import EmailNotificationTemplateService
 
 logger = logging.getLogger(__name__)
@@ -30,19 +31,23 @@ def send_boro_id_application_email(
     operator_legal_name: str,
     operation_name: str,
     opted_in: bool,
-    external_users: List[Recipient],
+    operation_creator: User,
+    point_of_contact: Contact,
 ) -> None:
     """
-    Sends an email to one or more external users regarding an operation's BORO ID application, based on the application_state.
+    Sends an email to the operation creator and point of contact regarding the BORO ID application based on the application state.
+
     Args:
         application_state: The state of the BORO ID application, which is used to determine which email template should be used.
         operator_legal_name: The legal name of the operator to use in the email template.
         operation_name: The name of the operation to use in the email template.
         opted_in: A boolean indicating whether or not the operation is required to register or is simply opting in.
-        external_users: A list of Recipient objects (consisting of full_name and email_address)
+        operation_creator: The user who created the operation.
+        point_of_contact: The point of contact for the operation.
 
     Raises:
-        ValueError: If the email template is not found
+        ValueError: If the email template is not found.
+
     Returns:
         None
     """
@@ -50,8 +55,17 @@ def send_boro_id_application_email(
     template_name = f"{'Opt-in And ' if opted_in else ''}BORO ID Application {application_state.value}"
     template = EmailNotificationTemplateService.get_template_by_name(template_name)
 
+    # prepare recipients list
+    recipients: List[Recipient] = []
+    if operation_creator:
+        recipients.append(Recipient(full_name=operation_creator.get_full_name(), email_address=operation_creator.email))
+    # If the point of contact is not the same as the operation creator, add them to the recipients list
+    if point_of_contact and (not operation_creator or operation_creator.email != point_of_contact.email):
+        recipients.append(Recipient(full_name=point_of_contact.get_full_name(), email_address=point_of_contact.email))
+
+    # populating email context for each recipient
     email_contexts = []
-    for recipient in external_users:
+    for recipient in recipients:
         email_context = {
             "operator_legal_name": operator_legal_name,
             "operation_name": operation_name,
@@ -62,14 +76,13 @@ def send_boro_id_application_email(
 
     for context in email_contexts:
         try:
-            response_json = email_service.send_email_by_template(
-                template, context, [context.get('external_user_email_address')]
-            )
+            email_address_to_send_email_to: str = context.get('external_user_email_address')
+            response_json = email_service.send_email_by_template(template, context, [email_address_to_send_email_to])
             # Create email notification record to store transaction and message IDs
             email_service.create_email_notification_record(
                 response_json['txId'],
                 response_json['messages'][0]['msgId'],
-                [context.get('external_user_email_address')],
+                [email_address_to_send_email_to],
                 template.id,
             )
         except Exception as exc:
