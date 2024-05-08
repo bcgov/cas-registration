@@ -1,10 +1,9 @@
 from common.models import BaseModel
 from django.db import models
-from simple_history.models import HistoricalRecords
 
 
 class Configuration(BaseModel):
-    """Reporting gas type"""
+    """Reporting configuration for a year/program state"""
 
     slug = models.CharField(max_length=1000, db_comment="Unique identifier for a configuration", unique=True)
     valid_from = models.DateField(blank=True, null=True, db_comment="Date from which the configuration is applicable")
