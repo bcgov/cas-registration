@@ -404,11 +404,11 @@ jobs:
         run: npx playwright install --with-deps ${{ matrix.project }}
         working-directory: ./bciers/apps/registration
 
-      - name: Run Playwright Tests
+      - name: 🎭 Run Playwright Tests
         run: |
           npx happo-e2e -- npx playwright test --project=${{ matrix.project }} bciers/apps/registration/e2e/*
         env:
-          XDEBUG: pw:api,pw:browser*
+          DEBUG: pw:api,pw:browser*
           API_URL: http://127.0.0.1:8000/api/
           DB_USER: postgres
           DB_NAME: registration
@@ -452,17 +452,17 @@ jobs:
     name: 📊 e2e report artifact
     runs-on: ubuntu-latest
     needs: [e2e-tests]
-    if: ${{ always() }}
+    if: ${{ always() && contains(needs.*.result, 'failure') }}
     steps:
       - name: Download blob reports from GitHub Actions Artifacts
         uses: actions/download-artifact@v4
         with:
-          path: bciers/apps/registration/all-blob-reports
-          pattern: blob-report-*
+          path: all-blob-reports
+          pattern: blob-report-chromium #blob-report-*
           merge-multiple: true
 
       - name: Merge into HTML Report
-        run: npx playwright merge-reports --reporter html ./bciers/apps/registration/all-blob-reports
+        run: npx playwright merge-reports --reporter html ./all-blob-reports
 
       - name: Upload HTML report
         uses: actions/upload-artifact@v4
