@@ -394,7 +394,7 @@ jobs:
         with:
           # Store all of the reports separately by reconfiguring the report name
           name: blob-report-${{ matrix.project }}
-          path: /bciers/blob-report
+          path: bciers/blob-report
           retention-days: 1
   # Merge the e2e blob reports to one HTML report
   e2e-report:
