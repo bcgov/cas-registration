@@ -3,7 +3,7 @@ const { join } = require("path");
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  presets: [require("../../tailwind-workspace-preset.js")],
+  presets: [require("../../tailwind-workspace-preset")],
   content: [
     join(
       __dirname,

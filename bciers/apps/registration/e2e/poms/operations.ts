@@ -25,6 +25,7 @@ import {
   checkLocatorsVisibility,
   checkRequiredFieldValue,
   getAllFormInputs,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   getFieldRequired,
   getTableColumnTextValues,
   getTableRowByCellSelector,
