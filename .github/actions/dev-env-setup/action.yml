@@ -23,7 +23,6 @@ runs:
       shell: bash
       run: |
         corepack enable
-        yarn set version 4.2.0
     - name: yarn cache
       uses: ./.github/actions/yarn-cache
     - name: Set up python
@@ -56,6 +55,6 @@ runs:
         make create_db
     - name: Install yarn dependencies
       if: steps.yarn-cache.outputs.cache-hit != 'true'
-      run: yarn install
+      run: yarn install --immutable
       working-directory: ./bciers
       shell: bash
