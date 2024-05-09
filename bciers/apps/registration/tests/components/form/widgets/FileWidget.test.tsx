@@ -11,8 +11,6 @@ export const dummyDataUri =
   "data:application/pdf;name=dummy.pdf;base64,ZHVtbXk=";
 const mockFile = new File(["test"], "test.pdf", { type: "application/pdf" });
 
-vi.resetAllMocks();
-
 export const fileFieldSchema = {
   type: "object",
   required: ["fileTestField"],
