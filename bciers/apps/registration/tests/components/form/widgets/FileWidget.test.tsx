@@ -10,6 +10,16 @@ const fileLabelRequired = `${fileFieldLabel}*`;
 export const dummyDataUri =
   "data:application/pdf;name=dummy.pdf;base64,ZHVtbXk=";
 const mockFile = new File(["test"], "test.pdf", { type: "application/pdf" });
+const mockFile2 = new File(["test2"], "test2.pdf", { type: "application/pdf" });
+const mockFileUnaccepted = new File(["test"], "test.txt", {
+  type: "text/plain",
+});
+
+const mock21MBFile = new File(["test".repeat(20000000)], "test.pdf", {
+  type: "application/pdf",
+});
+
+const alertMock = vi.spyOn(window, "alert");
 
 export const fileFieldSchema = {
   type: "object",
@@ -26,6 +36,7 @@ export const fileFieldSchema = {
 export const fileFieldUiSchema = {
   fileTestField: {
     "ui:widget": "FileWidget",
+    "ui:options": { accept: ".pdf" },
   },
 };
 
@@ -76,6 +87,22 @@ describe("RJSF FileWidget", () => {
     expect(screen.getByText("test.pdf")).toBeVisible();
   });
 
+  it("should not allow uploading a file with an unaccepted file type", async () => {
+    render(<FormBase schema={fileFieldSchema} uiSchema={fileFieldUiSchema} />);
+
+    const input = screen.getByLabelText(fileLabelRequired);
+    await userEvent.upload(input, mockFileUnaccepted);
+
+    expect(screen.getByText("No attachment was uploaded")).toBeVisible();
+
+    // add accepted file type
+    await userEvent.upload(input, mockFile);
+    expect(screen.getByText("test.pdf")).toBeVisible();
+    expect(
+      screen.queryByText("No attachment was uploaded"),
+    ).not.toBeInTheDocument();
+  });
+
   it("should change the upload button text when a file is uploaded", async () => {
     render(<FormBase schema={fileFieldSchema} uiSchema={fileFieldUiSchema} />);
 
@@ -87,6 +114,73 @@ describe("RJSF FileWidget", () => {
     expect(
       screen.getByRole("button", { name: "Reupload attachment" }),
     ).toBeVisible();
+  });
+
+  it("supports file formats such as .kml and .kmz", async () => {
+    const mockFileFieldUiSchema = {
+      fileTestField: {
+        "ui:widget": "FileWidget",
+        "ui:options": { accept: ".kml,.kmz" },
+      },
+    };
+    render(
+      <FormBase schema={fileFieldSchema} uiSchema={mockFileFieldUiSchema} />,
+    );
+
+    const input = screen.getByLabelText(fileLabelRequired);
+    const mockKmlFile = new File(["test"], "test.kml", {
+      type: "application/vnd.google-earth.kml+xml",
+    });
+    const mockKmzFile = new File(["test"], "test.kmz", {
+      type: "application/vnd.google-earth.kmz",
+    });
+
+    await userEvent.upload(input, mockKmlFile);
+
+    actionHandler.mockResolvedValueOnce({});
+
+    expect(screen.getByText("test.kml")).toBeVisible();
+
+    await userEvent.upload(input, mockKmzFile);
+
+    actionHandler.mockResolvedValueOnce({});
+
+    expect(screen.getByText("test.kmz")).toBeVisible();
+  });
+
+  it("should not allow uploading a file larger than 20MB", async () => {
+    render(<FormBase schema={fileFieldSchema} uiSchema={fileFieldUiSchema} />);
+
+    const input = screen.getByLabelText(fileLabelRequired);
+    await userEvent.upload(input, mock21MBFile);
+
+    expect(screen.getByText("No attachment was uploaded")).toBeVisible();
+  });
+
+  it("should display the alert when a file larger than 20MB is uploaded", async () => {
+    render(<FormBase schema={fileFieldSchema} uiSchema={fileFieldUiSchema} />);
+
+    const input = screen.getByLabelText(fileLabelRequired);
+    await userEvent.upload(input, mock21MBFile);
+
+    expect(alertMock).toHaveBeenCalledWith("File size must be less than 20MB");
+  });
+
+  it("should allow replacing an uploaded file", async () => {
+    render(<FormBase schema={fileFieldSchema} uiSchema={fileFieldUiSchema} />);
+
+    const input = screen.getByLabelText(fileLabelRequired);
+    await userEvent.upload(input, mockFile);
+
+    actionHandler.mockResolvedValueOnce({});
+
+    expect(screen.getByText("test.pdf")).toBeVisible();
+
+    await userEvent.upload(input, mockFile2);
+
+    actionHandler.mockResolvedValueOnce({});
+
+    expect(screen.getByText("test2.pdf")).toBeVisible();
   });
 
   it("should display the file preview link when a file is uploaded", async () => {
