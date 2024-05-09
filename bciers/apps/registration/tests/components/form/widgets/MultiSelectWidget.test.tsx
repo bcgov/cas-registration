@@ -83,6 +83,30 @@ describe("RJSF MultiSelectWidget", () => {
     expect(screen.getByRole("button", { name: "Option 3" })).toBeVisible();
   });
 
+  it("should allow selecting multiple combo box values", async () => {
+    render(
+      <FormBase
+        schema={multiSelectFieldSchema}
+        uiSchema={multiSelectFieldUiSchema}
+      />,
+    );
+
+    const openMultiSelectButton = screen.getByRole("button", { name: "Open" });
+    await userEvent.click(openMultiSelectButton);
+
+    const option1 = screen.getByText("Option 1");
+    const option3 = screen.getByText("Option 3");
+
+    await userEvent.click(option1);
+
+    await userEvent.click(openMultiSelectButton);
+
+    await userEvent.click(option3);
+
+    expect(screen.getByText("Option 1")).toBeVisible();
+    expect(screen.getByText("Option 3")).toBeVisible();
+  });
+
   it("should allow typing a combo box value", async () => {
     render(
       <FormBase
