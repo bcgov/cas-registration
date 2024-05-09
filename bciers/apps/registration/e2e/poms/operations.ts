@@ -186,6 +186,11 @@ export class OperationsPOM {
       this.table,
       `[data-field="${TableDataField.NAME}"]:has-text("${operationName}")`,
     );
+
+    const count = await page.getByText("View Details").count();
+
+    // expect(count).toEqual(20);
+    console.log("count", count);
     console.log("row is", row);
     console.log(
       "link selector",

@@ -1,6 +1,6 @@
 // 🧪 Suite to test the industry_user_admin workflows using storageState
 
-import { test } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 // 🪄 Page Object Models
 import { DashboardPOM } from "@/e2e/poms/dashboard";
 import { OperationPOM } from "@/e2e/poms/operation";
@@ -109,6 +109,7 @@ test.describe("Test Workflow industry_user_admin", () => {
     await operationsPage.urlIsCorrect();
     // 🔍 Assert `Operations` view, table and data reflect role `industry_user_admin`
     await operationsPage.tableIsVisible();
+    expect(await page.getByText("View Details").count()).toEqual(12);
     await operationsPage.tableHasExpectedColumns(UserRole.INDUSTRY_USER_ADMIN);
     // 📷 Cheese!
     await happoPlaywright.screenshot(operationPage.page, pageContent, {
@@ -173,6 +174,7 @@ test.describe("Test Workflow industry_user_admin", () => {
     await operationsPage.route();
     await operationsPage.urlIsCorrect();
     await operationsPage.tableIsVisible();
+    expect(await page.getByText("View Details").count()).toEqual(13);
     await operationsPage.clickViewDetailsButtonByOperationName(
       page,
       E2EValue.INPUT_OPERATION_NAME,
