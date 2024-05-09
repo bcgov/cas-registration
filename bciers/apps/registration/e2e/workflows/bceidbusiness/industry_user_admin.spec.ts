@@ -183,7 +183,10 @@ test.describe("Test Workflow industry_user_admin", () => {
       `[data-field="name"]:has-text("${E2EValue.INPUT_OPERATION_NAME}")`,
     );
     console.log("row", row);
-    await row.getByRole("link", { name: ButtonText.VIEW_DETAILS }).click();
+    const brianna = await row.getByRole("link", {
+      name: ButtonText.VIEW_DETAILS,
+    });
+    brianna.click();
     console.log("did we get here");
     expect(await page.getByText("View Details").count()).toEqual(13);
 
