@@ -13,6 +13,7 @@ import {
   analyzeAccessibility,
   clearTableFilter,
   filterTableByFieldId,
+  getTableRowByCellSelector,
   setupTestEnvironment,
   sortTableByColumnLabel,
   tableRowCount,
@@ -28,6 +29,7 @@ import {
   UserOperatorStatus,
   UserRole,
   E2EValue,
+  DataTestID,
 } from "@/e2e/utils/enums";
 import happoPlaywright from "happo-playwright";
 
@@ -176,6 +178,13 @@ test.describe("Test Workflow industry_user_admin", () => {
     await operationsPage.tableIsVisible();
     await page.waitForTimeout(5000);
     expect(page.getByText(E2EValue.INPUT_OPERATION_NAME)).toBeVisible();
+    const row = await getTableRowByCellSelector(
+      page.locator(DataTestID.GRID),
+      `[data-field="name"]:has-text("${E2EValue.INPUT_OPERATION_NAME}")`,
+    );
+    console.log("row", row);
+    await row.getByRole("link", { name: ButtonText.VIEW_DETAILS }).click();
+    console.log("did we get here");
     expect(await page.getByText("View Details").count()).toEqual(13);
 
     await operationsPage.clickViewDetailsButtonByOperationName(
