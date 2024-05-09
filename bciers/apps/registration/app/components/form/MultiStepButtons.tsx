@@ -4,19 +4,19 @@ import { Button } from "@mui/material";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 
-interface SubmitButtonProps {
+interface MultiStepButtonsProps {
   baseUrl: string;
   cancelUrl: string;
   classNames?: string;
   disabled?: boolean;
   isSubmitting: boolean;
-  step: number;
+  step: number; // 0-indexed
   steps: string[];
   allowBackNavigation?: boolean;
   submitButtonText?: string;
 }
 
-const SubmitButton: React.FunctionComponent<SubmitButtonProps> = ({
+const MultiStepButtons: React.FunctionComponent<MultiStepButtonsProps> = ({
   allowBackNavigation,
   baseUrl,
   cancelUrl,
@@ -88,4 +88,4 @@ const SubmitButton: React.FunctionComponent<SubmitButtonProps> = ({
   );
 };
 
-export default SubmitButton;
+export default MultiStepButtons;

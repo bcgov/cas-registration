@@ -1,5 +1,5 @@
 interface MultiStepHeaderProps {
-  step: number;
+  step: number; // step is 0-indexed
   steps: string[];
 }
 

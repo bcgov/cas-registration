@@ -159,6 +159,17 @@ actionHandler.mockReturnValueOnce({
 });
 ```
 
+To maintain test isolation, we should clear or reset (note that clearing and resetting are [different](https://vitest.dev/api/mock.html#mockreset)) mocks before every test:
+
+````
+beforeEach(() => {
+    vi.resetAllMocks(); // most agressive, clears all calls and resets implementations (any mocked function will return undefined after this)
+    vi.clearAllMocks(); // less agressive, clears calls but does not reset implementations
+
+  });```
+
+We have some global mocks set up, so even if you haven't written any mocking code, it's useful to add a `beforeEach` to clean the slate before every test.
+
 ### Backend unit tests (for API endpoints) with Pytest
 
 #### Running Tests
@@ -173,7 +184,7 @@ The easiest way to run these tests locally is by using commands from the Makefil
 > make pythontests ARGS='registration/tests/<file_name.py>' # run pytest for a specific file
 > make pythontests ARGS='-k <TestClassname>' # run pytest for a specific class, e.g. make pythontests ARGS='-k TestNaicsCodeEndpoint'
 > make pythontests ARGS='-k <test_name>' # run pytest for a specific test, e.g. make pythontests ARGS='-k test_get_method_for_200_status' (note: if any tests have the same name, even if they're within different classes, this command will run them all)
-```
+````
 
 #### Testing Helpers
 
