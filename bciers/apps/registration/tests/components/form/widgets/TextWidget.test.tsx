@@ -96,6 +96,14 @@ describe("RJSF TextWidget", () => {
     expect(input).toHaveValue(123);
   });
 
+  it("should not allow entering commas in a number field", async () => {
+    render(<FormBase schema={numberFieldSchema} />);
+    const input = screen.getByLabelText(numberLabelRequired);
+
+    await userEvent.type(input, "1,000,000");
+    expect(input).toHaveValue(1000000);
+  });
+
   it("should not allow entering numbers greater than the default max value", async () => {
     render(<FormBase schema={numberFieldSchema} />);
 
