@@ -1,9 +1,5 @@
 {
-  "extends": [
-    "next",
-    "../../.eslintrc.json",
-    "prettier"
-  ],
+  "extends": ["next", "../../.eslintrc.json", "prettier"],
   "ignorePatterns": ["!**/*", ".next/**/*"],
   "rules": {
     "import/no-extraneous-dependencies": [
@@ -40,10 +36,10 @@
         "@typescript-eslint/dot-notation": "error",
         "@typescript-eslint/naming-convention": "error"
       },
-    "parser": "@typescript-eslint/parser",
-    "parserOptions": {
-      "project": ["apps/reporting/tsconfig(.*)?.json"],
-      "tsConfigRootDir": "./"
+      "parser": "@typescript-eslint/parser",
+      "parserOptions": {
+        "project": ["apps/reporting/tsconfig(.*)?.json"],
+        "tsConfigRootDir": "./"
       }
     },
     {
