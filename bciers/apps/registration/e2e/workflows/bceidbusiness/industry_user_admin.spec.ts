@@ -174,7 +174,10 @@ test.describe("Test Workflow industry_user_admin", () => {
     await operationsPage.route();
     await operationsPage.urlIsCorrect();
     await operationsPage.tableIsVisible();
+    await page.waitForTimeout(5000);
+    expect(page.getByText(E2EValue.INPUT_OPERATION_NAME)).toBeVisible();
     expect(await page.getByText("View Details").count()).toEqual(13);
+
     await operationsPage.clickViewDetailsButtonByOperationName(
       page,
       E2EValue.INPUT_OPERATION_NAME,
