@@ -339,7 +339,7 @@ jobs:
         run: npx playwright install --with-deps ${{ matrix.project }}
         working-directory: ./bciers/apps/registration
 
-      - name: Run Playwright Tests
+      - name: 🎭 Run Playwright Tests
         run: |
           npx happo-e2e -- npx playwright test --project=${{ matrix.project }} bciers/apps/registration/e2e/*
         env:
@@ -380,7 +380,7 @@ jobs:
         with:
           # Store all of the reports separately by reconfiguring the report name
           name: blob-report-${{ matrix.project }}
-          path: bciers/apps/registration/blob-report
+          path: bciers/blob-report
           retention-days: 1
   # Merge the e2e blob reports to one HTML report
   e2e-report:
@@ -398,6 +398,13 @@ jobs:
 
       - name: Merge into HTML Report
         run: npx playwright merge-reports --reporter html ./all-blob-reports
+      - name: Upload HTML report
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report
+          retention-days: 14
+  # Ensure the e2e tests and e2e report completed successfully
   e2e:
     if: ${{ always() }}
     runs-on: ubuntu-latest
