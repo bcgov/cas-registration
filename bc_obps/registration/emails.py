@@ -1,6 +1,6 @@
 from typing import List
 from registration.enums.enums import AccessRequestStates, AccessRequestTypes
-from common.service.email.email_service import EmailService
+from service.email.email_service import EmailService
 from registration.enums.enums import BoroIdApplicationStates
 import logging
 

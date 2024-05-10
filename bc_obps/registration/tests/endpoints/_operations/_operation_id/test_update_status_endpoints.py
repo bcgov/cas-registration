@@ -29,7 +29,6 @@ class TestOperationsUpdateStatusEndpoint(CommonTestSetup):
         self.mock_send_boro_id_application_email = mocker.patch(
             "service.operation_service.send_boro_id_application_email"
         )
-        yield  # The function continues after the test runs
 
     def test_cas_admin_approves_operation(self):
         operation = operation_baker()

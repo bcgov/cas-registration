@@ -1,6 +1,6 @@
 from registration.emails import send_operator_access_request_email
 from registration.enums.enums import AccessRequestStates, AccessRequestTypes
-from common.service.email.email_service import EmailService
+from service.email.email_service import EmailService
 from registration.models import ParentOperator, User, Operator, UserOperator
 from typing import List, Optional, Union
 from datetime import datetime
