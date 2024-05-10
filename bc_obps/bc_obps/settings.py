@@ -30,6 +30,24 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
+# If we're in the CI environment, don't hit Google Cloud Storage
+if os.environ.get('CI', None) == 'true':
+    # Use local file storage for tests
+    DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'test_media/')
+else:
+    # Google Cloud Storage Settings
+    STORAGES = {
+        "default": {"BACKEND": "storages.backends.gcloud.GoogleCloudStorage"},
+        "staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"},
+    }
+    GS_BUCKET_NAME = os.environ.get("GS_BUCKET_NAME")
+    if os.environ.get("GOOGLE_APPLICATION_CREDENTIALS"):
+        GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
+            os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")
+        )
+    GS_FILE_OVERWRITE = False
+
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
 
@@ -153,17 +171,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# Google Cloud Storage Settings
-STORAGES = {
-    "default": {"BACKEND": "storages.backends.gcloud.GoogleCloudStorage"},
-    "staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"},
-}
-GS_BUCKET_NAME = os.environ.get("GS_BUCKET_NAME")
-if os.environ.get("GOOGLE_APPLICATION_CREDENTIALS"):
-    GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
-        os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")
-    )
-GS_FILE_OVERWRITE = False
 CORS_ALLOWED_ORIGINS = ["http://localhost:3000"]
 
 DATA_UPLOAD_MAX_MEMORY_SIZE = 20000000
