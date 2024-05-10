@@ -257,7 +257,6 @@ class TestOperationsEndpoint(CommonTestSetup):
         )
         assert response.status_code == 200
         response_data = response.json().get('data')
-        print(response_data)
         assert len(response_data) == 0
 
         # Test with a name filter

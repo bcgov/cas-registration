@@ -1,6 +1,7 @@
 from uuid import UUID
-from common.enums import AccessRequestStates, AccessRequestTypes
-from common.service.email.email_service import EmailService
+from registration.enums.enums import AccessRequestStates, AccessRequestTypes
+from registration.emails import send_operator_access_request_email
+from service.email.email_service import EmailService
 from registration.models import UserOperator
 from service.data_access_service.operator_service import OperatorDataAccessService
 from service.data_access_service.user_operator_service import UserOperatorDataAccessService
@@ -63,7 +64,7 @@ class ApplicationAccessService:
             # Making a draft UserOperator instance if one doesn't exist
             user_operator, created = UserOperatorDataAccessService.get_or_create_user_operator(user_guid, operator_id)
             if created:
-                email_service.send_operator_access_request_email(
+                send_operator_access_request_email(
                     AccessRequestStates.CONFIRMATION,
                     AccessRequestTypes.OPERATOR_WITH_ADMIN,
                     user_operator.operator.legal_name,
@@ -78,7 +79,7 @@ class ApplicationAccessService:
             # Making a draft UserOperator instance if one doesn't exist
             user_operator, created = UserOperatorDataAccessService.get_or_create_user_operator(user_guid, operator_id)
             if created:
-                email_service.send_operator_access_request_email(
+                send_operator_access_request_email(
                     AccessRequestStates.CONFIRMATION,
                     AccessRequestTypes.ADMIN,
                     user_operator.operator.legal_name,

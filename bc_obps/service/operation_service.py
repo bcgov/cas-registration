@@ -1,5 +1,7 @@
 from uuid import UUID
 from django.db import transaction
+from registration.emails import send_boro_id_application_email
+from registration.enums.enums import BoroIdApplicationStates
 from service.user_operator_service import UserOperatorService
 from service.data_access_service.document_service import DocumentDataAccessService
 from service.document_service import DocumentService
@@ -48,6 +50,21 @@ class OperationService:
         operation.status = status
         operation.save(update_fields=['status', 'verified_at', 'verified_by_id', 'bc_obps_regulated_operation'])
         operation.set_create_or_update(user_guid)
+
+        # send email notification to external user (email template depends on operation.status)
+        if status in [
+            Operation.Statuses.APPROVED,
+            Operation.Statuses.DECLINED,
+            Operation.Statuses.CHANGES_REQUESTED,
+        ]:
+            send_boro_id_application_email(
+                application_state=BoroIdApplicationStates(status),
+                operator_legal_name=operation.operator.legal_name,
+                operation_name=operation.name,
+                opted_in=operation.opt_in,
+                operation_creator=operation.created_by,
+                point_of_contact=operation.point_of_contact,
+            )
         return operation
 
     @classmethod
@@ -149,6 +166,14 @@ class OperationService:
                 operation.status = Operation.Statuses.PENDING
                 operation.submission_date = datetime.now(ZoneInfo("UTC"))
                 operation.save(update_fields=['status', 'submission_date'])
+                send_boro_id_application_email(
+                    application_state=BoroIdApplicationStates.CONFIRMATION,
+                    operator_legal_name=operation.operator.legal_name,
+                    operation_name=operation.name,
+                    opted_in=operation.opt_in,
+                    operation_creator=operation.created_by,
+                    point_of_contact=operation.point_of_contact,
+                )
         operation.set_create_or_update(user_guid)
         return operation
 

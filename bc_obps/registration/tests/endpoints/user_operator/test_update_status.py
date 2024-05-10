@@ -1,5 +1,4 @@
-from common.enums import AccessRequestStates, AccessRequestTypes
-from common.service.email.email_service import EmailService
+from registration.enums.enums import AccessRequestStates, AccessRequestTypes
 from model_bakery import baker
 from registration.models import (
     BusinessRole,
@@ -47,8 +46,8 @@ class TestUserOperatorUpdateStatusEndpoint(CommonTestSetup):
         operator = operator_baker({"status": Operator.Statuses.APPROVED, "is_new": False})
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
         subsequent_user_operator = baker.make(UserOperator, operator=operator)
-        mock_send_operator_access_request_email = mocker.patch.object(
-            EmailService, "send_operator_access_request_email"
+        mock_send_operator_access_request_email = mocker.patch(
+            "service.user_operator_service.send_operator_access_request_email"
         )
         response = TestUtils.mock_put_with_auth_role(
             self,
@@ -94,8 +93,8 @@ class TestUserOperatorUpdateStatusEndpoint(CommonTestSetup):
     def test_cas_admin_approves_access_request_with_existing_operator(self, mocker):
         operator = operator_baker({"status": Operator.Statuses.APPROVED, "is_new": False})
         user_operator = user_operator_baker({"operator": operator})
-        mock_send_operator_access_request_email = mocker.patch.object(
-            EmailService, "send_operator_access_request_email"
+        mock_send_operator_access_request_email = mocker.patch(
+            "service.user_operator_service.send_operator_access_request_email"
         )
         response_2 = TestUtils.mock_put_with_auth_role(
             self,
@@ -127,8 +126,8 @@ class TestUserOperatorUpdateStatusEndpoint(CommonTestSetup):
         # so we have to mark the operator as is_new=False and status=APPROVED so we can bypass the below part and can get to the email sending part
         operator = operator_baker({'status': Operator.Statuses.APPROVED, 'is_new': False, 'created_by': self.user})
         user_operator = user_operator_baker({'operator': operator, 'user': operator.created_by})
-        mock_send_operator_access_request_email = mocker.patch.object(
-            EmailService, 'send_operator_access_request_email'
+        mock_send_operator_access_request_email = mocker.patch(
+            "service.user_operator_service.send_operator_access_request_email"
         )
         response_2 = TestUtils.mock_put_with_auth_role(
             self,
@@ -173,8 +172,8 @@ class TestUserOperatorUpdateStatusEndpoint(CommonTestSetup):
             business_role=BusinessRole.objects.get(role_name="Senior Officer"),
         )
         user_operator.operator.contacts.set(contacts)
-        mock_send_operator_access_request_email = mocker.patch.object(
-            EmailService, "send_operator_access_request_email"
+        mock_send_operator_access_request_email = mocker.patch(
+            "service.user_operator_service.send_operator_access_request_email"
         )
         # Now decline the user_operator and make sure the contacts are deleted
         response = TestUtils.mock_put_with_auth_role(
