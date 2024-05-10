@@ -1,7 +1,7 @@
 import pytest
 from datetime import datetime, timedelta
 from uuid import UUID
-from common.service.email.email_service import EmailService
+from service.email.email_service import EmailService
 
 pytestmark = pytest.mark.django_db
 

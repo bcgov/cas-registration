@@ -1,6 +1,6 @@
 import uuid
 from common.models import EmailNotification
-from common.service.email.email_service import EmailService
+from service.email.email_service import EmailService
 from registration.emails import send_boro_id_application_email, send_operator_access_request_email
 from registration.enums.enums import AccessRequestStates, AccessRequestTypes, BoroIdApplicationStates
 import pytest

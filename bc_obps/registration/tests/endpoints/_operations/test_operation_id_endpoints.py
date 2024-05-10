@@ -30,7 +30,6 @@ class TestOperationsOperationIdEndpoint(CommonTestSetup):
         self.mock_send_boro_id_application_email = mocker.patch(
             "service.operation_service.send_boro_id_application_email"
         )
-        yield  # The function continues after the test runs
 
     def test_operations_endpoint_unauthorized_users_cannot_get(self):
         operation_instance_1 = operation_baker()
