@@ -17,6 +17,7 @@ def init_methodology_data(apps: Apps, schema_editor: SchemaEditor):
             ReportingMethodology(name='Measured Steam/Measured EF'),
             ReportingMethodology(name='Alternative Parameter Measurement'),
             ReportingMethodology(name='Replacement Methodology'),
+            ReportingMethodology(name='Anode Consumption'),
             ReportingMethodology(name="Slope method"),
             ReportingMethodology(name='Overvoltage method'),
             ReportingMethodology(name='C2F6 anode effects'),
