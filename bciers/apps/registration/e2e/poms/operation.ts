@@ -197,7 +197,7 @@ export class OperationPOM {
   }
 
   async successfulSubmissionIsVisible() {
-    this.messageBoroIdRequested.isVisible();
+    await expect(this.messageBoroIdRequested).toBeVisible();
   }
 
   async urlIsCorrect() {
