@@ -1,6 +1,8 @@
 from datetime import datetime, timedelta, timezone
 from model_bakery import baker
 from localflavor.ca.models import CAPostalCodeField
+import pytest
+from registration.enums.enums import BoroIdApplicationStates
 from registration.models import (
     Contact,
     Operation,
@@ -21,6 +23,13 @@ fake_timestamp_from_past_str_format = '%Y-%m-%d %H:%M:%S.%f%z'
 
 class TestOperationsOperationIdEndpoint(CommonTestSetup):
     endpoint = CommonTestSetup.base_endpoint + "operations"
+
+    @pytest.fixture(autouse=True)
+    def setup_mocks(self, mocker):
+        # Setup the mock here; it will be executed before each test method
+        self.mock_send_boro_id_application_email = mocker.patch(
+            "service.operation_service.send_boro_id_application_email"
+        )
 
     def test_operations_endpoint_unauthorized_users_cannot_get(self):
         operation_instance_1 = operation_baker()
@@ -221,7 +230,7 @@ class TestOperationsOperationIdEndpoint(CommonTestSetup):
             == 'Input should be a valid UUID, invalid length: expected length 32 for simple format, found 11'
         )
 
-    def test_put_operation_without_submit(self):
+    def test_industry_user_update_operation_without_submit(self):
         payload = TestUtils.mock_OperationUpdateIn()
         operator = operator_baker()
         operation = operation_baker(operator.pk)
@@ -244,12 +253,14 @@ class TestOperationsOperationIdEndpoint(CommonTestSetup):
         assert response.status_code == 200
         assert response.json() == {"name": "New name"}
 
+        self.mock_send_boro_id_application_email.assert_not_called()
+
         get_response = TestUtils.mock_get_with_auth_role(
             self, "industry_user", custom_reverse_lazy("get_operation", kwargs={"operation_id": operation.id})
         ).json()
         assert get_response["status"] == Operation.Statuses.DRAFT
 
-    def test_put_operation_with_submit(self):
+    def test_industry_user_update_operation_with_submit(self):
         payload = TestUtils.mock_OperationUpdateIn()
         operator = operator_baker()
         operation = operation_baker(operator.pk)
@@ -276,6 +287,15 @@ class TestOperationsOperationIdEndpoint(CommonTestSetup):
         assert response.status_code == 200
         assert response.json() == {"name": "New name"}
 
+        self.mock_send_boro_id_application_email.assert_called_once_with(
+            application_state=BoroIdApplicationStates.CONFIRMATION,
+            operator_legal_name=operation.operator.legal_name,
+            operation_name=payload.name,
+            opted_in=payload.opt_in,
+            operation_creator=operation.created_by,
+            point_of_contact=operation.point_of_contact,
+        )
+
         get_response = TestUtils.mock_get_with_auth_role(
             self, "industry_user", custom_reverse_lazy("get_operation", kwargs={"operation_id": operation.id})
         ).json()
@@ -284,7 +304,7 @@ class TestOperationsOperationIdEndpoint(CommonTestSetup):
         operation_after_put = Operation.objects.get(id=get_response["id"])
         assert operation_after_put.submission_date is not None
 
-    def test_put_malformed_operation(self):
+    def test_industry_user_update_operation_with_malformed_date(self):
         operation = operation_baker()
         response = TestUtils.mock_put_with_auth_role(
             self,
@@ -297,7 +317,7 @@ class TestOperationsOperationIdEndpoint(CommonTestSetup):
 
         assert response.status_code == 422
 
-    def test_put_operation_with_updated_point_of_contact(self):
+    def test_industry_user_update_operation_with_updated_point_of_contact(self):
         contact1 = baker.make(Contact)
         # contact2 is a new contact, even though they have the same email as contact1
         contact2 = baker.make(Contact, email=contact1.email)
@@ -345,7 +365,16 @@ class TestOperationsOperationIdEndpoint(CommonTestSetup):
         assert updated_contact2.first_name == 'Homer'
         assert updated_contact2.email == 'homer@email.com'
 
-    def test_put_operation_with_new_point_of_contact(self):
+        self.mock_send_boro_id_application_email.assert_called_once_with(
+            application_state=BoroIdApplicationStates.CONFIRMATION,
+            operator_legal_name=operation.operator.legal_name,
+            operation_name=operation.name,
+            opted_in=operation.opt_in,
+            operation_creator=operation.created_by,
+            point_of_contact=updated_contact2,
+        )
+
+    def test_industry_user_update_operation_with_new_point_of_contact(self):
         operator = operator_baker()
         operation = operation_baker(operator.id)
         first_contact = operation.point_of_contact
@@ -404,7 +433,7 @@ class TestOperationsOperationIdEndpoint(CommonTestSetup):
                 break
         assert homer_contact is None
 
-    def test_put_operation_with_no_point_of_contact(self):
+    def test_industry_user_update_operation_with_no_point_of_contact(self):
         operator = operator_baker()
         operation = operation_baker()
         operation.point_of_contact = None
@@ -438,7 +467,7 @@ class TestOperationsOperationIdEndpoint(CommonTestSetup):
         assert retrieved_operation.point_of_contact_id is None
         assert retrieved_operation.point_of_contact is None
 
-    def test_put_operation_that_is_already_approved(self):
+    def test_industry_user_update_operation_that_is_already_approved(self):
         operator = operator_baker()
         operation = operation_baker()
         operation.operator_id = operator.id
@@ -473,6 +502,8 @@ class TestOperationsOperationIdEndpoint(CommonTestSetup):
             fake_timestamp_from_past, fake_timestamp_from_past_str_format
         )
         assert retrieved_operation.status == Operation.Statuses.APPROVED
+
+        self.mock_send_boro_id_application_email.assert_not_called()
 
     def test_put_operation_ignores_declines_user_operator_records(self):
         operator = operator_baker()
@@ -510,13 +541,14 @@ class TestOperationsOperationIdEndpoint(CommonTestSetup):
         retrieved_operation = Operation.objects.first()
         assert retrieved_operation.name == 'Shorter legal Name'
 
-    def test_put_operation_with_changes_requested(self):
+    def test_industry_user_update_operation_with_changes_requested_status(self):
         operator = operator_baker()
         operation = operation_baker()
         operation.operator_id = operator.id
         operation.status = Operation.Statuses.CHANGES_REQUESTED
         operation.submission_date = fake_timestamp_from_past
-        operation.save(update_fields=['status', 'operator_id', 'submission_date'])
+        operation.created_by = self.user
+        operation.save(update_fields=['status', 'operator_id', 'submission_date', 'created_by'])
 
         update = OperationUpdateIn(
             name='Updated Name',
@@ -548,13 +580,23 @@ class TestOperationsOperationIdEndpoint(CommonTestSetup):
         assert retrieved_operation.submission_date - datetime.now(timezone.utc) < timedelta(seconds=10)
         assert retrieved_operation.status == Operation.Statuses.PENDING
 
-    def test_put_operation_with_pending_status(self):
+        self.mock_send_boro_id_application_email.assert_called_once_with(
+            application_state=BoroIdApplicationStates.CONFIRMATION,
+            operator_legal_name=retrieved_operation.operator.legal_name,
+            operation_name=retrieved_operation.name,
+            opted_in=retrieved_operation.opt_in,
+            operation_creator=retrieved_operation.created_by,
+            point_of_contact=retrieved_operation.point_of_contact,
+        )
+
+    def test_industry_user_update_operation_with_pending_status(self):
         operator = operator_baker()
         operation = operation_baker()
         operation.operator_id = operator.id
         operation.status = Operation.Statuses.PENDING
         operation.submission_date = fake_timestamp_from_past
-        operation.save(update_fields=['status', 'operator_id', 'submission_date'])
+        operation.created_by = self.user
+        operation.save(update_fields=['status', 'operator_id', 'submission_date', 'created_by'])
 
         update = OperationUpdateIn(
             name='Pending Legal Name',
@@ -586,13 +628,23 @@ class TestOperationsOperationIdEndpoint(CommonTestSetup):
         assert retrieved_operation.submission_date - datetime.now(timezone.utc) < timedelta(seconds=10)
         assert retrieved_operation.status == Operation.Statuses.PENDING
 
-    def test_put_operation_with_declined_status(self):
+        self.mock_send_boro_id_application_email.assert_called_once_with(
+            application_state=BoroIdApplicationStates.CONFIRMATION,
+            operator_legal_name=retrieved_operation.operator.legal_name,
+            operation_name=retrieved_operation.name,
+            opted_in=retrieved_operation.opt_in,
+            operation_creator=retrieved_operation.created_by,
+            point_of_contact=retrieved_operation.point_of_contact,
+        )
+
+    def test_industry_user_update_operation_with_declined_status(self):
         operator = operator_baker()
         operation = operation_baker()
         operation.operator_id = operator.id
         operation.status = Operation.Statuses.DECLINED
         operation.submission_date = fake_timestamp_from_past
-        operation.save(update_fields=['status', 'operator_id', 'submission_date'])
+        operation.created_by = self.user
+        operation.save(update_fields=['status', 'operator_id', 'submission_date', 'created_by'])
 
         regulated_product = baker.make(RegulatedProduct)
         update = OperationUpdateIn(
@@ -624,8 +676,16 @@ class TestOperationsOperationIdEndpoint(CommonTestSetup):
         # assert that operation's submission_date has been updated to the current time (approximately)
         assert retrieved_operation.submission_date - datetime.now(timezone.utc) < timedelta(seconds=10)
         assert retrieved_operation.status == Operation.Statuses.PENDING
+        self.mock_send_boro_id_application_email.assert_called_once_with(
+            application_state=BoroIdApplicationStates.CONFIRMATION,
+            operator_legal_name=retrieved_operation.operator.legal_name,
+            operation_name=retrieved_operation.name,
+            opted_in=retrieved_operation.opt_in,
+            operation_creator=retrieved_operation.created_by,
+            point_of_contact=retrieved_operation.point_of_contact,
+        )
 
-    def test_put_operation_one_form_section_at_a_time(self):
+    def test_industry_user_update_operation_one_form_section_at_a_time(self):
         # test setup
         operator = operator_baker()
         operation = operation_baker()
@@ -641,7 +701,7 @@ class TestOperationsOperationIdEndpoint(CommonTestSetup):
             operator_id=operator.id,
             documents=[],
             regulated_products=[],
-            naics_code_id=operation.naics_code_id
+            naics_code_id=operation.naics_code_id,
             # reporting_activities=[1],
         )
         put_response_1 = TestUtils.mock_put_with_auth_role(

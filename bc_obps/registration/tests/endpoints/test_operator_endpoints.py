@@ -1,5 +1,4 @@
-from common.enums import AccessRequestStates, AccessRequestTypes
-from common.service.email.email_service import EmailService
+from registration.enums.enums import AccessRequestStates, AccessRequestTypes
 from model_bakery import baker
 from localflavor.ca.models import CAPostalCodeField
 from registration.tests.utils.bakers import operator_baker, user_operator_baker
@@ -44,7 +43,6 @@ class TestOperatorsEndpoint(CommonTestSetup):
             assert response.status_code == 401
 
     def test_get_operators_no_parameters(self):
-
         response = TestUtils.mock_get_with_auth_role(
             self, 'industry_user', custom_reverse_lazy('get_operators_by_cra_number_or_legal_name')
         )
@@ -213,8 +211,8 @@ class TestOperatorsEndpoint(CommonTestSetup):
 
         operator.created_by = user_operators[0].user  # Set the first user operator as the creator of the operator
         operator.save(update_fields=['created_by'])
-        mock_send_operator_access_request_email = mocker.patch.object(
-            EmailService, 'send_operator_access_request_email'
+        mock_send_operator_access_request_email = mocker.patch(
+            "service.operator_service.send_operator_access_request_email"
         )
         response = TestUtils.mock_put_with_auth_role(
             self,
@@ -226,7 +224,6 @@ class TestOperatorsEndpoint(CommonTestSetup):
             },  # Setting status for the first user operator
             custom_reverse_lazy('update_operator_status', kwargs={'operator_id': operator.id}),
         )
-
         assert response.status_code == 200
         assert response.json().get('status') == Operator.Statuses.DECLINED
         assert response.json().get('is_new') is False

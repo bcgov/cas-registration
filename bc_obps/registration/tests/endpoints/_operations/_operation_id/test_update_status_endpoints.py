@@ -2,6 +2,8 @@ from datetime import datetime
 from zoneinfo import ZoneInfo
 from model_bakery import baker
 from localflavor.ca.models import CAPostalCodeField
+import pytest
+from registration.enums.enums import BoroIdApplicationStates
 from registration.models import (
     Operation,
     User,
@@ -21,7 +23,14 @@ fake_timestamp_from_past_str_format = '%Y-%m-%d %H:%M:%S.%f%z'
 class TestOperationsUpdateStatusEndpoint(CommonTestSetup):
     endpoint = CommonTestSetup.base_endpoint + "operations"
 
-    def test_put_operation_update_status_approved(self):
+    @pytest.fixture(autouse=True)
+    def setup_mocks(self, mocker):
+        # Setup the mock here; it will be executed before each test method
+        self.mock_send_boro_id_application_email = mocker.patch(
+            "service.operation_service.send_boro_id_application_email"
+        )
+
+    def test_cas_admin_approves_operation(self):
         operation = operation_baker()
         assert operation.status == Operation.Statuses.NOT_STARTED
         url = custom_reverse_lazy("update_status", kwargs={"operation_id": operation.id})
@@ -38,11 +47,21 @@ class TestOperationsUpdateStatusEndpoint(CommonTestSetup):
         assert operation_after_put.status == Operation.Statuses.APPROVED
         assert operation_after_put.verified_by == self.user
         assert operation_after_put.bc_obps_regulated_operation is not None
+
         operator = Operator.objects.get(id=operation.operator_id)
         assert operator.status == Operator.Statuses.APPROVED
         assert operator.is_new is False
         assert operator.verified_by == self.user
         assert operator.verified_at.strftime("%Y-%m-%d") == now.strftime("%Y-%m-%d")
+
+        self.mock_send_boro_id_application_email.assert_called_once_with(
+            application_state=BoroIdApplicationStates.APPROVED,
+            operator_legal_name=operation.operator.legal_name,
+            operation_name=operation.name,
+            opted_in=operation.opt_in,
+            operation_creator=operation.created_by,
+            point_of_contact=operation.point_of_contact,
+        )
 
         get_response = TestUtils.mock_get_with_auth_role(
             self, "cas_admin", custom_reverse_lazy("get_operation", kwargs={"operation_id": operation.id})
@@ -72,10 +91,9 @@ class TestOperationsUpdateStatusEndpoint(CommonTestSetup):
         assert new_operator.verified_by == random_user
         assert new_operator.verified_by != self.user
 
-    def test_put_operation_update_status_declined(self):
+    def test_cas_admin_declines_operation(self):
         operation = operation = operation_baker()
         assert operation.status == Operation.Statuses.NOT_STARTED
-
         put_response = TestUtils.mock_put_with_auth_role(
             self,
             "cas_admin",
@@ -92,12 +110,56 @@ class TestOperationsUpdateStatusEndpoint(CommonTestSetup):
         assert operation_after_put.verified_by == self.user
         assert operation_after_put.bc_obps_regulated_operation is None
 
+        self.mock_send_boro_id_application_email.assert_called_once_with(
+            application_state=BoroIdApplicationStates.DECLINED,
+            operator_legal_name=operation.operator.legal_name,
+            operation_name=operation.name,
+            opted_in=operation.opt_in,
+            operation_creator=operation.created_by,
+            point_of_contact=operation.point_of_contact,
+        )
+
         get_response = TestUtils.mock_get_with_auth_role(
             self, "cas_admin", custom_reverse_lazy("get_operation", kwargs={"operation_id": operation.id})
         )
         assert get_response.status_code == 200
         get_response_dict = get_response.json()
         assert get_response_dict.get("status") == "Declined"
+
+    def test_cas_admin_requests_changes_on_operation(self):
+        operation = operation = operation_baker()
+        assert operation.status == Operation.Statuses.NOT_STARTED
+        put_response = TestUtils.mock_put_with_auth_role(
+            self,
+            "cas_admin",
+            self.content_type,
+            {"status": "Changes Requested"},
+            custom_reverse_lazy("update_status", kwargs={"operation_id": operation.id}),
+        )
+        assert put_response.status_code == 200
+        put_response_dict = put_response.json()
+        assert put_response_dict.get("id") == str(operation.id)  # string representation of UUID
+        assert put_response_dict.keys() == {"id"}  # Make sure the response has the expected keys based on the schema
+        operation_after_put = Operation.objects.get(id=operation.id)
+        assert operation_after_put.status == Operation.Statuses.CHANGES_REQUESTED
+        assert operation_after_put.verified_by is None
+        assert operation_after_put.bc_obps_regulated_operation is None
+
+        self.mock_send_boro_id_application_email.assert_called_once_with(
+            application_state=BoroIdApplicationStates.CHANGES_REQUESTED,
+            operator_legal_name=operation.operator.legal_name,
+            operation_name=operation.name,
+            opted_in=operation.opt_in,
+            operation_creator=operation.created_by,
+            point_of_contact=operation.point_of_contact,
+        )
+
+        get_response = TestUtils.mock_get_with_auth_role(
+            self, "cas_admin", custom_reverse_lazy("get_operation", kwargs={"operation_id": operation.id})
+        )
+        assert get_response.status_code == 200
+        get_response_dict = get_response.json()
+        assert get_response_dict.get("status") == "Changes Requested"
 
     def test_put_operation_not_verified_when_not_registered(self):
         operation = operation_baker()
@@ -126,7 +188,7 @@ class TestOperationsUpdateStatusEndpoint(CommonTestSetup):
         assert get_response_dict.get("status") == "Not Started"
         assert get_response_dict.get("verified_at") is None
 
-    def test_put_operation_update_status_invalid_data(self):
+    def test_cas_admin_updates_operation_status_with_invalid_data(self):
         operation = operation_baker()
         assert operation.status == Operation.Statuses.NOT_STARTED
 
