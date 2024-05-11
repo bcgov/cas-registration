@@ -11,6 +11,7 @@ import Profile from "@bciers/components/navigation/Profile";
 
 export default function Header() {
   const { data: session } = useSession();
+
   // 🖥️📲  using MUI theme breakpoints for responsive design https://mui.com/material-ui/customization/breakpoints/
 
   // 🧩 For authentication content using theme breakpoints to hide for mobile & tablet

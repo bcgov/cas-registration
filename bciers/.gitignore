@@ -42,6 +42,7 @@ test-results
 .DS_Store
 Thumbs.db
 
+# Nx cache and application data
 .nx
 
 # Next.js
