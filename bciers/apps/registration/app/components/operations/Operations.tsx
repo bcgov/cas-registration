@@ -1,31 +1,30 @@
-import { GridRowsProp } from "@mui/x-data-grid";
+import { GridRowsProp } from '@mui/x-data-grid';
 
-import { actionHandler } from "@/app/utils/actions";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { actionHandler } from '@/app/utils/actions';
+import { auth } from '@/dashboard/auth';
 import {
   OperationRow,
   OperationsSearchParams,
-} from "@/app/components/operations/types";
-import buildQueryParams from "@/app/utils/buildQueryParams";
-import OperationDataGrid from "./OperationDataGrid";
+} from '@/app/components/operations/types';
+import buildQueryParams from '@/app/utils/buildQueryParams';
+import OperationDataGrid from './OperationDataGrid';
 
 const formatTimestamp = (timestamp: string) => {
   if (!timestamp) return undefined;
 
-  const date = new Date(timestamp).toLocaleString("en-CA", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-    timeZone: "America/Vancouver",
+  const date = new Date(timestamp).toLocaleString('en-CA', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    timeZone: 'America/Vancouver',
   });
 
-  const timeWithTimeZone = new Date(timestamp).toLocaleString("en-CA", {
-    hour: "numeric",
-    minute: "numeric",
-    second: "numeric",
-    timeZoneName: "short",
-    timeZone: "America/Vancouver",
+  const timeWithTimeZone = new Date(timestamp).toLocaleString('en-CA', {
+    hour: 'numeric',
+    minute: 'numeric',
+    second: 'numeric',
+    timeZoneName: 'short',
+    timeZone: 'America/Vancouver',
   });
 
   // Return with a line break so we can display date and time on separate lines
@@ -46,7 +45,7 @@ export const formatOperationRows = (rows: GridRowsProp) => {
     }) => {
       return {
         id,
-        bc_obps_regulated_operation: bc_obps_regulated_operation ?? "N/A",
+        bc_obps_regulated_operation: bc_obps_regulated_operation ?? 'N/A',
         name,
         bcghg_id,
         operator: operator,
@@ -67,8 +66,8 @@ export const fetchOperationsPageData = async (
     // fetch data from server
     const pageData = await actionHandler(
       `registration/operations${queryParams}`,
-      "GET",
-      "",
+      'GET',
+      '',
     );
     return {
       rows: formatOperationRows(pageData.data),
@@ -85,7 +84,7 @@ export default async function Operations({
 }: {
   searchParams: OperationsSearchParams;
 }) {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
   // Fetch operations data
   const operations: {
     rows: OperationRow[];
@@ -97,8 +96,8 @@ export default async function Operations({
 
   // Show the operator column if the user is CAS internal
   const isOperatorColumn =
-    session?.user.app_role?.includes("cas") &&
-    !session?.user.app_role?.includes("pending");
+    session?.user?.app_role?.includes('cas') &&
+    !session?.user?.app_role?.includes('pending');
 
   // Render the DataGrid component
   return (

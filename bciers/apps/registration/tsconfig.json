@@ -24,5 +24,9 @@
     "./.next/types/**/*.ts",
     ".next/types/**/*.ts"
   ],
-  "exclude": [".next", "node_modules", "jest.config.*"]
+  "exclude": [
+    ".next",
+    "node_modules",
+    "jest.config.*"
+  ]
 }

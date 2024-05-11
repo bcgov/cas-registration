@@ -34,8 +34,8 @@ export default function OperationsForm({ formData, schema }: Readonly<Props>) {
   const isFinalStep = formSection === formSectionList.length;
 
   const isCasInternal =
-    session?.user.app_role?.includes("cas") &&
-    !session?.user.app_role?.includes("pending");
+    session?.user?.app_role?.includes("cas") &&
+    !session?.user?.app_role?.includes("pending");
 
   const isFormStatusPending = formData?.status === Status.PENDING;
 

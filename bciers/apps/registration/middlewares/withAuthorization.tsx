@@ -3,12 +3,12 @@ import {
   NextMiddleware,
   NextRequest,
   NextResponse,
-} from "next/server";
+} from 'next/server';
 
-import { MiddlewareFactory } from "./types";
-import { getToken } from "next-auth/jwt";
-import { IDP } from "@/app/utils/enums";
+import { MiddlewareFactory } from '@bciers/middlewares/server';
 
+import { IDP } from '@/app/utils/enums';
+import { getToken } from '@bciers/actions/server';
 /*
 Access control logic is managed using Next.js middleware and NextAuth.js authentication JWT token.
 The middleware intercepts requests, and for restricted areas...
@@ -19,15 +19,15 @@ to the appropriate folder structure.
 
 // Function to check if the path is in the unauthenticated allow list
 const isUnauthenticatedAllowListedPath = (pathname: string): boolean => {
-  const authList = ["auth", "unauth"];
+  const authList = ['auth', 'unauth'];
   return authList.some((path) => pathname.includes(path));
 };
 
 // Function to check if the path is in the authenticated allow list
 const isAuthenticatedAllowListedPath = (pathname: string): boolean => {
-  const allowList = ["dashboard", "problem", "profile"];
-  const lastSegment = pathname.split("/").pop();
-  return allowList.includes(lastSegment || "");
+  const allowList = ['dashboard', 'problem', 'profile'];
+  const lastSegment = pathname.split('/').pop();
+  return allowList.includes(lastSegment || '');
 };
 
 // Function to check if the path requires authorization
@@ -61,28 +61,26 @@ const isAuthorizedIdirUser = (token: {
 
   const idp = token.identity_provider;
   const appRole = token.app_role;
-  return idp === IDP.IDIR && !appRole?.includes("pending") ? true : false;
+  return idp === IDP.IDIR && !appRole?.includes('pending') ? true : false;
 };
 
 // Middleware for authorization
 export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
   return async (request: NextRequest, _next: NextFetchEvent) => {
     const { pathname } = request.nextUrl;
-    const token = await getToken({
-      req: request,
-      secret: process.env.NEXTAUTH_SECRET,
-    });
+    console.log(` registration ${pathname}`);
     // Check if the path is in the unauthenticated allow list
     if (isUnauthenticatedAllowListedPath(pathname)) {
       return next(request, _next);
     }
-    // Check if the user is authenticated
+    // Check if the user is authenticated via the jwt encoded in server side cookie
+    const token = await getToken();
     if (token) {
       // Check for the existence of token.app_role
-      if (!token.app_role || token.app_role === "") {
+      if (!token.app_role || token.app_role === '') {
         // Code to handle the case where app_role is either an empty string or null
         // route to profile form
-        if (pathname.endsWith("/profile")) {
+        if (pathname.endsWith('/profile')) {
           return next(request, _next);
         } else {
           return NextResponse.redirect(
@@ -92,8 +90,10 @@ export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
       }
 
       // Redirect root or home requests to the dashboard
-      if (pathname.endsWith("/") || pathname.endsWith("/home")) {
-        return NextResponse.redirect(new URL(`/dashboard`, request.url));
+      if (pathname.endsWith('/registration') || pathname.endsWith('/home')) {
+        return NextResponse.redirect(
+          new URL(`/registration/dashboard`, request.url),
+        );
       }
 
       // Check if the path is in the authenticated allow list
@@ -103,13 +103,13 @@ export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
 
       // Check if the path requires authorization
       if (isAuthorizationRequiredPath(pathname, token)) {
-        if (pathname.includes("operations")) {
+        if (pathname.includes('operations')) {
           // Industry users are only allowed to see their operations if their operator is pending/approved
           if (!isAuthorizedIdirUser(token)) {
             try {
               const options: RequestInit = {
-                cache: "no-store", // Default cache option
-                method: "GET",
+                cache: 'no-store', // Default cache option
+                method: 'GET',
                 headers: new Headers({
                   Authorization: JSON.stringify({
                     user_guid: token.user_guid,
@@ -122,8 +122,8 @@ export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
               );
               const operator = await response.json();
               if (
-                operator.status !== "Pending" &&
-                operator.status !== "Approved"
+                operator.status !== 'Pending' &&
+                operator.status !== 'Approved'
               ) {
                 return NextResponse.redirect(
                   new URL(`/dashboard`, request.url),
@@ -141,13 +141,13 @@ export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
       // Routes with the folder structure break the breadcrumbs
       const pageSegment = pathname.replace(
         `/${token.identity_provider}/${token.app_role}`,
-        "",
+        '',
       );
 
       return NextResponse.redirect(new URL(`${pageSegment}`, request.url));
     } else {
       // Handle unauthenticated requests
-      if (pathname.endsWith("/home")) {
+      if (pathname.endsWith('/home')) {
         return next(request, _next);
       } else {
         return NextResponse.redirect(new URL(`/home`, request.url));

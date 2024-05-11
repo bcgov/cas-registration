@@ -16,11 +16,14 @@
     "target": "es2015",
     "types": ["vitest/globals"],
     "paths": {
-      "@bciers/components/server": ["libs/shared/components/src/server.ts"],
+      "@/*": ["apps/registration/*"],
+      "@/dashboard/*": ["apps/dashboard/src/*"],
+      "@bciers/actions/server": ["libs/shared/actions/src/server.ts"],
+      "@bciers/middlewares/server": ["libs/shared/middlewares/src/server.ts"],
       "@bciers/components": ["libs/shared/components/src/index.ts"],
+      "@bciers/components/server": ["libs/shared/components/src/server.ts"],
       "@bciers/img/*": ["libs/shared/img/*"],
-      "@bciers/styles": ["libs/shared/styles/src/index.ts"],
-      "@/*": ["apps/registration/*"]
+      "@bciers/styles": ["libs/shared/styles/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

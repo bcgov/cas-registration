@@ -1,22 +1,21 @@
-import { actionHandler } from "@/app/utils/actions";
+import { actionHandler } from '@/app/utils/actions';
 import {
   userOperatorSchema,
   userOperatorInternalUserSchema,
-} from "@/app/utils/jsonSchema/userOperator";
+} from '@/app/utils/jsonSchema/userOperator';
 
-import { RJSFSchema } from "@rjsf/utils";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { UserOperatorFormData } from "@/app/components/form/formDataTypes";
-import { validate as isValidUUID } from "uuid";
-import { BusinessStructure } from "./types";
-import UserOperatorReviewForm from "./UserOperatorReviewForm";
-import UserOperatorForm from "./UserOperatorForm";
+import { RJSFSchema } from '@rjsf/utils';
+import { auth } from '@/dashboard/auth';
+import { UserOperatorFormData } from '@/app/components/form/formDataTypes';
+import { validate as isValidUUID } from 'uuid';
+import { BusinessStructure } from './types';
+import UserOperatorReviewForm from './UserOperatorReviewForm';
+import UserOperatorForm from './UserOperatorForm';
 
 async function getBusinessStructures() {
   return actionHandler(
     `registration/business_structures`,
-    "GET",
+    'GET',
     `/dashboard/select-operator/user-operator`,
   );
 }
@@ -39,7 +38,7 @@ const createUserOperatorSchema = (
 
   const businessStructureOptions = businessStructureList?.map(
     (businessStructure) => ({
-      type: "string",
+      type: 'string',
       title: businessStructure.label,
       enum: [businessStructure.id],
       value: businessStructure.id,
@@ -64,10 +63,10 @@ export default async function UserOperator({
 }: Readonly<{
   params?: { id?: string; readonly?: boolean };
 }>) {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
   const isCasInternal =
-    session?.user.app_role?.includes("cas") &&
-    !session?.user.app_role?.includes("pending");
+    session?.user?.app_role?.includes('cas') &&
+    !session?.user?.app_role?.includes('pending');
   const serverError = <div>Server Error. Please try again later.</div>;
   const userOperatorId = params?.id;
   const businessStructures: BusinessStructure[] | { error: string } =
@@ -76,7 +75,7 @@ export default async function UserOperator({
   const userOperatorData: UserOperatorFormData | { error: string } =
     await getUserOperatorFormData(userOperatorId as string);
 
-  if ("error" in businessStructures || "error" in userOperatorData)
+  if ('error' in businessStructures || 'error' in userOperatorData)
     return serverError;
 
   const businessStructuresList = businessStructures?.map(

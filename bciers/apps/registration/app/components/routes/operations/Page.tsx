@@ -1,13 +1,12 @@
 // 🚩 flagging: the shared page route for */operations
-import Link from "next/link";
-import { Button } from "@mui/material";
-import { Suspense } from "react";
-import Loading from "@/app/components/loading/SkeletonGrid";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { OperationsSearchParams } from "@/app/components/operations/types";
-import Note, { registrationRequestNote } from "@/app/components/datagrid/Note";
-import Operations from "@/app/components/operations/Operations";
+import Link from 'next/link';
+import { Button } from '@mui/material';
+import { Suspense } from 'react';
+import Loading from '@/app/components/loading/SkeletonGrid';
+import { auth } from '@/dashboard/auth';
+import { OperationsSearchParams } from '@/app/components/operations/types';
+import Note, { registrationRequestNote } from '@/app/components/datagrid/Note';
+import Operations from '@/app/components/operations/Operations';
 
 export default async function OperationsPage({
   searchParams,
@@ -18,18 +17,18 @@ export default async function OperationsPage({
   /* When calling from the server-side i.e., in Route Handlers, React Server Components, API routes,
    * getServerSession requires passing the same object you would pass to NextAuth
    */
-  const session = await getServerSession(authOptions);
+  const session = await auth();
   const role = session?.user?.app_role;
 
   return (
     <>
       {/* Conditionally render the button based on user's role */}
-      {role?.includes("industry_user") && (
-        <Link href={"/dashboard/operations/create/1"}>
+      {role?.includes('industry_user') && (
+        <Link href={'/dashboard/operations/create/1'}>
           <Button variant="contained">Add Operation</Button>
         </Link>
       )}
-      {role && role.includes("cas") && (
+      {role && role.includes('cas') && (
         <Note classNames="mb-4 mt-6" message={registrationRequestNote} />
       )}
       <Suspense fallback={<Loading />}>
