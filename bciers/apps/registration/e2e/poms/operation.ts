@@ -197,7 +197,6 @@ export class OperationPOM {
   }
 
   async successfulSubmissionIsVisible() {
-    console.log("$$$CI VARIABLE:", process.env.CI);
     await expect(this.messageBoroIdRequested).toBeVisible();
   }
 
