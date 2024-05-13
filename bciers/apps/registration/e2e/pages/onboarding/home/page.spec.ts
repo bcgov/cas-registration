@@ -103,7 +103,7 @@ test.describe("Test Page - Home", () => {
       test(`Test Login - ${value}`, async ({ page }) => {
         // 👤 Set user and password based on the user role
         let user = process.env.E2E_CAS_USER as string;
-        let password = process.env.E2E_CAS_USER_PASSWORD as string;
+        let password = ("X" + process.env.E2E_CAS_USER_PASSWORD) as string;
         role = E2EValue.PREFIX + role;
         switch (value) {
           case UserRole.INDUSTRY_USER_ADMIN:
