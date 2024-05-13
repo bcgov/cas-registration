@@ -1,7 +1,7 @@
-from registration.schema.operation import OperationListOut
+from registration.schema.v1.operation import OperationListOut
 from service.user_operator_service import UserOperatorService
 from registration.models import Operation
-from registration.schema import (
+from registration.schema.v1 import (
     OperationOut,
 )
 

@@ -1,6 +1,6 @@
 from service.application_access_service import ApplicationAccessService
-from registration.schema.parent_operator import ParentOperatorIn
-from registration.schema.user_operator import UserOperatorOperatorIn
+from registration.schema.v1.parent_operator import ParentOperatorIn
+from registration.schema.v1.user_operator import UserOperatorOperatorIn
 import pytest
 import tempfile
 from model_bakery import baker

@@ -1,6 +1,6 @@
 from typing import List
 from registration.models import NaicsCode
-from registration.schema import NaicsCodeSchema
+from registration.schema.v1 import NaicsCodeSchema
 from django.core.cache import cache
 
 ##### GET #####

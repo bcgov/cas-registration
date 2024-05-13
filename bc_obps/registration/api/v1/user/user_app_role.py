@@ -1,7 +1,8 @@
 from registration.api.utils.current_user_utils import get_current_user_guid
 from registration.decorators import handle_http_errors
 from service.data_access_service.user_service import UserDataAccessService
-from registration.schema import UserAppRoleOut, Message
+from registration.schema.v1 import UserAppRoleOut
+from registration.schema.generic import Message
 from registration.api.router import router
 from ninja.responses import codes_4xx
 

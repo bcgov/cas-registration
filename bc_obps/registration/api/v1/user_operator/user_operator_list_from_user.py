@@ -2,7 +2,8 @@ from registration.api.utils.current_user_utils import get_current_user_guid
 from service.data_access_service.user_operator_service import UserOperatorDataAccessService
 
 from registration.decorators import authorize, handle_http_errors
-from registration.schema import ExternalDashboardUsersTileData, Message
+from registration.schema.v1 import ExternalDashboardUsersTileData
+from registration.schema.generic import Message
 from typing import List
 from registration.api.router import router
 from service.error_service.custom_codes_4xx import custom_codes_4xx

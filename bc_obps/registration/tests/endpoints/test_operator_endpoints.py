@@ -4,7 +4,7 @@ from localflavor.ca.models import CAPostalCodeField
 from registration.tests.utils.bakers import operator_baker, user_operator_baker
 from registration.constants import AUDIT_FIELDS
 from registration.models import Operator, UserOperator
-from registration.schema.operator import OperatorOut, OperatorSearchOut, ConfirmSelectedOperatorOut
+from registration.schema.v1.operator import OperatorOut, OperatorSearchOut, ConfirmSelectedOperatorOut
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
 

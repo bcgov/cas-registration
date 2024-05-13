@@ -6,9 +6,9 @@ from typing import List, Optional, Union
 from datetime import datetime
 from django.db.models import QuerySet
 from service.data_access_service.operator_service import OperatorDataAccessService
-from registration.schema import OperatorSearchOut
+from registration.schema.v1 import OperatorSearchOut
 from uuid import UUID
-from registration.schema import OperatorIn
+from registration.schema.v1 import OperatorIn
 from django.db import transaction
 from registration.utils import set_verification_columns
 from registration.models import (

@@ -8,14 +8,13 @@ from registration.models import (
     AppRole,
     UserOperator,
 )
-from registration.schema import (
+from registration.schema.v1 import (
     OperationCreateIn,
     OperationPaginatedOut,
     OperationCreateOut,
-    Message,
     OperationFilterSchema,
 )
-
+from registration.schema.generic import Message
 from ninja.responses import codes_4xx
 from ninja import Query
 

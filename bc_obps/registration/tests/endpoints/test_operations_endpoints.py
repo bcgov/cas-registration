@@ -6,7 +6,7 @@ from registration.models import (
     Operation,
     UserOperator,
 )
-from registration.schema import OperationCreateIn
+from registration.schema.v1 import OperationCreateIn
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 
 from registration.tests.utils.bakers import operation_baker, operator_baker, user_operator_baker

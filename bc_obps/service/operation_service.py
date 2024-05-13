@@ -7,7 +7,7 @@ from service.data_access_service.document_service import DocumentDataAccessServi
 from service.document_service import DocumentService
 from service.data_access_service.user_service import UserDataAccessService
 from service.data_access_service.contact_service import ContactDataAccessService
-from registration.schema.operation import OperationCreateIn, OperationFilterSchema, OperationUpdateIn
+from registration.schema.v1.operation import OperationCreateIn, OperationFilterSchema, OperationUpdateIn
 from service.data_access_service.operation_service import OperationDataAccessService
 from django.db.models import Q
 from django.core.paginator import Paginator

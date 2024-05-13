@@ -3,7 +3,7 @@ from registration.decorators import authorize
 from ..router import router
 from typing import List
 from registration.models import AppRole, UserOperator
-from registration.schema import (
+from registration.schema.v1 import (
     RegulatedProductSchema,
 )
 

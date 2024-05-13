@@ -4,10 +4,8 @@ from service.user_operator_service import UserOperatorService
 from service.data_access_service.user_operator_service import UserOperatorDataAccessService
 
 from registration.decorators import authorize, handle_http_errors
-from registration.schema import (
-    UserOperatorOut,
-    Message,
-)
+from registration.schema.v1 import UserOperatorOut
+from registration.schema.generic import Message
 from registration.api.router import router
 
 from registration.models import (

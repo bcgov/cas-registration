@@ -7,8 +7,8 @@ from registration.decorators import authorize, handle_http_errors
 from ..router import router
 from registration.models import AppRole, UserOperator
 from ninja.responses import codes_4xx, codes_5xx
-from registration.schema import Message, OperatorOut, OperatorIn, OperatorSearchOut, ConfirmSelectedOperatorOut
-
+from registration.schema.v1 import OperatorOut, OperatorIn, OperatorSearchOut, ConfirmSelectedOperatorOut
+from registration.schema.generic import Message
 
 ##### GET #####
 

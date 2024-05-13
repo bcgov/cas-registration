@@ -1,5 +1,5 @@
 from typing import List, Optional
-from registration.schema.operator import OperatorForOperationOut
+from registration.schema.v1.operator import OperatorForOperationOut
 from registration.utils import file_to_data_url, data_url_to_file
 from ninja import Field, FilterSchema, ModelSchema, Schema
 from registration.models import Operation, User
