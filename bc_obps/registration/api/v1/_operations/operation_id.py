@@ -12,13 +12,12 @@ from registration.models import (
     AppRole,
     UserOperator,
 )
-from registration.schema import (
+from registration.schema.v1 import (
     OperationUpdateIn,
     OperationOut,
     OperationUpdateOut,
-    Message,
 )
-
+from registration.schema.generic import Message
 from ninja.responses import codes_4xx
 
 

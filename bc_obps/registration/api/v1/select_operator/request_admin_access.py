@@ -1,11 +1,11 @@
 from registration.api.utils.current_user_utils import get_current_user_guid
 from service.application_access_service import ApplicationAccessService
 from registration.decorators import authorize, handle_http_errors
-from registration.schema import (
+from registration.schema.v1 import (
     SelectOperatorIn,
-    Message,
     RequestAccessOut,
 )
+from registration.schema.generic import Message
 from registration.api.router import router
 
 from registration.models import (

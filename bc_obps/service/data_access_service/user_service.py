@@ -1,5 +1,5 @@
 from uuid import UUID
-from registration.schema.user import UserIn, UserOut, UserUpdateIn
+from registration.schema.v1.user import UserIn, UserOut, UserUpdateIn
 from registration.models import AppRole, Operator, UserOperator, User
 
 

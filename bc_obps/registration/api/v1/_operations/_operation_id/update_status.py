@@ -6,11 +6,11 @@ from registration.api.router import router
 from registration.models import (
     AppRole,
 )
-from registration.schema import (
-    Message,
+from registration.schema.v1 import (
     OperationUpdateStatusIn,
     OperationUpdateStatusOut,
 )
+from registration.schema.generic import Message
 from ninja.responses import codes_4xx, codes_5xx
 
 

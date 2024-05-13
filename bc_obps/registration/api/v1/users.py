@@ -1,6 +1,6 @@
 from registration.decorators import authorize
 from registration.models import AppRole, User
-from registration.schema import UserOut, UserOperator
+from registration.schema.v1 import UserOut, UserOperator
 from registration.api.router import router
 
 ##### GET #####

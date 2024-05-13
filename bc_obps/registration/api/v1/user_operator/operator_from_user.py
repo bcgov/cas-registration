@@ -1,11 +1,9 @@
-from registration.schema.user_operator import PendingUserOperatorOut
+from registration.schema.v1.user_operator import PendingUserOperatorOut
 from service.data_access_service.user_service import UserDataAccessService
 
 from registration.decorators import authorize, handle_http_errors
-from registration.schema import (
-    Message,
-    OperatorFromUserOperatorOut,
-)
+from registration.schema.v1 import OperatorFromUserOperatorOut
+from registration.schema.generic import Message
 from registration.api.router import router
 
 from registration.models import (

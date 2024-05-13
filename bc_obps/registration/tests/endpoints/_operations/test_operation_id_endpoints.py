@@ -9,7 +9,7 @@ from registration.models import (
     UserOperator,
     RegulatedProduct,
 )
-from registration.schema import OperationUpdateIn
+from registration.schema.v1 import OperationUpdateIn
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 
 from registration.tests.utils.bakers import operation_baker, operator_baker, user_operator_baker

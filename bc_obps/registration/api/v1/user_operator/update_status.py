@@ -1,12 +1,11 @@
 from service.user_operator_service import UserOperatorService
 from registration.api.utils.current_user_utils import get_current_user_guid
 from registration.decorators import authorize, handle_http_errors
-from registration.schema import (
+from registration.schema.v1 import (
     UserOperatorOut,
-    Message,
     UserOperatorStatusUpdate,
 )
-
+from registration.schema.generic import Message
 from registration.models import (
     AppRole,
 )
