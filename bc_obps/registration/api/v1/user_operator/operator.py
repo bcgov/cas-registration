@@ -1,3 +1,4 @@
+from registration.constants import USER_OPERATOR_TAGS
 from service.user_operator_service import UserOperatorService
 from registration.api.utils.current_user_utils import get_current_user_guid
 from registration.decorators import authorize, handle_http_errors
@@ -19,6 +20,7 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
     "/user-operator/operator",
     response={200: RequestAccessOut, custom_codes_4xx: Message},
     url_name="create_operator_and_user_operator",
+    tags=USER_OPERATOR_TAGS,
 )
 @authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles(), False)
 @handle_http_errors()
@@ -31,6 +33,7 @@ def create_operator_and_user_operator(request, payload: UserOperatorOperatorIn):
     "/user-operator/operator/{uuid:user_operator_id}",
     response={200: RequestAccessOut, custom_codes_4xx: Message},
     url_name="update_operator_and_user_operator",
+    tags=USER_OPERATOR_TAGS,
 )
 @authorize(["industry_user"], ["admin"])
 @handle_http_errors()

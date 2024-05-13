@@ -1,3 +1,4 @@
+from registration.constants import USER_OPERATOR_TAGS
 from service.user_operator_service import UserOperatorService
 from registration.api.utils.current_user_utils import get_current_user_guid
 from registration.decorators import authorize, handle_http_errors
@@ -17,6 +18,7 @@ from registration.api.router import router
     "/user-operator/update-status",
     response={200: UserOperatorOut, custom_codes_4xx: Message},
     url_name="update_user_operator_status",
+    tags=USER_OPERATOR_TAGS,
 )
 @authorize(AppRole.get_all_authorized_app_roles(), ["admin"])
 @handle_http_errors()

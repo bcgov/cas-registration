@@ -1,4 +1,5 @@
 from registration.api.utils.current_user_utils import get_current_user_guid
+from registration.constants import OPERATION_TAGS
 from service.operation_service import OperationService
 from registration.decorators import authorize, handle_http_errors
 from ..router import router
@@ -22,7 +23,12 @@ from ninja import Query
 ##### GET #####
 
 
-@router.get("/operations", response={200: OperationPaginatedOut, codes_4xx: Message}, url_name="list_operations")
+@router.get(
+    "/operations",
+    response={200: OperationPaginatedOut, codes_4xx: Message},
+    url_name="list_operations",
+    tags=OPERATION_TAGS,
+)
 @authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles())
 @handle_http_errors()
 def list_operations(request, filters: OperationFilterSchema = Query(...)):
@@ -32,7 +38,12 @@ def list_operations(request, filters: OperationFilterSchema = Query(...)):
 ##### POST #####
 
 
-@router.post("/operations", response={201: OperationCreateOut, codes_4xx: Message}, url_name="create_operation")
+@router.post(
+    "/operations",
+    response={201: OperationCreateOut, codes_4xx: Message},
+    url_name="create_operation",
+    tags=OPERATION_TAGS,
+)
 @authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
 @handle_http_errors()
 def create_operation(request, payload: OperationCreateIn):
