@@ -52,6 +52,13 @@
         "command": "happo-e2e -- playwright test --ui"
       }
     },
+    "e2e:report": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "apps/registration",
+        "command": "playwright show-report"
+      }
+    },
     "e2e:sequential": {
       "executor": "nx:run-commands",
       "options": {
