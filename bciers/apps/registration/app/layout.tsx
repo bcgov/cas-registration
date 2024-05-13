@@ -53,7 +53,7 @@ export default async function RootLayout({
       </head>
       <body id="__next">
         <SessionProvider
-          // 👇 Notice that the basePath will be <HOME_URL>/auth
+          // 👇 Notice that the basePath to the auth management site
           basePath={`${process.env.NEXTAUTH_URL}/api/auth`}
           session={session}
         >

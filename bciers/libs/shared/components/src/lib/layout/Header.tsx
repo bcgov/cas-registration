@@ -7,7 +7,7 @@ import { useSession } from "next-auth/react";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import { styled } from "@mui/material/styles";
-import Profile from "@bciers/components/navigation/Profile";
+import Profile from "@/dashboard/app/components/auth/Profile";
 
 export default function Header() {
   const { data: session } = useSession();

@@ -6,8 +6,6 @@ import {
 } from "next/server";
 
 import { MiddlewareFactory } from "@bciers/middlewares/server";
-
-import { IDP } from "@/app/utils/enums";
 import { getToken } from "@bciers/actions/server";
 /*
 Access control logic is managed using Next.js middleware and NextAuth.js authentication JWT token.
@@ -25,7 +23,7 @@ const isUnauthenticatedAllowListedPath = (pathname: string): boolean => {
 
 // Function to check if the path is in the authenticated allow list
 const isAuthenticatedAllowListedPath = (pathname: string): boolean => {
-  const allowList = ["dashboard", "problem", "profile"];
+  const allowList = ["dashboard"];
   const lastSegment = pathname.split("/").pop();
   return allowList.includes(lastSegment || "");
 };
@@ -50,24 +48,11 @@ const isAuthorizationRequiredPath = (
   );
 };
 
-const isAuthorizedIdirUser = (token: {
-  identity_provider?: string;
-  app_role?: string;
-}): boolean => {
-  if (!token) {
-    return false;
-  }
-
-  const idp = token.identity_provider;
-  const appRole = token.app_role;
-  return idp === IDP.IDIR && !appRole?.includes("pending") ? true : false;
-};
-
 // Middleware for authorization
 export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
   return async (request: NextRequest, _next: NextFetchEvent) => {
     const { pathname } = request.nextUrl;
-    console.log(` registration ${pathname}`);
+    console.log(` reporting ${pathname}`);
     // Check if the path is in the unauthenticated allow list
     if (isUnauthenticatedAllowListedPath(pathname)) {
       return next(request, _next);
@@ -75,23 +60,10 @@ export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
     // Check if the user is authenticated via the jwt encoded in server side cookie
     const token = await getToken();
     if (token) {
-      // Check for the existence of token.app_role
-      if (!token.app_role || token.app_role === "") {
-        // Code to handle the case where app_role is either an empty string or null
-        // route to profile form
-        if (pathname.endsWith("/profile")) {
-          return next(request, _next);
-        } else {
-          return NextResponse.redirect(
-            new URL(`/dashboard/profile`, request.url),
-          );
-        }
-      }
-
-      // Redirect root or home requests to the dashboard
-      if (pathname.endsWith("/registration") || pathname.endsWith("/home")) {
+      // Redirect root requests to the dashboard
+      if (pathname.endsWith("/reporting")) {
         return NextResponse.redirect(
-          new URL(`/registration/dashboard`, request.url),
+          new URL(`/reporting/dashboard`, request.url),
         );
       }
 
@@ -102,39 +74,8 @@ export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
 
       // Check if the path requires authorization
       if (isAuthorizationRequiredPath(pathname, token)) {
-        if (pathname.includes("operations")) {
-          // Industry users are only allowed to see their operations if their operator is pending/approved
-          if (!isAuthorizedIdirUser(token)) {
-            try {
-              const options: RequestInit = {
-                cache: "no-store", // Default cache option
-                method: "GET",
-                headers: new Headers({
-                  Authorization: JSON.stringify({
-                    user_guid: token.user_guid,
-                  }),
-                }),
-              };
-              const response = await fetch(
-                `${process.env.API_URL}registration/user-operators/current`,
-                options,
-              );
-              const operator = await response.json();
-              if (
-                operator.status !== "Pending" &&
-                operator.status !== "Approved"
-              ) {
-                return NextResponse.redirect(
-                  new URL(`/dashboard`, request.url),
-                );
-              }
-            } catch (error) {
-              throw error;
-            }
-          }
-        }
-
-        request.nextUrl.pathname = `${token.identity_provider}/${token.app_role}${pathname.replace("registration/", "")}`;
+        //rewrite the request to reflected the token permissions
+        request.nextUrl.pathname = `${token.identity_provider}/${token.app_role}${pathname.replace("reporting/", "")}`;
         return NextResponse.rewrite(request.nextUrl);
       }
 
