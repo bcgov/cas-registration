@@ -51,8 +51,6 @@ class OperationUpdateIn(ModelSchema):
     @field_validator("statutory_declaration")
     @classmethod
     def validate_statutory_declaration(cls, value: str):
-        # if CI or ENVIRONMENT == 'develop':
-        #     return None
         if value:
             return data_url_to_file(value)
 

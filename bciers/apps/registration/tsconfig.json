@@ -21,7 +21,8 @@
     "./**/*",
     "./.happo.js",
     "./.eslintrc.json",
-    "./.next/types/**/*.ts"
+    "./.next/types/**/*.ts",
+    ".next/types/**/*.ts"
   ],
   "exclude": [".next", "node_modules", "jest.config.*"]
 }

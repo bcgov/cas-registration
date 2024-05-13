@@ -186,11 +186,6 @@ export class OperationsPOM {
       this.table,
       `[data-field="${TableDataField.NAME}"]:has-text("${operationName}")`,
     );
-    console.log("row is", row);
-    console.log(
-      "link selector",
-      row.getByRole("link", { name: ButtonText.VIEW_DETAILS }),
-    );
     await page.waitForTimeout(5000);
     // Click the `View Detail` for this row
     await row.getByRole("link", { name: ButtonText.VIEW_DETAILS }).click();
