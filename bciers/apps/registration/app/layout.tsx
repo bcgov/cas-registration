@@ -84,8 +84,11 @@ export default async function RootLayout({
                 }}
               >
                 <Header />
-                {/* Content goes here */}
-                {children}
+                <Bread
+                  separator={<span aria-hidden="true"> &gt; </span>}
+                  capitalizeLinks
+                />
+                <Main>{children}</Main>
                 <Footer />
               </Box>
             </ThemeProvider>

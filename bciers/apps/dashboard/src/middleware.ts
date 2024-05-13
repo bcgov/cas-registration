@@ -23,7 +23,9 @@ Custom matcher config
 Conditional statements
 */
 
-export const config = { matcher: ["/((?!api|_next|sw.js|favicon.ico).*)"] };
+export const config = {
+  matcher: ["/((?!api|_next|sw.js|favicon.ico|bciers/libs/shared/).*)"],
+};
 
 // ⛓️ Chaining middleware for maintainability, and scalability by apply a series of task specific functions to a request
 export default stackMiddlewares([withAuthorization]);

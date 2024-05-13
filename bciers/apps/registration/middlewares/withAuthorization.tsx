@@ -45,7 +45,6 @@ const isAuthorizationRequiredPath = (
 
   return (
     !pathname.includes(authRoute) &&
-    !pathname.endsWith(`/home`) &&
     !isUnauthenticatedAllowListedPath(pathname) &&
     !isAuthenticatedAllowListedPath(pathname)
   );
@@ -134,7 +133,9 @@ export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
             }
           }
         }
-        request.nextUrl.pathname = `${token.identity_provider}/${token.app_role}${pathname}`;
+
+        request.nextUrl.pathname = `${token.identity_provider}/${token.app_role}${pathname.replace("registration/", "")}`;
+        console.log(` registration rewrite ${request.nextUrl.pathname}`);
         return NextResponse.rewrite(request.nextUrl);
       }
 

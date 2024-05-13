@@ -16,7 +16,7 @@ to the appropriate folder structure.
  */
 
 const onboarding = "onboarding";
-const authenticated = "authenticated";
+const dashboard = "dashboard";
 // Function to check if the path is in the unauthenticated allow list
 const isUnauthenticatedAllowListedPath = (pathname: string): boolean => {
   const authList = ["auth", "unauth"];
@@ -25,7 +25,7 @@ const isUnauthenticatedAllowListedPath = (pathname: string): boolean => {
 
 // Function to check if the path is in the authenticated allow list
 const isAuthenticatedAllowListedPath = (pathname: string) => {
-  const allowList = [authenticated, "registration", "reporting"];
+  const allowList = [dashboard, "registration", "reporting"];
 
   // Split the pathname into segments
   const segments = pathname.split("/");
@@ -50,11 +50,11 @@ export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
     if (isUnauthenticatedAllowListedPath(pathname)) {
       return next(request, _next);
     }
-    // Check if the user is authenticated via the jwt encoded in server side cookie
+    // Check if the user is dashboard via the jwt encoded in server side cookie
     const token = await getToken();
     if (token) {
       if (pathname === "/" || pathname.endsWith(`/${onboarding}`)) {
-        return NextResponse.redirect(new URL(`/${authenticated}`, request.url));
+        return NextResponse.redirect(new URL(`/${dashboard}`, request.url));
       } else {
         return next(request, _next);
       }

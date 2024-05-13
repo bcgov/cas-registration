@@ -1,3 +1,3 @@
 // Use this file to export React server components
 
-export * from "./lib/layout/Main";
+export { default as Main } from "./lib/layout/Main";
