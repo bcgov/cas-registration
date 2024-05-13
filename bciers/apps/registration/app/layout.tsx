@@ -6,26 +6,24 @@ You should not manually add <head> tags such as <title> and <meta> to root layou
 */
 
 import '@/app/styles/globals.css';
-import SessionProvider from '@/dashboard/auth/SessionProvider';
+import SessionProvider from '@/dashboard/app/_components/auth/SessionProvider';
 import type { Metadata, Viewport } from 'next';
-import Footer from '@/app/components/layout/Footer';
-import Header from '@/app/components/layout/Header';
-// 🏷 import {named} can be significantly slower than import default
 import Box from '@mui/material/Box';
+import CssBaseline from '@mui/material/CssBaseline';
 import { auth } from '@/dashboard/auth';
 import { PublicEnvScript } from 'next-runtime-env';
 import ThemeProvider from '@mui/material/styles/ThemeProvider';
 import { theme } from '@bciers/components';
 import { NextAppDirEmotionCacheProvider } from '@bciers/components';
-import CssBaseline from '@mui/material/CssBaseline';
+import { Footer } from '@bciers/components';
+import { Header } from '@bciers/components';
+import { Bread } from '@bciers/components';
+import { Main } from '@bciers/components/server';
 
 export const metadata: Metadata = {
   title: 'CAS OBPS REGISTRATION',
   description:
     'The OBPS is designed to ensure there is a price incentive for industrial emitters to reduce their greenhouse gas emissions and spur innovation while maintaining competitiveness and protecting against carbon leakage.',
-  icons: {
-    icon: '/img/favicon.ico',
-  },
 };
 
 export const viewport: Viewport = {
@@ -83,8 +81,11 @@ export default async function RootLayout({
                 }}
               >
                 <Header />
-                {/* Content goes here */}
-                {children}
+                <Bread
+                  separator={<span aria-hidden="true"> &gt; </span>}
+                  capitalizeLinks
+                />
+                <Main>{children}</Main>
                 <Footer />
               </Box>
             </ThemeProvider>
