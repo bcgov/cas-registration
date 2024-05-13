@@ -1,7 +1,6 @@
 import { Bread } from '@bciers/components';
 import { Main } from '@bciers/components/server';
-
-export default function DashboardLayout({
+export default function AuthenticatedLayout({
   children,
 }: {
   children: React.ReactNode;

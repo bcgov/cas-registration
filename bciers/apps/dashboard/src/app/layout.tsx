@@ -1,6 +1,6 @@
 import './global.css';
 
-import SessionProvider from '@/dashboard/app/_components/auth/SessionProvider';
+import SessionProvider from '@/dashboard/app/components/auth/SessionProvider';
 import { auth } from '@/dashboard/auth';
 import { Viewport } from 'next';
 import Box from '@mui/material/Box';

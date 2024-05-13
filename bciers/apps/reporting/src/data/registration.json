@@ -1,0 +1,15 @@
+{
+  "title": "Registration",
+  "icon": "🔏",
+  "content": "View or update information of your operator, operations, facilities, and to submit BORO ID application here.",
+  "links": [
+    {
+      "title": "My Operator",
+      "href": "registration/select-operator"
+    },
+    {
+      "title": "Operations",
+      "href": "registration/operations"
+    }
+  ]
+}

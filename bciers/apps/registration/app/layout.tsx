@@ -6,11 +6,11 @@ You should not manually add <head> tags such as <title> and <meta> to root layou
 */
 
 import '@/app/styles/globals.css';
-import SessionProvider from '@/dashboard/app/_components/auth/SessionProvider';
+import SessionProvider from '@/dashboard/app/components/auth/SessionProvider';
+import { auth } from '@/dashboard/auth';
 import type { Metadata, Viewport } from 'next';
 import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
-import { auth } from '@/dashboard/auth';
 import { PublicEnvScript } from 'next-runtime-env';
 import ThemeProvider from '@mui/material/styles/ThemeProvider';
 import { theme } from '@bciers/components';
@@ -50,7 +50,7 @@ export default async function RootLayout({
       </head>
       <body id="__next">
         <SessionProvider
-          // 👇 Notice that the basePath will be <HOME_URL>/auth
+          // 👇 Notice that the basePath to the auth management site
           basePath={`${process.env.NEXTAUTH_URL}/api/auth`}
           session={session}
         >
