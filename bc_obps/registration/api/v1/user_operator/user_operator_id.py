@@ -1,5 +1,6 @@
 from uuid import UUID
 from registration.api.utils.current_user_utils import get_current_user_guid
+from registration.constants import USER_OPERATOR_TAGS
 from service.user_operator_service import UserOperatorService
 from service.data_access_service.user_operator_service import UserOperatorDataAccessService
 
@@ -19,6 +20,7 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
     "user-operator/{uuid:user_operator_id}",
     response={200: UserOperatorOut, custom_codes_4xx: Message},
     url_name="get_user_operator",
+    tags=USER_OPERATOR_TAGS,
 )
 @authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles())
 @handle_http_errors()

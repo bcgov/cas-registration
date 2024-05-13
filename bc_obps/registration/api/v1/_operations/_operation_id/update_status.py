@@ -1,5 +1,6 @@
 from uuid import UUID
 from registration.api.utils.current_user_utils import get_current_user_guid
+from registration.constants import OPERATION_TAGS
 from service.operation_service import OperationService
 from registration.decorators import authorize, handle_http_errors
 from registration.api.router import router
@@ -18,6 +19,7 @@ from ninja.responses import codes_4xx, codes_5xx
     "/operation/{operation_id}/update-status",
     response={200: OperationUpdateStatusOut, codes_4xx: Message, codes_5xx: Message},
     url_name="update_status",
+    tags=OPERATION_TAGS,
 )
 @authorize(AppRole.get_authorized_irc_roles())
 @handle_http_errors()

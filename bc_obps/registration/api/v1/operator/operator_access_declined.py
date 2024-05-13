@@ -1,4 +1,5 @@
 from uuid import UUID
+from registration.constants import OPERATOR_TAGS
 from service.data_access_service.user_service import UserDataAccessService
 
 from registration.decorators import authorize, handle_http_errors
@@ -16,6 +17,7 @@ from registration.api.utils.current_user_utils import get_current_user_guid
     "/operator/operator-access-declined/{operator_id}",
     response={200: bool, custom_codes_4xx: Message},
     url_name="operator_access_declined",
+    tags=OPERATOR_TAGS,
 )
 @authorize(['industry_user'], UserOperator.get_all_industry_user_operator_roles(), False)
 @handle_http_errors()

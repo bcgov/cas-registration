@@ -1,3 +1,4 @@
+from registration.constants import USER_OPERATOR_TAGS
 from registration.schema.v1.user_operator import PendingUserOperatorOut
 from service.data_access_service.user_service import UserDataAccessService
 
@@ -17,6 +18,7 @@ from registration.api.utils.current_user_utils import get_current_user_guid
     "/user-operator/user-operator-operator",
     response={200: OperatorFromUserOperatorOut, custom_codes_4xx: Message},
     url_name="get_user_operator_operator",
+    tags=USER_OPERATOR_TAGS,
 )
 @authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
 @handle_http_errors()

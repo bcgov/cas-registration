@@ -1,4 +1,5 @@
 from registration.api.utils.current_user_utils import get_current_user_guid
+from registration.constants import USER_OPERATOR_TAGS
 from service.data_access_service.user_operator_service import UserOperatorDataAccessService
 
 from registration.decorators import authorize, handle_http_errors
@@ -13,6 +14,7 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
     "/user-operator/user-operator-list-from-user",
     response={200: List[ExternalDashboardUsersTileData], custom_codes_4xx: Message},
     url_name="get_user_operator_list_from_user",
+    tags=USER_OPERATOR_TAGS,
 )
 @authorize(["industry_user"], ["admin"])
 @handle_http_errors()

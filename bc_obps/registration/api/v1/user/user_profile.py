@@ -1,5 +1,6 @@
 import json
 from registration.api.utils.current_user_utils import get_current_user_guid
+from registration.constants import USER_TAGS
 from service.data_access_service.user_service import UserDataAccessService
 from registration.decorators import authorize, handle_http_errors
 from registration.models import AppRole
@@ -10,7 +11,9 @@ from ninja.responses import codes_4xx
 from service.user_profile_service import UserProfileService
 
 # endpoint to return user data if user exists in user table
-@router.get("/user/user-profile", response={200: UserOut, codes_4xx: Message}, url_name="get_user_profile")
+@router.get(
+    "/user/user-profile", response={200: UserOut, codes_4xx: Message}, url_name="get_user_profile", tags=USER_TAGS
+)
 @handle_http_errors()
 def get_user_profile(request):
     return 200, UserDataAccessService.get_user_profile(
@@ -26,6 +29,7 @@ def get_user_profile(request):
     "/user/user-profile/{identity_provider}",
     response={200: UserOut, codes_4xx: Message},
     url_name="create_user_profile",
+    tags=USER_TAGS,
 )
 @handle_http_errors()
 def create_user_profile(request, identity_provider: str, payload: UserIn):
@@ -39,7 +43,9 @@ def create_user_profile(request, identity_provider: str, payload: UserIn):
 
 
 # Endpoint to update a user
-@router.put("/user/user-profile", response={200: UserOut, codes_4xx: Message}, url_name="update_user_profile")
+@router.put(
+    "/user/user-profile", response={200: UserOut, codes_4xx: Message}, url_name="update_user_profile", tags=USER_TAGS
+)
 @authorize(AppRole.get_all_app_roles(), UserOperator.get_all_industry_user_operator_roles(), False)
 @handle_http_errors()
 def update_user_profile(request, payload: UserUpdateIn):

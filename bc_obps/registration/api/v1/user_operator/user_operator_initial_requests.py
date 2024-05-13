@@ -1,3 +1,4 @@
+from registration.constants import USER_OPERATOR_TAGS
 from service.user_operator_service import UserOperatorService
 from registration.decorators import authorize, handle_http_errors
 from registration.schema.v1 import UserOperatorPaginatedOut
@@ -14,6 +15,7 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
     "/user-operator/user-operator-initial-requests",
     response={200: UserOperatorPaginatedOut, custom_codes_4xx: Message},
     url_name="list_user_operators",
+    tags=USER_OPERATOR_TAGS,
 )
 @authorize(AppRole.get_authorized_irc_roles())
 @handle_http_errors()

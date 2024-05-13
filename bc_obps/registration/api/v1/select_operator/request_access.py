@@ -1,4 +1,5 @@
 from registration.api.utils.current_user_utils import get_current_user_guid
+from registration.constants import SELECT_OPERATOR_TAGS
 from registration.decorators import authorize, handle_http_errors
 from registration.schema.v1 import (
     SelectOperatorIn,
@@ -18,6 +19,7 @@ from service.application_access_service import ApplicationAccessService
     "/select-operator/request-access",
     response={201: RequestAccessOut, custom_codes_4xx: Message},
     url_name="request_access",
+    tags=SELECT_OPERATOR_TAGS,
 )
 @authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles(), False)
 @handle_http_errors()

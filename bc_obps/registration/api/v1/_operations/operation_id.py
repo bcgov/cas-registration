@@ -1,4 +1,5 @@
 from uuid import UUID
+from registration.constants import OPERATION_TAGS
 from registration.decorators import authorize
 
 from service.operation_service import OperationService
@@ -25,6 +26,7 @@ from ninja.responses import codes_4xx
     "/operations/{operation_id}",
     response={200: OperationOut, codes_4xx: Message},
     url_name="get_operation",
+    tags=OPERATION_TAGS,
 )
 @authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles())
 @handle_http_errors()
@@ -33,7 +35,10 @@ def get_operation(request, operation_id: UUID):
 
 
 @router.put(
-    "/operations/{operation_id}", response={200: OperationUpdateOut, codes_4xx: Message}, url_name="update_operation"
+    "/operations/{operation_id}",
+    response={200: OperationUpdateOut, codes_4xx: Message},
+    url_name="update_operation",
+    tags=OPERATION_TAGS,
 )
 @authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
 @handle_http_errors()
