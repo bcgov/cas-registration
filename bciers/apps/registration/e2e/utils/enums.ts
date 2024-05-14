@@ -162,7 +162,6 @@ export enum Keycloak {
 
 // 🔗 link src
 export enum LinkSrc {
-  PDF_FILE = "mock_file.pdf",
   TILE_REPORT_PROBLEM = "mailto:GHGRegulator@gov.bc.ca",
 }
 
@@ -246,6 +245,7 @@ export enum UserOperatorUUID {
 export enum TableDataField {
   STATUS = "status",
   BCEID_BUSINESS_NAME = "bceid_business_name",
+  NAME = "name",
 }
 
 export enum OperationTableDataField {

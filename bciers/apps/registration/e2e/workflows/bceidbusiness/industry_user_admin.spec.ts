@@ -27,6 +27,7 @@ import {
   OperationStatus,
   UserOperatorStatus,
   UserRole,
+  E2EValue,
 } from "@/e2e/utils/enums";
 import happoPlaywright from "happo-playwright";
 
@@ -167,6 +168,16 @@ test.describe("Test Workflow industry_user_admin", () => {
     });
 
     await analyzeAccessibility(page);
+
+    // check that the newly created operation is visible
+    await operationsPage.route();
+    await operationsPage.urlIsCorrect();
+    await operationsPage.tableIsVisible();
+    await operationsPage.clickViewDetailsButtonByOperationName(
+      page,
+      E2EValue.INPUT_OPERATION_NAME,
+    );
+    await operationPage.formIsVisible();
   });
 
   test("Operations Tile View Details workflow", async ({ page }) => {
