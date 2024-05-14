@@ -162,7 +162,6 @@ export enum Keycloak {
 
 // 🔗 link src
 export enum LinkSrc {
-  PDF_FILE = "mock_file.pdf",
   TILE_REPORT_PROBLEM = "mailto:GHGRegulator@gov.bc.ca",
 }
 
