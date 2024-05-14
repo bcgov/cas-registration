@@ -49,10 +49,11 @@ const isAuthorizationRequiredPath = (
 };
 
 // Middleware for authorization
-export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
+export const withAuthorizationReporting: MiddlewareFactory = (
+  next: NextMiddleware,
+) => {
   return async (request: NextRequest, _next: NextFetchEvent) => {
     const { pathname } = request.nextUrl;
-    console.log(` reporting ${pathname}`);
     // Check if the path is in the unauthenticated allow list
     if (isUnauthenticatedAllowListedPath(pathname)) {
       return next(request, _next);
@@ -76,6 +77,7 @@ export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
       if (isAuthorizationRequiredPath(pathname, token)) {
         //rewrite the request to reflected the token permissions
         request.nextUrl.pathname = `${token.identity_provider}/${token.app_role}${pathname.replace("reporting/", "")}`;
+
         return NextResponse.rewrite(request.nextUrl);
       }
 
