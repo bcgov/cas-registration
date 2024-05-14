@@ -26,7 +26,8 @@
       "@bciers/middlewares/server": ["libs/shared/middlewares/src/server.ts"],
       "@bciers/styles": ["libs/shared/styles/src/index.ts"],
       "@bciers/styles/*": ["libs/shared/styles/src/lib/*"],
-      "@bciers/testConfig/*": ["libs/shared/testConfig/src/*"]
+      "@bciers/testConfig/*": ["libs/shared/testConfig/src/*"],
+      "@bciers/types": ["libs/shared/types/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

@@ -8,7 +8,7 @@ You should not manually add <head> tags such as <title> and <meta> to root layou
 import "@/app/styles/globals.css";
 import SessionProvider from "@/dashboard/app/components/auth/SessionProvider";
 import { auth } from "@/dashboard/auth";
-import { metadata as regMetadata, viewport as regViewport } from "@/app/layout";
+import { viewport as regViewport } from "@/app/layout";
 import ThemeProvider from "@mui/material/styles/ThemeProvider";
 import { theme } from "@bciers/components";
 import { NextAppDirEmotionCacheProvider } from "@bciers/components";
@@ -20,8 +20,13 @@ import { Footer } from "@bciers/components";
 import { Header } from "@bciers/components";
 import { Bread } from "@bciers/components";
 import { Main } from "@bciers/components/server";
+import { Metadata } from "next";
 
-export const metadata = regMetadata;
+export const metadata: Metadata = {
+  title: "CAS OBPS REPORTING",
+  description:
+    "The OBPS is designed to ensure there is a price incentive for industrial emitters to reduce their greenhouse gas emissions and spur innovation while maintaining competitiveness and protecting against carbon leakage.",
+};
 export const viewport = regViewport;
 
 export default async function RootLayout({

@@ -3,11 +3,14 @@
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Link from "next/link";
+import Image from "next/image";
 import { useSession } from "next-auth/react";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import { styled } from "@mui/material/styles";
 import Profile from "@/dashboard/app/components/auth/Profile";
+
+import Logo from "@bciers/img/src/lib/BCID_CleanBC_rev_tagline_colour.svg";
 
 export default function Header() {
   const { data: session } = useSession();
@@ -60,21 +63,11 @@ export default function Header() {
       >
         <Toolbar>
           <Link href="/" passHref>
-            <Box
-              component="img"
-              sx={{
-                height: {
-                  xs: "36.46px", //mobile & tablet
-                  md: "42.67px", //laptop & desktop
-                },
-                width: {
-                  xs: "170px", //mobile & tablet
-                  md: "200px", //laptop & desktop
-                },
-              }}
+            <Image
+              src={Logo}
               alt="Logo for Province of British Columbia CleanBC"
-              src="/img/BCID_CleanBC_rev_tagline_colour.svg"
-              aria-label="CleanBC Logo"
+              width="200"
+              height="43"
             />
           </Link>
           <Typography
