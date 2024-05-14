@@ -5,11 +5,11 @@
   "links": [
     {
       "title": "Submit Annual Reports",
-      "href": "reporting/dashboard/reporting?tab=1"
+      "href": "reporting/dashboard/report?tab=1"
     },
     {
       "title": "View Past Submissions",
-      "href": "reporting/dashboard/reporting?tab=2"
+      "href": "reporting/dashboard/report?tab=2"
     }
   ]
 }
