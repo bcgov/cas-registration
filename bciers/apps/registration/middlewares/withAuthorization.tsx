@@ -67,7 +67,6 @@ const isAuthorizedIdirUser = (token: {
 export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
   return async (request: NextRequest, _next: NextFetchEvent) => {
     const { pathname } = request.nextUrl;
-    console.log(` registration ${pathname}`);
     // Check if the path is in the unauthenticated allow list
     if (isUnauthenticatedAllowListedPath(pathname)) {
       return next(request, _next);
