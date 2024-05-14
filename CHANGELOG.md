@@ -1,3 +1,20 @@
+## [1.5.2](https://github.com/bcgov/cas-registration/compare/v1.5.1...v1.5.2) (2024-05-14)
+
+### Bug Fixes
+
+- add start target to registration ([a08388c](https://github.com/bcgov/cas-registration/commit/a08388cc905af555f00298ad2013993ddddd5563))
+- eslint errors ([1612cf4](https://github.com/bcgov/cas-registration/commit/1612cf4925f803b69e40e30f6a3d95483387ff01))
+- ignore lint error in rep placeholder page ([b5abda2](https://github.com/bcgov/cas-registration/commit/b5abda2c37de4afff79b87d59b212befb52631e8))
+- inconsistent config between rep and reg ([6ffd125](https://github.com/bcgov/cas-registration/commit/6ffd125eb62ef9a150324eaece5e5ae516ecef8c))
+- linting errors ([378f34a](https://github.com/bcgov/cas-registration/commit/378f34a49f46b45d2592f27a4e9d0448760301c8))
+- remove legacy registration build ([3e9d9ff](https://github.com/bcgov/cas-registration/commit/3e9d9ffc94c072218a4c45507972da3726e7cc29))
+- remove vistigial asdf .tool-versions ([c231e71](https://github.com/bcgov/cas-registration/commit/c231e711a68b8ff5fc41884e2d221d42ab3b8051))
+- remove vistigial pre-Nx package files ([4c3ff4b](https://github.com/bcgov/cas-registration/commit/4c3ff4b358d8e024e55796f28854c327060fd8e7))
+- use --immutable flag in dockerfiles ([90cc2ea](https://github.com/bcgov/cas-registration/commit/90cc2eafa4ac0eda06b1dd328e33b868c316335a))
+- use nx's testing command ([04eb791](https://github.com/bcgov/cas-registration/commit/04eb791698ddb09ec5423bd6802040f5838c7b5b))
+- use pre-monorepo configs (no [@nx](https://github.com/nx) lint-conifg) ([a7fcc8b](https://github.com/bcgov/cas-registration/commit/a7fcc8b1ac2d95320ac9eb4b22b93dfa614f8f01))
+- use proper directory and --immutable flag ([e0ae0d8](https://github.com/bcgov/cas-registration/commit/e0ae0d8b1c55314c25d4926dbed7526170444ce3))
+
 ## [1.5.1](https://github.com/bcgov/cas-registration/compare/v1.5.0...v1.5.1) (2024-05-02)
 
 ### Bug Fixes
