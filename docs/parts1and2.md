@@ -30,7 +30,7 @@ If data is no longer necessary for part 2 but existed in part 1:
 If you need to change something:
 
 - See if it's possible to make the change in a way to make the existing models work for both parts 1 and 2. For example, in part 1 we have `operation_type` as a `CharField`, and in part 2 it will be a foreign key field to an `OperationType` models. We can add the part 1 types (they were selected via dropdown so only a few options) to to the `OperationType` model so that both parts 1 and 2 can use the foreign key table.
-- If it's not possible to use the same models, we'll have to look into model versioning.
+- If it's not possible to use the same models, we'll have to look into field or model versioning. E.g. of field versioning: we have data_field, create data_field_1, and we can remove data_field and rename data_field_1 to data_field once we are done with reg part 2.
 
 ## Run/access Registration Parts 1 & 2 simultaneously in both local and DEV environments
 
