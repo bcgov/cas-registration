@@ -1,5 +1,5 @@
 from registration.models import ReportingActivity
-from registration.schema import (
+from registration.schema.v1 import (
     ReportingActivitySchema,
 )
 from django.core.cache import cache

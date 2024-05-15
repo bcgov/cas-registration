@@ -5,7 +5,7 @@ from registration.enums.enums import AccessRequestStates, AccessRequestTypes
 from registration.utils import update_model_instance
 from service.addresses_service import AddressesService
 from service.data_access_service.user_operator_service import UserOperatorDataAccessService
-from registration.schema.user_operator import UserOperatorOperatorIn, UserOperatorPaginatedOut
+from registration.schema.v1.user_operator import UserOperatorOperatorIn, UserOperatorPaginatedOut
 from service.data_access_service.user_service import UserDataAccessService
 from service.data_access_service.operator_service import OperatorDataAccessService
 from registration.models import Operator, User, UserOperator, BusinessRole

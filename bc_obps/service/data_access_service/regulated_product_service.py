@@ -1,5 +1,5 @@
 from registration.models import RegulatedProduct
-from registration.schema import (
+from registration.schema.v1 import (
     RegulatedProductSchema,
 )
 from django.core.cache import cache
