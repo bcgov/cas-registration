@@ -1,5 +1,6 @@
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import Tiles from "@/app/components/navigation/Tiles";
+import RegistrationV2Dashboard from "@/app/components/dashboard/RegistrationDashboard";
 import { getUserOperator } from "@/app/components/routes/select-operator/Page";
 import { actionHandler } from "@/app/utils/actions";
 import { FrontEndRoles } from "@/app/utils/enums";
@@ -25,6 +26,14 @@ export default async function Page() {
       userOperatorStatus = userOperator.status;
       break;
   }
+
+  const mockTileData = [
+    {
+      tileType: "bceidSelectOperatorTile",
+      links: ["selectOperator"],
+    },
+  ];
+
   return (
     <div>
       {role === FrontEndRoles.CAS_PENDING ? (
@@ -46,11 +55,7 @@ export default async function Page() {
         </>
       ) : (
         // Display role based tiles here
-        <Tiles
-          role={role}
-          operatorStatus={operatorStatus}
-          userOperatorStatus={userOperatorStatus}
-        />
+        <RegistrationV2Dashboard tileData={mockTileData} />
       )}
     </div>
   );

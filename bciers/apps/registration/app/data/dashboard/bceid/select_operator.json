@@ -1,13 +1,11 @@
-[
-  {
-    "title": "Select Operator",
-    "icon": "Inbox",
-    "content": "View or update your operator information",
-    "links": [
-      {
-        "href": "/dashboard/select-operator",
-        "notification": "industryOperator"
-      }
-    ]
-  }
-]
+{
+  "title": "Select Operator",
+  "icon": "Inbox",
+  "content": "View or update your operator information",
+  "links": [
+    {
+      "href": "/dashboard/select-operator",
+      "notification": "industryOperator"
+    }
+  ]
+}
