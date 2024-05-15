@@ -1,12 +1,12 @@
-from typing import List
 from registration.models import BusinessStructure
 from registration.schema.v1 import BusinessStructureOut
 from django.core.cache import cache
+from django.db.models import QuerySet
 
 
 class BusinessStructureDataAccessService:
     @classmethod
-    def get_business_structures(cls) -> List[BusinessStructure]:
+    def get_business_structures(cls) -> QuerySet[BusinessStructure]:
         cached_data = cache.get("business_structures")
         if cached_data:
             return cached_data

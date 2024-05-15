@@ -1,4 +1,4 @@
-from typing import List
+from django.db.models import QuerySet
 from registration.models import Operator, UserOperator
 from uuid import UUID
 
@@ -27,7 +27,7 @@ class OperatorDataAccessService:
     def get_operators_by_cra_number(cra_business_number: int) -> Operator:
         return Operator.objects.exclude(status=Operator.Statuses.DECLINED).get(cra_business_number=cra_business_number)
 
-    def get_operators_by_legal_name(legal_name: str) -> List[Operator]:
+    def get_operators_by_legal_name(legal_name: str) -> QuerySet[Operator]:
         return (
             Operator.objects.exclude(status=Operator.Statuses.DECLINED)
             .filter(legal_name__icontains=legal_name)

@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Union
 from registration.schema.v1.operator import OperatorForOperationOut
 from registration.utils import file_to_data_url, data_url_to_file
 from ninja import Field, FilterSchema, ModelSchema, Schema
@@ -160,7 +160,7 @@ class OperationFilterSchema(FilterSchema):
     name: Optional[str] = None
     operator: Optional[str] = None
     status: Optional[str] = None
-    page: Optional[int] = 1
+    page: Union[int, float, str] = 1
     sort_field: Optional[str] = "created_at"
     sort_order: Optional[str] = "desc"
     status: Optional[str] = None

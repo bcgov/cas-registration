@@ -1,3 +1,4 @@
+from django.http import HttpRequest
 from registration.api.utils.current_user_utils import get_current_user_guid
 from registration.constants import SELECT_OPERATOR_TAGS
 from service.application_access_service import ApplicationAccessService
@@ -23,6 +24,6 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 )
 @authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles(), False)
 @handle_http_errors()
-def request_admin_access(request, payload: SelectOperatorIn):
+def request_admin_access(request: HttpRequest, payload: SelectOperatorIn):
     user_guid = get_current_user_guid(request)
     return 201, ApplicationAccessService.request_admin_access(payload.operator_id, user_guid)

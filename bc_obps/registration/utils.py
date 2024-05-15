@@ -1,4 +1,4 @@
-from typing import List, Type, Union, Iterable, Dict, Any, Optional
+from typing import List, Type, Union, Iterable, Dict, Optional
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError, models
 from registration.constants import UNAUTHORIZED_MESSAGE, DEFAULT_API_NAMESPACE
@@ -16,12 +16,13 @@ from registration.models import (
 from django.urls import reverse_lazy
 from datetime import datetime
 from zoneinfo import ZoneInfo
+from ninja.types import DictStrAny
 
 
 def update_model_instance(
     instance: Type[models.Model],
     fields_to_update: Union[Iterable[str], Dict[str, str]],
-    data_dict: Dict[str, Any],
+    data_dict: DictStrAny,
 ) -> Type[models.Model]:
     """
     Update the provided data model instance with values from data_dict based on the field mappings.

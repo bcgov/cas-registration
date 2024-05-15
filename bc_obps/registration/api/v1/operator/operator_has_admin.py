@@ -1,4 +1,5 @@
 from uuid import UUID
+from django.http import HttpRequest
 from registration.constants import OPERATOR_TAGS
 from service.data_access_service.user_operator_service import UserOperatorDataAccessService
 from registration.decorators import authorize, handle_http_errors
@@ -19,5 +20,5 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 )
 @authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles(), False)
 @handle_http_errors()
-def get_user_operator_admin_exists(request, operator_id: UUID):
+def get_user_operator_admin_exists(request: HttpRequest, operator_id: UUID):
     return 200, UserOperatorDataAccessService.get_admin_users(operator_id, UserOperator.Statuses.APPROVED).exists()

@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from registration.enums.enums import AccessRequestStates, AccessRequestTypes
 from service.email.email_service import EmailService
 from registration.enums.enums import BoroIdApplicationStates
@@ -30,9 +30,9 @@ def send_boro_id_application_email(
     application_state: BoroIdApplicationStates,
     operator_legal_name: str,
     operation_name: str,
-    opted_in: bool,
-    operation_creator: User,
-    point_of_contact: Contact,
+    opted_in: Optional[bool],
+    operation_creator: Optional[User],
+    point_of_contact: Optional[Contact],
 ) -> None:
     """
     Sends an email to the operation creator and point of contact regarding the BORO ID application based on the application state.

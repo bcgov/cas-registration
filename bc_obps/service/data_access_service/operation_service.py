@@ -1,18 +1,20 @@
+from typing import Iterable, Union
+from uuid import UUID
 from registration.schema.v1.operation import OperationListOut
 from service.user_operator_service import UserOperatorService
-from registration.models import Operation
-from registration.schema.v1 import (
-    OperationOut,
-)
+from registration.models import Operation, RegulatedProduct, User
+from registration.schema.v1 import OperationOut
+from django.db.models import QuerySet
+from ninja.types import DictStrAny
 
 
 class OperationDataAccessService:
     @classmethod
-    def get_by_id(cls, operation_id):
+    def get_by_id(cls, operation_id: UUID) -> Operation:
         return Operation.objects.select_related('operator', 'bc_obps_regulated_operation').get(id=operation_id)
 
     @classmethod
-    def get_by_id_for_operation_out_schema(cls, operation_id):
+    def get_by_id_for_operation_out_schema(cls, operation_id: UUID) -> Operation:
         return (
             Operation.objects.only(
                 *OperationOut.Config.model_fields,
@@ -41,7 +43,7 @@ class OperationDataAccessService:
         )
 
     @classmethod
-    def get_by_id_for_update(cls, operation_id):
+    def get_by_id_for_update(cls, operation_id: UUID) -> Operation:
         return (
             Operation.objects.only('operator__id', 'point_of_contact__id')
             .select_related('operator', 'point_of_contact')
@@ -50,7 +52,12 @@ class OperationDataAccessService:
         )
 
     @classmethod
-    def create_operation(cls, user_guid, operation_data, regulated_products):
+    def create_operation(
+        cls,
+        user_guid: UUID,
+        operation_data: DictStrAny,
+        regulated_products: Union[QuerySet[RegulatedProduct], Iterable[RegulatedProduct]],
+    ) -> Operation:
 
         operation = Operation.objects.create(
             **operation_data,
@@ -60,7 +67,7 @@ class OperationDataAccessService:
         return operation
 
     @classmethod
-    def get_all_operations_for_user(cls, user):
+    def get_all_operations_for_user(cls, user: User) -> QuerySet[Operation]:
         if user.is_irc_user():
             # IRC users can see all operations except ones with status of "Not Started" or "Draft"
             return (
