@@ -2,6 +2,7 @@ import { userEvent } from "@testing-library/user-event";
 import { render, screen } from "@testing-library/react";
 import { RJSFSchema } from "@rjsf/utils";
 import FormBase from "@/app/components/form/FormBase";
+import { checkNoValidationErrorIsTriggered } from "@/tests/helpers/form";
 // import { checkTextWidgetValidationStyles } from "@/tests/helpers/form";
 
 const url = "https://example.com";
@@ -75,10 +76,31 @@ describe("RJSF URLWidget", () => {
     const input = screen.getByLabelText(urlLabelRequired);
     await userEvent.type(input, url);
 
-    const submitButton = screen.getByRole("button", { name: "Submit" });
+    await checkNoValidationErrorIsTriggered();
+    expect(screen.queryByText(urlErrorMessage)).toBeNull();
+  });
 
-    await userEvent.click(submitButton);
-
+  it("should allow clearing the field", async () => {
+    render(
+      <FormBase
+        schema={{
+          type: "object",
+          properties: {
+            urlTestField: {
+              type: "string",
+              format: "uri",
+              title: urlFieldLabel,
+            },
+          },
+        }}
+        uiSchema={urlFieldUiSchema}
+        formData={{ urlTestField: url }}
+      />,
+    );
+    const input = screen.getByLabelText(urlFieldLabel);
+    expect(input).toHaveValue(url);
+    userEvent.clear(input);
+    await checkNoValidationErrorIsTriggered();
     expect(screen.queryByText(urlErrorMessage)).toBeNull();
   });
 

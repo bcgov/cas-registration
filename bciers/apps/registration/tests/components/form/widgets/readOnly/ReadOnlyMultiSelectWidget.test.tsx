@@ -6,7 +6,7 @@ import {
 } from "@/tests/components/form/widgets/MultiSelectWidget.test";
 
 describe("RJSF ReadOnlyMultiSelectWidget", () => {
-  it("should render a multi select field", async () => {
+  it("should render a multi select field when formData is provided", async () => {
     const { container } = render(
       <FormBase
         disabled

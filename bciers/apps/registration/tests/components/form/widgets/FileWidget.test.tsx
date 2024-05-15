@@ -4,11 +4,14 @@ import { RJSFSchema } from "@rjsf/utils";
 import FormBase from "@/app/components/form/FormBase";
 import { actionHandler, useSession } from "@/tests/setup/mocks";
 import { Session } from "@/tests/setup/types";
+import { checkNoValidationErrorIsTriggered } from "@/tests/helpers/form";
 
 const fileFieldLabel = "FileWidget test field";
 const fileLabelRequired = `${fileFieldLabel}*`;
-export const dummyDataUri =
-  "data:application/pdf;name=dummy.pdf;base64,ZHVtbXk=";
+export const testDataUri =
+  "data:application/pdf;name=testpdf.pdf;base64,ZHVtbXk=";
+export const testDataUri2 =
+  "data:application/pdf;name=testpdf2.pdf;base64,ZHVtbXk=";
 const mockFile = new File(["test"], "test.pdf", { type: "application/pdf" });
 const mockFile2 = new File(["test2"], "test2.pdf", { type: "application/pdf" });
 const mockFileUnaccepted = new File(["test"], "test.txt", {
@@ -60,6 +63,7 @@ describe("RJSF FileWidget", () => {
       screen.getByRole("button", { name: "Upload attachment" }),
     ).toBeVisible();
     expect(screen.getByText("No attachment was uploaded")).toBeVisible();
+    expect(screen.queryByRole("input")).not.toBeInTheDocument();
   });
 
   it("should render the file value when formData is provided", async () => {
@@ -67,13 +71,13 @@ describe("RJSF FileWidget", () => {
       <FormBase
         schema={fileFieldSchema}
         formData={{
-          fileTestField: dummyDataUri,
+          fileTestField: testDataUri,
         }}
         uiSchema={fileFieldUiSchema}
       />,
     );
 
-    expect(screen.getByText("dummy.pdf")).toBeVisible();
+    expect(screen.getByText("testpdf.pdf")).toBeVisible();
   });
 
   it("should allow uploading a file", async () => {
@@ -82,9 +86,10 @@ describe("RJSF FileWidget", () => {
     const input = screen.getByLabelText(fileLabelRequired);
     await userEvent.upload(input, mockFile);
 
-    actionHandler.mockResolvedValueOnce({});
-
     expect(screen.getByText("test.pdf")).toBeVisible();
+    expect(
+      screen.queryByText("No attachment was uploaded"),
+    ).not.toBeInTheDocument();
   });
 
   it("should not allow uploading a file with an unaccepted file type", async () => {
@@ -94,13 +99,6 @@ describe("RJSF FileWidget", () => {
     await userEvent.upload(input, mockFileUnaccepted);
 
     expect(screen.getByText("No attachment was uploaded")).toBeVisible();
-
-    // add accepted file type
-    await userEvent.upload(input, mockFile);
-    expect(screen.getByText("test.pdf")).toBeVisible();
-    expect(
-      screen.queryByText("No attachment was uploaded"),
-    ).not.toBeInTheDocument();
   });
 
   it("should change the upload button text when a file is uploaded", async () => {
@@ -108,8 +106,6 @@ describe("RJSF FileWidget", () => {
 
     const input = screen.getByLabelText(fileLabelRequired);
     await userEvent.upload(input, mockFile);
-
-    actionHandler.mockResolvedValueOnce({});
 
     expect(
       screen.getByRole("button", { name: "Reupload attachment" }),
@@ -137,13 +133,9 @@ describe("RJSF FileWidget", () => {
 
     await userEvent.upload(input, mockKmlFile);
 
-    actionHandler.mockResolvedValueOnce({});
-
     expect(screen.getByText("test.kml")).toBeVisible();
 
     await userEvent.upload(input, mockKmzFile);
-
-    actionHandler.mockResolvedValueOnce({});
 
     expect(screen.getByText("test.kmz")).toBeVisible();
   });
@@ -166,19 +158,35 @@ describe("RJSF FileWidget", () => {
     expect(alertMock).toHaveBeenCalledWith("File size must be less than 20MB");
   });
 
-  it("should allow replacing an uploaded file", async () => {
+  it("should allow replacing an uploaded file before submission", async () => {
     render(<FormBase schema={fileFieldSchema} uiSchema={fileFieldUiSchema} />);
 
     const input = screen.getByLabelText(fileLabelRequired);
     await userEvent.upload(input, mockFile);
 
-    actionHandler.mockResolvedValueOnce({});
-
     expect(screen.getByText("test.pdf")).toBeVisible();
 
     await userEvent.upload(input, mockFile2);
 
-    actionHandler.mockResolvedValueOnce({});
+    expect(screen.getByText("test2.pdf")).toBeVisible();
+  });
+
+  it("should allow replacing an uploaded file after submission", async () => {
+    render(
+      <FormBase
+        schema={fileFieldSchema}
+        formData={{
+          fileTestField: testDataUri,
+        }}
+        uiSchema={fileFieldUiSchema}
+      />,
+    );
+
+    const input = screen.getByLabelText(fileLabelRequired);
+
+    expect(screen.getByText("testpdf.pdf")).toBeVisible();
+
+    await userEvent.upload(input, mockFile2);
 
     expect(screen.getByText("test2.pdf")).toBeVisible();
   });
@@ -192,8 +200,6 @@ describe("RJSF FileWidget", () => {
 
     await userEvent.upload(input, mockFile);
 
-    actionHandler.mockResolvedValueOnce({});
-
     waitFor(() => {
       expect(previewLink).toBeVisible();
     });
@@ -204,7 +210,7 @@ describe("RJSF FileWidget", () => {
 
     waitFor(() => {
       const previewLink = screen.getByRole("link", { name: "Preview" });
-      expect(previewLink).toHaveAttribute("href", dummyDataUri);
+      expect(previewLink).toHaveAttribute("href", testDataUri);
     });
   });
 
@@ -222,5 +228,57 @@ describe("RJSF FileWidget", () => {
     expect(
       screen.queryByRole("button", { name: "Upload attachment" }),
     ).not.toBeInTheDocument();
+  });
+
+  it("should show the validation error message if file is not uploaded", async () => {
+    render(<FormBase schema={fileFieldSchema} uiSchema={fileFieldUiSchema} />);
+
+    const submitButton = screen.getByRole("button", { name: "Submit" });
+
+    await userEvent.click(submitButton);
+
+    expect(screen.getByText("Required field")).toBeVisible();
+  });
+
+  it("should not trigger an error if the data is valid", async () => {
+    render(
+      <FormBase
+        schema={fileFieldSchema}
+        formData={{
+          fileTestField: testDataUri,
+        }}
+        uiSchema={fileFieldUiSchema}
+      />,
+    );
+
+    await checkNoValidationErrorIsTriggered();
+  });
+
+  // Note: our db is not set up to accept multiple files
+  it("allows uploading multiple files if the schema allows multiple files", async () => {
+    render(
+      <FormBase
+        schema={{
+          type: "object",
+          required: ["fileTestField"],
+          properties: {
+            fileTestField: {
+              type: "array",
+              title: "Multiple files",
+              items: {
+                type: "string",
+                format: "data-url",
+              },
+            },
+          },
+        }}
+        formData={{
+          fileTestField: [testDataUri, testDataUri2],
+        }}
+        uiSchema={fileFieldUiSchema}
+      />,
+    );
+
+    await checkNoValidationErrorIsTriggered();
   });
 });

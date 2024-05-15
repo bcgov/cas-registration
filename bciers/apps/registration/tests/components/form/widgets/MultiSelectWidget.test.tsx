@@ -1,7 +1,8 @@
 import { userEvent } from "@testing-library/user-event";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import { RJSFSchema } from "@rjsf/utils";
 import FormBase from "@/app/components/form/FormBase";
+import { checkNoValidationErrorIsTriggered } from "@/tests/helpers/form";
 
 const multiSelectFieldLabel = "MultiSelectWidget test field";
 const multiSelectLabelRequired = `${multiSelectFieldLabel}*`;
@@ -131,14 +132,75 @@ describe("RJSF MultiSelectWidget", () => {
       />,
     );
 
-    const selectedOption1 = screen.getByRole("button", { name: "Option 2" });
-    const selectedOption2 = screen.getByRole("button", { name: "Option 3" });
-    const optionCancelIcon = screen.getByTestId("CloseIcon");
+    const selectedOption2 = screen.getByRole("button", { name: "Option 2" });
+    const selectedOption3 = screen.getByRole("button", { name: "Option 3" });
+    const optionCancelIcon = screen.getAllByTestId("CancelIcon");
 
-    await userEvent.click(optionCancelIcon);
+    await userEvent.click(optionCancelIcon[0]);
+    await userEvent.click(optionCancelIcon[1]);
 
-    expect(selectedOption1).not.toBeInTheDocument();
-    expect(selectedOption2).not.toBeInTheDocument();
+    waitFor(() => {
+      expect(selectedOption2).not.toBeInTheDocument();
+      expect(selectedOption3).not.toBeInTheDocument();
+    });
+  });
+  it("should render the  placeholder text", async () => {
+    render(
+      <FormBase
+        schema={multiSelectFieldSchema}
+        uiSchema={{
+          multiSelectTestField: {
+            "ui:widget": "MultiSelectWidget",
+            "ui:placeholder": "Select regulated products",
+          },
+        }}
+      />,
+    );
+    expect(
+      screen.getByPlaceholderText("Select regulated products..."),
+    ).toBeVisible();
+  });
+  it("should use the enum values as the names if no enumNames are provided, use the enum values as the names", async () => {
+    render(
+      <FormBase
+        schema={{
+          type: "object",
+          required: ["multiSelectTestField"],
+          properties: {
+            multiSelectTestField: {
+              type: "array",
+              title: multiSelectFieldLabel,
+              items: {
+                type: "string",
+                enum: ["option_1", "option_2", "option_3"],
+              },
+            },
+          },
+        }}
+        uiSchema={multiSelectFieldUiSchema}
+      />,
+    );
+    const openMultiSelectButton = screen.getByRole("button", { name: "Open" });
+    await userEvent.click(openMultiSelectButton);
+
+    const option1 = screen.getByText("option_1");
+    const option2 = screen.getByText("option_2");
+    const option3 = screen.getByText("option_3");
+
+    expect(option1).toBeVisible();
+    expect(option2).toBeVisible();
+    expect(option3).toBeVisible();
+  });
+
+  it("should not trigger an error message when the value is valid", async () => {
+    render(
+      <FormBase
+        schema={multiSelectFieldSchema}
+        uiSchema={multiSelectFieldUiSchema}
+        formData={{ multiSelectTestField: ["option_2"] }}
+      />,
+    );
+    await checkNoValidationErrorIsTriggered();
   });
 
   // TODO: This is currently broken in MultiSelectWidget

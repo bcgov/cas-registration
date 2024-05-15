@@ -8,7 +8,7 @@ const errorStyle = "border-color: #d8292f";
 export const checkTextWidgetValidationStyles = async (
   component: ReactNode,
   labelText: string,
-  validationValue?: string,
+  invalidValue?: string,
 ) => {
   render(component);
 
@@ -28,8 +28,8 @@ export const checkTextWidgetValidationStyles = async (
   // The input should have the error border color
   expect(inputBorderElement).toHaveStyle(errorStyle);
 
-  if (validationValue) {
-    await userEvent.type(input, validationValue);
+  if (invalidValue) {
+    await userEvent.type(input, invalidValue);
 
     // The input should have the default border color since required field is not empty anymore
     expect(inputBorderElement).toHaveStyle(defaultStyle);
@@ -60,4 +60,13 @@ export const checkComboBoxWidgetValidationStyles = async (
 
   // The input should have the error border color
   expect(inputBorderElement).toHaveStyle(errorStyle);
+};
+
+export const checkNoValidationErrorIsTriggered = async (
+  component?: ReactNode,
+) => {
+  if (component) render(component);
+  const submitButton = screen.getByRole("button", { name: "Submit" });
+  await userEvent.click(submitButton);
+  expect(screen.queryByRole("alert")).toBeNull();
 };

@@ -2,7 +2,10 @@ import { userEvent } from "@testing-library/user-event";
 import { render, screen } from "@testing-library/react";
 import { RJSFSchema } from "@rjsf/utils";
 import FormBase from "@/app/components/form/FormBase";
-import { checkTextWidgetValidationStyles } from "@/tests/helpers/form";
+import {
+  checkNoValidationErrorIsTriggered,
+  checkTextWidgetValidationStyles,
+} from "@/tests/helpers/form";
 
 const postalCodeFieldLabel = "Postal code test field";
 const postalCodeLabelRequired = `${postalCodeFieldLabel}*`;
@@ -140,11 +143,7 @@ describe("RJSF PostalCodeWidget", () => {
     const input = screen.getByLabelText(postalCodeLabelRequired);
     await userEvent.type(input, postalCode);
 
-    const submitButton = screen.getByRole("button", { name: "Submit" });
-
-    await userEvent.click(submitButton);
-
-    expect(screen.queryByText("Format should be A1A 1A1")).toBeNull();
+    await checkNoValidationErrorIsTriggered();
   });
 
   it("should have the correct styling when validation is triggered", async () => {

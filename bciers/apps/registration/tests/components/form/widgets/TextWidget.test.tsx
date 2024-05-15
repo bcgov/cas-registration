@@ -2,7 +2,10 @@ import { userEvent } from "@testing-library/user-event";
 import { render, screen } from "@testing-library/react";
 import { RJSFSchema } from "@rjsf/utils";
 import FormBase from "@/app/components/form/FormBase";
-import { checkTextWidgetValidationStyles } from "@/tests/helpers/form";
+import {
+  checkNoValidationErrorIsTriggered,
+  checkTextWidgetValidationStyles,
+} from "@/tests/helpers/form";
 
 const stringFieldLabel = "String test field";
 const numberFieldLabel = "Number test field";
@@ -34,6 +37,9 @@ const numberFieldUiSchemaWithMax = {
 };
 
 describe("RJSF TextWidget", () => {
+  beforeEach(() => {
+    vi.resetAllMocks();
+  });
   it("should render a text field", () => {
     render(<FormBase schema={stringFieldSchema} />);
     expect(screen.getByLabelText(stringLabelRequired)).toBeVisible();
@@ -54,12 +60,12 @@ describe("RJSF TextWidget", () => {
     render(
       <FormBase
         schema={stringFieldSchema}
-        formData={{ stringTestField: "test" }}
+        formData={{ stringTestField: "test!123" }}
       />,
     );
 
     const input = screen.getByLabelText(stringLabelRequired);
-    expect(input).toHaveValue("test");
+    expect(input).toHaveValue("test!123");
   });
 
   it("should render the number value when formData is provided", () => {
@@ -147,6 +153,27 @@ describe("RJSF TextWidget", () => {
     await userEvent.type(input, "10");
 
     expect(input).toHaveValue(10);
+  });
+
+  it("should not trigger validation for a string value when the value is valid", async () => {
+    render(
+      <FormBase
+        schema={stringFieldSchema}
+        formData={{ stringTestField: "test!123" }}
+      />,
+    );
+    await checkNoValidationErrorIsTriggered();
+  });
+
+  it("should not trigger validation for a number value when the value is valid", async () => {
+    render(
+      <FormBase
+        schema={numberFieldSchema}
+        formData={{ numberTestField: 123 }}
+      />,
+    );
+
+    await checkNoValidationErrorIsTriggered();
   });
 
   it("should display the error message when a field is required and empty", async () => {

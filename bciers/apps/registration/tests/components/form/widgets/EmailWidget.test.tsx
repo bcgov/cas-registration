@@ -2,7 +2,10 @@ import { userEvent } from "@testing-library/user-event";
 import { render, screen } from "@testing-library/react";
 import { RJSFSchema } from "@rjsf/utils";
 import FormBase from "@/app/components/form/FormBase";
-import { checkTextWidgetValidationStyles } from "@/tests/helpers/form";
+import {
+  checkNoValidationErrorIsTriggered,
+  checkTextWidgetValidationStyles,
+} from "@/tests/helpers/form";
 
 const emailFieldLabel = "Email test field";
 const emailLabelRequired = `${emailFieldLabel}*`;
@@ -101,11 +104,7 @@ describe("RJSF EmailWidget", () => {
     const input = screen.getByLabelText(emailLabelRequired);
     await userEvent.type(input, testEmail);
 
-    const submitButton = screen.getByRole("button", { name: "Submit" });
-
-    await userEvent.click(submitButton);
-
-    expect(screen.queryByText(emailValidationMessage)).toBeNull();
+    await checkNoValidationErrorIsTriggered();
   });
 
   it("should not trigger validation error for valid email with a subdomain", async () => {
@@ -115,10 +114,7 @@ describe("RJSF EmailWidget", () => {
     const input = screen.getByLabelText(emailLabelRequired);
     await userEvent.type(input, "test.email@test.com");
 
-    const submitButton = screen.getByRole("button", { name: "Submit" });
-
-    await userEvent.click(submitButton);
-
+    await checkNoValidationErrorIsTriggered();
     expect(screen.queryByText(emailValidationMessage)).toBeNull();
   });
 

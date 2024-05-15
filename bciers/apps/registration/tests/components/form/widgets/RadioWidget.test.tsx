@@ -2,11 +2,14 @@ import { userEvent } from "@testing-library/user-event";
 import { render, screen } from "@testing-library/react";
 import { RJSFSchema } from "@rjsf/utils";
 import FormBase from "@/app/components/form/FormBase";
+import { checkNoValidationErrorIsTriggered } from "@/tests/helpers/form";
 
 const radioFieldLabel = "RadioWidget test field";
+const radioRequiredLabel = `${radioFieldLabel}*`;
 
 const radioFieldSchema = {
   type: "object",
+  required: ["radioTestField"],
   properties: {
     radioTestField: {
       type: "boolean",
@@ -27,7 +30,7 @@ describe("RJSF RadioWidget", () => {
     render(
       <FormBase schema={radioFieldSchema} uiSchema={radioFieldUiSchema} />,
     );
-    expect(screen.getByText(radioFieldLabel)).toBeVisible();
+    expect(screen.getByText(radioRequiredLabel)).toBeVisible();
   });
 
   it("should have a default checked value", async () => {
@@ -101,5 +104,36 @@ describe("RJSF RadioWidget", () => {
     expect(optionYes).not.toBeChecked();
     expect(optionNo).toBeChecked();
     expect(optionMaybe).not.toBeChecked();
+  });
+
+  it("should not trigger validation error when value is valid", async () => {
+    render(
+      <FormBase schema={radioFieldSchema} uiSchema={radioFieldUiSchema} />,
+    );
+
+    await checkNoValidationErrorIsTriggered();
+  });
+
+  it("should display the error message when the radio field is required but empty", async () => {
+    render(
+      <FormBase
+        schema={{
+          type: "object",
+          required: ["radioTestField"],
+          properties: {
+            radioTestField: {
+              type: "boolean",
+              title: radioFieldLabel,
+            },
+          },
+        }}
+        uiSchema={radioFieldUiSchema}
+      />,
+    );
+
+    const submitButton = screen.getByRole("button", { name: "Submit" });
+    await userEvent.click(submitButton);
+
+    expect(screen.getByText("Required field")).toBeVisible();
   });
 });
