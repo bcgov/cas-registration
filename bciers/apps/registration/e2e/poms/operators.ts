@@ -116,16 +116,7 @@ export class OperatorsPOM {
   // ###  Assertions ###
 
   async formHasExpectedUX(status: string, tableRowText?: string) {
-    let row: Locator;
-
-    if (tableRowText) {
-      row = await getTableRowByText(this.table, tableRowText);
-    } else {
-      row = await getTableRowByCellSelector(
-        this.table,
-        `[data-field="${TableDataField.STATUS}"]:has-text("${status}")`,
-      );
-    }
+    const row = await getTableRowByText(this.table, tableRowText ?? status);
 
     // Click the `View Detail` for this status row
     await row.getByRole("link", { name: ButtonText.VIEW_DETAILS }).click();

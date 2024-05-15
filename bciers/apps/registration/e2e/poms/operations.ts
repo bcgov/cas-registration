@@ -203,19 +203,8 @@ export class OperationsPOM {
   }
 
   // ### Assertions ###
-
   async formHasExpectedUX(status: string, tableRowText?: string) {
-    let row: Locator;
-
-    if (tableRowText) {
-      row = await getTableRowByText(this.table, tableRowText);
-    } else {
-      // Locate row containing the status
-      row = await getTableRowByCellSelector(
-        this.table,
-        `[data-field="${TableDataField.STATUS}"]:has-text("${status}")`,
-      );
-    }
+    const row = await getTableRowByText(this.table, tableRowText ?? status);
 
     // Click the `View Detail` for this row
     await row.getByRole("link", { name: ButtonText.VIEW_DETAILS }).click();
