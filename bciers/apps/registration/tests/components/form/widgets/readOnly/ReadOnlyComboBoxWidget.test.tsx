@@ -6,7 +6,7 @@ import {
 } from "@/tests/components/form/widgets/ComboBox.test";
 
 describe("RJSF ReadOnlyComboBoxWidget", () => {
-  it("should render a combo box field", async () => {
+  it("should render a combo box field when formData is provided", async () => {
     const { container } = render(
       <FormBase
         disabled

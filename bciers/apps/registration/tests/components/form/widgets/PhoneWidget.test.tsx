@@ -2,7 +2,10 @@ import { userEvent } from "@testing-library/user-event";
 import { render, screen } from "@testing-library/react";
 import { RJSFSchema } from "@rjsf/utils";
 import FormBase from "@/app/components/form/FormBase";
-import { checkTextWidgetValidationStyles } from "@/tests/helpers/form";
+import {
+  checkNoValidationErrorIsTriggered,
+  checkTextWidgetValidationStyles,
+} from "@/tests/helpers/form";
 
 const phoneWidgetLabel = "PhoneWidget test field";
 const phoneRequiredLabel = `${phoneWidgetLabel}*`;
@@ -50,12 +53,12 @@ describe("RJSF PhoneWidget", () => {
       <FormBase
         schema={phoneWidgetSchema}
         uiSchema={phoneWidgetUiSchema}
-        formData={{ phoneTestField: "+12345678901" }}
+        formData={{ phoneTestField: databaseTelephone }}
       />,
     );
 
     const phoneField = screen.getByLabelText(phoneRequiredLabel);
-    expect(phoneField).toHaveValue("234 567 8901");
+    expect(phoneField).toHaveValue("778 567 8901");
   });
 
   it("should allow only numbers in the phone field", async () => {
@@ -63,26 +66,8 @@ describe("RJSF PhoneWidget", () => {
       <FormBase schema={phoneWidgetSchema} uiSchema={phoneWidgetUiSchema} />,
     );
     const phoneField = screen.getByLabelText(phoneRequiredLabel);
-    await userEvent.type(phoneField, databaseTelephone);
-    expect(phoneField).toHaveValue(inputTelephone);
-  });
-
-  it("should not allow special characters in the phone field", async () => {
-    render(
-      <FormBase schema={phoneWidgetSchema} uiSchema={phoneWidgetUiSchema} />,
-    );
-    const phoneField = screen.getByLabelText(phoneRequiredLabel);
-    await userEvent.type(phoneField, "177-856-78901");
-    expect(phoneField).toHaveValue(inputTelephone);
-  });
-
-  it("should not allow letters in the phone field", async () => {
-    render(
-      <FormBase schema={phoneWidgetSchema} uiSchema={phoneWidgetUiSchema} />,
-    );
-    const phoneField = screen.getByLabelText(phoneRequiredLabel);
-    await userEvent.type(phoneField, "123-4abc");
-    expect(phoneField).toHaveValue("1 234");
+    await userEvent.type(phoneField, "+1-250-555-BUGS");
+    expect(phoneField).toHaveValue("1 250 555");
   });
 
   it("should display the Canadian flag by default", async () => {
@@ -115,6 +100,32 @@ describe("RJSF PhoneWidget", () => {
     );
 
     expect(screen.getByTestId("US")).toBeVisible();
+  });
+
+  it("should allow submission of a valid value", async () => {
+    render(
+      <FormBase
+        schema={phoneWidgetSchema}
+        uiSchema={phoneWidgetUiSchema}
+        formData={{ phoneTestField: databaseTelephone }} // Mexico number
+      />,
+    );
+
+    await checkNoValidationErrorIsTriggered();
+  });
+  it("should not allow submission of phone numbers from countries other than CA or US", async () => {
+    render(
+      <FormBase
+        schema={phoneWidgetSchema}
+        uiSchema={phoneWidgetUiSchema}
+        formData={{ phoneTestField: "55-5724-7900" }} // Mexico number
+      />,
+    );
+
+    const submitButton = screen.getByRole("button", { name: "Submit" });
+    await userEvent.click(submitButton);
+
+    expect(screen.getByText("Format should be ### ### ####")).toBeVisible(); //TODO: if we add a more accurate error for this case, update test
   });
 
   it("should display the error message when the phone field is required but empty", async () => {

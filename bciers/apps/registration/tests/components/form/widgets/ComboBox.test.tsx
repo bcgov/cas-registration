@@ -2,7 +2,10 @@ import { userEvent } from "@testing-library/user-event";
 import { render, screen } from "@testing-library/react";
 import { RJSFSchema } from "@rjsf/utils";
 import FormBase from "@/app/components/form/FormBase";
-import { checkComboBoxWidgetValidationStyles } from "@/tests/helpers/form";
+import {
+  checkComboBoxWidgetValidationStyles,
+  checkNoValidationErrorIsTriggered,
+} from "@/tests/helpers/form";
 
 const comboBoxFieldLabel = "ComboBox test field";
 const comboBoxLabelRequired = `${comboBoxFieldLabel}*`;
@@ -135,7 +138,7 @@ describe("RJSF ComboBoxWidget", () => {
     expect(screen.getByText("Required field")).toBeVisible();
   });
 
-  it("should not show an error message when the combo box is required and a value is selected", async () => {
+  it("should not show an error message when data is valid", async () => {
     render(
       <FormBase
         schema={comboBoxFieldSchema}
@@ -144,11 +147,7 @@ describe("RJSF ComboBoxWidget", () => {
       />,
     );
 
-    const submitButton = screen.getByRole("button", { name: "Submit" });
-
-    await userEvent.click(submitButton);
-
-    expect(screen.queryByText("Required field")).toBeNull();
+    await checkNoValidationErrorIsTriggered();
   });
 
   it("should show an error message when the combo box is required and an invalid value is typed", async () => {

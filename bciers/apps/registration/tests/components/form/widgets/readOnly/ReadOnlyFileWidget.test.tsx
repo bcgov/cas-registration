@@ -1,7 +1,7 @@
 import { render } from "@testing-library/react";
 import FormBase from "@/app/components/form/FormBase";
 import {
-  dummyDataUri,
+  testDataUri,
   fileFieldSchema,
   fileFieldUiSchema,
 } from "@/tests/components/form/widgets/FileWidget.test";
@@ -13,14 +13,14 @@ describe("RJSF ReadOnlyFileWidget", () => {
         disabled
         schema={fileFieldSchema}
         uiSchema={fileFieldUiSchema}
-        formData={{ fileTestField: dummyDataUri }}
+        formData={{ fileTestField: testDataUri }}
       />,
     );
 
     const readOnlyFileWidget = container.querySelector("#root_fileTestField");
 
     expect(readOnlyFileWidget).toBeVisible();
-    expect(readOnlyFileWidget).toHaveTextContent("dummy.pdf");
+    expect(readOnlyFileWidget).toHaveTextContent("testpdf.pdf");
   });
 
   it("should be have the correct message when no value is provided", async () => {

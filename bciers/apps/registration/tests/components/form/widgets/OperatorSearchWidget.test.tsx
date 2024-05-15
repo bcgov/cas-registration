@@ -1,9 +1,18 @@
 import { userEvent } from "@testing-library/user-event";
-import { act, render, screen, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { RJSFSchema } from "@rjsf/utils";
 import FormBase from "@/app/components/form/FormBase";
 import { actionHandler } from "@/tests/setup/mocks";
-import { checkComboBoxWidgetValidationStyles } from "@/tests/helpers/form";
+import {
+  checkComboBoxWidgetValidationStyles,
+  checkNoValidationErrorIsTriggered,
+} from "@/tests/helpers/form";
 
 const operatorSearchFieldLabel = "OperatorSearchWidget test field";
 const operatorSearchRequiredLabel = `${operatorSearchFieldLabel}*`;
@@ -67,7 +76,7 @@ describe("RJSF OperatorSearchWidget", () => {
     ).toBeVisible();
   });
 
-  it("should render the values when the search field returns results", async () => {
+  it("should render the correct values when the search field returns results", async () => {
     render(
       <FormBase
         schema={operatorSearchFieldSchema}
@@ -94,6 +103,10 @@ describe("RJSF OperatorSearchWidget", () => {
         id: "3",
         legal_name: "Operator 3",
       },
+      {
+        id: "4",
+        legal_name: "turtle",
+      },
     ]);
 
     await waitFor(async () => {
@@ -104,6 +117,43 @@ describe("RJSF OperatorSearchWidget", () => {
       expect(screen.getByText("Operator 1")).toBeVisible();
       expect(screen.getByText("Operator 2")).toBeVisible();
       expect(screen.getByText("Operator 3")).toBeVisible();
+      expect(screen.queryByText("turtle")).not.toBeInTheDocument();
+    });
+  });
+
+  it("should close the dropdown when the field loses focus", async () => {
+    render(
+      <FormBase
+        schema={operatorSearchFieldSchema}
+        uiSchema={operatorSearchFieldUiSchema}
+      />,
+    );
+
+    const searchField = screen.getByRole("combobox");
+
+    await act(async () => {
+      await userEvent.type(searchField, "Operator");
+    });
+
+    actionHandler.mockResolvedValueOnce([
+      {
+        id: "1",
+        legal_name: "Operator 1",
+      },
+    ]);
+
+    await waitFor(async () => {
+      expect(searchField).toHaveValue("Operator");
+    });
+
+    await waitFor(async () => {
+      expect(screen.getByText("Operator 1")).toBeVisible();
+    });
+
+    searchField.blur();
+
+    await waitFor(async () => {
+      expect(screen.queryByText("Operator 1")).not.toBeInTheDocument();
     });
   });
 
@@ -170,6 +220,8 @@ describe("RJSF OperatorSearchWidget", () => {
     });
 
     expect(searchField).toHaveValue("Operator 1");
+
+    await checkNoValidationErrorIsTriggered();
   });
 
   it("should show the validation error message when the search field is required", async () => {

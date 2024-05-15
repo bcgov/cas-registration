@@ -8,7 +8,10 @@ import {
 } from "@testing-library/react";
 import { RJSFSchema } from "@rjsf/utils";
 import FormBase from "@/app/components/form/FormBase";
-import { checkComboBoxWidgetValidationStyles } from "@/tests/helpers/form";
+import {
+  checkComboBoxWidgetValidationStyles,
+  checkNoValidationErrorIsTriggered,
+} from "@/tests/helpers/form";
 
 const selectFieldLabel = "SelectWidget test field";
 const selectFieldRequiredLabel = `${selectFieldLabel}*`;
@@ -78,7 +81,18 @@ describe("RJSF SelectWidget", () => {
     expect(screen.getByText("Select an option")).toBeVisible();
   });
 
-  it("should display an error message when there is a placeholder and the field is required", async () => {
+  it("should not trigger a validation error when data is valid", async () => {
+    render(
+      <FormBase
+        schema={selectFieldSchema}
+        formData={{ selectTestField: "Option 2" }}
+        uiSchema={selectFieldUiSchema}
+      />,
+    );
+    await checkNoValidationErrorIsTriggered();
+  });
+
+  it("should display an error message when the field is required", async () => {
     const placeholderUiSchema = {
       selectTestField: {
         "ui:widget": "SelectWidget",

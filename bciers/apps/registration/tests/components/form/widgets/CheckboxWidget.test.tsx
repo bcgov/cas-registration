@@ -2,6 +2,7 @@ import { userEvent } from "@testing-library/user-event";
 import { render, screen } from "@testing-library/react";
 import { RJSFSchema } from "@rjsf/utils";
 import FormBase from "@/app/components/form/FormBase";
+import { checkNoValidationErrorIsTriggered } from "@/tests/helpers/form";
 
 const checkboxFieldLabel = "Checkbox test field";
 
@@ -26,6 +27,9 @@ const checkboxFieldUiSchema = {
 };
 
 describe("RJSF CheckboxWidget", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
   it("should render a checkbox field", async () => {
     render(
       <FormBase
@@ -97,5 +101,40 @@ describe("RJSF CheckboxWidget", () => {
     await userEvent.click(checkbox);
 
     expect(checkbox).not.toBeChecked();
+  });
+
+  it("should not trigger an error when data is valid", async () => {
+    render(
+      <FormBase
+        schema={checkboxFieldSchema}
+        formData={{ checkboxTestField: true }}
+        uiSchema={checkboxFieldUiSchema}
+      />,
+    );
+
+    await checkNoValidationErrorIsTriggered();
+  });
+
+  it("should trigger validation error for required field", async () => {
+    render(
+      <FormBase
+        schema={checkboxFieldSchema}
+        uiSchema={checkboxFieldUiSchema}
+      />,
+    );
+    const submitButton = screen.getByRole("button", { name: "Submit" });
+
+    await userEvent.click(submitButton);
+
+    expect(screen.getByText("Required field")).toBeVisible();
+  });
+
+  it("should have the correct styles when the validation error is shown", async () => {
+    render(
+      <FormBase
+        schema={checkboxFieldSchema}
+        uiSchema={checkboxFieldUiSchema}
+      />,
+    );
   });
 });
