@@ -135,3 +135,9 @@ clear_db:
 shell: ## run the Django shell plus
 shell:
 	$(POETRY_RUN) python $(MANAGE_PY) shell_plus
+
+
+.PHONY: mypy
+mypy: ## run mypy static type checker with explicit package bases(useful in the absence of __init__.py files)
+mypy:
+	$(POETRY_RUN) mypy . --explicit-package-bases
