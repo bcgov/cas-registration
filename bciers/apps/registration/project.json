@@ -38,31 +38,31 @@
       "executor": "@nx/eslint:lint",
       "options": {}
     },
-    "e2e": {
+    "legecy2e": {
       "executor": "nx:run-commands",
       "options": {
         "cwd": "apps/registration",
-        "command": "happo-e2e -- playwright test"
+        "command": "happo-e2e -- yarn playwright test"
       }
     },
-    "e2e:ui": {
+    "legecy2e:ui": {
       "executor": "nx:run-commands",
       "options": {
         "cwd": "apps/registration",
-        "command": "happo-e2e -- playwright test --ui"
+        "command": "happo-e2e -- yarn playwright test --ui"
       }
     },
-    "e2e:report": {
+    "legecy2e:report": {
       "executor": "nx:run-commands",
       "options": {
         "cwd": "apps/registration",
-        "command": "playwright show-report"
+        "command": "yarn playwright show-report"
       }
     },
-    "e2e:sequential": {
+    "legecy2e:sequential": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "playwright test --workers=1 client/e2e/*"
+        "command": "yarn playwright test --workers=1 client/e2e/*"
       }
     }
   }

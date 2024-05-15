@@ -1,4 +1,5 @@
 import { defineConfig, devices } from "@playwright/test";
+import { nxE2EPreset } from "@nx/playwright/preset";
 // 👌 Best Practice:
 // prefer user-facing attributes to XPath or CSS selectors
 // this verifies that the application code works for the end users
@@ -14,6 +15,7 @@ import { defineConfig, devices } from "@playwright/test";
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
+  ...nxE2EPreset(__filename, { testDir: "./e2e" }),
   // Increase timeout from default to acomadate for slower CI
   timeout: 60000, //Each test is given 60 seconds timeout
   testDir: "./e2e",
