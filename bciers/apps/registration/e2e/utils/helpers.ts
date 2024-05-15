@@ -178,6 +178,13 @@ export async function getTableRowById(table: Locator, rowId: string) {
   return row;
 }
 
+// 🛠️ Function: gets table row by stext content
+export async function getTableRowByText(table: Locator, text: string) {
+  const tableContent = table.locator(`.MuiDataGrid-virtualScroller`);
+  const row = tableContent.locator(`[role="row"]:has-text("${text}")`).first();
+  return row;
+}
+
 // 🛠️ Function: get a table column's values
 export async function getTableColumnTextValues(
   table: Locator,
@@ -432,4 +439,33 @@ export async function clearTableFilter(page: Page, fieldId: string) {
   const filter = page.locator(`[id="${fieldId}"]`);
   await filter.clear();
   expect(await filter.inputValue()).toBe("");
+}
+
+export async function tableLastRowIsVisible(page: Page) {
+  const tableContent = page.locator(`.MuiDataGrid-virtualScroller`);
+  const rows = tableContent.locator('[role="row"]');
+  const lastRow = rows.last();
+  await expect(lastRow).toBeVisible();
+}
+
+// 🛠️ Function: waits for the DOM to stabilize
+export async function debounceDom(
+  page: Page,
+  pollDelay = 50,
+  stableDelay = 350,
+) {
+  let markupPrevious = "";
+  const timerStart = new Date();
+  let isStable = false;
+  while (!isStable) {
+    const markupCurrent = await page.evaluate(() => document.body.innerHTML);
+    if (markupCurrent == markupPrevious) {
+      const elapsed = new Date().getTime() - timerStart.getTime();
+      isStable = stableDelay <= elapsed;
+    } else {
+      markupPrevious = markupCurrent;
+    }
+    if (!isStable)
+      await new Promise((resolve) => setTimeout(resolve, pollDelay));
+  }
 }

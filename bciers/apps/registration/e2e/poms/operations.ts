@@ -28,6 +28,7 @@ import {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   getFieldRequired,
   getTableColumnTextValues,
+  getTableRowByText,
   getTableRowByCellSelector,
   tableColumnNamesAreCorrect,
 } from "@/e2e/utils/helpers";
@@ -178,6 +179,7 @@ export class OperationsPOM {
       .all();
     await viewDetailsButtons[index].click();
   }
+
   async clickViewDetailsButtonByOperationName(
     page: any,
     operationName: string,
@@ -190,6 +192,7 @@ export class OperationsPOM {
     // Click the `View Detail` for this row
     await row.getByRole("link", { name: ButtonText.VIEW_DETAILS }).click();
   }
+
   async navigateBack() {
     // Navigate back to the table
     await this.linkOperations.click();
@@ -201,12 +204,18 @@ export class OperationsPOM {
 
   // ### Assertions ###
 
-  async formHasExpectedUX(status: string) {
-    // Locate row containing the status
-    const row = await getTableRowByCellSelector(
-      this.table,
-      `[data-field="${TableDataField.STATUS}"]:has-text("${status}")`,
-    );
+  async formHasExpectedUX(status: string, tableRowText?: string) {
+    let row: Locator;
+
+    if (tableRowText) {
+      row = await getTableRowByText(this.table, tableRowText);
+    } else {
+      // Locate row containing the status
+      row = await getTableRowByCellSelector(
+        this.table,
+        `[data-field="${TableDataField.STATUS}"]:has-text("${status}")`,
+      );
+    }
 
     // Click the `View Detail` for this row
     await row.getByRole("link", { name: ButtonText.VIEW_DETAILS }).click();
@@ -373,6 +382,16 @@ export class OperationsPOM {
               OperationStatus.PENDING,
               OperationStatus.APPROVED,
               OperationStatus.DECLINED,
+            ];
+            break;
+
+          case UserRole.INDUSTRY_USER_ADMIN:
+          case UserRole.INDUSTRY_USER:
+            expectedValues = [
+              OperationStatus.PENDING,
+              OperationStatus.APPROVED,
+              OperationStatus.DRAFT,
+              OperationStatus.NOT_STARTED,
             ];
             break;
         }

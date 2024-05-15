@@ -5,7 +5,11 @@ import { DashboardPOM } from "@/e2e/poms/dashboard";
 import { OperationsPOM } from "@/e2e/poms/operations";
 import { OperatorsPOM } from "@/e2e/poms/operators";
 // 🛠️ Helpers
-import { setupTestEnvironment } from "@/e2e/utils/helpers";
+import {
+  setupTestEnvironment,
+  tableLastRowIsVisible,
+  tableRowCount,
+} from "@/e2e/utils/helpers";
 // ☰ Enums
 import {
   OperationStatus,
@@ -60,6 +64,9 @@ test.describe("Test Workflow cas_analyst", () => {
         UserRole.CAS_ANALYST,
         TableDataField.STATUS,
       );
+      // Make sure table is fully rendered for the screenshot
+      await tableRowCount(operatorsPage.page, 20);
+      await tableLastRowIsVisible(operatorsPage.page);
       // 📷 Cheese!
       const pageContent = page.locator("html");
       await happoPlaywright.screenshot(operatorsPage.page, pageContent, {

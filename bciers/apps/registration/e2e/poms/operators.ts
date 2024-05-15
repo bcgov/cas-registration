@@ -27,6 +27,7 @@ import {
   checkFormFieldsReadOnly,
   checkAlertMessage,
   getTableRowByCellSelector,
+  getTableRowByText,
   getTableColumnTextValues,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   getFieldRequired,
@@ -114,12 +115,17 @@ export class OperatorsPOM {
 
   // ###  Assertions ###
 
-  async formHasExpectedUX(status: string) {
-    // Locate row containing the status
-    const row = await getTableRowByCellSelector(
-      this.table,
-      `[data-field="${TableDataField.STATUS}"]:has-text("${status}")`,
-    );
+  async formHasExpectedUX(status: string, tableRowText?: string) {
+    let row: Locator;
+
+    if (tableRowText) {
+      row = await getTableRowByText(this.table, tableRowText);
+    } else {
+      row = await getTableRowByCellSelector(
+        this.table,
+        `[data-field="${TableDataField.STATUS}"]:has-text("${status}")`,
+      );
+    }
 
     // Click the `View Detail` for this status row
     await row.getByRole("link", { name: ButtonText.VIEW_DETAILS }).click();

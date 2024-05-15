@@ -15,6 +15,7 @@ import {
   filterTableByFieldId,
   setupTestEnvironment,
   sortTableByColumnLabel,
+  tableLastRowIsVisible,
   tableRowCount,
 } from "@/e2e/utils/helpers";
 import * as dotenv from "dotenv";
@@ -25,6 +26,7 @@ import {
   OperationTableDataField,
   OperationTableHeaders,
   OperationStatus,
+  TableDataField,
   UserOperatorStatus,
   UserRole,
   E2EValue,
@@ -110,6 +112,13 @@ test.describe("Test Workflow industry_user_admin", () => {
     // 🔍 Assert `Operations` view, table and data reflect role `industry_user_admin`
     await operationsPage.tableIsVisible();
     await operationsPage.tableHasExpectedColumns(UserRole.INDUSTRY_USER_ADMIN);
+    await operationsPage.tableHasExpectedColumnValues(
+      UserRole.INDUSTRY_USER_ADMIN,
+      TableDataField.STATUS,
+    );
+    // Make sure table is fully rendered for the screenshot
+    await tableRowCount(operationsPage.page, 14);
+    await tableLastRowIsVisible(operationsPage.page);
     // 📷 Cheese!
     await happoPlaywright.screenshot(operationPage.page, pageContent, {
       component: "Operation table",

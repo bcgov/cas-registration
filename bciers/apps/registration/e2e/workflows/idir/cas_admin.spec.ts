@@ -9,6 +9,7 @@ import {
   filterTableByFieldId,
   sortTableByColumnLabel,
   setupTestEnvironment,
+  tableLastRowIsVisible,
   tableRowCount,
 } from "@/e2e/utils/helpers";
 // ☰ Enums
@@ -64,6 +65,9 @@ test.describe("Test Workflow cas_admin", () => {
         UserRole.CAS_ADMIN,
         TableDataField.STATUS,
       );
+      // Make sure table is fully rendered for the screenshot
+      await tableRowCount(operatorsPage.page, 20);
+      await tableLastRowIsVisible(operatorsPage.page);
       // 📷 Cheese!
       const pageContent = page.locator("html");
       await happoPlaywright.screenshot(operatorsPage.page, pageContent, {
@@ -78,6 +82,8 @@ test.describe("Test Workflow cas_admin", () => {
       operatorsPage.route();
       // 🔍 Assert cas_admin is able to click "View Details" on see detailed info related Declined
       await operatorsPage.formHasExpectedUX(UserOperatorStatus.DECLINED);
+      // Wait for accordion to expand
+      await page.waitForTimeout(1200);
       // 📷 Cheese!
       let pageContent = page.locator("html");
       await happoPlaywright.screenshot(operatorsPage.page, pageContent, {
@@ -91,6 +97,8 @@ test.describe("Test Workflow cas_admin", () => {
 
       // 🔍 Assert cas_admin is able to click "View Details" on see detailed info related Approved
       await operatorsPage.formHasExpectedUX(UserOperatorStatus.APPROVED);
+      // Wait for accordion to expand
+      await page.waitForTimeout(1200);
       // 📷 Cheese!
       pageContent = page.locator("html");
       await happoPlaywright.screenshot(operatorsPage.page, pageContent, {
@@ -162,7 +170,12 @@ test.describe("Test Workflow cas_admin", () => {
       // 🛸 Navigate to operations page
       operationsPage.route();
       // 🔍 Assert cas_admin is able to click "View Details" on each status and see detailed info related to that status
-      await operationsPage.formHasExpectedUX(OperationStatus.PENDING);
+      await operationsPage.formHasExpectedUX(
+        OperationStatus.PENDING,
+        "New Operator 5 Legal Name",
+      );
+      // Wait for accordion to expand
+      await page.waitForTimeout(1200);
       // 📷 Cheese!
       let pageContent = page.locator("html");
       await happoPlaywright.screenshot(operationsPage.page, pageContent, {
@@ -175,6 +188,8 @@ test.describe("Test Workflow cas_admin", () => {
       await operationsPage.tableIsVisible();
 
       await operationsPage.formHasExpectedUX(OperationStatus.DECLINED);
+      // Wait for accordion to expand
+      await page.waitForTimeout(1200);
       // 📷 Cheese!
       pageContent = page.locator("html");
       await happoPlaywright.screenshot(operationsPage.page, pageContent, {
