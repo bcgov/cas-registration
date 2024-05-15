@@ -30,7 +30,7 @@ class BaseModel(models.Model):
     class Meta:
         abstract = True
 
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs) -> None:
         # if `update_fields` is passed, we only clean them otherwise we clean all fields(except audit fields)
         # This is to optimize the performance of the save method by only validating the fields that are being updated
         fields_to_update = kwargs.get('update_fields')
@@ -44,7 +44,7 @@ class BaseModel(models.Model):
 
 
 class TimeStampedModelManager(models.Manager):
-    def get_queryset(self):
+    def get_queryset(self) -> models.QuerySet:
         """Return only objects that have not been archived"""
         return super().get_queryset().filter(archived_at__isnull=True)
 
@@ -67,7 +67,7 @@ class TimeStampedModel(BaseModel):
     class Meta:
         abstract = True
 
-    def set_create_or_update(self, modifier_pk: 'User') -> None:
+    def set_create_or_update(self, modifier_pk: UUID) -> None:
         """
         Set the created by field if it is not already set.
         Otherwise, set the updated by field and updated at field.
@@ -77,7 +77,7 @@ class TimeStampedModel(BaseModel):
         else:
             self.__class__.objects.filter(pk=self.pk).update(updated_by_id=modifier_pk, updated_at=timezone.now())
 
-    def set_archive(self, modifier_pk: 'User') -> None:
+    def set_archive(self, modifier_pk: UUID) -> None:
         """Set the archived by field and archived at field if they are not already set."""
         if self.archived_by_id or self.archived_at:
             raise ValueError("Archived by or archived at is already set.")
@@ -362,7 +362,7 @@ class User(UserAndContactCommonInfo):
         """
         return self.user_operators.only("operator_id").filter(status=UserOperator.Statuses.APPROVED).first()
 
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs) -> None:
         """
         Override the save method to clear the cache when the user is saved.
         """
@@ -1033,7 +1033,7 @@ class BcObpsRegulatedOperation(BaseModel):
         db_table_comment = "Table to store BC OBPS Regulated Operation metadata"
         db_table = 'erc"."bc_obps_regulated_operation'
 
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs) -> None:
         """
         Override the save method to set the issued_at field if it is not already set.
         """

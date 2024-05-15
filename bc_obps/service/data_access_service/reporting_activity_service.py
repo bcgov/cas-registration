@@ -3,12 +3,12 @@ from registration.schema.v1 import (
     ReportingActivitySchema,
 )
 from django.core.cache import cache
-from typing import List
+from django.db.models import QuerySet
 
 
 class ReportingActivityDataAccessService:
     @classmethod
-    def get_reporting_activities(cls) -> List[ReportingActivity]:
+    def get_reporting_activities(cls) -> QuerySet[ReportingActivity]:
         cached_data = cache.get("reporting_activities")
         if cached_data:
             return cached_data

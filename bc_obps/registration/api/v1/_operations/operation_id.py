@@ -1,4 +1,6 @@
+from typing import Literal, Tuple
 from uuid import UUID
+from django.http import HttpRequest
 from registration.constants import OPERATION_TAGS
 from registration.decorators import authorize
 
@@ -11,6 +13,7 @@ from registration.decorators import handle_http_errors
 from registration.api.router import router
 from registration.models import (
     AppRole,
+    Operation,
     UserOperator,
 )
 from registration.schema.v1 import (
@@ -30,7 +33,7 @@ from ninja.responses import codes_4xx
 )
 @authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles())
 @handle_http_errors()
-def get_operation(request, operation_id: UUID):
+def get_operation(request: HttpRequest, operation_id: UUID) -> Tuple[Literal[200], Operation]:
     return 200, OperationService.get_if_authorized(get_current_user_guid(request), operation_id)
 
 
@@ -42,7 +45,9 @@ def get_operation(request, operation_id: UUID):
 )
 @authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
 @handle_http_errors()
-def update_operation(request, operation_id: UUID, submit: str, form_section: int, payload: OperationUpdateIn):
+def update_operation(
+    request: HttpRequest, operation_id: UUID, submit: str, form_section: int, payload: OperationUpdateIn
+) -> Tuple[Literal[200], Operation]:
     return 200, OperationService.update_operation(
         get_current_user_guid(request), operation_id, submit, form_section, payload
     )

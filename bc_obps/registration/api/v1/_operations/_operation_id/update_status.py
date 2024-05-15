@@ -1,4 +1,6 @@
+from typing import Literal, Tuple
 from uuid import UUID
+from django.http import HttpRequest
 from registration.api.utils.current_user_utils import get_current_user_guid
 from registration.constants import OPERATION_TAGS
 from service.operation_service import OperationService
@@ -6,6 +8,7 @@ from registration.decorators import authorize, handle_http_errors
 from registration.api.router import router
 from registration.models import (
     AppRole,
+    Operation,
 )
 from registration.schema.v1 import (
     OperationUpdateStatusIn,
@@ -23,5 +26,7 @@ from ninja.responses import codes_4xx, codes_5xx
 )
 @authorize(AppRole.get_authorized_irc_roles())
 @handle_http_errors()
-def update_status(request, operation_id: UUID, payload: OperationUpdateStatusIn):
-    return 200, OperationService.update_status(get_current_user_guid(request), operation_id, payload.status)
+def update_status(
+    request: HttpRequest, operation_id: UUID, payload: OperationUpdateStatusIn
+) -> Tuple[Literal[200], Operation]:
+    return 200, OperationService.update_status(get_current_user_guid(request), operation_id, payload.status)  # type: ignore[attr-defined]

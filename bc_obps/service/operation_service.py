@@ -1,3 +1,4 @@
+from typing import Dict, Union
 from uuid import UUID
 from django.db import transaction
 from registration.emails import send_boro_id_application_email
@@ -17,9 +18,10 @@ from registration.utils import (
 )
 from datetime import datetime
 from registration.models import (
-    Document,
     Operation,
     Operator,
+    User,
+    UserOperator,
 )
 from zoneinfo import ZoneInfo
 
@@ -28,9 +30,9 @@ from registration.constants import PAGE_SIZE, UNAUTHORIZED_MESSAGE
 
 class OperationService:
     @classmethod
-    def update_status(cls, user_guid, operation_id: UUID, status: Operation.Statuses):
+    def update_status(cls, user_guid: UUID, operation_id: UUID, status: Operation.Statuses) -> Operation:
 
-        operation = OperationDataAccessService.get_by_id(operation_id)
+        operation: Operation = OperationDataAccessService.get_by_id(operation_id)
 
         status = Operation.Statuses(status)
         if status in [Operation.Statuses.APPROVED, Operation.Statuses.DECLINED]:
@@ -68,9 +70,9 @@ class OperationService:
         return operation
 
     @classmethod
-    def get_if_authorized(cls, user_guid, operation_id):
-        operation = OperationDataAccessService.get_by_id_for_operation_out_schema(operation_id)
-        user = UserDataAccessService.get_by_guid(user_guid)
+    def get_if_authorized(cls, user_guid: UUID, operation_id: UUID) -> Operation:
+        operation: Operation = OperationDataAccessService.get_by_id_for_operation_out_schema(operation_id)
+        user: User = UserDataAccessService.get_by_guid(user_guid)
         if user.is_industry_user():
             if not operation.user_has_access(user.user_guid):
                 raise Exception(UNAUTHORIZED_MESSAGE)
@@ -133,11 +135,11 @@ class OperationService:
     @classmethod
     @transaction.atomic()
     def update_operation(
-        cls, user_guid, operation_id: UUID, submit: str, form_section: int, payload: OperationUpdateIn
-    ):
-        user = UserDataAccessService.get_by_guid(user_guid)
-        user_operator = UserOperatorService.get_current_user_approved_user_operator_or_raise(user)
-        operation = OperationDataAccessService.get_by_id_for_update(operation_id)
+        cls, user_guid: UUID, operation_id: UUID, submit: str, form_section: int, payload: OperationUpdateIn
+    ) -> Operation:
+        user: User = UserDataAccessService.get_by_guid(user_guid)
+        user_operator: UserOperator = UserOperatorService.get_current_user_approved_user_operator_or_raise(user)
+        operation: Operation = OperationDataAccessService.get_by_id_for_update(operation_id)
 
         # industry users can only edit operations that belong to their operator
         if not operation.user_has_access(user_guid) or operation.operator_id != user_operator.operator_id:
@@ -152,10 +154,9 @@ class OperationService:
             payload_dict: dict = payload.dict(include={'name', 'type', 'bcghg_id', 'opt_in'})
             for attr, value in payload_dict.items():
                 setattr(operation, attr, value)
-            operation.naics_code_id = payload.naics_code
+            operation.naics_code_id = payload.naics_code  # type: ignore[attr-defined]
             operation.save(update_fields=[*payload_dict.keys(), 'naics_code_id', 'status'])
-            operation.regulated_products.set(payload.regulated_products)
-
+            operation.regulated_products.set(payload.regulated_products)  # type: ignore[attr-defined]
         elif form_section == 2:
             existing_point_of_contact_id = operation.point_of_contact_id or None
             poc = cls.create_or_update_point_of_contact(user_guid, existing_point_of_contact_id, payload)
@@ -163,7 +164,7 @@ class OperationService:
             operation.save(update_fields=['point_of_contact'])
 
         elif form_section == 3 and payload.statutory_declaration:
-            existing_statutory_document: Document = DocumentService.get_existing_statutory_declaration_by_operation_id(
+            existing_statutory_document = DocumentService.get_existing_statutory_declaration_by_operation_id(
                 operation_id
             )
             document = cls.create_or_replace_statutory_declaration(user_guid, payload, existing_statutory_document)
@@ -195,7 +196,9 @@ class OperationService:
         return operation
 
     @classmethod
-    def list_operations(cls, user_guid, filters: OperationFilterSchema = Query(...)):
+    def list_operations(
+        cls, user_guid: UUID, filters: OperationFilterSchema = Query(...)
+    ) -> Dict[str, Union[list[Operation], int]]:
         user = UserDataAccessService.get_by_guid(user_guid)
         page = filters.page
         bcghg_id = filters.bcghg_id
@@ -208,7 +211,7 @@ class OperationService:
         sort_direction = "-" if sort_order == "desc" else ""
 
         base_qs = OperationDataAccessService.get_all_operations_for_user(user)
-        filters = [
+        list_of_filters = [
             Q(bcghg_id__icontains=bcghg_id) if bcghg_id else Q(),
             Q(bc_obps_regulated_operation__id__icontains=bc_obps_regulated_operation)
             if bc_obps_regulated_operation
@@ -218,7 +221,7 @@ class OperationService:
             Q(status__icontains=status) if status else Q(),
         ]
 
-        qs = base_qs.filter(*filters).order_by(f"{sort_direction}{sort_field}")
+        qs = base_qs.filter(*list_of_filters).order_by(f"{sort_direction}{sort_field}")
 
         paginator = Paginator(qs, PAGE_SIZE)
 
@@ -234,26 +237,26 @@ class OperationService:
 
     @classmethod
     @transaction.atomic()
-    def create_operation(cls, user_guid, payload: OperationCreateIn):
+    def create_operation(cls, user_guid: UUID, payload: OperationCreateIn) -> Dict[str, Union[str, UUID]]:
         user = UserDataAccessService.get_by_guid(user_guid)
-        user_operator = UserOperatorService.get_current_user_approved_user_operator_or_raise(user)
+        user_operator: UserOperator = UserOperatorService.get_current_user_approved_user_operator_or_raise(user)
 
-        payload_dict: dict = payload.dict(
+        payload_dict = payload.dict(
             exclude={
                 "regulated_products",
                 "naics_code",
             }
         )
         payload_dict['operator_id'] = user_operator.operator_id
-        payload_dict['naics_code_id'] = payload.naics_code
+        payload_dict['naics_code_id'] = payload.naics_code  # type: ignore[attr-defined]
         # check that the operation doesn't already exist
-        bcghg_id: str = payload.bcghg_id
+        bcghg_id: str = payload.bcghg_id  # type: ignore[attr-defined]
         if bcghg_id:
-            existing_operation: Operation = Operation.objects.only('bcghg_id').filter(bcghg_id=bcghg_id).exists()
-            if existing_operation:
+            operation_exists: bool = Operation.objects.only('bcghg_id').filter(bcghg_id=bcghg_id).exists()
+            if operation_exists:
                 raise Exception("Operation with this BCGHG ID already exists.")
 
-        operation = OperationDataAccessService.create_operation(user_guid, payload_dict, payload.regulated_products)
+        operation: Operation = OperationDataAccessService.create_operation(user_guid, payload_dict, payload.regulated_products)  # type: ignore[attr-defined]
 
         # Not needed for MVP
         # operation.reporting_activities.set(payload.reporting_activities)

@@ -2,7 +2,6 @@ from model_bakery import baker
 from registration.models import (
     BusinessStructure,
     Operator,
-    User,
     UserOperator,
 )
 from registration.tests.utils.bakers import (
@@ -123,12 +122,16 @@ class TestUserOperatorEndpointAuthorization(CommonTestSetup):
 
     def test_unauthorized_users_cannot_put(self):
         # user-operator/update-status
-        user = baker.make(User)
+        user_operator = user_operator_baker()
         response = TestUtils.mock_put_with_auth_role(
             self,
             'cas_pending',
             self.content_type,
-            {'status': 'Approved', 'user_guid': user.user_guid},
+            {
+                "role": UserOperator.Roles.REPORTER,
+                'status': UserOperator.Statuses.APPROVED,
+                "user_operator_id": user_operator.id,
+            },
             custom_reverse_lazy('update_user_operator_status'),
         )
         assert response.status_code == 401

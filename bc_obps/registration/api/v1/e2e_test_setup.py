@@ -2,13 +2,13 @@ from registration.constants import MISC_TAGS
 from ..router import router
 from django.core.management import call_command
 from django.conf import settings
-from django.http import HttpResponse
+from django.http import HttpRequest, HttpResponse
 from django.core.cache import cache
 
 
 # testing endpoint
 @router.get("/test-setup", tags=MISC_TAGS)
-def setup(request, workflow: str = None, truncate_only: bool = False):
+def setup(request: HttpRequest, workflow: str = None, truncate_only: bool = False):
     if settings.ENVIRONMENT == "develop":
         cache.clear()  # clear cache to avoid stale data (specifically for the current_user_middleware.py middleware)
         try:
