@@ -13,7 +13,7 @@ from registration.models import (
     UserOperator,
 )
 from model_bakery import baker
-from registration.schema import OperationCreateIn, OperationUpdateIn, UserOperatorContactIn, UserOperatorOperatorIn
+from registration.schema.v1 import OperationCreateIn, OperationUpdateIn, UserOperatorContactIn, UserOperatorOperatorIn
 from django.test import Client
 from phonenumber_field.modelfields import PhoneNumberField
 from registration.tests.utils.bakers import operation_baker, user_operator_baker

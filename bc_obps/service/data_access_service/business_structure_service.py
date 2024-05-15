@@ -1,6 +1,6 @@
 from typing import List
 from registration.models import BusinessStructure
-from registration.schema import BusinessStructureOut
+from registration.schema.v1 import BusinessStructureOut
 from django.core.cache import cache
 
 

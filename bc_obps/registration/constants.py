@@ -22,3 +22,16 @@ BORO_ID_REGEX = r"^\d{2}-\d{4}$"
 USER_CACHE_PREFIX = "user_cache_"
 
 PAGE_SIZE = 20
+
+
+# API Tags
+BUSINESS_STRUCTURE_TAGS = ["Business Structure V1"]
+NAICS_CODE_TAGS = ["NAICS Code V1"]
+OPERATION_TAGS = ["Operation V1"]
+OPERATOR_TAGS = ["Operator V1"]
+REGULATED_PRODUCT_TAGS = ["Regulated Product V1"]
+REPORTING_ACTIVITY_TAGS = ["Reporting Activity V1"]
+USER_TAGS = ["User V1"]
+SELECT_OPERATOR_TAGS = ["Select Operator V1"]
+USER_OPERATOR_TAGS = ["User Operator V1"]
+MISC_TAGS = ["Misc V1"]
