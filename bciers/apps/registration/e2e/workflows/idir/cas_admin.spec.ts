@@ -111,7 +111,10 @@ test.describe("Test Workflow cas_admin", () => {
       await operatorsPage.tableIsVisible();
 
       // 🔍 Assert cas_admin is able to click "View Details" on see detailed info related Pending
-      await operatorsPage.formHasExpectedUX(UserOperatorStatus.PENDING);
+      await operatorsPage.formHasExpectedUX(
+        UserOperatorStatus.PENDING,
+        "New Operator 5 Legal Name",
+      );
       // 📷 Cheese!
       pageContent = page.locator("html");
       await happoPlaywright.screenshot(operatorsPage.page, pageContent, {
@@ -170,10 +173,7 @@ test.describe("Test Workflow cas_admin", () => {
       // 🛸 Navigate to operations page
       operationsPage.route();
       // 🔍 Assert cas_admin is able to click "View Details" on each status and see detailed info related to that status
-      await operationsPage.formHasExpectedUX(
-        OperationStatus.PENDING,
-        "New Operator 5 Legal Name",
-      );
+      await operationsPage.formHasExpectedUX(OperationStatus.PENDING);
       // Wait for accordion to expand
       await page.waitForTimeout(1200);
       // 📷 Cheese!
