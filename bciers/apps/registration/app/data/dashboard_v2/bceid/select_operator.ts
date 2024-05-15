@@ -1,9 +1,8 @@
-import Inbox from "@/app/components/icons/Inbox";
-
 const selectOperator = {
   title: "Select Operator",
-  icon: Inbox,
-  content: "View or update your operator information",
+  description: "View or update your operator information",
+  // TODO: figure out how best to handle tiles wrapped with anchor vs link list tile
+  href: "/dashboard/select-operator",
   links: [
     {
       href: "/dashboard/select-operator",

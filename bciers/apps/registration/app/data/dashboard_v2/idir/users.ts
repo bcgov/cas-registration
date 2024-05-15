@@ -1,9 +1,8 @@
-import Users from "@/app/components/icons/Users";
-
 const users = {
   title: "Users",
-  icon: Users,
-  content: "For managing internal Clean Growth users.",
+  description: "For managing internal Clean Growth users.",
+  // TODO: figure out how best to handle tiles wrapped with anchor vs link list tile
+  href: "/dashboard/users",
   links: [{ title: "Users ➤", href: "/dashboard/users" }],
 };
 

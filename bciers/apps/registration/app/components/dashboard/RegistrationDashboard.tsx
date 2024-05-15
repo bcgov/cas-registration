@@ -1,10 +1,6 @@
 "use client";
 
 import Tiles from "@/app/components/dashboard/Tiles";
-import {
-  TileContentWithLink,
-  TileContentWithLinks,
-} from "@/app/components/dashboard/types";
 
 import { IncomingTileData } from "@/app/components/dashboard/types";
 // 📐 import the tile data
@@ -18,7 +14,7 @@ import idirOperationsTile from "@/app/data/dashboard_v2/idir/operations";
 import idirUsersTile from "@/app/data/dashboard_v2/idir/users";
 
 const tileMap = {
-  bceidSelectOperatorTile: bceidSelectOperatorTile as TileContentWithLinks,
+  bceidSelectOperatorTile,
   bceidMyOperatorTile,
   bceidOperationsTile,
   bceidUsersTile,

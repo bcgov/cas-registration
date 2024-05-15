@@ -1,9 +1,8 @@
-import Inbox from "@/app/components/icons/Inbox";
-
 const operators = {
   title: "Operators",
-  icon: Inbox,
-  content: "For managing external operator admin access requests.",
+  description: "For managing external operator admin access requests.",
+  // TODO: figure out how best to handle tiles wrapped with anchor vs link list tile
+  href: "/dashboard/operators",
   links: [{ title: "Operators ➤", href: "/dashboard/operators" }],
 };
 

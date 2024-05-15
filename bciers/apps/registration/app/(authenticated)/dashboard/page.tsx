@@ -32,6 +32,15 @@ export default async function Page() {
       tileType: "bceidSelectOperatorTile",
       links: ["selectOperator"],
     },
+    {
+      tileType: "bceidOperationsTile",
+    },
+    {
+      tileType: "bceidUsersTile",
+    },
+    {
+      tileType: "reportAProblemTile",
+    },
   ];
 
   return (

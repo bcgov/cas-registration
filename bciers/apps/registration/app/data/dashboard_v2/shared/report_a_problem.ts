@@ -1,9 +1,8 @@
-import Wrench from "@/app/components/icons/Wrench";
-
 const reportAProblem = {
   title: "Report a Problem",
-  icon: Wrench,
-  content: "Something wrong?",
+  description: "Something wrong?",
+  // TODO: figure out how best to handle tiles wrapped with anchor vs link list tile
+  href: "/dashboard/report_a_problem",
   links: [
     {
       title: "Report problems to GHGRegulator@gov.bc.ca",
