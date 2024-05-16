@@ -10,6 +10,7 @@ import {
   IncomingTileData,
   TileContent,
 } from "@/app/components/dashboard/types";
+import reportAProblem from "@/app/data/dashboard_v2/report_a_problem.json";
 
 export default async function Page() {
   const session = await getServerSession(authOptions);
@@ -33,7 +34,14 @@ export default async function Page() {
   const mockTileData = [
     {
       type: "select_operator",
-      links: ["link_1", "link_2"],
+      links: [
+        "my_operator",
+        "operations",
+        "contacts",
+        "users",
+        "register_an_operation",
+        "report_an_event",
+      ],
     },
     {
       type: "operations",
@@ -76,6 +84,9 @@ export default async function Page() {
         console.error("Error building content", error);
       }
     }
+
+    // All roles have access to the report a problem tile
+    contents.push(reportAProblem);
     return contents;
   };
 

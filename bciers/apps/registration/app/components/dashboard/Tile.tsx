@@ -30,22 +30,27 @@ const Tile = ({
   }
 
   return (
-    <div key={title} className="dashboard-tile-container">
-      <h2 className="flex items-center m-0">
-        <div>{title}</div>
-      </h2>
+    <div key={title} className="dashboard-tile-container p-0">
+      <div className="p-6">
+        <h2 className="flex items-center m-0 text-bc-link-blue">
+          <div>{title}</div>
+        </h2>
+        <div className="text-black mt-4">{content}</div>
+      </div>
       <div className="flex flex-col mt-2">
         {links &&
           links.map((link) => {
             const { title, href } = link;
             return (
-              <a
-                key={title}
-                href={href}
-                className="dashboard-tile-link no-underline cursor-pointer"
-              >
-                {title}
-              </a>
+              <div className="w-full px-6 py-2 border-0 border-t border-solid ">
+                <a
+                  key={title}
+                  href={href}
+                  className="dashboard-tile-link no-underline cursor-pointer"
+                >
+                  {title}
+                </a>
+              </div>
             );
           })}
       </div>
