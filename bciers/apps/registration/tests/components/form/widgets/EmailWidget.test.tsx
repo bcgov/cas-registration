@@ -112,7 +112,7 @@ describe("RJSF EmailWidget", () => {
       <FormBase schema={emailFieldSchema} uiSchema={emailFieldUiSchema} />,
     );
     const input = screen.getByLabelText(emailLabelRequired);
-    await userEvent.type(input, "test.email@test.com");
+    await userEvent.type(input, "test@email.test.com");
 
     await checkNoValidationErrorIsTriggered();
     expect(screen.queryByText(emailValidationMessage)).toBeNull();
