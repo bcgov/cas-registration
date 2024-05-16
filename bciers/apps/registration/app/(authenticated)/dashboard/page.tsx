@@ -31,26 +31,7 @@ export default async function Page() {
       break;
   }
 
-  const mockTileData = [
-    {
-      type: "select_operator",
-      links: [
-        "my_operator",
-        "operations",
-        "contacts",
-        "users",
-        "register_an_operation",
-        "report_an_event",
-      ],
-    },
-    {
-      type: "operations",
-    },
-    {
-      type: "users",
-    },
-  ];
-
+  // Mock API response data for registration dashboard tiles
   const mockRegistrationDashboardTiles = [
     {
       type: "my_operator",
@@ -72,11 +53,14 @@ export default async function Page() {
     },
   ];
 
-  const mockTileData2 = [
+  // Mock API response data for shared dashboard tiles
+  const mockBciersSharedDashboardTiles = [
     {
       type: "registration",
       // If we use this format to display registration links we may be able to re-use
       // the same serivce layer for the registration dashboard tiles
+      // *Assuming* that the bciers shared registration tile links
+      // are the same as the registration dashboard tiles for that user
       links: mockRegistrationDashboardTiles,
     },
     {
@@ -85,9 +69,6 @@ export default async function Page() {
         { type: "submit_annual_reports" },
         { type: "view_past_submissions" },
       ],
-    },
-    {
-      type: "users",
     },
   ];
 
@@ -125,14 +106,14 @@ export default async function Page() {
       }
     }
 
-    // All roles have access to the report a problem tile
+    // All roles have access to the report a problem tile - add it to the end of the list
     contents.push(reportAProblem);
     return contents;
   };
 
   const contents = (await buildContent(
     "bceid",
-    mockTileData2,
+    mockBciersSharedDashboardTiles,
   )) as TileContent[];
 
   return (

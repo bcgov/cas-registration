@@ -1,5 +1,5 @@
 {
   "title": "My Operator",
   "content": "View or update your operator information, which needs to be complete before applying for BORO ID's",
-  "path": "/dashboard/select-operator"
+  "href": "/dashboard/select-operator"
 }

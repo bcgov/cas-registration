@@ -1,5 +1,5 @@
 {
   "title": "Report a Problem",
   "content": "Something wrong? Report problems to GHGRegulator@gov.bc.ca",
-  "path": "mailto:GHGRegulator@gov.bc.ca"
+  "href": "mailto:GHGRegulator@gov.bc.ca"
 }
