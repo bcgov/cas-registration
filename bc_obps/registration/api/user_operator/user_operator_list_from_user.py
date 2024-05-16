@@ -7,7 +7,7 @@ from typing import List
 from registration.api.api_base import router
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 
-
+# user-operators/role? what's less weird
 @router.get(
     "/user-operator/user-operator-list-from-user",
     response={200: List[ExternalDashboardUsersTileData], custom_codes_4xx: Message},

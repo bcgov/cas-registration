@@ -13,7 +13,7 @@ from registration.models import (
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from registration.api.api_base import router
 
-
+# brianna should probably be using params instead of body for a few of these, this one
 @router.put(
     "/user-operator/update-status",
     response={200: UserOperatorOut, custom_codes_4xx: Message},

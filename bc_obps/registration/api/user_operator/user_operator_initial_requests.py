@@ -8,7 +8,7 @@ from registration.models import (
 )
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 
-
+# can this just be user-operators/irc??
 @router.get(
     "/user-operator/user-operator-initial-requests",
     response={200: UserOperatorPaginatedOut, custom_codes_4xx: Message},

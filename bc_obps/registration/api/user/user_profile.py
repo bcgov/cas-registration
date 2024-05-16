@@ -19,7 +19,7 @@ def get_user_profile(request):
 
 ##### POST #####
 
-
+# brianna this one's kind of weird, identity_provider should maybe in the body/payload?
 # Endpoint to create a new user
 @router.post(
     "/user/user-profile/{identity_provider}",

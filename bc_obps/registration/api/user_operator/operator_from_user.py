@@ -15,6 +15,7 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 from registration.api.utils.current_user_utils import get_current_user_guid
 
 # this endpoint retrieves data about both the user-operator and the operator
+# brianna change to user-operator/operator--remember this is for the USERS though, so no params
 @router.get(
     "/user-operator/user-operator-operator",
     response={200: OperatorFromUserOperatorOut, custom_codes_4xx: Message},

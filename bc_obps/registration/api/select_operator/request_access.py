@@ -13,6 +13,9 @@ from registration.models import (
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from service.application_access_service import ApplicationAccessService
 
+# brianna is select-operator weird, could just be operator/{operator_id}/request-access
+# use params
+
 
 @router.post(
     "/select-operator/request-access",

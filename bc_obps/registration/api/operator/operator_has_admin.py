@@ -9,7 +9,8 @@ from registration.models import (
 )
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 
-
+# we don't have just an /operator
+# brianna flip and has-admin?
 @router.get(
     "/operator/operator-has-admin/{operator_id}",
     response={200: bool, custom_codes_4xx: Message},

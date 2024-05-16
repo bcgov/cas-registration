@@ -13,7 +13,7 @@ from registration.models import (
 )
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 
-
+# brianna name, no need params cause current user
 @router.get(
     "/user-operator/is-approved-admin-user-operator",
     response={200: IsApprovedUserOperator, custom_codes_4xx: Message},

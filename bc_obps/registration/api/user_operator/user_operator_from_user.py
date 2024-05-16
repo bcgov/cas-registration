@@ -12,7 +12,7 @@ from registration.models import (
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from registration.api.utils.current_user_utils import get_current_user_guid
 
-
+# brianna I think this is the same as operator-from-user
 @router.get(
     "/user-operator/user-operator-from-user",
     response={200: PendingUserOperatorOut, custom_codes_4xx: Message},
