@@ -79,6 +79,59 @@ class OperationService:
 
     @classmethod
     @transaction.atomic()
+    def create_or_update_point_of_contact(
+        cls, user_guid: UUID, existing_point_of_contact_id: int, payload: OperationUpdateIn
+    ):
+        is_external_point_of_contact = payload.is_external_point_of_contact
+        if is_external_point_of_contact is False:  # the point of contact is the user
+
+            user_contact_data = {
+                "first_name": payload.first_name,
+                "last_name": payload.last_name,
+                "position_title": payload.position_title,
+                "email": payload.email,
+                "phone_number": payload.phone_number,
+            }
+            poc = ContactDataAccessService.update_or_create(existing_point_of_contact_id, user_contact_data, user_guid)
+            return poc
+
+        elif is_external_point_of_contact is True:  # the point of contact is an external user
+            external_contact_data = {
+                "first_name": payload.external_point_of_contact_first_name,
+                "last_name": payload.external_point_of_contact_last_name,
+                "position_title": payload.external_point_of_contact_position_title,
+                "email": payload.external_point_of_contact_email,
+                "phone_number": payload.external_point_of_contact_phone_number,
+            }
+
+            external_poc = ContactDataAccessService.update_or_create(
+                existing_point_of_contact_id, external_contact_data, user_guid
+            )
+            return external_poc
+
+    @classmethod
+    @transaction.atomic()
+    def create_or_replace_statutory_declaration(
+        cls, user_guid: UUID, payload: OperationUpdateIn, existing_statutory_document
+    ):
+
+        # if there is an existing statutory declaration document, check if the new one is different
+        if existing_statutory_document:
+            # We need to check if the file has changed, if it has, we need to delete the old one and create a new one
+            if not files_have_same_hash(payload.statutory_declaration, existing_statutory_document.file):
+                existing_statutory_document.delete()
+                return DocumentDataAccessService.create_document(
+                    user_guid, payload.statutory_declaration, "signed_statutory_declaration"
+                )
+
+        else:
+            # if there is no existing statutory declaration document, create a new one
+            return DocumentDataAccessService.create_document(
+                user_guid, payload.statutory_declaration, "signed_statutory_declaration"
+            )
+
+    @classmethod
+    @transaction.atomic()
     def update_operation(
         cls, user_guid, operation_id: UUID, submit: str, form_section: int, payload: OperationUpdateIn
     ):
@@ -102,55 +155,19 @@ class OperationService:
             operation.naics_code_id = payload.naics_code
             operation.save(update_fields=[*payload_dict.keys(), 'naics_code_id', 'status'])
             operation.regulated_products.set(payload.regulated_products)
+
         elif form_section == 2:
-            point_of_contact_id = operation.point_of_contact_id or None
-            is_external_point_of_contact = payload.is_external_point_of_contact
-
-            if is_external_point_of_contact is False:  # the point of contact is the user
-
-                user_contact_data = {
-                    "first_name": payload.first_name,
-                    "last_name": payload.last_name,
-                    "position_title": payload.position_title,
-                    "email": payload.email,
-                    "phone_number": payload.phone_number,
-                }
-                poc = ContactDataAccessService.update_or_create(point_of_contact_id, user_contact_data, user_guid)
-                operation.point_of_contact = poc
-
-            elif is_external_point_of_contact is True:  # the point of contact is an external user
-                external_contact_data = {
-                    "first_name": payload.external_point_of_contact_first_name,
-                    "last_name": payload.external_point_of_contact_last_name,
-                    "position_title": payload.external_point_of_contact_position_title,
-                    "email": payload.external_point_of_contact_email,
-                    "phone_number": payload.external_point_of_contact_phone_number,
-                }
-
-                external_poc = ContactDataAccessService.update_or_create(
-                    point_of_contact_id, external_contact_data, user_guid
-                )
-                operation.point_of_contact = external_poc
+            existing_point_of_contact_id = operation.point_of_contact_id or None
+            poc = cls.create_or_update_point_of_contact(user_guid, existing_point_of_contact_id, payload)
+            operation.point_of_contact = poc
             operation.save(update_fields=['point_of_contact'])
 
         elif form_section == 3 and payload.statutory_declaration:
             existing_statutory_document: Document = DocumentService.get_existing_statutory_declaration_by_operation_id(
                 operation_id
             )
-            # if there is an existing statutory declaration document, check if the new one is different
-            if existing_statutory_document:
-                # We need to check if the file has changed, if it has, we need to delete the old one and create a new one
-                if not files_have_same_hash(payload.statutory_declaration, existing_statutory_document.file):
-                    existing_statutory_document.delete()
-                    DocumentDataAccessService.create_statutory_declaration(
-                        user_guid, payload.statutory_declaration, operation
-                    )
-
-            else:
-                # if there is no existing statutory declaration document, create a new one
-                DocumentDataAccessService.create_statutory_declaration(
-                    user_guid, payload.statutory_declaration, operation
-                )
+            document = cls.create_or_replace_statutory_declaration(user_guid, payload, existing_statutory_document)
+            operation.documents.set([document])
 
         if submit == "true":
             """
