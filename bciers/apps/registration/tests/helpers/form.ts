@@ -62,10 +62,7 @@ export const checkComboBoxWidgetValidationStyles = async (
   expect(inputBorderElement).toHaveStyle(errorStyle);
 };
 
-export const checkNoValidationErrorIsTriggered = async (
-  component?: ReactNode,
-) => {
-  if (component) render(component);
+export const checkNoValidationErrorIsTriggered = async () => {
   const submitButton = screen.getByRole("button", { name: "Submit" });
   await userEvent.click(submitButton);
   expect(screen.queryByRole("alert")).toBeNull();
