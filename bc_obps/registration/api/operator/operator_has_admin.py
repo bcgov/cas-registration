@@ -9,6 +9,7 @@ from registration.models import (
 )
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 
+# this is actually user operator
 # we don't have just an /operator
 # brianna flip and has-admin?
 @router.get(
