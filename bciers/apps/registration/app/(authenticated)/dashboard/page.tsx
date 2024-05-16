@@ -51,6 +51,40 @@ export default async function Page() {
     },
   ];
 
+  const mockTileData2 = [
+    {
+      type: "select_operator",
+      // If we use this format to display registration links we may be able to re-use
+      // the same serivce layer for the registration dashboard tiles
+      links: [
+        {
+          type: "my_operator",
+        },
+        {
+          type: "operations",
+        },
+        {
+          type: "contacts",
+        },
+        {
+          type: "users",
+        },
+        {
+          type: "register_an_operation",
+        },
+        {
+          type: "report_an_event",
+        },
+      ],
+    },
+    {
+      type: "operations",
+    },
+    {
+      type: "users",
+    },
+  ];
+
   const buildContent = async (
     role: "bceid" | "idir",
     data: IncomingTileData[],

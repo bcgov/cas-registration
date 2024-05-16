@@ -13,6 +13,7 @@ const Tile = ({
     throw new Error("Tile must have an href or links");
   }
 
+  // TODO: refactor these to be more DRY
   // If the tile has an href, return a tile wrapped with an anchor tag
   if (path) {
     return (
