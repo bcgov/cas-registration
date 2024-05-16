@@ -13,7 +13,7 @@ from . import (
 from ._operations import operation_id
 from ._operations._operation_id import update_status
 
-from .operator import operator_access_declined, operator_has_admin
+from .operator import operator_access_declined, operator_has_admin, request_access, request_admin_access
 from .user import user_profile, user_app_role
 
 # ruff: noqa: F811
@@ -28,5 +28,4 @@ from .user_operator import (
     user_operator_list_from_user,
     update_status,
 )
-from .select_operator import request_access, request_admin_access
 from .api_base import router  # django_ninja router object
