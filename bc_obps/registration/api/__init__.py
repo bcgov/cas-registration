@@ -19,7 +19,6 @@ from .user import user_profile, user_app_role
 # ruff: noqa: F811
 from .user_operator import (
     operator,
-    operator_from_user,
     is_approved_admin_user_operator,
     user_operator_from_user,
     user_operator_id,

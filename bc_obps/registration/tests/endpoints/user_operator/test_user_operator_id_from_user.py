@@ -24,7 +24,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         assert response.status_code == 200
         assert response.json()['operator_id'] == str(operator.id)  # String representation of the UUID
 
-    def test_get_user_operator_operator_id(self):
+    def test_get_operator_and_user_operator_id(self):
         # Act
         operator = operator_baker()
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
@@ -39,7 +39,7 @@ class TestUserOperatorEndpoint(CommonTestSetup):
         assert "user_operator_id" in response_json
 
     # GET USER OPERATOR ID 404
-    def test_get_user_operator_operator_id_with_invalid_user(self):
+    def test_get_operator_and_user_operator_id_with_invalid_user(self):
         # Act
         response = TestUtils.mock_get_with_auth_role(self, 'industry_user', custom_reverse_lazy('get_user_operator_id'))
 

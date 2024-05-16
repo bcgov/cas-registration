@@ -1,3 +1,6 @@
+from registration.schema.operator import OperatorFromUserOperatorOut
+from registration.schema.user_operator import PendingUserOperatorOut
+from service.data_access_service.user_service import UserDataAccessService
 from service.user_operator_service import UserOperatorService
 from registration.api.utils.current_user_utils import get_current_user_guid
 from registration.decorators import authorize, handle_http_errors
@@ -13,6 +16,21 @@ from registration.models import (
 )
 from uuid import UUID
 from service.error_service.custom_codes_4xx import custom_codes_4xx
+
+# brianna is this better if it's just user-operators?
+
+# GET
+@router.get(
+    "/user-operator/operator",
+    response={200: OperatorFromUserOperatorOut, custom_codes_4xx: Message},
+    url_name="get_operator_and_user_operator",
+)
+@authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
+@handle_http_errors()
+def get_operator_and_user_operator(request):
+    user_operator = UserDataAccessService.get_user_operator_by_user(get_current_user_guid(request))
+    return 200, PendingUserOperatorOut.from_orm(user_operator)
+
 
 ## POST
 @router.post(
