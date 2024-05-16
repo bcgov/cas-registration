@@ -78,8 +78,8 @@ class TestUserOperatorEndpointAuthorization(CommonTestSetup):
                 self,
                 role,
                 self.content_type,
-                {'operator_id': operator.id},
-                custom_reverse_lazy('request_access'),
+                {},
+                custom_reverse_lazy('request_access', kwargs={'operator_id': operator.id}),
             )
             assert response.status_code == 401
         # /select-operator/request-admin-access
@@ -88,8 +88,8 @@ class TestUserOperatorEndpointAuthorization(CommonTestSetup):
                 self,
                 role,
                 self.content_type,
-                {'operator_id': operator.id},
-                custom_reverse_lazy('request_admin_access'),
+                {},
+                custom_reverse_lazy('request_admin_access', kwargs={'operator_id': operator.id}),
             )
             assert response.status_code == 401
 

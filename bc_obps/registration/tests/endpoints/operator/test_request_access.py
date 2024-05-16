@@ -1,14 +1,25 @@
+from model_bakery import baker
 from registration.enums.enums import AccessRequestStates, AccessRequestTypes
-from registration.models import UserOperator
+from registration.models import (
+    User,
+    UserOperator,
+)
 from registration.tests.utils.bakers import operator_baker
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
 
 
-class TestSelectOperatorRequestAccessEndpoint(CommonTestSetup):
-    def test_request_admin_access_with_valid_payload(self, mocker):
+class TestSelectOperatorRequestAccess(CommonTestSetup):
+    def test_request_subsequent_access_with_valid_payload(self, mocker):
         operator = operator_baker()
-        # We need to mock the send_operator_access_request_email function withing the application_access_service module
+        admin_user = baker.make(User, business_guid=self.user.business_guid)
+        baker.make(
+            UserOperator,
+            user=admin_user,
+            operator=operator,
+            role=UserOperator.Roles.ADMIN,
+            status=UserOperator.Statuses.APPROVED,
+        )
         mocked_send_access_request_email = mocker.patch(
             "service.application_access_service.send_operator_access_request_email"
         )
@@ -16,20 +27,19 @@ class TestSelectOperatorRequestAccessEndpoint(CommonTestSetup):
             self,
             "industry_user",
             self.content_type,
-            {"operator_id": operator.id},
-            custom_reverse_lazy("request_admin_access"),
+            {},
+            custom_reverse_lazy("request_access", kwargs={"operator_id": operator.id}),
         )
+        response_json = response.json()
 
         # Assert that the email notification was sent
         mocked_send_access_request_email.assert_called_once_with(
             AccessRequestStates.CONFIRMATION,
-            AccessRequestTypes.ADMIN,
+            AccessRequestTypes.OPERATOR_WITH_ADMIN,
             operator.legal_name,
             self.user.get_full_name(),
             self.user.email,
         )
-
-        response_json = response.json()
 
         assert response.status_code == 201
         assert "user_operator_id" in response_json
@@ -39,20 +49,6 @@ class TestSelectOperatorRequestAccessEndpoint(CommonTestSetup):
             user=self.user,
             operator=operator,
             status=UserOperator.Statuses.PENDING,
-            role=UserOperator.Roles.PENDING,
         ).exists()
 
         assert user_operator_exists, "UserOperator object was not created"
-
-    def test_request_access_with_invalid_payload(self):
-        invalid_payload = {"operator_id": 99999}  # Invalid operator ID
-
-        response = TestUtils.mock_post_with_auth_role(
-            self,
-            "industry_user",
-            self.content_type,
-            invalid_payload,
-            custom_reverse_lazy("request_admin_access"),
-        )
-        assert response.status_code == 422
-        assert response.json().get("detail")[0].get("msg") == "UUID input should be a string, bytes or UUID object"
