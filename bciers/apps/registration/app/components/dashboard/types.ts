@@ -1,6 +1,6 @@
 export interface IncomingTileData {
   type: string;
-  links?: string[];
+  links?: { type: string }[];
 }
 
 // 📐 type for ContentItem used to build dashboard content tiles

@@ -103,11 +103,11 @@ export default async function Page() {
         // If the tile has links, resolve which links to display
         const links =
           tile?.links &&
-          tile?.links.map((link: string) => {
-            if (!content?.links[link]) {
+          tile?.links.map((link: { type: string }) => {
+            if (!content?.links[link.type]) {
               throw new Error("Link not found");
             }
-            return content?.links[link];
+            return content?.links[link.type];
           });
 
         contents.push({
@@ -124,7 +124,10 @@ export default async function Page() {
     return contents;
   };
 
-  const contents = (await buildContent("bceid", mockTileData)) as TileContent[];
+  const contents = (await buildContent(
+    "bceid",
+    mockTileData2,
+  )) as TileContent[];
 
   return (
     <div>
