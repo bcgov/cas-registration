@@ -21,7 +21,7 @@ const Tile = ({
       <a
         key={title}
         href={href}
-        className="dashboard-tile-container no-underline cursor-pointer justify-start min-h-[240px] h-fit"
+        className="dashboard-tile-container no-underline justify-start min-h-[240px] h-fit"
       >
         <h2 className="flex items-center m-0">
           <div>{title}</div>
@@ -51,7 +51,7 @@ const Tile = ({
                 <a
                   key={title}
                   href={href}
-                  className="dashboard-tile-link no-underline cursor-pointer"
+                  className="dashboard-tile-link no-underline"
                 >
                   {title}
                 </a>
