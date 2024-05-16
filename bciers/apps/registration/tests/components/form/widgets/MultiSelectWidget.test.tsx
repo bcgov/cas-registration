@@ -160,7 +160,7 @@ describe("RJSF MultiSelectWidget", () => {
       screen.getByPlaceholderText("Select regulated products..."),
     ).toBeVisible();
   });
-  it("should use the enum values as the names if no enumNames are provided, use the enum values as the names", async () => {
+  it("should use the enum values as the names if no enumNames are provided", async () => {
     render(
       <FormBase
         schema={{
