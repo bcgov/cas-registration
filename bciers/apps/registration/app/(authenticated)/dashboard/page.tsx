@@ -6,10 +6,7 @@ import { FrontEndRoles } from "@/app/utils/enums";
 import Card from "@mui/material/Card";
 import Typography from "@mui/material/Typography";
 import { getServerSession } from "next-auth";
-import {
-  IncomingTileData,
-  TileContent,
-} from "@/app/components/dashboard/types";
+import { TileContent } from "@/app/components/dashboard/types";
 
 export default async function Page() {
   const session = await getServerSession(authOptions);
@@ -30,53 +27,10 @@ export default async function Page() {
       break;
   }
 
-  // Mock API response data for registration dashboard tiles
-  // This is an idea for what the basic strucutre of the registration dashboard tiles could look like
-  // const mockRegistrationDashboardTiles = [
-  //   {
-  //     type: "my_operator",
-  //   },
-  //   {
-  //     type: "operations",
-  //   },
-  //   {
-  //     type: "contacts",
-  //   },
-  //   {
-  //     type: "users",
-  //   },
-  //   {
-  //     type: "register_an_operation",
-  //   },
-  //   {
-  //     type: "report_an_event",
-  //   },
-  // ];
-
-  // Mock API response data for shared dashboard tiles
-  // This is an idea for what the basic structure of the shared dashboard tiles could look like
-  // const mockBciersSharedDashboardTiles = [
-  //   {
-  //     type: "registration",
-  //     // If we use this format to display registration links we may be able to re-use
-  //     // the same serivce layer for the registration dashboard tiles
-  //     // *Assuming* that the bciers shared registration tile links
-  //     // are the same as the registration dashboard tiles for that user
-  //     links: mockRegistrationDashboardTiles,
-  //   },
-  //   {
-  //     type: "reporting",
-  //     links: [
-  //       { type: "submit_annual_reports" },
-  //       { type: "view_past_submissions" },
-  //     ],
-  //   },
-  // ];
-
   // Mock API response data for shared dashboard tiles
   // Another revision after discussion with the team - we have decided to return the fully formed JSON data
   // from the API
-  const mockBciersSharedDashboardTiles = [
+  const mockBciersSharedDashboardTilesAPIData = [
     {
       title: "Registration",
       content:
@@ -130,50 +84,45 @@ export default async function Page() {
     },
   ] as TileContent[];
 
-  // Not needed if we are returning the fully formed JSON data from the API
-  // const buildContent = async (
-  //   role: "bceid" | "idir",
-  //   data: IncomingTileData[],
-  // ) => {
-  //   const contents = [];
-  //
-  //   for (const tile of data) {
-  //     try {
-  //       // Dynamically import the module
-  //       const module = await import(
-  //         `@/app/data/dashboard_v2/${role}/${tile.type}.json`
-  //       );
-  //
-  //       const content = module.default;
-  //
-  //       // If the tile has links, resolve which links to display
-  //       const links =
-  //         tile?.links &&
-  //         tile?.links.map((link: { type: string }) => {
-  //           if (!content?.links[link.type]) {
-  //             throw new Error("Link not found");
-  //           }
-  //           return content?.links[link.type];
-  //         });
-  //
-  //       contents.push({
-  //         ...content,
-  //         links,
-  //       });
-  //     } catch (error) {
-  //       console.error("Error building content", error);
-  //     }
-  //   }
-  //
-  //   // All roles have access to the report a problem tile - add it to the end of the list
-  //   contents.push(reportAProblem);
-  //   return contents;
-  // };
-  //
-  // const contents = (await buildContent(
-  //   "bceid",
-  //   mockBciersSharedDashboardTiles,
-  // )) as TileContent[];
+  // This is the mock API response data for the registration dashboard tiles
+  // It uses the simpler registration tiles with no sub-links. The href is used to wrap the entire tile in an anchor tag
+  // const mockRegistrationDashboardTilesAPIData = [
+  //   {
+  //     href: "/dashboard",
+  //     content: "View or update information of your operator here.",
+  //     title: "My Operator",
+  //   },
+  //   {
+  //     href: "/dashboard",
+  //     content:
+  //       "View the operations owned by your operator, or to add new operation to your operator here.",
+  //     title: "Operations",
+  //   },
+  //   {
+  //     href: "/dashboard",
+  //     content:
+  //       "View the contacts of your operator, or to add new contact for your operator here.",
+  //     title: "Contacts",
+  //   },
+  //   {
+  //     href: "/dashboard",
+  //     content:
+  //       "View, approve or decline Business BCeID user access requests to your operator, or to assign access type to users here.",
+  //     title: "Users",
+  //   },
+  //   {
+  //     href: "/dashboard",
+  //     content:
+  //       "Track the registration of operations, or to start new registration here.",
+  //     title: "Register an Operation",
+  //   },
+  //   {
+  //     href: "/dashboard",
+  //     content:
+  //       "Report sales, transfer, closure, acquisition, divestment, change in operator or director control, temporary shut down, etc. here.",
+  //     title: "Report an Event",
+  //   },
+  // ] as TileContent[];
 
   return (
     <div>
@@ -196,7 +145,7 @@ export default async function Page() {
         </>
       ) : (
         // Display role based tiles here
-        <Tiles tileData={mockBciersSharedDashboardTiles} />
+        <Tiles tileData={mockBciersSharedDashboardTilesAPIData} />
       )}
     </div>
   );
