@@ -1,0 +1,15 @@
+{
+  "title": "Select Operator",
+  "icon": "Inbox",
+  "content": "View or update your operator information",
+  "links": {
+    "link_1": {
+      "href": "/dashboard/select-operator",
+      "title": "link 1"
+    },
+    "link_2": {
+      "href": "/dashboard/select-operator",
+      "title": "link 2"
+    }
+  }
+}

@@ -1,11 +1,13 @@
-{
-  "title": "My Operations",
-  "icon": "Layers",
-  "content": "Apply for a B.C. OBPS Regulated Operation ID",
-  "links": [
-    {
-      "title": "My Operations ➤",
-      "href": "/dashboard/operations"
-    }
-  ]
-}
+[
+  {
+    "title": "My Operations",
+    "icon": "Layers",
+    "content": "Apply for a B.C. OBPS Regulated Operation ID",
+    "links": [
+      {
+        "title": "My Operations ➤",
+        "href": "/dashboard/operations"
+      }
+    ]
+  }
+]

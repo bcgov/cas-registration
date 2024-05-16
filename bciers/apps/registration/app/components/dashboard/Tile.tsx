@@ -1,30 +1,30 @@
 const Tile = ({
-  description,
-  href,
+  content,
+  path,
   links,
   title,
 }: {
-  description?: string;
-  href?: string;
+  content?: string;
+  path?: string;
   links?: { title: string; href: string }[];
   title: string;
 }) => {
-  if (!href && links?.length === 0) {
+  if (!path && links?.length === 0) {
     throw new Error("Tile must have an href or links");
   }
 
   // If the tile has an href, return a tile wrapped with an anchor tag
-  if (href) {
+  if (path) {
     return (
       <a
         key={title}
-        href={href}
+        href={path}
         className="dashboard-tile-container no-underline cursor-pointer min-h-[200px] justify-start"
       >
         <h2 className="flex items-center m-0">
           <div>{title}</div>
         </h2>
-        <div className="text-black mt-4">{description}</div>
+        <div className="text-black mt-4">{content}</div>
       </a>
     );
   }

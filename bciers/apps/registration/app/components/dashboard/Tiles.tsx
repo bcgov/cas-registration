@@ -1,34 +1,24 @@
 "use client";
 
 import Tile from "@/app/components/dashboard/Tile";
-import {
-  IncomingTileData,
-  TileContentWithHref,
-  TileContentWithLinks,
-} from "@/app/components/dashboard/types";
+import { TileContent } from "@/app/components/dashboard/types";
 
-export default function Tiles({
-  tileData,
-  tileMap,
-}: {
-  tileData: IncomingTileData[];
-  tileMap: { [key: string]: TileContentWithHref | TileContentWithLinks };
-}) {
+export default function Tiles({ tileData }: { tileData: TileContent[] }) {
   return (
     <section className="flex flex-wrap gap-x-16 lg:gap-x-24 gap-y-16 mt-4">
       {tileData &&
         tileData.map((tile) => {
-          const { tileType } = tile;
-          const tileContent = tileMap[tileType];
-          const { description, title } = tileContent;
+          const { title, content } = tile;
           // Need to revist href vs links
-          const href = (tileContent as TileContentWithHref)?.href;
+          const path = tile?.path;
+          const links = tile?.links;
           return (
             <Tile
-              key={tileType}
-              description={description}
-              href={href}
+              key={title}
+              content={content}
+              path={path}
               title={title}
+              links={links}
             />
           );
         })}
