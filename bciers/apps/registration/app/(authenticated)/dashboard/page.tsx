@@ -86,43 +86,43 @@ export default async function Page() {
 
   // This is the mock API response data for the registration dashboard tiles
   // It uses the simpler registration tiles with no sub-links. The href is used to wrap the entire tile in an anchor tag
-  // const mockRegistrationDashboardTilesAPIData = [
-  //   {
-  //     href: "/dashboard",
-  //     content: "View or update information of your operator here.",
-  //     title: "My Operator",
-  //   },
-  //   {
-  //     href: "/dashboard",
-  //     content:
-  //       "View the operations owned by your operator, or to add new operation to your operator here.",
-  //     title: "Operations",
-  //   },
-  //   {
-  //     href: "/dashboard",
-  //     content:
-  //       "View the contacts of your operator, or to add new contact for your operator here.",
-  //     title: "Contacts",
-  //   },
-  //   {
-  //     href: "/dashboard",
-  //     content:
-  //       "View, approve or decline Business BCeID user access requests to your operator, or to assign access type to users here.",
-  //     title: "Users",
-  //   },
-  //   {
-  //     href: "/dashboard",
-  //     content:
-  //       "Track the registration of operations, or to start new registration here.",
-  //     title: "Register an Operation",
-  //   },
-  //   {
-  //     href: "/dashboard",
-  //     content:
-  //       "Report sales, transfer, closure, acquisition, divestment, change in operator or director control, temporary shut down, etc. here.",
-  //     title: "Report an Event",
-  //   },
-  // ] as TileContent[];
+  const mockRegistrationDashboardTilesAPIData = [
+    {
+      href: "/dashboard",
+      content: "View or update information of your operator here.",
+      title: "My Operator",
+    },
+    {
+      href: "/dashboard",
+      content:
+        "View the operations owned by your operator, or to add new operation to your operator here.",
+      title: "Operations",
+    },
+    {
+      href: "/dashboard",
+      content:
+        "View the contacts of your operator, or to add new contact for your operator here.",
+      title: "Contacts",
+    },
+    {
+      href: "/dashboard",
+      content:
+        "View, approve or decline Business BCeID user access requests to your operator, or to assign access type to users here.",
+      title: "Users",
+    },
+    {
+      href: "/dashboard",
+      content:
+        "Track the registration of operations, or to start new registration here.",
+      title: "Register an Operation",
+    },
+    {
+      href: "/dashboard",
+      content:
+        "Report sales, transfer, closure, acquisition, divestment, change in operator or director control, temporary shut down, etc. here.",
+      title: "Report an Event",
+    },
+  ] as TileContent[];
 
   return (
     <div>
