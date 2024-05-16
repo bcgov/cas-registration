@@ -120,13 +120,14 @@ class OperationService:
             # We need to check if the file has changed, if it has, we need to delete the old one and create a new one
             if not files_have_same_hash(payload.statutory_declaration, existing_statutory_document.file):
                 existing_statutory_document.delete()
-                return DocumentDataAccessService.create_statutory_declaration(user_guid, payload.statutory_declaration)
+                return DocumentDataAccessService.create_document(
+                    user_guid, payload.statutory_declaration, "signed_statutory_declaration"
+                )
 
         else:
             # if there is no existing statutory declaration document, create a new one
-            return DocumentDataAccessService.create_statutory_declaration(
-                user_guid,
-                payload.statutory_declaration,
+            return DocumentDataAccessService.create_document(
+                user_guid, payload.statutory_declaration, "signed_statutory_declaration"
             )
 
     @classmethod
