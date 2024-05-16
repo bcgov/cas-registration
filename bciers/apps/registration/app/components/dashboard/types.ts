@@ -7,6 +7,6 @@ export interface IncomingTileData {
 export interface TileContent {
   title: string;
   content: string;
-  path?: string;
+  href?: string;
   links?: { title: string; href: string }[];
 }
