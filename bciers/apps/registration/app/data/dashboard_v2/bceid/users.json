@@ -1,6 +1,5 @@
 {
   "title": "User Access Management",
-  "icon": "Users",
   "content": " For managing user access to your operator profile",
   "path": "/dashboard/users"
 }

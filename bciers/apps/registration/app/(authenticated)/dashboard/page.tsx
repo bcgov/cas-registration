@@ -51,34 +51,40 @@ export default async function Page() {
     },
   ];
 
-  const mockTileData2 = [
+  const mockRegistrationDashboardTiles = [
     {
-      type: "select_operator",
-      // If we use this format to display registration links we may be able to re-use
-      // the same serivce layer for the registration dashboard tiles
-      links: [
-        {
-          type: "my_operator",
-        },
-        {
-          type: "operations",
-        },
-        {
-          type: "contacts",
-        },
-        {
-          type: "users",
-        },
-        {
-          type: "register_an_operation",
-        },
-        {
-          type: "report_an_event",
-        },
-      ],
+      type: "my_operator",
     },
     {
       type: "operations",
+    },
+    {
+      type: "contacts",
+    },
+    {
+      type: "users",
+    },
+    {
+      type: "register_an_operation",
+    },
+    {
+      type: "report_an_event",
+    },
+  ];
+
+  const mockTileData2 = [
+    {
+      type: "registration",
+      // If we use this format to display registration links we may be able to re-use
+      // the same serivce layer for the registration dashboard tiles
+      links: mockRegistrationDashboardTiles,
+    },
+    {
+      type: "reporting",
+      links: [
+        { type: "submit_annual_reports" },
+        { type: "view_past_submissions" },
+      ],
     },
     {
       type: "users",

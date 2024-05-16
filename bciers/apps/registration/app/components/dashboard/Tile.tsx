@@ -20,7 +20,7 @@ const Tile = ({
       <a
         key={title}
         href={path}
-        className="dashboard-tile-container no-underline cursor-pointer min-h-[200px] justify-start"
+        className="dashboard-tile-container no-underline cursor-pointer justify-start min-h-[240px] h-fit"
       >
         <h2 className="flex items-center m-0">
           <div>{title}</div>
@@ -31,7 +31,10 @@ const Tile = ({
   }
 
   return (
-    <div key={title} className="dashboard-tile-container p-0">
+    <div
+      key={title}
+      className="dashboard-tile-container p-0 min-h-[240px] h-fit"
+    >
       <div className="p-6">
         <h2 className="flex items-center m-0 text-bc-link-blue">
           <div>{title}</div>
