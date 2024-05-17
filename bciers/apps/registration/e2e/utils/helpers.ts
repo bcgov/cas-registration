@@ -447,3 +447,34 @@ export async function tableLastRowIsVisible(page: Page) {
   const lastRow = rows.last();
   await expect(lastRow).toBeVisible();
 }
+
+// 🛠️ Function: waits for the DOM to stabilize
+export async function debounceDom(
+  page: Page,
+  pollDelay = 50,
+  stableDelay = 350,
+) {
+  let markupPrevious = "";
+  const timerStart = new Date();
+  let isStable = false;
+  while (!isStable) {
+    const markupCurrent = await page.evaluate(() => document.body.innerHTML);
+    if (markupCurrent == markupPrevious) {
+      const elapsed = new Date().getTime() - timerStart.getTime();
+      isStable = stableDelay <= elapsed;
+    } else {
+      markupPrevious = markupCurrent;
+    }
+    if (!isStable)
+      await new Promise((resolve) => setTimeout(resolve, pollDelay));
+  }
+}
+
+// 🛠️ Function: waits for the Element to stabilize
+export async function waitForElementToStabalize(
+  page: Page,
+  el: string = "body",
+) {
+  const element = await page.$(el);
+  await element?.waitForElementState("stable");
+}

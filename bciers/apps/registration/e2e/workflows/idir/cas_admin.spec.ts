@@ -11,6 +11,7 @@ import {
   setupTestEnvironment,
   tableLastRowIsVisible,
   tableRowCount,
+  waitForElementToStabalize,
 } from "@/e2e/utils/helpers";
 // ☰ Enums
 import {
@@ -83,7 +84,7 @@ test.describe("Test Workflow cas_admin", () => {
       // 🔍 Assert cas_admin is able to click "View Details" on see detailed info related Declined
       await operatorsPage.formHasExpectedUX(UserOperatorStatus.DECLINED);
       // Wait for accordion to expand
-      await page.waitForTimeout(1000);
+      await waitForElementToStabalize(operatorsPage.page);
       // 📷 Cheese!
       let pageContent = page.locator("html");
       await happoPlaywright.screenshot(operatorsPage.page, pageContent, {
@@ -98,7 +99,7 @@ test.describe("Test Workflow cas_admin", () => {
       // 🔍 Assert cas_admin is able to click "View Details" on see detailed info related Approved
       await operatorsPage.formHasExpectedUX(UserOperatorStatus.APPROVED);
       // Wait for accordion to expand
-      await page.waitForTimeout(1000);
+      await waitForElementToStabalize(operatorsPage.page);
       // 📷 Cheese!
       pageContent = page.locator("html");
       await happoPlaywright.screenshot(operatorsPage.page, pageContent, {
@@ -175,7 +176,7 @@ test.describe("Test Workflow cas_admin", () => {
       // 🔍 Assert cas_admin is able to click "View Details" on each status and see detailed info related to that status
       await operationsPage.formHasExpectedUX(OperationStatus.PENDING);
       // Wait for accordion to expand
-      await page.waitForTimeout(1000);
+      await waitForElementToStabalize(operationsPage.page);
       // 📷 Cheese!
       let pageContent = page.locator("html");
       await happoPlaywright.screenshot(operationsPage.page, pageContent, {
@@ -189,7 +190,7 @@ test.describe("Test Workflow cas_admin", () => {
 
       await operationsPage.formHasExpectedUX(OperationStatus.DECLINED);
       // Wait for accordion to expand
-      await page.waitForTimeout(1000);
+      await waitForElementToStabalize(operationsPage.page);
       // 📷 Cheese!
       pageContent = page.locator("html");
       await happoPlaywright.screenshot(operationsPage.page, pageContent, {
