@@ -18,6 +18,8 @@ from registration.utils import (
 )
 from datetime import datetime
 from registration.models import (
+    Contact,
+    Document,
     Operation,
     Operator,
     User,
@@ -82,8 +84,8 @@ class OperationService:
     @classmethod
     @transaction.atomic()
     def create_or_update_point_of_contact(
-        cls, user_guid: UUID, existing_point_of_contact_id: int, payload: OperationUpdateIn
-    ):
+        cls, user_guid: UUID, existing_point_of_contact_id: Optional[int], payload: OperationUpdateIn
+    ) -> Optional[Contact]:
         is_external_point_of_contact = payload.is_external_point_of_contact
         if is_external_point_of_contact is False:  # the point of contact is the user
 
@@ -110,27 +112,27 @@ class OperationService:
                 existing_point_of_contact_id, external_contact_data, user_guid
             )
             return external_poc
+        return None
 
     @classmethod
     @transaction.atomic()
     def create_or_replace_statutory_declaration(
-        cls, user_guid: UUID, payload: OperationUpdateIn, existing_statutory_document
-    ):
+        cls, user_guid: UUID, payload: OperationUpdateIn, existing_statutory_document: Optional[Document]
+    ) -> Optional[Document]:
 
         # if there is an existing statutory declaration document, check if the new one is different
         if existing_statutory_document:
             # We need to check if the file has changed, if it has, we need to delete the old one and create a new one
-            if not files_have_same_hash(payload.statutory_declaration, existing_statutory_document.file):
+            if not files_have_same_hash(payload.statutory_declaration, existing_statutory_document.file):  # type: ignore[arg-type] # mypy is not aware of the schema validator
                 existing_statutory_document.delete()
                 return DocumentDataAccessService.create_document(
-                    user_guid, payload.statutory_declaration, "signed_statutory_declaration"
+                    user_guid, payload.statutory_declaration, "signed_statutory_declaration"  # type: ignore[arg-type] # mypy is not aware of the schema validator
                 )
-
-        else:
-            # if there is no existing statutory declaration document, create a new one
-            return DocumentDataAccessService.create_document(
-                user_guid, payload.statutory_declaration, "signed_statutory_declaration"
-            )
+            return None
+        # if there is no existing statutory declaration document, create a new one
+        return DocumentDataAccessService.create_document(
+            user_guid, payload.statutory_declaration, "signed_statutory_declaration"  # type: ignore[arg-type] # mypy is not aware of the schema validator
+        )
 
     @classmethod
     @transaction.atomic()
@@ -159,7 +161,7 @@ class OperationService:
             operation.save(update_fields=[*payload_dict.keys(), 'naics_code_id', 'status'])
             operation.regulated_products.set(payload.regulated_products)  # type: ignore[attr-defined]
         elif form_section == 2:
-            existing_point_of_contact_id = operation.point_of_contact_id or None
+            existing_point_of_contact_id: Optional[int] = operation.point_of_contact_id or None
             poc = cls.create_or_update_point_of_contact(user_guid, existing_point_of_contact_id, payload)
             operation.point_of_contact = poc
             operation.save(update_fields=['point_of_contact'])
@@ -168,8 +170,10 @@ class OperationService:
             existing_statutory_document = DocumentService.get_existing_statutory_declaration_by_operation_id(
                 operation_id
             )
+            # If document is new or has changed, we need to set it to the operation
             document = cls.create_or_replace_statutory_declaration(user_guid, payload, existing_statutory_document)
-            operation.documents.set([document])
+            if document:
+                operation.documents.set([document])
 
         if submit == "true":
             """
