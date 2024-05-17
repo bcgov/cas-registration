@@ -40,7 +40,7 @@ const OperatorSearchWidget: React.FC<WidgetProps> = ({
       "GET",
     );
 
-    if (response.error) {
+    if (!response || response?.error) {
       return;
     }
 
