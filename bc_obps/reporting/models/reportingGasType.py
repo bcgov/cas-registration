@@ -11,6 +11,8 @@ class ReportingGasType(BaseModel):
         table_name='erc_history"."reporting_gas_type_history',
         history_user_id_field=models.UUIDField(null=True, blank=True),
     )
+    def __str__(self) -> str:
+        return self.name
 
     class Meta:
         db_table_comment = "Reporting gas types"

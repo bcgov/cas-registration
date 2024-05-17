@@ -24,6 +24,10 @@ class ConfigurationElement(BaseModel):
     valid_from = models.ForeignKey(Configuration, on_delete=models.DO_NOTHING, related_name="+")
     valid_to = models.ForeignKey(Configuration, on_delete=models.DO_NOTHING, related_name="+")
 
+    def to_json(self):
+      return {"reporting_activity_id": self.reporting_activity.id, "reporting_activity_name": self.reporting_activity.name}
+
+
     class Meta:
         db_table_comment = "Element of a configuration, representing a single relationship between multiple entities"
         db_table = 'erc"."configuration_element'

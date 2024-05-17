@@ -1,0 +1,236 @@
+{
+  type: "object",
+  title: "Operation Information",
+  required: [
+    "name",
+    "type",
+    "naics_code_id",
+    // keys that are questions aren't saved in the database
+  ],
+  properties: {
+    name: { type: "string", title: "GSC Unit Name" },
+    name: { type: "string", title: "Fuel Name" },
+    name: { type: "string", title: "Fuel Description" },
+    name: { type: "string", title: "Gas Type" },
+    name: { type: "string", title: "Methodology" },
+    oneOf: [
+      if methodology = 1{
+        properties: {
+          Fuel Default High Heating Value: {
+            type: 'string',
+          },
+          Unit-Fuel-CO2 Default Emission Factor :
+          type: 'string',
+        },
+      },
+      if methodology = 2{
+        properties: {
+          Unit-Fuel-CO2 Default Emission Factor: {
+            type: 'string',
+          },
+        },
+        required: ['ipsum'],
+      },
+    ],
+  };
+
+  {
+    "type": "object",
+    "properties": {
+      "FuelName" : {
+        "type": "string"
+      },
+      "FuelAmount": {
+        "type": "number"
+      },
+      "gasType": {
+        "enum": [
+          "CO2",
+          "CH4",
+          "N2O"
+        ]
+      }
+    },
+    "allOf": [
+      {
+        "if": {
+          "properties": {
+            "gasType": {
+              "const": "CO2"
+            }
+          }
+        },
+        "then": {
+          "properties": {
+            "methodology": {
+              "type": "string",
+              "enum": [
+                "m1",
+                "m2",
+                "m3"
+              ]
+            }
+          },
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "methodology": {
+                    "const": "m1"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "fuelDefaultHighHeatingValue": {
+                    "type": "string"
+                  }
+                }
+              },
+              "if": {
+                "properties": {
+                  "methodology": {
+                    "const": "m2"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "BoilerRatio": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          ],
+          "required": [
+            "methodology"
+          ]
+        }
+      },
+      {
+        "if": {
+          "properties": {
+            "gasType": {
+              "const": "CH4"
+            }
+          }
+        },
+        "then": {
+          "properties": {
+            "methodology": {
+              "type": "string",
+              "enum": [
+                "m4",
+                "m5",
+                "m6",
+              ]
+            },
+          },
+          "required": [
+            "methodology",
+          ]
+        }
+      },
+      {
+        "required": [
+          "gasType"
+        ]
+      }
+    ]
+  }
+
+
+  ---- Working Example ----
+
+  {
+    "type": "object",
+    "properties": {
+      "animal": {
+        "enum": [
+          "Cat",
+          "Fish"
+        ]
+      }
+    },
+    "allOf": [
+      {
+        "if": {
+          "properties": {
+            "animal": {
+              "const": "Cat"
+            }
+          }
+        },
+        "then": {
+          "properties": {
+            "food": {
+              "type": "string",
+              "enum": [
+                "meat",
+                "grass",
+                "fish"
+              ]
+            }
+          },
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "food": {
+                    "const": "meat"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "barf": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          ],
+          "required": [
+            "food"
+          ]
+        }
+      },
+      {
+        "if": {
+          "properties": {
+            "animal": {
+              "const": "Fish"
+            }
+          }
+        },
+        "then": {
+          "properties": {
+            "food": {
+              "type": "string",
+              "enum": [
+                "insect",
+                "worms"
+              ]
+            },
+            "water": {
+              "type": "string",
+              "enum": [
+                "lake",
+                "sea"
+              ]
+            }
+          },
+          "required": [
+            "food",
+            "water"
+          ]
+        }
+      },
+      {
+        "required": [
+          "animal"
+        ]
+      }
+    ]
+  }
