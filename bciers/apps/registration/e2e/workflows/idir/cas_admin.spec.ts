@@ -83,7 +83,7 @@ test.describe("Test Workflow cas_admin", () => {
       // 🔍 Assert cas_admin is able to click "View Details" on see detailed info related Declined
       await operatorsPage.formHasExpectedUX(UserOperatorStatus.DECLINED);
       // Wait for accordion to expand
-      await page.waitForTimeout(1200);
+      await page.waitForTimeout(1000);
       // 📷 Cheese!
       let pageContent = page.locator("html");
       await happoPlaywright.screenshot(operatorsPage.page, pageContent, {
@@ -98,7 +98,7 @@ test.describe("Test Workflow cas_admin", () => {
       // 🔍 Assert cas_admin is able to click "View Details" on see detailed info related Approved
       await operatorsPage.formHasExpectedUX(UserOperatorStatus.APPROVED);
       // Wait for accordion to expand
-      await page.waitForTimeout(1200);
+      await page.waitForTimeout(1000);
       // 📷 Cheese!
       pageContent = page.locator("html");
       await happoPlaywright.screenshot(operatorsPage.page, pageContent, {
@@ -113,7 +113,7 @@ test.describe("Test Workflow cas_admin", () => {
       // 🔍 Assert cas_admin is able to click "View Details" on see detailed info related Pending
       await operatorsPage.formHasExpectedUX(
         UserOperatorStatus.PENDING,
-        "New Operator 5 Legal Name",
+        "New Operator 3 Legal Name",
       );
       // 📷 Cheese!
       pageContent = page.locator("html");
@@ -175,7 +175,7 @@ test.describe("Test Workflow cas_admin", () => {
       // 🔍 Assert cas_admin is able to click "View Details" on each status and see detailed info related to that status
       await operationsPage.formHasExpectedUX(OperationStatus.PENDING);
       // Wait for accordion to expand
-      await page.waitForTimeout(1200);
+      await page.waitForTimeout(1000);
       // 📷 Cheese!
       let pageContent = page.locator("html");
       await happoPlaywright.screenshot(operationsPage.page, pageContent, {
@@ -189,7 +189,7 @@ test.describe("Test Workflow cas_admin", () => {
 
       await operationsPage.formHasExpectedUX(OperationStatus.DECLINED);
       // Wait for accordion to expand
-      await page.waitForTimeout(1200);
+      await page.waitForTimeout(1000);
       // 📷 Cheese!
       pageContent = page.locator("html");
       await happoPlaywright.screenshot(operationsPage.page, pageContent, {

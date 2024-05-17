@@ -17,7 +17,6 @@ import {
 import * as dotenv from "dotenv";
 import {
   checkFormFieldsReadOnly,
-  debounceDom,
   fillAllFormFields,
   getAllFormInputs,
 } from "@/e2e/utils/helpers";
@@ -233,14 +232,14 @@ export class OperatorPOM {
     await this.fieldPostal.fill(E2EValue.INPUT_BAD_POSTAL);
     await this.fieldWebSite.fill(E2EValue.INPUT_BAD_WEB_SITE);
     await this.clickSubmitButton();
-    // Wait for DOM to stabilize
-    await debounceDom(this.page);
+    // Wait for text to fully render
+    await this.page.waitForTimeout(200);
   }
 
   async triggerErrorsFieldRequired() {
     await this.clickSubmitButton();
-    // Wait for DOM to stabilize
-    await debounceDom(this.page);
+    // Wait for text to fully render
+    await this.page.waitForTimeout(200);
   }
 
   // # Assertions
