@@ -1,7 +1,7 @@
 import {
   GridColumnGroupHeaderParams,
   GridColumnGroupingModel,
-} from "@mui/x-data-grid";
+} from "@mui/x-data-grid-pro";
 import EmptyGroupCell from "@/app/components/datagrid/cells/EmptyGroupCell";
 import { OPERATOR_COLUMN_INDEX } from "@/app/components/datagrid/models/operationColumns";
 

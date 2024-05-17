@@ -1599,6 +1599,7 @@ __metadata:
     "@mui/material-nextjs": "npm:^5.15.11"
     "@mui/system": "npm:^5.15.14"
     "@mui/x-data-grid": "npm:6.19.8"
+    "@mui/x-data-grid-pro": "npm:6.19.8"
     "@nx-tools/nx-container": "npm:5.2.0"
     "@nx/devkit": "npm:18.2.1"
     "@nx/eslint": "npm:18.2.1"
@@ -2660,7 +2661,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/utils@npm:^5.14.16, @mui/utils@npm:^5.15.14":
+"@mui/utils@npm:^5.13.7, @mui/utils@npm:^5.14.16, @mui/utils@npm:^5.15.14":
   version: 5.15.14
   resolution: "@mui/utils@npm:5.15.14"
   dependencies:
@@ -2675,6 +2676,27 @@ __metadata:
     "@types/react":
       optional: true
   checksum: 10c0/36265988477637a011361456b40929de928e215466b72e6c48673a2088610d83e09960a3e0608100448910683079fc80a5e11dbf49b9ce7109dd8e49403ae3b3
+  languageName: node
+  linkType: hard
+
+"@mui/x-data-grid-pro@npm:6.19.8":
+  version: 6.19.8
+  resolution: "@mui/x-data-grid-pro@npm:6.19.8"
+  dependencies:
+    "@babel/runtime": "npm:^7.23.2"
+    "@mui/utils": "npm:^5.14.16"
+    "@mui/x-data-grid": "npm:6.19.8"
+    "@mui/x-license-pro": "npm:6.10.2"
+    "@types/format-util": "npm:^1.0.3"
+    clsx: "npm:^2.0.0"
+    prop-types: "npm:^15.8.1"
+    reselect: "npm:^4.1.8"
+  peerDependencies:
+    "@mui/material": ^5.4.1
+    "@mui/system": ^5.4.1
+    react: ^17.0.0 || ^18.0.0
+    react-dom: ^17.0.0 || ^18.0.0
+  checksum: 10c0/33d9015141fb3c29701ae187575900c16265088372ba1fea882b0dd613e68c3af1741679aa3abc263e683fdf753e8d92bb2b4e74363164d14c911ab0a042150d
   languageName: node
   linkType: hard
 
@@ -2693,6 +2715,18 @@ __metadata:
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
   checksum: 10c0/ef2543367a52b23fbf2721bda357c6aee1646abd0c3ad14b1529c75fd5c0c6a0c22a5b9b6ae7b323378ef38b81432cacf3fdcd7d8649787bf23b457c111efd1e
+  languageName: node
+  linkType: hard
+
+"@mui/x-license-pro@npm:6.10.2":
+  version: 6.10.2
+  resolution: "@mui/x-license-pro@npm:6.10.2"
+  dependencies:
+    "@babel/runtime": "npm:^7.22.6"
+    "@mui/utils": "npm:^5.13.7"
+  peerDependencies:
+    react: ^17.0.0 || ^18.0.0
+  checksum: 10c0/e1c11956fc70b8e9429cee95e2d88ecd3f850a58ecfdb461441b59fa91b62db48bb30485a2002221a3c2554967937a869134f40ccc7c2b45043b747d73734619
   languageName: node
   linkType: hard
 
@@ -4496,6 +4530,13 @@ __metadata:
     "@types/qs": "npm:*"
     "@types/serve-static": "npm:*"
   checksum: 10c0/12e562c4571da50c7d239e117e688dc434db1bac8be55613294762f84fd77fbd0658ccd553c7d3ab02408f385bc93980992369dd30e2ecd2c68c358e6af8fabf
+  languageName: node
+  linkType: hard
+
+"@types/format-util@npm:^1.0.3":
+  version: 1.0.4
+  resolution: "@types/format-util@npm:1.0.4"
+  checksum: 10c0/173d1f67155c82311aaa5e90467351a18db17253c7d10174dc5a54d942415f1aa1f693f33ac4b15855e6f90363becb925651337692b3817271037f3d86b6e9f5
   languageName: node
   linkType: hard
 

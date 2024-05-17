@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import DataGrid from "@/app/components/datagrid/DataGrid";
-import { GridColumnGroupHeaderParams } from "@mui/x-data-grid";
+import { GridColumnGroupHeaderParams } from "@mui/x-data-grid-pro";
 import { useSession } from "next-auth/react";
 import OperationsActionCell from "@/app/components/datagrid/cells/OperationsActionCell";
 import HeaderSearchCell from "@/app/components/datagrid/cells/HeaderSearchCell";
@@ -33,9 +33,11 @@ const OperationSearchCell = ({
 };
 
 const OperationDataGrid = ({
+  gridCeption,
   initialData,
   isOperatorColumn = false,
 }: {
+  gridCeption?: React.ReactNode;
   isOperatorColumn?: boolean;
   initialData: {
     rows: OperationRow[];
@@ -70,6 +72,7 @@ const OperationDataGrid = ({
     <DataGrid
       columns={columns}
       columnGroupModel={columnGroup}
+      gridCeption={gridCeption}
       fetchPageData={fetchOperationsPageData}
       paginationMode="server"
       initialData={initialData}

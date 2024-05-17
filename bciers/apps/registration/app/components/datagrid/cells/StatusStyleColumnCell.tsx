@@ -2,7 +2,7 @@
 
 import { Status } from "@/app/utils/enums";
 import { Chip, ChipOwnProps } from "@mui/material";
-import { GridRenderCellParams } from "@mui/x-data-grid";
+import { GridRenderCellParams } from "@mui/x-data-grid-pro";
 
 export default function StatusStyleColumnCell(params: GridRenderCellParams) {
   const colorMap = new Map<string, ChipOwnProps["color"]>([

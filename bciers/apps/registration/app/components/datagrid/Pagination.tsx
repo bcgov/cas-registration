@@ -5,7 +5,7 @@ import {
   useGridSelector,
   gridFilteredTopLevelRowCountSelector,
   useGridRootProps,
-} from "@mui/x-data-grid";
+} from "@mui/x-data-grid-pro";
 import MuiPagination from "@mui/material/Pagination";
 import { TablePaginationProps } from "@mui/material/TablePagination";
 

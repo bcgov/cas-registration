@@ -1,4 +1,4 @@
-import { GridRowsProp } from "@mui/x-data-grid";
+import { GridRowsProp } from "@mui/x-data-grid-pro";
 
 import { actionHandler } from "@/app/utils/actions";
 import { getServerSession } from "next-auth";
@@ -9,6 +9,11 @@ import {
 } from "@/app/components/operations/types";
 import buildQueryParams from "@/app/utils/buildQueryParams";
 import OperationDataGrid from "./OperationDataGrid";
+import {
+  processExternalDashboardUsersTileData,
+  UserOperatorDataGridRow,
+} from "@/app/utils/users/adminUserOperators";
+import UserOperatorDataGrid from "@/app/components/userOperators/UserOperatorDataGrid";
 
 const formatTimestamp = (timestamp: string) => {
   if (!timestamp) return undefined;
@@ -95,6 +100,10 @@ export default async function Operations({
     return <div>No operations data in database.</div>;
   }
 
+  // Fetch userOperator data
+  const userOperatorData: { rows: UserOperatorDataGridRow[] } =
+    await processExternalDashboardUsersTileData();
+
   // Show the operator column if the user is CAS internal
   const isOperatorColumn =
     session?.user.app_role?.includes("cas") &&
@@ -106,6 +115,7 @@ export default async function Operations({
       <OperationDataGrid
         initialData={operations}
         isOperatorColumn={isOperatorColumn}
+        gridCeption={<UserOperatorDataGrid initialData={userOperatorData} />}
       />
     </div>
   );

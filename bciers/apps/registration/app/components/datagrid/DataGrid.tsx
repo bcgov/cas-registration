@@ -4,12 +4,12 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import debounce from "lodash.debounce";
 import {
-  DataGrid as MuiGrid,
+  DataGridPro as MuiGrid,
   GridColDef,
   GridColumnGroupingModel,
   GridSortDirection,
   GridSortItem,
-} from "@mui/x-data-grid";
+} from "@mui/x-data-grid-pro";
 import Pagination from "@/app/components/datagrid/Pagination";
 import SortIcon from "@/app/components/icons/SortIcon";
 import styles from "@/app/components/datagrid/styles";
@@ -18,6 +18,7 @@ interface Props {
   fetchPageData?: (params: { [key: string]: any }) => Promise<any>;
   columns: GridColDef[];
   columnGroupModel?: GridColumnGroupingModel;
+  gridCeption?: React.ReactNode;
   initialData: {
     rows: { [key: string]: any }[];
     row_count?: number;
@@ -38,6 +39,7 @@ const PAGE_SIZE = 20;
 const DataGrid: React.FC<Props> = ({
   columns,
   columnGroupModel,
+  gridCeption,
   fetchPageData,
   paginationMode = "client",
   initialData,
@@ -119,10 +121,12 @@ const DataGrid: React.FC<Props> = ({
         rows={rows}
         columns={columns}
         columnGroupingModel={columnGroupModel}
+        getDetailPanelContent={gridCeption ? () => gridCeption : null}
+        getDetailPanelHeight={() => "auto"}
+        experimentalFeatures={{ columnGrouping: true, ariaV7: true }}
         loading={loading}
         rowCount={rowCount}
         showCellVerticalBorder
-        experimentalFeatures={{ columnGrouping: true, ariaV7: true }}
         disableColumnMenu
         initialState={{
           pagination: { paginationModel: { pageSize: PAGE_SIZE } },

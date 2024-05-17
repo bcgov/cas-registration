@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { GridRenderCellParams } from "@mui/x-data-grid";
+import { GridRenderCellParams } from "@mui/x-data-grid-pro";
 import { OperationStatus } from "@/app/utils/enums";
 
 const OperationsActionCell = (isIndustryUser: boolean) => {
@@ -17,7 +17,7 @@ const OperationsActionCell = (isIndustryUser: boolean) => {
     }
 
     return (
-      <div>
+      <div onClick={() => params.api.unstable_getAllGroupDetails()}>
         {/* 🔗 Add link with href query parameter with row's descriptive text*/}
         <Link
           className="no-underline text-bc-link-blue whitespace-normal"
