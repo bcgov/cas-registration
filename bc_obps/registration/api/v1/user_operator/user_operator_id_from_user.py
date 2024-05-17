@@ -1,3 +1,6 @@
+from typing import Dict, Literal, Tuple
+from uuid import UUID
+from django.http import HttpRequest
 from registration.constants import USER_OPERATOR_TAGS
 from service.data_access_service.user_service import UserDataAccessService
 
@@ -21,5 +24,5 @@ from registration.api.utils.current_user_utils import get_current_user_guid
 )
 @authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles(), False)
 @handle_http_errors()
-def get_user_operator_id(request):
+def get_user_operator_id(request: HttpRequest) -> Tuple[Literal[200], Dict[str, UUID]]:
     return 200, {"user_operator_id": UserDataAccessService.get_user_operator_by_user(get_current_user_guid(request)).id}

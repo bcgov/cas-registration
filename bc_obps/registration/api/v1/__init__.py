@@ -1,4 +1,4 @@
-# type: ignore[no-redef]
+# type: ignore
 # ruff: noqa: F401
 from . import (
     business_structures,
@@ -8,7 +8,6 @@ from . import (
     regulated_products,
     user_operator,
     reporting_activities,
-    users,
     operations,
 )
 from ._operations import operation_id

@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, Optional
 from uuid import UUID
 from registration.emails import send_operator_access_request_email
 from registration.enums.enums import AccessRequestStates, AccessRequestTypes
@@ -23,7 +23,7 @@ from registration.constants import PAGE_SIZE, UNAUTHORIZED_MESSAGE
 
 class UserOperatorService:
     @classmethod
-    def check_if_user_eligible_to_access_user_operator(cls, user_guid: UUID, user_operator_id: UUID):
+    def check_if_user_eligible_to_access_user_operator(cls, user_guid: UUID, user_operator_id: UUID) -> Optional[bool]:
         """
         Check if a user is eligible to access a user_operator (i.e., they're allowed to access their own information (user_operator, operations, etc.) but not other people's).
 
@@ -37,16 +37,17 @@ class UserOperatorService:
 
         user: User = UserDataAccessService.get_by_guid(user_guid)
         user_operator: UserOperator = UserOperatorDataAccessService.get_user_operator_by_id(user_operator_id)
-        if not user.is_industry_user():
-            # internal users are always allowed to access user operators. (Though the @authorize decorator prevents them from accessing certain external-only endpoints)
-            return True
-        if user_operator.user.user_guid != user_guid:
+        if user.is_industry_user() and user_operator.user.user_guid != user_guid:
             raise PermissionError("Your user is not associated with this operator.")
+        # internal users are always allowed to access user operators. (Though the @authorize decorator prevents them from accessing certain external-only endpoints)
+        return None
 
     # Function to create/update an operator when creating/updating a user_operator
     @classmethod
     @transaction.atomic()
-    def save_operator(cls, updated_data: UserOperatorOperatorIn, operator_instance, user_guid: UUID) -> Operator:
+    def save_operator(
+        cls, updated_data: UserOperatorOperatorIn, operator_instance: Operator, user_guid: UUID
+    ) -> Operator:
         existing_physical_address = getattr(getattr(operator_instance, 'physical_address', None), 'id', None)
         existing_mailing_address = getattr(getattr(operator_instance, 'mailing_address', None), 'id', None)
 
@@ -188,7 +189,7 @@ class UserOperatorService:
             cra_business_number=cra_business_number,
             bc_corporate_registry_number=new_data.bc_corporate_registry_number,
             # treating business_structure as a foreign key
-            business_structure=new_data.business_structure,
+            business_structure=new_data.business_structure,  # type: ignore[misc] # we use field validator which returns a BusinessStructure object
             # This used to default to 'Draft' but now defaults to 'Pending' since we removed page 2 of the user operator form
             status=Operator.Statuses.PENDING,
         )
@@ -239,7 +240,8 @@ class UserOperatorService:
             user_operator.verified_by_id = admin_user_guid
 
             if user_operator.status == UserOperator.Statuses.APPROVED and updated_role != UserOperator.Roles.PENDING:
-                user_operator.role = updated_role  # we only update the role if the user_operator is being approved
+                # we only update the role if the user_operator is being approved
+                user_operator.role = updated_role  # type: ignore[assignment]
 
             access_request_type: AccessRequestTypes = AccessRequestTypes.OPERATOR_WITH_ADMIN
             if admin_user.is_irc_user():

@@ -26,7 +26,7 @@ from django.db.models import QuerySet
 @handle_http_errors()
 def get_operators_by_cra_number_or_legal_name(
     request: HttpRequest, cra_business_number: Optional[int] = None, legal_name: Optional[str] = ""
-) -> tuple[Literal[200], Union[Operator, QuerySet[Operator]]]:
+) -> Tuple[Literal[200], Union[Operator, QuerySet[Operator], OperatorSearchOut, List[OperatorSearchOut]]]:
     return 200, OperatorService.get_operators_by_cra_number_or_legal_name(cra_business_number, legal_name)
 
 

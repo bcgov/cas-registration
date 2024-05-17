@@ -3,7 +3,7 @@ from common.models import EmailNotificationTemplate
 
 class EmailNotificationTemplateService:
     @classmethod
-    def get_template_by_name(cls, template_name: str):
+    def get_template_by_name(cls, template_name: str) -> EmailNotificationTemplate:
         """
         Get an email notification template by its name.
 
