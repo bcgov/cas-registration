@@ -79,7 +79,7 @@ class UserOperatorOut(ModelSchema):
     bceid_business_name: Optional[str] = Field(None, alias="user.bceid_business_name")
 
     @staticmethod
-    def resolve_mailing_address_same_as_physical(obj: UserOperator):
+    def resolve_mailing_address_same_as_physical(obj: UserOperator) -> bool:
         if not obj.operator.mailing_address or not obj.operator.physical_address:
             return False
         return obj.operator.mailing_address.id == obj.operator.physical_address.id
@@ -89,7 +89,7 @@ class UserOperatorOut(ModelSchema):
         return obj.operator.parent_operators.exists()
 
     @staticmethod
-    def resolve_phone_number(obj):
+    def resolve_phone_number(obj: UserOperator) -> str:
         return str(obj.user.phone_number)
 
     class Config:
@@ -128,7 +128,7 @@ class UserOperatorOperatorIn(Schema):
 
     @field_validator("cra_business_number")
     @classmethod
-    def validate_cra_business_number(cls, value: int):
+    def validate_cra_business_number(cls, value: int) -> Optional[int]:
         return validate_cra_business_number(value)
 
 

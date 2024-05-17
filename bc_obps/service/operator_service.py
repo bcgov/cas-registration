@@ -1,5 +1,6 @@
 from registration.emails import send_operator_access_request_email
 from registration.enums.enums import AccessRequestStates, AccessRequestTypes
+from registration.schema.v1.parent_operator import ParentOperatorIn
 from service.email.email_service import EmailService
 from registration.models import ParentOperator, User, Operator, UserOperator
 from typing import List, Optional, Union
@@ -18,7 +19,7 @@ from registration.models import (
     Address,
 )
 from zoneinfo import ZoneInfo
-
+from ninja.types import DictStrAny
 
 email_service = EmailService()
 
@@ -27,7 +28,7 @@ class OperatorService:
     @classmethod
     def get_operators_by_cra_number_or_legal_name(
         cls, cra_business_number: Optional[int] = None, legal_name: Optional[str] = ""
-    ) -> Union[Operator, QuerySet[Operator]]:
+    ) -> Union[Operator, QuerySet[Operator], OperatorSearchOut, List[OperatorSearchOut]]:
         if not cra_business_number and not legal_name:
             raise Exception("No search value provided")
         if cra_business_number:
@@ -42,12 +43,13 @@ class OperatorService:
                 return [OperatorSearchOut.model_validate(operator) for operator in operators]
             except Exception:
                 raise Exception("No matching operator found. Retry or add operator.")
+        return []
 
     @classmethod
     def archive_parent_operators(
         cls,
-        existing_parent_operators: List[ParentOperator],
-        updated_parent_operators: List[ParentOperator],
+        existing_parent_operators: QuerySet[ParentOperator],
+        updated_parent_operators: List[ParentOperatorIn],
         user_guid: UUID,
     ) -> None:
         updated_parent_operator_indices = [po.operator_index for po in updated_parent_operators if po.operator_index]
@@ -57,7 +59,7 @@ class OperatorService:
         indices_to_delete = list(set(existing_parent_operator_indices) - set(updated_parent_operator_indices))
 
         if indices_to_delete:
-            parent_operators_to_delete: List[ParentOperator] = existing_parent_operators.filter(
+            parent_operators_to_delete: QuerySet[ParentOperator] = existing_parent_operators.filter(
                 operator_index__in=indices_to_delete
             )
             for po in parent_operators_to_delete:
@@ -69,9 +71,9 @@ class OperatorService:
 
     @classmethod
     def handle_parent_operators(
-        cls, updated_parent_operators: Optional[List[ParentOperator]], operator_instance: Operator, user_guid: UUID
+        cls, updated_parent_operators: Optional[List[ParentOperatorIn]], operator_instance: Operator, user_guid: UUID
     ) -> None:
-        existing_parent_operators = operator_instance.parent_operators.all()
+        existing_parent_operators: QuerySet[ParentOperator] = operator_instance.parent_operators.all()
 
         # if the user has removed all parent operators, archive them all
         if not updated_parent_operators and existing_parent_operators:
@@ -143,7 +145,7 @@ class OperatorService:
         """
         operator: Operator = OperatorDataAccessService.get_operator_by_id(operator_id)
         with transaction.atomic():
-            operator.status = updated_data.status
+            operator.status = updated_data.status  # type: ignore[attr-defined]
             if operator.is_new and operator.status == Operator.Statuses.DECLINED:
                 # If the operator is new and declined, we need to decline all user operators tied to this operator
                 user_operators_to_decline: QuerySet[UserOperator] = UserOperator.objects.filter(operator_id=operator_id)
@@ -179,7 +181,7 @@ class OperatorService:
     # Function to save multiple operators so we can reuse it in put/post routes
     @classmethod
     def create_or_update_multiple_operators(
-        cls, multiple_operators_array: List[MultipleOperator], operation: Operation, user: User
+        cls, multiple_operators_array: List[DictStrAny], operation: Operation, user: User
     ) -> None:
         """
         Creates or updates multiple operators associated with a specific operation.
@@ -232,7 +234,9 @@ class OperatorService:
                 if field in multiple_operator_fields_mapping:
                     new_operator[multiple_operator_fields_mapping[field]] = operator[field]
 
-            new_operator["business_structure"] = BusinessStructure.objects.get(name=operator["mo_business_structure"])
+            new_operator["business_structure"] = BusinessStructure.objects.get(
+                name=operator.get("mo_business_structure")
+            )
             # TODO: archive multiple operators in #361 that are not in the array anymore once #326 is done
 
             # check if there is a multiple_operator with that operation id and number

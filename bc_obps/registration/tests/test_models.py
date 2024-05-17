@@ -701,8 +701,10 @@ class OperationModelTest(BaseTestCase):
         # Case: Operation already has a BORO ID
         existing_id = baker.make(BcObpsRegulatedOperation, id='23-0001')  # Example existing ID for the current year
         self.test_object.bc_obps_regulated_operation = existing_id
-        generated_id = self.test_object.generate_unique_boro_id()
-        self.assertEqual(generated_id, existing_id, "Should return the existing ID.")
+        self.test_object.generate_unique_boro_id()
+        self.assertEqual(
+            self.test_object.bc_obps_regulated_operation, existing_id, "Should not change the existing ID."
+        )
 
     def test_generate_unique_boro_id_no_existing_id(self):
         # Case: No existing BORO ID

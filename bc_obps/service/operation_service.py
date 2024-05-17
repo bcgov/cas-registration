@@ -1,4 +1,4 @@
-from typing import Dict, Union
+from typing import Dict, Optional, Union
 from uuid import UUID
 from django.db import transaction
 from registration.emails import send_boro_id_application_email
@@ -24,7 +24,7 @@ from registration.models import (
     UserOperator,
 )
 from zoneinfo import ZoneInfo
-
+from django.core.files.base import ContentFile
 from registration.constants import PAGE_SIZE, UNAUTHORIZED_MESSAGE
 
 
@@ -140,6 +140,7 @@ class OperationService:
         user: User = UserDataAccessService.get_by_guid(user_guid)
         user_operator: UserOperator = UserOperatorService.get_current_user_approved_user_operator_or_raise(user)
         operation: Operation = OperationDataAccessService.get_by_id_for_update(operation_id)
+        payload_statutory_declaration: Optional[ContentFile] = payload.statutory_declaration  # type: ignore[assignment] # mypy is not aware of the schema validator
 
         # industry users can only edit operations that belong to their operator
         if not operation.user_has_access(user_guid) or operation.operator_id != user_operator.operator_id:
@@ -163,7 +164,7 @@ class OperationService:
             operation.point_of_contact = poc
             operation.save(update_fields=['point_of_contact'])
 
-        elif form_section == 3 and payload.statutory_declaration:
+        elif form_section == 3 and payload_statutory_declaration:
             existing_statutory_document = DocumentService.get_existing_statutory_declaration_by_operation_id(
                 operation_id
             )

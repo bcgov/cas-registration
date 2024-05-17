@@ -1,3 +1,5 @@
+from typing import Dict, Literal, Tuple
+from uuid import UUID
 from django.http import HttpRequest
 from registration.api.utils.current_user_utils import get_current_user_guid
 from registration.constants import SELECT_OPERATOR_TAGS
@@ -24,6 +26,5 @@ from service.application_access_service import ApplicationAccessService
 )
 @authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles(), False)
 @handle_http_errors()
-def request_access(request: HttpRequest, payload: SelectOperatorIn):
-
+def request_access(request: HttpRequest, payload: SelectOperatorIn) -> Tuple[Literal[201], Dict[str, UUID]]:
     return 201, ApplicationAccessService.request_access(payload.operator_id, get_current_user_guid(request))

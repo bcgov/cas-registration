@@ -39,7 +39,7 @@ class ParentOperatorIn(Schema):
 
     @field_validator("po_cra_business_number")
     @classmethod
-    def validate_cra_business_number(cls, value: int):
+    def validate_cra_business_number(cls, value: int) -> Optional[int]:
         return validate_cra_business_number(value)
 
 

@@ -14,7 +14,7 @@ class MultipleOperatorOut(ModelSchema):
     mo_cra_business_number: int = Field(..., alias="cra_business_number")
     mo_bc_corporate_registry_number: str = Field(
         ..., alias="bc_corporate_registry_number", regex=BC_CORPORATE_REGISTRY_REGEX
-    )
+    )  # type: ignore[call-arg]
     mo_business_structure: str = Field(..., alias="business_structure")
     mo_website: Optional[str] = Field("", alias="website")
     mo_percentage_ownership: Optional[float] = Field(None, alias="percentage_ownership")
@@ -29,8 +29,8 @@ class MultipleOperatorOut(ModelSchema):
     mo_mailing_postal_code: Optional[str] = Field(None, alias="mailing_address.postal_code")
 
     @staticmethod
-    def resolve_business_structure(mo: MultipleOperator):
-        return mo.business_structure.name
+    def resolve_business_structure(mo: MultipleOperator) -> str:
+        return mo.business_structure.name  # type: ignore # we know that business_structure is not None
 
     class Config:
         model = MultipleOperator
