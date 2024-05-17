@@ -132,6 +132,8 @@ test.describe("Test Workflow industry_user_admin", () => {
     await operationPage.formIsVisible();
     // 👉 Action fill page 1, take screenshot and click save and continue to move to the next step
     await operationPage.formFillPage1();
+    // Wait for the NAICS code text to be fully rendered
+    await page.waitForTimeout(200);
     // 📷 Cheese!
     await happoPlaywright.screenshot(operationPage.page, pageContent, {
       component: "Operation Form Page 1",
