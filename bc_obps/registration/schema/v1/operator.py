@@ -3,7 +3,7 @@ from uuid import UUID
 from ninja import Field, Schema
 from ninja import ModelSchema
 from registration.constants import AUDIT_FIELDS
-from registration.models import Operator
+from registration.models import Operator, ParentOperator
 from .parent_operator import ParentOperatorOut
 
 
@@ -91,7 +91,7 @@ class OperatorForOperationOut(ModelSchema):
     parent_operators_array: Optional[List[ParentOperatorOut]] = None
 
     @staticmethod
-    def resolve_parent_operators_array(obj: Operator):
+    def resolve_parent_operators_array(obj: Operator) -> Optional[List[ParentOperator]]:
         if obj.parent_operators.exists():
             return [
                 parent_operator
@@ -99,9 +99,10 @@ class OperatorForOperationOut(ModelSchema):
                     "physical_address", "mailing_address", "business_structure"
                 )
             ]
+        return None
 
     @staticmethod
-    def resolve_mailing_address_same_as_physical(obj: Operator):
+    def resolve_mailing_address_same_as_physical(obj: Operator) -> bool:
         if not obj.mailing_address or not obj.physical_address:
             return False
         return obj.mailing_address_id == obj.physical_address_id

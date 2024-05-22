@@ -1,17 +1,18 @@
+from typing import Optional
 from registration.models import RegulatedProduct
 from registration.schema.v1 import (
     RegulatedProductSchema,
 )
 from django.core.cache import cache
-from typing import List
+from django.db.models import QuerySet
 
 ##### GET #####
 
 
 class RegulatedProductDataAccessService:
     @classmethod
-    def get_regulated_products(cls) -> List[RegulatedProduct]:
-        cached_data = cache.get("regulated_products")
+    def get_regulated_products(cls) -> QuerySet[RegulatedProduct]:
+        cached_data: Optional[QuerySet[RegulatedProduct]] = cache.get("regulated_products")
         if cached_data:
             return cached_data
         else:

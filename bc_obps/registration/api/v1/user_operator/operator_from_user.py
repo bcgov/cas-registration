@@ -1,3 +1,5 @@
+from typing import Literal, Tuple
+from django.http import HttpRequest
 from registration.constants import USER_OPERATOR_TAGS
 from registration.schema.v1.user_operator import PendingUserOperatorOut
 from service.data_access_service.user_service import UserDataAccessService
@@ -22,6 +24,6 @@ from registration.api.utils.current_user_utils import get_current_user_guid
 )
 @authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
 @handle_http_errors()
-def get_user_operator_operator(request):
-    user_operator = UserDataAccessService.get_user_operator_by_user(get_current_user_guid(request))
+def get_user_operator_operator(request: HttpRequest) -> Tuple[Literal[200], PendingUserOperatorOut]:
+    user_operator: UserOperator = UserDataAccessService.get_user_operator_by_user(get_current_user_guid(request))
     return 200, PendingUserOperatorOut.from_orm(user_operator)

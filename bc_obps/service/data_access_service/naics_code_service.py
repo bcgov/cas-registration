@@ -1,4 +1,5 @@
-from typing import List
+from typing import Optional
+from django.db.models import QuerySet
 from registration.models import NaicsCode
 from registration.schema.v1 import NaicsCodeSchema
 from django.core.cache import cache
@@ -8,8 +9,8 @@ from django.core.cache import cache
 
 class NaicsCodeDataAccessService:
     @classmethod
-    def get_naics_codes(cls) -> List[NaicsCode]:
-        cached_data = cache.get("naics_codes")
+    def get_naics_codes(cls) -> QuerySet[NaicsCode]:
+        cached_data: Optional[QuerySet[NaicsCode]] = cache.get("naics_codes")
         if cached_data:
             return cached_data
         else:

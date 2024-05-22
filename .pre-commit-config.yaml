@@ -16,6 +16,11 @@ repos:
         name: Django Diagram # Generate a diagram of the Django models
         language: system
         entry: ./.bin/pre-commit-django-diagram.sh
+      - id: mypy
+        name: Mypy
+        language: system
+        entry: ./.bin/pre-commit-mypy.sh
+        require_serial: true # to prevent printing the same error multiple times
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v2.3.0

@@ -1,5 +1,6 @@
 from typing import List, Optional
 import re
+import typing
 from uuid import UUID
 import uuid
 from django.db import models
@@ -30,7 +31,8 @@ class BaseModel(models.Model):
     class Meta:
         abstract = True
 
-    def save(self, *args, **kwargs):
+    @typing.no_type_check
+    def save(self, *args, **kwargs) -> None:
         # if `update_fields` is passed, we only clean them otherwise we clean all fields(except audit fields)
         # This is to optimize the performance of the save method by only validating the fields that are being updated
         fields_to_update = kwargs.get('update_fields')
@@ -44,7 +46,7 @@ class BaseModel(models.Model):
 
 
 class TimeStampedModelManager(models.Manager):
-    def get_queryset(self):
+    def get_queryset(self) -> models.QuerySet:
         """Return only objects that have not been archived"""
         return super().get_queryset().filter(archived_at__isnull=True)
 
@@ -67,7 +69,7 @@ class TimeStampedModel(BaseModel):
     class Meta:
         abstract = True
 
-    def set_create_or_update(self, modifier_pk: 'User') -> None:
+    def set_create_or_update(self, modifier_pk: UUID) -> None:
         """
         Set the created by field if it is not already set.
         Otherwise, set the updated by field and updated at field.
@@ -77,14 +79,14 @@ class TimeStampedModel(BaseModel):
         else:
             self.__class__.objects.filter(pk=self.pk).update(updated_by_id=modifier_pk, updated_at=timezone.now())
 
-    def set_archive(self, modifier_pk: 'User') -> None:
+    def set_archive(self, modifier_pk: UUID) -> None:
         """Set the archived by field and archived at field if they are not already set."""
         if self.archived_by_id or self.archived_at:
             raise ValueError("Archived by or archived at is already set.")
         self.__class__.objects.filter(pk=self.pk).update(archived_by_id=modifier_pk, archived_at=timezone.now())
 
     @property
-    def _history_user(self):
+    def _history_user(self) -> Optional['User']:
         return self.archived_by or self.updated_by or self.created_by
 
 
@@ -181,6 +183,7 @@ class Document(TimeStampedModel):
             models.Index(fields=["type"], name="document_type_idx"),
         ]
 
+    @typing.no_type_check
     def delete(self, *args, **kwargs):
         # Delete the file from Google Cloud Storage before deleting the model instance
         if self.file:
@@ -203,6 +206,7 @@ class NaicsCode(BaseModel):
         db_table_comment = "Naics codes"
         db_table = 'erc"."naics_code'
 
+    @typing.no_type_check
     def save(self, *args, **kwargs):
         """
         Override the save method to clear the cache when/if the NAICS code is saved.
@@ -224,6 +228,7 @@ class RegulatedProduct(BaseModel):
         db_table_comment = "Regulated products"
         db_table = 'erc"."regulated_product'
 
+    @typing.no_type_check
     def save(self, *args, **kwargs):
         """
         Override the save method to clear the cache when/if the regulated product is saved.
@@ -362,7 +367,8 @@ class User(UserAndContactCommonInfo):
         """
         return self.user_operators.only("operator_id").filter(status=UserOperator.Statuses.APPROVED).first()
 
-    def save(self, *args, **kwargs):
+    @typing.no_type_check
+    def save(self, *args, **kwargs) -> None:
         """
         Override the save method to clear the cache when the user is saved.
         """
@@ -447,6 +453,7 @@ class BusinessStructure(BaseModel):
         db_table_comment = "The business structure of an operator"
         db_table = 'erc"."business_structure'
 
+    @typing.no_type_check
     def save(self, *args, **kwargs):
         """
         Override the save method to clear the cache when the business structure is saved.
@@ -680,6 +687,7 @@ class UserOperator(TimeStampedModel):
         """
         return UserOperator.Roles.values
 
+    @typing.no_type_check
     def save(self, *args, **kwargs):
         # Add a user_friendly_id to the UserOperator if it doesn't already have one
         if not self.user_friendly_id:
@@ -843,9 +851,9 @@ class Operation(TimeStampedModel):
         Generate a unique BC OBPS regulated operation ID based on the current year and the latest BORO ID.
         """
 
-        # if the operation already has a BORO ID, return it
+        # if the operation already has a BORO ID, do nothing
         if self.bc_obps_regulated_operation:
-            return self.bc_obps_regulated_operation
+            return None
 
         current_year_last_digits = timezone.now().year % 100  # Get the last two digits of the current year
 
@@ -906,11 +914,6 @@ class Facility(TimeStampedModel):
         table_name='erc_history"."facility_history',
         history_user_id_field=models.UUIDField(null=True, blank=True),
     )
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        # Customize db_comment for 'type' field
-        self._meta.get_field('type').db_comment = "The type of facility"
 
     class Meta:
         db_table_comment = "Contains data on facilities that emit carbon emissions and must report them to Clean Growth. A linear facility operation is made up of several different facilities whereas a single facility operation has only one facility. In the case of a single facility operation, much of the data in this table will overlap with the parent record in the operation table"
@@ -1033,7 +1036,8 @@ class BcObpsRegulatedOperation(BaseModel):
         db_table_comment = "Table to store BC OBPS Regulated Operation metadata"
         db_table = 'erc"."bc_obps_regulated_operation'
 
-    def save(self, *args, **kwargs):
+    @typing.no_type_check
+    def save(self, *args, **kwargs) -> None:
         """
         Override the save method to set the issued_at field if it is not already set.
         """

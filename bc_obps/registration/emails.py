@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from registration.enums.enums import AccessRequestStates, AccessRequestTypes
 from service.email.email_service import EmailService
 from registration.enums.enums import BoroIdApplicationStates
@@ -17,12 +17,12 @@ class Recipient:
         self.full_name = full_name
         self.email_address = email_address
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
         if not isinstance(other, Recipient):
             return NotImplemented
         return self.full_name == other.full_name and self.email_address == other.email_address
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"Recipient(full_name={self.full_name}, email_address={self.email_address})"
 
 
@@ -30,9 +30,9 @@ def send_boro_id_application_email(
     application_state: BoroIdApplicationStates,
     operator_legal_name: str,
     operation_name: str,
-    opted_in: bool,
-    operation_creator: User,
-    point_of_contact: Contact,
+    opted_in: Optional[bool],
+    operation_creator: Optional[User],
+    point_of_contact: Optional[Contact],
 ) -> None:
     """
     Sends an email to the operation creator and point of contact regarding the BORO ID application based on the application state.
@@ -76,7 +76,7 @@ def send_boro_id_application_email(
 
     for context in email_contexts:
         try:
-            email_address_to_send_email_to: str = context.get('external_user_email_address')
+            email_address_to_send_email_to: Optional[str] = context.get('external_user_email_address')
             response_json = email_service.send_email_by_template(template, context, [email_address_to_send_email_to])
             # Create email notification record to store transaction and message IDs
             email_service.create_email_notification_record(
@@ -124,7 +124,10 @@ def send_operator_access_request_email(
         response_json = email_service.send_email_by_template(template, email_context, [external_user_email_address])
         # Create email notification record to store the transaction and message IDs
         email_service.create_email_notification_record(
-            response_json['txId'], response_json['messages'][0]['msgId'], [external_user_email_address], template.id
+            response_json.get('txId'),
+            response_json.get('messages')[0]['msgId'],
+            [external_user_email_address],
+            template.id,
         )
     except Exception as exc:  # not raising exception here to avoid breaking the flow of the application
         logger.error(f'Logger: Exception sending operator access request email - {str(exc)}')

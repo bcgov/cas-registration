@@ -1,10 +1,13 @@
+from typing import Dict, Optional
 from uuid import UUID
 from registration.models import BusinessRole, Contact
 
 
 class ContactDataAccessService:
     @classmethod
-    def update_or_create(cls, point_of_contact_id, updated_data, user_guid: UUID):
+    def update_or_create(
+        cls, point_of_contact_id: Optional[int], updated_data: Dict[str, Optional[str]], user_guid: UUID
+    ) -> Contact:
         contact, _ = Contact.objects.update_or_create(
             id=point_of_contact_id,
             defaults={

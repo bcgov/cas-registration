@@ -1,3 +1,5 @@
+from typing import Literal, Tuple
+from django.http import HttpRequest
 from registration.constants import USER_OPERATOR_TAGS
 from service.user_operator_service import UserOperatorService
 from registration.decorators import authorize, handle_http_errors
@@ -19,5 +21,7 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 )
 @authorize(AppRole.get_authorized_irc_roles())
 @handle_http_errors()
-def list_user_operators(request, page: int = 1, sort_field: str = "created_at", sort_order: str = "desc"):
+def list_user_operators(
+    request: HttpRequest, page: int = 1, sort_field: str = "created_at", sort_order: str = "desc"
+) -> Tuple[Literal[200], UserOperatorPaginatedOut]:
     return 200, UserOperatorService.list_user_operators(page, sort_field, sort_order)

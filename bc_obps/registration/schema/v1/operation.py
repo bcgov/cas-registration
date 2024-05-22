@@ -1,10 +1,11 @@
-from typing import List, Optional
+from typing import List, Optional, Union
 from registration.schema.v1.operator import OperatorForOperationOut
 from registration.utils import file_to_data_url, data_url_to_file
 from ninja import Field, FilterSchema, ModelSchema, Schema
-from registration.models import Operation, User
+from registration.models import Operation, Operator, User
 from pydantic import field_validator
-
+from ninja.types import DictStrAny
+from django.core.files.base import ContentFile
 
 #### Operation schemas
 
@@ -49,9 +50,10 @@ class OperationUpdateIn(ModelSchema):
 
     @field_validator("statutory_declaration")
     @classmethod
-    def validate_statutory_declaration(cls, value: str):
+    def validate_statutory_declaration(cls, value: str) -> Optional[ContentFile]:
         if value:
             return data_url_to_file(value)
+        return None
 
     class Config:
         model = Operation
@@ -89,25 +91,25 @@ class OperationOut(ModelSchema):
     operator: Optional[OperatorForOperationOut] = None
 
     @staticmethod
-    def resolve_statutory_declaration(obj: Operation):
+    def resolve_statutory_declaration(obj: Operation) -> Optional[str]:
         statutory_declaration = obj.get_statutory_declaration()
         if statutory_declaration:
             return file_to_data_url(statutory_declaration)
         return None
 
     @staticmethod
-    def resolve_bcghg_id(obj: Operation):
+    def resolve_bcghg_id(obj: Operation) -> str:
         return obj.bcghg_id or ""
 
     @staticmethod
-    def resolve_phone_number(obj):
+    def resolve_phone_number(obj: Operation) -> Optional[str]:
         # PhoneNumberField returns a PhoneNumber object and we need a string
         if not obj.point_of_contact:
-            return
+            return None
         return str(obj.point_of_contact.phone_number)
 
     @staticmethod
-    def resolve_operator(obj, context):
+    def resolve_operator(obj: Operation, context: DictStrAny) -> Optional[Operator]:
         """
         Only return operator details if the user is an IRC user
         """
@@ -160,7 +162,6 @@ class OperationFilterSchema(FilterSchema):
     name: Optional[str] = None
     operator: Optional[str] = None
     status: Optional[str] = None
-    page: Optional[int] = 1
+    page: Union[int, float, str] = 1
     sort_field: Optional[str] = "created_at"
     sort_order: Optional[str] = "desc"
-    status: Optional[str] = None
