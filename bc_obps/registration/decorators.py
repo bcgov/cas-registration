@@ -37,7 +37,7 @@ def authorize(
     return decorator
 
 
-def handle_http_errors():
+def handle_http_errors() -> Callable[[Callable[..., Any]], Callable[..., Any]]:
     """
     Decorator to wrap a function in a try-except block and handle exceptions.
 

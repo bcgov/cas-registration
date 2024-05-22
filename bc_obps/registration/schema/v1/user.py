@@ -1,3 +1,4 @@
+from typing import Optional
 from ninja import Field, ModelSchema
 from registration.models import AppRole, User
 
@@ -32,10 +33,10 @@ class UserOut(ModelSchema):
     app_role: UserAppRoleOut = Field(..., alias="app_role")
 
     @staticmethod
-    def resolve_phone_number(obj):
+    def resolve_phone_number(obj: User) -> Optional[str]:
         # PhoneNumberField returns a PhoneNumber object and we need a string
         if not obj.phone_number:
-            return
+            return None
         return str(obj.phone_number)
 
     class Config:

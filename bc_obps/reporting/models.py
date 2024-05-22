@@ -11,5 +11,5 @@ class Report(models.Model):
         db_table = 'erc"."report'
         app_label = 'reporting'
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.title

@@ -1,3 +1,4 @@
+from typing import Dict, Optional
 from uuid import UUID
 from registration.enums.enums import AccessRequestStates, AccessRequestTypes
 from registration.emails import send_operator_access_request_email
@@ -12,7 +13,8 @@ email_service = EmailService()
 
 
 class ApplicationAccessService:
-    def is_user_eligible_to_request_access(operator_id: int, user_guid: UUID):
+    @classmethod
+    def is_user_eligible_to_request_access(cls, operator_id: UUID, user_guid: UUID) -> Optional[bool]:
         """
         Check if the business_guid of a user who is requesting access to an operator matches the business_guid of the operator's admin
 
@@ -31,10 +33,12 @@ class ApplicationAccessService:
         return True
 
     # check_users_admin_request_eligibility
+    @classmethod
     def is_user_eligible_to_request_admin_access(
+        cls,
         operator_id: UUID,
         user_guid: UUID,
-    ):
+    ) -> Optional[bool]:
         """
         Check if a user is eligible to request admin access to an operator.
 
@@ -59,7 +63,8 @@ class ApplicationAccessService:
 
         return True
 
-    def request_access(operator_id: UUID, user_guid: UUID):
+    @classmethod
+    def request_access(cls, operator_id: UUID, user_guid: UUID) -> Dict[str, UUID]:
         if ApplicationAccessService.is_user_eligible_to_request_access(operator_id, user_guid):
             # Making a draft UserOperator instance if one doesn't exist
             user_operator, created = UserOperatorDataAccessService.get_or_create_user_operator(user_guid, operator_id)
@@ -74,7 +79,8 @@ class ApplicationAccessService:
 
         return {"user_operator_id": user_operator.id, "operator_id": user_operator.operator.id}
 
-    def request_admin_access(operator_id: UUID, user_guid: UUID):
+    @classmethod
+    def request_admin_access(cls, operator_id: UUID, user_guid: UUID) -> Dict[str, UUID]:
         if ApplicationAccessService.is_user_eligible_to_request_admin_access(operator_id, user_guid):
             # Making a draft UserOperator instance if one doesn't exist
             user_operator, created = UserOperatorDataAccessService.get_or_create_user_operator(user_guid, operator_id)

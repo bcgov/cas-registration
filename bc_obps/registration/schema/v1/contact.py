@@ -13,10 +13,10 @@ class ContactSchema(ModelSchema):
     address: Optional[AddressSchema]
 
     @staticmethod
-    def resolve_phone_number(obj):
+    def resolve_phone_number(obj: Contact) -> Optional[str]:
         # PhoneNumberField returns a PhoneNumber object and we need a string
         if not obj.phone_number:
-            return
+            return None
         return str(obj.phone_number)
 
     class Config:

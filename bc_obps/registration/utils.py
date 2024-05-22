@@ -1,6 +1,9 @@
-from typing import List, Type, Union, Iterable, Dict, Any, Optional
+import logging
+from typing import Any, List, TypeVar, Union, Iterable, Dict, Optional
+from uuid import UUID
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError, models
+from django.http import HttpRequest
 from registration.constants import UNAUTHORIZED_MESSAGE, DEFAULT_API_NAMESPACE
 import requests
 import base64
@@ -10,24 +13,31 @@ from django.core.files.base import ContentFile
 from ninja.errors import HttpError
 from registration.models import (
     Document,
+    Operation,
+    Operator,
     User,
     UserOperator,
 )
 from django.urls import reverse_lazy
 from datetime import datetime
 from zoneinfo import ZoneInfo
+from ninja.types import DictStrAny
+
+logger = logging.getLogger(__name__)
+
+TModel = TypeVar('TModel', bound=models.Model)
 
 
 def update_model_instance(
-    instance: Type[models.Model],
+    instance: TModel,
     fields_to_update: Union[Iterable[str], Dict[str, str]],
-    data_dict: Dict[str, Any],
-) -> Type[models.Model]:
+    data_dict: DictStrAny,
+) -> TModel:
     """
     Update the provided data model instance with values from data_dict based on the field mappings.
 
     Args:
-        instance (Type[models.Model]): An instance of a data model.
+        instance: An instance of a data model.
         fields_to_update (dict or Iterable): A dictionary mapping fields in data_dict to instance fields
             or an iterable of fields to update.
         data_dict (dict): A dictionary containing the data to update the instance with.
@@ -55,7 +65,7 @@ def update_model_instance(
     return instance
 
 
-def generate_useful_error(error):
+def generate_useful_error(error: ValidationError) -> Optional[str]:
     """
     Generate a useful error message from a ValidationError.
     NOTE: this only returns the first error message until we can figure out a better way to handle multiple errors in the client side.
@@ -63,10 +73,11 @@ def generate_useful_error(error):
     for key, value in error.message_dict.items():
         formatted_key = ' '.join(word.capitalize() for word in key.split('_'))
         return f"{formatted_key}: {value[0]}"
+    return None
 
 
 def raise_401_if_user_not_authorized(
-    request,
+    request: HttpRequest,
     authorized_app_roles: List[str],
     authorized_user_operator_roles: Optional[List[str]] = None,
     industry_user_must_be_approved: bool = True,
@@ -109,7 +120,7 @@ def raise_401_if_user_not_authorized(
 
 
 # File helpers
-def file_to_data_url(document: Document):
+def file_to_data_url(document: Document) -> Optional[str]:  # type: ignore[return] # we don
     """
     Transforms a Django FieldField record into a data url that RJSF can process.
     """
@@ -120,23 +131,23 @@ def file_to_data_url(document: Document):
             document_content = response.content
             encoded_content = base64.b64encode(document_content).decode("utf-8")
             # only pdf format is allowed
-            return "data:application/pdf;name=" + document.file.name.split("/")[-1] + ";base64," + encoded_content
+            return "data:application/pdf;name=" + document.file.name.split("/")[-1] + ";base64," + encoded_content  # type: ignore[no-any-return]
         else:
-            print(f"Request to retrieve file failed with status code {response.status_code}")
+            logger.error(f"Request to retrieve file failed with status code {response.status_code}")
     except requests.exceptions.Timeout:
         # Handle the timeout exception
-        print(f"Request timed out after {timeout_seconds} seconds")
-
+        logger.exception(f"Request timed out after {timeout_seconds} seconds")
     except requests.exceptions.RequestException as e:
         # Handle other types of exceptions (e.g., connection error)
-        print(f"An error occurred: {e}")
+        logger.exception(f"An error occurred: {e}")
 
 
-def data_url_to_file(data_url: str):
+def data_url_to_file(data_url: str) -> ContentFile:
     """
     Transforms a data url into a ContentFile that Django can insert into the db and add to google cloud storage
     """
-    file_name = re.search(r'name=([^;]+)', data_url).group(1)
+    name_pattern = re.search(r'name=([^;]+)', data_url)
+    file_name = name_pattern.group(1) if name_pattern else None
     _, encoded_data = data_url.split(',')
 
     # Decode the base64-encoded data
@@ -144,19 +155,19 @@ def data_url_to_file(data_url: str):
     return ContentFile(file_data, file_name)
 
 
-def custom_reverse_lazy(view_name, *args, **kwargs) -> str:
+def custom_reverse_lazy(view_name: str, *args: Any, **kwargs: DictStrAny) -> Union[str, Any]:
     """
     A custom reverse_lazy function that includes the default API namespace.
     """
     return reverse_lazy(f"{DEFAULT_API_NAMESPACE}:{view_name}", *args, **kwargs)
 
 
-def set_verification_columns(record, user_guid):
+def set_verification_columns(record: Union[UserOperator, Operator, Operation], user_guid: UUID) -> None:
     record.verified_at = datetime.now(ZoneInfo("UTC"))
     record.verified_by_id = user_guid
 
 
-def files_have_same_hash(file1, file2) -> bool:
+def files_have_same_hash(file1: Optional[ContentFile], file2: Optional[ContentFile]) -> bool:
     """
     Compare the hash of two files to determine if they are the same.
     this might miss formatting changes.

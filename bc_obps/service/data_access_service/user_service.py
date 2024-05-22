@@ -1,20 +1,25 @@
+from typing import Dict
 from uuid import UUID
 from registration.schema.v1.user import UserIn, UserOut, UserUpdateIn
 from registration.models import AppRole, Operator, UserOperator, User
 
 
 class UserDataAccessService:
-    def get_by_guid(user_guid: UUID) -> User:
+    @classmethod
+    def get_by_guid(cls, user_guid: UUID) -> User:
         return User.objects.get(user_guid=user_guid)
 
-    def get_user_business_guid(user_guid: UUID) -> UUID:
+    @classmethod
+    def get_user_business_guid(cls, user_guid: UUID) -> UUID:
         return User.objects.get(user_guid=user_guid).business_guid
 
-    def get_operator_by_user(user_guid: UUID) -> Operator:
+    @classmethod
+    def get_operator_by_user(cls, user_guid: UUID) -> Operator:
         user_operator = UserDataAccessService.get_user_operator_by_user(user_guid)
         return user_operator.operator
 
-    def get_user_operator_by_user(user_guid: UUID) -> UserOperator:
+    @classmethod
+    def get_user_operator_by_user(cls, user_guid: UUID) -> UserOperator:
         user_operator = (
             UserOperator.objects.only("id", "status", "operator__id", "operator__is_new", "operator__status")
             .exclude(
@@ -25,42 +30,48 @@ class UserDataAccessService:
         )
         return user_operator
 
-    def is_user_an_approved_admin_user_operator(user_guid: str):
+    @classmethod
+    def is_user_an_approved_admin_user_operator(cls, user_guid: UUID) -> Dict[str, bool]:
         approved_user_operator: bool = UserOperator.objects.filter(
             user_id=user_guid, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.APPROVED
         ).exists()
         return {"approved": approved_user_operator}
 
-    def is_users_user_operator_declined(user_guid: UUID, operator_id: UUID) -> bool:
+    @classmethod
+    def is_users_user_operator_declined(cls, user_guid: UUID, operator_id: UUID) -> bool:
         is_declined = UserOperator.objects.filter(
             operator_id=operator_id, user_id=user_guid, status=UserOperator.Statuses.DECLINED
         ).exists()
         return is_declined
 
-    def get_app_role(user_guid: UUID) -> AppRole:
+    @classmethod
+    def get_app_role(cls, user_guid: UUID) -> AppRole:
         return User.objects.only('app_role').select_related('app_role').get(user_guid=user_guid).app_role
 
-    def get_user_profile(user_guid: UUID):
+    @classmethod
+    def get_user_profile(cls, user_guid: UUID) -> User:
         return (
             User.objects.only(*UserOut.Config.model_fields, "app_role")
             .select_related('app_role')
             .get(user_guid=user_guid)
         )
 
-    def create_user(user_guid: UUID, role: AppRole, user_data: UserIn) -> User:
+    @classmethod
+    def create_user(cls, user_guid: UUID, role: AppRole, user_data: UserIn) -> User:
         return User.objects.create(
             user_guid=user_guid,
-            business_guid=user_data.business_guid,
-            bceid_business_name=user_data.bceid_business_name,
+            business_guid=user_data.business_guid,  # type: ignore[attr-defined]
+            bceid_business_name=user_data.bceid_business_name,  # type: ignore[attr-defined]
             app_role=role,
-            first_name=user_data.first_name,
-            last_name=user_data.last_name,
-            email=user_data.email,
-            position_title=user_data.position_title,
-            phone_number=user_data.phone_number,
+            first_name=user_data.first_name,  # type: ignore[attr-defined]
+            last_name=user_data.last_name,  # type: ignore[attr-defined]
+            email=user_data.email,  # type: ignore[attr-defined]
+            position_title=user_data.position_title,  # type: ignore[attr-defined]
+            phone_number=user_data.phone_number,  # type: ignore[attr-defined]
         )
 
-    def update_user(user_guid: UUID, updated_data: UserUpdateIn) -> User:
+    @classmethod
+    def update_user(cls, user_guid: UUID, updated_data: UserUpdateIn) -> User:
         user: User = UserDataAccessService.get_by_guid(user_guid)
         for attr, value in updated_data.dict().items():
             setattr(user, attr, value)

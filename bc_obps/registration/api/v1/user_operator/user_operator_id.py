@@ -1,4 +1,6 @@
+from typing import Literal, Tuple
 from uuid import UUID
+from django.http import HttpRequest
 from registration.api.utils.current_user_utils import get_current_user_guid
 from registration.constants import USER_OPERATOR_TAGS
 from service.user_operator_service import UserOperatorService
@@ -24,7 +26,7 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 )
 @authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles())
 @handle_http_errors()
-def get_user_operator_by_id(request, user_operator_id: UUID):
+def get_user_operator_by_id(request: HttpRequest, user_operator_id: UUID) -> Tuple[Literal[200], UserOperator]:
     UserOperatorService.check_if_user_eligible_to_access_user_operator(
         get_current_user_guid(request), user_operator_id
     )  # industry users can only access their own user_operators

@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
-from typing import List, Optional
+from typing import Any, Dict, List, Optional, TypedDict, Union
+import typing
 from uuid import UUID
 import logging
 import requests
@@ -11,6 +12,17 @@ logger = logging.getLogger(__name__)
 SENDER_EMAIL = 'no-reply.cas@gov.bc.ca'
 
 
+class Message(TypedDict):
+    msgId: str
+    tag: str
+    to: List[str]
+
+
+class EmailResponseType(TypedDict):
+    messages: List[Message]
+    txId: str
+
+
 class EmailService(object):
     """
     EmailService uses Common Hosted Email Service (CHES) API to enqueue emails for delivery. Uses BC Government-hosted SMTP server to send emails.
@@ -18,8 +30,15 @@ class EmailService(object):
     """
 
     _instance = None
+    token: Optional[str]  # Define type for token
+    token_expiry: datetime  # Define type for token_expiry
+    token_endpoint: str
+    api_url: str
+    client_id: str
+    client_secret: str
 
     # Singleton pattern to ensure only one instance of EmailService is created
+    @typing.no_type_check
     def __new__(cls):
         if cls._instance is None:
             cls._instance = super(EmailService, cls).__new__(cls)
@@ -34,7 +53,7 @@ class EmailService(object):
             )
         return cls._instance
 
-    def _get_token(self):
+    def _get_token(self) -> None:
         """
         Every other function within EmailService should begin by calling this function.
 
@@ -59,7 +78,9 @@ class EmailService(object):
         except Exception as exc:
             logger.error(f'Logger: Exception in _get_token {str(exc)}')
 
-    def _make_request(self, endpoint, method='GET', data: any = None):
+    def _make_request(
+        self, endpoint: str, method: Optional[str] = 'GET', data: Optional[Any] = None
+    ) -> requests.Response:
         """
         Helper function to build and send either GET or POST request to CHES API with appropriate headers.
         """
@@ -73,7 +94,7 @@ class EmailService(object):
 
         return response
 
-    def health_check(self):
+    def health_check(self) -> Optional[Any]:
         """
         Retrieves health check data from CHES API.
         Response is a dict with key "dependencies", containing a list of 3 dicts (one for each component).
@@ -87,7 +108,7 @@ class EmailService(object):
             logger.error(f'Logger: Exception in /email/health_check {str(exc)}')
             raise
 
-    def get_message_status(self, message_id: UUID):
+    def get_message_status(self, message_id: UUID) -> Optional[Any]:
         """
         Given a message_id (which is different from a transaction_id), returns the status of the message.
 
@@ -108,7 +129,7 @@ class EmailService(object):
             logger.error(f'Logger: Exception retrieving message status for {message_id} - {str(exc)}')
             raise
 
-    def send_email(self, email_data: dict):
+    def send_email(self, email_data: Dict) -> Optional[Any]:
         """
         Email (content in either text or HTML format) is queued to be sent to each recipient listed in 'to'.
 
@@ -137,7 +158,7 @@ class EmailService(object):
             logger.error(f'Logger: Exception in send_email {str(exc)}')
             raise
 
-    def merge_template_and_send(self, email_template_data: dict):
+    def merge_template_and_send(self, email_template_data: Dict) -> Optional[Any]:
         """
         Given an email template with variables for customized content, CHES API merges the template with the given
         "contexts" (values of variables) and sends each message to the CHES API queue for email delivery. Each "context"
@@ -170,7 +191,7 @@ class EmailService(object):
 
     def send_email_by_template(
         self, template_instance: EmailNotificationTemplate, email_context: dict, recipients_email: List[str]
-    ) -> Optional[dict]:
+    ) -> Optional[EmailResponseType]:
         """
         Sends an email using the provided email template, email context, and recipient email addresses.
 
@@ -197,7 +218,11 @@ class EmailService(object):
         return self.merge_template_and_send(email_data)
 
     def create_email_notification_record(
-        self, transaction_id: UUID, message_id: UUID, recipients_email: List[str], template_id: int
+        self,
+        transaction_id: Union[UUID, str],
+        message_id: Union[UUID, str],
+        recipients_email: List[str],
+        template_id: int,
     ) -> None:
         """
         Creates a new email notification record in the database.
