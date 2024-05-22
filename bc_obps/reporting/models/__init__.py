@@ -4,6 +4,8 @@ from .reportingMethodology import ReportingMethodology
 from .reportingSourceType import ReportingSourceType
 from .configuration import Configuration
 from .configuration_element import ConfigurationElement
+from .reporting_field import ReportingField
+from .config_element_reporting_field import ConfigElementReportingField
 
 __all__ = [
     "Report",
@@ -12,4 +14,6 @@ __all__ = [
     "ReportingSourceType",
     "Configuration",
     "ConfigurationElement",
+    "ReportingField",
+    "ConfigElementReportingField"
 ]

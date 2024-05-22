@@ -1,6 +1,6 @@
 from math import ceil
 from reporting.schema.config import ConfigOut
-from reporting.models import ConfigurationElement, ReportingSourceType
+from reporting.models import ConfigurationElement, ReportingSourceType, ConfigElementReportingField
 from django.core.cache import cache
 from typing import List
 from pprint import pprint
@@ -42,12 +42,19 @@ def build_gsc_schema(gsc):
           z = (o.get('reporting_methodology_id'))
           met_name = gsc.filter(reporting_source_type_id=x, reporting_gas_type_id=y, reporting_methodology_id=z).first().reporting_methodology.name
           print('METHODOLOGY_ID: ', z, ' ', met_name)
+          config_record = gsc.filter(reporting_activity_id=1, reporting_source_type_id=x, reporting_gas_type_id=y, reporting_methodology_id=z)
+          for i in config_record:
+              fields = ConfigElementReportingField.objects.all().prefetch_related("reporting_field").filter(configuration_element=i)
+              for f in fields:
+                  print ('FIELD NAME: ', f.reporting_field.field_name, 'FIELD_TYPE: ', f.reporting_field.field_type)
+
 
 class ReportConfigService:
 
     @classmethod
     def build_config_elements(request):
         activity_ids=[1]
+        request.activity_id, ...
         config = get_config(activity_ids)
         schemas = {}
         gsc = config.filter(reporting_activity_id=1)
@@ -56,3 +63,5 @@ class ReportConfigService:
         build_gsc_schema(gsc)
 
         return config[5].reporting_source_type.name
+
+/build-gas-schema
