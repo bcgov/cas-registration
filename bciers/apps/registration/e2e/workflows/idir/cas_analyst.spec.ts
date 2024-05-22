@@ -76,6 +76,7 @@ test.describe("Test Workflow cas_analyst", () => {
       await operatorsPage.formHasExpectedUX(UserOperatorStatus.DECLINED);
       // 📷 Cheese!
       let pageContent = page.locator("html");
+
       await happoPlaywright.screenshot(operatorsPage.page, pageContent, {
         component: "Operators Details Page cas_analyst",
         variant: "declined",
@@ -102,6 +103,7 @@ test.describe("Test Workflow cas_analyst", () => {
       await operatorsPage.formHasExpectedUX(UserOperatorStatus.PENDING);
       // 📷 Cheese!
       pageContent = page.locator("html");
+
       await happoPlaywright.screenshot(operatorsPage.page, pageContent, {
         component: "Operators Details Page cas_analyst",
         variant: "pending",
@@ -147,6 +149,7 @@ test.describe("Test Workflow cas_analyst", () => {
       );
       // 📷 Cheese!
       const pageContent = page.locator("html");
+
       await happoPlaywright.screenshot(operationsPage.page, pageContent, {
         component: "Operations Grid cas_analyst",
         variant: "default",

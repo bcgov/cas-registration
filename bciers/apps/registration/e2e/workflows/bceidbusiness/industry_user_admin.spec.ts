@@ -15,6 +15,7 @@ import {
   filterTableByFieldId,
   setupTestEnvironment,
   sortTableByColumnLabel,
+  tableHasExpectedRowCount,
   tableRowCount,
 } from "@/e2e/utils/helpers";
 import * as dotenv from "dotenv";
@@ -110,9 +111,11 @@ test.describe("Test Workflow industry_user_admin", () => {
     // 🔍 Assert `Operations` view, table and data reflect role `industry_user_admin`
     await operationsPage.tableIsVisible();
     await operationsPage.tableHasExpectedColumns(UserRole.INDUSTRY_USER_ADMIN);
+    await tableHasExpectedRowCount(page, 14);
     // 📷 Cheese!
+    // brianna here
     await happoPlaywright.screenshot(operationPage.page, pageContent, {
-      component: "Operation table",
+      component: "Operation table", // brianna change to grid once confirmed that diffs are gone
       variant: UserRole.INDUSTRY_USER_ADMIN,
     });
     // ♿️ Analyze accessibility
@@ -192,7 +195,10 @@ test.describe("Test Workflow industry_user_admin", () => {
     await operationsPage.tableIsVisible();
     await operationsPage.tableHasExpectedColumns(UserRole.INDUSTRY_USER_ADMIN);
     // 🛸 Navigate to an operation with pending status
-    await operationsPage.clickViewDetailsButton(1);
+    await operationsPage.clickViewDetailsButtonByOperationName(
+      page,
+      "Operation 14",
+    );
     // 🔍 Assert we are on the operation detail page
     await operationPage.formIsVisible();
     // 📷 Cheese!
@@ -326,6 +332,7 @@ test.describe("Test Workflow industry_user_admin", () => {
       OperationTableDataField.BCGHG_ID,
     );
 
+    // brianna
     await filterTableByFieldId(
       operationsPage.page,
       OperationTableDataField.STATUS,
