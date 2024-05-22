@@ -15,7 +15,7 @@ const OperationReview = ({ operation }: Props) => {
   const changeStatus = async (status: Status, id: number) => {
     try {
       const response = await actionHandler(
-        `registration/operation/${id}/update-status`,
+        `registration/operations/${id}/update-status`,
         "PUT",
         `dashboard/operations/${id}`,
         {

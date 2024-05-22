@@ -15,7 +15,7 @@ For example:
 
 ```
 @router.post(
-    "/select-operator/request-access",
+    "/operators/{operator_id}/request-access",
     response={201: RequestAccessOut, custom_codes_4xx: Message},
     url_name="request_access",
 )

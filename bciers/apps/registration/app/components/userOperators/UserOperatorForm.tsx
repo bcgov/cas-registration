@@ -42,10 +42,12 @@ export default function UserOperatorForm({
       ...data.formData,
     } as UserOperatorFormData;
 
+    // brianna
+    const endpoint = `registration/user-operators${
+      !isCreate ? `/${userOperatorId}` : ""
+    }`;
     const response = await actionHandler(
-      `registration/user-operator/operator${
-        !isCreate ? `/${userOperatorId}` : ""
-      }`,
+      endpoint,
       isCreate ? "POST" : "PUT",
       `/dashboard/select-operator/user-operator/${
         isCreate ? "create" : userOperatorId

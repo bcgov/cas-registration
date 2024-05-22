@@ -22,7 +22,7 @@ export default function RequestAccessButton({
     ? "Request Administrator Access"
     : "Request Access";
 
-  const endpointUrl = `registration/select-operator/${
+  const endpointUrl = `registration/operators/${operatorId}/${
     isAdminRequest ? "request-admin-access" : "request-access"
   }`;
 
@@ -31,11 +31,6 @@ export default function RequestAccessButton({
       endpointUrl,
       "POST",
       `/dashboard/select-operator/confirm/${operatorId}`,
-      {
-        body: JSON.stringify({
-          operator_id: operatorId,
-        }),
-      },
     );
     if (response.error) {
       setErrorList([{ message: response.error }]);

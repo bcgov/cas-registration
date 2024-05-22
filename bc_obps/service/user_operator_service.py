@@ -211,7 +211,7 @@ class UserOperatorService:
 
     @classmethod
     @transaction.atomic()
-    def update_user_operator_status(
+    def update_status(
         cls, user_operator_id: UUID, updated_data: UserOperatorStatusUpdate, admin_user_guid: UUID
     ) -> UserOperator:
         "Function to update only the user_operator status (operator is already in the system and therefore doesn't need to be approved/denied)"

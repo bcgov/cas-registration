@@ -19,14 +19,14 @@ from ninja.responses import codes_4xx, codes_5xx
 
 
 @router.put(
-    "/operation/{operation_id}/update-status",
+    "/operations/{operation_id}/update-status",
     response={200: OperationUpdateStatusOut, codes_4xx: Message, codes_5xx: Message},
-    url_name="update_status",
+    url_name="update_operation_status",
     tags=OPERATION_TAGS,
 )
 @authorize(AppRole.get_authorized_irc_roles())
 @handle_http_errors()
-def update_status(
+def update_operation_status(
     request: HttpRequest, operation_id: UUID, payload: OperationUpdateStatusIn
 ) -> Tuple[Literal[200], Operation]:
     return 200, OperationService.update_status(get_current_user_guid(request), operation_id, payload.status)  # type: ignore[attr-defined]

@@ -1,5 +1,6 @@
 import json
 import uuid
+from registration.schema.v1.user import UserInWithIdp
 from registration.schema.v1 import UserIn, UserUpdateIn
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.enums.enums import IdPs
@@ -34,7 +35,7 @@ class TestUserProfileEndpoint(CommonTestSetup):
     # # POST USER PROFILE BCEIDBUSINESS
     def test_create_user_profile_bceidbusiness(self):
         # Arrange
-        mock_payload = UserIn(
+        mock_payload = UserInWithIdp(
             first_name='Bceid',
             last_name='User',
             email='bceid.user@email.com',
@@ -42,12 +43,13 @@ class TestUserProfileEndpoint(CommonTestSetup):
             position_title='Tester',
             business_guid='00000000-0000-0000-0000-000000000001',
             bceid_business_name='test business',
+            identity_provider=IdPs.BCEIDBUSINESS.value,
         )
 
         # Act
         # Construct the endpoint URL for identity_provider "bceidbusiness"
         response = TestUtils.client.post(
-            custom_reverse_lazy('create_user_profile', kwargs={'identity_provider': IdPs.BCEIDBUSINESS.value}),
+            custom_reverse_lazy('create_user_profile'),
             content_type=self.content_type,
             data=mock_payload.model_dump_json(),
             HTTP_AUTHORIZATION=json.dumps({'user_guid': str(uuid.uuid4())}),
@@ -81,7 +83,7 @@ class TestUserProfileEndpoint(CommonTestSetup):
     # POST USER PROFILE IDIR
     def test_create_user_profile_idir(self):
         # Arrange
-        mock_payload = UserIn(
+        mock_payload = UserInWithIdp(
             first_name='Idir',
             last_name='User',
             email='idir.user@email.com',
@@ -89,12 +91,13 @@ class TestUserProfileEndpoint(CommonTestSetup):
             position_title='Tester',
             business_guid='00000000-0000-0000-0000-000000000000',
             bceid_business_name='bcgov test',
+            identity_provider=IdPs.IDIR.value,
         )
 
         # Act
         # Construct the endpoint URL for identity_provider "idir"
         response = TestUtils.client.post(
-            custom_reverse_lazy('create_user_profile', kwargs={'identity_provider': IdPs.IDIR.value}),
+            custom_reverse_lazy('create_user_profile'),
             content_type=self.content_type,
             data=mock_payload.model_dump_json(),
             HTTP_AUTHORIZATION=json.dumps({'user_guid': str(uuid.uuid4())}),
