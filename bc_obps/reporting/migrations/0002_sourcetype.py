@@ -185,7 +185,6 @@ def reverse_init_source_type_data(apps, schema_monitor):
             'General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy',
             'General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy',
             'Field gas or process vent gas combustion at a linear facilities operation',
-            'General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy',
             'Natural gas pneumatic high bleed device venting',
             'Natural gas pneumatic pump venting',
             'Natural gas pneumatic low bleed device venting',
