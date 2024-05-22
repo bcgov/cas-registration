@@ -21,7 +21,7 @@ fake_timestamp_from_past = '2024-01-09 14:13:08.888903-0800'
 fake_timestamp_from_past_str_format = '%Y-%m-%d %H:%M:%S.%f%z'
 
 
-class TestOperationsOperationIdEndpoint(CommonTestSetup):
+class TestOperationIdEndpoint(CommonTestSetup):
     endpoint = CommonTestSetup.base_endpoint + "operations"
 
     @pytest.fixture(autouse=True)
@@ -202,7 +202,7 @@ class TestOperationsOperationIdEndpoint(CommonTestSetup):
             "industry_user",
             self.content_type,
             {"status": "approved"},
-            custom_reverse_lazy("update_status", kwargs={"operation_id": operation.id}),
+            custom_reverse_lazy("update_operation_status", kwargs={"operation_id": operation.id}),
         )
         assert response.status_code == 401
 
@@ -222,7 +222,7 @@ class TestOperationsOperationIdEndpoint(CommonTestSetup):
             "cas_admin",
             self.content_type,
             {"status": "approved"},
-            custom_reverse_lazy("update_status", kwargs={"operation_id": 99999999999}),
+            custom_reverse_lazy("update_operation_status", kwargs={"operation_id": 99999999999}),
         )
         assert put_response.status_code == 422
         assert (

@@ -17,6 +17,10 @@ class UserIn(ModelSchema):
         ]
 
 
+class UserInWithIdp(UserIn):
+    identity_provider: str
+
+
 class UserUpdateIn(ModelSchema):
     class Config:
         model = User

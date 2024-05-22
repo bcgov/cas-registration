@@ -139,6 +139,27 @@ class TestUtils:
             email='test@email.com',
         )
 
+    @staticmethod
+    def create_mock_operator_payload(business_structure: BusinessStructure):
+        return {
+            "legal_name": "Put Operator Legal Name",
+            "trade_name": "Put Operator Trade Name",
+            "cra_business_number": 963852741,
+            "bc_corporate_registry_number": "abc1234321",
+            "business_structure": business_structure.pk,
+            "physical_street_address": "test physical street address",
+            "physical_municipality": "test physical municipality",
+            "physical_province": "BC",
+            "physical_postal_code": "H0H0H0",
+            "mailing_address_same_as_physical": False,
+            "mailing_street_address": "test mailing street address",
+            "mailing_municipality": "test mailing municipality",
+            "mailing_province": "BC",
+            "mailing_postal_code": "V0V0V0",
+            "operator_has_parent_operators": True,
+            "parent_operators_array": [],
+        }
+
 
 baker.generators.add(PhoneNumberField, TestUtils.mock_phone_number)
 

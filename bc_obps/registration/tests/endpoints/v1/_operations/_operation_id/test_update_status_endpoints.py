@@ -20,7 +20,7 @@ fake_timestamp_from_past = '2024-01-09 14:13:08.888903-0800'
 fake_timestamp_from_past_str_format = '%Y-%m-%d %H:%M:%S.%f%z'
 
 
-class TestOperationsUpdateStatusEndpoint(CommonTestSetup):
+class TestUpdateOperationStatusEndpoint(CommonTestSetup):
     endpoint = CommonTestSetup.base_endpoint + "operations"
 
     @pytest.fixture(autouse=True)
@@ -33,7 +33,7 @@ class TestOperationsUpdateStatusEndpoint(CommonTestSetup):
     def test_cas_admin_approves_operation(self):
         operation = operation_baker()
         assert operation.status == Operation.Statuses.NOT_STARTED
-        url = custom_reverse_lazy("update_status", kwargs={"operation_id": operation.id})
+        url = custom_reverse_lazy("update_operation_status", kwargs={"operation_id": operation.id})
 
         now = datetime.now(ZoneInfo("UTC"))
         put_response_1 = TestUtils.mock_put_with_auth_role(
@@ -99,7 +99,7 @@ class TestOperationsUpdateStatusEndpoint(CommonTestSetup):
             "cas_admin",
             self.content_type,
             {"status": "Declined"},
-            custom_reverse_lazy("update_status", kwargs={"operation_id": operation.id}),
+            custom_reverse_lazy("update_operation_status", kwargs={"operation_id": operation.id}),
         )
         assert put_response.status_code == 200
         put_response_dict = put_response.json()
@@ -134,7 +134,7 @@ class TestOperationsUpdateStatusEndpoint(CommonTestSetup):
             "cas_admin",
             self.content_type,
             {"status": "Changes Requested"},
-            custom_reverse_lazy("update_status", kwargs={"operation_id": operation.id}),
+            custom_reverse_lazy("update_operation_status", kwargs={"operation_id": operation.id}),
         )
         assert put_response.status_code == 200
         put_response_dict = put_response.json()
@@ -170,7 +170,7 @@ class TestOperationsUpdateStatusEndpoint(CommonTestSetup):
             "cas_admin",
             self.content_type,
             {"status": "Not Started"},
-            custom_reverse_lazy("update_status", kwargs={"operation_id": operation.id}),
+            custom_reverse_lazy("update_operation_status", kwargs={"operation_id": operation.id}),
         )
         assert put_response.status_code == 200
         put_response_dict = put_response.json()
@@ -197,7 +197,7 @@ class TestOperationsUpdateStatusEndpoint(CommonTestSetup):
             "cas_admin",
             self.content_type,
             {"status": "nonsense"},
-            custom_reverse_lazy("update_status", kwargs={"operation_id": operation.id}),
+            custom_reverse_lazy("update_operation_status", kwargs={"operation_id": operation.id}),
         )
         assert response.status_code == 400
         assert response.json().get('message') == "'nonsense' is not a valid Operation.Statuses"
