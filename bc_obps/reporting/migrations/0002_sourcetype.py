@@ -3,6 +3,7 @@
 from django.db import migrations, models
 import uuid
 
+
 def init_source_type_data(apps, schema_monitor):
     '''
     Add initial data to erc.sourcetype
@@ -13,33 +14,47 @@ def init_source_type_data(apps, schema_monitor):
             SourceType(name='General stationary combustion of fuel or waste with production of useful energy'),
             SourceType(name='General stationary combustion of waste without production of useful energy'),
             SourceType(name='Fuel combustion by mobile equipment that is part of the facility'),
-            SourceType(name='Anode consumption in electrolysis cells, anode and cathode baking or green coke calcination'),
+            SourceType(
+                name='Anode consumption in electrolysis cells, anode and cathode baking or green coke calcination'
+            ),
             SourceType(name='Anode effects'),
             SourceType(name='Cover gas from electrolysis cells'),
             SourceType(name='Steam reformation or gasification of a hydrocarbon during ammonia production'),
-            SourceType(name='Calcination of limestone, shale, sand, slag or other raw materials used to produce clinker, as well as the oxidization of organic carbon in the raw material'),
+            SourceType(
+                name='Calcination of limestone, shale, sand, slag or other raw materials used to produce clinker, as well as the oxidization of organic carbon in the raw material'
+            ),
             SourceType(name='Coal when broken or exposed to the atmosphere during mining'),
             SourceType(name='Stored coal piles'),
             SourceType(name='Removal of impurities using carbonate flux reagents'),
             SourceType(name='Use of reducing agents'),
-            SourceType(name='Use of material (e.g., coke) for slag cleaning and the consumption of graphite or carbon electrodes'),
+            SourceType(
+                name='Use of material (e.g., coke) for slag cleaning and the consumption of graphite or carbon electrodes'
+            ),
             SourceType(name='The solvent extraction and electrowinning process, also known as SX-EW'),
             SourceType(name='Fuel combustion for electricity generation'),
             SourceType(name='Acid gas scrubbers and acid gas reagents'),
             SourceType(name='Cooling units'),
             SourceType(name='Geothermal geyser steam or fluids'),
             SourceType(name='Installation, maintenance, operation and decommission-ing of electrical equipment'),
-            SourceType(name='Electronics manufacturing, including the cleaning of chemical vapour deposition chambers and plasma'),
-            SourceType(name='Removal of impurities using carbonate flux reagents, the use of reducing agents, the use of material (e.g. coke) for slag cleaning, and the consumption of graphite or carbon electrodes during ferroalloy production'),
+            SourceType(
+                name='Electronics manufacturing, including the cleaning of chemical vapour deposition chambers and plasma'
+            ),
+            SourceType(
+                name='Removal of impurities using carbonate flux reagents, the use of reducing agents, the use of material (e.g. coke) for slag cleaning, and the consumption of graphite or carbon electrodes during ferroalloy production'
+            ),
             SourceType(name='Calcination of carbonate materials '),
-            SourceType(name='Steam reformation of hydrocarbons, partial oxidation of hydrocarbons or other transformation of hydrocarbon feedstock '),
+            SourceType(
+                name='Steam reformation of hydrocarbons, partial oxidation of hydrocarbons or other transformation of hydrocarbon feedstock '
+            ),
             SourceType(name='Industrial wastewater process using anaerobic digestion'),
             SourceType(name='Oil-water separators'),
             SourceType(name='Use of reducing agents during lead production'),
             SourceType(name='Calcination of carbonate materials in lime manufacturing'),
             SourceType(name='Use of reducing agents in magnesium production'),
             SourceType(name='Cover gases or carrier gases in magnesium production'),
-            SourceType(name='Catalytic oxidation, condensation and absorption processes during nitric acid manufacturing'),
+            SourceType(
+                name='Catalytic oxidation, condensation and absorption processes during nitric acid manufacturing'
+            ),
             SourceType(name='Flares and oxidizers'),
             SourceType(name='Process vents'),
             SourceType(name='Equipment leaks'),
@@ -48,7 +63,9 @@ def init_source_type_data(apps, schema_monitor):
             SourceType(name='Catalyst regeneration'),
             SourceType(name='Asphalt production'),
             SourceType(name='Sulphur recovery'),
-            SourceType(name='Flares, the flare pilot, the combustion of purge gas and the destruction of low Btu gases'),
+            SourceType(
+                name='Flares, the flare pilot, the combustion of purge gas and the destruction of low Btu gases'
+            ),
             SourceType(name='Above-ground storage tanks at refineries'),
             SourceType(name='Oil-water separators at refineries'),
             SourceType(name='Equipment leaks at refineries'),
@@ -63,8 +80,12 @@ def init_source_type_data(apps, schema_monitor):
             SourceType(name='Use of reducing agents during zinc production'),
             SourceType(name='Above-ground storage tanks'),
             SourceType(name='Carbonates used but not consumed in other activities set out in column 2'),
-            SourceType(name='General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy'),
-            SourceType(name='General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy'),
+            SourceType(
+                name='General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy'
+            ),
+            SourceType(
+                name='General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy'
+            ),
             SourceType(name='Field gas or process vent gas combustion at a linear facilities operation'),
             SourceType(name='Natural gas pneumatic high bleed device venting'),
             SourceType(name='Natural gas pneumatic pump venting'),
@@ -92,7 +113,9 @@ def init_source_type_data(apps, schema_monitor):
             SourceType(name='Natural gas pneumatic pump venting'),
             SourceType(name='Dehydrator venting'),
             SourceType(name='Well venting for liquids unloading'),
-            SourceType(name='Gas well venting during well completions and workovers with or without hydraulic fracturing'),
+            SourceType(
+                name='Gas well venting during well completions and workovers with or without hydraulic fracturing'
+            ),
             SourceType(name='Drilling flaring'),
             SourceType(name='Drilling venting'),
             SourceType(name='Hydraulic fracturing flaring'),
@@ -239,6 +262,7 @@ def reverse_init_source_type_data(apps, schema_monitor):
             'Third party line hits with release of gas',
         ]
     ).delete()
+
 
 class Migration(migrations.Migration):
 
