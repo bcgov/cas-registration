@@ -442,8 +442,8 @@ export async function clearTableFilter(page: Page, fieldId: string) {
   expect(await filter.inputValue()).toBe("");
 }
 
-export async function waitForElementToStabilize(page: Page, element: any) {
+export async function waitForElementToStabilize(page: Page, element: string) {
   await page.waitForLoadState();
-  const bri = await page.$(element);
-  await bri?.waitForElementState("stable");
+  const el = await page.$(element);
+  await el?.waitForElementState("stable");
 }

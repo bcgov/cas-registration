@@ -81,7 +81,6 @@ test.describe("Test Workflow cas_admin", () => {
       await operatorsPage.formHasExpectedUX(UserOperatorStatus.DECLINED);
 
       // 📷 Cheese!
-      // await page.waitForTimeout(10000);
       let pageContent = page.locator("html");
       await waitForElementToStabilize(page, "section");
 
