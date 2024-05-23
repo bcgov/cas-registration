@@ -17,6 +17,8 @@
     "types": ["vitest/globals"],
     "paths": {
       "@/*": ["apps/registration1/*"],
+      "@reporting/*": ["apps/reporting/*"],
+      "@shared/*": ["libs/shared/*"],
       "@bciers/components": ["libs/shared/components/src/index.ts"],
       "@bciers/components/*": ["libs/shared/components/src/lib/*"],
       "@bciers/components/server": ["libs/shared/components/src/server.ts"],

@@ -1,5 +1,27 @@
 import { actionHandler } from "@/app/utils/actions";
 
+// 🛠️ Function to fetch operations
+export const fetchOperationsPageData = async (
+  searchParams: OperationsSearchParams,
+) => {
+  try {
+    const queryParams = buildQueryParams(searchParams);
+
+    // fetch data from server
+    const pageData = await actionHandler(
+      `registration/operations${queryParams}`,
+      "GET",
+      "",
+    );
+    return {
+      rows: formatOperationRows(pageData.data),
+      row_count: pageData.row_count,
+    };
+  } catch (error) {
+    throw error;
+  }
+};
+
 async function getOperators() {
   try {
     return await actionHandler("registration/operations", "GET");

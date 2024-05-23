@@ -3,12 +3,13 @@
 import { useMemo, useState } from "react";
 import DataGrid from "@shared/components/src/lib/layout/DataGrid";
 import { GridColumnGroupHeaderParams } from "@mui/x-data-grid";
+import { useSession } from "next-auth/react";
 import OperationsActionCell from "@shared/components/src/lib/datagrid/cells/OperationsActionCell";
 import HeaderSearchCell from "@shared/components/src/lib/datagrid/cells/HeaderSearchCell";
-import operationColumns from "../datagrid/models/operationColumns";
+import operationColumns from "@reporting/src/app/components/datagrid/models/operationColumns";
 import operationGroupColumns from "@shared/components/src/lib/datagrid/models/operationGroupColumns";
-import { OperationRow } from "./types";
-import fetchOperationsPageData from "./fetchOperationsPageData";
+import { OperationRow } from "@reporting/src/app/components/operations/types";
+import { fetchOperationsPageData } from "./Operations";
 
 const OperationSearchCell = ({
   lastFocusedField,
@@ -21,8 +22,8 @@ const OperationSearchCell = ({
     const { groupId, headerName } = params;
     return (
       <HeaderSearchCell
-        field={groupId ?? ""}
-        fieldLabel={headerName ?? ""}
+        field={groupId as string}
+        fieldLabel={headerName as string}
         isFocused={lastFocusedField === groupId}
         setLastFocusedField={setLastFocusedField}
       />
@@ -31,16 +32,16 @@ const OperationSearchCell = ({
   return RenderCell;
 };
 
-const OperationDataGrid = ({
+const ReportingOperationDataGrid = ({
   initialData,
-  isInternalUser = false,
 }: {
-  isInternalUser?: boolean;
   initialData: {
     rows: OperationRow[];
     row_count: number;
   };
 }) => {
+  const { data: session } = useSession();
+  const isIndustryUser = session?.user.app_role?.includes("industry") ?? false;
   const [lastFocusedField, setLastFocusedField] = useState<string | null>(null);
 
   const SearchCell = useMemo(
@@ -49,18 +50,15 @@ const OperationDataGrid = ({
   );
 
   const ActionCell = useMemo(
-    () => OperationsActionCell(!isInternalUser),
-    [!isInternalUser],
+    () => OperationsActionCell(isIndustryUser),
+    [isIndustryUser],
   );
 
-  const columns = useMemo(
-    () => operationColumns(isInternalUser, ActionCell),
-    [ActionCell, isInternalUser],
-  );
+  const columns = useMemo(() => operationColumns(ActionCell), [ActionCell]);
 
   const columnGroup = useMemo(
-    () => operationGroupColumns(isInternalUser, SearchCell),
-    [SearchCell, isInternalUser],
+    () => operationGroupColumns(false, SearchCell),
+    [SearchCell],
   );
 
   return (
@@ -74,4 +72,4 @@ const OperationDataGrid = ({
   );
 };
 
-export default OperationDataGrid;
+export default ReportingOperationDataGrid;
