@@ -23,6 +23,7 @@ const growthbook_fileName = new Growthbook(...
 
 ### Client components
 
+demo change
 The implementation for Client components vs Server components is slightly different. This is an example for a Client component:
 
 ```typescript
