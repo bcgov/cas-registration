@@ -181,7 +181,7 @@ SENTRY_ENVIRONMENT = os.environ.get('SENTRY_ENVIRONMENT')
 SENTRY_TRACE_SAMPLE_RATE = os.environ.get('SENTRY_TRACE_SAMPLE_RATE')
 if SENTRY_ENVIRONMENT == 'prod':
     sentry_sdk.init(
-        dsn="https://c097ce7d51760bab348fa0608eea9870@o646776.ingest.sentry.io/4506621387407360",
+        dsn="https://cf402cd8318aab5c911728a16cbf8fcc@o646776.ingest.sentry.io/4506624068026368",
         integrations=[DjangoIntegration()],
         # Set traces_sample_rate to 1.0 to capture 100%
         # of transactions for performance monitoring.
