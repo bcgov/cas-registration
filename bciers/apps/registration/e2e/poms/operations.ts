@@ -255,6 +255,11 @@ export class OperationsPOM {
         ]);
         break;
     }
+
+    const arrowDropDownElements = await this.page.locator(
+      '[data-testid="ArrowDropDownIcon"]',
+    );
+    expect(await arrowDropDownElements.count()).toBe(4);
   }
 
   async formHasExpectedWorkflow(
