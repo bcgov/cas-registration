@@ -113,9 +113,8 @@ test.describe("Test Workflow industry_user_admin", () => {
     await operationsPage.tableHasExpectedColumns(UserRole.INDUSTRY_USER_ADMIN);
     await tableHasExpectedRowCount(page, 14);
     // 📷 Cheese!
-    // brianna here
     await happoPlaywright.screenshot(operationPage.page, pageContent, {
-      component: "Operation table", // brianna change to grid once confirmed that diffs are gone
+      component: "Operation grid",
       variant: UserRole.INDUSTRY_USER_ADMIN,
     });
     // ♿️ Analyze accessibility
@@ -332,7 +331,6 @@ test.describe("Test Workflow industry_user_admin", () => {
       OperationTableDataField.BCGHG_ID,
     );
 
-    // brianna
     await filterTableByFieldId(
       operationsPage.page,
       OperationTableDataField.STATUS,
