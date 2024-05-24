@@ -246,6 +246,7 @@ export enum TableDataField {
   STATUS = "status",
   BCEID_BUSINESS_NAME = "bceid_business_name",
   NAME = "name",
+  LEGAL_NAME = "legal_name",
 }
 
 export enum OperationTableDataField {
