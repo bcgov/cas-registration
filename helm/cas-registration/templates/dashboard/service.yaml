@@ -1,0 +1,19 @@
+{{- if (.Values.dashboardFrontend.enabled) }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "cas-registration.fullname" . }}-dashboard-frontend
+  labels:
+    role: frontend
+    {{- include "cas-registration.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.dashboardFrontend.service.type }}
+  ports:
+    - port: {{ .Values.dashboardFrontend.service.port }}
+      targetPort: 3000
+      protocol: TCP
+      name: {{ include "cas-registration.fullname" . }}-dashboard-frontend
+  selector:
+    {{- include "cas-registration.selectorLabels" . | nindent 4 }}
+    component: dashboard-frontend
+{{- end }}

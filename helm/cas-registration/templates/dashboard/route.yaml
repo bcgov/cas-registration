@@ -1,0 +1,24 @@
+{{- if (.Values.dashboardFrontend.enabled) }}
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: {{ template "cas-registration.fullname" . }}-dashboard-frontend
+  labels:
+{{ include "cas-registration.labels" . | indent 4 }}
+  annotations:
+    haproxy.router.openshift.io/balance: roundrobin
+    haproxy.router.openshift.io/rewrite-target: /
+
+spec:
+  host: {{ .Values.dashboardFrontend.route.host }}
+  path: {{ .Values.dashboardFrontend.route.path }}
+  port:
+    targetPort: {{ template "cas-registration.fullname" . }}-dashboard-frontend
+  tls:
+    insecureEdgeTerminationPolicy: Redirect
+    termination: edge
+  to:
+    kind: Service
+    name:  {{ template "cas-registration.fullname" . }}-dashboard-frontend
+    weight: 100
+{{- end }}

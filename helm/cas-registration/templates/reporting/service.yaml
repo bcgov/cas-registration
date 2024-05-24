@@ -4,6 +4,7 @@ kind: Service
 metadata:
   name: {{ include "cas-registration.fullname" . }}-reporting-frontend
   labels:
+    role: frontend
     {{- include "cas-registration.labels" . | nindent 4 }}
 spec:
   type: {{ .Values.reportingFrontend.service.type }}

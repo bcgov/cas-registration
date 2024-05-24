@@ -3,6 +3,7 @@ kind: Service
 metadata:
   name: {{ include "cas-registration.fullname" . }}-frontend
   labels:
+    role: frontend
     {{- include "cas-registration.labels" . | nindent 4 }}
 spec:
   type: {{ .Values.frontend.service.type }}
