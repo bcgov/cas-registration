@@ -133,7 +133,7 @@ export class OperatorsPOM {
     if (operatorLegalName) {
       row = await getTableRowByCellSelector(
         this.table,
-        `[data-field="${TableDataField.NAME}"]:has-text("${operatorLegalName}")`,
+        `[data-field="${TableDataField.LEGAL_NAME}"]:has-text("${operatorLegalName}")`,
       );
     } else {
       row = await getTableRowByCellSelector(

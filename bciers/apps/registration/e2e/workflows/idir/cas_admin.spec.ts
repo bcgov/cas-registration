@@ -1,5 +1,5 @@
 // 🧪 Suite to test the cas_admin workflows using storageState
-import { test } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 // 🪄 Page Object Models
 import { DashboardPOM } from "@/e2e/poms/dashboard";
 import { OperationsPOM } from "@/e2e/poms/operations";
@@ -78,10 +78,7 @@ test.describe("Test Workflow cas_admin", () => {
       // 🛸 Navigate to operators page
       operatorsPage.route();
       // 🔍 Assert cas_admin is able to click "View Details" on see detailed info related Declined
-      await operatorsPage.formHasExpectedUX(
-        "New Operator 3 Legal Name",
-        UserOperatorStatus.DECLINED,
-      );
+      await operatorsPage.formHasExpectedUX(UserOperatorStatus.DECLINED);
 
       // 📷 Cheese!
       let pageContent = page.locator("html");
@@ -117,7 +114,10 @@ test.describe("Test Workflow cas_admin", () => {
       await operatorsPage.tableIsVisible();
 
       // 🔍 Assert cas_admin is able to click "View Details" on see detailed info related Pending
-      await operatorsPage.formHasExpectedUX(UserOperatorStatus.PENDING);
+      await operatorsPage.formHasExpectedUX(
+        UserOperatorStatus.PENDING,
+        "New Operator 3 Legal Name",
+      );
       // 📷 Cheese!
       pageContent = page.locator("html");
       await waitForElementToStabilize(page, "section");
