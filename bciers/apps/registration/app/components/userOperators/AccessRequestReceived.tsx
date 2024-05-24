@@ -29,7 +29,7 @@ export default async function AccessRequestReceived({
 
   const adminRequestJSX: JSX.Element = (
     <>
-      <p>Once approved, you will receive a confirmation email.</p>
+      <p>Once approved, you will receive an email.</p>
       <p>
         You can then log back in using your Business BCeID with Administrator
         access.
@@ -53,7 +53,7 @@ export default async function AccessRequestReceived({
         Your access request has been sent to the Administrator(s) of{" "}
         <b>{operator.legal_name}</b> for review.
       </p>
-      <p>Once approved, you will receive a confirmation email.</p>
+      <p>Once approved, you will receive an email.</p>
       <p>
         You can then log back in using your Business BCeID with the designated
         access type.

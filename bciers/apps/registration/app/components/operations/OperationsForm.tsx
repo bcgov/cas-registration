@@ -52,7 +52,7 @@ export default function OperationsForm({ formData, schema }: Readonly<Props>) {
             Your application for the B.C. OBPS Regulated Operation ID for{" "}
             <b>{operationName}</b> has been received.
           </p>
-          <p>Once approved, you will receive a confirmation email.</p>
+          <p>Once approved, you will receive an email.</p>
           <p>
             You can then log back in and view the B.C. OBPS Regulated Operation
             ID for <b>{operationName}</b>.
