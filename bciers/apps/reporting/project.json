@@ -10,8 +10,7 @@
       "outputs": ["{options.outputPath}"],
       "defaultConfiguration": "dev",
       "options": {
-        "outputPath": "dist/reporting",
-        "experimentalAppOnly": true
+        "outputPath": "dist/reporting"
       }
     },
     "container": {

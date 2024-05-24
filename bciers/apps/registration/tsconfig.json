@@ -22,7 +22,8 @@
     "./.happo.js",
     "./.eslintrc.json",
     "./.next/types/**/*.ts",
-    ".next/types/**/*.ts"
+    ".next/types/**/*.ts",
+    "../../dist/registration/.next/types/**/*.ts"
   ],
   "exclude": [
     ".next",
