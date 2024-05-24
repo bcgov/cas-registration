@@ -5,6 +5,25 @@
   "projectType": "application",
   "tags": [],
   "targets": {
+    "build": {
+      "executor": "@nx/next:build",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "dev",
+      "options": {
+        "outputPath": "dist/dashboard"
+      }
+    },
+    "container": {
+      "executor": "@nx-tools/nx-container:build",
+      "dependsOn": ["build"],
+      "defaultConfiguration": "dev",
+      "options": {
+        "engine": "docker",
+        "context": "dist/dashboard",
+        "file": "apps/dashboard/Dockerfile",
+        "tags": ["cas-dashboard:latest"]
+      }
+    },
     "test": {
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
