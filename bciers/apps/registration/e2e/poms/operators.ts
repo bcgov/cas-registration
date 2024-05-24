@@ -155,6 +155,11 @@ export class OperatorsPOM {
         expect(await this.buttonsDecline.count()).toBe(2);
         break;
     }
+
+    const arrowDropDownElements = await this.page.locator(
+      '[data-testid="ArrowDropDownIcon"]',
+    );
+    expect(await arrowDropDownElements.count()).toBe(2);
   }
 
   async formHasExpectedWorkflow(role: string, workflowNumber: number) {

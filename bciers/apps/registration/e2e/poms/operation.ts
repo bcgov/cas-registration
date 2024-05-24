@@ -149,10 +149,10 @@ export class OperationPOM {
 
   async formFillPage1() {
     // Fill out the operation information form
+    await this.fieldNAICSCode.click();
+    await this.fieldNAICSCodeOption.click(); // filling NAICS code first so it has time to settle before the happo screenshot
     await this.fieldOperationName.fill(E2EValue.INPUT_OPERATION_NAME);
     await this.fieldOperationType.fill(E2EValue.FIXTURE_SFO);
-    await this.fieldNAICSCode.click();
-    await this.fieldNAICSCodeOption.click();
   }
 
   async formFillPage2() {

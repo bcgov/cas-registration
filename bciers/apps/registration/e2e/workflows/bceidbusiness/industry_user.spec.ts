@@ -164,6 +164,7 @@ test.describe("Test Workflow industry_user", () => {
     // 👉 Action trigger form required fields errors
     await selectOperatorPage.triggerErrorsFieldRequired();
     // 📷 Cheese!
+
     pageContent = page.locator("html");
     await happoPlaywright.screenshot(page, pageContent, {
       component: "Add a new operator",
