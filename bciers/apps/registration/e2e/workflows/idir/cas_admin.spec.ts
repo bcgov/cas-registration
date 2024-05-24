@@ -201,7 +201,7 @@ test.describe("Test Workflow cas_admin", () => {
       const arrowDropDownElements = await page.locator(
         '[data-testid="ArrowDropDownIcon"]',
       );
-      expect(await arrowDropDownElements.count()).toBe(2);
+      expect(await arrowDropDownElements.count()).toBe(4);
       await waitForElementToStabilize(page, "section");
       pageContent = page.locator("html");
       await happoPlaywright.screenshot(operationsPage.page, pageContent, {
