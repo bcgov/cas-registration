@@ -8,3 +8,7 @@ Report {
     TextField description
     DateTimeField created_at
 }
+SourceType {
+    UUIDField id
+    CharField name
+}
