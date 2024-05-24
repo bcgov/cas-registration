@@ -8,6 +8,7 @@ import { OperatorsPOM } from "@/e2e/poms/operators";
 import {
   setupTestEnvironment,
   tableHasExpectedRowCount,
+  waitForElementToStabilize,
 } from "@/e2e/utils/helpers";
 // ☰ Enums
 import {
@@ -82,6 +83,7 @@ test.describe("Test Workflow cas_analyst", () => {
       // 📷 Cheese!
       let pageContent = page.locator("html");
 
+      await waitForElementToStabilize(page, "section");
       await happoPlaywright.screenshot(operatorsPage.page, pageContent, {
         component: "Operators Details Page cas_analyst",
         variant: "declined",
@@ -183,6 +185,7 @@ test.describe("Test Workflow cas_analyst", () => {
       await operationsPage.formHasExpectedUX(OperationStatus.DECLINED);
       // 📷 Cheese!
       pageContent = page.locator("html");
+      await waitForElementToStabilize(page, "section");
       await happoPlaywright.screenshot(operationsPage.page, pageContent, {
         component: "Operations Details Page cas_analyst",
         variant: "declined",

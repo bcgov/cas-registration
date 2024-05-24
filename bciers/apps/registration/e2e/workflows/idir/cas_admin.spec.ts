@@ -198,6 +198,11 @@ test.describe("Test Workflow cas_admin", () => {
       await operationsPage.formHasExpectedUX(OperationStatus.DECLINED);
       // 📷 Cheese!
       await waitForElementToStabilize(page, "section");
+      const arrowDropDownElements = await page.locator(
+        '[data-testid="ArrowDropDownIcon"]',
+      );
+      expect(await arrowDropDownElements.count()).toBe(2);
+      await waitForElementToStabilize(page, "section");
       pageContent = page.locator("html");
       await happoPlaywright.screenshot(operationsPage.page, pageContent, {
         component: "Operations Details Page cas_admin",
