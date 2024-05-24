@@ -10,6 +10,7 @@ import {
   sortTableByColumnLabel,
   setupTestEnvironment,
   tableRowCount,
+  waitForElementToStabilize,
 } from "@/e2e/utils/helpers";
 // ☰ Enums
 import {
@@ -78,8 +79,11 @@ test.describe("Test Workflow cas_admin", () => {
       operatorsPage.route();
       // 🔍 Assert cas_admin is able to click "View Details" on see detailed info related Declined
       await operatorsPage.formHasExpectedUX(UserOperatorStatus.DECLINED);
+
       // 📷 Cheese!
       let pageContent = page.locator("html");
+      await waitForElementToStabilize(page, "section");
+
       await happoPlaywright.screenshot(operatorsPage.page, pageContent, {
         component: "Operators Details Page cas_admin",
         variant: "declined",
@@ -93,6 +97,7 @@ test.describe("Test Workflow cas_admin", () => {
       await operatorsPage.formHasExpectedUX(UserOperatorStatus.APPROVED);
       // 📷 Cheese!
       pageContent = page.locator("html");
+      await waitForElementToStabilize(page, "section");
       await happoPlaywright.screenshot(operatorsPage.page, pageContent, {
         component: "Operators Details Page cas_admin",
         variant: "approved",
@@ -106,6 +111,7 @@ test.describe("Test Workflow cas_admin", () => {
       await operatorsPage.formHasExpectedUX(UserOperatorStatus.PENDING);
       // 📷 Cheese!
       pageContent = page.locator("html");
+      await waitForElementToStabilize(page, "section");
       await happoPlaywright.screenshot(operatorsPage.page, pageContent, {
         component: "Operators Details Page cas_admin",
         variant: "pending",
@@ -165,6 +171,7 @@ test.describe("Test Workflow cas_admin", () => {
       await operationsPage.formHasExpectedUX(OperationStatus.PENDING);
       // 📷 Cheese!
       let pageContent = page.locator("html");
+      await waitForElementToStabilize(page, "section");
       await happoPlaywright.screenshot(operationsPage.page, pageContent, {
         component: "Operations Details Page cas_admin",
         variant: "pending",
@@ -176,6 +183,7 @@ test.describe("Test Workflow cas_admin", () => {
 
       await operationsPage.formHasExpectedUX(OperationStatus.DECLINED);
       // 📷 Cheese!
+      await waitForElementToStabilize(page, "section");
       pageContent = page.locator("html");
       await happoPlaywright.screenshot(operationsPage.page, pageContent, {
         component: "Operations Details Page cas_admin",
@@ -190,6 +198,7 @@ test.describe("Test Workflow cas_admin", () => {
       await operationsPage.formHasExpectedUX(OperationStatus.APPROVED);
       // 📷 Cheese!
       pageContent = page.locator("html");
+      await waitForElementToStabilize(page, "section");
       await happoPlaywright.screenshot(operationsPage.page, pageContent, {
         component: "Operations Details Page cas_admin",
         variant: "approved",

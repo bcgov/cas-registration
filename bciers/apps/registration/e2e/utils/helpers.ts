@@ -299,6 +299,14 @@ export async function tableColumnNamesAreCorrect(
   expect(actualColumnNames).toEqual(expectedColumnNames);
 }
 
+export async function tableHasExpectedRowCount(
+  page: Page,
+  expectedRowCount: number,
+) {
+  const rows = page.locator(".MuiDataGrid-row");
+  await expect(rows).toHaveCount(expectedRowCount);
+}
+
 // 🛠️ Function: calls api to seed database with data for workflow tests
 export async function setupTestEnvironment(
   workFlow?: string,
@@ -432,4 +440,10 @@ export async function clearTableFilter(page: Page, fieldId: string) {
   const filter = page.locator(`[id="${fieldId}"]`);
   await filter.clear();
   expect(await filter.inputValue()).toBe("");
+}
+
+export async function waitForElementToStabilize(page: Page, element: string) {
+  await page.waitForLoadState();
+  const el = await page.$(element);
+  await el?.waitForElementState("stable");
 }
