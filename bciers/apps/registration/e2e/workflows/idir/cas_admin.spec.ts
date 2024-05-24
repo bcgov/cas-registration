@@ -116,7 +116,7 @@ test.describe("Test Workflow cas_admin", () => {
       // 🔍 Assert cas_admin is able to click "View Details" on see detailed info related Pending
       await operatorsPage.formHasExpectedUX(
         UserOperatorStatus.PENDING,
-        "New Operator 3 Legal Name",
+        "New Operator 5 Legal Name",
       );
       // 📷 Cheese!
       pageContent = page.locator("html");
