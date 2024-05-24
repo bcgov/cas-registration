@@ -11,6 +11,7 @@ import {
   setupTestEnvironment,
   tableRowCount,
   waitForElementToStabilize,
+  tableHasExpectedRowCount,
 } from "@/e2e/utils/helpers";
 // ☰ Enums
 import {
@@ -65,6 +66,8 @@ test.describe("Test Workflow cas_admin", () => {
         UserRole.CAS_ADMIN,
         TableDataField.STATUS,
       );
+      await tableHasExpectedRowCount(page, 20);
+      expect(page.locator(".MuiDataGrid-row:hover")).toHaveCount(0);
       // 📷 Cheese!
       const pageContent = page.locator("html");
       await happoPlaywright.screenshot(operatorsPage.page, pageContent, {
@@ -164,6 +167,8 @@ test.describe("Test Workflow cas_admin", () => {
         UserRole.CAS_ADMIN,
         TableDataField.STATUS,
       );
+      await tableHasExpectedRowCount(page, 20);
+      expect(page.locator(".MuiDataGrid-row:hover")).toHaveCount(0);
       // 📷 Cheese!
       const pageContent = page.locator("html");
       await happoPlaywright.screenshot(operationsPage.page, pageContent, {
