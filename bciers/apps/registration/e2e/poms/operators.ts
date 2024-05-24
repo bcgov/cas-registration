@@ -112,14 +112,35 @@ export class OperatorsPOM {
     await this.page.goto(this.url);
   }
 
-  // ###  Assertions ###
-
-  async formHasExpectedUX(status: string) {
-    // Locate row containing the status
+  async clickViewDetailsButtonByOperatorName(page: any, operationName: string) {
     const row = await getTableRowByCellSelector(
       this.table,
-      `[data-field="${TableDataField.STATUS}"]:has-text("${status}")`,
+      `[data-field="${TableDataField.NAME}"]:has-text("${operationName}")`,
     );
+    await page.waitForTimeout(5000);
+    // Click the `View Detail` for this row
+    await row.getByRole("link", { name: ButtonText.VIEW_DETAILS }).click();
+  }
+
+  // ###  Assertions ###
+
+  async formHasExpectedUX(
+    status: string,
+    operatorLegalName: string | undefined = undefined,
+  ) {
+    let row;
+    // The mock data contains some operators with the same status, so in these cases, we can select by the more specific Operator Legal Name instead
+    if (operatorLegalName) {
+      row = await getTableRowByCellSelector(
+        this.table,
+        `[data-field="${TableDataField.NAME}"]:has-text("${operatorLegalName}")`,
+      );
+    } else {
+      row = await getTableRowByCellSelector(
+        this.table,
+        `[data-field="${TableDataField.STATUS}"]:has-text("${status}")`,
+      );
+    }
 
     // Click the `View Detail` for this status row
     await row.getByRole("link", { name: ButtonText.VIEW_DETAILS }).click();
@@ -155,11 +176,6 @@ export class OperatorsPOM {
         expect(await this.buttonsDecline.count()).toBe(2);
         break;
     }
-
-    const arrowDropDownElements = await this.page.locator(
-      '[data-testid="ArrowDropDownIcon"]',
-    );
-    expect(await arrowDropDownElements.count()).toBe(2);
   }
 
   async formHasExpectedWorkflow(role: string, workflowNumber: number) {

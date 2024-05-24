@@ -78,10 +78,19 @@ test.describe("Test Workflow cas_admin", () => {
       // 🛸 Navigate to operators page
       operatorsPage.route();
       // 🔍 Assert cas_admin is able to click "View Details" on see detailed info related Declined
-      await operatorsPage.formHasExpectedUX(UserOperatorStatus.DECLINED);
+      await operatorsPage.formHasExpectedUX(
+        "New Operator 3 Legal Name",
+        UserOperatorStatus.DECLINED,
+      );
 
       // 📷 Cheese!
       let pageContent = page.locator("html");
+      // brianna
+      await waitForElementToStabilize(page, "section");
+      const arrowDropDownElements = await page.locator(
+        '[data-testid="ArrowDropDownIcon"]',
+      );
+      expect(await arrowDropDownElements.count()).toBe(2);
       await waitForElementToStabilize(page, "section");
 
       await happoPlaywright.screenshot(operatorsPage.page, pageContent, {
