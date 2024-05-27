@@ -42,7 +42,6 @@ export default function UserOperatorForm({
       ...data.formData,
     } as UserOperatorFormData;
 
-    // brianna
     const endpoint = `registration/user-operators${
       !isCreate ? `/${userOperatorId}` : ""
     }`;
