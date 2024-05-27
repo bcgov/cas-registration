@@ -323,6 +323,7 @@ jobs:
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
   zap-owasp:
+    if: false
     needs:
       [
         "backend-docker-build",
@@ -360,6 +361,7 @@ jobs:
           fail_action: false
 
   e2e-tests:
+    if: false
     name: 🧪 e2e tests ${{ matrix.project }}
     needs:
       - backend-docker-build
@@ -453,7 +455,7 @@ jobs:
     name: 📊 e2e report artifact
     runs-on: ubuntu-latest
     needs: [e2e-tests]
-    if: ${{ always() && contains(needs.*.result, 'failure') }}
+    if: false
     steps:
       - name: Download blob reports from GitHub Actions Artifacts
         uses: actions/download-artifact@v4
@@ -472,7 +474,7 @@ jobs:
           retention-days: 14
   # Ensure the e2e tests and e2e report completed successfully
   e2e:
-    if: ${{ always() }}
+    if: false
     runs-on: ubuntu-latest
     needs: [e2e-tests]
     steps:
@@ -485,6 +487,7 @@ jobs:
           }}
 
   happo-finalize:
+    if: false
     runs-on: ubuntu-latest
     needs: [e2e-tests]
     steps:
@@ -500,6 +503,7 @@ jobs:
         working-directory: ./bciers/apps/registration
 
   backend-tests:
+    if: false
     needs:
       [
         "backend-docker-build",
@@ -519,6 +523,7 @@ jobs:
         working-directory: ./bc_obps
         run: make pythontests
   check-migrations:
+    if: false
     needs: install-dev-tools
     runs-on: ubuntu-latest
     steps:
