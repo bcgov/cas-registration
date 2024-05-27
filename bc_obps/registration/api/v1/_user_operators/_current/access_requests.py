@@ -11,7 +11,7 @@ from typing import List, Literal, Tuple
 from registration.api.router import router
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 
-
+# "current" refers to the current user-operator (we look up the current user-operator via the current user)
 @router.get(
     "/user-operators/current/access-requests",
     response={200: List[ExternalDashboardUsersTileData], custom_codes_4xx: Message},

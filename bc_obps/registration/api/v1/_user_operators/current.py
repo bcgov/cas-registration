@@ -14,8 +14,8 @@ from registration.models import (
 )
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 
-# We don't need a user_operator_id parameter (using "current" instead) because we can look up the user_operator via the user data we receive in the middleware
 
+# "current" refers to the current user-operator (we look up the current user-operator via the current user)
 # this endpoint retrieves data about both the user-operator and the operator
 @router.get(
     "/user-operators/current",
