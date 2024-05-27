@@ -2,7 +2,7 @@ from typing import Optional
 from registration.schema.v1.address import AddressSchema
 from ninja import ModelSchema, Field
 from registration.models import Contact
-from registration.constants import AUDIT_FIELDS
+from common.constants import AUDIT_FIELDS
 
 
 class ContactSchema(ModelSchema):
