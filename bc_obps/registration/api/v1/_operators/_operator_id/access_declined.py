@@ -16,7 +16,7 @@ from registration.api.utils.current_user_utils import get_current_user_guid
 
 
 @router.get(
-    "/operators/{operator_id}/is-declined",
+    "/operators/{operator_id}/access-declined",
     response={200: bool, custom_codes_4xx: Message},
     url_name="operator_access_declined",
     tags=OPERATOR_TAGS,
