@@ -1,9 +1,9 @@
+from common.models import BaseModel
 from django.db import models
-from registration.models import BaseModel
 import uuid
 
 
-class Report(models.Model):
+class Report(BaseModel):
     title = models.CharField(max_length=100, db_comment="The title of the report")
     description = models.TextField(db_comment="The description of the report")
     created_at = models.DateTimeField(auto_now_add=True, db_comment="The timestamp when the report was created")
