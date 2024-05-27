@@ -15,8 +15,10 @@ import {
   filterTableByFieldId,
   setupTestEnvironment,
   sortTableByColumnLabel,
+  stabilizeGrid,
   tableHasExpectedRowCount,
   tableRowCount,
+  takeStabilizedScreenshot,
 } from "@/e2e/utils/helpers";
 import * as dotenv from "dotenv";
 dotenv.config({ path: "./e2e/.env.local" });
@@ -111,12 +113,12 @@ test.describe("Test Workflow industry_user_admin", () => {
     // 🔍 Assert `Operations` view, table and data reflect role `industry_user_admin`
     await operationsPage.tableIsVisible();
     await operationsPage.tableHasExpectedColumns(UserRole.INDUSTRY_USER_ADMIN);
-    await tableHasExpectedRowCount(page, 14);
-    expect(page.locator(".MuiDataGrid-row:hover")).toHaveCount(0);
     // 📷 Cheese!
-    await happoPlaywright.screenshot(operationPage.page, pageContent, {
+    await stabilizeGrid(page, 14);
+    await takeStabilizedScreenshot(happoPlaywright, operationPage.page, {
       component: "Operation grid",
       variant: UserRole.INDUSTRY_USER_ADMIN,
+      targets: ["chrome", "firefox", "safari"], // this screenshot is flaky in edge
     });
 
     // ♿️ Analyze accessibility

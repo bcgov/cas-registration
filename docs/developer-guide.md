@@ -318,6 +318,10 @@ await happoPlaywright.screenshot(page, selector, {
 });
 ```
 
+If you experience flakiness, you can use the `takeStabilizedScreenshot` function instead. It contains an assertion to wait for the page to stabilize before taking the shot. See https://playwright.dev/docs/api/class-elementhandle#element-handle-wait-for-element-state for more information about the `stable` state.
+
+Additionally, we have two helper functions to stabilize specfic page elements, the grids (`stabilizeGrid`) and accordions (`stabilizeAccordion`).
+
 #### Using Happo on your local e2e tests
 
 To view diffs found while running your local e2e tests ask the dev team for access to the Happo dashboard. Add the Happo API key and secret to your .env file. The API key and secret can be found in the Happo dashboard under the Account section.
