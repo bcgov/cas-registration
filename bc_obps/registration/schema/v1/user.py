@@ -4,6 +4,8 @@ from registration.models import AppRole, User
 
 
 class UserIn(ModelSchema):
+    identity_provider: str
+
     class Config:
         model = User
         model_fields = [
