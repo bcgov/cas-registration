@@ -1,5 +1,5 @@
 // 🧪 Suite to test the cas_admin workflows using storageState
-import { test } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 // 🪄 Page Object Models
 import { DashboardPOM } from "@/e2e/poms/dashboard";
 import { OperationsPOM } from "@/e2e/poms/operations";
@@ -11,6 +11,7 @@ import {
   setupTestEnvironment,
   tableRowCount,
   waitForElementToStabilize,
+  tableHasExpectedRowCount,
 } from "@/e2e/utils/helpers";
 // ☰ Enums
 import {
@@ -65,6 +66,8 @@ test.describe("Test Workflow cas_admin", () => {
         UserRole.CAS_ADMIN,
         TableDataField.STATUS,
       );
+      await tableHasExpectedRowCount(page, 20);
+      expect(page.locator(".MuiDataGrid-row:hover")).toHaveCount(0);
       // 📷 Cheese!
       const pageContent = page.locator("html");
       await happoPlaywright.screenshot(operatorsPage.page, pageContent, {
@@ -82,6 +85,12 @@ test.describe("Test Workflow cas_admin", () => {
 
       // 📷 Cheese!
       let pageContent = page.locator("html");
+      // brianna
+      await waitForElementToStabilize(page, "section");
+      const arrowDropDownElements = await page.locator(
+        '[data-testid="ArrowDropDownIcon"]',
+      );
+      expect(await arrowDropDownElements.count()).toBe(2);
       await waitForElementToStabilize(page, "section");
 
       await happoPlaywright.screenshot(operatorsPage.page, pageContent, {
@@ -108,7 +117,10 @@ test.describe("Test Workflow cas_admin", () => {
       await operatorsPage.tableIsVisible();
 
       // 🔍 Assert cas_admin is able to click "View Details" on see detailed info related Pending
-      await operatorsPage.formHasExpectedUX(UserOperatorStatus.PENDING);
+      await operatorsPage.formHasExpectedUX(
+        UserOperatorStatus.PENDING,
+        "New Operator 5 Legal Name",
+      );
       // 📷 Cheese!
       pageContent = page.locator("html");
       await waitForElementToStabilize(page, "section");
@@ -155,6 +167,8 @@ test.describe("Test Workflow cas_admin", () => {
         UserRole.CAS_ADMIN,
         TableDataField.STATUS,
       );
+      await tableHasExpectedRowCount(page, 20);
+      expect(page.locator(".MuiDataGrid-row:hover")).toHaveCount(0);
       // 📷 Cheese!
       const pageContent = page.locator("html");
       await happoPlaywright.screenshot(operationsPage.page, pageContent, {
@@ -183,6 +197,11 @@ test.describe("Test Workflow cas_admin", () => {
 
       await operationsPage.formHasExpectedUX(OperationStatus.DECLINED);
       // 📷 Cheese!
+      await waitForElementToStabilize(page, "section");
+      const arrowDropDownElements = await page.locator(
+        '[data-testid="ArrowDropDownIcon"]',
+      );
+      expect(await arrowDropDownElements.count()).toBe(4);
       await waitForElementToStabilize(page, "section");
       pageContent = page.locator("html");
       await happoPlaywright.screenshot(operationsPage.page, pageContent, {

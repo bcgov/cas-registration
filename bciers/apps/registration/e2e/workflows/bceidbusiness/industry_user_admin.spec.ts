@@ -1,6 +1,6 @@
 // 🧪 Suite to test the industry_user_admin workflows using storageState
 
-import { test } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 // 🪄 Page Object Models
 import { DashboardPOM } from "@/e2e/poms/dashboard";
 import { OperationPOM } from "@/e2e/poms/operation";
@@ -112,11 +112,13 @@ test.describe("Test Workflow industry_user_admin", () => {
     await operationsPage.tableIsVisible();
     await operationsPage.tableHasExpectedColumns(UserRole.INDUSTRY_USER_ADMIN);
     await tableHasExpectedRowCount(page, 14);
+    expect(page.locator(".MuiDataGrid-row:hover")).toHaveCount(0);
     // 📷 Cheese!
     await happoPlaywright.screenshot(operationPage.page, pageContent, {
       component: "Operation grid",
       variant: UserRole.INDUSTRY_USER_ADMIN,
     });
+
     // ♿️ Analyze accessibility
     await analyzeAccessibility(page);
     // 🛸 Navigate to new operation form
