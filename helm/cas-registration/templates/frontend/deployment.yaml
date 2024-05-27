@@ -4,6 +4,7 @@ metadata:
   name: {{ include "cas-registration.fullname" . }}-frontend
   labels:
     component: frontend
+    role: frontend
 {{- include "cas-registration.labels" . | nindent 4 }}
 spec:
 {{- if not .Values.frontend.autoscaling.enabled }}
@@ -20,6 +21,7 @@ spec:
       labels:
 {{- include "cas-registration.selectorLabels" . | nindent 8 }}
         component: frontend
+        role: frontend
     spec:
       containers:
         - name: {{ template "cas-registration.fullname" . }}-frontend
