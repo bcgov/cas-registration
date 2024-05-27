@@ -1,11 +1,15 @@
 // 🧪 Suite to test the cas_analyst workflows using storageState
-import { test } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 // 🪄 Page Object Models
 import { DashboardPOM } from "@/e2e/poms/dashboard";
 import { OperationsPOM } from "@/e2e/poms/operations";
 import { OperatorsPOM } from "@/e2e/poms/operators";
 // 🛠️ Helpers
-import { setupTestEnvironment } from "@/e2e/utils/helpers";
+import {
+  setupTestEnvironment,
+  tableHasExpectedRowCount,
+  waitForElementToStabilize,
+} from "@/e2e/utils/helpers";
 // ☰ Enums
 import {
   OperationStatus,
@@ -60,6 +64,8 @@ test.describe("Test Workflow cas_analyst", () => {
         UserRole.CAS_ANALYST,
         TableDataField.STATUS,
       );
+      await tableHasExpectedRowCount(page, 20);
+      expect(page.locator(".MuiDataGrid-row:hover")).toHaveCount(0);
       // 📷 Cheese!
       const pageContent = page.locator("html");
       await happoPlaywright.screenshot(operatorsPage.page, pageContent, {
@@ -77,6 +83,7 @@ test.describe("Test Workflow cas_analyst", () => {
       // 📷 Cheese!
       let pageContent = page.locator("html");
 
+      await waitForElementToStabilize(page, "section");
       await happoPlaywright.screenshot(operatorsPage.page, pageContent, {
         component: "Operators Details Page cas_analyst",
         variant: "declined",
@@ -147,6 +154,8 @@ test.describe("Test Workflow cas_analyst", () => {
         UserRole.CAS_ANALYST,
         TableDataField.STATUS,
       );
+      await tableHasExpectedRowCount(page, 20);
+      expect(page.locator(".MuiDataGrid-row:hover")).toHaveCount(0);
       // 📷 Cheese!
       const pageContent = page.locator("html");
 
@@ -176,6 +185,7 @@ test.describe("Test Workflow cas_analyst", () => {
       await operationsPage.formHasExpectedUX(OperationStatus.DECLINED);
       // 📷 Cheese!
       pageContent = page.locator("html");
+      await waitForElementToStabilize(page, "section");
       await happoPlaywright.screenshot(operationsPage.page, pageContent, {
         component: "Operations Details Page cas_analyst",
         variant: "declined",
