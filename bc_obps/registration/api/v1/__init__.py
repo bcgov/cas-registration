@@ -10,6 +10,7 @@ from . import (
     reporting_activities,
     operations,
     user_operators,
+    users,
 )
 from ._operations import operation_id
 from ._operations._operation_id import update_status
