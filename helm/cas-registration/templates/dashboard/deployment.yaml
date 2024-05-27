@@ -33,6 +33,34 @@ spec:
               value: http://{{ include "cas-registration.fullname" . }}-frontend.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.frontend.service.port }}
             - name: HOST_REPORTING
               value: http://{{ include "cas-registration.fullname" . }}-reporting-frontend.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.reportingFrontend.service.port }}
+            - name: NEXTAUTH_URL
+              value: https://{{ .Values.dashboardFrontend.route.host }}
+            - name: API_URL
+              value: http://{{ include "cas-registration.fullname" . }}-backend.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.backend.service.port }}/api/
+            - name: KEYCLOAK_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-gold-client-secret
+                  key: kcClientSecret
+            - name: KEYCLOAK_AUTH_URL
+              value: {{ .Values.frontend.auth.keycloakAuthUrl}}
+            - name: KEYCLOAK_REALMS
+              value: {{ .Values.frontend.auth.keycloakRealms}}
+            - name: KEYCLOAK_OIDC
+              value: {{ .Values.frontend.auth.keycloakOidc}}
+            - name: KEYCLOAK_LOGIN_URL
+              value: {{ .Values.frontend.auth.keycloakAuthUrl}}{{ .Values.frontend.auth.keycloakRealms }}
+            - name: KEYCLOAK_LOGOUT_URL
+              value: {{ .Values.frontend.auth.keycloakAuthUrl}}{{ .Values.frontend.auth.keycloakRealms }}{{ .Values.frontend.auth.keycloakOidc}}/logout
+            - name: KEYCLOAK_TOKEN_URL
+              value: {{ .Values.frontend.auth.keycloakAuthUrl}}{{ .Values.frontend.auth.keycloakRealms }}{{ .Values.frontend.auth.keycloakOidc}}/token
+            - name: NEXTAUTH_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "cas-registration.fullname" . }}-nextauth
+                  key: nextauth-secret
+            - name: NEXT_PUBLIC_GROWTHBOOK_CLIENT_KEY
+              value: {{ .Values.growthbook.clientKey }}
           image: "{{ .Values.dashboardFrontend.image.repository }}:{{ .Values.defaultImageTag | default .Values.dashboardFrontend.image.tag }}"
           imagePullPolicy: {{ .Values.dashboardFrontend.image.pullPolicy }}
           ports:
