@@ -1,2 +1,2 @@
 # ruff: noqa: F401
-from . import sample
+from . import dashboard_tiles, sample
