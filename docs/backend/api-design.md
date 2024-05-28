@@ -66,3 +66,23 @@ Sometimes, an endpoint needs to do something more complicated than simply call a
 
 - if multiple database services are called, ensure they're atomic using the @transaction.atomic() decorator
 - check if users should be allowed to do things (in the regisration app, role-based authentication is handled in the endpoints, but anything more specific (e.g., if an operator already has an admin, subsequent users can't request admin access) is handled in an intermediary service)
+
+## Creating a New API Endpoint
+
+When creating a new API endpoint, you need to define several key components to ensure the endpoint is functional, secure, and well-documented. Here are the steps and elements required to create a new endpoint:
+
+1. **Define the Route**: Specify the HTTP method (GET, POST, PUT, DELETE) and the endpoint path. The path should be self-documenting and follow the file structure conventions.([API endpoint best practices](https://restfulapi.net/resource-naming/))
+
+2. **Authorization**: Use the `@authorize` decorator to handle role-based authorization. This ensures that only users with the appropriate roles can access the endpoint.
+
+3. **Error Handling**: Apply the `@handle_http_errors` decorator to manage HTTP errors. This should be placed below the @authorize decorator to catch authorization errors correctly.
+
+4. **Service Calls**: Use services to handle the business logic and database interactions. Ensure that the service methods are designed to perform atomic transactions when necessary.
+
+5. **Response Handling**: Define the response format and status codes. Use response models to ensure consistent and structured responses.
+
+6. **Tags**: Use the tags parameter to group endpoints logically. Tags help with API documentation and make it easier to find related endpoints.
+
+7. **URL Name**: Assign a unique `url_name` to the endpoint for reverse URL lookups and to maintain consistent naming conventions.
+
+8. **Description**: Provide a detailed description of what the endpoint does. This helps with understanding the functionality and purpose of the endpoint.
