@@ -19,8 +19,8 @@ class UserIn(ModelSchema):
         ]
 
 
-class UserInWithIdp(UserIn):
-    identity_provider: str
+# class UserInWithIdp(UserIn):
+#     identity_provider: str
 
 
 class UserUpdateIn(ModelSchema):

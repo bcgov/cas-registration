@@ -11,7 +11,6 @@ class TestCurrentUserOperatorEndpoint(CommonTestSetup):
         # Act
         operator = operator_baker()
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
-        breakpoint()
         response = TestUtils.mock_get_with_auth_role(
             self, "industry_user", custom_reverse_lazy("get_current_operator_and_user_operator")
         )

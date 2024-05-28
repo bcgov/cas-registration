@@ -1,6 +1,5 @@
 import json
 import uuid
-from registration.schema.v1.user import UserInWithIdp
 from registration.schema.v1 import UserIn, UserUpdateIn
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.enums.enums import IdPs
@@ -35,7 +34,7 @@ class TestUserProfileEndpoint(CommonTestSetup):
     # # POST USER PROFILE BCEIDBUSINESS
     def test_create_user_profile_bceidbusiness(self):
         # Arrange
-        mock_payload = UserInWithIdp(
+        mock_payload = UserIn(
             first_name='Bceid',
             last_name='User',
             email='bceid.user@email.com',
@@ -83,7 +82,7 @@ class TestUserProfileEndpoint(CommonTestSetup):
     # POST USER PROFILE IDIR
     def test_create_user_profile_idir(self):
         # Arrange
-        mock_payload = UserInWithIdp(
+        mock_payload = UserIn(
             first_name='Idir',
             last_name='User',
             email='idir.user@email.com',
@@ -176,6 +175,7 @@ class TestUserProfileEndpoint(CommonTestSetup):
             position_title='Boss',
             business_guid='00000000-0000-0000-0000-000000000001',
             bceid_business_name='test business',
+            identity_provider='bceid',
         )
 
         # Act
