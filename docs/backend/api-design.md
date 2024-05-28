@@ -4,7 +4,7 @@ The goal of API design is to separate concerns as much as possible.
 
 ## Endpoints
 
-Endpoints are app-specific (e.g. `registration/api/select-operator/request-access`) and should contain as little logic as possible. They should only:
+Endpoints are app-specific (e.g. `registration/api/operators/{operator_id}/request-access`) and should contain as little logic as possible. They should only:
 
 - handle role-based authorization using the @authorize decorator
 - handle http errors using the @handle_http_errors decorator (placed below @authorize or else it will catch auth errors)
