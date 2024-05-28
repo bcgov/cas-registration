@@ -13,7 +13,7 @@ import SelectOperator from "@/app/components/userOperators/SelectOperator";
 export const getUserOperator = async () => {
   try {
     return await actionHandler(
-      `registration/user-operator/user-operator-from-user`,
+      `registration/user-operators/pending`,
       "GET",
       "",
     );

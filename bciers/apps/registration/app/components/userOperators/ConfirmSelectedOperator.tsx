@@ -15,7 +15,7 @@ export async function getOperator(id: string) {
 
 export async function getOperatorHasAdmin(id: string) {
   return actionHandler(
-    `registration/operator/operator-has-admin/${id}`,
+    `registration/operators/${id}/has-admin`,
     "GET",
     `dashboard/select-operator/confirm/${id}`,
   );
@@ -23,7 +23,7 @@ export async function getOperatorHasAdmin(id: string) {
 
 export async function getOperatorAccessDeclined(id: string) {
   return actionHandler(
-    `registration/operator/operator-access-declined/${id}`,
+    `registration/operators/${id}/access-declined`,
     "GET",
     `dashboard/select-operator/confirm/${id}`,
   );
