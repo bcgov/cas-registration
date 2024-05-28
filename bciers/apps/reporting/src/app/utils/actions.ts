@@ -17,10 +17,26 @@ export async function getGasTypes() {
   }
 }
 
-export async function getMethodologyFields() {
+export async function getMethodologies() {
   try {
     const res = await fetch(
       "http://127.0.0.1:8000/api/reporting/get-methodologies?activity=1&source_type=1&gas_type=1",
+      {
+        cache: "no-store", // Default cache option
+        method: "GET",
+      }
+    );
+    return await res.json();
+  } catch (error) {
+    // Handle the error here or rethrow it to handle it at a higher level
+    throw error;
+  }
+};
+
+export async function getMethodologyFields() {
+  try {
+    const res = await fetch(
+      "http://127.0.0.1:8000/api/reporting/get-methodology-fields?activity=1&source_type=1&gas_type=1&methodology=1",
       {
         cache: "no-store", // Default cache option
         method: "GET",

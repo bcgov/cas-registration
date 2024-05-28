@@ -1,11 +1,13 @@
+import json
 from math import ceil
 from reporting.schema.config import ConfigOut
-from reporting.models import ConfigurationElement, ReportingGasType, ConfigElementReportingField
+from reporting.models import ConfigurationElement, ReportingGasType, ConfigElementReportingField, ReportingField
 from django.core.cache import cache
 from typing import List
 from pprint import pprint
 from django.forms import model_to_dict
 from ninja import Field, FilterSchema, ModelSchema, Schema
+from django.http import JsonResponse
 
 
 
@@ -74,6 +76,10 @@ class ReportConfigService:
       methodologies = ConfigurationElement.objects.filter(reporting_activity_id=activity, reporting_source_type_id=source_type, reporting_gas_type_id=gas_type).prefetch_related('reporting_methodology').values_list("reporting_methodology__name", flat=True).distinct()
       return methodologies
 
-    # @classmethod
-    # def get_config_fields(request, activity, source_type, gas_type, methodology):
+    @classmethod
+    def get_config_fields(request, activity, source_type, gas_type, methodology):
+      config_id = ConfigurationElement.objects.filter(reporting_activity_id=activity, reporting_source_type_id=source_type, reporting_gas_type_id=gas_type, reporting_methodology_id=methodology).first().id
+      reporting_field_ids = ConfigElementReportingField.objects.filter(configuration_element__id=config_id).values_list("reporting_field", flat=True)
+      reporting_fields = ReportingField.objects.filter(pk__in=reporting_field_ids)
+      return json.dumps([field.serialize() for field in reporting_fields])
 
