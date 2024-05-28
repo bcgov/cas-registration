@@ -11,16 +11,23 @@ const isAuthenticatedPath = (path: string) => {
   return path.startsWith(authenticatedRoot);
 };
 
+
 // Middleware for reporting authorization
 // This is meant to be throwaway code until we refactor the middleware in the registration app to be configurable
 export const withReportingAuthorization: MiddlewareFactory = (next) => {
   return async (request, _next) => {
+
     const token = await getToken({
       req: request,
       secret: process.env.NEXTAUTH_SECRET,
     });
 
     const { pathname } = request.nextUrl;
+
+    if (pathname === "/formTest") {
+      return next(request, _next);
+    }
+
 
     // Next-auth routes need to be allowed through
     if (isNextAuthPath(pathname)) {

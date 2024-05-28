@@ -1,6 +1,6 @@
 from math import ceil
 from reporting.schema.config import ConfigOut
-from reporting.models import ConfigurationElement, ReportingSourceType, ConfigElementReportingField
+from reporting.models import ConfigurationElement, ReportingGasType, ConfigElementReportingField
 from django.core.cache import cache
 from typing import List
 from pprint import pprint
@@ -64,4 +64,16 @@ class ReportConfigService:
 
         return config[5].reporting_source_type.name
 
-/build-gas-schema
+    @classmethod
+    def get_valid_gas_types(request, activity, source_type):
+      gas_type_names = ConfigurationElement.objects.filter(reporting_activity_id=activity, reporting_source_type_id=source_type).prefetch_related('reporting_gas_type').values_list("reporting_gas_type__name", flat=True).distinct()
+      return gas_type_names
+
+    @classmethod
+    def get_valid_methodologies(request, activity, source_type, gas_type):
+      methodologies = ConfigurationElement.objects.filter(reporting_activity_id=activity, reporting_source_type_id=source_type, reporting_gas_type_id=gas_type).prefetch_related('reporting_methodology').values_list("reporting_methodology__name", flat=True).distinct()
+      return methodologies
+
+    # @classmethod
+    # def get_config_fields(request, activity, source_type, gas_type, methodology):
+
