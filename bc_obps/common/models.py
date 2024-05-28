@@ -1,6 +1,20 @@
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
 
+class DashboardData(models.Model):
+    """
+    Responsible for storing JSON information for dashboard tiles
+    """
+
+    name = models.CharField(max_length=100)
+    data = models.JSONField()
+
+    def __str__(self):
+        return f"DashboardData {self.id} - {self.name}"  # Informative string representation
+
+    class Meta:
+        db_table_comment = "The JSON information for dashboard navigation tiles."
+        db_table = 'common"."dashboard_data'
 
 class EmailNotificationTemplate(models.Model):
     """

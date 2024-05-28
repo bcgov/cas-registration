@@ -1,0 +1,25 @@
+[
+  {
+    "model": "common.dashboarddata",
+    "pk": 8,
+    "fields": {
+      "name": "Internal Reporting Dashboard",
+      "data": {
+        "dashboard": "reporting",
+        "access_roles": ["industry_user", "industry_user_admin"],
+        "tiles": [
+          {
+            "title": "Annual Reports",
+            "content": "TBD here.",
+            "href": "/reporting/tbd"
+          },
+          {
+            "title": "Previous Years Reports",
+            "content": "TBD here.",
+            "href": "/reporting/tbd"
+          }
+        ]
+      }
+    }
+  }
+]
