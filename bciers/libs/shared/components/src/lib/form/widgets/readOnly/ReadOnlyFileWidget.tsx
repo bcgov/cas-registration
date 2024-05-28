@@ -4,7 +4,7 @@ import { WidgetProps } from "@rjsf/utils/lib/types";
 import {
   extractFileInfo,
   FilesInfo,
-} from "@/app/components/form/widgets/FileWidget";
+} from "@components/form/widgets/FileWidget";
 
 const ReadOnlyFileWidget: React.FC<WidgetProps> = ({
   id,

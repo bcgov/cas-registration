@@ -1,5 +1,5 @@
 import { ThemeProps, getDefaultRegistry } from "@rjsf/core";
-import * as widgets from "./widgets";
+import * as widgets from "@components/form/widgets";
 import InlineFieldTemplate from "@/app/styles/rjsf/InlineFieldTemplate";
 import TitleFieldTemplate from "@/app/styles/rjsf/TitleFieldTemplate";
 

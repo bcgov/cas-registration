@@ -1,6 +1,6 @@
 import { describe, expect } from "vitest";
 import customTransformErrors from "@/app/utils/customTransformErrors";
-import { customFormatsErrorMessages } from "@/app/components/form/FormBase";
+import { customFormatsErrorMessages } from "@components/form/FormBase";
 
 const requiredFieldError = [
   {

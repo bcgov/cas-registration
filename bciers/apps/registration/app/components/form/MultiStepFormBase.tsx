@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import { Button } from "@mui/material";
 import { RJSFSchema } from "@rjsf/utils";
 import { Alert } from "@mui/material";
-import FormBase from "./FormBase";
+import FormBase from "@components/form/FormBase";
 import MultiStepHeader from "./MultiStepHeader";
 import MultiStepButtons from "./MultiStepButtons";
 

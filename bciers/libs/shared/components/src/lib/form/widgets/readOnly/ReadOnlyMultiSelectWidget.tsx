@@ -2,7 +2,7 @@ import { WidgetProps } from "@rjsf/utils/lib/types";
 import {
   FieldSchema,
   mapOptions,
-} from "@/app/components/form/widgets/MultiSelectWidget";
+} from "@components/form/widgets/MultiSelectWidget";
 
 const ReadOnlyMultiSelectWidget: React.FC<WidgetProps> = ({
   id,

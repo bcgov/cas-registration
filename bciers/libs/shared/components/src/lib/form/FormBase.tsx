@@ -1,5 +1,5 @@
-import defaultTheme from "./defaultTheme";
-import readOnlyTheme from "./readOnlyTheme";
+import defaultTheme from "@components/form/theme/defaultTheme";
+import readOnlyTheme from "@components/form/theme/readOnlyTheme";
 import { useMemo, useState } from "react";
 import { customizeValidator } from "@rjsf/validator-ajv8";
 import { FormProps, IChangeEvent, withTheme, ThemeProps } from "@rjsf/core";

@@ -1,5 +1,5 @@
 import { render } from "@testing-library/react";
-import FormBase from "@/app/components/form/FormBase";
+import FormBase from "@components/form/FormBase";
 import {
   comboBoxFieldSchema,
   comboBoxFieldUiSchema,
