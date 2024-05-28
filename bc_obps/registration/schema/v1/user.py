@@ -4,6 +4,8 @@ from registration.models import AppRole, User
 
 
 class UserIn(ModelSchema):
+    identity_provider: str
+
     class Config:
         model = User
         model_fields = [
@@ -15,6 +17,10 @@ class UserIn(ModelSchema):
             "bceid_business_name",
             "business_guid",
         ]
+
+
+# class UserInWithIdp(UserIn):
+#     identity_provider: str
 
 
 class UserUpdateIn(ModelSchema):

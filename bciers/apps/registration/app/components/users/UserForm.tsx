@@ -56,9 +56,7 @@ export default function UserForm({ formData, isCreate }: Props) {
     setIsSuccess(false);
     // 🚀 API call: POST/PUT user form data
     const response = await actionHandler(
-      isCreate
-        ? `registration/user/user-profile/${idp}`
-        : `registration/user/user-profile`,
+      isCreate ? `registration/users` : `registration/user/user-profile`,
       isCreate ? "POST" : "PUT",
       "/dashboard/profile",
       {
@@ -66,6 +64,7 @@ export default function UserForm({ formData, isCreate }: Props) {
           ...data.formData,
           business_guid: session?.user?.bceid_business_guid,
           bceid_business_name: session?.user?.bceid_business_name,
+          identity_provider: idp,
         }),
       },
     );

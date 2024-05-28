@@ -23,14 +23,13 @@ const handleUpdateStatus = async (
 ) => {
   try {
     return await actionHandler(
-      `registration/user-operator/update-status`,
+      `registration/user-operators/${userOperatorId}/update-status`,
       "PUT",
       "",
       {
         body: JSON.stringify({
           role: roleUpdate,
           status: statusUpdate,
-          user_operator_id: userOperatorId,
         }),
       },
     );

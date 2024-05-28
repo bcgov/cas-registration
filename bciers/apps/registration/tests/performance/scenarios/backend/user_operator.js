@@ -33,18 +33,13 @@ const userOperator = () => {
   );
 
   const getUserOperatorOperator = http.get(
-    HOST + "/user-operator/user-operator-operator",
+    HOST + "/user-operators/user-operator",
     industryUser2Params,
   );
 
   check(getUserOperatorOperator, {
     "is status 200": (r) => r.status === 200,
   });
-
-  const getUserOperatorId = http.get(
-    HOST + "/user-operator/user-operator-id",
-    industryUserParams,
-  );
 
   check(getUserOperatorId, {
     "is status 200": (r) => r.status === 200,
@@ -64,10 +59,7 @@ const userOperator = () => {
   );
 
   check(
-    http.get(
-      HOST + `/operator/operator-has-admin/${operatorId}`,
-      industryUserParams,
-    ),
+    http.get(HOST + `/operators/${operatorId}/has-admin/`, industryUserParams),
     {
       "is status 200": (r) => r.status === 200,
     },
@@ -75,7 +67,7 @@ const userOperator = () => {
 
   check(
     http.get(
-      HOST + "/user-operator/user-operator-list-from-user",
+      HOST + "/user-operators/current/access-requests",
       industryUserParams,
     ),
     {
@@ -175,7 +167,7 @@ const userOperator = () => {
   });
 
   const createUserOperator = http.post(
-    HOST + "/user-operator/operator",
+    HOST + "/user-operators",
     userOperatorPayload,
     newUserParams,
   );
@@ -213,7 +205,7 @@ const userOperator = () => {
 
   check(
     http.put(
-      HOST + `/user-operator/operator/${newUserOperatorId}`,
+      HOST + `/user-operators/${newUserOperatorId}`,
       userOperatorPayload,
       newUserParams,
     ),
@@ -224,7 +216,8 @@ const userOperator = () => {
 
   check(
     http.put(
-      HOST + "/user-operator/update-status",
+      // brianna is this id ok
+      HOST + `/user-operators/${newUserOperatorId}/update-status`,
       JSON.stringify({
         user_guid: newUserGuid,
         status: "Pending",
