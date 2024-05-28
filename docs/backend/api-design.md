@@ -13,7 +13,7 @@ Endpoints are app-specific (e.g. `registration/api/select-operator/request-acces
 
 For example:
 
-```
+```python
 @router.post(
     "/operators/{operator_id}/request-access",
     response={201: RequestAccessOut, custom_codes_4xx: Message},
@@ -46,7 +46,7 @@ The only things these services do are:
 
 For example:
 
-```
+```python
 @transaction.atomic()
     def get_or_create_user_operator(user_guid: UUID, operator_id: UUID) -> Tuple[UserOperator, bool]:
         "Function to create a user_operator"

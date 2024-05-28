@@ -157,11 +157,11 @@ cd bciers && yarn reg:coverage
 
 React Testing Library isn't entirely compatible with Next 13 yet, so a few things to note:
 
-- If you're testing a simple async component, you can use `render(await Operations());` instead of `render(<Operations />)`. If the component is more complicated (e.g., it imports other async components, or a mix of client/server), it appears there isn't yet a solution: https://github.com/testing-library/react-testing-library/issues/1209#issuecomment-1673372612
+- If you're testing a simple async component, you can use `render(await Operations());` instead of `render(<Operations />)`. If the component is more complicated (e.g., it imports other async components, or a mix of client/server), it appears there isn't yet a solution: <https://github.com/testing-library/react-testing-library/issues/1209#issuecomment-1673372612>
 
 - To mock fetching data which uses our `actionHandler` you can import the action handler mock and mock the response values using `mockReturnValue` or `mockReturnValueOnce`:
 
-```
+```javascript
 import { actionHandler } from "@/tests/setup/mocks";
 
 actionHandler.mockReturnValueOnce({
@@ -171,53 +171,14 @@ actionHandler.mockReturnValueOnce({
 
 To maintain test isolation, we should clear or reset (note that clearing and resetting are [different](https://vitest.dev/api/mock.html#mockreset)) mocks before every test:
 
-````
+```javascript
 beforeEach(() => {
-    vi.resetAllMocks(); // most agressive, clears all calls and resets implementations (any mocked function will return undefined after this)
-    vi.clearAllMocks(); // less agressive, clears calls but does not reset implementations
-
-  });```
+  vi.resetAllMocks(); // most agressive, clears all calls and resets implementations (any mocked function will return undefined after this)
+  vi.clearAllMocks(); // less agressive, clears calls but does not reset implementations
+});
+```
 
 We have some global mocks set up, so even if you haven't written any mocking code, it's useful to add a `beforeEach` to clean the slate before every test.
-
-### Backend unit tests (for API endpoints) with Pytest
-
-#### Running Tests
-
-The easiest way to run these tests locally is by using commands from the Makefile.
-
-```shell
-> make pythontests              # standard pytest run
-> make pythontests_verbose      # run pytest with verbose output (helpful for troubleshooting unit tests)
-> make pythontests_watch        # adds a watcher that can run pytest in the background; unit tests will re-run whenever changes to a Python file are detected
-> make pythontests_coverage     # run pytest with coverage report
-> make pythontests ARGS='registration/tests/<file_name.py>' # run pytest for a specific file
-> make pythontests ARGS='-k <TestClassname>' # run pytest for a specific class, e.g. make pythontests ARGS='-k TestNaicsCodeEndpoint'
-> make pythontests ARGS='-k <test_name>' # run pytest for a specific test, e.g. make pythontests ARGS='-k test_get_method_for_200_status' (note: if any tests have the same name, even if they're within different classes, this command will run them all)
-````
-
-#### Testing Helpers
-
-We have some testing helpers in tests.utils.helpers.TestUtils:
-
-- mock user roles for get, post, and put requests
-- mock postal codes
-- authorize a user as belonging to an operator
-- create mock operations
-
-To use the helpers, import them from `utils` and use like this:
-
-```
-TestUtils.mock_postal_code()
-```
-
-#### Writing backend tests using mock
-
-We use the `mock` library (a.k.a. `unittest.mock`) to patch calls made in our backend. For examples of this in our codebase, search for the keyphrase `mocker.patch`.
-
-When mocking calls, it's very important to insert your patch in the correct place - namely, patch where an object is _called_ (looked up), not where it is defined. For a more detailed explanation, see [Where to patch](https://docs.python.org/3/library/unittest.mock.html#id6).
-
-It's also important to understand the difference between patching a function - done with `patch()` - and patching an object - done with `patch.object()`. Again, refer to unittest.mock's [online docs](https://docs.python.org/3/library/unittest.mock.html#patch) for more detail.
 
 ### End-to-end Tests with Playwright
 
@@ -291,7 +252,7 @@ Read more about Happo and how to review diffs here:
 
 #### Basic setup to take Happo screenshots in your test file
 
-```
+```javascript
 import { test } from "@playwright/test";
 import happoPlaywright from "happo-playwright";
 
@@ -302,14 +263,13 @@ test.beforeEach(async ({ context }) => {
 test.afterEach(async () => {
   await happoPlaywright.finish();
 });
-
 ```
 
 #### Taking a screenshot
 
 Using html selector to take screenshot of entire page. Use something more specific if testing a component.
 
-```
+```javascript
 const selector = page.locator("html");
 
 await happoPlaywright.screenshot(page, selector, {
@@ -321,8 +281,6 @@ await happoPlaywright.screenshot(page, selector, {
 #### Using Happo on your local e2e tests
 
 To view diffs found while running your local e2e tests ask the dev team for access to the Happo dashboard. Add the Happo API key and secret to your .env file. The API key and secret can be found in the Happo dashboard under the Account section.
-
-````
 
 After you run your e2e tests the screenshots can be viewed in the Happo dashboard as snap requests.
 
@@ -338,7 +296,7 @@ Use `expect` assertions to verify the expected behavior of the application. Play
 
 ```javascript
 await expect(page.getByTestId("status")).toHaveText("Submitted");
-````
+```
 
 Playwright will be re-testing the element with the test id of status until the fetched element has the "Submitted" text. It will re-fetch the element and check it over and over, until the condition is met or until the timeout is reached.
 
@@ -417,7 +375,7 @@ cd client &&  npx playwright show-trace test-results/setup-trace.zip
 
 Accessiblity is important. To test a page for accessibility issues import the `analyzeAccessibility` helper function in a playwright e2e test and pass it the page object:
 
-```
+```javascript
 import { analyzeAccessibility, setupTestEnvironment } from "@/e2e/utils/helpers";
 
 ...
@@ -428,228 +386,3 @@ await analyzeAccessibility(page);
 ```
 
 If this step fails the library will provide details about why it failed and how to fix it.
-
-### Debugging Django using Shell Plus
-
-[Shell Plus](https://django-extensions.readthedocs.io/en/latest/shell_plus.html) is a Django extension that allows you to run a shell with all of your Django models and settings pre-loaded. This is useful for debugging and testing.
-You can run Shell Plus with the following command:
-
-```bash
-> python manage.py shell_plus
-```
-
-### Sonarcloud Integration
-
-Our project benefits from Sonarcloud integration, a static code analysis tool seamlessly integrated with Github. This integration is configured to automatically run on every pull request, identifying and reporting code issues for quick resolution. You can view the results and analysis insights on the [Sonarcloud dashboard](https://sonarcloud.io/project/overview?id=bcgov_cas-registration).
-
-For advanced customization and configuration, we've provided a `.sonarcloud.properties` file. This file allows you to fine-tune Sonarcloud analysis settings to suit your project's unique requirements and code quality standards.
-
-### Entity-Relationship Diagram (ERD) Generation
-
-We use [Mermaid](https://mermaid-js.github.io/mermaid/) to create ERD diagrams for our data models. The [django-diagram](https://github.com/nick-solly/django-diagram) package enables the generation of ERD diagrams specific to our Django models.
-
-To generate the most recent ERD diagram, navigate to the `bc_obps` directory (where the `manage.py` file is located) and execute the following command in your terminal:
-
-```bash
-poetry run python -m django_diagram --app=registration --output=../erd.md --settings=bc_obps.settings
-
-```
-
-### Audit Trail Implementation
-
-Within our Django application, we employ the `TimeStampedModel` abstract data model to integrate audit columns into our various models. This model resides in `bc_obps/registration/models.py` and serves as the foundation for all data models requiring audit trails. It incorporates the following columns:
-
-`created_at`: Captures the timestamp when an object is initially created.
-`created_by`: Records the creator of the object.
-`updated_at`: Indicates the timestamp of the object's last update.
-`updated_by`: Stores the user who last modified the object.
-`archived_at`: Documents the timestamp when an object is archived.
-`archived_by`: Registers the user who initiated the archiving process.
-
-This data model is equipped with two essential methods:
-
-`set_create_or_update`: This method sets the necessary audit columns when creating a new object or updating an existing one. It requires the user initiating the modification as a parameter.
-
-`set_archive`: Specifically designed for archiving objects, this method captures the archival details and requires the user initiating the archival process as a parameter.
-
-Furthermore, a custom manager is implemented to filter out archived objects, ensuring a streamlined retrieval process focused only on active data.
-
-## Profiling and Optimizing Endpoints
-
-### Django Silk
-
-[Django Silk](https://github.com/jazzband/django-silk) is a powerful profiling tool for Django applications. It allows developers to measure and analyze the performance of their Django views, routes and middlewares. Profiling your endpoints with Django Silk can help identify bottlenecks and optimize your code for better performance.
-The information provided by Silk can be immensely helpful in identifying and resolving performance issues during the development phase.
-
-To access Django Silk's profiling reports, follow these steps:
-
-1. Ensure Django Silk is installed and configured in your project.([Installation Guide](https://github.com/jazzband/django-silk?tab=readme-ov-file#installation))
-
-2. Start the Django development server:
-
-   ```bash
-   make run
-   ```
-
-3. Open your web browser and navigate to `http://127.0.0.1:8000/silk/requests/` to access the Silk request profiling dashboard.
-
-4. Trigger the endpoint you want to profile within your application.
-
-5. Refresh the Silk dashboard to view the profiling report for the triggered endpoint and you can see overall duration, duration of SQL queries, and total number of SQL queries executed for the endpoint.
-
-   ![Django Silk Requests Dashboard](./images/silk_requests_dashboard.png)
-
-6. By selecting a specific request, you can view detailed information about the request and response, including time metrics, SQL queries, Request and Response details, and etc.
-
-   ![Django Silk Request Detail](./images/silk_request_detail.png)
-
-7. By selecting the SQL tab on top left, you can view the SQL queries executed for the selected request and their execution times.
-
-   ![Django Silk SQL Queries](./images/silk_sql_queries.png)
-
-#### NOTE
-
-Django Silk's profiler is accessible only in the local development environment.(DEBUG=True)
-
-## Database Optimization
-
-Optimizing database queries is crucial for improving the overall performance of a Django application. Django provides several techniques to optimize database queries and minimize the number of queries executed.
-
-### Using `select_related`
-
-[Django's `select_related`](https://docs.djangoproject.com/en/4.2/ref/models/querysets/#select-related) is a performance booster which results in a single more complex query but means later use of foreign-key relationships won’t require database queries.
-
-```python
-from django.db import models
-
-
-class City(models.Model):
-    # ...
-    pass
-
-
-class Person(models.Model):
-    # ...
-    hometown = models.ForeignKey(
-        City,
-        on_delete=models.SET_NULL,
-        blank=True,
-        null=True,
-    )
-
-
-class Book(models.Model):
-    # ...
-    author = models.ForeignKey(Person, on_delete=models.CASCADE)
-
-# Hits the database with joins to the author and hometown tables.
-b = Book.objects.select_related("author__hometown").get(id=4)
-p = b.author  # Doesn't hit the database.
-c = p.hometown  # Doesn't hit the database.
-
-# Without select_related()...
-b = Book.objects.get(id=4)  # Hits the database.
-p = b.author  # Hits the database.
-c = p.hometown  # Hits the database.
-
-```
-
-### Using `prefetch_related`
-
-[Django's `prefetch_related`](https://docs.djangoproject.com/en/4.2/ref/models/querysets/#prefetch-related) serves a similar purpose to `select_related`, aiming to mitigate the issue of excessive database queries resulting from accessing related objects. However, the strategy employed by `prefetch_related` differs significantly.
-
-```python
-from django.db import models
-
-class Author(models.Model):
-    name = models.CharField(max_length=100)
-
-class Genre(models.Model):
-    name = models.CharField(max_length=50)
-
-class Book(models.Model):
-    title = models.CharField(max_length=100)
-    author = models.ForeignKey(Author, on_delete=models.CASCADE)
-    genres = models.ManyToManyField(Genre)
-    published_at = models.DateTimeField()
-
-class Publisher(models.Model):
-    name = models.CharField(max_length=300)
-    books = models.ManyToManyField(Book)
-
-# Without prefetch_related, this hits the database with multiple queries.
-publisher = Publisher.objects.get(name="BigBooks") # Hits the database.
-related_books = publisher.books.all()  # Hits the database again to get the related books.
-
-# Using prefetch_related()...
-publisher = Publisher.objects.prefetch_related("books__author", "books__genres").get(name="BigBooks")
-related_books = publisher.books.all()  # Doesn't hit the database for authors and genres, as they are included in the initial query.
-
-```
-
-### Using `.only()`
-
-[Django's `.only()`](https://docs.djangoproject.com/en/4.2/ref/models/querysets/#only) method is a powerful tool for optimizing queries by allowing you to fetch only specific fields from the database, reducing the amount of data retrieved. This can be particularly useful when you are interested in a subset of fields and want to minimize the overhead associated with fetching unnecessary data.
-
-Consider the following example with a Book model:
-
-```python
-from django.db import models
-
-class Book(models.Model):
-    title = models.CharField(max_length=100)
-    author = models.CharField(max_length=100)
-    published_at = models.DateTimeField()
-    page_count = models.IntegerField()
-    genre = models.CharField(max_length=50)
-
-
-# Without using .only(), this fetches all fields from the database.
-all_books = Book.objects.all()
-
-# Using .only() to fetch only specific fields - title and author.
-selected_fields_books = Book.objects.only('title', 'author').all()
-```
-
-This optimization becomes more noticeable when dealing with larger datasets or when only a subset of fields is required for a particular operation. By utilizing .only(), you can enhance the performance of your Django application by minimizing unnecessary data transfer from the database.
-
-### Optimizing Django-Ninja Schema
-
-When defining Pydantic schemas for Django-Ninja, explicitly include only the fields that are essential for processing or need to be included in the response. Avoid adding unnecessary fields to minimize the data transmitted over the network and improve the overall efficiency of your API.
-
-In the following example, the `OperationListOut` schema is defined to include only the essential fields from the `Operation` model to be used on the client side.(Operations Table)
-
-```python
-from ninja import ModelSchema
-
-class OperationListOut(ModelSchema):
-    operator: str = Field(..., alias="operator.legal_name")
-    bc_obps_regulated_operation: Optional[str] = Field(None, alias="bc_obps_regulated_operation.id")
-
-    class Config:
-        model = Operation
-        model_fields = ['id', 'name', 'bcghg_id', 'submission_date', 'status']
-```
-
-## Common Utils
-
-### `custom_reverse_lazy` Function
-
-This utility function facilitates flexible URL reversal in Django by allowing the reverse of a URL. It's particularly useful for dynamic parameter URLs and avoids hardcoding. Additionally, it leverages the `url_name` defined on each API endpoint for URL reversal, ensuring consistency.
-
-For example, to reverse the URL for the `get_operation` API endpoint with a dynamic parameter `operation_id`:
-
-```python
-custom_reverse_lazy("get_operation", kwargs={"operation_id": operation_instance_1.id})
-```
-
-This will return the URL for the `get_operation` endpoint with the `operation_id` parameter.
-
-## Email Notifications
-
-Email notifications are an essential part of the application's communication strategy. They provide users with important information, updates, and alerts. We use CHES (Common Hosted Email Service) to send email notifications to users.
-To send real emails, you need to set up CHES credentials in your environment variables. You can find the required CHES credentials in the 1Password document `OBPS backend ENV`.
-
-You also need to set up the `EmailService` singleton object (like `email_service = EmailService()`) in the `.py` file to access the `EmailService` object.
-
-**Note**: Make sure to not send real emails in the development environment by commenting out the CHES credentials in the `bc_obps/.env` file.
