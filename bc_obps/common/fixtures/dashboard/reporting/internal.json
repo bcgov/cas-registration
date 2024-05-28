@@ -6,7 +6,7 @@
       "name": "Internal Reporting Dashboard",
       "data": {
         "dashboard": "reporting",
-        "access_roles": ["industry_user", "industry_user_admin"],
+        "access_roles": ["cas_admin", "cas_analyst"],
         "tiles": [
           {
             "title": "Annual Reports",
