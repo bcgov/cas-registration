@@ -71,7 +71,7 @@ class TestUserOperatorEndpointAuthorization(CommonTestSetup):
                 custom_reverse_lazy('request_access', kwargs={'operator_id': operator.id}),
             )
             assert response.status_code == 401
-        # /select-operator/request-admin-access
+        # /operators/{operator_id}/request-admin-access
         for role in ['cas_pending', 'cas_admin', 'cas_analyst']:
             response = TestUtils.mock_post_with_auth_role(
                 self,
