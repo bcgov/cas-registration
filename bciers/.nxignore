@@ -1,0 +1,3 @@
+# Vite temp configs
+vite.config.*.timestamp-*
+vitest.config.*.timestamp-*

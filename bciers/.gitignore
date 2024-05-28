@@ -60,3 +60,7 @@ out
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+
+# Vite temp configs
+vite.config.*.timestamp-*
+vitest.config.*.timestamp-*
