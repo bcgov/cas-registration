@@ -46,12 +46,14 @@ export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
   return async (request: NextRequest, _next: NextFetchEvent) => {
     const { pathname } = request.nextUrl;
 
+    console.log('pathname', pathname);
     // Check if the path is in the unauthenticated allow list
     if (isUnauthenticatedAllowListedPath(pathname)) {
       return next(request, _next);
     }
     // Check if the user is dashboard via the jwt encoded in server side cookie
     const token = await getToken();
+    console.log('token', token);
     if (token) {
       if (pathname === '/' || pathname.endsWith(`/${onboarding}`)) {
         return NextResponse.redirect(new URL(`/${dashboard}`, request.url));
