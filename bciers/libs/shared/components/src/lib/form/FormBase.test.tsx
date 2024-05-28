@@ -1,6 +1,5 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect } from "vitest";
-import React from "react";
 import FormBase from "@components/form/FormBase";
 import readOnlyTheme from "@components/form/theme/readOnlyTheme";
 

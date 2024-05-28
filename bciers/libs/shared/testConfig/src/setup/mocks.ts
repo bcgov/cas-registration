@@ -1,3 +1,5 @@
+import { fetchMocker } from "./global";
+
 // To reduce code duplication and simplify mocking you can import these common mocks from this file
 // and use them in your test files with custom return values
 //
@@ -16,11 +18,27 @@
 //    },
 //    replace: vi.fn(),
 //  });
+//
+// To mock fetch return values refer to the vitest-fetch-mock documentation:
+// https://github.com/IanVS/vitest-fetch-mock
+
+// TODO(Nx Migration): Module added to Monorepo at `bciers/libs/shared/testConfig/src/setup/mocks.ts`
 
 const actionHandler = vi.fn();
 const useRouter = vi.fn();
 const useParams = vi.fn();
+const usePathname = vi.fn();
+const useSearchParams = vi.fn();
 const useSession = vi.fn();
 const getServerSession = vi.fn();
 
-export { actionHandler, getServerSession, useRouter, useParams, useSession };
+export {
+  actionHandler,
+  fetchMocker as fetch,
+  getServerSession,
+  useRouter,
+  useParams,
+  usePathname,
+  useSearchParams,
+  useSession,
+};

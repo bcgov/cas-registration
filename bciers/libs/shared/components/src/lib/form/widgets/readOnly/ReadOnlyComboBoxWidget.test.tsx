@@ -1,9 +1,6 @@
 import { render } from "@testing-library/react";
 import FormBase from "@components/form/FormBase";
-import {
-  comboBoxFieldSchema,
-  comboBoxFieldUiSchema,
-} from "@/tests/components/form/widgets/ComboBox.test";
+import { comboBoxFieldSchema, comboBoxFieldUiSchema } from "../ComboBox.test";
 
 describe("RJSF ReadOnlyComboBoxWidget", () => {
   it("should render a combo box field when formData is provided", async () => {

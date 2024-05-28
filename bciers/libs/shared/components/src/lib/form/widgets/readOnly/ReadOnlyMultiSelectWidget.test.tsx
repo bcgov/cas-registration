@@ -3,7 +3,7 @@ import FormBase from "@components/form/FormBase";
 import {
   multiSelectFieldSchema,
   multiSelectFieldUiSchema,
-} from "@/tests/components/form/widgets/MultiSelectWidget.test";
+} from "../MultiSelectWidget.test";
 
 describe("RJSF ReadOnlyMultiSelectWidget", () => {
   it("should render a multi select field when formData is provided", async () => {

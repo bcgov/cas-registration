@@ -1,14 +1,17 @@
 import type { TestingLibraryMatchers } from "@testing-library/jest-dom/matchers";
 import * as matchers from "@testing-library/jest-dom/matchers";
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { expect } from "vitest";
 import {
   actionHandler,
   getServerSession,
   useParams,
+  usePathname,
   useRouter,
+  useSearchParams,
   useSession,
 } from "./mocks";
+import createFetchMock from "vitest-fetch-mock";
+import { vi } from "vitest";
 
 declare module "vitest" {
   interface Assertion<T = any>
@@ -22,6 +25,8 @@ expect.extend(matchers);
 vi.mock("next/navigation", () => ({
   useRouter,
   useParams,
+  usePathname,
+  useSearchParams,
 }));
 
 vi.mock("next-auth/react", async () => ({
@@ -39,3 +44,8 @@ vi.mock("next-auth", () => ({
 vi.mock("@/app/utils/actions", () => ({
   actionHandler,
 }));
+
+// mock fetch
+export const fetchMocker = createFetchMock(vi);
+
+fetchMocker.enableMocks();

@@ -4,7 +4,7 @@ import {
   testDataUri,
   fileFieldSchema,
   fileFieldUiSchema,
-} from "@/tests/components/form/widgets/FileWidget.test";
+} from "../FileWidget.test";
 
 describe("RJSF ReadOnlyFileWidget", () => {
   it("should render a file field", async () => {

@@ -8,7 +8,7 @@ import {
 } from "@testing-library/react";
 import { RJSFSchema } from "@rjsf/utils";
 import FormBase from "@components/form/FormBase";
-import { actionHandler } from "@/tests/setup/mocks";
+import { actionHandler } from "@tests/mocks";
 import {
   checkComboBoxWidgetValidationStyles,
   checkNoValidationErrorIsTriggered,

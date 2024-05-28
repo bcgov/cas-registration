@@ -1,9 +1,6 @@
 import { render } from "@testing-library/react";
 import FormBase from "@components/form/FormBase";
-import {
-  stringFieldSchema,
-  numberFieldSchema,
-} from "@/tests/components/form/widgets/TextWidget.test";
+import { stringFieldSchema, numberFieldSchema } from "../TextWidget.test";
 
 describe("RJSF ReadOnlyWidget", () => {
   it("should render a string value", () => {
