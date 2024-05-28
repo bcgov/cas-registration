@@ -13,7 +13,12 @@ from ninja.responses import codes_4xx
 
 
 @router.get(
-    "user/user-app-role", response={200: UserAppRoleOut, codes_4xx: Message}, url_name="get_user_role", tags=USER_TAGS
+    "user/user-app-role",
+    response={200: UserAppRoleOut, codes_4xx: Message},
+    url_name="get_user_role",
+    tags=USER_TAGS,
+    description="""Retrieves the application role of the current user.
+    The endpoint uses the user's GUID to look up and return their associated application role.""",
 )
 @handle_http_errors()
 def get_user_role(request: HttpRequest) -> Tuple[Literal[200], AppRole]:

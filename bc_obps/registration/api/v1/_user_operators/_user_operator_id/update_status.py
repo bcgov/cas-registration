@@ -23,6 +23,9 @@ from registration.api.router import router
     response={200: UserOperatorOut, custom_codes_4xx: Message},
     url_name="update_user_operator_status",
     tags=USER_OPERATOR_TAGS,
+    description="""Updates the status of a user operator by its ID.
+    If the status is updated to 'APPROVED' or 'DECLINED', the user operator is verified with the current timestamp and the admin who performed the action.
+    An email notification is sent based on the updated status.""",
 )
 @authorize(AppRole.get_all_authorized_app_roles(), ["admin"])
 @handle_http_errors()
