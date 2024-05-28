@@ -46,6 +46,8 @@ class Command(BaseCommand):
                 f'common/fixtures/dashboard/registration/external.json',
                 f'common/fixtures/dashboard/registration/internal_admin.json',
                 f'common/fixtures/dashboard/registration/internal.json',
+                f'common/fixtures/dashboard/reporting/external.json',
+                f'common/fixtures/dashboard/reporting/internal.json',
             ]
 
         for fixture in fixtures:
