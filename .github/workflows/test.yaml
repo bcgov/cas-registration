@@ -460,5 +460,6 @@ jobs:
       - name: dev env setup
         uses: ./.github/actions/dev-env-setup
       - run: poetry run python manage.py makemigrations --check --dry-run
+        working-directory: ./bc_obps
       - run: poetry run python manage.py migrate --check;
         working-directory: ./bc_obps
