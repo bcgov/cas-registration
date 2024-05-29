@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Accordion from "@/app/components/accordion/Accordion";
-import FormBase from "@components/form/FormBase";
+import FormBase from "@bciers/components/form/FormBase";
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
 
 interface Props {

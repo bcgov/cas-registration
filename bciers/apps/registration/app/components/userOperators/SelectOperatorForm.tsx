@@ -1,6 +1,6 @@
 "use client";
 
-import Form from "@components/form/FormBase";
+import Form from "@bciers/components/form/FormBase";
 import { RJSFSchema } from "@rjsf/utils";
 import { useState } from "react";
 import { Alert } from "@mui/material";

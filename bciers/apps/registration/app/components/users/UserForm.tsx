@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import FormBase from "@components/form/FormBase";
+import FormBase from "@bciers/components/form/FormBase";
 import { Alert } from "@mui/material";
 import SubmitButton from "@/app/components/form/SubmitButton";
 import { actionHandler } from "@/app/utils/actions";

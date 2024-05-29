@@ -2,8 +2,8 @@
 
 import { createRef, useEffect, useMemo, useRef, useState } from "react";
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
-import FormBase from "@components/form/FormBase";
-import TaskList from "@components/form/TaskList";
+import FormBase from "@bciers/components/form/FormBase";
+import TaskList from "@bciers/components/form/TaskList";
 import SingleStepTaskListButtons from "./SingleStepTaskListButtons";
 
 interface SingleStepTaskListFormProps {

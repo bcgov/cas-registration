@@ -1,7 +1,7 @@
 import { userEvent } from "@testing-library/user-event";
 import { render, screen, waitFor } from "@testing-library/react";
 import { RJSFSchema } from "@rjsf/utils";
-import FormBase from "@components/form/FormBase";
+import FormBase from "@bciers/components/form/FormBase";
 import { actionHandler, useSession } from "@tests/mocks";
 import { Session } from "@tests/types";
 import { checkNoValidationErrorIsTriggered } from "@/tests/helpers/form";

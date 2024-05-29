@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect } from "vitest";
-import FormBase from "@components/form/FormBase";
-import readOnlyTheme from "@components/form/theme/readOnlyTheme";
+import FormBase from "@bciers/components/form/FormBase";
+import readOnlyTheme from "@bciers/components/form/theme/readOnlyTheme";
 
 const testSchema = {
   type: "object",

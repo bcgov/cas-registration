@@ -7,7 +7,7 @@ import {
   useSession,
   useParams,
   useRouter,
-} from "@/tests/setup/mocks";
+} from "@tests/setup/mocks";
 import { QueryParams, Router, Session } from "@/tests/setup/types";
 import { createOperationSchema } from "@/app/components/operations/Operation";
 import OperationsForm from "@/app/components/operations/OperationsForm";

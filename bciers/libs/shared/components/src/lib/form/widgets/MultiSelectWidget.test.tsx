@@ -1,7 +1,7 @@
 import { userEvent } from "@testing-library/user-event";
 import { render, screen, waitFor } from "@testing-library/react";
 import { RJSFSchema } from "@rjsf/utils";
-import FormBase from "@components/form/FormBase";
+import FormBase from "@bciers/components/form/FormBase";
 import { checkNoValidationErrorIsTriggered } from "@/tests/helpers/form";
 
 const multiSelectFieldLabel = "MultiSelectWidget test field";

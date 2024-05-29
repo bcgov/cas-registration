@@ -8,8 +8,8 @@ import {
 import { describe, expect } from "vitest";
 import React from "react";
 import MultiStepFormBase from "@/app/components/form/MultiStepFormBase";
-import { useSession, useParams } from "@/tests/setup/mocks";
-import { QueryParams, Session } from "@/tests/setup/types";
+import { useSession, useParams } from "@tests/setup/mocks";
+import { QueryParams, Session } from "@tests/setup/types";
 import userEvent from "@testing-library/user-event";
 
 const testSchema = {

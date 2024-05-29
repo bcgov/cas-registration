@@ -2,8 +2,8 @@ import MultiStepButtons from "@/app/components/form/MultiStepButtons";
 import { render, screen } from "@testing-library/react";
 import { describe, expect } from "vitest";
 import React from "react";
-import { useSession } from "@/tests/setup/mocks";
-import { Session } from "@/tests/setup/types";
+import { useSession } from "@tests/setup/mocks";
+import { Session } from "@tests/setup/types";
 
 const defaultProps = {
   allowBackNavigation: true,

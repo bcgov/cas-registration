@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import CheckCircle from "@components/icons/CheckCircle";
+import CheckCircle from "@bciers/components/icons/CheckCircle";
 import { BC_GOV_LINKS_COLOR } from "@bciers/styles";
 
 export interface TaskListProps {

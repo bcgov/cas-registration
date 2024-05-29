@@ -1,6 +1,6 @@
 import { render } from "@testing-library/react";
 import { RJSFSchema } from "@rjsf/utils";
-import FormBase from "@components/form/FormBase";
+import FormBase from "@bciers/components/form/FormBase";
 
 const booleanFieldSchema = {
   type: "object",
