@@ -27,10 +27,9 @@ const SingleStepTaskListForm = ({
   const formSections = schema.properties as RJSFSchema;
   const formSectionList = Object.keys(formSections);
 
-  const taskListData = formSectionList.map((section, index) => ({
+  const taskListData = formSectionList.map((section) => ({
     section,
     title: formSections[section]?.title,
-    href: `#${index}`,
   }));
   const isDisabled = disabled || isSubmitting;
 
@@ -59,6 +58,7 @@ const SingleStepTaskListForm = ({
 
           return (
             <FormBase
+              id={section}
               key={section}
               disabled={isDisabled}
               schema={sectionSchema}
