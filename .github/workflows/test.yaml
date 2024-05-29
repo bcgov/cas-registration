@@ -452,3 +452,13 @@ jobs:
       - name: Run pytest
         working-directory: ./bc_obps
         run: make pythontests
+  check-migrations:
+    needs: install-dev-tools
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: dev env setup
+        uses: ./.github/actions/dev-env-setup
+      - run: poetry run python manage.py makemigrations --check --dry-run
+      - run: poetry run python manage.py migrate --check;
+        working-directory: ./bc_obps

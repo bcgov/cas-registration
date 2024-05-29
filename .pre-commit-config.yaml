@@ -21,12 +21,6 @@ repos:
         language: system
         entry: ./.bin/pre-commit-mypy.sh
         require_serial: true # to prevent printing the same error multiple times
-      - id: check-migrations
-        name: Check Migrations
-        language: system
-        entry: ./.bin/pre-commit-check-migrations.sh
-        require_serial: true # to prevent printing the same error multiple times
-
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v2.3.0
     hooks:
