@@ -1,6 +1,6 @@
 import defaultTheme from "@components/form/theme/defaultTheme";
 import readOnlyTheme from "@components/form/theme/readOnlyTheme";
-import { useMemo, useState } from "react";
+import { createRef, useMemo, useState } from "react";
 import { customizeValidator } from "@rjsf/validator-ajv8";
 import { FormProps, IChangeEvent, withTheme, ThemeProps } from "@rjsf/core";
 import customTransformErrors from "@/app/utils/customTransformErrors";
@@ -31,6 +31,9 @@ const transformErrors = (errors: RJSFValidationError[]) => {
 const validator = customizeValidator({ customFormats });
 
 interface FormPropsWithTheme<T> extends Omit<FormProps<T>, "validator"> {
+  children?: React.ReactNode | true;
+  onChange?: (e: IChangeEvent) => void;
+  onValidationSuccess?: () => void;
   theme?: ThemeProps;
   validator?: any;
   setErrorReset?: (error: undefined) => void;
@@ -38,10 +41,13 @@ interface FormPropsWithTheme<T> extends Omit<FormProps<T>, "validator"> {
 
 const FormBase: React.FC<FormPropsWithTheme<any>> = (props) => {
   const {
+    children,
     disabled,
     formData,
     omitExtraData,
+    onChange,
     onSubmit,
+    onValidationSuccess,
     readonly,
     setErrorReset,
     theme,
@@ -59,16 +65,29 @@ const FormBase: React.FC<FormPropsWithTheme<any>> = (props) => {
     if (onSubmit) onSubmit(e, formState);
   };
 
+  const formRef = createRef<any>();
+
+  const handleChange = (e: IChangeEvent) => {
+    onChange?.(e);
+
+    if (onValidationSuccess && formRef.current.validateForm()) {
+      onValidationSuccess?.();
+    }
+  };
+
   return (
     <Form
       {...props}
+      ref={formRef}
       formData={formState}
       noHtml5Validate
       omitExtraData={omitExtraData ?? true}
+      onChange={handleChange}
       onSubmit={handleSubmit}
       showErrorList={false}
       transformErrors={transformErrors}
       validator={validator}
+      children={children}
     />
   );
 };
