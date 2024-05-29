@@ -6,11 +6,11 @@ import {
 } from "next/server";
 
 import { MiddlewareFactory } from "@bciers/middlewares/server";
-import { getToken } from "@bciers/actions/server";
+import { auth } from "@/dashboard/auth";
 /*
-Access control logic is managed using Next.js middleware and NextAuth.js authentication JWT token.
+Access control logic is managed using Next.js middleware and NextAuth.js authentication JWT session.
 The middleware intercepts requests, and for restricted areas...
-Checks for a valid user session, and extracts user information from the JWT token.
+Checks for a valid user session, and extracts user information from the JWT session.
 Based on JWT properties of identity_provider and role, the middleware dynamically rewrites the request URL
 to the appropriate folder structure.
  */
@@ -51,8 +51,9 @@ export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
       return next(request, _next);
     }
     // Check if the user is dashboard via the jwt encoded in server side cookie
-    const token = await getToken();
-    if (token) {
+    const session = await auth();
+    console.log("session", session);
+    if (session) {
       if (pathname === "/" || pathname.endsWith(`/${onboarding}`)) {
         return NextResponse.redirect(new URL(`/${dashboard}`, request.url));
       } else {

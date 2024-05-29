@@ -8,11 +8,12 @@ import {
 import { MiddlewareFactory } from "@bciers/middlewares/server";
 
 import { IDP } from "@/app/utils/enums";
-import { getToken } from "@bciers/actions/server";
+import { auth } from "@/dashboard/auth";
+import { Session } from "next-auth";
 /*
-Access control logic is managed using Next.js middleware and NextAuth.js authentication JWT token.
+Access control logic is managed using Next.js middleware and NextAuth.js authentication JWT session.
 The middleware intercepts requests, and for restricted areas...
-Checks for a valid user session, and extracts user information from the JWT token.
+Checks for a valid user session, and extracts user information from the JWT session.
 Based on JWT properties of identity_provider and role, the middleware dynamically rewrites the request URL
 to the appropriate folder structure.
  */
@@ -33,14 +34,14 @@ const isAuthenticatedAllowListedPath = (pathname: string): boolean => {
 // Function to check if the path requires authorization
 const isAuthorizationRequiredPath = (
   pathname: string,
-  token: { identity_provider?: string; app_role?: string },
+  session: Session,
 ): boolean => {
-  if (!token) {
+  if (!session) {
     return false;
   }
 
-  const idp = token.identity_provider;
-  const appRole = token.app_role;
+  const idp = session.identity_provider;
+  const appRole = session.user.app_role;
   const authRoute = `${idp}/${appRole}`;
 
   return (
@@ -50,16 +51,13 @@ const isAuthorizationRequiredPath = (
   );
 };
 
-const isAuthorizedIdirUser = (token: {
-  identity_provider?: string;
-  app_role?: string;
-}): boolean => {
-  if (!token) {
+const isAuthorizedIdirUser = (session: Session): boolean => {
+  if (!session) {
     return false;
   }
 
-  const idp = token.identity_provider;
-  const appRole = token.app_role;
+  const idp = session.identity_provider;
+  const appRole = session.user.app_role;
   return idp === IDP.IDIR && !appRole?.includes("pending") ? true : false;
 };
 
@@ -72,10 +70,10 @@ export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
       return next(request, _next);
     }
     // Check if the user is authenticated via the jwt encoded in server side cookie
-    const token = await getToken();
-    if (token) {
-      // Check for the existence of token.app_role
-      if (!token.app_role || token.app_role === "") {
+    const session = await auth();
+    if (session) {
+      // Check for the existence of session.user.app_role
+      if (!session.user.app_role || session.user.app_role === "") {
         // Code to handle the case where app_role is either an empty string or null
         // route to profile form
         if (pathname.endsWith("/profile")) {
@@ -100,19 +98,14 @@ export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
       }
 
       // Check if the path requires authorization
-      if (isAuthorizationRequiredPath(pathname, token)) {
+      if (isAuthorizationRequiredPath(pathname, session)) {
         if (pathname.includes("operations")) {
           // Industry users are only allowed to see their operations if their operator is pending/approved
-          if (!isAuthorizedIdirUser(token)) {
+          if (!isAuthorizedIdirUser(session)) {
             try {
               const options: RequestInit = {
                 cache: "no-store", // Default cache option
                 method: "GET",
-                headers: new Headers({
-                  Authorization: JSON.stringify({
-                    user_guid: token.user_guid,
-                  }),
-                }),
               };
               const response = await fetch(
                 `${process.env.API_URL}registration/user-operators/current`,
@@ -133,13 +126,13 @@ export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
           }
         }
 
-        request.nextUrl.pathname = `${token.identity_provider}/${token.app_role}${pathname.replace("registration/", "")}`;
+        request.nextUrl.pathname = `${session.identity_provider}/${session.user.app_role}${pathname.replace("registration/", "")}`;
         return NextResponse.rewrite(request.nextUrl);
       }
 
       // Routes with the folder structure break the breadcrumbs
       const pageSegment = pathname.replace(
-        `/${token.identity_provider}/${token.app_role}`,
+        `/${session.identity_provider}/${session.user.app_role}`,
         "",
       );
 
