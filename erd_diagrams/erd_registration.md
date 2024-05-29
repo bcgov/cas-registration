@@ -353,6 +353,13 @@ HistoricalOperation {
     CharField history_change_reason
     CharField history_type
 }
+HistoricalOperation_reporting_activities {
+    BigIntegerField id
+    ForeignKey operation
+    ForeignKey reportingactivity
+    ForeignKey history
+    AutoField m2m_history_id
+}
 HistoricalOperation_documents {
     BigIntegerField id
     ForeignKey operation
@@ -364,13 +371,6 @@ HistoricalOperation_regulated_products {
     BigIntegerField id
     ForeignKey operation
     ForeignKey regulatedproduct
-    ForeignKey history
-    AutoField m2m_history_id
-}
-HistoricalOperation_reporting_activities {
-    BigIntegerField id
-    ForeignKey operation
-    ForeignKey reportingactivity
     ForeignKey history
     AutoField m2m_history_id
 }
@@ -637,15 +637,15 @@ HistoricalOperation }|--|| NaicsCode : naics_code
 HistoricalOperation }|--|| User : verified_by
 HistoricalOperation }|--|| Contact : point_of_contact
 HistoricalOperation }|--|| BcObpsRegulatedOperation : bc_obps_regulated_operation
+HistoricalOperation_reporting_activities }|--|| Operation : operation
+HistoricalOperation_reporting_activities }|--|| ReportingActivity : reportingactivity
+HistoricalOperation_reporting_activities }|--|| HistoricalOperation : history
 HistoricalOperation_documents }|--|| Operation : operation
 HistoricalOperation_documents }|--|| Document : document
 HistoricalOperation_documents }|--|| HistoricalOperation : history
 HistoricalOperation_regulated_products }|--|| Operation : operation
 HistoricalOperation_regulated_products }|--|| RegulatedProduct : regulatedproduct
 HistoricalOperation_regulated_products }|--|| HistoricalOperation : history
-HistoricalOperation_reporting_activities }|--|| Operation : operation
-HistoricalOperation_reporting_activities }|--|| ReportingActivity : reportingactivity
-HistoricalOperation_reporting_activities }|--|| HistoricalOperation : history
 Operation }|--|| User : created_by
 Operation }|--|| User : updated_by
 Operation }|--|| User : archived_by

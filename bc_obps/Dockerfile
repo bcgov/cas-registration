@@ -1,5 +1,5 @@
 # Use an official Python runtime as a parent image
-FROM python:3.9.16 AS main
+FROM python:3.12.3 AS main
 
 # Install system dependencies and clean up
 RUN apt-get update && \
