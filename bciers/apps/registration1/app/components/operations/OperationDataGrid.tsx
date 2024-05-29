@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+<<<<<<<< HEAD:bciers/apps/registration1/app/components/operations/OperationDataGrid.tsx
 import DataGrid from "@bciers/components/datagrid/DataGrid";
 import { GridColumnGroupHeaderParams } from "@mui/x-data-grid";
 import { useSession } from "next-auth/react";
@@ -9,6 +10,16 @@ import HeaderSearchCell from "@bciers/components/datagrid/cells/HeaderSearchCell
 import operationColumns from "@/app/components/datagrid/models/operationColumns";
 import operationGroupColumns from "@/app/components/datagrid/models/operationGroupColumns";
 import { OperationRow } from "./types";
+========
+import DataGrid from "@shared/components/src/lib/layout/DataGrid";
+import { GridColumnGroupHeaderParams } from "@mui/x-data-grid";
+import { useSession } from "next-auth/react";
+import OperationsActionCell from "@shared/components/src/lib/datagrid/cells/OperationActionCell";
+import HeaderSearchCell from "@shared/components/src/lib/datagrid/cells/HeaderSearchCell";
+import operationColumns from "@reporting/src/app/components/datagrid/models/operationColumns";
+import operationGroupColumns from "@shared/components/src/lib/datagrid/models/operationGroupColumns";
+import { OperationRow } from "@shared/components/src/operations/type";
+>>>>>>>> 25097e07 (chore: move components to shared library and fix references, rename OperationDataGrid -> ReportingOperationDataGrid for clarity):bciers/apps/reporting/src/app/components/operations/ReportingOperationDataGrid.tsx
 import { fetchOperationsPageData } from "./Operations";
 
 const OperationSearchCell = ({
@@ -32,7 +43,7 @@ const OperationSearchCell = ({
   return RenderCell;
 };
 
-const OperationDataGrid = ({
+const ReportingOperationDataGrid = ({
   initialData,
   isOperatorColumn = false,
 }: {
@@ -77,4 +88,4 @@ const OperationDataGrid = ({
   );
 };
 
-export default OperationDataGrid;
+export default ReportingOperationDataGrid;
