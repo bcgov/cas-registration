@@ -65,10 +65,10 @@ const SingleStepTaskListForm = ({
               uiSchema={uiSchema}
               formData={formData}
               onSubmit={submitHandler}
-              onValidationSuccess={() => {
+              onLiveValidation={(isValid) => {
                 setFormSectionStatus({
                   ...formSectionStatus,
-                  [section]: true,
+                  [section]: isValid,
                 });
               }}
               children={true}

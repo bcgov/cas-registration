@@ -33,7 +33,7 @@ const validator = customizeValidator({ customFormats });
 interface FormPropsWithTheme<T> extends Omit<FormProps<T>, "validator"> {
   children?: React.ReactNode | true;
   onChange?: (e: IChangeEvent) => void;
-  onValidationSuccess?: () => void;
+  onLiveValidation?: (isValid: boolean) => void;
   theme?: ThemeProps;
   validator?: any;
   setErrorReset?: (error: undefined) => void;
@@ -47,7 +47,7 @@ const FormBase: React.FC<FormPropsWithTheme<any>> = (props) => {
     omitExtraData,
     onChange,
     onSubmit,
-    onValidationSuccess,
+    onLiveValidation,
     readonly,
     setErrorReset,
     theme,
@@ -69,10 +69,8 @@ const FormBase: React.FC<FormPropsWithTheme<any>> = (props) => {
 
   const handleChange = (e: IChangeEvent) => {
     onChange?.(e);
-
-    if (onValidationSuccess && formRef.current.validateForm()) {
-      onValidationSuccess?.();
-    }
+    // If onLiveValidation is provided, call it with the current form validation status
+    onLiveValidation?.(formRef.current?.validateForm());
   };
 
   return (

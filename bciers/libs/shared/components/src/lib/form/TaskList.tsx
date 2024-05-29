@@ -28,6 +28,8 @@ const TaskList = ({ taskListData, taskListStatus }: TaskListProps) => {
     setAnchorTarget(document.getElementById(section));
   };
 
+  //
+
   return (
     <nav className="w-[256px] mr-4 h-fit border-solid border-0 border-r-2 border-[#f0f0f0]">
       {taskListData.map((task, index) => {
@@ -37,10 +39,10 @@ const TaskList = ({ taskListData, taskListStatus }: TaskListProps) => {
         return (
           <div
             key={index}
-            className={`flex items-center px-2.5 py-2 mb-2  transition-colors ease-in duration-200 ${
+            className={`flex items-center px-2.5 py-2 mb-2 transition-all ease-in duration-200 border-solid border-0 border-r-2 ${
               isActive
-                ? `bg-[#1a5a960c] border-solid border-0 border-r-2 border-[${BC_GOV_LINKS_COLOR}]`
-                : "bg-transparent"
+                ? `bg-[#1a5a960c] border-[${BC_GOV_LINKS_COLOR}]`
+                : "bg-transparent border-transparent"
             }`}
             onClick={(e) => handleTaskClick(e, section)}
           >
