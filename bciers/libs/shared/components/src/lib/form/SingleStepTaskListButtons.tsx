@@ -2,17 +2,16 @@ import { Button } from "@mui/material";
 
 interface SingleStepTaskListButtonsProps {
   disabled?: boolean;
-  isSubmitting: boolean;
+  onSubmit: () => Promise<any>;
 }
 
 const SingleStepTaskListButtons = ({
   disabled,
-  isSubmitting,
+  onSubmit,
 }: SingleStepTaskListButtonsProps) => {
-  const isDisabled = disabled || isSubmitting;
   return (
     <div className="w-full flex justify-end mt-8">
-      <Button variant="contained" disabled={isDisabled}>
+      <Button variant="contained" disabled={disabled} onClick={onSubmit}>
         Submit
       </Button>
       <Button className="ml-4" variant="outlined" type="button">

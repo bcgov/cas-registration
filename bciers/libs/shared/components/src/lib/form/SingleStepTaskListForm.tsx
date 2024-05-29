@@ -1,6 +1,7 @@
 "use client";
 
-import { createRef, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useState } from "react";
+import { IChangeEvent } from "@rjsf/core";
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import FormBase from "@bciers/components/form/FormBase";
 import TaskList from "@bciers/components/form/TaskList";
@@ -22,27 +23,47 @@ const SingleStepTaskListForm = ({
   uiSchema,
 }: SingleStepTaskListFormProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isAllSectionsValidated, setIsAllSectionsValidated] = useState(false);
+  // Form section status to track if each section is validated
   const [formSectionStatus, setFormSectionStatus] = useState({});
+  const [formState, setFormState] = useState(formData ?? {});
 
   const formSections = schema.properties as RJSFSchema;
   const formSectionList = Object.keys(formSections);
-
   const taskListData = formSectionList.map((section) => ({
     section,
     title: formSections[section]?.title,
   }));
-  const isDisabled = disabled || isSubmitting;
+
+  const isFormDisabled = disabled || isSubmitting;
+  const isSubmitDisabled = isFormDisabled || !isAllSectionsValidated;
+
+  useEffect(() => {
+    // Check if all form sections are validated so we can enable the submit button
+    const isValidated = formSectionList.every(
+      (section) => formSectionStatus[section],
+    );
+    setIsAllSectionsValidated(isValidated);
+  }, [formSectionStatus]);
 
   // Set isSubmitting to true to disable submit buttons and prevent multiple form submissions
-  const submitHandler = async (data: any) => {
+  const submitHandler = async () => {
     setIsSubmitting(true);
-    const response = await onSubmit(data);
+    const response = await onSubmit(formState);
 
     // If there is an error, set isSubmitting to false to re-enable submit buttons
     // and allow user to attempt to re-submit the form
     if (response?.error) {
       setIsSubmitting(false);
     }
+  };
+
+  const handleFormChange = (e: IChangeEvent) => {
+    // Merge section form data into singular form state
+    setFormState((prevState: any) => ({
+      ...prevState,
+      ...e.formData,
+    }));
   };
 
   return (
@@ -53,18 +74,19 @@ const SingleStepTaskListForm = ({
       />
 
       <div className="w-full">
+        {/* FormBase component is used to render each form section */}
+        {/* This was done as 'separate forms' so we could individually validate each section for the task list */}
         {formSectionList.map((section) => {
           const sectionSchema = (schema.properties as RJSFSchema)[section];
-
           return (
             <FormBase
               id={section}
               key={section}
-              disabled={isDisabled}
+              disabled={isFormDisabled}
               schema={sectionSchema}
               uiSchema={uiSchema}
               formData={formData}
-              onSubmit={submitHandler}
+              onChange={(e) => handleFormChange(e)}
               onLiveValidation={(isValid) => {
                 setFormSectionStatus({
                   ...formSectionStatus,
@@ -76,8 +98,8 @@ const SingleStepTaskListForm = ({
           );
         })}
         <SingleStepTaskListButtons
-          disabled={isDisabled}
-          isSubmitting={isSubmitting}
+          disabled={isSubmitDisabled}
+          onSubmit={submitHandler}
         />
       </div>
     </div>
