@@ -250,17 +250,17 @@ HistoricalOperator {
     CharField history_change_reason
     CharField history_type
 }
-HistoricalOperator_documents {
-    BigIntegerField id
-    ForeignKey operator
-    ForeignKey document
-    ForeignKey history
-    AutoField m2m_history_id
-}
 HistoricalOperator_contacts {
     BigIntegerField id
     ForeignKey operator
     ForeignKey contact
+    ForeignKey history
+    AutoField m2m_history_id
+}
+HistoricalOperator_documents {
+    BigIntegerField id
+    ForeignKey operator
+    ForeignKey document
     ForeignKey history
     AutoField m2m_history_id
 }
@@ -353,6 +353,13 @@ HistoricalOperation {
     CharField history_change_reason
     CharField history_type
 }
+HistoricalOperation_regulated_products {
+    BigIntegerField id
+    ForeignKey operation
+    ForeignKey regulatedproduct
+    ForeignKey history
+    AutoField m2m_history_id
+}
 HistoricalOperation_reporting_activities {
     BigIntegerField id
     ForeignKey operation
@@ -364,13 +371,6 @@ HistoricalOperation_documents {
     BigIntegerField id
     ForeignKey operation
     ForeignKey document
-    ForeignKey history
-    AutoField m2m_history_id
-}
-HistoricalOperation_regulated_products {
-    BigIntegerField id
-    ForeignKey operation
-    ForeignKey regulatedproduct
     ForeignKey history
     AutoField m2m_history_id
 }
@@ -602,12 +602,12 @@ HistoricalOperator }|--|| BusinessStructure : business_structure
 HistoricalOperator }|--|| Address : physical_address
 HistoricalOperator }|--|| Address : mailing_address
 HistoricalOperator }|--|| User : verified_by
-HistoricalOperator_documents }|--|| Operator : operator
-HistoricalOperator_documents }|--|| Document : document
-HistoricalOperator_documents }|--|| HistoricalOperator : history
 HistoricalOperator_contacts }|--|| Operator : operator
 HistoricalOperator_contacts }|--|| Contact : contact
 HistoricalOperator_contacts }|--|| HistoricalOperator : history
+HistoricalOperator_documents }|--|| Operator : operator
+HistoricalOperator_documents }|--|| Document : document
+HistoricalOperator_documents }|--|| HistoricalOperator : history
 Operator }|--|| User : created_by
 Operator }|--|| User : updated_by
 Operator }|--|| User : archived_by
@@ -637,15 +637,15 @@ HistoricalOperation }|--|| NaicsCode : naics_code
 HistoricalOperation }|--|| User : verified_by
 HistoricalOperation }|--|| Contact : point_of_contact
 HistoricalOperation }|--|| BcObpsRegulatedOperation : bc_obps_regulated_operation
+HistoricalOperation_regulated_products }|--|| Operation : operation
+HistoricalOperation_regulated_products }|--|| RegulatedProduct : regulatedproduct
+HistoricalOperation_regulated_products }|--|| HistoricalOperation : history
 HistoricalOperation_reporting_activities }|--|| Operation : operation
 HistoricalOperation_reporting_activities }|--|| ReportingActivity : reportingactivity
 HistoricalOperation_reporting_activities }|--|| HistoricalOperation : history
 HistoricalOperation_documents }|--|| Operation : operation
 HistoricalOperation_documents }|--|| Document : document
 HistoricalOperation_documents }|--|| HistoricalOperation : history
-HistoricalOperation_regulated_products }|--|| Operation : operation
-HistoricalOperation_regulated_products }|--|| RegulatedProduct : regulatedproduct
-HistoricalOperation_regulated_products }|--|| HistoricalOperation : history
 Operation }|--|| User : created_by
 Operation }|--|| User : updated_by
 Operation }|--|| User : archived_by
