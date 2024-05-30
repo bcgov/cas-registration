@@ -25,7 +25,9 @@ const SingleStepTaskListForm = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isAllSectionsValidated, setIsAllSectionsValidated] = useState(false);
   // Form section status to track if each section is validated
-  const [formSectionStatus, setFormSectionStatus] = useState({});
+  const [formSectionStatus, setFormSectionStatus] = useState<{
+    [key: string]: boolean;
+  }>({});
   const [formState, setFormState] = useState(formData ?? {});
   const [triggerValidation, setTriggerValidation] = useState(false);
 
@@ -37,7 +39,6 @@ const SingleStepTaskListForm = ({
   }));
 
   const isFormDisabled = disabled || isSubmitting;
-  const isSubmitDisabled = isFormDisabled;
 
   useEffect(() => {
     // Check if all form sections are validated so we can enable the submit button
@@ -101,7 +102,7 @@ const SingleStepTaskListForm = ({
           );
         })}
         <SingleStepTaskListButtons
-          disabled={isSubmitDisabled}
+          disabled={isFormDisabled}
           onSubmit={async () => {
             setTriggerValidation(true);
             if (isAllSectionsValidated) {
