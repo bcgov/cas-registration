@@ -7,6 +7,7 @@ import { DARK_GREY_BG_COLOR, BC_GOV_SEMANTICS_RED } from "@/app/styles/colors";
 const TextWidget: React.FC<WidgetProps> = ({
   disabled,
   id,
+  onBlur,
   onChange,
   rawErrors,
   readonly,
@@ -25,6 +26,10 @@ const TextWidget: React.FC<WidgetProps> = ({
 
     onChange(val);
   };
+
+  const handleBlur = ({
+    target: { value },
+  }: React.FocusEvent<HTMLInputElement>) => onBlur(id, value);
 
   const isError = rawErrors && rawErrors.length > 0;
   const borderColor = isError ? BC_GOV_SEMANTICS_RED : DARK_GREY_BG_COLOR;
@@ -49,6 +54,7 @@ const TextWidget: React.FC<WidgetProps> = ({
           ? `${value.slice(0, 3)} ${value.slice(3)}`.toUpperCase()
           : value
       }
+      onBlur={handleBlur}
       onChange={handleChange}
       sx={styles}
       type="text"

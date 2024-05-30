@@ -5,6 +5,7 @@ import { customizeValidator } from "@rjsf/validator-ajv8";
 import { FormProps, IChangeEvent, withTheme, ThemeProps } from "@rjsf/core";
 import customTransformErrors from "@/app/utils/customTransformErrors";
 import { RJSFValidationError } from "@rjsf/utils";
+import { get, omit, cloneDeep, set, unset } from "lodash";
 
 const customFormats = {
   phone: /\(?\d{3}\)?[\s-]?\d{3}[\s-]?\d{4}$/,
@@ -57,6 +58,7 @@ const FormBase: React.FC<FormPropsWithTheme<any>> = (props) => {
   const formTheme = disabled || readonly ? readOnlyTheme : defaultTheme;
   const Form = useMemo(() => withTheme(theme ?? formTheme), [theme, formTheme]);
   const [formState, setFormState] = useState(formData ?? {});
+  const [errors, setErrors] = useState({});
 
   // Handling form state externally as RJSF was resetting the form data on submission and
   // creating buggy behaviour if there was an API error and the user attempted to resubmit
@@ -67,7 +69,6 @@ const FormBase: React.FC<FormPropsWithTheme<any>> = (props) => {
     if (onSubmit) onSubmit(e, formState);
   };
 
-  // Create a ref to the form to allow manual triggering of validation
   const formRef = createRef<any>();
 
   const handleChange = (e: IChangeEvent) => {
@@ -83,6 +84,34 @@ const FormBase: React.FC<FormPropsWithTheme<any>> = (props) => {
     }
   }, [triggerValidation]);
 
+  const handleBlur = (...args: string[]) => {
+    // TODO: should this be conditionally enabled or okay to always run?
+    // RJSF does not support single field validation out of the box
+    // This workaround is based on the following example:
+    // https://github.com/rjsf-team/react-jsonschema-form/issues/617#issuecomment-1003141946
+    const $this = formRef.current;
+
+    const fieldPath = args[0].split("root_").slice(1);
+    const { formData, errorSchema: stateErrorSchema } = $this.state;
+    const fieldValue = get(formData, fieldPath);
+    // clear empty string values since JSON schema considers "" sufficient to pass `required` validation
+    let formDataToValidate =
+      fieldValue === "" ? omit(formData, fieldPath) : formData;
+
+    const { errorSchema: validatedErrorSchema } =
+      $this.validate(formDataToValidate);
+    const newErrorSchema = cloneDeep(stateErrorSchema);
+    const newFieldErrorSchema = get(validatedErrorSchema, fieldPath);
+
+    if (newFieldErrorSchema) {
+      set(newErrorSchema, fieldPath, newFieldErrorSchema);
+    } else {
+      // if there is no errorSchema for the field that was blurred, delete the key
+      unset(newErrorSchema, fieldPath);
+    }
+    setErrors(newErrorSchema);
+  };
+
   return (
     <Form
       {...props}
@@ -90,9 +119,11 @@ const FormBase: React.FC<FormPropsWithTheme<any>> = (props) => {
       formData={formState}
       noHtml5Validate
       omitExtraData={omitExtraData ?? true}
+      onBlur={handleBlur}
       onChange={handleChange}
       onSubmit={handleSubmit}
       showErrorList={false}
+      extraErrors={errors}
       transformErrors={transformErrors}
       validator={validator}
       children={children}

@@ -7,6 +7,7 @@ import { DARK_GREY_BG_COLOR, BC_GOV_SEMANTICS_RED } from "@/app/styles/colors";
 const TextWidget: React.FC<WidgetProps> = ({
   disabled,
   id,
+  onBlur,
   onChange,
   rawErrors,
   readonly,
@@ -21,6 +22,10 @@ const TextWidget: React.FC<WidgetProps> = ({
   const maxNumDbLimit = 2147483647;
 
   const maxNum = max || maxNumDbLimit;
+
+  const handleBlur = ({
+    target: { value },
+  }: React.FocusEvent<HTMLInputElement>) => onBlur(id, value);
 
   const handleChange = (e: { target: { value: string } }) => {
     const val = e.target.value;
@@ -48,6 +53,7 @@ const TextWidget: React.FC<WidgetProps> = ({
       disabled={disabled || readonly}
       name={id}
       value={value}
+      onBlur={handleBlur}
       onChange={handleChange}
       sx={styles}
       type={type}
