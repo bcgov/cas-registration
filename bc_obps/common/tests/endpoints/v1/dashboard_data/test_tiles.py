@@ -15,3 +15,8 @@ class TestDashboardDataEndpointAuthorization(CommonTestSetup):
         for role in roles:
             response = TestUtils.mock_get_with_auth_role(self, role)
             assert response.status_code == 200
+
+    # CLIENT ERROR
+    def test_missing_dashboard_parameter(self):
+        response = TestUtils.mock_get_with_auth_role(self, "industry_user", endpoint=BASE_ENDPOINT + "dashboard-data")
+        assert response.status_code == 422
