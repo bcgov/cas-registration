@@ -394,7 +394,7 @@ class TestUserOperatorIdEndpoint(CommonTestSetup):
         response = TestUtils.mock_get_with_auth_role(
             self,
             'industry_user',
-            custom_reverse_lazy('get_user_operator', kwargs={'user_operator_id': random_user_operator.id}),
+            custom_reverse_lazy('get_user_operator_by_id', kwargs={'user_operator_id': random_user_operator.id}),
         )
         # returns 401 because the user_operator does not belong to the current user
         assert response.status_code == 403
@@ -404,7 +404,9 @@ class TestUserOperatorIdEndpoint(CommonTestSetup):
         user_operator = baker.make(UserOperator, operator=operator)
 
         response = TestUtils.mock_get_with_auth_role(
-            self, 'cas_admin', custom_reverse_lazy('get_user_operator', kwargs={'user_operator_id': user_operator.id})
+            self,
+            'cas_admin',
+            custom_reverse_lazy('get_user_operator_by_id', kwargs={'user_operator_id': user_operator.id}),
         )
         assert response.status_code == 200
         assert response.json()['operator_id'] == str(operator.id)  # String representation of the UUID
