@@ -22,9 +22,6 @@ from service.data_access_service.dashboard_service import DashboardDataService
 @authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles(), False)
 @handle_http_errors()
 def list_dashboard_data(request: HttpRequest, dashboard: Literal['all', 'bciers','registration-operation-detail', 'registration', 'reporting']) -> Tuple[Literal[200], QuerySet[DashboardData]]:
-    if dashboard is None:
-        # Handle missing 'dashboard' parameter
-        return 400, []  
     role = ""
     if dashboard != "all":  # if dashboard is not equal to "all" then get role from AppRole
         user_guid: UUID = get_current_user_guid(request)
