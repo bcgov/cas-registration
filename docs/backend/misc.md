@@ -22,3 +22,5 @@ custom_reverse_lazy("get_operation", kwargs={"operation_id": operation_instance_
 ```
 
 This will return the URL for the `get_operation` endpoint with the `operation_id` parameter.
+
+**NOTE:** By default, `url_name` is the name of the operation (the function responsible for each endpoint). However, we can assign a different name if desired.

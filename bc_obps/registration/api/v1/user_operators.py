@@ -23,7 +23,9 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
     tags=USER_OPERATOR_TAGS,
     description="""Retrieves a paginated list of user operators.
     The endpoint allows authorized IRC roles to view user operators, sorted by various fields such as creation date, user details, and operator legal name.
-    It excludes pending user operators for operators with approved admins and approved user operators verified by industry users.""",
+    It excludes:
+    - pending user operators for operators with approved admins
+    - approved user operators verified by industry users.""",
 )
 @authorize(AppRole.get_authorized_irc_roles())
 @handle_http_errors()

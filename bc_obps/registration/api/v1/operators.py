@@ -21,7 +21,7 @@ from django.db.models import QuerySet
     response={200: Union[List[OperatorSearchOut], OperatorSearchOut], codes_4xx: Message, codes_5xx: Message},
     tags=OPERATOR_TAGS,
     description="""Retrieves operator(s) based on the provided CRA business number or legal name.
-    The endpoint allows authorized users to search for operators by their CRA business number or legal name.
+    This endpoint is accessible to both approved and unapproved users, allowing them to view operator information when selected.
     If no matching operator is found, an exception is raised.""",
 )
 @authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles(), False)

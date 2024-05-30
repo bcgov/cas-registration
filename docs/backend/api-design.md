@@ -29,7 +29,11 @@ def request_access(request, payload: SelectOperatorIn):
 The /api file structure is designed to self-document URLs. This means:
 
 - any file in the root of /api has a single-part path, e.g. `/api/operations` refers to the route `registration/api/operations`
-- folders within /api that have the same name as files are prefaced with an underscore to avoid import collisons. E.g., `api/_operations/operation_id` refers to the route `registration/api/operations/{operation_id}`.
+- folders within /api that have the same name as files are prefaced with an underscore to avoid import collisions. E.g., `api/_operations/operation_id` refers to the route `registration/api/operations/{operation_id}`.
+
+### Notes on Endpoints
+
+- Most Endpoints leverage user data from the middleware (current_user) to identify the current user and their roles. This middleware looks for a user_guid in the request headers and sets the current user to the user with that guid. This way, we can have access to the user object wherever we have access to the request object.
 
 ## Services
 
