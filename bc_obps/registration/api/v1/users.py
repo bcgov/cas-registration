@@ -18,7 +18,6 @@ from service.user_profile_service import UserProfileService
 @router.post(
     "/users",
     response={200: UserOut, codes_4xx: Message},
-    url_name="create_user_profile",
     tags=USER_TAGS,
     description="""Creates a new user.
     The endpoint determines the user's role based on the identity provider specified in the payload and assigns the appropriate application role.

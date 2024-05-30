@@ -16,7 +16,6 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 @router.get(
     "/user-operators/current/access-requests",
     response={200: List[ExternalDashboardUsersTileData], custom_codes_4xx: Message},
-    url_name="get_current_user_operator_access_requests",
     tags=USER_OPERATOR_TAGS,
     description="""Retrieves the list of user operators' access requests for the current user who is an industry user admin.
     The endpoint returns the access requests that need to be approved or denied by the admin, excluding those with a 'DECLINED' status.

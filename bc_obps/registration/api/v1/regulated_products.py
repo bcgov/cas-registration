@@ -14,7 +14,6 @@ from django.db.models import QuerySet
 @router.get(
     "/regulated_products",
     response=List[RegulatedProductSchema],
-    url_name="list_regulated_products",
     tags=REGULATED_PRODUCT_TAGS,
     description="""Retrieves a list of regulated products.
     The endpoint returns cached data if available; otherwise, it queries the database and caches the results for future requests.""",

@@ -16,7 +16,6 @@ from django.db.models import QuerySet
 @router.get(
     "/reporting_activities",
     response=List[ReportingActivitySchema],
-    url_name="list_reporting_activities",
     tags=REPORTING_ACTIVITY_TAGS,
     description="""Retrieves a list of reporting activities.
     The endpoint returns cached data if available; otherwise, it queries the database and caches the results for future requests.""",

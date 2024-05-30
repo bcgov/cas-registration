@@ -19,7 +19,6 @@ from django.db.models import QuerySet
 @router.get(
     "/operators",
     response={200: Union[List[OperatorSearchOut], OperatorSearchOut], codes_4xx: Message, codes_5xx: Message},
-    url_name="get_operators_by_cra_number_or_legal_name",
     tags=OPERATOR_TAGS,
     description="""Retrieves operator(s) based on the provided CRA business number or legal name.
     The endpoint allows authorized users to search for operators by their CRA business number or legal name.
@@ -37,7 +36,6 @@ def get_operators_by_cra_number_or_legal_name(
 @router.get(
     "/operators/{operator_id}",
     response={200: ConfirmSelectedOperatorOut, codes_4xx: Message},
-    url_name="get_operator",
     tags=OPERATOR_TAGS,
     description="""Retrieves information about a specific operator by its ID.
     This endpoint is accessible to both approved and unapproved users, allowing them to view operator information when selected.""",
@@ -54,7 +52,6 @@ def get_operator(request: HttpRequest, operator_id: UUID) -> Tuple[Literal[200],
 @router.put(
     "/operators/{operator_id}",
     response={200: OperatorOut, codes_4xx: Message},
-    url_name="update_operator_status",
     tags=OPERATOR_TAGS,
     description="""Updates the status of a specific operator by its ID.
     The endpoint allows authorized users to update the operator's status and perform additional actions based on the new status.

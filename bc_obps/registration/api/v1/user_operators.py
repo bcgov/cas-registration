@@ -20,7 +20,6 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 @router.get(
     "/user-operators",
     response={200: UserOperatorPaginatedOut, custom_codes_4xx: Message},
-    url_name="list_user_operators",
     tags=USER_OPERATOR_TAGS,
     description="""Retrieves a paginated list of user operators.
     The endpoint allows authorized IRC roles to view user operators, sorted by various fields such as creation date, user details, and operator legal name.
@@ -38,7 +37,6 @@ def list_user_operators(
 @router.post(
     "/user-operators",
     response={200: RequestAccessOut, custom_codes_4xx: Message},
-    url_name="create_operator_and_user_operator",
     tags=USER_OPERATOR_TAGS,
     description="""Creates a new operator and a user-operator for the current user.
     The endpoint ensures that only authorized industry users can create a new operator and user-operator.

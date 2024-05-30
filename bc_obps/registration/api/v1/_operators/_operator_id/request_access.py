@@ -20,7 +20,6 @@ from service.application_access_service import ApplicationAccessService
 @router.post(
     "/operators/{operator_id}/request-access",
     response={201: RequestAccessOut, custom_codes_4xx: Message},
-    url_name="request_access",
     tags=OPERATOR_TAGS,
     description="""Allows an industry user to request access to a specific operator.
     The endpoint checks if the user is eligible to request access, and if so, creates a draft UserOperator instance if one does not already exist.
