@@ -27,6 +27,7 @@ const SingleStepTaskListForm = ({
   // Form section status to track if each section is validated
   const [formSectionStatus, setFormSectionStatus] = useState({});
   const [formState, setFormState] = useState(formData ?? {});
+  const [triggerValidation, setTriggerValidation] = useState(false);
 
   const formSections = schema.properties as RJSFSchema;
   const formSectionList = Object.keys(formSections);
@@ -36,7 +37,7 @@ const SingleStepTaskListForm = ({
   }));
 
   const isFormDisabled = disabled || isSubmitting;
-  const isSubmitDisabled = isFormDisabled || !isAllSectionsValidated;
+  const isSubmitDisabled = isFormDisabled;
 
   useEffect(() => {
     // Check if all form sections are validated so we can enable the submit button
@@ -48,6 +49,7 @@ const SingleStepTaskListForm = ({
 
   // Set isSubmitting to true to disable submit buttons and prevent multiple form submissions
   const submitHandler = async () => {
+    alert("Submitting form data");
     setIsSubmitting(true);
     const response = await onSubmit(formState);
 
@@ -93,13 +95,19 @@ const SingleStepTaskListForm = ({
                   [section]: isValid,
                 });
               }}
+              triggerValidation={triggerValidation}
               children={true}
             />
           );
         })}
         <SingleStepTaskListButtons
           disabled={isSubmitDisabled}
-          onSubmit={submitHandler}
+          onSubmit={async () => {
+            setTriggerValidation(true);
+            if (isAllSectionsValidated) {
+              await submitHandler();
+            }
+          }}
         />
       </div>
     </div>

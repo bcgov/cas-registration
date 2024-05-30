@@ -1,6 +1,6 @@
 import defaultTheme from "@bciers/components/form/theme/defaultTheme";
 import readOnlyTheme from "@bciers/components/form/theme/readOnlyTheme";
-import { createRef, useMemo, useState } from "react";
+import { createRef, useEffect, useMemo, useState } from "react";
 import { customizeValidator } from "@rjsf/validator-ajv8";
 import { FormProps, IChangeEvent, withTheme, ThemeProps } from "@rjsf/core";
 import customTransformErrors from "@/app/utils/customTransformErrors";
@@ -37,6 +37,7 @@ interface FormPropsWithTheme<T> extends Omit<FormProps<T>, "validator"> {
   theme?: ThemeProps;
   validator?: any;
   setErrorReset?: (error: undefined) => void;
+  triggerValidation?: boolean;
 }
 
 const FormBase: React.FC<FormPropsWithTheme<any>> = (props) => {
@@ -51,6 +52,7 @@ const FormBase: React.FC<FormPropsWithTheme<any>> = (props) => {
     readonly,
     setErrorReset,
     theme,
+    triggerValidation,
   } = props;
   const formTheme = disabled || readonly ? readOnlyTheme : defaultTheme;
   const Form = useMemo(() => withTheme(theme ?? formTheme), [theme, formTheme]);
@@ -65,6 +67,7 @@ const FormBase: React.FC<FormPropsWithTheme<any>> = (props) => {
     if (onSubmit) onSubmit(e, formState);
   };
 
+  // Create a ref to the form to allow manual triggering of validation
   const formRef = createRef<any>();
 
   const handleChange = (e: IChangeEvent) => {
@@ -72,6 +75,13 @@ const FormBase: React.FC<FormPropsWithTheme<any>> = (props) => {
     // If onLiveValidation is provided, call it with the current form validation status
     onLiveValidation?.(formRef.current?.validateForm());
   };
+
+  useEffect(() => {
+    // Trigger validation prop to externally trigger form validation
+    if (triggerValidation) {
+      formRef.current?.validateForm();
+    }
+  }, [triggerValidation]);
 
   return (
     <Form

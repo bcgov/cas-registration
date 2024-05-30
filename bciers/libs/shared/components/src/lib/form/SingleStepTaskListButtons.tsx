@@ -2,7 +2,7 @@ import { Button } from "@mui/material";
 
 interface SingleStepTaskListButtonsProps {
   disabled?: boolean;
-  onSubmit: () => Promise<any>;
+  onSubmit: () => void;
 }
 
 const SingleStepTaskListButtons = ({
