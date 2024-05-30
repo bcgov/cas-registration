@@ -6,14 +6,14 @@ class DashboardData(models.Model):
     Responsible for storing JSON information for dashboard tiles
     """
 
-    name = models.CharField(max_length=100)
-    data = models.JSONField()
+    name = models.CharField(max_length=100, unique=True, db_comment="Name of the dashboard by app and ID type used as a friendly unique identifier.")
+    data = models.JSONField(db_comment="JSON representation of dashboard navigation tiles.")
 
     def __str__(self):
         return f"DashboardData {self.id} - {self.name}"  # Informative string representation
 
     class Meta:
-        db_table_comment = "The JSON information for dashboard navigation tiles."
+        db_table_comment = "The JSON information for dashboard navigation tiles by app and ID type."
         db_table = 'common"."dashboard_data'
 
 class EmailNotificationTemplate(models.Model):

@@ -4,8 +4,8 @@ from django.db.models import Q
 from common.models import DashboardData
 from common.schema.v1 import DashboardDataSchemaOut
 
-##### GET #####
-
+import logging
+logger = logging.getLogger(__name__)
 
 class DashboardDataService:
     @classmethod
@@ -30,8 +30,8 @@ class DashboardDataService:
 
             return query
         
-        except Exception as e:
+        except Exception as exc:
             # Log the exception if needed
-            print(f"An error occurred: {e}")
+            logger.error(f'Logger: Exception in get_dashboard_data_by_name_for_role {str(exc)}')
             return DashboardData.objects.none()
         

@@ -1,7 +1,6 @@
 [
   {
     "model": "common.dashboarddata",
-    "pk": 6,
     "fields": {
       "name": "Internal Analyst Registration Dashboard",
       "data": {

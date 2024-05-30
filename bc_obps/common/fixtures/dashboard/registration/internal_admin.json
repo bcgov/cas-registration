@@ -1,7 +1,6 @@
 [
   {
     "model": "common.dashboarddata",
-    "pk": 5,
     "fields": {
       "name": "Internal Admin Registration Dashboard",
       "data": {
