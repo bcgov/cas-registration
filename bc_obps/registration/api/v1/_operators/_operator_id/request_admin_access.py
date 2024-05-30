@@ -20,7 +20,6 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 @router.post(
     "/operators/{operator_id}/request-admin-access",
     response={201: RequestAccessOut, custom_codes_4xx: Message},
-    url_name="request_admin_access",
     tags=OPERATOR_TAGS,
     description="""Allows an industry user to request admin access to a specific operator.
     The endpoint checks if the user is eligible to request admin access, and if so, creates a draft UserOperator instance if one does not already exist.

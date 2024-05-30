@@ -13,7 +13,6 @@ from registration.schema.v1 import BusinessStructureOut
 @router.get(
     "/business_structures",
     response=List[BusinessStructureOut],
-    url_name="list_business_structures",
     tags=BUSINESS_STRUCTURE_TAGS,
     description="""Retrieves a list of business structures.
     The endpoint returns cached data if available; otherwise, it queries the database and caches the results for future requests.""",

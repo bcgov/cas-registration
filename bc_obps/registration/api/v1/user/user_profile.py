@@ -16,7 +16,6 @@ from ninja.responses import codes_4xx
 @router.get(
     "/user/user-profile",
     response={200: UserOut, codes_4xx: Message},
-    url_name="get_user_profile",
     tags=USER_TAGS,
     description="""Retrieves the profile data of the current user.
     The endpoint uses the user GUID from the authorization header to look up and return the user's profile information, including their application role.""",
@@ -33,7 +32,6 @@ def get_user_profile(request: HttpRequest) -> Tuple[Literal[200], User]:
 @router.put(
     "/user/user-profile",
     response={200: UserOut, codes_4xx: Message},
-    url_name="update_user_profile",
     tags=USER_TAGS,
     description="""Updates the profile data of the current user.
     The user's data is retrieved and updated with the new values from the payload.""",
