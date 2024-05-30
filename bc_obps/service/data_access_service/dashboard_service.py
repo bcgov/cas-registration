@@ -9,9 +9,29 @@ from common.schema.v1 import DashboardDataSchemaOut
 
 class DashboardDataService:
     @classmethod
-    def get_dashboard_data_by_name_for_role(cls, dashboard: Optional[str] = None, role: Optional[str] = None) -> QuerySet[DashboardData]:
-        if dashboard == "all":
-            dashboard_data= DashboardData.objects.only(*DashboardDataSchemaOut.Meta.fields)
-        else:
-            dashboard_data= DashboardData.objects.only(*DashboardDataSchemaOut.Meta.fields).filter(Q(data__dashboard=dashboard) & Q(data__access_roles__contains=role))
-        return dashboard_data
+    def get_dashboard_data_by_name_for_role(cls, dashboard: str = None, role: Optional[str] = None) -> QuerySet[DashboardData]:
+        """
+        Fetches dashboard data filtered by dashboard name and user role.
+
+        Args:
+            dashboard (str): The name of the dashboard to filter by. Use "all" to fetch all dashboards.
+            role (Optional[str]): The user role to filter by. The role should be contained within the access_roles.
+
+        Returns:
+            QuerySet[DashboardData]: A queryset of filtered DashboardData objects.
+        """
+        try:
+            fields = DashboardDataSchemaOut.Meta.fields
+            query = DashboardData.objects.only(*fields)
+            if dashboard == "all":
+                return query
+            else:
+                query = query.filter(Q(data__dashboard=dashboard) & Q(data__access_roles__contains=role))
+
+            return query
+        
+        except Exception as e:
+            # Log the exception if needed
+            print(f"An error occurred: {e}")
+            return DashboardData.objects.none()
+        

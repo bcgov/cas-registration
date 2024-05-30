@@ -40,14 +40,6 @@ class Command(BaseCommand):
                 f'{fixture_base_dir}/user_operator.json',
                 f'{fixture_base_dir}/parent_operator.json',
                 f'{fixture_base_dir}/facility.json',
-                f'common/fixtures/dashboard/bciers/external.json',
-                f'common/fixtures/dashboard/bciers/internal.json',
-                f'common/fixtures/dashboard/registration/operation/external.json',
-                f'common/fixtures/dashboard/registration/external.json',
-                f'common/fixtures/dashboard/registration/internal_admin.json',
-                f'common/fixtures/dashboard/registration/internal.json',
-                f'common/fixtures/dashboard/reporting/external.json',
-                f'common/fixtures/dashboard/reporting/internal.json',
             ]
 
         for fixture in fixtures:
