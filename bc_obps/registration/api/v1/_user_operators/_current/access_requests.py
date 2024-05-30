@@ -17,8 +17,8 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
     "/user-operators/current/access-requests",
     response={200: List[ExternalDashboardUsersTileData], custom_codes_4xx: Message},
     tags=USER_OPERATOR_TAGS,
-    description="""Retrieves the list of user operators' access requests for the current user who is an industry user admin.
-    The endpoint returns the access requests that need to be approved or denied by the admin, excluding those with a 'DECLINED' status.
+    description="""Retrieves the list of access requests to the current user's operator. The current user is an industry user admin.
+    The endpoint returns the access requests that need to be approved or declined by the admin, excluding those that have already been declined (have a 'DECLINED' status.)
     The list is filtered based on the business GUID of the current user and the associated operator.""",
 )
 @authorize(["industry_user"], ["admin"])

@@ -51,7 +51,8 @@ def get_user_operator_by_id(request: HttpRequest, user_operator_id: UUID) -> Tup
     tags=USER_OPERATOR_TAGS,
     description="""Updates both the operator and the user-operator by their ID.
     The endpoint ensures that industry users can only update their own user-operators.
-    It checks for the uniqueness of the CRA Business Number and updates the operator's status to 'Pending' if it is currently 'Draft'.
+    It checks for the uniqueness of the CRA Business Number.
+    If all permissions and checks are in order, it updates the operator's status to 'Pending' if it is currently 'Draft'.
     The updated data is saved, and a new user-operator instance is created if one does not already exist.""",
 )
 @authorize(["industry_user"], ["admin"])

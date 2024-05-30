@@ -18,7 +18,7 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
     "/user-operators/current/is-current-user-approved-admin",
     response={200: IsApprovedUserOperator, custom_codes_4xx: Message},
     tags=USER_OPERATOR_TAGS,
-    description="""Checks if the current user is an approved admin user operator.
+    description="""Checks if the current user is an approved admin for their operator.
     The endpoint verifies whether the current user has the 'ADMIN' role and 'APPROVED' status.
     It returns a dictionary indicating whether the user is an approved admin.""",
 )

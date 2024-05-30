@@ -139,7 +139,7 @@ This optimization becomes more noticeable when dealing with larger datasets or w
 
 ### Optimizing Django-Ninja Schema
 
-When defining Pydantic schemas for Django-Ninja, explicitly include only the fields that are essential for processing or need to be included in the response. Avoid adding unnecessary fields to minimize the data transmitted over the network and improve the overall efficiency of your API.
+When defining Pydantic schemas for Django-Ninja, explicitly include only the fields that are essential for processing or need to be included in the response. This minimizes the data transmitted over the network and improves the overall efficiency of your API.
 
 In the following example, the `OperationListOut` schema is defined to include only the essential fields from the `Operation` model to be used on the client side.(Operations Table)
 
@@ -147,9 +147,6 @@ In the following example, the `OperationListOut` schema is defined to include on
 from ninja import ModelSchema
 
 class OperationListOut(ModelSchema):
-    operator: str = Field(..., alias="operator.legal_name")
-    bc_obps_regulated_operation: Optional[str] = Field(None, alias="bc_obps_regulated_operation.id")
-
     class Config:
         model = Operation
         model_fields = ['id', 'name', 'bcghg_id', 'submission_date', 'status']

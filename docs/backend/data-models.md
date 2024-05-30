@@ -30,7 +30,9 @@ This data model is equipped with two essential methods:
 
 `set_archive`: Specifically designed for archiving objects, this method captures the archival details and requires the user initiating the archival process as a parameter.
 
-Furthermore, a custom manager is implemented to filter out archived objects, ensuring a streamlined retrieval process focused only on active data.
+Furthermore, a custom manager (`TimeStampedModelManager`) is implemented to filter out archived objects, ensuring a streamlined retrieval process focused only on active data.
+
+**Note:** Every data model that inherits from `TimeStampedModel` will automatically have the audit columns and methods integrated into its structure. These models will also be managed by the `TimeStampedModelManager` to exclude archived objects from queries.
 
 ## Data Models Primary Key
 

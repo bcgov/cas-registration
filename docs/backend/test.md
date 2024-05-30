@@ -1,6 +1,6 @@
 # Testing Overview
 
-We use Pytest and Django's TestCase classes for testing. We aim to cover as much of the backend codebase as possible with unit tests for services, data access services, endpoints, data models and utilities. All tests are located in the `tests` directory within each Django app. Test's function names should be descriptive and follow the naming convention `test_<name>`. For example, `test_get_user_by_guid` otherwise, the test runner will not pick up the test.
+We use Pytest and Django's TestCase classes for testing. We aim to cover as much of the backend codebase as possible with unit tests for endpoints (these cover services and data access services as well), data models and utilities. All tests are located in the `tests` directory within each Django app. Test's function names should be descriptive and follow the naming convention `test_<name>`, for example, `test_get_user_by_guid`. If the test name does not contain `test`, the test runner will not pick up the test.
 
 Endpoint tests are located in the `tests/endpoints` directory. Test files in this directory should mirror the structure of the `api` directory. For example, the tests for the `registration/api/operations.py` endpoint should be located in `tests/endpoints/test_operations.py`.
 
@@ -64,6 +64,7 @@ When testing Django models, we use the `BaseTestCase` class from the `bc_obps.co
 
    - This method asserts that the label of a given field matches the expected label.
    - If the field is a `ManyToOneRel` or `ManyToManyRel`, it checks the verbose name of the related model instead.
+     **Note:** This is particularly relevant if you are using Django views or the Django admin interface, where the field labels are displayed to the user. For example, if you have a field named `first_name`, you may want to display it as `First Name` in the admin interface.
 
 3. **`assertFieldMaxLength(self, instance, field_name, expected_max_length)`**:
 
