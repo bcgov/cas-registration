@@ -18,6 +18,7 @@ env:
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
+
 jobs:
   install-dev-tools:
     runs-on: ubuntu-latest
@@ -27,6 +28,7 @@ jobs:
         uses: ./.github/actions/dev-env-setup
       - run: yarn install --immutable
         working-directory: ./bciers
+
   nx-tests:
     needs: install-dev-tools
     runs-on: ubuntu-latest
@@ -40,8 +42,10 @@ jobs:
           fetch-depth: 0
       - name: dev env setup
         uses: ./.github/actions/dev-env-setup
-      - name: Run Nx Tests
-        run: yarn nx run-many -t test --skipNxCache
+      - name: Authenticate with Nx Cloud
+        run: yarn nx connect-to-nx-cloud
+      - name: Run Nx Tests with Remote Caching
+        run: yarn nx run-many -t test
 
   yarn-audit:
     needs: install-dev-tools
@@ -52,6 +56,7 @@ jobs:
         uses: ./.github/actions/dev-env-setup
       - run: yarn npm audit
         working-directory: ./bciers
+
   pre-commit:
     needs: install-dev-tools
     runs-on: ubuntu-latest
@@ -78,6 +83,7 @@ jobs:
           key: pre-commit-${{ env.PY }}-${{ hashFiles('.pre-commit-config.yaml') }}-v4
       - run: pip install -r requirements.txt
       - uses: pre-commit/action@v3.0.1
+
   backend-docker-build:
     runs-on: ubuntu-latest
     steps:
