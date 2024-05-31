@@ -414,9 +414,9 @@ class Contact(UserAndContactCommonInfo, TimeStampedModel):
             models.Index(fields=["business_role"], name="contact_role_idx"),
         ]
 
-    def __str__(self) -> str:
-        fields = [f"{field.name}={getattr(self, field.name)}" for field in self._meta.fields]
-        return ' - '.join(fields)
+    # def __str__(self) -> str:
+    #     fields = [f"{field.name}={getattr(self, field.name)}" for field in self._meta.fields]
+    #     return ' - '.join(fields)
 
 
 class BusinessStructure(BaseModel):
@@ -553,9 +553,9 @@ class Operator(TimeStampedModel):
         db_table_comment = "Table containing operator information. An operator is the person who owns and/or controls and directs industrial operations. An operator can own multiple operations. For more information see definitions in the Greenhouse Gas Industrial Reporting and Control Act: https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/14029_01#section1: https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/14029_01#section1"
         db_table = 'erc"."operator'
 
-    def __str__(self) -> str:
-        fields = [f"{field.name}={getattr(self, field.name)}" for field in self._meta.fields]
-        return ' - '.join(fields)
+    # def __str__(self) -> str:
+    #     fields = [f"{field.name}={getattr(self, field.name)}" for field in self._meta.fields]
+    #     return ' - '.join(fields)
 
 
 class UserOperator(TimeStampedModel):
@@ -633,9 +633,9 @@ class UserOperator(TimeStampedModel):
             )
         ]
 
-    def __str__(self) -> str:
-        fields = [f"{field.name}={getattr(self, field.name)}" for field in self._meta.fields]
-        return ' - '.join(fields)
+    # def __str__(self) -> str:
+    #     fields = [f"{field.name}={getattr(self, field.name)}" for field in self._meta.fields]
+    #     return ' - '.join(fields)
 
     def get_senior_officer(self) -> Optional[Contact]:
         """
@@ -687,14 +687,16 @@ class Operation(TimeStampedModel):
     id = models.UUIDField(
         primary_key=True, default=uuid.uuid4, db_comment="Primary key to identify the operation", verbose_name="ID"
     )
-    name = models.CharField(max_length=1000, db_comment="The name of an operation")
-    type = models.CharField(max_length=1000, db_comment="The type of an operation")
+    name = models.CharField(max_length=1000, db_comment="The name of an operation")  # TODO: move this
+    type = models.CharField(
+        max_length=1000, db_comment="The type of an operation"
+    )  # TODO: move this to ownership table and also a data migration to populate this using the new OpetionType model
     operator = models.ForeignKey(
         Operator,
         on_delete=models.DO_NOTHING,
         db_comment="The operator who owns the operation",
         related_name="operations",
-    )
+    )  # TODO: move this
     operation_has_multiple_operators = models.BooleanField(
         db_comment="Whether or not the operation has multiple operators", default=False
     )
@@ -722,7 +724,7 @@ class Operation(TimeStampedModel):
         db_comment="Whether or not the operation is required to register or is simply opting in. Only needed if the operation did not report the previous year.",
         blank=True,
         null=True,
-    )
+    )  # TODO: move this
 
     verified_at = models.DateTimeField(
         db_comment="The time the operation was verified by an IRC user. If exists, the operation is registered for OBPS.",
@@ -746,7 +748,7 @@ class Operation(TimeStampedModel):
         Document,
         blank=True,
         related_name="operations",
-    )
+    )  # TODO: move this
     point_of_contact = models.ForeignKey(
         Contact,
         on_delete=models.DO_NOTHING,
@@ -754,7 +756,7 @@ class Operation(TimeStampedModel):
         blank=True,
         null=True,
         db_comment="Foreign key to the contact that is the point of contact",
-    )
+    )  # TODO: move this
     status = models.CharField(
         max_length=1000,
         choices=Statuses.choices,
@@ -773,12 +775,12 @@ class Operation(TimeStampedModel):
         RegulatedProduct,
         blank=True,
         related_name='%(class)ss',
-    )
+    )  # TODO: move this
     reporting_activities = models.ManyToManyField(
         ReportingActivity,
         blank=True,
         related_name='%(class)ss',
-    )
+    )  # TODO: move this
     history = HistoricalRecords(
         table_name='erc_history"."operation_history',
         m2m_fields=[regulated_products, reporting_activities, documents],
@@ -856,17 +858,15 @@ class Operation(TimeStampedModel):
         new_boro_id_instance = BcObpsRegulatedOperation.objects.create(id=new_boro_id)
         self.bc_obps_regulated_operation = new_boro_id_instance
 
-    def __str__(self) -> str:
-        fields = [f"{field.name}={getattr(self, field.name)}" for field in self._meta.fields]
-        return ' - '.join(fields)
+    # def __str__(self) -> str:
+    #     fields = [f"{field.name}={getattr(self, field.name)}" for field in self._meta.fields]
+    #     return ' - '.join(fields)
 
 
 class Facility(TimeStampedModel):
     id = models.UUIDField(
         primary_key=True, default=uuid.uuid4, db_comment="Primary key to identify the facility", verbose_name="ID"
     )
-    name = models.CharField(max_length=1000, db_comment="The name of a facility")
-    type = models.CharField(max_length=1000, db_comment="The type of a facility")
     address = models.ForeignKey(
         Address,
         on_delete=models.DO_NOTHING,
@@ -875,8 +875,6 @@ class Facility(TimeStampedModel):
         null=True,
         related_name='%(class)s_address',
     )
-    new_entrant = models.BooleanField(db_comment="Whether or not the facility is a new entrant")
-    operation = models.ForeignKey(Operation, on_delete=models.DO_NOTHING, related_name="facilities")
     swrs_facility_id = models.IntegerField(
         db_comment="A facility's SWRS facility ID.",
         blank=True,
@@ -896,6 +894,17 @@ class Facility(TimeStampedModel):
     class Meta:
         db_table_comment = "Contains data on facilities that emit carbon emissions and must report them to Clean Growth. A linear facility operation is made up of several different facilities whereas a single facility operation has only one facility. In the case of a single facility operation, much of the data in this table will overlap with the parent record in the operation table."
         db_table = 'erc"."facility'
+        verbose_name_plural = "Facilities"
+
+    @property
+    def current_owner(self) -> Optional[Operation]:
+        """
+        Returns the current owner(operation) of the facility.
+        """
+        owner: Optional[FacilityOwnershipTimeline] = self.ownerships.filter(end_date__isnull=True).first()
+        if owner:
+            return owner.operation
+        return None
 
 
 class WellAuthorizationNumber(TimeStampedModel):
@@ -1082,4 +1091,76 @@ class ParentOperator(TimeStampedModel):
             models.Index(fields=["business_structure"], name="po_business_structure_idx"),
             models.Index(fields=["physical_address"], name="po_physical_address_idx"),
             models.Index(fields=["mailing_address"], name="po_mailing_address_idx"),
+        ]
+
+
+class OperationType(BaseModel):
+    """
+    TODO: we need to make the type of operation a foreign key to this model(This needs a data migration to populate the operation type field in the operation model using this model)(A whole new ticket)
+    """
+
+    name = models.CharField(primary_key=True, max_length=1000, db_comment="The name of an operation type")
+    history = HistoricalRecords(
+        table_name='erc_history"."operation_type_history',
+        history_user_id_field=models.UUIDField(null=True, blank=True),
+    )
+
+    class Meta:
+        db_table_comment = "Operation types"
+        db_table = 'erc"."operation_type'
+
+    def __str__(self) -> str:
+        return self.name
+
+
+class FacilityType(BaseModel):
+    name = models.CharField(unique=True, max_length=1000, db_comment="The name of a facility type")
+    operation_type = models.ForeignKey(
+        OperationType,
+        on_delete=models.DO_NOTHING,
+        related_name="facility_types",
+        db_comment="The type of operation that this facility type is associated with",
+    )
+    history = HistoricalRecords(
+        table_name='erc_history"."facility_type_history',
+        history_user_id_field=models.UUIDField(null=True, blank=True),
+    )
+
+    class Meta:
+        db_table_comment = "Facility types"
+        db_table = 'erc"."facility_type'
+
+    def __str__(self) -> str:
+        return f"{self.name} - {self.operation_type.name}"
+
+
+class FacilityOwnershipTimeline(TimeStampedModel):
+    facility = models.ForeignKey(Facility, on_delete=models.DO_NOTHING, related_name="ownerships")
+    operation = models.ForeignKey(Operation, on_delete=models.DO_NOTHING, related_name="facility_ownerships")
+    name = models.CharField(max_length=1000, db_comment="The name of the facility when the operation owned it")
+    facility_type = models.ForeignKey(
+        FacilityType,
+        on_delete=models.DO_NOTHING,
+        related_name="facility_ownerships",
+        db_comment="The type of facility that the operation owned",
+    )
+    start_date = models.DateTimeField(
+        blank=True, null=True, db_comment="The start date of the ownership of the facility"
+    )
+    end_date = models.DateTimeField(blank=True, null=True, db_comment="The end date of the ownership of the facility")
+
+    history = HistoricalRecords(
+        table_name='erc_history"."facility_ownership_timeline_history',
+        history_user_id_field=models.UUIDField(null=True, blank=True),
+    )
+
+    class Meta:
+        db_table_comment = "A table to connect facilities and operations"
+        db_table = 'erc"."facility_ownership_timeline'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['facility'],
+                condition=models.Q(end_date__isnull=True),
+                name='unique_active_ownership_per_facility',
+            )
         ]
