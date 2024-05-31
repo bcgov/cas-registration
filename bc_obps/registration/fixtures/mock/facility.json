@@ -1,7 +1,6 @@
 [
   {
     "model": "registration.facility",
-    "pk": 1,
     "fields": {
       "name": "Facility name",
       "type": "Facility type",
