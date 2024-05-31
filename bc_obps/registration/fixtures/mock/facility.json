@@ -1,11 +1,23 @@
 [
   {
     "model": "registration.facility",
+    "pk": "0cb4248e-aa38-4858-b620-02afa30efc6b",
     "fields": {
-      "name": "Facility name",
-      "type": "Facility type",
-      "new_entrant": true,
-      "operation": "e1300fd7-2dee-47d1-b655-2ad3fd10f052"
+      "created_by": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "created_at": "2024-05-31T23:08:17.542Z",
+      "swrs_facility_id": 1001,
+      "bcghg_id": "23219990005"
+    }
+  },
+  {
+    "model": "registration.facility",
+    "pk": "8f10616b-481c-4bf8-b8b0-30a0fd7e3413",
+    "fields": {
+      "created_by": "00000000-0000-0000-0000-000000000001",
+      "created_at": "2024-05-31T23:09:15.878Z",
+      "address": 1,
+      "swrs_facility_id": 1002,
+      "bcghg_id": "23219990006"
     }
   }
 ]
