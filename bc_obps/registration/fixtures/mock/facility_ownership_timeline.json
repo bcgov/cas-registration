@@ -1,0 +1,28 @@
+[
+  {
+    "model": "registration.facilityownershiptimeline",
+    "fields": {
+      "created_by": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "created_at": "2024-05-31T23:13:10.388Z",
+      "facility": "0cb4248e-aa38-4858-b620-02afa30efc6b",
+      "operation": "e1300fd7-2dee-47d1-b655-2ad3fd10f052",
+      "name": "Cow",
+      "facility_type": 1,
+      "start_date": "2024-05-31T23:13:08Z",
+      "end_date": null
+    }
+  },
+  {
+    "model": "registration.facilityownershiptimeline",
+    "fields": {
+      "created_by": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "created_at": "2024-05-31T23:13:36.676Z",
+      "facility": "8f10616b-481c-4bf8-b8b0-30a0fd7e3413",
+      "operation": "e1300fd7-2dee-47d1-b655-2ad3fd10f052",
+      "name": "Monkey",
+      "facility_type": 2,
+      "start_date": "2024-05-31T23:13:35Z",
+      "end_date": null
+    }
+  }
+]
