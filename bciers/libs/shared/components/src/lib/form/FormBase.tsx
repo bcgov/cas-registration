@@ -72,9 +72,12 @@ const FormBase: React.FC<FormPropsWithTheme<any>> = (props) => {
   const formRef = createRef<any>();
 
   const handleChange = (e: IChangeEvent) => {
+    const validator = e.schemaUtils.getValidator();
+    const isValid =
+      validator.validateFormData(e.formData, props.schema).errors.length === 0;
     onChange?.(e);
     // If onLiveValidation is provided, call it with the current form validation status
-    onLiveValidation?.(formRef.current?.validateForm());
+    onLiveValidation?.(isValid);
   };
 
   useEffect(() => {
@@ -84,33 +87,33 @@ const FormBase: React.FC<FormPropsWithTheme<any>> = (props) => {
     }
   }, [triggerValidation]);
 
-  const handleBlur = (...args: string[]) => {
-    // TODO: should this be conditionally enabled or okay to always run?
-    // RJSF does not support single field validation out of the box
-    // This workaround is based on the following example:
-    // https://github.com/rjsf-team/react-jsonschema-form/issues/617#issuecomment-1003141946
-    const $this = formRef.current;
-
-    const fieldPath = args[0].split("root_").slice(1);
-    const { formData, errorSchema: stateErrorSchema } = $this.state;
-    const fieldValue = get(formData, fieldPath);
-    // clear empty string values since JSON schema considers "" sufficient to pass `required` validation
-    let formDataToValidate =
-      fieldValue === "" ? omit(formData, fieldPath) : formData;
-
-    const { errorSchema: validatedErrorSchema } =
-      $this.validate(formDataToValidate);
-    const newErrorSchema = cloneDeep(stateErrorSchema);
-    const newFieldErrorSchema = get(validatedErrorSchema, fieldPath);
-
-    if (newFieldErrorSchema) {
-      set(newErrorSchema, fieldPath, newFieldErrorSchema);
-    } else {
-      // if there is no errorSchema for the field that was blurred, delete the key
-      unset(newErrorSchema, fieldPath);
-    }
-    setErrors(newErrorSchema);
-  };
+  // const handleBlur = (...args: string[]) => {
+  //   // TODO: should this be conditionally enabled or okay to always run?
+  //   // RJSF does not support single field validation out of the box
+  //   // This workaround is based on the following example:
+  //   // https://github.com/rjsf-team/react-jsonschema-form/issues/617#issuecomment-1003141946
+  //   const $this = formRef.current;
+  //
+  //   const fieldPath = args[0].split("root_").slice(1);
+  //   const { formData, errorSchema: stateErrorSchema } = $this.state;
+  //   const fieldValue = get(formData, fieldPath);
+  //   // clear empty string values since JSON schema considers "" sufficient to pass `required` validation
+  //   let formDataToValidate =
+  //     fieldValue === "" ? omit(formData, fieldPath) : formData;
+  //
+  //   const { errorSchema: validatedErrorSchema } =
+  //     $this.validate(formDataToValidate);
+  //   const newErrorSchema = cloneDeep(stateErrorSchema);
+  //   const newFieldErrorSchema = get(validatedErrorSchema, fieldPath);
+  //
+  //   if (newFieldErrorSchema) {
+  //     set(newErrorSchema, fieldPath, newFieldErrorSchema);
+  //   } else {
+  //     // if there is no errorSchema for the field that was blurred, delete the key
+  //     unset(newErrorSchema, fieldPath);
+  //   }
+  //   setErrors(newErrorSchema);
+  // };
 
   return (
     <Form
@@ -119,7 +122,7 @@ const FormBase: React.FC<FormPropsWithTheme<any>> = (props) => {
       formData={formState}
       noHtml5Validate
       omitExtraData={omitExtraData ?? true}
-      onBlur={handleBlur}
+      // onBlur={handleBlur}
       onChange={handleChange}
       onSubmit={handleSubmit}
       showErrorList={false}
