@@ -207,6 +207,9 @@ class RegulatedProduct(BaseModel):
         db_table_comment = "Table containing the names of regulated products. Regulated product means a product listed in column 2 of Table 2 of Schedule A.1 of the Greenhouse Gas Industrial Reporting and Control Act: https://www.bclaws.gov.bc.ca/civix/document/id/lc/statreg/249_2015."
         db_table = 'erc"."regulated_product'
 
+    def __str__(self) -> str:
+        return self.name
+
     @typing.no_type_check
     def save(self, *args, **kwargs):
         """
@@ -236,6 +239,9 @@ class ReportingActivity(BaseModel):
     class Meta:
         db_table_comment = "Table containing names activities. If facilities carry out these activities, in many cases they are required to report. Some activities can only be carried out by certain types of facilities. Reporting activities are listed in column 2 of Table 1 of Schedule A of the Greenhouse Gas Industrial Reporting and Control Act: https://www.bclaws.gov.bc.ca/civix/document/id/lc/statreg/249_2015."
         db_table = 'erc"."reporting_activity'
+
+    def __str__(self) -> str:
+        return f"{self.name} ({self.applicable_to})"
 
 
 class Address(BaseModel):
@@ -687,19 +693,21 @@ class Operation(TimeStampedModel):
     id = models.UUIDField(
         primary_key=True, default=uuid.uuid4, db_comment="Primary key to identify the operation", verbose_name="ID"
     )
-    name = models.CharField(max_length=1000, db_comment="The name of an operation")  # TODO: move this
+    name = models.CharField(
+        max_length=1000, db_comment="The name of an operation"
+    )  # TODO: Delete this once we added the data migration for ownership
     type = models.CharField(
         max_length=1000, db_comment="The type of an operation"
-    )  # TODO: move this to ownership table and also a data migration to populate this using the new OpetionType model
+    )  # TODO: Delete this once we added the data migration for ownership
     operator = models.ForeignKey(
         Operator,
         on_delete=models.DO_NOTHING,
         db_comment="The operator who owns the operation",
         related_name="operations",
-    )  # TODO: move this
+    )  # TODO: Delete this once we added the data migration for ownership
     operation_has_multiple_operators = models.BooleanField(
         db_comment="Whether or not the operation has multiple operators", default=False
-    )
+    )  # TODO: Delete this once we added the data migration for ownership
 
     naics_code = models.ForeignKey(
         NaicsCode,
@@ -724,7 +732,7 @@ class Operation(TimeStampedModel):
         db_comment="Whether or not the operation is required to register or is simply opting in. Only needed if the operation did not report the previous year.",
         blank=True,
         null=True,
-    )  # TODO: move this
+    )  # TODO: Delete this once we added the data migration for ownership
 
     verified_at = models.DateTimeField(
         db_comment="The time the operation was verified by an IRC user. If exists, the operation is registered for OBPS.",
@@ -748,7 +756,7 @@ class Operation(TimeStampedModel):
         Document,
         blank=True,
         related_name="operations",
-    )  # TODO: move this
+    )  # TODO: Delete this once we added the data migration for ownership
     point_of_contact = models.ForeignKey(
         Contact,
         on_delete=models.DO_NOTHING,
@@ -756,7 +764,7 @@ class Operation(TimeStampedModel):
         blank=True,
         null=True,
         db_comment="Foreign key to the contact that is the point of contact",
-    )  # TODO: move this
+    )  # TODO: Delete this once we added the data migration for ownership
     status = models.CharField(
         max_length=1000,
         choices=Statuses.choices,
@@ -775,12 +783,12 @@ class Operation(TimeStampedModel):
         RegulatedProduct,
         blank=True,
         related_name='%(class)ss',
-    )  # TODO: move this
+    )  # TODO: Delete this once we added the data migration for ownership
     reporting_activities = models.ManyToManyField(
         ReportingActivity,
         blank=True,
         related_name='%(class)ss',
-    )  # TODO: move this
+    )  # TODO: Delete this once we added the data migration for ownership
     history = HistoricalRecords(
         table_name='erc_history"."operation_history',
         m2m_fields=[regulated_products, reporting_activities, documents],
@@ -862,6 +870,13 @@ class Operation(TimeStampedModel):
     #     fields = [f"{field.name}={getattr(self, field.name)}" for field in self._meta.fields]
     #     return ' - '.join(fields)
 
+    @property
+    def current_owner(self) -> Operator:
+        """
+        Returns the current owner of the operation.
+        """
+        return self.ownerships.get(end_date__isnull=True).operator
+
 
 class Facility(TimeStampedModel):
     id = models.UUIDField(
@@ -897,14 +912,11 @@ class Facility(TimeStampedModel):
         verbose_name_plural = "Facilities"
 
     @property
-    def current_owner(self) -> Optional[Operation]:
+    def current_owner(self) -> Operation:
         """
         Returns the current owner(operation) of the facility.
         """
-        owner: Optional[FacilityOwnershipTimeline] = self.ownerships.filter(end_date__isnull=True).first()
-        if owner:
-            return owner.operation
-        return None
+        return self.ownerships.get(end_date__isnull=True).operation
 
 
 class WellAuthorizationNumber(TimeStampedModel):
@@ -1162,5 +1174,79 @@ class FacilityOwnershipTimeline(TimeStampedModel):
                 fields=['facility'],
                 condition=models.Q(end_date__isnull=True),
                 name='unique_active_ownership_per_facility',
+            )
+        ]
+
+
+"""
+NOTE:
+1- We need to populate this data model using the data from the existing operations (Need to create ownerships)
+2- Once updated, we need to update all references to an operation to use this model instead
+3- First step should happen once we update all references throughout the code to use this model
+4- We need to update the operation model to remove the fields that are now in this model
+"""
+
+
+class OperationOwnershipTimeline(TimeStampedModel):
+    operation = models.ForeignKey(Operation, on_delete=models.DO_NOTHING, related_name="ownerships")
+    operator = models.ForeignKey(Operator, on_delete=models.DO_NOTHING, related_name="operation_ownerships")
+    name = models.CharField(
+        max_length=1000, db_comment="The name of an operation"
+    )  # TODO: Need a data migration to populate this
+    operation_type = models.ForeignKey(
+        OperationType,
+        on_delete=models.DO_NOTHING,
+        related_name="operation_ownerships",
+        db_comment="The type of operation that the operator owned",
+    )  # TODO: Need a data migration to populate this
+    operation_has_multiple_operators = models.BooleanField(
+        db_comment="Whether or not the operation has multiple operators", default=False
+    )  # TODO: Need a data migration to populate this
+    opt_in = models.BooleanField(
+        db_comment="Whether or not the operation is required to register or is simply opting in. Only needed if the operation did not report the previous year.",
+        blank=True,
+        null=True,
+    )  # TODO: Need a data migration to populate this
+    documents = models.ManyToManyField(
+        Document,
+        blank=True,
+        related_name="operation_ownerships",
+    )  # TODO: Need a data migration to populate this
+    point_of_contact = models.ForeignKey(
+        Contact,
+        on_delete=models.DO_NOTHING,
+        related_name="operation_ownerships",
+        blank=True,
+        null=True,
+        db_comment="Foreign key to the contact that is the point of contact",
+    )  # TODO: Need a data migration to populate this
+    regulated_products = models.ManyToManyField(
+        RegulatedProduct,
+        blank=True,
+        related_name="operation_ownerships",
+    )  # TODO: Need a data migration to populate this
+    reporting_activities = models.ManyToManyField(
+        ReportingActivity,
+        blank=True,
+        related_name="operation_ownerships",
+    )  # TODO: Need a data migration to populate this
+    start_date = models.DateTimeField(
+        blank=True, null=True, db_comment="The start date of the ownership of the operation"
+    )  # TODO: Need a data migration to populate this
+    end_date = models.DateTimeField(blank=True, null=True, db_comment="The end date of the ownership of the operation")
+
+    history = HistoricalRecords(
+        table_name='erc_history"."operation_ownership_timeline_history',
+        history_user_id_field=models.UUIDField(null=True, blank=True),
+    )
+
+    class Meta:
+        db_table_comment = "A table to connect operations and operators"
+        db_table = 'erc"."operation_ownership_timeline'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['operation'],
+                condition=models.Q(end_date__isnull=True),
+                name='unique_active_ownership_per_operation',
             )
         ]
