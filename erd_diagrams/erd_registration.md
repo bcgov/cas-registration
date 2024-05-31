@@ -250,17 +250,17 @@ HistoricalOperator {
     CharField history_change_reason
     CharField history_type
 }
-HistoricalOperator_contacts {
-    BigIntegerField id
-    ForeignKey operator
-    ForeignKey contact
-    ForeignKey history
-    AutoField m2m_history_id
-}
 HistoricalOperator_documents {
     BigIntegerField id
     ForeignKey operator
     ForeignKey document
+    ForeignKey history
+    AutoField m2m_history_id
+}
+HistoricalOperator_contacts {
+    BigIntegerField id
+    ForeignKey operator
+    ForeignKey contact
     ForeignKey history
     AutoField m2m_history_id
 }
@@ -602,12 +602,12 @@ HistoricalOperator }|--|| BusinessStructure : business_structure
 HistoricalOperator }|--|| Address : physical_address
 HistoricalOperator }|--|| Address : mailing_address
 HistoricalOperator }|--|| User : verified_by
-HistoricalOperator_contacts }|--|| Operator : operator
-HistoricalOperator_contacts }|--|| Contact : contact
-HistoricalOperator_contacts }|--|| HistoricalOperator : history
 HistoricalOperator_documents }|--|| Operator : operator
 HistoricalOperator_documents }|--|| Document : document
 HistoricalOperator_documents }|--|| HistoricalOperator : history
+HistoricalOperator_contacts }|--|| Operator : operator
+HistoricalOperator_contacts }|--|| Contact : contact
+HistoricalOperator_contacts }|--|| HistoricalOperator : history
 Operator }|--|| User : created_by
 Operator }|--|| User : updated_by
 Operator }|--|| User : archived_by
