@@ -106,7 +106,7 @@ class AppRole(BaseModel):
     )
 
     class Meta:
-        db_table_comment = "This table contains the definitions for roles within the app/database. These roles are used to define the permissions a user has within the app"
+        db_table_comment = "This table contains the definitions for roles within the BCIERs apps. These roles are used to define the permissions a user has within BCIERs apps."
         db_table = 'erc"."app_role'
 
     # We need try/except blocks here because the app_role table may not exist yet when we run migrations
@@ -156,7 +156,7 @@ class DocumentType(BaseModel):
     )
 
     class Meta:
-        db_table_comment = "Table that contains types of documents"
+        db_table_comment = "Table that contains types of documents."
         db_table = 'erc"."document_type'
 
 
@@ -177,7 +177,9 @@ class Document(TimeStampedModel):
     )
 
     class Meta:
-        db_table_comment = "Documents"
+        db_table_comment = (
+            "Table that contains information about documents such as file metadata, type, and description."
+        )
         db_table = 'erc"."document'
         indexes = [
             models.Index(fields=["type"], name="document_type_idx"),
@@ -203,7 +205,7 @@ class NaicsCode(BaseModel):
     )
 
     class Meta:
-        db_table_comment = "Naics codes"
+        db_table_comment = "Table contains NAICS codes & their descriptions. NAICS code means the 6-digit code applicable to one or more producing units within a reporting operation under the North American Industrial Classification System (NAICS) Canada, 2007, published by Statistics Canada. Operations can have more than one NAICS code. More information, including version history for NAICS codes can be found at https://www.statcan.gc.ca/en/concepts/industry."
         db_table = 'erc"."naics_code'
 
     @typing.no_type_check
@@ -225,7 +227,7 @@ class RegulatedProduct(BaseModel):
     )
 
     class Meta:
-        db_table_comment = "Regulated products"
+        db_table_comment = "Table containing the names of regulated products. Regulated product means a product listed in column 2 of Table 2 of Schedule A.1 of the Greenhouse Gas Industrial Reporting and Control Act: https://www.bclaws.gov.bc.ca/civix/document/id/lc/statreg/249_2015."
         db_table = 'erc"."regulated_product'
 
     @typing.no_type_check
@@ -255,7 +257,7 @@ class ReportingActivity(BaseModel):
     )
 
     class Meta:
-        db_table_comment = "Reporting activities"
+        db_table_comment = "Table containing names activities. If facilities carry out these activities, in many cases they are required to report. Some activities can only be carried out by certain types of facilities. Reporting activities are listed in column 2 of Table 1 of Schedule A of the Greenhouse Gas Industrial Reporting and Control Act: https://www.bclaws.gov.bc.ca/civix/document/id/lc/statreg/249_2015."
         db_table = 'erc"."reporting_activity'
 
 
@@ -282,7 +284,7 @@ class Address(BaseModel):
     )
 
     class Meta:
-        db_table_comment = "Address"
+        db_table_comment = "Table containing address data. Only Canadian addresses are supported."
         db_table = 'erc"."address'
 
 
@@ -300,7 +302,7 @@ class UserAndContactCommonInfo(BaseModel):
 
     class Meta:
         abstract = True
-        db_table_comment = "An abstract base class (used for putting common information into a number of other models) containing fields for users and contacts"
+        db_table_comment = "An abstract base class (used for putting common information into a number of other models) containing fields for users and contacts."
 
     def get_full_name(self) -> str:
         """
@@ -336,7 +338,7 @@ class User(UserAndContactCommonInfo):
     )
 
     class Meta:
-        db_table_comment = "App users"
+        db_table_comment = "Table containing information about app users. Industry users are all associated with a business and are identified via their Business BCEID."
         db_table = 'erc"."user'
         constraints = [
             models.UniqueConstraint(
@@ -395,7 +397,7 @@ class BusinessRole(BaseModel):
     )
 
     class Meta:
-        db_table_comment = "This table contains the definitions for roles within the operator/operation. These roles are used to define the permissions a user has within the operator/operation"
+        db_table_comment = "This table contains the definitions for roles within the operator/operation. These roles are used to define the permissions a user has within the operator/operation."
         db_table = 'erc"."business_role'
 
 
@@ -429,7 +431,7 @@ class Contact(UserAndContactCommonInfo, TimeStampedModel):
     )
 
     class Meta:
-        db_table_comment = "Contacts (people who don't use the app, e.g. authorized signing officers)"
+        db_table_comment = "Table containing information about contacts. Contacts are people that IRC may need to get in touch with to confirmation information about industry. Contacts can be BCIERs app users (in which case they will also have a record in the Users table), but they don't have to be."
         db_table = 'erc"."contact'
         indexes = [
             models.Index(fields=["business_role"], name="contact_role_idx"),
@@ -450,7 +452,7 @@ class BusinessStructure(BaseModel):
     )
 
     class Meta:
-        db_table_comment = "The business structure of an operator"
+        db_table_comment = "Table containing operator business structures. Business structure refers to the legal and organizational framework under which a business operates (e.g., partnership, sole proprietorship, corporation, limited liability company)."
         db_table = 'erc"."business_structure'
 
     @typing.no_type_check
@@ -571,8 +573,7 @@ class Operator(TimeStampedModel):
                 name="cra_business_number_unique_constraint",
             )
         ]
-        db_table_comment = "Operators (also called organizations)"
-        # don't need indexes if we end up using `unique`
+        db_table_comment = "Table containing operator information. An operator is the person who owns and/or controls and directs industrial operations. An operator can own multiple operations. For more information see definitions in the Greenhouse Gas Industrial Reporting and Control Act: https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/14029_01#section1: https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/14029_01#section1"
         db_table = 'erc"."operator'
 
     def __str__(self) -> str:
@@ -808,7 +809,7 @@ class Operation(TimeStampedModel):
     )
 
     class Meta:
-        db_table_comment = "Operations"
+        db_table_comment = "Table containing information about operations. 'Industrial operation' means one or more facilities, or a prescribed activity, to which greenhouse gas emissions are attributable, subject to subsection (3)of the Greenhouse Gas Industrial Reporting and Control Act: https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/14029_01#section1."
         db_table = 'erc"."operation'
         constraints = [
             models.UniqueConstraint(
@@ -916,7 +917,7 @@ class Facility(TimeStampedModel):
     )
 
     class Meta:
-        db_table_comment = "Contains data on facilities that emit carbon emissions and must report them to Clean Growth. A linear facility operation is made up of several different facilities whereas a single facility operation has only one facility. In the case of a single facility operation, much of the data in this table will overlap with the parent record in the operation table"
+        db_table_comment = "Contains data on facilities that emit carbon emissions and must report them to Clean Growth. A linear facility operation is made up of several different facilities whereas a single facility operation has only one facility. In the case of a single facility operation, much of the data in this table will overlap with the parent record in the operation table."
         db_table = 'erc"."facility'
 
 
@@ -932,9 +933,7 @@ class WellAuthorizationNumber(TimeStampedModel):
     )
 
     class Meta:
-        db_table_comment = (
-            "A table containing well authorization numbers. Facilities can have multiple well authorization numbers."
-        )
+        db_table_comment = "A table containing well authorization numbers. Authorization numbers are assigned by the British Columbia Energy Regulator: https://www.bc-er.ca/what-we-regulate/oil-gas/wells/. Facilities can have multiple well authorization numbers."
         db_table = 'erc"."well_authorization_number'
 
 
@@ -1007,7 +1006,7 @@ class MultipleOperator(TimeStampedModel):
     )
 
     class Meta:
-        db_table_comment = "Table to store multiple operator metadata"
+        db_table_comment = "Table containing data about operations' operators. An operation's designated (primary) operator has a record in the Operator table (this information has been submitted by someone who works for that operator). Any additional operators are stored in this table (additional operator information has been submitted by a user who works for a different operator, so this user should not have access to the Operator table record)."
         db_table = 'erc"."multiple_operator'
 
 
@@ -1033,7 +1032,7 @@ class BcObpsRegulatedOperation(BaseModel):
     )
 
     class Meta:
-        db_table_comment = "Table to store BC OBPS Regulated Operation metadata"
+        db_table_comment = "Table to store BC OBPS Regulated Operation metadata. Once an operation has been approved as a BC OBPS Regulated Operations (IRC has determined the operation meets certain criteria and should be included in the program), then it is issued an ID."
         db_table = 'erc"."bc_obps_regulated_operation'
 
     @typing.no_type_check
@@ -1099,7 +1098,7 @@ class ParentOperator(TimeStampedModel):
     )
 
     class Meta:
-        db_table_comment = "Table to store parent operator metadata"
+        db_table_comment = "Table containing data about operators' parent operators. Parent operators may have a record in the Operator table. If so, that record is controlled by someone who works for that parent operator. The information in this table is controlled by child operators who should not have access to other operator's records."
         db_table = 'erc"."parent_operator'
         indexes = [
             models.Index(fields=["child_operator"], name="po_child_operator_idx"),
