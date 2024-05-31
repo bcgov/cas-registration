@@ -4,6 +4,7 @@ from registration.models import (
     Facility,
     FacilityOwnershipTimeline,
     FacilityType,
+    OperationOwnershipTimeline,
     OperationType,
     RegulatedProduct,
     NaicsCode,
@@ -60,3 +61,19 @@ class FacilityAdmin(admin.ModelAdmin):
 @admin.register(FacilityOwnershipTimeline)
 class FacilityOwnershipTimelineAdmin(admin.ModelAdmin):
     list_display = ('id', 'facility', 'operation', 'name', 'facility_type', 'start_date', 'end_date')
+
+
+@admin.register(OperationOwnershipTimeline)
+class OperationOwnershipTimelineAdmin(admin.ModelAdmin):
+    list_display = (
+        'id',
+        'operation',
+        'operator',
+        'name',
+        'operation_type',
+        'operation_has_multiple_operators',
+        'opt_in',
+        'point_of_contact',
+        'start_date',
+        'end_date',
+    )
