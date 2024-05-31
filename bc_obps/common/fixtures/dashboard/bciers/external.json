@@ -1,0 +1,86 @@
+[
+  {
+    "model": "common.dashboarddata",
+    "fields": {
+      "name": "External BCiers Dashboard",
+      "data": {
+        "dashboard": "bciers",
+        "access_roles": ["industry_user", "industry_user_admin"],
+        "tiles": [
+          {
+            "title": "Registration",
+            "content": "View or update your operator information, which needs to be complete before applying for BORO ID's",
+            "links": [
+              {
+                "title": "My Operator",
+                "href": "/dashboard/select-operator"
+              },
+              {
+                "title": "Operations",
+                "href": "/registration/tbd"
+              },
+              {
+                "title": "BORO ID Applications",
+                "href": "/registration/tbd"
+              },
+              {
+                "title": "Report an Event",
+                "href": "/registration/tbd"
+              },
+              {
+                "title": "Contacts",
+                "href": "/registration/tbd"
+              },
+              {
+                "title": "User and Access Requests",
+                "href": "/registration/tbd"
+              }
+            ]
+          },
+          {
+            "title": "Reporting",
+            "content": "Submit annual report for an  and to view or update previous year's reports here",
+            "links": [
+              {
+                "title": "Submit Annual Report",
+                "href": "/reporting/tbd"
+              },
+              {
+                "title": "View Past Submissions",
+                "href": "/reporting/tbd"
+              }
+            ]
+          },
+          {
+            "title": "COAM",
+            "content": "View payments for compliance obligations here",
+            "links": [
+              {
+                "title": "TBD",
+                "href": "/coam/"
+              },
+              {
+                "title": "TBD",
+                "href": "/coam/"
+              },
+              {
+                "title": "TBD",
+                "href": "/coam/"
+              }
+            ]
+          },
+          {
+            "title": "Report a Problem",
+            "content": "Something wrong?",
+            "links": [
+              {
+                "title": "Report problems to GHGRegulator@gov.bc.ca",
+                "href": "mailto:GHGRegulator@gov.bc.ca"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+]

@@ -1,0 +1,44 @@
+[
+  {
+    "model": "common.dashboarddata",
+    "fields": {
+      "name": "External Registration Dashboard",
+      "data": {
+        "dashboard": "registration",
+        "access_roles": ["industry_user", "industry_user_admin"],
+        "tiles": [
+          {
+            "title": "My Operator",
+            "content": "View or update information of your operator here.",
+            "href": "/dashboard/select-operator"
+          },
+          {
+            "title": "Operations",
+            "content": "View the operations owned by your operator, or to add a new operation to your operator here.",
+            "href": "/registration/operations"
+          },
+          {
+            "title": "Contacts",
+            "content": "View the contacts of your operator, or to add new contact for your operator here.",
+            "href": "/registration/tbd"
+          },
+          {
+            "title": "User and Access Requests",
+            "content": "View, approve or decline Business BCeid user access requests to your operator, or to assign type to user here.",
+            "href": "/registration/tbd"
+          },
+          {
+            "title": "Register an Operator",
+            "content": "Track the registration of operations, or to start new registration here.",
+            "href": "/registration/tbd"
+          },
+          {
+            "title": "Report an Event",
+            "content": "Report sales, transer, closure, acquisition, divestement, change in operator or director control, temporary shout down, etc. here.",
+            "href": "/registration/tbd"
+          }
+        ]
+      }
+    }
+  }
+]
