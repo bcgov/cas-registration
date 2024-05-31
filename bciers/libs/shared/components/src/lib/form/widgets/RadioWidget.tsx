@@ -56,7 +56,7 @@ const RadioWidget = ({
               }
               label={option.label}
               value={String(index)}
-              key={index}
+              key={option.label}
               disabled={disabled || itemDisabled || readonly}
             />
           );

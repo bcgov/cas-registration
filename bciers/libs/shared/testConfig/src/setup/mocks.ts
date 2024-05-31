@@ -22,8 +22,6 @@ import { fetchMocker } from "./global";
 // To mock fetch return values refer to the vitest-fetch-mock documentation:
 // https://github.com/IanVS/vitest-fetch-mock
 
-// TODO(Nx Migration): Module added to Monorepo at `bciers/libs/shared/testConfig/src/setup/mocks.ts`
-
 const actionHandler = vi.fn();
 const useRouter = vi.fn();
 const useParams = vi.fn();

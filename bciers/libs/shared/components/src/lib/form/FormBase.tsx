@@ -125,7 +125,7 @@ const FormBase: React.FC<FormPropsWithTheme<any>> = (props) => {
   };
 
   useEffect(() => {
-    // TODO: Likely remove this as it's a hacky workaround when using multiple forms on the same page
+    // ikely remove this as it's a hacky workaround when using multiple forms on the same page
     // which I will try to avoid for the single step task list
     // Trigger validation prop to externally trigger form validation
     if (triggerValidation) {

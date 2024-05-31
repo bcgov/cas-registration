@@ -22,7 +22,7 @@ export const mapOptions = (fieldSchema: FieldSchema) => {
   const enumNames = fieldSchema?.enumNames;
   return enumValues.map((enumValue: string | number, index: number) => ({
     id: enumValue,
-    label: enumNames?.[index] || enumValue,
+    label: enumNames?.[index] ?? enumValue,
   }));
 };
 

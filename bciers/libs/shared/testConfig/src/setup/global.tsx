@@ -1,6 +1,6 @@
 import type { TestingLibraryMatchers } from "@testing-library/jest-dom/matchers";
 import * as matchers from "@testing-library/jest-dom/matchers";
-import { expect } from "vitest";
+import { expect, vi } from "vitest";
 import {
   actionHandler,
   getServerSession,
@@ -11,7 +11,6 @@ import {
   useSession,
 } from "./mocks";
 import createFetchMock from "vitest-fetch-mock";
-import { vi } from "vitest";
 
 declare module "vitest" {
   interface Assertion<T = any>

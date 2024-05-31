@@ -3,7 +3,6 @@ import { render, screen } from "@testing-library/react";
 import { RJSFSchema } from "@rjsf/utils";
 import FormBase from "@bciers/components/form/FormBase";
 import { checkNoValidationErrorIsTriggered } from "@/tests/helpers/form";
-// import { checkTextWidgetValidationStyles } from "@/tests/helpers/form";
 
 const url = "https://example.com";
 const urlFieldLabel = "URL test field";

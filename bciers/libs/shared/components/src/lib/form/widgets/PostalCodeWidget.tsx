@@ -19,8 +19,7 @@ const TextWidget: React.FC<WidgetProps> = ({
 
   const handleChange = (e: { target: { value: string } }) => {
     // remove spaces and convert to uppercase
-    const val =
-      e.target.value && e.target.value.split(" ").join("").toUpperCase();
+    const val = e.target?.value.split(" ").join("").toUpperCase();
     if (!val) return onChange(undefined);
     if (val.length > 6) return;
     if (!re.test(val)) return;

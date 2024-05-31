@@ -32,8 +32,7 @@ const ComboBox: React.FC<WidgetProps> = ({
   const getSelected = useCallback(() => {
     if (!value || !schema?.anyOf) return null;
     const selectedValue = schema.anyOf.find(
-      (option) =>
-        (option as any).const === value || (option as any).value === value,
+      (option) => option.const === value || option.value === value,
     );
 
     return selectedValue;
