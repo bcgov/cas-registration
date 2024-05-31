@@ -5,7 +5,7 @@ import { customizeValidator } from "@rjsf/validator-ajv8";
 import { FormProps, IChangeEvent, withTheme, ThemeProps } from "@rjsf/core";
 import customTransformErrors from "@/app/utils/customTransformErrors";
 import { RJSFValidationError } from "@rjsf/utils";
-import { get, omit, cloneDeep, set, unset } from "lodash";
+import { filter, uniqWith, isEqual } from "lodash";
 
 const customFormats = {
   phone: /\(?\d{3}\)?[\s-]?\d{3}[\s-]?\d{4}$/,
@@ -57,16 +57,16 @@ const FormBase: React.FC<FormPropsWithTheme<any>> = (props) => {
   } = props;
   const formTheme = disabled || readonly ? readOnlyTheme : defaultTheme;
   const Form = useMemo(() => withTheme(theme ?? formTheme), [theme, formTheme]);
-  const [formState, setFormState] = useState(formData ?? {});
+  const [formSubmitState, setFormSubmitState] = useState(formData ?? {});
   const [errors, setErrors] = useState({});
 
   // Handling form state externally as RJSF was resetting the form data on submission and
   // creating buggy behaviour if there was an API error and the user attempted to resubmit
   const handleSubmit = (e: IChangeEvent) => {
-    setFormState(e.formData);
+    setFormSubmitState(e.formData);
     if (setErrorReset) setErrorReset(undefined); // Reset error state on form submission
 
-    if (onSubmit) onSubmit(e, formState);
+    if (onSubmit) onSubmit(e, formSubmitState);
   };
 
   const formRef = createRef<any>();
@@ -81,52 +81,51 @@ const FormBase: React.FC<FormPropsWithTheme<any>> = (props) => {
   };
 
   useEffect(() => {
+    // TODO: Likely remove this as it's a hacky workaround when using multiple forms on the same page
+    // which I will try to avoid for the single step task list
     // Trigger validation prop to externally trigger form validation
     if (triggerValidation) {
       formRef.current?.validateForm();
     }
   }, [triggerValidation]);
 
-  // const handleBlur = (...args: string[]) => {
-  //   // TODO: should this be conditionally enabled or okay to always run?
-  //   // RJSF does not support single field validation out of the box
-  //   // This workaround is based on the following example:
-  //   // https://github.com/rjsf-team/react-jsonschema-form/issues/617#issuecomment-1003141946
-  //   const $this = formRef.current;
-  //
-  //   const fieldPath = args[0].split("root_").slice(1);
-  //   const { formData, errorSchema: stateErrorSchema } = $this.state;
-  //   const fieldValue = get(formData, fieldPath);
-  //   // clear empty string values since JSON schema considers "" sufficient to pass `required` validation
-  //   let formDataToValidate =
-  //     fieldValue === "" ? omit(formData, fieldPath) : formData;
-  //
-  //   const { errorSchema: validatedErrorSchema } =
-  //     $this.validate(formDataToValidate);
-  //   const newErrorSchema = cloneDeep(stateErrorSchema);
-  //   const newFieldErrorSchema = get(validatedErrorSchema, fieldPath);
-  //
-  //   if (newFieldErrorSchema) {
-  //     set(newErrorSchema, fieldPath, newFieldErrorSchema);
-  //   } else {
-  //     // if there is no errorSchema for the field that was blurred, delete the key
-  //     unset(newErrorSchema, fieldPath);
-  //   }
-  //   setErrors(newErrorSchema);
-  // };
+  const handleBlur = (...args: string[]) => {
+    // RJSF does not support single field validation out of the box
+    // This is a workaround to validate a single field onBlur
+    const $this = formRef.current;
+    const field = args[0].slice("root_".length);
+    const { formData, errors, errorSchema } = $this.state;
+
+    const { errors: _errors, errorSchema: _errorSchema } =
+      $this.validate(formData);
+
+    const prevOtherFieldErrors = errors.filter(
+      (error) => error.property !== `.${field}`,
+    );
+
+    const fieldErrors = _errors.filter(
+      (error) => error.property === `.${field}`,
+    );
+
+    const fieldErrorSchema = _errorSchema[field];
+
+    $this.setState({
+      errors: uniqWith([...prevOtherFieldErrors, ...fieldErrors], isEqual),
+      errorSchema: { ...errorSchema, [field]: fieldErrorSchema },
+    });
+  };
 
   return (
     <Form
       {...props}
       ref={formRef}
-      formData={formState}
+      formData={formSubmitState}
       noHtml5Validate
       omitExtraData={omitExtraData ?? true}
-      // onBlur={handleBlur}
+      onBlur={handleBlur}
       onChange={handleChange}
       onSubmit={handleSubmit}
       showErrorList={false}
-      extraErrors={errors}
       transformErrors={transformErrors}
       validator={validator}
       children={children}
