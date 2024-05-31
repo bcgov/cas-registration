@@ -1,4 +1,3 @@
-
 # API Base
 BASE_ENDPOINT = "/api/common/"
 

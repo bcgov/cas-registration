@@ -2,6 +2,7 @@
 
 from django.db import migrations, models
 
+
 def load_dashboard_fixtures(apps, schema_editor):
     from django.core.management import call_command
 

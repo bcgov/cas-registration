@@ -18,15 +18,23 @@ from service.data_access_service.user_service import UserDataAccessService
 from service.data_access_service.dashboard_service import DashboardDataService
 
 
-@router.get("/dashboard-data", response={200: List[DashboardDataSchemaOut], codes_4xx: Message}, url_name="list_dashboard_data", tags=TAG_DASHBOARD_TILES)
+@router.get(
+    "/dashboard-data",
+    response={200: List[DashboardDataSchemaOut], codes_4xx: Message},
+    url_name="list_dashboard_data",
+    tags=TAG_DASHBOARD_TILES,
+)
 @authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles(), False)
 @handle_http_errors()
-def list_dashboard_data(request: HttpRequest, dashboard: Literal['all', 'bciers','registration-operation-detail', 'registration', 'reporting']) -> Tuple[Literal[200], QuerySet[DashboardData]]:
+def list_dashboard_data(
+    request: HttpRequest,
+    dashboard: Literal['all', 'bciers', 'registration-operation-detail', 'registration', 'reporting'],
+) -> Tuple[Literal[200], QuerySet[DashboardData]]:
     role = ""
     if dashboard != "all":  # if dashboard is not equal to "all" then get role from AppRole
         user_guid: UUID = get_current_user_guid(request)
         app_role: AppRole = UserDataAccessService.get_app_role(user_guid)
-        role= app_role.role_name
-    data= DashboardDataService.get_dashboard_data_by_name_for_role(dashboard, role)
-   
+        role = app_role.role_name
+    data = DashboardDataService.get_dashboard_data_by_name_for_role(dashboard, role)
+
     return 200, data

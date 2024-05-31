@@ -5,11 +5,13 @@ from common.models import DashboardData
 from common.schema.v1 import DashboardDataSchemaOut
 
 import logging
+
 logger = logging.getLogger(__name__)
+
 
 class DashboardDataService:
     @classmethod
-    def get_dashboard_data_by_name_for_role(cls, dashboard: str = None, role: Optional[str] = None) -> QuerySet[DashboardData]:
+    def get_dashboard_data_by_name_for_role(cls, dashboard: str, role: Optional[str] = None) -> QuerySet[DashboardData]:
         """
         Fetches dashboard data filtered by dashboard name and user role.
 
@@ -29,9 +31,8 @@ class DashboardDataService:
                 query = query.filter(Q(data__dashboard=dashboard) & Q(data__access_roles__contains=role))
 
             return query
-        
+
         except Exception as exc:
             # Log the exception if needed
             logger.error(f'Logger: Exception in get_dashboard_data_by_name_for_role {str(exc)}')
             return DashboardData.objects.none()
-                     

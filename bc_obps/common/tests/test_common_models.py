@@ -1,6 +1,7 @@
 from common.models import DashboardData, EmailNotification, EmailNotificationTemplate
 from common.tests.utils.helpers import BaseTestCase
 
+
 class DashboardDataModelTest(BaseTestCase):
     def setUp(self):
         """
@@ -15,15 +16,15 @@ class DashboardDataModelTest(BaseTestCase):
                     {
                         "title": "Operation Information",
                         "content": "View or update information of this operation here.",
-                        "href": "/registration/tbd"
+                        "href": "/registration/tbd",
                     },
                     {
                         "title": "Facilities",
                         "content": "View the facilities, or to add new facility to this operation here.",
-                        "href": "/registration/tbd"
-                    }
-                ]
-            }
+                        "href": "/registration/tbd",
+                    },
+                ],
+            },
         )
 
     def test_dashboard_data_creation(self):
@@ -41,7 +42,10 @@ class DashboardDataModelTest(BaseTestCase):
         """
         Test the string representation of the DashboardData instance.
         """
-        self.assertEqual(str(self.dashboard_data), f"DashboardData {self.dashboard_data.id} - Test External Registration Operation Details")
+        self.assertEqual(
+            str(self.dashboard_data),
+            f"DashboardData {self.dashboard_data.id} - Test External Registration Operation Details",
+        )
 
     def test_database_table_name(self):
         """
@@ -53,7 +57,11 @@ class DashboardDataModelTest(BaseTestCase):
         """
         Test the database table comment.
         """
-        self.assertEqual(DashboardData._meta.db_table_comment, "The JSON information for dashboard navigation tiles by app and ID type.")
+        self.assertEqual(
+            DashboardData._meta.db_table_comment,
+            "The JSON information for dashboard navigation tiles by app and ID type.",
+        )
+
 
 class EmailNotificationTemplateModelTest(BaseTestCase):
     @classmethod
