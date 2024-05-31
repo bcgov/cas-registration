@@ -9,7 +9,6 @@
     {
       "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
       "rules": {
-        "avoidEscape": 0,
         "@nx/enforce-module-boundaries": [
           "warn",
           {

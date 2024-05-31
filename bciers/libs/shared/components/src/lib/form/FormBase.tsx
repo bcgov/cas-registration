@@ -83,7 +83,9 @@ const FormBase: React.FC<FormPropsWithTheme<any>> = (props) => {
     // RJSF does not support single field validation out of the box
     // This function is a workaround to validate a single field
     const $this = formRef.current;
-    const { formData, errors, errorSchema } = $this.state;
+    const state = $this?.state;
+    if (!state) return;
+    const { formData, errors, errorSchema } = $this?.state;
 
     const { errors: _errors, errorSchema: _errorSchema } =
       $this.validate(formData);
