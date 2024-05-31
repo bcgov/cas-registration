@@ -29,4 +29,4 @@ def list_dashboard_data(request: HttpRequest, dashboard: Literal['all', 'bciers'
         role= app_role.role_name
     data= DashboardDataService.get_dashboard_data_by_name_for_role(dashboard, role)
    
-    return 200, data 
+    return 200, data
