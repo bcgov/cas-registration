@@ -1,6 +1,10 @@
 from django.contrib import admin
 from registration.models import (
     Address,
+    Facility,
+    FacilityOwnershipTimeline,
+    FacilityType,
+    OperationType,
     RegulatedProduct,
     NaicsCode,
     Document,
@@ -36,3 +40,23 @@ class OperationAdmin(admin.ModelAdmin):
     list_display = ('id', 'operator', 'name', 'type', 'status', 'created_at', 'updated_at', 'archived_at')
     search_fields = ('id', 'operator', 'name', 'operation_type', 'status', 'created_at', 'updated_at', 'archived_at')
     ordering = ('id',)
+
+
+@admin.register(OperationType)
+class OperationTypeAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+
+
+@admin.register(FacilityType)
+class FacilityTypeAdmin(admin.ModelAdmin):
+    list_display = ('name', 'operation_type')
+
+
+@admin.register(Facility)
+class FacilityAdmin(admin.ModelAdmin):
+    list_display = ('id', 'address', 'swrs_facility_id', 'bcghg_id', 'created_at', 'updated_at', 'archived_at')
+
+
+@admin.register(FacilityOwnershipTimeline)
+class FacilityOwnershipTimelineAdmin(admin.ModelAdmin):
+    list_display = ('id', 'facility', 'operation', 'name', 'facility_type', 'start_date', 'end_date')
