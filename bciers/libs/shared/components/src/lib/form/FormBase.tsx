@@ -5,7 +5,7 @@ import { customizeValidator } from "@rjsf/validator-ajv8";
 import { FormProps, IChangeEvent, withTheme, ThemeProps } from "@rjsf/core";
 import customTransformErrors from "@/app/utils/customTransformErrors";
 import { RJSFValidationError } from "@rjsf/utils";
-import { filter, uniqWith, isEqual } from "lodash";
+import { uniqWith, isEqual } from "lodash";
 
 const customFormats = {
   phone: /\(?\d{3}\)?[\s-]?\d{3}[\s-]?\d{4}$/,
@@ -24,6 +24,15 @@ export const customFormatsErrorMessages = {
   email: "Please enter a valid email address, e.g. mail@example.com",
   uri: "Please enter a valid website link, e.g. http://www.website.com, https://www.website.com",
 };
+
+interface Error {
+  message: string;
+  name: string;
+  params?: { [key: string]: string };
+  property: string;
+  schemaPath?: string;
+  stack: string;
+}
 
 const transformErrors = (errors: RJSFValidationError[]) => {
   return customTransformErrors(errors, customFormatsErrorMessages);
@@ -58,7 +67,7 @@ const FormBase: React.FC<FormPropsWithTheme<any>> = (props) => {
   const formTheme = disabled || readonly ? readOnlyTheme : defaultTheme;
   const Form = useMemo(() => withTheme(theme ?? formTheme), [theme, formTheme]);
   const [formSubmitState, setFormSubmitState] = useState(formData ?? {});
-  const [errors, setErrors] = useState({});
+  const [focusedField, setFocusedField] = useState<string | undefined>();
 
   // Handling form state externally as RJSF was resetting the form data on submission and
   // creating buggy behaviour if there was an API error and the user attempted to resubmit
@@ -71,13 +80,49 @@ const FormBase: React.FC<FormPropsWithTheme<any>> = (props) => {
 
   const formRef = createRef<any>();
 
+  const validateSingleField = (field: string) => {
+    // RJSF does not support single field validation out of the box
+    // This function is a workaround to validate a single field
+    const $this = formRef.current;
+    const { formData, errors, errorSchema } = $this.state;
+
+    const { errors: _errors, errorSchema: _errorSchema } =
+      $this.validate(formData);
+
+    const prevOtherFieldErrors = errors.filter(
+      (error: Error) => error.property !== `.${field}`,
+    );
+
+    const fieldErrors = _errors.filter(
+      (error: Error) => error.property === `.${field}`,
+    );
+
+    const fieldErrorSchema = _errorSchema[field];
+
+    $this.setState({
+      errors: uniqWith([...prevOtherFieldErrors, ...fieldErrors], isEqual),
+      errorSchema: { ...errorSchema, [field]: fieldErrorSchema },
+    });
+  };
+
   const handleChange = (e: IChangeEvent) => {
+    // Use schemaUtils validator to validate form data but not trigger validation
     const validator = e.schemaUtils.getValidator();
     const isValid =
       validator.validateFormData(e.formData, props.schema).errors.length === 0;
     onChange?.(e);
     // If onLiveValidation is provided, call it with the current form validation status
     onLiveValidation?.(isValid);
+
+    // Validate the focused field on change
+    validateSingleField(focusedField ?? "");
+  };
+
+  const handleFocus = (field: string) => {
+    // We can't get the field id onChange so saving the current field state on focus
+    // to validate onChange
+    const fieldName = field.slice("root_".length);
+    setFocusedField(fieldName);
   };
 
   useEffect(() => {
@@ -90,29 +135,8 @@ const FormBase: React.FC<FormPropsWithTheme<any>> = (props) => {
   }, [triggerValidation]);
 
   const handleBlur = (...args: string[]) => {
-    // RJSF does not support single field validation out of the box
-    // This is a workaround to validate a single field onBlur
-    const $this = formRef.current;
     const field = args[0].slice("root_".length);
-    const { formData, errors, errorSchema } = $this.state;
-
-    const { errors: _errors, errorSchema: _errorSchema } =
-      $this.validate(formData);
-
-    const prevOtherFieldErrors = errors.filter(
-      (error) => error.property !== `.${field}`,
-    );
-
-    const fieldErrors = _errors.filter(
-      (error) => error.property === `.${field}`,
-    );
-
-    const fieldErrorSchema = _errorSchema[field];
-
-    $this.setState({
-      errors: uniqWith([...prevOtherFieldErrors, ...fieldErrors], isEqual),
-      errorSchema: { ...errorSchema, [field]: fieldErrorSchema },
-    });
+    validateSingleField(field);
   };
 
   return (
@@ -123,6 +147,7 @@ const FormBase: React.FC<FormPropsWithTheme<any>> = (props) => {
       noHtml5Validate
       omitExtraData={omitExtraData ?? true}
       onBlur={handleBlur}
+      onFocus={handleFocus}
       onChange={handleChange}
       onSubmit={handleSubmit}
       showErrorList={false}

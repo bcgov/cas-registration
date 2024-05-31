@@ -9,6 +9,7 @@ const TextWidget: React.FC<WidgetProps> = ({
   id,
   onBlur,
   onChange,
+  onFocus,
   rawErrors,
   readonly,
   schema,
@@ -26,6 +27,10 @@ const TextWidget: React.FC<WidgetProps> = ({
   const handleBlur = ({
     target: { value },
   }: React.FocusEvent<HTMLInputElement>) => onBlur(id, value);
+
+  const handleFocus = ({
+    target: { value },
+  }: React.FocusEvent<HTMLInputElement>) => onFocus(id, value);
 
   const handleChange = (e: { target: { value: string } }) => {
     const val = e.target.value;
@@ -55,6 +60,7 @@ const TextWidget: React.FC<WidgetProps> = ({
       value={value}
       onBlur={handleBlur}
       onChange={handleChange}
+      onFocus={handleFocus}
       sx={styles}
       type={type}
       placeholder={placeholder}
