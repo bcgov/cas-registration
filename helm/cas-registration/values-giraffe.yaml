@@ -11,7 +11,7 @@ backend:
     tag: "latest"
 
   route:
-    host: cas-bciers-backend-dev.apps.silver.devops.gov.bc.ca
+    host: dsh-bciers-backend-dev.apps.silver.devops.gov.bc.ca
 
   environment: develop
 
@@ -29,10 +29,11 @@ frontend:
   replicaCount: 2
 
   image:
-    tag: "latest"
+    tag: "pr-1652"
 
   route:
-    host: cas-bciers-frontend-dev.apps.silver.devops.gov.bc.ca
+    host: dsh-bciers-frontend-dev.apps.silver.devops.gov.bc.ca
+    path: "/registration"
 
   environment: develop
 
@@ -51,9 +52,12 @@ frontend:
 reportingFrontend:
   enabled: true
 
+  image:
+    tag: "pr-1652"
+
   route:
-    host: cas-bciers-frontend-dev.apps.silver.devops.gov.bc.ca
-    path: "/reportingpath"
+    host: dsh-bciers-frontend-dev.apps.silver.devops.gov.bc.ca
+    path: "/reporting"
 
   resources:
     limits:
@@ -66,9 +70,12 @@ reportingFrontend:
 dashboardFrontend:
   enabled: true
 
+  image:
+    tag: "pr-1652"
+
   route:
-    host: cas-bciers-frontend-dev.apps.silver.devops.gov.bc.ca
-    path: "/onboarding"
+    host: dsh-bciers-frontend-dev.apps.silver.devops.gov.bc.ca
+    path: "/"
 
   resources:
     limits:
