@@ -5,7 +5,6 @@ import { customizeValidator } from "@rjsf/validator-ajv8";
 import { FormProps, IChangeEvent, withTheme, ThemeProps } from "@rjsf/core";
 import customTransformErrors from "@/app/utils/customTransformErrors";
 import { RJSFValidationError } from "@rjsf/utils";
-import { uniqWith, isEqual } from "lodash";
 
 const customFormats = {
   phone: /\(?\d{3}\)?[\s-]?\d{3}[\s-]?\d{4}$/,
@@ -100,7 +99,7 @@ const FormBase: React.FC<FormPropsWithTheme<any>> = (props) => {
     const fieldErrorSchema = _errorSchema[field];
 
     $this.setState({
-      errors: uniqWith([...prevOtherFieldErrors, ...fieldErrors], isEqual),
+      errors: [...new Set([...prevOtherFieldErrors, ...fieldErrors])],
       errorSchema: { ...errorSchema, [field]: fieldErrorSchema },
     });
   };

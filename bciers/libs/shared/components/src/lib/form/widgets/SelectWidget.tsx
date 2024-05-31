@@ -11,7 +11,9 @@ const SelectWidget: React.FC<WidgetProps> = (props) => {
   const {
     disabled,
     id,
+    onBlur,
     onChange,
+    onFocus,
     rawErrors,
     readonly,
     schema,
@@ -28,6 +30,14 @@ const SelectWidget: React.FC<WidgetProps> = (props) => {
     const val = e.target.value;
     onChange(val || "");
   };
+
+  const handleBlur = ({
+    target: { value },
+  }: React.FocusEvent<HTMLInputElement>) => onBlur(id, value);
+
+  const handleFocus = ({
+    target: { value },
+  }: React.FocusEvent<HTMLInputElement>) => onFocus(id, value);
 
   const isError = rawErrors && rawErrors.length > 0;
   const borderColor = isError ? BC_GOV_SEMANTICS_RED : DARK_GREY_BG_COLOR;
@@ -55,7 +65,9 @@ const SelectWidget: React.FC<WidgetProps> = (props) => {
         value={value || ""}
         disabled={disabled || readonly}
         name={id}
+        onBlur={handleBlur}
         onChange={handleChange}
+        onFocus={handleFocus}
         sx={styles}
         inputProps={{
           id: id,

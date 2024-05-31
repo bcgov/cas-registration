@@ -8,16 +8,26 @@ import { DARK_GREY_BG_COLOR, BC_GOV_SEMANTICS_RED } from "@/app/styles/colors";
 const ComboBox: React.FC<WidgetProps> = ({
   disabled,
   id,
+  onBlur,
   onChange,
+  onFocus,
   rawErrors,
   readonly,
   schema,
   value,
   uiSchema,
 }) => {
+  const handleBlur = ({
+    target: { value },
+  }: React.FocusEvent<HTMLInputElement>) => onBlur(id, value);
+
   const handleChange = (e: React.ChangeEvent<{}>, option: any) => {
     onChange(option?.const || option?.value);
   };
+
+  const handleFocus = ({
+    target: { value },
+  }: React.FocusEvent<HTMLInputElement>) => onFocus(id, value);
 
   const getSelected = useCallback(() => {
     if (!value || !schema?.anyOf) return null;
@@ -54,7 +64,9 @@ const ComboBox: React.FC<WidgetProps> = ({
       defaultValue={getSelected()}
       value={getSelected()}
       sx={styles}
+      onBlur={handleBlur}
       onChange={handleChange}
+      onFocus={handleFocus}
       getOptionLabel={(option: any) => (option ? option.title : "")}
       renderInput={(params) => (
         <TextField

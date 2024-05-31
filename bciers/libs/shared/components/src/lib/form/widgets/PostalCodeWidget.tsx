@@ -9,6 +9,7 @@ const TextWidget: React.FC<WidgetProps> = ({
   id,
   onBlur,
   onChange,
+  onFocus,
   rawErrors,
   readonly,
   value,
@@ -30,6 +31,10 @@ const TextWidget: React.FC<WidgetProps> = ({
   const handleBlur = ({
     target: { value },
   }: React.FocusEvent<HTMLInputElement>) => onBlur(id, value);
+
+  const handleFocus = ({
+    target: { value },
+  }: React.FocusEvent<HTMLInputElement>) => onFocus(id, value);
 
   const isError = rawErrors && rawErrors.length > 0;
   const borderColor = isError ? BC_GOV_SEMANTICS_RED : DARK_GREY_BG_COLOR;
@@ -56,6 +61,7 @@ const TextWidget: React.FC<WidgetProps> = ({
       }
       onBlur={handleBlur}
       onChange={handleChange}
+      onFocus={handleFocus}
       sx={styles}
       type="text"
     />
