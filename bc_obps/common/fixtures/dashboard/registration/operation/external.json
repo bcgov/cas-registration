@@ -1,0 +1,24 @@
+[
+  {
+    "model": "common.dashboarddata",
+    "fields": {
+      "name": "External Registration Operation Details",
+      "data": {
+        "dashboard": "registration-operation-detail",
+        "access_roles": ["industry_user", "industry_user_admin"],
+        "tiles": [
+          {
+            "title": "Operation Information",
+            "content": "View or update information of this operation here.",
+            "href": "/registration/tbd"
+          },
+          {
+            "title": "Facilities",
+            "content": "View the facilities, or to add new facility to this operation here.",
+            "href": "/registration/tbd"
+          }
+        ]
+      }
+    }
+  }
+]

@@ -2,6 +2,11 @@
 Django ER Diagram
 ---
 erDiagram
+DashboardData {
+    BigAutoField id
+    CharField name
+    JSONField data
+}
 EmailNotificationTemplate {
     BigAutoField id
     CharField name

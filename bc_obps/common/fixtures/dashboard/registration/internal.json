@@ -1,0 +1,49 @@
+[
+  {
+    "model": "common.dashboarddata",
+    "fields": {
+      "name": "Internal Analyst Registration Dashboard",
+      "data": {
+        "dashboard": "registration",
+        "access_roles": ["cas_analyst"],
+        "tiles": [
+          {
+            "title": "Operators",
+            "content": "View all operators here.",
+            "href": "/dashboard/operators"
+          },
+          {
+            "title": "Operations",
+            "content": "View all operations here.",
+            "href": "/registration/operations"
+          },
+          {
+            "title": "Facilities",
+            "content": "View all facilities here.",
+            "href": "/registration/tbd"
+          },
+          {
+            "title": "Operator Administrators and Access Requests",
+            "content": "View all operator administrators and administrator access requests here.",
+            "href": "/registration/tbd"
+          },
+          {
+            "title": "Operation Registration",
+            "content": "View, approve or decline the registration of operations here.",
+            "href": "/registration/tbd"
+          },
+          {
+            "title": "Contacts",
+            "content": "View all contacts here.",
+            "href": "/registration/tbd"
+          },
+          {
+            "title": "Events",
+            "content": "View all reported events here.",
+            "href": "/registration/tbd"
+          }
+        ]
+      }
+    }
+  }
+]
