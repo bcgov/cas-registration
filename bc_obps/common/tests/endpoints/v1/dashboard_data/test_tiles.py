@@ -2,9 +2,10 @@ from registration.tests.utils.helpers import CommonTestSetup
 from registration.tests.utils.helpers import TestUtils
 from common.constants import BASE_ENDPOINT
 
+
 class TestDashboardDataEndpointAuthorization(CommonTestSetup):
     endpoint = BASE_ENDPOINT + "dashboard-data?dashboard=bciers"
-   
+
     # AUTHORIZATION
     def test_unauthorized_users_cannot_get_dashboard_data(self):
         response = TestUtils.mock_get_with_auth_role(self, "cas_pending")
@@ -20,4 +21,3 @@ class TestDashboardDataEndpointAuthorization(CommonTestSetup):
     def test_missing_dashboard_parameter(self):
         response = TestUtils.mock_get_with_auth_role(self, "industry_user", endpoint=BASE_ENDPOINT + "dashboard-data")
         assert response.status_code == 422
-             

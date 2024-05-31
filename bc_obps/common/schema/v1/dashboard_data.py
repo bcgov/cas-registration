@@ -1,5 +1,6 @@
 from common.models import DashboardData
-from ninja import  ModelSchema
+from ninja import ModelSchema
+
 
 class DashboardDataSchemaOut(ModelSchema):
     class Meta:
