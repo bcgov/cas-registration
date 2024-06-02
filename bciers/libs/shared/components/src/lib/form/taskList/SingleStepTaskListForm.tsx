@@ -1,11 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { Button } from "@mui/material";
 import { IChangeEvent } from "@rjsf/core";
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import FormBase from "@bciers/components/form/FormBase";
 import TaskList from "@bciers/components/form/taskList/TaskList";
-import SingleStepTaskListButtons from "./SingleStepTaskListButtons";
 
 interface SingleStepTaskListFormProps {
   disabled?: boolean;
@@ -39,6 +39,7 @@ const SingleStepTaskListForm = ({
 
   // Set isSubmitting to true to disable submit buttons and prevent multiple form submissions
   const submitHandler = async () => {
+    setIsSubmitting(true);
     const response = await onSubmit(formData);
 
     // If there is an error, set isSubmitting to false to re-enable submit buttons
@@ -91,12 +92,17 @@ const SingleStepTaskListForm = ({
           uiSchema={uiSchema}
           formData={formData}
           onChange={handleFormChange}
-        ></FormBase>
-
-        <SingleStepTaskListButtons
-          disabled={isFormDisabled}
           onSubmit={submitHandler}
-        />
+        >
+          <div className="w-full flex justify-end mt-8">
+            <Button variant="contained" type="submit" disabled={disabled}>
+              Submit
+            </Button>
+            <Button className="ml-4" variant="outlined" type="button">
+              Cancel
+            </Button>
+          </div>
+        </FormBase>
       </div>
     </div>
   );
