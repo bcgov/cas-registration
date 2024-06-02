@@ -46,76 +46,34 @@ function InlineFieldTemplate({
   const isLabel = options?.label !== false;
 
   return (
-    <Grid
-      container
-      sx={{
-        marginBottom: {
-          xs: "16px",
-          md: "8px",
-        },
-        display: "flex",
-        alignItems: {
-          xs: "flex-start",
-          md: "center",
-        },
-      }}
-      className={classNames}
+    <div
+      className={`mb-4 md:mb-2 flex flex-col md:flex-row items-start md:items-center ${classNames}`}
     >
       {isLabel && (
-        <Grid item xs={12} md={3} className="w-10">
+        <div className="w-full md:w-3/12">
           <label htmlFor={id} className="font-bold">
             {label}
-            {required ? "*" : null}
+            {required && "*"}
           </label>
-        </Grid>
+        </div>
       )}
-      <Grid
-        item
-        xs={12}
-        md={4}
-        sx={{
-          position: "relative",
-          display: "flex",
-          alignItems: "center",
-          height: "100%",
-        }}
-      >
+      <div className="relative flex items-center w-full md:w-4/12">
         {children}
-      </Grid>
+      </div>
       {isErrors && (
-        <Grid
-          item
-          xs={12}
-          md={4}
+        <div
+          className="w-full md:w-4/12 flex items-center text-red-600 ml-0 md:ml-4"
           role="alert"
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            color: "error.main",
-            marginLeft: {
-              xs: "0",
-              md: "16px",
-            },
-          }}
         >
-          <Box
-            sx={{
-              display: {
-                xs: "none",
-                md: "block",
-              },
-              marginRight: "12px",
-            }}
-          >
+          <div className="hidden md:block mr-3">
             <AlertIcon />
-          </Box>
+          </div>
           <span>{error}</span>
-        </Grid>
+        </div>
       )}
-
       {description}
       {help}
-    </Grid>
+    </div>
   );
 }
 

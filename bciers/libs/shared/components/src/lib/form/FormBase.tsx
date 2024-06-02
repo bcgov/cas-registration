@@ -73,7 +73,7 @@ const FormBase: React.FC<FormPropsWithTheme<any>> = (props) => {
   };
 
   const handleError = () => {
-    // Enable live validation on first error eg. onSubmit with required fields
+    // Enable live validation on first error eg. onSubmit with empty required fields
     if (!isLiveValidate) setIsLiveValidate(true);
   };
 
