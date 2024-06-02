@@ -3,17 +3,17 @@ import CheckCircle from "@bciers/components/icons/CheckCircle";
 import { BC_GOV_LINKS_COLOR } from "@bciers/styles";
 
 export interface TaskListProps {
-  taskListData: {
+  taskListItems: {
     section: string;
     title: string;
   }[];
-  taskListStatus: {
-    [key: string]: boolean;
+  taskListItemStatus: {
+    [section: string]: boolean;
   };
 }
 
-const TaskList = ({ taskListData, taskListStatus }: TaskListProps) => {
-  const [activeTask, setActiveTask] = useState(taskListData[0].section);
+const TaskList = ({ taskListItems, taskListItemStatus }: TaskListProps) => {
+  const [activeTask, setActiveTask] = useState(taskListItems[0].section);
 
   const handleTaskClick = (e: React.MouseEvent, section: string) => {
     // Prevent the default anchor link behavior so that the page doesn't jump
@@ -23,13 +23,11 @@ const TaskList = ({ taskListData, taskListStatus }: TaskListProps) => {
     anchorTarget?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  //
-
   return (
     <nav className="w-[256px] mr-4 h-fit border-solid border-0 border-r-2 border-[#f0f0f0]">
-      {taskListData.map((task) => {
+      {taskListItems.map((task) => {
         const { section, title } = task;
-        const taskStatus = taskListStatus?.[section];
+        const taskStatus = taskListItemStatus?.[section];
         const isActive = activeTask === section;
         return (
           <button
