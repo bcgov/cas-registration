@@ -1,4 +1,4 @@
-import { BC_GOV_BACKGROUND_COLOR_BLUE } from "@/app/styles/colors";
+import { BC_GOV_BACKGROUND_COLOR_BLUE } from "@bciers/styles/colors";
 
 // DataGrid component styles
 const styles = {

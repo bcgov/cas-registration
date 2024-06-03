@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { permanentRedirect } from "next/navigation";
 import Loading from "@bciers/components/loading/SkeletonField";
-import { BC_GOV_LINKS_COLOR } from "@/app/styles/colors";
+import { BC_GOV_LINKS_COLOR } from "@bciers/styles/colors";
 import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";

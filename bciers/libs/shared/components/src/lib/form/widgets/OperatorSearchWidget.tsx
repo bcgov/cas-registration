@@ -5,7 +5,10 @@ import { Autocomplete, TextField } from "@mui/material";
 import { actionHandler } from "@/app/utils/actions";
 import debounce from "lodash.debounce";
 import { WidgetProps } from "@rjsf/utils/lib/types";
-import { DARK_GREY_BG_COLOR, BC_GOV_SEMANTICS_RED } from "@/app/styles/colors";
+import {
+  DARK_GREY_BG_COLOR,
+  BC_GOV_SEMANTICS_RED,
+} from "@bciers/styles/colors";
 
 const OperatorSearchWidget: React.FC<WidgetProps> = ({
   disabled,

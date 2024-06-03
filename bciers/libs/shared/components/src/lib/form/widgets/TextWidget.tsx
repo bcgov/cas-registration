@@ -2,7 +2,10 @@
 
 import { TextField } from "@mui/material";
 import { WidgetProps } from "@rjsf/utils/lib/types";
-import { DARK_GREY_BG_COLOR, BC_GOV_SEMANTICS_RED } from "@/app/styles/colors";
+import {
+  DARK_GREY_BG_COLOR,
+  BC_GOV_SEMANTICS_RED,
+} from "@bciers/styles/colors";
 
 const TextWidget: React.FC<WidgetProps> = ({
   disabled,
