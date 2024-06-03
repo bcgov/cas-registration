@@ -41,7 +41,6 @@ const FormBase: React.FC<FormPropsWithTheme<any>> = (props) => {
     disabled,
     formData,
     omitExtraData,
-    onChange,
     onSubmit,
     readonly,
     setErrorReset,
@@ -50,7 +49,6 @@ const FormBase: React.FC<FormPropsWithTheme<any>> = (props) => {
   const formTheme = disabled || readonly ? readOnlyTheme : defaultTheme;
   const Form = useMemo(() => withTheme(theme ?? formTheme), [theme, formTheme]);
   const [formState, setFormState] = useState(formData ?? {});
-  const [isLiveValidate, setIsLiveValidate] = useState(false);
 
   // Handling form state externally as RJSF was resetting the form data on submission and
   // creating buggy behaviour if there was an API error and the user attempted to resubmit
@@ -61,35 +59,16 @@ const FormBase: React.FC<FormPropsWithTheme<any>> = (props) => {
     if (onSubmit) onSubmit(e, formState);
   };
 
-  const handleChange = (e: IChangeEvent) => {
-    // If onChange is provided control the form state externally to stop form data loss
-    // on re-render when setting state in the parent component
-    // ⚠️ Warning ⚠️ - be mindful of the performance implications of both controlled state as well as
-    // running expensive computations in the OnChange callback, especially with complex forms
-    if (onChange) {
-      setFormState(e.formData);
-      onChange(e); // Pass the event back to the parent component
-    }
-  };
-
-  const handleError = () => {
-    // Enable live validation on first error eg. onSubmit with empty required fields
-    if (!isLiveValidate) setIsLiveValidate(true);
-  };
-
   return (
     <Form
       {...props}
       formData={formState}
-      onChange={handleChange}
       noHtml5Validate
       omitExtraData={omitExtraData ?? true}
-      onError={handleError}
       onSubmit={handleSubmit}
       showErrorList={false}
       transformErrors={transformErrors}
       validator={validator}
-      liveValidate={isLiveValidate}
     />
   );
 };
