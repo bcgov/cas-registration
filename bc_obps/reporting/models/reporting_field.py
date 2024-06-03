@@ -1,4 +1,4 @@
-from common.models import BaseModel
+from registration.models import BaseModel
 from django.db import models
 
 

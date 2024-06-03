@@ -1,4 +1,4 @@
-from common.models import BaseModel
+from registration.models import BaseModel
 from django.db import models
 from registration.models import ReportingActivity
 from reporting.models import SourceType, BaseSchema, Configuration
@@ -23,13 +23,13 @@ class ActivitySourceTypeBaseSchema(BaseModel):
 
     class Meta:
         db_table_comment = "Intersection table that assigns a base_schema as valid for a period of time given an activity-sourceType pair"
-        db_table = 'erc"."configuration_element'
+        db_table = 'erc"."activity_source_type_base_schema'
         constraints = [
             UniqueConstraint(
                 fields=[
                     'reporting_activity',
                     'source_type',
-                    'base_schema'
+                    'base_schema',
                     'valid_from',
                     'valid_to',
                 ],
