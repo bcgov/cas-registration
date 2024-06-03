@@ -48,7 +48,7 @@ spec:
             - name: NEXTAUTH_URL
               value: https://{{ .Values.frontend.route.host }}
             - name: AUTH_TRUST_HOST
-              value: true
+              value: "true"
             - name: SITEMINDER_AUTH_URL
               value: {{ .Values.frontend.auth.siteminderAuthUrl }}
             - name: SITEMINDER_LOGOUT_URL
