@@ -1,24 +1,23 @@
 {
-  "name": "registration",
+  "name": "registration1",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "apps/registration",
+  "sourceRoot": "apps/registration1",
   "projectType": "application",
   "tags": [],
-  "// targets": "to see all targets run: nx show project registration --web",
   "targets": {
     "build": {
       "executor": "@nx/next:build",
       "outputs": ["{options.outputPath}"],
       "defaultConfiguration": "dev",
       "options": {
-        "outputPath": "dist/registration",
+        "outputPath": "dist/registration1",
         "experimentalAppOnly": true
       }
     },
     "start": {
       "executor": "@nx/next:server",
       "options": {
-        "buildTarget": "registration:build",
+        "buildTarget": "registration1:build",
         "port": 3000,
         "dev": false
       }
@@ -29,8 +28,8 @@
       "defaultConfiguration": "dev",
       "options": {
         "engine": "docker",
-        "context": "dist/registration",
-        "file": "apps/registration/Dockerfile",
+        "context": "dist/registration1",
+        "file": "apps/registration1/Dockerfile",
         "tags": ["cas-registration:latest"]
       }
     },
@@ -41,21 +40,21 @@
     "e2e": {
       "executor": "nx:run-commands",
       "options": {
-        "cwd": "apps/registration",
+        "cwd": "apps/registration1",
         "command": "happo-e2e -- playwright test"
       }
     },
     "e2e:ui": {
       "executor": "nx:run-commands",
       "options": {
-        "cwd": "apps/registration",
+        "cwd": "apps/registration1",
         "command": "happo-e2e -- playwright test --ui"
       }
     },
     "e2e:report": {
       "executor": "nx:run-commands",
       "options": {
-        "cwd": "apps/registration",
+        "cwd": "apps/registration1",
         "command": "playwright show-report"
       }
     },

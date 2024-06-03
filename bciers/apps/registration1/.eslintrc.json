@@ -39,7 +39,7 @@
       },
       "parser": "@typescript-eslint/parser",
       "parserOptions": {
-        "project": ["apps/registration/tsconfig(.*)?.json"],
+        "project": ["apps/registration1/tsconfig(.*)?.json"],
         "tsConfigRootDir": "./"
       }
     },

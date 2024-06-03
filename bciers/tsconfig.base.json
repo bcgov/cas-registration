@@ -16,7 +16,7 @@
     "target": "es2015",
     "types": ["vitest/globals"],
     "paths": {
-      "@/*": ["apps/registration/*"],
+      "@/*": ["apps/registration1/*"],
       "@bciers/components": ["libs/shared/components/src/index.ts"],
       "@bciers/components/*": ["libs/shared/components/src/lib/*"],
       "@bciers/components/server": ["libs/shared/components/src/server.ts"],
