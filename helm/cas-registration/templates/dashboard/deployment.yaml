@@ -37,8 +37,6 @@ spec:
               value: https://{{ .Values.dashboardFrontend.route.host }}
             - name: AUTH_TRUST_HOST
               value: "true"
-            - name: API_URL
-              value: http://{{ include "cas-registration.fullname" . }}-backend.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.backend.service.port }}/api/
             - name: KEYCLOAK_CLIENT_SECRET
               valueFrom:
                 secretKeyRef:
