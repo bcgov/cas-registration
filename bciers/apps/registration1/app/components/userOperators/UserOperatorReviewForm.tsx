@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useParams } from "next/navigation";
 import { userOperatorInternalUserUiSchema } from "@/app/utils/jsonSchema/userOperator";
-import MultiStepAccordion from "@/app/components/form/MultiStepAccordion";
+import MultiStepAccordion from "@bciers/components/form/MultiStepAccordion";
 import { UserOperatorFormData } from "@/app/components/form/formDataTypes";
 import { RJSFSchema } from "@rjsf/utils";
 import { OperatorStatus, UserOperatorStatus } from "@/app/utils/enums";

@@ -7,7 +7,7 @@ import {
 } from "@testing-library/react";
 import { describe, expect } from "vitest";
 import React from "react";
-import MultiStepFormBase from "@/app/components/form/MultiStepFormBase";
+import MultiStepFormBase from "@bciers/components/form/MultiStepFormBase";
 import { useSession, useParams } from "@bciers/testConfig/mocks";
 import { QueryParams, Session } from "@bciers/testConfig/types";
 import userEvent from "@testing-library/user-event";
