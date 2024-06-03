@@ -1,3 +1,5 @@
+// TODO(Nx Migration): Component added to Monorepo at `@bciers/components/src/lib/layout/Main.tsx`
+
 import Box from "@mui/material/Box";
 
 import { ReactNode } from "react";
@@ -9,7 +11,7 @@ type MainProps = {
   };
 };
 
-export const Main = ({ children, sx }: MainProps) => {
+const Main = ({ children, sx }: MainProps) => {
   return (
     <Box
       component="main"

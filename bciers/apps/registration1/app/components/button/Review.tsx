@@ -5,7 +5,7 @@ import { Alert, Button, Box } from "@mui/material";
 import RecommendIcon from "@mui/icons-material/Recommend";
 import Note from "@/app/components/datagrid/Note";
 import DoNotDisturbIcon from "@mui/icons-material/DoNotDisturb";
-import Modal from "@/app/components/modal/Modal";
+import Modal from "@bciers/components/modal/Modal";
 import RequestChanges from "./RequestChanges";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
