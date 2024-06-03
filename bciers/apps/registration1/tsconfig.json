@@ -22,7 +22,8 @@
     "./.happo.js",
     "./.eslintrc.json",
     "./.next/types/**/*.ts",
-    ".next/types/**/*.ts"
+    ".next/types/**/*.ts",
+    "../../libs/shared/components/src/lib/modal"
   ],
   "exclude": [".next", "node_modules", "jest.config.*"]
 }

@@ -3,8 +3,8 @@ import Link from "@mui/material/Link/Link";
 import List from "@mui/material/List/List";
 import ListItem from "@mui/material/ListItem/ListItem";
 import Typography from "@mui/material/Typography/Typography";
-import Footer from "@/app/components/layout/Footer";
-import Header from "@/app/components/layout/Header";
+import Footer from "@bciers/components/layout/Footer";
+import Header from "@bciers/components/layout/Header";
 
 export default async function NotFound() {
   return (

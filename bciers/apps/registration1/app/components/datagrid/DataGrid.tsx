@@ -11,7 +11,7 @@ import {
   GridSortItem,
 } from "@mui/x-data-grid";
 import Pagination from "@/app/components/datagrid/Pagination";
-import SortIcon from "@/app/components/icons/SortIcon";
+import SortIcon from "@bciers/components/icons/SortIcon";
 import styles from "@/app/components/datagrid/styles";
 
 interface Props {
