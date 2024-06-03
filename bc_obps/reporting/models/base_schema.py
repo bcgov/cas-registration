@@ -2,7 +2,7 @@ from common.models import BaseModel
 from django.db import models
 
 
-class ReportingField(BaseModel):
+class BaseSchema(BaseModel):
     """Static base json schema for emissions reporting forms"""
 
     # No history needed, these elements are immutable

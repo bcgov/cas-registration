@@ -6,7 +6,7 @@ from django.db.models.constraints import UniqueConstraint
 
 
 class ActivitySourceTypeBaseSchema(BaseModel):
-    """Configuration element for reporting"""
+    """Intersection table for Activity-SourceType-BaseSchema"""
 
     # No history needed, these elements are immutable
     reporting_activity = models.ForeignKey(
