@@ -1,3 +1,4 @@
+export { default as AlertIcon } from "./AlertIcon";
 export { default as CheckCircle } from "./CheckCircle";
 export { default as Inbox } from "./Inbox";
 export { default as Layers } from "./Layers";

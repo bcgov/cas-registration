@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Alert, Button, Box } from "@mui/material";
 import RecommendIcon from "@mui/icons-material/Recommend";
-import Note from "@/app/components/datagrid/Note";
+import Note from "@bciers/components/datagrid/Note";
 import DoNotDisturbIcon from "@mui/icons-material/DoNotDisturb";
 import Modal from "@bciers/components/modal/Modal";
 import RequestChanges from "./RequestChanges";

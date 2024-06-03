@@ -1,4 +1,4 @@
-import { AlertIcon } from "@/app/styles/rjsf/InlineFieldTemplate";
+import AlertIcon from "@bciers/components/icons/AlertIcon";
 
 export const registrationRequestNote =
   "Once “Approved,” a B.C. OBPS Regulated Operation ID will be issued for the operation.";

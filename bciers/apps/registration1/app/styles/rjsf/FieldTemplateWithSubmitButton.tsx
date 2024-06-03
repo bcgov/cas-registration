@@ -2,7 +2,7 @@
 
 import { FieldTemplateProps } from "@rjsf/utils";
 import SubmitButton from "@/app/components/form/SubmitButton";
-import { AlertIcon } from "./InlineFieldTemplate";
+import AlertIcon from "@bciers/components/icons/AlertIcon";
 
 function FieldTemplateWithSubmitButton(props: Readonly<FieldTemplateProps>) {
   const {

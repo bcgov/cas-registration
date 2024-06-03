@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import Loading from "@/app/components/loading/SkeletonGrid";
+import Loading from "@bciers/components/loading/SkeletonGrid";
 import AccessRequestReceived from "@/app/components/userOperators/AccessRequestReceived";
 
 export default async function SelectOperatorRequestAccessReceivedPage({

@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 
-import Loading from "@/app/components/loading/SkeletonGrid";
+import Loading from "@bciers/components/loading/SkeletonGrid";
 import {
   processExternalDashboardUsersTileData,
   UserOperatorDataGridRow,
