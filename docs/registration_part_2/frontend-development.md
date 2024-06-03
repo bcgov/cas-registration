@@ -42,8 +42,10 @@ Refer to the [Nx docs about @nx/next generators](https://nx.dev/nx-api/next/gene
 
 ### Importing shared components
 
-When importing shared components, use the `@bciers/components` alias. For example:
+When importing shared components, use the `@bciers/components` alias which is an alias for our shared components folder located in: `@bciers/libs/shared/components/src/lib/*`.
 
-import FormBase from '@bciers/components/form/FormBase';
+Example:
+
+`import FormBase from '@bciers/components/form/FormBase';`
 
 Alias paths can be modified in the `tsconfig.base.json` file in the `/bciers` directory.
