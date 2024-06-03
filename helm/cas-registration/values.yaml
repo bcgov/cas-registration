@@ -60,6 +60,7 @@ frontend:
 
   route:
     host: ~
+    path: ~
 
   resources:
     limits:

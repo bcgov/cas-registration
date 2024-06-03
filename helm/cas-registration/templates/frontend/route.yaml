@@ -21,6 +21,7 @@ metadata:
 
 spec:
   host: {{ .Values.frontend.route.host }}
+  path: {{ .Values.frontend.route.path }}
   port:
     targetPort: {{ template "cas-registration.fullname" . }}-frontend
   tls:
