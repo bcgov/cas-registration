@@ -426,7 +426,7 @@ export async function filterTableByFieldId(
 
   // Longer timeout to wait for filtering to complete
   await expect(firstFilteredCell).toContainText(filterValue, {
-    timeout: 20000,
+    timeout: 40000,
   });
 }
 

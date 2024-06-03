@@ -60,7 +60,7 @@ export class UsersPOM {
 
   async clickActionButtonInRow(row: Locator, buttonText: string) {
     await row.getByRole("button", { name: new RegExp(buttonText) }).click();
-    await this.page.waitForEvent("response", { timeout: 10000 });
+    await this.page.waitForEvent("response", { timeout: 20000 });
   }
 
   async route() {

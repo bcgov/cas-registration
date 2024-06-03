@@ -312,7 +312,7 @@ jobs:
             os: ubuntu-latest
             cache_dir: ~/.cache/ms-playwright
           - project: webkit
-            os: macos-12
+            os: macos-latest
             cache_dir: ~/Library/Caches/ms-playwright
     steps:
       - uses: actions/checkout@v4
@@ -335,7 +335,7 @@ jobs:
           key: ${{ runner.os }}-${{ matrix.project }}-playwright-registration
 
       - name: 📥 install Playwright ${{ matrix.project }}
-        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        # if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps ${{ matrix.project }}
         working-directory: ./bciers/apps/registration1
 
