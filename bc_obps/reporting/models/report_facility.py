@@ -15,8 +15,9 @@ class ReportFacility(BaseModel):
 
     facility_bcghgid = models.CharField(max_length=1000, db_comment="The BC GHG ID of the facility as reported")
 
-    activities = models.ManyToManyField(ReportingActivity)
-    products = models.ManyToManyField(RegulatedProduct)
+    # We don't create a backwards relation since these are registration models
+    activities = models.ManyToManyField(ReportingActivity, related_name="+")
+    products = models.ManyToManyField(RegulatedProduct, related_name="+")
 
     class Meta:
         db_table_comment = "A table to store individual facility information as part of a report"
