@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import Loading from "@/app/components/loading/SkeletonSpinner";
+import Loading from "@bciers/components/loading/SkeletonSpinner";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { IDP } from "@/app/utils/enums";

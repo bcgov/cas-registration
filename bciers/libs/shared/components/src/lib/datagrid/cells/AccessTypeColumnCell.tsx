@@ -1,7 +1,7 @@
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import FormControl from "@mui/material/FormControl";
 import MenuItem from "@mui/material/MenuItem";
-import { UserOperatorRenderCellParams } from "@/app/components/datagrid/cells/types";
+import { UserOperatorRenderCellParams } from "@bciers/components/datagrid/cells/types";
 import { UserOperatorRoles, Status } from "@/app/utils/enums";
 
 const AccessTypeColumnCell = (params: UserOperatorRenderCellParams) => {

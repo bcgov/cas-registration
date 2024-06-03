@@ -1,6 +1,6 @@
-import Note from "@/app/components/datagrid/Note";
+import Note from "@bciers/components/datagrid/Note";
 import { UserOperatorPaginated } from "./types";
-import StatusStyleColumnCell from "@/app/components/datagrid/cells/StatusStyleColumnCell";
+import StatusStyleColumnCell from "@bciers/components/datagrid/cells/StatusStyleColumnCell";
 import OperatorDataGrid from "./OperatorDataGrid";
 
 // 🧩 Main component

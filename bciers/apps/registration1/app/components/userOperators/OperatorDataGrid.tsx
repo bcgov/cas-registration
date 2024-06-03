@@ -1,6 +1,6 @@
 "use client";
 
-import DataGrid from "@/app/components/datagrid/DataGrid";
+import DataGrid from "@bciers/components/datagrid/DataGrid";
 import Link from "next/link";
 import { GridRenderCellParams } from "@mui/x-data-grid";
 import { UserOperator } from "./types";

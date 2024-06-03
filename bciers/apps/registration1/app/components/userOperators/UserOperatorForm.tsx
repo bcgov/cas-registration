@@ -13,7 +13,7 @@ import { actionHandler } from "@/app/utils/actions";
 import { useSession } from "next-auth/react";
 import MultiStepFormBase from "@bciers/components/form/MultiStepFormBase";
 import { UserOperatorFormData } from "@/app/components/form/formDataTypes";
-import Note from "@/app/components/datagrid/Note";
+import Note from "@bciers/components/datagrid/Note";
 import { Status } from "@/app/utils/enums";
 
 interface UserOperatorFormProps {

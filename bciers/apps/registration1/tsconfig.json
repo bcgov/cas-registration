@@ -23,7 +23,8 @@
     "./.eslintrc.json",
     "./.next/types/**/*.ts",
     ".next/types/**/*.ts",
-    "../../libs/shared/components/src/lib/modal"
+    "../../libs/shared/components/src/lib/modal",
+    "../../dist/registration1/.next/types/**/*.ts"
   ],
   "exclude": [".next", "node_modules", "jest.config.*"]
 }

@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import Loading from "@/app/components/loading/SkeletonForm";
+import Loading from "@bciers/components/loading/SkeletonForm";
 import Operators from "./Operators";
 
 export default async function OperatorsPage() {
