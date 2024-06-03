@@ -6,7 +6,7 @@ import path from 'path';
 
 export default defineConfig({
   root: __dirname,
-  cacheDir: '../../node_modules/.vite/apps/registration1',
+  cacheDir: '../../node_modules/.vite/apps/registration',
   plugins: [react(), tsconfigPaths()],
   test: {
     environment: 'jsdom',
@@ -19,7 +19,7 @@ export default defineConfig({
     },
     reporters: ['default'],
     coverage: {
-      reportsDirectory: '../../coverage/apps/registration1',
+      reportsDirectory: '../../coverage/apps/registration',
       provider: 'v8',
     },
     setupFiles: ['../../libs/shared/testConfig/src/global.tsx'],
