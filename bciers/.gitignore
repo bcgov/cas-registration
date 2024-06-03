@@ -42,7 +42,7 @@ test-results
 .DS_Store
 Thumbs.db
 
-.nx/cache
+.nx
 
 # Next.js
 .next
