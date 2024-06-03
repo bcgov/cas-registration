@@ -33,7 +33,8 @@ class ReportOperation(BaseModel):
         max_length=1000, db_comment="The full name of the operation representative"
     )
 
-    reporting_activities = models.ManyToManyField(ReportingActivity)
+    # We don't create a backwards relation since this is a registration model
+    reporting_activities = models.ManyToManyField(ReportingActivity, related_name="+")
 
     class Meta:
         db_table_comment = "A table to store operation information as part of a report"
