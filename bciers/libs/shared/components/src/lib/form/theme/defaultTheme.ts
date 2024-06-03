@@ -1,7 +1,7 @@
 import { ThemeProps, getDefaultRegistry } from "@rjsf/core";
 import * as widgets from "@bciers/components/form/widgets";
-import InlineFieldTemplate from "@/app/styles/rjsf/InlineFieldTemplate";
-import TitleFieldTemplate from "@/app/styles/rjsf/TitleFieldTemplate";
+import InlineFieldTemplate from "@bciers/components/form/fields/InlineFieldTemplate";
+import TitleFieldTemplate from "@bciers/components/form/fields/TitleFieldTemplate";
 
 const {
   fields,

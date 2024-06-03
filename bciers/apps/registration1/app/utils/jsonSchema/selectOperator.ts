@@ -1,6 +1,6 @@
 import { RJSFSchema } from "@rjsf/utils";
-import FieldTemplate from "@/app/styles/rjsf/FieldTemplate";
-import FieldTemplateWithSubmitButton from "@/app/styles/rjsf/FieldTemplateWithSubmitButton";
+import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
+import FieldTemplateWithSubmitButton from "@bciers/components/form/fields/FieldTemplateWithSubmitButton";
 
 export const selectOperatorSchema: RJSFSchema = {
   type: "object",

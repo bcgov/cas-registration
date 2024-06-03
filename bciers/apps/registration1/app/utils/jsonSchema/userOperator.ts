@@ -1,7 +1,7 @@
 import { RJSFSchema } from "@rjsf/utils";
 import provinceOptions from "@/app/data/provinces.json";
-import FieldTemplate from "@/app/styles/rjsf/FieldTemplate";
-import TitleOnlyFieldTemplate from "@/app/styles/rjsf/TitleOnlyFieldTemplate";
+import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
+import TitleOnlyFieldTemplate from "@bciers/components/form/fields/TitleOnlyFieldTemplate";
 import {
   OperatorMailingAddressTitle,
   OperatorPhysicalAddressTitle,
@@ -9,7 +9,7 @@ import {
   ParentCompanyPhysicalAddressTitle,
   SeniorOfficerTitle,
 } from "@/app/components/form/titles/userOperatorTitles";
-import ArrayFieldTemplate from "@/app/styles/rjsf/ArrayFieldTemplate";
+import ArrayFieldTemplate from "@bciers/components/form/fields/ArrayFieldTemplate";
 
 const subheading = {
   "ui:classNames": "text-bc-bg-blue text-start text-lg",
