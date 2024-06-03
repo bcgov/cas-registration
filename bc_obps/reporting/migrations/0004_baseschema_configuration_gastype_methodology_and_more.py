@@ -3,6 +3,28 @@
 from django.db import migrations, models
 import django.db.models.deletion
 
+def init_gas_type_data(apps, schema_monitor):
+    '''
+    Add initial data to erc.sourcetype
+    '''
+    GasType = apps.get_model('reporting', 'GasType')
+    GasType.objects.bulk_create(
+        [
+            GasType(name='Gas Type')
+        ]
+    )
+
+def reverse_init_gas_type_data(apps, schema_monitor):
+    '''
+    Remove initial data from erc.gas_type
+    '''
+    GasType = apps.get_model('reporting', 'GasType')
+    GasType.objects.filter(
+        name__in=[
+            'Gas Type',
+        ]
+    ).delete()
+
 
 class Migration(migrations.Migration):
 
