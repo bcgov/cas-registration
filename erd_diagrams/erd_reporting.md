@@ -19,10 +19,10 @@ ReportOperation {
     CharField operator_trade_name
     CharField operation_name
     CharField operation_type
-    CharField operation_bcghg_id
+    CharField operation_bcghgid
     CharField bc_obps_regulated_operation_id
     CharField operation_representative_name
-    ManyToManyField reporting_activities
+    ManyToManyField activities
 }
 ReportFacility {
     BigAutoField id
@@ -34,7 +34,7 @@ ReportFacility {
     ManyToManyField products
 }
 ReportOperation ||--|| Report : report
-ReportOperation }|--|{ ReportingActivity : reporting_activities
+ReportOperation }|--|{ ReportingActivity : activities
 ReportFacility }|--|| Report : report
 ReportFacility }|--|{ ReportingActivity : activities
 ReportFacility }|--|{ RegulatedProduct : products
