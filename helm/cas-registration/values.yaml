@@ -160,3 +160,6 @@ devops:
     requests:
       cpu: 100m
       memory: 64Mi
+
+growthbook:
+  clientKey: ~

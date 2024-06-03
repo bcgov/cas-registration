@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "cas-registration.fullname" . }}-frontend-shared-env
+data:
+  - name: API_URL
+    value: http://{{ include "cas-registration.fullname" . }}-backend.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.backend.service.port }}/api/
+  - name: AUTH_TRUST_HOST
+    value: "true"
+  - name: NEXT_PUBLIC_GROWTHBOOK_CLIENT_KEY
+    value: {{ .Values.growthbook.clientKey }}
+  - name: HOST_REGISTRATION
+    value: http://{{ include "cas-registration.fullname" . }}-frontend.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.frontend.service.port }}
+  - name: HOST_REPORTING
+    value: http://{{ include "cas-registration.fullname" . }}-reporting-frontend.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.reportingFrontend.service.port }}
+  - name: HOST_DASHBOARD
+    value: http://{{ include "cas-registration.fullname" . }}-dashboard-frontend.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.dashboardFrontend.service.port }}
+  - name: NEXTAUTH_URL
+    value: https://{{ .Values.frontend.route.host }}
+  - name: NEXTAUTH_SECRET
+    valueFrom:
+      secretKeyRef:
+        name: {{ template "cas-registration.fullname" . }}-nextauth
+        key: nextauth-secret
+  {{- if hasSuffix "-prod" .Release.Namespace }}
+  - name: SENTRY_ENVIRONMENT
+    value: {{ include "cas-registration.namespaceSuffix" . }}
+  - name: SENTRY_RELEASE
+    value: {{ .Values.frontend.image.tag }}
+  - name: SENTRY_TRACE_SAMPLE_RATE
+    value: {{ .Values.frontend.sentry.traceSampleRate | quote }}
+  {{- end }}
+

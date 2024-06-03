@@ -26,13 +26,12 @@ spec:
     spec:
       containers:
         - name: {{ template "cas-registration.fullname" . }}-reporting-frontend
+          envFrom:
+            - configMapRef:
+                name: {{ template "cas-registration.fullname" . }}-frontend-shared-env
           env:
-            - name: API_URL
-              value: http://{{ include "cas-registration.fullname" . }}-backend.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.backend.service.port }}/api/
             - name: KEYCLOAK_CLIENT_ID
               value: {{ .Values.frontend.auth.keycloakClientId }}
-            - name: AUTH_TRUST_HOST
-              value: "true"
           image: "{{ .Values.reportingFrontend.image.repository }}:{{ .Values.defaultImageTag | default .Values.reportingFrontend.image.tag }}"
           imagePullPolicy: {{ .Values.reportingFrontend.image.pullPolicy }}
           ports:
