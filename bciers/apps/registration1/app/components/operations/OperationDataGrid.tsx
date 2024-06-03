@@ -1,11 +1,11 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import DataGrid from "@/app/components/datagrid/DataGrid";
+import DataGrid from "@bciers/components/datagrid/DataGrid";
 import { GridColumnGroupHeaderParams } from "@mui/x-data-grid";
 import { useSession } from "next-auth/react";
-import OperationsActionCell from "@/app/components/datagrid/cells/OperationsActionCell";
-import HeaderSearchCell from "@/app/components/datagrid/cells/HeaderSearchCell";
+import OperationsActionCell from "@bciers/components/datagrid/cells/OperationsActionCell";
+import HeaderSearchCell from "@bciers/components/datagrid/cells/HeaderSearchCell";
 import operationColumns from "@/app/components/datagrid/models/operationColumns";
 import operationGroupColumns from "@/app/components/datagrid/models/operationGroupColumns";
 import { OperationRow } from "./types";

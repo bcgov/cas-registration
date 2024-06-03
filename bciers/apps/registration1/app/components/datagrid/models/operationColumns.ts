@@ -1,5 +1,5 @@
 import { GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
-import StatusStyleColumnCell from "@/app/components/datagrid/cells/StatusStyleColumnCell";
+import StatusStyleColumnCell from "@bciers/components/datagrid/cells/StatusStyleColumnCell";
 
 export const OPERATOR_COLUMN_INDEX = 1;
 

@@ -10,9 +10,9 @@ import {
   GridSortDirection,
   GridSortItem,
 } from "@mui/x-data-grid";
-import Pagination from "@/app/components/datagrid/Pagination";
+import Pagination from "@bciers/components/datagrid/Pagination";
 import SortIcon from "@bciers/components/icons/SortIcon";
-import styles from "@/app/components/datagrid/styles";
+import styles from "@bciers/components/datagrid/styles";
 
 interface Props {
   fetchPageData?: (params: { [key: string]: any }) => Promise<any>;

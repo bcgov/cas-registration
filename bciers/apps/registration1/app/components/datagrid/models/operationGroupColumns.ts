@@ -2,7 +2,7 @@ import {
   GridColumnGroupHeaderParams,
   GridColumnGroupingModel,
 } from "@mui/x-data-grid";
-import EmptyGroupCell from "@/app/components/datagrid/cells/EmptyGroupCell";
+import EmptyGroupCell from "@bciers/components/datagrid/cells/EmptyGroupCell";
 import { OPERATOR_COLUMN_INDEX } from "@/app/components/datagrid/models/operationColumns";
 
 const operationGroupColumns = (

@@ -7,7 +7,7 @@ import DoNotDisturbIcon from "@mui/icons-material/DoNotDisturb";
 import { ReactNode } from "react";
 import { Stack } from "@mui/system";
 import { UserOperatorRoles, Status } from "@/app/utils/enums";
-import { UserOperatorRenderCellParams } from "@/app/components/datagrid/cells/types";
+import { UserOperatorRenderCellParams } from "@bciers/components/datagrid/cells/types";
 
 interface UserOperatorStatusAction {
   statusTo: Status;
