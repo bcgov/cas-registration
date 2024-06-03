@@ -13,7 +13,7 @@ import { useState } from "react";
 import WarningIcon from "@mui/icons-material/Warning";
 import RequestAccessButton from "@/app/components/button/RequestAccessButton";
 import Link from "next/link";
-import { BC_GOV_LINKS_COLOR, DARK_GREY_BG_COLOR } from "@/app/styles/colors";
+import { BC_GOV_LINKS_COLOR, DARK_GREY_BG_COLOR } from "@bciers/styles/colors";
 import Button from "@mui/material/Button";
 import { Operator } from "./types";
 

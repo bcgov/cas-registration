@@ -1,6 +1,9 @@
 import { MuiTelInput } from "mui-tel-input";
 import { WidgetProps } from "@rjsf/utils/lib/types";
-import { DARK_GREY_BG_COLOR, BC_GOV_SEMANTICS_RED } from "@/app/styles/colors";
+import {
+  DARK_GREY_BG_COLOR,
+  BC_GOV_SEMANTICS_RED,
+} from "@bciers/styles/colors";
 
 const PhoneWidget: React.FC<WidgetProps> = ({
   disabled,

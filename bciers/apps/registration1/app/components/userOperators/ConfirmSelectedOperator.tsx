@@ -1,7 +1,7 @@
 import { actionHandler } from "@/app/utils/actions";
 import CancelIcon from "@mui/icons-material/Cancel";
 import Link from "next/link";
-import { BC_GOV_LINKS_COLOR } from "@/app/styles/colors";
+import { BC_GOV_LINKS_COLOR } from "@bciers/styles/colors";
 import { Operator } from "./types";
 import ConfirmSelectedOperatorForm from "./ConfirmSelectedOperatorForm";
 
