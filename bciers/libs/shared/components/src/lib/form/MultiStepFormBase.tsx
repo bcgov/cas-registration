@@ -5,9 +5,9 @@ import { useParams } from "next/navigation";
 import { Button } from "@mui/material";
 import { RJSFSchema } from "@rjsf/utils";
 import { Alert } from "@mui/material";
-import FormBase from "@bciers/components/form/FormBase";
-import MultiStepHeader from "./MultiStepHeader";
-import MultiStepButtons from "./MultiStepButtons";
+import FormBase from "./FormBase";
+import MultiStepHeader from "./components/MultiStepHeader";
+import MultiStepButtons from "./components/MultiStepButtons";
 
 interface MultiStepFormProps {
   allowBackNavigation?: boolean;
