@@ -1,7 +1,7 @@
 import { act, render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, vi } from "vitest";
-import { actionHandler, useParams, useSession } from "@tests/setup/mocks";
-import { QueryParams, Session } from "@tests/setup/types";
+import { actionHandler, useParams, useSession } from "@bciers/testConfig/mocks";
+import { QueryParams, Session } from "@bciers/testConfig/types";
 import Operation from "@/app/components/operations/Operation";
 
 useSession.mockReturnValue({

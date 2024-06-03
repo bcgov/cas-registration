@@ -5,8 +5,8 @@ import {
   useRouter,
   useSearchParams,
   useSession,
-} from "@tests/setup/mocks";
-import { Session } from "@tests/setup/types";
+} from "@bciers/testConfig/mocks";
+import { Session } from "@bciers/testConfig/types";
 import Operations from "@/app/components/operations/Operations";
 
 useSession.mockReturnValue({

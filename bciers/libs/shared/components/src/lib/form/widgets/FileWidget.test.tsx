@@ -2,8 +2,8 @@ import { userEvent } from "@testing-library/user-event";
 import { render, screen, waitFor } from "@testing-library/react";
 import { RJSFSchema } from "@rjsf/utils";
 import FormBase from "@bciers/components/form/FormBase";
-import { useSession } from "@tests/mocks";
-import { Session } from "@tests/types";
+import { useSession } from "@bciers/testConfig/mocks";
+import { Session } from "@bciers/testConfig/types";
 import { checkNoValidationErrorIsTriggered } from "@/tests/helpers/form";
 
 const fileFieldLabel = "FileWidget test field";

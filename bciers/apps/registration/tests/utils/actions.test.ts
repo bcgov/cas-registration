@@ -1,6 +1,6 @@
 import { describe, expect } from "vitest";
 import { actionHandler, getToken } from "@/app/utils/actions";
-import { fetch } from "@tests/setup/mocks";
+import { fetch } from "@bciers/testConfig/mocks";
 import * as Sentry from "@sentry/nextjs";
 
 // disable the global mock since we are testing actions here

@@ -29,9 +29,7 @@ export const mapOptions = (fieldSchema: FieldSchema) => {
 const MultiSelectWidget: React.FC<WidgetProps> = ({
   disabled,
   id,
-  onBlur,
   onChange,
-  onFocus,
   rawErrors,
   readonly,
   schema,
@@ -42,17 +40,9 @@ const MultiSelectWidget: React.FC<WidgetProps> = ({
 
   const options = mapOptions(fieldSchema);
 
-  const handleBlur = ({
-    target: { value },
-  }: React.FocusEvent<HTMLInputElement>) => onBlur(id, value);
-
   const handleChange = (e: React.ChangeEvent<{}>, option: Array<Option>) => {
     onChange(option.map((o: Option) => o.id));
   };
-
-  const handleFocus = ({
-    target: { value },
-  }: React.FocusEvent<HTMLInputElement>) => onFocus(id, value);
 
   const placeholder = uiSchema?.["ui:placeholder"]
     ? `${uiSchema["ui:placeholder"]}...`
@@ -86,9 +76,7 @@ const MultiSelectWidget: React.FC<WidgetProps> = ({
       isOptionEqualToValue={(option: Option, val: Option) => {
         return option.id === val.id;
       }}
-      onBlur={handleBlur}
       onChange={handleChange}
-      onFocus={handleFocus}
       getOptionLabel={(option: Option) => String(option.label)}
       renderInput={(params) => (
         <TextField

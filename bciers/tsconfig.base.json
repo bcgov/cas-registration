@@ -22,7 +22,8 @@
       "@bciers/components/server": ["libs/shared/components/src/server.ts"],
       "@bciers/img/*": ["libs/shared/img/*"],
       "@bciers/styles": ["libs/shared/styles/src/index.ts"],
-      "@tests/*": ["libs/shared/testConfig/src/*"]
+      "@bciers/styles/*": ["libs/shared/styles/src/lib/*"],
+      "@bciers/testConfig/*": ["libs/shared/testConfig/src/*"]
     }
   },
   "exclude": ["node_modules", "tmp"]

@@ -4,7 +4,6 @@ import Checkbox from "@mui/material/Checkbox";
 const CheckboxWidget: React.FC<WidgetProps> = ({
   disabled,
   id,
-  onBlur,
   onChange,
   label,
   value,

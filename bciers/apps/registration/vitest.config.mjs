@@ -18,6 +18,6 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./"),
       app: path.resolve(__dirname, "./app"),
     },
-    setupFiles: ["../../libs/shared/testConfig/src/setup/global.tsx"],
+    setupFiles: ["../../libs/shared/testConfig/src/global.tsx"],
   },
 });

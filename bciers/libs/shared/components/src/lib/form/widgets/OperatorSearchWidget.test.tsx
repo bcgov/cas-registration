@@ -2,7 +2,7 @@ import { userEvent } from "@testing-library/user-event";
 import { act, render, screen, waitFor } from "@testing-library/react";
 import { RJSFSchema } from "@rjsf/utils";
 import FormBase from "@bciers/components/form/FormBase";
-import { actionHandler } from "@tests/mocks";
+import { actionHandler } from "@bciers/testConfig/mocks";
 import {
   checkComboBoxWidgetValidationStyles,
   checkNoValidationErrorIsTriggered,
