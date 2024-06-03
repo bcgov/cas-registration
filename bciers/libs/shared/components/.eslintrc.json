@@ -8,7 +8,9 @@
   "overrides": [
     {
       "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
-      "rules": {}
+      "rules": {
+        "avoidEscape": true
+      }
     },
     {
       "files": ["*.ts", "*.tsx"],
