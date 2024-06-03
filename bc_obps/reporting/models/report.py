@@ -3,6 +3,10 @@ from registration.models import BaseModel
 
 
 class Report(BaseModel):
+    """
+    Report model for storing OBPS reports
+    """
+
     title = models.CharField(max_length=100, db_comment="The title of the report")
     description = models.TextField(db_comment="The description of the report")
     created_at = models.DateTimeField(auto_now_add=True, db_comment="The timestamp when the report was created")

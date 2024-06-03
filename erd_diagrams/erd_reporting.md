@@ -12,3 +12,29 @@ SourceType {
     UUIDField id
     CharField name
 }
+ReportOperation {
+    BigAutoField id
+    OneToOneField report
+    CharField operator_legal_name
+    CharField operator_trade_name
+    CharField operation_name
+    CharField operation_type
+    CharField operation_bcghg_id
+    CharField bc_obps_regulated_operation_id
+    CharField operation_representative_name
+    ManyToManyField reporting_activities
+}
+ReportFacility {
+    BigAutoField id
+    ForeignKey report
+    CharField facility_name
+    CharField facility_type
+    CharField facility_bcghgid
+    ManyToManyField activities
+    ManyToManyField products
+}
+ReportOperation ||--|| Report : report
+ReportOperation }|--|{ ReportingActivity : reporting_activities
+ReportFacility }|--|| Report : report
+ReportFacility }|--|{ ReportingActivity : activities
+ReportFacility }|--|{ RegulatedProduct : products
