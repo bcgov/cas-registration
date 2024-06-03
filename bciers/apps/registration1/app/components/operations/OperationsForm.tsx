@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { operationUiSchema } from "@/app/utils/jsonSchema/operations";
-import MultiStepFormBase from "@/app/components/form/MultiStepFormBase";
+import MultiStepFormBase from "@bciers/components/form/MultiStepFormBase";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { actionHandler } from "@/app/utils/actions";

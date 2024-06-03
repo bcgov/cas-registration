@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect } from "vitest";
 import React from "react";
-import MultiStepHeader from "@/app/components/form/MultiStepHeader";
+import MultiStepHeader from "@bciers/components/form/components/MultiStepHeader";
 
 const defaultProps = {
   step: 0, // steps are 0-indexed in the props but 1-indexed in the app

@@ -1,7 +1,7 @@
 "use client";
 
 import { operationInternalUserUiSchema } from "@/app/utils/jsonSchema/operations";
-import MultiStepAccordion from "@/app/components/form/MultiStepAccordion";
+import MultiStepAccordion from "@bciers/components/form/MultiStepAccordion";
 import { RJSFSchema } from "@rjsf/utils";
 import { OperationsFormData } from "./OperationsForm";
 
