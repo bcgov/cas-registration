@@ -23,7 +23,7 @@ class ReportOperation(BaseModel):
     operation_type = models.CharField(
         max_length=1000, choices=OperationType.choices, db_comment="The type of the operation, LFO or SFO"
     )
-    operation_bcghg_id = models.CharField(
+    operation_bcghgid = models.CharField(
         max_length=1000, db_comment="The BCGHGH ID of the operation", blank=True, null=True
     )
     bc_obps_regulated_operation_id = models.CharField(
@@ -34,7 +34,7 @@ class ReportOperation(BaseModel):
     )
 
     # We don't create a backwards relation since this is a registration model
-    reporting_activities = models.ManyToManyField(ReportingActivity, related_name="+")
+    activities = models.ManyToManyField(ReportingActivity, related_name="+")
 
     class Meta:
         db_table_comment = "A table to store operation information as part of a report"
