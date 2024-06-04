@@ -37,7 +37,7 @@ def populate_operation_ownership_timeline(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('registration', '0018_facilitytype_historicaloperationtype_operationtype_and_more'),
+        ('registration', '0019_facilitytype_historicaloperationtype_operationtype_and_more'),
     ]
 
     operations = [
