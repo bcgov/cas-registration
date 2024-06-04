@@ -1,6 +1,5 @@
 import Link from "next/link";
-import { Grid } from "@mui/material";
-import { Main } from "@bciers/components/server";
+import Main from "@bciers/components/layout/Main";
 
 export default function Index() {
   return (

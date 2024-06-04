@@ -23,6 +23,6 @@ export default defineConfig({
       reportsDirectory: "../../../coverage/libs/shared/components",
       provider: "v8",
     },
-    setupFiles: ["../testConfig/src/setup/global.tsx"],
+    setupFiles: ["../testConfig/src/global.tsx"],
   },
 });
