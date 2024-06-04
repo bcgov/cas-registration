@@ -1126,7 +1126,7 @@ class OperationType(BaseModel):
 
 
 class FacilityType(BaseModel):
-    name = models.CharField(unique=True, max_length=1000, db_comment="The name of a facility type")
+    name = models.CharField(primary_key=True, max_length=1000, db_comment="The name of a facility type")
     operation_type = models.ForeignKey(
         OperationType,
         on_delete=models.DO_NOTHING,
