@@ -139,5 +139,5 @@ shell:
 
 .PHONY: mypy
 mypy: ## run mypy static type checker with explicit package bases(useful in the absence of __init__.py files)
-mypy:
+mypy: ## We can use --show-traceback to show the full traceback in case of an error
 	$(POETRY_RUN) mypy . --explicit-package-bases

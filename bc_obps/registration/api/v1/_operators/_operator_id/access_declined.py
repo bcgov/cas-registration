@@ -18,8 +18,10 @@ from registration.api.utils.current_user_utils import get_current_user_guid
 @router.get(
     "/operators/{operator_id}/access-declined",
     response={200: bool, custom_codes_4xx: Message},
-    url_name="operator_access_declined",
     tags=OPERATOR_TAGS,
+    description="""Checks if the current user's access to a specific operator has been declined.
+    The endpoint verifies whether the user has a 'DECLINED' status for the given operator ID.
+    If the user’s access is declined, it returns 'True'; otherwise, it returns 'False'.""",
 )
 @authorize(['industry_user'], UserOperator.get_all_industry_user_operator_roles(), False)
 @handle_http_errors()

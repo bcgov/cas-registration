@@ -28,3 +28,37 @@ In some places, we use `# type: ignore[attr-defined]` because of using Django-ni
 ### `@typing.no_type_check`
 
 We use `@typing.no_type_check` on some functions to disable type checking for those specific functions. This is useful when type checking is not feasible or would require significant changes to the code that are not currently practical.
+
+### When to Use Any
+
+The Any type can be used when you need to disable type checking for a particular variable or expression. It effectively tells Mypy to ignore type checking for that value, allowing for maximum flexibility. However, overusing Any can negate the benefits of static type checking, so it should be used sparingly.
+
+### How to Use Any
+
+You can use Any by importing it from the typing module and then specifying it as the type for a variable or function parameter. For example:
+
+```python
+from typing import Any
+
+def process_data(data: Any) -> None:
+    # Function implementation
+    pass
+```
+
+### When to Use # type: ignore
+
+The # type: ignore comment can be used to suppress Mypy type checking on a specific line of code. This is useful when you know that a particular line will raise a type checking error that you want to ignore. Common scenarios include third-party libraries with incomplete type hints or code that is difficult to type correctly.
+
+### How to Use # type: ignore
+
+You can place # type: ignore at the end of a line to tell Mypy to ignore type errors for that line. For example:
+
+```python
+result = some_function()  # type: ignore
+```
+
+You can also specify the exact error to ignore by adding it in square brackets, which can make your intent clearer and avoid ignoring other types of errors inadvertently:
+
+```python
+result = some_function()  # type: ignore[return-value]
+```

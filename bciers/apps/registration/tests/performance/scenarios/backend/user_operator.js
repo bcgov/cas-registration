@@ -49,10 +49,7 @@ const userOperator = () => {
   const operatorId = JSON.parse(getUserOperatorOperator.body).operator_id;
 
   check(
-    http.get(
-      HOST + `/select-operator/user-operator/${userOperatorId}`,
-      industryUserParams,
-    ),
+    http.get(HOST + `/user-operators/${userOperatorId}`, industryUserParams),
     {
       "is status 200": (r) => r.status === 200,
     },
@@ -83,7 +80,7 @@ const userOperator = () => {
 
   check(
     http.post(
-      HOST + "/select-operator/request-admin-access",
+      HOST + "/operators/{operator_id}/request-admin-access",
       JSON.stringify({
         operator_id: 1,
       }),
@@ -97,7 +94,7 @@ const userOperator = () => {
   // need to return to this one and get it to POST correctly
   //   // check(
   //   http.post(
-  //     HOST + "/select-operator/request-access",
+  //     HOST + "/operators/{operator_id}/request-access",
   //     JSON.stringify({
   //       operator_id: operatorId,
   //     }),

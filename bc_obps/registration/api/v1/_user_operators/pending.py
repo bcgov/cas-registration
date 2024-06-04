@@ -16,8 +16,9 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 @router.get(
     "/user-operators/pending",
     response={200: PendingUserOperatorOut, custom_codes_4xx: Message},
-    url_name="get_pending_operator_and_user_operator",
     tags=USER_OPERATOR_TAGS,
+    description="""Retrieves data about the pending user-operator and their associated operator.
+    Declined user-operators are excluded from the results.""",
 )
 @authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles(), False)
 @handle_http_errors()

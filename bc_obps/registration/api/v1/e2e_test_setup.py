@@ -8,7 +8,12 @@ from django.core.cache import cache
 
 
 # testing endpoint
-@router.get("/test-setup", tags=MISC_TAGS)
+@router.get(
+    "/test-setup",
+    tags=MISC_TAGS,
+    description="""Sets up the test environment by either truncating data tables or loading fixtures based on the specified workflow.
+    This endpoint is only available in the development environment.""",
+)
 def setup(request: HttpRequest, workflow: Optional[str] = None, truncate_only: bool = False) -> HttpResponse:
     if settings.ENVIRONMENT == "develop":
         cache.clear()  # clear cache to avoid stale data (specifically for the current_user_middleware.py middleware)

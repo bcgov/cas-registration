@@ -11,16 +11,13 @@ from registration.schema.v1 import NaicsCodeSchema
 ##### GET #####
 
 
-@router.get("/naics_codes", response=List[NaicsCodeSchema], url_name="list_naics_codes", tags=NAICS_CODE_TAGS)
+@router.get(
+    "/naics_codes",
+    response=List[NaicsCodeSchema],
+    tags=NAICS_CODE_TAGS,
+    description="""Retrieves a list of NAICS codes.
+    The endpoint returns cached data if available; otherwise, it queries the database and caches the results for future requests.""",
+)
 @authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles(), False)
 def list_naics_codes(request: HttpRequest) -> Tuple[Literal[200], QuerySet[NaicsCode]]:
     return 200, NaicsCodeDataAccessService.get_naics_codes()
-
-
-##### POST #####
-
-
-##### PUT #####
-
-
-##### DELETE #####

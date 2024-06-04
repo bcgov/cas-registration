@@ -21,8 +21,11 @@ from ninja.responses import codes_4xx, codes_5xx
 @router.put(
     "/operations/{operation_id}/update-status",
     response={200: OperationUpdateStatusOut, codes_4xx: Message, codes_5xx: Message},
-    url_name="update_operation_status",
     tags=OPERATION_TAGS,
+    description="""Updates the status of an operation.
+    When an operation is approved or declined, it is marked as verified with the current timestamp and the user who performed the action.
+    If the operation is approved, a unique BORO ID is generated, and the associated operator is approved if not already.
+    An email notification is sent to the relevant external user based on the new status of the operation.""",
 )
 @authorize(AppRole.get_authorized_irc_roles())
 @handle_http_errors()

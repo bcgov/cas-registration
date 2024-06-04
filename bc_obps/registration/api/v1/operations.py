@@ -28,8 +28,9 @@ from ninja.types import DictStrAny
 @router.get(
     "/operations",
     response={200: OperationPaginatedOut, codes_4xx: Message},
-    url_name="list_operations",
     tags=OPERATION_TAGS,
+    description="""Retrieves a paginated list of operations based on the provided filters.
+    The endpoint allows authorized users to view operations filtered by various criteria such as BCGHG ID, regulated operation, name, operator, status, and sort order.""",
 )
 @authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles())
 @handle_http_errors()
@@ -45,8 +46,9 @@ def list_operations(
 @router.post(
     "/operations",
     response={201: OperationCreateOut, codes_4xx: Message},
-    url_name="create_operation",
     tags=OPERATION_TAGS,
+    description="""Creates a new operation for the current user.
+    It verifies that an operation with the given BCGHG ID does not already exist and associates the new operation with the current user's approved user-operator.""",
 )
 @authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
 @handle_http_errors()
