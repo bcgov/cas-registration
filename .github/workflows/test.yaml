@@ -393,7 +393,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: all-blob-reports
-          pattern: blob-report-chromium #blob-report-*
+          pattern: blob-report-* #blob-report-chromium
           merge-multiple: true
 
       - name: Merge into HTML Report
