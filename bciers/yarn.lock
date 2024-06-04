@@ -1610,9 +1610,9 @@ __metadata:
     "@nx/web": "npm:18.2.1"
     "@nx/workspace": "npm:18.2.1"
     "@playwright/test": "npm:^1.38.1"
-    "@rjsf/core": "npm:^5.12.1"
-    "@rjsf/utils": "npm:^5.12.1"
-    "@rjsf/validator-ajv8": "npm:^5.12.1"
+    "@rjsf/core": "npm:^5.18.4"
+    "@rjsf/utils": "npm:^5.18.4"
+    "@rjsf/validator-ajv8": "npm:^5.18.4"
     "@sentry/nextjs": "npm:^7.94.1"
     "@swc-node/register": "npm:~1.8.0"
     "@swc/cli": "npm:~0.1.62"
@@ -3408,7 +3408,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rjsf/core@npm:^5.12.1":
+"@rjsf/core@npm:^5.18.4":
   version: 5.18.4
   resolution: "@rjsf/core@npm:5.18.4"
   dependencies:
@@ -3424,7 +3424,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rjsf/utils@npm:^5.12.1":
+"@rjsf/utils@npm:^5.18.4":
   version: 5.18.4
   resolution: "@rjsf/utils@npm:5.18.4"
   dependencies:
@@ -3439,7 +3439,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rjsf/validator-ajv8@npm:^5.12.1":
+"@rjsf/validator-ajv8@npm:^5.18.4":
   version: 5.18.4
   resolution: "@rjsf/validator-ajv8@npm:5.18.4"
   dependencies:
