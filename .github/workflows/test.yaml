@@ -46,6 +46,8 @@ jobs:
         run: yarn nx connect-to-nx-cloud
       - name: Run Nx Tests with Remote Caching
         run: yarn nx run-many -t test
+      - name: Run affected nx tests
+        run: npm run affected:test -- --base=remotes/origin/main
 
   yarn-audit:
     needs: install-dev-tools
