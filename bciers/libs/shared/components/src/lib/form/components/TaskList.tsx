@@ -19,7 +19,8 @@ const TaskList = ({ taskListItems, taskListItemStatus }: TaskListProps) => {
     // Prevent the default anchor link behavior so that the page doesn't jump
     e.preventDefault();
     setActiveTask(section);
-    const anchorTarget = document.getElementById(section);
+    // prepend root_ to the section to match the id of the anchor target
+    const anchorTarget = document.getElementById(`root_${section}`);
     anchorTarget?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
@@ -31,7 +32,7 @@ const TaskList = ({ taskListItems, taskListItemStatus }: TaskListProps) => {
         const isActive = activeTask === section;
         return (
           <button
-            key={title}
+            key={title ?? section}
             className={`w-full text-lg flex items-center px-2.5 py-2 mb-2 transition-all ease-in duration-200 border-solid border-0 border-r-2 ${
               isActive
                 ? `bg-[#1a5a960c] border-[${BC_GOV_LINKS_COLOR}]`
@@ -48,7 +49,7 @@ const TaskList = ({ taskListItems, taskListItemStatus }: TaskListProps) => {
               }`}
               href={`#${section}`}
             >
-              {title}
+              {title ?? section}
             </a>
           </button>
         );
