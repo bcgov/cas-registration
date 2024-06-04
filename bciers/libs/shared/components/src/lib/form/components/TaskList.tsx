@@ -40,17 +40,19 @@ const TaskList = ({ taskListItems, taskListItemStatus }: TaskListProps) => {
             }`}
             onClick={(e) => handleTaskClick(e, section)}
           >
-            <div className={`min-w-4 mr-2.5 flex align-middle `}>
+            <div
+              className={`min-w-4 mr-2.5 flex align-middle `}
+              data-testid={`${section}-tasklist-check`}
+            >
               {taskStatus && <CheckCircle />}
             </div>
-            <a
+            <span
               className={`no-underline ${
                 isActive ? "text-bc-link-blue" : "text-bc-text"
               }`}
-              href={`#${section}`}
             >
               {title ?? section}
-            </a>
+            </span>
           </button>
         );
       })}

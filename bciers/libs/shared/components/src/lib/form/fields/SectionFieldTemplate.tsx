@@ -18,13 +18,12 @@ const SectionFieldTemplate = ({
       id={id}
     >
       {isLabel && label && (
-        <label
-          htmlFor={id}
+        <h2
           id={id}
-          className="inline-block text-lg py-2 font-bold text-bc-bg-blue mb-8"
+          className="inline-block p-0 text-lg font-bold text-bc-bg-blue m-0 mb-12"
         >
           {label}
-        </label>
+        </h2>
       )}
       {children}
     </div>
