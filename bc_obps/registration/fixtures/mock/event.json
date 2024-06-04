@@ -1,0 +1,30 @@
+[
+  {
+    "model": "registration.event",
+    "pk": "7d010cd9-f205-45cb-ae64-49607ef5a008",
+    "fields": {
+      "created_by": "00000000-0000-0000-0000-000000000001",
+      "created_at": "2024-06-04T21:55:44.583Z",
+      "facility": "0cb4248e-aa38-4858-b620-02afa30efc6b",
+      "effective_date": "2024-06-04T21:55:15Z",
+      "type": "Closing or Temporary Shutdown",
+      "additional_data": { "end_date": "2024-06-03T12:00:00Z" }
+    }
+  },
+  {
+    "model": "registration.event",
+    "pk": "fe90c103-ecb3-425b-9806-04c016cfe119",
+    "fields": {
+      "created_by": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "created_at": "2024-06-04T21:35:42.654Z",
+      "operation": "e1300fd7-2dee-47d1-b655-2ad3fd10f052",
+      "facility": null,
+      "effective_date": "2024-06-04T21:35:28Z",
+      "type": "Acquisition",
+      "additional_data": {
+        "seller_legal_name": "seller name",
+        "seller_mailing_address_id": 1
+      }
+    }
+  }
+]

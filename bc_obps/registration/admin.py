@@ -1,6 +1,7 @@
 from django.contrib import admin
 from registration.models import (
     Address,
+    Event,
     Facility,
     FacilityOwnershipTimeline,
     FacilityType,
@@ -77,3 +78,8 @@ class OperationOwnershipTimelineAdmin(admin.ModelAdmin):
         'start_date',
         'end_date',
     )
+
+
+@admin.register(Event)
+class EventAdmin(admin.ModelAdmin):
+    list_display = ('id', 'facility', 'operation', 'effective_date', 'type', 'additional_data')
