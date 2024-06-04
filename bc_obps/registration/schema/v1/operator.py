@@ -2,7 +2,7 @@ from typing import List, Optional
 from uuid import UUID
 from ninja import Field, Schema
 from ninja import ModelSchema
-from registration.constants import AUDIT_FIELDS
+from common.constants import AUDIT_FIELDS
 from registration.models import Operator, ParentOperator
 from .parent_operator import ParentOperatorOut
 

@@ -5,7 +5,8 @@ from registration.schema.v1.operator import OperatorExternalDashboardUsersTileDa
 from registration.schema.v1.user import UserExternalDashboardUsersTileData
 from ninja import ModelSchema, Schema, Field
 from pydantic import field_validator
-from registration.constants import AUDIT_FIELDS, BC_CORPORATE_REGISTRY_REGEX
+from common.constants import AUDIT_FIELDS
+from registration.constants import BC_CORPORATE_REGISTRY_REGEX
 from registration.models import BusinessStructure, Contact, UserOperator
 from .parent_operator import ParentOperatorIn, ParentOperatorOut
 from .business_structure import validate_business_structure

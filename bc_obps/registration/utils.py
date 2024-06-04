@@ -120,7 +120,7 @@ def raise_401_if_user_not_authorized(
 
 
 # File helpers
-def file_to_data_url(document: Document) -> Optional[str]:  # type: ignore[return] # we don
+def file_to_data_url(document: Document) -> Optional[str]:  # type: ignore[return] # we dont break the function if something goes wrong in this function
     """
     Transforms a Django FieldField record into a data url that RJSF can process.
     """

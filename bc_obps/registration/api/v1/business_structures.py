@@ -13,8 +13,9 @@ from registration.schema.v1 import BusinessStructureOut
 @router.get(
     "/business_structures",
     response=List[BusinessStructureOut],
-    url_name="list_business_structures",
     tags=BUSINESS_STRUCTURE_TAGS,
+    description="""Retrieves a list of business structures.
+    The endpoint returns cached data if available; otherwise, it queries the database and caches the results for future requests.""",
 )
 @authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles(), False)
 def list_business_structures(request: HttpRequest) -> Tuple[Literal[200], QuerySet[BusinessStructure]]:

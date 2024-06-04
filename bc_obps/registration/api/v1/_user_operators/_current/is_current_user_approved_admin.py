@@ -12,12 +12,15 @@ from registration.api.router import router
 from registration.models import UserOperator
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 
+
 # "current" refers to the current user-operator (we look up the current user-operator via the current user)
 @router.get(
     "/user-operators/current/is-current-user-approved-admin",
     response={200: IsApprovedUserOperator, custom_codes_4xx: Message},
-    url_name="is_current_user_approved_admin",
     tags=USER_OPERATOR_TAGS,
+    description="""Checks if the current user is an approved admin for their operator.
+    The endpoint verifies whether the current user has the 'ADMIN' role and 'APPROVED' status.
+    It returns a dictionary indicating whether the user is an approved admin.""",
 )
 @authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
 @handle_http_errors()

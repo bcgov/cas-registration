@@ -19,8 +19,9 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 @router.get(
     "/user-operators/current",
     response={200: OperatorFromUserOperatorOut, custom_codes_4xx: Message},
-    url_name="get_current_operator_and_user_operator",
     tags=USER_OPERATOR_TAGS,
+    description="""Retrieves data about the current user-operator and their associated operator.
+    Declined user-operators are excluded from the results.""",
 )
 @authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
 @handle_http_errors()

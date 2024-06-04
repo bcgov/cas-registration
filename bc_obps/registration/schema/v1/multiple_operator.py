@@ -1,6 +1,7 @@
 from typing import Optional
 from ninja import Field, ModelSchema
-from registration.constants import AUDIT_FIELDS, BC_CORPORATE_REGISTRY_REGEX
+from common.constants import AUDIT_FIELDS
+from registration.constants import BC_CORPORATE_REGISTRY_REGEX
 from registration.models import MultipleOperator
 
 

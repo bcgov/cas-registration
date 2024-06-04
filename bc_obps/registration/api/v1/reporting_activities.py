@@ -16,18 +16,10 @@ from django.db.models import QuerySet
 @router.get(
     "/reporting_activities",
     response=List[ReportingActivitySchema],
-    url_name="list_reporting_activities",
     tags=REPORTING_ACTIVITY_TAGS,
+    description="""Retrieves a list of reporting activities.
+    The endpoint returns cached data if available; otherwise, it queries the database and caches the results for future requests.""",
 )
 @authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles(), False)
 def list_reporting_activities(request: HttpRequest) -> Tuple[Literal[200], QuerySet[ReportingActivity]]:
     return 200, ReportingActivityDataAccessService.get_reporting_activities()
-
-
-##### POST #####
-
-
-##### PUT #####
-
-
-##### DELETE #####

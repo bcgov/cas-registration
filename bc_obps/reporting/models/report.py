@@ -1,5 +1,5 @@
+from common.models import BaseModel
 from django.db import models
-from registration.models import BaseModel
 
 
 class Report(BaseModel):

@@ -19,8 +19,10 @@ from django.db.models import QuerySet
 @router.get(
     "/operators",
     response={200: Union[List[OperatorSearchOut], OperatorSearchOut], codes_4xx: Message, codes_5xx: Message},
-    url_name="get_operators_by_cra_number_or_legal_name",
     tags=OPERATOR_TAGS,
+    description="""Retrieves operator(s) based on the provided CRA business number or legal name.
+    This endpoint is accessible to both approved and unapproved users, allowing them to view operator information when selected.
+    If no matching operator is found, an exception is raised.""",
 )
 @authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles(), False)
 @handle_http_errors()
@@ -34,16 +36,14 @@ def get_operators_by_cra_number_or_legal_name(
 @router.get(
     "/operators/{operator_id}",
     response={200: ConfirmSelectedOperatorOut, codes_4xx: Message},
-    url_name="get_operator",
     tags=OPERATOR_TAGS,
+    description="""Retrieves information about a specific operator by its ID.
+    This endpoint is accessible to both approved and unapproved users, allowing them to view operator information when selected.""",
 )
 @authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles(), False)
 @handle_http_errors()
 def get_operator(request: HttpRequest, operator_id: UUID) -> Tuple[Literal[200], Operator]:
     return 200, OperatorDataAccessService.get_operator_by_id(operator_id)
-
-
-##### POST #####
 
 
 ##### PUT #####
@@ -52,8 +52,10 @@ def get_operator(request: HttpRequest, operator_id: UUID) -> Tuple[Literal[200],
 @router.put(
     "/operators/{operator_id}",
     response={200: OperatorOut, codes_4xx: Message},
-    url_name="update_operator_status",
     tags=OPERATOR_TAGS,
+    description="""Updates the status of a specific operator by its ID.
+    The endpoint allows authorized users to update the operator's status and perform additional actions based on the new status.
+    If the operator is new and declined, all associated user operators are also declined, and notifications are sent accordingly.""",
 )
 @authorize(AppRole.get_authorized_irc_roles())
 @handle_http_errors()
@@ -61,6 +63,3 @@ def update_operator_status(
     request: HttpRequest, operator_id: UUID, payload: OperatorIn
 ) -> Tuple[Literal[200], Operator]:
     return 200, OperatorService.update_operator_status(get_current_user_guid(request), operator_id, payload)
-
-
-##### DELETE #####
