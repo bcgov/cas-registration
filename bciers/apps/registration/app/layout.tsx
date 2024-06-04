@@ -6,15 +6,15 @@ You should not manually add <head> tags such as <title> and <meta> to root layou
 */
 
 // eslint-disable-next-line import/extensions
-import "@/app/styles/globals.css";
-import SessionProvider from "@/app/components/auth/SessionProvider";
+import "@bciers/styles/globals.css";
+import SessionProvider from "@bciers/components/auth/SessionProvider";
 import type { Metadata, Viewport } from "next";
-import Footer from "@/app/components/layout/Footer";
-import Header from "@/app/components/layout/Header";
+import Footer from "@bciers/components/layout/Footer";
+import Header from "@bciers/components/layout/Header";
 // 🏷 import {named} can be significantly slower than import default
 import Box from "@mui/material/Box";
 import { getServerSession } from "next-auth";
-import { authOptions } from "./api/auth/[...nextauth]/route";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { PublicEnvScript } from "next-runtime-env";
 import ThemeProvider from "@mui/material/styles/ThemeProvider";
 import { theme } from "@bciers/components";
