@@ -280,18 +280,18 @@ await happoPlaywright.screenshot(page, selector, {
 
 If you experience flakiness, you can use the `takeStabilizedScreenshot` function instead. It contains an assertion to wait for the page to stabilize before taking the shot. See https://playwright.dev/docs/api/class-elementhandle#element-handle-wait-for-element-state for more information about the `stable` state.
 
-Additionally, we have two helper functions to stabilize specfic page elements, the grids (`stabilizeGrid`) and accordions (`stabilizeAccordion`).
+Additionally, we have two helper functions to stabilize specific page elements, the grids (`stabilizeGrid`) and accordions (`stabilizeAccordion`).
 
 Additionally additionally, sometimes we were unable to get the screenshots to stabilize. In these cases, we only took the screenshots in the browsers that were stable. For example:
 
-```
+```javascript
 // 📷 Cheese!
-      await stabilizeAccordion(page, 4);
-      await takeStabilizedScreenshot(happoPlaywright, operationsPage.page, {
-        component: "Operations Details Page cas_analyst",
-        variant: "pending",
-        targets: ["chrome"],
-      });
+await stabilizeAccordion(page, 4);
+await takeStabilizedScreenshot(happoPlaywright, operationsPage.page, {
+  component: "Operations Details Page cas_analyst",
+  variant: "pending",
+  targets: ["chrome"],
+});
 ```
 
 #### Using Happo on your local e2e tests
@@ -374,7 +374,7 @@ cd client && yarn nx run registration:e2e:report
 **Traces**
 Traces are normally run in a Continuous Integration(CI) environment, because locally you can use UI Mode for developing and debugging tests. However, if you want to run traces locally without using UI Mode, you can force tracing to be on with --trace on.
 
-```
+```bash
 npx playwright test --trace on
 ```
 
@@ -389,7 +389,7 @@ cd client &&  npx playwright show-trace test-results/setup-trace.zip
 
 [Playwright accessiblity testing documentation](https://playwright.dev/docs/accessibility-testing)
 
-Accessiblity is important. To test a page for accessibility issues import the `analyzeAccessibility` helper function in a playwright e2e test and pass it the page object:
+Accessibility is important. To test a page for accessibility issues import the `analyzeAccessibility` helper function in a playwright e2e test and pass it the page object:
 
 ```javascript
 import { analyzeAccessibility, setupTestEnvironment } from "@/e2e/utils/helpers";
