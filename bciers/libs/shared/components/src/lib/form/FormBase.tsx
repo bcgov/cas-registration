@@ -41,6 +41,7 @@ const FormBase: React.FC<FormPropsWithTheme<any>> = (props) => {
     disabled,
     formData,
     omitExtraData,
+    onChange,
     onSubmit,
     readonly,
     setErrorReset,
@@ -59,10 +60,22 @@ const FormBase: React.FC<FormPropsWithTheme<any>> = (props) => {
     if (onSubmit) onSubmit(e, formState);
   };
 
+  const handleChange = (e: IChangeEvent) => {
+    // If onChange is provided control the form state externally to stop form data loss
+    // on re-render when setting state in the parent component
+    // ⚠️ Warning ⚠️ - be mindful of the performance implications of both controlled state as well as
+    // running expensive computations in the OnChange callback, especially with complex forms
+    if (onChange) {
+      setFormState(e.formData);
+      onChange(e); // Pass the event back to the parent component
+    }
+  };
+
   return (
     <Form
       {...props}
       formData={formState}
+      onChange={handleChange}
       noHtml5Validate
       omitExtraData={omitExtraData ?? true}
       onSubmit={handleSubmit}

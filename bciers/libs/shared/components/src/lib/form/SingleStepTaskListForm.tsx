@@ -23,6 +23,7 @@ const SingleStepTaskListForm = ({
   uiSchema,
 }: SingleStepTaskListFormProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLiveValidate, setIsLiveValidate] = useState(false);
 
   // Form section status to track if each section is validated
   const [formSectionStatus, setFormSectionStatus] = useState<{
@@ -79,6 +80,11 @@ const SingleStepTaskListForm = ({
     setFormSectionStatus(newSectionErrorList);
   };
 
+  const handleError = () => {
+    // Enable live validation on first error eg. onSubmit with empty required fields
+    if (!isLiveValidate) setIsLiveValidate(true);
+  };
+
   return (
     <div className="w-full flex flex-row mt-8">
       <TaskList
@@ -92,8 +98,9 @@ const SingleStepTaskListForm = ({
           uiSchema={uiSchema}
           formData={formData}
           onChange={handleFormChange}
+          onError={handleError}
           onSubmit={submitHandler}
-          liveValidate={isSubmitting}
+          liveValidate={isLiveValidate}
         >
           <div className="w-full flex justify-end mt-8">
             <Button variant="contained" type="submit" disabled={isFormDisabled}>
