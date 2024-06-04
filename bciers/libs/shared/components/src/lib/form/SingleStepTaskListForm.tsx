@@ -10,6 +10,7 @@ import TaskList from "@bciers/components/form/components/TaskList";
 interface SingleStepTaskListFormProps {
   disabled?: boolean;
   formData: any;
+  onCancel: () => void;
   onSubmit: (e: IChangeEvent) => Promise<any>;
   schema: RJSFSchema;
   uiSchema: UiSchema;
@@ -18,6 +19,7 @@ interface SingleStepTaskListFormProps {
 const SingleStepTaskListForm = ({
   disabled,
   formData,
+  onCancel,
   onSubmit,
   schema,
   uiSchema,
@@ -106,7 +108,12 @@ const SingleStepTaskListForm = ({
             <Button variant="contained" type="submit" disabled={isFormDisabled}>
               Submit
             </Button>
-            <Button className="ml-4" variant="outlined" type="button">
+            <Button
+              className="ml-4"
+              variant="outlined"
+              type="button"
+              onClick={onCancel}
+            >
               Cancel
             </Button>
           </div>
