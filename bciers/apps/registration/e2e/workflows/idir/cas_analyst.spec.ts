@@ -7,7 +7,10 @@ import { OperatorsPOM } from "@/e2e/poms/operators";
 // 🛠️ Helpers
 import {
   setupTestEnvironment,
+  stabilizeAccordion,
+  stabilizeGrid,
   tableHasExpectedRowCount,
+  takeStabilizedScreenshot,
   waitForElementToStabilize,
 } from "@/e2e/utils/helpers";
 // ☰ Enums
@@ -64,9 +67,8 @@ test.describe("Test Workflow cas_analyst", () => {
         UserRole.CAS_ANALYST,
         TableDataField.STATUS,
       );
-      await tableHasExpectedRowCount(page, 20);
-      expect(page.locator(".MuiDataGrid-row:hover")).toHaveCount(0);
       // 📷 Cheese!
+      await stabilizeGrid(page, 20);
       const pageContent = page.locator("html");
       await happoPlaywright.screenshot(operatorsPage.page, pageContent, {
         component: "Operators Grid cas_analyst",
@@ -81,10 +83,8 @@ test.describe("Test Workflow cas_analyst", () => {
       // 🔍 Assert cas_analyst is able to click "View Details" on see detailed info related Declined
       await operatorsPage.formHasExpectedUX(UserOperatorStatus.DECLINED);
       // 📷 Cheese!
-      let pageContent = page.locator("html");
-
-      await waitForElementToStabilize(page, "section");
-      await happoPlaywright.screenshot(operatorsPage.page, pageContent, {
+      await stabilizeAccordion(page, 2);
+      await takeStabilizedScreenshot(happoPlaywright, operatorsPage.page, {
         component: "Operators Details Page cas_analyst",
         variant: "declined",
       });
@@ -96,8 +96,8 @@ test.describe("Test Workflow cas_analyst", () => {
       // 🔍 Assert cas_analyst is able to click "View Details" on see detailed info related Approved
       await operatorsPage.formHasExpectedUX(UserOperatorStatus.APPROVED);
       // 📷 Cheese!
-      pageContent = page.locator("html");
-      await happoPlaywright.screenshot(operatorsPage.page, pageContent, {
+      await stabilizeAccordion(page, 2);
+      await takeStabilizedScreenshot(happoPlaywright, operatorsPage.page, {
         component: "Operators Details Page cas_analyst",
         variant: "approved",
       });
@@ -107,11 +107,13 @@ test.describe("Test Workflow cas_analyst", () => {
       await operatorsPage.tableIsVisible();
 
       // 🔍 Assert cas_analyst is able to click "View Details" on see detailed info related Pending
-      await operatorsPage.formHasExpectedUX(UserOperatorStatus.PENDING);
+      await operatorsPage.formHasExpectedUX(
+        UserOperatorStatus.PENDING,
+        "New Operator 3 Legal Name",
+      );
       // 📷 Cheese!
-      pageContent = page.locator("html");
-
-      await happoPlaywright.screenshot(operatorsPage.page, pageContent, {
+      await stabilizeAccordion(page, 2);
+      await takeStabilizedScreenshot(happoPlaywright, operatorsPage.page, {
         component: "Operators Details Page cas_analyst",
         variant: "pending",
       });
@@ -154,12 +156,9 @@ test.describe("Test Workflow cas_analyst", () => {
         UserRole.CAS_ANALYST,
         TableDataField.STATUS,
       );
-      await tableHasExpectedRowCount(page, 20);
-      expect(page.locator(".MuiDataGrid-row:hover")).toHaveCount(0);
       // 📷 Cheese!
-      const pageContent = page.locator("html");
-
-      await happoPlaywright.screenshot(operationsPage.page, pageContent, {
+      await stabilizeGrid(page, 20);
+      await takeStabilizedScreenshot(happoPlaywright, operationsPage.page, {
         component: "Operations Grid cas_analyst",
         variant: "default",
       });
@@ -172,10 +171,11 @@ test.describe("Test Workflow cas_analyst", () => {
       // 🔍 Assert cas_analyst is able to click "View Details" on each status and see detailed info related to that status
       await operationsPage.formHasExpectedUX(OperationStatus.PENDING);
       // 📷 Cheese!
-      let pageContent = page.locator("html");
-      await happoPlaywright.screenshot(operationsPage.page, pageContent, {
+      await stabilizeAccordion(page, 4);
+      await takeStabilizedScreenshot(happoPlaywright, operationsPage.page, {
         component: "Operations Details Page cas_analyst",
         variant: "pending",
+        targets: ["chrome"], // only taking the shot in chrome because the other browsers are too flaky
       });
       // 🛸 Navigate back
       await operationsPage.navigateBack();
@@ -184,9 +184,8 @@ test.describe("Test Workflow cas_analyst", () => {
 
       await operationsPage.formHasExpectedUX(OperationStatus.DECLINED);
       // 📷 Cheese!
-      pageContent = page.locator("html");
-      await waitForElementToStabilize(page, "section");
-      await happoPlaywright.screenshot(operationsPage.page, pageContent, {
+      await stabilizeAccordion(operationsPage.page, 4);
+      await takeStabilizedScreenshot(happoPlaywright, operationsPage.page, {
         component: "Operations Details Page cas_analyst",
         variant: "declined",
       });

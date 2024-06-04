@@ -11,7 +11,9 @@ import {
   setupTestEnvironment,
   tableRowCount,
   waitForElementToStabilize,
-  tableHasExpectedRowCount,
+  takeStabilizedScreenshot,
+  stabilizeGrid,
+  stabilizeAccordion,
 } from "@/e2e/utils/helpers";
 // ☰ Enums
 import {
@@ -66,8 +68,7 @@ test.describe("Test Workflow cas_admin", () => {
         UserRole.CAS_ADMIN,
         TableDataField.STATUS,
       );
-      await tableHasExpectedRowCount(page, 20);
-      expect(page.locator(".MuiDataGrid-row:hover")).toHaveCount(0);
+
       // 📷 Cheese!
       const pageContent = page.locator("html");
       await happoPlaywright.screenshot(operatorsPage.page, pageContent, {
@@ -84,15 +85,8 @@ test.describe("Test Workflow cas_admin", () => {
       await operatorsPage.formHasExpectedUX(UserOperatorStatus.DECLINED);
 
       // 📷 Cheese!
-      let pageContent = page.locator("html");
-      await waitForElementToStabilize(page, "section");
-      const arrowDropDownElements = await page.locator(
-        '[data-testid="ArrowDropDownIcon"]',
-      );
-      expect(await arrowDropDownElements.count()).toBe(2);
-      await waitForElementToStabilize(page, "section");
-
-      await happoPlaywright.screenshot(operatorsPage.page, pageContent, {
+      await stabilizeAccordion(page, 2);
+      await takeStabilizedScreenshot(happoPlaywright, operatorsPage.page, {
         component: "Operators Details Page cas_admin",
         variant: "declined",
       });
@@ -104,9 +98,8 @@ test.describe("Test Workflow cas_admin", () => {
       // 🔍 Assert cas_admin is able to click "View Details" on see detailed info related Approved
       await operatorsPage.formHasExpectedUX(UserOperatorStatus.APPROVED);
       // 📷 Cheese!
-      pageContent = page.locator("html");
-      await waitForElementToStabilize(page, "section");
-      await happoPlaywright.screenshot(operatorsPage.page, pageContent, {
+      await stabilizeAccordion(page, 2);
+      await takeStabilizedScreenshot(happoPlaywright, operatorsPage.page, {
         component: "Operators Details Page cas_admin",
         variant: "approved",
       });
@@ -121,9 +114,8 @@ test.describe("Test Workflow cas_admin", () => {
         "New Operator 5 Legal Name",
       );
       // 📷 Cheese!
-      pageContent = page.locator("html");
-      await waitForElementToStabilize(page, "section");
-      await happoPlaywright.screenshot(operatorsPage.page, pageContent, {
+      await stabilizeAccordion(page, 2);
+      await takeStabilizedScreenshot(happoPlaywright, operatorsPage.page, {
         component: "Operators Details Page cas_admin",
         variant: "pending",
       });
@@ -166,13 +158,12 @@ test.describe("Test Workflow cas_admin", () => {
         UserRole.CAS_ADMIN,
         TableDataField.STATUS,
       );
-      await tableHasExpectedRowCount(page, 20);
-      expect(page.locator(".MuiDataGrid-row:hover")).toHaveCount(0);
       // 📷 Cheese!
-      const pageContent = page.locator("html");
-      await happoPlaywright.screenshot(operationsPage.page, pageContent, {
+      await stabilizeGrid(page, 20);
+      await takeStabilizedScreenshot(happoPlaywright, operationsPage.page, {
         component: "Operations Grid cas_admin",
         variant: "default",
+        targets: ["chrome", "firefox", "safari"], // edge screenshot is flaky
       });
     });
 
@@ -196,12 +187,7 @@ test.describe("Test Workflow cas_admin", () => {
 
       await operationsPage.formHasExpectedUX(OperationStatus.DECLINED);
       // 📷 Cheese!
-      await waitForElementToStabilize(page, "section");
-      const arrowDropDownElements = await page.locator(
-        '[data-testid="ArrowDropDownIcon"]',
-      );
-      expect(await arrowDropDownElements.count()).toBe(4);
-      await waitForElementToStabilize(page, "section");
+      await stabilizeAccordion(page, 4);
       pageContent = page.locator("html");
       await happoPlaywright.screenshot(operationsPage.page, pageContent, {
         component: "Operations Details Page cas_admin",

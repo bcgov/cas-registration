@@ -70,6 +70,7 @@ export enum DataTestID {
   OPERATION_FIELD_TEMPLATE = "field-template-label",
   OPERATION_HEADER_TEMPLATE = "multistep-header-title",
   MODAL = "modal",
+  ARROW_DROPDOWN_ICON = "ArrowDropDownIcon",
 }
 
 // E2E values

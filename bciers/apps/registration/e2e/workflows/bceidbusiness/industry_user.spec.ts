@@ -12,6 +12,8 @@ import { E2EValue, FormField, UserRole } from "@/e2e/utils/enums";
 import {
   analyzeAccessibility,
   setupTestEnvironment,
+  takeStabilizedScreenshot,
+  waitForElementToStabilize,
 } from "@/e2e/utils/helpers";
 dotenv.config({ path: "./e2e/.env.local" });
 const happoPlaywright = require("happo-playwright");
@@ -52,12 +54,12 @@ test.describe("Test Workflow industry_user", () => {
     await selectOperatorPage.urlIsCorrect();
     // 🔍 Assert the form is visible - needed to prevent analyzeAccessibility from failing
     await selectOperatorPage.formIsVisible();
-    // 📷 Cheese!
-    pageContent = page.locator("html");
-    await happoPlaywright.screenshot(page, pageContent, {
+
+    await takeStabilizedScreenshot(happoPlaywright, page, {
       component: "Select operator page",
       variant: "default",
     });
+
     // ♿️ Analyze accessibility
     await analyzeAccessibility(page);
     // 👉 Action search by legal name
@@ -165,8 +167,7 @@ test.describe("Test Workflow industry_user", () => {
     await selectOperatorPage.triggerErrorsFieldRequired();
     // 📷 Cheese!
 
-    pageContent = page.locator("html");
-    await happoPlaywright.screenshot(page, pageContent, {
+    await takeStabilizedScreenshot(happoPlaywright, page, {
       component: "Add a new operator",
       variant: "required errors",
     });
@@ -176,8 +177,8 @@ test.describe("Test Workflow industry_user", () => {
     // 👉 Action trigger form fields format errors
     await selectOperatorPage.triggerErrorsFieldFormat();
     // 📷 Cheese!
-    pageContent = page.locator("html");
-    await happoPlaywright.screenshot(page, pageContent, {
+
+    await takeStabilizedScreenshot(happoPlaywright, page, {
       component: "Add a new operator",
       variant: "format errors",
     });
@@ -196,8 +197,7 @@ test.describe("Test Workflow industry_user", () => {
       FormField.FIELDSET_PARENT_COMPANY_1,
     );
     // 📷 Cheese!
-    pageContent = page.locator("html");
-    await happoPlaywright.screenshot(page, pageContent, {
+    await takeStabilizedScreenshot(happoPlaywright, page, {
       component: "Add a new operator",
       variant: "filled",
     });
