@@ -1,3 +1,4 @@
+// brianna BUG
 export const endpointAllowList = [
   "registration/user/user-app-role",
   "registration/user-operators/current/is-current-user-approved-admin",

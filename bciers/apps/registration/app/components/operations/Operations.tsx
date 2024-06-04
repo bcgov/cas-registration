@@ -70,6 +70,7 @@ export const fetchOperationsPageData = async (
       "GET",
       "",
     );
+    console.log("pageData", pageData);
     return {
       rows: formatOperationRows(pageData.data),
       row_count: pageData.row_count,
