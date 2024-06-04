@@ -18,7 +18,9 @@ def init_operation_types(apps, schema_editor):
 
 def reverse_init_operation_types(apps, schema_editor):
     OperationType = apps.get_model('registration', 'OperationType')
-    OperationType.objects.filter(name__in=['Single Facility Operation', 'Linear Facilities Operation', 'Electricity Import Operation']).delete()
+    OperationType.objects.filter(
+        name__in=['Single Facility Operation', 'Linear Facilities Operation', 'Electricity Import Operation']
+    ).delete()
 
 
 def init_facility_types(apps, schema_editor):
@@ -50,7 +52,9 @@ class Migration(migrations.Migration):
             fields=[
                 (
                     'name',
-                    models.CharField(db_comment='The name of a facility type', max_length=1000, primary_key=True, serialize=False),
+                    models.CharField(
+                        db_comment='The name of a facility type', max_length=1000, primary_key=True, serialize=False
+                    ),
                 ),
             ],
             options={
@@ -85,7 +89,9 @@ class Migration(migrations.Migration):
             fields=[
                 (
                     'name',
-                    models.CharField(db_comment='The name of an operation type', max_length=1000, primary_key=True, serialize=False),
+                    models.CharField(
+                        db_comment='The name of an operation type', max_length=1000, primary_key=True, serialize=False
+                    ),
                 ),
             ],
             options={
@@ -147,15 +153,21 @@ class Migration(migrations.Migration):
                 ('archived_at', models.DateTimeField(blank=True, null=True)),
                 (
                     'name',
-                    models.CharField(db_comment='The name of the facility when the operation owned it', max_length=1000),
+                    models.CharField(
+                        db_comment='The name of the facility when the operation owned it', max_length=1000
+                    ),
                 ),
                 (
                     'start_date',
-                    models.DateTimeField(blank=True, db_comment='The start date of the ownership of the facility', null=True),
+                    models.DateTimeField(
+                        blank=True, db_comment='The start date of the ownership of the facility', null=True
+                    ),
                 ),
                 (
                     'end_date',
-                    models.DateTimeField(blank=True, db_comment='The end date of the ownership of the facility', null=True),
+                    models.DateTimeField(
+                        blank=True, db_comment='The end date of the ownership of the facility', null=True
+                    ),
                 ),
                 (
                     'archived_by',
@@ -227,15 +239,21 @@ class Migration(migrations.Migration):
                 ('archived_at', models.DateTimeField(blank=True, null=True)),
                 (
                     'name',
-                    models.CharField(db_comment='The name of the facility when the operation owned it', max_length=1000),
+                    models.CharField(
+                        db_comment='The name of the facility when the operation owned it', max_length=1000
+                    ),
                 ),
                 (
                     'start_date',
-                    models.DateTimeField(blank=True, db_comment='The start date of the ownership of the facility', null=True),
+                    models.DateTimeField(
+                        blank=True, db_comment='The start date of the ownership of the facility', null=True
+                    ),
                 ),
                 (
                     'end_date',
-                    models.DateTimeField(blank=True, db_comment='The end date of the ownership of the facility', null=True),
+                    models.DateTimeField(
+                        blank=True, db_comment='The end date of the ownership of the facility', null=True
+                    ),
                 ),
                 ('history_user_id', models.UUIDField(blank=True, null=True)),
                 ('history_id', models.AutoField(primary_key=True, serialize=False)),
@@ -332,7 +350,9 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(db_comment='The name of an operation', max_length=1000)),
                 (
                     'operation_has_multiple_operators',
-                    models.BooleanField(db_comment='Whether or not the operation has multiple operators', default=False),
+                    models.BooleanField(
+                        db_comment='Whether or not the operation has multiple operators', default=False
+                    ),
                 ),
                 (
                     'opt_in',
@@ -344,11 +364,15 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'start_date',
-                    models.DateTimeField(blank=True, db_comment='The start date of the ownership of the operation', null=True),
+                    models.DateTimeField(
+                        blank=True, db_comment='The start date of the ownership of the operation', null=True
+                    ),
                 ),
                 (
                     'end_date',
-                    models.DateTimeField(blank=True, db_comment='The end date of the ownership of the operation', null=True),
+                    models.DateTimeField(
+                        blank=True, db_comment='The end date of the ownership of the operation', null=True
+                    ),
                 ),
                 (
                     'archived_by',
@@ -403,11 +427,15 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'regulated_products',
-                    models.ManyToManyField(blank=True, related_name='operation_ownerships', to='registration.regulatedproduct'),
+                    models.ManyToManyField(
+                        blank=True, related_name='operation_ownerships', to='registration.regulatedproduct'
+                    ),
                 ),
                 (
                     'reporting_activities',
-                    models.ManyToManyField(blank=True, related_name='operation_ownerships', to='registration.reportingactivity'),
+                    models.ManyToManyField(
+                        blank=True, related_name='operation_ownerships', to='registration.reportingactivity'
+                    ),
                 ),
                 (
                     'updated_by',
@@ -444,7 +472,9 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(db_comment='The name of an operation', max_length=1000)),
                 (
                     'operation_has_multiple_operators',
-                    models.BooleanField(db_comment='Whether or not the operation has multiple operators', default=False),
+                    models.BooleanField(
+                        db_comment='Whether or not the operation has multiple operators', default=False
+                    ),
                 ),
                 (
                     'opt_in',
@@ -456,11 +486,15 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'start_date',
-                    models.DateTimeField(blank=True, db_comment='The start date of the ownership of the operation', null=True),
+                    models.DateTimeField(
+                        blank=True, db_comment='The start date of the ownership of the operation', null=True
+                    ),
                 ),
                 (
                     'end_date',
-                    models.DateTimeField(blank=True, db_comment='The end date of the ownership of the operation', null=True),
+                    models.DateTimeField(
+                        blank=True, db_comment='The end date of the ownership of the operation', null=True
+                    ),
                 ),
                 ('history_user_id', models.UUIDField(blank=True, null=True)),
                 ('history_id', models.AutoField(primary_key=True, serialize=False)),
