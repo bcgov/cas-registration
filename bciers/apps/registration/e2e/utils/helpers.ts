@@ -447,3 +447,41 @@ export async function waitForElementToStabilize(page: Page, element: string) {
   const el = await page.$(element);
   await el?.waitForElementState("stable");
 }
+
+// This function can be used instead of `happoPlaywright.screenshot` when experiencing flaky screenshots. It waits for the page to be stable before taking a screenshot.
+export async function takeStabilizedScreenshot(
+  happoPlaywright: any,
+  page: Page,
+  happoArgs: { component: string; variant: string; targets?: string[] },
+) {
+  const { component, variant, targets } = happoArgs;
+  const pageContent = page.locator("html");
+  await waitForElementToStabilize(page, "main");
+  await happoPlaywright.screenshot(page, pageContent, {
+    component,
+    variant,
+    targets,
+  });
+}
+export async function assertCount(
+  elementsToCount: Locator,
+  expectedCount: number,
+) {
+  expect(elementsToCount).toHaveCount(0);
+}
+
+export async function stabilizeGrid(page: Page, expectedRowCount: number) {
+  await tableHasExpectedRowCount(page, expectedRowCount);
+  await assertCount(page.locator(".MuiDataGrid-row:hover"), 0); // on hover, the table row colour changes, creating happo diffs
+}
+export async function stabilizeAccordion(
+  page: Page,
+  expectedArrowDropdownCount: number,
+) {
+  await waitForElementToStabilize(page, "section");
+  const arrowDropDownElements = await page.locator(
+    `[data-testid=${DataTestID.ARROW_DROPDOWN_ICON}]`,
+  );
+  expect(await arrowDropDownElements.count()).toBe(expectedArrowDropdownCount);
+  await waitForElementToStabilize(page, "section");
+}
