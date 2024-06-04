@@ -266,6 +266,7 @@ class DocumentModelTest(BaseTestCase):
             ("operators", "operator", None, None),
             ("operations", "operation", None, None),
             ("contacts", "contact", None, None),
+            ("operation_ownerships", "operation ownership timeline", None, None),
         ]
         cls.test_object = Document.objects.get(id=1)
 
@@ -292,6 +293,7 @@ class RegulatedProductModelTest(BaseTestCase):
             ("id", "ID", None, None),
             ("name", "name", 1000, None),
             ("operations", "operation", None, None),
+            ("operation_ownerships", "operation ownership timeline", None, None),
         ]
         cls.test_object = RegulatedProduct.objects.create(
             name="test product",
@@ -306,6 +308,7 @@ class ReportingActivityModelTest(BaseTestCase):
             ("name", "name", 1000, None),
             ("applicable_to", "applicable to", None, None),
             ("operations", "operation", None, None),
+            ("operation_ownerships", "operation ownership timeline", None, None),
         ]
         cls.test_object = ReportingActivity.objects.create(
             name="test activity",
@@ -368,6 +371,15 @@ class UserModelTest(BaseTestCase):
             ("wellauthorizationnumber_created", "well authorization number", None, None),
             ("wellauthorizationnumber_updated", "well authorization number", None, None),
             ("wellauthorizationnumber_archived", "well authorization number", None, None),
+            ("facilityownershiptimeline_created", "facility ownership timeline", None, None),
+            ("facilityownershiptimeline_updated", "facility ownership timeline", None, None),
+            ("facilityownershiptimeline_archived", "facility ownership timeline", None, None),
+            ("operationownershiptimeline_created", "operation ownership timeline", None, None),
+            ("operationownershiptimeline_updated", "operation ownership timeline", None, None),
+            ("operationownershiptimeline_archived", "operation ownership timeline", None, None),
+            ("event_created", "event", None, None),
+            ("event_updated", "event", None, None),
+            ("event_archived", "event", None, None),
         ]
 
     def test_unique_user_guid_and_business_guid_constraint(self):
@@ -447,6 +459,7 @@ class ContactModelTest(BaseTestCase):
             ("documents", "documents", None, None),
             ("operators", "operator", None, None),
             ("operations", "operation", None, None),
+            ("operation_ownerships", "operation ownership timeline", None, None),
         ]
 
 
@@ -510,6 +523,7 @@ class OperatorModelTest(BaseTestCase):
             ("operations", "operation", None, None),
             ("user_operators", "user operator", None, 2),
             ("parent_operators", "parent operator", None, None),
+            ("operation_ownerships", "operation ownership timeline", None, None),
         ]
 
     def test_check_cra_business_number_format(self):
@@ -678,7 +692,9 @@ class OperationModelTest(BaseTestCase):
             ("operator", "operator", None, None),
             ("status", "status", 1000, None),
             ("multiple_operator", "multiple operator", None, None),
-            ("facilities", "facility", None, None),
+            ("facility_ownerships", "facility ownership timeline", None, None),
+            ("ownerships", "operation ownership timeline", None, None),
+            ("events", "event", None, None),
         ]
 
     def test_unique_boro_id_per_operation(self):
@@ -797,14 +813,12 @@ class FacilityModelTest(BaseTestCase):
         cls.field_data = [
             *timestamp_common_fields,
             ("id", "ID", None, None),
-            ("name", "name", 1000, None),
-            ("type", "type", 1000, None),
-            ("operation", "operation", None, None),
             ("address", "address", None, None),
-            ("new_entrant", "new entrant", None, None),
             ("well_authorization_numbers", "well authorization number", None, None),
             ("swrs_facility_id", "swrs facility id", None, None),
             ("bcghg_id", "bcghg id", None, None),
+            ("ownerships", "facility ownership timeline", None, None),
+            ("events", "event", None, None),
         ]
 
 
