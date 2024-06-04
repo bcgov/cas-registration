@@ -6,7 +6,7 @@ import EmptyGroupCell from "@bciers/components/datagrid/cells/EmptyGroupCell";
 import { OPERATOR_COLUMN_INDEX } from "@/app/components/datagrid/models/operationColumns";
 
 const operationGroupColumns = (
-  isOperatorColumn: boolean,
+  isInternalUser: boolean,
   SearchCell: (params: GridColumnGroupHeaderParams) => JSX.Element,
 ) => {
   const columnGroupModel = [
@@ -18,28 +18,11 @@ const operationGroupColumns = (
     },
     {
       groupId: "name",
-      headerName: "Operation",
+      headerName: "Operation Name",
       renderHeaderGroup: SearchCell,
       children: [{ field: "name" }],
     },
-    {
-      groupId: "submission_date",
-      headerName: "Submission Date",
-      renderHeaderGroup: EmptyGroupCell,
-      children: [{ field: "submission_date" }],
-    },
-    {
-      groupId: "bc_obps_regulated_operation",
-      headerName: "BORO ID",
-      renderHeaderGroup: SearchCell,
-      children: [{ field: "bc_obps_regulated_operation" }],
-    },
-    {
-      groupId: "status",
-      headerName: "Application Status",
-      renderHeaderGroup: SearchCell,
-      children: [{ field: "status" }],
-    },
+
     {
       groupId: "action",
       headerName: "Action",
@@ -48,7 +31,7 @@ const operationGroupColumns = (
     },
   ] as GridColumnGroupingModel;
 
-  if (isOperatorColumn) {
+  if (isInternalUser) {
     columnGroupModel.splice(OPERATOR_COLUMN_INDEX, 0, {
       groupId: "operator",
       headerName: "Operator",

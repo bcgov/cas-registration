@@ -8,8 +8,8 @@ import OperationsActionCell from "@bciers/components/datagrid/cells/OperationsAc
 import HeaderSearchCell from "@bciers/components/datagrid/cells/HeaderSearchCell";
 import operationColumns from "@/app/components/datagrid/models/operationColumns";
 import operationGroupColumns from "@/app/components/datagrid/models/operationGroupColumns";
-import { OperationRow } from "./types";
 import { fetchOperationsPageData } from "./Operations";
+import { OperationRow } from "@/app/components/operations/types";
 
 const OperationSearchCell = ({
   lastFocusedField,
@@ -42,6 +42,7 @@ const OperationDataGrid = ({
     row_count: number;
   };
 }) => {
+  // brianna clean up and rename variables
   const { data: session } = useSession();
   const isIndustryUser = session?.user.app_role?.includes("industry") ?? false;
   const [lastFocusedField, setLastFocusedField] = useState<string | null>(null);

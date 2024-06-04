@@ -4,32 +4,18 @@ import StatusStyleColumnCell from "@bciers/components/datagrid/cells/StatusStyle
 export const OPERATOR_COLUMN_INDEX = 1;
 
 const operationColumns = (
-  isOperatorColumn: boolean,
+  isInternalUser: boolean,
   ActionCell: (params: GridRenderCellParams) => JSX.Element,
 ) => {
   const columns = [
-    { field: "bcghg_id", headerName: "BC GHG ID", width: 160 },
     {
       field: "name",
-      headerName: "Operation",
-      width: isOperatorColumn ? 320 : 560,
+      headerName: "Operation Name",
+      width: isInternalUser ? 320 : 560,
     },
-    {
-      field: "submission_date",
-      headerName: "Submission Date",
-      width: isOperatorColumn ? 200 : 220,
-    },
-    {
-      field: "bc_obps_regulated_operation",
-      headerName: "BORO ID",
-      width: isOperatorColumn ? 160 : 220,
-    },
-    {
-      field: "status",
-      headerName: "Application Status",
-      width: 130,
-      renderCell: StatusStyleColumnCell,
-    },
+    { field: "bcghg_id", headerName: "BC GHG ID", width: 320 },
+    { field: "type", headerName: "Operation Type", width: 320 },
+
     {
       field: "action",
       headerName: "Action",
@@ -41,7 +27,7 @@ const operationColumns = (
     },
   ] as GridColDef[];
 
-  if (isOperatorColumn) {
+  if (isInternalUser) {
     columns.splice(OPERATOR_COLUMN_INDEX, 0, {
       field: "operator",
       headerName: "Operator",
