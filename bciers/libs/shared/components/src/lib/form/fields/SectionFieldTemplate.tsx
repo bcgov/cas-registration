@@ -13,7 +13,8 @@ const SectionFieldTemplate = ({
 
   return (
     <div
-      className={`section-field w-full first:mt-0 mt-8 ${classNames}`}
+      // scroll-mt-12 is a top scroll margin for the task list anchor smooth scroll
+      className={`section-field w-full first:mt-0 mt-8 scroll-mt-12 ${classNames}`}
       id={id}
     >
       {isLabel && label && (
