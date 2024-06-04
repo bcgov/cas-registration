@@ -43,7 +43,7 @@ def reverse_init_facility_types(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('registration', '0017_V1_5_2'),
+        ('registration', '0018_alter_address_table_comment_and_more'),
     ]
 
     operations = [
