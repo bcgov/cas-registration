@@ -333,7 +333,7 @@ jobs:
         id: playwright-cache
         with:
           path: ${{ matrix.cache_dir }}
-          key: ${{ runner.os }}-${{ matrix.project }}-playwright-registration
+          key: ${{ runner.os }}-${{ matrix.project }}-ms-playwright-registration
 
       - name: 📥 install Playwright ${{ matrix.project }}
         if: steps.playwright-cache.outputs.cache-hit != 'true'
