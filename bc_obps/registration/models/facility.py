@@ -1,13 +1,21 @@
 import uuid
 from django.db import models
-from registration.models import Address, Operation, TimeStampedModel
+from registration.models import Address, TimeStampedModel, Operation
 from simple_history.models import HistoricalRecords
 
 
 class Facility(TimeStampedModel):
+    class Types(models.TextChoices):
+        SINGLE_FACILITY = "Single Facility"
+        LARGE = "Large"
+        MEDIUM = "Medium"
+        SMALL_AGGREGATE = "Small Aggregate"
+
     id = models.UUIDField(
         primary_key=True, default=uuid.uuid4, db_comment="Primary key to identify the facility", verbose_name="ID"
     )
+    name = models.CharField(max_length=1000, db_comment="The name of the facility when the operation owned it")
+    type = models.CharField(max_length=100, choices=Types.choices, db_comment="The type of the facility")
     address = models.ForeignKey(
         Address,
         on_delete=models.DO_NOTHING,
