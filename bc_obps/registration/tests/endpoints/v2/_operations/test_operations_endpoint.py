@@ -1,3 +1,4 @@
+from registration.constants import PAGE_SIZE
 from model_bakery import baker
 from localflavor.ca.models import CAPostalCodeField
 from registration.models import (
@@ -20,51 +21,53 @@ class TestOperationsEndpoint(CommonTestSetup):
 
     # AUTHORIZATION
 
-    # def test_unauthorized_roles_cannot_list_operations_v2(self):
-    #     response = TestUtils.mock_get_with_auth_role(
-    #         self, 'cas_pending', custom_reverse_lazy("list_operations_v2")
-    #     )
-    #     assert response.status_code == 401
+    def test_unauthorized_roles_cannot_list_operations_v2(self):
+        response = TestUtils.mock_get_with_auth_role(self, 'cas_pending', custom_reverse_lazy("list_operations_v2"))
+        assert response.status_code == 401
 
-    # def test_operations_endpoint_list_operations_v2_paginated(self):
-    #     operator1 = operator_baker()
-    #     baker.make(
-    #         Operation,
-    #         operator_id=operator1.id,
-    #         status=Operation.Statuses.PENDING,
-    #         naics_code=baker.make(NaicsCode, naics_code=123456, naics_description='desc'),
-    #         _quantity=60,
-    #     )
-    #     # Get the default page 1 response
-    #     response = TestUtils.mock_get_with_auth_role(self, "cas_admin")
-    #     assert response.status_code == 200
-    #     response_data = response.json().get('data')
-    #     # save the id of the first paginated response item
-    #     page_1_response_id = response_data[0].get('id')
-    #     assert len(response_data) == PAGE_SIZE
-    #     # Get the page 2 response
-    #     response = TestUtils.mock_get_with_auth_role(
-    #         self, "cas_admin", custom_reverse_lazy('list_operations_v2') + "?page=2&sort_field=created_at&sort_order=desc"
-    #     )
-    #     assert response.status_code == 200
-    #     response_data = response.json().get('data')
-    #     # save the id of the first paginated response item
-    #     page_2_response_id = response_data[0].get('id')
-    #     assert len(response_data) == PAGE_SIZE
-    #     # assert that the first item in the page 1 response is not the same as the first item in the page 2 response
-    #     assert page_1_response_id != page_2_response_id
+    def test_operations_endpoint_list_operations_v2_paginated(self):
+        operator1 = operator_baker()
+        baker.make(
+            Operation,
+            operator_id=operator1.id,
+            status=Operation.Statuses.PENDING,
+            naics_code=baker.make(NaicsCode, naics_code=123456, naics_description='desc'),
+            _quantity=60,
+        )
+        # Get the default page 1 response
+        response = TestUtils.mock_get_with_auth_role(self, "cas_admin")
+        assert response.status_code == 200
+        response_data = response.json().get('data')
+        # save the id of the first paginated response item
+        page_1_response_id = response_data[0].get('id')
+        assert len(response_data) == PAGE_SIZE
+        # Get the page 2 response
+        response = TestUtils.mock_get_with_auth_role(
+            self,
+            "cas_admin",
+            custom_reverse_lazy('list_operations_v2') + "?page=2&sort_field=created_at&sort_order=desc",
+        )
+        assert response.status_code == 200
+        response_data = response.json().get('data')
+        # save the id of the first paginated response item
+        page_2_response_id = response_data[0].get('id')
+        assert len(response_data) == PAGE_SIZE
+        # assert that the first item in the page 1 response is not the same as the first item in the page 2 response
+        assert page_1_response_id != page_2_response_id
 
-    #     # Get the page 2 response but with a different sort order
-    #     response = TestUtils.mock_get_with_auth_role(
-    #         self, "cas_admin", custom_reverse_lazy('list_operations_v2') + "?page=2&sort_field=created_at&sort_order=asc"
-    #     )
-    #     assert response.status_code == 200
-    #     response_data = response.json().get('data')
-    #     # save the id of the first paginated response item
-    #     page_2_response_id_reverse = response_data[0].get('id')
-    #     assert len(response_data) == PAGE_SIZE
-    #     # assert that the first item in the page 2 response is not the same as the first item in the page 2 response with reversed order
-    #     assert page_2_response_id != page_2_response_id_reverse
+        # Get the page 2 response but with a different sort order
+        response = TestUtils.mock_get_with_auth_role(
+            self,
+            "cas_admin",
+            custom_reverse_lazy('list_operations_v2') + "?page=2&sort_field=created_at&sort_order=asc",
+        )
+        assert response.status_code == 200
+        response_data = response.json().get('data')
+        # save the id of the first paginated response item
+        page_2_response_id_reverse = response_data[0].get('id')
+        assert len(response_data) == PAGE_SIZE
+        # assert that the first item in the page 2 response is not the same as the first item in the page 2 response with reversed order
+        assert page_2_response_id != page_2_response_id_reverse
 
     def test_operations_endpoint_list_operations_v2_with_filter(self):
         operator1 = operator_baker()
