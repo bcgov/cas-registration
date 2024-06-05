@@ -13,9 +13,7 @@ from registration.models import (
     UserOperator,
 )
 from registration.schema.v1 import (
-    OperationCreateIn,
     OperationPaginatedOut,
-    OperationCreateOut,
     OperationFilterSchema,
 )
 from registration.schema.generic import Message
@@ -27,29 +25,13 @@ from ninja.types import DictStrAny
 
 
 @router.get(
-    "/operations",
+    "/v2/operations",
     response={200: OperationPaginatedOut, codes_4xx: Message},
-    url_name="list_operations",
-    tags=OPERATION_TAGS,
+    tags=["V2"]
 )
 @authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles())
 @handle_http_errors()
-def list_operations(
+def list_operations_v2(
     request: HttpRequest, filters: OperationFilterSchema = Query(...)
 ) -> Tuple[Literal[200], DictStrAny]:
     return 200, OperationService.list_operations(get_current_user_guid(request), filters)
-
-
-##### POST #####
-
-
-@router.post(
-    "/operations",
-    response={201: OperationCreateOut, codes_4xx: Message},
-    url_name="create_operation",
-    tags=OPERATION_TAGS,
-)
-@authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
-@handle_http_errors()
-def create_operation(request: HttpRequest, payload: OperationCreateIn) -> Tuple[Literal[201], DictStrAny]:
-    return 201, OperationService.create_operation(get_current_user_guid(request), payload)
