@@ -1,6 +1,7 @@
 from common.tests.utils.helpers import BaseTestCase
 from reporting.models import Configuration
 
+
 class ConfigurationTest(BaseTestCase):
     @classmethod
     def setUpTestData(cls):
