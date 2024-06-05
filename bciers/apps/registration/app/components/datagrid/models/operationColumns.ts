@@ -11,17 +11,17 @@ const operationColumns = (
     {
       field: "name",
       headerName: "Operation Name",
-      width: isInternalUser ? 320 : 560,
+      width: isInternalUser ? 320 : 400,
     },
-    { field: "bcghg_id", headerName: "BC GHG ID", width: 320 },
-    { field: "type", headerName: "Operation Type", width: 320 },
+    { field: "bcghg_id", headerName: "BC GHG ID", width: 160 },
+    { field: "type", headerName: "Operation Type", width: 200 },
 
     {
       field: "action",
       headerName: "Action",
       renderCell: ActionCell,
       sortable: false,
-      width: 120,
+      width: 200,
       // Set flex to 1 to make the column take up all the remaining width if user zooms out
       flex: 1,
     },
@@ -31,7 +31,7 @@ const operationColumns = (
     columns.splice(OPERATOR_COLUMN_INDEX, 0, {
       field: "operator",
       headerName: "Operator",
-      width: 320,
+      width: 200,
     });
   }
 

@@ -1,15 +1,11 @@
-# brianna best to copy the whole file or just the classes you need to change for v2
 from typing import Literal, Tuple
 from django.http import HttpRequest
-from registration.schema.v2.operation import OperationFilterSchema
+from registration.schema.v2.operation import OperationFilterSchema, OperationPaginatedOut
 from service.operation_service_v2 import OperationService
 from registration.decorators import handle_http_errors
 from ..router import router
 
 
-from registration.schema.v1 import (
-    OperationPaginatedOut,
-)
 from registration.schema.generic import Message
 from ninja.responses import codes_4xx
 from ninja import Query

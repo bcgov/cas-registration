@@ -6,10 +6,10 @@ import { GridColumnGroupHeaderParams } from "@mui/x-data-grid";
 import { useSession } from "next-auth/react";
 import OperationsActionCell from "@bciers/components/datagrid/cells/OperationsActionCell";
 import HeaderSearchCell from "@bciers/components/datagrid/cells/HeaderSearchCell";
-import operationColumns from "@/app/components/datagrid/models/operationColumns";
-import operationGroupColumns from "@/app/components/datagrid/models/operationGroupColumns";
 import { fetchOperationsPageData } from "./Operations";
 import { OperationRow } from "@/app/components/operations/types";
+import operationColumns from "../datagrid/models/operationColumns";
+import operationGroupColumns from "../datagrid/models/operationGroupColumns";
 
 const OperationSearchCell = ({
   lastFocusedField,
@@ -34,9 +34,9 @@ const OperationSearchCell = ({
 
 const OperationDataGrid = ({
   initialData,
-  isOperatorColumn = false,
+  isInternalUser = false,
 }: {
-  isOperatorColumn?: boolean;
+  isInternalUser?: boolean;
   initialData: {
     rows: OperationRow[];
     row_count: number;
@@ -58,13 +58,13 @@ const OperationDataGrid = ({
   );
 
   const columns = useMemo(
-    () => operationColumns(isOperatorColumn, ActionCell),
-    [ActionCell, isOperatorColumn],
+    () => operationColumns(isInternalUser, ActionCell),
+    [ActionCell, isInternalUser],
   );
 
   const columnGroup = useMemo(
-    () => operationGroupColumns(isOperatorColumn, SearchCell),
-    [SearchCell, isOperatorColumn],
+    () => operationGroupColumns(isInternalUser, SearchCell),
+    [SearchCell, isInternalUser],
   );
 
   return (

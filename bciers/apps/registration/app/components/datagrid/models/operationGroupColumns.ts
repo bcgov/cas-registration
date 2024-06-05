@@ -22,6 +22,12 @@ const operationGroupColumns = (
       renderHeaderGroup: SearchCell,
       children: [{ field: "name" }],
     },
+    {
+      groupId: "type",
+      headerName: "Operation Type",
+      renderHeaderGroup: SearchCell,
+      children: [{ field: "type" }],
+    },
 
     {
       groupId: "action",

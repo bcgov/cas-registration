@@ -34,27 +34,15 @@ const formatTimestamp = (timestamp: string) => {
 };
 
 export const formatOperationRows = (rows: GridRowsProp) => {
-  return rows.map(
-    ({
+  return rows.map(({ id, operator, name, bcghg_id, type }) => {
+    return {
       id,
-      bc_obps_regulated_operation,
-      operator,
-      submission_date,
-      status,
       name,
       bcghg_id,
-    }) => {
-      return {
-        id,
-        bc_obps_regulated_operation: bc_obps_regulated_operation ?? "N/A",
-        name,
-        bcghg_id,
-        operator: operator,
-        submission_date: formatTimestamp(submission_date) ?? status,
-        status,
-      };
-    },
-  );
+      operator: operator,
+      type,
+    };
+  });
 };
 
 // 🛠️ Function to fetch operations
@@ -95,7 +83,7 @@ export default async function Operations({
   }
 
   // Show the operator column if the user is CAS internal
-  const isOperatorColumn =
+  const isAuthorizedInternalUser =
     session?.user.app_role?.includes("cas") &&
     !session?.user.app_role?.includes("pending");
 
@@ -104,7 +92,7 @@ export default async function Operations({
     <div className="mt-5">
       <OperationDataGrid
         initialData={operations}
-        isOperatorColumn={isOperatorColumn}
+        isInternalUser={isAuthorizedInternalUser}
       />
     </div>
   );
