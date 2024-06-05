@@ -11,7 +11,7 @@ class ReportingField(BaseModel):
     )
     field_type = models.CharField(max_length=1000, db_comment="Type definition for field.")
 
-    def serialize(self) -> str:
+    def serialize(self) -> "dict[str,str]":
         return {"fieldName": self.field_name, "fieldType": self.field_type}
 
     class Meta:
