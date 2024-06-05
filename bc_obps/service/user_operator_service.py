@@ -311,7 +311,7 @@ class UserOperatorService:
 
     @classmethod
     def get_current_user_approved_user_operator_or_raise(cls, user: User) -> UserOperator:
-        user_operator = user.get_approved_user_operator()
+        user_operator = UserOperatorDataAccessService.get_approved_user_operator(user)
         if not user_operator:
             raise Exception(UNAUTHORIZED_MESSAGE)
         return user_operator
