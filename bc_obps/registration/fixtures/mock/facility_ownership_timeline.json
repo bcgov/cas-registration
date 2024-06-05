@@ -3,26 +3,21 @@
     "model": "registration.facilityownershiptimeline",
     "fields": {
       "created_by": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-      "created_at": "2024-05-31T23:13:10.388Z",
-      "facility": "0cb4248e-aa38-4858-b620-02afa30efc6b",
+      "created_at": "2024-06-05T23:19:34.959Z",
+      "facility": "f486f2fb-62ed-438d-bb3e-0819b51e3aeb",
       "operation": "e1300fd7-2dee-47d1-b655-2ad3fd10f052",
-      "name": "Cow",
-      "facility_type": "Single Facility",
-      "start_date": "2024-05-31T23:13:08Z",
-      "end_date": null
+      "start_date": "2024-06-05T23:19:32Z"
     }
   },
   {
     "model": "registration.facilityownershiptimeline",
     "fields": {
-      "created_by": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-      "created_at": "2024-05-31T23:13:36.676Z",
-      "facility": "8f10616b-481c-4bf8-b8b0-30a0fd7e3413",
+      "created_by": "00000000-0000-0000-0000-000000000001",
+      "created_at": "2024-06-05T23:19:57.459Z",
+      "facility": "459b80f9-b5f3-48aa-9727-90c30eaf3a58",
       "operation": "e1300fd7-2dee-47d1-b655-2ad3fd10f052",
-      "name": "Monkey",
-      "facility_type": "Large",
-      "start_date": "2024-05-31T23:13:35Z",
-      "end_date": null
+      "start_date": "2024-06-05T23:19:56Z",
+      "end_date": "2024-06-28T23:20:02Z"
     }
   }
 ]

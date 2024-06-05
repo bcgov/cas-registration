@@ -41,6 +41,7 @@ class Command(BaseCommand):
                 f'{fixture_base_dir}/parent_operator.json',
                 f'{fixture_base_dir}/facility.json',
                 f'{fixture_base_dir}/facility_ownership_timeline.json',
+                f'{fixture_base_dir}/operation_ownership_timeline.json',
                 f'{fixture_base_dir}/event.json',
             ]
 
