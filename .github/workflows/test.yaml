@@ -44,10 +44,8 @@ jobs:
         uses: ./.github/actions/dev-env-setup
       - name: Authenticate with Nx Cloud
         run: yarn nx connect-to-nx-cloud
-      - name: Run Nx Tests with Remote Caching
-        run: yarn nx run-many -t test
-      - name: Run affected nx tests
-        run: npm run affected:test
+      - name: Run Nx Affected Tests with Remote Caching
+        run: yarn nx affected --target=test --parallel --base=origin/main --head=$(git rev-parse HEAD)
 
   yarn-audit:
     needs: install-dev-tools
