@@ -6,12 +6,18 @@ class BaseTestCase(TestCase):
     field_data = []  # Override this in the child class
 
     def assertFieldLabel(self, instance, field_name, expected_label):
-        field = instance._meta.get_field(field_name)
-        if isinstance(field, models.ManyToOneRel) or isinstance(field, models.ManyToManyRel):
-            # If the field is a ManyToOneRel or ManyToManyRel, get the field from the related model
-            self.assertEqual(field.related_model._meta.verbose_name, expected_label)
-        else:
-            self.assertEqual(field.verbose_name, expected_label)
+        try:
+          field = instance._meta.get_field(field_name)
+          if isinstance(field, models.ManyToOneRel) or isinstance(field, models.ManyToManyRel):
+              # If the field is a ManyToOneRel or ManyToManyRel, get the field from the related model
+              self.assertEqual(field.related_model._meta.verbose_name, expected_label)
+          else:
+              self.assertEqual(field.verbose_name, expected_label)
+        except Exception as e:
+          print(e)
+          expected_fields=instance._meta.get_fields()
+          raise Exception(f'Field not found: {field_name} not in expected set of fields [{expected_fields}]. Error: {e}')
+
 
     def assertFieldMaxLength(self, instance, field_name, expected_max_length):
         field = instance._meta.get_field(field_name)
