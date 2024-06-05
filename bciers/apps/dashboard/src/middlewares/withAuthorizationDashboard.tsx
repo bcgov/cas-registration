@@ -52,7 +52,7 @@ export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
     }
     // Check if the user is dashboard via the jwt encoded in server side cookie
     const session = await auth();
-    console.log("session", session);
+
     if (session) {
       if (pathname === "/" || pathname.endsWith(`/${onboarding}`)) {
         return NextResponse.redirect(new URL(`/${dashboard}`, request.url));
