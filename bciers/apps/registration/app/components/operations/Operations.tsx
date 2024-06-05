@@ -63,14 +63,12 @@ export const fetchOperationsPageData = async (
 ) => {
   try {
     const queryParams = buildQueryParams(searchParams);
-
     // fetch data from server
     const pageData = await actionHandler(
-      `registration/operations${queryParams}`,
+      `registration/v2/operations${queryParams}`,
       "GET",
       "",
     );
-    console.log("pageData", pageData);
     return {
       rows: formatOperationRows(pageData.data),
       row_count: pageData.row_count,

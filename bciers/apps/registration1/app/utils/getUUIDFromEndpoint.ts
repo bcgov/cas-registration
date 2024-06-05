@@ -1,8 +1,9 @@
-// brianna BUG
 export const endpointAllowList = [
   "registration/user/user-app-role",
   "registration/user-operators/current/is-current-user-approved-admin",
   "registration/user/user-profile",
+  // brianna
+  "registration/v2/operations",
 ];
 
 // 🛠️ Function to get the last non-empty segment as a UUID from an endpoint URL
