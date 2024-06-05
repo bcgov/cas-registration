@@ -42,9 +42,9 @@ def init_source_type_data(apps, schema_monitor):
             SourceType(
                 name='Removal of impurities using carbonate flux reagents, the use of reducing agents, the use of material (e.g. coke) for slag cleaning, and the consumption of graphite or carbon electrodes during ferroalloy production'
             ),
-            SourceType(name='Calcination of carbonate materials '),
+            SourceType(name='Calcination of carbonate materials'),
             SourceType(
-                name='Steam reformation of hydrocarbons, partial oxidation of hydrocarbons or other transformation of hydrocarbon feedstock '
+                name='Steam reformation of hydrocarbons, partial oxidation of hydrocarbons or other transformation of hydrocarbon feedstock'
             ),
             SourceType(name='Industrial wastewater process using anaerobic digestion'),
             SourceType(name='Oil-water separators'),
@@ -230,7 +230,7 @@ def reverse_init_source_type_data(apps, schema_monitor):
             'Other venting sources',
             'Other fugitive sources',
             'Third-party line hits with release of gas',
-            'Natural gas pneumatic high bleed device venting ',
+            'Natural gas pneumatic high bleed device venting',
             'Natural gas pneumatic pump venting',
             'Dehydrator venting',
             'Well venting for liquids unloading',
@@ -274,16 +274,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='SourceType',
             fields=[
-                (
-                    'id',
-                    models.UUIDField(
-                        db_comment='Unique ID for the source type',
-                        default=uuid.uuid4,
-                        editable=False,
-                        primary_key=True,
-                        serialize=False,
-                    ),
-                ),
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(db_comment='The name of a source type', max_length=1000)),
             ],
             options={
