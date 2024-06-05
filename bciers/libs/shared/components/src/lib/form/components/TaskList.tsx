@@ -25,7 +25,7 @@ const TaskList = ({ taskListItems, taskListItemStatus }: TaskListProps) => {
   };
 
   return (
-    <nav className="w-[256px] mr-4 h-fit border-solid border-0 border-r-2 border-[#f0f0f0]">
+    <nav className="w-[256px] mr-4 h-fit border-solid border-0 border-r-2 border-bc-light-grey-300">
       {taskListItems.map((task) => {
         const { section, title } = task;
         const taskStatus = taskListItemStatus?.[section];
@@ -37,7 +37,7 @@ const TaskList = ({ taskListItems, taskListItemStatus }: TaskListProps) => {
               isActive
                 ? `bg-[#1a5a960c] border-[${BC_GOV_LINKS_COLOR}]`
                 : "bg-transparent border-transparent"
-            }`}
+            } hover:bg-bc-light-grey-200`}
             onClick={(e) => handleTaskClick(e, section)}
           >
             <div

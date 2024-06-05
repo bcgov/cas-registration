@@ -6,6 +6,8 @@ export const BC_GOV_TEXT: string = "#313132";
 // App specific colors
 export const DARK_GREY_BG_COLOR: string = "#E5E5E5";
 export const LIGHT_GREY_BG_COLOR: string = "#fafafc";
+export const LIGHT_GREY_BG_COLOR_200: string = "#f5f5f5";
+export const LIGHT_GREY_BG_COLOR_300: string = "#f0f0f0";
 export const BC_GOV_COMPONENTS_GREY: string = "#606060";
 export const BC_GOV_YELLOW: string = "#FCBA19";
 export const BC_GOV_SEMANTICS_RED: string = "#D8292F";
