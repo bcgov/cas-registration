@@ -29,8 +29,31 @@ jobs:
       - run: yarn install --immutable
         working-directory: ./bciers
 
-  nx-tests:
+  capture-affected:
     needs: install-dev-tools
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./bciers
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: dev env setup
+        uses: ./.github/actions/dev-env-setup
+      - name: Generate Affected Projects JSON
+        id: affected
+        run: npx nx print-affected --base=origin/main --head=$(git rev-parse HEAD) --select=projects > affected.json
+      - name: Set Affected Projects as Output
+        id: set-affected
+        run: |
+          AFFECTED_PROJECTS=$(cat affected.json | jq -r '.projects | join(",")')
+          echo "::set-output name=projects::$AFFECTED_PROJECTS"
+        shell: bash
+
+  nx-tests:
+    needs: [install-dev-tools, capture-affected]
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -45,7 +68,7 @@ jobs:
       - name: Authenticate with Nx Cloud
         run: yarn nx connect-to-nx-cloud
       - name: Run Nx Affected Tests with Remote Caching
-        run: yarn nx affected --target=test --parallel --base=origin/main --head=$(git rev-parse HEAD)
+        run: yarn nx affected --target=test --parallel --base=origin/main --head=$(git rev-parse HEAD) --projects ${{ needs.set-affected.outputs.projects }}
 
   yarn-audit:
     needs: install-dev-tools
