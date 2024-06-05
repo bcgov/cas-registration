@@ -1,9 +1,9 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import SingleStepTaskListForm from "./SingleStepTaskListForm";
 import SectionFieldTemplate from "@bciers/components/form/fields/SectionFieldTemplate";
-import { RJSFSchema } from "@rjsf/utils";
+import { RJSFSchema, UiSchema } from "@rjsf/utils";
 
-const section1 = {
+const section1: RJSFSchema = {
   type: "object",
   title: "Section 1",
   required: ["first_name", "last_name"],
@@ -19,7 +19,7 @@ const section1 = {
   },
 };
 
-const section2 = {
+const section2: RJSFSchema = {
   type: "object",
   title: "Section 2",
   required: ["phone", "email"],
@@ -37,7 +37,7 @@ const section2 = {
   },
 };
 
-const section3 = {
+const section3: RJSFSchema = {
   type: "object",
   title: "Section 3",
   required: ["address", "city"],
@@ -53,7 +53,7 @@ const section3 = {
   },
 };
 
-export const schema = {
+export const schema: RJSFSchema = {
   type: "object",
   required: ["section1", "section2", "section3"],
   properties: {
@@ -61,9 +61,9 @@ export const schema = {
     section2,
     section3,
   },
-} as RJSFSchema;
+};
 
-export const uiSchema = {
+export const uiSchema: UiSchema = {
   "ui:FieldTemplate": SectionFieldTemplate,
   "ui: options": {
     label: false,
@@ -134,6 +134,7 @@ describe("the SingleStepTaskListForm component", () => {
     expect(screen.getByLabelText("Address*")).toBeVisible();
     expect(screen.getByLabelText("City*")).toBeVisible();
 
+    // It should render the submit and cancel buttons
     expect(screen.getByRole("button", { name: "Submit" })).toBeVisible();
     expect(screen.getByRole("button", { name: "Cancel" })).toBeVisible();
   });
