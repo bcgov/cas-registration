@@ -10,6 +10,8 @@ import {
   BC_GOV_YELLOW,
   DARK_GREY_BG_COLOR,
   LIGHT_GREY_BG_COLOR,
+  LIGHT_GREY_BG_COLOR_200,
+  LIGHT_GREY_BG_COLOR_300,
   BC_GOV_SEMANTICS_RED,
   BC_GOV_SEMANTICS_GREEN,
 } from "./libs/shared/styles/src/index.ts";
@@ -33,6 +35,8 @@ module.exports = {
         "bc-yellow": BC_GOV_YELLOW,
         "bc-bg-dark-grey": DARK_GREY_BG_COLOR,
         "bc-bg-light-grey": LIGHT_GREY_BG_COLOR,
+        "bc-light-grey-200": LIGHT_GREY_BG_COLOR_200,
+        "bc-light-grey-300": LIGHT_GREY_BG_COLOR_300,
         "bc-component-grey": BC_GOV_COMPONENTS_GREY,
         "bc-success-green": BC_GOV_SEMANTICS_GREEN,
         "bc-error-red": BC_GOV_SEMANTICS_RED,
