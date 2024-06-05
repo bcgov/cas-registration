@@ -7,6 +7,7 @@ from model_bakery import baker
 from reporting.models.report import Report
 from reporting.models.configuration_element import ConfigurationElement
 from reporting.models.configuration import Configuration
+from reporting.models.methodology import Methodology
 
 
 def report_baker() -> Report:
@@ -20,6 +21,9 @@ def source_type_baker() -> SourceType:
 
 def gas_type_baker() -> GasType:
     return baker.make(GasType)
+
+def methodology_baker() -> Methodology:
+    return baker.make(Methodology)
 
 def base_schema_baker() -> BaseSchema:
     return baker.make(BaseSchema, slug='testSlug', schema="{'testkey': 'testValue'}")
