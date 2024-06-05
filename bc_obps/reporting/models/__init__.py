@@ -12,4 +12,16 @@ from .base_schema import BaseSchema
 from .activity_source_type_base_schema import ActivitySourceTypeBaseSchema
 
 
-__all__ = ["Report", "SourceType", "ReportOperation", "ReportFacility", "GasType", "Methodology", "ReportingField", "Configuration", "ConfigurationElement", "BaseSchema", "ActivitySourceTypeBaseSchema"]
+__all__ = [
+    "Report",
+    "SourceType",
+    "ReportOperation",
+    "ReportFacility",
+    "GasType",
+    "Methodology",
+    "ReportingField",
+    "Configuration",
+    "ConfigurationElement",
+    "BaseSchema",
+    "ActivitySourceTypeBaseSchema",
+]

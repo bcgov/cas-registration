@@ -3,6 +3,7 @@
 import django.db.models.deletion
 from django.db import migrations, models
 
+
 def init_gas_type_data(apps, schema_monitor):
     '''
     Add initial data to erc.gastype
@@ -22,16 +23,16 @@ def init_gas_type_data(apps, schema_monitor):
         ]
     )
 
+
 def reverse_init_gas_type_data(apps, schema_monitor):
     '''
     Remove initial data from erc.gas_type
     '''
     GasType = apps.get_model('reporting', 'GasType')
     GasType.objects.filter(
-        chemical_formula__in=[
-            'CO2','N2O','CH4','SF6','CF4','C2F6','CH2F2','C2HF5','C2H2F4'
-        ]
+        chemical_formula__in=['CO2', 'N2O', 'CH4', 'SF6', 'CF4', 'C2F6', 'CH2F2', 'C2HF5', 'C2H2F4']
     ).delete()
+
 
 def init_methodology_data(apps, schema_monitor):
     '''
@@ -57,6 +58,7 @@ def init_methodology_data(apps, schema_monitor):
         ]
     )
 
+
 def reverse_init_methodology_data(apps, schema_monitor):
     '''
     Remove initial data from erc.methodology
@@ -80,6 +82,7 @@ def reverse_init_methodology_data(apps, schema_monitor):
             'Input/output'
         ]
     ).delete()
+
 
 class Migration(migrations.Migration):
 
@@ -163,7 +166,6 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.RunPython(init_gas_type_data, reverse_init_gas_type_data),
-
         migrations.CreateModel(
             name='Methodology',
             fields=[
@@ -176,7 +178,6 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.RunPython(init_methodology_data, reverse_init_methodology_data),
-
         migrations.CreateModel(
             name='ReportingField',
             fields=[
