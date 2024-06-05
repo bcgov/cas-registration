@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { createRef, useEffect, useState } from "react";
 import { Button } from "@mui/material";
 import { IChangeEvent } from "@rjsf/core";
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
@@ -41,6 +41,32 @@ const SingleStepTaskListForm = ({
     section,
     title: formSections[section]?.title,
   }));
+
+  const formRef = createRef<any>();
+
+  useEffect(() => {
+    // Do not validate on component mount if there is no formData
+    if (Object.keys(formData).length === 0 || !formRef?.current) return;
+
+    // If there is formData, validate the form sections and
+    // set the formSectionStatus on component mount
+    const validator = formRef?.current.state.schemaUtils.getValidator();
+    const errorData = validator.validateFormData(formData, schema);
+    const errorSchema = errorData.errorSchema;
+
+    const formSectionErrorList = formSectionList.reduce(
+      (acc: { [key: string]: boolean }, section: string) => {
+        const sectionErrors = errorSchema?.[section] ?? {};
+        const isValid = Object.keys(sectionErrors).length === 0;
+        acc[section] = isValid;
+        return acc;
+      },
+      {},
+    );
+
+    setIsLiveValidate(true);
+    setFormSectionStatus(formSectionErrorList);
+  }, []);
 
   // Set isSubmitting to true to disable submit buttons and prevent multiple form submissions
   const submitHandler = async () => {
@@ -95,33 +121,12 @@ const SingleStepTaskListForm = ({
       />
       <div className="w-full">
         <FormBase
+          formRef={formRef}
           disabled={isFormDisabled}
           schema={schema}
           uiSchema={uiSchema}
           formData={formData}
           onChange={handleFormChange}
-          onMount={(formRef) => {
-            // Do not validate on component mount if there is no formData
-            if (Object.keys(formData).length === 0) return;
-
-            // If there is formData, validate the form sections and set the formSectionStatus
-            const validator = formRef.current.state.schemaUtils.getValidator();
-            const errorData = validator.validateFormData(formData, schema);
-            const errorSchema = errorData.errorSchema;
-
-            const formSectionErrorList = formSectionList.reduce(
-              (acc: { [key: string]: boolean }, section: string) => {
-                const sectionErrors = errorSchema?.[section] ?? {};
-                const isValid = Object.keys(sectionErrors).length === 0;
-                acc[section] = isValid;
-                return acc;
-              },
-              {},
-            );
-
-            setIsLiveValidate(true);
-            setFormSectionStatus(formSectionErrorList);
-          }}
           onError={handleError}
           onSubmit={submitHandler}
           liveValidate={isLiveValidate}
