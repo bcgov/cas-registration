@@ -45,15 +45,22 @@ jobs:
       - name: Generate Affected Projects JSON
         id: affected
         run: npx nx print-affected --base=origin/main --head=$(git rev-parse HEAD) --select=projects > affected.json
+      - name: Output Affected Projects JSON
+        run: cat affected.json
       - name: Set Affected Projects as Output
         id: set-affected
         run: |
-          AFFECTED_PROJECTS=$(cat affected.json | jq -r '.projects | join(",")')
-          echo "::set-output name=projects::$AFFECTED_PROJECTS"
+          if cat affected.json | jq -e . > /dev/null 2>&1; then
+            AFFECTED_PROJECTS=$(cat affected.json | jq -r '.projects | join(",")')
+            echo "::set-output name=projects::$AFFECTED_PROJECTS"
+          else
+            echo "::set-output name=projects::"
+            echo "Invalid JSON in affected.json"
+          fi
         shell: bash
 
   nx-tests:
-    needs: [install-dev-tools, capture-affected]
+    needs: [capture-affected]
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -74,6 +81,7 @@ jobs:
           else
             echo "No affected projects to test."
           fi
+        shell: bash
 
   yarn-audit:
     needs: install-dev-tools
