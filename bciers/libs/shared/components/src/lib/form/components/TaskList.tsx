@@ -1,6 +1,5 @@
 import { useState } from "react";
 import CheckCircle from "@bciers/components/icons/CheckCircle";
-import { BC_GOV_LINKS_COLOR } from "@bciers/styles";
 
 export interface TaskListProps {
   taskListItems: {
@@ -35,7 +34,7 @@ const TaskList = ({ taskListItems, taskListItemStatus }: TaskListProps) => {
             key={title ?? section}
             className={`w-full text-lg flex items-center px-2.5 py-2 mb-2 transition-all ease-in duration-200 border-solid border-0 border-r-2 ${
               isActive
-                ? `bg-[#1a5a960c] border-[${BC_GOV_LINKS_COLOR}]`
+                ? `bg-[#1a5a960c] border-bc-link-blue`
                 : "bg-transparent border-transparent"
             } hover:bg-bc-light-grey-200`}
             onClick={(e) => handleTaskClick(e, section)}
