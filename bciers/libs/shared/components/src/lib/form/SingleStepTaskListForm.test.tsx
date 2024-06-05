@@ -169,15 +169,9 @@ describe("the SingleStepTaskListForm component", () => {
       />,
     );
 
-    expect(
-      screen.getByTestId("section1-tasklist-check"),
-    ).not.toBeEmptyDOMElement();
-    expect(
-      screen.getByTestId("section2-tasklist-check"),
-    ).not.toBeEmptyDOMElement();
-    expect(
-      screen.getByTestId("section3-tasklist-check"),
-    ).not.toBeEmptyDOMElement();
+    expect(screen.getByTestId("section1-tasklist-check")).toContainHTML("svg");
+    expect(screen.getByTestId("section2-tasklist-check")).toContainHTML("svg");
+    expect(screen.getByTestId("section3-tasklist-check")).toContainHTML("svg");
   });
 
   it("should render the correct task list checks when partial formData is provided", () => {
@@ -200,15 +194,11 @@ describe("the SingleStepTaskListForm component", () => {
       />,
     );
 
-    expect(
-      screen.getByTestId("section1-tasklist-check"),
-    ).not.toBeEmptyDOMElement();
-    expect(
-      screen.getByTestId("section2-tasklist-check"),
-    ).not.toBeEmptyDOMElement();
-    expect(
-      screen.queryByTestId("section3-tasklist-check"),
-    ).toBeEmptyDOMElement();
+    expect(screen.getByTestId("section1-tasklist-check")).toContainHTML("svg");
+    expect(screen.getByTestId("section2-tasklist-check")).toContainHTML("svg");
+    expect(screen.queryByTestId("section3-tasklist-check")).not.toContainHTML(
+      "svg",
+    );
   });
 
   it("should call the onSubmit function when the form is submitted", async () => {
@@ -305,17 +295,15 @@ describe("the SingleStepTaskListForm component", () => {
       />,
     );
 
-    // Use empty DOM element because we can't attach a data-testid to an svg,
-    // only to the div that contains the svg
-    expect(
-      screen.queryByTestId("section1-tasklist-check"),
-    ).toBeEmptyDOMElement();
-    expect(
-      screen.queryByTestId("section2-tasklist-check"),
-    ).toBeEmptyDOMElement();
-    expect(
-      screen.queryByTestId("section3-tasklist-check"),
-    ).toBeEmptyDOMElement();
+    expect(screen.queryByTestId("section1-tasklist-check")).not.toContainHTML(
+      "svg",
+    );
+    expect(screen.queryByTestId("section2-tasklist-check")).not.toContainHTML(
+      "svg",
+    );
+    expect(screen.queryByTestId("section3-tasklist-check")).not.toContainHTML(
+      "svg",
+    );
 
     // Fill in section 1 fields and verify the task list check appears
     const firstNameField = screen.getByLabelText("First name*");
@@ -324,9 +312,7 @@ describe("the SingleStepTaskListForm component", () => {
     fireEvent.change(firstNameField, { target: { value: "Test" } });
     fireEvent.change(lastNameField, { target: { value: "User" } });
 
-    expect(
-      screen.getByTestId("section1-tasklist-check"),
-    ).not.toBeEmptyDOMElement();
+    expect(screen.getByTestId("section1-tasklist-check")).toContainHTML("svg");
 
     // Fill in section 2 fields and verify the task list check appears
     const phoneField = screen.getByLabelText("Phone*");
@@ -335,9 +321,7 @@ describe("the SingleStepTaskListForm component", () => {
     fireEvent.change(phoneField, { target: { value: "12345678901" } });
     fireEvent.change(emailField, { target: { value: "test@testing.ca" } });
 
-    expect(
-      screen.getByTestId("section2-tasklist-check"),
-    ).not.toBeEmptyDOMElement();
+    expect(screen.getByTestId("section2-tasklist-check")).toContainHTML("svg");
 
     // Fill in section 3 fields and verify the task list check appears
     const addressField = screen.getByLabelText("Address*");
@@ -346,9 +330,7 @@ describe("the SingleStepTaskListForm component", () => {
     fireEvent.change(addressField, { target: { value: "123 Test St" } });
     fireEvent.change(cityField, { target: { value: "Victoria" } });
 
-    expect(
-      screen.getByTestId("section3-tasklist-check"),
-    ).not.toBeEmptyDOMElement();
+    expect(screen.getByTestId("section3-tasklist-check")).toContainHTML("svg");
   });
 
   it("should not render a task list check if the format validation fails", () => {
