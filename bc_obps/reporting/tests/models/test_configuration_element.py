@@ -1,6 +1,13 @@
 from common.tests.utils.helpers import BaseTestCase
 from reporting.models import ConfigurationElement
-from reporting.tests.utils.bakers import configuration_baker, gas_type_baker, reporting_activity_baker, source_type_baker, methodology_baker
+from reporting.tests.utils.bakers import (
+    configuration_baker,
+    gas_type_baker,
+    reporting_activity_baker,
+    source_type_baker,
+    methodology_baker,
+)
+
 
 class ConfigurationElementTest(BaseTestCase):
     @classmethod
@@ -22,5 +29,5 @@ class ConfigurationElementTest(BaseTestCase):
             ("methodology", "methodology", None, None),
             ("valid_from", "valid from", None, None),
             ("valid_to", "valid to", None, None),
-            ("reporting_fields", "reporting fields", None, None)
+            ("reporting_fields", "reporting fields", None, None),
         ]

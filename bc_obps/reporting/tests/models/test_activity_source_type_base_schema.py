@@ -1,6 +1,12 @@
 from common.tests.utils.helpers import BaseTestCase
 from reporting.models import ActivitySourceTypeBaseSchema
-from reporting.tests.utils.bakers import configuration_baker, reporting_activity_baker, source_type_baker, base_schema_baker
+from reporting.tests.utils.bakers import (
+    configuration_baker,
+    reporting_activity_baker,
+    source_type_baker,
+    base_schema_baker,
+)
+
 
 class ActivitySourceTypeBaseSchemaTest(BaseTestCase):
     @classmethod
@@ -19,5 +25,5 @@ class ActivitySourceTypeBaseSchemaTest(BaseTestCase):
             ("source_type", "source type", None, None),
             ("base_schema", "base schema", None, None),
             ("valid_from", "valid from", None, None),
-            ("valid_to", "valid to", None, None)
+            ("valid_to", "valid to", None, None),
         ]
