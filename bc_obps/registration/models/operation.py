@@ -36,21 +36,17 @@ class Operation(TimeStampedModel):
     id = models.UUIDField(
         primary_key=True, default=uuid.uuid4, db_comment="Primary key to identify the operation", verbose_name="ID"
     )
-    name = models.CharField(
-        max_length=1000, db_comment="The name of an operation"
-    )  # TODO: Delete this once we added the data migration for ownership
-    type = models.CharField(
-        max_length=1000, db_comment="The type of an operation"
-    )  # TODO: Delete this once we added the data migration for ownership
+    name = models.CharField(max_length=1000, db_comment="The name of an operation")
+    type = models.CharField(max_length=1000, db_comment="The type of an operation")
     operator = models.ForeignKey(
         Operator,
         on_delete=models.DO_NOTHING,
         db_comment="The operator who owns the operation",
         related_name="operations",
-    )  # TODO: Delete this once we added the data migration for ownership
+    )
     operation_has_multiple_operators = models.BooleanField(
         db_comment="Whether or not the operation has multiple operators", default=False
-    )  # TODO: Delete this once we added the data migration for ownership
+    )
 
     naics_code = models.ForeignKey(
         NaicsCode,
@@ -75,7 +71,7 @@ class Operation(TimeStampedModel):
         db_comment="Whether or not the operation is required to register or is simply opting in. Only needed if the operation did not report the previous year.",
         blank=True,
         null=True,
-    )  # TODO: Delete this once we added the data migration for ownership
+    )
 
     verified_at = models.DateTimeField(
         db_comment="The time the operation was verified by an IRC user. If exists, the operation is registered for OBPS.",
@@ -99,7 +95,7 @@ class Operation(TimeStampedModel):
         Document,
         blank=True,
         related_name="operations",
-    )  # TODO: Delete this once we added the data migration for ownership
+    )
     point_of_contact = models.ForeignKey(
         Contact,
         on_delete=models.DO_NOTHING,
@@ -107,7 +103,7 @@ class Operation(TimeStampedModel):
         blank=True,
         null=True,
         db_comment="Foreign key to the contact that is the point of contact",
-    )  # TODO: Delete this once we added the data migration for ownership
+    )
     status = models.CharField(
         max_length=1000,
         choices=Statuses.choices,
@@ -126,12 +122,12 @@ class Operation(TimeStampedModel):
         RegulatedProduct,
         blank=True,
         related_name='%(class)ss',
-    )  # TODO: Delete this once we added the data migration for ownership
+    )
     reporting_activities = models.ManyToManyField(
         ReportingActivity,
         blank=True,
         related_name='%(class)ss',
-    )  # TODO: Delete this once we added the data migration for ownership
+    )
     history = HistoricalRecords(
         table_name='erc_history"."operation_history',
         m2m_fields=[regulated_products, reporting_activities, documents],
@@ -208,10 +204,6 @@ class Operation(TimeStampedModel):
 
         new_boro_id_instance = BcObpsRegulatedOperation.objects.create(id=new_boro_id)
         self.bc_obps_regulated_operation = new_boro_id_instance
-
-    # def __str__(self) -> str:
-    #     fields = [f"{field.name}={getattr(self, field.name)}" for field in self._meta.fields]
-    #     return ' - '.join(fields)
 
     @property
     def current_owner(self) -> Operator:

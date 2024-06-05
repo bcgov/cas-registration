@@ -81,10 +81,6 @@ class UserOperator(TimeStampedModel):
             )
         ]
 
-    # def __str__(self) -> str:
-    #     fields = [f"{field.name}={getattr(self, field.name)}" for field in self._meta.fields]
-    #     return ' - '.join(fields)
-
     def get_senior_officer(self) -> Optional[Contact]:
         """
         Returns the senior officer associated with the useroperator's operator.

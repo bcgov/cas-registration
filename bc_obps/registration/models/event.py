@@ -9,18 +9,11 @@ from datetime import datetime
 
 class Event(TimeStampedModel):
     class Types(models.TextChoices):
-        """
-        ?: Could we have shorter names for the types?
-        ?: Do we need any constraint on operation and facility?(like only one of them can be null or some event types can only be associated with one of them)
-        TODO: Make sure these are the correct types
-        """
-
         CLOSING_OR_TEMPORARY_SHUTDOWN = "Closing or Temporary Shutdown"
         ACQUISITION = "Acquisition"
         TRANSFER_OF_CONTROL = "Transfer of Control"
         DIVESTMENT = "Divestment"
-        # STARTUP = "Startup"
-        # CHANGE_IN_THE_OPERATOR_HAVING_CONTROL_AND_DIRECTION = "Change in the Operator having Control and Direction"
+        STARTUP = "Startup"
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, db_comment="Primary key to identify the event")
     operation = models.ForeignKey(Operation, null=True, blank=True, on_delete=models.DO_NOTHING, related_name="events")
