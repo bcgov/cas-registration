@@ -20,7 +20,7 @@ class Event(TimeStampedModel):
     facility = models.ForeignKey(Facility, null=True, blank=True, on_delete=models.DO_NOTHING, related_name="events")
     effective_date = models.DateTimeField(db_comment="The effective date of the event")
     type = models.CharField(max_length=100, choices=Types.choices, db_comment="The type of the event")
-    additional_data = models.JSONField(db_comment="Additional data about the event")
+    additional_data = models.JSONField(null=True, blank=True, db_comment="Additional data about the event")
     history = HistoricalRecords(
         table_name='erc_history"."event_history',
         history_user_id_field=models.UUIDField(null=True, blank=True),
@@ -31,6 +31,23 @@ class Event(TimeStampedModel):
             "Table containing information about events that occur in the lifecycle of an operation or facility."
         )
         db_table = 'erc"."event'
+        constraints = [
+            models.CheckConstraint(
+                check=(
+                    (models.Q(operation_id__isnull=True) & models.Q(facility_id__isnull=False))
+                    | (models.Q(operation_id__isnull=False) & models.Q(facility_id__isnull=True))
+                ),
+                name="event_not_both_operation_and_facility",
+            ),
+            models.CheckConstraint(
+                check=~(models.Q(operation_id__isnull=False) & models.Q(facility_id__isnull=False)),
+                name="event_cannot_have_both_operation_and_facility",
+            ),
+            models.CheckConstraint(
+                check=~models.Q(operation_id__isnull=True, facility_id__isnull=True),
+                name="event_has_operation_or_facility",
+            ),
+        ]
 
     def __str__(self) -> str:
         return f"{self.type} - {self.effective_date}"
@@ -60,38 +77,49 @@ class Event(TimeStampedModel):
         NOTE: We can also implement this as a database constraint using a separate migration and having PostgreSQL CHECK the CONSTRAINT.
         """
         event_type_mapping: Dict[str, Dict[str, Callable]] = {
-            self.Types.CLOSING_OR_TEMPORARY_SHUTDOWN: {'end_date': lambda value: self._validate_datetime(value)},
+            self.Types.CLOSING_OR_TEMPORARY_SHUTDOWN: {'end_date': self._validate_datetime},
             self.Types.ACQUISITION: {
-                'seller_legal_name': lambda value: self._validate_string(value),
-                'seller_mailing_address_id': lambda value: self._validate_address_id(value),
+                'seller_legal_name': self._validate_string,
+                'seller_mailing_address_id': self._validate_address_id,
             },
             self.Types.TRANSFER_OF_CONTROL: {
-                'transferer_legal_name': lambda value: self._validate_string(value),
-                'transferer_mailing_address_id': lambda value: self._validate_address_id(value),
+                'transferer_legal_name': self._validate_string,
+                'transferer_mailing_address_id': self._validate_address_id,
             },
             self.Types.DIVESTMENT: {
-                'buyer_legal_name': lambda value: self._validate_string(value),
-                'buyer_mailing_address_id': lambda value: self._validate_address_id(value),
+                'buyer_legal_name': self._validate_string,
+                'buyer_mailing_address_id': self._validate_address_id,
             },
-            # self.Types.STARTUP: ...
-            # self.Types.CHANGE_IN_THE_OPERATOR_HAVING_CONTROL_AND_DIRECTION: ...
+            self.Types.STARTUP: {},  # No additional data required for startup(We only need the effective date)
         }
 
-        required_fields_and_validators = event_type_mapping.get(self.type, {})
+        required_fields_and_validators = event_type_mapping.get(self.type)
 
-        if not required_fields_and_validators:
+        if required_fields_and_validators is None:
             raise ValidationError("Invalid event type")
 
-        if not self.additional_data:
-            raise ValidationError("Additional data is missing")
+        # For all event types except STARTUP and CLOSING_OR_TEMPORARY_SHUTDOWN, additional_data is required
+        if self.type not in [self.Types.STARTUP, self.Types.CLOSING_OR_TEMPORARY_SHUTDOWN]:
+            if not self.additional_data:
+                raise ValidationError("Additional data is missing")
 
-        for field, check_func in required_fields_and_validators.items():
-            value = self.additional_data.get(field)
+            for field, check_func in required_fields_and_validators.items():
+                value = self.additional_data.get(field)
 
-            if not value:
-                raise ValidationError(f"Field '{field}' is missing in additional data")
+                if value is None:
+                    raise ValidationError(f"Field '{field}' is missing in additional data")
 
+                try:
+                    check_func(value)
+                except Exception as e:
+                    raise ValidationError(f"Invalid value for field '{field}': {e}")
+
+        if (
+            self.type == self.Types.CLOSING_OR_TEMPORARY_SHUTDOWN
+            and self.additional_data
+            and 'end_date' in self.additional_data
+        ):
             try:
-                check_func(value)
+                self._validate_datetime(self.additional_data.get('end_date'))
             except Exception as e:
-                raise ValidationError(f"Invalid value for field '{field}': {e}")
+                raise ValidationError(f"Invalid value for field 'end_date': {e}")
