@@ -65,11 +65,11 @@ const SingleStepTaskListForm = ({
 
     // Get the section keys from the error schema and set the newSectionErrorList
     const newSectionErrorList = Object.keys(errorSchema).reduce(
-      (acc, section: string) => {
+      (acc: { [key: string]: boolean }, section: string) => {
         acc[section] = false;
         return acc;
       },
-      {} as { [key: string]: boolean },
+      {},
     );
 
     // Re-validate the errors in the previous state and update the newSectionErrorList
@@ -100,6 +100,28 @@ const SingleStepTaskListForm = ({
           uiSchema={uiSchema}
           formData={formData}
           onChange={handleFormChange}
+          onMount={(formRef) => {
+            // Do not validate on component mount if there is no formData
+            if (Object.keys(formData).length === 0) return;
+
+            // If there is formData, validate the form sections and set the formSectionStatus
+            const validator = formRef.current.state.schemaUtils.getValidator();
+            const errorData = validator.validateFormData(formData, schema);
+            const errorSchema = errorData.errorSchema;
+
+            const formSectionErrorList = formSectionList.reduce(
+              (acc: { [key: string]: boolean }, section: string) => {
+                const sectionErrors = errorSchema?.[section] ?? {};
+                const isValid = Object.keys(sectionErrors).length === 0;
+                acc[section] = isValid;
+                return acc;
+              },
+              {},
+            );
+
+            setIsLiveValidate(true);
+            setFormSectionStatus(formSectionErrorList);
+          }}
           onError={handleError}
           onSubmit={submitHandler}
           liveValidate={isLiveValidate}
