@@ -38,7 +38,3 @@ class Contact(UserAndContactCommonInfo, TimeStampedModel):
         indexes = [
             models.Index(fields=["business_role"], name="contact_role_idx"),
         ]
-
-    # def __str__(self) -> str:
-    #     fields = [f"{field.name}={getattr(self, field.name)}" for field in self._meta.fields]
-    #     return ' - '.join(fields)

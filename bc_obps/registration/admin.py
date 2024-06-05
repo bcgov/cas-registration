@@ -4,9 +4,7 @@ from registration.models import (
     Event,
     Facility,
     FacilityOwnershipTimeline,
-    FacilityType,
     OperationOwnershipTimeline,
-    OperationType,
     RegulatedProduct,
     NaicsCode,
     Document,
@@ -44,16 +42,6 @@ class OperationAdmin(admin.ModelAdmin):
     ordering = ('id',)
 
 
-@admin.register(OperationType)
-class OperationTypeAdmin(admin.ModelAdmin):
-    list_display = ('name',)
-
-
-@admin.register(FacilityType)
-class FacilityTypeAdmin(admin.ModelAdmin):
-    list_display = ('name', 'operation_type')
-
-
 @admin.register(Facility)
 class FacilityAdmin(admin.ModelAdmin):
     list_display = ('id', 'address', 'swrs_facility_id', 'bcghg_id', 'created_at', 'updated_at', 'archived_at')
@@ -61,7 +49,7 @@ class FacilityAdmin(admin.ModelAdmin):
 
 @admin.register(FacilityOwnershipTimeline)
 class FacilityOwnershipTimelineAdmin(admin.ModelAdmin):
-    list_display = ('id', 'facility', 'operation', 'name', 'facility_type', 'start_date', 'end_date')
+    list_display = ('id', 'facility', 'operation', 'start_date', 'end_date')
 
 
 @admin.register(OperationOwnershipTimeline)
@@ -70,11 +58,6 @@ class OperationOwnershipTimelineAdmin(admin.ModelAdmin):
         'id',
         'operation',
         'operator',
-        'name',
-        'operation_type',
-        'operation_has_multiple_operators',
-        'opt_in',
-        'point_of_contact',
         'start_date',
         'end_date',
     )

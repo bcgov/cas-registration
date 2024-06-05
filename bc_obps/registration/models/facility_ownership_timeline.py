@@ -1,18 +1,11 @@
 from django.db import models
-from registration.models import Facility, FacilityType, Operation, TimeStampedModel
+from registration.models import Facility, Operation, TimeStampedModel
 from simple_history.models import HistoricalRecords
 
 
 class FacilityOwnershipTimeline(TimeStampedModel):
     facility = models.ForeignKey(Facility, on_delete=models.DO_NOTHING, related_name="ownerships")
     operation = models.ForeignKey(Operation, on_delete=models.DO_NOTHING, related_name="facility_ownerships")
-    name = models.CharField(max_length=1000, db_comment="The name of the facility when the operation owned it")
-    facility_type = models.ForeignKey(
-        FacilityType,
-        on_delete=models.DO_NOTHING,
-        related_name="facility_ownerships",
-        db_comment="The type of facility that the operation owned",
-    )
     start_date = models.DateTimeField(
         blank=True, null=True, db_comment="The start date of the ownership of the facility"
     )

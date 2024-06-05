@@ -15,9 +15,7 @@ from .user_operator import UserOperator
 from .regulated_product import RegulatedProduct
 from .naics_code import NaicsCode
 from .reporting_activity import ReportingActivity
-from .operation_type import OperationType
 from .operation import Operation
-from .facility_type import FacilityType
 from .facility import Facility
 from .event import Event
 from .facility_ownership_timeline import FacilityOwnershipTimeline
@@ -37,12 +35,10 @@ __all__ = [
     "Document",
     "Event",
     "FacilityOwnershipTimeline",
-    "FacilityType",
     "Facility",
     "MultipleOperator",
     "NaicsCode",
     "OperationOwnershipTimeline",
-    "OperationType",
     "Operation",
     "Operator",
     "ParentOperator",
