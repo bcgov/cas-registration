@@ -68,7 +68,12 @@ jobs:
       - name: Authenticate with Nx Cloud
         run: yarn nx connect-to-nx-cloud
       - name: Run Nx Affected Tests with Remote Caching
-        run: yarn nx affected --target=test --parallel --base=origin/main --head=$(git rev-parse HEAD) --projects ${{ needs.set-affected.outputs.projects }}
+        run: |
+          if [ -n "${{ needs.capture-affected.outputs.projects }}" ]; then
+            yarn nx affected --target=test --parallel --projects=${{ needs.capture-affected.outputs.projects }}
+          else
+            echo "No affected projects to test."
+          fi
 
   yarn-audit:
     needs: install-dev-tools
