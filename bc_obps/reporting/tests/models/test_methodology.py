@@ -1,7 +1,6 @@
 from common.tests.utils.helpers import BaseTestCase
 from reporting.models import Methodology
 from django.test import TestCase
-from reporting.tests.utils.bakers import configuration_element_baker
 
 
 class TestInitialData(TestCase):
