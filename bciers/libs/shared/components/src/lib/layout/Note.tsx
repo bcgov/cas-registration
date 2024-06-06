@@ -34,7 +34,7 @@ const Note = ({ children, variant = "info" }: NoteProps) => {
     <div
       className="relative w-full"
       style={{
-        paddingBottom: `${height}px`,
+        height: `${height}px`,
       }}
     >
       <div
