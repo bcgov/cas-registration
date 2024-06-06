@@ -2,6 +2,44 @@
 
 RJSF Documentation: [https://rjsf-team.github.io/react-jsonschema-form/docs/](https://rjsf-team.github.io/react-jsonschema-form/docs/)
 
+Documentation on our Form Base components: [rjsf-form-base-components.md](rjsf-form-base-components.md)
+
+## Externally validate the form
+
+Sometimes it is necessary to validate the form externally or validate the form without triggering the form validation. This can be done by accessing the validator through the `schemaUtils` object in the `onChange` event or through the `formRef` object.
+
+Access validator through onChange:
+<br/>
+
+```
+const handleFormChange = (e: IChangeEvent) => {
+const validator = e.schemaUtils.getValidator();
+const errorData = validator.validateFormData(e.formData, e.schema);
+...
+}
+```
+
+Access validator through formRef:
+
+```
+  import { createRef } from 'react';
+
+
+  const formRef = createRef<FormBase>();
+
+
+  const validator = formRef?.current.state.schemaUtils.getValidator();
+  const errorData = validator.validateFormData(formData, schema);
+
+
+  return (
+    <FormBase
+      ref={formRef}
+      ...
+    />
+  );
+```
+
 ## Types
 
 Number fields will be automatically handled when the type is set to `number` in the schema as the default `TextWidget` will change the input to a number input and save the value as a number. This can be overridden using the `ui:widget` option in the `uiSchema`.
