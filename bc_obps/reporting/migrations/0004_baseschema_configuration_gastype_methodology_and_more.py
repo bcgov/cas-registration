@@ -2,6 +2,7 @@
 
 import django.db.models.deletion
 from django.db import migrations, models
+import json
 
 
 def init_gas_type_data(apps, schema_monitor):
@@ -21,7 +22,7 @@ def init_gas_type_data(apps, schema_monitor):
             GasType(name='Pentafluoroethane', chemical_formula='C2HF5'),
             GasType(name='1,1,1,2-Tetrafluoroethane', chemical_formula='C2H2F4'),
         ]
-    )
+)
 
 
 def reverse_init_gas_type_data(apps, schema_monitor):
@@ -83,6 +84,23 @@ def reverse_init_methodology_data(apps, schema_monitor):
         ]
     ).delete()
 
+def init_base_schema_data(apps, schema_monitor):
+    '''
+    Add initial data to erc.baseSchema
+    '''
+    ## Import JSON base schema data
+    import os
+    cwd = os.getcwd()
+    with open(f'{cwd}/reporting/base_json_schemas/general_stationary_combustion/gsc_of_fuel_or_waste_with_production_of_useful_energy_2024.json') as gsc_st1:
+        gsc_source_type_1 = json.load(gsc_st1)
+
+
+    BaseSchema = apps.get_model('reporting', 'BaseSchema')
+    BaseSchema.objects.bulk_create(
+        [
+            BaseSchema(slug='gsc_of_fuel_or_waste_with_production_of_useful_energy_2024', schema=gsc_source_type_1)
+        ]
+    )
 
 class Migration(migrations.Migration):
 
@@ -116,6 +134,7 @@ class Migration(migrations.Migration):
                 'db_table_comment': 'This table contains the base json schema data for displaying emission forms. The base schema can be defined by activity and source type and does not change based on user input so it can be stored statically',
             },
         ),
+        migrations.RunPython(init_base_schema_data),
         migrations.CreateModel(
             name='Configuration',
             fields=[

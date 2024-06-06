@@ -1,0 +1,46 @@
+{
+  "title": "General stationary combustion of fuel or waste with production of useful energy",
+  "type": "object",
+  "required": [
+    "firstName",
+    "lastName"
+  ],
+  "properties": {
+    "gscUnitName": {
+      "type": "string",
+      "title": "GSC Unit Name"
+    },
+    "gscUnitType": {
+      "type": "string",
+      "title": "GSC Unit Type"
+    },
+    "description": {
+      "type": "string",
+      "title": "Description"
+    },
+    "FuelInformation": {
+      "type": "null",
+      "title": "Fuel Information"
+    },
+    "fuelName": {
+      "type": "string",
+      "title": "Fuel Name"
+    },
+    "fuelUnit": {
+      "type": "string",
+      "title": "Fuel Unit"
+    },
+    "fuelDescription": {
+      "type": "string",
+      "title": "Fuel Description"
+    },
+    "annualFuelAmount": {
+      "type": "number",
+      "title": "Annual Fuel Amount"
+    },
+    "gasType": {
+      "type": "string",
+      "title": "Gas Type"
+    }
+  }
+}
