@@ -106,8 +106,11 @@ export default function Page() {
       }}
     >
       <Note variant="important">
-        <b>Important:</b> It can be used to highlight important information or
-        provide context to the content on the page.
+        <p>
+          <b>Important:</b> It can be used to highlight important information or
+          provide context to the content on the page.
+        </p>
+        <p>Works with multiple paragraphs.</p>
       </Note>
       <Note>
         <b>Note:</b> It can be used to provide additional context to the content
