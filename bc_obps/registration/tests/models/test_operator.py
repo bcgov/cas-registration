@@ -10,7 +10,14 @@ from registration.models import (
     UserOperator,
 )
 from django.core.exceptions import ValidationError
-from registration.tests.constants import ADDRESS_FIXTURE, CONTACT_FIXTURE, OPERATOR_FIXTURE, TIMESTAMP_COMMON_FIELDS, USER_FIXTURE, DOCUMENT_FIXTURE
+from registration.tests.constants import (
+    ADDRESS_FIXTURE,
+    CONTACT_FIXTURE,
+    OPERATOR_FIXTURE,
+    TIMESTAMP_COMMON_FIELDS,
+    USER_FIXTURE,
+    DOCUMENT_FIXTURE,
+)
 
 
 class OperatorModelTest(BaseTestCase):

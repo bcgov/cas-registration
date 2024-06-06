@@ -6,7 +6,13 @@ from registration.models import (
     UserOperator,
 )
 from django.core.exceptions import ValidationError
-from registration.tests.constants import ADDRESS_FIXTURE, CONTACT_FIXTURE, OPERATOR_FIXTURE, TIMESTAMP_COMMON_FIELDS, USER_FIXTURE
+from registration.tests.constants import (
+    ADDRESS_FIXTURE,
+    CONTACT_FIXTURE,
+    OPERATOR_FIXTURE,
+    TIMESTAMP_COMMON_FIELDS,
+    USER_FIXTURE,
+)
 from registration.tests.utils.bakers import user_operator_baker
 
 
@@ -48,7 +54,9 @@ class UserOperatorModelTest(BaseTestCase):
             verified_by=User.objects.get(user_guid="00000000-0000-0000-0000-000000000001"),
         )
 
-        with self.assertRaises(ValidationError, msg="A UserOperator record with this user-operator pair already exists."):
+        with self.assertRaises(
+            ValidationError, msg="A UserOperator record with this user-operator pair already exists."
+        ):
             invalid_user_operator_record.save()
 
     def test_user_friendly_id_generation(self):
@@ -56,5 +64,9 @@ class UserOperatorModelTest(BaseTestCase):
         user_operator_2 = user_operator_baker()
         user_operator_1_friendly_id = user_operator_1.user_friendly_id
         user_operator_2_friendly_id = user_operator_2.user_friendly_id
-        self.assertNotEqual(user_operator_1_friendly_id, user_operator_2_friendly_id, "User friendly IDs should be unique.")
-        self.assertEqual(user_operator_2_friendly_id, user_operator_1_friendly_id + 1, "User friendly IDs should increment")
+        self.assertNotEqual(
+            user_operator_1_friendly_id, user_operator_2_friendly_id, "User friendly IDs should be unique."
+        )
+        self.assertEqual(
+            user_operator_2_friendly_id, user_operator_1_friendly_id + 1, "User friendly IDs should increment"
+        )

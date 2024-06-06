@@ -1,5 +1,12 @@
 from common.tests.utils.helpers import BaseTestCase
-from registration.tests.constants import ADDRESS_FIXTURE, TIMESTAMP_COMMON_FIELDS, USER_FIXTURE, CONTACT_FIXTURE, OPERATOR_FIXTURE, DOCUMENT_FIXTURE
+from registration.tests.constants import (
+    ADDRESS_FIXTURE,
+    TIMESTAMP_COMMON_FIELDS,
+    USER_FIXTURE,
+    CONTACT_FIXTURE,
+    OPERATOR_FIXTURE,
+    DOCUMENT_FIXTURE,
+)
 from registration.tests.utils.bakers import multiple_operator_baker
 
 
