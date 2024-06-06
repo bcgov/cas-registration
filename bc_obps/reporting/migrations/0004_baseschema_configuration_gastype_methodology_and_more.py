@@ -98,7 +98,8 @@ def init_base_schema_data(apps, schema_monitor):
     BaseSchema = apps.get_model('reporting', 'BaseSchema')
     BaseSchema.objects.bulk_create(
         [
-            BaseSchema(slug='gsc_of_fuel_or_waste_with_production_of_useful_energy_2024', schema=gsc_source_type_1)
+            BaseSchema(slug='gsc_of_fuel_or_waste_with_production_of_useful_energy_2024', schema=gsc_source_type_1),
+            BaseSchema(slug='gsc_of_fuel_or_waste_without_production_of_useful_energy_2024', schema=gsc_source_type_1)
         ]
     )
 
