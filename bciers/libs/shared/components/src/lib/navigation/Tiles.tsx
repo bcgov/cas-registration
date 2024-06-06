@@ -1,3 +1,4 @@
+"use client";
 import { ContentItem } from "@bciers/types";
 
 export default async function Tiles({ tiles }: { tiles: ContentItem[] }) {
@@ -6,13 +7,22 @@ export default async function Tiles({ tiles }: { tiles: ContentItem[] }) {
       {tiles &&
         tiles.map((tile) => {
           const { icon, links, title } = tile;
+          const handleClick = () => {
+            if (tile.href) {
+              window.location.href = tile.href; // Navigate to href if exists
+            }
+          };
+
           return (
-            <div key={title} className="dashboard-tile-container">
+            <div
+              key={title}
+              className="dashboard-tile-container"
+              onClick={handleClick}
+            >
               <h2 className="flex items-center m-0">
                 {icon}
                 <div className="ml-2">{tile.title}</div>
               </h2>
-
               <p className="mt-6 mb-0">{tile.content}</p>
               {typeof links === "object" &&
                 links.map((link, i) => {

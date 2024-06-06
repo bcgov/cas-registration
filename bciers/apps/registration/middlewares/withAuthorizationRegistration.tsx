@@ -35,14 +35,14 @@ const isAuthenticatedAllowListedPath = (pathname: string): boolean => {
 // Function to check if the path requires authorization
 const isAuthorizationRequiredPath = (
   pathname: string,
-  token: Session,
+  token: { identity_provider?: string; app_role?: string },
 ): boolean => {
   if (!token) {
     return false;
   }
 
   const idp = token.identity_provider;
-  const appRole = token.user.app_role;
+  const appRole = token.app_role;
   const authRoute = `${idp}/${appRole}`;
 
   return (
@@ -52,13 +52,16 @@ const isAuthorizationRequiredPath = (
   );
 };
 
-const isAuthorizedIdirUser = (token: Session): boolean => {
+const isAuthorizedIdirUser = (token: {
+  identity_provider?: string;
+  app_role?: string;
+}): boolean => {
   if (!token) {
     return false;
   }
 
   const idp = token.identity_provider;
-  const appRole = token.user.app_role;
+  const appRole = token.app_role;
   return idp === IDP.IDIR && !appRole?.includes("pending") ? true : false;
 };
 
@@ -72,9 +75,10 @@ export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
     }
     // Check if the user is authenticated via the jwt encoded in server side cookie
     const token = await getToken();
+    console.log(token);
     if (token) {
       // Check for the existence of token.user.app_role
-      if (!token.user.app_role || token.user.app_role === "") {
+      if (!token.app_role || token.app_role === "") {
         // Code to handle the case where app_role is either an empty string or null
         // route to profile form
         if (pathname.endsWith("/profile")) {
@@ -128,7 +132,7 @@ export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
         }
 
         request.nextUrl.pathname = `${token.identity_provider}/${
-          token.user.app_role
+          token.app_role
         }${pathname.replace("registration/", "")}`;
         return NextResponse.rewrite(request.nextUrl);
       }

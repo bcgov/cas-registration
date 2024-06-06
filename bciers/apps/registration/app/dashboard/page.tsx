@@ -1,30 +1,18 @@
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import Tiles from "@bciers/components/navigation/Tiles";
-import { getUserOperator } from "@/app/components/routes/select-operator/Page";
-import { actionHandler } from "@/app/utils/actions";
 import { FrontEndRoles } from "@/app/utils/enums";
 import Card from "@mui/material/Card";
 import Typography from "@mui/material/Typography";
 import { auth } from "@/dashboard/auth";
+import { fetchDashboardData } from "@bciers/actions/server";
+import { ContentItem } from "@bciers/types";
 
 export default async function Page() {
   const session = await auth();
   const role = session?.user?.app_role || "";
-  let operatorStatus = "";
-  let userOperatorStatus = "";
-  switch (role) {
-    case FrontEndRoles.INDUSTRY_USER:
-    case FrontEndRoles.INDUSTRY_USER_ADMIN:
-      const operator = await actionHandler(
-        "registration/user-operators/current",
-        "GET",
-        "",
-      );
-      const userOperator = await getUserOperator();
-      operatorStatus = operator.status;
-      userOperatorStatus = userOperator.status;
-      break;
-  }
+  const data = (await fetchDashboardData(
+    "common/dashboard-data?dashboard=registration",
+  )) as ContentItem[];
+
   return (
     <div>
       {role === FrontEndRoles.CAS_PENDING ? (
@@ -46,11 +34,7 @@ export default async function Page() {
         </>
       ) : (
         // Display role based tiles here
-        <Tiles
-          role={role}
-          operatorStatus={operatorStatus}
-          userOperatorStatus={userOperatorStatus}
-        />
+        <Tiles tiles={data} />
       )}
     </div>
   );

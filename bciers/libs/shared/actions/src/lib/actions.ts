@@ -7,10 +7,9 @@ and can be called from server components or from client components.
 */
 "use server";
 
-import { promises as fs } from "fs";
-import path from "path";
 import { cookies } from "next/headers";
 import { ContentItem } from "@bciers/types";
+import { actionHandler } from "@/app/utils/actions";
 
 // 🛠️ Function to get the encrypted JWT from NextAuth getToken route function
 export async function getToken() {
@@ -33,81 +32,20 @@ export async function getToken() {
   }
 }
 
-// 🛠️ Function to get the relative path of the monorepo
-function getRelativePath() {
-  const bciers = "bciers"; // Constant for directory name
-  const currentPath = process.cwd();
-  const relativePath = currentPath.slice(
-    0,
-    currentPath.indexOf(bciers) + bciers.length,
-  );
-  return relativePath;
-}
-
-// 🛠️ Function to return an array of JSON file paths within a source path
-export async function getJSONFiles(folderName: string): Promise<string[]> {
-  // Get the directory path for folderName
-  const relativePath = getRelativePath();
-  const directoryPath = path.join(relativePath, folderName);
+// 🛠️ Function to get dashboard tiles
+export async function fetchDashboardData(url: string) {
   try {
-    // Read the directory
-    const filenames = await fs.readdir(directoryPath);
-
-    // Filter JSON files and construct relative paths for JSON files
-    const jsonFiles = filenames
-      .filter((filename: string) => filename.endsWith(".json"))
-      .map((filename: string) => path.join(folderName, filename)); // Constructing relative paths
-
-    const reportProblemJsonPath = "libs/shared/data/src/report_a_problem.json";
-    jsonFiles.push(reportProblemJsonPath);
-
-    return jsonFiles;
+    // fetch data from server
+    const response = await actionHandler(url, "GET", "");
+    // Pretty-print the data
+    const data = JSON.stringify(response[0].data.tiles, null, 2);
+    // Parse data to object
+    var object = JSON.parse(data);
+    // Assert the object as ContentType
+    return object as ContentItem[];
   } catch (error) {
-    console.error(`Error reading directory: ${error}`);
-    return [];
+    // eslint-disable-next-line no-console
+    console.error(`An error occurred while fetching dashboard data: ${error}`);
+    return {};
   }
-}
-
-// 🛠️ Function to dynamically import json data objects
-export async function loadJson(jsonFile: string) {
-  const relativePath = getRelativePath();
-  const directoryPath = path.join(relativePath, jsonFile);
-  const file = await fs.readFile(directoryPath, "utf8");
-  return JSON.parse(file);
-}
-
-// 🛠️ Function to build tile content for dashboard
-export async function buildTileContent(
-  tiles: string[],
-): Promise<ContentItem[]> {
-  const contents: ContentItem[] = [];
-
-  for (const tile of tiles) {
-    try {
-      // Load JSON data asynchronously using loadJson
-      const content = await loadJson(tile);
-
-      // Assuming the loaded JSON data has the structure of ContentItem
-      const contentItem: ContentItem = {
-        title: content.title,
-        icon: content.icon,
-        content: content.content,
-        links: content.links,
-      };
-
-      // Push content to the array
-      contents.push(contentItem);
-    } catch (error) {
-      console.error(`Error loading JSON data for tile "${tile}":`, error);
-      // Handle loading errors (e.g., display an error message in the div)
-      contents.push({
-        title: `Error: Failed to load content for "${tile}"`,
-        icon: "",
-        content: "",
-        links: [],
-      });
-    }
-  }
-
-  return contents;
 }

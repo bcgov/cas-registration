@@ -22,7 +22,6 @@ import { Footer } from "@bciers/components";
 import { Header } from "@bciers/components";
 import { Bread } from "@bciers/components";
 import { Main } from "@bciers/components/server";
-import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "CAS OBPS REGISTRATION",
