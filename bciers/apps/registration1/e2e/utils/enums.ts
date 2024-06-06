@@ -104,7 +104,7 @@ export enum E2EValue {
   PREFIX = "E2E_",
   SEARCH_CRA = "987654321",
   SEARCH_LEGAL_NAME = "Operator",
-  STORAGE = "_STORAGE",
+  STORAGE = "_STORAGE_STATE",
 }
 
 // 👋 Form fields selectors
