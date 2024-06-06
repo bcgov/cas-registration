@@ -8,12 +8,13 @@ import {
 import { MiddlewareFactory } from "@bciers/middlewares/server";
 
 import { IDP } from "@/app/utils/enums";
-import { auth } from "@/dashboard/auth";
 import { Session } from "next-auth";
+
+import { getToken } from "@bciers/actions/server";
 /*
-Access control logic is managed using Next.js middleware and NextAuth.js authentication JWT session.
+Access control logic is managed using Next.js middleware and NextAuth.js authentication JWT token.
 The middleware intercepts requests, and for restricted areas...
-Checks for a valid user session, and extracts user information from the JWT session.
+Checks for a valid user token, and extracts user information from the JWT token.
 Based on JWT properties of identity_provider and role, the middleware dynamically rewrites the request URL
 to the appropriate folder structure.
  */
@@ -34,14 +35,14 @@ const isAuthenticatedAllowListedPath = (pathname: string): boolean => {
 // Function to check if the path requires authorization
 const isAuthorizationRequiredPath = (
   pathname: string,
-  session: Session,
+  token: Session,
 ): boolean => {
-  if (!session) {
+  if (!token) {
     return false;
   }
 
-  const idp = session.identity_provider;
-  const appRole = session.user.app_role;
+  const idp = token.identity_provider;
+  const appRole = token.user.app_role;
   const authRoute = `${idp}/${appRole}`;
 
   return (
@@ -51,13 +52,13 @@ const isAuthorizationRequiredPath = (
   );
 };
 
-const isAuthorizedIdirUser = (session: Session): boolean => {
-  if (!session) {
+const isAuthorizedIdirUser = (token: Session): boolean => {
+  if (!token) {
     return false;
   }
 
-  const idp = session.identity_provider;
-  const appRole = session.user.app_role;
+  const idp = token.identity_provider;
+  const appRole = token.user.app_role;
   return idp === IDP.IDIR && !appRole?.includes("pending") ? true : false;
 };
 
@@ -70,10 +71,10 @@ export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
       return next(request, _next);
     }
     // Check if the user is authenticated via the jwt encoded in server side cookie
-    const session = await auth();
-    if (session) {
-      // Check for the existence of session.user.app_role
-      if (!session.user.app_role || session.user.app_role === "") {
+    const token = await getToken();
+    if (token) {
+      // Check for the existence of token.user.app_role
+      if (!token.user.app_role || token.user.app_role === "") {
         // Code to handle the case where app_role is either an empty string or null
         // route to profile form
         if (pathname.endsWith("/profile")) {
@@ -98,10 +99,10 @@ export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
       }
 
       // Check if the path requires authorization
-      if (isAuthorizationRequiredPath(pathname, session)) {
+      if (isAuthorizationRequiredPath(pathname, token)) {
         if (pathname.includes("operations")) {
           // Industry users are only allowed to see their operations if their operator is pending/approved
-          if (!isAuthorizedIdirUser(session)) {
+          if (!isAuthorizedIdirUser(token)) {
             try {
               const options: RequestInit = {
                 cache: "no-store", // Default cache option
@@ -126,15 +127,15 @@ export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
           }
         }
 
-        request.nextUrl.pathname = `${session.identity_provider}/${
-          session.user.app_role
+        request.nextUrl.pathname = `${token.identity_provider}/${
+          token.user.app_role
         }${pathname.replace("registration/", "")}`;
         return NextResponse.rewrite(request.nextUrl);
       }
 
       // Routes with the folder structure break the breadcrumbs
       const pageSegment = pathname.replace(
-        `/${session.identity_provider}/${session.user.app_role}`,
+        `/${token.identity_provider}/${token.user.app_role}`,
         "",
       );
 
