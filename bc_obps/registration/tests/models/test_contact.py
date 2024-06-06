@@ -3,7 +3,13 @@ from registration.models import (
     Document,
     Contact,
 )
-from registration.tests.constants import ADDRESS_FIXTURE, CONTACT_FIXTURE, DOCUMENT_FIXTURE, USER_FIXTURE, TIMESTAMP_COMMON_FIELDS
+from registration.tests.constants import (
+    ADDRESS_FIXTURE,
+    CONTACT_FIXTURE,
+    DOCUMENT_FIXTURE,
+    USER_FIXTURE,
+    TIMESTAMP_COMMON_FIELDS,
+)
 
 
 class ContactModelTest(BaseTestCase):

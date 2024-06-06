@@ -11,7 +11,16 @@ from registration.models import (
 )
 from model_bakery import baker
 from django.core.exceptions import ValidationError
-from registration.tests.constants import ADDRESS_FIXTURE, BC_OBPS_REGULATED_OPERATION_FIXTURE, CONTACT_FIXTURE, DOCUMENT_FIXTURE, OPERATION_FIXTURE, OPERATOR_FIXTURE, TIMESTAMP_COMMON_FIELDS, USER_FIXTURE
+from registration.tests.constants import (
+    ADDRESS_FIXTURE,
+    BC_OBPS_REGULATED_OPERATION_FIXTURE,
+    CONTACT_FIXTURE,
+    DOCUMENT_FIXTURE,
+    OPERATION_FIXTURE,
+    OPERATOR_FIXTURE,
+    TIMESTAMP_COMMON_FIELDS,
+    USER_FIXTURE,
+)
 from registration.tests.utils.bakers import operation_baker
 
 
@@ -96,7 +105,9 @@ class OperationModelTest(BaseTestCase):
         existing_id = baker.make(BcObpsRegulatedOperation, id='23-0001')  # Example existing ID for the current year
         self.test_object.bc_obps_regulated_operation = existing_id
         self.test_object.generate_unique_boro_id()
-        self.assertEqual(self.test_object.bc_obps_regulated_operation, existing_id, "Should not change the existing ID.")
+        self.assertEqual(
+            self.test_object.bc_obps_regulated_operation, existing_id, "Should not change the existing ID."
+        )
 
     def test_generate_unique_boro_id_no_existing_id(self):
         # Case: No existing BORO ID

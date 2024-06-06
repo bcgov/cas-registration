@@ -64,7 +64,9 @@ class TestModelsWithAuditColumns(TestCase):
 
             # UPDATE
             model_data_field_has_choices = model._meta.get_field(field_to_update).choices
-            model.objects.filter(id=instance.id).update(**{field_to_update: model_data_field_has_choices[0][0] if model_data_field_has_choices else 'updated'})
+            model.objects.filter(id=instance.id).update(
+                **{field_to_update: model_data_field_has_choices[0][0] if model_data_field_has_choices else 'updated'}
+            )
             instance.set_create_or_update(self.user_2.pk)
             instance.refresh_from_db()
             self.assertIsNotNone(instance.created_at)
@@ -132,7 +134,9 @@ class TestModelsWithAuditColumns(TestCase):
 
             # Perform an action
             model_data_field_has_choices = model._meta.get_field(field_to_update).choices
-            model.objects.filter(id=instance.id).update(**{field_to_update: model_data_field_has_choices[0][0] if model_data_field_has_choices else 'updated'})
+            model.objects.filter(id=instance.id).update(
+                **{field_to_update: model_data_field_has_choices[0][0] if model_data_field_has_choices else 'updated'}
+            )
             instance.set_create_or_update(self.user_2.pk)
             instance.refresh_from_db()
 

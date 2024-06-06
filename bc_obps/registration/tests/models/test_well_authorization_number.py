@@ -30,7 +30,9 @@ class WellAuthorizationNumberTest(BaseTestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.test_object = WellAuthorizationNumber.objects.create(well_authorization_number=1, facility=Facility.objects.first())
+        cls.test_object = WellAuthorizationNumber.objects.create(
+            well_authorization_number=1, facility=Facility.objects.first()
+        )
         cls.field_data = [
             *TIMESTAMP_COMMON_FIELDS,
             ("well_authorization_number", "well authorization number", None, None),

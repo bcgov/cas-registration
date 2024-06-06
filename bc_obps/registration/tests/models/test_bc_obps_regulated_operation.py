@@ -9,7 +9,9 @@ from django.core.exceptions import ValidationError
 class TestBcObpsRegulatedOperationModel(BaseTestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.test_object = BcObpsRegulatedOperation.objects.create(id='23-0001', issued_at=timezone.now(), comments='test')
+        cls.test_object = BcObpsRegulatedOperation.objects.create(
+            id='23-0001', issued_at=timezone.now(), comments='test'
+        )
         cls.field_data = [
             ("id", "id", None, None),  # this is not ID because we override the default ID field
             ("issued_at", "issued at", None, None),
