@@ -346,8 +346,8 @@ export async function setupTestEnvironment(
   const url = workFlow
     ? `${baseUrlSetup}?workflow=${workFlow}`
     : truncateOnly
-      ? `${baseUrlSetup}?truncate_only=true`
-      : baseUrlSetup;
+    ? `${baseUrlSetup}?truncate_only=true`
+    : baseUrlSetup;
 
   let response: APIResponse = await context.request.get(url);
 

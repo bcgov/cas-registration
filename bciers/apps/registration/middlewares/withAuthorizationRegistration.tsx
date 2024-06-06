@@ -126,7 +126,9 @@ export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
           }
         }
 
-        request.nextUrl.pathname = `${session.identity_provider}/${session.user.app_role}${pathname.replace("registration/", "")}`;
+        request.nextUrl.pathname = `${session.identity_provider}/${
+          session.user.app_role
+        }${pathname.replace("registration/", "")}`;
         return NextResponse.rewrite(request.nextUrl);
       }
 

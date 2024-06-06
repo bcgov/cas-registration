@@ -1,17 +1,17 @@
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import Tiles from "@bciers/components/navigation/Tiles";
-import { getUserOperator } from '@/app/components/routes/select-operator/Page';
-import { actionHandler } from '@/app/utils/actions';
-import { FrontEndRoles } from '@/app/utils/enums';
-import Card from '@mui/material/Card';
-import Typography from '@mui/material/Typography';
-import { auth } from '@/dashboard/auth';
+import { getUserOperator } from "@/app/components/routes/select-operator/Page";
+import { actionHandler } from "@/app/utils/actions";
+import { FrontEndRoles } from "@/app/utils/enums";
+import Card from "@mui/material/Card";
+import Typography from "@mui/material/Typography";
+import { auth } from "@/dashboard/auth";
 
 export default async function Page() {
   const session = await auth();
-  const role = session?.user?.app_role || '';
-  let operatorStatus = '';
-  let userOperatorStatus = '';
+  const role = session?.user?.app_role || "";
+  let operatorStatus = "";
+  let userOperatorStatus = "";
   switch (role) {
     case FrontEndRoles.INDUSTRY_USER:
     case FrontEndRoles.INDUSTRY_USER_ADMIN:
@@ -31,7 +31,7 @@ export default async function Page() {
         <>
           <Card
             data-testid="dashboard-pending-message"
-            sx={{ padding: 2, margin: 2, border: 'none', boxShadow: 'none' }}
+            sx={{ padding: 2, margin: 2, border: "none", boxShadow: "none" }}
           >
             <Typography variant="h5" component="div">
               Welcome to B.C. Industrial Emissions Reporting System

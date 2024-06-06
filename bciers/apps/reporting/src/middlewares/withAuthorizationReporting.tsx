@@ -74,7 +74,9 @@ export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
       // Check if the path requires authorization
       if (isAuthorizationRequiredPath(pathname, token)) {
         //rewrite the request to reflected the token permissions
-        request.nextUrl.pathname = `${token.identity_provider}/${token.app_role}${pathname.replace("reporting/", "")}`;
+        request.nextUrl.pathname = `${token.identity_provider}/${
+          token.app_role
+        }${pathname.replace("reporting/", "")}`;
 
         return NextResponse.rewrite(request.nextUrl);
       }
