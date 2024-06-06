@@ -5,6 +5,10 @@ export default {
   transform: {
     "^(?!.*\\.(js|jsx|ts|tsx|css|json)$)": "@nx/react/plugins/jest",
     "^.+\\.[tj]sx?$": ["babel-jest", { presets: ["@nx/next/babel"] }],
+    "^node_modules/@mui/material/.+\\.[jt]sx?$": [
+      "babel-jest",
+      { presets: ["@nx/next/babel"] },
+    ],
   },
   moduleFileExtensions: ["ts", "tsx", "js", "jsx"],
   coverageDirectory: "../../coverage/apps/dashboard",
