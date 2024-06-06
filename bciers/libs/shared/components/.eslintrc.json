@@ -9,7 +9,12 @@
     {
       "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
       "rules": {
-        "avoidEscape": true
+        "@eslint/quotes": [
+          "warn",
+          {
+            "avoidEscape": true
+          }
+        ]
       }
     },
     {
