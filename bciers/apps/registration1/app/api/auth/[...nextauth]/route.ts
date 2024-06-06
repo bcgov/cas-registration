@@ -1,4 +1,4 @@
-import NextAuth, { NextAuthOptions } from "next-auth";
+import NextAuth, { NextAuthConfig } from "next-auth";
 import KeycloakProvider, {
   KeycloakProfile,
 } from "next-auth/providers/keycloak";
@@ -13,7 +13,7 @@ You can define authentication providers, callbacks, refreshtoken, and other sett
 
 // https://next-auth.js.org/configuration/options
 // Use authOptions when calling getServerSession(authOptions) from the server-side i.e. in React Server Components, Route Handlers, API routes
-export const authOptions: NextAuthOptions = {
+export const authOptions: NextAuthConfig = {
   providers: [
     //https://next-auth.js.org/providers/keycloak
     KeycloakProvider({
