@@ -7,7 +7,7 @@ import path from "path";
 export default defineConfig({
   root: __dirname,
   cacheDir: "../../node_modules/.vite/apps/registration",
-  plugins: [react(), tsconfigPaths()],
+  plugins: [react(), tsconfigPaths({ root: "../../" })],
   test: {
     environment: "jsdom",
     globals: true,
