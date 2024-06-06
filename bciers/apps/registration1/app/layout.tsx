@@ -13,7 +13,7 @@ import Footer from "@bciers/components/layout/Footer";
 import Header from "@bciers/components/layout/Header";
 // 🏷 import {named} can be significantly slower than import default
 import Box from "@mui/material/Box";
-import { getServerSession } from "next-auth";
+import getServerSession from "next-auth";
 import { authOptions } from "./api/auth/[...nextauth]/route";
 import { PublicEnvScript } from "next-runtime-env";
 import ThemeProvider from "@mui/material/styles/ThemeProvider";

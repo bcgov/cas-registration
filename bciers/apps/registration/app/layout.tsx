@@ -9,16 +9,20 @@ You should not manually add <head> tags such as <title> and <meta> to root layou
 import "@bciers/styles/globals.css";
 import SessionProvider from "@/dashboard/auth/SessionProvider";
 import type { Metadata, Viewport } from "next";
-import Footer from "@bciers/components/layout/Footer";
-import Header from "@bciers/components/layout/Header";
 // 🏷 import {named} can be significantly slower than import default
-import Box from "@mui/material/Box";
 import { auth } from "@/dashboard/auth";
 import { PublicEnvScript } from "next-runtime-env";
 import ThemeProvider from "@mui/material/styles/ThemeProvider";
 import { theme } from "@bciers/components";
 import { NextAppDirEmotionCacheProvider } from "@bciers/components";
 import CssBaseline from "@mui/material/CssBaseline";
+
+import Box from "@mui/material/Box";
+import { Footer } from "@bciers/components";
+import { Header } from "@bciers/components";
+import { Bread } from "@bciers/components";
+import { Main } from "@bciers/components/server";
+import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "CAS OBPS REGISTRATION",

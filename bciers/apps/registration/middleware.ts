@@ -1,5 +1,5 @@
 import { stackMiddlewares } from "@bciers/middlewares/server";
-import { withAuthorization } from "@/middlewares/withAuthorizationRegistration";
+import { withAuthorization } from "./middlewares/withAuthorizationRegistration";
 
 /* 📌
 Middleware allows you to run code before a request is completed so you can modify the response by
