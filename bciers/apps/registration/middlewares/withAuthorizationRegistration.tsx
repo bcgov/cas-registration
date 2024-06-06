@@ -75,7 +75,7 @@ export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
     }
     // Check if the user is authenticated via the jwt encoded in server side cookie
     const token = await getToken();
-    console.log(token);
+
     if (token) {
       // Check for the existence of token.user.app_role
       if (!token.app_role || token.app_role === "") {

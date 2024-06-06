@@ -13,7 +13,7 @@
             "links": [
               {
                 "title": "My Operator",
-                "href": "/dashboard/select-operator"
+                "href": "/registration/dashboard/select-operator"
               },
               {
                 "title": "Operations",
@@ -57,15 +57,15 @@
             "links": [
               {
                 "title": "TBD",
-                "href": "/coam/"
+                "href": "/coam/tbd"
               },
               {
                 "title": "TBD",
-                "href": "/coam/"
+                "href": "/coam/tbd"
               },
               {
                 "title": "TBD",
-                "href": "/coam/"
+                "href": "/coam/tbd"
               }
             ]
           },
