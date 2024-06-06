@@ -4,6 +4,7 @@
 import {
   BC_GOV_PRIMARY_BRAND_COLOR_BLUE,
   BC_GOV_BACKGROUND_COLOR_BLUE,
+  BC_GOV_BACKGROUND_COLOR_GREY,
   BC_GOV_COMPONENTS_GREY,
   BC_GOV_TEXT,
   BC_GOV_LINKS_COLOR,
@@ -37,6 +38,7 @@ module.exports = {
         "bc-bg-light-grey": LIGHT_GREY_BG_COLOR,
         "bc-light-grey-200": LIGHT_GREY_COLOR_200,
         "bc-light-grey-300": LIGHT_GREY_COLOR_300,
+        "bc-bg-grey": BC_GOV_BACKGROUND_COLOR_GREY,
         "bc-component-grey": BC_GOV_COMPONENTS_GREY,
         "bc-success-green": BC_GOV_SEMANTICS_GREEN,
         "bc-error-red": BC_GOV_SEMANTICS_RED,
