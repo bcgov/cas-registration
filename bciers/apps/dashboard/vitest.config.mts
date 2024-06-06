@@ -15,7 +15,6 @@ export default defineConfig({
     exclude: ["node_modules", "dist", "e2e"],
     alias: {
       "@/dashboard": path.resolve(__dirname, "../dashboard/src/"),
-      "@": path.resolve(__dirname, "./"),
       app: path.resolve(__dirname, "./app"),
     },
     reporters: ["default"],
