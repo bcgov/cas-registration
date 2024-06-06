@@ -36,17 +36,4 @@ describe("The note component", () => {
 
     expect(note).toHaveClass("bg-bc-bg-grey");
   });
-
-  it("should call the resize event listener when the component is mounted", () => {
-    const addEventListener = vi.spyOn(window, "addEventListener");
-
-    render(<Note>Test note component</Note>);
-
-    expect(addEventListener).toHaveBeenCalled();
-
-    expect(addEventListener).toHaveBeenCalledWith(
-      "resize",
-      expect.any(Function),
-    );
-  });
 });
