@@ -69,9 +69,9 @@ const SingleStepTaskListForm = ({
   }, []);
 
   // Set isSubmitting to true to disable submit buttons and prevent multiple form submissions
-  const submitHandler = async () => {
+  const submitHandler = async (e: IChangeEvent) => {
     setIsSubmitting(true);
-    const response = await onSubmit(formData);
+    const response = await onSubmit(e); // Pass the event to the parent component
 
     // If there is an error, set isSubmitting to false to re-enable submit buttons
     // and allow user to attempt to re-submit the form
