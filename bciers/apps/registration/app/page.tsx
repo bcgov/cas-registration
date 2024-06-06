@@ -1,6 +1,7 @@
 "use client";
 
 import Main from "@bciers/components/layout/Main";
+import Note from "@bciers/components/layout/Note";
 
 // Will remove this before merging, just leaving it in for PR review
 import SingleStepTaskListForm from "@bciers/components/form/SingleStepTaskListForm";
@@ -104,6 +105,14 @@ export default function Page() {
         },
       }}
     >
+      <Note variant="important">
+        <b>Important:</b> It can be used to highlight important information or
+        provide context to the content on the page.
+      </Note>
+      <Note>
+        <b>Note:</b> It can be used to provide additional context to the content
+        on the page.
+      </Note>
       <h1>Registration Part II</h1>
       {/* Added a large bottom margin to test task list onClick smooth scroll */}
       <div className="mb-[50vh]">
