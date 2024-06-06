@@ -1,21 +1,11 @@
-<<<<<<<< HEAD:bciers/apps/registration1/app/(authenticated)/dashboard/page.tsx
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import Tiles from "@bciers/components/navigation/Tiles";
-import { getUserOperator } from "@/app/components/routes/select-operator/Page";
-import { actionHandler } from "@/app/utils/actions";
-import { FrontEndRoles } from "@/app/utils/enums";
-import Card from "@mui/material/Card";
-import Typography from "@mui/material/Typography";
-import { getServerSession } from "next-auth";
-========
-import Tiles from '@/app/components/navigation/Tiles';
 import { getUserOperator } from '@/app/components/routes/select-operator/Page';
 import { actionHandler } from '@/app/utils/actions';
 import { FrontEndRoles } from '@/app/utils/enums';
 import Card from '@mui/material/Card';
 import Typography from '@mui/material/Typography';
 import { auth } from '@/dashboard/auth';
->>>>>>>> cfe9f03d0 (feat: mulitzone apps with shared auth):bciers/apps/registration/app/dashboard/page.tsx
 
 export default async function Page() {
   const session = await auth();
