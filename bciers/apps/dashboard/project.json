@@ -5,6 +5,11 @@
   "projectType": "application",
   "tags": [],
   "targets": {
+    "dev": {
+      "options": {
+        "port": 3000
+      }
+    },
     "test": {
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],

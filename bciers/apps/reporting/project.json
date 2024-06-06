@@ -5,6 +5,11 @@
   "projectType": "application",
   "tags": [],
   "targets": {
+    "dev": {
+      "options": {
+        "port": 5000
+      }
+    },
     "build": {
       "executor": "@nx/next:build",
       "outputs": ["{options.outputPath}"],
