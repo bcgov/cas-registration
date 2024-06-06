@@ -266,7 +266,6 @@ class DocumentModelTest(BaseTestCase):
             ("operators", "operator", None, None),
             ("operations", "operation", None, None),
             ("contacts", "contact", None, None),
-            ("operation_ownerships", "operation ownership timeline", None, None),
         ]
         cls.test_object = Document.objects.get(id=1)
 
@@ -293,7 +292,6 @@ class RegulatedProductModelTest(BaseTestCase):
             ("id", "ID", None, None),
             ("name", "name", 1000, None),
             ("operations", "operation", None, None),
-            ("operation_ownerships", "operation ownership timeline", None, None),
         ]
         cls.test_object = RegulatedProduct.objects.create(
             name="test product",
@@ -308,7 +306,6 @@ class ReportingActivityModelTest(BaseTestCase):
             ("name", "name", 1000, None),
             ("applicable_to", "applicable to", None, None),
             ("operations", "operation", None, None),
-            ("operation_ownerships", "operation ownership timeline", None, None),
         ]
         cls.test_object = ReportingActivity.objects.create(
             name="test activity",
@@ -459,7 +456,6 @@ class ContactModelTest(BaseTestCase):
             ("documents", "documents", None, None),
             ("operators", "operator", None, None),
             ("operations", "operation", None, None),
-            ("operation_ownerships", "operation ownership timeline", None, None),
         ]
 
 
@@ -813,6 +809,8 @@ class FacilityModelTest(BaseTestCase):
         cls.field_data = [
             *timestamp_common_fields,
             ("id", "ID", None, None),
+            ("name", "name", 1000, None),
+            ("type", "type", 100, None),
             ("address", "address", None, None),
             ("well_authorization_numbers", "well authorization number", None, None),
             ("swrs_facility_id", "swrs facility id", None, None),
