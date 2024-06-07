@@ -2,6 +2,25 @@
 Django ER Diagram
 ---
 erDiagram
+HistoricalAddress {
+    BigIntegerField id
+    CharField street_address
+    CharField municipality
+    CharField province
+    CharField postal_code
+    UUIDField history_user_id
+    AutoField history_id
+    DateTimeField history_date
+    CharField history_change_reason
+    CharField history_type
+}
+Address {
+    BigAutoField id
+    CharField street_address
+    CharField municipality
+    CharField province
+    CharField postal_code
+}
 HistoricalAppRole {
     CharField role_name
     CharField role_description
@@ -14,6 +33,45 @@ HistoricalAppRole {
 AppRole {
     CharField role_name
     CharField role_description
+}
+HistoricalBcObpsRegulatedOperation {
+    CharField id
+    DateTimeField issued_at
+    TextField comments
+    UUIDField history_user_id
+    AutoField history_id
+    DateTimeField history_date
+    CharField history_change_reason
+    CharField history_type
+}
+BcObpsRegulatedOperation {
+    CharField id
+    DateTimeField issued_at
+    TextField comments
+}
+HistoricalBusinessRole {
+    CharField role_name
+    CharField role_description
+    UUIDField history_user_id
+    AutoField history_id
+    DateTimeField history_date
+    CharField history_change_reason
+    CharField history_type
+}
+BusinessRole {
+    CharField role_name
+    CharField role_description
+}
+HistoricalBusinessStructure {
+    CharField name
+    UUIDField history_user_id
+    AutoField history_id
+    DateTimeField history_date
+    CharField history_change_reason
+    CharField history_type
+}
+BusinessStructure {
+    CharField name
 }
 HistoricalDocumentType {
     BigIntegerField id
@@ -56,116 +114,6 @@ Document {
     FileField file
     ForeignKey type
     CharField description
-}
-HistoricalNaicsCode {
-    BigIntegerField id
-    CharField naics_code
-    CharField naics_description
-    UUIDField history_user_id
-    AutoField history_id
-    DateTimeField history_date
-    CharField history_change_reason
-    CharField history_type
-}
-NaicsCode {
-    BigAutoField id
-    CharField naics_code
-    CharField naics_description
-}
-HistoricalRegulatedProduct {
-    BigIntegerField id
-    CharField name
-    UUIDField history_user_id
-    AutoField history_id
-    DateTimeField history_date
-    CharField history_change_reason
-    CharField history_type
-}
-RegulatedProduct {
-    BigAutoField id
-    CharField name
-}
-HistoricalReportingActivity {
-    BigIntegerField id
-    CharField name
-    CharField applicable_to
-    UUIDField history_user_id
-    AutoField history_id
-    DateTimeField history_date
-    CharField history_change_reason
-    CharField history_type
-}
-ReportingActivity {
-    BigAutoField id
-    CharField name
-    CharField applicable_to
-}
-HistoricalAddress {
-    BigIntegerField id
-    CharField street_address
-    CharField municipality
-    CharField province
-    CharField postal_code
-    UUIDField history_user_id
-    AutoField history_id
-    DateTimeField history_date
-    CharField history_change_reason
-    CharField history_type
-}
-Address {
-    BigAutoField id
-    CharField street_address
-    CharField municipality
-    CharField province
-    CharField postal_code
-}
-HistoricalUser {
-    CharField first_name
-    CharField last_name
-    CharField position_title
-    CharField email
-    CharField phone_number
-    UUIDField user_guid
-    UUIDField business_guid
-    CharField bceid_business_name
-    UUIDField history_user_id
-    ForeignKey app_role
-    AutoField history_id
-    DateTimeField history_date
-    CharField history_change_reason
-    CharField history_type
-}
-HistoricalUser_documents {
-    BigIntegerField id
-    ForeignKey user
-    ForeignKey document
-    ForeignKey history
-    AutoField m2m_history_id
-}
-User {
-    CharField first_name
-    CharField last_name
-    CharField position_title
-    CharField email
-    CharField phone_number
-    UUIDField user_guid
-    UUIDField business_guid
-    CharField bceid_business_name
-    ForeignKey app_role
-    ManyToManyField documents
-}
-HistoricalBusinessRole {
-    CharField role_name
-    CharField role_description
-    UUIDField history_user_id
-    AutoField history_id
-    DateTimeField history_date
-    CharField history_change_reason
-    CharField history_type
-}
-BusinessRole {
-    CharField role_name
-    CharField role_description
 }
 HistoricalContact {
     BigIntegerField id
@@ -212,16 +160,40 @@ Contact {
     ForeignKey address
     ManyToManyField documents
 }
-HistoricalBusinessStructure {
-    CharField name
+HistoricalUser {
+    CharField first_name
+    CharField last_name
+    CharField position_title
+    CharField email
+    CharField phone_number
+    UUIDField user_guid
+    UUIDField business_guid
+    CharField bceid_business_name
     UUIDField history_user_id
+    ForeignKey app_role
     AutoField history_id
     DateTimeField history_date
     CharField history_change_reason
     CharField history_type
 }
-BusinessStructure {
-    CharField name
+HistoricalUser_documents {
+    BigIntegerField id
+    ForeignKey user
+    ForeignKey document
+    ForeignKey history
+    AutoField m2m_history_id
+}
+User {
+    CharField first_name
+    CharField last_name
+    CharField position_title
+    CharField email
+    CharField phone_number
+    UUIDField user_guid
+    UUIDField business_guid
+    CharField bceid_business_name
+    ForeignKey app_role
+    ManyToManyField documents
 }
 HistoricalOperator {
     DateTimeField created_at
@@ -325,6 +297,49 @@ UserOperator {
     DateTimeField verified_at
     ForeignKey verified_by
 }
+HistoricalRegulatedProduct {
+    BigIntegerField id
+    CharField name
+    UUIDField history_user_id
+    AutoField history_id
+    DateTimeField history_date
+    CharField history_change_reason
+    CharField history_type
+}
+RegulatedProduct {
+    BigAutoField id
+    CharField name
+}
+HistoricalNaicsCode {
+    BigIntegerField id
+    CharField naics_code
+    CharField naics_description
+    UUIDField history_user_id
+    AutoField history_id
+    DateTimeField history_date
+    CharField history_change_reason
+    CharField history_type
+}
+NaicsCode {
+    BigAutoField id
+    CharField naics_code
+    CharField naics_description
+}
+HistoricalReportingActivity {
+    BigIntegerField id
+    CharField name
+    CharField applicable_to
+    UUIDField history_user_id
+    AutoField history_id
+    DateTimeField history_date
+    CharField history_change_reason
+    CharField history_type
+}
+ReportingActivity {
+    BigAutoField id
+    CharField name
+    CharField applicable_to
+}
 HistoricalOperation {
     DateTimeField created_at
     DateTimeField updated_at
@@ -407,7 +422,6 @@ HistoricalFacility {
     UUIDField id
     CharField name
     CharField type
-    BooleanField new_entrant
     IntegerField swrs_facility_id
     CharField bcghg_id
     UUIDField history_user_id
@@ -415,7 +429,6 @@ HistoricalFacility {
     ForeignKey updated_by
     ForeignKey archived_by
     ForeignKey address
-    ForeignKey operation
     AutoField history_id
     DateTimeField history_date
     CharField history_change_reason
@@ -432,35 +445,72 @@ Facility {
     CharField name
     CharField type
     ForeignKey address
-    BooleanField new_entrant
-    ForeignKey operation
     IntegerField swrs_facility_id
     CharField bcghg_id
 }
-HistoricalWellAuthorizationNumber {
+HistoricalEvent {
     DateTimeField created_at
     DateTimeField updated_at
     DateTimeField archived_at
-    IntegerField well_authorization_number
+    UUIDField id
+    DateTimeField effective_date
+    CharField type
+    JSONField additional_data
     UUIDField history_user_id
     ForeignKey created_by
     ForeignKey updated_by
     ForeignKey archived_by
+    ForeignKey operation
     ForeignKey facility
     AutoField history_id
     DateTimeField history_date
     CharField history_change_reason
     CharField history_type
 }
-WellAuthorizationNumber {
+Event {
     ForeignKey created_by
     DateTimeField created_at
     ForeignKey updated_by
     DateTimeField updated_at
     ForeignKey archived_by
     DateTimeField archived_at
-    IntegerField well_authorization_number
+    UUIDField id
+    ForeignKey operation
     ForeignKey facility
+    DateTimeField effective_date
+    CharField type
+    JSONField additional_data
+}
+HistoricalFacilityOwnershipTimeline {
+    BigIntegerField id
+    DateTimeField created_at
+    DateTimeField updated_at
+    DateTimeField archived_at
+    DateTimeField start_date
+    DateTimeField end_date
+    UUIDField history_user_id
+    ForeignKey created_by
+    ForeignKey updated_by
+    ForeignKey archived_by
+    ForeignKey facility
+    ForeignKey operation
+    AutoField history_id
+    DateTimeField history_date
+    CharField history_change_reason
+    CharField history_type
+}
+FacilityOwnershipTimeline {
+    BigAutoField id
+    ForeignKey created_by
+    DateTimeField created_at
+    ForeignKey updated_by
+    DateTimeField updated_at
+    ForeignKey archived_by
+    DateTimeField archived_at
+    ForeignKey facility
+    ForeignKey operation
+    DateTimeField start_date
+    DateTimeField end_date
 }
 HistoricalMultipleOperator {
     BigIntegerField id
@@ -509,20 +559,36 @@ MultipleOperator {
     ForeignKey mailing_address
     BooleanField mailing_address_same_as_physical
 }
-HistoricalBcObpsRegulatedOperation {
-    CharField id
-    DateTimeField issued_at
-    TextField comments
+HistoricalOperationOwnershipTimeline {
+    BigIntegerField id
+    DateTimeField created_at
+    DateTimeField updated_at
+    DateTimeField archived_at
+    DateTimeField start_date
+    DateTimeField end_date
     UUIDField history_user_id
+    ForeignKey created_by
+    ForeignKey updated_by
+    ForeignKey archived_by
+    ForeignKey operation
+    ForeignKey operator
     AutoField history_id
     DateTimeField history_date
     CharField history_change_reason
     CharField history_type
 }
-BcObpsRegulatedOperation {
-    CharField id
-    DateTimeField issued_at
-    TextField comments
+OperationOwnershipTimeline {
+    BigAutoField id
+    ForeignKey created_by
+    DateTimeField created_at
+    ForeignKey updated_by
+    DateTimeField updated_at
+    ForeignKey archived_by
+    DateTimeField archived_at
+    ForeignKey operation
+    ForeignKey operator
+    DateTimeField start_date
+    DateTimeField end_date
 }
 HistoricalParentOperator {
     BigIntegerField id
@@ -567,6 +633,31 @@ ParentOperator {
     ForeignKey physical_address
     ForeignKey mailing_address
 }
+HistoricalWellAuthorizationNumber {
+    DateTimeField created_at
+    DateTimeField updated_at
+    DateTimeField archived_at
+    IntegerField well_authorization_number
+    UUIDField history_user_id
+    ForeignKey created_by
+    ForeignKey updated_by
+    ForeignKey archived_by
+    ForeignKey facility
+    AutoField history_id
+    DateTimeField history_date
+    CharField history_change_reason
+    CharField history_type
+}
+WellAuthorizationNumber {
+    ForeignKey created_by
+    DateTimeField created_at
+    ForeignKey updated_by
+    DateTimeField updated_at
+    ForeignKey archived_by
+    DateTimeField archived_at
+    IntegerField well_authorization_number
+    ForeignKey facility
+}
 HistoricalDocument }|--|| User : created_by
 HistoricalDocument }|--|| User : updated_by
 HistoricalDocument }|--|| User : archived_by
@@ -575,12 +666,6 @@ Document }|--|| User : created_by
 Document }|--|| User : updated_by
 Document }|--|| User : archived_by
 Document }|--|| DocumentType : type
-HistoricalUser }|--|| AppRole : app_role
-HistoricalUser_documents }|--|| User : user
-HistoricalUser_documents }|--|| Document : document
-HistoricalUser_documents }|--|| HistoricalUser : history
-User }|--|| AppRole : app_role
-User }|--|{ Document : documents
 HistoricalContact }|--|| User : created_by
 HistoricalContact }|--|| User : updated_by
 HistoricalContact }|--|| User : archived_by
@@ -595,6 +680,12 @@ Contact }|--|| User : archived_by
 Contact }|--|| BusinessRole : business_role
 Contact }|--|| Address : address
 Contact }|--|{ Document : documents
+HistoricalUser }|--|| AppRole : app_role
+HistoricalUser_documents }|--|| User : user
+HistoricalUser_documents }|--|| Document : document
+HistoricalUser_documents }|--|| HistoricalUser : history
+User }|--|| AppRole : app_role
+User }|--|{ Document : documents
 HistoricalOperator }|--|| User : created_by
 HistoricalOperator }|--|| User : updated_by
 HistoricalOperator }|--|| User : archived_by
@@ -661,20 +752,30 @@ HistoricalFacility }|--|| User : created_by
 HistoricalFacility }|--|| User : updated_by
 HistoricalFacility }|--|| User : archived_by
 HistoricalFacility }|--|| Address : address
-HistoricalFacility }|--|| Operation : operation
 Facility }|--|| User : created_by
 Facility }|--|| User : updated_by
 Facility }|--|| User : archived_by
 Facility }|--|| Address : address
-Facility }|--|| Operation : operation
-HistoricalWellAuthorizationNumber }|--|| User : created_by
-HistoricalWellAuthorizationNumber }|--|| User : updated_by
-HistoricalWellAuthorizationNumber }|--|| User : archived_by
-HistoricalWellAuthorizationNumber }|--|| Facility : facility
-WellAuthorizationNumber }|--|| User : created_by
-WellAuthorizationNumber }|--|| User : updated_by
-WellAuthorizationNumber }|--|| User : archived_by
-WellAuthorizationNumber }|--|| Facility : facility
+HistoricalEvent }|--|| User : created_by
+HistoricalEvent }|--|| User : updated_by
+HistoricalEvent }|--|| User : archived_by
+HistoricalEvent }|--|| Operation : operation
+HistoricalEvent }|--|| Facility : facility
+Event }|--|| User : created_by
+Event }|--|| User : updated_by
+Event }|--|| User : archived_by
+Event }|--|| Operation : operation
+Event }|--|| Facility : facility
+HistoricalFacilityOwnershipTimeline }|--|| User : created_by
+HistoricalFacilityOwnershipTimeline }|--|| User : updated_by
+HistoricalFacilityOwnershipTimeline }|--|| User : archived_by
+HistoricalFacilityOwnershipTimeline }|--|| Facility : facility
+HistoricalFacilityOwnershipTimeline }|--|| Operation : operation
+FacilityOwnershipTimeline }|--|| User : created_by
+FacilityOwnershipTimeline }|--|| User : updated_by
+FacilityOwnershipTimeline }|--|| User : archived_by
+FacilityOwnershipTimeline }|--|| Facility : facility
+FacilityOwnershipTimeline }|--|| Operation : operation
 HistoricalMultipleOperator }|--|| User : created_by
 HistoricalMultipleOperator }|--|| User : updated_by
 HistoricalMultipleOperator }|--|| User : archived_by
@@ -689,6 +790,16 @@ MultipleOperator }|--|| Operation : operation
 MultipleOperator }|--|| BusinessStructure : business_structure
 MultipleOperator }|--|| Address : physical_address
 MultipleOperator }|--|| Address : mailing_address
+HistoricalOperationOwnershipTimeline }|--|| User : created_by
+HistoricalOperationOwnershipTimeline }|--|| User : updated_by
+HistoricalOperationOwnershipTimeline }|--|| User : archived_by
+HistoricalOperationOwnershipTimeline }|--|| Operation : operation
+HistoricalOperationOwnershipTimeline }|--|| Operator : operator
+OperationOwnershipTimeline }|--|| User : created_by
+OperationOwnershipTimeline }|--|| User : updated_by
+OperationOwnershipTimeline }|--|| User : archived_by
+OperationOwnershipTimeline }|--|| Operation : operation
+OperationOwnershipTimeline }|--|| Operator : operator
 HistoricalParentOperator }|--|| User : created_by
 HistoricalParentOperator }|--|| User : updated_by
 HistoricalParentOperator }|--|| User : archived_by
@@ -703,3 +814,11 @@ ParentOperator }|--|| Operator : child_operator
 ParentOperator }|--|| BusinessStructure : business_structure
 ParentOperator }|--|| Address : physical_address
 ParentOperator }|--|| Address : mailing_address
+HistoricalWellAuthorizationNumber }|--|| User : created_by
+HistoricalWellAuthorizationNumber }|--|| User : updated_by
+HistoricalWellAuthorizationNumber }|--|| User : archived_by
+HistoricalWellAuthorizationNumber }|--|| Facility : facility
+WellAuthorizationNumber }|--|| User : created_by
+WellAuthorizationNumber }|--|| User : updated_by
+WellAuthorizationNumber }|--|| User : archived_by
+WellAuthorizationNumber }|--|| Facility : facility
