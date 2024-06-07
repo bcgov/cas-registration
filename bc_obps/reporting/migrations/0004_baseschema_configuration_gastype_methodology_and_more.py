@@ -4,7 +4,7 @@ import django.db.models.deletion
 from django.db import migrations, models
 import json
 from registration.models import ReportingActivity
-from reporting.models import SourceType, Configuration, BaseSchema
+from reporting.models import SourceType, Configuration, BaseSchema, GasType, Methodology
 
 
 def init_gas_type_data(apps, schema_monitor):
@@ -175,6 +175,220 @@ def reverse_init_activity_source_type_base_schema_data(apps, schema_monitor):
     ASTBS.objects.filter(
         valid_from='2024-01-01',
         valid_to='9999-12-31'
+    ).delete()
+
+def init_configuration_element_data(apps, schema_monitor):
+    '''
+    Add initial data to erc.configuration_element
+    '''
+
+
+    ConfigurationElement = apps.get_model('reporting', 'ConfigurationElement')
+    ConfigurationElement.objects.bulk_create(
+        [
+            ConfigurationElement(
+              reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id,
+              source_type_id=SourceType.objects.get(name='General stationary combustion of fuel or waste with production of useful energy').id,
+              gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
+              methodology_id=Methodology.objects.get(name='Default HHV/Default EF').id,
+              valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+              valid_to_id=Configuration.objects.get(valid_to='9999-12-31').id
+            ),
+            ConfigurationElement(
+              reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id,
+              source_type_id=SourceType.objects.get(name='General stationary combustion of fuel or waste with production of useful energy').id,
+              gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
+              methodology_id=Methodology.objects.get(name='Default EF').id,
+              valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+              valid_to_id=Configuration.objects.get(valid_to='9999-12-31').id
+            ),
+            ConfigurationElement(
+              reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id,
+              source_type_id=SourceType.objects.get(name='General stationary combustion of fuel or waste with production of useful energy').id,
+              gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
+              methodology_id=Methodology.objects.get(name='Measured HHV/Default EF').id,
+              valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+              valid_to_id=Configuration.objects.get(valid_to='9999-12-31').id
+            ),
+            ConfigurationElement(
+              reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id,
+              source_type_id=SourceType.objects.get(name='General stationary combustion of fuel or waste with production of useful energy').id,
+              gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
+              methodology_id=Methodology.objects.get(name='Measured Steam/Default EF').id,
+              valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+              valid_to_id=Configuration.objects.get(valid_to='9999-12-31').id
+            ),
+            ConfigurationElement(
+              reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id,
+              source_type_id=SourceType.objects.get(name='General stationary combustion of fuel or waste with production of useful energy').id,
+              gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
+              methodology_id=Methodology.objects.get(name='Measured CC').id,
+              valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+              valid_to_id=Configuration.objects.get(valid_to='9999-12-31').id
+            ),
+            ConfigurationElement(
+              reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id,
+              source_type_id=SourceType.objects.get(name='General stationary combustion of fuel or waste with production of useful energy').id,
+              gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
+              methodology_id=Methodology.objects.get(name='Measured Steam/Measured EF').id,
+              valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+              valid_to_id=Configuration.objects.get(valid_to='9999-12-31').id
+            ),
+            ConfigurationElement(
+              reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id,
+              source_type_id=SourceType.objects.get(name='General stationary combustion of fuel or waste with production of useful energy').id,
+              gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
+              methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement').id,
+              valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+              valid_to_id=Configuration.objects.get(valid_to='9999-12-31').id
+            ),
+            ConfigurationElement(
+              reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id,
+              source_type_id=SourceType.objects.get(name='General stationary combustion of fuel or waste with production of useful energy').id,
+              gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
+              methodology_id=Methodology.objects.get(name='Replacement Methodology').id,
+              valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+              valid_to_id=Configuration.objects.get(valid_to='9999-12-31').id
+            ),
+            ConfigurationElement(
+              reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id,
+              source_type_id=SourceType.objects.get(name='General stationary combustion of fuel or waste with production of useful energy').id,
+              gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
+              methodology_id=Methodology.objects.get(name='Default HHV/Default EF').id,
+              valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+              valid_to_id=Configuration.objects.get(valid_to='9999-12-31').id
+            ),
+            ConfigurationElement(
+              reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id,
+              source_type_id=SourceType.objects.get(name='General stationary combustion of fuel or waste with production of useful energy').id,
+              gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
+              methodology_id=Methodology.objects.get(name='Default EF').id,
+              valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+              valid_to_id=Configuration.objects.get(valid_to='9999-12-31').id
+            ),
+            ConfigurationElement(
+              reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id,
+              source_type_id=SourceType.objects.get(name='General stationary combustion of fuel or waste with production of useful energy').id,
+              gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
+              methodology_id=Methodology.objects.get(name='Measured HHV/Default EF').id,
+              valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+              valid_to_id=Configuration.objects.get(valid_to='9999-12-31').id
+            ),
+            ConfigurationElement(
+              reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id,
+              source_type_id=SourceType.objects.get(name='General stationary combustion of fuel or waste with production of useful energy').id,
+              gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
+              methodology_id=Methodology.objects.get(name='Measured Steam/Default EF').id,
+              valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+              valid_to_id=Configuration.objects.get(valid_to='9999-12-31').id
+            ),
+            ConfigurationElement(
+              reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id,
+              source_type_id=SourceType.objects.get(name='General stationary combustion of fuel or waste with production of useful energy').id,
+              gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
+              methodology_id=Methodology.objects.get(name='Measured CC').id,
+              valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+              valid_to_id=Configuration.objects.get(valid_to='9999-12-31').id
+            ),
+            ConfigurationElement(
+              reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id,
+              source_type_id=SourceType.objects.get(name='General stationary combustion of fuel or waste with production of useful energy').id,
+              gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
+              methodology_id=Methodology.objects.get(name='Measured Steam/Measured EF').id,
+              valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+              valid_to_id=Configuration.objects.get(valid_to='9999-12-31').id
+            ),
+            ConfigurationElement(
+              reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id,
+              source_type_id=SourceType.objects.get(name='General stationary combustion of fuel or waste with production of useful energy').id,
+              gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
+              methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement').id,
+              valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+              valid_to_id=Configuration.objects.get(valid_to='9999-12-31').id
+            ),
+            ConfigurationElement(
+              reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id,
+              source_type_id=SourceType.objects.get(name='General stationary combustion of fuel or waste with production of useful energy').id,
+              gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
+              methodology_id=Methodology.objects.get(name='Replacement Methodology').id,
+              valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+              valid_to_id=Configuration.objects.get(valid_to='9999-12-31').id
+            ),
+            ConfigurationElement(
+              reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id,
+              source_type_id=SourceType.objects.get(name='General stationary combustion of fuel or waste with production of useful energy').id,
+              gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
+              methodology_id=Methodology.objects.get(name='Default HHV/Default EF').id,
+              valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+              valid_to_id=Configuration.objects.get(valid_to='9999-12-31').id
+            ),
+            ConfigurationElement(
+              reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id,
+              source_type_id=SourceType.objects.get(name='General stationary combustion of fuel or waste with production of useful energy').id,
+              gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
+              methodology_id=Methodology.objects.get(name='Default EF').id,
+              valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+              valid_to_id=Configuration.objects.get(valid_to='9999-12-31').id
+            ),
+            ConfigurationElement(
+              reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id,
+              source_type_id=SourceType.objects.get(name='General stationary combustion of fuel or waste with production of useful energy').id,
+              gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
+              methodology_id=Methodology.objects.get(name='Measured HHV/Default EF').id,
+              valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+              valid_to_id=Configuration.objects.get(valid_to='9999-12-31').id
+            ),
+            ConfigurationElement(
+              reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id,
+              source_type_id=SourceType.objects.get(name='General stationary combustion of fuel or waste with production of useful energy').id,
+              gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
+              methodology_id=Methodology.objects.get(name='Measured Steam/Default EF').id,
+              valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+              valid_to_id=Configuration.objects.get(valid_to='9999-12-31').id
+            ),
+            ConfigurationElement(
+              reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id,
+              source_type_id=SourceType.objects.get(name='General stationary combustion of fuel or waste with production of useful energy').id,
+              gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
+              methodology_id=Methodology.objects.get(name='Measured CC').id,
+              valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+              valid_to_id=Configuration.objects.get(valid_to='9999-12-31').id
+            ),
+            ConfigurationElement(
+              reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id,
+              source_type_id=SourceType.objects.get(name='General stationary combustion of fuel or waste with production of useful energy').id,
+              gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
+              methodology_id=Methodology.objects.get(name='Measured Steam/Measured EF').id,
+              valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+              valid_to_id=Configuration.objects.get(valid_to='9999-12-31').id
+            ),
+            ConfigurationElement(
+              reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id,
+              source_type_id=SourceType.objects.get(name='General stationary combustion of fuel or waste with production of useful energy').id,
+              gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
+              methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement').id,
+              valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+              valid_to_id=Configuration.objects.get(valid_to='9999-12-31').id
+            ),
+            ConfigurationElement(
+              reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id,
+              source_type_id=SourceType.objects.get(name='General stationary combustion of fuel or waste with production of useful energy').id,
+              gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
+              methodology_id=Methodology.objects.get(name='Replacement Methodology').id,
+              valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+              valid_to_id=Configuration.objects.get(valid_to='9999-12-31').id
+            ),
+        ]
+    )
+
+def reverse_init_configuration_element_data(apps, schema_monitor):
+    '''
+    Remove initial data from erc.configuration_element
+    '''
+    ASTBS = apps.get_model('reporting', 'ActivitySourceTypeBaseSchema')
+    ASTBS.objects.filter(
+        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_to_id=Configuration.objects.get(valid_to='9999-12-31').id
     ).delete()
 
 
@@ -412,4 +626,5 @@ class Migration(migrations.Migration):
                 name='unique_per_config',
             ),
         ),
+        migrations.RunPython(init_configuration_element_data, reverse_init_configuration_element_data),
     ]

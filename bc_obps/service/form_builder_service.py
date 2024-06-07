@@ -60,6 +60,19 @@ def build_full_schema(activity: int, source_type: int, gas_type: int, methodolog
 class FormBuilderService:
 
     @classmethod
+    def build_form_schema(request, activity=None, source_type=None, gas_type=None, methodology=None, report_date='2024-04-01'):
+      if activity is None or source_type is None:
+          return 'ERROR: Cannot build a schema without both Activity & Source Type data'
+      elif gas_type is None:
+          schema=build_activity_source_type_schema(activity, source_type, report_date)
+      elif methodology is None:
+          print('Here')
+          schema=build_activity_source_type_gas_type_schema(activity, source_type, gas_type)
+      else:
+          schema=build_full_schema(activity, source_type, gas_type, methodology)
+      return schema
+
+    @classmethod
     def build_config_elements(request):
         activity_ids=[1]
         request.activity_id, ...
@@ -89,16 +102,4 @@ class FormBuilderService:
       reporting_fields = ReportingField.objects.filter(pk__in=reporting_field_ids)
       return json.dumps([field.serialize() for field in reporting_fields])
 
-    @classmethod
-    def build_form_schema(request, activity=None, source_type=None, gas_type=None, methodology=None, report_date='2024-04-01'):
-      if activity is None or source_type is None:
-          return 'ERROR: Cannot build a schema without both Activity & Source Type data'
-      elif gas_type is None:
-          schema=build_activity_source_type_schema(activity, source_type, report_date)
-      elif methodology is None:
-          print('Here')
-          schema=build_activity_source_type_gas_type_schema(activity, source_type, gas_type)
-      else:
-          schema=build_full_schema(activity, source_type, gas_type, methodology)
-      return schema
 
