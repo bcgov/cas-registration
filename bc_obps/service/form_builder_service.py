@@ -44,11 +44,20 @@ def build_gsc_schema(gsc):
                   print ('FIELD NAME: ', f.reporting_field.field_name, 'FIELD_TYPE: ', f.reporting_field.field_type)
 
 
-## Return base schema for activity-sourceType pair if only those values are passed
+## Return base schema for activity-sourceType pair if only those values are passed & append valid gas types to schema as enum
 def build_activity_source_type_schema(activity: int, source_type: int, report_date: str):
+  ## Fetch base schema for activity-sourceType pair
   source_type_schema = ActivitySourceTypeBaseSchema.objects.select_related('base_schema').filter(reporting_activity_id=activity, source_type_id=source_type, valid_from__valid_from__lte=report_date, valid_to__valid_to__gte=report_date).first()
-  print (f'GSC Base only. Activity: {activity} SourceType: {source_type}\n Schema: {source_type_schema.base_schema.schema}')
-  return json.dumps(source_type_schema.base_schema.schema)
+  ## Fetch valid gas_type values for activity-sourceType pair
+  gas_types=ConfigurationElement.objects.select_related('gas_type').filter(reporting_activity_id=activity, source_type_id=source_type).distinct('gas_type__name')
+  gas_type_enum = []
+  for t in gas_types:
+      gas_type_enum.append(t.gas_type.chemical_formula)
+  return_schema = source_type_schema.base_schema.schema
+  ## Append valid gas types to schema as an enum on the gasType property
+  source_type_schema.base_schema.schema['properties']['gasType']['enum'] = gas_type_enum
+  ## May need to return 2 objects here: the schema & a mapping for the gas_type.chemical_formula to gas_type.id for use in the frontend
+  return json.dumps(return_schema)
 
 def build_activity_source_type_gas_type_schema(activity: int, source_type: int, gas_type: int):
   return f'GSC with gas type. Activity: {activity} SourceType: {source_type} GasType: {gas_type}'
