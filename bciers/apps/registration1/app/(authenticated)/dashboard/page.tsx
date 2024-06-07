@@ -9,7 +9,9 @@ import { auth } from "@/auth";
 
 export default async function Page() {
   const session = await auth();
-  const role = session?.user?.app_role || "";
+  const hasSession = session ? "HAS SESSION" : "NO SESSION";
+  const hasSessionUser = session?.user ? "HAS USER" : "NO USER";
+  const role = session?.user?.app_role || "NO ROLE";
   let operatorStatus = "";
   let userOperatorStatus = "";
   switch (role) {
@@ -27,7 +29,9 @@ export default async function Page() {
   }
   return (
     <div>
-      <h1>ROLE: {role}</h1>
+      <h1>Session: {hasSession}</h1>
+      <h2>User: {hasSessionUser}</h2>
+      <h3>Role: {role}</h3>
       {role === FrontEndRoles.CAS_PENDING ? (
         <>
           <Card
