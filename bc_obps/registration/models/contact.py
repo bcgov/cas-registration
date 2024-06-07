@@ -4,8 +4,6 @@ from simple_history.models import HistoricalRecords
 
 
 class Contact(UserAndContactCommonInfo, TimeStampedModel):
-    """Contact model"""
-
     documents = models.ManyToManyField(
         Document,
         blank=True,

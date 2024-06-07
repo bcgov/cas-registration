@@ -6,8 +6,6 @@ from django.core.cache import cache
 
 
 class BusinessStructure(BaseModel):
-    """The business structure of an operator"""
-
     name = models.CharField(primary_key=True, max_length=1000, db_comment="The name of a business structure")
     history = HistoricalRecords(
         table_name='erc_history"."business_structure_history',

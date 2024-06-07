@@ -7,8 +7,6 @@ from django.core.cache import cache
 
 
 class User(UserAndContactCommonInfo):
-    """User model"""
-
     user_guid = models.UUIDField(primary_key=True, db_comment="A GUID to identify the user")
     business_guid = models.UUIDField(db_comment="A GUID to identify the business")
     bceid_business_name = models.CharField(

@@ -9,8 +9,6 @@ from django.core.validators import RegexValidator
 
 
 class MultipleOperator(TimeStampedModel):
-    """def here"""
-
     operation = models.ForeignKey(
         Operation,
         db_comment="The operation that this multiple operator is associated with",

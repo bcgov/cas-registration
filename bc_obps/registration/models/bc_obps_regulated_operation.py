@@ -9,8 +9,6 @@ from django.core.exceptions import ValidationError
 
 
 class BcObpsRegulatedOperation(BaseModel):
-    """BC OBPS Regulated Operation model"""
-
     id = models.CharField(
         primary_key=True,
         max_length=255,

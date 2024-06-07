@@ -4,8 +4,6 @@ from simple_history.models import HistoricalRecords
 
 
 class ReportingActivity(BaseModel):
-    """Reporting activity model"""
-
     class Applicability(models.TextChoices):
         SFO = "sfo"
         LFO = "lfo"

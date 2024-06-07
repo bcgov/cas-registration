@@ -28,10 +28,6 @@ class BaseModel(models.Model):
 
 
 class DashboardData(models.Model):
-    """
-    Responsible for storing JSON information for dashboard tiles
-    """
-
     name = models.CharField(
         max_length=100,
         unique=True,
@@ -48,10 +44,6 @@ class DashboardData(models.Model):
 
 
 class EmailNotificationTemplate(models.Model):
-    """
-    Responsible for storing email templates for notifications
-    """
-
     name = models.CharField(max_length=255, unique=True, db_comment="Name of the email template as a unique identifier")
     subject = models.CharField(max_length=255, db_comment="Subject of the email template")
     body = models.TextField(db_comment="Body of the email template")
@@ -62,11 +54,6 @@ class EmailNotificationTemplate(models.Model):
 
 
 class EmailNotification(models.Model):
-    """
-    Responsible for storing email notifications after they have been sent
-    We store the transaction_id and message_id for tracking purposes
-    """
-
     transaction_id = models.UUIDField(
         primary_key=True, editable=False, db_comment="Transaction identifier for the email message in CHES API"
     )

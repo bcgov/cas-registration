@@ -5,8 +5,6 @@ from simple_history.models import HistoricalRecords
 
 
 class AppRole(BaseModel):
-    """AppRole model"""
-
     role_name = models.CharField(
         primary_key=True,
         serialize=False,

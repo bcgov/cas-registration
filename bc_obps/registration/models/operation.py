@@ -23,8 +23,6 @@ from django.core.exceptions import ValidationError
 
 
 class Operation(TimeStampedModel):
-    """Operation model"""
-
     class Statuses(models.TextChoices):
         NOT_STARTED = "Not Started"
         DRAFT = "Draft"

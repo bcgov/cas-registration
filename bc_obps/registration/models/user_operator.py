@@ -7,8 +7,6 @@ from simple_history.models import HistoricalRecords
 
 
 class UserOperator(TimeStampedModel):
-    """User operator model"""
-
     class Roles(models.TextChoices):
         ADMIN = "admin", "Admin"
         REPORTER = "reporter", "Reporter"

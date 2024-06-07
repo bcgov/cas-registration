@@ -11,8 +11,6 @@ from django.core.validators import RegexValidator, MaxValueValidator, MinValueVa
 
 
 class Operator(TimeStampedModel):
-    """Operator model"""
-
     class Statuses(models.TextChoices):
         DRAFT = "Draft"
         PENDING = "Pending"
