@@ -32,7 +32,7 @@ jobs:
       - name: dev env setup
         uses: ./.github/actions/dev-env-setup
       - name: run app locally
-        uses: ./.github/actions/local-app-run
+        uses: ./.github/actions/run-registration1-app
         with:
           django_secret_key: ${{ env.DJANGO_SECRET_KEY }}
       - name: ZAP Frontend Scan
@@ -82,7 +82,7 @@ jobs:
         uses: ./.github/actions/dev-env-setup
 
       - name: 🎁 setup local app
-        uses: ./.github/actions/local-app-run
+        uses: ./.github/actions/run-registration1-app
         with:
           django_secret_key: ${{ env.DJANGO_SECRET_KEY }}
           keycloak_client_id: ${{ env.KEYCLOAK_CLIENT_ID }}
@@ -204,7 +204,7 @@ jobs:
       - name: dev env setup
         uses: ./.github/actions/dev-env-setup
       - name: run app locally
-        uses: ./.github/actions/local-app-run
+        uses: ./.github/actions/run-registration1-app
         with:
           django_secret_key: ${{ env.DJANGO_SECRET_KEY }}
       - name: Run pytest
