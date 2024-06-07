@@ -1,14 +1,10 @@
 name: Trivy Scan Code
 
 on:
-  push:
-    branches: [main, develop]
+  workflow_call:
     tags:
-      - frontend
-      - backend
-  pull_request:
-    # The branches below must be a subset of the branches above
-    branches: [main, develop]
+    - frontend
+    - backend
 
 concurrency:
   group: callee-trivy-${{ github.workflow }}-${{ github.ref }}
