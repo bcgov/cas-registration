@@ -3,6 +3,8 @@
 import django.db.models.deletion
 from django.db import migrations, models
 import json
+from registration.models import ReportingActivity
+from reporting.models import SourceType, Configuration, BaseSchema
 
 
 def init_gas_type_data(apps, schema_monitor):
@@ -64,8 +66,8 @@ def reverse_init_methodology_data(apps, schema_monitor):
     '''
     Remove initial data from erc.methodology
     '''
-    GasType = apps.get_model('reporting', 'Methodology')
-    GasType.objects.filter(
+    Methodology = apps.get_model('reporting', 'Methodology')
+    Methodology.objects.filter(
         name__in=[
             'Default HHV/Default EF'
             'Default EF'
@@ -103,6 +105,79 @@ def init_base_schema_data(apps, schema_monitor):
         ]
     )
 
+def reverse_init_base_schema_data(apps, schema_monitor):
+    '''
+    Remove initial data from erc.base_schema
+    '''
+    BaseSchema = apps.get_model('reporting', 'BaseSchema')
+    BaseSchema.objects.filter(
+        slug__in=[
+            'gsc_of_fuel_or_waste_with_production_of_useful_energy_2024'
+            'gsc_of_fuel_or_waste_without_production_of_useful_energy_2024'
+        ]
+    ).delete()
+
+def init_configuration_data(apps, schema_monitor):
+    '''
+    Add initial data to erc.configuration
+    '''
+
+
+    Configuration = apps.get_model('reporting', 'Configuration')
+    Configuration.objects.bulk_create(
+        [
+            Configuration(slug='2024', valid_from='2024-01-01', valid_to='9999-12-31')
+        ]
+    )
+
+def reverse_init_configuration_data(apps, schema_monitor):
+    '''
+    Remove initial data from erc.configuration
+    '''
+    Configuration = apps.get_model('reporting', 'Configuration')
+    Configuration.objects.filter(
+        slug__in=[
+            '2024'
+        ]
+    ).delete()
+
+def init_activity_source_type_base_schema_data(apps, schema_monitor):
+    '''
+    Add initial data to erc.activity_source_type_base_schema
+    '''
+
+
+    ASTBS = apps.get_model('reporting', 'ActivitySourceTypeBaseSchema')
+    ASTBS.objects.bulk_create(
+        [
+            ASTBS(
+              reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id,
+              source_type_id=SourceType.objects.get(name='General stationary combustion of fuel or waste with production of useful energy').id,
+              base_schema_id=BaseSchema.objects.get(slug='gsc_of_fuel_or_waste_with_production_of_useful_energy_2024').id,
+              valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+              valid_to_id=Configuration.objects.get(valid_to='9999-12-31').id
+            ),
+            ASTBS(
+              reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id,
+              source_type_id=SourceType.objects.get(name='General stationary combustion of waste without production of useful energy').id,
+              base_schema_id=BaseSchema.objects.get(slug='gsc_of_fuel_or_waste_without_production_of_useful_energy_2024').id,
+              valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+              valid_to_id=Configuration.objects.get(valid_to='9999-12-31').id
+            )
+        ]
+    )
+
+def reverse_init_activity_source_type_base_schema_data(apps, schema_monitor):
+    '''
+    Remove initial data from erc.activity_source_type_base_schema
+    '''
+    ASTBS = apps.get_model('reporting', 'ActivitySourceTypeBaseSchema')
+    ASTBS.objects.filter(
+        valid_from='2024-01-01',
+        valid_to='9999-12-31'
+    ).delete()
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -135,7 +210,7 @@ class Migration(migrations.Migration):
                 'db_table_comment': 'This table contains the base json schema data for displaying emission forms. The base schema can be defined by activity and source type and does not change based on user input so it can be stored statically',
             },
         ),
-        migrations.RunPython(init_base_schema_data),
+        migrations.RunPython(init_base_schema_data, reverse_init_base_schema_data),
         migrations.CreateModel(
             name='Configuration',
             fields=[
@@ -162,6 +237,7 @@ class Migration(migrations.Migration):
                 'db_table_comment': 'Table containing program configurations for a date range. Each record will define a time period for when configuration elements are valid. When a change to the configuration is made a new configuration record will be created. This enables historical accuracy when applying configurations from previous years.',
             },
         ),
+        migrations.RunPython(init_configuration_data, reverse_init_configuration_data),
         migrations.CreateModel(
             name='GasType',
             fields=[
@@ -261,6 +337,7 @@ class Migration(migrations.Migration):
                 'db_table_comment': 'Intersection table that assigns a base_schema as valid for a period of time given an activity-sourceType pair',
             },
         ),
+        migrations.RunPython(init_activity_source_type_base_schema_data, reverse_init_activity_source_type_base_schema_data),
         migrations.CreateModel(
             name='ConfigurationElement',
             fields=[

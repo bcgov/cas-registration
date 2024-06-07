@@ -91,7 +91,6 @@ class FormBuilderService:
 
     @classmethod
     def build_form_schema(request, activity=None, source_type=None, gas_type=None, methodology=None, report_date='2024-04-01'):
-      print (activity, source_type, gas_type, methodology)
       if activity is None or source_type is None:
           return 'ERROR: Cannot build a schema without both Activity & Source Type data'
       elif gas_type is None:
