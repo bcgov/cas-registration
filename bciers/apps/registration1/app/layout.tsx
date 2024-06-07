@@ -8,7 +8,6 @@ You should not manually add <head> tags such as <title> and <meta> to root layou
 // eslint-disable-next-line import/extensions
 import "@bciers/styles/globals.css";
 
-import SessionProvider from "@/dashboard/auth/SessionProvider";
 import type { Metadata, Viewport } from "next";
 import Footer from "@bciers/components/layout/Footer";
 import Header from "@bciers/components/layout/Header";
@@ -20,7 +19,9 @@ import ThemeProvider from "@mui/material/styles/ThemeProvider";
 import { theme } from "@bciers/components";
 import { NextAppDirEmotionCacheProvider } from "@bciers/components";
 import CssBaseline from "@mui/material/CssBaseline";
-import { auth } from "@/dashboard/auth";
+
+import SessionProvider from "@/auth/SessionProvider";
+import { auth } from "@/auth";
 
 export const metadata: Metadata = {
   title: "CAS OBPS REGISTRATION",
