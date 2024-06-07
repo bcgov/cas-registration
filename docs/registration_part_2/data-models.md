@@ -19,6 +19,7 @@ If data is no longer necessary for v2 but existed in v1:
 
 - Set the column to nullable and blank in the model file
 - Run migrations
+- Check if that field is being referenced anywhere in the codebase. If it is, we must remove that reference to avoid breaking the app
 - No test updates needed--we don't test if fields are mandatory or not
 
 ## Updating New Tables and Columns
