@@ -1,5 +1,5 @@
-name: "Build and push Docker image"
-description: "Reusable action to build and push a Docker image"
+name: "Nx project uild and push Docker image"
+description: "Reusable action to build and push a Docker image for an Nx project in the /bciers directory"
 
 inputs:
   project:
@@ -7,12 +7,6 @@ inputs:
     required: true
   image_url:
     description: "Docker image URL"
-    required: true
-  registry:
-    description: "Docker registry"
-    required: true
-  cache_key:
-    description: "Unique cache key name"
     required: true
   github_token:
     description: "GitHub token"
@@ -54,9 +48,9 @@ runs:
       uses: actions/cache@v3
       with:
         path: /tmp/.buildx-cache
-        key: ${{ runner.os }}-${{ inputs.cache_key }}${{ github.sha }}
+        key: ${{ runner.os }}-buildx-bciers-${{ inputs.project }}${{ github.sha }}
         restore-keys: |
-          ${{ runner.os }}-${{ inputs.cache_key }}
+          ${{ runner.os }}-buildx-bciers-${{ inputs.project }}
     - name: Build images
       shell: bash
       env:
