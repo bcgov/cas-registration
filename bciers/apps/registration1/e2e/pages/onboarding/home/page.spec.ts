@@ -76,6 +76,27 @@ test.afterEach(async () => {
 });
 
 test.describe("Test Page - Home", () => {
+  test("Test Route", async ({ page }) => {
+    const homePage = new HomePOM(page);
+    await homePage.route();
+    // 🔍 Assert correct url
+    homePage.urlIsCorrect();
+  });
+
+  test("Test Selfie", async ({ page }) => {
+    const homePage = new HomePOM(page);
+    await homePage.route();
+
+    const pageContent = page.locator("html");
+
+    await happoPlaywright.screenshot(homePage.page, pageContent, {
+      component: "Home page",
+      variant: "default",
+    });
+    // ♿️ Analyze accessibility
+    await analyzeAccessibility(page);
+  });
+
   test.describe(`Test User Role`, () => {
     // ➰ Loop through the entries of UserRole enum
     for (let [role, value] of Object.entries(UserRole)) {
