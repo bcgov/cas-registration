@@ -7,11 +7,13 @@ const operationColumns = (
   isInternalUser: boolean,
   ActionCell: (params: GridRenderCellParams) => JSX.Element,
 ) => {
-  const columns = [
+  const columns: GridColDef[] = [
     {
       field: "name",
       headerName: "Operation Name",
       width: isInternalUser ? 720 : 320,
+      // Set flex to 1 to make the column take up all the remaining width if user zooms out
+      flex: 1,
     },
     { field: "bcghg_id", headerName: "BC GHG ID", width: 200 },
     { field: "type", headerName: "Operation Type", width: 200 },
@@ -21,10 +23,8 @@ const operationColumns = (
       renderCell: ActionCell,
       sortable: false,
       width: 120,
-      // Set flex to 1 to make the column take up all the remaining width if user zooms out
-      flex: 1,
     },
-  ] as GridColDef[];
+  ];
 
   if (isInternalUser) {
     columns.splice(OPERATOR_COLUMN_INDEX, 0, {

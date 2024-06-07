@@ -22,8 +22,8 @@ const OperationSearchCell = ({
     const { groupId, headerName } = params;
     return (
       <HeaderSearchCell
-        field={groupId as string}
-        fieldLabel={headerName as string}
+        field={groupId ?? ""}
+        fieldLabel={headerName ?? ""}
         isFocused={lastFocusedField === groupId}
         setLastFocusedField={setLastFocusedField}
       />

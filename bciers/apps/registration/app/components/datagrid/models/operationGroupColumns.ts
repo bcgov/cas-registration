@@ -9,7 +9,7 @@ const operationGroupColumns = (
   isInternalUser: boolean,
   SearchCell: (params: GridColumnGroupHeaderParams) => JSX.Element,
 ) => {
-  const columnGroupModel = [
+  const columnGroupModel: GridColumnGroupingModel = [
     {
       groupId: "bcghg_id",
       headerName: "BC GHG ID",
@@ -35,7 +35,7 @@ const operationGroupColumns = (
       renderHeaderGroup: EmptyGroupCell,
       children: [{ field: "action" }],
     },
-  ] as GridColumnGroupingModel;
+  ];
 
   if (isInternalUser) {
     columnGroupModel.splice(OPERATOR_COLUMN_INDEX, 0, {

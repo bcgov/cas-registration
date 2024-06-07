@@ -6,21 +6,6 @@ import { FrontEndRoles } from "@/app/utils/enums";
 import { OperationRow, OperationsSearchParams } from "./types";
 import { actionHandler } from "@/app/utils/actions";
 
-export const formatOperationRows = (rows: GridRowsProp) => {
-  if (!rows) {
-    return;
-  }
-  return rows.map(({ id, operator, name, bcghg_id, type }) => {
-    return {
-      id,
-      name,
-      bcghg_id,
-      operator: operator,
-      type,
-    };
-  });
-};
-
 // 🛠️ Function to fetch operations
 export const fetchOperationsPageData = async (
   searchParams: OperationsSearchParams,
@@ -34,7 +19,7 @@ export const fetchOperationsPageData = async (
       "",
     );
     return {
-      rows: formatOperationRows(pageData.data) as OperationRow[],
+      rows: pageData.data,
       row_count: pageData.row_count,
     };
   } catch (error) {
