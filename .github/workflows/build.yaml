@@ -67,12 +67,11 @@ jobs:
         with:
           fetch-depth: 0
       - name: Build registration1 container
-        uses: ./.github/actions/docker-build
+        uses: ./.github/actions/nx-project-build
         with:
           project: registration1
           image_url: ghcr.io/bcgov/cas-reg1-frontend
           registry: ghcr.io
-          cache_key: buildx-bciers-registration1
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
   nx-docker-build-reporting:
@@ -83,12 +82,11 @@ jobs:
         with:
           fetch-depth: 0
       - name: Build reporting container
-        uses: ./.github/actions/docker-build
+        uses: ./.github/actions/nx-project-build
         with:
           project: reporting
           image_url: ghcr.io/bcgov/cas-rep-frontend
           registry: ghcr.io
-          cache_key: buildx-bciers-reporting
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
   # nx-docker-build-registration:
