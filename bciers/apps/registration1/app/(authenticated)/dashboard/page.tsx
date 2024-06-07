@@ -27,6 +27,7 @@ export default async function Page() {
   }
   return (
     <div>
+      <h1>ROLE: {role}</h1>
       {role === FrontEndRoles.CAS_PENDING ? (
         <>
           <Card
