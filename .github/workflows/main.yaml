@@ -1,0 +1,21 @@
+# This is the main workflow which will orchestrate the other workflows:
+
+name: BCIERS Main Workflow
+
+on:
+  push:
+    branches: [develop, main]
+  pull_request:
+    branches: [develop, main]
+  workflow_dispatch:
+
+jobs:
+  build-containers:
+    uses: ./.github/workflows/build.yaml
+  test-code:
+    uses: ./.github/workflows/test.yaml
+  # Call the test containers workflow after all the containers have been built
+  test-containers:
+    needs: [build-containers]
+    uses: ./.github/workflows/test-containers.yaml
+    secrets: inherit
