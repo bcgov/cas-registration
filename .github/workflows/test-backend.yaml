@@ -1,0 +1,26 @@
+# This file is used for tests that use the backend container
+# For tests that don't require containers to be built first, see test.yaml
+
+name: Test BCIERS backend container
+
+on:
+  workflow_call:
+
+env:
+  PGUSER: postgres
+  DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+
+jobs:
+  backend-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: dev env setup
+        uses: ./.github/actions/dev-env-setup
+      - name: run app locally
+        uses: ./.github/actions/run-registration1-app
+        with:
+          django_secret_key: ${{ env.DJANGO_SECRET_KEY }}
+      - name: Run pytest
+        working-directory: ./bc_obps
+        run: make pythontests
