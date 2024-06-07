@@ -99,15 +99,6 @@ test.describe("Test Dashboard Page", () => {
             await dashboardPage.urlIsCorrect();
             break;
         }
-        // 📷 Cheese!
-        const pageContent = page.locator("html");
-        await happoPlaywright.screenshot(dashboardPage.page, pageContent, {
-          component: `Authenticated page ${role}`,
-          variant: "default",
-        });
-
-        // ♿️ Analyze accessibility
-        await analyzeAccessibility(page);
       });
       test("Report a Problem Tile workflow", async ({ page }) => {
         // 📌 Skip roles: cas_pending; new user

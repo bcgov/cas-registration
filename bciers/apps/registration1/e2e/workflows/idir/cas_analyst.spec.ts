@@ -45,7 +45,7 @@ test.describe.configure({ mode: "serial" });
 test.describe("Test Workflow cas_analyst", () => {
   // 👤 run test using the storageState for this role
   const storageState = JSON.parse(
-    process.env.E2E_CAS_ANALYST_STORAGE_STATE as string,
+    process.env.E2E_CAS_ANALYST_STORAGE as string,
   );
   // Note: specify storageState for each test file
   test.use({ storageState: storageState });
