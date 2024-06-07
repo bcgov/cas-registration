@@ -5,7 +5,7 @@ import {
 } from "@/app/utils/jsonSchema/userOperator";
 
 import { RJSFSchema } from "@rjsf/utils";
-import { auth } from "@/dashboard/auth";
+import { auth } from "@/auth";
 import { UserOperatorFormData } from "@/app/components/form/formDataTypes";
 import { validate as isValidUUID } from "uuid";
 import { BusinessStructure } from "./types";

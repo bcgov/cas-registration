@@ -5,7 +5,7 @@ import { actionHandler } from "@/app/utils/actions";
 import { FrontEndRoles } from "@/app/utils/enums";
 import Card from "@mui/material/Card";
 import Typography from "@mui/material/Typography";
-import { auth } from "@/dashboard/auth";
+import { auth } from "@/auth";
 
 export default async function Page() {
   const session = await auth();

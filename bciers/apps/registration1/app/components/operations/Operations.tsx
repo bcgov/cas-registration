@@ -1,7 +1,7 @@
 import { GridRowsProp } from "@mui/x-data-grid";
 
 import { actionHandler } from "@/app/utils/actions";
-import { auth } from "@/dashboard/auth";
+import { auth } from "@/auth";
 import {
   OperationRow,
   OperationsSearchParams,

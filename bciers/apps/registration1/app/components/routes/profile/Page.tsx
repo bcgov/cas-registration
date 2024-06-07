@@ -3,7 +3,7 @@ import {
   UserProfileFormData,
   UserProfilePartialFormData,
 } from "@/app/components/form/formDataTypes";
-import { auth } from "@/dashboard/auth";
+import { auth } from "@/auth";
 import getUserFullName from "@/app/utils/getUserFullName";
 import UserForm from "@/app/components/users/UserForm";
 
