@@ -64,7 +64,9 @@ export async function actionHandler(
         const userGuid =
           token?.user_guid || getUUIDFromEndpoint(endpoint) || "";
         // strip any guid param from endpoint url
-        endpoint = endpoint.replace(`/${userGuid}`, "");
+        if (userGuid) {
+          endpoint = endpoint.replace(`/${userGuid}`, ""); // if there's no userGuid, this replaces slashes
+        }
         // Add user_guid to Django API Authorization header
         const defaultOptions: RequestInit = {
           cache: "no-store", // Default cache option
@@ -80,7 +82,6 @@ export async function actionHandler(
           ...defaultOptions,
           ...options, // Merge the provided options, allowing cache to be overridden
         };
-
         const response = await fetch(
           `${process.env.API_URL}${endpoint}`,
           mergedOptions,
