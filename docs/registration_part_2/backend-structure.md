@@ -62,3 +62,7 @@ class UserDataAccessService:
 ```
 
 If significant changes are made to the service layers, consider creating `v1` and `v2` sub-folders for the service layers as well.
+
+## Tests
+
+The existing testing commands run both `v1` and `v2` tests. See [test.md](../backend/test.md) for more details.
