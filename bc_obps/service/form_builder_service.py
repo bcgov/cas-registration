@@ -1,5 +1,5 @@
 import json
-from reporting.models import ConfigurationElement, SourceType, GasType, Methodology, ReportingField
+from reporting.models import ConfigurationElement, SourceType, GasType, Methodology, ReportingField, ActivitySourceTypeBaseSchema
 from registration.models import ReportingActivity
 
 
@@ -44,8 +44,11 @@ def build_gsc_schema(gsc):
                   print ('FIELD NAME: ', f.reporting_field.field_name, 'FIELD_TYPE: ', f.reporting_field.field_type)
 
 
-def build_activity_source_type_schema(activity: int, source_type: int):
-  return f'GSC Base only. Activity: {activity} SourceType: {source_type}'
+## Return base schema for activity-sourceType pair if only those values are passed
+def build_activity_source_type_schema(activity: int, source_type: int, report_date: str):
+  source_type_schema = ActivitySourceTypeBaseSchema.objects.select_related('base_schema').filter(reporting_activity_id=activity, source_type_id=source_type, valid_from__valid_from__lte=report_date, valid_to__valid_to__gte=report_date).first()
+  print (f'GSC Base only. Activity: {activity} SourceType: {source_type}\n Schema: {source_type_schema.base_schema.schema}')
+  return json.dumps(source_type_schema.base_schema.schema)
 
 def build_activity_source_type_gas_type_schema(activity: int, source_type: int, gas_type: int):
   return f'GSC with gas type. Activity: {activity} SourceType: {source_type} GasType: {gas_type}'
@@ -87,12 +90,12 @@ class FormBuilderService:
       return json.dumps([field.serialize() for field in reporting_fields])
 
     @classmethod
-    def build_form_schema(request, activity=None, source_type=None, gas_type=None, methodology=None):
+    def build_form_schema(request, activity=None, source_type=None, gas_type=None, methodology=None, report_date='2024-04-01'):
       print (activity, source_type, gas_type, methodology)
       if activity is None or source_type is None:
           return 'ERROR: Cannot build a schema without both Activity & Source Type data'
       elif gas_type is None:
-          schema=build_activity_source_type_schema(activity, source_type)
+          schema=build_activity_source_type_schema(activity, source_type, report_date)
       elif methodology is None:
           print('Here')
           schema=build_activity_source_type_gas_type_schema(activity, source_type, gas_type)
