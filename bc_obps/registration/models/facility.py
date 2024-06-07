@@ -7,9 +7,9 @@ from simple_history.models import HistoricalRecords
 class Facility(TimeStampedModel):
     class Types(models.TextChoices):
         SINGLE_FACILITY = "Single Facility"
-        LARGE = "Large"
-        MEDIUM = "Medium"
-        SMALL_AGGREGATE = "Small Aggregate"
+        LARGE_LFO = "Large LFO"
+        MEDIUM_LFO = "Medium LFO"
+        SMALL_AGGREGATE_LFO = "Small Aggregate LFO"
 
     id = models.UUIDField(
         primary_key=True, default=uuid.uuid4, db_comment="Primary key to identify the facility", verbose_name="ID"

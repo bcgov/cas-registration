@@ -32,6 +32,7 @@ class Event(TimeStampedModel):
         )
         db_table = 'erc"."event'
         constraints = [
+            # Ensure that an event is associated with either an operation or a facility, but not both.
             models.CheckConstraint(
                 check=(
                     (models.Q(operation_id__isnull=True) & models.Q(facility_id__isnull=False))
@@ -39,10 +40,12 @@ class Event(TimeStampedModel):
                 ),
                 name="event_not_both_operation_and_facility",
             ),
+            # Explicitly ensure that an event cannot have both an operation and a facility.
             models.CheckConstraint(
                 check=~(models.Q(operation_id__isnull=False) & models.Q(facility_id__isnull=False)),
                 name="event_cannot_have_both_operation_and_facility",
             ),
+            # Ensure that an event must have either an operation or a facility associated.
             models.CheckConstraint(
                 check=~models.Q(operation_id__isnull=True, facility_id__isnull=True),
                 name="event_has_operation_or_facility",
