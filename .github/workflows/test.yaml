@@ -51,6 +51,7 @@ jobs:
         id: set-affected
         run: |
           AFFECTED_PROJECTS=$(cat affected.txt)
+          echo "testing AFFECTED_PROJECTS=$AFFECTED_PROJECTS"
           echo "AFFECTED_PROJECTS=$AFFECTED_PROJECTS" >> $GITHUB_ENV
         shell: bash
 
@@ -69,6 +70,8 @@ jobs:
         uses: ./.github/actions/dev-env-setup
       - name: Authenticate with Nx Cloud
         run: yarn nx connect-to-nx-cloud
+      - name: Output Affected Projects
+        run: echo "AFFECTED_PROJECTS=$AFFECTED_PROJECTS"
       - name: Run Nx Affected Tests with Remote Caching
         run: |
           if [ -n "${AFFECTED_PROJECTS}" ]; then
