@@ -12,7 +12,7 @@ env:
 
 # Cancel current job when pushing new commit into the PR
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: test-containers-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 jobs:
   install-dev-tools:
