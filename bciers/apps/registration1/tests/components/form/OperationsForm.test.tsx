@@ -138,7 +138,7 @@ describe("Operations component", () => {
     ).toBeInTheDocument();
   });
 
-  it("shows the success message when operationName is defined", async () => {
+  it("shows the received message when operationName is defined", async () => {
     useParams.mockReturnValue({
       formSection: "3",
       operation: "test-id",
@@ -166,6 +166,41 @@ describe("Operations component", () => {
           (_, element) =>
             element?.textContent ===
             "Your application for the B.C. OBPS Regulated Operation ID for Operation 1 has been received.",
+        ),
+      ).toBeVisible();
+    });
+  });
+
+  it("shows the saved message when an operation that already has a BORO ID and is updated", async () => {
+    useParams.mockReturnValue({
+      formSection: "3",
+      operation: "test-id",
+    } as QueryParams);
+
+    render(
+      <OperationsForm
+        schema={testOperationSchema}
+        formData={{ ...mockFormData, bc_obps_regulated_operation: "21-0005" }}
+      />,
+    );
+
+    const submitButton = screen.getByText(/Submit/i);
+
+    act(() => {
+      submitButton.click();
+      actionHandler.mockReturnValueOnce({
+        id: "025328a0-f9e8-4e1a-888d-aa192cb053db",
+        name: "Operation 1",
+        error: null,
+      });
+    });
+
+    // Get the success message using the text content since it returns broken up text error
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          (_, element) =>
+            element?.textContent === "Your changes have been saved.",
         ),
       ).toBeVisible();
     });
