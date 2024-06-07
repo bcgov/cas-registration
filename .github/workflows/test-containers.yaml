@@ -10,10 +10,6 @@ env:
   KEYCLOAK_CLIENT_SECRET: ${{ secrets.KEYCLOAK_CLIENT_SECRET }}
   NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
 
-# Cancel current job when pushing new commit into the PR
-concurrency:
-  group: test-containers-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
 jobs:
   install-dev-tools:
     runs-on: ubuntu-latest

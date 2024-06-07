@@ -6,10 +6,6 @@ on:
     - frontend
     - backend
 
-concurrency:
-  group: callee-trivy-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
 jobs:
   trivy-scan-code:
     runs-on: ubuntu-latest
