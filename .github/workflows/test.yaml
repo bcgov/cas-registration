@@ -42,22 +42,16 @@ jobs:
           fetch-depth: 0
       - name: dev env setup
         uses: ./.github/actions/dev-env-setup
-      - name: Generate Affected Projects JSON
+      - name: Generate Affected Projects
         id: affected
-        run: |
-          npx nx print-affected --base=origin/main --head=$(git rev-parse HEAD) --select=projects > affected.json
-      - name: Output Affected Projects JSON
-        run: cat affected.json
+        run: npx nx print-affected --base=origin/main --head=$(git rev-parse HEAD) --select=projects > affected.txt
+      - name: Output Affected Projects
+        run: cat affected.txt
       - name: Set Affected Projects as Output
         id: set-affected
         run: |
-          if cat affected.json | jq -e . > /dev/null 2>&1; then
-            AFFECTED_PROJECTS=$(cat affected.json | jq -r '.projects | join(",")')
-            echo "AFFECTED_PROJECTS=$AFFECTED_PROJECTS" >> $GITHUB_ENV
-          else
-            echo "AFFECTED_PROJECTS=" >> $GITHUB_ENV
-            echo "Invalid JSON in affected.json"
-          fi
+          AFFECTED_PROJECTS=$(cat affected.txt)
+          echo "AFFECTED_PROJECTS=$AFFECTED_PROJECTS" >> $GITHUB_ENV
         shell: bash
 
   nx-tests:
