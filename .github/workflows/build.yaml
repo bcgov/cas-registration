@@ -132,7 +132,6 @@ jobs:
     defaults:
       run:
         working-directory: ./bciers
-    needs: backend-docker-build
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -196,7 +195,6 @@ jobs:
     defaults:
       run:
         working-directory: ./bciers
-    needs: backend-docker-build
     steps:
       - name: Checkout
         uses: actions/checkout@v4
