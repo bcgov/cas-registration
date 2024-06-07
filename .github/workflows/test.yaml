@@ -17,17 +17,7 @@ env:
   NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
 
 jobs:
-  install-dev-tools:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: dev env setup
-        uses: ./.github/actions/dev-env-setup
-      - run: yarn install --immutable
-        working-directory: ./bciers
-
   nx-tests:
-    needs: install-dev-tools
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -46,7 +36,6 @@ jobs:
         shell: bash
 
   yarn-audit:
-    needs: install-dev-tools
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -56,7 +45,6 @@ jobs:
         working-directory: ./bciers
 
   pre-commit:
-    needs: install-dev-tools
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -83,7 +71,6 @@ jobs:
       - uses: pre-commit/action@v3.0.1
       
   check-migrations:
-    needs: install-dev-tools
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

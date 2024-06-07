@@ -13,16 +13,28 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  PGUSER: postgres
+
 jobs:
+  install-dev-tools:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: dev env setup
+        uses: ./.github/actions/dev-env-setup
+      - run: yarn install --immutable
+        working-directory: ./bciers
   build-containers:
     uses: ./.github/workflows/build.yaml
   test-code:
     uses: ./.github/workflows/test.yaml
+    needs: [install-dev-tools]
   scan-code-trivy:
     uses: ./.github/workflows/scan-code-trivy.yaml
   codeql-analysis:
     uses: ./.github/workflows/codeql.yaml
   test-containers:
-    needs: [build-containers]
+    needs: [build-containers, install-dev-tools]
     uses: ./.github/workflows/test-containers.yaml
     secrets: inherit
