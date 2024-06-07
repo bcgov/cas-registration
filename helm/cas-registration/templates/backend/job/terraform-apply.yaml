@@ -9,12 +9,12 @@ metadata:
     "helm.sh/hook": pre-install, pre-upgrade
 spec:
   backoffLimit: 0
-  activeDeadlineSeconds: 900
   parallelism: 1
   completions: 1
   template:
     spec:
       serviceAccountName: "terraform-kubernetes-service-account"
+      activeDeadlineSeconds: 600
       containers:
         - name: terraform-apply
           resources: {{ toYaml .Values.devops.resources | nindent 12 }}
