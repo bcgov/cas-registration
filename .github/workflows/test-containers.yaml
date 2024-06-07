@@ -1,3 +1,6 @@
+# This file is used for tests that use containers.
+# For tests that don't require containers to be built first, see test.yaml
+
 name: Test BCIERS containers
 
 on:
@@ -11,17 +14,7 @@ env:
   NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
 
 jobs:
-  install-dev-tools:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: dev env setup
-        uses: ./.github/actions/dev-env-setup
-      - run: yarn install --immutable
-        working-directory: ./bciers
-
   zap-owasp:
-    needs: [install-dev-tools]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -54,7 +47,6 @@ jobs:
 
   e2e-tests:
     name: 🧪 e2e tests ${{ matrix.project }}
-    needs: [install-dev-tools]
     runs-on: ubuntu-latest
     timeout-minutes: 60
     strategy:
@@ -193,7 +185,6 @@ jobs:
         working-directory: ./bciers/apps/registration1
 
   backend-tests:
-    needs: [install-dev-tools]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
