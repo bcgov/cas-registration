@@ -1,0 +1,212 @@
+name: Test BCIERS containers
+
+on:
+  workflow_call:
+
+env:
+  PGUSER: postgres
+  DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+  KEYCLOAK_CLIENT_ID: ${{ secrets.KEYCLOAK_CLIENT_ID }}
+  KEYCLOAK_CLIENT_SECRET: ${{ secrets.KEYCLOAK_CLIENT_SECRET }}
+  NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
+
+# Cancel current job when pushing new commit into the PR
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  install-dev-tools:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: dev env setup
+        uses: ./.github/actions/dev-env-setup
+      - run: yarn install --immutable
+        working-directory: ./bciers
+
+  zap-owasp:
+    needs: [install-dev-tools]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: dev env setup
+        uses: ./.github/actions/dev-env-setup
+      - name: run app locally
+        uses: ./.github/actions/local-app-run
+        with:
+          django_secret_key: ${{ env.DJANGO_SECRET_KEY }}
+      - name: ZAP Frontend Scan
+        uses: zaproxy/action-baseline@v0.12.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          docker_name: "ghcr.io/zaproxy/zaproxy:stable"
+          target: "http://localhost:3000/"
+          rules_file_name: ".zap/rules-frontend.tsv"
+          cmd_options: "-a -d -T 5 -m 2"
+          issue_title: OWASP Baseline - Frontend
+          fail_action: false
+      - name: ZAP Backend Scan
+        uses: zaproxy/action-baseline@v0.12.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          docker_name: "ghcr.io/zaproxy/zaproxy:stable"
+          target: "http://0.0.0.0:8000/"
+          rules_file_name: ".zap/rules-backend.tsv"
+          cmd_options: "-a -d -T 5 -m 2"
+          issue_title: OWASP Baseline - Backend
+          fail_action: false
+
+  e2e-tests:
+    name: 🧪 e2e tests ${{ matrix.project }}
+    needs: [install-dev-tools]
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - project: chromium
+            os: ubuntu-latest
+            cache_dir: ~/.cache/ms-playwright
+          - project: firefox
+            os: ubuntu-latest
+            cache_dir: ~/.cache/ms-playwright
+          # Commented out because of flakey issues with webkit in CI
+          # - project: webkit
+          #   os: macos-latest
+          #   cache_dir: ~/Library/Caches/ms-playwright
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 🎁 setup dev env
+        uses: ./.github/actions/dev-env-setup
+
+      - name: 🎁 setup local app
+        uses: ./.github/actions/local-app-run
+        with:
+          django_secret_key: ${{ env.DJANGO_SECRET_KEY }}
+          keycloak_client_id: ${{ env.KEYCLOAK_CLIENT_ID }}
+          keycloak_client_secret: ${{ env.KEYCLOAK_CLIENT_SECRET }}
+          nextauth_secret: ${{ env.NEXTAUTH_SECRET }}
+      - name: ⚡️ cache Playwright binaries
+        uses: actions/cache@v4
+        id: playwright-cache
+        with:
+          path: ${{ matrix.cache_dir }}
+          key: ${{ runner.os }}-${{ matrix.project }}-ms-playwright-registration
+
+      - name: 📥 install Playwright ${{ matrix.project }}
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: npx playwright install --with-deps ${{ matrix.project }}
+        working-directory: ./bciers/apps/registration1
+
+      - name: 🎭 Run Playwright Tests
+        run: |
+          npx happo-e2e -- npx playwright test --project=${{ matrix.project }} bciers/apps/registration1/e2e/*
+        env:
+          XDEBUG: pw:api,pw:browser*
+          API_URL: http://127.0.0.1:8000/api/
+          DB_USER: postgres
+          DB_NAME: registration
+          DB_PORT: 5432
+          DB_HOST: localhost
+          E2E_BASEURL: http://localhost:3000/
+          E2E_CAS_USER: ${{ secrets.E2E_CAS_USER }}
+          E2E_CAS_USER_GUID: ${{ secrets.E2E_CAS_USER_GUID }}
+          E2E_CAS_USER_PASSWORD: ${{ secrets.E2E_CAS_USER_PASSWORD}}
+          E2E_CAS_ADMIN_STORAGE: ${{ secrets.E2E_CAS_ADMIN_STORAGE}}
+          E2E_CAS_ANALYST_STORAGE: ${{ secrets.E2E_CAS_ANALYST_STORAGE}}
+          E2E_CAS_PENDING_STORAGE: ${{ secrets.E2E_CAS_PENDING_STORAGE}}
+          E2E_INDUSTRY_USER_ADMIN: bc-cas-dev
+          E2E_INDUSTRY_USER_ADMIN_GUID: ${{ secrets.E2E_INDUSTRY_USER_ADMIN_GUID }}
+          E2E_INDUSTRY_USER_ADMIN_PASSWORD: ${{ secrets.E2E_INDUSTRY_USER_ADMIN_PASSWORD }}
+          E2E_INDUSTRY_USER_ADMIN_STORAGE: ${{ secrets.E2E_INDUSTRY_USER_ADMIN_STORAGE}}
+          E2E_INDUSTRY_USER: bc-cas-dev-secondary
+          E2E_INDUSTRY_USER_GUID: ${{ secrets.E2E_INDUSTRY_USER_GUID }}
+          E2E_INDUSTRY_USER_PASSWORD: ${{ secrets.E2E_INDUSTRY_USER_PASSWORD }}
+          E2E_INDUSTRY_USER_STORAGE: ${{ secrets.E2E_INDUSTRY_USER_STORAGE}}
+          E2E_NEW_USER: bc-cas-dev-three
+          E2E_NEW_USER_GUID: ${{ secrets.E2E_NEW_USER_GUID }}
+          E2E_NEW_USER_PASSWORD: ${{ secrets.E2E_NEW_USER_PASSWORD }}
+          E2E_NEW_USER_STORAGE: ${{ secrets.E2E_NEW_USER_STORAGE}}
+          HAPPO_API_KEY: ${{ secrets.HAPPO_API_KEY }}
+          HAPPO_API_SECRET: ${{ secrets.HAPPO_API_SECRET }}
+          HAPPO_NONCE: ${{ github.sha }}
+          SMTP_CONNECTION_STRING: smtp://@localhost:1025
+        working-directory: ./bciers/apps/registration1
+      - name: 💾 save ${{ matrix.project }} report artifact
+        # prefer to upload the report only in case of test failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          # Store all of the reports separately by reconfiguring the report name
+          name: blob-report-${{ matrix.project }}
+          path: bciers/blob-report
+          retention-days: 1
+  # Merge the e2e blob reports to one HTML report
+  e2e-report:
+    name: 📊 e2e report artifact
+    runs-on: ubuntu-latest
+    needs: [e2e-tests]
+    if: ${{ always() && contains(needs.*.result, 'failure') }}
+    steps:
+      - name: Download blob reports from GitHub Actions Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: all-blob-reports
+          # To minimize the report file size only download Chromium reports
+          # If you want to debug other reports, add the * pattern back in temporarily
+          pattern: blob-report-chromium #blob-report-*
+          merge-multiple: true
+
+      - name: Merge into HTML Report
+        run: npx playwright merge-reports --reporter html ./all-blob-reports
+      - name: Upload HTML report
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report
+          retention-days: 14
+  # Ensure the e2e tests and e2e report completed successfully
+  e2e:
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    needs: [e2e-tests]
+    steps:
+      - run: exit 1
+        if: >-
+          ${{
+               contains(needs.*.result, 'failure')
+            || contains(needs.*.result, 'cancelled')
+            || contains(needs.*.result, 'skipped')
+          }}
+
+  happo-finalize:
+    runs-on: ubuntu-latest
+    needs: [e2e-tests]
+    steps:
+      - uses: actions/checkout@v4
+      - name: dev env setup
+        uses: ./.github/actions/dev-env-setup
+      - name: finalize happo e2e tests
+        env:
+          HAPPO_API_KEY: ${{ secrets.HAPPO_API_KEY }}
+          HAPPO_API_SECRET: ${{ secrets.HAPPO_API_SECRET }}
+          HAPPO_NONCE: ${{ github.sha }}
+        run: npx happo-e2e finalize
+        working-directory: ./bciers/apps/registration1
+
+  backend-tests:
+    needs: [install-dev-tools]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: dev env setup
+        uses: ./.github/actions/dev-env-setup
+      - name: run app locally
+        uses: ./.github/actions/local-app-run
+        with:
+          django_secret_key: ${{ env.DJANGO_SECRET_KEY }}
+      - name: Run pytest
+        working-directory: ./bc_obps
+        run: make pythontests
