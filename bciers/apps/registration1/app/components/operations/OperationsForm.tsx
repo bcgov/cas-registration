@@ -41,13 +41,14 @@ export default function OperationsForm({ formData, schema }: Readonly<Props>) {
 
   // used as href query parameter for breadcrumb toggle of UUID segment to a title segment
   let paramTitle = "Create";
-  return (
-    <>
-      {operationName ? (
-        <section
-          data-testid="operation-boro-id-message"
-          className="w-full text-center text-2xl mt-20"
-        >
+
+  const confirmationMessage = (
+    <section
+      data-testid="operation-boro-id-message"
+      className="w-full text-center text-2xl mt-20"
+    >
+      {!formData?.bc_obps_regulated_operation ? (
+        <>
           <p>
             Your application for the B.C. OBPS Regulated Operation ID for{" "}
             <b>{operationName}</b> has been received.
@@ -60,14 +61,27 @@ export default function OperationsForm({ formData, schema }: Readonly<Props>) {
           <p>
             <Link href="#">Have not received the confirmation email yet?</Link>
           </p>
-          <Link
-            className="m-auto link-button-blue"
-            href="/dashboard/operations"
-            aria-label="Return to Operations List"
-          >
-            Return to Operations List{" "}
-          </Link>
-        </section>
+        </>
+      ) : (
+        <>
+          <p>Your changes have been saved.</p>
+        </>
+      )}
+
+      <Link
+        className="m-auto link-button-blue"
+        href="/dashboard/operations"
+        aria-label="Return to Operations List"
+      >
+        Return to Operations List{" "}
+      </Link>
+    </section>
+  );
+
+  return (
+    <>
+      {operationName ? (
+        confirmationMessage
       ) : (
         <MultiStepFormBase
           baseUrl={`/dashboard/operations/${operationId}`}
