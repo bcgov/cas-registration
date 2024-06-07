@@ -6,8 +6,6 @@ from django.core.cache import cache
 
 
 class NaicsCode(BaseModel):
-    """NAICS code model"""
-
     naics_code = models.CharField(max_length=1000, db_comment="NAICS code")
     naics_description = models.CharField(max_length=1000, db_comment="Description of the NAICS code")
     history = HistoricalRecords(

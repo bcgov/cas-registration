@@ -6,8 +6,6 @@ from django.core.cache import cache
 
 
 class RegulatedProduct(BaseModel):
-    """Regulated products model"""
-
     name = models.CharField(max_length=1000, db_comment="The name of a regulated product")
     history = HistoricalRecords(
         table_name='erc_history"."regulated_product_history',

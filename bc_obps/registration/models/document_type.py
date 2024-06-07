@@ -4,8 +4,6 @@ from simple_history.models import HistoricalRecords
 
 
 class DocumentType(BaseModel):
-    """Document type model"""
-
     name = models.CharField(
         max_length=1000,
         db_comment="Name of document type (e.g. opt in signed statutory declaration)",

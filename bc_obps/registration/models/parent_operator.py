@@ -9,8 +9,6 @@ from django.core.validators import RegexValidator
 
 
 class ParentOperator(TimeStampedModel):
-    """Metadata for parent operators associated with a child operator"""
-
     child_operator = models.ForeignKey(
         Operator,
         db_comment="The operator that this parent operator is associated with",

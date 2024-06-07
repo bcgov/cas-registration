@@ -5,8 +5,6 @@ from simple_history.models import HistoricalRecords
 
 
 class Address(BaseModel):
-    """Address model"""
-
     street_address = models.CharField(
         max_length=1000, null=True, blank=True, db_comment="Street address of relevant location)"
     )

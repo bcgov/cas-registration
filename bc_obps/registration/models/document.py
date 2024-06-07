@@ -6,8 +6,6 @@ from django.core.files.storage import default_storage
 
 
 class Document(TimeStampedModel):
-    """Document model"""
-
     file = models.FileField(upload_to="documents", db_comment="The file format, metadata, etc.")
     type = models.ForeignKey(
         DocumentType,

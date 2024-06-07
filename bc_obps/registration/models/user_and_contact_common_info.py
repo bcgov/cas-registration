@@ -4,8 +4,6 @@ from phonenumber_field.modelfields import PhoneNumberField
 
 
 class UserAndContactCommonInfo(BaseModel):
-    """User and contact common information abstract base class"""
-
     first_name = models.CharField(max_length=1000, db_comment="A user or contact's first name")
     last_name = models.CharField(max_length=1000, db_comment="A user or contact's last name")
     position_title = models.CharField(max_length=1000, db_comment="A user or contact's position title")

@@ -4,10 +4,6 @@ from simple_history.models import HistoricalRecords
 
 
 class BusinessRole(BaseModel):
-    """
-    Roles that a Contact can have within an operator/operation
-    """
-
     role_name = models.CharField(
         primary_key=True,
         serialize=False,
