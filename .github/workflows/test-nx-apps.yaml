@@ -1,7 +1,7 @@
-# This file is used for tests that use containers.
+# This file is used for tests that use Nx app containers.
 # For tests that don't require containers to be built first, see test.yaml
 
-name: Test BCIERS containers
+name: Test BCIERS Nx App containers
 
 on:
   workflow_call:
@@ -183,17 +183,3 @@ jobs:
           HAPPO_NONCE: ${{ github.sha }}
         run: npx happo-e2e finalize
         working-directory: ./bciers/apps/registration1
-
-  backend-tests:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: dev env setup
-        uses: ./.github/actions/dev-env-setup
-      - name: run app locally
-        uses: ./.github/actions/run-registration1-app
-        with:
-          django_secret_key: ${{ env.DJANGO_SECRET_KEY }}
-      - name: Run pytest
-        working-directory: ./bc_obps
-        run: make pythontests

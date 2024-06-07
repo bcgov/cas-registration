@@ -1,5 +1,5 @@
 name: "Nx project uild and push Docker image"
-description: "Reusable action to build and push a Docker image for an Nx project in the /bciers directory"
+description: "Reusable action to build and push a Docker image for an Nx app in the /bciers directory"
 
 inputs:
   project:
