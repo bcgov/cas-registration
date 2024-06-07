@@ -3,6 +3,7 @@ from reporting.models import ConfigurationElement, ReportingField, ActivitySourc
 
 ## Return base schema for activity-sourceType pair if only those values are passed & append valid gas types to schema as enum
 def build_activity_source_type_schema(activity: int, source_type: int, report_date: str):
+    ## DYLAN: Should be refactored out into a commonn function to be used by all build functions
     ## Fetch base schema for activity-sourceType pair
     source_type_schema = ActivitySourceTypeBaseSchema.objects.select_related('base_schema').filter(reporting_activity_id=activity, source_type_id=source_type, valid_from__valid_from__lte=report_date, valid_to__valid_to__gte=report_date).first()
     ## Fetch valid gas_type values for activity-sourceType pair
@@ -16,10 +17,11 @@ def build_activity_source_type_schema(activity: int, source_type: int, report_da
     ## Append other fields related to gas type to schema
     return_schema['properties']['emisisons'] = {"type": "number", "title": "Emissions"}
     return_schema['properties']['equivalentEmisisons'] = {"type": "number", "title": "Equivalent Emissions"}
-    ## May need to return 2 objects here: the schema & a mapping for the gas_type.chemical_formula to gas_type.id for use in the frontend
+    ## DYLAN: May need to return 2 objects here: the schema & a mapping for the gas_type.chemical_formula to gas_type.id for use in the frontend
     return json.dumps(return_schema)
 
 def build_activity_source_type_gas_type_schema(activity: int, source_type: int, gas_type: int, report_date: str):
+    ## DYLAN: Should be refactored out into a commonn function to be used by all build functions
     source_type_schema = ActivitySourceTypeBaseSchema.objects.select_related('base_schema').filter(reporting_activity_id=activity, source_type_id=source_type, valid_from__valid_from__lte=report_date, valid_to__valid_to__gte=report_date).first()
     ## Fetch valid gas_type values for activity-sourceType pair
     gas_types=ConfigurationElement.objects.select_related('gas_type').filter(reporting_activity_id=activity, source_type_id=source_type, valid_from__valid_from__lte=report_date,).distinct('gas_type__name')
@@ -39,6 +41,7 @@ def build_activity_source_type_gas_type_schema(activity: int, source_type: int, 
         methdology_enum.append(t.methodology.name)
     ## Append methodology field to schema with valid methodologies as an enum
     return_schema['properties']['methodology'] = {"type": "string", "title": "Methodology", "enum": methdology_enum}
+    ## DYLAN: May need to return more objects here including mappings for methodology name / id and gas type formula / id
     return json.dumps(return_schema)
 
 def build_full_schema(activity: int, source_type: int, gas_type: int, methodology: int, report_date: str):
