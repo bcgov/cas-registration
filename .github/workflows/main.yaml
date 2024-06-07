@@ -14,7 +14,8 @@ jobs:
     uses: ./.github/workflows/build.yaml
   test-code:
     uses: ./.github/workflows/test.yaml
-  # Call the test containers workflow after all the containers have been built
+  scan-code-trivy:
+    uses: ./.github/workflows/scan-code-trivy.yaml
   test-containers:
     needs: [build-containers]
     uses: ./.github/workflows/test-containers.yaml
