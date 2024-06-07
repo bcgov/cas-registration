@@ -5,7 +5,7 @@ on:
 
 # Cancel current job when pushing new commit into the PR
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: build-containers-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:

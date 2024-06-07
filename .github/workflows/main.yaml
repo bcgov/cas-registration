@@ -16,6 +16,8 @@ jobs:
     uses: ./.github/workflows/test.yaml
   scan-code-trivy:
     uses: ./.github/workflows/scan-code-trivy.yaml
+  codeql-analysis:
+    uses: ./.github/workflows/codeql.yaml
   test-containers:
     needs: [build-containers]
     uses: ./.github/workflows/test-containers.yaml
