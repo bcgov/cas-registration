@@ -44,7 +44,8 @@ jobs:
         uses: ./.github/actions/dev-env-setup
       - name: Generate Affected Projects JSON
         id: affected
-        run: npx nx print-affected --base=origin/main --head=$(git rev-parse HEAD) --select=projects > affected.json
+        run: |
+          npx nx print-affected --base=origin/main --head=$(git rev-parse HEAD) --select=projects > affected.json
       - name: Output Affected Projects JSON
         run: cat affected.json
       - name: Set Affected Projects as Output
@@ -52,9 +53,9 @@ jobs:
         run: |
           if cat affected.json | jq -e . > /dev/null 2>&1; then
             AFFECTED_PROJECTS=$(cat affected.json | jq -r '.projects | join(",")')
-            echo "::set-output name=projects::$AFFECTED_PROJECTS"
+            echo "AFFECTED_PROJECTS=$AFFECTED_PROJECTS" >> $GITHUB_ENV
           else
-            echo "::set-output name=projects::"
+            echo "AFFECTED_PROJECTS=" >> $GITHUB_ENV
             echo "Invalid JSON in affected.json"
           fi
         shell: bash
@@ -76,8 +77,8 @@ jobs:
         run: yarn nx connect-to-nx-cloud
       - name: Run Nx Affected Tests with Remote Caching
         run: |
-          if [ -n "${{ needs.capture-affected.outputs.projects }}" ]; then
-            yarn nx affected --target=test --parallel --projects=${{ needs.capture-affected.outputs.projects }}
+          if [ -n "${AFFECTED_PROJECTS}" ]; then
+            yarn nx affected --target=test --parallel --projects=${AFFECTED_PROJECTS}
           else
             echo "No affected projects to test."
           fi
