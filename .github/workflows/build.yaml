@@ -1,11 +1,7 @@
 name: Build BCIERS containers
 
 on:
-  push:
-    branches: [develop, main]
-  pull_request:
-    branches: [develop, main]
-  workflow_dispatch:
+  workflow_call:
 
 # Cancel current job when pushing new commit into the PR
 concurrency:
@@ -252,14 +248,3 @@ jobs:
         run: |
           rm -rf /tmp/.buildx-cache
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
-
-  # Call the test containers workflow after all the containers have been built
-  test-containers:
-    needs:
-      [
-        backend-docker-build,
-        nx-docker-build-registration1,
-        nx-docker-build-reporting,
-      ]
-    uses: ./.github/workflows/test-containers.yaml
-    secrets: inherit

@@ -1,15 +1,13 @@
-name: Test Registration App
+# This workflow is to run all tests that don't require containers to be built
+
+name: Test BCIERS code
 
 on:
-  push:
-    branches: [develop, main]
+  workflow_call:
     tags:
-      - frontend
-      - backend
-      - components
-  pull_request:
-    branches: [develop, main]
-  workflow_dispatch:
+    - frontend
+    - backend
+    - components
 
 env:
   PGUSER: postgres
