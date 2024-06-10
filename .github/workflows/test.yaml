@@ -44,9 +44,19 @@ jobs:
         uses: ./.github/actions/dev-env-setup
       - name: Generate Affected Projects
         id: affected
-        run: npx nx print-affected --base=origin/main --head=$(git rev-parse HEAD) --select=projects > affected.txt
+        run: |
+          npx nx print-affected --base=origin/main --head=$(git rev-parse HEAD) --select=projects > affected.txt
+          ls -l
       - name: Output Affected Projects
         run: cat affected.txt
+      - name: Check if affected.txt exists
+        run: |
+          if [ -f affected.txt ]; then
+            echo "affected.txt file exists"
+          else
+            echo "affected.txt file does not exist"
+            exit 1
+          fi
       - name: Upload Affected Projects Artifact
         uses: actions/upload-artifact@v3
         with:
