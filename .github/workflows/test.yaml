@@ -83,8 +83,8 @@ jobs:
           path: ./
       - name: Check if affected.txt exists after download
         run: |
-          echo "printing ls -a"
-          ls -a
+          echo "printing ls -a /home/runner/work/cas-registration/cas-registration"
+          ls -a /home/runner/work/cas-registration/cas-registration
       - name: Authenticate with Nx Cloud
         run: yarn nx connect-to-nx-cloud
       - name: Run Nx Affected Tests with Remote Caching
