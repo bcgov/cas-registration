@@ -85,6 +85,7 @@ jobs:
         run: |
           echo "printing ls -a /home/runner/work/cas-registration/cas-registration"
           ls -a /home/runner/work/cas-registration/cas-registration
+          cat /home/runner/work/cas-registration/cas-registration/affected.txt
       - name: Authenticate with Nx Cloud
         run: yarn nx connect-to-nx-cloud
       - name: Run Nx Affected Tests with Remote Caching
