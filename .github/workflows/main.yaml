@@ -37,7 +37,7 @@ jobs:
     needs: [install-dev-tools]
     uses: ./.github/workflows/test-code.yaml
   test-backend:
-    needs: [build-backend, build-registration1, install-dev-tools]
+    needs: [build-backend, install-dev-tools]
     uses: ./.github/workflows/test-backend.yaml
   test-e2e:
     needs: [build-registration1, install-dev-tools]
