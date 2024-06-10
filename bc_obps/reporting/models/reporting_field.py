@@ -9,7 +9,10 @@ class ReportingField(BaseModel):
     field_name = models.CharField(
         max_length=1000, db_comment="Name of field needed for the related configuration element."
     )
-    field_type = models.CharField(max_length=1000, db_comment="Type definition for field.")
+    field_type = models.CharField(max_length=100, db_comment="Type definition for field.")
+    field_units = models.CharField(
+        null=True, max_length=100, db_comment="Units associated to the field_name. example: kg/GJ"
+    )
 
     def serialize(self) -> "dict[str,str]":
         return {"fieldName": self.field_name, "fieldType": self.field_type}

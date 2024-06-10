@@ -4,7 +4,7 @@ import django.db.models.deletion
 from django.db import migrations, models
 import json
 from registration.models import ReportingActivity
-from reporting.models import SourceType, Configuration, BaseSchema, GasType, Methodology
+from reporting.models import SourceType, Configuration, ConfigurationElement, BaseSchema, GasType, Methodology, ReportingField
 
 
 def init_gas_type_data(apps, schema_monitor):
@@ -391,6 +391,83 @@ def reverse_init_configuration_element_data(apps, schema_monitor):
         valid_to_id=Configuration.objects.get(valid_to='9999-12-31').id
     ).delete()
 
+def init_reporting_field_data(apps, schema_monitor):
+    '''
+    Add initial data to erc.reporting_field
+    '''
+
+    ReportingField = apps.get_model('reporting', 'ReportingField')
+    ReportingField.objects.bulk_create(
+        [
+            ReportingField(field_name='Fuel Default High Heating Value', field_type='number', field_units=None),
+            ReportingField(field_name='Unit-Fuel-CO2 Default Emission Factor', field_type='number', field_units='kg/GJ'),
+            ReportingField(field_name='Unit-Fuel-CO2 Default Emission Factor', field_type='number', field_units='kg/fuel units'),
+            ReportingField(field_name='Fuel Annual Weighted Average High Heating Value', field_type='number', field_units=None),
+            ReportingField(field_name='Unit-Fuel Annual Steam Generated', field_type='number', field_units=None),
+            ReportingField(field_name='Boiler Ratio', field_type='number', field_units=None),
+            ReportingField(field_name='Unit-Fuel-CO2 Emission Factor', field_type='number', field_units='kg/GJ'),
+            ReportingField(field_name='Fuel Annual Weighted Average Carbon Content (weight fraction)', field_type='number', field_units=None),
+            ReportingField(field_name='Unit-Fuel-CO2 Measured Emission Factor', field_type='number', field_units=None),
+            ReportingField(field_name='Description', field_type='string', field_units=None),
+            ReportingField(field_name='Unit-Fuel-CH4 Default Emission Factor', field_type='number', field_units='kg/GJ'),
+            ReportingField(field_name='Unit-Fuel-CH4 Default Emission Factor', field_type='number', field_units='kg/fuel units'),
+            ReportingField(field_name='Unit-Fuel-CH4 Measured Emission Factor', field_type='number', field_units='kg/fuel units'),
+            ReportingField(field_name='Unit-Fuel Heat Input', field_type='number', field_units=None),
+            ReportingField(field_name='Unit-Fuel-N2O Default Emission Factor', field_type='number', field_units='kg/GJ'),
+            ReportingField(field_name='Unit-Fuel-N2O Default Emission Factor', field_type='number', field_units='kg/fuel units'),
+            ReportingField(field_name='Unit-Fuel-N2O Measured Emission Factor', field_type='number', field_units='kg/fuel units'),
+        ]
+    )
+
+def reverse_init_reporting_field_data(apps, schema_monitor):
+    '''
+    Remove initial data from erc.reporting_field
+    '''
+    ReportingField = apps.get_model('reporting', 'ReportingField')
+    ReportingField.objects.filter(
+        field_name__in=[
+          'Unit-Fuel-CO2 Measured Emission Factor'
+          'Unit-Fuel Heat Input'
+          'Unit-Fuel-CO2 Default Emission Factor'
+          'Unit-Fuel-CH4 Measured Emission Factor'
+          'Unit-Fuel Annual Steam Generated'
+          'Description'
+          'Unit-Fuel-CO2 Emission Factor'
+          'Boiler Ratio'
+          'Unit-Fuel-N2O Default Emission Factor'
+          'Unit-Fuel-CH4 Default Emission Factor'
+          'Fuel Annual Weighted Average High Heating Value'
+          'Unit-Fuel-N2O Measured Emission Factor'
+          'Fuel Default High Heating Value'
+          'Fuel Annual Weighted Average Carbon Content (weight fraction)'
+        ]
+    ).delete()
+
+def init_configuration_element_reporting_fields_data(apps, schema_monitor):
+    '''
+    Add initial data to erc.activity_source_type_base_schema
+    '''
+
+
+    CERF = apps.get_model('reporting', 'ConfigurationElementReportingFields')
+    CERF.objects.bulk_create(
+        [
+            CERF(
+              configurationelement_id=ConfigurationElement.objects.get(pk=1).id,
+              reportingfield_id=ReportingField.objects.get(pk=1).id
+            )
+        ]
+    )
+
+# def reverse_init_configuration_element_reporting_fields_data(apps, schema_monitor):
+#     '''
+#     Remove initial data from erc.activity_source_type_base_schema
+#     '''
+#     CERF = apps.get_model('reporting', 'ConfigurationElementReportingFields')
+#     CERF.objects.filter(
+#         configurationelement_id=get id,
+#         reportingfield_id=get id
+#     ).delete()
 
 class Migration(migrations.Migration):
 
@@ -498,13 +575,15 @@ class Migration(migrations.Migration):
                         db_comment='Name of field needed for the related configuration element.', max_length=1000
                     ),
                 ),
-                ('field_type', models.CharField(db_comment='Type definition for field.', max_length=1000)),
+                ('field_type', models.CharField(db_comment='Type definition for field.', max_length=100)),
+                ('field_units', models.CharField(null=True, db_comment='Units associated to the field_name. example: kg/GJ', max_length=100)),
             ],
             options={
                 'db_table': 'erc"."reporting_field',
                 'db_table_comment': 'A field name/type combination that relates to a configuration element record through the config_element_reporting_field intersection table. Used to dynamically create a form schema from the configuration',
             },
         ),
+        migrations.RunPython(init_reporting_field_data, reverse_init_reporting_field_data),
         migrations.CreateModel(
             name='ActivitySourceTypeBaseSchema',
             fields=[
@@ -627,4 +706,5 @@ class Migration(migrations.Migration):
             ),
         ),
         migrations.RunPython(init_configuration_element_data, reverse_init_configuration_element_data),
+        # migrations.RunPython(init_configuration_element_reporting_fields_data),
     ]
