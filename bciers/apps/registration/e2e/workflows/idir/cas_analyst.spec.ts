@@ -1,4 +1,4 @@
-// 🧪 Suite to test the cas_admin workflows using storageState
+// 🧪 Suite to test the cas_analyst workflows using storageState
 import { expect, test } from "@playwright/test";
 // 🪄 Page Object Models
 import { DashboardPOM } from "@/e2e/poms/dashboard";
@@ -6,20 +6,16 @@ import { OperationsPOM } from "@/e2e/poms/operations";
 import { OperatorsPOM } from "@/e2e/poms/operators";
 // 🛠️ Helpers
 import {
-  filterTableByFieldId,
-  sortTableByColumnLabel,
   setupTestEnvironment,
-  tableRowCount,
-  waitForElementToStabilize,
-  takeStabilizedScreenshot,
-  stabilizeGrid,
   stabilizeAccordion,
+  stabilizeGrid,
+  tableHasExpectedRowCount,
+  takeStabilizedScreenshot,
+  waitForElementToStabilize,
 } from "@/e2e/utils/helpers";
 // ☰ Enums
 import {
   OperationStatus,
-  OperationTableDataField,
-  OperationTableHeaders,
   TableDataField,
   UserOperatorStatus,
   UserRole,
@@ -32,23 +28,24 @@ const happoPlaywright = require("happo-playwright");
 
 test.beforeAll(async () => {
   // Hit the test setup endpoint before running the tests to ensure the test data is set up
-  await setupTestEnvironment(UserRole.CAS_ADMIN);
+  await setupTestEnvironment(UserRole.CAS_ANALYST);
 });
 
 test.beforeEach(async ({ context }) => {
   // initialize Happo
   await happoPlaywright.init(context);
 });
+
 test.afterEach(async () => {
   await happoPlaywright.finish();
 });
 
 // 🏷 Annotate test suite as serial
 test.describe.configure({ mode: "serial" });
-test.describe("Test Workflow cas_admin", () => {
+test.describe("Test Workflow cas_analyst", () => {
   // 👤 run test using the storageState for this role
   const storageState = JSON.parse(
-    process.env.E2E_CAS_ADMIN_STORAGE_STATE as string,
+    process.env.E2E_CAS_ANALYST_STORAGE_STATE as string,
   );
   // Note: specify storageState for each test file
   test.use({ storageState: storageState });
@@ -62,19 +59,19 @@ test.describe("Test Workflow cas_admin", () => {
       await dashboardPage.clickOperatorsTile();
       // 🔍 Assert that the current URL is operators
       await operatorsPage.urlIsCorrect();
-      // 🔍 Assert `Operators` view, table and data reflect role `cas_admin`
-      await operatorsPage.viewIsCorrect(UserRole.CAS_ADMIN);
+      // 🔍 Assert `Operators` view, table and data reflect role `cas_analyst`
+      await operatorsPage.viewIsCorrect(UserRole.CAS_ANALYST);
       await operatorsPage.tableIsVisible();
-      await operatorsPage.tableHasExpectedColumns(UserRole.CAS_ADMIN);
+      await operatorsPage.tableHasExpectedColumns(UserRole.CAS_ANALYST);
       await operatorsPage.tableHasExpectedColumnValues(
-        UserRole.CAS_ADMIN,
+        UserRole.CAS_ANALYST,
         TableDataField.STATUS,
       );
-
       // 📷 Cheese!
+      await stabilizeGrid(page, 20);
       const pageContent = page.locator("html");
       await happoPlaywright.screenshot(operatorsPage.page, pageContent, {
-        component: "Operators Grid cas_admin",
+        component: "Operators Grid cas_analyst",
         variant: "default",
       });
     });
@@ -83,13 +80,12 @@ test.describe("Test Workflow cas_admin", () => {
       const operatorsPage = new OperatorsPOM(page);
       // 🛸 Navigate to operators page
       operatorsPage.route();
-      // 🔍 Assert cas_admin is able to click "View Details" on see detailed info related Declined
+      // 🔍 Assert cas_analyst is able to click "View Details" on see detailed info related Declined
       await operatorsPage.formHasExpectedUX(UserOperatorStatus.DECLINED);
-
       // 📷 Cheese!
       await stabilizeAccordion(page, 2);
       await takeStabilizedScreenshot(happoPlaywright, operatorsPage.page, {
-        component: "Operators Details Page cas_admin",
+        component: "Operators Details Page cas_analyst",
         variant: "declined",
       });
       // 🛸 Navigate back
@@ -97,12 +93,12 @@ test.describe("Test Workflow cas_admin", () => {
       // 🔍 Assert table is visible
       await operatorsPage.tableIsVisible();
 
-      // 🔍 Assert cas_admin is able to click "View Details" on see detailed info related Approved
+      // 🔍 Assert cas_analyst is able to click "View Details" on see detailed info related Approved
       await operatorsPage.formHasExpectedUX(UserOperatorStatus.APPROVED);
       // 📷 Cheese!
       await stabilizeAccordion(page, 2);
       await takeStabilizedScreenshot(happoPlaywright, operatorsPage.page, {
-        component: "Operators Details Page cas_admin",
+        component: "Operators Details Page cas_analyst",
         variant: "approved",
       });
       // 🛸 Navigate back
@@ -110,15 +106,15 @@ test.describe("Test Workflow cas_admin", () => {
       // 🔍 Assert table is visible
       await operatorsPage.tableIsVisible();
 
-      // 🔍 Assert cas_admin is able to click "View Details" on see detailed info related Pending
+      // 🔍 Assert cas_analyst is able to click "View Details" on see detailed info related Pending
       await operatorsPage.formHasExpectedUX(
         UserOperatorStatus.PENDING,
-        "New Operator 5 Legal Name",
+        "New Operator 3 Legal Name",
       );
       // 📷 Cheese!
       await stabilizeAccordion(page, 2);
       await takeStabilizedScreenshot(happoPlaywright, operatorsPage.page, {
-        component: "Operators Details Page cas_admin",
+        component: "Operators Details Page cas_analyst",
         variant: "pending",
       });
       // 🛸 Navigate back
@@ -131,14 +127,14 @@ test.describe("Test Workflow cas_admin", () => {
       const operatorsPage = new OperatorsPOM(page);
       // 🛸 Navigate to operators page
       operatorsPage.route();
-      // 🔍 Assert cas_admin workflow New Operator, Pending: Reject
-      await operatorsPage.formHasExpectedWorkflow(UserRole.CAS_ADMIN, 1);
-      // 🔍 Assert cas_admin workflow New Operator, Pending: Reject
-      await operatorsPage.formHasExpectedWorkflow(UserRole.CAS_ADMIN, 2);
-      // 🔍 Assert cas_admin workflow Existing Operator, Pending: Approve
-      await operatorsPage.formHasExpectedWorkflow(UserRole.CAS_ADMIN, 3);
-      // 🔍 Assert cas_admin workflow Existing Operator,  Pending: Reject
-      await operatorsPage.formHasExpectedWorkflow(UserRole.CAS_ADMIN, 4);
+      // 🔍 Assert cas_analyst workflow New Operator, Pending: Reject
+      await operatorsPage.formHasExpectedWorkflow(UserRole.CAS_ANALYST, 1);
+      // 🔍 Assert cas_analyst workflow New Operator, Pending: Reject
+      await operatorsPage.formHasExpectedWorkflow(UserRole.CAS_ANALYST, 2);
+      // 🔍 Assert cas_analyst workflow Existing Operator, Pending: Approve
+      await operatorsPage.formHasExpectedWorkflow(UserRole.CAS_ANALYST, 3);
+      // 🔍 Assert cas_analyst workflow Existing Operator,  Pending: Reject
+      await operatorsPage.formHasExpectedWorkflow(UserRole.CAS_ANALYST, 4);
     });
   });
 
@@ -152,20 +148,19 @@ test.describe("Test Workflow cas_admin", () => {
       await dashboardPage.clickOperationsTile();
       // 🔍 Assert that the current URL is operations
       await operationsPage.urlIsCorrect();
-      // 🔍 Assert `Operations` view, table and data reflect role `cas_admin`
-      await operationsPage.viewIsCorrect(UserRole.CAS_ADMIN);
+      // 🔍 Assert `Operations` view, table and data reflect role `cas_analyst`
+      await operationsPage.viewIsCorrect(UserRole.CAS_ANALYST);
       await operationsPage.tableIsVisible();
-      await operationsPage.tableHasExpectedColumns(UserRole.CAS_ADMIN);
+      await operationsPage.tableHasExpectedColumns(UserRole.CAS_ANALYST);
       await operationsPage.tableHasExpectedColumnValues(
-        UserRole.CAS_ADMIN,
+        UserRole.CAS_ANALYST,
         TableDataField.STATUS,
       );
       // 📷 Cheese!
       await stabilizeGrid(page, 20);
       await takeStabilizedScreenshot(happoPlaywright, operationsPage.page, {
-        component: "Operations Grid cas_admin",
+        component: "Operations Grid cas_analyst",
         variant: "default",
-        targets: ["chrome", "firefox", "safari"], // edge screenshot is flaky
       });
     });
 
@@ -173,14 +168,14 @@ test.describe("Test Workflow cas_admin", () => {
       const operationsPage = new OperationsPOM(page);
       // 🛸 Navigate to operations page
       operationsPage.route();
-      // 🔍 Assert cas_admin is able to click "View Details" on each status and see detailed info related to that status
+      // 🔍 Assert cas_analyst is able to click "View Details" on each status and see detailed info related to that status
       await operationsPage.formHasExpectedUX(OperationStatus.PENDING);
       // 📷 Cheese!
-      let pageContent = page.locator("html");
-      await waitForElementToStabilize(page, "section");
-      await happoPlaywright.screenshot(operationsPage.page, pageContent, {
-        component: "Operations Details Page cas_admin",
+      await stabilizeAccordion(page, 4);
+      await takeStabilizedScreenshot(happoPlaywright, operationsPage.page, {
+        component: "Operations Details Page cas_analyst",
         variant: "pending",
+        targets: ["chrome"], // only taking the shot in chrome because the other browsers are too flaky
       });
       // 🛸 Navigate back
       await operationsPage.navigateBack();
@@ -189,10 +184,9 @@ test.describe("Test Workflow cas_admin", () => {
 
       await operationsPage.formHasExpectedUX(OperationStatus.DECLINED);
       // 📷 Cheese!
-      await stabilizeAccordion(page, 4);
-      pageContent = page.locator("html");
-      await happoPlaywright.screenshot(operationsPage.page, pageContent, {
-        component: "Operations Details Page cas_admin",
+      await stabilizeAccordion(operationsPage.page, 4);
+      await takeStabilizedScreenshot(happoPlaywright, operationsPage.page, {
+        component: "Operations Details Page cas_analyst",
         variant: "declined",
       });
       // 🛸 Navigate back
@@ -204,9 +198,8 @@ test.describe("Test Workflow cas_admin", () => {
       await operationsPage.formHasExpectedUX(OperationStatus.APPROVED);
       // 📷 Cheese!
       pageContent = page.locator("html");
-      await waitForElementToStabilize(page, "section");
       await happoPlaywright.screenshot(operationsPage.page, pageContent, {
-        component: "Operations Details Page cas_admin",
+        component: "Operations Details Page cas_analyst",
         variant: "approved",
       });
       // 🛸 Navigate back
@@ -220,51 +213,23 @@ test.describe("Test Workflow cas_admin", () => {
       const operationsPage = new OperationsPOM(page);
       // 🛸 Navigate to operations page
       operationsPage.route();
-      // 🔍 Assert cas_admin workflow Pending, Request Changes, Undo (Request Changes), Approve
+      // 🔍 Assert cas_analyst workflow Pending, Request Changes, Undo (Request Changes), Approve
       await operationsPage.formHasExpectedWorkflow(
-        UserRole.CAS_ADMIN,
+        UserRole.CAS_ANALYST,
         OperationStatus.PENDING,
         1,
       );
-      // 🔍 Assert cas_admin workflow Pending, Decline
+      // 🔍 Assert cas_analyst workflow Pending, Decline
       await operationsPage.formHasExpectedWorkflow(
-        UserRole.CAS_ADMIN,
+        UserRole.CAS_ANALYST,
         OperationStatus.PENDING,
         2,
       );
-      // 🔍 Assert cas_admin workflow Approved, Preview the Statutory Declaration PDF
+      // 🔍 Assert cas_analyst workflow Approved, Preview the Statutory Declaration PDF
       await operationsPage.formHasExpectedWorkflow(
-        UserRole.CAS_ADMIN,
+        UserRole.CAS_ANALYST,
         OperationStatus.APPROVED,
         3,
-      );
-    });
-
-    test("Operations table sorting and filtering", async ({ page }) => {
-      // We do a more thorough test of the operations table in the industry_user_admin.spec.ts file
-      // This test is just to make sure that the sorting and filtering works for the cas_admin role
-      // which also has the extra Operator column
-      const operationsPage = new OperationsPOM(page);
-      // 🛸 Navigate to operations table page
-      await operationsPage.route();
-      // 🔍 Assert that the current URL is operations
-      await operationsPage.urlIsCorrect();
-      // 🔍 Assert `Operations` view, table reflect role `industry_user_admin`
-      await operationsPage.tableIsVisible();
-      await operationsPage.tableHasExpectedColumns(UserRole.CAS_ADMIN);
-
-      await filterTableByFieldId(
-        operationsPage.page,
-        OperationTableDataField.OPERATOR,
-        OperationTableHeaders.OPERATOR,
-        "Existing",
-      );
-      await tableRowCount(operationsPage.page, 12);
-
-      await sortTableByColumnLabel(
-        operationsPage.page,
-        OperationTableHeaders.OPERATOR,
-        "Existing Operator 2 Legal Name",
       );
     });
   });

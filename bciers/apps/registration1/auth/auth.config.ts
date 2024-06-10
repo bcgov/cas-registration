@@ -62,7 +62,7 @@ export default {
     Keycloak({
       clientId: `${process.env.KEYCLOAK_CLIENT_ID}`,
       clientSecret: `${process.env.KEYCLOAK_CLIENT_SECRET}`,
-      issuer: `${process.env.KEYCLOAK_LOGIN_URL}`,
+      issuer: `https://dev.loginproxy.gov.bc.ca/auth/realms/standard`,
       profile(profile: KeycloakProfile) {
         return {
           ...profile,
