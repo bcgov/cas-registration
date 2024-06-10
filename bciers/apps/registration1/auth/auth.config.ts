@@ -73,7 +73,7 @@ export default {
   ],
   secret: `${process.env.NEXTAUTH_SECRET}`,
   pages: {
-    error: "auth/error", // Error code passed in query string as ?error=
+    error: "../auth/error", // Error code passed in query string as ?error=
   },
   callbacks: {
     async jwt({ token, account, profile }) {
