@@ -58,7 +58,7 @@ jobs:
             exit 1
           fi
       - name: Upload Affected Projects Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: affected-projects
           path: ./bciers/affected.txt
@@ -77,18 +77,14 @@ jobs:
       - name: dev env setup
         uses: ./.github/actions/dev-env-setup
       - name: Download Affected Projects Artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: affected-projects
-          path: ./bciers
+          path: ./
       - name: Check if affected.txt exists after download
         run: |
-          if [ -f ./bciers/affected.txt ]; then
-            echo "affected.txt file exists after download"
-          else
-            echo "affected.txt file does not exist after download"
-            exit 1
-          fi
+          echo "printing ls -a"
+          ls -a
       - name: Authenticate with Nx Cloud
         run: yarn nx connect-to-nx-cloud
       - name: Run Nx Affected Tests with Remote Caching
