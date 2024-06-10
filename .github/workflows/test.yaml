@@ -344,7 +344,7 @@ jobs:
         run: |
           npx happo-e2e -- npx playwright test --trace on --project=${{ matrix.project }} bciers/apps/registration1/e2e/*
         env:
-          XDEBUG: pw:api,pw:browser*
+          DEBUG: pw:api,pw:browser*
           API_URL: http://127.0.0.1:8000/api/
           DB_USER: postgres
           DB_NAME: registration
