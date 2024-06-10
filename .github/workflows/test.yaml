@@ -339,37 +339,6 @@ jobs:
         if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps ${{ matrix.project }}
         working-directory: ./bciers/apps/registration1
-      - name: Validate Variables
-        run: |
-          echo "Project: ${{ matrix.project }}"
-          echo "OS: ${{ matrix.os }}"
-          echo "Cache Directory: ${{ matrix.cache_dir }}"
-          echo "DJANGO_SECRET_KEY: ${{ env.DJANGO_SECRET_KEY }}"
-          echo "KEYCLOAK_CLIENT_ID: ${{ env.KEYCLOAK_CLIENT_ID }}"
-          echo "KEYCLOAK_CLIENT_SECRET: ${{ env.KEYCLOAK_CLIENT_SECRET }}"
-          echo "NEXTAUTH_SECRET: ${{ env.NEXTAUTH_SECRET }}"
-          echo "NEXTAUTH_URL: ${{ env.NEXTAUTH_URL }}"
-          echo "E2E_CAS_USER: ${{ secrets.E2E_CAS_USER }}"
-          echo "E2E_CAS_USER_GUID: ${{ secrets.E2E_CAS_USER_GUID }}"
-          echo "E2E_CAS_USER_PASSWORD: ${{ secrets.E2E_CAS_USER_PASSWORD}}"
-          echo "E2E_CAS_ADMIN_STORAGE: ${{ secrets.E2E_CAS_ADMIN_STORAGE}}"
-          echo "E2E_CAS_ANALYST_STORAGE: ${{ secrets.E2E_CAS_ANALYST_STORAGE}}"
-          echo "E2E_CAS_PENDING_STORAGE: ${{ secrets.E2E_CAS_PENDING_STORAGE}}"
-          echo "E2E_INDUSTRY_USER_ADMIN: bc-cas-dev"
-          echo "E2E_INDUSTRY_USER_ADMIN_GUID: ${{ secrets.E2E_INDUSTRY_USER_ADMIN_GUID }}"
-          echo "E2E_INDUSTRY_USER_ADMIN_PASSWORD: ${{ secrets.E2E_INDUSTRY_USER_ADMIN_PASSWORD }}"
-          echo "E2E_INDUSTRY_USER_ADMIN_STORAGE: ${{ secrets.E2E_INDUSTRY_USER_ADMIN_STORAGE}}"
-          echo "E2E_INDUSTRY_USER: bc-cas-dev-secondary"
-          echo "E2E_INDUSTRY_USER_GUID: ${{ secrets.E2E_INDUSTRY_USER_GUID }}"
-          echo "E2E_INDUSTRY_USER_PASSWORD: ${{ secrets.E2E_INDUSTRY_USER_PASSWORD }}"
-          echo "E2E_INDUSTRY_USER_STORAGE: ${{ secrets.E2E_INDUSTRY_USER_STORAGE}}"
-          echo "E2E_NEW_USER: bc-cas-dev-three"
-          echo "E2E_NEW_USER_GUID: ${{ secrets.E2E_NEW_USER_GUID }}"
-          echo "E2E_NEW_USER_PASSWORD: ${{ secrets.E2E_NEW_USER_PASSWORD }}"
-          echo "E2E_NEW_USER_STORAGE: ${{ secrets.E2E_NEW_USER_STORAGE}}"
-          echo "HAPPO_API_KEY: ${{ secrets.HAPPO_API_KEY }}"
-          echo "HAPPO_API_SECRET: ${{ secrets.HAPPO_API_SECRET }}"
-          echo "HAPPO_NONCE: ${{ github.sha }}"
 
       - name: 🎭 Run Playwright Tests
         run: |
