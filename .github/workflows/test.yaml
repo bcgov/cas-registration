@@ -45,7 +45,7 @@ jobs:
       - name: Generate Affected Projects
         id: affected
         run: |
-          npx nx print-affected --base=origin/main --head=$(git rev-parse HEAD) --select=projects > affected.txt
+          npx nx print-affected --base=origin/develop --head=$(git rev-parse HEAD) --select=projects > affected.txt
           ls -l
       - name: Output Affected Projects
         run: cat affected.txt
@@ -89,9 +89,14 @@ jobs:
       - name: Authenticate with Nx Cloud
         run: yarn nx connect-to-nx-cloud
       - name: Run Nx Affected Tests with Remote Caching
+        id: nx-tests
         run: |
           AFFECTED_PROJECTS=$(cat /home/runner/work/cas-registration/cas-registration/affected.txt)
-          yarn nx affected --target=test --parallel --projects=$AFFECTED_PROJECTS
+          yarn nx affected --base=origin/develop --target=test --parallel --projects=$AFFECTED_PROJECTS
+        shell: bash
+      - name: Run Nx Replay if Tests Fail
+        if: failure()
+        run: yarn nx replay
         shell: bash
 
   pre-commit:
