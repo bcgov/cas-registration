@@ -90,8 +90,8 @@ jobs:
         run: yarn nx connect-to-nx-cloud
       - name: Run Nx Affected Tests with Remote Caching
         run: |
-          if [ -s ./home/runner/work/cas-registration/cas-registration/affected.txt ]; then
-            AFFECTED_PROJECTS=$(cat ./home/runner/work/cas-registration/cas-registration/affected.txt)
+          if [ -s /home/runner/work/cas-registration/cas-registration/affected.txt ]; then
+            AFFECTED_PROJECTS=$(cat /home/runner/work/cas-registration/cas-registration/affected.txt)
             yarn nx affected --target=test --parallel --projects=$AFFECTED_PROJECTS
           else
             echo "No affected projects to test."
