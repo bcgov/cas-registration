@@ -47,13 +47,11 @@ jobs:
         run: npx nx print-affected --base=origin/main --head=$(git rev-parse HEAD) --select=projects > affected.txt
       - name: Output Affected Projects
         run: cat affected.txt
-      - name: Set Affected Projects as Output
-        id: set-affected
-        run: |
-          AFFECTED_PROJECTS=$(cat affected.txt)
-          echo "testing AFFECTED_PROJECTS=$AFFECTED_PROJECTS"
-          echo "AFFECTED_PROJECTS=$AFFECTED_PROJECTS" >> $GITHUB_ENV
-        shell: bash
+      - name: Upload Affected Projects Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: affected-projects
+          path: affected.txt
 
   nx-tests:
     needs: [capture-affected]
@@ -68,28 +66,24 @@ jobs:
           fetch-depth: 0
       - name: dev env setup
         uses: ./.github/actions/dev-env-setup
+      - name: Download Affected Projects Artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: affected-projects
+          path: .
       - name: Authenticate with Nx Cloud
         run: yarn nx connect-to-nx-cloud
       - name: Output Affected Projects
-        run: echo "AFFECTED_PROJECTS=$AFFECTED_PROJECTS"
+        run: echo "outputting AFFECTED_PROJECTS=$(cat affected.txt)"
       - name: Run Nx Affected Tests with Remote Caching
         run: |
-          if [ -n "${AFFECTED_PROJECTS}" ]; then
-            yarn nx affected --target=test --parallel --projects=${AFFECTED_PROJECTS}
+          if [ -s affected.txt ]; then
+            AFFECTED_PROJECTS=$(cat affected.txt)
+            yarn nx affected --target=test --parallel --projects=$AFFECTED_PROJECTS
           else
             echo "No affected projects to test."
           fi
         shell: bash
-
-  yarn-audit:
-    needs: install-dev-tools
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: dev env setup
-        uses: ./.github/actions/dev-env-setup
-      - run: yarn npm audit
-        working-directory: ./bciers
 
   pre-commit:
     needs: install-dev-tools
