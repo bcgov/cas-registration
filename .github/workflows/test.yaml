@@ -61,7 +61,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: affected-projects
-          path: affected.txt
+          path: ./bciers/affected.txt
 
   nx-tests:
     needs: [capture-affected]
@@ -80,15 +80,21 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: affected-projects
-          path: .
+          path: ./bciers
+      - name: Check if affected.txt exists after download
+        run: |
+          if [ -f ./bciers/affected.txt ]; then
+            echo "affected.txt file exists after download"
+          else
+            echo "affected.txt file does not exist after download"
+            exit 1
+          fi
       - name: Authenticate with Nx Cloud
         run: yarn nx connect-to-nx-cloud
-      - name: Output Affected Projects
-        run: echo "outputting AFFECTED_PROJECTS=$(cat affected.txt)"
       - name: Run Nx Affected Tests with Remote Caching
         run: |
-          if [ -s affected.txt ]; then
-            AFFECTED_PROJECTS=$(cat affected.txt)
+          if [ -s ./bciers/affected.txt ]; then
+            AFFECTED_PROJECTS=$(cat ./bciers/affected.txt)
             yarn nx affected --target=test --parallel --projects=$AFFECTED_PROJECTS
           else
             echo "No affected projects to test."
