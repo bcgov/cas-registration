@@ -3,8 +3,6 @@ name: Build BCIERS backend Docker container
 on:
   workflow_call:
 
-## test
-
 jobs:
   backend-docker-build:
     runs-on: ubuntu-latest
