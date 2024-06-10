@@ -3,7 +3,7 @@ import { permanentRedirect } from "next/navigation";
 import Loading from "@bciers/components/loading/SkeletonField";
 import { BC_GOV_LINKS_COLOR } from "@bciers/styles/colors";
 import Link from "next/link";
-import { auth } from "@/auth";
+import { auth } from "@/dashboard/auth";
 import { actionHandler } from "@/app/utils/actions";
 import { OperatorStatus, UserOperatorStatus } from "@/app/utils/enums";
 import getUserFullName from "@/app/utils/getUserFullName";

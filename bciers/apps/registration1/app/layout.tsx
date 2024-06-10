@@ -21,7 +21,7 @@ import { NextAppDirEmotionCacheProvider } from "@bciers/components";
 import CssBaseline from "@mui/material/CssBaseline";
 
 import SessionProvider from "@/auth/SessionProvider";
-import { auth } from "@/auth";
+import { auth } from "@/dashboard/auth";
 
 export const metadata: Metadata = {
   title: "CAS OBPS REGISTRATION",

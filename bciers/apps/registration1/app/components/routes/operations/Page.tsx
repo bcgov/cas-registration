@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Button } from "@mui/material";
 import { Suspense } from "react";
 import Loading from "@bciers/components/loading/SkeletonGrid";
-import { auth } from "@/auth";
+import { auth } from "@/dashboard/auth";
 import { OperationsSearchParams } from "@/app/components/operations/types";
 import Note, {
   registrationRequestNote,

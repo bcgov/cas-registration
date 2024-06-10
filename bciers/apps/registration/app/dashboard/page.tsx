@@ -2,9 +2,9 @@ import Tiles from "@bciers/components/navigation/Tiles";
 import { FrontEndRoles } from "@/app/utils/enums";
 import Card from "@mui/material/Card";
 import Typography from "@mui/material/Typography";
-import { auth } from "@/dashboard/auth";
 import { fetchDashboardData } from "@bciers/actions/server";
 import { ContentItem } from "@bciers/types";
+import { auth } from "@/dashboard/auth";
 
 export default async function Page() {
   const session = await auth();

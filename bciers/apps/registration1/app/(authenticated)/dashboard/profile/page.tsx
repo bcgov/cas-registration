@@ -3,7 +3,7 @@ import Loading from "@bciers/components/loading/SkeletonSpinner";
 
 import { IDP } from "@/app/utils/enums";
 import User from "@/app/components/routes/profile/Page";
-import { auth } from "@/auth";
+import { auth } from "@/dashboard/auth";
 
 // 🏗️ Sync server component: dashboard\profile
 export default async function Page() {
