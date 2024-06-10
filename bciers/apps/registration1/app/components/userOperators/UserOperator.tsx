@@ -5,8 +5,7 @@ import {
 } from "@/app/utils/jsonSchema/userOperator";
 
 import { RJSFSchema } from "@rjsf/utils";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { auth } from "@/auth";
 import { UserOperatorFormData } from "@/app/components/form/formDataTypes";
 import { validate as isValidUUID } from "uuid";
 import { BusinessStructure } from "./types";
@@ -64,10 +63,10 @@ export default async function UserOperator({
 }: Readonly<{
   params?: { id?: string; readonly?: boolean };
 }>) {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
   const isCasInternal =
-    session?.user.app_role?.includes("cas") &&
-    !session?.user.app_role?.includes("pending");
+    session?.user?.app_role?.includes("cas") &&
+    !session?.user?.app_role?.includes("pending");
   const serverError = <div>Server Error. Please try again later.</div>;
   const userOperatorId = params?.id;
   const businessStructures: BusinessStructure[] | { error: string } =

@@ -3,8 +3,7 @@ import { permanentRedirect } from "next/navigation";
 import Loading from "@bciers/components/loading/SkeletonField";
 import { BC_GOV_LINKS_COLOR } from "@bciers/styles/colors";
 import Link from "next/link";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { auth } from "@/auth";
 import { actionHandler } from "@/app/utils/actions";
 import { OperatorStatus, UserOperatorStatus } from "@/app/utils/enums";
 import getUserFullName from "@/app/utils/getUserFullName";
@@ -23,7 +22,7 @@ export const getUserOperator = async () => {
 };
 
 export default async function MyOperatorPage() {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
   const userName = getUserFullName(session);
   const userOperator = await getUserOperator();
   const isNew = userOperator.is_new;

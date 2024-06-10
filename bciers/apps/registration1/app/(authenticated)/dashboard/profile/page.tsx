@@ -1,13 +1,13 @@
 import { Suspense } from "react";
 import Loading from "@bciers/components/loading/SkeletonSpinner";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+
 import { IDP } from "@/app/utils/enums";
 import User from "@/app/components/routes/profile/Page";
+import { auth } from "@/auth";
 
 // 🏗️ Sync server component: dashboard\profile
 export default async function Page() {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
   const isIdirUser = session?.identity_provider?.includes(IDP.IDIR);
   return (
     <>
