@@ -40,32 +40,7 @@ For industry_user: set up for user login to have app_role "industry_user"
 For "new user":
 -  delete record in the db so that on "new user" login the ID will have no app_role
 */
-test.beforeAll(async () => {
-  try {
-    // 👤 industry_user_admin
-    // Upsert a User record: bc-cas-dev
-    await upsertUserRecord(UserRole.INDUSTRY_USER_ADMIN);
-    // Upsert an Operator record, using default values
-    await upsertOperatorRecord();
-    // Upsert an User Operator record: industry_user_admin, operator id 2
-    await upsertUserOperatorRecord(
-      process.env.E2E_INDUSTRY_USER_ADMIN_GUID as string,
-      AppRole.ADMIN,
-      UserOperatorStatus.APPROVED,
-    );
 
-    // 👤 industry_user
-    // Upsert a User record: bc-cas-dev-secondary
-    await upsertUserRecord(UserRole.INDUSTRY_USER);
-
-    // 👤 delete new user: bc-cas-dev-three
-    await deleteUserRecord(process.env.E2E_NEW_USER_GUID as string);
-  } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error("❌ Error in Db setup for login roles:", error);
-    throw error;
-  }
-});
 
 test.beforeEach(async ({ context }) => {
   await happoPlaywright.init(context);
@@ -75,7 +50,7 @@ test.afterEach(async () => {
   await happoPlaywright.finish();
 });
 
- 
+
   test.describe(`Test User Role`, () => {
     // ➰ Loop through the entries of UserRole enum
     for (let [role, value] of Object.entries(UserRole)) {

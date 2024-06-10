@@ -62,7 +62,7 @@ export default {
     Keycloak({
       clientId: `${process.env.KEYCLOAK_CLIENT_ID}`,
       clientSecret: `${process.env.KEYCLOAK_CLIENT_SECRET}`,
-      issuer: "https://dev.loginproxy.gov.bc.ca/auth/realms/standard",
+      issuer: `${process.env.KEYCLOAK_LOGIN_URL}`,
       profile(profile: KeycloakProfile) {
         return {
           ...profile,
@@ -73,7 +73,7 @@ export default {
   ],
   secret: `${process.env.NEXTAUTH_SECRET}`,
   pages: {
-    error: "/auth/error", // Error code passed in query string as ?error=
+    error: "auth/error", // Error code passed in query string as ?error=
   },
   callbacks: {
     async jwt({ token, account, profile }) {
