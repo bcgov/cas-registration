@@ -1,0 +1,19 @@
+name: Build Reporting Docker container
+
+on:
+  workflow_call:
+
+jobs:
+  nx-docker-build-reporting:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Build reporting container
+        uses: ./.github/actions/nx-app-build
+        with:
+          project: reporting
+          image_url: ghcr.io/bcgov/cas-rep-frontend
+          github_token: ${{ secrets.GITHUB_TOKEN }}

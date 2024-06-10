@@ -27,21 +27,27 @@ jobs:
         working-directory: ./bciers
   build-backend:
     uses: ./.github/workflows/build-backend.yaml
-  build-nx-apps:
-    uses: ./.github/workflows/build-nx-apps.yaml
+  # build-registration:
+  #   uses: ./.github/workflows/build-registration.yaml
+  build-registration1:
+    uses: ./.github/workflows/build-registration1.yaml
+  build-reporting:
+    uses: ./.github/workflows/build-reporting.yaml
   test-code:
     needs: [install-dev-tools]
     uses: ./.github/workflows/test-code.yaml
+  test-backend:
+    needs: [build-backend, build-registration1, install-dev-tools]
+    uses: ./.github/workflows/test-backend.yaml
+  test-e2e:
+    needs: [build-registration1, install-dev-tools]
+    uses: ./.github/workflows/test-e2e.yaml
+    secrets: inherit
+  zap-owasp:
+    # We will need to set up registration part 2 and reporting to get zap scanned
+    needs: [build-backend, build-registration1, install-dev-tools]
+    uses: ./.github/workflows/zap-owasp.yaml
   scan-code-trivy:
     uses: ./.github/workflows/scan-code-trivy.yaml
   codeql-analysis:
     uses: ./.github/workflows/codeql.yaml
-  test-backend:
-    needs: [build-backend, install-dev-tools]
-    uses: ./.github/workflows/test-backend.yaml
-  test-nx-apps:
-    needs: [build-nx-apps, install-dev-tools]
-    uses: ./.github/workflows/test-nx-apps.yaml
-  zap-owasp:
-    needs: [build-nx-apps, build-backend, install-dev-tools]
-    uses: ./.github/workflows/zap-owasp.yaml

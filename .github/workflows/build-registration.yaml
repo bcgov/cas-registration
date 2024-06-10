@@ -1,0 +1,19 @@
+name: Build Registration Docker container
+
+on:
+  workflow_call:
+
+jobs:
+  nx-docker-build-registration:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Build registration container
+        uses: ./.github/actions/nx-app-build
+        with:
+          project: registration
+          image_url: ghcr.io/bcgov/cas-reg-frontend
+          github_token: ${{ secrets.GITHUB_TOKEN }}
