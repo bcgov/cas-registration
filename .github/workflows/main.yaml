@@ -39,6 +39,7 @@ jobs:
   test-backend:
     needs: [build-backend, install-dev-tools]
     uses: ./.github/workflows/test-backend.yaml
+    secrets: inherit
   test-e2e:
     needs: [build-registration1, install-dev-tools]
     uses: ./.github/workflows/test-e2e.yaml
