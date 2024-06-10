@@ -20,14 +20,14 @@ def build_schema(activity: int, source_type: int, gas_type: int, methodology: in
         return_schema['properties']['emissions'] = {"type": "number", "title": "Emissions"}
         return_schema['properties']['equivalentEmisisons'] = {"type": "number", "title": "Equivalent Emissions"}
         ## Fetch valid methodology values for activity-sourceType pair + gasType selection
-        methodologies=ConfigurationElement.objects.select_related('methodology').filter(reporting_activity_id=activity, source_type_id=source_type, gas_type_id=gas_type, valid_from__valid_from__lte=report_date,)
+        methodologies=ConfigurationElement.objects.select_related('methodology').filter(reporting_activity_id=activity, source_type_id=source_type, gas_type_id=gas_type, valid_from__valid_from__lte=report_date, valid_to__valid_to__gte=report_date,)
         methdology_enum = []
         for t in methodologies:
             methdology_enum.append(t.methodology.name)
         ## Append methodology field to schema with valid methodologies as an enum
         return_schema['properties']['methodology'] = {"type": "string", "title": "Methodology", "enum": methdology_enum}
     if methodology:
-        methodology_fields=ConfigurationElement.objects.prefetch_related('reporting_fields').get(reporting_activity_id=activity, source_type_id=source_type, gas_type_id=gas_type, methodology_id=methodology).reporting_fields.all()
+        methodology_fields=ConfigurationElement.objects.prefetch_related('reporting_fields').get(reporting_activity_id=activity, source_type_id=source_type, gas_type_id=gas_type, methodology_id=methodology, valid_from__valid_from__lte=report_date, valid_to__valid_to__gte=report_date).reporting_fields.all()
         for f in methodology_fields:
             property_field = camelCase(f.field_name)
             return_schema['properties'][property_field] = {"type": f.field_type, "title": f.field_name}
@@ -37,7 +37,6 @@ def build_schema(activity: int, source_type: int, gas_type: int, methodology: in
 
 
 class FormBuilderService:
-
     @classmethod
     def build_form_schema(request, activity=None, source_type=None, gas_type=None, methodology=None, report_date='2024-04-01'):
       if report_date is None:
