@@ -17,8 +17,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: dev env setup
         uses: ./.github/actions/dev-env-setup
-      - name: run app locally
-        uses: ./.github/actions/run-registration1-app
+      - name: start backend
+        uses: ./.github/actions/run-backend
         with:
           django_secret_key: ${{ env.DJANGO_SECRET_KEY }}
       - name: Run pytest
