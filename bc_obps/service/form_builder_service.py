@@ -32,7 +32,6 @@ def build_schema(activity: int, source_type: int, gas_type: int, methodology: in
             property_field = camelCase(f.field_name)
             return_schema['properties'][property_field] = {"type": f.field_type, "title": f.field_name}
             if f.field_units:
-                unitField = f"{property_field}FieldUnits"
                 return_schema['properties'][f"{property_field}FieldUnits"] = {"type": "string", "default": f.field_units}
     return json.dumps(return_schema)
 
