@@ -1,17 +1,15 @@
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import Tiles from "@/app/components/navigation/Tiles";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import Tiles from "@bciers/components/navigation/Tiles";
 import { getUserOperator } from "@/app/components/routes/select-operator/Page";
 import { actionHandler } from "@/app/utils/actions";
 import { FrontEndRoles } from "@/app/utils/enums";
 import Card from "@mui/material/Card";
 import Typography from "@mui/material/Typography";
-import { auth } from "@/auth";
+import { getServerSession } from "next-auth";
 
 export default async function Page() {
-  const session = await auth();
-  const hasSession = session ? "HAS SESSION" : "NO SESSION";
-  const hasSessionUser = session?.user ? "HAS USER" : "NO USER";
-  const role = session?.user?.app_role || "NO ROLE";
+  const session = await getServerSession(authOptions);
+  const role = session?.user?.app_role || "";
   let operatorStatus = "";
   let userOperatorStatus = "";
   switch (role) {
@@ -29,9 +27,6 @@ export default async function Page() {
   }
   return (
     <div>
-      <h1>Session: {hasSession}</h1>
-      <h2>User: {hasSessionUser}</h2>
-      <h3>Role: {role}</h3>
       {role === FrontEndRoles.CAS_PENDING ? (
         <>
           <Card

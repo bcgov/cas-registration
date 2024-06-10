@@ -77,9 +77,9 @@ export default function UserOperatorForm({
 
   // page flashes if !isCasInternal or !isIndustryUser is used
   const isCasInternal =
-    session?.user?.app_role?.includes("cas") &&
-    !session?.user?.app_role?.includes("pending");
-  const isIndustryUser = session?.user?.app_role?.includes("industry");
+    session?.user.app_role?.includes("cas") &&
+    !session?.user.app_role?.includes("pending");
+  const isIndustryUser = session?.user.app_role?.includes("industry");
 
   const isFormStatusDisabled =
     formData?.status === Status.PENDING || formData?.status === Status.APPROVED;

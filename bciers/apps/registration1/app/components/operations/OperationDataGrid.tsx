@@ -43,7 +43,7 @@ const OperationDataGrid = ({
   };
 }) => {
   const { data: session } = useSession();
-  const isIndustryUser = session?.user?.app_role?.includes("industry") ?? false;
+  const isIndustryUser = session?.user.app_role?.includes("industry") ?? false;
   const [lastFocusedField, setLastFocusedField] = useState<string | null>(null);
 
   const SearchCell = useMemo(

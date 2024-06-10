@@ -53,8 +53,8 @@ const OperationReview = ({ operation }: Props) => {
   };
 
   const isCasInternal =
-    session?.user?.app_role?.includes("cas") &&
-    !session?.user?.app_role?.includes("pending");
+    session?.user.app_role?.includes("cas") &&
+    !session?.user.app_role?.includes("pending");
 
   if (!operation || !isCasInternal) return null;
 

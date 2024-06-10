@@ -1,7 +1,8 @@
 import { GridRowsProp } from "@mui/x-data-grid";
 
 import { actionHandler } from "@/app/utils/actions";
-import { auth } from "@/auth";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import {
   OperationRow,
   OperationsSearchParams,
@@ -84,7 +85,7 @@ export default async function Operations({
 }: {
   searchParams: OperationsSearchParams;
 }) {
-  const session = await auth();
+  const session = await getServerSession(authOptions);
   // Fetch operations data
   const operations: {
     rows: OperationRow[];
@@ -96,8 +97,8 @@ export default async function Operations({
 
   // Show the operator column if the user is CAS internal
   const isOperatorColumn =
-    session?.user?.app_role?.includes("cas") &&
-    !session?.user?.app_role?.includes("pending");
+    session?.user.app_role?.includes("cas") &&
+    !session?.user.app_role?.includes("pending");
 
   // Render the DataGrid component
   return (
