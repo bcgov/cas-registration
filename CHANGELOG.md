@@ -1,3 +1,18 @@
+# [1.6.0](https://github.com/bcgov/cas-registration/compare/v1.5.2...v1.6.0) (2024-06-10)
+
+### Bug Fixes
+
+- pre-commit ([b782037](https://github.com/bcgov/cas-registration/commit/b782037e83e6a56c18d43ba50f814b4eefd30a68))
+- restore file ([acb9dc8](https://github.com/bcgov/cas-registration/commit/acb9dc8e36b039c655d32f7d8b09cf87da52514e))
+- terraform job's template to be time-bound ([e3e1f2c](https://github.com/bcgov/cas-registration/commit/e3e1f2c249e994c3644c04463bd49e0e4c7d3311))
+
+### Features
+
+- /dashboard-data api tests ([9e97dfa](https://github.com/bcgov/cas-registration/commit/9e97dfae9838c9f799321a25ee982a2ecdafce98))
+- add single step task list form ([9836b35](https://github.com/bcgov/cas-registration/commit/9836b35c005de4e02ced108895844af389ff5ce2))
+- adding database models for reporting operation and facility information ([05cff42](https://github.com/bcgov/cas-registration/commit/05cff429c384cf40d5bbbade6b0b6546b7e72f20))
+- dashboard tiles API ([98dd809](https://github.com/bcgov/cas-registration/commit/98dd8099db2451fd2aeff80a78e4cf6eeedd1e5d))
+
 ## [1.5.2](https://github.com/bcgov/cas-registration/compare/v1.5.1...v1.5.2) (2024-05-14)
 
 ### Bug Fixes
