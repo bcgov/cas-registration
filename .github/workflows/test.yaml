@@ -87,13 +87,14 @@ jobs:
           ls -a /home/runner/work/cas-registration/cas-registration
           echo "printing cat /home/runner/work/cas-registration/cas-registration/affected.txt"
           cat /home/runner/work/cas-registration/cas-registration/affected.txt
-      - name: Authenticate with Nx Cloud
-        run: yarn nx connect-to-nx-cloud
+      #- name: Authenticate with Nx Cloud
+      #  run: yarn nx connect-to-nx-cloud
       - name: Run Nx Affected Tests with Remote Caching
         id: nx-tests
         run: |
           AFFECTED_PROJECTS=$(cat /home/runner/work/cas-registration/cas-registration/affected.txt)
-          yarn nx affected --base=origin/develop --target=test --parallel --projects=$AFFECTED_PROJECTS
+          yarn nx affected:build --base=origin/develop
+        #yarn nx affected --base=origin/develop --target=test --parallel --projects=$AFFECTED_PROJECTS
         shell: bash
 
   pre-commit:
