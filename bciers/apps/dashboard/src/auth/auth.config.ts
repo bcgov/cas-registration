@@ -72,7 +72,7 @@ export default {
       },
     }),
   ],
-  secret: `${process.env.NEXTAUTH_SECRET}`,
+  secret: `${process.env.AUTH_SECRET}`,
   pages: {
     error: "../auth/error", // Error code passed in query string as ?error=
   },
