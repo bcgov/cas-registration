@@ -109,7 +109,6 @@
     "happo.io": "^9.1.2",
     "improved-yarn-audit": "^3.0.0",
     "jest-environment-jsdom": "^29.7.0",
-    "jest-extended": "^4.0.1",
     "jsdom": "~22.1.0",
     "nx": "18.2.1",
     "prettier": "^3.0.3",
