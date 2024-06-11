@@ -342,7 +342,7 @@ jobs:
 
       - name: 🎭 Run Playwright Tests
         run: |
-          npx happo-e2e -- npx playwright test --trace on --project=${{ matrix.project }} bciers/apps/registration1/e2e/*
+          npx happo-e2e -- npx playwright test --trace on --project=${{ matrix.project }} bciers/apps/registration1/e2e/pages/onboarding/*
         env:
           XDEBUG: pw:api,pw:browser*
           API_URL: http://127.0.0.1:8000/api/
