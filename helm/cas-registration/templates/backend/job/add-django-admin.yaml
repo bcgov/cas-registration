@@ -1,0 +1,34 @@
+{{- if (hasSuffix "-dev" .Release.Namespace)}}
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  labels: {{- include "cas-registration.labels" . | nindent 4 }}
+    component: backend
+  name: {{ template "cas-registration.fullname" . }}-add-django-admin
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    "helm.sh/hook": post-upgrade, post-install
+spec:
+  template:
+    metadata:
+      name: {{ template "cas-registration.fullname" . }}-add-django-admin
+    spec:
+      activeDeadlineSeconds: 300
+      containers:
+        - name: {{ template "cas-registration.fullname" . }}-add-django-admin
+          image: "{{ .Values.backend.image.repository }}:{{ .Values.defaultImageTag | default .Values.backend.image.tag }}"
+          env:
+            - name: DJANGO_SUPERUSER_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  key: username
+                  name: django-superuser
+            - name: DJANGO_SUPERUSER_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: password
+                  name: django-superuser
+          command: [ "poetry", "run", "python", "manage.py", "create_superuser" ]
+      restartPolicy: Never
+{{ end }}
