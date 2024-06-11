@@ -1,6 +1,6 @@
 # This is the main workflow which will orchestrate the other workflows:
 
-name: BCIERS Main Workflow
+name: main
 
 on:
   push:
@@ -48,7 +48,7 @@ jobs:
     # We will need to set up registration part 2 and reporting to get zap scanned
     needs: [build-backend, build-registration1, install-dev-tools]
     uses: ./.github/workflows/zap-owasp.yaml
-  scan-code-trivy:
-    uses: ./.github/workflows/scan-code-trivy.yaml
-  codeql-analysis:
+  trivy:
+    uses: ./.github/workflows/trivy.yaml
+  codeql:
     uses: ./.github/workflows/codeql.yaml

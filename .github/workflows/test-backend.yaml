@@ -11,7 +11,7 @@ env:
   DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
 
 jobs:
-  backend-tests:
+  pythontests:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

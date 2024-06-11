@@ -4,7 +4,7 @@ on:
   workflow_call:
 
 jobs:
-  nx-docker-build-registration1:
+  docker-build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
