@@ -13,16 +13,16 @@
 apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
-  name: {{ template "cas-registration.fullname" . }}-frontend
+  name: {{ template "cas-registration.fullname" . }}-registration1-frontend
   labels:
 {{ include "cas-registration.labels" . | indent 4 }}
   annotations:
     haproxy.router.openshift.io/balance: roundrobin
 
 spec:
-  host: {{ .Values.frontend.route.host }}
+  host: {{ .Values.registration1Frontend.route.host }}
   port:
-    targetPort: {{ template "cas-registration.fullname" . }}-frontend
+    targetPort: {{ template "cas-registration.fullname" . }}-registration1-frontend
   tls:
     insecureEdgeTerminationPolicy: Redirect
     termination: edge
@@ -33,5 +33,5 @@ spec:
 {{- end }}
   to:
     kind: Service
-    name:  {{ template "cas-registration.fullname" . }}-frontend
+    name:  {{ template "cas-registration.fullname" . }}-registration1-frontend
     weight: 100
