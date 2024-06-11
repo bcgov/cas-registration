@@ -10,6 +10,7 @@ import Note, {
   registrationRequestNote,
 } from "@bciers/components/datagrid/Note";
 import Operations from "./Operations";
+import { FrontEndRoles } from "@/app/utils/enums";
 
 export default async function OperationsPage({
   searchParams,
@@ -21,6 +22,7 @@ export default async function OperationsPage({
    * getServerSession requires passing the same object you would pass to NextAuth
    */
   const session = await getServerSession(authOptions);
+  // @ts-ignore
   const role = session?.user?.app_role;
   const message = role?.includes("cas")
     ? "View all the operations, which can be sorted or filtered by operator here."

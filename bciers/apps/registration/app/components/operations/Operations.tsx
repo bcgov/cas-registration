@@ -13,7 +13,7 @@ export default async function Operations({
   role,
 }: {
   searchParams: OperationsSearchParams;
-  role: FrontEndRoles;
+  role: string | undefined;
 }) {
   // Fetch operations data
   const operations: {
