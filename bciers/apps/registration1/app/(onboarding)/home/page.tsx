@@ -24,11 +24,11 @@ export default function Page() {
   const tableBorder = "border border-solid border-bc-bg-dark-grey";
 
   const handleIdirLogin = () => {
-    signIn("Keycloak", undefined, { kc_idp_hint: "idir" });
+    signIn("keycloak", undefined, { kc_idp_hint: "idir" });
   };
 
   const handleBceidLogin = () => {
-    signIn("Keycloak", undefined, { kc_idp_hint: "bceidbusiness" });
+    signIn("keycloak", undefined, { kc_idp_hint: "bceidbusiness" });
   };
 
   const handleBceidSignupClick = async () => {
