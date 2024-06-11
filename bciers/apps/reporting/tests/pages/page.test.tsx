@@ -1,8 +1,8 @@
 import { render, screen } from "@testing-library/react";
 import Page from "../../src/app/page";
 
-const mockSignIn = jest.fn();
-jest.mock("next-auth/react", () => ({
+const mockSignIn = vi.fn();
+vi.mock("next-auth/react", () => ({
   signIn: mockSignIn,
 }));
 
