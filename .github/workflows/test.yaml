@@ -29,7 +29,7 @@ jobs:
       - run: yarn install --immutable
         working-directory: ./bciers
 
-  capture-affected:
+  nx-tests:
     needs: install-dev-tools
     runs-on: ubuntu-latest
     defaults:
@@ -42,59 +42,10 @@ jobs:
           fetch-depth: 0
       - name: dev env setup
         uses: ./.github/actions/dev-env-setup
-      - name: Generate Affected Projects
-        id: affected
-        run: |
-          npx nx print-affected --base=origin/develop --head=$(git rev-parse HEAD) --select=projects > affected.txt
-          ls -l
-      - name: Output Affected Projects
-        run: cat affected.txt
-      - name: Check if affected.txt exists
-        run: |
-          if [ -f affected.txt ]; then
-            echo "affected.txt file exists"
-          else
-            echo "affected.txt file does not exist"
-            exit 1
-          fi
-      - name: Upload Affected Projects Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: affected-projects
-          path: ./bciers/affected.txt
-
-  nx-tests:
-    needs: [capture-affected]
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./bciers
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: dev env setup
-        uses: ./.github/actions/dev-env-setup
-      - name: Download Affected Projects Artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: affected-projects
-          path: ./
-      - name: Check if affected.txt exists after download
-        run: |
-          echo "printing ls -a /home/runner/work/cas-registration/cas-registration"
-          ls -a /home/runner/work/cas-registration/cas-registration
-          echo "printing cat /home/runner/work/cas-registration/cas-registration/affected.txt"
-          cat /home/runner/work/cas-registration/cas-registration/affected.txt
-      #- name: Authenticate with Nx Cloud
-      #  run: yarn nx connect-to-nx-cloud
       - name: Run Nx Affected Tests with Remote Caching
         id: nx-tests
         run: |
-          AFFECTED_PROJECTS=$(cat /home/runner/work/cas-registration/cas-registration/affected.txt)
           yarn nx affected:build --base=origin/develop --target=test --parallel
-        #yarn nx affected --base=origin/develop --target=test --parallel --projects=$AFFECTED_PROJECTS
         shell: bash
 
   pre-commit:
