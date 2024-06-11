@@ -1,0 +1,18 @@
+{{- if (.Values.registrationFrontend.enabled) }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "cas-registration.fullname" . }}-registration-frontend
+  labels:
+    {{- include "cas-registration.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.registrationFrontend.service.type }}
+  ports:
+    - port: {{ .Values.registrationFrontend.service.port }}
+      targetPort: 3000
+      protocol: TCP
+      name: {{ include "cas-registration.fullname" . }}-registration-frontend
+  selector:
+    {{- include "cas-registration.selectorLabels" . | nindent 4 }}
+    component: frontend
+{{- end }}
