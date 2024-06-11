@@ -11,29 +11,38 @@ def build_schema(activity: int, source_type: int, gas_type: int, methodology: in
     ## Fetch valid gas_type values for activity-sourceType pair
     gas_types=ConfigurationElement.objects.select_related('gas_type').filter(reporting_activity_id=activity, source_type_id=source_type, valid_from__valid_from__lte=report_date,).distinct('gas_type__name')
     gas_type_enum = []
+    gas_type_map = {}
+    methodology_map = {}
     for t in gas_types:
         gas_type_enum.append(t.gas_type.chemical_formula)
-    return_schema = source_type_schema.base_schema.schema
+        gas_type_map[t.gas_type.id] = t.gas_type.chemical_formula
+    rjsf_schema = source_type_schema.base_schema.schema
     ## Append valid gas types to schema as an enum on the gasType property
-    return_schema['properties']['gasType']['enum'] = gas_type_enum
+    rjsf_schema['properties']['gasType']['enum'] = gas_type_enum
     if gas_type:
-        return_schema['properties']['emissions'] = {"type": "number", "title": "Emissions"}
-        return_schema['properties']['equivalentEmisisons'] = {"type": "number", "title": "Equivalent Emissions"}
+        rjsf_schema['properties']['emissions'] = {"type": "number", "title": "Emissions"}
+        rjsf_schema['properties']['equivalentEmisisons'] = {"type": "number", "title": "Equivalent Emissions"}
         ## Fetch valid methodology values for activity-sourceType pair + gasType selection
         methodologies=ConfigurationElement.objects.select_related('methodology').filter(reporting_activity_id=activity, source_type_id=source_type, gas_type_id=gas_type, valid_from__valid_from__lte=report_date, valid_to__valid_to__gte=report_date,)
         methdology_enum = []
         for t in methodologies:
             methdology_enum.append(t.methodology.name)
+            methodology_map[t.methodology.id] = t.methodology.name
         ## Append methodology field to schema with valid methodologies as an enum
-        return_schema['properties']['methodology'] = {"type": "string", "title": "Methodology", "enum": methdology_enum}
+        rjsf_schema['properties']['methodology'] = {"type": "string", "title": "Methodology", "enum": methdology_enum}
     if methodology:
         methodology_fields=ConfigurationElement.objects.prefetch_related('reporting_fields').get(reporting_activity_id=activity, source_type_id=source_type, gas_type_id=gas_type, methodology_id=methodology, valid_from__valid_from__lte=report_date, valid_to__valid_to__gte=report_date).reporting_fields.all()
         for f in methodology_fields:
             property_field = camelCase(f.field_name)
-            return_schema['properties'][property_field] = {"type": f.field_type, "title": f.field_name}
+            rjsf_schema['properties'][property_field] = {"type": f.field_type, "title": f.field_name}
             if f.field_units:
-                return_schema['properties'][f"{property_field}FieldUnits"] = {"type": "string", "default": f.field_units}
-    return json.dumps(return_schema)
+                rjsf_schema['properties'][f"{property_field}FieldUnits"] = {"type": "string", "default": f.field_units}
+    # Create a return object that includes the rjsf schema & an id-name mapping for gas_types & methodologies
+    return_object = {}
+    return_object["schema"]=rjsf_schema
+    return_object["gasTypeMap"]=gas_type_map
+    return_object['methodologyMap']=methodology_map
+    return json.dumps(return_object)
 
 
 class FormBuilderService:
