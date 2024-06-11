@@ -3,13 +3,12 @@
 import { useMemo, useState } from "react";
 import DataGrid from "@bciers/components/datagrid/DataGrid";
 import { GridColumnGroupHeaderParams } from "@mui/x-data-grid";
-import { useSession } from "next-auth/react";
 import OperationsActionCell from "@bciers/components/datagrid/cells/OperationsActionCell";
 import HeaderSearchCell from "@bciers/components/datagrid/cells/HeaderSearchCell";
-import { fetchOperationsPageData } from "./Operations";
 import operationColumns from "../datagrid/models/operationColumns";
 import operationGroupColumns from "../datagrid/models/operationGroupColumns";
 import { OperationRow } from "./types";
+import fetchOperationsPageData from "./fetchOperationsPageData";
 
 const OperationSearchCell = ({
   lastFocusedField,
