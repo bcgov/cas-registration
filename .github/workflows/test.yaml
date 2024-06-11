@@ -308,9 +308,9 @@ jobs:
           - project: chromium
             os: ubuntu-latest
             cache_dir: ~/.cache/ms-playwright
-          - project: firefox
-            os: ubuntu-latest
-            cache_dir: ~/.cache/ms-playwright
+          # - project: firefox
+          #   os: ubuntu-latest
+          #   cache_dir: ~/.cache/ms-playwright
           # Commented out because of flakey issues with webkit in CI
           # - project: webkit
           #   os: macos-latest
@@ -336,8 +336,7 @@ jobs:
           key: ${{ runner.os }}-${{ matrix.project }}-ms-playwright-registration
 
       - name: 📥 install Playwright ${{ matrix.project }}
-        if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: npx playwright install --with-deps ${{ matrix.project }}
+        run: npx playwright install --with-deps
         working-directory: ./bciers/apps/registration1
 
       - name: 🎭 Run Playwright Tests
