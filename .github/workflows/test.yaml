@@ -52,6 +52,16 @@ jobs:
           yarn nx affected:build --base=origin/develop --target=test --parallel
         shell: bash
 
+  yarn-audit:
+    needs: install-dev-tools
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: dev env setup
+        uses: ./.github/actions/dev-env-setup
+      - run: yarn npm audit
+        working-directory: ./bciers
+
   pre-commit:
     needs: install-dev-tools
     runs-on: ubuntu-latest
