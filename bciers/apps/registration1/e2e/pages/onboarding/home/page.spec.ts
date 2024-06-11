@@ -101,6 +101,11 @@ test.describe("Test Page - Home", () => {
     // ➰ Loop through the entries of UserRole enum
     for (let [role, value] of Object.entries(UserRole)) {
       test(`Test Login - ${value}`, async ({ page }) => {
+        // Intercept network requests
+        await page.route(/.*\/api\/.*/, async (route, request) => {
+          console.log("Request URL:", request.url());
+          await route.continue();
+        });
         // 👤 Set user and password based on the user role
         let user = process.env.E2E_CAS_USER as string;
         let password = process.env.E2E_CAS_USER_PASSWORD as string;

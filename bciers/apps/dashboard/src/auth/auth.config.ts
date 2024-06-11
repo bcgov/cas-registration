@@ -57,8 +57,9 @@ declare module "next-auth" {
 */
 export const AUTH_BASE_PATH = "/api/auth";
 export default {
-  basePath: AUTH_BASE_PATH,
+  //In a Docker environment, make sure to set either trustHost: true in your Auth.js configuration or the AUTH_TRUST_HOST environment variable to true.
   trustHost: true,
+  basePath: AUTH_BASE_PATH,
   providers: [
     Keycloak({
       clientId: `${process.env.KEYCLOAK_CLIENT_ID}`,
@@ -72,7 +73,7 @@ export default {
       },
     }),
   ],
-  secret: `${process.env.AUTH_SECRET}`,
+  secret: `${process.env.NEXTAUTH_SECRET}`,
   pages: {
     error: "../auth/error", // Error code passed in query string as ?error=
   },
