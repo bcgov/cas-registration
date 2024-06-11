@@ -58,6 +58,7 @@ declare module "next-auth" {
 export const AUTH_BASE_PATH = "/api/auth";
 export default {
   basePath: AUTH_BASE_PATH,
+  trustHost: true,
   providers: [
     Keycloak({
       clientId: `${process.env.KEYCLOAK_CLIENT_ID}`,
@@ -73,7 +74,7 @@ export default {
   ],
   secret: `${process.env.NEXTAUTH_SECRET}`,
   pages: {
-    error: "/auth/error", // Error code passed in query string as ?error=
+    error: "../auth/error", // Error code passed in query string as ?error=
   },
   callbacks: {
     async jwt({ token, account, profile }) {
