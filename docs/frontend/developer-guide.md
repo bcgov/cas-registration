@@ -155,9 +155,19 @@ cd bciers && yarn reg:coverage
 
 #### Writing Unit Tests
 
-React Testing Library isn't entirely compatible with Next 13 yet, so a few things to note:
+React Testing Library isn't entirely compatible with Next server components yet, so a few things to note:
 
-- If you're testing a simple async component, you can use `render(await Operations());` instead of `render(<Operations />)`. If the component is more complicated (e.g., it imports other async components, or a mix of client/server), it appears there isn't yet a solution: <https://github.com/testing-library/react-testing-library/issues/1209#issuecomment-1673372612>
+- If you're testing a client component, put the component in <>, e.g. `render(<Operations />)`
+- If you're testing a server component, await the component as a function, e.g. `render(await Operations());`
+- If the you're testing a server component that imports another server component (e.g. `OperationsPage`), when you run the test you'll see an error about rendering React children. This is a [limitation of server components with react testing library](https://github.com/testing-library/react-testing-library/issues/1209#issuecomment-1673372612). As a workaround until this is fixed, you can mock the child server components, e.g.
+
+```
+vi.mock("apps/registration/app/components/operations/Operations", () => {
+  return {
+    default: () => <div>mocked Operations component</div>,
+  };
+});
+```
 
 - To mock fetching data which uses our `actionHandler` you can import the action handler mock and mock the response values using `mockReturnValue` or `mockReturnValueOnce`:
 
