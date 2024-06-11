@@ -3,10 +3,10 @@ name: Test Registration App
 on:
   push:
     branches: [develop, main, dylan/nx-3]
-    tags:
-      - frontend
   pull_request:
     branches: [develop, main]
+    tags:
+      - frontend
   workflow_dispatch:
 
 env:
