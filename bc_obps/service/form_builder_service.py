@@ -9,7 +9,7 @@ def camelCase(st):
 def build_schema(activity: int, source_type: int, gas_type: int, methodology: int, report_date: str):
     source_type_schema = ActivitySourceTypeBaseSchema.objects.select_related('base_schema').filter(reporting_activity_id=activity, source_type_id=source_type, valid_from__valid_from__lte=report_date, valid_to__valid_to__gte=report_date).first()
     if source_type_schema is None:
-        raise Exception(f'No base schema found for activity_id {activity} & source_type_id {source_type}')
+        raise Exception(f'No base schema found for activity_id {activity} & source_type_id {source_type} & report_date {report_date}')
     # Fetch valid gas_type values for activity-sourceType pair
     gas_types=ConfigurationElement.objects.select_related('gas_type').filter(reporting_activity_id=activity, source_type_id=source_type, valid_from__valid_from__lte=report_date,).distinct('gas_type__name')
     gas_type_enum = []
@@ -30,7 +30,7 @@ def build_schema(activity: int, source_type: int, gas_type: int, methodology: in
         ## Fetch valid methodology values for activity-sourceType pair + gasType selection
         methodologies=ConfigurationElement.objects.select_related('methodology').filter(reporting_activity_id=activity, source_type_id=source_type, gas_type_id=gas_type, valid_from__valid_from__lte=report_date, valid_to__valid_to__gte=report_date,)
         if not methodologies.exists():
-            raise Exception(f'No configuration found for activity_id {activity} & source_type_id {source_type} & gas_type_id {gas_type}')
+            raise Exception(f'No configuration found for activity_id {activity} & source_type_id {source_type} & gas_type_id {gas_type} & report_date {report_date}')
         methodology_enum = []
         for t in methodologies:
             methodology_enum.append(t.methodology.name)
@@ -43,7 +43,7 @@ def build_schema(activity: int, source_type: int, gas_type: int, methodology: in
         try:
             methodology_fields=ConfigurationElement.objects.prefetch_related('reporting_fields').get(reporting_activity_id=activity, source_type_id=source_type, gas_type_id=gas_type, methodology_id=methodology, valid_from__valid_from__lte=report_date, valid_to__valid_to__gte=report_date).reporting_fields.all()
         except:
-          raise Exception(f'No configuration found for activity_id {activity} & source_type_id {source_type} & gas_type_id {gas_type} & methodology_id {methodology}')
+          raise Exception(f'No configuration found for activity_id {activity} & source_type_id {source_type} & gas_type_id {gas_type} & methodology_id {methodology} & report_date {report_date}')
         for f in methodology_fields:
             property_field = camelCase(f.field_name)
             rjsf_schema['properties'][property_field] = {"type": f.field_type, "title": f.field_name}
