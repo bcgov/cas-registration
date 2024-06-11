@@ -51,7 +51,6 @@
     "eslint-config-airbnb-typescript": "^17.1.0",
     "eslint-config-next": "^14.0.4",
     "eslint-plugin-import": "^2.27.5",
-    "jest-fetch-mock": "^3.0.3",
     "lodash.debounce": "^4.0.8",
     "mui-tel-input": "^4.0.1",
     "next": "14.1.1",
