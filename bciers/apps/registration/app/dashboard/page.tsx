@@ -9,6 +9,8 @@ import { auth } from "@/dashboard/auth";
 export default async function Page() {
   const session = await auth();
   const role = session?.user?.app_role || "";
+  // 🚀 API fetch dashboard tiles
+  // 🚩 Source: bc_obps/common/fixtures/dashboard/registration/[IdProviderType]
   const data = (await fetchDashboardData(
     "common/dashboard-data?dashboard=registration",
   )) as ContentItem[];
