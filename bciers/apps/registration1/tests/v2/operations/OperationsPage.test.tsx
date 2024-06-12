@@ -1,7 +1,7 @@
 import "@testing-library/jest-dom";
 import { render, screen } from "@testing-library/react";
+import { getServerSession } from "@bciers/testConfig/mocks";
 import OperationsPage from "apps/registration/app/components/operations/OperationsPage";
-import { getServerSession } from "@/tests/mocks";
 
 // we have to mock child server components because react testing library doesn't yet play nice with the new next server components
 vi.mock("apps/registration/app/components/operations/Operations", () => {

@@ -3,13 +3,13 @@ import * as matchers from "@testing-library/jest-dom/matchers";
 import { expect, vi } from "vitest";
 import {
   actionHandler,
+  getServerSession,
   useParams,
   usePathname,
   useRouter,
   useSearchParams,
   useSession,
 } from "./mocks";
-import { getServerSession } from "@/tests/mocks";
 import createFetchMock from "vitest-fetch-mock";
 
 declare module "vitest" {
