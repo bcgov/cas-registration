@@ -1,5 +1,5 @@
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import Tiles from "@bciers/components/navigation/Tiles";
+import Tiles from "@/app/components/navigation/Tiles";
 import { getUserOperator } from "@/app/components/routes/select-operator/Page";
 import { actionHandler } from "@/app/utils/actions";
 import { FrontEndRoles } from "@/app/utils/enums";

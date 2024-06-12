@@ -6,6 +6,7 @@ import Main from "@bciers/components/layout/Main";
 import SingleStepTaskListForm from "@bciers/components/form/SingleStepTaskListForm";
 import SectionFieldTemplate from "@bciers/components/form/fields/SectionFieldTemplate";
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
+import Tiles from "@bciers/components/navigation/Tiles";
 
 const section1: RJSFSchema = {
   type: "object",
@@ -109,6 +110,83 @@ const mockFormData = {
   },
 };
 
+const mockTilesWithLinks = [
+  {
+    links: [
+      {
+        href: "/registration/dashboard/select-operator",
+        title: "My Operator",
+      },
+      {
+        href: "/registration/tbd",
+        title: "Operations",
+      },
+      {
+        href: "/registration/tbd",
+        title: "BORO ID Applications",
+      },
+      {
+        href: "/registration/tbd",
+        title: "Report an Event",
+      },
+      {
+        href: "/registration/tbd",
+        title: "Contacts",
+      },
+      {
+        href: "/registration/tbd",
+        title: "User and Access Requests",
+      },
+    ],
+    title: "Registration",
+    content:
+      "View or update your operator information, which needs to be complete before applying for BORO ID's",
+  },
+  {
+    links: [
+      {
+        href: "/reporting/tbd",
+        title: "Submit Annual Report",
+      },
+      {
+        href: "/reporting/tbd",
+        title: "View Past Submissions",
+      },
+    ],
+    title: "Reporting",
+    content:
+      "Submit annual report for an  and to view or update previous year's reports here",
+  },
+  {
+    links: [
+      {
+        href: "/coam/tbd",
+        title: "TBD",
+      },
+      {
+        href: "/coam/tbd",
+        title: "TBD",
+      },
+      {
+        href: "/coam/tbd",
+        title: "TBD",
+      },
+    ],
+    title: "COAM",
+    content: "View payments for compliance obligations here",
+  },
+  {
+    links: [
+      {
+        href: "mailto:GHGRegulator@gov.bc.ca",
+        title: "Report problems to GHGRegulator@gov.bc.ca",
+      },
+    ],
+    title: "Report a problem",
+    content: "Something wrong?",
+  },
+];
+
 export default function Page() {
   // Main will be moved into a child layout component once we set up the routes
   return (
@@ -120,6 +198,7 @@ export default function Page() {
         },
       }}
     >
+      <Tiles tiles={mockTilesWithLinks} />
       <h1>Registration Part II</h1>
       {/* Added a large bottom margin to test task list onClick smooth scroll */}
       <div className="mb-[50vh]">
