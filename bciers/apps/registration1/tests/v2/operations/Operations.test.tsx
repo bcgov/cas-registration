@@ -3,9 +3,7 @@ import {
   actionHandler,
   useRouter,
   useSearchParams,
-  useSession,
 } from "@bciers/testConfig/mocks";
-import { Session } from "@bciers/testConfig/types";
 import Operations from "apps/registration/app/components/operations/Operations";
 import { FrontEndRoles } from "@/app/utils/enums";
 
