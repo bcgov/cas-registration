@@ -1,12 +1,7 @@
 {
   "title": "General stationary combustion of fuel or waste with production of useful energy",
   "type": "object",
-  "required": [
-    "fuelName",
-    "fuelUnit",
-    "annualFuelAmount",
-    "gasType"
-  ],
+  "required": ["fuelName", "fuelUnit", "annualFuelAmount", "gasType"],
   "properties": {
     "gscUnitName": {
       "type": "string",
