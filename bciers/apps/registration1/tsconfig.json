@@ -26,5 +26,5 @@
     "../../libs/shared/components/src/lib/modal",
     "../../dist/registration1/.next/types/**/*.ts"
   ],
-  "exclude": [".next", "node_modules", "jest.config.*"]
+  "exclude": [".next", "node_modules"]
 }
