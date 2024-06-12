@@ -29,6 +29,6 @@ spec:
                 secretKeyRef:
                   key: password
                   name: django-superuser
-          command: [ "poetry", "run", "python", "manage.py", "create_superuser" ]
+          command: [ "/usr/bin/env", "bash", "-c", "poetry run python manage.py create_superuser" ]
       restartPolicy: Never
 {{ end }}
