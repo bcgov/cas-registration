@@ -1,8 +1,10 @@
 # Install dependencies only when needed
 FROM docker.io/node:20.11 as deps
 WORKDIR /usr/src/app
-COPY ./package*.json ./
+COPY ./package.json .
 RUN corepack enable
+# Force Yarn to use standard node-modules folder
+RUN echo 'nodeLinker: "node-modules"' >> ./.yarnrc.yml
 RUN yarn install
 
 # Production image, copy all the files and run next
@@ -15,11 +17,11 @@ ENTRYPOINT ["dumb-init", "--"]
 ENV NODE_ENV production
 ENV PORT 3000
 WORKDIR /usr/src/app
-COPY --from=deps /usr/src/app/node_modules ./node_modules
-COPY --from=deps /usr/src/app/package.json ./package.json
-COPY ./public ./public
-COPY ./.next ./.next
-RUN chown -R node:node .
+COPY --from=deps --chown=node:node /usr/src/app/node_modules node_modules
+COPY --from=deps --chown=node:node /usr/src/app/package.json package.json
+COPY --chown=node:node ./public ./public
+COPY --chown=node:node ./.next ./.next
+
 USER node
 EXPOSE 3000
 # COPY --chown=node:node ./tools/scripts/entrypoints/api.sh /usr/local/bin/docker-entrypoint.sh
