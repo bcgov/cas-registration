@@ -6,7 +6,7 @@ import {
 
 import { RJSFSchema } from "@rjsf/utils";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/app/utils/auth/authOptions";
 import { UserOperatorFormData } from "@/app/components/form/formDataTypes";
 import { validate as isValidUUID } from "uuid";
 import { BusinessStructure } from "./types";

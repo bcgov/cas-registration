@@ -4,7 +4,7 @@ import {
   UserProfilePartialFormData,
 } from "@/app/components/form/formDataTypes";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/app/utils/auth/authOptions";
 import getUserFullName from "@/app/utils/getUserFullName";
 import UserForm from "@/app/components/users/UserForm";
 

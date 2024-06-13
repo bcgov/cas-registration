@@ -4,7 +4,7 @@ import Loading from "@bciers/components/loading/SkeletonField";
 import { BC_GOV_LINKS_COLOR } from "@bciers/styles/colors";
 import Link from "next/link";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/app/utils/auth/authOptions";
 import { actionHandler } from "@/app/utils/actions";
 import { OperatorStatus, UserOperatorStatus } from "@/app/utils/enums";
 import getUserFullName from "@/app/utils/getUserFullName";
