@@ -7,7 +7,7 @@ You should not manually add <head> tags such as <title> and <meta> to root layou
 
 // eslint-disable-next-line import/extensions
 import "@bciers/styles/globals.css";
-import SessionProvider from "@bciers/components/auth/SessionProvider";
+import SessionProvider from "../components/auth/SessionProvider";
 import type { Metadata, Viewport } from "next";
 import Footer from "@bciers/components/layout/Footer";
 import Header from "@bciers/components/layout/Header";
