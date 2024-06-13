@@ -9,10 +9,12 @@
     {
       "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
       "rules": {
-        "@eslint/quotes": [
-          "warn",
+        "@typescript-eslint/quotes": [
+          "error",
+          "double",
           {
-            "avoidEscape": true
+            "avoidEscape": true,
+            "allowTemplateLiterals": true
           }
         ]
       }
