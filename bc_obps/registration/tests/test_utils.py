@@ -1,5 +1,5 @@
 import pytest
-import tempfile
+import base64
 from model_bakery import baker
 from registration.models import User, UserOperator, AppRole
 from registration.utils import (
@@ -13,9 +13,9 @@ from registration.utils import (
 from django.core.exceptions import ValidationError
 from ninja.errors import HttpError
 from django.test import RequestFactory, TestCase
-from registration.tests.utils.helpers import MOCK_DATA_URL
 from django.core.files.base import ContentFile
-from registration.tests.utils.bakers import user_operator_baker
+from registration.tests.utils.bakers import document_baker, user_operator_baker
+import requests
 
 pytestmark = pytest.mark.django_db
 
@@ -201,20 +201,85 @@ class TestCheckIfRoleAuthorized(TestCase):
             raise_401_if_user_not_authorized(self.request, ['industry_user'])
 
 
-class TestFileHelpers:
+class TestFileTODataURL:
     @staticmethod
-    def file_to_data_url_returns_data_url():
-        # Create a temporary file
-        temp_pdf_file = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf")
+    def test_file_to_data_url_returns_data_url(mocker):
+        # Mock the document object
+        document = document_baker()
 
-        result = file_to_data_url(temp_pdf_file)
-        assert isinstance(result, str)
-        assert result.startswith('data:application/pdf;name=')
+        # Mock the response of requests.get
+        mock_response = mocker.MagicMock()
+        mock_response.status_code = 200
+        mock_response.content = b"PDF content"
+
+        mocker.patch("requests.get", return_value=mock_response)
+
+        # Call the function
+        result = file_to_data_url(document)
+
+        # Check the expected result
+        encoded_content = base64.b64encode(b"PDF content").decode("utf-8")
+        expected_result = f"data:application/pdf;name=test.pdf;base64,{encoded_content}"
+        assert result == expected_result
 
     @staticmethod
-    def data_url_to_file_returns_file():
-        result = data_url_to_file(MOCK_DATA_URL)
-        assert result.exists() and result.is_file()
+    def test_file_to_data_url_handles_timeout(mocker, caplog):
+        # Mock the document object
+        document = document_baker()
+
+        # Mock the response of requests.get to raise a timeout exception
+        mocker.patch("requests.get", side_effect=requests.exceptions.Timeout)
+
+        # Call the function
+        result = file_to_data_url(document)
+
+        # Check the result is None
+        assert result is None
+
+        # Check that the timeout was logged
+        assert "Request timed out" in caplog.text
+
+    @staticmethod
+    def test_file_to_data_url_handles_request_exception(mocker, caplog):
+        # Mock the document object
+        document = document_baker()
+
+        # Mock the response of requests.get to raise a request exception
+        mocker.patch("requests.get", side_effect=requests.exceptions.RequestException("An error occurred"))
+
+        # Call the function
+        result = file_to_data_url(document)
+
+        # Check the result is None
+        assert result is None
+
+        # Check that the exception was logged
+        assert "An error occurred" in caplog.text
+
+
+class TestDataUrlToFile:
+    @staticmethod
+    def test_data_url_to_file():
+        data_url = "data:application/pdf;name=test.pdf;base64,UERGIENvbnRlbnQ="
+        content_file = data_url_to_file(data_url)
+
+        assert content_file.name == "test.pdf"
+        assert content_file.read() == b"PDF Content"
+
+    @staticmethod
+    def test_data_url_to_file_no_name():
+        data_url = "data:application/pdf;base64,UERGIENvbnRlbnQ="
+        content_file = data_url_to_file(data_url)
+
+        assert content_file.name is None
+        assert content_file.read() == b"PDF Content"
+
+    @staticmethod
+    def test_data_url_to_file_invalid_base64():
+        data_url = "data:application/pdf;name=test.pdf;base64,invalidbase64data"
+
+        with pytest.raises(base64.binascii.Error):
+            data_url_to_file(data_url)
 
 
 class TestFileHashComparison(TestCase):
