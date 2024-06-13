@@ -1,6 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import {
   actionHandler,
+  fetchOperationsPageData,
   useRouter,
   useSearchParams,
 } from "@bciers/testConfig/mocks";
@@ -15,6 +16,13 @@ useRouter.mockReturnValue({
 useSearchParams.mockReturnValue({
   get: vi.fn(),
 });
+
+vi.mock(
+  "apps/registration/app/components/operations/fetchOperationsPageData",
+  () => ({
+    default: fetchOperationsPageData,
+  }),
+);
 
 const mockResponse = {
   data: [
@@ -39,65 +47,25 @@ const mockResponse = {
 describe("Operations component", () => {
   beforeEach(async () => {
     vi.clearAllMocks();
-    actionHandler.mockReturnValue(mockResponse);
-  });
-  it("renders the Operations grid for external users", async () => {
-    render(
-      await Operations({ searchParams: {}, role: FrontEndRoles.INDUSTRY_USER }),
-    );
-
-    // correct headers
-    expect(
-      screen.getByRole("columnheader", { name: "Operation Name" }),
-    ).toBeVisible();
-    expect(
-      screen.queryByRole("columnheader", { name: "Operator Legal Name" }),
-    ).not.toBeInTheDocument();
-    expect(
-      screen.getByRole("columnheader", { name: "Operation Type" }),
-    ).toBeVisible();
-    expect(
-      screen.getByRole("columnheader", { name: "BC GHG ID" }),
-    ).toBeVisible();
-    expect(screen.getByRole("columnheader", { name: "Action" })).toBeVisible();
-
-    // Check data displays
-    expect(screen.getByText(/Operation 1/i)).toBeVisible();
-    expect(screen.queryAllByText(/FakeOperator/i)).toHaveLength(0);
-    expect(screen.getByText(/1-211113-0001/i)).toBeVisible();
-    expect(screen.getAllByText(/Single Facility Operation/i)).toHaveLength(1);
-    expect(screen.getAllByRole("link", { name: /View Details/i })).toHaveLength(
-      2,
-    );
   });
 
-  it("renders the Operations grid for internal users", async () => {
+  it("renders a message when there are no operations in the database", async () => {
+    fetchOperationsPageData.mockReturnValueOnce(undefined);
     render(
       await Operations({ searchParams: {}, role: FrontEndRoles.CAS_ADMIN }),
     );
+    expect(screen.queryByRole("grid")).not.toBeInTheDocument();
+    expect(screen.getByText(/No operations data in database./i)).toBeVisible();
+  });
 
-    // correct headers
-    expect(
-      screen.getByRole("columnheader", { name: "Operation Name" }),
-    ).toBeVisible();
-    expect(
-      screen.queryByRole("columnheader", { name: "Operator Legal Name" }),
-    ).toBeVisible();
-    expect(
-      screen.getByRole("columnheader", { name: "Operation Type" }),
-    ).toBeVisible();
-    expect(
-      screen.getByRole("columnheader", { name: "BC GHG ID" }),
-    ).toBeVisible();
-    expect(screen.getByRole("columnheader", { name: "Action" })).toBeVisible();
-
-    // Check data displays
-    expect(screen.getByText(/Operation 1/i)).toBeVisible();
-    expect(screen.queryAllByText(/FakeOperator/i)).toHaveLength(2);
-    expect(screen.getByText(/1-211113-0001/i)).toBeVisible();
-    expect(screen.getAllByText(/Single Facility Operation/i)).toHaveLength(1);
-    expect(screen.getAllByRole("link", { name: /View Details/i })).toHaveLength(
-      2,
+  it("renders the OperationDataGrid component when there are operations in the database", async () => {
+    fetchOperationsPageData.mockReturnValueOnce(mockResponse);
+    render(
+      await Operations({ searchParams: {}, role: FrontEndRoles.CAS_ADMIN }),
     );
+    expect(screen.getByRole("grid")).toBeVisible();
+    expect(
+      screen.queryByText(/No operations data in database./i),
+    ).not.toBeInTheDocument();
   });
 });

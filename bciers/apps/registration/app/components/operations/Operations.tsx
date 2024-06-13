@@ -5,27 +5,7 @@ import OperationDataGrid from "./OperationDataGrid";
 import { FrontEndRoles } from "@/app/utils/enums";
 import { OperationRow, OperationsSearchParams } from "./types";
 import { actionHandler } from "@/app/utils/actions";
-
-// 🛠️ Function to fetch operations
-export const fetchOperationsPageData = async (
-  searchParams: OperationsSearchParams,
-) => {
-  try {
-    const queryParams = buildQueryParams(searchParams);
-    // fetch data from server
-    const pageData = await actionHandler(
-      `registration/v2/operations${queryParams}`,
-      "GET",
-      "",
-    );
-    return {
-      rows: pageData.data,
-      row_count: pageData.row_count,
-    };
-  } catch (error) {
-    throw error;
-  }
-};
+import fetchOperationsPageData from "./fetchOperationsPageData";
 
 // 🧩 Main component
 export default async function Operations({
@@ -33,7 +13,7 @@ export default async function Operations({
   role,
 }: {
   searchParams: OperationsSearchParams;
-  role: FrontEndRoles;
+  role: string | undefined;
 }) {
   // Fetch operations data
   const operations: {
