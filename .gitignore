@@ -150,3 +150,7 @@ helm/**/charts
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+
+
+# JetBrains
+.idea/
