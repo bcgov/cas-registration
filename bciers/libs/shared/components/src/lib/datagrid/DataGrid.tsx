@@ -51,7 +51,6 @@ const DataGrid: React.FC<Props> = ({
   const { replace } = useRouter();
   const isRowsEmpty = rows.length === 0;
 
-  // brianna I don't think we need this, the second use effect should do it
   useEffect(() => {
     setIsComponentMounted(true);
 
@@ -59,7 +58,6 @@ const DataGrid: React.FC<Props> = ({
   }, []);
 
   useEffect(() => {
-    // brianna can the check we on if we have props?
     // Don't fetch data if the component is not mounted
     // Since we will grab the first page using the server side props
     if (!isComponentMounted || !fetchPageData) return;
