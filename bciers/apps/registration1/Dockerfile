@@ -3,7 +3,7 @@ FROM docker.io/node:20.11 as deps
 WORKDIR /usr/src/app
 COPY ./package*.json ./
 RUN corepack enable
-RUN yarn install --immutable --production==false --ignore-scripts
+RUN yarn install
 
 # Production image, copy all the files and run next
 FROM docker.io/node:20.11 as runner

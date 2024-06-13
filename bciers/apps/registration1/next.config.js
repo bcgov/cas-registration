@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const { withSentryConfig } = require("@sentry/nextjs");
-const { composePlugins } = require("@nx/next");
+const { composePlugins, withNx } = require("@nx/next");
 
 const nextConfigBase = require("../../next.config.base");
 
@@ -21,6 +21,11 @@ const nextConfig = {
     serverActions: {
       bodySizeLimit: "20mb",
     },
+  },
+  nx: {
+    // Set this to true if you would like to use SVGR
+    // See: https://github.com/gregberge/svgr
+    svgr: false,
   },
 };
 
@@ -46,6 +51,7 @@ const withSentry = (/** @type {import('next').NextConfig} */ config) =>
 const plugins = [
   // Add more Next.js plugins to this list if needed.
   withSentry,
+  withNx,
 ];
 
 module.exports = composePlugins(...plugins)(nextConfig);
