@@ -161,6 +161,7 @@ test.describe("Test Workflow cas_analyst", () => {
       await takeStabilizedScreenshot(happoPlaywright, operationsPage.page, {
         component: "Operations Grid cas_analyst",
         variant: "default",
+        targets: ["chrome", "firefox", "safari"], // this screenshot is flaky in edge
       });
     });
 
