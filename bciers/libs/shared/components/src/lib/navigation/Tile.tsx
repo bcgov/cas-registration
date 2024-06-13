@@ -10,10 +10,6 @@ const iconMap: IconMap = {
 };
 
 const Tile = ({ content, href, icon, links, title }: ContentItem) => {
-  if (!href && links?.length === 0) {
-    throw new Error("Tile must have an href or links");
-  }
-
   return (
     <div
       className="dashboard-tile-container p-0 min-h-[240px] h-fit py-6"

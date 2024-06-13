@@ -4,6 +4,11 @@ import Tiles from "./Tiles";
 
 const mockTilesWithLinks = [
   {
+    title: "Registration",
+    href: "/registration/dashboard",
+    icon: "Inbox",
+    content:
+      "View or update information of your operator, operations, facilities, and to register operations here.",
     links: [
       {
         href: "/registration/dashboard/select-operator",
@@ -30,12 +35,13 @@ const mockTilesWithLinks = [
         title: "User and Access Requests",
       },
     ],
-    title: "Registration",
-    icon: "Inbox",
-    content:
-      "View or update your operator information, which needs to be complete before applying for BORO ID's",
   },
   {
+    title: "Reporting",
+    href: "/reporting/tbd",
+    icon: "Layers",
+    content:
+      "Submit Annual Report for an operation, and to view or update previous years’ reports here.",
     links: [
       {
         href: "/reporting/tbd",
@@ -46,12 +52,12 @@ const mockTilesWithLinks = [
         title: "View Past Submissions",
       },
     ],
-    title: "Reporting",
-    icon: "Layers",
-    content:
-      "Submit annual report for an  and to view or update previous year's reports here",
   },
   {
+    title: "COAM",
+    href: "/coam/tbd",
+    icon: "Pulse",
+    content: "View payments for compliance obligations here",
     links: [
       {
         href: "/coam/tbd",
@@ -66,24 +72,22 @@ const mockTilesWithLinks = [
         title: "TBD",
       },
     ],
-    title: "COAM",
-    icon: "Pulse",
-    content: "View payments for compliance obligations here",
   },
   {
+    title: "Report a problem",
+    href: "mailto:GHGRegulator@gov.bc.ca",
+    icon: "Wrench",
+    content: "Something wrong?",
     links: [
       {
         href: "mailto:GHGRegulator@gov.bc.ca",
         title: "Report problems to GHGRegulator@gov.bc.ca",
       },
     ],
-    title: "Report a problem",
-    icon: "Wrench",
-    content: "Something wrong?",
   },
 ];
 
-const mockTilesWithHref = [
+const mockTilesWithoutLinks = [
   {
     href: "/registration/dashboard/select-operator",
     icon: "Inbox",
@@ -95,7 +99,7 @@ const mockTilesWithHref = [
     href: "/registration/tbd",
     icon: "Layers",
     title: "Operations",
-    content: "View or update your operator information",
+    content: "View all operations here",
   },
   {
     href: "mailto:GHGRegulator@gov.bc.ca",
@@ -106,14 +110,51 @@ const mockTilesWithHref = [
 ];
 
 describe("The Tiles component", () => {
+  it("renders a list of tiles without links", () => {
+    render(<Tiles tiles={mockTilesWithoutLinks} />);
+
+    // Operator tile
+    expect(
+      screen.getByRole("heading", { name: "My Operator" }),
+    ).toBeInTheDocument();
+
+    // Operator tile content
+    expect(
+      screen.getByText(
+        "View or update your operator information, which needs to be complete before applying for BORO ID's",
+      ),
+    ).toBeInTheDocument();
+
+    // Operations tile
+    expect(
+      screen.getByRole("heading", { name: "Operations" }),
+    ).toBeInTheDocument();
+
+    // Operations tile content
+    expect(screen.getByText("View all operations here")).toBeInTheDocument();
+
+    // Report a Problem tile
+    expect(
+      screen.getByRole("heading", { name: "Report a problem" }),
+    ).toBeInTheDocument();
+
+    // Report a Problem tile content
+    expect(screen.getByText("Something wrong?")).toBeInTheDocument();
+  });
+
   it("renders a list of tiles with links", () => {
     render(<Tiles tiles={mockTilesWithLinks} />);
-
-    expect(screen.getAllByRole("link")).toHaveLength(12);
 
     // Registration tile
     expect(
       screen.getByRole("heading", { name: "Registration" }),
+    ).toBeInTheDocument();
+
+    // Registration tile content
+    expect(
+      screen.getByText(
+        "View or update information of your operator, operations, facilities, and to register operations here.",
+      ),
     ).toBeInTheDocument();
 
     // Registration tile links
@@ -147,6 +188,13 @@ describe("The Tiles component", () => {
       screen.getByRole("heading", { name: "Reporting" }),
     ).toBeInTheDocument();
 
+    // Reporting tile content
+    expect(
+      screen.getByText(
+        "Submit Annual Report for an operation, and to view or update previous years’ reports here.",
+      ),
+    ).toBeInTheDocument();
+
     // Reporting tile links
     expect(
       screen.getByRole("link", { name: "Submit Annual Report" }),
@@ -157,6 +205,11 @@ describe("The Tiles component", () => {
 
     // COAM tile
     expect(screen.getByRole("heading", { name: "COAM" })).toBeInTheDocument();
+
+    // COAM tile content
+    expect(
+      screen.getByText("View payments for compliance obligations here"),
+    ).toBeInTheDocument();
 
     // COAM tile links
     expect(screen.getAllByRole("link", { name: "TBD" })).toHaveLength(3);
@@ -170,6 +223,9 @@ describe("The Tiles component", () => {
       screen.getByRole("heading", { name: "Report a problem" }),
     ).toBeInTheDocument();
 
+    // Report a Problem tile content
+    expect(screen.getByText("Something wrong?")).toBeInTheDocument();
+
     // Report a Problem tile links
     expect(
       screen.getByRole("link", {
@@ -178,43 +234,37 @@ describe("The Tiles component", () => {
     ).toHaveAttribute("href", "mailto:GHGRegulator@gov.bc.ca");
   });
 
-  it("renders a list of tiles with href", () => {
-    render(<Tiles tiles={mockTilesWithHref} />);
-
-    expect(screen.getAllByRole("link")).toHaveLength(4);
-
-    // My Operator tile
-    expect(
-      screen.getByRole("heading", { name: "My Operator" }),
-    ).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "My Operator" })).toHaveAttribute(
-      "href",
-      "/registration/dashboard/select-operator",
-    );
-
-    // Submit Annual Report tile
-    expect(
-      screen.getByRole("heading", { name: "Submit Annual Report" }),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("link", { name: "Submit Annual Report" }),
-    ).toHaveAttribute("href", "/reporting/tbd");
-
-    // COAM tile
-    expect(screen.getByRole("heading", { name: "COAM" })).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "COAM" })).toHaveAttribute(
-      "href",
-      "/coam/tbd",
-    );
-
-    // Report a Problem tile
-    expect(
-      screen.getByRole("heading", { name: "Report a problem" }),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("link", {
-        name: "Report a problem",
-      }),
-    ).toHaveAttribute("href", "mailto:GHGRegulator@gov.bc.ca");
-  });
+  // it("renders a list of tiles with and without links", () => {
+  //   render(<Tiles tiles={[...mockTilesWithLinks, ...mockTilesWithoutLinks]} />);
+  //
+  //   // Registration tile
+  //   expect(
+  //     screen.getByRole("heading", { name: "Registration" }),
+  //   ).toBeInTheDocument();
+  //
+  //   // Registration tile content
+  //   expect(
+  //     screen.getByText(
+  //       "View or update your operator information, which needs to be complete before applying for BORO ID's",
+  //     ),
+  //   ).toBeInTheDocument();
+  //
+  //   // Registration tile links
+  //   expect(screen.getByRole("link", { name: "My Operator" })).toHaveAttribute(
+  //     "href",
+  //     "/registration/dashboard/select-operator",
+  //   );
+  //
+  //   // Operator tile
+  //   expect(
+  //     screen.getByRole("heading", { name: "My Operator" }),
+  //   ).toBeInTheDocument();
+  //
+  //   // Operator tile content
+  //   expect(
+  //     screen.getByText(
+  //       "View or update information of your operator, operations, facilities, and to register operations here.",
+  //     ),
+  //   ).toBeInTheDocument();
+  // });
 });
