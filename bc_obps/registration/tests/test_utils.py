@@ -1,10 +1,7 @@
-from service.application_access_service import ApplicationAccessService
-from registration.schema.v1.parent_operator import ParentOperatorIn
-from registration.schema.v1.user_operator import UserOperatorOperatorIn
 import pytest
-import tempfile
+import base64
 from model_bakery import baker
-from registration.models import Address, BusinessStructure, Operator, ParentOperator, User, UserOperator, AppRole
+from registration.models import User, UserOperator, AppRole
 from registration.utils import (
     file_to_data_url,
     data_url_to_file,
@@ -13,17 +10,14 @@ from registration.utils import (
     generate_useful_error,
     raise_401_if_user_not_authorized,
 )
-from localflavor.ca.models import CAPostalCodeField
 from django.core.exceptions import ValidationError
 from ninja.errors import HttpError
 from django.test import RequestFactory, TestCase
-from registration.tests.utils.helpers import TestUtils, MOCK_DATA_URL
 from django.core.files.base import ContentFile
-from registration.tests.utils.bakers import operator_baker, user_operator_baker
+from registration.tests.utils.bakers import document_baker, user_operator_baker
+import requests
 
 pytestmark = pytest.mark.django_db
-
-baker.generators.add(CAPostalCodeField, TestUtils.mock_postal_code)
 
 
 class TestUpdateModelInstance:
@@ -129,116 +123,6 @@ class TestGenerateUsefulError:
         assert useful_error == expected_error
 
 
-class TestCheckUserAdminRequestEligibility:
-    @staticmethod
-    def test_user_eligible_for_admin_request():
-        user = baker.make(User)
-        operator = operator_baker()
-        assert (
-            ApplicationAccessService.is_user_eligible_to_request_admin_access(
-                operator.id,
-                user.user_guid,
-            )
-            is True
-        )
-
-    @staticmethod
-    def test_user_already_admin_for_operator():
-        user = baker.make(User)
-        operator = operator_baker()
-        baker.make(
-            UserOperator,
-            user=user,
-            operator=operator,
-            role=UserOperator.Roles.ADMIN,
-            status=UserOperator.Statuses.APPROVED,
-        )
-
-        with pytest.raises(Exception, match="You are already an admin for this Operator!"):
-            ApplicationAccessService.is_user_eligible_to_request_admin_access(
-                operator.id,
-                user.user_guid,
-            )
-
-    @staticmethod
-    def test_operator_already_has_admin():
-        user = baker.make(User)
-        admin_user = baker.make(User)
-        operator = operator_baker()
-        baker.make(
-            UserOperator,
-            user=admin_user,
-            operator=operator,
-            role=UserOperator.Roles.ADMIN,
-            status=UserOperator.Statuses.APPROVED,
-        )
-
-        with pytest.raises(Exception, match="This Operator already has an admin user!"):
-            ApplicationAccessService.is_user_eligible_to_request_admin_access(
-                operator.id,
-                user.user_guid,
-            )
-
-    @staticmethod
-    def test_user_already_has_pending_request():
-        user = baker.make(User)
-        operator = operator_baker()
-        baker.make(
-            UserOperator,
-            user=user,
-            operator=operator,
-            role=UserOperator.Roles.ADMIN,
-            status=UserOperator.Statuses.PENDING,
-        )
-
-        with pytest.raises(Exception, match="You already have a pending request for this Operator!"):
-            ApplicationAccessService.is_user_eligible_to_request_admin_access(
-                operator.id,
-                user.user_guid,
-            )
-
-    @staticmethod
-    def test_user_business_guid_matches_admin():
-        admin_user = baker.make(User)
-        user = baker.make(
-            User,
-            business_guid=admin_user.business_guid,
-        )
-        operator = operator_baker()
-
-        baker.make(
-            UserOperator,
-            user=admin_user,
-            operator=operator,
-            role=UserOperator.Roles.ADMIN,
-            status=UserOperator.Statuses.APPROVED,
-        )
-
-        assert (
-            ApplicationAccessService.is_user_eligible_to_request_access(
-                operator.id,
-                user.user_guid,
-            )
-            is True
-        )
-
-    @staticmethod
-    def test_user_business_guid_not_match_admin():
-        admin_user = baker.make(User)
-        user = baker.make(User)
-        operator = operator_baker()
-
-        baker.make(
-            UserOperator,
-            user=admin_user,
-            operator=operator,
-            role=UserOperator.Roles.ADMIN,
-            status=UserOperator.Statuses.APPROVED,
-        )
-        with pytest.raises(Exception, match="Your business bceid does not match that of the approved admin."):
-            ApplicationAccessService.is_user_eligible_to_request_access(operator.id, user.user_guid)
-
-
 class TestCheckIfRoleAuthorized(TestCase):
     def setup_method(self, *args, **kwargs):
         # Every test needs access to the request factory.
@@ -317,157 +201,85 @@ class TestCheckIfRoleAuthorized(TestCase):
             raise_401_if_user_not_authorized(self.request, ['industry_user'])
 
 
-class TestFileHelpers:
+class TestFileTODataURL:
     @staticmethod
-    def file_to_data_url_returns_data_url():
-        # Create a temporary file
-        temp_pdf_file = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf")
+    def test_file_to_data_url_returns_data_url(mocker):
+        # Mock the document object
+        document = document_baker()
 
-        result = file_to_data_url(temp_pdf_file)
-        assert isinstance(result, str)
-        assert result.startswith('data:application/pdf;name=')
+        # Mock the response of requests.get
+        mock_response = mocker.MagicMock()
+        mock_response.status_code = 200
+        mock_response.content = b"PDF content"
 
-    @staticmethod
-    def data_url_to_file_returns_file():
-        result = data_url_to_file(MOCK_DATA_URL)
-        assert result.exists() and result.is_file()
+        mocker.patch("requests.get", return_value=mock_response)
 
+        # Call the function
+        result = file_to_data_url(document)
 
-class TestOperatorHelpers:
-    @staticmethod
-    def test_upsert_addresses_from_data_create_without_prefix():
-        from service.addresses_service import AddressesService
-
-        address_data = {
-            "physical_street_address": "123 Main St",
-            "physical_municipality": "Anytown",
-            "physical_province": "MB",
-            "physical_postal_code": "A1B 2C3",
-            "mailing_address_same_as_physical": False,
-            "mailing_street_address": "456 Secondary St",
-            "mailing_municipality": "Othertown",
-            "mailing_province": "BC",
-            "mailing_postal_code": "X1Y 2Z3",
-        }
-
-        result = AddressesService.upsert_addresses_from_data(address_data, None, None)
-
-        assert len(Address.objects.all()) == 2
-        assert Address.objects.all()[0] == result['physical_address']
-        assert Address.objects.all()[0].street_address == "123 Main St"
-        assert Address.objects.all()[1] == result['mailing_address']
-        assert Address.objects.all()[1].postal_code == "X1Y 2Z3"
+        # Check the expected result
+        encoded_content = base64.b64encode(b"PDF content").decode("utf-8")
+        expected_result = f"data:application/pdf;name=test.pdf;base64,{encoded_content}"
+        assert result == expected_result
 
     @staticmethod
-    def test_upsert_addresses_from_data_update_with_prefix():
-        from service.addresses_service import AddressesService
+    def test_file_to_data_url_handles_timeout(mocker, caplog):
+        # Mock the document object
+        document = document_baker()
 
-        existing_physical_address = baker.make(Address)
-        existing_mailing_address = baker.make(Address)
+        # Mock the response of requests.get to raise a timeout exception
+        mocker.patch("requests.get", side_effect=requests.exceptions.Timeout)
 
-        address_data = {
-            "po_physical_street_address": "123 Main St",
-            "po_physical_municipality": "Anytown",
-            "po_physical_province": "MB",
-            "po_physical_postal_code": "A1B 2C3",
-            "po_mailing_address_same_as_physical": False,
-            "po_mailing_street_address": "456 Secondary St",
-            "po_mailing_municipality": "Othertown",
-            "po_mailing_province": "BC",
-            "po_mailing_postal_code": "X1Y 2Z3",
-        }
+        # Call the function
+        result = file_to_data_url(document)
 
-        AddressesService.upsert_addresses_from_data(
-            address_data, existing_physical_address.id, existing_mailing_address.id, 'po_'
-        )
+        # Check the result is None
+        assert result is None
 
-        assert len(Address.objects.all()) == 2
-        assert Address.objects.get(id=existing_physical_address.id).street_address == "123 Main St"
-        assert Address.objects.get(id=existing_mailing_address.id).postal_code == "X1Y 2Z3"
+        # Check that the timeout was logged
+        assert "Request timed out" in caplog.text
 
     @staticmethod
-    def test_upsert_addresses_from_data__add_mailing_address():
-        from service.addresses_service import AddressesService
+    def test_file_to_data_url_handles_request_exception(mocker, caplog):
+        # Mock the document object
+        document = document_baker()
 
-        existing_physical_address = baker.make(Address)
-        existing_mailing_address = existing_physical_address
+        # Mock the response of requests.get to raise a request exception
+        mocker.patch("requests.get", side_effect=requests.exceptions.RequestException("An error occurred"))
 
-        address_data = {
-            "po_physical_street_address": "Physical address",
-            "po_physical_municipality": "Sometown",
-            "po_physical_province": "ON",
-            "po_physical_postal_code": "D4E 5F6",
-            "po_mailing_address_same_as_physical": False,
-            "po_mailing_street_address": "Mailing address",
-            "po_mailing_municipality": "Sometown",
-            "po_mailing_province": "ON",
-            "po_mailing_postal_code": "D4E 5F6",
-        }
+        # Call the function
+        result = file_to_data_url(document)
 
-        AddressesService.upsert_addresses_from_data(
-            address_data, existing_physical_address.id, existing_mailing_address.id, 'po_'
-        )
+        # Check the result is None
+        assert result is None
 
-        assert len(Address.objects.all()) == 2
-        assert Address.objects.get(street_address="Physical address") is not None
-        assert Address.objects.get(street_address="Mailing address") is not None
+        # Check that the exception was logged
+        assert "An error occurred" in caplog.text
+
+
+class TestDataUrlToFile:
+    @staticmethod
+    def test_data_url_to_file():
+        data_url = "data:application/pdf;name=test.pdf;base64,UERGIENvbnRlbnQ="
+        content_file = data_url_to_file(data_url)
+
+        assert content_file.name == "test.pdf"
+        assert content_file.read() == b"PDF Content"
 
     @staticmethod
-    def test_save_operator():
-        from service.user_operator_service import UserOperatorService
+    def test_data_url_to_file_no_name():
+        data_url = "data:application/pdf;base64,UERGIENvbnRlbnQ="
+        content_file = data_url_to_file(data_url)
 
-        user = baker.make(User)
-        operator_instance: Operator = Operator(
-            cra_business_number=444444444,
-            bc_corporate_registry_number="aaa1111111",
-            business_structure=BusinessStructure.objects.first(),
-            status=Operator.Statuses.PENDING,
-        )
-        payload = UserOperatorOperatorIn(
-            legal_name="Example Legal Name",
-            trade_name="Example Trade Name",
-            cra_business_number=123456789,
-            bc_corporate_registry_number="aaa1111111",
-            business_structure='BC Corporation',
-            physical_street_address="Example Physical Street Address",
-            physical_municipality="Example Physical Municipality",
-            physical_province="AB",
-            physical_postal_code="H0H 0H0",
-            mailing_street_address="Example Mailing Street Address",
-            mailing_municipality="Example Mailing Municipality",
-            mailing_province="BC",
-            mailing_postal_code="H0H 0H0",
-            mailing_address_same_as_physical=False,
-            operator_has_parent_operators=True,
-            parent_operators_array=[],
-        )
-        # need to set this outside of UserOperatorOperatorIn because otherwise the two schemas interfere with each other and one expects business_structure to be a str while the other expects BusinessStructure
-        payload.parent_operators_array = [
-            ParentOperatorIn(
-                po_legal_name="Example Parent Legal Name",
-                po_trade_name="Example Parent Trade Name",
-                po_cra_business_number=987654321,
-                po_bc_corporate_registry_number="bbb2222222",
-                po_business_structure='BC Corporation',
-                po_physical_street_address="Example Parent Physical Street Address",
-                po_physical_municipality="Example Parent Physical Municipality",
-                po_physical_province="BC",
-                po_physical_postal_code="H0H 0H0",
-                po_mailing_address_same_as_physical=False,
-                mailing_street_address="Example Parent Mailing Street Address",
-                po_mailing_municipality="Example Parent Mailing Municipality",
-                po_mailing_province="ON",
-                po_mailing_postal_code="H0H 0H0",
-                operator_index=1,
-            )
-        ]
+        assert content_file.name is None
+        assert content_file.read() == b"PDF Content"
 
-        UserOperatorService.save_operator(payload, operator_instance, user.user_guid)
-        assert len(Operator.objects.all()) == 1
-        assert Operator.objects.first().legal_name == "Example Legal Name"
-        assert len(ParentOperator.objects.all()) == 1
-        assert ParentOperator.objects.first().legal_name == "Example Parent Legal Name"
-        assert len(Address.objects.all()) == 4
+    @staticmethod
+    def test_data_url_to_file_invalid_base64():
+        data_url = "data:application/pdf;name=test.pdf;base64,invalidbase64data"
+
+        with pytest.raises(base64.binascii.Error):
+            data_url_to_file(data_url)
 
 
 class TestFileHashComparison(TestCase):
