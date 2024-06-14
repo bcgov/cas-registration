@@ -6,7 +6,7 @@ from django.db import migrations, models
 
 def init_gas_type_data(apps, schema_monitor):
     '''
-    Add initial data to erc.gastype
+    Add initial data to erc.gas_type
     '''
     GasType = apps.get_model('reporting', 'GasType')
     GasType.objects.bulk_create(
@@ -38,23 +38,23 @@ def init_methodology_data(apps, schema_monitor):
     '''
     Add initial data to erc.methodology
     '''
-    GasType = apps.get_model('reporting', 'Methodology')
-    GasType.objects.bulk_create(
+    Methodology = apps.get_model('reporting', 'Methodology')
+    Methodology.objects.bulk_create(
         [
-            GasType(name='Default HHV/Default EF'),
-            GasType(name='Default EF'),
-            GasType(name='Measured HHV/Default EF'),
-            GasType(name='Measured Steam/Default EF'),
-            GasType(name='Measured CC'),
-            GasType(name='Measured Steam/Measured EF'),
-            GasType(name='Alternative Parameter Measurement'),
-            GasType(name='Replacement Methodology'),
-            GasType(name='Anode Consumption'),
-            GasType(name='Slope method'),
-            GasType(name='Overvoltage method'),
-            GasType(name='C2F6 anode effects'),
-            GasType(name='Inventory'),
-            GasType(name='Input/output'),
+            Methodology(name='Default HHV/Default EF'),
+            Methodology(name='Default EF'),
+            Methodology(name='Measured HHV/Default EF'),
+            Methodology(name='Measured Steam/Default EF'),
+            Methodology(name='Measured CC'),
+            Methodology(name='Measured Steam/Measured EF'),
+            Methodology(name='Alternative Parameter Measurement'),
+            Methodology(name='Replacement Methodology'),
+            Methodology(name='Anode Consumption'),
+            Methodology(name='Slope method'),
+            Methodology(name='Overvoltage method'),
+            Methodology(name='C2F6 anode effects'),
+            Methodology(name='Inventory'),
+            Methodology(name='Input/output'),
         ]
     )
 
@@ -63,8 +63,8 @@ def reverse_init_methodology_data(apps, schema_monitor):
     '''
     Remove initial data from erc.methodology
     '''
-    GasType = apps.get_model('reporting', 'Methodology')
-    GasType.objects.filter(
+    Methodology = apps.get_model('reporting', 'Methodology')
+    Methodology.objects.filter(
         name__in=[
             'Default HHV/Default EF'
             'Default EF'
