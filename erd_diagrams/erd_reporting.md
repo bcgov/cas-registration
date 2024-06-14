@@ -7,6 +7,8 @@ Report {
     CharField title
     TextField description
     DateTimeField created_at
+    ForeignKey operation
+    IntegerField reporting_year
 }
 SourceType {
     BigAutoField id
@@ -33,6 +35,7 @@ ReportFacility {
     ManyToManyField activities
     ManyToManyField products
 }
+<<<<<<< HEAD
 GasType {
     BigAutoField id
     CharField name
@@ -76,6 +79,9 @@ ActivitySourceTypeBaseSchema {
     ForeignKey valid_from
     ForeignKey valid_to
 }
+=======
+Report }|--|| Operation : operation
+>>>>>>> 89c4c905 (chore: updating report model with operation and year info)
 ReportOperation ||--|| Report : report
 ReportOperation }|--|{ ReportingActivity : activities
 ReportFacility }|--|| Report : report
