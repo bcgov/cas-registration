@@ -4,7 +4,7 @@ import { Button } from "@mui/material";
 import { Suspense } from "react";
 import Loading from "@bciers/components/loading/SkeletonGrid";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "../../api/auth/[...nextauth]/route";
 import { OperationsSearchParams } from "@/app/components/operations/types";
 import Note, {
   registrationRequestNote,
