@@ -2,8 +2,6 @@ from common.models import BaseModel
 from django.db import models
 from registration.models import ReportingActivity
 from reporting.models import SourceType, BaseSchema, Configuration
-from django.db.models import Q
-
 import typing
 
 class ActivitySourceTypeBaseSchema(BaseModel):
