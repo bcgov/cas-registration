@@ -4,7 +4,7 @@ The app directory must include a root app/layout.js.
 The root layout must define <html> and <body> tags.
 You should not manually add <head> tags such as <title> and <meta> to root layouts. Instead, you should use the Metadata API which automatically handles advanced requirements such as streaming and de-duplicating <head> elements.
 */
- 
+
 // eslint-disable-next-line import/extensions
 import "@bciers/styles/globals.css";
 import SessionProvider from "@bciers/components/auth/SessionProvider";
@@ -20,7 +20,7 @@ import ThemeProvider from "@mui/material/styles/ThemeProvider";
 import { theme } from "@bciers/components";
 import { NextAppDirEmotionCacheProvider } from "@bciers/components";
 import CssBaseline from "@mui/material/CssBaseline";
- 
+
 export const metadata: Metadata = {
   title: "CAS OBPS REGISTRATION",
   description:
@@ -29,12 +29,12 @@ export const metadata: Metadata = {
     icon: "/img/favicon.ico",
   },
 };
- 
+
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
 };
- 
+
 export default async function RootLayout({
   children,
 }: {
@@ -43,24 +43,24 @@ export default async function RootLayout({
   //🪝 Wrap the returned auth session in the "use client" version of NextAuth SessionProvider so to expose the useSession() hook in client components
   // Session properties come from client/app/api/auth/[...nextauth]/route.ts
   const session = await getServerSession(authOptions);
- 
+
   return (
-<html lang="en">
+    <html lang="en">
       {
         //👇️ Used to mark the root element where Next.js will mount the client-side React application
       }
-<head>
-<PublicEnvScript />
-</head>
-<body id="__next">
+      <head>
+        <PublicEnvScript />
+      </head>
+      <body id="__next">
         {/* 👇️  NextAuth SessionProvider available to client children via useSession */}
-<SessionProvider session={session}>
+        <SessionProvider session={session}>
           {
             //👇️ provide MUI custom theme to the components within the layout
             // ThemeRegistry component does not properly import, so we import the individual pieces separately.
           }
-<NextAppDirEmotionCacheProvider options={{ key: "mui" }}>
-<ThemeProvider theme={theme}>
+          <NextAppDirEmotionCacheProvider options={{ key: "mui" }}>
+            <ThemeProvider theme={theme}>
               {/*
             MUI Box component is a versatile and essential building block in Material-UI v5.
             It serves as a wrapper element that helps structure and organize the layout of your application.
@@ -68,8 +68,8 @@ export default async function RootLayout({
             utilizing Box component's sx prop to create a responsive layout...
             You can use properties like display, flexDirection, alignItems, justifyContent and more to control the arrangement and alignment of elements within a flex container
             */}
-<CssBaseline />
-<Box
+              <CssBaseline />
+              <Box
                 sx={{
                   display: "flex",
                   minHeight: "100vh",
@@ -80,16 +80,16 @@ export default async function RootLayout({
                   maxWidth: "1536px",
                   padding: "0 16px",
                 }}
->
-<Header />
+              >
+                <Header />
                 {/* Content goes here */}
                 {children}
-<Footer />
-</Box>
-</ThemeProvider>
-</NextAppDirEmotionCacheProvider>
-</SessionProvider>
-</body>
-</html>
+                <Footer />
+              </Box>
+            </ThemeProvider>
+          </NextAppDirEmotionCacheProvider>
+        </SessionProvider>
+      </body>
+    </html>
   );
 }

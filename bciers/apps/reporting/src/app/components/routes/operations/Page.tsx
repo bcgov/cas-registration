@@ -3,7 +3,9 @@ import Link from "next/link";
 import { Button } from "@mui/material";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import Note, { registrationRequestNote } from "@bciers/components/datagrid/Note";
+import Note, {
+  registrationRequestNote,
+} from "@bciers/components/datagrid/Note";
 import Operations from "@reporting/src/app/components/operations/Operations";
 
 export default async function OperationsPage({}) {

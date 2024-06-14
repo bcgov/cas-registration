@@ -1,7 +1,7 @@
 import { GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
- 
+
 export const OPERATOR_COLUMN_INDEX = 1;
- 
+
 const operationColumns = (
   ActionCell: (params: GridRenderCellParams) => JSX.Element,
 ) => {
@@ -22,8 +22,8 @@ const operationColumns = (
       flex: 0,
     },
   ];
- 
+
   return columns;
 };
- 
+
 export default operationColumns;
