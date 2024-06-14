@@ -47,11 +47,11 @@ class ActivitySourceTypeBaseSchemaTest(BaseTestCase):
             assert exc.match(r"^This record will result in duplicate base schemas")
     def testValidInsert(self):
         config = configuration_baker({'slug':'2026', 'valid_from': '2026-01-01', 'valid_to': '2026-12-31'})
-        invalid_record = ActivitySourceTypeBaseSchema(
+        valid_record = ActivitySourceTypeBaseSchema(
             reporting_activity=self.test_object.reporting_activity,
             source_type=self.test_object.source_type,
             base_schema=base_schema_baker(),
             valid_from=config,
             valid_to=config,
         )
-        invalid_record.save()
+        valid_record.save()
