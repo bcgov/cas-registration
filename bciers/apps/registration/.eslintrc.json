@@ -14,6 +14,11 @@
           "error",
           "apps/registration/pages"
         ]
+      },
+      "parser": "@typescript-eslint/parser",
+      "parserOptions": {
+        "project": ["apps/registration/tsconfig(.*)?.json"],
+        "tsConfigRootDir": "./"
       }
     },
     {

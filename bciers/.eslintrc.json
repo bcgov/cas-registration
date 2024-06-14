@@ -9,6 +9,14 @@
     {
       "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
       "rules": {
+        "@typescript-eslint/quotes": [
+          "error",
+          "double",
+          {
+            "avoidEscape": true,
+            "allowTemplateLiterals": true
+          }
+        ],
         "@nx/enforce-module-boundaries": [
           "warn",
           {
