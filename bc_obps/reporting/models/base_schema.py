@@ -11,7 +11,6 @@ class BaseSchema(BaseModel):
         db_comment="Name of the base schema. Should describe what form it is used to generate and when the base schema took effect. For example: general_stationary_combustion_2024",
     )
     schema = models.JSONField(
-        max_length=100000,
         db_comment="The base json schema for a form. This schema defines the static set of fields that should be shown on a form, static meaning that they do not dynamically change based on user input.",
     )
 
