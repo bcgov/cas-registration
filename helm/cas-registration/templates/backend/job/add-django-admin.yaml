@@ -19,6 +19,31 @@ spec:
         - name: {{ template "cas-registration.fullname" . }}-add-django-admin
           image: "{{ .Values.backend.image.repository }}:{{ .Values.defaultImageTag | default .Values.backend.image.tag }}"
           env:
+            - name: PGUSER
+              valueFrom:
+                secretKeyRef:
+                  key: user
+                  name: cas-obps-postgres-pguser-postgres
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: password
+                  name: cas-obps-postgres-pguser-postgres
+            - name: PGDATABASE
+              valueFrom:
+                secretKeyRef:
+                  key: dbname
+                  name: cas-obps-postgres-pguser-postgres
+            - name: PGPORT
+              valueFrom:
+                secretKeyRef:
+                  key: port
+                  name: cas-obps-postgres-pguser-postgres
+            - name: PGHOST
+              valueFrom:
+                secretKeyRef:
+                  key: host
+                  name: cas-obps-postgres-pguser-postgres
             - name: DJANGO_SUPERUSER_USERNAME
               valueFrom:
                 secretKeyRef:
