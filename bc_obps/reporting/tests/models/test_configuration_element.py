@@ -10,14 +10,14 @@ import pytest
 class ConfigurationElementTest(BaseTestCase):
     @classmethod
     def setUpTestData(cls):
-        config = configuration_baker({'slug':'2024', 'valid_from': '2024-01-01', 'valid_to': '2024-12-31'})
+        config = configuration_baker({'slug': '2024', 'valid_from': '2024-01-01', 'valid_to': '2024-12-31'})
         cls.test_object = ConfigurationElement.objects.create(
             reporting_activity=ReportingActivity.objects.get(pk=1),
             source_type=SourceType.objects.get(pk=1),
             gas_type=GasType.objects.get(pk=1),
             methodology=Methodology.objects.get(pk=1),
             valid_from=config,
-            valid_to=config
+            valid_to=config,
         )
         cls.field_data = [
             ("id", "ID", None, None),
@@ -29,6 +29,7 @@ class ConfigurationElementTest(BaseTestCase):
             ("valid_to", "valid to", None, None),
             ("reporting_fields", "reporting fields", None, None),
         ]
+
     def testDuplicateConfigElementForDateRange(self):
         invalid_record = ConfigurationElement(
             reporting_activity=self.test_object.reporting_activity,
@@ -42,8 +43,9 @@ class ConfigurationElementTest(BaseTestCase):
         with pytest.raises(Exception) as exc:
             invalid_record.save()
         assert exc.match(r"^This record will result in duplicate configurations")
+
     def testValidInsert(self):
-        config = configuration_baker({'slug':'2026', 'valid_from': '2026-01-01', 'valid_to': '2026-12-31'})
+        config = configuration_baker({'slug': '2026', 'valid_from': '2026-01-01', 'valid_to': '2026-12-31'})
         valid_record = ConfigurationElement(
             reporting_activity=self.test_object.reporting_activity,
             source_type=self.test_object.source_type,
