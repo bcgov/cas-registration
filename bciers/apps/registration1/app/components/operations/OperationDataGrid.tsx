@@ -32,7 +32,7 @@ const OperationSearchCell = ({
   return RenderCell;
 };
 
-const ReportingOperationDataGrid = ({
+const OperationDataGrid = ({
   initialData,
   isOperatorColumn = false,
 }: {
@@ -77,4 +77,4 @@ const ReportingOperationDataGrid = ({
   );
 };
 
-export default ReportingOperationDataGrid;
+export default OperationDataGrid;
