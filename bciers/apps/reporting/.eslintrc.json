@@ -2,28 +2,6 @@
   "extends": ["next", "../../.eslintrc.json", "prettier"],
   "ignorePatterns": ["!**/*", ".next/**/*"],
   "rules": {
-    "import/no-extraneous-dependencies": [
-      "error",
-      {
-        "devDependencies": [
-          "**/test.{ts,tsx,js,jsx}",
-          "**/test-*.{ts,tsx,js,jsx}",
-          "**/*{.,_}{test,spec}.{ts,tsx,js,jsx}",
-          "**/e2e/**/*.{ts,tsx,js,jsx}",
-          "**/playwright.config.{ts,js}",
-          "**/tailwind.config.{ts,js}",
-          "**/next.config.{ts,js}",
-          "**/.happo.{ts,js}"
-        ]
-      }
-    ],
-    "import/extensions": [
-      "error",
-      "never",
-      {
-        "json": "always"
-      }
-    ],
     "no-console": 1,
     "no-var": 2,
     "@next/next/no-html-link-for-pages": ["error", "apps/registration/app"]
