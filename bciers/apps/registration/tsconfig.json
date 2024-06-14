@@ -25,5 +25,5 @@
     ".next/types/**/*.ts",
     "../../dist/registration/.next/types/**/*.ts"
   ],
-  "exclude": ["node_modules", "**/*.spec.ts", "**/*.test.ts"]
+  "exclude": ["node_modules"]
 }
