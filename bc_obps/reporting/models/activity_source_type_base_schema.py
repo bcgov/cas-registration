@@ -4,6 +4,7 @@ from registration.models import ReportingActivity
 from reporting.models import SourceType, BaseSchema, Configuration
 import typing
 
+
 class ActivitySourceTypeBaseSchema(BaseModel):
     """Intersection table for Activity-SourceType-BaseSchema"""
 
@@ -30,13 +31,16 @@ class ActivitySourceTypeBaseSchema(BaseModel):
         Override the save method to validate if there are overlapping records.
         """
         all_ranges = ActivitySourceTypeBaseSchema.objects.select_related('valid_from', 'valid_to').filter(
-          reporting_activity=self.reporting_activity,
-          source_type=self.source_type)
+            reporting_activity=self.reporting_activity, source_type=self.source_type
+        )
         for y in all_ranges:
             if (
-                (self.valid_from.valid_from >= y.valid_from.valid_from) and (self.valid_from.valid_from <= y.valid_to.valid_to)
-                or
-                (self.valid_to.valid_to <= y.valid_to.valid_to) and (self.valid_to.valid_to >= y.valid_from.valid_from)
+                (self.valid_from.valid_from >= y.valid_from.valid_from)
+                and (self.valid_from.valid_from <= y.valid_to.valid_to)
+                or (self.valid_to.valid_to <= y.valid_to.valid_to)
+                and (self.valid_to.valid_to >= y.valid_from.valid_from)
             ):
-                raise Exception(f'This record will result in duplicate base schemas being returned for the date range {self.valid_from.valid_from} - {self.valid_to.valid_to} as it overlaps with a current record or records')
+                raise Exception(
+                    f'This record will result in duplicate base schemas being returned for the date range {self.valid_from.valid_from} - {self.valid_to.valid_to} as it overlaps with a current record or records'
+                )
         super().save(*args, **kwargs)
