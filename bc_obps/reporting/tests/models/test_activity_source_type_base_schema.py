@@ -8,7 +8,6 @@ from reporting.tests.utils.bakers import (
 import pytest
 
 
-
 class ActivitySourceTypeBaseSchemaTest(BaseTestCase):
     @classmethod
     def setUpTestData(cls):
