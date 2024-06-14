@@ -9,7 +9,7 @@ from django.contrib.postgres.fields import (
 
 
 class TsTzRange(models.Func):
-    function = "TSTZRANGE"
+    function = "DATERANGE"
     output_field = DateTimeRangeField()
 
 
@@ -25,7 +25,7 @@ class Configuration(BaseModel):
         db_table = 'erc"."configuration'
         constraints = [
             ExclusionConstraint(
-                name="exclude_overlapping_asb_records_by_date_range",
+                name="exclude_overlapping_configuration_records_by_date_range",
                 expressions=[(TsTzRange("valid_from", "valid_to", RangeBoundary()), RangeOperators.OVERLAPS)],
             ),
         ]
