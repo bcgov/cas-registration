@@ -14,12 +14,18 @@ def report_baker() -> Report:
     return baker.make(Report)
 
 
-def reporting_activity_baker() -> ReportingActivity:
-    return baker.make(ReportingActivity)
+def reporting_activity_baker(custom_properties=None) -> ReportingActivity:
+    properties = {}
+    if custom_properties:
+        properties.update(custom_properties)
+    return baker.make(ReportingActivity, **properties)
 
 
-def source_type_baker() -> SourceType:
-    return baker.make(SourceType)
+def source_type_baker(custom_properties=None) -> SourceType:
+    properties = {}
+    if custom_properties:
+        properties.update(custom_properties)
+    return baker.make(SourceType, **properties)
 
 
 def gas_type_baker() -> GasType:
@@ -38,5 +44,8 @@ def configuration_element_baker() -> ConfigurationElement:
     return baker.make(ConfigurationElement)
 
 
-def configuration_baker() -> configuration_element:
-    return baker.make(Configuration)
+def configuration_baker(custom_properties=None) -> configuration_element:
+    properties = {}
+    if custom_properties:
+        properties.update(custom_properties)
+    return baker.make(Configuration, **properties)

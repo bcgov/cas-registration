@@ -1,9 +1,10 @@
-from registration.models import BaseModel
+from common.models import BaseModel
 from django.db import models
 from registration.models import ReportingActivity
 from reporting.models import SourceType, BaseSchema, Configuration
-from django.db.models.constraints import UniqueConstraint
+from django.db.models import Q
 
+import typing
 
 class ActivitySourceTypeBaseSchema(BaseModel):
     """Intersection table for Activity-SourceType-BaseSchema"""
@@ -24,15 +25,3 @@ class ActivitySourceTypeBaseSchema(BaseModel):
     class Meta:
         db_table_comment = "Intersection table that assigns a base_schema as valid for a period of time given an activity-sourceType pair"
         db_table = 'erc"."activity_source_type_base_schema'
-        constraints = [
-            UniqueConstraint(
-                fields=[
-                    'reporting_activity',
-                    'source_type',
-                    'base_schema',
-                    'valid_from',
-                    'valid_to',
-                ],
-                name='unique_per_acivity_source_type_base_schema',
-            )
-        ]
