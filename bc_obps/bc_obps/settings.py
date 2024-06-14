@@ -189,3 +189,7 @@ if SENTRY_ENVIRONMENT == 'prod':
         # Specify environment (usually production or staging)
         environment='production',
     )
+
+
+# DJANGO-NINJA SETTINGS
+NINJA_PAGINATION_PER_PAGE = 20
