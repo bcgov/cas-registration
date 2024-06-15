@@ -7,19 +7,21 @@ You should not manually add <head> tags such as <title> and <meta> to root layou
 
 // eslint-disable-next-line import/extensions
 import "@bciers/styles/globals.css";
-import SessionProvider from "@bciers/components/auth/SessionProvider";
+import SessionProvider from "@/dashboard/auth/SessionProvider";
 import type { Metadata, Viewport } from "next";
-import Footer from "@bciers/components/layout/Footer";
-import Header from "@bciers/components/layout/Header";
 // 🏷 import {named} can be significantly slower than import default
-import Box from "@mui/material/Box";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { auth } from "@/dashboard/auth";
 import { PublicEnvScript } from "next-runtime-env";
 import ThemeProvider from "@mui/material/styles/ThemeProvider";
 import { theme } from "@bciers/components";
 import { NextAppDirEmotionCacheProvider } from "@bciers/components";
 import CssBaseline from "@mui/material/CssBaseline";
+
+import Box from "@mui/material/Box";
+import { Footer } from "@bciers/components";
+import { Header } from "@bciers/components";
+import { Bread } from "@bciers/components";
+import { Main } from "@bciers/components/server";
 
 export const metadata: Metadata = {
   title: "CAS OBPS REGISTRATION",
@@ -42,7 +44,7 @@ export default async function RootLayout({
 }) {
   //🪝 Wrap the returned auth session in the "use client" version of NextAuth SessionProvider so to expose the useSession() hook in client components
   // Session properties come from client/app/api/auth/[...nextauth]/route.ts
-  const session = await getServerSession(authOptions);
+  const session = await auth();
 
   return (
     <html lang="en">
@@ -53,8 +55,11 @@ export default async function RootLayout({
         <PublicEnvScript />
       </head>
       <body id="__next">
-        {/* 👇️  NextAuth SessionProvider available to client children via useSession */}
-        <SessionProvider session={session}>
+        <SessionProvider
+          // 👇 Notice that the basePath to the auth management site
+          basePath={`${process.env.NEXTAUTH_URL}/api/auth`}
+          session={session}
+        >
           {
             //👇️ provide MUI custom theme to the components within the layout
             // ThemeRegistry component does not properly import, so we import the individual pieces separately.
@@ -82,8 +87,11 @@ export default async function RootLayout({
                 }}
               >
                 <Header />
-                {/* Content goes here */}
-                {children}
+                <Bread
+                  separator={<span aria-hidden="true"> &gt; </span>}
+                  capitalizeLinks
+                />
+                <Main>{children}</Main>
                 <Footer />
               </Box>
             </ThemeProvider>

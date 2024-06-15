@@ -1,0 +1,20 @@
+{
+  "pages": {
+    "/bceidbusiness/industry_user_admin/dashboard/select-operator/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/bceidbusiness/industry_user_admin/dashboard/select-operator/page.js"
+    ],
+    "/layout": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/layout.css",
+      "static/chunks/app/layout.js"
+    ],
+    "/bceidbusiness/industry_user_admin/dashboard/select-operator/(request-access)/user-operator/[id]/[formSection]/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/bceidbusiness/industry_user_admin/dashboard/select-operator/(request-access)/user-operator/[id]/[formSection]/page.js"
+    ]
+  }
+}

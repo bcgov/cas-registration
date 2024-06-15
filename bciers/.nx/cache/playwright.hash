@@ -1,0 +1,2092 @@
+{
+  "6402034993801310726": {
+    "targets": {
+      "e2e": {
+        "command": "playwright test",
+        "options": {
+          "cwd": "{projectRoot}"
+        },
+        "metadata": {
+          "technologies": [
+            "playwright"
+          ],
+          "description": "Runs Playwright Tests"
+        },
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{workspaceRoot}/dist/.playwright/apps/dashboard-e2e/playwright-report",
+          "{workspaceRoot}/dist/.playwright/apps/dashboard-e2e/test-output"
+        ]
+      },
+      "e2e-ci--src/example.spec.ts": {
+        "command": "playwright test src/example.spec.ts",
+        "options": {
+          "cwd": "{projectRoot}"
+        },
+        "metadata": {
+          "technologies": [
+            "playwright"
+          ],
+          "description": "Runs Playwright Tests in src/example.spec.ts in CI"
+        },
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{workspaceRoot}/dist/.playwright/apps/dashboard-e2e/playwright-report",
+          "{workspaceRoot}/dist/.playwright/apps/dashboard-e2e/test-output"
+        ]
+      },
+      "e2e-ci": {
+        "executor": "nx:noop",
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{workspaceRoot}/dist/.playwright/apps/dashboard-e2e/playwright-report",
+          "{workspaceRoot}/dist/.playwright/apps/dashboard-e2e/test-output"
+        ],
+        "dependsOn": [
+          {
+            "target": "e2e-ci--src/example.spec.ts",
+            "projects": "self",
+            "params": "forward"
+          }
+        ],
+        "metadata": {
+          "technologies": [
+            "playwright"
+          ],
+          "description": "Runs Playwright Tests in CI"
+        }
+      }
+    },
+    "metadata": {
+      "targetGroups": {
+        "E2E (CI)": [
+          "e2e-ci--src/example.spec.ts",
+          "e2e-ci"
+        ]
+      }
+    }
+  },
+  "12247867075505975283": {
+    "targets": {
+      "e2e": {
+        "command": "playwright test",
+        "options": {
+          "cwd": "{projectRoot}"
+        },
+        "metadata": {
+          "technologies": [
+            "playwright"
+          ],
+          "description": "Runs Playwright Tests"
+        },
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{projectRoot}/playwright-report",
+          "{projectRoot}/test-results"
+        ]
+      },
+      "e2e-ci--e2e/pages/authenticated/dashboard/page.spec.ts": {
+        "command": "playwright test e2e/pages/authenticated/dashboard/page.spec.ts",
+        "options": {
+          "cwd": "{projectRoot}"
+        },
+        "metadata": {
+          "technologies": [
+            "playwright"
+          ],
+          "description": "Runs Playwright Tests in e2e/pages/authenticated/dashboard/page.spec.ts in CI"
+        },
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{projectRoot}/playwright-report",
+          "{projectRoot}/test-results"
+        ]
+      },
+      "e2e-ci--e2e/pages/authenticated/dashboard/profile/page.spec.ts": {
+        "command": "playwright test e2e/pages/authenticated/dashboard/profile/page.spec.ts",
+        "options": {
+          "cwd": "{projectRoot}"
+        },
+        "metadata": {
+          "technologies": [
+            "playwright"
+          ],
+          "description": "Runs Playwright Tests in e2e/pages/authenticated/dashboard/profile/page.spec.ts in CI"
+        },
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{projectRoot}/playwright-report",
+          "{projectRoot}/test-results"
+        ]
+      },
+      "e2e-ci--e2e/pages/authenticated/routes/page.spec.ts": {
+        "command": "playwright test e2e/pages/authenticated/routes/page.spec.ts",
+        "options": {
+          "cwd": "{projectRoot}"
+        },
+        "metadata": {
+          "technologies": [
+            "playwright"
+          ],
+          "description": "Runs Playwright Tests in e2e/pages/authenticated/routes/page.spec.ts in CI"
+        },
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{projectRoot}/playwright-report",
+          "{projectRoot}/test-results"
+        ]
+      },
+      "e2e-ci--e2e/pages/onboarding/home/page.spec.ts": {
+        "command": "playwright test e2e/pages/onboarding/home/page.spec.ts",
+        "options": {
+          "cwd": "{projectRoot}"
+        },
+        "metadata": {
+          "technologies": [
+            "playwright"
+          ],
+          "description": "Runs Playwright Tests in e2e/pages/onboarding/home/page.spec.ts in CI"
+        },
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{projectRoot}/playwright-report",
+          "{projectRoot}/test-results"
+        ]
+      },
+      "e2e-ci--e2e/workflows/bceidbusiness/industry_user.spec.ts": {
+        "command": "playwright test e2e/workflows/bceidbusiness/industry_user.spec.ts",
+        "options": {
+          "cwd": "{projectRoot}"
+        },
+        "metadata": {
+          "technologies": [
+            "playwright"
+          ],
+          "description": "Runs Playwright Tests in e2e/workflows/bceidbusiness/industry_user.spec.ts in CI"
+        },
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{projectRoot}/playwright-report",
+          "{projectRoot}/test-results"
+        ]
+      },
+      "e2e-ci--e2e/workflows/bceidbusiness/industry_user_admin.spec.ts": {
+        "command": "playwright test e2e/workflows/bceidbusiness/industry_user_admin.spec.ts",
+        "options": {
+          "cwd": "{projectRoot}"
+        },
+        "metadata": {
+          "technologies": [
+            "playwright"
+          ],
+          "description": "Runs Playwright Tests in e2e/workflows/bceidbusiness/industry_user_admin.spec.ts in CI"
+        },
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{projectRoot}/playwright-report",
+          "{projectRoot}/test-results"
+        ]
+      },
+      "e2e-ci--e2e/workflows/bceidbusiness/new_user.spec.ts": {
+        "command": "playwright test e2e/workflows/bceidbusiness/new_user.spec.ts",
+        "options": {
+          "cwd": "{projectRoot}"
+        },
+        "metadata": {
+          "technologies": [
+            "playwright"
+          ],
+          "description": "Runs Playwright Tests in e2e/workflows/bceidbusiness/new_user.spec.ts in CI"
+        },
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{projectRoot}/playwright-report",
+          "{projectRoot}/test-results"
+        ]
+      },
+      "e2e-ci--e2e/workflows/idir/cas_admin.spec.ts": {
+        "command": "playwright test e2e/workflows/idir/cas_admin.spec.ts",
+        "options": {
+          "cwd": "{projectRoot}"
+        },
+        "metadata": {
+          "technologies": [
+            "playwright"
+          ],
+          "description": "Runs Playwright Tests in e2e/workflows/idir/cas_admin.spec.ts in CI"
+        },
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{projectRoot}/playwright-report",
+          "{projectRoot}/test-results"
+        ]
+      },
+      "e2e-ci--e2e/workflows/idir/cas_analyst.spec.ts": {
+        "command": "playwright test e2e/workflows/idir/cas_analyst.spec.ts",
+        "options": {
+          "cwd": "{projectRoot}"
+        },
+        "metadata": {
+          "technologies": [
+            "playwright"
+          ],
+          "description": "Runs Playwright Tests in e2e/workflows/idir/cas_analyst.spec.ts in CI"
+        },
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{projectRoot}/playwright-report",
+          "{projectRoot}/test-results"
+        ]
+      },
+      "e2e-ci--e2e/workflows/idir/cas_pending.spec.ts": {
+        "command": "playwright test e2e/workflows/idir/cas_pending.spec.ts",
+        "options": {
+          "cwd": "{projectRoot}"
+        },
+        "metadata": {
+          "technologies": [
+            "playwright"
+          ],
+          "description": "Runs Playwright Tests in e2e/workflows/idir/cas_pending.spec.ts in CI"
+        },
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{projectRoot}/playwright-report",
+          "{projectRoot}/test-results"
+        ]
+      },
+      "e2e-ci": {
+        "executor": "nx:noop",
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{projectRoot}/playwright-report",
+          "{projectRoot}/test-results"
+        ],
+        "dependsOn": [
+          {
+            "target": "e2e-ci--e2e/pages/authenticated/dashboard/page.spec.ts",
+            "projects": "self",
+            "params": "forward"
+          },
+          {
+            "target": "e2e-ci--e2e/pages/authenticated/dashboard/profile/page.spec.ts",
+            "projects": "self",
+            "params": "forward"
+          },
+          {
+            "target": "e2e-ci--e2e/pages/authenticated/routes/page.spec.ts",
+            "projects": "self",
+            "params": "forward"
+          },
+          {
+            "target": "e2e-ci--e2e/pages/onboarding/home/page.spec.ts",
+            "projects": "self",
+            "params": "forward"
+          },
+          {
+            "target": "e2e-ci--e2e/workflows/bceidbusiness/industry_user.spec.ts",
+            "projects": "self",
+            "params": "forward"
+          },
+          {
+            "target": "e2e-ci--e2e/workflows/bceidbusiness/industry_user_admin.spec.ts",
+            "projects": "self",
+            "params": "forward"
+          },
+          {
+            "target": "e2e-ci--e2e/workflows/bceidbusiness/new_user.spec.ts",
+            "projects": "self",
+            "params": "forward"
+          },
+          {
+            "target": "e2e-ci--e2e/workflows/idir/cas_admin.spec.ts",
+            "projects": "self",
+            "params": "forward"
+          },
+          {
+            "target": "e2e-ci--e2e/workflows/idir/cas_analyst.spec.ts",
+            "projects": "self",
+            "params": "forward"
+          },
+          {
+            "target": "e2e-ci--e2e/workflows/idir/cas_pending.spec.ts",
+            "projects": "self",
+            "params": "forward"
+          }
+        ],
+        "metadata": {
+          "technologies": [
+            "playwright"
+          ],
+          "description": "Runs Playwright Tests in CI"
+        }
+      }
+    },
+    "metadata": {
+      "targetGroups": {
+        "E2E (CI)": [
+          "e2e-ci--e2e/pages/authenticated/dashboard/page.spec.ts",
+          "e2e-ci--e2e/pages/authenticated/dashboard/profile/page.spec.ts",
+          "e2e-ci--e2e/pages/authenticated/routes/page.spec.ts",
+          "e2e-ci--e2e/pages/onboarding/home/page.spec.ts",
+          "e2e-ci--e2e/workflows/bceidbusiness/industry_user.spec.ts",
+          "e2e-ci--e2e/workflows/bceidbusiness/industry_user_admin.spec.ts",
+          "e2e-ci--e2e/workflows/bceidbusiness/new_user.spec.ts",
+          "e2e-ci--e2e/workflows/idir/cas_admin.spec.ts",
+          "e2e-ci--e2e/workflows/idir/cas_analyst.spec.ts",
+          "e2e-ci--e2e/workflows/idir/cas_pending.spec.ts",
+          "e2e-ci"
+        ]
+      }
+    }
+  },
+  "7547748388037497057": {
+    "targets": {
+      "e2e": {
+        "command": "playwright test",
+        "options": {
+          "cwd": "{projectRoot}"
+        },
+        "metadata": {
+          "technologies": [
+            "playwright"
+          ],
+          "description": "Runs Playwright Tests"
+        },
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{projectRoot}/playwright-report",
+          "{projectRoot}/test-results"
+        ]
+      },
+      "e2e-ci--e2e/pages/authenticated/dashboard/page.spec.ts": {
+        "command": "playwright test e2e/pages/authenticated/dashboard/page.spec.ts",
+        "options": {
+          "cwd": "{projectRoot}"
+        },
+        "metadata": {
+          "technologies": [
+            "playwright"
+          ],
+          "description": "Runs Playwright Tests in e2e/pages/authenticated/dashboard/page.spec.ts in CI"
+        },
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{projectRoot}/playwright-report",
+          "{projectRoot}/test-results"
+        ]
+      },
+      "e2e-ci--e2e/pages/authenticated/dashboard/profile/page.spec.ts": {
+        "command": "playwright test e2e/pages/authenticated/dashboard/profile/page.spec.ts",
+        "options": {
+          "cwd": "{projectRoot}"
+        },
+        "metadata": {
+          "technologies": [
+            "playwright"
+          ],
+          "description": "Runs Playwright Tests in e2e/pages/authenticated/dashboard/profile/page.spec.ts in CI"
+        },
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{projectRoot}/playwright-report",
+          "{projectRoot}/test-results"
+        ]
+      },
+      "e2e-ci--e2e/pages/authenticated/routes/page.spec.ts": {
+        "command": "playwright test e2e/pages/authenticated/routes/page.spec.ts",
+        "options": {
+          "cwd": "{projectRoot}"
+        },
+        "metadata": {
+          "technologies": [
+            "playwright"
+          ],
+          "description": "Runs Playwright Tests in e2e/pages/authenticated/routes/page.spec.ts in CI"
+        },
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{projectRoot}/playwright-report",
+          "{projectRoot}/test-results"
+        ]
+      },
+      "e2e-ci--e2e/pages/onboarding/home/page.spec.ts": {
+        "command": "playwright test e2e/pages/onboarding/home/page.spec.ts",
+        "options": {
+          "cwd": "{projectRoot}"
+        },
+        "metadata": {
+          "technologies": [
+            "playwright"
+          ],
+          "description": "Runs Playwright Tests in e2e/pages/onboarding/home/page.spec.ts in CI"
+        },
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{projectRoot}/playwright-report",
+          "{projectRoot}/test-results"
+        ]
+      },
+      "e2e-ci--e2e/workflows/bceidbusiness/industry_user.spec.ts": {
+        "command": "playwright test e2e/workflows/bceidbusiness/industry_user.spec.ts",
+        "options": {
+          "cwd": "{projectRoot}"
+        },
+        "metadata": {
+          "technologies": [
+            "playwright"
+          ],
+          "description": "Runs Playwright Tests in e2e/workflows/bceidbusiness/industry_user.spec.ts in CI"
+        },
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{projectRoot}/playwright-report",
+          "{projectRoot}/test-results"
+        ]
+      },
+      "e2e-ci--e2e/workflows/bceidbusiness/industry_user_admin.spec.ts": {
+        "command": "playwright test e2e/workflows/bceidbusiness/industry_user_admin.spec.ts",
+        "options": {
+          "cwd": "{projectRoot}"
+        },
+        "metadata": {
+          "technologies": [
+            "playwright"
+          ],
+          "description": "Runs Playwright Tests in e2e/workflows/bceidbusiness/industry_user_admin.spec.ts in CI"
+        },
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{projectRoot}/playwright-report",
+          "{projectRoot}/test-results"
+        ]
+      },
+      "e2e-ci--e2e/workflows/bceidbusiness/new_user.spec.ts": {
+        "command": "playwright test e2e/workflows/bceidbusiness/new_user.spec.ts",
+        "options": {
+          "cwd": "{projectRoot}"
+        },
+        "metadata": {
+          "technologies": [
+            "playwright"
+          ],
+          "description": "Runs Playwright Tests in e2e/workflows/bceidbusiness/new_user.spec.ts in CI"
+        },
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{projectRoot}/playwright-report",
+          "{projectRoot}/test-results"
+        ]
+      },
+      "e2e-ci--e2e/workflows/idir/cas_admin.spec.ts": {
+        "command": "playwright test e2e/workflows/idir/cas_admin.spec.ts",
+        "options": {
+          "cwd": "{projectRoot}"
+        },
+        "metadata": {
+          "technologies": [
+            "playwright"
+          ],
+          "description": "Runs Playwright Tests in e2e/workflows/idir/cas_admin.spec.ts in CI"
+        },
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{projectRoot}/playwright-report",
+          "{projectRoot}/test-results"
+        ]
+      },
+      "e2e-ci--e2e/workflows/idir/cas_analyst.spec.ts": {
+        "command": "playwright test e2e/workflows/idir/cas_analyst.spec.ts",
+        "options": {
+          "cwd": "{projectRoot}"
+        },
+        "metadata": {
+          "technologies": [
+            "playwright"
+          ],
+          "description": "Runs Playwright Tests in e2e/workflows/idir/cas_analyst.spec.ts in CI"
+        },
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{projectRoot}/playwright-report",
+          "{projectRoot}/test-results"
+        ]
+      },
+      "e2e-ci--e2e/workflows/idir/cas_pending.spec.ts": {
+        "command": "playwright test e2e/workflows/idir/cas_pending.spec.ts",
+        "options": {
+          "cwd": "{projectRoot}"
+        },
+        "metadata": {
+          "technologies": [
+            "playwright"
+          ],
+          "description": "Runs Playwright Tests in e2e/workflows/idir/cas_pending.spec.ts in CI"
+        },
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{projectRoot}/playwright-report",
+          "{projectRoot}/test-results"
+        ]
+      },
+      "e2e-ci": {
+        "executor": "nx:noop",
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{projectRoot}/playwright-report",
+          "{projectRoot}/test-results"
+        ],
+        "dependsOn": [
+          {
+            "target": "e2e-ci--e2e/pages/authenticated/dashboard/page.spec.ts",
+            "projects": "self",
+            "params": "forward"
+          },
+          {
+            "target": "e2e-ci--e2e/pages/authenticated/dashboard/profile/page.spec.ts",
+            "projects": "self",
+            "params": "forward"
+          },
+          {
+            "target": "e2e-ci--e2e/pages/authenticated/routes/page.spec.ts",
+            "projects": "self",
+            "params": "forward"
+          },
+          {
+            "target": "e2e-ci--e2e/pages/onboarding/home/page.spec.ts",
+            "projects": "self",
+            "params": "forward"
+          },
+          {
+            "target": "e2e-ci--e2e/workflows/bceidbusiness/industry_user.spec.ts",
+            "projects": "self",
+            "params": "forward"
+          },
+          {
+            "target": "e2e-ci--e2e/workflows/bceidbusiness/industry_user_admin.spec.ts",
+            "projects": "self",
+            "params": "forward"
+          },
+          {
+            "target": "e2e-ci--e2e/workflows/bceidbusiness/new_user.spec.ts",
+            "projects": "self",
+            "params": "forward"
+          },
+          {
+            "target": "e2e-ci--e2e/workflows/idir/cas_admin.spec.ts",
+            "projects": "self",
+            "params": "forward"
+          },
+          {
+            "target": "e2e-ci--e2e/workflows/idir/cas_analyst.spec.ts",
+            "projects": "self",
+            "params": "forward"
+          },
+          {
+            "target": "e2e-ci--e2e/workflows/idir/cas_pending.spec.ts",
+            "projects": "self",
+            "params": "forward"
+          }
+        ],
+        "metadata": {
+          "technologies": [
+            "playwright"
+          ],
+          "description": "Runs Playwright Tests in CI"
+        }
+      }
+    },
+    "metadata": {
+      "targetGroups": {
+        "E2E (CI)": [
+          "e2e-ci--e2e/pages/authenticated/dashboard/page.spec.ts",
+          "e2e-ci--e2e/pages/authenticated/dashboard/profile/page.spec.ts",
+          "e2e-ci--e2e/pages/authenticated/routes/page.spec.ts",
+          "e2e-ci--e2e/pages/onboarding/home/page.spec.ts",
+          "e2e-ci--e2e/workflows/bceidbusiness/industry_user.spec.ts",
+          "e2e-ci--e2e/workflows/bceidbusiness/industry_user_admin.spec.ts",
+          "e2e-ci--e2e/workflows/bceidbusiness/new_user.spec.ts",
+          "e2e-ci--e2e/workflows/idir/cas_admin.spec.ts",
+          "e2e-ci--e2e/workflows/idir/cas_analyst.spec.ts",
+          "e2e-ci--e2e/workflows/idir/cas_pending.spec.ts",
+          "e2e-ci"
+        ]
+      }
+    }
+  },
+  "8837732857424081432": {
+    "targets": {
+      "e2e": {
+        "command": "playwright test",
+        "options": {
+          "cwd": "{projectRoot}"
+        },
+        "metadata": {
+          "technologies": [
+            "playwright"
+          ],
+          "description": "Runs Playwright Tests"
+        },
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{workspaceRoot}/dist/.playwright/apps/reporting-e2e/playwright-report",
+          "{workspaceRoot}/dist/.playwright/apps/reporting-e2e/test-output"
+        ]
+      },
+      "e2e-ci--src/example.spec.ts": {
+        "command": "playwright test src/example.spec.ts",
+        "options": {
+          "cwd": "{projectRoot}"
+        },
+        "metadata": {
+          "technologies": [
+            "playwright"
+          ],
+          "description": "Runs Playwright Tests in src/example.spec.ts in CI"
+        },
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{workspaceRoot}/dist/.playwright/apps/reporting-e2e/playwright-report",
+          "{workspaceRoot}/dist/.playwright/apps/reporting-e2e/test-output"
+        ]
+      },
+      "e2e-ci": {
+        "executor": "nx:noop",
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{workspaceRoot}/dist/.playwright/apps/reporting-e2e/playwright-report",
+          "{workspaceRoot}/dist/.playwright/apps/reporting-e2e/test-output"
+        ],
+        "dependsOn": [
+          {
+            "target": "e2e-ci--src/example.spec.ts",
+            "projects": "self",
+            "params": "forward"
+          }
+        ],
+        "metadata": {
+          "technologies": [
+            "playwright"
+          ],
+          "description": "Runs Playwright Tests in CI"
+        }
+      }
+    },
+    "metadata": {
+      "targetGroups": {
+        "E2E (CI)": [
+          "e2e-ci--src/example.spec.ts",
+          "e2e-ci"
+        ]
+      }
+    }
+  },
+  "4800668132980223202": {
+    "targets": {
+      "e2e": {
+        "command": "playwright test",
+        "options": {
+          "cwd": "{projectRoot}"
+        },
+        "metadata": {
+          "technologies": [
+            "playwright"
+          ],
+          "description": "Runs Playwright Tests"
+        },
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{projectRoot}/playwright-report",
+          "{projectRoot}/test-results"
+        ]
+      },
+      "e2e-ci--e2e/pages/authenticated/dashboard/page.spec.ts": {
+        "command": "playwright test e2e/pages/authenticated/dashboard/page.spec.ts",
+        "options": {
+          "cwd": "{projectRoot}"
+        },
+        "metadata": {
+          "technologies": [
+            "playwright"
+          ],
+          "description": "Runs Playwright Tests in e2e/pages/authenticated/dashboard/page.spec.ts in CI"
+        },
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{projectRoot}/playwright-report",
+          "{projectRoot}/test-results"
+        ]
+      },
+      "e2e-ci--e2e/pages/authenticated/dashboard/profile/page.spec.ts": {
+        "command": "playwright test e2e/pages/authenticated/dashboard/profile/page.spec.ts",
+        "options": {
+          "cwd": "{projectRoot}"
+        },
+        "metadata": {
+          "technologies": [
+            "playwright"
+          ],
+          "description": "Runs Playwright Tests in e2e/pages/authenticated/dashboard/profile/page.spec.ts in CI"
+        },
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{projectRoot}/playwright-report",
+          "{projectRoot}/test-results"
+        ]
+      },
+      "e2e-ci--e2e/pages/authenticated/routes/page.spec.ts": {
+        "command": "playwright test e2e/pages/authenticated/routes/page.spec.ts",
+        "options": {
+          "cwd": "{projectRoot}"
+        },
+        "metadata": {
+          "technologies": [
+            "playwright"
+          ],
+          "description": "Runs Playwright Tests in e2e/pages/authenticated/routes/page.spec.ts in CI"
+        },
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{projectRoot}/playwright-report",
+          "{projectRoot}/test-results"
+        ]
+      },
+      "e2e-ci--e2e/pages/onboarding/home/page.spec.ts": {
+        "command": "playwright test e2e/pages/onboarding/home/page.spec.ts",
+        "options": {
+          "cwd": "{projectRoot}"
+        },
+        "metadata": {
+          "technologies": [
+            "playwright"
+          ],
+          "description": "Runs Playwright Tests in e2e/pages/onboarding/home/page.spec.ts in CI"
+        },
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{projectRoot}/playwright-report",
+          "{projectRoot}/test-results"
+        ]
+      },
+      "e2e-ci--e2e/workflows/bceidbusiness/industry_user.spec.ts": {
+        "command": "playwright test e2e/workflows/bceidbusiness/industry_user.spec.ts",
+        "options": {
+          "cwd": "{projectRoot}"
+        },
+        "metadata": {
+          "technologies": [
+            "playwright"
+          ],
+          "description": "Runs Playwright Tests in e2e/workflows/bceidbusiness/industry_user.spec.ts in CI"
+        },
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{projectRoot}/playwright-report",
+          "{projectRoot}/test-results"
+        ]
+      },
+      "e2e-ci--e2e/workflows/bceidbusiness/industry_user_admin.spec.ts": {
+        "command": "playwright test e2e/workflows/bceidbusiness/industry_user_admin.spec.ts",
+        "options": {
+          "cwd": "{projectRoot}"
+        },
+        "metadata": {
+          "technologies": [
+            "playwright"
+          ],
+          "description": "Runs Playwright Tests in e2e/workflows/bceidbusiness/industry_user_admin.spec.ts in CI"
+        },
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{projectRoot}/playwright-report",
+          "{projectRoot}/test-results"
+        ]
+      },
+      "e2e-ci--e2e/workflows/bceidbusiness/new_user.spec.ts": {
+        "command": "playwright test e2e/workflows/bceidbusiness/new_user.spec.ts",
+        "options": {
+          "cwd": "{projectRoot}"
+        },
+        "metadata": {
+          "technologies": [
+            "playwright"
+          ],
+          "description": "Runs Playwright Tests in e2e/workflows/bceidbusiness/new_user.spec.ts in CI"
+        },
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{projectRoot}/playwright-report",
+          "{projectRoot}/test-results"
+        ]
+      },
+      "e2e-ci--e2e/workflows/idir/cas_admin.spec.ts": {
+        "command": "playwright test e2e/workflows/idir/cas_admin.spec.ts",
+        "options": {
+          "cwd": "{projectRoot}"
+        },
+        "metadata": {
+          "technologies": [
+            "playwright"
+          ],
+          "description": "Runs Playwright Tests in e2e/workflows/idir/cas_admin.spec.ts in CI"
+        },
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{projectRoot}/playwright-report",
+          "{projectRoot}/test-results"
+        ]
+      },
+      "e2e-ci--e2e/workflows/idir/cas_analyst.spec.ts": {
+        "command": "playwright test e2e/workflows/idir/cas_analyst.spec.ts",
+        "options": {
+          "cwd": "{projectRoot}"
+        },
+        "metadata": {
+          "technologies": [
+            "playwright"
+          ],
+          "description": "Runs Playwright Tests in e2e/workflows/idir/cas_analyst.spec.ts in CI"
+        },
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{projectRoot}/playwright-report",
+          "{projectRoot}/test-results"
+        ]
+      },
+      "e2e-ci--e2e/workflows/idir/cas_pending.spec.ts": {
+        "command": "playwright test e2e/workflows/idir/cas_pending.spec.ts",
+        "options": {
+          "cwd": "{projectRoot}"
+        },
+        "metadata": {
+          "technologies": [
+            "playwright"
+          ],
+          "description": "Runs Playwright Tests in e2e/workflows/idir/cas_pending.spec.ts in CI"
+        },
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{projectRoot}/playwright-report",
+          "{projectRoot}/test-results"
+        ]
+      },
+      "e2e-ci": {
+        "executor": "nx:noop",
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{projectRoot}/playwright-report",
+          "{projectRoot}/test-results"
+        ],
+        "dependsOn": [
+          {
+            "target": "e2e-ci--e2e/pages/authenticated/dashboard/page.spec.ts",
+            "projects": "self",
+            "params": "forward"
+          },
+          {
+            "target": "e2e-ci--e2e/pages/authenticated/dashboard/profile/page.spec.ts",
+            "projects": "self",
+            "params": "forward"
+          },
+          {
+            "target": "e2e-ci--e2e/pages/authenticated/routes/page.spec.ts",
+            "projects": "self",
+            "params": "forward"
+          },
+          {
+            "target": "e2e-ci--e2e/pages/onboarding/home/page.spec.ts",
+            "projects": "self",
+            "params": "forward"
+          },
+          {
+            "target": "e2e-ci--e2e/workflows/bceidbusiness/industry_user.spec.ts",
+            "projects": "self",
+            "params": "forward"
+          },
+          {
+            "target": "e2e-ci--e2e/workflows/bceidbusiness/industry_user_admin.spec.ts",
+            "projects": "self",
+            "params": "forward"
+          },
+          {
+            "target": "e2e-ci--e2e/workflows/bceidbusiness/new_user.spec.ts",
+            "projects": "self",
+            "params": "forward"
+          },
+          {
+            "target": "e2e-ci--e2e/workflows/idir/cas_admin.spec.ts",
+            "projects": "self",
+            "params": "forward"
+          },
+          {
+            "target": "e2e-ci--e2e/workflows/idir/cas_analyst.spec.ts",
+            "projects": "self",
+            "params": "forward"
+          },
+          {
+            "target": "e2e-ci--e2e/workflows/idir/cas_pending.spec.ts",
+            "projects": "self",
+            "params": "forward"
+          }
+        ],
+        "metadata": {
+          "technologies": [
+            "playwright"
+          ],
+          "description": "Runs Playwright Tests in CI"
+        }
+      }
+    },
+    "metadata": {
+      "targetGroups": {
+        "E2E (CI)": [
+          "e2e-ci--e2e/pages/authenticated/dashboard/page.spec.ts",
+          "e2e-ci--e2e/pages/authenticated/dashboard/profile/page.spec.ts",
+          "e2e-ci--e2e/pages/authenticated/routes/page.spec.ts",
+          "e2e-ci--e2e/pages/onboarding/home/page.spec.ts",
+          "e2e-ci--e2e/workflows/bceidbusiness/industry_user.spec.ts",
+          "e2e-ci--e2e/workflows/bceidbusiness/industry_user_admin.spec.ts",
+          "e2e-ci--e2e/workflows/bceidbusiness/new_user.spec.ts",
+          "e2e-ci--e2e/workflows/idir/cas_admin.spec.ts",
+          "e2e-ci--e2e/workflows/idir/cas_analyst.spec.ts",
+          "e2e-ci--e2e/workflows/idir/cas_pending.spec.ts",
+          "e2e-ci"
+        ]
+      }
+    }
+  },
+  "13810116081484001036": {
+    "targets": {
+      "e2e": {
+        "command": "playwright test",
+        "options": {
+          "cwd": "{projectRoot}"
+        },
+        "metadata": {
+          "technologies": [
+            "playwright"
+          ],
+          "description": "Runs Playwright Tests"
+        },
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{projectRoot}/playwright-report",
+          "{projectRoot}/test-results"
+        ]
+      },
+      "e2e-ci--e2e/pages/authenticated/dashboard/page.spec.ts": {
+        "command": "playwright test e2e/pages/authenticated/dashboard/page.spec.ts",
+        "options": {
+          "cwd": "{projectRoot}"
+        },
+        "metadata": {
+          "technologies": [
+            "playwright"
+          ],
+          "description": "Runs Playwright Tests in e2e/pages/authenticated/dashboard/page.spec.ts in CI"
+        },
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{projectRoot}/playwright-report",
+          "{projectRoot}/test-results"
+        ]
+      },
+      "e2e-ci--e2e/pages/authenticated/dashboard/profile/page.spec.ts": {
+        "command": "playwright test e2e/pages/authenticated/dashboard/profile/page.spec.ts",
+        "options": {
+          "cwd": "{projectRoot}"
+        },
+        "metadata": {
+          "technologies": [
+            "playwright"
+          ],
+          "description": "Runs Playwright Tests in e2e/pages/authenticated/dashboard/profile/page.spec.ts in CI"
+        },
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{projectRoot}/playwright-report",
+          "{projectRoot}/test-results"
+        ]
+      },
+      "e2e-ci--e2e/pages/authenticated/routes/page.spec.ts": {
+        "command": "playwright test e2e/pages/authenticated/routes/page.spec.ts",
+        "options": {
+          "cwd": "{projectRoot}"
+        },
+        "metadata": {
+          "technologies": [
+            "playwright"
+          ],
+          "description": "Runs Playwright Tests in e2e/pages/authenticated/routes/page.spec.ts in CI"
+        },
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{projectRoot}/playwright-report",
+          "{projectRoot}/test-results"
+        ]
+      },
+      "e2e-ci--e2e/pages/onboarding/home/page.spec.ts": {
+        "command": "playwright test e2e/pages/onboarding/home/page.spec.ts",
+        "options": {
+          "cwd": "{projectRoot}"
+        },
+        "metadata": {
+          "technologies": [
+            "playwright"
+          ],
+          "description": "Runs Playwright Tests in e2e/pages/onboarding/home/page.spec.ts in CI"
+        },
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{projectRoot}/playwright-report",
+          "{projectRoot}/test-results"
+        ]
+      },
+      "e2e-ci--e2e/workflows/bceidbusiness/industry_user.spec.ts": {
+        "command": "playwright test e2e/workflows/bceidbusiness/industry_user.spec.ts",
+        "options": {
+          "cwd": "{projectRoot}"
+        },
+        "metadata": {
+          "technologies": [
+            "playwright"
+          ],
+          "description": "Runs Playwright Tests in e2e/workflows/bceidbusiness/industry_user.spec.ts in CI"
+        },
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{projectRoot}/playwright-report",
+          "{projectRoot}/test-results"
+        ]
+      },
+      "e2e-ci--e2e/workflows/bceidbusiness/industry_user_admin.spec.ts": {
+        "command": "playwright test e2e/workflows/bceidbusiness/industry_user_admin.spec.ts",
+        "options": {
+          "cwd": "{projectRoot}"
+        },
+        "metadata": {
+          "technologies": [
+            "playwright"
+          ],
+          "description": "Runs Playwright Tests in e2e/workflows/bceidbusiness/industry_user_admin.spec.ts in CI"
+        },
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{projectRoot}/playwright-report",
+          "{projectRoot}/test-results"
+        ]
+      },
+      "e2e-ci--e2e/workflows/bceidbusiness/new_user.spec.ts": {
+        "command": "playwright test e2e/workflows/bceidbusiness/new_user.spec.ts",
+        "options": {
+          "cwd": "{projectRoot}"
+        },
+        "metadata": {
+          "technologies": [
+            "playwright"
+          ],
+          "description": "Runs Playwright Tests in e2e/workflows/bceidbusiness/new_user.spec.ts in CI"
+        },
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{projectRoot}/playwright-report",
+          "{projectRoot}/test-results"
+        ]
+      },
+      "e2e-ci--e2e/workflows/idir/cas_admin.spec.ts": {
+        "command": "playwright test e2e/workflows/idir/cas_admin.spec.ts",
+        "options": {
+          "cwd": "{projectRoot}"
+        },
+        "metadata": {
+          "technologies": [
+            "playwright"
+          ],
+          "description": "Runs Playwright Tests in e2e/workflows/idir/cas_admin.spec.ts in CI"
+        },
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{projectRoot}/playwright-report",
+          "{projectRoot}/test-results"
+        ]
+      },
+      "e2e-ci--e2e/workflows/idir/cas_analyst.spec.ts": {
+        "command": "playwright test e2e/workflows/idir/cas_analyst.spec.ts",
+        "options": {
+          "cwd": "{projectRoot}"
+        },
+        "metadata": {
+          "technologies": [
+            "playwright"
+          ],
+          "description": "Runs Playwright Tests in e2e/workflows/idir/cas_analyst.spec.ts in CI"
+        },
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{projectRoot}/playwright-report",
+          "{projectRoot}/test-results"
+        ]
+      },
+      "e2e-ci--e2e/workflows/idir/cas_pending.spec.ts": {
+        "command": "playwright test e2e/workflows/idir/cas_pending.spec.ts",
+        "options": {
+          "cwd": "{projectRoot}"
+        },
+        "metadata": {
+          "technologies": [
+            "playwright"
+          ],
+          "description": "Runs Playwright Tests in e2e/workflows/idir/cas_pending.spec.ts in CI"
+        },
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{projectRoot}/playwright-report",
+          "{projectRoot}/test-results"
+        ]
+      },
+      "e2e-ci": {
+        "executor": "nx:noop",
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{projectRoot}/playwright-report",
+          "{projectRoot}/test-results"
+        ],
+        "dependsOn": [
+          {
+            "target": "e2e-ci--e2e/pages/authenticated/dashboard/page.spec.ts",
+            "projects": "self",
+            "params": "forward"
+          },
+          {
+            "target": "e2e-ci--e2e/pages/authenticated/dashboard/profile/page.spec.ts",
+            "projects": "self",
+            "params": "forward"
+          },
+          {
+            "target": "e2e-ci--e2e/pages/authenticated/routes/page.spec.ts",
+            "projects": "self",
+            "params": "forward"
+          },
+          {
+            "target": "e2e-ci--e2e/pages/onboarding/home/page.spec.ts",
+            "projects": "self",
+            "params": "forward"
+          },
+          {
+            "target": "e2e-ci--e2e/workflows/bceidbusiness/industry_user.spec.ts",
+            "projects": "self",
+            "params": "forward"
+          },
+          {
+            "target": "e2e-ci--e2e/workflows/bceidbusiness/industry_user_admin.spec.ts",
+            "projects": "self",
+            "params": "forward"
+          },
+          {
+            "target": "e2e-ci--e2e/workflows/bceidbusiness/new_user.spec.ts",
+            "projects": "self",
+            "params": "forward"
+          },
+          {
+            "target": "e2e-ci--e2e/workflows/idir/cas_admin.spec.ts",
+            "projects": "self",
+            "params": "forward"
+          },
+          {
+            "target": "e2e-ci--e2e/workflows/idir/cas_analyst.spec.ts",
+            "projects": "self",
+            "params": "forward"
+          },
+          {
+            "target": "e2e-ci--e2e/workflows/idir/cas_pending.spec.ts",
+            "projects": "self",
+            "params": "forward"
+          }
+        ],
+        "metadata": {
+          "technologies": [
+            "playwright"
+          ],
+          "description": "Runs Playwright Tests in CI"
+        }
+      }
+    },
+    "metadata": {
+      "targetGroups": {
+        "E2E (CI)": [
+          "e2e-ci--e2e/pages/authenticated/dashboard/page.spec.ts",
+          "e2e-ci--e2e/pages/authenticated/dashboard/profile/page.spec.ts",
+          "e2e-ci--e2e/pages/authenticated/routes/page.spec.ts",
+          "e2e-ci--e2e/pages/onboarding/home/page.spec.ts",
+          "e2e-ci--e2e/workflows/bceidbusiness/industry_user.spec.ts",
+          "e2e-ci--e2e/workflows/bceidbusiness/industry_user_admin.spec.ts",
+          "e2e-ci--e2e/workflows/bceidbusiness/new_user.spec.ts",
+          "e2e-ci--e2e/workflows/idir/cas_admin.spec.ts",
+          "e2e-ci--e2e/workflows/idir/cas_analyst.spec.ts",
+          "e2e-ci--e2e/workflows/idir/cas_pending.spec.ts",
+          "e2e-ci"
+        ]
+      }
+    }
+  },
+  "6825821563175504281": {
+    "targets": {
+      "e2e": {
+        "command": "playwright test",
+        "options": {
+          "cwd": "{projectRoot}"
+        },
+        "metadata": {
+          "technologies": [
+            "playwright"
+          ],
+          "description": "Runs Playwright Tests"
+        },
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{projectRoot}/playwright-report",
+          "{projectRoot}/test-results"
+        ]
+      },
+      "e2e-ci--e2e/pages/authenticated/dashboard/page.spec.ts": {
+        "command": "playwright test e2e/pages/authenticated/dashboard/page.spec.ts",
+        "options": {
+          "cwd": "{projectRoot}"
+        },
+        "metadata": {
+          "technologies": [
+            "playwright"
+          ],
+          "description": "Runs Playwright Tests in e2e/pages/authenticated/dashboard/page.spec.ts in CI"
+        },
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{projectRoot}/playwright-report",
+          "{projectRoot}/test-results"
+        ]
+      },
+      "e2e-ci--e2e/pages/authenticated/dashboard/profile/page.spec.ts": {
+        "command": "playwright test e2e/pages/authenticated/dashboard/profile/page.spec.ts",
+        "options": {
+          "cwd": "{projectRoot}"
+        },
+        "metadata": {
+          "technologies": [
+            "playwright"
+          ],
+          "description": "Runs Playwright Tests in e2e/pages/authenticated/dashboard/profile/page.spec.ts in CI"
+        },
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{projectRoot}/playwright-report",
+          "{projectRoot}/test-results"
+        ]
+      },
+      "e2e-ci--e2e/pages/authenticated/routes/page.spec.ts": {
+        "command": "playwright test e2e/pages/authenticated/routes/page.spec.ts",
+        "options": {
+          "cwd": "{projectRoot}"
+        },
+        "metadata": {
+          "technologies": [
+            "playwright"
+          ],
+          "description": "Runs Playwright Tests in e2e/pages/authenticated/routes/page.spec.ts in CI"
+        },
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{projectRoot}/playwright-report",
+          "{projectRoot}/test-results"
+        ]
+      },
+      "e2e-ci--e2e/pages/onboarding/home/page.spec.ts": {
+        "command": "playwright test e2e/pages/onboarding/home/page.spec.ts",
+        "options": {
+          "cwd": "{projectRoot}"
+        },
+        "metadata": {
+          "technologies": [
+            "playwright"
+          ],
+          "description": "Runs Playwright Tests in e2e/pages/onboarding/home/page.spec.ts in CI"
+        },
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{projectRoot}/playwright-report",
+          "{projectRoot}/test-results"
+        ]
+      },
+      "e2e-ci--e2e/workflows/bceidbusiness/industry_user.spec.ts": {
+        "command": "playwright test e2e/workflows/bceidbusiness/industry_user.spec.ts",
+        "options": {
+          "cwd": "{projectRoot}"
+        },
+        "metadata": {
+          "technologies": [
+            "playwright"
+          ],
+          "description": "Runs Playwright Tests in e2e/workflows/bceidbusiness/industry_user.spec.ts in CI"
+        },
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{projectRoot}/playwright-report",
+          "{projectRoot}/test-results"
+        ]
+      },
+      "e2e-ci--e2e/workflows/bceidbusiness/industry_user_admin.spec.ts": {
+        "command": "playwright test e2e/workflows/bceidbusiness/industry_user_admin.spec.ts",
+        "options": {
+          "cwd": "{projectRoot}"
+        },
+        "metadata": {
+          "technologies": [
+            "playwright"
+          ],
+          "description": "Runs Playwright Tests in e2e/workflows/bceidbusiness/industry_user_admin.spec.ts in CI"
+        },
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{projectRoot}/playwright-report",
+          "{projectRoot}/test-results"
+        ]
+      },
+      "e2e-ci--e2e/workflows/bceidbusiness/new_user.spec.ts": {
+        "command": "playwright test e2e/workflows/bceidbusiness/new_user.spec.ts",
+        "options": {
+          "cwd": "{projectRoot}"
+        },
+        "metadata": {
+          "technologies": [
+            "playwright"
+          ],
+          "description": "Runs Playwright Tests in e2e/workflows/bceidbusiness/new_user.spec.ts in CI"
+        },
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{projectRoot}/playwright-report",
+          "{projectRoot}/test-results"
+        ]
+      },
+      "e2e-ci--e2e/workflows/idir/cas_admin.spec.ts": {
+        "command": "playwright test e2e/workflows/idir/cas_admin.spec.ts",
+        "options": {
+          "cwd": "{projectRoot}"
+        },
+        "metadata": {
+          "technologies": [
+            "playwright"
+          ],
+          "description": "Runs Playwright Tests in e2e/workflows/idir/cas_admin.spec.ts in CI"
+        },
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{projectRoot}/playwright-report",
+          "{projectRoot}/test-results"
+        ]
+      },
+      "e2e-ci--e2e/workflows/idir/cas_analyst.spec.ts": {
+        "command": "playwright test e2e/workflows/idir/cas_analyst.spec.ts",
+        "options": {
+          "cwd": "{projectRoot}"
+        },
+        "metadata": {
+          "technologies": [
+            "playwright"
+          ],
+          "description": "Runs Playwright Tests in e2e/workflows/idir/cas_analyst.spec.ts in CI"
+        },
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{projectRoot}/playwright-report",
+          "{projectRoot}/test-results"
+        ]
+      },
+      "e2e-ci--e2e/workflows/idir/cas_pending.spec.ts": {
+        "command": "playwright test e2e/workflows/idir/cas_pending.spec.ts",
+        "options": {
+          "cwd": "{projectRoot}"
+        },
+        "metadata": {
+          "technologies": [
+            "playwright"
+          ],
+          "description": "Runs Playwright Tests in e2e/workflows/idir/cas_pending.spec.ts in CI"
+        },
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{projectRoot}/playwright-report",
+          "{projectRoot}/test-results"
+        ]
+      },
+      "e2e-ci": {
+        "executor": "nx:noop",
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{projectRoot}/playwright-report",
+          "{projectRoot}/test-results"
+        ],
+        "dependsOn": [
+          {
+            "target": "e2e-ci--e2e/pages/authenticated/dashboard/page.spec.ts",
+            "projects": "self",
+            "params": "forward"
+          },
+          {
+            "target": "e2e-ci--e2e/pages/authenticated/dashboard/profile/page.spec.ts",
+            "projects": "self",
+            "params": "forward"
+          },
+          {
+            "target": "e2e-ci--e2e/pages/authenticated/routes/page.spec.ts",
+            "projects": "self",
+            "params": "forward"
+          },
+          {
+            "target": "e2e-ci--e2e/pages/onboarding/home/page.spec.ts",
+            "projects": "self",
+            "params": "forward"
+          },
+          {
+            "target": "e2e-ci--e2e/workflows/bceidbusiness/industry_user.spec.ts",
+            "projects": "self",
+            "params": "forward"
+          },
+          {
+            "target": "e2e-ci--e2e/workflows/bceidbusiness/industry_user_admin.spec.ts",
+            "projects": "self",
+            "params": "forward"
+          },
+          {
+            "target": "e2e-ci--e2e/workflows/bceidbusiness/new_user.spec.ts",
+            "projects": "self",
+            "params": "forward"
+          },
+          {
+            "target": "e2e-ci--e2e/workflows/idir/cas_admin.spec.ts",
+            "projects": "self",
+            "params": "forward"
+          },
+          {
+            "target": "e2e-ci--e2e/workflows/idir/cas_analyst.spec.ts",
+            "projects": "self",
+            "params": "forward"
+          },
+          {
+            "target": "e2e-ci--e2e/workflows/idir/cas_pending.spec.ts",
+            "projects": "self",
+            "params": "forward"
+          }
+        ],
+        "metadata": {
+          "technologies": [
+            "playwright"
+          ],
+          "description": "Runs Playwright Tests in CI"
+        }
+      }
+    },
+    "metadata": {
+      "targetGroups": {
+        "E2E (CI)": [
+          "e2e-ci--e2e/pages/authenticated/dashboard/page.spec.ts",
+          "e2e-ci--e2e/pages/authenticated/dashboard/profile/page.spec.ts",
+          "e2e-ci--e2e/pages/authenticated/routes/page.spec.ts",
+          "e2e-ci--e2e/pages/onboarding/home/page.spec.ts",
+          "e2e-ci--e2e/workflows/bceidbusiness/industry_user.spec.ts",
+          "e2e-ci--e2e/workflows/bceidbusiness/industry_user_admin.spec.ts",
+          "e2e-ci--e2e/workflows/bceidbusiness/new_user.spec.ts",
+          "e2e-ci--e2e/workflows/idir/cas_admin.spec.ts",
+          "e2e-ci--e2e/workflows/idir/cas_analyst.spec.ts",
+          "e2e-ci--e2e/workflows/idir/cas_pending.spec.ts",
+          "e2e-ci"
+        ]
+      }
+    }
+  },
+  "4093131522124017850": {
+    "targets": {
+      "e2e": {
+        "command": "playwright test",
+        "options": {
+          "cwd": "{projectRoot}"
+        },
+        "metadata": {
+          "technologies": [
+            "playwright"
+          ],
+          "description": "Runs Playwright Tests"
+        },
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{projectRoot}/playwright-report",
+          "{projectRoot}/test-results"
+        ]
+      },
+      "e2e-ci--e2e/pages/authenticated/dashboard/page.spec.ts": {
+        "command": "playwright test e2e/pages/authenticated/dashboard/page.spec.ts",
+        "options": {
+          "cwd": "{projectRoot}"
+        },
+        "metadata": {
+          "technologies": [
+            "playwright"
+          ],
+          "description": "Runs Playwright Tests in e2e/pages/authenticated/dashboard/page.spec.ts in CI"
+        },
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{projectRoot}/playwright-report",
+          "{projectRoot}/test-results"
+        ]
+      },
+      "e2e-ci--e2e/pages/authenticated/dashboard/profile/page.spec.ts": {
+        "command": "playwright test e2e/pages/authenticated/dashboard/profile/page.spec.ts",
+        "options": {
+          "cwd": "{projectRoot}"
+        },
+        "metadata": {
+          "technologies": [
+            "playwright"
+          ],
+          "description": "Runs Playwright Tests in e2e/pages/authenticated/dashboard/profile/page.spec.ts in CI"
+        },
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{projectRoot}/playwright-report",
+          "{projectRoot}/test-results"
+        ]
+      },
+      "e2e-ci--e2e/pages/authenticated/routes/page.spec.ts": {
+        "command": "playwright test e2e/pages/authenticated/routes/page.spec.ts",
+        "options": {
+          "cwd": "{projectRoot}"
+        },
+        "metadata": {
+          "technologies": [
+            "playwright"
+          ],
+          "description": "Runs Playwright Tests in e2e/pages/authenticated/routes/page.spec.ts in CI"
+        },
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{projectRoot}/playwright-report",
+          "{projectRoot}/test-results"
+        ]
+      },
+      "e2e-ci--e2e/pages/onboarding/home/page.spec.ts": {
+        "command": "playwright test e2e/pages/onboarding/home/page.spec.ts",
+        "options": {
+          "cwd": "{projectRoot}"
+        },
+        "metadata": {
+          "technologies": [
+            "playwright"
+          ],
+          "description": "Runs Playwright Tests in e2e/pages/onboarding/home/page.spec.ts in CI"
+        },
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{projectRoot}/playwright-report",
+          "{projectRoot}/test-results"
+        ]
+      },
+      "e2e-ci--e2e/workflows/bceidbusiness/industry_user.spec.ts": {
+        "command": "playwright test e2e/workflows/bceidbusiness/industry_user.spec.ts",
+        "options": {
+          "cwd": "{projectRoot}"
+        },
+        "metadata": {
+          "technologies": [
+            "playwright"
+          ],
+          "description": "Runs Playwright Tests in e2e/workflows/bceidbusiness/industry_user.spec.ts in CI"
+        },
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{projectRoot}/playwright-report",
+          "{projectRoot}/test-results"
+        ]
+      },
+      "e2e-ci--e2e/workflows/bceidbusiness/industry_user_admin.spec.ts": {
+        "command": "playwright test e2e/workflows/bceidbusiness/industry_user_admin.spec.ts",
+        "options": {
+          "cwd": "{projectRoot}"
+        },
+        "metadata": {
+          "technologies": [
+            "playwright"
+          ],
+          "description": "Runs Playwright Tests in e2e/workflows/bceidbusiness/industry_user_admin.spec.ts in CI"
+        },
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{projectRoot}/playwright-report",
+          "{projectRoot}/test-results"
+        ]
+      },
+      "e2e-ci--e2e/workflows/bceidbusiness/new_user.spec.ts": {
+        "command": "playwright test e2e/workflows/bceidbusiness/new_user.spec.ts",
+        "options": {
+          "cwd": "{projectRoot}"
+        },
+        "metadata": {
+          "technologies": [
+            "playwright"
+          ],
+          "description": "Runs Playwright Tests in e2e/workflows/bceidbusiness/new_user.spec.ts in CI"
+        },
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{projectRoot}/playwright-report",
+          "{projectRoot}/test-results"
+        ]
+      },
+      "e2e-ci--e2e/workflows/idir/cas_admin.spec.ts": {
+        "command": "playwright test e2e/workflows/idir/cas_admin.spec.ts",
+        "options": {
+          "cwd": "{projectRoot}"
+        },
+        "metadata": {
+          "technologies": [
+            "playwright"
+          ],
+          "description": "Runs Playwright Tests in e2e/workflows/idir/cas_admin.spec.ts in CI"
+        },
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{projectRoot}/playwright-report",
+          "{projectRoot}/test-results"
+        ]
+      },
+      "e2e-ci--e2e/workflows/idir/cas_analyst.spec.ts": {
+        "command": "playwright test e2e/workflows/idir/cas_analyst.spec.ts",
+        "options": {
+          "cwd": "{projectRoot}"
+        },
+        "metadata": {
+          "technologies": [
+            "playwright"
+          ],
+          "description": "Runs Playwright Tests in e2e/workflows/idir/cas_analyst.spec.ts in CI"
+        },
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{projectRoot}/playwright-report",
+          "{projectRoot}/test-results"
+        ]
+      },
+      "e2e-ci--e2e/workflows/idir/cas_pending.spec.ts": {
+        "command": "playwright test e2e/workflows/idir/cas_pending.spec.ts",
+        "options": {
+          "cwd": "{projectRoot}"
+        },
+        "metadata": {
+          "technologies": [
+            "playwright"
+          ],
+          "description": "Runs Playwright Tests in e2e/workflows/idir/cas_pending.spec.ts in CI"
+        },
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{projectRoot}/playwright-report",
+          "{projectRoot}/test-results"
+        ]
+      },
+      "e2e-ci": {
+        "executor": "nx:noop",
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{projectRoot}/playwright-report",
+          "{projectRoot}/test-results"
+        ],
+        "dependsOn": [
+          {
+            "target": "e2e-ci--e2e/pages/authenticated/dashboard/page.spec.ts",
+            "projects": "self",
+            "params": "forward"
+          },
+          {
+            "target": "e2e-ci--e2e/pages/authenticated/dashboard/profile/page.spec.ts",
+            "projects": "self",
+            "params": "forward"
+          },
+          {
+            "target": "e2e-ci--e2e/pages/authenticated/routes/page.spec.ts",
+            "projects": "self",
+            "params": "forward"
+          },
+          {
+            "target": "e2e-ci--e2e/pages/onboarding/home/page.spec.ts",
+            "projects": "self",
+            "params": "forward"
+          },
+          {
+            "target": "e2e-ci--e2e/workflows/bceidbusiness/industry_user.spec.ts",
+            "projects": "self",
+            "params": "forward"
+          },
+          {
+            "target": "e2e-ci--e2e/workflows/bceidbusiness/industry_user_admin.spec.ts",
+            "projects": "self",
+            "params": "forward"
+          },
+          {
+            "target": "e2e-ci--e2e/workflows/bceidbusiness/new_user.spec.ts",
+            "projects": "self",
+            "params": "forward"
+          },
+          {
+            "target": "e2e-ci--e2e/workflows/idir/cas_admin.spec.ts",
+            "projects": "self",
+            "params": "forward"
+          },
+          {
+            "target": "e2e-ci--e2e/workflows/idir/cas_analyst.spec.ts",
+            "projects": "self",
+            "params": "forward"
+          },
+          {
+            "target": "e2e-ci--e2e/workflows/idir/cas_pending.spec.ts",
+            "projects": "self",
+            "params": "forward"
+          }
+        ],
+        "metadata": {
+          "technologies": [
+            "playwright"
+          ],
+          "description": "Runs Playwright Tests in CI"
+        }
+      }
+    },
+    "metadata": {
+      "targetGroups": {
+        "E2E (CI)": [
+          "e2e-ci--e2e/pages/authenticated/dashboard/page.spec.ts",
+          "e2e-ci--e2e/pages/authenticated/dashboard/profile/page.spec.ts",
+          "e2e-ci--e2e/pages/authenticated/routes/page.spec.ts",
+          "e2e-ci--e2e/pages/onboarding/home/page.spec.ts",
+          "e2e-ci--e2e/workflows/bceidbusiness/industry_user.spec.ts",
+          "e2e-ci--e2e/workflows/bceidbusiness/industry_user_admin.spec.ts",
+          "e2e-ci--e2e/workflows/bceidbusiness/new_user.spec.ts",
+          "e2e-ci--e2e/workflows/idir/cas_admin.spec.ts",
+          "e2e-ci--e2e/workflows/idir/cas_analyst.spec.ts",
+          "e2e-ci--e2e/workflows/idir/cas_pending.spec.ts",
+          "e2e-ci"
+        ]
+      }
+    }
+  }
+}

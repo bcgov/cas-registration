@@ -1,0 +1,191 @@
+{
+  "3872655222113079780apps/reporting/vitest.config.mts": {
+    "test": {
+      "command": "vitest run",
+      "options": {
+        "cwd": "apps/reporting"
+      },
+      "cache": true,
+      "inputs": [
+        "default",
+        "^production",
+        {
+          "externalDependencies": [
+            "vitest"
+          ]
+        }
+      ],
+      "outputs": [
+        "{workspaceRoot}/coverage/apps/reporting"
+      ]
+    }
+  },
+  "12756090167431844411libs/shared/components/vitest.config.mts": {
+    "test": {
+      "command": "vitest run",
+      "options": {
+        "cwd": "libs/shared/components"
+      },
+      "cache": true,
+      "inputs": [
+        "default",
+        "^production",
+        {
+          "externalDependencies": [
+            "vitest"
+          ]
+        }
+      ],
+      "outputs": [
+        "{workspaceRoot}/coverage/libs/shared/components"
+      ]
+    }
+  },
+  "6618216609043998921apps/dashboard/vitest.config.mts": {
+    "test": {
+      "command": "vitest run",
+      "options": {
+        "cwd": "apps/dashboard"
+      },
+      "cache": true,
+      "inputs": [
+        "default",
+        "^production",
+        {
+          "externalDependencies": [
+            "vitest"
+          ]
+        }
+      ],
+      "outputs": [
+        "{workspaceRoot}/coverage/apps/dashboard"
+      ]
+    }
+  },
+  "12291677666555664151apps/registration1/vitest.config.mjs": {
+    "test": {
+      "command": "vitest run",
+      "options": {
+        "cwd": "apps/registration1"
+      },
+      "cache": true,
+      "inputs": [
+        "default",
+        "^production",
+        {
+          "externalDependencies": [
+            "vitest"
+          ]
+        }
+      ],
+      "outputs": [
+        "{workspaceRoot}/coverage/apps/registration1"
+      ]
+    }
+  },
+  "6814312256753261816apps/registration/vitest.config.mts": {
+    "test": {
+      "command": "vitest run",
+      "options": {
+        "cwd": "apps/registration"
+      },
+      "cache": true,
+      "inputs": [
+        "default",
+        "^production",
+        {
+          "externalDependencies": [
+            "vitest"
+          ]
+        }
+      ],
+      "outputs": [
+        "{workspaceRoot}/coverage/apps/registration"
+      ]
+    }
+  },
+  "6324192642855826351apps/registration/vitest.config.mts": {
+    "test": {
+      "command": "vitest run",
+      "options": {
+        "cwd": "apps/registration"
+      },
+      "cache": true,
+      "inputs": [
+        "default",
+        "^production",
+        {
+          "externalDependencies": [
+            "vitest"
+          ]
+        }
+      ],
+      "outputs": [
+        "{workspaceRoot}/coverage/apps/registration"
+      ]
+    }
+  },
+  "4245939177635164542apps/registration/vitest.config.mts": {
+    "test": {
+      "command": "vitest run",
+      "options": {
+        "cwd": "apps/registration"
+      },
+      "cache": true,
+      "inputs": [
+        "default",
+        "^production",
+        {
+          "externalDependencies": [
+            "vitest"
+          ]
+        }
+      ],
+      "outputs": [
+        "{workspaceRoot}/coverage/apps/registration"
+      ]
+    }
+  },
+  "6752019020715238307apps/registration/vitest.config.mts": {
+    "test": {
+      "command": "vitest run",
+      "options": {
+        "cwd": "apps/registration"
+      },
+      "cache": true,
+      "inputs": [
+        "default",
+        "^production",
+        {
+          "externalDependencies": [
+            "vitest"
+          ]
+        }
+      ],
+      "outputs": [
+        "{workspaceRoot}/coverage/apps/registration"
+      ]
+    }
+  },
+  "11352109929214437005apps/registration/vitest.config.mts": {
+    "test": {
+      "command": "vitest run",
+      "options": {
+        "cwd": "apps/registration"
+      },
+      "cache": true,
+      "inputs": [
+        "default",
+        "^production",
+        {
+          "externalDependencies": [
+            "vitest"
+          ]
+        }
+      ],
+      "outputs": [
+        "{workspaceRoot}/coverage/apps/registration"
+      ]
+    }
+  }
+}
