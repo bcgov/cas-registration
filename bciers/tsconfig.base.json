@@ -17,17 +17,13 @@
     "types": ["vitest/globals"],
     "paths": {
       "@/*": ["apps/registration1/*"],
-      "@/dashboard/*": ["apps/dashboard/*"],
-      "@bciers/actions/server": ["libs/shared/actions/src/server.ts"],
       "@bciers/components": ["libs/shared/components/src/index.ts"],
       "@bciers/components/*": ["libs/shared/components/src/lib/*"],
       "@bciers/components/server": ["libs/shared/components/src/server.ts"],
       "@bciers/img/*": ["libs/shared/img/*"],
-      "@bciers/middlewares/server": ["libs/shared/middlewares/src/server.ts"],
       "@bciers/styles": ["libs/shared/styles/src/index.ts"],
       "@bciers/styles/*": ["libs/shared/styles/src/lib/*"],
-      "@bciers/testConfig/*": ["libs/shared/testConfig/src/*"],
-      "@bciers/types": ["libs/shared/types/src/index.ts"]
+      "@bciers/testConfig/*": ["libs/shared/testConfig/src/*"]
     }
   },
   "exclude": ["node_modules", "tmp"]
