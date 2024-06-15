@@ -1,12 +1,12 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import DataGrid from "@shared/components/src/lib/layout/DataGrid";
+import DataGrid from "@bciers/components/datagrid/DataGrid";
 import { GridColumnGroupHeaderParams } from "@mui/x-data-grid";
-import OperationsActionCell from "@shared/components/src/lib/datagrid/cells/OperationsActionCell";
-import HeaderSearchCell from "@shared/components/src/lib/datagrid/cells/HeaderSearchCell";
+import OperationsActionCell from "@bciers/components/datagrid/cells/OperationsActionCell";
+import HeaderSearchCell from "@bciers/components/datagrid/cells/HeaderSearchCell";
 import operationColumns from "../datagrid/models/operationColumns";
-import operationGroupColumns from "@shared/components/src/lib/datagrid/models/operationGroupColumns";
+import operationGroupColumns from "@bciers/components/datagrid/models/operationGroupColumns";
 import { OperationRow } from "./types";
 import fetchOperationsPageData from "./fetchOperationsPageData";
 
