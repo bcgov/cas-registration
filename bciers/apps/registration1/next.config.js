@@ -50,8 +50,8 @@ const withSentry = (/** @type {import('next').NextConfig} */ config) =>
 
 const plugins = [
   // Add more Next.js plugins to this list if needed.
-  withNx,
   withSentry,
+  withNx,
 ];
 
 module.exports = composePlugins(...plugins)(nextConfig);

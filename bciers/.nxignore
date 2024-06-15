@@ -1,5 +1,3 @@
-node_modules
-
 # Vite(st) temporary config files
 vite.config.**s.timestamp-*
 vitest.config.**s.timestamp-*

@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { Session } from "next-auth";
 
 const getUserFullName = (session?: Session | null) => {

@@ -1,4 +1,4 @@
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/app/utils/auth/authOptions";
 import Tiles from "@bciers/components/navigation/Tiles";
 import { getUserOperator } from "@/app/components/routes/select-operator/Page";
 import { actionHandler } from "@/app/utils/actions";
