@@ -3,7 +3,7 @@ import * as matchers from "@testing-library/jest-dom/matchers";
 import { expect, vi } from "vitest";
 import {
   actionHandler,
-  getServerSession,
+  auth,
   useParams,
   usePathname,
   useRouter,
@@ -37,7 +37,7 @@ vi.mock("next-auth/react", async () => ({
 
 vi.mock("next-auth", () => ({
   default: vi.fn(),
-  getServerSession,
+  auth,
 }));
 
 vi.mock("@/app/utils/actions", () => ({

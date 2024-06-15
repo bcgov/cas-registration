@@ -167,8 +167,8 @@ const FileWidget = ({
 
   const { data: session } = useSession();
   const isCasInternal =
-    session?.user.app_role?.includes("cas") &&
-    !session?.user.app_role?.includes("pending");
+    session?.user?.app_role?.includes("cas") &&
+    !session?.user?.app_role?.includes("pending");
 
   const hiddenFileInput = useRef() as MutableRefObject<HTMLInputElement>;
 

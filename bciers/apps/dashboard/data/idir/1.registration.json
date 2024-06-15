@@ -1,0 +1,35 @@
+{
+  "title": "Registration",
+  "icon": "",
+  "content": "View or update information of your operator, operations, facilities, and to submit BORO ID application here.",
+  "links": [
+    {
+      "title": "Operator Admins and Access Requests",
+      "href": "registration/dashboard/tbd"
+    },
+    {
+      "title": "Contacts",
+      "href": "registration/dashboard/tbd"
+    },
+    {
+      "title": "Operators",
+      "href": "registration/dashboard/operators"
+    },
+    {
+      "title": "Operations",
+      "href": "registration/dashboard/operations"
+    },
+    {
+      "title": "Facilities",
+      "href": "registration/dashboard/tbd"
+    },
+    {
+      "title": "BORO ID Applications",
+      "href": "registration/dashboard/tbd"
+    },
+    {
+      "title": "Events",
+      "href": "registration/dashboard/tbd"
+    }
+  ]
+}
