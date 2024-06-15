@@ -18,14 +18,12 @@
     ]
   },
   "include": [
-    "**/*.ts",
-    "**/*.tsx",
-    "**/*.js",
-    "**/*.jsx",
-    "../../apps/registration/.next/types/**/*.ts",
-    "../../dist/apps/registration/.next/types/**/*.ts",
-    "next-env.d.ts",
-    ".next/types/**/*.ts"
+    "./**/*",
+    "./.happo.js",
+    "./.eslintrc.json",
+    "./.next/types/**/*.ts",
+    ".next/types/**/*.ts",
+    "../../dist/registration/.next/types/**/*.ts"
   ],
   "exclude": ["node_modules", "**/*.spec.ts", "**/*.test.ts"]
 }
