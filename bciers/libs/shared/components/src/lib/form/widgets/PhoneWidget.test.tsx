@@ -10,7 +10,6 @@ import {
 const phoneWidgetLabel = "PhoneWidget test field";
 const phoneRequiredLabel = `${phoneWidgetLabel}*`;
 const databaseTelephone = "+17785678901";
-const inputTelephone = "1 778 567 8901";
 
 const phoneWidgetSchema = {
   type: "object",
