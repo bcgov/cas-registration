@@ -93,22 +93,6 @@ const uiSchema: UiSchema = {
   },
 };
 
-// Mock form data for testing, commented last_name to test validation
-const mockFormData = {
-  section1: {
-    first_name: "John",
-    // last_name: "Doe",
-  },
-  section2: {
-    phone: "7785678901",
-    email: "test@asdad.ca",
-  },
-  section3: {
-    address: "1234 Street",
-    postal_code: "V5V 1V1",
-  },
-};
-
 export default function Page() {
   // Main will be moved into a child layout component once we set up the routes
   return (
