@@ -6,12 +6,11 @@ import Loading from "@bciers/components/loading/SkeletonGrid";
 import { OperationsSearchParams } from "@/app/components/operations/types";
 import Note from "@bciers/components/datagrid/Note";
 import Operations from "./Operations";
-<<<<<<< HEAD
+
 import { FrontEndRoles } from "@/app/utils/enums";
 
-=======
 import { auth } from "@/dashboard/auth";
->>>>>>> 9288280d (chore: auth v5 from dashboard shared comp)
+
 export default async function OperationsPage({
   searchParams,
 }: {
@@ -20,12 +19,9 @@ export default async function OperationsPage({
   // 👤 Use NextAuth.js hook to get information about the user's session
   /* When calling from the server-side i.e., in Route Handlers, React Server Components, API routes,
    */
-<<<<<<< HEAD
-  const session = await getServerSession(authOptions);
-  // @ts-ignore
-=======
+
   const session = await auth();
->>>>>>> 9288280d (chore: auth v5 from dashboard shared comp)
+
   const role = session?.user?.app_role;
   const message = role?.includes("cas")
     ? "View all the operations, which can be sorted or filtered by operator here."
