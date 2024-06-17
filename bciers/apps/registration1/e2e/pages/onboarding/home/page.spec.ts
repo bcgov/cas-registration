@@ -1,16 +1,9 @@
 // 🧪 Suite to test `bciers/apps/registration1/app/(onboarding)/home/page.tsx`
-import { test, expect } from "@playwright/test";
+import { test } from "@playwright/test";
 // 🪄 Page Object Models
-import { DashboardPOM } from "@/e2e/poms/dashboard";
 import { HomePOM } from "@/e2e/poms/home";
-import { ProfilePOM } from "@/e2e/poms/profile";
 // ☰ Enums
-import {
-  AppRole,
-  UserRole,
-  UserOperatorStatus,
-  E2EValue,
-} from "@/e2e/utils/enums";
+import { AppRole, UserRole, UserOperatorStatus } from "@/e2e/utils/enums";
 // 🥞 DB CRUD
 import {
   deleteUserRecord,
