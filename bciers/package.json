@@ -3,9 +3,12 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
+    "dev-all": "nx run-many -t dev -p dashboard,registration,reporting",
     "dev": "nx dev reporting",
-    "reg": "nx dev registration",
-    "reg:build": "nx run registration:build",
+    "dash": "nx dev dashboard -p 3000",
+    "dash:build": "nx build dashboard",
+    "reg": "nx dev registration -p 4000",
+    "reg:build": "nx build registration",
     "reg:e2e": "nx run registration:e2e",
     "reg:e2e:ui": "nx run registration:e2e:ui",
     "reg:e2e:report": "nx run registration:report",
@@ -17,7 +20,9 @@
     "reg1:e2e:ui": "nx run registration1:e2e:ui",
     "reg1:e2e:report": "nx run registration1:report",
     "reg1:coverage": "nx run registration1:test --coverage",
-    "reg1:test": "nx run registration1:test"
+    "reg1:test": "nx run registration1:test",
+    "report": "nx dev reporting  -p 5000",
+    "report:build": "nx build reporting"
   },
   "private": true,
   "module": "commonjs",
