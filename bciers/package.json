@@ -82,7 +82,7 @@
     "@babel/preset-env": "^7.22.10",
     "@babel/preset-typescript": "^7.22.11",
     "@mui/material-nextjs": "^5.15.11",
-    "@nx-tools/nx-container": "5.2.0",
+    "@nx-tools/nx-container": "^6.0.1",
     "@nx/devkit": "19.3.0",
     "@nx/eslint": "19.3.0",
     "@nx/eslint-plugin": "19.3.0",
