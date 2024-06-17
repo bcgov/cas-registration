@@ -10,7 +10,8 @@
       "outputs": ["{options.outputPath}"],
       "defaultConfiguration": "dev",
       "options": {
-        "outputPath": "dist/registration1"
+        "outputPath": "dist/registration1",
+        "generateLockfile": true
       }
     },
     "start": {

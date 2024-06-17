@@ -15,7 +15,8 @@
       "outputs": ["{options.outputPath}"],
       "defaultConfiguration": "dev",
       "options": {
-        "outputPath": "dist/reporting"
+        "outputPath": "dist/reporting",
+        "generateLockfile": true
       }
     },
     "container": {
