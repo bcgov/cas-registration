@@ -3,6 +3,7 @@ FROM docker.io/node:20.11 as deps
 WORKDIR /usr/src/app
 COPY ./package.json .
 RUN corepack enable
+RUN yarn set version 4.2.0
 # Force Yarn to use standard node-modules folder
 RUN echo 'nodeLinker: "node-modules"' >> ./.yarnrc.yml
 RUN yarn install
