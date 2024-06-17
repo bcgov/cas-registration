@@ -14,6 +14,7 @@ export default defineConfig({
     include: ["**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
     exclude: ["node_modules", "dist", "e2e"],
     alias: {
+      "@/dashboard": path.resolve(__dirname, "../dashboard/src/"),
       "@": path.resolve(__dirname, "./"),
       app: path.resolve(__dirname, "./app"),
     },

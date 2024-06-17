@@ -1,5 +1,5 @@
 {
-  "extends": ["plugin:@nx/react", "../../../.eslintrc.json"],
+  "extends": ["plugin:@nx/react", "../../../.eslintrc.json", "prettier"],
   "globals": { "vi": true },
   "parserOptions": {
     "project": ["./tsconfig(.*)?.json"]
@@ -9,7 +9,12 @@
     {
       "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
       "rules": {
-        "avoidEscape": true
+        "@eslint/quotes": [
+          "warn",
+          {
+            "avoidEscape": true
+          }
+        ]
       }
     },
     {

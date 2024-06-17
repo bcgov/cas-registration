@@ -1,5 +1,6 @@
 import { describe, expect } from "vitest";
-import { actionHandler, getToken } from "@/app/utils/actions";
+import { actionHandler } from "@/app/utils/actions";
+import { getToken } from "@bciers/actions/server";
 import { fetch } from "@bciers/testConfig/mocks";
 import * as Sentry from "@sentry/nextjs";
 

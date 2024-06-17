@@ -24,11 +24,19 @@ export default function Page() {
   const tableBorder = "border border-solid border-bc-bg-dark-grey";
 
   const handleIdirLogin = () => {
-    signIn("keycloak", undefined, { kc_idp_hint: "idir" });
+    try {
+      signIn("keycloak", undefined, { kc_idp_hint: "idir" });
+    } catch (error) {
+      console.error("Error during IDIR login:", error);
+    }
   };
 
   const handleBceidLogin = () => {
-    signIn("keycloak", undefined, { kc_idp_hint: "bceidbusiness" });
+    try {
+      signIn("keycloak", undefined, { kc_idp_hint: "bceidbusiness" });
+    } catch (error) {
+      console.error("Error during BCEID login:", error);
+    }
   };
 
   const handleBceidSignupClick = async () => {

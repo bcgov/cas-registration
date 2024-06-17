@@ -10,8 +10,7 @@
       "outputs": ["{options.outputPath}"],
       "defaultConfiguration": "dev",
       "options": {
-        "outputPath": "dist/registration1",
-        "experimentalAppOnly": true
+        "outputPath": "dist/registration1"
       }
     },
     "start": {
