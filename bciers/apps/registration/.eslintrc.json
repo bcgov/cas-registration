@@ -9,12 +9,7 @@
   "overrides": [
     {
       "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
-      "rules": {
-        "@next/next/no-html-link-for-pages": [
-          "error",
-          "apps/registration/pages"
-        ]
-      },
+      "rules": {},
       "parser": "@typescript-eslint/parser",
       "parserOptions": {
         "project": ["apps/registration/tsconfig(.*)?.json"],
