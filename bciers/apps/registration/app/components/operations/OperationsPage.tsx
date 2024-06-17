@@ -3,14 +3,13 @@ import Link from "next/link";
 import { Button } from "@mui/material";
 import { Suspense } from "react";
 import Loading from "@bciers/components/loading/SkeletonGrid";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { OperationsSearchParams } from "@/app/components/operations/types";
-import Note, {
-  registrationRequestNote,
-} from "@bciers/components/datagrid/Note";
+import Note from "@bciers/components/datagrid/Note";
 import Operations from "./Operations";
+
 import { FrontEndRoles } from "@/app/utils/enums";
+
+import { auth } from "@/dashboard/auth";
 
 export default async function OperationsPage({
   searchParams,
@@ -19,10 +18,10 @@ export default async function OperationsPage({
 }) {
   // 👤 Use NextAuth.js hook to get information about the user's session
   /* When calling from the server-side i.e., in Route Handlers, React Server Components, API routes,
-   * getServerSession requires passing the same object you would pass to NextAuth
    */
-  const session = await getServerSession(authOptions);
-  // @ts-ignore
+
+  const session = await auth();
+
   const role = session?.user?.app_role;
   const message = role?.includes("cas")
     ? "View all the operations, which can be sorted or filtered by operator here."

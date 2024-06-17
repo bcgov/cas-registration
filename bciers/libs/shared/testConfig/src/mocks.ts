@@ -28,13 +28,13 @@ const useParams = vi.fn();
 const usePathname = vi.fn();
 const useSearchParams = vi.fn();
 const useSession = vi.fn();
-const getServerSession = vi.fn();
+const auth = vi.fn();
 const fetchOperationsPageData = vi.fn();
 
 export {
   actionHandler,
   fetchMocker as fetch,
-  getServerSession,
+  auth,
   useRouter,
   useParams,
   usePathname,

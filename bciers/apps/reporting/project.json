@@ -5,13 +5,17 @@
   "projectType": "application",
   "tags": [],
   "targets": {
+    "dev": {
+      "options": {
+        "port": 5000
+      }
+    },
     "build": {
       "executor": "@nx/next:build",
       "outputs": ["{options.outputPath}"],
       "defaultConfiguration": "dev",
       "options": {
-        "outputPath": "dist/reporting",
-        "experimentalAppOnly": true
+        "outputPath": "dist/reporting"
       }
     },
     "container": {

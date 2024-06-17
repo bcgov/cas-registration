@@ -1,0 +1,15 @@
+{
+  "title": "Reporting",
+  "icon": "",
+  "content": "Submit Annual Report for an operation, and to view or update previous years' reports here.",
+  "links": [
+    {
+      "title": "Submit Annual Reports",
+      "href": "reporting/dashboard/report?tab=1"
+    },
+    {
+      "title": "View Past Submissions",
+      "href": "reporting/dashboard/report?tab=2"
+    }
+  ]
+}
