@@ -1,15 +1,6 @@
-import { Suspense } from "react";
-import Loading from "@bciers/components/loading/SkeletonForm";
-import Operators from "./Operators";
+// 🚩 flagging that for shared routes between roles, "Page" code is a component for code maintainability
+import OperationsPage from "../../../components/routes/operations/Page";
 
-export default async function OperatorsPage() {
-  return (
-    <Suspense fallback={<Loading />}>
-      <div>
-        <h1>Facilities and operators page</h1>
-        <h2>Operators:</h2>
-        <Operators />
-      </div>
-    </Suspense>
-  );
+export default async function Page() {
+  return <OperationsPage />;
 }
