@@ -30,5 +30,6 @@
       "@bciers/types": ["libs/shared/types/src/index.ts"]
     }
   },
+  "include": ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx", "**/*.json"],
   "exclude": ["node_modules", "tmp"]
 }

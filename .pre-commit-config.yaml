@@ -12,11 +12,6 @@ repos:
         language: system
         files: \.(j|t)sx?$
         entry: ./.bin/pre-commit-lint.sh
-      - id: eslint
-        name: ESLint
-        language: system
-        files: \.(j|t)sx?$
-        entry: ./.bin/pre-commit-lint.sh
       - id: django-diagram
         name: Django Diagram # Generate a diagram of the Django models
         language: system
