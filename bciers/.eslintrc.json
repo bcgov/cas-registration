@@ -41,7 +41,7 @@
       }
     ],
     "@nx/enforce-module-boundaries": [
-      "warn",
+      "off",
       {
         "enforceBuildableLibDependency": true,
         "allow": ["@/"],

@@ -8,7 +8,12 @@
   "overrides": [
     {
       "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
-      "rules": {}
+      "rules": {},
+      "parser": "@typescript-eslint/parser",
+      "parserOptions": {
+        "project": ["libs/shared/components/tsconfig(.*)?.json"],
+        "tsConfigRootDir": "./"
+      }
     },
     {
       "files": ["*.ts", "*.tsx"],
