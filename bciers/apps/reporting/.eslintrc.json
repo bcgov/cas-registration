@@ -9,10 +9,7 @@
   "overrides": [
     {
       "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
-      "rules": {
-        "@typescript-eslint/dot-notation": "error",
-        "@typescript-eslint/naming-convention": "error"
-      },
+      "rules": {},
       "parser": "@typescript-eslint/parser",
       "parserOptions": {
         "project": ["apps/reporting/tsconfig(.*)?.json"],

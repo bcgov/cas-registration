@@ -5,54 +5,58 @@
   "globals": { "vi": true },
   "ignorePatterns": ["**/*"],
   "plugins": ["@nx"],
-  "overrides": [
-    {
-      "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
-      "rules": {
-        "import/no-extraneous-dependencies": [
-          "error",
+  "rules": {
+    "@typescript-eslint/dot-notation": "error",
+    "@typescript-eslint/naming-convention": "error",
+    "no-console": 1,
+    "no-var": 2,
+    "import/extensions": [
+      "error",
+      "never",
+      {
+        "json": "always"
+      }
+    ],
+    "import/no-extraneous-dependencies": [
+      "error",
+      {
+        "devDependencies": [
+          "**/test.{ts,tsx,js,jsx}",
+          "**/test-*.{ts,tsx,js,jsx}",
+          "**/*{.,_}{test,spec}.{ts,tsx,js,jsx}",
+          "**/e2e/**/*.{ts,tsx,js,jsx}",
+          "**/playwright.config.{ts,js}",
+          "**/tailwind.config.{ts,js}",
+          "**/next.config.{ts,js}",
+          "**/.happo.{ts,js}"
+        ]
+      }
+    ],
+    "@typescript-eslint/quotes": [
+      "error",
+      "double",
+      {
+        "avoidEscape": true,
+        "allowTemplateLiterals": true
+      }
+    ],
+    "@nx/enforce-module-boundaries": [
+      "warn",
+      {
+        "enforceBuildableLibDependency": true,
+        "allow": ["@/"],
+        "depConstraints": [
           {
-            "devDependencies": [
-              "**/test.{ts,tsx,js,jsx}",
-              "**/test-*.{ts,tsx,js,jsx}",
-              "**/*{.,_}{test,spec}.{ts,tsx,js,jsx}",
-              "**/e2e/**/*.{ts,tsx,js,jsx}",
-              "**/playwright.config.{ts,js}",
-              "**/tailwind.config.{ts,js}",
-              "**/next.config.{ts,js}",
-              "**/.happo.{ts,js}"
-            ]
-          }
-        ],
-        "import/extensions": [
-          "error",
-          "never",
-          {
-            "json": "always"
-          }
-        ],
-        "@typescript-eslint/quotes": [
-          "error",
-          "double",
-          {
-            "avoidEscape": true,
-            "allowTemplateLiterals": true
-          }
-        ],
-        "@nx/enforce-module-boundaries": [
-          "warn",
-          {
-            "enforceBuildableLibDependency": true,
-            "allow": ["@/"],
-            "depConstraints": [
-              {
-                "sourceTag": "*",
-                "onlyDependOnLibsWithTags": ["*"]
-              }
-            ]
+            "sourceTag": "*",
+            "onlyDependOnLibsWithTags": ["*"]
           }
         ]
       }
+    ]
+  },
+  "overrides": [
+    {
+      "files": ["*.ts", "*.tsx", "*.js", "*.jsx"]
     },
     {
       "files": ["*.ts", "*.tsx"],
