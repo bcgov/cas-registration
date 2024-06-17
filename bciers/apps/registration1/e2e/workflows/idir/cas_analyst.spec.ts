@@ -1,5 +1,5 @@
 // 🧪 Suite to test the cas_analyst workflows using storageState
-import { expect, test } from "@playwright/test";
+import { test } from "@playwright/test";
 // 🪄 Page Object Models
 import { DashboardPOM } from "@/e2e/poms/dashboard";
 import { OperationsPOM } from "@/e2e/poms/operations";
@@ -9,9 +9,7 @@ import {
   setupTestEnvironment,
   stabilizeAccordion,
   stabilizeGrid,
-  tableHasExpectedRowCount,
   takeStabilizedScreenshot,
-  waitForElementToStabilize,
 } from "@/e2e/utils/helpers";
 // ☰ Enums
 import {

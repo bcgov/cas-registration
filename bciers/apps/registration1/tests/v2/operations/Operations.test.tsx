@@ -1,6 +1,5 @@
 import { render, screen } from "@testing-library/react";
 import {
-  actionHandler,
   fetchOperationsPageData,
   useRouter,
   useSearchParams,

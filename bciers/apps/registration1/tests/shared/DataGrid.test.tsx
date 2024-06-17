@@ -1,14 +1,7 @@
-import {
-  act,
-  getByRole,
-  render,
-  screen,
-  waitFor,
-} from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, vi } from "vitest";
 import { useRouter, useSearchParams } from "@bciers/testConfig/mocks";
-import { QueryParams, Session } from "@bciers/testConfig/types";
-import Operation from "@/app/components/operations/Operation";
+import { QueryParams } from "@bciers/testConfig/types";
 import DataGrid from "@bciers/components/datagrid/DataGrid";
 import { GridColDef } from "@mui/x-data-grid";
 

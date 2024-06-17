@@ -13,7 +13,6 @@ import {
   analyzeAccessibility,
   setupTestEnvironment,
   takeStabilizedScreenshot,
-  waitForElementToStabilize,
 } from "@/e2e/utils/helpers";
 dotenv.config({ path: "./e2e/.env.local" });
 const happoPlaywright = require("happo-playwright");

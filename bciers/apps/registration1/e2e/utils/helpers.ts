@@ -463,16 +463,13 @@ export async function takeStabilizedScreenshot(
     targets,
   });
 }
-export async function assertCount(
-  elementsToCount: Locator,
-  expectedCount: number,
-) {
+export async function assertCount(elementsToCount: Locator) {
   expect(elementsToCount).toHaveCount(0);
 }
 
 export async function stabilizeGrid(page: Page, expectedRowCount: number) {
   await tableHasExpectedRowCount(page, expectedRowCount);
-  await assertCount(page.locator(".MuiDataGrid-row:hover"), 0); // on hover, the table row colour changes, creating happo diffs
+  await assertCount(page.locator(".MuiDataGrid-row:hover")); // on hover, the table row colour changes, creating happo diffs
 }
 export async function stabilizeAccordion(
   page: Page,
