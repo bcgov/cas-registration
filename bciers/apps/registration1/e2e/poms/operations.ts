@@ -325,7 +325,7 @@ export class OperationsPOM {
             // FIXME FOR CI
             /* await downloadPDF(
               this.page,
-              ButtonText.PDF_ PREVIEW,
+              ButtonText.PDF_PREVIEW,
               LinkSrc.PDF_FILE
             );
             */
