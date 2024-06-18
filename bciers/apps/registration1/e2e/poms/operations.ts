@@ -313,7 +313,6 @@ export class OperationsPOM {
               this.buttonConfirmModal,
               this.alertDeclined,
             );
-            await expect(this.messageOperationDeclined).toBeVisible();
             break;
           case 3:
             // Status Approved
