@@ -6,17 +6,18 @@
     "../../.eslintrc.json"
   ],
   "ignorePatterns": ["!**/*", ".next/**/*"],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "project": ["apps/registration/tsconfig(.*)?.json"],
+    "tsConfigRootDir": "./"
+  },
+  "rules": {
+    "@next/next/no-html-link-for-pages": ["error", "apps/registration/app"]
+  },
   "overrides": [
     {
       "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
-      "rules": {
-        "@next/next/no-html-link-for-pages": ["error", "apps/registration/app"]
-      },
-      "parser": "@typescript-eslint/parser",
-      "parserOptions": {
-        "project": ["apps/registration/tsconfig(.*)?.json"],
-        "tsConfigRootDir": "./"
-      }
+      "rules": {}
     },
     {
       "files": ["*.ts", "*.tsx"],

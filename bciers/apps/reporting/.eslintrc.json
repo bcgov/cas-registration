@@ -2,19 +2,17 @@
   "extends": ["next", "../../.eslintrc.json", "prettier"],
   "ignorePatterns": ["!**/*", ".next/**/*"],
   "rules": {
-    "no-console": 1,
-    "no-var": 2,
-    "@next/next/no-html-link-for-pages": ["error", "apps/registration/app"]
+    "@next/next/no-html-link-for-pages": ["error", "apps/reporting/src/app"]
+  },
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "project": ["apps/reporting/tsconfig(.*)?.json"],
+    "tsConfigRootDir": "./"
   },
   "overrides": [
     {
       "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
-      "rules": {},
-      "parser": "@typescript-eslint/parser",
-      "parserOptions": {
-        "project": ["apps/reporting/tsconfig(.*)?.json"],
-        "tsConfigRootDir": "./"
-      }
+      "rules": {}
     },
     {
       "files": ["*.js", "*.jsx"],

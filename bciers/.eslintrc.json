@@ -6,6 +6,7 @@
   "ignorePatterns": ["**/*"],
   "plugins": ["@nx"],
   "rules": {
+    "@next/next/no-html-link-for-pages": ["off"],
     "@typescript-eslint/dot-notation": "error",
     "@typescript-eslint/naming-convention": "error",
     "no-console": 1,
