@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
+    "affected:test": "nx affected --base=remotes/origin/main --target-test",
     "dev-all": "nx run-many -t dev -p dashboard,registration,reporting",
     "dev": "nx dev reporting",
     "dash": "nx dev dashboard -p 3000",
