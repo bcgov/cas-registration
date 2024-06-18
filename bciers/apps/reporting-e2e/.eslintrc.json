@@ -6,7 +6,6 @@
     "../../.eslintrc.json"
   ],
   "ignorePatterns": ["!**/*"],
-  "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "project": ["apps/reporting-e2e/tsconfig(.*)?.json"],
     "tsConfigRootDir": "./"

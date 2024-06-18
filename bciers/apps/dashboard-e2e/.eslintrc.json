@@ -13,8 +13,7 @@
   "overrides": [
     {
       "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
-      "rules": {},
-      "parser": "@typescript-eslint/parser"
+      "rules": {}
     },
     {
       "files": ["*.ts", "*.tsx"],
