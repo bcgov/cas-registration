@@ -2,9 +2,6 @@ name: Trivy Scan Code
 
 on:
   workflow_call:
-    tags:
-    - frontend
-    - backend
 
 jobs:
   analyze:
