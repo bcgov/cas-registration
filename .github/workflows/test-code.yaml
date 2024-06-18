@@ -4,10 +4,6 @@ name: Test BCIERS code
 
 on:
   workflow_call:
-    tags:
-    - frontend
-    - backend
-    - components
 
 env:
   PGUSER: postgres
