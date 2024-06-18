@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { Button } from "@mui/material";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { auth } from "@/dashboard/auth";
 import Note, {
   registrationRequestNote,
 } from "@bciers/components/datagrid/Note";
@@ -13,7 +13,7 @@ export default async function OperationsPage({}) {
   /* When calling from the server-side i.e., in Route Handlers, React Server Components, API routes,
    * getServerSession requires passing the same object you would pass to NextAuth
    */
-  const session = await getServerSession(authOptions);
+  const session = await auth();
   const role = session?.user?.app_role;
 
   return (
