@@ -10,6 +10,26 @@
         "port": 3000
       }
     },
+    "build": {
+      "executor": "@nx/next:build",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "dev",
+      "options": {
+        "outputPath": "dist/dashboard",
+        "generateLockfile": true
+      }
+    },
+    "container": {
+      "executor": "@nx-tools/nx-container:build",
+      "dependsOn": ["build"],
+      "defaultConfiguration": "dev",
+      "options": {
+        "engine": "docker",
+        "context": "dist/dashboard",
+        "file": "apps/dashboard/Dockerfile",
+        "tags": ["cas-dashboard:latest"]
+      }
+    },
     "lint": {
       "executor": "@nx/eslint:lint",
       "options": {}
