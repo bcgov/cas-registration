@@ -1,7 +1,6 @@
 // 🚩 flagging: the shared page route for */operations
 import Link from "next/link";
 import { Button } from "@mui/material";
-import { getServerSession } from "next-auth";
 import { auth } from "@/dashboard/auth";
 import Note, {
   registrationRequestNote,
