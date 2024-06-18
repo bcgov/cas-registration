@@ -1,6 +1,6 @@
-import buildQueryParams from "@/app/utils/buildQueryParams";
+import buildQueryParams from "@bciers/utils/buildQueryParams";
 import { OperationsSearchParams } from "./types";
-import { actionHandler } from "@/app/utils/actions";
+import { actionHandler } from "@bciers/utils/actions";
 
 // 🛠️ Function to fetch operations
 export default async function fetchOperationsPageData(

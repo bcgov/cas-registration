@@ -1,4 +1,4 @@
-import { actionHandler } from "@/app/utils/actions";
+import { actionHandler } from "@bciers/utils/actions";
 
 async function getOperators() {
   try {

@@ -4,7 +4,7 @@ import {
   FrontEndRoles,
   OperatorStatus,
   UserOperatorStatus,
-} from "@/app/utils/enums";
+} from "@bciers/utils/enums";
 import reportAProblemTile from "@/app/data/dashboard/report_a_problem.json";
 import bceidSelectOperatorTile from "@/app/data/dashboard/bceid/select_operator.json";
 import bceidMyOperatorTile from "@/app/data/dashboard/bceid/my_operator.json";

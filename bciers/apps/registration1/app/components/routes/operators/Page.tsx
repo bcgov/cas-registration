@@ -1,8 +1,8 @@
 import { Suspense } from "react";
 import Loading from "@bciers/components/loading/SkeletonGrid";
-import { actionHandler } from "@/app/utils/actions";
+import { actionHandler } from "@bciers/utils/actions";
 import { GridRowsProp } from "@mui/x-data-grid";
-import buildQueryParams from "@/app/utils/buildQueryParams";
+import buildQueryParams from "@bciers/utils/buildQueryParams";
 import { OperatorsSearchParams } from "@/app/components/userOperators/types";
 import AccessRequests from "@/app/components/userOperators/AccessRequests";
 

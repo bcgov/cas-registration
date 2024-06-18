@@ -1,5 +1,5 @@
 import Tiles from "@bciers/components/navigation/Tiles";
-import { FrontEndRoles } from "@/app/utils/enums";
+import { FrontEndRoles } from "@bciers/utils/enums";
 import Card from "@mui/material/Card";
 import Typography from "@mui/material/Typography";
 import { fetchDashboardData } from "@bciers/actions/server";

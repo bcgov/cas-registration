@@ -9,7 +9,7 @@ import Modal from "@bciers/components/modal/Modal";
 import RequestChanges from "./RequestChanges";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
-import { Status } from "@/app/utils/enums";
+import { Status } from "@bciers/utils/enums";
 
 interface Props {
   confirmApproveMessage: string;
