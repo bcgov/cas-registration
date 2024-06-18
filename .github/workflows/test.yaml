@@ -49,7 +49,7 @@ jobs:
       - name: Run Nx Affected Tests with Remote Caching
         id: nx-tests
         run: |
-          yarn nx affected:build --base=origin/develop --target=test --parallel
+          yarn nx affected --base=origin/develop --target=test --parallel
         shell: bash
 
   yarn-audit:
