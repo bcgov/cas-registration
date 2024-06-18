@@ -1,4 +1,4 @@
-// 🧪 Suite to test `client/app/(onboarding)/home/page.tsx`
+// 🧪 Suite to test `app/(onboarding)/home/page.tsx`
 import { test, expect } from "@playwright/test";
 // 🪄 Page Object Models
 import { DashboardPOM } from "@/e2e/poms/dashboard";

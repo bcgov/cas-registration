@@ -1,4 +1,4 @@
-// 🧪 Suite to test `client/app/(authenticated)/dashboard/profile/page.tsx`
+// 🧪 Suite to test `app/(authenticated)/dashboard/profile/page.tsx`
 
 import { test } from "@playwright/test";
 // 🪄 Page Object Models

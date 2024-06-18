@@ -56,12 +56,6 @@
         "cwd": "apps/registration1",
         "command": "playwright show-report"
       }
-    },
-    "e2e:sequential": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "playwright test --workers=1 client/e2e/*"
-      }
     }
   }
 }
