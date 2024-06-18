@@ -26,7 +26,8 @@
     "report:build": "nx build reporting",
     "coam": "nx dev coam",
     "coam:build": "nx build coam",
-    "coam:test": "nx run coam:test"
+    "coam:test": "nx run coam:test",
+    "rep:test": "nx run reporting:test"
   },
   "private": true,
   "module": "commonjs",
