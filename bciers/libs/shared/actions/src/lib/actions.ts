@@ -40,7 +40,7 @@ export async function fetchDashboardData(url: string) {
     // Pretty-print the data
     const data = JSON.stringify(response[0].data.tiles, null, 2);
     // Parse data to object
-    var object = JSON.parse(data);
+    const object = JSON.parse(data);
     // Assert the object as ContentType
     return object as ContentItem[];
   } catch (error) {
