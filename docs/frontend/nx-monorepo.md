@@ -75,6 +75,29 @@ A set of helm templates have been created in `{repo}/helm/cas-registration/templ
 
 ## Nx Generators 🦾
 
+### Creating new projects 🏗
+
+For further information, see the [Nx docs about @nx/next generators](https://nx.dev/nx-api/next/generators/application).
+
+#### Eslint
+
+When creating a new project with Nx, there is some setup that needs to be done to ensure that eslint works correctly with typescript. Nx doesn't set this up by default since there is a performance hit though we are using typescript in all of our projects. More information about this can be found in the [Nx docs](https://nx.dev/latest/react/guides/eslint).
+
+This is done by adding the following to the `apps/{project}/.eslintrc.json` or `libs/shared/{project}/.eslintrc.json` file:
+
+```
+{
+  ...
+  "parserOptions": {
+    "project": ["apps/{project_name}/tsconfig(.*)?.json"],
+    "tsConfigRootDir": "./"
+  },
+  ...
+}
+```
+
+Ensure that linting is setup and working correctly by running `nx run {project}:lint` or `nx run-many --target=lint` to lint all projects.
+
 ### Creating new components 📻
 
 For further information, see the [Nx docs about @nx/next generators](https://nx.dev/nx-api/next/generators/component).
