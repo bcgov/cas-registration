@@ -9,10 +9,6 @@
       "options": {
         "port": 3000
       }
-    },
-    "lint": {
-      "executor": "@nx/eslint:lint",
-      "options": {}
     }
   }
 }

@@ -28,10 +28,6 @@
         "file": "apps/reporting/Dockerfile",
         "tags": ["cas-reporting:latest"]
       }
-    },
-    "lint": {
-      "executor": "@nx/eslint:lint",
-      "options": {}
     }
   }
 }

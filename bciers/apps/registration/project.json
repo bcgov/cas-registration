@@ -38,10 +38,6 @@
         "tags": ["cas-registration:latest"]
       }
     },
-    "lint": {
-      "executor": "@nx/eslint:lint",
-      "options": {}
-    },
     "e2e": {
       "executor": "nx:run-commands",
       "options": {
