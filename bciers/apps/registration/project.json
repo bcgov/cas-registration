@@ -27,6 +27,10 @@
         "dev": false
       }
     },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "options": {}
+    },
     "container": {
       "executor": "@nx-tools/nx-container:build",
       "dependsOn": ["build"],
