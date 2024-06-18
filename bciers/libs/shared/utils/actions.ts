@@ -7,11 +7,11 @@ and can be called from server components or from client components.
 */
 "use server";
 
-import getUUIDFromEndpoint from "@/app/utils/getUUIDFromEndpoint";
 import { revalidatePath } from "next/cache";
 import * as Sentry from "@sentry/nextjs";
 
-import { getToken } from "@bciers/actions/server";
+import getUUIDFromEndpoint from "./getUUIDFromEndpoint";
+import { getToken } from "../actions/src/lib/actions";
 
 /**
  * Generic action handler that sends a request to the specified API endpoint

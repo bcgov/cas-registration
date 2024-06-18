@@ -1,4 +1,4 @@
-import { bcObpsLink } from "@/app/utils/urls";
+import { bcObpsLink } from "@bciers/utils/urls";
 
 export const PointOfContactTitle = (
   <>

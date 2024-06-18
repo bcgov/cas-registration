@@ -9,7 +9,7 @@ and can be called from server components or from client components.
 
 import { cookies } from "next/headers";
 import { ContentItem } from "@bciers/types";
-import { actionHandler } from "@/app/utils/actions";
+import { actionHandler } from "@bciers/utils/actions";
 
 // 🛠️ Function to get the encrypted JWT from NextAuth getToken route function
 export async function getToken() {

@@ -210,7 +210,7 @@ export enum MessageTextResponse {
 }
 
 // 📝 Status LOV Operator
-import { OperatorStatus } from "@/app/utils/enums";
+import { OperatorStatus } from "@bciers/utils/enums";
 export { OperatorStatus };
 
 // 🤳 UUIDs Operator
@@ -219,7 +219,7 @@ export enum OperatorUUID {
 }
 
 // 📝 Status LOV Operation
-import { OperationStatus } from "@/app/utils/enums";
+import { OperationStatus } from "@bciers/utils/enums";
 export { OperationStatus };
 
 // 💬 Dashboard tiles
@@ -234,7 +234,7 @@ export enum TileTextDashboard {
 }
 
 // 📝 Status LOV UserOperator
-import { UserOperatorStatus } from "@/app/utils/enums";
+import { UserOperatorStatus } from "@bciers/utils/enums";
 export { UserOperatorStatus };
 
 // 🤳 UUIDs UserOperator

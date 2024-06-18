@@ -5,12 +5,12 @@ import Button from "@mui/material/Button";
 import Grid from "@mui/material/Grid/Grid";
 import events from "@/app/data/home/events.json";
 import { signIn } from "next-auth/react";
-import { getEnvValue } from "@/app/utils/actions";
+import { getEnvValue } from "@bciers/utils/actions";
 import {
   bcObpsLink,
   bcObpsGuidanceLink,
   carbonTaxExemptionLink,
-} from "@/app/utils/urls";
+} from "@bciers/utils/urls";
 /*
 📚
 In the app directory, nested folders are normally mapped to URL paths.

@@ -1,6 +1,6 @@
 import { describe, expect } from "vitest";
 import { Session } from "next-auth";
-import getUserFullName from "@/app/utils/getUserFullName";
+import getUserFullName from "@bciers/utils/getUserFullName";
 
 const session = {
   user: {

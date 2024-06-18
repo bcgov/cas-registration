@@ -5,7 +5,7 @@ import {
   useSearchParams,
 } from "@bciers/testConfig/mocks";
 import Operations from "apps/registration/app/components/operations/Operations";
-import { FrontEndRoles } from "@/app/utils/enums";
+import { FrontEndRoles } from "@bciers/utils/enums";
 
 useRouter.mockReturnValue({
   query: {},

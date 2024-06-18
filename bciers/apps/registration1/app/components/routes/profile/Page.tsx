@@ -1,10 +1,10 @@
-import { actionHandler } from "@/app/utils/actions";
+import { actionHandler } from "@bciers/utils/actions";
 import {
   UserProfileFormData,
   UserProfilePartialFormData,
 } from "@/app/components/form/formDataTypes";
 import { auth } from "@/dashboard/auth";
-import getUserFullName from "@/app/utils/getUserFullName";
+import getUserFullName from "@bciers/utils/getUserFullName";
 import UserForm from "@/app/components/users/UserForm";
 
 // 🚀 API call: GET user's data
