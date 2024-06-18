@@ -1,7 +1,6 @@
 {
   "extends": ["next", "../../.eslintrc.json", "prettier"],
   "ignorePatterns": ["!**/*", ".next/**/*"],
-  "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "project": ["apps/registration1/tsconfig(.*)?.json"],
     "tsConfigRootDir": "./"

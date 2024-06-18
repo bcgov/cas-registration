@@ -1,7 +1,6 @@
 {
   "extends": ["plugin:@nx/react", "../../../.eslintrc.json"],
   "ignorePatterns": ["!**/*"],
-  "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "project": ["libs/shared/types/tsconfig(.*)?.json"],
     "tsConfigRootDir": "./"

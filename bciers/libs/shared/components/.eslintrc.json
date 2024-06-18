@@ -2,7 +2,6 @@
   "extends": ["plugin:@nx/react", "../../../.eslintrc.json", "prettier"],
   "globals": { "vi": true },
   "ignorePatterns": ["!**/*"],
-  "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "project": ["libs/shared/components/tsconfig(.*)?.json"],
     "tsConfigRootDir": "./"

@@ -1,13 +1,12 @@
 {
   "extends": ["next", "../../.eslintrc.json", "prettier"],
   "ignorePatterns": ["!**/*", ".next/**/*"],
-  "rules": {
-    "@next/next/no-html-link-for-pages": ["error", "apps/reporting/src/app"]
-  },
-  "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "project": ["apps/reporting/tsconfig(.*)?.json"],
     "tsConfigRootDir": "./"
+  },
+  "rules": {
+    "@next/next/no-html-link-for-pages": ["error", "apps/reporting/src/app"]
   },
   "overrides": [
     {
