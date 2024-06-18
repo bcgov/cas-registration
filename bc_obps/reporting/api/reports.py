@@ -2,7 +2,7 @@ from registration.decorators import handle_http_errors
 from .router import router
 
 
-@router.put(
+@router.post(
     "/reports/",
 )
 @handle_http_errors()
