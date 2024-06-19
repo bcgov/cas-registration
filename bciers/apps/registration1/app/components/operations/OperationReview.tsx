@@ -17,7 +17,7 @@ const OperationReview = ({ operation }: Props) => {
       const response = await actionHandler(
         `registration/operations/${id}/update-status`,
         "PUT",
-        `dashboard/operations/${id}`,
+        ``,
         {
           body: JSON.stringify({ status }),
         },
