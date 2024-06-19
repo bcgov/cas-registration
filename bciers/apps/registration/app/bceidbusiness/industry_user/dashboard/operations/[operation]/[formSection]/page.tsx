@@ -1,10 +1,11 @@
 // 🚩 flagging that for shared routes between roles, "Page" code is a component for code maintainability
-import OperationsOperationPage from "@/app/components/routes/operations/operation/Page";
+import { OperationsSearchParams } from "@/app/components/operations/types";
+import OperationsPage from "apps/registration/app/components/operations/OperationsPage";
 
-export default function Page({
-  params,
+export default async function Page({
+  searchParams,
 }: {
-  params: Readonly<{ operation: string }>;
+  searchParams: OperationsSearchParams;
 }) {
-  return <OperationsOperationPage params={params} />;
+  return <OperationsPage searchParams={searchParams} />;
 }
