@@ -107,13 +107,13 @@ perf_test: SERVER_HOST=http://127.0.0.1:8000
 perf_test: SERVER_API_ROUTE=/api/registration
 perf_test: SERVER_ROUTE=$(SERVER_HOST)$(SERVER_API_ROUTE)
 perf_test:
-	@k6 -e SERVER_HOST=$(SERVER_ROUTE) run client/tests/performance/script.js --out csv=k6_results/test_results.csv
+	@k6 -e SERVER_HOST=$(SERVER_ROUTE) run bciers/apps/registration1/tests/performance/script.js --out csv=k6_results/test_results.csv
 
 .PHONY: perf_test_frontend
 perf_test_frontend: ## run frontend performance tests with k6
 perf_test_frontend: APP_HOST=http://localhost:3000
 perf_test_frontend:
-	@k6 -e APP_HOST=$(APP_HOST) run client/tests/performance/frontend_script.js --out csv=k6_results/test_results_frontend.csv
+	@k6 -e APP_HOST=$(APP_HOST) run bciers/apps/registration1/tests/performance/frontend_script.js --out csv=k6_results/test_results_frontend.csv
 
 
 # include .env.devops

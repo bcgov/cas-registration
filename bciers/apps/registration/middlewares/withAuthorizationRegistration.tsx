@@ -111,6 +111,11 @@ export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
               const options: RequestInit = {
                 cache: "no-store", // Default cache option
                 method: "GET",
+                headers: new Headers({
+                  Authorization: JSON.stringify({
+                    user_guid: token.user_guid,
+                  }),
+                }),
               };
               const response = await fetch(
                 `${process.env.API_URL}registration/user-operators/current`,
@@ -122,7 +127,7 @@ export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
                 operator.status !== "Approved"
               ) {
                 return NextResponse.redirect(
-                  new URL(`/dashboard`, request.url),
+                  new URL(`/registration/dashboard`, request.url),
                 );
               }
             } catch (error) {
