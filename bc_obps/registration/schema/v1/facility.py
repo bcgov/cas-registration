@@ -15,4 +15,4 @@ class FacilityFilterSchema(FilterSchema):
     # If we want to achieve more by using the `q` parameter, we should use it and ignore the mypy error
     bcghg_id: Optional[str] = Field(None, json_schema_extra={'q': 'bcghg_id__icontains'})
     name: Optional[str] = Field(None, json_schema_extra={'q': 'name__icontains'})
-    type: Optional[Facility.Types] = Field(None, json_schema_extra={'q': 'type'})
+    type: Optional[str] = Field(None, json_schema_extra={'q': 'type__icontains'})
