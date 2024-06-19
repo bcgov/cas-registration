@@ -9,6 +9,8 @@
         "tiles": [
           {
             "title": "Clean Growth User Access Management",
+            "href": "/tbd/",
+            "icon": "Users",
             "content": "View, approve, or decine IDIR user access requests, or to assign to user's here.",
             "links": [
               {
@@ -23,6 +25,8 @@
           },
           {
             "title": "Registration",
+            "href": "/registration/dashboard",
+            "icon": "Layers",
             "content": "View information of any operator, operation, facility, or to approve or decline BORO ID applications here.",
             "links": [
               {
@@ -53,6 +57,8 @@
           },
           {
             "title": "Reporting",
+            "href": "/reporting/dashboard",
+            "icon": "File",
             "content": "View annual reports for any operation here",
             "links": [
               {
@@ -67,6 +73,8 @@
           },
           {
             "title": "COAM",
+            "href": "/coam/",
+            "icon": "Pulse",
             "content": "View payments for compliance obligations here",
             "links": [
               {
@@ -85,6 +93,8 @@
           },
           {
             "title": "Report a Problem",
+            "href": "mailto:GHGRegulator@gov.bc.ca",
+            "icon": "Wrench",
             "content": "Something wrong?",
             "links": [
               {

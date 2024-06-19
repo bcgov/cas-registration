@@ -9,6 +9,8 @@
         "tiles": [
           {
             "title": "Registration",
+            "href": "/registration/dashboard",
+            "icon": "Layers",
             "content": "View or update your operator information, which needs to be complete before applying for BORO ID's",
             "links": [
               {
@@ -39,6 +41,8 @@
           },
           {
             "title": "Reporting",
+            "href": "/reporting/dashboard",
+            "icon": "File",
             "content": "Submit annual report for an  and to view or update previous year's reports here",
             "links": [
               {
@@ -53,6 +57,8 @@
           },
           {
             "title": "COAM",
+            "href": "/coam/dashboard",
+            "icon": "Pulse",
             "content": "View payments for compliance obligations here",
             "links": [
               {
@@ -71,6 +77,8 @@
           },
           {
             "title": "Report a Problem",
+            "href": "mailto:GHGRegulator@gov.bc.ca",
+            "icon": "Wrench",
             "content": "Something wrong?",
             "links": [
               {
