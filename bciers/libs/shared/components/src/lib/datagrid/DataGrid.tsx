@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { usePathname, useSearchParams } from "next/navigation";
-import { useRouter } from "next/navigation";
+import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import debounce from "lodash.debounce";
 import {
   DataGrid as MuiGrid,
@@ -15,7 +14,7 @@ import SortIcon from "@bciers/components/icons/SortIcon";
 import styles from "@bciers/components/datagrid/styles";
 
 interface Props {
-  fetchPageData?: (params: { [key: string]: any }) => Promise<any>;
+  fetchPageData?: (...params: any) => Promise<any>;
   columns: GridColDef[];
   columnGroupModel?: GridColumnGroupingModel;
   initialData: {

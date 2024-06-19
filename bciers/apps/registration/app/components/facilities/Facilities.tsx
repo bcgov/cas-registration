@@ -16,8 +16,8 @@ export const fetchFacilitiesPageData = async (
       "",
     );
     return {
-      rows: pageData.data,
-      row_count: pageData.row_count,
+      rows: pageData.items,
+      row_count: pageData.count,
     };
   } catch (error) {
     throw error;
