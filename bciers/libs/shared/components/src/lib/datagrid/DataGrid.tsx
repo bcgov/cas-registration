@@ -14,7 +14,7 @@ import SortIcon from "@bciers/components/icons/SortIcon";
 import styles from "@bciers/components/datagrid/styles";
 
 interface Props {
-  fetchPageData?: (...params: any) => Promise<any>;
+  fetchPageData?: (params: { [key: string]: any }) => Promise<any>;
   columns: GridColDef[];
   columnGroupModel?: GridColumnGroupingModel;
   initialData: {
