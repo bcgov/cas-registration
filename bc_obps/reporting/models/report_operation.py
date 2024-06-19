@@ -1,18 +1,16 @@
 from common.models import BaseModel
 from django.db import models
 from registration.models import ReportingActivity
-from reporting.models import Report
 
 
 class ReportOperation(BaseModel):
+    """
+    Report model to store operation information
+    """
+
     class OperationType(models.TextChoices):
         SFO = "sfo"
         LFO = "lfo"
-
-    # A report can only be for one single operation
-    report = models.OneToOneField(
-        Report, on_delete=models.CASCADE, db_comment="The report this operation information relates to"
-    )
 
     operator_legal_name = models.CharField(
         max_length=1000, db_comment="The legal name of the operator operating this operation"
