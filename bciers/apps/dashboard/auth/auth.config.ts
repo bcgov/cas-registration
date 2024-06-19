@@ -80,7 +80,7 @@ export default {
   callbacks: {
     async jwt({ token, account, profile }) {
       try {
-        // 🧩 custom properties are configured through module augmentation in client/app/types/next-auth.d.ts
+        // 🧩 custom properties are configured through module augmentation
         if (profile) {
           token.given_name = (profile as KeycloakProfile).given_name;
           token.family_name = (profile as KeycloakProfile).family_name;
@@ -183,7 +183,7 @@ export default {
       if (url.startsWith("/")) return `${baseUrl}${url}`;
       // Allows callback URLs on the same origin
       else if (new URL(url).origin === baseUrl) return url;
-      // 🛸 Allow callbacks to identity server for federated signout after next-auth SignOut(): client/app/components/navigation/Profile.tsx
+      // 🛸 Allow callbacks to identity server for federated signout after next-auth SignOut()
       else if (new URL(url).origin === process.env.SITEMINDER_AUTH_URL)
         return url;
       return baseUrl;

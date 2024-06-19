@@ -17,7 +17,15 @@ Ensure the following are installed:
 
 ## App Environment Variables
 
-In both the `client` and `bc_obps` directories, create a `.env` file and copy the contents of `.env.example` file of the respective directory into it. See the 1Password vault for the values.
+In `bc_obps` directory, create a `bc_obps/.env` file from the `bc_obps/.env.example` file. See the 1Password `Clean Growth Digital Services Team` vault for the `bc_obps/.env` values in document `OBPS backend ENV`.
+
+In `bciers` directory, create a `bciers/.env` file from the `bciers/.env.example` file. See the 1Password `Clean Growth Digital Services Team` vault for the `bciers/.env` values in document `OBPS FE env`.
+
+In `bciers` directory, create a `bciers/.env.local` file from the `bciers/.env.local.example` file. See the 1Password `Clean Growth Digital Services Team` vault for the `bciers/.env.local` values in document `OBPS FE env.local`.
+
+In `bciers/apps/registration1/e2e` directory, create a `bciers/apps/registration1/e2e/.env.local` file from the `bciers/apps/registration1/e2e/.env.local.example` file. See `bciers/apps/registration1/e2e/.env.local` file for directions to the 1password values.
+
+In `bciers/apps/registration/e2e` directory, create a `bciers/apps//e2e/.env.local` file from the `bciers/apps/registration/e2e/.env.local.example` file. See `bciers/apps/registration/e2e/.env.local` file for directions to the 1password values.
 
 ## Backend Environment Setup
 
@@ -83,14 +91,29 @@ In the `bciers` directory:
 
 ### Development server
 
-1. To run a development server, you can use `yarn nx run {project}:dev`, with `{project}` being the frontend project you are working on. ie. `yarn nx run registration:dev` for the Registration application.
-2. Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+1. To run a development server, you can use `yarn nx run {project}:dev`, with `{project}` being the frontend project you are working on. ie. `yarn nx run registration:dev` for the Registration application. **Or**, you can use the scripts available in `bciers/package.json`:
+
+| Script       | Link                                                                                                                                         |
+| ------------ | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| yarn reg1    | [http://localhost:3000](http://localhost:3000)                                                                                               |
+| yarn dash    | [http://localhost:3000](http://localhost:3000)                                                                                               |
+| yarn reg     | [http://localhost:4000](http://localhost:4000)                                                                                               |
+| yarn report  | [http://localhost:5000](http://localhost:5000)                                                                                               |
+| yarn dev-all | Runs target dev for all multi-zone projects defined in `bciers/apps/dashboard/next.config.js` [http://localhost:3000](http://localhost:3000) |
 
 ### Testing
 
 - To run Vitest unit tests on a specific project: `yarn nx run {project}:test`.
 - To run Vitest unit tests on all projects: `yarn nx run-many -t test`.
 - To run playwright end-to-end tests: `nx run {project}:e2e` (For the first time, you may need to run `yarn playwright install --with-deps` to install the browsers)
+
+**Or**, you can use the scripts available in `bciers/package.json`
+
+### Building
+
+- To build a specific project: `yarn nx run {project}:build`.
+
+**Or**, you can use the scripts available in `bciers/package.json`
 
 ## Pre-Commit
 
@@ -114,4 +137,4 @@ We use [gitlint](https://jorisroovers.com/gitlint/) to check commit message form
 
 This project follows the commit message conventions outlined by [Conventional Commits](https://www.conventionalcommits.org/). Besides the standard commit types (message prefixes) **feat** and **fix**, we use some other types described there based on the Angular convention; some common ones among those are **test**, **docs**, **chore** and **refactor**. You can find the configuration details in the [.gitlint](../.gitlint) file
 
-We also extend this prefix convention to the naming of **branches**, eg: `docs/add-readme` or `feat/some-feature`.
+We also extend this prefix convention to the naming of **branches**, eg: `docs/#githubissuenumber-add-readme` or `feat/#githubissuenumber-some-feature`.
