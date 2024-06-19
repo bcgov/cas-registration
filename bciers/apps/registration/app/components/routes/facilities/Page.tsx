@@ -22,10 +22,10 @@ export default async function FacilitiesPage({
         classNames="mb-4 bg-gray-300 py-5"
         message={"View the facilities of this operation here."}
       />
-      <h1>Facilities</h1>
+      <h2 className="text-bc-primary-blue">Facilities</h2>
       {/* Conditionally render the button based on user's role */}
       {role?.includes("industry_user") && (
-        <div>
+        <div className="text-right">
           <Link href="#">
             <Button variant="contained">Add Facility</Button>
           </Link>
