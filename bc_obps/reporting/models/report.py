@@ -1,6 +1,7 @@
 from common.models import BaseModel
 from django.db import models
 from registration.models.operation import Operation
+from reporting.models.reporting_year import ReportingYear
 
 
 class Report(BaseModel):
@@ -17,7 +18,13 @@ class Report(BaseModel):
         Operation, on_delete=models.DO_NOTHING, db_comment="The operation to which this report belongs", null=True
     )
 
-    reporting_year = models.IntegerField(default=2024, db_comment="The reporting year for which this report was filed")
+    reporting_year = models.ForeignKey(
+        ReportingYear,
+        on_delete=models.DO_NOTHING,
+        blank=False,
+        null=False,
+        db_comment="The reporting year, for which this report is filled",
+    )
 
     class Meta:
         db_table_comment = "A table to store reports"
