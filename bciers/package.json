@@ -23,7 +23,9 @@
     "reg1:coverage": "nx run registration1:test --coverage",
     "reg1:test": "nx run registration1:test",
     "report": "nx dev reporting  -p 5000",
-    "report:build": "nx build reporting"
+    "report:build": "nx build reporting",
+    "coam": "nx dev coam",
+    "coam:build": "nx build coam"
   },
   "private": true,
   "module": "commonjs",
