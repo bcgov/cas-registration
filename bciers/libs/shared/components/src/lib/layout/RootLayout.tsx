@@ -24,7 +24,7 @@ import { Bread } from "@bciers/components";
 import { Main } from "@bciers/components/server";
 
 export const metadata: Metadata = {
-  title: "CAS OBPS REGISTRATION",
+  title: "CAS OBPS",
   description:
     "The OBPS is designed to ensure there is a price incentive for industrial emitters to reduce their greenhouse gas emissions and spur innovation while maintaining competitiveness and protecting against carbon leakage.",
   icons: {
