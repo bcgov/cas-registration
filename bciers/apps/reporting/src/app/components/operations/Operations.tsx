@@ -1,6 +1,6 @@
 import { actionHandler } from "@/app/utils/actions";
-import { OperationRow } from "@reporting/src/app/components/operations/types";
 import ReportingOperationDataGrid from "./ReportingOperationDataGrid";
+import { OperationRow } from "./types";
 
 // 🛠️ Function to fetch operations
 export const fetchOperationsPageData = async () => {
@@ -22,10 +22,10 @@ export default async function Operations() {
   if (!operations) {
     return <div>No operations data in database.</div>;
   }
-
   // Render the DataGrid component
   return (
     <div className="mt-5">
+      <div>{operations.rows.toString()}</div>
       <ReportingOperationDataGrid initialData={operations} />
     </div>
   );
