@@ -3,9 +3,11 @@ import { FacilitiesSearchParams } from "apps/registration/app/components/facilit
 import FacilitiesPage from "apps/registration/app/components/routes/facilities/Page";
 
 export default async function Page({
-  params,
+  params: { operation },
+  searchParams,
 }: Readonly<{
-  params: { operation: string; searchParams: FacilitiesSearchParams };
+  params: { operation: string };
+  searchParams: FacilitiesSearchParams;
 }>) {
-  return <FacilitiesPage searchParams={params.searchParams} />;
+  return <FacilitiesPage operationId={operation} searchParams={searchParams} />;
 }

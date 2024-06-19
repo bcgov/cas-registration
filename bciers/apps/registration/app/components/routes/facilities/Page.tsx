@@ -8,15 +8,14 @@ import Facilities from "../../facilities/Facilities";
 import Note from "@bciers/components/datagrid/Note";
 
 export default async function FacilitiesPage({
+  operationId,
   searchParams,
-}: Readonly<{ searchParams: FacilitiesSearchParams }>) {
+}: Readonly<{ operationId: string; searchParams: FacilitiesSearchParams }>) {
   // 👤 Use NextAuth.js hook to get information about the user's session
   /* When calling from the server-side i.e., in Route Handlers, React Server Components, API routes,
    */
   const session = await auth();
   const role = session?.user?.app_role;
-  // ⛔️ hard-coded operationId we need to replace with dynamic data
-  const operationId = "e1300fd7-2dee-47d1-b655-2ad3fd10f052";
   return (
     <>
       <Note
