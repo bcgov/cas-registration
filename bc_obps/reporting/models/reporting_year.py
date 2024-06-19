@@ -15,7 +15,7 @@ class ReportingYear(BaseModel):
         blank=False, null=False, db_comment="End of the reporting period for that reporting year, UTC-based"
     )
 
-    description = models.CharField()
+    description = models.CharField(max_length=10000, db_comment="Description for the reporting year")
 
     class Meta:
         db_table_comment = "Reporting year"

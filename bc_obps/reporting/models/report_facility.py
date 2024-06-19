@@ -7,7 +7,10 @@ from reporting.models import Report
 class ReportFacility(BaseModel):
 
     report = models.ForeignKey(
-        Report, on_delete=models.CASCADE, db_comment="The report this facility information is related to"
+        Report,
+        on_delete=models.CASCADE,
+        db_comment="The report this facility information is related to",
+        related_name="report_facilities",
     )
 
     facility_name = models.CharField(max_length=1000, db_comment="The name of the facility as reported")
