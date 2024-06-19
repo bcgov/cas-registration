@@ -15,7 +15,7 @@
           {
             "title": "Operations",
             "content": "View all operations here.",
-            "href": "/registration/operations"
+            "href": "/registration/dashboard/operations"
           },
           {
             "title": "Facilities",
