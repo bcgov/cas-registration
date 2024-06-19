@@ -6,7 +6,7 @@ from registration.models import Facility
 class FacilityListOut(ModelSchema):
     class Config:
         model = Facility
-        model_fields = ['name', 'type', 'bcghg_id']
+        model_fields = ['id', 'name', 'type', 'bcghg_id']
 
 
 class FacilityFilterSchema(FilterSchema):
