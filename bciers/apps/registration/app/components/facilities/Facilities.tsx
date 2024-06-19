@@ -1,28 +1,6 @@
-import buildQueryParams from "@/app/utils/buildQueryParams";
-import { actionHandler } from "@/app/utils/actions";
 import { FacilityRow, FacilitiesSearchParams } from "./types";
 import FacilityDataGrid from "./FacilityDataGrid";
-
-// ↓ fetch data from server
-export const fetchFacilitiesPageData = async (
-  operationId: string,
-  searchParams: FacilitiesSearchParams,
-) => {
-  try {
-    const queryParams = buildQueryParams(searchParams);
-    const pageData = await actionHandler(
-      `registration/operations/${operationId}/facilities${queryParams}`,
-      "GET",
-      "",
-    );
-    return {
-      rows: pageData.items,
-      row_count: pageData.count,
-    };
-  } catch (error) {
-    throw error;
-  }
-};
+import { fetchFacilitiesPageData } from "./utils";
 
 // 🧩 Main component
 export default async function Facilities({
@@ -44,7 +22,7 @@ export default async function Facilities({
   // Render the DataGrid component
   return (
     <div className="mt-5">
-      <FacilityDataGrid initialData={facilities} />
+      <FacilityDataGrid operationId={operationId} initialData={facilities} />
     </div>
   );
 }

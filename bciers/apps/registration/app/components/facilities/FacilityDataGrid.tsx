@@ -1,39 +1,19 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { GridColumnGroupHeaderParams } from "@mui/x-data-grid";
+import { FacilitySearchCell } from "../datagrid/cells/FacilitiesSearchCell";
 import DataGrid from "@bciers/components/datagrid/DataGrid";
-import FacilitiesActionCell from "@bciers/components/datagrid/cells/FacilitiesActionCell";
-import HeaderSearchCell from "@bciers/components/datagrid/cells/HeaderSearchCell";
-import { fetchFacilitiesPageData } from "./Facilities";
+import FacilitiesActionCell from "../datagrid/cells/FacilitiesActionCell";
 import facilityColumns from "../datagrid/models/facilities/facilityColumns";
 import facilityGroupColumns from "../datagrid/models/facilities/facilityGroupColumns";
 import { FacilityRow } from "./types";
-
-const FacilitySearchCell = ({
-  lastFocusedField,
-  setLastFocusedField,
-}: {
-  lastFocusedField: string | null;
-  setLastFocusedField: (value: string | null) => void;
-}) => {
-  const RenderCell = (params: GridColumnGroupHeaderParams) => {
-    const { groupId, headerName } = params;
-    return (
-      <HeaderSearchCell
-        field={groupId ?? ""}
-        fieldLabel={headerName ?? ""}
-        isFocused={lastFocusedField === groupId}
-        setLastFocusedField={setLastFocusedField}
-      />
-    );
-  };
-  return RenderCell;
-};
+import { createFetchFacilitiesPageData } from "./utils";
 
 const FacilityDataGrid = ({
+  operationId,
   initialData,
 }: {
+  operationId: string;
   initialData: {
     rows: FacilityRow[];
     row_count: number;
@@ -59,7 +39,7 @@ const FacilityDataGrid = ({
     <DataGrid
       columns={columns}
       columnGroupModel={columnGroup}
-      fetchPageData={fetchFacilitiesPageData}
+      fetchPageData={createFetchFacilitiesPageData(operationId)}
       paginationMode="server"
       initialData={initialData}
     />
