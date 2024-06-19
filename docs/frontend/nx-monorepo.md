@@ -29,14 +29,19 @@ When running commands, Nx has two patterns you can use
 
 #### Current projects
 
-| Project        | Location                         | Type        |
-| -------------- | -------------------------------- | ----------- |
-| `registration` | `/bciers/apps/registration`      | application |
-| `reporting`    | `/bciers/apps/reporting`         | application |
-| `components`   | `/bciers/libs/shared/components` | library     |
-| `img`          | `/bciers/libs/shared/img`        | library     |
-| `styles`       | `/bciers/libs/shared/styles`     | library     |
-| `testConfig`   | `/bciers/libs/shared/testConfig` | library     |
+| Project         | Location                          | Type        |
+| --------------- | --------------------------------- | ----------- |
+| `dashboard`     | `/bciers/apps/dashboard`          | application |
+| `registration`  | `/bciers/apps/registration`       | application |
+| `reporting`     | `/bciers/apps/reporting`          | application |
+| `registration1` | `/bciers/apps/registration1`      | application |
+| `actions`       | `/bciers/libs/shared/actions`     | library     |
+| `components`    | `/bciers/libs/shared/components`  | library     |
+| `img`           | `/bciers/libs/shared/img`         | library     |
+| `middlewares`   | `/bciers/libs/shared/middlewares` | library     |
+| `styles`        | `/bciers/libs/shared/styles`      | library     |
+| `testConfig`    | `/bciers/libs/shared/testConfig`  | library     |
+| `types`         | `/bciers/libs/shared/types`       | library     |
 
 ### General tips
 
@@ -49,7 +54,7 @@ The _Reporting_ application container is built using Nx. Automation is in place 
 
 ### Running the build 🏃
 
-> You may need to run `yarn` in the `{repo}/bciers` directory to install and update packages. Additionally, while eventually everything will be bundled and handled by Nx, currently there are pieces being imported from the non-monorepo folder of Registration `{repo}/client`. Due to this, you must also ensure packages are up-to-date there as well.
+> You may need to run `yarn` in the `{repo}/bciers` directory to install and update packages.
 
 1. Navigate to `{repo}/bciers` and run (if nx is not installed globally, add `npx` first to the following) `nx run reporting:container --skip-nx-cache`. Next.JS should be built and then a container made from that build.
 

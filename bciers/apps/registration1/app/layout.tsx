@@ -20,7 +20,7 @@ import { theme } from "@bciers/components";
 import { NextAppDirEmotionCacheProvider } from "@bciers/components";
 import CssBaseline from "@mui/material/CssBaseline";
 
-import SessionProvider from "@/auth/SessionProvider";
+import SessionProvider from "@/dashboard/auth/SessionProvider";
 import { auth } from "@/dashboard/auth";
 
 export const metadata: Metadata = {
@@ -43,7 +43,6 @@ export default async function RootLayout({
   readonly children: React.ReactNode;
 }) {
   //🪝 Wrap the returned auth session in the "use client" version of NextAuth SessionProvider so to expose the useSession() hook in client components
-  // Session properties come from client/app/api/auth/[...nextauth]/route.ts
   const session = await auth();
 
   return (

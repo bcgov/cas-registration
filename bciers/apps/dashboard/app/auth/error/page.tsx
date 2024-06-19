@@ -1,7 +1,6 @@
 "use client";
 import { useSearchParams } from "next/navigation";
 // Custom auth error page to display login error
-// Defined in client/app/api/auth/[...nextauth]/route.ts
 
 export default function Page() {
   // useSearchParams is a Client Component hook that lets you read the current URL's query string.
