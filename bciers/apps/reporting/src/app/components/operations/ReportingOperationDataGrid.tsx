@@ -3,13 +3,11 @@
 import { useMemo, useState } from "react";
 import DataGrid from "@bciers/components/datagrid/DataGrid";
 import { GridColumnGroupHeaderParams } from "@mui/x-data-grid";
-import { useSession } from "next-auth/react";
-import OperationsActionCell from "@bciers/components/datagrid/cells/OperationsActionCell";
 import HeaderSearchCell from "@bciers/components/datagrid/cells/HeaderSearchCell";
-import operationColumns from "@reporting/src/app/components/datagrid/models/operationColumns";
 import operationGroupColumns from "@bciers/components/datagrid/models/operationGroupColumns";
-import { OperationRow } from "@reporting/src/app/components/operations/types";
 import { fetchOperationsPageData } from "./Operations";
+import operationColumns from "../datagrid/models/operationColumns";
+import { OperationRow } from "./types";
 
 const OperationSearchCell = ({
   lastFocusedField,
@@ -40,8 +38,6 @@ const ReportingOperationDataGrid = ({
     row_count: number;
   };
 }) => {
-  const { data: session } = useSession();
-  const isIndustryUser = session?.user.app_role?.includes("industry") ?? false;
   const [lastFocusedField, setLastFocusedField] = useState<string | null>(null);
 
   const SearchCell = useMemo(
@@ -49,12 +45,7 @@ const ReportingOperationDataGrid = ({
     [lastFocusedField, setLastFocusedField],
   );
 
-  const ActionCell = useMemo(
-    () => OperationsActionCell(isIndustryUser),
-    [isIndustryUser],
-  );
-
-  const columns = useMemo(() => operationColumns(ActionCell), [ActionCell]);
+  const columns = operationColumns();
 
   const columnGroup = useMemo(
     () => operationGroupColumns(false, SearchCell),
