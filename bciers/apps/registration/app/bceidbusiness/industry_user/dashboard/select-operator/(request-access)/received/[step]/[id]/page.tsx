@@ -1,9 +1,5 @@
-import SelectOperatorRequestAccessReceivedPage from "@/app/components/routes/select-operator/request-access/received/Page";
+// 🚩 flagging that for shared routes between roles, "Page" code is a component for code maintainability
 
-export default async function Page({
-  params,
-}: {
-  readonly params: { id: string; step: string };
-}) {
-  return <SelectOperatorRequestAccessReceivedPage params={params} />;
+export default async function Page() {
+  return <div>TBD</div>;
 }
