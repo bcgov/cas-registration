@@ -1,15 +1,5 @@
-import { Suspense } from "react";
-import Loading from "@bciers/components/loading/SkeletonGrid";
-import UserOperator from "@/app/components/userOperators/UserOperator";
+// 🚩 flagging that for shared routes between roles, "Page" code is a component for code maintainability
 
-export default async function Page({
-  params,
-}: {
-  params: { id: string; readonly: boolean };
-}) {
-  return (
-    <Suspense fallback={<Loading />}>
-      <UserOperator params={params} />
-    </Suspense>
-  );
+export default async function Page() {
+  return <div>TBD</div>;
 }
