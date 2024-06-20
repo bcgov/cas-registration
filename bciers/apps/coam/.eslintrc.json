@@ -21,5 +21,9 @@
       "files": ["*.js", "*.jsx"],
       "rules": {}
     }
-  ]
+  ],
+  "parserOptions": {
+    "project": ["apps/coam/tsconfig(.*)?.json"],
+    "tsConfigRootDir": "./"
+  }
 }
