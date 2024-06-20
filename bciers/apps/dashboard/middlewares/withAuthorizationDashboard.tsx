@@ -6,7 +6,8 @@ import {
 } from "next/server";
 
 import { MiddlewareFactory } from "@bciers/middlewares/server";
-import { auth } from "@/dashboard/auth";
+
+import { getToken } from "@bciers/actions/server";
 /*
 Access control logic is managed using Next.js middleware and NextAuth.js authentication JWT session.
 The middleware intercepts requests, and for restricted areas...
@@ -45,15 +46,27 @@ const isUnauthenticatedAllowListedPath = (pathname: string): boolean => {
 export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
   return async (request: NextRequest, _next: NextFetchEvent) => {
     const { pathname } = request.nextUrl;
-
+    console.log(pathname);
     // Check if the path is in the unauthenticated allow list
     if (isUnauthenticatedAllowListedPath(pathname)) {
       return next(request, _next);
     }
-    // Check if the user is dashboard via the jwt encoded in server side cookie
-    const session = await auth();
+    // Check if the user is authenticated via the jwt encoded in server side cookie
+    const token = await getToken();
 
-    if (session) {
+    if (token) {
+      // Check for the existence of token.user.app_role
+      if (!token.app_role || token.app_role === "") {
+        // Code to handle the case where app_role is either an empty string or null
+        // route to profile form
+        if (pathname.endsWith("/profile")) {
+          return next(request, _next);
+        } else {
+          return NextResponse.redirect(
+            new URL(`/registration/dashboard/profile`, request.url),
+          );
+        }
+      }
       if (pathname === "/" || pathname.endsWith(`/${onboarding}`)) {
         return NextResponse.redirect(new URL(`/${dashboard}`, request.url));
       } else {
