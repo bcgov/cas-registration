@@ -1,14 +1,9 @@
-from uuid import UUID
 from service.user_operator_service import UserOperatorService
 from registration.models import Facility, User
 from django.db.models import QuerySet
 
 
 class FacilityDataAccessService:
-    @classmethod
-    def get_all_facilities_for_operation(cls, operation_id: UUID) -> QuerySet[Facility]:
-        return Facility.objects.filter(ownerships__operation_id=operation_id).distinct()
-
     @classmethod
     def get_all_facilities_for_user(cls, user: User) -> QuerySet[Facility]:
         queryset = Facility.objects.all()
