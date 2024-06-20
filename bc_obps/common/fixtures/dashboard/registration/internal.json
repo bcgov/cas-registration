@@ -9,36 +9,43 @@
         "tiles": [
           {
             "title": "Operators",
+            "icon": "Inbox",
             "content": "View all operators here.",
             "href": "/dashboard/operators"
           },
           {
             "title": "Operations",
+            "icon": "Layers",
             "content": "View all operations here.",
             "href": "/registration/dashboard/operations"
           },
           {
             "title": "Facilities",
+            "icon": "File",
             "content": "View all facilities here.",
             "href": "/registration/tbd"
           },
           {
             "title": "Operator Administrators and Access Requests",
+            "icon": "Inbox",
             "content": "View all operator administrators and administrator access requests here.",
             "href": "/registration/tbd"
           },
           {
-            "title": "Operation Registration",
-            "content": "View, approve or decline the registration of operations here.",
+            "title": "Operation Registrations",
+            "icon": "Layers",
+            "content": "View the registration of operations here.",
             "href": "/registration/tbd"
           },
           {
             "title": "Contacts",
+            "icon": "Users",
             "content": "View all contacts here.",
             "href": "/registration/tbd"
           },
           {
-            "title": "Events",
+            "title": "Reported Events",
+            "icon": "File",
             "content": "View all reported events here.",
             "href": "/registration/tbd"
           }

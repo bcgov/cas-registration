@@ -10,11 +10,13 @@
         "tiles": [
           {
             "title": "Annual Reports",
+            "icon": "File",
             "content": "TBD here.",
             "href": "/reporting/tbd"
           },
           {
             "title": "Previous Years Reports",
+            "icon": "File",
             "content": "TBD here.",
             "href": "/reporting/tbd"
           }

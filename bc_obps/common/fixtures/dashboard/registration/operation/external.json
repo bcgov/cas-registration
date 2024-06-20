@@ -9,11 +9,13 @@
         "tiles": [
           {
             "title": "Operation Information",
+            "icon": "File",
             "content": "View or update information of this operation here.",
             "href": "/registration/tbd"
           },
           {
             "title": "Facilities",
+            "icon": "File",
             "content": "View the facilities, or to add new facility to this operation here.",
             "href": "/registration/tbd"
           }
