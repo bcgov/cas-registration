@@ -1,4 +1,4 @@
-import Main from "@bciers/components/layout/Main";
+import Main from "@/app/components/layout/Main";
 
 export default function OnboardingLayout({
   children,

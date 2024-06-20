@@ -1,5 +1,5 @@
-import Bread from "@bciers/components/navigation/Bread";
-import Main from "@bciers/components/layout/Main";
+import Bread from "@/app/components/navigation/Bread";
+import Main from "@/app/components/layout/Main";
 
 export default function AuthenticatedLayout({
   children,
