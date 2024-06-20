@@ -11,6 +11,8 @@ from registration.models import (
     ParentOperator,
     User,
     UserOperator,
+    Facility,
+    FacilityOwnershipTimeline,
 )
 import uuid
 import random
@@ -70,7 +72,7 @@ def operator_baker(custom_properties=None) -> Operator:
     return baker.make(Operator, **properties)
 
 
-def operation_baker(operator_id: uuid.UUID = None) -> Operation:
+def operation_baker(operator_id: uuid.UUID = None, *args, **kwargs) -> Operation:
     if operator_id:
         return baker.make(
             Operation,
@@ -78,6 +80,8 @@ def operation_baker(operator_id: uuid.UUID = None) -> Operation:
             naics_code=NaicsCode.objects.first(),
             bcghg_id=uuid.uuid4(),
             operator_id=operator_id,
+            *args,
+            **kwargs,
         )
 
     return baker.make(
@@ -86,6 +90,8 @@ def operation_baker(operator_id: uuid.UUID = None) -> Operation:
         naics_code=NaicsCode.objects.first(),
         bcghg_id=uuid.uuid4(),
         operator=operator_baker(),
+        *args,
+        **kwargs,
     )
 
 
@@ -125,3 +131,18 @@ def parent_operator_baker() -> ParentOperator:
         mailing_address=Address.objects.first(),
         website='https://www.example-po.com',
     )
+
+
+def facility_ownership_timeline_baker(operation_id: uuid.UUID = None, *args, **kwargs) -> FacilityOwnershipTimeline:
+    operation_id = operation_id or operation_baker().id
+    return baker.make(
+        FacilityOwnershipTimeline,
+        operation_id=operation_id,
+        end_date='2024-01-09 14:13:08.888903-0800',  # using a hardcoded date to not face the unique constraint error of the model
+        *args,
+        **kwargs,
+    )
+
+
+def facility_baker(*args, **kwargs):
+    return baker.make(Facility, *args, **kwargs)
