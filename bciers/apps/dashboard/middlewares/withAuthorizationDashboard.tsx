@@ -24,22 +24,22 @@ const isUnauthenticatedAllowListedPath = (pathname: string): boolean => {
 };
 
 // Function to check if the path is in the authenticated allow list
-const isAuthenticatedAllowListedPath = (pathname: string) => {
-  const allowList = [dashboard, "registration", "reporting"];
-
-  // Split the pathname into segments
-  const segments = pathname.split("/");
-
-  // Iterate through each segment
-  for (const segment of segments) {
-    // Check if any value in the allowList matches the current segment
-    if (allowList.includes(segment)) {
-      return true; // Return true if match found
-    }
-  }
-
-  return false; // Return false if no match found
-};
+// const isAuthenticatedAllowListedPath = (pathname: string) => {
+//   const allowList = [dashboard, "registration", "reporting"];
+//
+//   // Split the pathname into segments
+//   const segments = pathname.split("/");
+//
+//   // Iterate through each segment
+//   for (const segment of segments) {
+//     // Check if any value in the allowList matches the current segment
+//     if (allowList.includes(segment)) {
+//       return true; // Return true if match found
+//     }
+//   }
+//
+//   return false; // Return false if no match found
+// };
 
 // Middleware for authorization
 export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {

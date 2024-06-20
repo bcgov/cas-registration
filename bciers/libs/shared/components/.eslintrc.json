@@ -1,23 +1,15 @@
 {
   "extends": ["plugin:@nx/react", "../../../.eslintrc.json", "prettier"],
   "globals": { "vi": true },
-  "parserOptions": {
-    "project": ["./tsconfig(.*)?.json"]
-  },
   "ignorePatterns": ["!**/*"],
+  "parserOptions": {
+    "project": ["libs/shared/components/tsconfig(.*)?.json"],
+    "tsConfigRootDir": "./"
+  },
   "overrides": [
     {
       "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
-      "rules": {
-        "@typescript-eslint/quotes": [
-          "error",
-          "double",
-          {
-            "avoidEscape": true,
-            "allowTemplateLiterals": true
-          }
-        ]
-      }
+      "rules": {}
     },
     {
       "files": ["*.ts", "*.tsx"],

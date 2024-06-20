@@ -21,6 +21,10 @@
     },
     "container": {
       "cache": true
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "options": {}
     }
   },
   "plugins": [

@@ -178,6 +178,7 @@ export class OperationsPOM {
       .all();
     await viewDetailsButtons[index].click();
   }
+
   async clickViewDetailsButtonByOperationName(
     page: any,
     operationName: string,
@@ -190,6 +191,7 @@ export class OperationsPOM {
     // Click the `View Detail` for this row
     await row.getByRole("link", { name: ButtonText.VIEW_DETAILS }).click();
   }
+
   async navigateBack() {
     // Navigate back to the table
     await this.linkOperations.click();

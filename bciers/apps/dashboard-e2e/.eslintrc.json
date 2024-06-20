@@ -1,6 +1,15 @@
 {
-  "extends": ["plugin:playwright/recommended", "../../.eslintrc.json"],
+  "extends": [
+    "plugin:@nx/react-typescript",
+    "next",
+    "plugin:playwright/recommended",
+    "../../.eslintrc.json"
+  ],
   "ignorePatterns": ["!**/*"],
+  "parserOptions": {
+    "project": ["apps/dashboard-e2e/tsconfig(.*)?.json"],
+    "tsConfigRootDir": "./"
+  },
   "overrides": [
     {
       "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],

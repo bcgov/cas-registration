@@ -27,6 +27,10 @@
         "dev": false
       }
     },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "options": {}
+    },
     "container": {
       "executor": "@nx-tools/nx-container:build",
       "dependsOn": ["build"],
@@ -37,10 +41,6 @@
         "file": "apps/registration/Dockerfile",
         "tags": ["cas-registration:latest"]
       }
-    },
-    "lint": {
-      "executor": "@nx/eslint:lint",
-      "options": {}
     },
     "e2e": {
       "executor": "nx:run-commands",

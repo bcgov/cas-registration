@@ -6,9 +6,6 @@ import Loading from "@bciers/components/loading/SkeletonGrid";
 import { OperationsSearchParams } from "@/app/components/operations/types";
 import Note from "@bciers/components/datagrid/Note";
 import Operations from "./Operations";
-
-import { FrontEndRoles } from "@/app/utils/enums";
-
 import { auth } from "@/dashboard/auth";
 
 export default async function OperationsPage({

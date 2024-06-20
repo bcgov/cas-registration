@@ -1,6 +1,6 @@
 // 🧪 Suite to test the industry_user_admin workflows using storageState
 
-import { expect, test } from "@playwright/test";
+import { test } from "@playwright/test";
 // 🪄 Page Object Models
 import { DashboardPOM } from "@/e2e/poms/dashboard";
 import { OperationPOM } from "@/e2e/poms/operation";
@@ -16,7 +16,6 @@ import {
   setupTestEnvironment,
   sortTableByColumnLabel,
   stabilizeGrid,
-  tableHasExpectedRowCount,
   tableRowCount,
   takeStabilizedScreenshot,
 } from "@/e2e/utils/helpers";

@@ -5,5 +5,10 @@
   "projectType": "library",
   "tags": ["lib:components"],
   "// targets": "to see all targets run: nx show project components --web",
-  "targets": {}
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "options": {}
+    }
+  }
 }

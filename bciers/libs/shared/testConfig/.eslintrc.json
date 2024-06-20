@@ -4,6 +4,10 @@
   "parserOptions": {
     "project": ["./tsconfig(.*)?.json"]
   },
+  "parserOptions": {
+    "project": ["libs/shared/testConfig/tsconfig(.*)?.json"],
+    "tsConfigRootDir": "./"
+  },
   "ignorePatterns": ["!**/*"],
   "overrides": [
     {

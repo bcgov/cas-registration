@@ -6,12 +6,17 @@
     "../../.eslintrc.json"
   ],
   "ignorePatterns": ["!**/*", ".next/**/*"],
+  "parserOptions": {
+    "project": ["apps/dashboard/tsconfig(.*)?.json"],
+    "tsConfigRootDir": "./"
+  },
+  "rules": {
+    "@next/next/no-html-link-for-pages": ["error", "apps/dashboard/app"]
+  },
   "overrides": [
     {
       "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
-      "rules": {
-        "@next/next/no-html-link-for-pages": ["error", "apps/dashboard/pages"]
-      }
+      "rules": {}
     },
     {
       "files": ["*.ts", "*.tsx"],
