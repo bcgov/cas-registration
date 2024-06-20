@@ -9,6 +9,7 @@ import { MiddlewareFactory } from "@bciers/middlewares/server";
 
 import { IDP } from "@/app/utils/enums";
 import { getToken } from "@bciers/actions/server";
+import path from "path";
 
 /*
 Access control logic is managed using Next.js middleware and NextAuth.js authentication JWT token.
@@ -42,18 +43,10 @@ const isAuthorizedIdirUser = (token: {
 export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
   return async (request: NextRequest, _next: NextFetchEvent) => {
     const { pathname } = request.nextUrl;
-
     // Check if the user is authenticated via the jwt encoded in server side cookie
     const token = await getToken();
 
     if (token) {
-      // Redirect root requests to the dashboard
-      if (pathname.endsWith("/registration")) {
-        return NextResponse.redirect(
-          new URL(`/registration/dashboard`, request.url),
-        );
-      }
-
       // Check if the path is in the authenticated allow list
       if (isAuthenticatedAllowListedPath(pathname)) {
         return next(request, _next);

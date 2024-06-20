@@ -9,9 +9,30 @@ and can be called from server components or from client components.
 
 import { cookies } from "next/headers";
 import { ContentItem } from "@bciers/types";
-import getUUIDFromEndpoint from "@/app/utils/getUUIDFromEndpoint";
+import { getUUIDFromEndpoint } from "@bciers/utils/server";
 import { revalidatePath } from "next/cache";
 import * as Sentry from "@sentry/nextjs";
+
+// 🛠️ Function to get the encrypted JWT from NextAuth getToken route function
+export async function getToken() {
+  try {
+    const res = await fetch(`${process.env.NEXTAUTH_URL}/api/auth/token`, {
+      method: "GET",
+      headers: { Cookie: cookies().toString() },
+    });
+
+    if (!res.ok) {
+      // eslint-disable-next-line no-console
+      console.error(`Failed to fetch token. Status: ${res.status}`);
+      return {};
+    }
+    return await res.json();
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error(`An error occurred while fetching token: ${error}`);
+    return {};
+  }
+}
 
 /**
  * Generic action handler that sends a request to the specified API endpoint
@@ -117,27 +138,6 @@ export async function getEnvValue(key: string) {
   if (!publicEnvAllowList.includes(key)) throw new Error("Invalid env key");
 
   return process.env[key];
-}
-
-// 🛠️ Function to get the encrypted JWT from NextAuth getToken route function
-export async function getToken() {
-  try {
-    const res = await fetch(`${process.env.NEXTAUTH_URL}/api/auth/token`, {
-      method: "GET",
-      headers: { Cookie: cookies().toString() },
-    });
-
-    if (!res.ok) {
-      // eslint-disable-next-line no-console
-      console.error(`Failed to fetch token. Status: ${res.status}`);
-      return {};
-    }
-    return await res.json();
-  } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error(`An error occurred while fetching token: ${error}`);
-    return {};
-  }
 }
 
 // 🛠️ Function to get dashboard tiles
