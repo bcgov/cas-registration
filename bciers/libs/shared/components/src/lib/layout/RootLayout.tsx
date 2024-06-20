@@ -16,12 +16,10 @@ import ThemeProvider from "@mui/material/styles/ThemeProvider";
 import { theme } from "@bciers/components";
 import { NextAppDirEmotionCacheProvider } from "@bciers/components";
 import CssBaseline from "@mui/material/CssBaseline";
-
-import Box from "@mui/material/Box";
-import { Footer } from "@bciers/components";
-import { Header } from "@bciers/components";
-import { Bread } from "@bciers/components";
-import { Main } from "@bciers/components/server";
+import Footer from "@bciers/components/layout/Footer";
+import Header from "@bciers/components/layout/Header";
+import Bread from "@bciers/components/navigation/Bread";
+import Main from "@bciers/components/layout/Main";
 
 export const metadata: Metadata = {
   title: "CAS OBPS",
@@ -66,34 +64,14 @@ export default async function RootLayout({
           }
           <NextAppDirEmotionCacheProvider options={{ key: "mui" }}>
             <ThemeProvider theme={theme}>
-              {/*
-            MUI Box component is a versatile and essential building block in Material-UI v5.
-            It serves as a wrapper element that helps structure and organize the layout of your application.
-            One of the Box component's strengths is its ability to create responsive layouts easily...
-            utilizing Box component's sx prop to create a responsive layout...
-            You can use properties like display, flexDirection, alignItems, justifyContent and more to control the arrangement and alignment of elements within a flex container
-            */}
               <CssBaseline />
-              <Box
-                sx={{
-                  display: "flex",
-                  minHeight: "100vh",
-                  flexDirection: "column",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  margin: "0 auto",
-                  maxWidth: "1536px",
-                  padding: "0 16px",
-                }}
-              >
-                <Header />
-                <Bread
-                  separator={<span aria-hidden="true"> &gt; </span>}
-                  capitalizeLinks
-                />
-                <Main>{children}</Main>
-                <Footer />
-              </Box>
+              <Header />
+              <Bread
+                separator={<span aria-hidden="true"> &gt; </span>}
+                capitalizeLinks
+              />
+              <Main>{children}</Main>
+              <Footer />
             </ThemeProvider>
           </NextAppDirEmotionCacheProvider>
         </SessionProvider>
