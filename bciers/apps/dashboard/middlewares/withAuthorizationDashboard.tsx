@@ -67,6 +67,18 @@ export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
           );
         }
       }
+      // Redirect requests to registration to the registration\dashboard
+      if (pathname.endsWith("/registration")) {
+        return NextResponse.redirect(
+          new URL(`/registration/dashboard`, request.url),
+        );
+      }
+      // Redirect requests to registration to the registration\dashboard
+      if (pathname.endsWith("/reporting")) {
+        return NextResponse.redirect(
+          new URL(`/reporting/dashboard`, request.url),
+        );
+      }
       if (pathname === "/" || pathname.endsWith(`/${onboarding}`)) {
         return NextResponse.redirect(new URL(`/${dashboard}`, request.url));
       } else {
