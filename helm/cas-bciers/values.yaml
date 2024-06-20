@@ -1,0 +1,155 @@
+# Default values for cas-bciers.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+backend:
+  replicaCount: 1
+
+  image:
+    repository: ghcr.io/bcgov/cas-reg-backend
+    pullPolicy: Always
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "latest"
+
+  deployRoute: false
+
+  environment: ~
+
+  service:
+    type: ClusterIP
+    port: 8000
+
+  route:
+    host: ~
+
+  resources:
+    limits:
+      cpu: 200m
+      memory: 512Mi
+    requests:
+      cpu: 60m
+      memory: 256Mi
+
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+    # targetMemoryUtilizationPercentage: 80
+
+registrationFrontend:
+  replicaCount: 1
+
+  image:
+    repository: ghcr.io/bcgov/cas-reg-frontend
+    pullPolicy: Always
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "latest"
+
+  environment: ~
+
+  auth:
+    keycloakAuthUrl: ~
+    keycloakRealms: /realms/standard
+    keycloakOidc: /protocol/openid-connect
+    keycloakClientId: obps-4953
+
+  service:
+    type: ClusterIP
+    port: 3000
+
+  route:
+    host: ~
+    path: ~
+
+  resources:
+    limits:
+      cpu: 100m
+      memory: 256Mi
+    requests:
+      cpu: 60m
+      memory: 192Mi
+
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+    # targetMemoryUtilizationPercentage: 80
+
+reportingFrontend:
+  replicaCount: 1
+
+  image:
+    repository: ghcr.io/bcgov/cas-rep-frontend
+    pullPolicy: Always
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "latest"
+
+  environment: ~
+
+  service:
+    type: ClusterIP
+    port: 3000
+
+  route:
+    host: ~
+    path: ~
+
+  resources:
+    limits:
+      cpu: 100m
+      memory: 256Mi
+    requests:
+      cpu: 60m
+      memory: 192Mi
+
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+    # targetMemoryUtilizationPercentage: 80
+
+dashboardFrontend:
+  replicaCount: 1
+
+  image:
+    repository: ghcr.io/bcgov/cas-dash-frontend
+    pullPolicy: Always
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "latest"
+
+  environment: ~
+
+  service:
+    type: ClusterIP
+    port: 3000
+
+  route:
+    host: ~
+    path: ~
+
+  resources:
+    limits:
+      cpu: 100m
+      memory: 256Mi
+    requests:
+      cpu: 60m
+      memory: 192Mi
+
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+    # targetMemoryUtilizationPercentage: 80
+
+
+terraform-bucket-provision:
+  terraform:
+    namespace_apps: '["reg-attachments"]'
+    workspace: bciers # This value is OPTIONAL, only set if required
+
+growthbook:
+  clientKey: ~

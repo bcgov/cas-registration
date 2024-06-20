@@ -1,0 +1,22 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: {{ template "cas-bciers.fullname" . }}-dashboard-frontend
+  labels:
+{{ include "cas-bciers.labels" . | indent 4 }}
+  annotations:
+    haproxy.router.openshift.io/balance: roundrobin
+    haproxy.router.openshift.io/rewrite-target: /
+
+spec:
+  host: {{ .Values.dashboardFrontend.route.host }}
+  path: {{ .Values.dashboardFrontend.route.path }}
+  port:
+    targetPort: {{ template "cas-bciers.fullname" . }}-dashboard-frontend
+  tls:
+    insecureEdgeTerminationPolicy: Redirect
+    termination: edge
+  to:
+    kind: Service
+    name: {{ template "cas-bciers.fullname" . }}-dashboard-frontend
+    weight: 100

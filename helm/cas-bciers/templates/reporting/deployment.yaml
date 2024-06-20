@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "cas-bciers.fullname" . }}-reporting-frontend
+  labels:
+    component: reporting-frontend
+    role: frontend
+{{- include "cas-bciers.labels" . | nindent 4 }}
+spec:
+{{- if not .Values.reportingFrontend.autoscaling.enabled }}
+  replicas: {{ .Values.reportingFrontend.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "cas-bciers.selectorLabels" . | nindent 6 }}
+      component: reporting-frontend
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+{{- include "cas-bciers.selectorLabels" . | nindent 8 }}
+        component: reporting-frontend
+        role: frontend
+    spec:
+      containers:
+        - name: {{ template "cas-bciers.fullname" . }}-reporting-frontend
+          env:
+            - name: API_URL
+              value: http://{{ include "cas-bciers.fullname" . }}-backend.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.backend.service.port }}/api/
+          image: "{{ .Values.reportingFrontend.image.repository }}:{{ .Values.defaultImageTag | default .Values.reportingFrontend.image.tag }}"
+          imagePullPolicy: {{ .Values.reportingFrontend.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.reportingFrontend.service.port }}
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.reportingFrontend.resources | nindent 12 }}
+      restartPolicy: Always
