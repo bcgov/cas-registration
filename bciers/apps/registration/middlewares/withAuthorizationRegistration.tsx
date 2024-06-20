@@ -19,7 +19,7 @@ Based on JWT properties of identity_provider and role, the middleware dynamicall
 to the appropriate folder structure.
  */
 
-// Function to check if the path is in the authenticated allow list
+// Function to check if the path is in the authenticated allow list- does not build authorization folders
 const isAuthenticatedAllowListedPath = (pathname: string): boolean => {
   const allowList = ["dashboard", "profile"];
   const lastSegment = pathname.split("/").pop();
@@ -40,7 +40,9 @@ const isAuthorizedIdirUser = (token: {
 };
 
 // Middleware for authorization
-export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
+export const withAuthorizationRegistration: MiddlewareFactory = (
+  next: NextMiddleware,
+) => {
   return async (request: NextRequest, _next: NextFetchEvent) => {
     const { pathname } = request.nextUrl;
     // Check if the user is authenticated via the jwt encoded in server side cookie
