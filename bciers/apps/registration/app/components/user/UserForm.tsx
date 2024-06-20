@@ -1,16 +1,16 @@
-'use client';
-import { useState } from 'react';
-import { Alert } from '@mui/material';
-import { actionHandler } from '@bciers/actions/server';
-import FormBase from '@bciers/components/form/FormBase';
-import SubmitButton from '@bciers/components/form/SubmitButton';
+"use client";
+import { useState } from "react";
+import { Alert } from "@mui/material";
+import { actionHandler } from "@bciers/actions/server";
+import FormBase from "@bciers/components/form/FormBase";
+import SubmitButton from "@bciers/components/form/SubmitButton";
 import {
   UserProfileFormData,
   UserProfilePartialFormData,
-} from '@bciers/components/form/formDataTypes';
-import { userSchema, userUiSchema } from '@bciers/utils/server';
-import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+} from "@bciers/components/form/formDataTypes";
+import { userSchema, userUiSchema } from "@bciers/utils/server";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 // 📐 Interface: expected properties and their types for UserForm component
 
@@ -30,7 +30,7 @@ export default function UserForm({ formData, isCreate }: Props) {
   // 👤 Use NextAuth.js hook to get information about the user's session
   //  Destructuring assignment from data property of the object returned by useSession()
   const { data: session, update } = useSession();
-  const idp = session?.identity_provider || '';
+  const idp = session?.identity_provider || "";
   const router = useRouter();
   // 🛠️ Function to update the session, without reloading the page
   const handleUpdate = async () => {
@@ -44,7 +44,7 @@ export default function UserForm({ formData, isCreate }: Props) {
     }, 3000);
     if (isCreate) {
       // 🛸 Routing: after the update is complete, navigate to the dashboard
-      router.push('/dashboard');
+      router.push("/dashboard");
     }
   };
 
@@ -57,8 +57,8 @@ export default function UserForm({ formData, isCreate }: Props) {
     // 🚀 API call: POST/PUT user form data
     const response = await actionHandler(
       isCreate ? `registration/users` : `registration/user/user-profile`,
-      isCreate ? 'POST' : 'PUT',
-      '/dashboard/profile',
+      isCreate ? "POST" : "PUT",
+      "/dashboard/profile",
       {
         body: JSON.stringify({
           ...data.formData,
@@ -97,7 +97,7 @@ export default function UserForm({ formData, isCreate }: Props) {
       <div className="flex justify-end gap-3">
         {/* Disable the button when loading or when success state is true */}
         <SubmitButton
-          label={isSuccess ? '✅ Success' : 'Submit'}
+          label={isSuccess ? "✅ Success" : "Submit"}
           disabled={isLoading}
         />
       </div>

@@ -1,7 +1,7 @@
-import type { DefaultSession, NextAuthConfig } from 'next-auth';
-import Keycloak, { KeycloakProfile } from 'next-auth/providers/keycloak';
-import { Errors, IDP } from '@/app/utils/enums';
-import { actionHandler } from '@/app/utils/actions';
+import type { DefaultSession, NextAuthConfig } from "next-auth";
+import Keycloak, { KeycloakProfile } from "next-auth/providers/keycloak";
+import { Errors, IDP } from "@/app/utils/enums";
+import { actionHandler } from "@/app/utils/actions";
 
 /*
 📌 Module Augmentation
@@ -11,7 +11,7 @@ Module Augmentation is exactly that-
 define your shared interfaces in a single place, and get type-safety across your application
 */
 
-declare module 'next-auth' {
+declare module "next-auth" {
   /**
    * Returned by `auth`, `useSession`, `getSession` and received as a prop on the `SessionProvider` React Context
    */
@@ -33,7 +33,7 @@ declare module 'next-auth' {
        * with the new ones defined above. To keep the default session user properties,
        * you need to add them back into the newly declared interface.
        */
-    } & DefaultSession['user'];
+    } & DefaultSession["user"];
   }
   /** Returned by getToken from "@auth/core/jwt */
   interface JWT {
@@ -55,7 +55,7 @@ declare module 'next-auth' {
 /*
 📌 Make one central auth config that can be imported to auth.ts or middleware when required
 */
-export const AUTH_BASE_PATH = '/api/auth';
+export const AUTH_BASE_PATH = "/api/auth";
 export default {
   //In a Docker environment, make sure to set either trustHost: true in your Auth.js configuration or the AUTH_TRUST_HOST environment variable to true.
   trustHost: true,
@@ -75,7 +75,7 @@ export default {
   ],
   secret: `${process.env.NEXTAUTH_SECRET}`,
   pages: {
-    error: '../auth/error', // Error code passed in query string as ?error=
+    error: "../auth/error", // Error code passed in query string as ?error=
   },
   callbacks: {
     async jwt({ token, account, profile }) {
@@ -96,14 +96,14 @@ export default {
           // ✨  On a new sessions, you can add information to the next-auth created token...
 
           // 👇️ used for routing and DJANGO API calls
-          token.user_guid = account.providerAccountId.split('@')[0];
+          token.user_guid = account.providerAccountId.split("@")[0];
 
-          token.identity_provider = account.providerAccountId.split('@')[1];
+          token.identity_provider = account.providerAccountId.split("@")[1];
         }
         // 🚀 API call: Get user name from user table
         const response = await actionHandler(
           `registration/user/user-profile/${token.user_guid}`,
-          'GET',
+          "GET",
         );
         const { first_name: firstName, last_name: lastName } = response || {};
         if (firstName && lastName) {
@@ -116,7 +116,7 @@ export default {
           // 🚀 API call: Get user app_role by user_guid from user table
           const responseRole = await actionHandler(
             `registration/user/user-app-role/${token.user_guid}`,
-            'GET',
+            "GET",
           );
           if (responseRole?.role_name) {
             // user found in table, assign role to token (note: all industry users have the same app role of `industry_user`, and their permissions are further defined by their role in the UserOperator model)
@@ -127,10 +127,10 @@ export default {
                 // 🚀 API call: check if user is admin approved
                 const responseAdmin = await actionHandler(
                   `registration/user-operators/current/is-current-user-approved-admin/${token.user_guid}`,
-                  'GET',
+                  "GET",
                 );
                 if (responseAdmin?.approved) {
-                  token.app_role = 'industry_user_admin'; // note: industry_user_admin a front-end only role. In the db, all industry users have an industry_user app_role, and their permissions are further defined by UserOperator.role
+                  token.app_role = "industry_user_admin"; // note: industry_user_admin a front-end only role. In the db, all industry users have an industry_user app_role, and their permissions are further defined by UserOperator.role
                 } else {
                   // Default app_role (industry_user) if the API call fails
                 }
@@ -162,12 +162,12 @@ export default {
           // IDIR users will not have a bceid_business guid/name. We set default values here so that the model fields can be not null for all users.
           // Business BCeID users will have these values set by the token & these values cannot be null or empty in the database.
           bceid_business_guid:
-            token.identity_provider === 'idir'
-              ? '00000000-0000-0000-0000-000000000000'
+            token.identity_provider === "idir"
+              ? "00000000-0000-0000-0000-000000000000"
               : token.bceid_business_guid,
           bceid_business_name:
-            token.identity_provider === 'idir'
-              ? 'BCGOV'
+            token.identity_provider === "idir"
+              ? "BCGOV"
               : token.bceid_business_name,
           given_name: token.given_name,
           family_name: token.family_name,
@@ -180,7 +180,7 @@ export default {
     // by default only URLs on the same URL as the site are allowed, you can use the redirect callback to customise that behaviour.
     async redirect({ url, baseUrl }) {
       // Allows relative callback URLs
-      if (url.startsWith('/')) return `${baseUrl}${url}`;
+      if (url.startsWith("/")) return `${baseUrl}${url}`;
       // Allows callback URLs on the same origin
       else if (new URL(url).origin === baseUrl) return url;
       // 🛸 Allow callbacks to identity server for federated signout after next-auth SignOut()
