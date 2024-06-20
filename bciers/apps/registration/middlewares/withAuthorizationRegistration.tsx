@@ -66,6 +66,7 @@ const isAuthorizedIdirUser = (token: {
 // Middleware for authorization
 export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
   return async (request: NextRequest, _next: NextFetchEvent) => {
+    console.log("************************registration***********************");
     const { pathname } = request.nextUrl;
     // Check if the path is in the unauthenticated allow list
     if (isUnauthenticatedAllowListedPath(pathname)) {
@@ -83,7 +84,7 @@ export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
           return next(request, _next);
         } else {
           return NextResponse.redirect(
-            new URL(`/dashboard/profile`, request.url),
+            new URL(`/registration/dashboard/profile`, request.url),
           );
         }
       }
