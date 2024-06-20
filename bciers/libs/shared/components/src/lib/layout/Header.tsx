@@ -11,13 +11,11 @@ export default function Header() {
   const { data: session } = useSession();
 
   return (
-    <div className={`relative w-full`}>
+    <header className={`relative w-full`}>
       <div
         className={`bg-bc-primary-blue relative left-1/2 transform -translate-x-1/2 w-screen max-w-none`}
       >
-        <div
-          className={`max-w-[1536px] mx-auto px-4 sm:px-6 py-3 h-fit text-lg`}
-        >
+        <div className={`max-w-page mx-auto px-4 sm:px-6 py-3 h-fit text-lg`}>
           <div className="flex items-center w-full">
             <Link href="/" passHref>
               <Image
@@ -45,6 +43,6 @@ export default function Header() {
           )}
         </div>
       </div>
-    </div>
+    </header>
   );
 }
