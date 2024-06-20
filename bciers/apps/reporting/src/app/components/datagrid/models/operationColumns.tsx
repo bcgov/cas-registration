@@ -17,7 +17,7 @@ const operationColumns = () => {
       sortable: false,
       width: 120,
       // Set flex to 1 to make the column take up all the remaining width if user zooms out
-      flex: 0,
+      flex: 1,
     },
   ];
 
