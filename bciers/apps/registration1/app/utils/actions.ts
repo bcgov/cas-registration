@@ -3,7 +3,7 @@
  Server actions are JavaScript async functions that run on the server
 and can be called from server components or from client components.
 
-💡 You can define Server actins in RSC or define multiple Server Actions in a single file.
+💡 You can define Server actions in RSC or define multiple Server Actions in a single file.
 */
 "use server";
 
