@@ -93,6 +93,7 @@ const uiSchema: UiSchema = {
 
 export default function Page() {
   return (
+    <>
       <h1>Registration Part II</h1>
       {/* Added a large bottom margin to test task list onClick smooth scroll */}
       <div className="mb-[50vh]">
@@ -104,5 +105,6 @@ export default function Page() {
           onCancel={() => console.log("cancelled")}
         />
       </div>
+    </>
   );
 }
