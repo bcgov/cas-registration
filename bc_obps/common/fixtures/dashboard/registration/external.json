@@ -14,7 +14,7 @@
           },
           {
             "title": "Operations",
-            "content": "View the operations owned by your operator, or to add a new operation to your operator here.",
+            "content": "View the operations owned by your operator, or to add and register new operation to your operator here.",
             "href": "/registration/operations"
           },
           {
@@ -23,18 +23,18 @@
             "href": "/registration/tbd"
           },
           {
-            "title": "User and Access Requests",
-            "content": "View, approve or decline Business BCeid user access requests to your operator, or to assign type to user here.",
+            "title": "Users and Access Requests",
+            "content": "View, approve or decline Business BCeID user access requests to your operator, or to assign access type to users here.",
             "href": "/registration/tbd"
           },
           {
-            "title": "Register an Operator",
+            "title": "Register an Operation",
             "content": "Track the registration of operations, or to start new registration here.",
             "href": "/registration/tbd"
           },
           {
             "title": "Report an Event",
-            "content": "Report sales, transer, closure, acquisition, divestement, change in operator or director control, temporary shout down, etc. here.",
+            "content": "Report start up, closing, or temporary shutdown, acquisition, divestment, transer, etc. here.",
             "href": "/registration/tbd"
           }
         ]
