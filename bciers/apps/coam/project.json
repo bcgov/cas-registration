@@ -4,6 +4,10 @@
   "sourceRoot": "apps/coam",
   "projectType": "application",
   "tags": [],
-  "// targets": "to see all targets run: nx show project coam --web",
-  "targets": {}
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "options": {}
+    }
+  }
 }
