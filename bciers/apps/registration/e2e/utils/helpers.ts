@@ -465,9 +465,9 @@ export async function takeStabilizedScreenshot(
 }
 export async function assertCount(
   elementsToCount: Locator,
-  expectedCount: number,
+  expectedCount: number = 0,
 ) {
-  expect(elementsToCount).toHaveCount(0);
+  expect(elementsToCount).toHaveCount(expectedCount);
 }
 
 export async function stabilizeGrid(page: Page, expectedRowCount: number) {
