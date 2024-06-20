@@ -33,7 +33,7 @@ const Tile = ({ content, href, icon, links, title }: ContentItem) => {
       {links && (
         <div className="flex flex-col mt-6">
           {links &&
-            links.map((link) => {
+            links.map((link: { title: string; href: string }) => {
               const { title: linkTitle, href: linkHref } = link;
               return (
                 <div className="w-full px-6 py-2 ">

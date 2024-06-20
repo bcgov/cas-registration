@@ -23,7 +23,7 @@
     @apply [&>label]:text-2xl [&>label]:py-2 [&>label]:w-full [&>label]:font-bold [&>label]:border-solid [&>label]:text-bc-bg-blue [&>label]:border-bc-bg-blue [&>label]:border-l-0 [&>label]:border-r-0 [&>label]:mb-4;
   }
   .dashboard-tile-container {
-    @apply flex flex-col justify-between border border-bc-component-grey border-solid rounded-md min-w-full min-h-full sm:min-w-[400px] sm:max-w-[400px] p-6 hover:box-shadow-tile hover:transition-shadow;
+    @apply flex flex-col justify-between border border-bc-component-grey border-solid rounded-md min-w-full min-h-full sm:min-w-[420px] sm:max-w-[420px] p-6 hover:box-shadow-tile hover:transition-shadow;
   }
   .box-shadow-tile {
     @apply shadow-[1px_11px_15px_0px_#00000040];

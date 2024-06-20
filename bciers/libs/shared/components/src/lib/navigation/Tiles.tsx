@@ -3,7 +3,7 @@ import Tile from "./Tile";
 
 const Tiles = ({ tiles }: { tiles: ContentItem[] }) => {
   return (
-    <section className="flex flex-wrap gap-x-16 lg:gap-x-24 gap-y-16 my-4">
+    <section className="w-full flex flex-wrap gap-x-8 lg:gap-x-24 gap-y-16 my-4">
       {tiles &&
         tiles.map((tile) => {
           const { title } = tile;
