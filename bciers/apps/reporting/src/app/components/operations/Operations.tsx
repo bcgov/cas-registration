@@ -25,7 +25,6 @@ export default async function Operations() {
   // Render the DataGrid component
   return (
     <div className="mt-5">
-      <div>{operations.rows.toString()}</div>
       <ReportingOperationDataGrid initialData={operations} />
     </div>
   );
