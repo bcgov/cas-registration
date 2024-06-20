@@ -1,15 +1,11 @@
 {
   "extends": "../../../tsconfig.base.json",
   "files": [],
-  "include": [],
-  "references": [
-    {
-      "path": "./tsconfig.lib.json"
-    }
-  ],
+  "include": ["**/*.ts", "**/*.tsx"],
   "compilerOptions": {
     "forceConsistentCasingInFileNames": true,
     "strict": true,
+    "jsx": "react",
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true
   }

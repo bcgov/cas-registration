@@ -1,9 +1,9 @@
-import { ContentItem } from "./types";
+import { ContentItem } from "@bciers/types/tiles";
 import Tile from "./Tile";
 
 const Tiles = ({ tiles }: { tiles: ContentItem[] }) => {
   return (
-    <section className="w-full flex flex-wrap gap-x-8 lg:gap-x-24 gap-y-16 my-4">
+    <section className="w-full flex flex-wrap gap-x-8 lg:gap-x-24 gap-y-16 my-8">
       {tiles &&
         tiles.map((tile) => {
           const { title } = tile;
