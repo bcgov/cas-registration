@@ -1,17 +1,17 @@
-import { actionHandler } from '@bciers/actions/server';
+import { actionHandler } from "@bciers/actions/server";
 import {
   UserProfileFormData,
   UserProfilePartialFormData,
-} from '@bciers/components/form/formDataTypes';
-import { auth } from '@/dashboard/auth';
-import { getUserFullName } from '@bciers/utils/server';
-import UserForm from '@/registration/app/components/user/UserForm';
+} from "@bciers/components/form/formDataTypes";
+import { auth } from "@/dashboard/auth";
+import { getUserFullName } from "@bciers/utils/server";
+import UserForm from "@/registration/app/components/user/UserForm";
 
 // 🚀 API call: GET user's data
 async function getUserFormData(): Promise<
   UserProfileFormData | { error: string }
 > {
-  return actionHandler(`registration/user/user-profile`, 'GET', '');
+  return actionHandler(`registration/user/user-profile`, "GET", "");
 }
 
 // 🏗️ Async server component: dashboard\profile
@@ -22,15 +22,15 @@ export default async function UserPage() {
   // get user's data
   let formData: UserProfilePartialFormData | { error: string } =
     await getUserFormData();
-  if ('error' in formData) {
-    if (formData.error.includes('Not Found')) {
+  if ("error" in formData) {
+    if (formData.error.includes("Not Found")) {
       // No user found, create formData to reflect new user in user table
       isCreate = true;
       // 👤 Use NextAuth.js hook to get information about the user's session
       /* When calling from the server-side i.e., in Route Handlers, React Server Components, API routes,
        */
       const session = await auth();
-      const names = getUserFullName(session)?.split(' ');
+      const names = getUserFullName(session)?.split(" ");
 
       formData = {
         first_name: names?.[0],

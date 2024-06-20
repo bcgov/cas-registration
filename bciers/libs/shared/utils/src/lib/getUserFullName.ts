@@ -7,13 +7,13 @@ export const getUserFullName = (session: any) => {
   if (fullName) {
     userFullName = fullName;
   } else if (givenName && familyName) {
-    userFullName = givenName.concat(' ', familyName);
+    userFullName = givenName.concat(" ", familyName);
   } else if (givenName && !familyName) {
     userFullName = givenName;
   } else if (!givenName && familyName) {
     userFullName = familyName;
   } else {
-    userFullName = session?.user?.name || '';
+    userFullName = session?.user?.name || "";
   }
 
   return userFullName;
