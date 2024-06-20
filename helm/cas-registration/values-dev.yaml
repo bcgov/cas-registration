@@ -20,21 +20,6 @@ backend:
       cpu: 60m
       memory: 256Mi
 
-registrationFrontend:
-  replicaCount: 1
-
-  route:
-    host: cas-reg-frontend-dev.apps.silver.devops.gov.bc.ca
-    path: "/registration2"
-
-  environment: develop
-
-  auth:
-    keycloakAuthUrl: https://dev.loginproxy.gov.bc.ca/auth
-    siteminderAuthUrl: https://logontest7.gov.bc.ca
-
-
-
 registration1Frontend:
   replicaCount: 2
 
