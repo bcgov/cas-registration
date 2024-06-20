@@ -1,35 +1,12 @@
-// TODO(Nx Migration): Component added to Monorepo at `@bciers/components/src/lib/layout/Main.tsx`
-
-import Box from "@mui/material/Box";
-
-import { ReactNode } from "react";
-
 type MainProps = {
-  children: ReactNode;
-  sx?: {
-    [key: string]: any;
-  };
+  children: React.ReactNode;
 };
 
-const Main = ({ children, sx }: MainProps) => {
+const Main = ({ children }: MainProps) => {
   return (
-    <Box
-      component="main"
-      sx={{
-        width: "100%",
-        minWidth: "100%",
-        minHeight: "100%",
-        maxWidth: "1536px",
-        margin: {
-          xs: "260px auto 180px auto",
-          md: "180px auto 80px auto",
-        },
-        padding: "0 12px",
-        ...sx,
-      }}
-    >
+    <main className="w-full max-w-[1536px] min-h-full mx-auto p-4 sm:p-6 pb-48 sm:pb-20">
       {children}
-    </Box>
+    </main>
   );
 };
 

@@ -1,8 +1,5 @@
 "use client";
 
-import Main from "@bciers/components/layout/Main";
-import Note from "@bciers/components/layout/Note";
-
 // Will remove this before merging, just leaving it in for PR review
 import SingleStepTaskListForm from "@bciers/components/form/SingleStepTaskListForm";
 import SectionFieldTemplate from "@bciers/components/form/fields/SectionFieldTemplate";
@@ -95,27 +92,7 @@ const uiSchema: UiSchema = {
 };
 
 export default function Page() {
-  // Main will be moved into a child layout component once we set up the routes
   return (
-    <Main
-      sx={{
-        margin: {
-          xs: "140px auto 180px auto",
-          md: "80px auto 80px auto",
-        },
-      }}
-    >
-      <Note variant="important">
-        <p>
-          <b>Important:</b> It can be used to highlight important information or
-          provide context to the content on the page.
-        </p>
-        <p>Works with multiple paragraphs.</p>
-      </Note>
-      <Note>
-        <b>Note:</b> It can be used to provide additional context to the content
-        on the page.
-      </Note>
       <h1>Registration Part II</h1>
       {/* Added a large bottom margin to test task list onClick smooth scroll */}
       <div className="mb-[50vh]">
@@ -127,6 +104,5 @@ export default function Page() {
           onCancel={() => console.log("cancelled")}
         />
       </div>
-    </Main>
   );
 }

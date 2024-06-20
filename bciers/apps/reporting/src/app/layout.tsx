@@ -7,6 +7,6 @@ You should not manually add <head> tags such as <title> and <meta> to root layou
 
 // eslint-disable-next-line import/extensions
 import "@bciers/styles/globals.css";
-import { RootLayout } from "@bciers/components/server";
+import RootLayout from "@bciers/components/layout/RootLayout";
 
 export default RootLayout;
