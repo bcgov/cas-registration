@@ -1,4 +1,4 @@
-import { ContentItem, IconMap } from "./types";
+import { ContentItem, IconMap } from "@bciers/types/tiles";
 import {
   File,
   Inbox,
