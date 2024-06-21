@@ -30,6 +30,8 @@ const useSearchParams = vi.fn();
 const useSession = vi.fn();
 const auth = vi.fn();
 const fetchOperationsPageData = vi.fn();
+const fetchFacilitiesPageData = vi.fn();
+const createFetchFacilitiesPageData = vi.fn();
 
 export {
   actionHandler,
@@ -41,4 +43,6 @@ export {
   useSearchParams,
   useSession,
   fetchOperationsPageData,
+  fetchFacilitiesPageData,
+  createFetchFacilitiesPageData,
 };
