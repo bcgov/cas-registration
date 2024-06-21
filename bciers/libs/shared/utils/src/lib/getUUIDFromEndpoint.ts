@@ -5,7 +5,7 @@ export const endpointAllowList = [
 ];
 
 // 🛠️ Function to get the last non-empty segment as a UUID from an endpoint URL
-function getUUIDFromEndpoint(endpoint: string): string | null {
+export function getUUIDFromEndpoint(endpoint: string): string | null {
   const isEndpointAllowed = endpointAllowList.find((allowedEndpoint) =>
     endpoint.includes(allowedEndpoint),
   )
@@ -33,5 +33,3 @@ function getUUIDFromEndpoint(endpoint: string): string | null {
   // Return the last non-empty segment as a UUID or null if not a UUID
   return isUUID ? (lastSegment as string) : null;
 }
-
-export default getUUIDFromEndpoint;

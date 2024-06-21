@@ -15,7 +15,7 @@ declare module "next-auth" {
   /**
    * Returned by `auth`, `useSession`, `getSession` and received as a prop on the `SessionProvider` React Context
    */
-  export interface Session {
+  interface Session {
     error?: string;
     identity_provider: string | undefined;
     user: {
