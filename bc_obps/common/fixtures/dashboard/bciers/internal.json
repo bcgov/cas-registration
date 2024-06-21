@@ -26,23 +26,27 @@
             "content": "View information of any operator, operation, facility, or to approve or decline BORO ID applications here.",
             "links": [
               {
-                "title": "Operator Admins and Access Requests",
-                "href": "/registration/tbd"
-              },
-              {
-                "title": "Contacts",
-                "href": "/registration/tbd"
-              },
-              {
                 "title": "Operators",
                 "href": "/registration/tbd"
+              },
+              {
+                "title": "Operations",
+                "href": "/registration/dashboard/operations"
               },
               {
                 "title": "Facilities",
                 "href": "/registration/tbd"
               },
               {
-                "title": "BORO ID Applications",
+                "title": "Operator Admins and Access Requests",
+                "href": "/registration/tbd"
+              },
+              {
+                "title": "Operation Registrations",
+                "href": "/registration/tbd"
+              },
+              {
+                "title": "Contacts",
                 "href": "/registration/tbd"
               },
               {

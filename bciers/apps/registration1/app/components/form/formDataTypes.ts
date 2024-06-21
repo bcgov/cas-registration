@@ -1,4 +1,4 @@
-import { OperatorStatus } from "@/app/utils/enums";
+import { OperatorStatus } from "@bciers/utils/enums";
 
 export interface UserFormData {
   first_name: string;

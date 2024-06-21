@@ -3,7 +3,7 @@ import { useState } from "react";
 import FormBase from "@bciers/components/form/FormBase";
 import { Alert } from "@mui/material";
 import SubmitButton from "@/app/components/form/SubmitButton";
-import { actionHandler } from "@/app/utils/actions";
+import { actionHandler } from "@bciers/utils/actions";
 import {
   UserProfileFormData,
   UserProfilePartialFormData,

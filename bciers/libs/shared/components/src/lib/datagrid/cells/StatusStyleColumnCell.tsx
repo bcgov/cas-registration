@@ -1,6 +1,6 @@
 "use client";
 
-import { Status } from "@/app/utils/enums";
+import { Status } from "@bciers/utils/enums";
 import { Chip, ChipOwnProps } from "@mui/material";
 import { GridRenderCellParams } from "@mui/x-data-grid";
 

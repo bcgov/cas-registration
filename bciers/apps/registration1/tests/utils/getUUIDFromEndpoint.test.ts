@@ -1,8 +1,7 @@
-import { describe, expect } from "vitest";
-
 import getUUIDFromEndpoint, {
   endpointAllowList,
-} from "@/app/utils/getUUIDFromEndpoint";
+} from "@bciers/utils/getUUIDFromEndpoint";
+import { describe, expect } from "vitest";
 
 describe("getUUIDFromEndpoint", () => {
   it.each(endpointAllowList)(

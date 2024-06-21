@@ -4,9 +4,9 @@ import Loading from "@bciers/components/loading/SkeletonField";
 import { BC_GOV_LINKS_COLOR } from "@bciers/styles/colors";
 import Link from "next/link";
 import { auth } from "@/dashboard/auth";
-import { actionHandler } from "@/app/utils/actions";
-import { OperatorStatus, UserOperatorStatus } from "@/app/utils/enums";
-import getUserFullName from "@/app/utils/getUserFullName";
+import { actionHandler } from "@bciers/utils/actions";
+import { OperatorStatus, UserOperatorStatus } from "@bciers/utils/enums";
+import getUserFullName from "@bciers/utils/getUserFullName";
 import SelectOperator from "@/app/components/userOperators/SelectOperator";
 
 export const getUserOperator = async () => {

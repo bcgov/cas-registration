@@ -6,7 +6,7 @@ import {
 } from "next/server";
 
 import { MiddlewareFactory } from "./types";
-import { IDP } from "@/app/utils/enums";
+import { IDP } from "@bciers/utils/enums";
 
 import { getToken } from "@bciers/actions/server";
 /*

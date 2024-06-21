@@ -7,7 +7,8 @@ import {
 
 import { MiddlewareFactory } from "@bciers/middlewares/server";
 
-import { IDP } from "@/app/utils/enums";
+import { IDP } from "@bciers/utils/enums";
+
 import { getToken } from "@bciers/actions/server";
 /*
 Access control logic is managed using Next.js middleware and NextAuth.js authentication JWT token.
@@ -115,6 +116,7 @@ export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
                   }),
                 }),
               };
+
               const response = await fetch(
                 `${process.env.API_URL}registration/user-operators/current`,
                 options,
