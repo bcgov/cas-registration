@@ -7,7 +7,7 @@ import FacilitiesActionCell from "../datagrid/cells/FacilitiesActionCell";
 import facilityColumns from "../datagrid/models/facilities/facilityColumns";
 import facilityGroupColumns from "../datagrid/models/facilities/facilityGroupColumns";
 import { FacilityRow } from "./types";
-import { createFetchFacilitiesPageData } from "./utils";
+import createFetchFacilitiesPageData from "./createFetchFacilitiesPageData";
 
 const FacilityDataGrid = ({
   operationId,

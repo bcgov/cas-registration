@@ -1,33 +1,9 @@
-import buildQueryParams from "@/app/utils/buildQueryParams";
-import { actionHandler } from "@/app/utils/actions";
-import { FacilitiesSearchParams } from "./types";
-
-// ↓ fetch data from server
-export const fetchFacilitiesPageData = async (
-  operationId: string,
-  searchParams: FacilitiesSearchParams,
-) => {
-  try {
-    const queryParams = buildQueryParams(searchParams);
-    const pageData = await actionHandler(
-      `registration/operations/${operationId}/facilities${queryParams}`,
-      "GET",
-      "",
-    );
-    return {
-      rows: pageData.items,
-      row_count: pageData.count,
-    };
-  } catch (error) {
-    throw error;
-  }
-};
-
+import fetchFacilitiesPageData from "./fetchFacilitiesPageData";
 // ⚡️ Higher-order function to create a data-fetching function with operationId
 // This function is designed to generate a data-fetching function tailored to include a specific operationId.
 // It is particularly useful in contexts where the operationId is a required parameter for data retrieval,
 // such as in the DataGrid component which requires search parameters (searchParams) to fetch paginated data.
-export const createFetchFacilitiesPageData = (operationId: string) => {
+const createFetchFacilitiesPageData = (operationId: string) => {
   return async (params: { [key: string]: any }) => {
     try {
       // Call the existing fetch function with the provided operationId and searchParams.
@@ -46,3 +22,5 @@ export const createFetchFacilitiesPageData = (operationId: string) => {
     }
   };
 };
+
+export default createFetchFacilitiesPageData;
