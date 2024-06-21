@@ -22,9 +22,10 @@ There are two ways to define which paths Middleware will run on:
 Custom matcher config
 Conditional statements
 */
-
 export const config = {
-  matcher: ["/((?!api|_next|sw.js|favicon.ico|bciers/libs/shared/).*)"],
+  matcher: [
+    "/((?!api|_next|sw.js|favicon.ico|bciers/libs/shared/|registration/_next|reporting/_next|coam/_next).*)",
+  ],
 };
 
 // ⛓️ Chaining middleware for maintainability, and scalability by apply a series of task specific functions to a request

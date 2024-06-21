@@ -9,7 +9,6 @@ import { MiddlewareFactory } from "@bciers/middlewares/server";
 
 import { IDP } from "@/app/utils/enums";
 import { getToken } from "@bciers/actions/server";
-import path from "path";
 
 /*
 Access control logic is managed using Next.js middleware and NextAuth.js authentication JWT token.
@@ -21,7 +20,7 @@ to the appropriate folder structure.
 
 // Function to check if the path is in the authenticated allow list- does not build authorization folders
 const isAuthenticatedAllowListedPath = (pathname: string): boolean => {
-  const allowList = ["dashboard", "profile"];
+  const allowList = ["profile"];
   const lastSegment = pathname.split("/").pop();
   return allowList.includes(lastSegment || "");
 };
@@ -77,7 +76,7 @@ export const withAuthorizationRegistration: MiddlewareFactory = (
               operator.status !== "Approved"
             ) {
               return NextResponse.redirect(
-                new URL(`/registration/dashboard`, request.url),
+                new URL(`/registration`, request.url),
               );
             }
           } catch (error) {

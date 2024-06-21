@@ -18,8 +18,8 @@ interface Props {
   formData?: UserProfilePartialFormData;
   isCreate: boolean;
 }
-// 🏗️ Client side component: dashboard\profile
-export default function UserForm({ formData, isCreate }: Props) {
+
+export default function ProfileForm({ formData, isCreate }: Props) {
   // 🐜 To display errors
   const [errorList, setErrorList] = useState([] as any[]);
   // 🌀 Loading state for the Submit button
@@ -58,7 +58,7 @@ export default function UserForm({ formData, isCreate }: Props) {
     const response = await actionHandler(
       isCreate ? `registration/users` : `registration/user/user-profile`,
       isCreate ? "POST" : "PUT",
-      "/dashboard/profile",
+      "/profile",
       {
         body: JSON.stringify({
           ...data.formData,

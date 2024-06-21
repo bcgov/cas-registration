@@ -46,6 +46,7 @@ const isUnauthenticatedAllowListedPath = (pathname: string): boolean => {
 export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
   return async (request: NextRequest, _next: NextFetchEvent) => {
     const { pathname } = request.nextUrl;
+
     // Check if the path is in the unauthenticated allow list
     if (isUnauthenticatedAllowListedPath(pathname)) {
       return next(request, _next);
@@ -62,12 +63,13 @@ export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
           return next(request, _next);
         } else {
           return NextResponse.redirect(
-            new URL(`/registration/dashboard/profile`, request.url),
+            new URL(`/registration/profile`, request.url),
           );
         }
       }
 
-      if (pathname === "/" || pathname.endsWith(`/${onboarding}`)) {
+      if (pathname === "/" || pathname === `/${onboarding}`) {
+        // redirect authenticated user to common dashboard
         return NextResponse.redirect(new URL(`/${dashboard}`, request.url));
       } else {
         return next(request, _next);

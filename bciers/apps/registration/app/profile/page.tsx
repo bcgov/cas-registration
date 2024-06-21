@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import { auth } from "@/dashboard/auth";
 import Loading from "@bciers/components/loading/SkeletonSpinner";
 import { IDP } from "@bciers/utils/server";
-import UserPage from "@/registration/app/components/user/UserPage";
+import UserPage from "@/registration/app/components/profile/ProfilePage";
 
 export default async function Page() {
   const session = await auth();
