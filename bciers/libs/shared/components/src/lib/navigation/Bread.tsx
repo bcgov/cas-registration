@@ -6,12 +6,6 @@ import Link from "@mui/material/Link";
 import Breadcrumbs from "@mui/material/Breadcrumbs/Breadcrumbs";
 import { validate as isValidUUID } from "uuid";
 
-// 📐 type for breadcrumb props
-type TBreadCrumbProps = {
-  separator: ReactNode;
-  capitalizeLinks?: boolean;
-};
-
 // 🛠️ Function to un-slugify and capitalize a string
 function unslugifyAndCapitalize(segment: string): string {
   if (isValidUUID(segment)) return segment; // Do not capitalize UUIDs
@@ -72,9 +66,17 @@ const aStyle: React.CSSProperties = {
   fontSize: "18px",
 };
 
+// 📐 type for breadcrumb props
+type TBreadCrumbProps = {
+  separator: React.ReactNode;
+  capitalizeLinks: boolean;
+  defaultLinks?: { label: string; href: string }[];
+};
+
 export default function Bread({
   separator,
   capitalizeLinks,
+  defaultLinks = [], // Default to an empty array if not provided
 }: TBreadCrumbProps) {
   // 🛸 Routing: use the `usePathname` hook from next/navigation to access the current route information
   const paths = usePathname();
@@ -87,6 +89,7 @@ export default function Bread({
   if (params && params.formSection) {
     pathNames.pop();
   }
+
   // 🕹️ Toggle UUID segment to a title segment...
   // by using title parameter sent from link href
   // and useState which is maintained between renders of a top-level React component (required for next\back) navigations
@@ -134,6 +137,20 @@ export default function Bread({
         }}
       >
         <ol style={olStyle}>
+          {defaultLinks.map((link, index) => {
+            const isLastDefaultLink = index === defaultLinks.length - 1;
+            return (
+              <li key={link.href} style={liStyle}>
+                <Link href={link.href} style={aStyle}>
+                  {capitalizeLinks
+                    ? unslugifyAndCapitalize(link.label)
+                    : link.label}
+                </Link>
+                {!isLastDefaultLink || pathNames.length > 0 ? separator : null}{" "}
+                {/* Conditionally render the separator */}
+              </li>
+            );
+          })}
           {pathNames.map((link, index) => {
             const isLastItem = index === pathNames.length - 1;
 

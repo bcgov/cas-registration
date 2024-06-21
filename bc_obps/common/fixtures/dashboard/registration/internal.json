@@ -10,37 +10,37 @@
           {
             "title": "Operators",
             "content": "View all operators here.",
-            "href": "/registration/dashboard/operators"
+            "href": "/registration/operators"
           },
           {
             "title": "Operations",
             "content": "View all operations here.",
-            "href": "/registration/dashboard/operations"
+            "href": "/registration/operations"
           },
           {
             "title": "Facilities",
             "content": "View all facilities here.",
-            "href": "/registration/dashboard/tbd"
+            "href": "/registration/tbd"
           },
           {
             "title": "Operator Administrators and Access Requests",
             "content": "View all operator administrators and administrator access requests here.",
-            "href": "/registration/dashboard/tbd"
+            "href": "/registration/tbd"
           },
           {
             "title": "Operation Registrations",
             "content": "View the registration of operations here.",
-            "href": "/registration/dashboard/tbd"
+            "href": "/registration/tbd"
           },
           {
             "title": "Contacts",
             "content": "View all contacts here.",
-            "href": "/registration/dashboard/tbd"
+            "href": "/registration/tbd"
           },
           {
             "title": "Reported Events",
             "content": "View all reported events here.",
-            "href": "/registration/dashboard/tbd"
+            "href": "/registration/tbd"
           }
         ]
       }

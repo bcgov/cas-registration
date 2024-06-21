@@ -13,31 +13,31 @@
             "links": [
               {
                 "title": "Operators",
-                "href": "/registration/dashboard/operators"
+                "href": "/registration/operators"
               },
               {
                 "title": "Operations",
-                "href": "/registration/dashboard/operations"
+                "href": "/registration/operations"
               },
               {
                 "title": "Facilities",
-                "href": "/registration/dashboard/tbd"
+                "href": "/registration/tbd"
               },
               {
                 "title": "Operator Admins and Access Requests",
-                "href": "/registration/dashboard/tbd"
+                "href": "/registration/tbd"
               },
               {
                 "title": "Operation Registrations",
-                "href": "/registration/dashboard/tbd"
+                "href": "/registration/tbd"
               },
               {
                 "title": "Contacts",
-                "href": "/registration/dashboard/tbd"
+                "href": "/registration/tbd"
               },
               {
                 "title": "Events",
-                "href": "/registration/dashboard/tbd"
+                "href": "/registration/tbd"
               }
             ]
           },

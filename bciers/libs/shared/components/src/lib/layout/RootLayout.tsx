@@ -1,15 +1,6 @@
-/*
-A layout is UI that is shared between routes.
-The app directory must include a root app/layout.js.
-The root layout must define <html> and <body> tags.
-You should not manually add <head> tags such as <title> and <meta> to root layouts. Instead, you should use the Metadata API which automatically handles advanced requirements such as streaming and de-duplicating <head> elements.
-*/
-
-// eslint-disable-next-line import/extensions
 import "@bciers/styles/globals.css";
 import SessionProvider from "@/dashboard/auth/SessionProvider";
 import type { Metadata, Viewport } from "next";
-// 🏷 import {named} can be significantly slower than import default
 import { auth } from "@/dashboard/auth";
 import { PublicEnvScript } from "next-runtime-env";
 import ThemeProvider from "@mui/material/styles/ThemeProvider";
@@ -37,11 +28,16 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
+// 📐 type for root layout props
+type RootLayoutProps = {
+  children: React.ReactNode;
+  defaultLinks?: { label: string; href: string }[]; // for breadcrumbs
+};
+
 export default async function RootLayout({
   children,
-}: {
-  readonly children: React.ReactNode;
-}) {
+  defaultLinks,
+}: RootLayoutProps) {
   //🪝 Wrap the returned auth session in the "use client" version of NextAuth SessionProvider so to expose the useSession() hook in client components
 
   const session = await auth();
@@ -66,13 +62,6 @@ export default async function RootLayout({
           }
           <NextAppDirEmotionCacheProvider options={{ key: "mui" }}>
             <ThemeProvider theme={theme}>
-              {/*
-            MUI Box component is a versatile and essential building block in Material-UI v5.
-            It serves as a wrapper element that helps structure and organize the layout of your application.
-            One of the Box component's strengths is its ability to create responsive layouts easily...
-            utilizing Box component's sx prop to create a responsive layout...
-            You can use properties like display, flexDirection, alignItems, justifyContent and more to control the arrangement and alignment of elements within a flex container
-            */}
               <CssBaseline />
               <Box
                 sx={{
@@ -90,6 +79,7 @@ export default async function RootLayout({
                 <Bread
                   separator={<span aria-hidden="true"> &gt; </span>}
                   capitalizeLinks
+                  defaultLinks={defaultLinks} // Pass defaultLinks as a prop
                 />
                 <Main>{children}</Main>
                 <Footer />
