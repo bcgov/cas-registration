@@ -18,6 +18,7 @@ export default async function FacilitiesPage({
   const role = session?.user?.app_role;
   return (
     <>
+      {/* TODO: TEMP note component. we need to use the newer version of Note component when it is merged */}
       <Note
         classNames="mb-4 bg-gray-300 py-5"
         message={"View the facilities of this operation here."}
