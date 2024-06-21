@@ -68,16 +68,16 @@ ConfigurationElement {
     ForeignKey valid_to
     ManyToManyField reporting_fields
 }
-BaseSchema {
+JsonSchema {
     BigAutoField id
     CharField slug
     JSONField schema
 }
-ActivitySourceTypeBaseSchema {
+ActivitySourceTypeJsonSchema {
     BigAutoField id
     ForeignKey reporting_activity
     ForeignKey source_type
-    ForeignKey base_schema
+    ForeignKey json_schema
     ForeignKey valid_from
     ForeignKey valid_to
 }
@@ -95,8 +95,8 @@ ConfigurationElement }|--|| Methodology : methodology
 ConfigurationElement }|--|| Configuration : valid_from
 ConfigurationElement }|--|| Configuration : valid_to
 ConfigurationElement }|--|{ ReportingField : reporting_fields
-ActivitySourceTypeBaseSchema }|--|| ReportingActivity : reporting_activity
-ActivitySourceTypeBaseSchema }|--|| SourceType : source_type
-ActivitySourceTypeBaseSchema }|--|| BaseSchema : base_schema
-ActivitySourceTypeBaseSchema }|--|| Configuration : valid_from
-ActivitySourceTypeBaseSchema }|--|| Configuration : valid_to
+ActivitySourceTypeJsonSchema }|--|| ReportingActivity : reporting_activity
+ActivitySourceTypeJsonSchema }|--|| SourceType : source_type
+ActivitySourceTypeJsonSchema }|--|| JsonSchema : json_schema
+ActivitySourceTypeJsonSchema }|--|| Configuration : valid_from
+ActivitySourceTypeJsonSchema }|--|| Configuration : valid_to

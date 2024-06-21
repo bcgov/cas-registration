@@ -22,7 +22,7 @@ class ConfigurationTest(BaseTestCase):
     # Throws when a record being inserted has an overlapping date range
     def testExclusionConstraintOverlaps(self):
         invalid_record = Configuration(slug='invalidRecord', valid_from='2024-02-01', valid_to='2024-12-31')
-        with self.assertRaises(ValidationError, msg="ActivitySourceTypeBaseSchema already exists."):
+        with self.assertRaises(ValidationError, msg="ActivitySourceTypeJsonSchema already exists."):
             invalid_record.save()
 
     def testValidRecordInsert(self):

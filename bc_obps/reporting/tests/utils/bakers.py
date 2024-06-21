@@ -1,6 +1,6 @@
 from registration.tests.utils.bakers import operation_baker
 from reporting.models import configuration_element
-from reporting.models.base_schema import BaseSchema
+from reporting.models.json_schema import JsonSchema
 from reporting.models.gas_type import GasType
 from registration.models import ReportingActivity
 from reporting.models.reporting_year import ReportingYear
@@ -40,8 +40,8 @@ def methodology_baker() -> Methodology:
     return baker.make(Methodology)
 
 
-def base_schema_baker() -> BaseSchema:
-    return baker.make(BaseSchema, slug='testSlug', schema="{'testkey': 'testValue'}")
+def json_schema_baker() -> JsonSchema:
+    return baker.make(JsonSchema, slug='testSlug', schema="{'testkey': 'testValue'}")
 
 
 def configuration_element_baker() -> ConfigurationElement:
