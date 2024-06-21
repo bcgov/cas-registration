@@ -39,7 +39,7 @@
       "options": {
         "engine": "docker",
         "context": "dist/registration",
-        "file": "apps/registration/Dockerfile",
+        "file": "Dockerfile",
         "tags": ["cas-registration:latest"]
       }
     },

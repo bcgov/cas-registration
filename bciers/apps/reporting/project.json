@@ -26,7 +26,7 @@
       "options": {
         "engine": "docker",
         "context": "dist/reporting",
-        "file": "apps/reporting/Dockerfile",
+        "file": "Dockerfile",
         "tags": ["cas-reporting:latest"]
       }
     },
