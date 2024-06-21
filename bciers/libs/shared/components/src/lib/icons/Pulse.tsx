@@ -1,4 +1,4 @@
-const Pulse = () => (
+const Pulse = (
   <svg
     width="22"
     height="21"

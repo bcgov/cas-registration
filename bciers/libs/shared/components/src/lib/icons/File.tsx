@@ -1,4 +1,4 @@
-const File = () => (
+const File = (
   <svg
     width="24"
     height="25"

@@ -1,4 +1,4 @@
-const Layers = () => (
+const Layers = (
   <svg
     width="24"
     height="25"
