@@ -3,7 +3,7 @@ import {
   GridColumnGroupingModel,
 } from "@mui/x-data-grid";
 import EmptyGroupCell from "@bciers/components/datagrid/cells/EmptyGroupCell";
-import { OPERATOR_COLUMN_INDEX } from "@/app/components/datagrid/models/operationColumns";
+import { OPERATOR_COLUMN_INDEX } from "@bciers/components/datagrid/models/operationColumns";
 
 const operationGroupColumns = (
   isInternalUser: boolean,

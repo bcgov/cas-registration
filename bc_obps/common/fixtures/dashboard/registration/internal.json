@@ -10,12 +10,12 @@
           {
             "title": "Operators",
             "content": "View all operators here.",
-            "href": "/dashboard/operators"
+            "href": "/registration/operators"
           },
           {
             "title": "Operations",
             "content": "View all operations here.",
-            "href": "/registration/dashboard/operations"
+            "href": "/registration/operations"
           },
           {
             "title": "Facilities",
@@ -28,8 +28,8 @@
             "href": "/registration/tbd"
           },
           {
-            "title": "Operation Registration",
-            "content": "View, approve or decline the registration of operations here.",
+            "title": "Operation Registrations",
+            "content": "View the registration of operations here.",
             "href": "/registration/tbd"
           },
           {
@@ -38,7 +38,7 @@
             "href": "/registration/tbd"
           },
           {
-            "title": "Events",
+            "title": "Reported Events",
             "content": "View all reported events here.",
             "href": "/registration/tbd"
           }

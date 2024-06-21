@@ -18,6 +18,7 @@
     "paths": {
       "@/*": ["apps/registration1/*"],
       "@/dashboard/*": ["apps/dashboard/*"],
+      "@/registration/*": ["apps/registration/*"],
       "@bciers/actions/server": ["libs/shared/actions/src/server.ts"],
       "@bciers/components": ["libs/shared/components/src/index.ts"],
       "@bciers/components/*": ["libs/shared/components/src/lib/*"],
@@ -28,7 +29,8 @@
       "@bciers/styles/*": ["libs/shared/styles/src/lib/*"],
       "@bciers/testConfig/*": ["libs/shared/testConfig/src/*"],
       "@bciers/types": ["libs/shared/types/src/index.ts"],
-      "@bciers/utils/*": ["libs/shared/utils/*"]
+      "@bciers/utils/*": ["libs/shared/utils/*"],
+      "@bciers/utils/server": ["libs/shared/utils/server.ts"]
     }
   },
   "include": ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx", "**/*.json"],

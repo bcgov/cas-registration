@@ -2,12 +2,11 @@
 import Link from "next/link";
 import { Button } from "@mui/material";
 import { Suspense } from "react";
+import { auth } from "@/dashboard/auth";
 import Loading from "@bciers/components/loading/SkeletonGrid";
-import { OperationsSearchParams } from "@/app/components/operations/types";
+import { OperationsSearchParams } from "@bciers/components/operations/types";
 import Note from "@bciers/components/datagrid/Note";
 import Operations from "./Operations";
-
-import { auth } from "@/dashboard/auth";
 
 export default async function OperationsPage({
   searchParams,
@@ -31,7 +30,7 @@ export default async function OperationsPage({
       <h1>Operations</h1>
       {/* Conditionally render the button based on user's role */}
       {role?.includes("industry_user") && (
-        <Link href={"/dashboard/operations/create/1"}>
+        <Link href={"/operations/create/1"}>
           <Button variant="contained">Add Operation</Button>
         </Link>
       )}

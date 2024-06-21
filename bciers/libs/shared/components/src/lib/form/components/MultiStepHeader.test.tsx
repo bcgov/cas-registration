@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect } from "vitest";
-import React from "react";
+
 import MultiStepHeader from "@bciers/components/form/components/MultiStepHeader";
 
 const defaultProps = {
