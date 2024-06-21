@@ -26,7 +26,7 @@
       "options": {
         "engine": "docker",
         "context": "dist/dashboard",
-        "file": "apps/dashboard/Dockerfile",
+        "file": "Dockerfile",
         "tags": ["cas-dashboard:latest"]
       }
     },
