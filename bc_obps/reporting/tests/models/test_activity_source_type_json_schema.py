@@ -16,6 +16,8 @@ class ActivitySourceTypeJsonSchemaTest(BaseTestCase):
             reporting_activity=ReportingActivity.objects.get(pk=1),
             source_type=SourceType.objects.get(pk=1),
             json_schema=json_schema_baker(),
+            has_unit=True,
+            has_fuel=True,
             valid_from=config,
             valid_to=config,
         )
@@ -24,6 +26,8 @@ class ActivitySourceTypeJsonSchemaTest(BaseTestCase):
             ("reporting_activity", "reporting activity", None, None),
             ("source_type", "source type", None, None),
             ("json_schema", "json schema", None, None),
+            ("has_unit", "has unit", None, None),
+            ("has_fuel", "has fuel", None, None),
             ("valid_from", "valid from", None, None),
             ("valid_to", "valid to", None, None),
         ]
@@ -34,13 +38,15 @@ class ActivitySourceTypeJsonSchemaTest(BaseTestCase):
             reporting_activity=self.test_object.reporting_activity,
             source_type=self.test_object.source_type,
             json_schema=json_schema_baker(),
+            has_unit=True,
+            has_fuel=True,
             valid_from=self.test_object.valid_from,
             valid_to=self.test_object.valid_from,
         )
 
         with pytest.raises(Exception) as exc:
             invalid_record.save()
-        assert exc.match(r"^This record will result in duplicate base schemas")
+        assert exc.match(r"^This record will result in duplicate json schemas")
 
     def testValidInsert(self):
         config = configuration_baker({'slug': '2026', 'valid_from': '2026-01-01', 'valid_to': '2026-12-31'})
@@ -48,6 +54,8 @@ class ActivitySourceTypeJsonSchemaTest(BaseTestCase):
             reporting_activity=self.test_object.reporting_activity,
             source_type=self.test_object.source_type,
             json_schema=json_schema_baker(),
+            has_unit=True,
+            has_fuel=True,
             valid_from=config,
             valid_to=config,
         )
