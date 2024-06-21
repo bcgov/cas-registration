@@ -25,13 +25,20 @@ spec:
     spec:
       containers:
         - name: {{ template "cas-bciers.fullname" . }}-dashboard-frontend
+          envFrom:
+            - configMapRef:
+                name: {{ template "cas-bciers.fullname" . }}-frontend-env-configmap
           env:
-            - name: API_URL
-              value: http://{{ include "cas-bciers.fullname" . }}-backend.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.backend.service.port }}/api/
-            - name: HOST_REGISTRATION
-              value: http://{{ include "cas-bciers.fullname" . }}-frontend.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.registrationFrontend.service.port }}
-            - name: HOST_REPORTING
-              value: http://{{ include "cas-bciers.fullname" . }}-frontend.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.reportingFrontend.service.port }}
+            - name: KEYCLOAK_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-gold-client-secret
+                  key: kcClientSecret
+            - name: NEXTAUTH_SECRET
+              valueFrom:
+                  secretKeyRef:
+                    name: cas-bciers-nextauth
+                    key: nextauth-secret
           image: "{{ .Values.dashboardFrontend.image.repository }}:{{ .Values.defaultImageTag | default .Values.dashboardFrontend.image.tag }}"
           imagePullPolicy: {{ .Values.dashboardFrontend.image.pullPolicy }}
           ports:

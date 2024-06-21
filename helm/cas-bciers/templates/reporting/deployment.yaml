@@ -25,9 +25,9 @@ spec:
     spec:
       containers:
         - name: {{ template "cas-bciers.fullname" . }}-reporting-frontend
-          env:
-            - name: API_URL
-              value: http://{{ include "cas-bciers.fullname" . }}-backend.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.backend.service.port }}/api/
+          envFrom:
+            - configMapRef:
+                name: {{ template "cas-bciers.fullname" . }}-frontend-env-configmap
           image: "{{ .Values.reportingFrontend.image.repository }}:{{ .Values.defaultImageTag | default .Values.reportingFrontend.image.tag }}"
           imagePullPolicy: {{ .Values.reportingFrontend.image.pullPolicy }}
           ports:
