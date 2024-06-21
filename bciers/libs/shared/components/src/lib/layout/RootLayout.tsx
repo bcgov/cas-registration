@@ -1,14 +1,14 @@
 import "@bciers/styles/globals.css";
-import SessionProvider from "@/dashboard/auth/SessionProvider";
 import type { Metadata, Viewport } from "next";
-import { auth } from "@/dashboard/auth";
 import { PublicEnvScript } from "next-runtime-env";
 import ThemeProvider from "@mui/material/styles/ThemeProvider";
+import CssBaseline from "@mui/material/CssBaseline";
+import Box from "@mui/material/Box";
+
+import { auth } from "@/dashboard/auth";
+import SessionProvider from "@/dashboard/auth/SessionProvider";
 import { theme } from "@bciers/components";
 import { NextAppDirEmotionCacheProvider } from "@bciers/components";
-import CssBaseline from "@mui/material/CssBaseline";
-
-import Box from "@mui/material/Box";
 import { Footer } from "@bciers/components";
 import { Header } from "@bciers/components";
 import { Bread } from "@bciers/components";

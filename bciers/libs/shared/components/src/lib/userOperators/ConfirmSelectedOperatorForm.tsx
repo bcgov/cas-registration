@@ -10,11 +10,13 @@ import {
   TableRow,
 } from "@mui/material";
 import { useState } from "react";
-import WarningIcon from "@mui/icons-material/Warning";
-import RequestAccessButton from "@/app/components/button/RequestAccessButton";
 import Link from "next/link";
-import { BC_GOV_LINKS_COLOR, DARK_GREY_BG_COLOR } from "@bciers/styles/colors";
+import WarningIcon from "@mui/icons-material/Warning";
 import Button from "@mui/material/Button";
+
+import RequestAccessButton from "@bciers/components/button/RequestAccessButton";
+import { BC_GOV_LINKS_COLOR, DARK_GREY_BG_COLOR } from "@bciers/styles/colors";
+
 import { Operator } from "./types";
 
 interface ConfirmSelectedOperatorFormProps {
@@ -137,7 +139,7 @@ export default function ConfirmSelectedOperatorForm({
             <span className="text-sm">
               This is not my operator.{" "}
               <Link
-                href="/dashboard/select-operator"
+                href="/select-operator"
                 className="underline hover:no-underline text-sm"
                 style={{ color: BC_GOV_LINKS_COLOR }}
                 onClick={() => setHasConfirmedOperator(false)}

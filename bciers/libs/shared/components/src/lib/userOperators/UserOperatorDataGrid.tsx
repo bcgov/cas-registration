@@ -1,11 +1,12 @@
 "use client";
 
 import { GridColDef } from "@mui/x-data-grid";
+
 import DataGrid from "@bciers/components/datagrid/DataGrid";
 import AccessTypeColumnCell from "@bciers/components/datagrid/cells/AccessTypeColumnCell";
 import ChangeUserOperatorStatusColumnCell from "@bciers/components/datagrid/cells/ChangeUserOperatorStatusColumnCell";
 import StatusStyleColumnCell from "@bciers/components/datagrid/cells/StatusStyleColumnCell";
-import { UserOperatorDataGridRow } from "@/app/utils/users/adminUserOperators";
+import { UserOperatorDataGridRow } from "@bciers/utils/server";
 
 const columns: GridColDef[] = [
   {

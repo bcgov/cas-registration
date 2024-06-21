@@ -1,13 +1,14 @@
-import { actionHandler } from "@/app/utils/actions";
+import { RJSFSchema } from "@rjsf/utils";
+import { validate as isValidUUID } from "uuid";
+
+import { auth } from "@/dashboard/auth";
+import { actionHandler } from "@bciers/actions/server";
 import {
   userOperatorSchema,
   userOperatorInternalUserSchema,
-} from "@/app/utils/jsonSchema/userOperator";
+} from "@bciers/utils/server";
+import { UserOperatorFormData } from "@bciers/components/form/formDataTypes";
 
-import { RJSFSchema } from "@rjsf/utils";
-import { auth } from "@/dashboard/auth";
-import { UserOperatorFormData } from "@/app/components/form/formDataTypes";
-import { validate as isValidUUID } from "uuid";
 import { BusinessStructure } from "./types";
 import UserOperatorReviewForm from "./UserOperatorReviewForm";
 import UserOperatorForm from "./UserOperatorForm";
@@ -16,7 +17,7 @@ async function getBusinessStructures() {
   return actionHandler(
     `registration/business_structures`,
     "GET",
-    `/dashboard/select-operator/user-operator`,
+    `/select-operator/user-operator`,
   );
 }
 

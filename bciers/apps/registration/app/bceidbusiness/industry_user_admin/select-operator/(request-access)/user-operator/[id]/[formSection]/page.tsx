@@ -1,4 +1,4 @@
-import SelectOperatorRequestAccessReceivedUserOperatorPage from "@/app/components/routes/select-operator/request-access/user-operator/Page";
+import SelectOperatorRequestAccessReceivedUserOperatorPage from "@/registration/app/components/operations/select-operator/request-access/user-operator/OperatorUserRequest";
 
 export default async function Page({
   params,

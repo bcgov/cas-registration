@@ -3,7 +3,7 @@ import readOnlyTheme from "./theme/readOnlyTheme";
 import { useMemo, useState } from "react";
 import { customizeValidator } from "@rjsf/validator-ajv8";
 import { FormProps, IChangeEvent, withTheme, ThemeProps } from "@rjsf/core";
-import customTransformErrors from "@/app/utils/customTransformErrors";
+import { customTransformErrors } from "@bciers/utils/server";
 import { RJSFValidationError } from "@rjsf/utils";
 
 const customFormats = {

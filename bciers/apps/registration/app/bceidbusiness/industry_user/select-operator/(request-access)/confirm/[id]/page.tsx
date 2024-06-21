@@ -1,9 +1,9 @@
-import SelectOperatorRequestAccessConfirmPage from "@/app/components/routes/select-operator/request-access/confirm/Page";
+import OperatorRequestConfirm from "@/registration/app/components/operations/select-operator/request-access/confirm/OperatorRequestConfirm";
 
 export default async function Page({
   params,
 }: {
   readonly params: { id: string };
 }) {
-  return <SelectOperatorRequestAccessConfirmPage params={params} />;
+  return <OperatorRequestConfirm params={params} />;
 }

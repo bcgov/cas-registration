@@ -1,5 +1,5 @@
 import { GridRenderCellParams } from "@mui/x-data-grid/models/params/gridCellParams";
-import { Status } from "@/app/utils/enums";
+import { Status } from "@bciers/utils/server";
 
 export interface UserOperatorRenderCellParams extends GridRenderCellParams {
   row: {

@@ -1,10 +1,11 @@
 "use client";
 
-import Button from "@mui/material/Button";
-import { actionHandler } from "@/app/utils/actions";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Alert } from "@mui/material";
+import Button from "@mui/material/Button";
+
+import { actionHandler } from "@bciers/actions/server";
 
 interface RequestAccessButtonProps {
   operatorId: number;
@@ -30,14 +31,14 @@ export default function RequestAccessButton({
     const response = await actionHandler(
       endpointUrl,
       "POST",
-      `/dashboard/select-operator/confirm/${operatorId}`,
+      `/select-operator/confirm/${operatorId}`,
     );
     if (response.error) {
       setErrorList([{ message: response.error }]);
       return;
     }
     // admin vs. subsequent access request conditionality handled in component
-    push(`/dashboard/select-operator/received/request-access/${operatorId}`);
+    push(`/select-operator/received/request-access/${operatorId}`);
   };
 
   return (

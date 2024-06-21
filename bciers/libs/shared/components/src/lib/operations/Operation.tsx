@@ -35,7 +35,7 @@ async function getNaicsCodes() {
     return await actionHandler(
       "registration/naics_codes",
       "GET",
-      "/dashboard/operations",
+      "/operations",
     );
   } catch (error) {
     // Handle the error here or rethrow it to handle it at a higher level
@@ -75,7 +75,7 @@ async function getBusinessStructures() {
   return actionHandler(
     `registration/business_structures`,
     "GET",
-    `/dashboard/select-operator/user-operator`,
+    `/select-operator/user-operator`,
   );
 }
 

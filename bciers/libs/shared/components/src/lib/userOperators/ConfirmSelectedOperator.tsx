@@ -9,7 +9,7 @@ export async function getOperator(id: string) {
   return actionHandler(
     `registration/operators/${id}`,
     "GET",
-    `dashboard/select-operator/confirm/${id}`,
+    `select-operator/confirm/${id}`,
   );
 }
 
@@ -17,7 +17,7 @@ export async function getOperatorHasAdmin(id: string) {
   return actionHandler(
     `registration/operators/${id}/has-admin`,
     "GET",
-    `dashboard/select-operator/confirm/${id}`,
+    `select-operator/confirm/${id}`,
   );
 }
 
@@ -25,7 +25,7 @@ export async function getOperatorAccessDeclined(id: string) {
   return actionHandler(
     `registration/operators/${id}/access-declined`,
     "GET",
-    `dashboard/select-operator/confirm/${id}`,
+    `select-operator/confirm/${id}`,
   );
 }
 
@@ -82,7 +82,7 @@ export default async function ConfirmSelectedOperator({
         {hasAdmin ? declinedHasAdminJSX : declinedNoAdminJSX}
         <span className="text-sm">
           <Link
-            href="/dashboard/select-operator"
+            href="/select-operator"
             className="underline hover:no-underline text-sm"
             style={{ color: BC_GOV_LINKS_COLOR }}
           >

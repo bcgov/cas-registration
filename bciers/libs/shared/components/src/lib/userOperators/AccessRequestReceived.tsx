@@ -1,5 +1,6 @@
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
-import { actionHandler } from "@/app/utils/actions";
+
+import { actionHandler } from "@bciers/actions/server";
 import { Operator } from "./types";
 import { getOperator } from "./ConfirmSelectedOperator";
 
@@ -7,7 +8,7 @@ export async function getOperatorHasAdmin(id: string) {
   return actionHandler(
     `registration/operators/${id}/has-admin`,
     "GET",
-    `dashboard/select-operator/confirm/${id}`,
+    `select-operator/confirm/${id}`,
   );
 }
 

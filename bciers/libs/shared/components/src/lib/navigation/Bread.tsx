@@ -1,5 +1,5 @@
 "use client";
-import React, { ReactNode, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, usePathname, useSearchParams } from "next/navigation";
 import Box from "@mui/material/Box";
 import Link from "@mui/material/Link";

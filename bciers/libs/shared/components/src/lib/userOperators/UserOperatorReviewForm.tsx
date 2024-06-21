@@ -1,12 +1,13 @@
 "use client";
-
+import { RJSFSchema } from "@rjsf/utils";
 import { useState } from "react";
 import { useParams } from "next/navigation";
-import { userOperatorInternalUserUiSchema } from "@/app/utils/jsonSchema/userOperator";
+
 import MultiStepAccordion from "@bciers/components/form/MultiStepAccordion";
-import { UserOperatorFormData } from "@/app/components/form/formDataTypes";
-import { RJSFSchema } from "@rjsf/utils";
-import { OperatorStatus, UserOperatorStatus } from "@/app/utils/enums";
+import { UserOperatorFormData } from "@bciers/components/form/formDataTypes";
+import { userOperatorInternalUserUiSchema } from "@bciers/utils/server";
+import { OperatorStatus, UserOperatorStatus } from "@bciers/utils/server";
+
 import UserOperatorReview from "./UserOperatorReview";
 
 interface Props {

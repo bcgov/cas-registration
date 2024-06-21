@@ -8,13 +8,14 @@ import {
   useRouter,
   useSearchParams,
 } from "next/navigation";
-import { userOperatorUiSchema } from "@/app/utils/jsonSchema/userOperator";
-import { actionHandler } from "@/app/utils/actions";
 import { useSession } from "next-auth/react";
+
+import { actionHandler } from "@bciers/actions/server";
+import { userOperatorUiSchema } from "@bciers/utils/server";
 import MultiStepFormBase from "@bciers/components/form/MultiStepFormBase";
-import { UserOperatorFormData } from "@/app/components/form/formDataTypes";
+import { UserOperatorFormData } from "@bciers/components/form/formDataTypes";
 import Note from "@bciers/components/datagrid/Note";
-import { Status } from "@/app/utils/enums";
+import { Status } from "@bciers/utils/server";
 
 interface UserOperatorFormProps {
   readonly schema: RJSFSchema;
@@ -48,7 +49,7 @@ export default function UserOperatorForm({
     const response = await actionHandler(
       endpoint,
       isCreate ? "POST" : "PUT",
-      `/dashboard/select-operator/user-operator/${
+      `/select-operator/user-operator/${
         isCreate ? "create" : userOperatorId
       }/${formSection}`,
       {
@@ -63,16 +64,16 @@ export default function UserOperatorForm({
     }
     if (isCreate) {
       return push(
-        `/dashboard/select-operator/received/add-operator/${response.operator_id}`,
+        `/select-operator/received/add-operator/${response.operator_id}`,
       );
     }
 
     if (isRequestingAccess) {
       return push(
-        `/dashboard/select-operator/received/request-access/${response.operator_id}`,
+        `/select-operator/received/request-access/${response.operator_id}`,
       );
     }
-    return push(`/dashboard`);
+    return push(`/registration`);
   };
 
   // page flashes if !isCasInternal or !isIndustryUser is used
@@ -88,10 +89,10 @@ export default function UserOperatorForm({
 
   const confirmationMessage = (
     <>
-      Please click on the &quot;Edit Information&quot; button, fill out missing
-      information or update incorrect information about your operator, and then
-      click on the &quot;Save and Return to Dashboard&quot; button to confirm
-      the completeness and accuracy. <br />
+      PPPPPPlease click on the &quot;Edit Information&quot; button, fill out
+      missing information or update incorrect information about your operator,
+      and then click on the &quot;Save and Return to Dashboard&quot; button to
+      confirm the completeness and accuracy. <br />
       Some fields cannot be edited. If you need to change those fields, please
       contact us via email at{" "}
       <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca</a>.
@@ -109,12 +110,10 @@ export default function UserOperatorForm({
         />
       )}
       <MultiStepFormBase
-        cancelUrl={
-          isCasInternal ? "/dashboard/operators" : "/dashboard/select-operator"
-        }
+        cancelUrl={isCasInternal ? "/operators" : "/select-operator"}
         allowEdit={isFormStatusDisabled && isIndustryUser}
         allowBackNavigation
-        baseUrl={`/dashboard/${operatorRoute}/user-operator/${
+        baseUrl={`/${operatorRoute}/user-operator/${
           isCreate ? "create" : userOperatorId
         }`}
         schema={schema}

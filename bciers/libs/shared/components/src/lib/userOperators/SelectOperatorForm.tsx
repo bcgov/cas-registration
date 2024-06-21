@@ -1,13 +1,14 @@
 "use client";
 
-import Form from "@bciers/components/form/FormBase";
 import { RJSFSchema } from "@rjsf/utils";
 import { useState } from "react";
-import { Alert } from "@mui/material";
-import { selectOperatorUiSchema } from "@/app/utils/jsonSchema/selectOperator";
 import { useRouter } from "next/navigation";
-import { actionHandler } from "@/app/utils/actions";
-import { SelectOperatorFormData } from "@/app/components/form/formDataTypes";
+import { Alert } from "@mui/material";
+
+import { actionHandler } from "@bciers/actions/server";
+import Form from "@bciers/components/form/FormBase";
+import { selectOperatorUiSchema } from "@bciers/utils/server";
+import { SelectOperatorFormData } from "@bciers/components/form/formDataTypes";
 
 interface SelectOperatorFormProps {
   schema: RJSFSchema;
@@ -23,14 +24,16 @@ export default function SelectOperatorForm({
     <Form
       schema={schema}
       onSubmit={async (data: { formData?: SelectOperatorFormData }) => {
-        const queryParam = `?${data.formData?.search_type}=${data.formData?.[
-          data.formData?.search_type as keyof SelectOperatorFormData
-        ]}`;
+        const queryParam = `?${data.formData?.search_type}=${
+          data.formData?.[
+            data.formData?.search_type as keyof SelectOperatorFormData
+          ]
+        }`;
 
         const response = await actionHandler(
           `registration/operators${queryParam}`,
           "GET",
-          "/dashboard/select-operator",
+          "/select-operator",
         );
 
         if (response.error) {
@@ -48,7 +51,7 @@ export default function SelectOperatorForm({
           operatorLegalName = response.legal_name;
         }
         push(
-          `/dashboard/select-operator/confirm/${operatorId}?title=${operatorLegalName}`,
+          `/select-operator/confirm/${operatorId}?title=${operatorLegalName}`,
         );
       }}
       uiSchema={selectOperatorUiSchema}

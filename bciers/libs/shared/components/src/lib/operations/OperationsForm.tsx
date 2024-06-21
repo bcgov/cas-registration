@@ -71,7 +71,7 @@ export default function OperationsForm({ formData, schema }: Readonly<Props>) {
 
       <Link
         className="m-auto link-button-blue"
-        href="/dashboard/operations"
+        href="/operations"
         aria-label="Return to Operations List"
       >
         Return to Operations List{" "}
@@ -85,8 +85,8 @@ export default function OperationsForm({ formData, schema }: Readonly<Props>) {
         confirmationMessage
       ) : (
         <MultiStepFormBase
-          baseUrl={`/dashboard/operations/${operationId}`}
-          cancelUrl="/dashboard/operations"
+          baseUrl={`/operations/${operationId}`}
+          cancelUrl="/operations"
           // Add custom titles since "Statutory Declaration" is different than the
           // title in the schema "Statutory Declaration and Disclaimer"
           customStepNames={[
@@ -106,8 +106,8 @@ export default function OperationsForm({ formData, schema }: Readonly<Props>) {
               ? "registration/operations"
               : `registration/operations/${formData?.id}?title=${paramTitle}&submit=${isFinalStep}&form_section=${formSection}`;
             const pathToRevalidate = isCreate
-              ? "dashboard/operations"
-              : `dashboard/operations/${formData?.id}`;
+              ? "operations"
+              : `operations/${formData?.id}`;
             const body = {
               ...formData,
               ...data.formData,
@@ -134,11 +134,11 @@ export default function OperationsForm({ formData, schema }: Readonly<Props>) {
               paramTitle = response.name;
             }
             router.replace(
-              `/dashboard/operations/${operation}/${formSection}?title=${paramTitle}`,
+              `/operations/${operation}/${formSection}?title=${paramTitle}`,
             );
             if (isNotFinalStep) {
               router.push(
-                `/dashboard/operations/${operation}/${
+                `/operations/${operation}/${
                   formSection + 1
                 }?title=${paramTitle}`,
               );
