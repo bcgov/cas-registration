@@ -3,7 +3,6 @@
 import { ReactNode, useEffect, useState } from "react";
 import { useParams, usePathname, useSearchParams } from "next/navigation";
 import Link from "@mui/material/Link";
-import Breadcrumbs from "@mui/material/Breadcrumbs/Breadcrumbs";
 import { validate as isValidUUID } from "uuid";
 
 // 📐 type for breadcrumb props
@@ -98,18 +97,9 @@ export default function Bread({
       <div
         className={`bg-bc-bg-blue relative left-1/2 transform -translate-x-1/2 w-screen max-w-none`}
       >
-        <Breadcrumbs
+        <nav
           aria-label="breadcrumbs"
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            backgroundColor: "primary.light",
-            width: "100%",
-            maxWidth: "1536px",
-            height: 80,
-            marginLeft: "auto",
-            marginRight: "auto",
-          }}
+          className="flex items-center bg-bc-bg-blue w-full max-w-page h-20 mx-auto"
         >
           <ol className="list-none pl-0 ml-4 sm:ml-6">
             {pathNames.map((link, index) => {
@@ -150,7 +140,7 @@ export default function Bread({
               }
             })}
           </ol>
-        </Breadcrumbs>
+        </nav>
       </div>
     </div>
   );
