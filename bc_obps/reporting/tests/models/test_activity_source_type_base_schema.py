@@ -1,21 +1,21 @@
 from common.tests.utils.helpers import BaseTestCase
 from registration.models import ReportingActivity
-from reporting.models import ActivitySourceTypeBaseSchema, SourceType
+from reporting.models import ActivitySourceTypeJsonSchema, SourceType
 from reporting.tests.utils.bakers import (
     configuration_baker,
-    base_schema_baker,
+    json_schema_baker,
 )
 import pytest
 
 
-class ActivitySourceTypeBaseSchemaTest(BaseTestCase):
+class ActivitySourceTypeJsonSchemaTest(BaseTestCase):
     @classmethod
     def setUpTestData(cls):
         config = configuration_baker({'slug': '2024', 'valid_from': '2024-01-01', 'valid_to': '2024-12-31'})
-        cls.test_object = ActivitySourceTypeBaseSchema.objects.create(
+        cls.test_object = ActivitySourceTypeJsonSchema.objects.create(
             reporting_activity=ReportingActivity.objects.get(pk=1),
             source_type=SourceType.objects.get(pk=1),
-            base_schema=base_schema_baker(),
+            json_schema=json_schema_baker(),
             valid_from=config,
             valid_to=config,
         )
@@ -23,17 +23,17 @@ class ActivitySourceTypeBaseSchemaTest(BaseTestCase):
             ("id", "ID", None, None),
             ("reporting_activity", "reporting activity", None, None),
             ("source_type", "source type", None, None),
-            ("base_schema", "base schema", None, None),
+            ("json_schema", "base schema", None, None),
             ("valid_from", "valid from", None, None),
             ("valid_to", "valid to", None, None),
         ]
 
-    # Throws when a matching activity, source_type, base_schema has an overlapping date range
-    def testDuplicateBaseSchemaForDateRange(self):
-        invalid_record = ActivitySourceTypeBaseSchema(
+    # Throws when a matching activity, source_type, json_schema has an overlapping date range
+    def testDuplicateJsonSchemaForDateRange(self):
+        invalid_record = ActivitySourceTypeJsonSchema(
             reporting_activity=self.test_object.reporting_activity,
             source_type=self.test_object.source_type,
-            base_schema=base_schema_baker(),
+            json_schema=json_schema_baker(),
             valid_from=self.test_object.valid_from,
             valid_to=self.test_object.valid_from,
         )
@@ -44,10 +44,10 @@ class ActivitySourceTypeBaseSchemaTest(BaseTestCase):
 
     def testValidInsert(self):
         config = configuration_baker({'slug': '2026', 'valid_from': '2026-01-01', 'valid_to': '2026-12-31'})
-        valid_record = ActivitySourceTypeBaseSchema(
+        valid_record = ActivitySourceTypeJsonSchema(
             reporting_activity=self.test_object.reporting_activity,
             source_type=self.test_object.source_type,
-            base_schema=base_schema_baker(),
+            json_schema=json_schema_baker(),
             valid_from=config,
             valid_to=config,
         )

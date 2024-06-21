@@ -9,8 +9,8 @@ from .methodology import Methodology
 from .reporting_field import ReportingField
 from .configuration import Configuration
 from .configuration_element import ConfigurationElement
-from .base_schema import BaseSchema
-from .activity_source_type_base_schema import ActivitySourceTypeBaseSchema
+from .json_schema import JsonSchema
+from .activity_source_type_json_schema import ActivitySourceTypeJsonSchema
 
 
 __all__ = [
@@ -24,6 +24,6 @@ __all__ = [
     "ReportingField",
     "Configuration",
     "ConfigurationElement",
-    "BaseSchema",
-    "ActivitySourceTypeBaseSchema",
+    "JsonSchema",
+    "ActivitySourceTypeJsonSchema",
 ]
