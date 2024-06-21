@@ -5,9 +5,12 @@ import { BC_GOV_LINKS_COLOR } from "@bciers/styles/colors";
 import Link from "next/link";
 import { auth } from "@/dashboard/auth";
 import { actionHandler } from "@bciers/actions/server";
-import { OperatorStatus, UserOperatorStatus } from "@bciers/utils/server";
-import { getUserFullName } from "@bciers/utils/server";
-import SelectOperator from "@/registration/app/components/operations/select-operator/MyOperatorPage";
+import {
+  OperatorStatus,
+  UserOperatorStatus,
+  getUserFullName,
+} from "@bciers/utils/server";
+import SelectOperator from "@bciers/components/userOperators/SelectOperator";
 
 export const getUserOperator = async () => {
   try {
