@@ -6,13 +6,16 @@
 @layer components {
   html,
   body {
-    @apply text-bc-text;
+    @apply text-bc-text bg-bc-primary-blue;
+  }
+  main {
+    @apply bg-white;
   }
   a {
     @apply text-bc-link-blue underline;
   }
   .max-w-page {
-    @apply max-w-[1536px];
+    @apply max-w-[1440px];
   }
   .padding-page {
     @apply p-4 sm:px-6;
@@ -51,15 +54,15 @@ fieldset {
 }
 
 html {
-  min-height: 100vh;
+  height: 100%;
+  min-height: 100%;
 }
 
 body {
-  position: relative;
-  margin: 0 auto;
-  padding: 0;
-  height: 1px;
-  min-height: 100vh;
+  height: 100%;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Remove the arrows from input number fields */

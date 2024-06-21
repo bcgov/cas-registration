@@ -25,7 +25,7 @@ const Tile = ({ content, href, icon, links, title }: ContentItem) => {
     >
       <a href={href} className="px-6 no-underline text-bc-text">
         <h2 className="flex items-center m-0">
-          {iconMap[icon as keyof IconMap]?.()}
+          {iconMap[icon as keyof IconMap]}
           <div className="ml-3">{title}</div>
         </h2>
         <div className=" mt-4">{content}</div>

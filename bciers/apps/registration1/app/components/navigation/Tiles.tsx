@@ -123,7 +123,7 @@ export default function Tiles({
           return (
             <div key={title} className="dashboard-tile-container">
               <h2 className="flex items-center m-0">
-                {iconMap[icon as keyof IconMap]?.()}
+                {iconMap[icon as keyof IconMap]}
                 <div className="ml-2">{content.title}</div>
               </h2>
 
