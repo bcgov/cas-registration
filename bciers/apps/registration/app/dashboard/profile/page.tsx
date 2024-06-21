@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import Loading from "@bciers/components/loading/SkeletonSpinner";
 import { auth } from "@/dashboard/auth";
-import { IDP } from "@/app/utils/enums";
+import { IDP } from "@bciers/utils/enums";
 import User from "@/app/components/routes/profile/Page";
 
 // 🏗️ Sync server component: dashboard\profile

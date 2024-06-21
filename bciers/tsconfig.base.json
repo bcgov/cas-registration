@@ -27,7 +27,8 @@
       "@bciers/styles": ["libs/shared/styles/src/index.ts"],
       "@bciers/styles/*": ["libs/shared/styles/src/lib/*"],
       "@bciers/testConfig/*": ["libs/shared/testConfig/src/*"],
-      "@bciers/types": ["libs/shared/types/src/index.ts"]
+      "@bciers/types": ["libs/shared/types/src/index.ts"],
+      "@bciers/utils/*": ["libs/shared/utils/*"]
     }
   },
   "include": ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx", "**/*.json"],

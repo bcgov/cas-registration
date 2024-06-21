@@ -1,8 +1,8 @@
 import Button from "@mui/material/Button/Button";
 import Link from "@mui/material/Link";
 import { signOut, useSession } from "next-auth/react";
-import { getEnvValue } from "@/app/utils/actions";
-import getUserFullName from "@/app/utils/getUserFullName";
+import { getEnvValue } from "@bciers/utils/actions";
+import getUserFullName from "@bciers/utils/getUserFullName";
 
 export default function Profile() {
   const { data: session } = useSession();

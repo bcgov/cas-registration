@@ -1,11 +1,11 @@
 import { Suspense } from "react";
 
 import Loading from "@bciers/components/loading/SkeletonGrid";
-import {
-  processExternalDashboardUsersTileData,
-  UserOperatorDataGridRow,
-} from "@/app/utils/users/adminUserOperators";
 import UserOperatorDataGrid from "@/app/components/userOperators/UserOperatorDataGrid";
+import {
+  UserOperatorDataGridRow,
+  processExternalDashboardUsersTileData,
+} from "@/app/utils/users/adminUserOperators";
 
 const UserOperatorsPage = async () => {
   const userOperatorData: { rows: UserOperatorDataGridRow[] } =

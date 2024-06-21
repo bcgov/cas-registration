@@ -1,4 +1,4 @@
-import { actionHandler } from "@/app/utils/actions";
+import { actionHandler } from "@bciers/utils/actions";
 import CancelIcon from "@mui/icons-material/Cancel";
 import Link from "next/link";
 import { BC_GOV_LINKS_COLOR } from "@bciers/styles/colors";

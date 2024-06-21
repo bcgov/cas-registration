@@ -15,7 +15,7 @@
           {
             "title": "Operations",
             "content": "View the operations owned by your operator, or to add a new operation to your operator here.",
-            "href": "/registration/operations"
+            "href": "/registration/dashboard/operations"
           },
           {
             "title": "Contacts",
