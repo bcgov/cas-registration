@@ -23,7 +23,7 @@ class ActivitySourceTypeJsonSchemaTest(BaseTestCase):
             ("id", "ID", None, None),
             ("reporting_activity", "reporting activity", None, None),
             ("source_type", "source type", None, None),
-            ("json_schema", "base schema", None, None),
+            ("json_schema", "json schema", None, None),
             ("valid_from", "valid from", None, None),
             ("valid_to", "valid to", None, None),
         ]
