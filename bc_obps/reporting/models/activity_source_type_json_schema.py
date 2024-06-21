@@ -3,6 +3,7 @@ from django.db import models
 from registration.models import ReportingActivity
 from reporting.models import SourceType, JsonSchema, Configuration
 import typing
+from reporting.utils import validate_overlapping_records
 
 
 class ActivitySourceTypeJsonSchema(BaseModel):
@@ -18,6 +19,12 @@ class ActivitySourceTypeJsonSchema(BaseModel):
     json_schema = models.ForeignKey(
         JsonSchema, on_delete=models.DO_NOTHING, related_name="activity_source_type_json_schemas"
     )
+    has_unit = models.BooleanField(
+        db_comment="Whether or not this source type should collect unit data. If true, add a unit schema when buidling the form object", default=True
+    )
+    has_fuel = models.BooleanField(
+        db_comment="Whether or not this source type should collect fuel data. If true, add a fuel schema when buidling the form object", default=True
+    )
     valid_from = models.ForeignKey(Configuration, on_delete=models.DO_NOTHING, related_name="+")
     valid_to = models.ForeignKey(Configuration, on_delete=models.DO_NOTHING, related_name="+")
 
@@ -30,17 +37,6 @@ class ActivitySourceTypeJsonSchema(BaseModel):
         """
         Override the save method to validate if there are overlapping records.
         """
-        all_ranges = ActivitySourceTypeJsonSchema.objects.select_related('valid_from', 'valid_to').filter(
-            reporting_activity=self.reporting_activity, source_type=self.source_type
-        )
-        for y in all_ranges:
-            if (
-                ( (self.valid_from.valid_from >= y.valid_from.valid_from)
-                and (self.valid_from.valid_from <= y.valid_to.valid_to) )
-                or ( (self.valid_to.valid_to <= y.valid_to.valid_to)
-                and (self.valid_to.valid_to >= y.valid_from.valid_from) )
-            ):
-                raise Exception(
-                    f'This record will result in duplicate base schemas being returned for the date range {self.valid_from.valid_from} - {self.valid_to.valid_to} as it overlaps with a current record or records'
-                )
+        exception_message = f'This record will result in duplicate json schemas being returned for the date range {self.valid_from.valid_from} - {self.valid_to.valid_to} as it overlaps with a current record or records'
+        validate_overlapping_records(ActivitySourceTypeJsonSchema, self, exception_message)
         super().save(*args, **kwargs)
