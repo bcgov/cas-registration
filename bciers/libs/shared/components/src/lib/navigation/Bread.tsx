@@ -71,12 +71,14 @@ type TBreadCrumbProps = {
   separator: React.ReactNode;
   capitalizeLinks: boolean;
   defaultLinks?: { label: string; href: string }[];
+  zone?: string;
 };
 
 export default function Bread({
   separator,
   capitalizeLinks,
   defaultLinks = [], // Default to an empty array if not provided
+  zone = "", // Default to empty string if not provided
 }: TBreadCrumbProps) {
   // 🛸 Routing: use the `usePathname` hook from next/navigation to access the current route information
   const paths = usePathname();
@@ -160,12 +162,11 @@ export default function Bread({
             if (isValidLink(link)) {
               if (!isLastItem) {
                 //  🔗 create a link
+                const path = `/${pathNames.slice(0, index + 1).join("/")}`;
+                const href = zone ? `/${zone}${path}` : path;
                 return (
                   <li key={link} style={liStyle}>
-                    <Link
-                      href={`/${pathNames.slice(0, index + 1).join("/")}`}
-                      style={aStyle}
-                    >
+                    <Link href={href} style={aStyle}>
                       {content}
                     </Link>
                     {separator}

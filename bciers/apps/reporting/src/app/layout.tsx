@@ -14,5 +14,9 @@ export default function ReportingLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <RootLayout defaultLinks={defaultLinks}>{children}</RootLayout>;
+  return (
+    <RootLayout defaultLinks={defaultLinks} zone="reporting">
+      {children}
+    </RootLayout>
+  );
 }

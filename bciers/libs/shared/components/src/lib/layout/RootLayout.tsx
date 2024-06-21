@@ -32,11 +32,13 @@ export const viewport: Viewport = {
 type RootLayoutProps = {
   children: React.ReactNode;
   defaultLinks?: { label: string; href: string }[]; // for breadcrumbs
+  zone?: string; // for breadcrumbs
 };
 
 export default async function RootLayout({
   children,
   defaultLinks,
+  zone,
 }: RootLayoutProps) {
   //🪝 Wrap the returned auth session in the "use client" version of NextAuth SessionProvider so to expose the useSession() hook in client components
 
@@ -79,7 +81,8 @@ export default async function RootLayout({
                 <Bread
                   separator={<span aria-hidden="true"> &gt; </span>}
                   capitalizeLinks
-                  defaultLinks={defaultLinks} // Pass defaultLinks as a prop
+                  defaultLinks={defaultLinks}
+                  zone={zone}
                 />
                 <Main>{children}</Main>
                 <Footer />
