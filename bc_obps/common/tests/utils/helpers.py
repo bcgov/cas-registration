@@ -6,12 +6,19 @@ class BaseTestCase(TestCase):
     field_data = []  # Override this in the child class
 
     def assertFieldLabel(self, instance, field_name, expected_label):
-        field = instance._meta.get_field(field_name)
-        if isinstance(field, models.ManyToOneRel) or isinstance(field, models.ManyToManyRel):
-            # If the field is a ManyToOneRel or ManyToManyRel, get the field from the related model
-            self.assertEqual(field.related_model._meta.verbose_name, expected_label)
-        else:
-            self.assertEqual(field.verbose_name, expected_label)
+        try:
+            field = instance._meta.get_field(field_name)
+            if isinstance(field, models.ManyToOneRel) or isinstance(field, models.ManyToManyRel):
+                # If the field is a ManyToOneRel or ManyToManyRel, get the field from the related model
+                self.assertEqual(field.related_model._meta.verbose_name, expected_label)
+            else:
+                self.assertEqual(field.verbose_name, expected_label)
+        except Exception as e:
+            print(e)
+            expected_fields = instance._meta.get_fields()
+            raise Exception(
+                f'Field not found: {field_name} not in expected set of fields [{expected_fields}]. Error: {e}'
+            )
 
     def assertFieldMaxLength(self, instance, field_name, expected_max_length):
         field = instance._meta.get_field(field_name)
@@ -39,4 +46,8 @@ class BaseTestCase(TestCase):
     def test_field_data_length(self):
         if hasattr(self, "test_object") and hasattr(self, "field_data"):
             # check that the number of fields in the model is the same as the number of fields in the field_data list
-            self.assertEqual(len(self.field_data), len(self.test_object._meta.get_fields()))
+            self.assertEqual(
+                len(self.field_data),
+                len(self.test_object._meta.get_fields()),
+                f'EXPECTED FIELDS: {self.field_data}, FIELDS FOUND: {self.test_object._meta.get_fields()}',
+            )
