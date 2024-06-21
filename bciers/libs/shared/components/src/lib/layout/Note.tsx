@@ -13,10 +13,10 @@ const Note = ({ children, variant = "info" }: NoteProps) => {
       <div
         // relative positioning combined with left: 50% and transform: translateX(-50%)
         // to extend background colour to full width of the screen
-        className={`bg-${bgColour} relative left-1/2 transform -translate-x-1/2 w-screen max-w-none`}
+        className={`bg-${bgColour} relative left-1/2 transform -translate-x-1/2 -translate-y-4 w-screen max-w-none`}
       >
         <div
-          className={`max-w-page mx-auto px-6 bg-${bgColour} py-5 h-fit text-lg`}
+          className={`max-w-page mx-auto padding-page bg-${bgColour} h-fit text-lg`}
         >
           {children}
         </div>
