@@ -10,7 +10,7 @@
           {
             "title": "My Operator",
             "content": "View or update information of your operator here.",
-            "href": "/dashboard/select-operator"
+            "href": "/registration/select-operator"
           },
           {
             "title": "Operations",
