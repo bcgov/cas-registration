@@ -2,7 +2,7 @@ export interface FacilityRow {
   id: number;
   bcghg_id: string;
   name: string;
-  status: string;
+  type: string;
 }
 
 export interface FacilitiesSearchParams {
