@@ -48,12 +48,6 @@ registrationFrontend:
 
   environment: ~
 
-  auth:
-    keycloakAuthUrl: ~
-    keycloakRealms: /realms/standard
-    keycloakOidc: /protocol/openid-connect
-    keycloakClientId: obps-4953
-
   service:
     type: ClusterIP
     port: 3000
@@ -145,6 +139,12 @@ dashboardFrontend:
     targetCPUUtilizationPercentage: 80
     # targetMemoryUtilizationPercentage: 80
 
+  auth:
+    keycloakAuthUrl: ~
+    siteminderAuthUrl: ~
+    keycloakRealms: /realms/standard
+    keycloakOidc: /protocol/openid-connect
+    keycloakClientId: obps-4953
 
 terraform-bucket-provision:
   terraform:

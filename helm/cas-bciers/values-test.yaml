@@ -30,10 +30,6 @@ registrationFrontend:
 
   environment: test
 
-  auth:
-    keycloakAuthUrl: https://test.loginproxy.gov.bc.ca/auth
-    siteminderAuthUrl: https://logontest7.gov.bc.ca
-
   resources:
     limits:
       cpu: 200m
@@ -53,10 +49,6 @@ reportingFrontend:
     path: "/reporting"
 
   environment: test
-
-  auth:
-    keycloakAuthUrl: https://test.loginproxy.gov.bc.ca/auth
-    siteminderAuthUrl: https://logontest7.gov.bc.ca
 
   resources:
     limits:

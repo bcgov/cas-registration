@@ -35,10 +35,6 @@ registrationFrontend:
 
   environment: develop
 
-  auth:
-    keycloakAuthUrl: https://dev.loginproxy.gov.bc.ca/auth
-    siteminderAuthUrl: https://logontest7.gov.bc.ca
-
   resources:
     limits:
       cpu: 200m
@@ -82,6 +78,10 @@ dashboardFrontend:
     requests:
       cpu: 60m
       memory: 256Mi
+
+  auth:
+    keycloakAuthUrl: https://dev.loginproxy.gov.bc.ca/auth
+    siteminderAuthUrl: https://logontest7.gov.bc.ca
 
 growthbook:
   clientKey: sdk-YMBcx9KglRDGzGTE

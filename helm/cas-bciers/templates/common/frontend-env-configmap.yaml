@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "cas-bciers.fullname" . }}-frontend-env-configmap
+data:
+  API_URL: http://{{ include "cas-bciers.fullname" . }}-backend.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.backend.service.port }}/api/
+  HOST_REGISTRATION: http://{{ include "cas-bciers.fullname" . }}-frontend.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.registrationFrontend.service.port }}
+  HOST_REPORTING: http://{{ include "cas-bciers.fullname" . }}-frontend.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.reportingFrontend.service.port }}
+  KEYCLOAK_AUTH_URL: {{ .Values.dashboardFrontend.auth.keycloakAuthUrl }}
+  KEYCLOAK_REALMS: {{ .Values.dashboardFrontend.auth.keycloakRealms }}
+  KEYCLOAK_OIDC: {{ .Values.dashboardFrontend.auth.keycloakOidc }}
+  KEYCLOAK_LOGIN_URL: {{ .Values.dashboardFrontend.auth.keycloakAuthUrl }}{{ .Values.dashboardFrontend.auth.keycloakRealms }}
+  KEYCLOAK_LOGOUT_URL: {{ .Values.dashboardFrontend.auth.keycloakAuthUrl }}{{ .Values.dashboardFrontend.auth.keycloakRealms }}{{ .Values.dashboardFrontend.auth.keycloakOidc }}/logout
+  KEYCLOAK_TOKEN_URL: {{ .Values.dashboardFrontend.auth.keycloakAuthUrl }}{{ .Values.dashboardFrontend.auth.keycloakRealms }}{{ .Values.dashboardFrontend.auth.keycloakOidc }}/token
+  KEYCLOAK_CLIENT_ID: {{ .Values.dashboardFrontend.auth.keycloakClientId }}
+  NEXTAUTH_URL: https://{{ .Values.dashboardFrontend.route.host }}
+  NEXT_PUBLIC_GROWTHBOOK_CLIENT_KEY: {{ .Values.growthbook.clientKey }}
+  NEXT_PUBLIC_KEYCLOAK_LOGOUT_URL: {{ .Values.dashboardFrontend.auth.siteminderAuthUrl }}/clp-cgi/logoff.cgi?retnow=1&returl={{ .Values.dashboardFrontend.auth.keycloakAuthUrl}}{{ .Values.dashboardFrontend.auth.keycloakRealms }}{{ .Values.dashboardFrontend.auth.keycloakOidc}}/logout
+  SITEMINDER_AUTH_URL: {{ .Values.dashboardFrontend.auth.siteminderAuthUrl }}
+  SITEMINDER_LOGOUT_URL: {{ .Values.dashboardFrontend.auth.siteminderAuthUrl }}/clp-cgi/logoff.cgi
+  SITEMINDER_KEYCLOAK_LOGOUT_URL: {{ .Values.dashboardFrontend.auth.siteminderAuthUrl }}/clp-cgi/logoff.cgi?retnow=1&returl={{ .Values.dashboardFrontend.auth.keycloakAuthUrl}}{{ .Values.dashboardFrontend.auth.keycloakRealms }}{{ .Values.dashboardFrontend.auth.keycloakOidc}}/logout
+  {{- if hasSuffix "-prod" .Release.Namespace }}
+  SENTRY_ENVIRONMENT: {{ include "cas-bciers.namespaceSuffix" . }}
+  SENTRY_RELEASE: {{ .Values.frontend.image.tag }}
+  SENTRY_TRACE_SAMPLE_RATE: {{ .Values.frontend.sentry.traceSampleRate | quote }}
+  {{- end }}
