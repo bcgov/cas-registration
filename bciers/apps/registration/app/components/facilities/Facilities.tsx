@@ -1,6 +1,6 @@
 import { FacilityRow, FacilitiesSearchParams } from "./types";
 import FacilityDataGrid from "./FacilityDataGrid";
-import { fetchFacilitiesPageData } from "./utils";
+import fetchFacilitiesPageData from "./fetchFacilitiesPageData";
 
 // 🧩 Main component
 export default async function Facilities({
