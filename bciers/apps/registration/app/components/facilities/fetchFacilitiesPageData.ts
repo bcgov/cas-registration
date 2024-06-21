@@ -1,5 +1,5 @@
-import buildQueryParams from "@/app/utils/buildQueryParams";
-import { actionHandler } from "@/app/utils/actions";
+import buildQueryParams from "@bciers/utils/buildQueryParams";
+import { actionHandler } from "@bciers/utils/actions";
 import { FacilitiesSearchParams } from "./types";
 
 // ↓ fetch data from server
