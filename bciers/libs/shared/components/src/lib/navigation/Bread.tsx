@@ -111,7 +111,7 @@ export default function Bread({
             marginRight: "auto",
           }}
         >
-          <ol className="list-none pl-0 ml-6">
+          <ol className="list-none pl-0 ml-4 sm:ml-6">
             {pathNames.map((link, index) => {
               const isLastItem = index === pathNames.length - 1;
 

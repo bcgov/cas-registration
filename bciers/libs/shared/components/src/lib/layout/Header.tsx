@@ -15,7 +15,7 @@ export default function Header() {
       <div
         className={`bg-bc-primary-blue relative left-1/2 transform -translate-x-1/2 w-screen max-w-none`}
       >
-        <div className={`max-w-page mx-auto px-4 sm:px-6 py-3 h-fit text-lg`}>
+        <div className={`max-w-page mx-auto padding-page py-3 h-fit text-lg`}>
           <div className="flex items-center w-full">
             <Link href="/" passHref>
               <Image
