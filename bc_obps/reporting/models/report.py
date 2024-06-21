@@ -1,17 +1,14 @@
 from django.db import models
+from common.models.base_model import BaseModel
 from registration.models.operation import Operation
-from registration.models.time_stamped_model import TimeStampedModel
 from reporting.models.report_operation import ReportOperation
 from reporting.models.reporting_year import ReportingYear
 
 
-class Report(TimeStampedModel):
+class Report(BaseModel):
     """
     Report model for storing OBPS reports
     """
-
-    title = models.CharField(max_length=100, db_comment="The title of the report")
-    description = models.TextField(db_comment="The description of the report")
 
     # This will need to be updated
     operation = models.ForeignKey(
@@ -35,6 +32,3 @@ class Report(TimeStampedModel):
         db_table_comment = "A table to store reports"
         db_table = 'erc"."report'
         app_label = 'reporting'
-
-    def __str__(self) -> str:
-        return self.title
