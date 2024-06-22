@@ -12,7 +12,7 @@ import {
 import { userOperatorUiSchema } from "@bciers/utils/server";
 import { actionHandler } from "@bciers/actions/server";
 import MultiStepFormBase from "@bciers/components/form/MultiStepFormBase";
-import { UserOperatorFormData } from "@/app/components/form/formDataTypes";
+import { UserOperatorFormData } from "@bciers/components/form/formDataTypes";
 import Note from "@bciers/components/datagrid/Note";
 import { Status } from "@bciers/utils/server";
 
@@ -48,7 +48,7 @@ export default function UserOperatorForm({
     const response = await actionHandler(
       endpoint,
       isCreate ? "POST" : "PUT",
-      `/dashboard/select-operator/user-operator/${
+      `/select-operator/user-operator/${
         isCreate ? "create" : userOperatorId
       }/${formSection}`,
       {
@@ -63,16 +63,16 @@ export default function UserOperatorForm({
     }
     if (isCreate) {
       return push(
-        `/dashboard/select-operator/received/add-operator/${response.operator_id}`,
+        `/select-operator/received/add-operator/${response.operator_id}`,
       );
     }
 
     if (isRequestingAccess) {
       return push(
-        `/dashboard/select-operator/received/request-access/${response.operator_id}`,
+        `/select-operator/received/request-access/${response.operator_id}`,
       );
     }
-    return push(`/dashboard`);
+    return push(`/registration`);
   };
 
   // page flashes if !isCasInternal or !isIndustryUser is used
@@ -109,12 +109,10 @@ export default function UserOperatorForm({
         />
       )}
       <MultiStepFormBase
-        cancelUrl={
-          isCasInternal ? "/dashboard/operators" : "/dashboard/select-operator"
-        }
+        cancelUrl={isCasInternal ? "/operators" : "/select-operator"}
         allowEdit={isFormStatusDisabled && isIndustryUser}
         allowBackNavigation
-        baseUrl={`/dashboard/${operatorRoute}/user-operator/${
+        baseUrl={`/${operatorRoute}/user-operator/${
           isCreate ? "create" : userOperatorId
         }`}
         schema={schema}

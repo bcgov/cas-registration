@@ -138,7 +138,7 @@ export default function ConfirmSelectedOperatorForm({
             <span className="text-sm">
               This is not my operator.{" "}
               <Link
-                href="/dashboard/select-operator"
+                href="/select-operator"
                 className="underline hover:no-underline text-sm"
                 style={{ color: BC_GOV_LINKS_COLOR }}
                 onClick={() => setHasConfirmedOperator(false)}

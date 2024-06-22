@@ -1,5 +1,5 @@
 import { RJSFSchema } from "@rjsf/utils";
-import provinceOptions from "@/app/data/provinces.json";
+import provinceOptions from "@bciers/data/provinces.json";
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
 import TitleOnlyFieldTemplate from "@bciers/components/form/fields/TitleOnlyFieldTemplate";
 import {
@@ -8,7 +8,7 @@ import {
   ParentCompanyMailingAddressTitle,
   ParentCompanyPhysicalAddressTitle,
   SeniorOfficerTitle,
-} from "@/app/components/form/titles/userOperatorTitles";
+} from "@bciers/components/form/titles/userOperatorTitles";
 import ArrayFieldTemplate from "@bciers/components/form/fields/ArrayFieldTemplate";
 
 const subheading = {

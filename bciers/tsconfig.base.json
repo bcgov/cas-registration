@@ -23,6 +23,7 @@
       "@bciers/components": ["libs/shared/components/src/index.ts"],
       "@bciers/components/*": ["libs/shared/components/src/lib/*"],
       "@bciers/components/server": ["libs/shared/components/src/server.ts"],
+      "@bciers/data/*": ["libs/shared/data/*"],
       "@bciers/img/*": ["libs/shared/img/*"],
       "@bciers/middlewares/server": ["libs/shared/middlewares/src/server.ts"],
       "@bciers/styles": ["libs/shared/styles/src/index.ts"],

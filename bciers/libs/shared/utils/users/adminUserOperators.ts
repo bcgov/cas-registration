@@ -36,7 +36,7 @@ export async function getExternalDashboardUsersTileData(): Promise<
     return await actionHandler(
       `registration/user-operators/current/access-requests`,
       "GET",
-      "/dashboard/users",
+      "/users",
     );
   } catch (error) {
     throw error;

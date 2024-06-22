@@ -6,7 +6,7 @@ import {
   OperationRow,
   OperationsSearchParams,
 } from "@bciers/components/operations/types";
-import { buildQueryParams } from "@bciers/utils/server";
+import buildQueryParams from "@bciers/utils/buildQueryParams";
 
 import OperationDataGrid from "./OperationDataGrid";
 

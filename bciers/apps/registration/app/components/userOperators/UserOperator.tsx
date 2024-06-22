@@ -18,7 +18,7 @@ async function getBusinessStructures() {
   return actionHandler(
     `registration/business_structures`,
     "GET",
-    `/dashboard/select-operator/user-operator`,
+    `/select-operator/user-operator`,
   );
 }
 

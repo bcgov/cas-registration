@@ -1,4 +1,4 @@
-// 🚩 flagging that for shared routes between roles, "Page" code is a component for code maintainability
+// 🚩 flagging that for shared routes between roles, "*Page" code is a shared component for code maintainability
 import OperationsOperationPage from "@/registration/app/components/operations/OperationsOperationPage";
 
 export default function Page({

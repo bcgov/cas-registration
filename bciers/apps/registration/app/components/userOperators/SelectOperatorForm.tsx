@@ -24,16 +24,14 @@ export default function SelectOperatorForm({
     <Form
       schema={schema}
       onSubmit={async (data: { formData?: SelectOperatorFormData }) => {
-        const queryParam = `?${data.formData?.search_type}=${
-          data.formData?.[
-            data.formData?.search_type as keyof SelectOperatorFormData
-          ]
-        }`;
+        const queryParam = `?${data.formData?.search_type}=${data.formData?.[
+          data.formData?.search_type as keyof SelectOperatorFormData
+        ]}`;
 
         const response = await actionHandler(
           `registration/operators${queryParam}`,
           "GET",
-          "/dashboard/select-operator",
+          "/select-operator",
         );
 
         if (response.error) {
@@ -51,7 +49,7 @@ export default function SelectOperatorForm({
           operatorLegalName = response.legal_name;
         }
         push(
-          `/dashboard/select-operator/confirm/${operatorId}?title=${operatorLegalName}`,
+          `/select-operator/confirm/${operatorId}?title=${operatorLegalName}`,
         );
       }}
       uiSchema={selectOperatorUiSchema}
