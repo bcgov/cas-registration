@@ -6,7 +6,7 @@
 @layer components {
   html,
   body {
-    @apply text-bc-text bg-bc-primary-blue;
+    @apply text-bc-text;
   }
   main {
     @apply bg-white;
