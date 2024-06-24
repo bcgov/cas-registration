@@ -1,4 +1,4 @@
-import { actionHandler } from "@/app/utils/actions";
+import { actionHandler } from "@bciers/utils/actions";
 import ReportingOperationDataGrid from "./ReportingOperationDataGrid";
 import { OperationRow } from "./types";
 
