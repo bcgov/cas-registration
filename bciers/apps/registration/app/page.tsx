@@ -1,110 +1,42 @@
-"use client";
+import Tiles from "@bciers/components/navigation/Tiles";
+import { FrontEndRoles } from "@bciers/utils/enums";
+import Card from "@mui/material/Card";
+import Typography from "@mui/material/Typography";
+import { fetchDashboardData } from "@bciers/actions/server";
+import { ContentItem } from "@bciers/types/tiles";
+import { auth } from "@/dashboard/auth";
 
-// Will remove this before merging, just leaving it in for PR review
-import SingleStepTaskListForm from "@bciers/components/form/SingleStepTaskListForm";
-import SectionFieldTemplate from "@bciers/components/form/fields/SectionFieldTemplate";
-import { RJSFSchema, UiSchema } from "@rjsf/utils";
+export default async function Page() {
+  const session = await auth();
+  const role = session?.user?.app_role || "";
 
-const section1: RJSFSchema = {
-  type: "object",
-  title: "Section 1",
-  required: ["first_name", "last_name"],
-  properties: {
-    first_name: {
-      type: "string",
-      title: "First name",
-    },
-    last_name: {
-      type: "string",
-      title: "Last name",
-    },
-  },
-};
+  // 🚀 API fetch dashboard tiles
+  // 🚩 Source: bc_obps/common/fixtures/dashboard/registration/[IdProviderType]/role?
+  const data = (await fetchDashboardData(
+    "common/dashboard-data?dashboard=registration",
+  )) as ContentItem[];
 
-const section2: RJSFSchema = {
-  type: "object",
-  title: "Section 2",
-  required: ["phone", "email"],
-  properties: {
-    phone: {
-      type: "string",
-      title: "Phone",
-      format: "phone",
-    },
-    email: {
-      type: "string",
-      title: "Email",
-      format: "email",
-    },
-  },
-};
-
-const section3: RJSFSchema = {
-  type: "object",
-  title: "Section 3",
-  required: ["address", "postal_code"],
-  properties: {
-    address: {
-      type: "string",
-      title: "Address",
-    },
-    postal_code: {
-      type: "string",
-      title: "Postal code",
-      format: "postal-code",
-    },
-  },
-};
-
-const schema: RJSFSchema = {
-  type: "object",
-  required: ["section1", "section2", "section3"],
-  properties: {
-    section1,
-    section2,
-    section3,
-  },
-};
-
-const uiSchema: UiSchema = {
-  "ui:FieldTemplate": SectionFieldTemplate,
-  "ui: options": {
-    label: false,
-  },
-  section1: {
-    "ui:FieldTemplate": SectionFieldTemplate,
-  },
-  section2: {
-    "ui:FieldTemplate": SectionFieldTemplate,
-    phone: {
-      "ui:widget": "PhoneWidget",
-    },
-    email: {
-      "ui:widget": "EmailWidget",
-    },
-  },
-  section3: {
-    "ui:FieldTemplate": SectionFieldTemplate,
-    postal_code: {
-      "ui:widget": "PostalCodeWidget",
-    },
-  },
-};
-
-export default function Page() {
   return (
-    <>
-      <h1>Registration Part II</h1>
-      {/* Added a large bottom margin to test task list onClick smooth scroll */}
-      <div className="mb-[50vh]">
-        <SingleStepTaskListForm
-          schema={schema}
-          uiSchema={uiSchema}
-          formData={{}}
-          onSubmit={async (data) => console.log(data)}
-          onCancel={() => console.log("cancelled")}
-        />
-      </div>
-    </>
+    <div>
+      {role === FrontEndRoles.CAS_PENDING ? (
+        <Card
+          data-testid="dashboard-pending-message"
+          sx={{ padding: 2, margin: 2, border: "none", boxShadow: "none" }}
+        >
+          <Typography variant="h5" component="div">
+            Welcome to B.C. Industrial Emissions Reporting System
+          </Typography>
+          <Typography variant="body1" color="textSecondary" component="div">
+            Your access request is pending approval.
+          </Typography>
+          <Typography variant="body1" color="textSecondary" component="div">
+            Once approved, you can log back in with access to the system.
+          </Typography>
+        </Card>
+      ) : (
+        // Display role based tiles here
+        <Tiles tiles={data} />
+      )}
+    </div>
   );
 }

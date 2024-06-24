@@ -11,7 +11,6 @@ import { cookies } from "next/headers";
 import { actionHandler } from "@bciers/utils/actions";
 import { ContentItem } from "@bciers/types/tiles";
 
-
 // 🛠️ Function to get the encrypted JWT from NextAuth getToken route function
 export async function getToken() {
   try {

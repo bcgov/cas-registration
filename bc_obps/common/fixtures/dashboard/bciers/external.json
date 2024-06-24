@@ -9,33 +9,33 @@
         "tiles": [
           {
             "title": "Registration",
-            "href": "/registration/dashboard",
+            "href": "/registration",
             "icon": "Layers",
             "content": "View or update information of your operator, operations, facilities, contacts, and to register operations or report events here.",
             "links": [
               {
                 "title": "My Operator",
-                "href": "/registration/dashboard/select-operator"
+                "href": "/registration/select-operator"
               },
               {
                 "title": "Operations",
-                "href": "/registration/dashboard/operations"
+                "href": "/registration/operations"
               },
               {
                 "title": "Contacts",
-                "href": "/registration/dashboard/tbd"
+                "href": "/registration/tbd"
               },
               {
                 "title": "Users and Access Requests",
-                "href": "/registration/dashboard/tbd"
+                "href": "/registration/tbd"
               },
               {
                 "title": "Register an Operation",
-                "href": "/registration/dashboard/tbd"
+                "href": "/registrationd/tbd"
               },
               {
                 "title": "Report an Event",
-                "href": "/registration/dashboard/tbd"
+                "href": "/registration/tbd"
               }
             ]
           },
