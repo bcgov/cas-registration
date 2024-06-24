@@ -5,6 +5,7 @@ import MuiAccordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+
 import { BC_GOV_BACKGROUND_COLOR_BLUE } from "@bciers/styles/colors";
 
 interface Props {

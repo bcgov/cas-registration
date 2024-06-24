@@ -1,6 +1,15 @@
-import { Session } from "next-auth";
+// Define the Session type
+type Session = {
+  user?: {
+    full_name?: string;
+    given_name?: string;
+    family_name?: string;
+    name?: string; // Added this for the fallback case
+  };
+};
 
-const getUserFullName = (session?: Session | null) => {
+// Define the getUserFullName function with the session parameter typed as Session
+export const getUserFullName = (session: Session) => {
   const fullName = session?.user?.full_name;
   const givenName = session?.user?.given_name;
   const familyName = session?.user?.family_name;

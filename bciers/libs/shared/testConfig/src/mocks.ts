@@ -29,7 +29,6 @@ const usePathname = vi.fn();
 const useSearchParams = vi.fn();
 const useSession = vi.fn();
 const auth = vi.fn();
-const fetchOperationsPageData = vi.fn();
 
 export {
   actionHandler,
@@ -40,5 +39,4 @@ export {
   usePathname,
   useSearchParams,
   useSession,
-  fetchOperationsPageData,
 };

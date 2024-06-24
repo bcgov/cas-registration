@@ -82,10 +82,10 @@ bc_corporate_registry_number: { type: "string", title: "title", format: "bc_corp
 
 ## Custom widgets
 
-Custom widgets can be created and added to the `widgets` object in the `defaultTheme.ts` which is done automatically if the widget is added to the exports in @/app/components/form/widgets/index.ts. They can then be set in the forms `uiSchema` using the `ui:widget` option.
+Custom widgets can be created and added to the `widgets` object in the `defaultTheme.ts` which is done automatically if the widget is added to the exports in @bciers/components/form/widgets/index.ts. They can then be set in the forms `uiSchema` using the `ui:widget` option.
 
 ```
-IMPORTANT: When creating a custom widget don't forget to handle it in the readonly theme located in @/app/components/form/readonlyTheme.ts. If the widget saves the value as a basic string or number, you can set it to the generic ReadOnlyWidget, otherwise create a custom ReadOnlyWidget.
+IMPORTANT: When creating a custom widget don't forget to handle it in the readonly theme located in @bciers/components/form/readonlyTheme.ts. If the widget saves the value as a basic string or number, you can set it to the generic ReadOnlyWidget, otherwise create a custom ReadOnlyWidget.
 ```
 
 The `defaultTheme` includes many custom widgets which can be set in the forms `uiSchema` using the `ui:widget` option.

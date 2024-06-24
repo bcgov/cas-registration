@@ -1,9 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import {
-  fetchOperationsPageData,
-  useRouter,
-  useSearchParams,
-} from "@bciers/testConfig/mocks";
+import { useRouter, useSearchParams } from "@bciers/testConfig/mocks";
 import Operations from "apps/registration/app/components/operations/Operations";
 import { FrontEndRoles } from "@bciers/utils/enums";
 
@@ -15,13 +11,6 @@ useRouter.mockReturnValue({
 useSearchParams.mockReturnValue({
   get: vi.fn(),
 });
-
-vi.mock(
-  "apps/registration/app/components/operations/fetchOperationsPageData",
-  () => ({
-    default: fetchOperationsPageData,
-  }),
-);
 
 const mockResponse = {
   data: [
@@ -42,6 +31,8 @@ const mockResponse = {
   ],
   row_count: 2,
 };
+
+const fetchOperationsPageData = vi.fn();
 
 describe("Operations component", () => {
   beforeEach(async () => {
