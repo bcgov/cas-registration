@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/extensions
 import "@bciers/styles/globals.css";
 import type { Metadata, Viewport } from "next";
 import { PublicEnvScript } from "next-runtime-env";

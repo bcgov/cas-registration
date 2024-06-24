@@ -1,39 +1,39 @@
 import OperationsForm, {
   OperationsFormData,
-} from '@bciers/components/operations/OperationsForm';
+} from "@bciers/components/operations/OperationsForm";
 import {
   operationSchema,
   operationInternalUserSchema,
-} from '@bciers/utils/server';
-import { UserProfileFormData } from '@bciers/components/form/formDataTypes';
-import { RJSFSchema } from '@rjsf/utils';
-import { actionHandler } from '@bciers/actions/server';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import CancelIcon from '@mui/icons-material/Cancel';
-import ErrorIcon from '@mui/icons-material/Error';
-import { Status } from '@bciers/utils/server';
-import { Operation as OperationInt } from '@bciers/components/operations/types';
-import Link from 'next/link';
-import { validate as isValidUUID } from 'uuid';
-import { carbonTaxExemptionLink } from '@bciers/utils/urls';
-import { BusinessStructure } from '@bciers/components/userOperators/types';
+} from "@bciers/utils/server";
+import { UserProfileFormData } from "@bciers/components/form/formDataTypes";
+import { RJSFSchema } from "@rjsf/utils";
+import { actionHandler } from "@bciers/actions/server";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import CancelIcon from "@mui/icons-material/Cancel";
+import ErrorIcon from "@mui/icons-material/Error";
+import { Status } from "@bciers/utils/server";
+import { Operation as OperationInt } from "@bciers/components/operations/types";
+import Link from "next/link";
+import { validate as isValidUUID } from "uuid";
+import { carbonTaxExemptionLink } from "@bciers/utils/urls";
+import { BusinessStructure } from "@bciers/components/userOperators/types";
 
-import OperationReview from './OperationReview';
-import OperationReviewForm from './OperationReviewForm';
+import OperationReview from "./OperationReview";
+import OperationReviewForm from "./OperationReviewForm";
 // 🚀 API call: GET user's data
 async function getUserFormData(): Promise<
   UserProfileFormData | { error: string }
 > {
-  return actionHandler(`registration/user/user-profile`, 'GET', '');
+  return actionHandler(`registration/user/user-profile`, "GET", "");
 }
 
 // 🛠️ Function to fetch NAICS codes
 async function getNaicsCodes() {
   try {
     return await actionHandler(
-      'registration/naics_codes',
-      'GET',
-      '/dashboard/operations',
+      "registration/naics_codes",
+      "GET",
+      "/dashboard/operations",
     );
   } catch (error) {
     // Handle the error here or rethrow it to handle it at a higher level
@@ -44,9 +44,9 @@ async function getNaicsCodes() {
 export async function getRegulatedProducts() {
   try {
     return await actionHandler(
-      'registration/regulated_products',
-      'GET',
-      '/operations',
+      "registration/regulated_products",
+      "GET",
+      "/operations",
     );
   } catch (error) {
     // Handle the error here or rethrow it to handle it at a higher level
@@ -72,7 +72,7 @@ export async function getRegulatedProducts() {
 async function getBusinessStructures() {
   return actionHandler(
     `registration/business_structures`,
-    'GET',
+    "GET",
     `/dashboard/select-operator/user-operator`,
   );
 }
@@ -82,7 +82,7 @@ async function getOperation(id: string) {
   try {
     return await actionHandler(
       `registration/operations/${id}`,
-      'GET',
+      "GET",
       `/operations/${id}`,
     );
   } catch (error) {
@@ -136,7 +136,7 @@ export const createOperationSchema = (
   //business structures
   const businessStructureOptions = businessStructureList?.map(
     (businessStructure) => ({
-      type: 'string',
+      type: "string",
       title: businessStructure.label,
       enum: [businessStructure.id],
       value: businessStructure.id,
@@ -167,8 +167,8 @@ export default async function Operation({ numRow }: { numRow?: string }) {
   const currentUserAppRole = (userProfileFormData as UserProfileFormData)
     ?.app_role?.role_name;
   const isCasInternal =
-    currentUserAppRole?.includes('cas') &&
-    !currentUserAppRole?.includes('pending');
+    currentUserAppRole?.includes("cas") &&
+    !currentUserAppRole?.includes("pending");
   const codes = await getNaicsCodes();
   const products = await getRegulatedProducts();
   /*   const activities = await getReportingActivities(); */
@@ -204,7 +204,7 @@ export default async function Operation({ numRow }: { numRow?: string }) {
       <CheckCircleIcon
         fontSize="large"
         color="success"
-        sx={{ width: '3rem', height: '3rem' }}
+        sx={{ width: "3rem", height: "3rem" }}
       />
       <div>
         {isCasInternal ? (
@@ -214,15 +214,15 @@ export default async function Operation({ numRow }: { numRow?: string }) {
           </p>
         ) : (
           <>
-            {' '}
+            {" "}
             <p className="my-0">
-              <b>B.C. OBPS Regulated Operation ID: </b>{' '}
+              <b>B.C. OBPS Regulated Operation ID: </b>{" "}
               {operation?.bc_obps_regulated_operation}
             </p>
             <p className="my-0">
               You will need this B.C. OBPS Regulated Operation ID to claim an
               exemption from carbon tax. For information about the exemption and
-              how to claim it, please see the{' '}
+              how to claim it, please see the{" "}
               <Link href={carbonTaxExemptionLink}>
                 carbon tax exemption page
               </Link>

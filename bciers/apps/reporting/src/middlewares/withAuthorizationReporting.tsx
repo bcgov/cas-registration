@@ -18,8 +18,10 @@ to the appropriate folder structure.
 
 // Middleware for authorization
 export const withAuthorizationReporting: MiddlewareFactory = (
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   next: NextMiddleware,
 ) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   return async (request: NextRequest, _next: NextFetchEvent) => {
     const { pathname } = request.nextUrl;
     // Check if the user is authenticated via the jwt encoded in server side cookie

@@ -10,7 +10,7 @@ import Box from "@mui/material/Box";
 import { styled } from "@mui/material/styles";
 
 import Profile from "@bciers/components/navigation/Profile";
-
+// eslint-disable-next-line import/extensions
 import Logo from "@bciers/img/src/lib/BCID_CleanBC_rev_tagline_colour.svg";
 
 export default function Header() {

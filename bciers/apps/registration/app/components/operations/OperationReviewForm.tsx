@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { operationInternalUserUiSchema } from '@bciers/utils/server';
-import MultiStepAccordion from '@bciers/components/form/MultiStepAccordion';
-import { RJSFSchema } from '@rjsf/utils';
-import { OperationsFormData } from './OperationsForm';
+import { operationInternalUserUiSchema } from "@bciers/utils/server";
+import MultiStepAccordion from "@bciers/components/form/MultiStepAccordion";
+import { RJSFSchema } from "@rjsf/utils";
+import { OperationsFormData } from "./OperationsForm";
 
 interface Props {
   formData: OperationsFormData;

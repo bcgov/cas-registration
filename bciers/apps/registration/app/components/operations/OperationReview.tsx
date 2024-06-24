@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { actionHandler } from '@bciers/actions/server';
-import { useSession } from 'next-auth/react';
-import Review from '@bciers/components/button/Review';
-import { Status } from '@bciers/utils/enums';
+import { actionHandler } from "@bciers/actions/server";
+import { useSession } from "next-auth/react";
+import Review from "@bciers/components/button/Review";
+import { Status } from "@bciers/utils/enums";
 
 interface Props {
   operation: any;
@@ -16,7 +16,7 @@ const OperationReview = ({ operation }: Props) => {
     try {
       const response = await actionHandler(
         `registration/operations/${id}/update-status`,
-        'PUT',
+        "PUT",
         ``,
         {
           body: JSON.stringify({ status }),
@@ -53,8 +53,8 @@ const OperationReview = ({ operation }: Props) => {
   };
 
   const isCasInternal =
-    session?.user?.app_role?.includes('cas') &&
-    !session?.user?.app_role?.includes('pending');
+    session?.user?.app_role?.includes("cas") &&
+    !session?.user?.app_role?.includes("pending");
 
   if (!operation || !isCasInternal) return null;
 
