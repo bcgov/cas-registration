@@ -17,6 +17,7 @@ const Note = ({ children, variant = "info" }: NoteProps) => {
         className={`bg-${bgColour} relative left-1/2 transform -translate-x-1/2 -translate-y-4 w-screen max-w-none`}
       >
         <div
+          data-testid="note"
           className={`max-w-page mx-auto padding-page bg-${bgColour} h-fit text-lg`}
         >
           {children}
