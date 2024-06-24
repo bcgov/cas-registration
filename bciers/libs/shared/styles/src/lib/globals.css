@@ -8,9 +8,6 @@
   body {
     @apply text-bc-text;
   }
-  main {
-    @apply bg-white;
-  }
   a {
     @apply text-bc-link-blue underline;
   }
