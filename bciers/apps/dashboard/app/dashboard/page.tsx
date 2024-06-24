@@ -17,6 +17,8 @@ export default async function Page() {
     "common/dashboard-data?dashboard=bciers",
   )) as ContentItem[];
 
+  console.log("data", data);
+
   // Build the navigation tiles
   return (
     <>

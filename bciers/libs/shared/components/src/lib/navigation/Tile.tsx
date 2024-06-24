@@ -36,7 +36,7 @@ const Tile = ({ content, href, icon, links, title }: ContentItem) => {
             links.map((link: { title: string; href: string }) => {
               const { title: linkTitle, href: linkHref } = link;
               return (
-                <div className="w-full px-6 py-2 ">
+                <div className="w-full px-6 py-2 " key={linkTitle}>
                   <a
                     key={linkTitle}
                     href={linkHref}
