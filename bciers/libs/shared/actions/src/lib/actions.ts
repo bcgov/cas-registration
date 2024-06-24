@@ -8,7 +8,7 @@ and can be called from server components or from client components.
 "use server";
 
 import { cookies } from "next/headers";
-import { ContentItem } from "@bciers/types";
+import { ContentItem } from "@bciers/types/tiles";
 import getUUIDFromEndpoint from "@bciers/utils/getUUIDFromEndpoint";
 import { revalidatePath } from "next/cache";
 import * as Sentry from "@sentry/nextjs";

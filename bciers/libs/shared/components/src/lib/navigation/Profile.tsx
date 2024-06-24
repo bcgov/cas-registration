@@ -1,13 +1,13 @@
 import { signOut, useSession } from "next-auth/react";
 import Button from "@mui/material/Button/Button";
 import Link from "@mui/material/Link";
-
 import { getEnvValue } from "@bciers/actions/server";
 import { getUserFullName } from "@bciers/utils/server";
+import { Session } from "@bciers/types/session";
 
 export default function Profile() {
   const { data: session } = useSession();
-  const userFullName = getUserFullName(session);
+  const userFullName = getUserFullName(session as Session);
   return (
     <div className="flex items-center">
       <Link

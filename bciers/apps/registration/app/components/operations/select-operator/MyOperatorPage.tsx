@@ -8,6 +8,7 @@ import { actionHandler } from "@bciers/actions/server";
 import { OperatorStatus, UserOperatorStatus } from "@bciers/utils/server";
 import getUserFullName from "@bciers/utils/getUserFullName";
 import SelectOperator from "@bciers/components/userOperators/SelectOperator";
+import { Session } from "@bciers/types/session";
 
 export const getUserOperator = async () => {
   try {
@@ -23,7 +24,7 @@ export const getUserOperator = async () => {
 
 export default async function MyOperatorPage() {
   const session = await auth();
-  const userName = getUserFullName(session);
+  const userName = getUserFullName(session as Session);
   const userOperator = await getUserOperator();
   const isNew = userOperator.is_new;
   const { status, id, operatorId, operatorStatus, operatorLegalName } =

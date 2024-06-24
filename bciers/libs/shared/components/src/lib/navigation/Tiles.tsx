@@ -1,5 +1,5 @@
 "use client";
-import { ContentItem } from "@bciers/types";
+import { ContentItem } from "@bciers/types/tiles";
 
 export default function Tiles({ tiles }: { tiles: ContentItem[] }) {
   return (

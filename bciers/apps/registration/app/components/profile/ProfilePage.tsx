@@ -6,6 +6,7 @@ import {
 import { auth } from "@/dashboard/auth";
 import getUserFullName from "@bciers/utils/getUserFullName";
 import UserForm from "@/registration/app/components/profile/ProfileForm";
+import { Session } from "@bciers/types/session";
 
 // 🚀 API call: GET user's data
 async function getUserFormData(): Promise<
@@ -30,7 +31,7 @@ export default async function UserPage() {
       /* When calling from the server-side i.e., in Route Handlers, React Server Components, API routes,
        */
       const session = await auth();
-      const names = getUserFullName(session)?.split(" ");
+      const names = getUserFullName(session as Session)?.split(" ");
 
       formData = {
         first_name: names?.[0],

@@ -3,7 +3,7 @@ import { FrontEndRoles } from "@bciers/utils/server";
 import Card from "@mui/material/Card";
 import Typography from "@mui/material/Typography";
 import { fetchDashboardData } from "@bciers/actions/server";
-import { ContentItem } from "@bciers/types";
+import { ContentItem } from "@bciers/types/tiles";
 import { auth } from "@/dashboard/auth";
 
 export default async function Page() {
