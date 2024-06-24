@@ -39,6 +39,10 @@ vi.mock("next-auth", () => ({
   auth,
 }));
 
+vi.mock("@/dashboard/auth", () => ({
+  auth,
+}));
+
 vi.mock("@bciers/utils/actions", () => ({
   actionHandler,
 }));

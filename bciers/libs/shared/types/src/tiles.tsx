@@ -7,10 +7,10 @@ export type ContentItem = {
 };
 
 export type IconMap = {
-  File: () => JSX.Element;
-  Inbox: () => JSX.Element;
-  Layers: () => JSX.Element;
-  Pulse: () => JSX.Element;
-  Wrench: () => JSX.Element;
-  Users: () => JSX.Element;
+  File: JSX.Element;
+  Inbox: JSX.Element;
+  Layers: JSX.Element;
+  Pulse: JSX.Element;
+  Wrench: JSX.Element;
+  Users: JSX.Element;
 };
