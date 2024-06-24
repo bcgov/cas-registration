@@ -9,41 +9,41 @@
         "tiles": [
           {
             "title": "Registration",
-            "href": "/registration/dashboard",
+            "href": "/registration",
             "icon": "Layers",
             "content": "View information of any operator, operation, facility, contact, event, or to approve or decline operation registrations here.",
             "links": [
               {
                 "title": "Operators",
-                "href": "/registration/dashboard/select-operator"
+                "href": "/registration/select-operator"
               },
               {
                 "title": "Operations",
-                "href": "/registration/dashboard/operations"
+                "href": "/registration/operations"
               },
               {
                 "title": "Operations",
-                "href": "/registration/dashboard/operations"
+                "href": "/registration/operations"
               },
               {
                 "title": "Facilities",
-                "href": "/registration/dashboard/tbd"
+                "href": "/registration/tbd"
               },
               {
                 "title": "Operator Admins and Access Requests",
-                "href": "/registration/dashboard/tbd"
+                "href": "/registration/tbd"
               },
               {
                 "title": "Operation Registrations",
-                "href": "/registration/dashboard/tbd"
+                "href": "/registration/tbd"
               },
               {
                 "title": "Contacts",
-                "href": "/registration/dashboard/tbd"
+                "href": "/registration/tbd"
               },
               {
                 "title": "Events",
-                "href": "/registration/dashboard/tbd"
+                "href": "/registrationtbd"
               }
             ]
           },

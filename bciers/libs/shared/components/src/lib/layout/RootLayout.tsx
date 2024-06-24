@@ -1,25 +1,17 @@
-/*
-A layout is UI that is shared between routes.
-The app directory must include a root app/layout.js.
-The root layout must define <html> and <body> tags.
-You should not manually add <head> tags such as <title> and <meta> to root layouts. Instead, you should use the Metadata API which automatically handles advanced requirements such as streaming and de-duplicating <head> elements.
-*/
-
 // eslint-disable-next-line import/extensions
 import "@bciers/styles/globals.css";
-import SessionProvider from "@/dashboard/auth/SessionProvider";
 import type { Metadata, Viewport } from "next";
-// 🏷 import {named} can be significantly slower than import default
-import { auth } from "@/dashboard/auth";
 import { PublicEnvScript } from "next-runtime-env";
 import ThemeProvider from "@mui/material/styles/ThemeProvider";
+import CssBaseline from "@mui/material/CssBaseline";
+import { auth } from "@/dashboard/auth";
+import SessionProvider from "@/dashboard/auth/SessionProvider";
 import { theme } from "@bciers/components";
 import { NextAppDirEmotionCacheProvider } from "@bciers/components";
-import CssBaseline from "@mui/material/CssBaseline";
-import Footer from "@bciers/components/layout/Footer";
-import Header from "@bciers/components/layout/Header";
-import Bread from "@bciers/components/navigation/Bread";
-import Main from "@bciers/components/layout/Main";
+import { Footer } from "@bciers/components";
+import { Header } from "@bciers/components";
+import { Bread } from "@bciers/components";
+import { Main } from "@bciers/components/server";
 
 export const metadata: Metadata = {
   title: "CAS OBPS",
@@ -35,11 +27,18 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
+// 📐 type for root layout props
+type RootLayoutProps = {
+  children: React.ReactNode;
+  defaultLinks?: { label: string; href: string }[]; // for breadcrumbs
+  zone?: string; // for breadcrumbs
+};
+
 export default async function RootLayout({
   children,
-}: {
-  readonly children: React.ReactNode;
-}) {
+  defaultLinks,
+  zone,
+}: RootLayoutProps) {
   //🪝 Wrap the returned auth session in the "use client" version of NextAuth SessionProvider so to expose the useSession() hook in client components
 
   const session = await auth();
@@ -69,6 +68,8 @@ export default async function RootLayout({
               <Bread
                 separator={<span aria-hidden="true"> &gt; </span>}
                 capitalizeLinks
+                defaultLinks={defaultLinks}
+                zone={zone}
               />
               <Main>{children}</Main>
               <Footer />

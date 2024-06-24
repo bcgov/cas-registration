@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, vi } from "vitest";
-import DashboardPage from "../../app/dashboard/page";
+import DashboardPage from "../../app/page";
 import { auth } from "@bciers/testConfig/mocks";
 
 const tiles = [

@@ -11,7 +11,7 @@
             "title": "My Operator",
             "icon": "Inbox",
             "content": "View or update information of your operator here.",
-            "href": "/dashboard/select-operator"
+            "href": "/registration/select-operator"
           },
           {
             "title": "Operations",
