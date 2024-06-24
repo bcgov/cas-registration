@@ -24,7 +24,7 @@ const Tile = ({ content, href, icon, links, title }: ContentItem) => {
       aria-label={title} // Added ARIA label for screen reader accessibility
     >
       <a href={href} className="px-6 no-underline text-bc-text">
-        <h2 className="flex items-center m-0">
+        <h2 className="flex items-center m-0 [&>svg]:min-w-6">
           {iconMap[icon as keyof IconMap]}
           <div className="ml-3">{title}</div>
         </h2>
