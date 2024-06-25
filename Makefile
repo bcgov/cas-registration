@@ -69,30 +69,6 @@ install:
 		helm upgrade $(HELM_OPTS) $(CHART_INSTANCE) $(CHART_DIR); \
 	fi;
 
-.PHONY: install_giraffe
-install_giraffe: ## Installs the helm chart on the OpenShift cluster
-install_giraffe: check_environment
-install_giraffe:
-install_giraffe: GIT_SHA1=$(shell git rev-parse HEAD)
-install_giraffe: IMAGE_TAG=$(GIT_SHA1)
-install_giraffe: NAMESPACE=$(CIF_NAMESPACE_PREFIX)-tools
-install_giraffe: CHART_DIR=./helm/cas-registration
-install_giraffe: CHART_INSTANCE=cas-registration
-install_giraffe: HELM_OPTS=--atomic --wait-for-jobs --timeout 2400s --namespace $(NAMESPACE) \
-										--set defaultImageTag=$(IMAGE_TAG) \
-										--values $(CHART_DIR)/values-giraffe.yaml
-install_giraffe:
-	@set -euo pipefail; \
-	helm dep up $(CHART_DIR); \
-	if ! helm status --namespace $(NAMESPACE) cas-obps-postgres; then \
-		echo "ERROR: Postgres is not deployed to $(NAMESPACE)."; \
-	elif ! helm status --namespace $(NAMESPACE) $(CHART_INSTANCE); then \
-		echo 'Installing the application'; \
-		helm install $(HELM_OPTS) $(CHART_INSTANCE) $(CHART_DIR); \
-	else \
-		helm upgrade $(HELM_OPTS) $(CHART_INSTANCE) $(CHART_DIR); \
-	fi;
-
 .PHONY: generate_credentials
 generate_credentials:
 	./scripts/generate-gcloud-credentials.sh $(service_account)

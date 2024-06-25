@@ -176,7 +176,6 @@ jobs:
       - name: Derive appropriate SHAs for base and head for `nx affected` commands
         uses: nrwl/nx-set-shas@v4
         with:
-          # This will need to be updated when giraffe-develop merges with develop
           main-branch-name: "develop"
       - name: Cache Docker layers
         uses: actions/cache@v4
@@ -240,7 +239,6 @@ jobs:
       - name: Derive appropriate SHAs for base and head for `nx affected` commands
         uses: nrwl/nx-set-shas@v4
         with:
-          # This will need to be updated when giraffe-develop merges with develop
           main-branch-name: "develop"
       - name: Cache Docker layers
         uses: actions/cache@v4

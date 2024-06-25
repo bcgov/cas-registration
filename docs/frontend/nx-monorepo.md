@@ -65,7 +65,7 @@ The _Reporting_ application container is built using Nx. Automation is in place 
 
 ### Helm template ⛑️
 
-A set of helm templates have been created in `{repo}/helm/cas-registration/templates/reporting` that conditionally deploy the pods and support infrastructure for the _Reporting_ application. The conditionality is a feature flag a `.values.reportingFrontend.enabled` boolean, which is set to true only in `value-giraffe.yaml`. This is used by the `make install_giraffe` target.
+A set of helm templates have been created in `{repo}/helm/cas-registration/templates/reporting` that conditionally deploy the pods and support infrastructure for the _Reporting_ application. The conditionality is a feature flag, a `.values.reportingFrontend.enabled` boolean.
 
 ### Nx Notes 📝
 

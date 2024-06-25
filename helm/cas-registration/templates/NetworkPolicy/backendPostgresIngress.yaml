@@ -11,7 +11,7 @@ spec:
   - from:
     - podSelector:
         matchLabels:
-          release: {{ include "cas-registration.fullname" . }}
+          release: {{ .Release.Name }}
           component: backend
     - podSelector:
         matchLabels:
