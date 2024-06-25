@@ -1,17 +1,18 @@
+import { signOut, useSession } from "next-auth/react";
 import Button from "@mui/material/Button/Button";
 import Link from "@mui/material/Link";
-import { signOut, useSession } from "next-auth/react";
 import { getEnvValue } from "@bciers/utils/actions";
 import getUserFullName from "@bciers/utils/getUserFullName";
+import { Session } from "@bciers/types/session";
 
 export default function Profile() {
   const { data: session } = useSession();
-  const userFullName = getUserFullName(session);
+  const userFullName = getUserFullName(session as Session);
   return (
     <div className="flex items-center">
       <Link
         data-testid="nav-user-profile"
-        href="/dashboard/profile"
+        href="/registration/profile"
         sx={{ color: "white", marginRight: "10px" }}
       >
         <div

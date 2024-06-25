@@ -1,5 +1,5 @@
 import { stackMiddlewares } from "@bciers/middlewares/server";
-import { withAuthorization } from "./middlewares/withAuthorizationDashboard";
+import { withAuthorizationDashboard } from "./middlewares/withAuthorizationDashboard";
 
 /* 📌
 Middleware allows you to run code before a request is completed so you can modify the response by
@@ -28,4 +28,4 @@ export const config = {
 };
 
 // ⛓️ Chaining middleware for maintainability, and scalability by apply a series of task specific functions to a request
-export default stackMiddlewares([withAuthorization]);
+export default stackMiddlewares([withAuthorizationDashboard]);
