@@ -1,5 +1,4 @@
 import { describe } from "vitest";
-import React from "react";
 import operationColumns from "@reporting/src/app/components/datagrid/models/operationColumns";
 import { GridColDef } from "@mui/x-data-grid";
 
