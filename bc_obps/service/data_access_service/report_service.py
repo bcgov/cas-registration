@@ -12,11 +12,13 @@ class ReportDataAccessService:
         )
 
     @classmethod
-    def create_report(cls, operation_id: UUID, reporting_year: int):
+    def create_report(cls, operation_id: UUID, reporting_year: int) -> Report:
         """
         Creates a new report for an operation and a reporting year.
         Throws an exception if a report already exists
         """
 
-        if ReportDataAccessService.report_exists(operation_id, reporting_year):
-            raise Exception("A report already exists for this operation and reporting year")
+        if existing_report := ReportDataAccessService.report_exists(operation_id, reporting_year):
+            return existing_report
+
+        return Report()
