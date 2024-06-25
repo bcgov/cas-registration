@@ -33,5 +33,5 @@ __all__ = [
     "ActivitySourceTypeJsonSchema",
     "ActivitySourceTypeUnitJsonSchema",
     "ActivitySourceTypeFuelJsonSchema",
-    "ActivitySourceTypeGasTypeJsonSchema"
+    "ActivitySourceTypeGasTypeJsonSchema",
 ]
