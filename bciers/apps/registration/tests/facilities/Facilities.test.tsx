@@ -1,9 +1,6 @@
 import { render, screen } from "@testing-library/react";
-import {
-  fetchFacilitiesPageData,
-  useRouter,
-  useSearchParams,
-} from "@bciers/testConfig/mocks";
+import { fetchFacilitiesPageData } from "./mocks"; // Import the mock above the component to avoid dependency issues
+import { useRouter, useSearchParams } from "@bciers/testConfig/mocks";
 import Facilities from "apps/registration/app/components/facilities/Facilities";
 
 useRouter.mockReturnValue({
@@ -14,13 +11,6 @@ useRouter.mockReturnValue({
 useSearchParams.mockReturnValue({
   get: vi.fn(),
 });
-
-vi.mock(
-  "apps/registration/app/components/facilities/fetchFacilitiesPageData",
-  () => ({
-    default: fetchFacilitiesPageData,
-  }),
-);
 
 const mockResponse = {
   rows: [
@@ -46,7 +36,7 @@ describe("Facilities component", () => {
   });
 
   it("renders a message when there are no facilities in the database", async () => {
-    fetchFacilitiesPageData.mockReturnValueOnce(undefined);
+    fetchFacilitiesPageData.mockResolvedValueOnce(undefined);
     render(
       await Facilities({
         operationId: "randomOperationUUID",
@@ -58,7 +48,7 @@ describe("Facilities component", () => {
   });
 
   it("renders the FacilityDataGrid component when there are facilities in the database", async () => {
-    fetchFacilitiesPageData.mockReturnValue(mockResponse);
+    fetchFacilitiesPageData.mockResolvedValueOnce(mockResponse);
     render(
       await Facilities({
         operationId: "randomOperationUUID",
