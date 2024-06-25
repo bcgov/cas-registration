@@ -19,9 +19,12 @@ spec:
       containers:
         - name:  {{ template "cas-bciers.fullname" . }}-load-dev-data
           image: curlimages/curl
+          env:
+            - name: BACKEND_HOST
+              value: {{ .Values.backend.route.host }}
           command:
             - /bin/sh
             - -ec
-            - "curl https://cas-reg-backend-dev.apps.silver.devops.gov.bc.ca/api/registration/test-setup"
+            - "curl $(BACKEND_HOST)/api/registration/test-setup"
       restartPolicy: Never
 {{ end }}
