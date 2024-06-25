@@ -13,14 +13,14 @@ class ActivityJsonSchema(BaseModel):
     reporting_activity = models.ForeignKey(
         ReportingActivity, on_delete=models.DO_NOTHING, related_name="activity_json_schemas"
     )
-    json_schema = models.ForeignKey(
-        JsonSchema, on_delete=models.DO_NOTHING, related_name="activity_json_schemas"
-    )
+    json_schema = models.ForeignKey(JsonSchema, on_delete=models.DO_NOTHING, related_name="activity_json_schemas")
     valid_from = models.ForeignKey(Configuration, on_delete=models.DO_NOTHING, related_name="+")
     valid_to = models.ForeignKey(Configuration, on_delete=models.DO_NOTHING, related_name="+")
 
     class Meta:
-        db_table_comment = "Intersection table that assigns a json_schema as valid for a period of time given an activity"
+        db_table_comment = (
+            "Intersection table that assigns a json_schema as valid for a period of time given an activity"
+        )
         db_table = 'erc"."activity_json_schema'
 
     @typing.no_type_check

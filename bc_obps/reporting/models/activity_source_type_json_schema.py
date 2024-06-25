@@ -20,10 +20,12 @@ class ActivitySourceTypeJsonSchema(BaseModel):
         JsonSchema, on_delete=models.DO_NOTHING, related_name="activity_source_type_json_schemas"
     )
     has_unit = models.BooleanField(
-        db_comment="Whether or not this source type should collect unit data. If true, add a unit schema when buidling the form object", default=True
+        db_comment="Whether or not this source type should collect unit data. If true, add a unit schema when buidling the form object",
+        default=True,
     )
     has_fuel = models.BooleanField(
-        db_comment="Whether or not this source type should collect fuel data. If true, add a fuel schema when buidling the form object", default=True
+        db_comment="Whether or not this source type should collect fuel data. If true, add a fuel schema when buidling the form object",
+        default=True,
     )
     valid_from = models.ForeignKey(Configuration, on_delete=models.DO_NOTHING, related_name="+")
     valid_to = models.ForeignKey(Configuration, on_delete=models.DO_NOTHING, related_name="+")

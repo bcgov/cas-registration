@@ -15,5 +15,7 @@ class JsonSchema(BaseModel):
     )
 
     class Meta:
-        db_table_comment = "This table contains the json schema data for displaying the components of an emission form by activity."
+        db_table_comment = (
+            "This table contains the json schema data for displaying the components of an emission form by activity."
+        )
         db_table = 'erc"."json_schema'
