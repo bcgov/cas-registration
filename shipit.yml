@@ -6,7 +6,7 @@ review:
 
 deploy:
   override:
-    - ./deploy.sh:
+    - make install:
         timeout: 1800
 
 ci:
