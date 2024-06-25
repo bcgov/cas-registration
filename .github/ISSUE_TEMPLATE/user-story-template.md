@@ -8,6 +8,11 @@ labels: User Story
 assignees: ""
 ---
 
+#### Dependencies
+
+- Blocked by
+- Blocking
+
 #### Description:
 
 Brief description of the work involved, including any user research context or key decisions.
@@ -48,8 +53,3 @@ Then
 - [ ] Reviewed and approved by Product Owner
 
 #### Notes:
-
-#### Dependencies
-
-- Blocked by
-- Blocking
