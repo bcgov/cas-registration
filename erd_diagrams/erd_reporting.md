@@ -73,10 +73,44 @@ JsonSchema {
     CharField slug
     JSONField schema
 }
+ActivityJsonSchema {
+    BigAutoField id
+    ForeignKey reporting_activity
+    ForeignKey json_schema
+    ForeignKey valid_from
+    ForeignKey valid_to
+}
 ActivitySourceTypeJsonSchema {
     BigAutoField id
     ForeignKey reporting_activity
     ForeignKey source_type
+    ForeignKey json_schema
+    BooleanField has_unit
+    BooleanField has_fuel
+    ForeignKey valid_from
+    ForeignKey valid_to
+}
+ActivitySourceTypeUnitJsonSchema {
+    BigAutoField id
+    ForeignKey reporting_activity
+    ForeignKey source_type
+    ForeignKey json_schema
+    ForeignKey valid_from
+    ForeignKey valid_to
+}
+ActivitySourceTypeFuelJsonSchema {
+    BigAutoField id
+    ForeignKey reporting_activity
+    ForeignKey source_type
+    ForeignKey json_schema
+    ForeignKey valid_from
+    ForeignKey valid_to
+}
+ActivitySourceTypeGasTypeJsonSchema {
+    BigAutoField id
+    ForeignKey reporting_activity
+    ForeignKey source_type
+    ForeignKey gas_type
     ForeignKey json_schema
     ForeignKey valid_from
     ForeignKey valid_to
@@ -95,8 +129,28 @@ ConfigurationElement }|--|| Methodology : methodology
 ConfigurationElement }|--|| Configuration : valid_from
 ConfigurationElement }|--|| Configuration : valid_to
 ConfigurationElement }|--|{ ReportingField : reporting_fields
+ActivityJsonSchema }|--|| ReportingActivity : reporting_activity
+ActivityJsonSchema }|--|| JsonSchema : json_schema
+ActivityJsonSchema }|--|| Configuration : valid_from
+ActivityJsonSchema }|--|| Configuration : valid_to
 ActivitySourceTypeJsonSchema }|--|| ReportingActivity : reporting_activity
 ActivitySourceTypeJsonSchema }|--|| SourceType : source_type
 ActivitySourceTypeJsonSchema }|--|| JsonSchema : json_schema
 ActivitySourceTypeJsonSchema }|--|| Configuration : valid_from
 ActivitySourceTypeJsonSchema }|--|| Configuration : valid_to
+ActivitySourceTypeUnitJsonSchema }|--|| ReportingActivity : reporting_activity
+ActivitySourceTypeUnitJsonSchema }|--|| SourceType : source_type
+ActivitySourceTypeUnitJsonSchema }|--|| JsonSchema : json_schema
+ActivitySourceTypeUnitJsonSchema }|--|| Configuration : valid_from
+ActivitySourceTypeUnitJsonSchema }|--|| Configuration : valid_to
+ActivitySourceTypeFuelJsonSchema }|--|| ReportingActivity : reporting_activity
+ActivitySourceTypeFuelJsonSchema }|--|| SourceType : source_type
+ActivitySourceTypeFuelJsonSchema }|--|| JsonSchema : json_schema
+ActivitySourceTypeFuelJsonSchema }|--|| Configuration : valid_from
+ActivitySourceTypeFuelJsonSchema }|--|| Configuration : valid_to
+ActivitySourceTypeGasTypeJsonSchema }|--|| ReportingActivity : reporting_activity
+ActivitySourceTypeGasTypeJsonSchema }|--|| SourceType : source_type
+ActivitySourceTypeGasTypeJsonSchema }|--|| GasType : gas_type
+ActivitySourceTypeGasTypeJsonSchema }|--|| JsonSchema : json_schema
+ActivitySourceTypeGasTypeJsonSchema }|--|| Configuration : valid_from
+ActivitySourceTypeGasTypeJsonSchema }|--|| Configuration : valid_to
