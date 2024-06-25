@@ -20,6 +20,7 @@
       "@/dashboard/*": ["apps/dashboard/*"],
       "@/coam/*": ["apps/coam/*"],
       "@bciers/actions/server": ["libs/shared/actions/src/server.ts"],
+      "@reporting/*": ["apps/reporting/*"],
       "@bciers/components": ["libs/shared/components/src/index.ts"],
       "@bciers/components/*": ["libs/shared/components/src/lib/*"],
       "@bciers/components/server": ["libs/shared/components/src/server.ts"],
