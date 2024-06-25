@@ -17,9 +17,7 @@ export default defineConfig({
   test: {
     globals: true,
     environment: "jsdom",
-    include: [
-      "{test,src,spec}**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}",
-    ],
+    include: ["**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
     reporters: ["default"],
     coverage: {
       reportsDirectory: "../../coverage/apps/reporting",
