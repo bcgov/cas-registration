@@ -1,13 +1,13 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { FacilitySearchCell } from "../datagrid/cells/FacilitiesSearchCell";
 import DataGrid from "@bciers/components/datagrid/DataGrid";
 import FacilitiesActionCell from "../datagrid/cells/FacilitiesActionCell";
 import facilityColumns from "../datagrid/models/facilities/facilityColumns";
 import facilityGroupColumns from "../datagrid/models/facilities/facilityGroupColumns";
 import { FacilityRow } from "./types";
 import createFetchFacilitiesPageData from "./createFetchFacilitiesPageData";
+import HeaderSearchCell from "@bciers/components/datagrid/cells/HeaderSearchCell";
 
 const FacilityDataGrid = ({
   operationId,
@@ -22,7 +22,7 @@ const FacilityDataGrid = ({
   const [lastFocusedField, setLastFocusedField] = useState<string | null>(null);
 
   const SearchCell = useMemo(
-    () => FacilitySearchCell({ lastFocusedField, setLastFocusedField }),
+    () => HeaderSearchCell({ lastFocusedField, setLastFocusedField }),
     [lastFocusedField, setLastFocusedField],
   );
 

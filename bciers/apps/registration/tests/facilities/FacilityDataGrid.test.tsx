@@ -1,10 +1,6 @@
 import "@testing-library/jest-dom";
 import { render, screen } from "@testing-library/react";
-import {
-  useRouter,
-  useSearchParams,
-  createFetchFacilitiesPageData,
-} from "@bciers/testConfig/mocks";
+import { useRouter, useSearchParams } from "@bciers/testConfig/mocks";
 import React from "react";
 import FacilityDataGrid from "apps/registration/app/components/facilities/FacilityDataGrid";
 
@@ -34,13 +30,6 @@ const mockResponse = {
   ],
   row_count: 2,
 };
-
-vi.mock(
-  "apps/registration/app/components/facilities/createFetchFacilitiesPageData",
-  () => ({
-    default: createFetchFacilitiesPageData,
-  }),
-);
 
 describe("OperationsDataGrid component", () => {
   beforeEach(async () => {
