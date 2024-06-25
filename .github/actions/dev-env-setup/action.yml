@@ -55,6 +55,6 @@ runs:
         make create_db
     - name: Install yarn dependencies
       if: steps.yarn-cache.outputs.cache-hit != 'true'
-      run: which yarn; yarn install --immutable
+      run: which yarn; yarn --version; yarn install --immutable
       working-directory: ./bciers
       shell: bash
