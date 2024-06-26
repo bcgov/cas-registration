@@ -1,5 +1,3 @@
-"use server";
-
 import Tiles from "@bciers/components/navigation/Tiles";
 import Note from "@bciers/components/layout/Note";
 import { fetchDashboardData } from "@bciers/actions/server";
@@ -16,8 +14,6 @@ export default async function Page() {
   const data = (await fetchDashboardData(
     "common/dashboard-data?dashboard=bciers",
   )) as ContentItem[];
-
-  console.log("data", data);
 
   // Build the navigation tiles
   return (
