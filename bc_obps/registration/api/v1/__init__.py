@@ -11,6 +11,7 @@ from . import (
     operations,
     user_operators,
     users,
+    facilities,
 )
 from ._operations import operation_id
 from ._operations._operation_id import update_status, facilities
@@ -19,5 +20,6 @@ from ._operators._operator_id import request_access, request_admin_access, has_a
 from .user import user_profile, user_app_role
 from ._user_operators import user_operator_id, current, pending
 from ._user_operators._current import is_current_user_approved_admin, access_requests
+from ._facilities import facility_id
 
 # ruff: noqa: F811
