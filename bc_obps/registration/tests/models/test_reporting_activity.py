@@ -11,7 +11,6 @@ class ReportingActivityModelTest(BaseTestCase):
             ("applicable_to", "applicable to", None, None),
             ("operations", "operation", None, None),
             ("configuration_elements", "configuration element", None, None),
-            ("activity_source_type_json_schemas", "activity source type json schema", None, None),
         ]
         cls.test_object = ReportingActivity.objects.create(
             name="test activity",
