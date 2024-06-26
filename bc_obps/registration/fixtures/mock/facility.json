@@ -6,9 +6,9 @@
       "created_by": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
       "created_at": "2024-06-05T23:18:07.664Z",
       "name": "Facility 1",
-      "type": "Single Facility",
-      "swrs_facility_id": 1001,
-      "bcghg_id": "23219990005"
+      "type": "Large Facility",
+      "latitude_of_largest_emissions": 43.5,
+      "longitude_of_largest_emissions": -123.5
     }
   },
   {
