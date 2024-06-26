@@ -1,7 +1,7 @@
 from common.models import BaseModel
 from django.db import models
 from registration.models import ReportingActivity
-from reporting.models import SourceType, JsonSchema, Configuration
+from reporting.models import SourceType, Configuration
 import typing
 from reporting.utils import validate_overlapping_records
 
@@ -10,14 +10,10 @@ class ActivitySourceTypeJsonSchema(BaseModel):
     """Intersection table for Activity-SourceType-JsonSchema"""
 
     # No history needed, these elements are immutable
-    reporting_activity = models.ForeignKey(
-        ReportingActivity, on_delete=models.DO_NOTHING, related_name="activity_source_type_json_schemas"
-    )
-    source_type = models.ForeignKey(
-        SourceType, on_delete=models.DO_NOTHING, related_name="activity_source_type_json_schemas"
-    )
-    json_schema = models.ForeignKey(
-        JsonSchema, on_delete=models.DO_NOTHING, related_name="activity_source_type_json_schemas"
+    reporting_activity = models.ForeignKey(ReportingActivity, on_delete=models.DO_NOTHING, related_name="+")
+    source_type = models.ForeignKey(SourceType, on_delete=models.DO_NOTHING, related_name="+")
+    json_schema = models.JSONField(
+        db_comment="The json schema for a specific activity-source type pair. This defines the shape of the data collected for the source type",
     )
     has_unit = models.BooleanField(
         db_comment="Whether or not this source type should collect unit data. If true, add a unit schema when buidling the form object",
