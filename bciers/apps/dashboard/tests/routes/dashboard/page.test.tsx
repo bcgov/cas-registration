@@ -91,7 +91,7 @@ const tiles = [
 const noteContent =
   "Important: Please always ensure that the information in Registration is complete and accurate before submit or amend reports in Reporting.";
 
-vi.mock("@bciers/actions/server", () => ({
+vi.mock("@bciers/actions", () => ({
   fetchDashboardData: vi.fn(() => tiles),
 }));
 

@@ -1,4 +1,4 @@
-import { actionHandler } from "@bciers/utils/actions";
+import { actionHandler } from "@bciers/actions";
 import {
   UserProfileFormData,
   UserProfilePartialFormData,

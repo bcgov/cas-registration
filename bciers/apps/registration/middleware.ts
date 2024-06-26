@@ -1,4 +1,4 @@
-import { stackMiddlewares } from "@bciers/middlewares/server";
+import { stackMiddlewares } from "@bciers/middlewares";
 import { withAuthorizationRegistration } from "./middlewares/withAuthorizationRegistration";
 
 /* 📌

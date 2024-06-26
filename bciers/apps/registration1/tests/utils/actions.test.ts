@@ -1,11 +1,11 @@
 import { describe, expect } from "vitest";
-import { actionHandler } from "@bciers/utils/actions";
-import { getToken } from "@bciers/actions/server";
+import { actionHandler } from "@bciers/actions";
+import { getToken } from "@bciers/actions";
 import { fetch } from "@bciers/testConfig/mocks";
 import * as Sentry from "@sentry/nextjs";
 
 // disable the global mock since we are testing actions here
-vi.unmock("@bciers/utils/actions");
+vi.unmock("@bciers/actions");
 
 vi.mock("next/headers", () => ({
   cookies: vi.fn(() => ({
