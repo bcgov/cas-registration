@@ -2,33 +2,11 @@
 
 import { useMemo, useState } from "react";
 import DataGrid from "@bciers/components/datagrid/DataGrid";
-import { GridColumnGroupHeaderParams } from "@mui/x-data-grid";
 import HeaderSearchCell from "@bciers/components/datagrid/cells/HeaderSearchCell";
 import operationGroupColumns from "@bciers/components/datagrid/models/operationGroupColumns";
 import { fetchOperationsPageData } from "./Operations";
 import operationColumns from "../datagrid/models/operationColumns";
 import { OperationRow } from "./types";
-
-const OperationSearchCell = ({
-  lastFocusedField,
-  setLastFocusedField,
-}: {
-  lastFocusedField: string | null;
-  setLastFocusedField: (value: string | null) => void;
-}) => {
-  const RenderCell = (params: GridColumnGroupHeaderParams) => {
-    const { groupId, headerName } = params;
-    return (
-      <HeaderSearchCell
-        field={groupId as string}
-        fieldLabel={headerName as string}
-        isFocused={lastFocusedField === groupId}
-        setLastFocusedField={setLastFocusedField}
-      />
-    );
-  };
-  return RenderCell;
-};
 
 const ReportingOperationDataGrid = ({
   initialData,
@@ -41,7 +19,7 @@ const ReportingOperationDataGrid = ({
   const [lastFocusedField, setLastFocusedField] = useState<string | null>(null);
 
   const SearchCell = useMemo(
-    () => OperationSearchCell({ lastFocusedField, setLastFocusedField }),
+    () => HeaderSearchCell({ lastFocusedField, setLastFocusedField }),
     [lastFocusedField, setLastFocusedField],
   );
 
