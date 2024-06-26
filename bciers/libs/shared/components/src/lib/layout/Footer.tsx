@@ -1,7 +1,5 @@
 import Link from "next/link";
 
-// 🏷 import {named} can be significantly slower than import default
-import Box from "@mui/material/Box";
 import footerLinks from "@/app/data/layout/footer.json";
 
 const links = footerLinks.map((link, index) => (
@@ -9,52 +7,21 @@ const links = footerLinks.map((link, index) => (
     key={index}
     href={link.href}
     target={link.target}
-    style={{
-      fontWeight: 400,
-      fontSize: "16px",
-      lineHeight: "19.36px",
-      textDecoration: "none",
-      color: "white",
-      margin: "0 10px",
-    }}
+    className="text-white text-lg no-underline sm:mr-4"
     aria-label={link.label}
   >
     {link.name}
   </Link>
 ));
 
-export default function Footer() {
-  return (
-    <Box
-      position="absolute"
-      component="footer"
-      sx={{
-        alignItems: "center",
-        maxHeight: "fit-content",
-        mt: "auto",
-        width: "100%",
-        bgcolor: "primary.main",
-        overflow: "hidden",
-        py: 3,
-        px: 2,
-        bottom: 0,
-      }}
-    >
-      <Box
-        component="div"
-        sx={{
-          display: "flex",
-          flexDirection: {
-            xs: "column", //mobile small
-            sm: "row",
-          },
-          margin: "0 auto",
-          width: "100%",
-          maxWidth: "1536px",
-        }}
-      >
+const Footer = () => (
+  <footer className="relative w-full">
+    <div className="bg-bc-primary-blue relative left-1/2 transform -translate-x-1/2 w-screen max-w-none">
+      <div className="max-w-page mx-auto padding-page h-fit text-lg flex align-start flex-col sm:flex-row">
         {links}
-      </Box>
-    </Box>
-  );
-}
+      </div>
+    </div>
+  </footer>
+);
+
+export default Footer;

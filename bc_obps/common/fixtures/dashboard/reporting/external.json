@@ -10,11 +10,13 @@
         "tiles": [
           {
             "title": "Submit Annual Report",
+            "icon": "File",
             "content": "TBD here.",
             "href": "/reporting/tbd"
           },
           {
             "title": "View Past Submissions",
+            "icon": "File",
             "content": "TBD here.",
             "href": "/reporting/tbd"
           }

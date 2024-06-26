@@ -9,40 +9,44 @@
         "tiles": [
           {
             "title": "Registration",
-            "content": "View or update your operator information, which needs to be complete before applying for BORO ID's",
+            "href": "/registration",
+            "icon": "Layers",
+            "content": "View or update information of your operator, operations, facilities, contacts, and to register operations or report events here.",
             "links": [
               {
                 "title": "My Operator",
-                "href": "/dashboard/select-operator"
+                "href": "/registration/select-operator"
               },
               {
                 "title": "Operations",
-                "href": "/registration/dashboard/operations"
-              },
-              {
-                "title": "BORO ID Applications",
-                "href": "/registration/tbd"
-              },
-              {
-                "title": "Report an Event",
-                "href": "/registration/tbd"
+                "href": "/registration/operations"
               },
               {
                 "title": "Contacts",
                 "href": "/registration/tbd"
               },
               {
-                "title": "User and Access Requests",
+                "title": "Users and Access Requests",
+                "href": "/registration/tbd"
+              },
+              {
+                "title": "Register an Operation",
+                "href": "/registration/tbd"
+              },
+              {
+                "title": "Report an Event",
                 "href": "/registration/tbd"
               }
             ]
           },
           {
             "title": "Reporting",
-            "content": "Submit annual report for an  and to view or update previous year's reports here",
+            "href": "/reporting/dashboard",
+            "icon": "File",
+            "content": "Submit Annual Report for an operation, and to view or update previous years' reports here.",
             "links": [
               {
-                "title": "Submit Annual Report",
+                "title": "Submit Annual Reports",
                 "href": "/reporting/tbd"
               },
               {
@@ -53,7 +57,9 @@
           },
           {
             "title": "COAM",
-            "content": "View payments for compliance obligations here",
+            "href": "/coam/",
+            "icon": "Pulse",
+            "content": "View and pay compliance obligations here.",
             "links": [
               {
                 "title": "TBD",
@@ -71,7 +77,9 @@
           },
           {
             "title": "Report a Problem",
-            "content": "Something wrong?",
+            "href": "mailto:GHGRegulator@gov.bc.ca",
+            "icon": "Wrench",
+            "content": "Report a problem or contact us here.",
             "links": [
               {
                 "title": "Report problems to GHGRegulator@gov.bc.ca",

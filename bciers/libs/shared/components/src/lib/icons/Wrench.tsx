@@ -1,4 +1,4 @@
-const Wrench = () => (
+const Wrench = (
   <svg
     width="21"
     height="21"

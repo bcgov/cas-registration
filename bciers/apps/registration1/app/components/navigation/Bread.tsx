@@ -1,16 +1,15 @@
 "use client";
-
-import { useEffect, useState } from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 import { useParams, usePathname, useSearchParams } from "next/navigation";
+import Box from "@mui/material/Box";
 import Link from "@mui/material/Link";
+import Breadcrumbs from "@mui/material/Breadcrumbs/Breadcrumbs";
 import { validate as isValidUUID } from "uuid";
 
 // 📐 type for breadcrumb props
 type TBreadCrumbProps = {
-  separator: React.ReactNode;
-  capitalizeLinks: boolean;
-  defaultLinks?: { label: string; href: string }[];
-  zone?: string;
+  separator: ReactNode;
+  capitalizeLinks?: boolean;
 };
 
 // 🛠️ Function to un-slugify and capitalize a string
@@ -52,18 +51,30 @@ function isValidLink(segment: string): boolean {
           separator=">"
           maxItems={3}
           itemsAfterCollapse={2}
-*/
+  */
 
 // 🎨 Styles...
-const liStyle = "inline text-white text-lg";
+//<ol>
+const olStyle: React.CSSProperties = {
+  listStyle: "none",
+  paddingLeft: "0px",
+  marginLeft: "30px",
+};
+//<li>
+const liStyle: React.CSSProperties = {
+  display: "inline",
+  color: "white",
+  fontSize: "18px",
+};
 //<Link>
-const aStyle = "text-white text-lg";
+const aStyle: React.CSSProperties = {
+  color: "white",
+  fontSize: "18px",
+};
 
 export default function Bread({
   separator,
   capitalizeLinks,
-  defaultLinks = [], // Default to an empty array if not provided
-  zone = "", // Default to empty string if not provided
 }: TBreadCrumbProps) {
   // 🛸 Routing: use the `usePathname` hook from next/navigation to access the current route information
   const paths = usePathname();
@@ -97,70 +108,71 @@ export default function Bread({
     return segment;
   }
   return (
-    <div className="relative w-full">
-      <div
-        className={`bg-bc-bg-blue relative left-1/2 transform -translate-x-1/2 w-screen max-w-none`}
+    <Box
+      sx={{
+        width: "100%",
+        justifyContent: "center",
+        position: "absolute",
+        backgroundColor: "primary.light",
+      }}
+    >
+      <Breadcrumbs
+        aria-label="breadcrumbs"
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          backgroundColor: "primary.light",
+          width: "100%",
+          maxWidth: "1536px",
+          height: 80,
+          marginLeft: "auto",
+          marginRight: "auto",
+          marginTop: {
+            xs: "160px",
+            md: "80px",
+          },
+        }}
       >
-        <nav
-          aria-label="breadcrumbs"
-          className="flex items-center bg-bc-bg-blue w-full max-w-page h-20 mx-auto"
-        >
-          <ol className="list-none pl-0 ml-4 sm:ml-6">
-            {defaultLinks.map((link, index) => {
-              const isLastDefaultLink = index === defaultLinks.length - 1;
-              return (
-                <li key={link.href} className={liStyle}>
-                  <Link href={link.href} className={aStyle}>
-                    {capitalizeLinks
-                      ? unslugifyAndCapitalize(link.label)
-                      : link.label}
-                  </Link>
-                  {!isLastDefaultLink || pathNames.length > 0
-                    ? separator
-                    : null}{" "}
-                  {/* Conditionally render the separator */}
-                </li>
-              );
-            })}
-            {pathNames.map((link, index) => {
-              const isLastItem = index === pathNames.length - 1;
+        <ol style={olStyle}>
+          {pathNames.map((link, index) => {
+            const isLastItem = index === pathNames.length - 1;
 
-              const content = capitalizeLinks
-                ? translateNumericPart(unslugifyAndCapitalize(link))
-                : translateNumericPart(link);
-              if (isValidLink(link)) {
-                if (!isLastItem) {
-                  //  🔗 create a link
-                  const path = `/${pathNames.slice(0, index + 1).join("/")}`;
-                  const href = zone ? `/${zone}${path}` : path;
-                  return (
-                    <li key={link} className={liStyle}>
-                      <Link href={href} className={aStyle}>
-                        {content}
-                      </Link>
-                      {separator}
-                    </li>
-                  );
-                } else {
-                  // Last item, no link, bold styling
-                  return (
-                    <li
-                      key={link}
-                      data-testid="breadcrumb-last-item"
-                      className={liStyle}
-                      style={{
-                        fontWeight: isLastItem ? "bold" : "normal",
-                      }}
+            const content = capitalizeLinks
+              ? translateNumericPart(unslugifyAndCapitalize(link))
+              : translateNumericPart(link);
+            if (isValidLink(link)) {
+              if (!isLastItem) {
+                //  🔗 create a link
+                return (
+                  <li key={link} style={liStyle}>
+                    <Link
+                      href={`/${pathNames.slice(0, index + 1).join("/")}`}
+                      style={aStyle}
                     >
                       {content}
-                    </li>
-                  );
-                }
+                    </Link>
+                    {separator}
+                  </li>
+                );
+              } else {
+                // Last item, no link, bold styling
+                return (
+                  <li
+                    key={link}
+                    data-testid="breadcrumb-last-item"
+                    style={{
+                      fontWeight: isLastItem ? "bold" : "normal",
+                      ...liStyle,
+                    }}
+                  >
+                    {content}
+                  </li>
+                );
               }
-            })}
-          </ol>
-        </nav>
-      </div>
-    </div>
+            }
+          })}
+        </ol>
+      </Breadcrumbs>
+    </Box>
   );
 }
