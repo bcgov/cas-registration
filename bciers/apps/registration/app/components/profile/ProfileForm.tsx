@@ -86,7 +86,7 @@ export default function ProfileForm({ formData, isCreate }: Props) {
     }, 3000);
     if (isCreate) {
       // 🛸 Routing: after the update is complete, navigate to the dashboard
-      router.push("/dashboard");
+      router.push("/");
     }
   };
 
