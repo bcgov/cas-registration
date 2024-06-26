@@ -52,6 +52,7 @@ export const withAuthorizationDashboard: MiddlewareFactory = (
     if (isUnauthenticatedAllowListedPath(pathname)) {
       return next(request, _next);
     }
+
     // Check if the user is authenticated via the jwt encoded in server side cookie
     const token = await getToken();
 
