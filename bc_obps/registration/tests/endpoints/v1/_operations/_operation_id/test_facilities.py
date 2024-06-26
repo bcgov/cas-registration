@@ -1,8 +1,9 @@
 from bc_obps.settings import NINJA_PAGINATION_PER_PAGE
 from registration.models import Facility
-from registration.tests.utils.bakers import facility_ownership_timeline_baker, operation_baker
+from registration.tests.utils.bakers import facility_ownership_timeline_baker, operation_baker, operator_baker
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
+from model_bakery import baker
 
 
 class TestFacilitiesEndpoint(CommonTestSetup):
@@ -113,3 +114,95 @@ class TestFacilitiesEndpoint(CommonTestSetup):
         assert response.json().get('count') == 1
         assert response_items_3[0].get('name') == name_to_filter
         assert response_items_3[0].get('type') == Facility.Types.LARGE_LFO
+
+    # AUTHORIZATION
+
+    def test_unauthorized_roles_cannot_create_new_facility(self):
+        mock_facility = {
+            'name': 'zip',
+            'type': 'Large Facility',
+            'latitude_of_largest_emissions': 5,
+            'longitude_of_largest_emissions': 5,
+            'operation_id': operation_baker().id,
+        }
+        # IRC users can't post
+        for role in ['cas_pending', 'cas_admin', 'cas_analyst']:
+            response = TestUtils.mock_post_with_auth_role(
+                self, role, self.content_type, mock_facility, custom_reverse_lazy("create_facility")
+            )
+            assert response.status_code == 401
+
+    # POST
+    def test_post_new_malformed_facility(self):
+        response = TestUtils.mock_post_with_auth_role(
+            self, "industry_user", self.content_type, {"garbage": "i am bad data"}
+        )
+        assert response.status_code == 422
+
+    def test_post_existing_facility_with_same_name(self):
+        TestUtils.authorize_current_user_as_operator_user(self, operator_baker())
+        facility_instance = baker.make(Facility, latitude_of_largest_emissions=5, longitude_of_largest_emissions=5)
+        mock_facility = {
+            'name': facility_instance.name,
+            'type': 'Large Facility',
+            'latitude_of_largest_emissions': 5,
+            'longitude_of_largest_emissions': 5,
+            'operation_id': operation_baker().id,
+        }
+        post_response = TestUtils.mock_post_with_auth_role(
+            self,
+            "industry_user",
+            self.content_type,
+            mock_facility,
+            custom_reverse_lazy("create_facility"),
+        )
+        assert post_response.status_code == 422
+        assert post_response.json().get('message') == "Name: Facility with this Name already exists."
+
+    def test_post_new_lfo_facility(self):
+        mock_facility = {
+            'name': 'zip',
+            'type': 'Large Facility',
+            'latitude_of_largest_emissions': 5,
+            'longitude_of_largest_emissions': 5,
+            'operation_id': operation_baker().id,
+            'well_authorization_numbers': [1234, 5641, 89899],
+        }
+        TestUtils.authorize_current_user_as_operator_user(self, operator_baker())
+        post_response = TestUtils.mock_post_with_auth_role(
+            self,
+            "industry_user",
+            self.content_type,
+            mock_facility,
+            custom_reverse_lazy("create_facility"),
+        )
+        assert post_response.status_code == 201
+        print('response', post_response.json())
+        assert post_response.json().get('section1').get('name') == "zip"
+        assert post_response.json().get('id') is not None
+
+    def test_post_new_sfo_facility_with_address(self):
+        TestUtils.authorize_current_user_as_operator_user(self, operator_baker())
+        mock_facility = {
+            'name': 'zip',
+            'type': 'Single Facility',
+            'latitude_of_largest_emissions': 5,
+            'longitude_of_largest_emissions': 5,
+            'operation_id': operation_baker().id,
+        }
+        mock_facility.update(
+            {'street_address': '123 Facility Lane', 'municipality': 'city', 'province': 'AB', 'postal_code': 'H0H0H0'}
+        )
+        post_response = TestUtils.mock_post_with_auth_role(
+            self,
+            "industry_user",
+            self.content_type,
+            mock_facility,
+            custom_reverse_lazy("create_facility"),
+        )
+        assert post_response.status_code == 201
+        assert Facility.objects.count() == 1
+        facility = Facility.objects.first()
+        assert facility.name == 'zip'
+        assert facility.address is not None
+        assert facility.address.street_address == '123 Facility Lane'
