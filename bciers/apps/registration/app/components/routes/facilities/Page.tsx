@@ -5,7 +5,7 @@ import { Suspense } from "react";
 import Loading from "@bciers/components/loading/SkeletonGrid";
 import { FacilitiesSearchParams } from "../../facilities/types";
 import Facilities from "../../facilities/Facilities";
-import Note from "@bciers/components/datagrid/Note";
+import Note from "@bciers/components/layout/Note";
 
 export default async function FacilitiesPage({
   operationId,
@@ -18,11 +18,9 @@ export default async function FacilitiesPage({
   const role = session?.user?.app_role;
   return (
     <>
-      {/* TODO: TEMP note component. we need to use the newer version of Note component when it is merged */}
-      <Note
-        classNames="mb-4 bg-gray-300 py-5"
-        message={"View the facilities of this operation here."}
-      />
+      <Note>
+        <b>Note: </b>View the facilities of this operation here.
+      </Note>
       <h2 className="text-bc-primary-blue">Facilities</h2>
       {/* Conditionally render the button based on user's role */}
       {role?.includes("industry_user") && (
