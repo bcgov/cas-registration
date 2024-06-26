@@ -4,6 +4,7 @@
 const buildQueryParams = (params: {
   [key: string]: string | number | undefined;
 }) => {
+  if (!params) return "";
   const query = Object.entries(params)
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     .filter(([_, value]) => value !== "" && value !== undefined)

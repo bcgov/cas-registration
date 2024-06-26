@@ -13,7 +13,7 @@ from . import (
     users,
 )
 from ._operations import operation_id
-from ._operations._operation_id import update_status
+from ._operations._operation_id import update_status, facilities
 
 from ._operators._operator_id import request_access, request_admin_access, has_admin, access_declined
 from .user import user_profile, user_app_role

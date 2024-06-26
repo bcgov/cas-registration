@@ -2,17 +2,20 @@
 
 import { useMemo, useState } from "react";
 import DataGrid from "@bciers/components/datagrid/DataGrid";
+import FacilitiesActionCell from "../datagrid/cells/FacilitiesActionCell";
+import facilityColumns from "../datagrid/models/facilities/facilityColumns";
+import facilityGroupColumns from "../datagrid/models/facilities/facilityGroupColumns";
+import { FacilityRow } from "./types";
+import createFetchFacilitiesPageData from "./createFetchFacilitiesPageData";
 import HeaderSearchCell from "@bciers/components/datagrid/cells/HeaderSearchCell";
-import operationGroupColumns from "@bciers/components/datagrid/models/operationGroupColumns";
-import { fetchOperationsPageData } from "./Operations";
-import operationColumns from "../datagrid/models/operationColumns";
-import { OperationRow } from "./types";
 
-const ReportingOperationDataGrid = ({
+const FacilityDataGrid = ({
+  operationId,
   initialData,
 }: {
+  operationId: string;
   initialData: {
-    rows: OperationRow[];
+    rows: FacilityRow[];
     row_count: number;
   };
 }) => {
@@ -23,10 +26,12 @@ const ReportingOperationDataGrid = ({
     [lastFocusedField, setLastFocusedField],
   );
 
-  const columns = operationColumns();
+  const ActionCell = useMemo(() => FacilitiesActionCell(), []);
+
+  const columns = useMemo(() => facilityColumns(ActionCell), [ActionCell]);
 
   const columnGroup = useMemo(
-    () => operationGroupColumns(false, SearchCell),
+    () => facilityGroupColumns(SearchCell),
     [SearchCell],
   );
 
@@ -34,11 +39,11 @@ const ReportingOperationDataGrid = ({
     <DataGrid
       columns={columns}
       columnGroupModel={columnGroup}
-      fetchPageData={fetchOperationsPageData}
+      fetchPageData={createFetchFacilitiesPageData(operationId)}
       paginationMode="server"
       initialData={initialData}
     />
   );
 };
 
-export default ReportingOperationDataGrid;
+export default FacilityDataGrid;

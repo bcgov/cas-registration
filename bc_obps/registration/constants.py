@@ -18,6 +18,7 @@ PAGE_SIZE = 20
 BUSINESS_STRUCTURE_TAGS = ["Business Structure V1"]
 NAICS_CODE_TAGS = ["NAICS Code V1"]
 OPERATION_TAGS = ["Operation V1"]
+FACILITY_TAGS = ["Facility V1"]
 OPERATOR_TAGS = ["Operator V1"]
 REGULATED_PRODUCT_TAGS = ["Regulated Product V1"]
 REPORTING_ACTIVITY_TAGS = ["Reporting Activity V1"]
