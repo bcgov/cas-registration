@@ -72,7 +72,11 @@ def operator_baker(custom_properties=None) -> Operator:
     return baker.make(Operator, **properties)
 
 
-def operation_baker(operator_id: uuid.UUID = None, *args, **kwargs) -> Operation:
+def operation_baker(operator_id: uuid.UUID = None, custom_properties=None) -> Operation:
+    properties = {}
+    if custom_properties:
+        properties.update(custom_properties)
+
     if operator_id:
         return baker.make(
             Operation,
@@ -80,8 +84,7 @@ def operation_baker(operator_id: uuid.UUID = None, *args, **kwargs) -> Operation
             naics_code=NaicsCode.objects.first(),
             bcghg_id=uuid.uuid4(),
             operator_id=operator_id,
-            *args,
-            **kwargs,
+            **properties,
         )
 
     return baker.make(
@@ -90,8 +93,7 @@ def operation_baker(operator_id: uuid.UUID = None, *args, **kwargs) -> Operation
         naics_code=NaicsCode.objects.first(),
         bcghg_id=uuid.uuid4(),
         operator=operator_baker(),
-        *args,
-        **kwargs,
+        **properties,
     )
 
 

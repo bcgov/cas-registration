@@ -26,10 +26,13 @@ class ReportOperation(BaseModel):
         max_length=1000, db_comment="The BCGHGH ID of the operation", blank=True, null=True
     )
     bc_obps_regulated_operation_id = models.CharField(
-        max_length=255, db_comment="The BC OBPS Regulated Operation ID (BORO ID) for this operation"
+        max_length=255,
+        db_comment="The BC OBPS Regulated Operation ID (BORO ID) for this operation",
+        blank=True,
+        null=True,
     )
     operation_representative_name = models.CharField(
-        max_length=1000, db_comment="The full name of the operation representative"
+        max_length=10000, db_comment="The full name of the operation representative"
     )
 
     # We don't create a backwards relation since this is a registration model

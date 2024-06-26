@@ -5,6 +5,7 @@ from reporting.models.report_facility import ReportFacility
 from reporting.models.report_operation import ReportOperation
 from service.data_access_service.facility_service import FacilityDataAccessService
 from django.db import transaction
+from service.data_access_service.report_service import ReportDataAccessService
 from service.data_access_service.reporting_year import ReportingYearDataAccessService
 
 
@@ -12,9 +13,15 @@ class ReportService:
     @classmethod
     @transaction.atomic()
     def create_report(cls, operation_id: UUID, reporting_year: int) -> Report:
-        operation = Operation.objects.select_related('reporting_activities', 'regulated_products', 'operator').get(
-            id=operation_id
+        if ReportDataAccessService.report_exists(operation_id, reporting_year):
+            raise Exception("A report already exists for this operation and year, unable to create a new one.")
+
+        operation = (
+            Operation.objects.select_related('operator')
+            .prefetch_related('reporting_activities', 'regulated_products')
+            .get(id=operation_id)
         )
+
         operator = operation.operator
         facilities = FacilityDataAccessService.get_currently_owned(operation)
 
