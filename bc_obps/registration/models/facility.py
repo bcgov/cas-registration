@@ -1,20 +1,26 @@
 import uuid
 from django.db import models
+from registration.models.well_authorization_number import WellAuthorizationNumber
 from registration.models import Address, TimeStampedModel, Operation
 from simple_history.models import HistoricalRecords
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 
 class Facility(TimeStampedModel):
     class Types(models.TextChoices):
         SINGLE_FACILITY = "Single Facility"
-        LARGE_LFO = "Large LFO"
-        MEDIUM_LFO = "Medium LFO"
-        SMALL_AGGREGATE_LFO = "Small Aggregate LFO"
+        LARGE_LFO = "Large Facility"
+        MEDIUM_LFO = "Medium Facility"
+        SMALL_AGGREGATE_LFO = "Small Aggregate"
 
     id = models.UUIDField(
         primary_key=True, default=uuid.uuid4, db_comment="Primary key to identify the facility", verbose_name="ID"
     )
-    name = models.CharField(max_length=1000, db_comment="The name of the facility when the operation owned it")
+    name = models.CharField(
+        max_length=1000,
+        db_comment="The name of the facility when the operation owned it",
+        unique=True,
+    )
     type = models.CharField(max_length=100, choices=Types.choices, db_comment="The type of the facility")
     address = models.ForeignKey(
         Address,
@@ -35,6 +41,21 @@ class Facility(TimeStampedModel):
         blank=True,
         null=True,
     )
+    latitude_of_largest_emissions = models.DecimalField(
+        db_comment='The latitude of the largest point of emissions',
+        decimal_places=6,
+        max_digits=8,
+        validators=[MinValueValidator(-90), MaxValueValidator(90)],
+        null=True,
+    )
+    longitude_of_largest_emissions = models.DecimalField(
+        db_comment='The longitude of the largest point of emissions',
+        decimal_places=6,
+        max_digits=9,
+        validators=[MinValueValidator(-180), MaxValueValidator(180)],
+        null=True,
+    )
+    well_authorization_numbers = models.ManyToManyField(WellAuthorizationNumber, related_name='facilities')
     history = HistoricalRecords(
         table_name='erc_history"."facility_history',
         history_user_id_field=models.UUIDField(null=True, blank=True),
