@@ -75,7 +75,7 @@ class UserOperatorOut(ModelSchema):
     last_name: str = Field(..., alias="user.last_name")
     email: str = Field(..., alias="user.email")
     phone_number: str = str(Field(None, alias="user.phone_number"))
-    position_title: str = Field(None, alias="user.position_title")
+    position_title: str = Field(..., alias="user.position_title")
     bceid_business_name: Optional[str] = Field(None, alias="user.bceid_business_name")
 
     @staticmethod

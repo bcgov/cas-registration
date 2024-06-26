@@ -1,12 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { usePathname, useSearchParams } from "next/navigation";
-import { useRouter } from "next/navigation";
+import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import { TextField } from "@mui/material";
 import OutsideClickHandler from "react-outside-click-handler";
+import { GridColumnGroupHeaderParams } from "@mui/x-data-grid";
 
-const HeaderSearchCell = ({
+const SearchCell = ({
   field,
   fieldLabel,
   isFocused,
@@ -83,6 +83,27 @@ const HeaderSearchCell = ({
       </OutsideClickHandler>
     </div>
   );
+};
+
+const HeaderSearchCell = ({
+  lastFocusedField,
+  setLastFocusedField,
+}: {
+  lastFocusedField: string | null;
+  setLastFocusedField: (value: string | null) => void;
+}) => {
+  const RenderCell = (params: GridColumnGroupHeaderParams) => {
+    const { groupId, headerName } = params;
+    return (
+      <SearchCell
+        field={groupId ?? ""}
+        fieldLabel={headerName ?? ""}
+        isFocused={lastFocusedField === groupId}
+        setLastFocusedField={setLastFocusedField}
+      />
+    );
+  };
+  return RenderCell;
 };
 
 export default HeaderSearchCell;
