@@ -57,7 +57,6 @@ export const withAuthorizationDashboard: MiddlewareFactory = (
     const token = await getToken();
 
     if (token) {
-      console.log("token", token);
       // Check for the existence of token.user.app_role
       if (!token.app_role || token.app_role === "") {
         // Code to handle the case where app_role is either an empty string or null
@@ -69,6 +68,13 @@ export const withAuthorizationDashboard: MiddlewareFactory = (
             new URL(`/registration/profile`, request.url),
           );
         }
+      }
+
+      // Should the user be redirected to the onboarding page?
+      if (token.app_role.includes("pending")) {
+        request.nextUrl.pathname = "/registration/";
+
+        return NextResponse.rewrite(request.nextUrl);
       }
 
       if (pathname === "/" || pathname === `/${onboarding}`) {

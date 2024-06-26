@@ -87,10 +87,6 @@ export const withAuthorizationRegistration: MiddlewareFactory = (
         token.app_role
       }${pathname.replace("registration/", "")}`;
 
-      console.log("***************************");
-      console.log(pathname);
-      console.log(request.nextUrl);
-      console.log("***************************");
       return NextResponse.rewrite(request.nextUrl);
     } else {
       // Handle unauthenticated requests
