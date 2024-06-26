@@ -3,11 +3,10 @@ import Button from "@mui/material/Button/Button";
 import Link from "@mui/material/Link";
 import { getEnvValue } from "@bciers/utils/actions";
 import getUserFullName from "@bciers/utils/getUserFullName";
-import { Session } from "@bciers/types/session";
 
 export default function Profile() {
   const { data: session } = useSession();
-  const userFullName = getUserFullName(session as Session);
+  const userFullName = getUserFullName(session);
   return (
     <div className="flex items-center">
       <Link
