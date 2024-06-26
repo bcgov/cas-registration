@@ -1,0 +1,22 @@
+{
+  "Unit": {
+    "type": "object",
+    "properties": {
+      "gscUnitName": {
+        "title": "GSC Unit Name",
+        "maxLength": 200,
+        "type": "string"
+      },
+      "gscUnitType": {
+        "title": "GSC Unit Type",
+        "maxLength": 200,
+        "type": "string"
+      },
+      "description": {
+        "title": "Description",
+        "default": "",
+        "type": "string"
+      }
+    }
+  }
+}
