@@ -28,7 +28,7 @@ check_environment: ## Making sure the environment is properly configured for hel
 check_environment:
 	@set -euo pipefail; \
 	if [ -z '$(OBPS_NAMESPACE_PREFIX)' ]; then \
-		echo "REG_NAMESPACE_PREFIX is not set"; \
+		echo "OBPS_NAMESPACE_PREFIX is not set"; \
 		exit 1; \
 	fi; \
 	if [ -z '$(ENVIRONMENT)' ]; then \
@@ -46,18 +46,42 @@ verify_postgres_deployment:
 	fi; \
 
 .PHONY: install
-install: ## Installs the helm chart on the OpenShift cluster
+install: ## Installs the BCIERS helm chart on the OpenShift cluster
 install: check_environment
 install:
 install: GIT_SHA1=$(shell git rev-parse HEAD)
 install: IMAGE_TAG=$(GIT_SHA1)
 install: NAMESPACE=$(OBPS_NAMESPACE_PREFIX)-$(ENVIRONMENT)
-install: CHART_DIR=./helm/cas-registration
-install: CHART_INSTANCE=cas-registration
+install: CHART_DIR=./helm/cas-bciers
+install: CHART_INSTANCE=cas-bciers
 install: HELM_OPTS=--atomic --wait-for-jobs --timeout 2400s --namespace $(NAMESPACE) \
 										--set defaultImageTag=$(IMAGE_TAG) \
 										--values $(CHART_DIR)/values-$(ENVIRONMENT).yaml
 install:
+	@set -euo pipefail; \
+	helm dep up $(CHART_DIR); \
+	if ! helm status --namespace $(NAMESPACE) cas-obps-postgres; then \
+		echo "ERROR: Postgres is not deployed to $(NAMESPACE)."; \
+	elif ! helm status --namespace $(NAMESPACE) $(CHART_INSTANCE); then \
+		echo 'Installing the application'; \
+		helm install $(HELM_OPTS) $(CHART_INSTANCE) $(CHART_DIR); \
+	else \
+		helm upgrade $(HELM_OPTS) $(CHART_INSTANCE) $(CHART_DIR); \
+	fi;
+
+.PHONY: install_reg1
+install_reg1: ## Installs the helm Registration part 1 chart on the OpenShift cluster
+install_reg1: check_environment
+install_reg1:
+install_reg1: GIT_SHA1=$(shell git rev-parse HEAD)
+install_reg1: IMAGE_TAG=$(GIT_SHA1)
+install_reg1: NAMESPACE=$(OBPS_NAMESPACE_PREFIX)-$(ENVIRONMENT)
+install_reg1: CHART_DIR=./helm/cas-registration
+install_reg1: CHART_INSTANCE=cas-registration
+install_reg1: HELM_OPTS=--atomic --wait-for-jobs --timeout 2400s --namespace $(NAMESPACE) \
+										--set defaultImageTag=$(IMAGE_TAG) \
+										--values $(CHART_DIR)/values-$(ENVIRONMENT).yaml
+install_reg1:
 	@set -euo pipefail; \
 	helm dep up $(CHART_DIR); \
 	if ! helm status --namespace $(NAMESPACE) cas-obps-postgres; then \
