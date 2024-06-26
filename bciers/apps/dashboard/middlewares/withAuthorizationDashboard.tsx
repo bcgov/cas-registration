@@ -57,6 +57,7 @@ export const withAuthorizationDashboard: MiddlewareFactory = (
     const token = await getToken();
 
     if (token) {
+      console.log("token", token);
       // Check for the existence of token.user.app_role
       if (!token.app_role || token.app_role === "") {
         // Code to handle the case where app_role is either an empty string or null
