@@ -1,7 +1,7 @@
 from common.models import BaseModel
 from django.db import models
 from registration.models import ReportingActivity
-from reporting.models import JsonSchema, Configuration
+from reporting.models import Configuration
 import typing
 from reporting.utils import validate_overlapping_records
 
@@ -10,10 +10,10 @@ class ActivityJsonSchema(BaseModel):
     """Intersection table for Activity-JsonSchema"""
 
     # No history needed, these elements are immutable
-    reporting_activity = models.ForeignKey(
-        ReportingActivity, on_delete=models.DO_NOTHING, related_name="activity_json_schemas"
+    reporting_activity = models.ForeignKey(ReportingActivity, on_delete=models.DO_NOTHING, related_name="+")
+    json_schema = models.JSONField(
+        db_comment="The json schema for a specific activity. This defines the shape of the data collected for the related activity",
     )
-    json_schema = models.ForeignKey(JsonSchema, on_delete=models.DO_NOTHING, related_name="activity_json_schemas")
     valid_from = models.ForeignKey(Configuration, on_delete=models.DO_NOTHING, related_name="+")
     valid_to = models.ForeignKey(Configuration, on_delete=models.DO_NOTHING, related_name="+")
 

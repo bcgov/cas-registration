@@ -9,7 +9,6 @@ from .methodology import Methodology
 from .reporting_field import ReportingField
 from .configuration import Configuration
 from .configuration_element import ConfigurationElement
-from .json_schema import JsonSchema
 from .activity_json_schema import ActivityJsonSchema
 from .activity_source_type_json_schema import ActivitySourceTypeJsonSchema
 from .activity_source_type_unit_json_schema import ActivitySourceTypeUnitJsonSchema
@@ -28,7 +27,6 @@ __all__ = [
     "ReportingField",
     "Configuration",
     "ConfigurationElement",
-    "JsonSchema",
     "ActivityJsonSchema",
     "ActivitySourceTypeJsonSchema",
     "ActivitySourceTypeUnitJsonSchema",

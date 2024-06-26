@@ -1,10 +1,7 @@
 from common.tests.utils.helpers import BaseTestCase
 from registration.models import ReportingActivity
 from reporting.models import ActivitySourceTypeJsonSchema, SourceType
-from reporting.tests.utils.bakers import (
-    configuration_baker,
-    json_schema_baker,
-)
+from reporting.tests.utils.bakers import configuration_baker
 import pytest
 
 
@@ -15,7 +12,7 @@ class ActivitySourceTypeJsonSchemaTest(BaseTestCase):
         cls.test_object = ActivitySourceTypeJsonSchema.objects.create(
             reporting_activity=ReportingActivity.objects.get(pk=1),
             source_type=SourceType.objects.get(pk=1),
-            json_schema=json_schema_baker(),
+            json_schema='{}',
             has_unit=True,
             has_fuel=True,
             valid_from=config,
@@ -37,7 +34,7 @@ class ActivitySourceTypeJsonSchemaTest(BaseTestCase):
         invalid_record = ActivitySourceTypeJsonSchema(
             reporting_activity=self.test_object.reporting_activity,
             source_type=self.test_object.source_type,
-            json_schema=json_schema_baker(),
+            json_schema='{}',
             has_unit=True,
             has_fuel=True,
             valid_from=self.test_object.valid_from,
@@ -53,7 +50,7 @@ class ActivitySourceTypeJsonSchemaTest(BaseTestCase):
         valid_record = ActivitySourceTypeJsonSchema(
             reporting_activity=self.test_object.reporting_activity,
             source_type=self.test_object.source_type,
-            json_schema=json_schema_baker(),
+            json_schema='{}',
             has_unit=True,
             has_fuel=True,
             valid_from=config,
