@@ -25,10 +25,10 @@ describe("operationColumns function", () => {
     );
     assert(columns[1].width === 560, "Column 2 width should be 560");
 
-    assert(columns[2].field === "action", 'Column 3 field should be "action"');
+    assert(columns[2].field === "more", 'Column 3 field should be "action"');
     assert(
-      columns[2].headerName === "Action",
-      'Column 3 headerName should be "Action"',
+      columns[2].headerName === "More",
+      'Column 3 headerName should be "More"',
     );
     assert(columns[2].sortable === false, "Column 3 sortable should be false");
     assert(columns[2].width === 120, "Column 3 width should be 120");
