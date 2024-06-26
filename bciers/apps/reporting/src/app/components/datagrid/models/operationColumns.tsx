@@ -3,10 +3,11 @@ import Button from "@mui/material/Button";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import * as React from "react";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 
 export const OPERATOR_COLUMN_INDEX = 1;
 
-const ActionCell: React.FC = () => {
+const MoreCell: React.FC = () => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
@@ -27,7 +28,7 @@ const ActionCell: React.FC = () => {
         aria-expanded={open ? "true" : undefined}
         onClick={handleClick}
       >
-        ...
+        <MoreVertIcon />
       </Button>
       <Menu
         id="basic-menu"
@@ -38,9 +39,10 @@ const ActionCell: React.FC = () => {
           "aria-labelledby": "basic-button",
         }}
       >
-        <MenuItem onClick={handleClose}>Placeholder 1</MenuItem>
-        <MenuItem onClick={handleClose}>Placeholder 2</MenuItem>
-        <MenuItem onClick={handleClose}>Placeholder 3</MenuItem>
+        <MenuItem onClick={handleClose}>Edit Report</MenuItem>
+        <MenuItem onClick={handleClose}>Report History</MenuItem>
+        <MenuItem onClick={handleClose}>Download LFO</MenuItem>
+        <MenuItem onClick={handleClose}>Download .csv</MenuItem>
       </Menu>
     </div>
   );
@@ -55,9 +57,9 @@ const operationColumns = (): GridColDef[] => {
       width: 560,
     },
     {
-      field: "action",
-      headerName: "Action",
-      renderCell: () => <ActionCell />,
+      field: "more",
+      headerName: "More",
+      renderCell: () => <MoreCell />,
       sortable: false,
       width: 120,
       flex: 1,
