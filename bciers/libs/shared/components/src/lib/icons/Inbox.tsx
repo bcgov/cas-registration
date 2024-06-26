@@ -1,4 +1,4 @@
-const Inbox = () => (
+const Inbox = (
   <svg
     width="24"
     height="25"

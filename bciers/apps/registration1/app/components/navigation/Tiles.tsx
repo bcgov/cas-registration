@@ -13,16 +13,12 @@ import bceidUsersTile from "@/app/data/dashboard/bceid/users.json";
 import idirOperatorsTile from "@/app/data/dashboard/idir/operators.json";
 import idirOperationsTile from "@/app/data/dashboard/idir/operations.json";
 import idirUsersTile from "@/app/data/dashboard/idir/users.json";
-import Inbox from "@/app/components/icons/Inbox";
-import Layers from "@/app/components/icons/Layers";
-import NotificationIcon from "@/app/components/icons/Notification";
-import Users from "@/app/components/icons/Users";
-import Wrench from "@/app/components/icons/Wrench";
-import {
-  IconMap,
-  Notification,
-  NotificationMap,
-} from "@/app/components/navigation/types";
+import Inbox from "@bciers/components/icons/Inbox";
+import Layers from "@bciers/components/icons/Layers";
+import NotificationIcon from "@bciers/components/icons/Notification";
+import Users from "@bciers/components/icons/Users";
+import Wrench from "@bciers/components/icons/Wrench";
+import { IconMap, Notification, NotificationMap } from "./types";
 
 // 📐 type for ContentItem used to build dashboard content tiles
 type ContentItem = {
@@ -127,7 +123,7 @@ export default function Tiles({
           return (
             <div key={title} className="dashboard-tile-container">
               <h2 className="flex items-center m-0">
-                {iconMap[icon as keyof IconMap]?.()}
+                {iconMap[icon as keyof IconMap]}
                 <div className="ml-2">{content.title}</div>
               </h2>
 
