@@ -43,7 +43,7 @@ vi.mock("@/dashboard/auth", () => ({
   auth,
 }));
 
-vi.mock("@bciers/utils/actions", () => ({
+vi.mock("@bciers/actions", () => ({
   actionHandler,
 }));
 

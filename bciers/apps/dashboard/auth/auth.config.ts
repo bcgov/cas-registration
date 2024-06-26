@@ -1,7 +1,7 @@
 import type { DefaultSession, NextAuthConfig } from "next-auth";
 import Keycloak, { KeycloakProfile } from "next-auth/providers/keycloak";
 import { Errors, IDP } from "@bciers/utils/enums";
-import { actionHandler } from "@bciers/utils/actions";
+import { actionHandler } from "@bciers/actions";
 
 /*
 📌 Module Augmentation

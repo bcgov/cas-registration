@@ -5,8 +5,8 @@ import {
   NextResponse,
 } from "next/server";
 
-import { MiddlewareFactory } from "@bciers/middlewares/server";
-import { getToken } from "@bciers/actions/server";
+import { MiddlewareFactory } from "@bciers/middlewares";
+import { getToken } from "@bciers/actions";
 /*
 Access control logic is managed using Next.js middleware and NextAuth.js authentication JWT session.
 The middleware intercepts requests, and for restricted areas...

@@ -1,9 +1,9 @@
 import { describe, expect, vi } from "vitest";
-import { getEnvValue } from "@bciers/utils/actions";
+import { getEnvValue } from "@bciers/actions";
 
 vi.stubEnv("SITEMINDER_KEYCLOAK_LOGOUT_URL", "https://example.com");
 
-vi.unmock("@bciers/utils/actions");
+vi.unmock("@bciers/actions");
 
 describe("getEnvValue", () => {
   it("should return the value of the NODE_ENV environment variable", async () => {
