@@ -415,6 +415,29 @@ Operation {
     ManyToManyField regulated_products
     ManyToManyField reporting_activities
 }
+HistoricalWellAuthorizationNumber {
+    DateTimeField created_at
+    DateTimeField updated_at
+    DateTimeField archived_at
+    IntegerField well_authorization_number
+    UUIDField history_user_id
+    ForeignKey created_by
+    ForeignKey updated_by
+    ForeignKey archived_by
+    AutoField history_id
+    DateTimeField history_date
+    CharField history_change_reason
+    CharField history_type
+}
+WellAuthorizationNumber {
+    ForeignKey created_by
+    DateTimeField created_at
+    ForeignKey updated_by
+    DateTimeField updated_at
+    ForeignKey archived_by
+    DateTimeField archived_at
+    IntegerField well_authorization_number
+}
 HistoricalFacility {
     DateTimeField created_at
     DateTimeField updated_at
@@ -424,6 +447,8 @@ HistoricalFacility {
     CharField type
     IntegerField swrs_facility_id
     CharField bcghg_id
+    DecimalField latitude_of_largest_emissions
+    DecimalField longitude_of_largest_emissions
     UUIDField history_user_id
     ForeignKey created_by
     ForeignKey updated_by
@@ -447,6 +472,9 @@ Facility {
     ForeignKey address
     IntegerField swrs_facility_id
     CharField bcghg_id
+    DecimalField latitude_of_largest_emissions
+    DecimalField longitude_of_largest_emissions
+    ManyToManyField well_authorization_numbers
 }
 HistoricalEvent {
     DateTimeField created_at
@@ -633,31 +661,6 @@ ParentOperator {
     ForeignKey physical_address
     ForeignKey mailing_address
 }
-HistoricalWellAuthorizationNumber {
-    DateTimeField created_at
-    DateTimeField updated_at
-    DateTimeField archived_at
-    IntegerField well_authorization_number
-    UUIDField history_user_id
-    ForeignKey created_by
-    ForeignKey updated_by
-    ForeignKey archived_by
-    ForeignKey facility
-    AutoField history_id
-    DateTimeField history_date
-    CharField history_change_reason
-    CharField history_type
-}
-WellAuthorizationNumber {
-    ForeignKey created_by
-    DateTimeField created_at
-    ForeignKey updated_by
-    DateTimeField updated_at
-    ForeignKey archived_by
-    DateTimeField archived_at
-    IntegerField well_authorization_number
-    ForeignKey facility
-}
 HistoricalDocument }|--|| User : created_by
 HistoricalDocument }|--|| User : updated_by
 HistoricalDocument }|--|| User : archived_by
@@ -748,6 +751,12 @@ Operation ||--|| BcObpsRegulatedOperation : bc_obps_regulated_operation
 Operation }|--|{ Document : documents
 Operation }|--|{ RegulatedProduct : regulated_products
 Operation }|--|{ ReportingActivity : reporting_activities
+HistoricalWellAuthorizationNumber }|--|| User : created_by
+HistoricalWellAuthorizationNumber }|--|| User : updated_by
+HistoricalWellAuthorizationNumber }|--|| User : archived_by
+WellAuthorizationNumber }|--|| User : created_by
+WellAuthorizationNumber }|--|| User : updated_by
+WellAuthorizationNumber }|--|| User : archived_by
 HistoricalFacility }|--|| User : created_by
 HistoricalFacility }|--|| User : updated_by
 HistoricalFacility }|--|| User : archived_by
@@ -756,6 +765,7 @@ Facility }|--|| User : created_by
 Facility }|--|| User : updated_by
 Facility }|--|| User : archived_by
 Facility }|--|| Address : address
+Facility }|--|{ WellAuthorizationNumber : well_authorization_numbers
 HistoricalEvent }|--|| User : created_by
 HistoricalEvent }|--|| User : updated_by
 HistoricalEvent }|--|| User : archived_by
@@ -814,11 +824,3 @@ ParentOperator }|--|| Operator : child_operator
 ParentOperator }|--|| BusinessStructure : business_structure
 ParentOperator }|--|| Address : physical_address
 ParentOperator }|--|| Address : mailing_address
-HistoricalWellAuthorizationNumber }|--|| User : created_by
-HistoricalWellAuthorizationNumber }|--|| User : updated_by
-HistoricalWellAuthorizationNumber }|--|| User : archived_by
-HistoricalWellAuthorizationNumber }|--|| Facility : facility
-WellAuthorizationNumber }|--|| User : created_by
-WellAuthorizationNumber }|--|| User : updated_by
-WellAuthorizationNumber }|--|| User : archived_by
-WellAuthorizationNumber }|--|| Facility : facility

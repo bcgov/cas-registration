@@ -1,5 +1,5 @@
 from django.db import models
-from registration.models import TimeStampedModel, Facility
+from registration.models import TimeStampedModel
 from simple_history.models import HistoricalRecords
 
 
@@ -7,7 +7,6 @@ class WellAuthorizationNumber(TimeStampedModel):
     well_authorization_number = models.IntegerField(
         primary_key=True, db_comment="A well authorization number from the BC Energy Regulator"
     )
-    facility = models.ForeignKey(Facility, on_delete=models.DO_NOTHING, related_name="well_authorization_numbers")
 
     history = HistoricalRecords(
         table_name='erc_history"."well_authorization_number_history',
