@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { Alert } from "@mui/material";
-import { actionHandler } from "@bciers/actions/server";
+import { actionHandler } from "@bciers/actions";
 import FormBase from "@bciers/components/form/FormBase";
 import { Button } from "@mui/material";
 import { useSession } from "next-auth/react";
