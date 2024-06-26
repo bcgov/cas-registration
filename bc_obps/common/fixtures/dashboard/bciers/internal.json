@@ -43,7 +43,7 @@
               },
               {
                 "title": "Events",
-                "href": "/registrationtbd"
+                "href": "/registration/tbd"
               }
             ]
           },
@@ -87,7 +87,7 @@
             "title": "Clean Growth User Access Management",
             "href": "mailto:GHGRegulator@gov.bc.ca",
             "icon": "Users",
-            "content": "View, approve or decine IDIR user access requests, or to assign access type to users here.",
+            "content": "View, approve or decline IDIR user access requests, or to assign access type to users here.",
             "links": [
               {
                 "title": "Access Requests",

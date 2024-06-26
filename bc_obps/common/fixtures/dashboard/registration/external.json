@@ -40,7 +40,7 @@
           {
             "title": "Report an Event",
             "icon": "File",
-            "content": "Report start up, closing, or temporary shutdown, acquisition, divestment, transer, etc. here.",
+            "content": "Report start up, closing, or temporary shutdown, acquisition, divestment, tranfser, etc. here.",
             "href": "/registration/tbd"
           }
         ]
