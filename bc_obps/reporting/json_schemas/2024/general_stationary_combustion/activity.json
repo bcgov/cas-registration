@@ -1,0 +1,14 @@
+{
+  "title": "General stationary combustion",
+  "type": "object",
+  "properties": {
+    "withUsefulEnergy": {
+      "type": "boolean",
+      "title": "General stationary combustion of fuel or waste with production of useful energy"
+    },
+    "withoutUsefulEnergy": {
+      "type": "boolean",
+      "title": "General stationary combustion of fuel or waste without production of useful energy"
+    }
+  }
+}

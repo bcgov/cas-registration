@@ -1,0 +1,23 @@
+{
+  "Emission": {
+    "type": "object",
+    "properties": {
+      "gasType": {
+        "type": "string",
+        "enum": []
+      },
+      "emissions": {
+        "title": "Emissions",
+        "type": "number"
+      },
+      "equivalentEmissions": {
+        "title": "Equivalent Emissions",
+        "type": "number"
+      },
+      "methodology": {
+        "type": "string",
+        "enum": []
+      }
+    }
+  }
+}
