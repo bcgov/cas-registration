@@ -2,6 +2,21 @@
 
 from django.db import migrations
 
+def init_configuration_data(apps, schema_monitor):
+    '''
+    Add initial data to erc.configuration
+    '''
+
+    Configuration = apps.get_model('reporting', 'Configuration')
+    Configuration.objects.bulk_create([Configuration(slug='2024', valid_from='2024-01-01', valid_to='9999-12-31')])
+
+
+def reverse_init_configuration_data(apps, schema_monitor):
+    '''
+    Remove initial data from erc.configuration
+    '''
+    Configuration = apps.get_model('reporting', 'Configuration')
+    Configuration.objects.filter(slug__in=['2024']).delete()
 
 def init_source_type_data(apps, schema_monitor):
     '''
