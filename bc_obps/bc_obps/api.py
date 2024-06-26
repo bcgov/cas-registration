@@ -11,7 +11,7 @@ api = NinjaAPI(
 )
 
 
-@api.exception_handler(ValidationError)
+@api.exception_handler(ValidationError)  # type: ignore
 def custom_validation_errors(request, exc):
     print(exc.errors)  # <--------------------- !!!!
     return api.create_response(request, {"detail": exc.errors}, status=422)
