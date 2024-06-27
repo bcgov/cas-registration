@@ -142,13 +142,16 @@ def parent_operator_baker() -> ParentOperator:
     )
 
 
-def facility_ownership_timeline_baker(operation_id: uuid.UUID = None, *args, **kwargs) -> FacilityOwnershipTimeline:
+def facility_ownership_timeline_baker(
+    operation_id: uuid.UUID = None, facility_id: uuid.UUID = None, *args, **kwargs
+) -> FacilityOwnershipTimeline:
     operation_id = operation_id or operation_baker().id
+    facility_id = facility_id or facility_baker().id
     return baker.make(
         FacilityOwnershipTimeline,
         operation_id=operation_id,
         # brianna does this just make one instead of 10?
-        facility=facility_baker(),
+        facility_id=facility_id,
         end_date='2024-01-09 14:13:08.888903-0800',  # using a hardcoded date to not face the unique constraint error of the model
         *args,
         **kwargs,
@@ -156,7 +159,6 @@ def facility_ownership_timeline_baker(operation_id: uuid.UUID = None, *args, **k
 
 
 def facility_baker(*args, **kwargs):
-
     return baker.make(
         Facility, latitude_of_largest_emissions=48.407326, longitude_of_largest_emissions=-123.329773, *args, **kwargs
     )
