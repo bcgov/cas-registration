@@ -46,14 +46,12 @@ class Facility(TimeStampedModel):
         decimal_places=6,
         max_digits=8,
         validators=[MinValueValidator(-90), MaxValueValidator(90)],
-        null=True,
     )
     longitude_of_largest_emissions = models.DecimalField(
         db_comment='The longitude of the largest point of emissions',
         decimal_places=6,
         max_digits=9,
         validators=[MinValueValidator(-180), MaxValueValidator(180)],
-        null=True,
     )
     well_authorization_numbers = models.ManyToManyField(WellAuthorizationNumber, related_name='facilities')
     history = HistoricalRecords(
