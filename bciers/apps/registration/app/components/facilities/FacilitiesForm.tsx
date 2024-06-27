@@ -13,14 +13,14 @@ interface Props {
   schema: any;
   uiSchema: any;
   formData: FacilityFormData;
-  disabled?: boolean;
+  isCreating?: boolean;
 }
 
 export default function FacilitiesForm({
   formData,
   schema,
   uiSchema,
-  disabled,
+  isCreating,
 }: Readonly<Props>) {
   console.log("formdata", formData);
   // @ ts-ignore
@@ -28,13 +28,13 @@ export default function FacilitiesForm({
   const [confirmation, setConfirmation] = useState(false);
   const router = useRouter();
   const params = useParams();
-  let isCreating = Object.keys(formData).length > 0 ? false : true;
+
   return (
     <>
       {confirmation && <div>success</div>}
       <SingleStepTaskListForm
         error={error}
-        disabled={disabled}
+        disabled={!isCreating}
         schema={schema}
         uiSchema={uiSchema}
         formData={formData}
