@@ -23,7 +23,6 @@ class TestFacilityIdEndpoint(CommonTestSetup):
     def test_facilities_endpoint_unauthorized_roles_cannot_get(self):
         facility = facility_baker()
         # cas_pending can't get
-        breakpoint()
         response = TestUtils.mock_get_with_auth_role(
             self, "cas_pending", custom_reverse_lazy("get_facility", kwargs={"facility_id": facility.id})
         )
@@ -53,7 +52,6 @@ class TestFacilityIdEndpoint(CommonTestSetup):
         )
 
     def test_industry_users_can_get_their_own_facilities(self):
-
         operator = operator_baker()
         TestUtils.authorize_current_user_as_operator_user(self, operator)
         owning_operation: Operation = operation_baker(operator.id)
