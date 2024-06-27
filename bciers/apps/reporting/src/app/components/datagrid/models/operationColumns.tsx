@@ -1,8 +1,54 @@
 import { GridColDef } from "@mui/x-data-grid";
+import Button from "@mui/material/Button";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import * as React from "react";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 
 export const OPERATOR_COLUMN_INDEX = 1;
 
-const operationColumns = () => {
+const MoreCell: React.FC = () => {
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  return (
+    <div>
+      <Button
+        id="basic-button"
+        aria-controls={open ? "basic-menu" : undefined}
+        aria-haspopup="true"
+        aria-expanded={open ? "true" : undefined}
+        onClick={handleClick}
+      >
+        <MoreVertIcon />
+      </Button>
+      <Menu
+        id="basic-menu"
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+        MenuListProps={{
+          "aria-labelledby": "basic-button",
+        }}
+      >
+        <MenuItem onClick={handleClose}>Edit Report</MenuItem>
+        <MenuItem onClick={handleClose}>Report History</MenuItem>
+        <MenuItem onClick={handleClose}>Download LFO</MenuItem>
+        <MenuItem onClick={handleClose}>Download .csv</MenuItem>
+      </Menu>
+    </div>
+  );
+};
+
+const operationColumns = (): GridColDef[] => {
   const columns: GridColDef[] = [
     { field: "bcghg_id", headerName: "BC GHG ID", width: 160 },
     {
@@ -11,12 +57,11 @@ const operationColumns = () => {
       width: 560,
     },
     {
-      field: "action",
-      headerName: "Action",
-      renderCell: () => <div>...</div>,
+      field: "more",
+      headerName: "More",
+      renderCell: () => <MoreCell />,
       sortable: false,
       width: 120,
-      // Set flex to 1 to make the column take up all the remaining width if user zooms out
       flex: 1,
     },
   ];
