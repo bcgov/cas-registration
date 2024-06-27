@@ -23,6 +23,7 @@ import { fetchMocker } from "./global";
 // https://github.com/IanVS/vitest-fetch-mock
 
 const actionHandler = vi.fn();
+const getToken = vi.fn();
 const useRouter = vi.fn();
 const useParams = vi.fn();
 const usePathname = vi.fn();
@@ -34,6 +35,7 @@ const fetchOperationsPageData = vi.fn();
 export {
   actionHandler,
   fetchMocker as fetch,
+  getToken,
   auth,
   useRouter,
   useParams,

@@ -72,9 +72,10 @@ export const withAuthorizationDashboard: MiddlewareFactory = (
 
       // Should the user be redirected to the onboarding page?
       if (token.app_role.includes("pending")) {
-        request.nextUrl.pathname = "/registration/";
+        const url = request.nextUrl.clone();
+        url.pathname = "/registration";
 
-        return NextResponse.rewrite(request.nextUrl);
+        return NextResponse.rewrite(url);
       }
 
       if (pathname === "/" || pathname === `/${onboarding}`) {
