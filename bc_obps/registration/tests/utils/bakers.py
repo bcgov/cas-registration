@@ -80,11 +80,7 @@ def operator_baker(custom_properties=None) -> Operator:
     return baker.make(Operator, **properties)
 
 
-def operation_baker(operator_id: uuid.UUID = None, custom_properties=None) -> Operation:
-    properties = {}
-    if custom_properties:
-        properties.update(custom_properties)
-
+def operation_baker(operator_id: uuid.UUID = None, **properties) -> Operation:
     if operator_id:
         return baker.make(
             Operation,

@@ -15,8 +15,8 @@ ReportOperation {
 }
 ReportingYear {
     IntegerField reporting_year
-    DateTimeField reporting_period_start
-    DateTimeField reporting_period_end
+    DateTimeField reporting_window_start
+    DateTimeField reporting_window_end
     CharField description
 }
 Report {

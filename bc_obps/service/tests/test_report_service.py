@@ -30,7 +30,7 @@ class TestReportService(TestCase):
 
     def test_throws_if_year_doesnt_exist(self):
         operator = operator_baker({"trade_name": "test_trade_name"})
-        operation = operation_baker(operator_id=operator.id, custom_properties={"type": "sfo"})
+        operation = operation_baker(operator_id=operator.id, type="sfo")
 
         with self.assertRaises(ObjectDoesNotExist) as exceptionContext:
             ReportService.create_report(operation.id, reporting_year=2000)
@@ -39,7 +39,7 @@ class TestReportService(TestCase):
 
     def test_throws_if_report_already_exists(self):
 
-        operation = operation_baker(custom_properties={"type": "lfo"})
+        operation = operation_baker(type="lfo")
         reporting_year = reporting_year_baker(reporting_year=2024)
         _ = report_baker(operation=operation, reporting_year=reporting_year)
 
@@ -70,9 +70,7 @@ class TestReportService(TestCase):
             mock_report_data_access_service_report_exists.return_value = False
             mock_facility_data_access_service_get_currently_owned.return_value = mock_facilities
 
-            operation = operation_baker(
-                custom_properties={"type": "lfo", "bc_obps_regulated_operation": bc_obps_regulated_operation_baker()}
-            )
+            operation = operation_baker(type="lfo", bc_obps_regulated_operation=bc_obps_regulated_operation_baker())
             operation.reporting_activities.add(
                 ReportingActivity.objects.get(name='Magnesium production'),
                 ReportingActivity.objects.get(name='Hydrogen production'),
