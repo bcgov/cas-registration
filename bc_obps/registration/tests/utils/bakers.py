@@ -20,7 +20,6 @@ import random
 import string
 
 from registration.models.bc_obps_regulated_operation import BcObpsRegulatedOperation
-from registration.models.facility import Facility
 
 
 def generate_random_bc_corporate_registry_number():

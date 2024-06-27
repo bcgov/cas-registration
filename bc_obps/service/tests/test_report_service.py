@@ -21,8 +21,6 @@ class TestReportService(TestCase):
     def test_throws_if_operation_doesnt_exist(self):
         baker.make(ReportingYear, reporting_year=2000)
 
-        self.assertEqual(ReportingYear.objects.count(), 1)
-
         with self.assertRaises(ObjectDoesNotExist) as exceptionContext:
             ReportService.create_report(operation_id="00000000-00000000-00000000-00000000", reporting_year=2000)
 
@@ -40,11 +38,11 @@ class TestReportService(TestCase):
     def test_throws_if_report_already_exists(self):
 
         operation = operation_baker(type="lfo")
-        reporting_year = reporting_year_baker(reporting_year=2024)
+        reporting_year = reporting_year_baker(reporting_year=2002)
         _ = report_baker(operation=operation, reporting_year=reporting_year)
 
         with self.assertRaises(Exception) as exceptionContext:
-            ReportService.create_report(operation.id, 2024)
+            ReportService.create_report(operation.id, 2002)
 
         self.assertEqual(
             str(exceptionContext.exception),
@@ -80,9 +78,9 @@ class TestReportService(TestCase):
                 RegulatedProduct.objects.get(name='Mining: gold-equivalent'),
                 RegulatedProduct.objects.get(name='Liquefied natural gas'),
             )
-            reporting_year = reporting_year_baker(reporting_year=2024)
+            reporting_year = reporting_year_baker(reporting_year=2101)
 
-            report = ReportService.create_report(operation.id, reporting_year=2024)
+            report = ReportService.create_report(operation.id, reporting_year=2101)
 
             # Testing the report data
             self.assertEqual(report.operation.id, operation.id)
