@@ -82,7 +82,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   key: bucket_name
-                  name: gcp-{{ .Release.Namespace }}-reg-attachments-service-account-key
+                  name: gcp-{{ .Release.Namespace }}-bciers-attach-service-account-key
             - name: GOOGLE_APPLICATION_CREDENTIALS
               value: "/attachment-credentials/attachment-credentials.json"
             - name: ENVIRONMENT
@@ -129,7 +129,7 @@ spec:
       volumes:
         - name: gcs-attachment-credentials
           secret:
-            secretName: gcp-{{ .Release.Namespace }}-reg-attachments-service-account-key
+            secretName: gcp-{{ .Release.Namespace }}-bciers-attach-service-account-key
             items:
             - key: credentials.json
               path: attachment-credentials.json

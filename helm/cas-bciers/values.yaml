@@ -148,7 +148,7 @@ dashboardFrontend:
 
 terraform-bucket-provision:
   terraform:
-    namespace_apps: '["reg-attachments"]'
+    namespace_apps: '["bciers-attach"]' # Maximum of 13 characters
     workspace: bciers # This value is OPTIONAL, only set if required
 
 growthbook:
