@@ -1,6 +1,11 @@
 from bc_obps.settings import NINJA_PAGINATION_PER_PAGE
 from registration.models import Facility
-from registration.tests.utils.bakers import facility_ownership_timeline_baker, operation_baker, operator_baker
+from registration.tests.utils.bakers import (
+    facility_ownership_timeline_baker,
+    operation_baker,
+    operator_baker,
+    facility_baker,
+)
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
 from model_bakery import baker
@@ -21,7 +26,12 @@ class TestFacilitiesEndpoint(CommonTestSetup):
     # GET
     def test_facilities_endpoint_list_facilities_paginated(self):
         operation = operation_baker()
-        facility_ownership_timeline_baker(operation_id=operation.id, _quantity=45)
+        baked_facilities = facility_baker(_quantity=45)
+        timelines = []
+        for f in baked_facilities:
+            timelines.extend(
+                facility_ownership_timeline_baker(operation_id=operation.id, facility_id=f.id, _quantity=8)
+            )
         facilities_url = custom_reverse_lazy('list_facilities', kwargs={'operation_id': operation.id})
         # Get the default page 1 response
         response = TestUtils.mock_get_with_auth_role(self, "cas_admin", facilities_url)
@@ -69,7 +79,9 @@ class TestFacilitiesEndpoint(CommonTestSetup):
 
     def test_facilities_endpoint_list_facilities_with_filter(self):
         operation = operation_baker()
-        facility_ownership_timeline_baker(operation_id=operation.id, _quantity=25)
+        facilities = facility_baker(_quantity=25)
+        for f in facilities:
+            facility_ownership_timeline_baker(operation_id=operation.id, facility_id=f.id, _quantity=2)
         facilities_url = custom_reverse_lazy('list_facilities', kwargs={'operation_id': operation.id})
 
         # Get the default page 1 response
