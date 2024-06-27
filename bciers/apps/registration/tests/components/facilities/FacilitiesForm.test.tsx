@@ -77,7 +77,7 @@ describe("FacilitiesForm component", () => {
       <FacilitiesForm
         schema={facilitiesSchemaSfo}
         uiSchema={facilitiesUiSchema}
-        formData={undefined}
+        formData={{}}
       />,
     );
     // form fields and headings
@@ -103,39 +103,41 @@ describe("FacilitiesForm component", () => {
     const submitButton = screen.getByRole("button", { name: /submit/i });
     expect(submitButton).toBeEnabled();
   });
-  //   it("renders the empty LFO facility form when no data is passed", async () => {
-  //     render(
-  //       <FacilitiesForm
-  //         schema={facilitiesSchemaLfo}
-  //         uiSchema={facilitiesUiSchema}
-  //         formData={undefined}
-  //       />,
-  //     );
-  //     // form fields and headings
-  //     expect(
-  //       screen.getByRole("heading", { name: /Facility Information/i }),
-  //     ).toBeVisible();
-  //     expect(screen.getByLabelText(/Facility Name+/i)).toHaveValue("");
-  //     expect(screen.getByLabelText(/Facility Type+/i)).toHaveValue("");
-  //     // brianna
-  //     expect(screen.getByText(/Authorization+/i)).toHaveValue("");
-  //     expect(
-  //       screen.getByRole("heading", { name: /Facility Address/i }),
-  //     ).toBeVisible();
-  //     expect(screen.getByLabelText(/Street address+/i)).toHaveValue("");
-  //     expect(screen.getByLabelText(/Municipality+/i)).toHaveValue("");
-  //     expect(screen.getByLabelText(/Province+/i)).toHaveValue("");
-  //     expect(screen.getByLabelText(/Postal Code+/i)).toHaveValue("");
-  //     expect(
-  //       screen.getByLabelText(/Latitude of Largest Point of Emissions+/i),
-  //     ).toHaveValue(null);
-  //     expect(
-  //       screen.getByLabelText(/Longitude of Largest Point of Emissions+/i),
-  //     ).toHaveValue(null);
-  //     // submit button
-  //     const submitButton = screen.getByRole("button", { name: /submit/i });
-  //     expect(submitButton).toBeEnabled();
-  //   });
+
+  it("renders the empty LFO facility form when no data is passed", async () => {
+    render(
+      <FacilitiesForm
+        schema={facilitiesSchemaLfo}
+        uiSchema={facilitiesUiSchema}
+        formData={{}}
+      />,
+    );
+    // form fields and headings
+    expect(
+      screen.getByRole("heading", { name: /Facility Information/i }),
+    ).toBeVisible();
+    expect(screen.getByLabelText(/Facility Name+/i)).toHaveValue("");
+    expect(screen.getByLabelText(/Facility Type+/i)).toHaveValue("");
+
+    expect(screen.getByText(/Authorization+/i)).toBeVisible(); // text seems to be broken up
+    expect(screen.getByRole("button", { name: "Add" })).toBeVisible();
+    expect(
+      screen.getByRole("heading", { name: /Facility Address/i }),
+    ).toBeVisible();
+    expect(screen.getByLabelText(/Street address+/i)).toHaveValue("");
+    expect(screen.getByLabelText(/Municipality+/i)).toHaveValue("");
+    expect(screen.getByLabelText(/Province+/i)).toHaveValue("");
+    expect(screen.getByLabelText(/Postal Code+/i)).toHaveValue("");
+    expect(
+      screen.getByLabelText(/Latitude of Largest Point of Emissions+/i),
+    ).toHaveValue(null);
+    expect(
+      screen.getByLabelText(/Longitude of Largest Point of Emissions+/i),
+    ).toHaveValue(null);
+    // submit button
+    const submitButton = screen.getByRole("button", { name: /submit/i });
+    expect(submitButton).toBeEnabled();
+  });
   it("loads existing readonly SFO form data", async () => {
     const { container } = render(
       <FacilitiesForm
@@ -256,97 +258,109 @@ describe("FacilitiesForm component", () => {
     expect(screen.getAllByText(/must be <= 180/i)).toHaveLength(1);
   });
 
-  //   it("when creating a new SFO facility, posts the form on submit and redirects", async () => {
-  //     render(
-  //       <FacilitiesForm
-  //         schema={facilitiesSchemaSfo}
-  //         uiSchema={facilitiesUiSchema}
-  //         formData={undefined}
-  //       />,
-  //     );
+  it.only("fills form, creates new SFO facility, and redirects on success", async () => {
+    render(
+      <FacilitiesForm
+        schema={facilitiesSchemaSfo}
+        uiSchema={facilitiesUiSchema}
+        formData={{}}
+      />,
+    );
 
-  //     const submitButton = screen.getByRole("button", { name: /submit/i });
-  //     act(() => {
-  //       fireEvent.change(screen.getByLabelText(/Facility Name+/i), {
-  //         target: { value: "test" },
-  //       });
-  //       fireEvent.change(screen.getByLabelText(/Facility Type+/i), {
-  //         target: { value: "Single Facility Operation" },
-  //       });
-  //       fireEvent.change(
-  //         screen.getByLabelText(/Latitude of Largest Point of Emissions+/i),
-  //         { target: { value: 3 } },
-  //       );
-  //       fireEvent.change(
-  //         screen.getByLabelText(/Longitude of Largest Point of Emissions+/i),
-  //         { target: { value: 6 } },
-  //       );
-  //       fireEvent.click(submitButton);
-  //       // submitButton.click();
-  //       actionHandler.mockReturnValueOnce({
-  //         id: "025328a0-f9e8-4e1a-888d-aa192cb053db",
-  //         error: null,
-  //       });
-  //     });
-  //     userEvent.click(submitButton);
-  //     // expect(consoleSpy).toHaveBeenCalledOnce();
-  //     await waitFor(() => {
-  //       expect(screen.getByText("success")).toBeVisible();
-  //     });
-  //   });
+    const submitButton = screen.getByRole("button", { name: /submit/i });
+    act(() => {
+      fireEvent.change(screen.getByLabelText(/Facility Name+/i), {
+        target: { value: "test" },
+      });
+      expect(screen.getByLabelText(/Facility Name+/i)).toHaveValue("test");
 
-  //   it.only("when creating a new LFO facility, posts the form on submit and redirects", async () => {
-  //     render(
-  //       <FacilitiesForm
-  //         schema={facilitiesSchemaLfo}
-  //         uiSchema={facilitiesUiSchema}
-  //         formData={undefined}
-  //       />,
-  //     );
+      fireEvent.change(screen.getByLabelText(/Facility Type+/i), {
+        target: { value: "Single Facility Operation" },
+      });
+      expect(screen.getByLabelText(/Facility Type+/i)).toHaveValue(
+        "Single Facility Operation",
+      );
+      fireEvent.change(
+        screen.getByLabelText(/Latitude of Largest Point of Emissions+/i),
+        { target: { value: 3 } },
+      );
+      expect(
+        screen.getByLabelText(/Latitude of Largest Point of Emissions+/i),
+      ).toHaveValue(3);
+      fireEvent.change(
+        screen.getByLabelText(/Longitude of Largest Point of Emissions+/i),
+        { target: { value: 6 } },
+      );
+      expect(
+        screen.getByLabelText(/Longitude of Largest Point of Emissions+/i),
+      ).toHaveValue(6);
+      fireEvent.click(submitButton);
+      // brianna why getting a validation error on facility type?
+      // submitButton.click();
+      actionHandler.mockReturnValueOnce({
+        id: "025328a0-f9e8-4e1a-888d-aa192cb053db",
+        error: null,
+      });
+    });
+    userEvent.click(submitButton);
+    // expect(consoleSpy).toHaveBeenCalledOnce();
+    await waitFor(() => {
+      expect(screen.getByText("success")).toBeVisible();
+    });
+  });
 
-  //     const submitButton = screen.getByRole("button", { name: /submit/i });
-  //     act(async () => {
-  //       fireEvent.change(screen.getByLabelText(/Facility Name+/i), {
-  //         target: { value: "test" },
-  //       });
-  //       const dropdown = screen.getByLabelText(/Facility Type+/i);
-  //       // fireEvent.change(screen.getByLabelText(/Facility Name+/i), {
-  //       //   target: { value: "Large Facility" },
-  //       // });
-  //       fireEvent.click(dropdown);
+  it("when creating a new LFO facility, posts the form on submit and redirects", async () => {
+    render(
+      <FacilitiesForm
+        schema={facilitiesSchemaLfo}
+        uiSchema={facilitiesUiSchema}
+        formData={undefined}
+      />,
+    );
 
-  //       const dropdownItem = await screen.getByRole("option", {
-  //         name: /large facility/i,
-  //       });
-  //       fireEvent.click(dropdownItem);
-  //       fireEvent.click(screen.getByText("Large Facility"));
-  //       expect(dropdown).toHaveValue("Large Facility");
+    const submitButton = screen.getByRole("button", { name: /submit/i });
+    act(async () => {
+      fireEvent.change(screen.getByLabelText(/Facility Name+/i), {
+        target: { value: "test" },
+      });
+      const dropdown = screen.getByLabelText(/Facility Type+/i);
+      // fireEvent.change(screen.getByLabelText(/Facility Name+/i), {
+      //   target: { value: "Large Facility" },
+      // });
+      fireEvent.click(dropdown);
 
-  //       // Find the option and select it
-  //       const option = screen.getByRole("option", {
-  //         name: "Large Facility",
-  //       });
-  //       fireEvent.click(option);
+      const dropdownItem = await screen.getByRole("option", {
+        name: /large facility/i,
+      });
+      fireEvent.click(dropdownItem);
+      fireEvent.click(screen.getByText("Large Facility"));
+      expect(dropdown).toHaveValue("Large Facility");
 
-  //       fireEvent.change(
-  //         screen.getByLabelText(/Latitude of Largest Point of Emissions+/i),
-  //         { target: { value: 3 } },
-  //       );
-  //       fireEvent.change(
-  //         screen.getByLabelText(/Longitude of Largest Point of Emissions+/i),
-  //         { target: { value: 6 } },
-  //       );
-  //       fireEvent.click(submitButton);
-  //       // submitButton.click();
-  //       actionHandler.mockReturnValueOnce({
-  //         id: "025328a0-f9e8-4e1a-888d-aa192cb053db",
-  //         error: null,
-  //       });
-  //     });
-  //     userEvent.click(submitButton);
-  //     // expect(consoleSpy).toHaveBeenCalledOnce();
-  //     await waitFor(() => {
-  //       // expect(screen.getByText("success")).toBeVisible();
-  //     });
-  //   });
+      // Find the option and select it
+      const option = screen.getByRole("option", {
+        name: "Large Facility",
+      });
+      fireEvent.click(option);
+
+      fireEvent.change(
+        screen.getByLabelText(/Latitude of Largest Point of Emissions+/i),
+        { target: { value: 3 } },
+      );
+      fireEvent.change(
+        screen.getByLabelText(/Longitude of Largest Point of Emissions+/i),
+        { target: { value: 6 } },
+      );
+      fireEvent.click(submitButton);
+      // submitButton.click();
+      actionHandler.mockReturnValueOnce({
+        id: "025328a0-f9e8-4e1a-888d-aa192cb053db",
+        error: null,
+      });
+    });
+    userEvent.click(submitButton);
+    // expect(consoleSpy).toHaveBeenCalledOnce();
+    await waitFor(() => {
+      // expect(screen.getByText("success")).toBeVisible();
+    });
+  });
 });

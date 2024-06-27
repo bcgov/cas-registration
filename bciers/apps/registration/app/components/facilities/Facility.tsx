@@ -4,36 +4,10 @@ import {
 } from "../../utils/jsonSchema/facilitiesSfo";
 import { facilitiesSchemaLfo } from "../../utils/jsonSchema/facilitiesLfo";
 import FacilitiesForm from "./FacilitiesForm";
-import { UUID } from "crypto"; //brianna check this impoart
+import { UUID } from "crypto";
 import { notFound } from "next/navigation";
-import { actionHandler } from "@bciers/utils/actions";
-
-// 🛠️ Function to fetch a facility by uuid
-async function getFacility(uuid: UUID) {
-  try {
-    return await actionHandler(
-      `registration/facilities/${uuid}`,
-      "GET",
-      `/facilities/${uuid}`,
-    );
-  } catch (error) {
-    // Handle the error here or rethrow it to handle it at a higher level
-    throw error;
-  }
-}
-
-async function getOperation(id: string) {
-  try {
-    return await actionHandler(
-      `registration/operations/${id}`,
-      "GET",
-      `/operations/${id}`,
-    );
-  } catch (error) {
-    // Handle the error here or rethrow it to handle it at a higher level
-    throw error;
-  }
-}
+import getFacility from "./getFacility";
+import getOperation from "../operations/getOperation";
 
 // 🧩 Main component
 export default async function Facility({
@@ -43,8 +17,7 @@ export default async function Facility({
   facilityId?: UUID;
   operationId: UUID;
 }) {
-  let facilityFormData: { [key: string]: any } | { error: string } | undefined =
-    undefined;
+  let facilityFormData: { [key: string]: any } | { error: string } = {};
 
   if (facilityId) {
     facilityFormData = await getFacility(facilityId);
@@ -54,6 +27,8 @@ export default async function Facility({
     }
   }
   const operation = await getOperation(operationId);
+  console.log("getoperation", getOperation);
+  console.log("operation", operation);
   if (operation.error) {
     // brianna did we have some global error handling for this is part 1?
     return notFound();
@@ -68,7 +43,7 @@ export default async function Facility({
             : facilitiesSchemaLfo
         }
         uiSchema={facilitiesUiSchema}
-        {...(facilityFormData ? { formData: facilityFormData } : {})}
+        formData={facilityFormData}
         {...(facilityFormData ? { disabled: true } : {})}
       />
     </>
