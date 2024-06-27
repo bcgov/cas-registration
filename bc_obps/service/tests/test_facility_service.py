@@ -1,14 +1,6 @@
 import pytest
-from registration.models import (
-    UserOperator,
-    Facility,
-    Operation,
-    FacilityOwnershipTimeline,
-    User,
-    WellAuthorizationNumber,
-    AppRole,
-    Address,
-)
+from registration.models import UserOperator, Facility
+from registration.models.app_role import AppRole
 from registration.tests.utils.bakers import (
     facility_baker,
     facility_ownership_timeline_baker,
@@ -17,10 +9,17 @@ from registration.tests.utils.bakers import (
     user_operator_baker,
 )
 from service.data_access_service.facility_service import FacilityDataAccessService
+from registration.models.well_authorization_number import WellAuthorizationNumber
 from registration.constants import UNAUTHORIZED_MESSAGE
+from registration.models.facility_ownership_timeline import FacilityOwnershipTimeline
+from registration.models.facility import Facility
+from registration.models.operation import Operation
+from registration.models.user import User
+from registration.models.user_operator import UserOperator
 from registration.tests.utils.bakers import operator_baker
 from service.facility_service import FacilityService
 from model_bakery import baker
+from registration.models import Address
 
 pytestmark = pytest.mark.django_db
 
@@ -37,21 +36,12 @@ class TestFacilityService:
         industry_user = user_baker({'app_role': AppRole.objects.get(role_name='industry_user')})
         users_operation = operation_baker()
         random_operation = operation_baker()
-        baked_users_facilities = facility_baker(_quantity=10)  # facilities for users operation
-        random_facilities = facility_baker(_quantity=10)  # facilities for random operation
-        facility_timelines = []
-        for u_f in baked_users_facilities:
-            facility_timelines.extend(
-                facility_ownership_timeline_baker(
-                    operation_id=users_operation.id, facility_id=u_f.id, _quantity=2
-                )  # ownership history for each facility in users operation
-            )
-        for r_f in random_facilities:
-            facility_timelines.extend(
-                facility_ownership_timeline_baker(
-                    operation_id=random_operation.id, facility_id=r_f.id, _quantity=2
-                )  # ownership history for each facility in random operation
-            )
+        users_facility_ownerships = facility_ownership_timeline_baker(
+            operation_id=users_operation.id, _quantity=10
+        )  # facilities for users operation
+        facility_ownership_timeline_baker(
+            operation_id=random_operation.id, _quantity=10
+        )  # facilities for random operation
         # Approved user operator for industry user
         user_operator_baker(
             {"user": industry_user, "operator": users_operation.operator, "status": UserOperator.Statuses.APPROVED}
@@ -60,7 +50,9 @@ class TestFacilityService:
         assert users_facilities.count() == 10
         # make sure user's facilities are only from their operation
         users_facilities_ids = users_facilities.values_list('id', flat=True)
-        assert all([facility.id in users_facilities_ids for facility in users_facilities])
+        assert all(
+            [facility_ownership.facility_id in users_facilities_ids for facility_ownership in users_facility_ownerships]
+        )
 
 
 class TestGetIfAuthorized:

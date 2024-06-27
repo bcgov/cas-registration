@@ -16,9 +16,6 @@ class FacilityOwnershipTimeline(TimeStampedModel):
         history_user_id_field=models.UUIDField(null=True, blank=True),
     )
 
-    def __str__(self) -> str:
-        return f'{self.facility}, {self.operation}, {self.start_date}, {self.end_date}'
-
     class Meta:
         db_table_comment = "A table to connect facilities and operations"
         db_table = 'erc"."facility_ownership_timeline'
