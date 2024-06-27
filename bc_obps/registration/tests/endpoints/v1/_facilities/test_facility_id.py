@@ -23,7 +23,6 @@ class TestFacilityIdEndpoint(CommonTestSetup):
     def test_facilities_endpoint_unauthorized_roles_cannot_get(self):
         facility = facility_baker()
         # cas_pending can't get
-        breakpoint()
         response = TestUtils.mock_get_with_auth_role(
             self, "cas_pending", custom_reverse_lazy("get_facility", kwargs={"facility_id": facility.id})
         )
