@@ -1,3 +1,4 @@
+from registration.tests.utils.bakers import operation_baker
 from reporting.models import configuration_element
 from reporting.models.base_schema import BaseSchema
 from reporting.models.gas_type import GasType
@@ -12,6 +13,8 @@ from reporting.models.methodology import Methodology
 
 
 def report_baker(**props) -> Report:
+    if "operation" not in props and "operation_id" not in props:
+        props["operation"] = operation_baker()
     return baker.make(Report, **props)
 
 
