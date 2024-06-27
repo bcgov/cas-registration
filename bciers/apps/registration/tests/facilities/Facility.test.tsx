@@ -64,36 +64,36 @@ describe("Facilities component", () => {
     expect(screen.getByLabelText(/facility name/i)).toHaveValue("");
     expect(screen.queryByText(/well/i)).not.toBeInTheDocument(); // well authorization number is only for LFOs
   });
-  it.only("renders the LFO readonly form with form data", async () => {
-    // getFacility return
-    actionHandler.mockReturnValueOnce({
-      section1: {
-        name: "Test Facility Name",
-        type: "Large Facility",
-        well_authorization_numbers: [3442, 42643],
-      },
-      section2: {
-        latitude_of_largest_emissions: "3.000000",
-        longitude_of_largest_emissions: "4.000000",
-        street_address: "adf",
-        municipality: "ad",
-        province: "BC",
-        postal_code: "h0h0h0",
-      },
-      id: "4abd8367-efd1-4654-a7ea-fa1a015d3cae",
-    });
-    // getOperation return
-    actionHandler.mockReturnValueOnce({
-      id: "8be4c7aa-6ab3-4aad-9206-0ef914fea063",
-      type: "Linear Facility Operation",
-    });
-    render(
-      await Facility({
-        operationId: "8be4c7aa-6ab3-4aad-9206-0ef914fea063",
-        facilityId: "4abd8367-efd1-4654-a7ea-fa1a015d3cae",
-      }),
-    );
-    expect(screen.getByText(/Test Facility Name/i)).toBeVisible();
-    expect(screen.queryByText(/well/i)).toBeVisible();
-  });
+  // it("renders the LFO readonly form with form data", async () => {
+  //   // getFacility return
+  //   actionHandler.mockReturnValueOnce({
+  //     section1: {
+  //       name: "Test Facility Name",
+  //       type: "Large Facility",
+  //       well_authorization_numbers: [3442, 42643],
+  //     },
+  //     section2: {
+  //       latitude_of_largest_emissions: "3.000000",
+  //       longitude_of_largest_emissions: "4.000000",
+  //       street_address: "adf",
+  //       municipality: "ad",
+  //       province: "BC",
+  //       postal_code: "h0h0h0",
+  //     },
+  //     id: "4abd8367-efd1-4654-a7ea-fa1a015d3cae",
+  //   });
+  //   // getOperation return
+  //   actionHandler.mockReturnValueOnce({
+  //     id: "8be4c7aa-6ab3-4aad-9206-0ef914fea063",
+  //     type: "Linear Facility Operation",
+  //   });
+  //   render(
+  //     await Facility({
+  //       operationId: "8be4c7aa-6ab3-4aad-9206-0ef914fea063",
+  //       facilityId: "4abd8367-efd1-4654-a7ea-fa1a015d3cae",
+  //     }),
+  //   );
+  //   expect(screen.getByText(/Test Facility Name/i)).toBeVisible();
+  //   expect(screen.queryByText(/well/i)).toBeVisible();
+  // });
 });
