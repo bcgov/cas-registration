@@ -12,7 +12,7 @@ export interface FacilityFormData {
 interface Props {
   schema: any;
   uiSchema: any;
-  formData?: FacilityFormData;
+  formData: FacilityFormData;
   disabled?: boolean;
 }
 
@@ -22,12 +22,13 @@ export default function FacilitiesForm({
   uiSchema,
   disabled,
 }: Readonly<Props>) {
+  console.log("formdata", formData);
   // @ ts-ignore
   const [error, setError] = useState(undefined);
   const [confirmation, setConfirmation] = useState(false);
   const router = useRouter();
   const params = useParams();
-  let isCreating = formData && Object.keys(formData).length > 0 ? false : true;
+  let isCreating = Object.keys(formData).length > 0 ? false : true;
   return (
     <>
       {confirmation && <div>success</div>}
