@@ -23,5 +23,5 @@ __all__ = [
     "Configuration",
     "ConfigurationElement",
     "ActivityJsonSchema",
-    "ActivitySourceTypeJsonSchema"
+    "ActivitySourceTypeJsonSchema",
 ]

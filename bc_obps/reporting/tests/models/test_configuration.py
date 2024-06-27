@@ -1,4 +1,3 @@
-from common.tests.utils.helpers import BaseTestCase
 from reporting.models import Configuration
 from django.core.exceptions import ValidationError
 from django.test import TestCase

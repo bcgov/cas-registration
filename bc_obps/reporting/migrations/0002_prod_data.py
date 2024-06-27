@@ -2,6 +2,7 @@
 
 from django.db import migrations
 
+
 def init_configuration_data(apps, schema_monitor):
     '''
     Add initial data to erc.configuration
@@ -17,6 +18,7 @@ def reverse_init_configuration_data(apps, schema_monitor):
     '''
     Configuration = apps.get_model('reporting', 'Configuration')
     Configuration.objects.filter(slug__in=['2024']).delete()
+
 
 def init_source_type_data(apps, schema_monitor):
     '''
