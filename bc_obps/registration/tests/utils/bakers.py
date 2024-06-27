@@ -1,4 +1,5 @@
 from model_bakery import baker
+from model_bakery.recipe import seq
 from registration.models import (
     Address,
     BusinessStructure,
@@ -17,6 +18,9 @@ from registration.models import (
 import uuid
 import random
 import string
+
+from registration.models.bc_obps_regulated_operation import BcObpsRegulatedOperation
+from registration.models.facility import Facility
 
 
 def generate_random_bc_corporate_registry_number():
@@ -54,6 +58,10 @@ def document_baker() -> Document:
 
 def contact_baker() -> Contact:
     return baker.make(Contact)
+
+
+def bc_obps_regulated_operation_baker() -> BcObpsRegulatedOperation:
+    return baker.make(BcObpsRegulatedOperation, id=seq("99-", start=1001))
 
 
 def operator_baker(custom_properties=None) -> Operator:
