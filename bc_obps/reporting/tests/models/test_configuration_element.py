@@ -10,7 +10,7 @@ import pytest
 class ConfigurationElementTest(BaseTestCase):
     @classmethod
     def setUpTestData(cls):
-        config = configuration_baker({'slug': '2024', 'valid_from': '2024-01-01', 'valid_to': '2024-12-31'})
+        config = configuration_baker({'slug': '5025', 'valid_from': '5025-01-01', 'valid_to': '5025-12-31'})
         cls.test_object = ConfigurationElement.objects.create(
             reporting_activity=ReportingActivity.objects.get(pk=1),
             source_type=SourceType.objects.get(pk=1),
@@ -45,7 +45,7 @@ class ConfigurationElementTest(BaseTestCase):
         assert exc.match(r"^This record will result in duplicate configurations")
 
     def testValidInsert(self):
-        config = configuration_baker({'slug': '2026', 'valid_from': '2026-01-01', 'valid_to': '2026-12-31'})
+        config = configuration_baker({'slug': '5026', 'valid_from': '5026-01-01', 'valid_to': '5026-12-31'})
         valid_record = ConfigurationElement(
             reporting_activity=self.test_object.reporting_activity,
             source_type=self.test_object.source_type,

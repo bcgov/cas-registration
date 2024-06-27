@@ -10,9 +10,6 @@ from .configuration import Configuration
 from .configuration_element import ConfigurationElement
 from .activity_json_schema import ActivityJsonSchema
 from .activity_source_type_json_schema import ActivitySourceTypeJsonSchema
-from .activity_source_type_unit_json_schema import ActivitySourceTypeUnitJsonSchema
-from .activity_source_type_fuel_json_schema import ActivitySourceTypeFuelJsonSchema
-from .activity_source_type_emission_json_schema import ActivitySourceTypeEmissionJsonSchema
 
 
 __all__ = [
@@ -26,8 +23,5 @@ __all__ = [
     "Configuration",
     "ConfigurationElement",
     "ActivityJsonSchema",
-    "ActivitySourceTypeJsonSchema",
-    "ActivitySourceTypeUnitJsonSchema",
-    "ActivitySourceTypeFuelJsonSchema",
-    "ActivitySourceTypeEmissionJsonSchema",
+    "ActivitySourceTypeJsonSchema"
 ]

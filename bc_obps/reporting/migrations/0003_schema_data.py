@@ -6,11 +6,7 @@ import json
 from registration.models import ReportingActivity
 from reporting.models import (
     SourceType,
-    Configuration,
-    ConfigurationElement,
-    GasType,
-    Methodology,
-    ReportingField,
+    Configuration
 )
 
 # ACTIVITY
@@ -32,7 +28,7 @@ def init_activity_schema_data(apps, schema_monitor):
         reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id,
         json_schema=schema,
         valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
-        valid_to_id=Configuration.objects.get(valid_to='9999-12-31').id,
+        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     )
 
 
@@ -70,14 +66,14 @@ def init_activity_source_type_schema_data(apps, schema_monitor):
         source_type_id=SourceType.objects.get(name='General stationary combustion of fuel or waste with production of useful energy').id,
         json_schema=schema1,
         valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
-        valid_to_id=Configuration.objects.get(valid_to='9999-12-31').id,
+        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
       ),
       ActivitySourceTypeSchema(
         reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id,
         source_type_id=SourceType.objects.get(name='General stationary combustion of waste without production of useful energy').id,
         json_schema=schema2,
         valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
-        valid_to_id=Configuration.objects.get(valid_to='9999-12-31').id,
+        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
       ),
     ])
 
@@ -91,131 +87,6 @@ def reverse_init_activity_source_type_schema_data(apps, schema_monitor):
         reporting_activity_id=ActivitySourceTypeJsonSchema.objects.get(name='General stationary combustion').id
     ).delete()
 
-# SOURCE TYPE - Unit
-def init_activity_source_type_unit_schema_data(apps, schema_monitor):
-    '''
-    Add initial schema data to erc.activity_source_type_unit_json_schema
-    '''
-    ## Import JSON data
-    import os
-
-    cwd = os.getcwd()
-    with open(
-        f'{cwd}/reporting/json_schemas/2024/general_stationary_combustion/unit.json'
-    ) as gsc_st1:
-        schema1 = json.load(gsc_st1)
-
-    ActivitySourceTypeFuelSchema = apps.get_model('reporting', 'ActivitySourceTypeFuelJsonSchema')
-    ActivitySourceTypeFuelSchema.objects.bulk_create([
-      ActivitySourceTypeFuelSchema(
-        reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id,
-        source_type_id=SourceType.objects.get(name='General stationary combustion of fuel or waste with production of useful energy').id,
-        json_schema=schema1,
-        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
-        valid_to_id=Configuration.objects.get(valid_to='9999-12-31').id,
-      ),
-      ActivitySourceTypeFuelSchema(
-        reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id,
-        source_type_id=SourceType.objects.get(name='General stationary combustion of waste without production of useful energy').id,
-        json_schema=schema1,
-        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
-        valid_to_id=Configuration.objects.get(valid_to='9999-12-31').id,
-      ),
-    ])
-
-
-def reverse_init_activity_source_type_unit_schema_data(apps, schema_monitor):
-    '''
-    Remove initial data from erc.activity_source_type_fuel_json_schema
-    '''
-    ActivitySourceTypeFuelJsonSchema = apps.get_model('reporting', 'ActivitySourceTypeJsonSchema')
-    ActivitySourceTypeFuelJsonSchema.objects.filter(
-        reporting_activity_id=ActivitySourceTypeFuelJsonSchema.objects.get(name='General stationary combustion').id
-    ).delete()
-
-# SOURCE TYPE - Fuel
-def init_activity_source_type_fuel_schema_data(apps, schema_monitor):
-    '''
-    Add initial schema data to erc.activity_source_type_fuel_json_schema
-    '''
-    ## Import JSON data
-    import os
-
-    cwd = os.getcwd()
-    with open(
-        f'{cwd}/reporting/json_schemas/2024/general_stationary_combustion/fuel.json'
-    ) as gsc_st1:
-        schema1 = json.load(gsc_st1)
-
-    ActivitySourceTypeFuelSchema = apps.get_model('reporting', 'ActivitySourceTypeFuelJsonSchema')
-    ActivitySourceTypeFuelSchema.objects.bulk_create([
-      ActivitySourceTypeFuelSchema(
-        reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id,
-        source_type_id=SourceType.objects.get(name='General stationary combustion of fuel or waste with production of useful energy').id,
-        json_schema=schema1,
-        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
-        valid_to_id=Configuration.objects.get(valid_to='9999-12-31').id,
-      ),
-      ActivitySourceTypeFuelSchema(
-        reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id,
-        source_type_id=SourceType.objects.get(name='General stationary combustion of waste without production of useful energy').id,
-        json_schema=schema1,
-        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
-        valid_to_id=Configuration.objects.get(valid_to='9999-12-31').id,
-      ),
-    ])
-
-def reverse_init_activity_source_type_fuel_schema_data(apps, schema_monitor):
-    '''
-    Remove initial data from erc.activity_source_type_fuel_json_schema
-    '''
-    ActivitySourceTypeFuelJsonSchema = apps.get_model('reporting', 'ActivitySourceTypeJsonSchema')
-    ActivitySourceTypeFuelJsonSchema.objects.filter(
-        reporting_activity_id=ActivitySourceTypeFuelJsonSchema.objects.get(name='General stationary combustion').id
-    ).delete()
-
-# SOURCE TYPE - Emission
-def init_activity_source_type_emission_schema_data(apps, schema_monitor):
-    '''
-    Add initial schema data to erc.activity_source_type_emission_json_schema
-    '''
-    ## Import JSON data
-    import os
-
-    cwd = os.getcwd()
-    with open(
-        f'{cwd}/reporting/json_schemas/2024/general_stationary_combustion/emission.json'
-    ) as gsc_st1:
-        schema1 = json.load(gsc_st1)
-
-    ActivitySourceTypeEmissionSchema = apps.get_model('reporting', 'ActivitySourceTypeEmissionJsonSchema')
-    ActivitySourceTypeEmissionSchema.objects.bulk_create([
-      ActivitySourceTypeEmissionSchema(
-        reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id,
-        source_type_id=SourceType.objects.get(name='General stationary combustion of fuel or waste with production of useful energy').id,
-        json_schema=schema1,
-        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
-        valid_to_id=Configuration.objects.get(valid_to='9999-12-31').id,
-      ),
-      ActivitySourceTypeEmissionSchema(
-        reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id,
-        source_type_id=SourceType.objects.get(name='General stationary combustion of waste without production of useful energy').id,
-        json_schema=schema1,
-        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
-        valid_to_id=Configuration.objects.get(valid_to='9999-12-31').id,
-      )
-    ])
-
-
-def reverse_init_activity_source_type_emission_schema_data(apps, schema_monitor):
-    '''
-    Remove initial data from erc.activity_source_type_emission_json_schema
-    '''
-    ActivitySourceTypeEmissionJsonSchema = apps.get_model('reporting', 'ActivitySourceTypeEmissionJsonSchema')
-    ActivitySourceTypeEmissionJsonSchema.objects.filter(
-        reporting_activity_id=ActivitySourceTypeEmissionJsonSchema.objects.get(name='General stationary combustion').id
-    ).delete()
-
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -224,8 +95,5 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.RunPython(init_activity_schema_data, reverse_init_activity_schema_data),
-        migrations.RunPython(init_activity_source_type_schema_data, reverse_init_activity_source_type_schema_data),
-        migrations.RunPython(init_activity_source_type_fuel_schema_data, reverse_init_activity_source_type_fuel_schema_data),
-        migrations.RunPython(init_activity_source_type_unit_schema_data, reverse_init_activity_source_type_unit_schema_data),
-        migrations.RunPython(init_activity_source_type_emission_schema_data, reverse_init_activity_source_type_emission_schema_data),
+        migrations.RunPython(init_activity_source_type_schema_data, reverse_init_activity_source_type_schema_data)
     ]
