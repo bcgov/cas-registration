@@ -3,39 +3,12 @@ import { NextFetchEvent, NextRequest, NextResponse } from "next/server";
 import { instance, mock, reset, when } from "ts-mockito";
 import middleware from "../middleware";
 import { getToken } from "@bciers/testConfig/mocks";
-
-const mockBaseToken = {
-  name: "Test User",
-  email: "ggircs@test.ca",
-  sub: "uuid",
-  given_name: "Test",
-  family_name: "User",
-  bceid_business_name: "Cas, Bcgov",
-  bceid_business_guid: "guid",
-  user_guid: "guid",
-  full_name: "Test User",
-  iat: 1719517475,
-  exp: 1719519275,
-  jti: "uuid",
-};
-
-const mockIndustryUserToken = {
-  ...mockBaseToken,
-  app_role: "industry_user",
-  identity_provider: "bceidbusiness",
-};
-
-const mockCasPendingToken = {
-  ...mockBaseToken,
-  app_role: "cas_pending",
-  identity_provider: "idir",
-};
-
-const mockCasUserToken = {
-  ...mockBaseToken,
-  app_role: "cas_user",
-  identity_provider: "idir",
-};
+import {
+  mockBaseToken,
+  mockCasPendingToken,
+  mockCasUserToken,
+  mockIndustryUserToken,
+} from "@bciers/testConfig/data/tokens";
 
 const domain = "https://localhost:3000";
 const mockedRequest: NextRequest = mock(NextRequest);
