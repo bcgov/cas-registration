@@ -2,6 +2,7 @@ import { ThemeProps, getDefaultRegistry } from "@rjsf/core";
 import * as widgets from "@bciers/components/form/widgets";
 import InlineFieldTemplate from "@bciers/components/form/fields/InlineFieldTemplate";
 import TitleFieldTemplate from "@bciers/components/form/fields/TitleFieldTemplate";
+import { ArrayFieldTemplate } from "../fields";
 
 const {
   fields,
@@ -22,6 +23,7 @@ const formTheme: ThemeProps = {
     ...defaultTemplates,
     FieldTemplate: InlineFieldTemplate,
     TitleFieldTemplate,
+    ArrayFieldTemplate,
   },
 };
 

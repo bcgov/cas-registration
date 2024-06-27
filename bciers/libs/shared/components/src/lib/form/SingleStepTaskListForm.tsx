@@ -1,7 +1,7 @@
 "use client";
 
 import { createRef, useEffect, useState } from "react";
-import { Button } from "@mui/material";
+import { Alert, Button } from "@mui/material";
 import { IChangeEvent } from "@rjsf/core";
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import FormBase from "@bciers/components/form/FormBase";
@@ -14,6 +14,7 @@ interface SingleStepTaskListFormProps {
   onSubmit: (e: IChangeEvent) => Promise<any>;
   schema: RJSFSchema;
   uiSchema: UiSchema;
+  error?: any;
 }
 
 const SingleStepTaskListForm = ({
@@ -23,6 +24,7 @@ const SingleStepTaskListForm = ({
   onSubmit,
   schema,
   uiSchema,
+  error,
 }: SingleStepTaskListFormProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLiveValidate, setIsLiveValidate] = useState(false);
@@ -46,7 +48,8 @@ const SingleStepTaskListForm = ({
 
   useEffect(() => {
     // Do not validate on component mount if there is no formData
-    if (Object.keys(formData).length === 0 || !formRef?.current) return;
+    if (!formData || Object.keys(formData).length === 0 || !formRef?.current)
+      return;
 
     // If there is formData, validate the form sections and
     // set the formSectionStatus on component mount
@@ -131,6 +134,7 @@ const SingleStepTaskListForm = ({
           onSubmit={submitHandler}
           liveValidate={isLiveValidate}
         >
+          {error && <Alert severity="error">{error}</Alert>}
           <div className="w-full flex justify-end mt-8">
             <Button variant="contained" type="submit" disabled={isFormDisabled}>
               Submit
