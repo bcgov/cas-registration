@@ -39,7 +39,7 @@ backend:
 
 registration1Frontend:
   image:
-    repository: ghcr.io/bcgov/cas-reg-frontend
+    repository: ghcr.io/bcgov/cas-reg1-frontend
     pullPolicy: Always
     # Overrides the image tag whose default is the chart appVersion.
     tag: "latest"
