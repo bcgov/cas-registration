@@ -33,7 +33,7 @@ export default async function Facility({
     // brianna did we have some global error handling for this is part 1?
     return notFound();
   }
-
+  const isCreating = Object.keys(facilityFormData).length > 0 ? false : true;
   return (
     <>
       <FacilitiesForm
@@ -44,7 +44,7 @@ export default async function Facility({
         }
         uiSchema={facilitiesUiSchema}
         formData={facilityFormData}
-        {...(facilityFormData ? { disabled: true } : {})}
+        isCreating={isCreating}
       />
     </>
   );
