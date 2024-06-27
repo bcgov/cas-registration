@@ -1,5 +1,4 @@
 import pytest
-from registration.models import UserOperator, Facility
 from registration.models.app_role import AppRole
 from registration.tests.utils.bakers import (
     facility_baker,
