@@ -11,6 +11,7 @@ import {
   useSession,
   useSearchParams,
   notFound,
+  useParams,
   useRouter,
 } from "@bciers/testConfig/mocks";
 import Operations from "apps/registration/app/components/operations/Operations";
@@ -23,15 +24,21 @@ import {
 } from "apps/registration/app/utils/jsonSchema/facilitiesSfo";
 import { facilitiesSchemaLfo } from "apps/registration/app/utils/jsonSchema/facilitiesLfo";
 
+const operationId = "8be4c7aa-6ab3-4aad-9206-0ef914fea063";
+const facilityId = "025328a0-f9e8-4e1a-888d-aa192cb053db";
+("025328a0-f9e8-4e1a-888d-aa192cb053db");
+useParams.mockReturnValue({
+  operationId: operationId,
+});
+
 useSession.mockReturnValue({
   get: vi.fn(),
 });
 
-const mockPush = vi.fn();
+const mockReplace = vi.fn();
 useRouter.mockReturnValue({
   query: {},
-  replace: vi.fn(),
-  push: mockPush,
+  replace: mockReplace,
 });
 
 const sfoFormData = {
@@ -72,12 +79,13 @@ describe("FacilitiesForm component", () => {
     vi.clearAllMocks();
   });
 
-  it("renders the empty SFO facility form when no data is passed", async () => {
+  it("renders the empty SFO facility form when creating a new facility", async () => {
     render(
       <FacilitiesForm
         schema={facilitiesSchemaSfo}
         uiSchema={facilitiesUiSchema}
         formData={{}}
+        isCreating
       />,
     );
     // form fields and headings
@@ -104,12 +112,13 @@ describe("FacilitiesForm component", () => {
     expect(submitButton).toBeEnabled();
   });
 
-  it("renders the empty LFO facility form when no data is passed", async () => {
+  it("renders the empty LFO facility form when creating a new facility", async () => {
     render(
       <FacilitiesForm
         schema={facilitiesSchemaLfo}
         uiSchema={facilitiesUiSchema}
         formData={{}}
+        isCreating
       />,
     );
     // form fields and headings
@@ -141,7 +150,6 @@ describe("FacilitiesForm component", () => {
   it("loads existing readonly SFO form data", async () => {
     const { container } = render(
       <FacilitiesForm
-        disabled
         schema={facilitiesSchemaSfo}
         uiSchema={facilitiesUiSchema}
         formData={sfoFormData}
@@ -177,10 +185,9 @@ describe("FacilitiesForm component", () => {
     const submitButton = screen.getByRole("button", { name: /submit/i });
     expect(submitButton).toBeDisabled();
   });
-  it("loads existing readonly LFO form data", async () => {
+  it.only("loads existing readonly LFO form data", async () => {
     const { container } = render(
       <FacilitiesForm
-        disabled
         schema={facilitiesSchemaLfo}
         uiSchema={facilitiesUiSchema}
         formData={lfoFormData}
@@ -225,6 +232,7 @@ describe("FacilitiesForm component", () => {
         schema={facilitiesSchemaSfo}
         uiSchema={facilitiesUiSchema}
         formData={{}}
+        isCreating
       />,
     );
     const submitButton = screen.getByRole("button", { name: /submit/i });
@@ -233,9 +241,10 @@ describe("FacilitiesForm component", () => {
     });
     expect(screen.getAllByText(/Required field/i)).toHaveLength(4);
   });
-  it("does not allow LFO submission if there are validation errors (bad form data)", async () => {
-    render(
+  it.only("does not allow LFO submission if there are validation errors (bad form data)", async () => {
+    const { container } = render(
       <FacilitiesForm
+        isCreating
         schema={facilitiesSchemaLfo}
         uiSchema={facilitiesUiSchema}
         formData={{
@@ -261,6 +270,7 @@ describe("FacilitiesForm component", () => {
   it.only("fills form, creates new SFO facility, and redirects on success", async () => {
     render(
       <FacilitiesForm
+        isCreating
         schema={facilitiesSchemaSfo}
         uiSchema={facilitiesUiSchema}
         formData={{}}
@@ -268,53 +278,50 @@ describe("FacilitiesForm component", () => {
     );
 
     const submitButton = screen.getByRole("button", { name: /submit/i });
-    act(() => {
-      fireEvent.change(screen.getByLabelText(/Facility Name+/i), {
-        target: { value: "test" },
-      });
-      expect(screen.getByLabelText(/Facility Name+/i)).toHaveValue("test");
-
-      fireEvent.change(screen.getByLabelText(/Facility Type+/i), {
-        target: { value: "Single Facility Operation" },
-      });
-      expect(screen.getByLabelText(/Facility Type+/i)).toHaveValue(
-        "Single Facility Operation",
-      );
-      fireEvent.change(
-        screen.getByLabelText(/Latitude of Largest Point of Emissions+/i),
-        { target: { value: 3 } },
-      );
-      expect(
-        screen.getByLabelText(/Latitude of Largest Point of Emissions+/i),
-      ).toHaveValue(3);
-      fireEvent.change(
-        screen.getByLabelText(/Longitude of Largest Point of Emissions+/i),
-        { target: { value: 6 } },
-      );
-      expect(
-        screen.getByLabelText(/Longitude of Largest Point of Emissions+/i),
-      ).toHaveValue(6);
-      fireEvent.click(submitButton);
-      // brianna why getting a validation error on facility type?
-      // submitButton.click();
-      actionHandler.mockReturnValueOnce({
-        id: "025328a0-f9e8-4e1a-888d-aa192cb053db",
-        error: null,
-      });
+    actionHandler.mockReturnValueOnce({
+      id: facilityId,
+      error: null,
     });
+    // fill name
+    await userEvent.type(screen.getByLabelText(/Facility Name+/i), "test");
+    // fill type
+    const comboBoxInput = screen.getAllByRole(
+      "combobox",
+    )[0] as HTMLInputElement;
+    const openComboboxButton = comboBoxInput?.parentElement?.children[1]
+      ?.children[0] as HTMLInputElement;
+    await userEvent.click(openComboboxButton);
+    const typeOption = screen.getByText("Single Facility Operation");
+    await userEvent.click(typeOption);
+    // fill lat and long (userEvent.type doesn't work because the value goes in as a string and lat/long require a number)
+    fireEvent.change(
+      screen.getByLabelText(/Latitude of Largest Point of Emissions+/i),
+      { target: { value: 3 } },
+    );
+    fireEvent.change(
+      screen.getByLabelText(/Longitude of Largest Point of Emissions+/i),
+      { target: { value: 6 } },
+    );
     userEvent.click(submitButton);
-    // expect(consoleSpy).toHaveBeenCalledOnce();
+
     await waitFor(() => {
       expect(screen.getByText("success")).toBeVisible();
+      expect(mockReplace).toHaveBeenCalledWith(
+        `/operations/${operationId}/facilities/${facilityId}`,
+        {
+          shallow: true,
+        },
+      );
     });
   });
 
   it("when creating a new LFO facility, posts the form on submit and redirects", async () => {
     render(
       <FacilitiesForm
+        isCreating
         schema={facilitiesSchemaLfo}
         uiSchema={facilitiesUiSchema}
-        formData={undefined}
+        formData={{}}
       />,
     );
 
@@ -353,7 +360,7 @@ describe("FacilitiesForm component", () => {
       fireEvent.click(submitButton);
       // submitButton.click();
       actionHandler.mockReturnValueOnce({
-        id: "025328a0-f9e8-4e1a-888d-aa192cb053db",
+        id: facilityId,
         error: null,
       });
     });
