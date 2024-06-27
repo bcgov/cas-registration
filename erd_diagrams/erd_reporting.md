@@ -85,6 +85,7 @@ ActivitySourceTypeJsonSchema {
     ForeignKey valid_from
     ForeignKey valid_to
 }
+<<<<<<< HEAD
 ActivitySourceTypeUnitJsonSchema {
     BigAutoField id
     ForeignKey reporting_activity
@@ -110,6 +111,9 @@ ActivitySourceTypeGasTypeJsonSchema {
     ForeignKey valid_from
     ForeignKey valid_to
 }
+=======
+ReportOperation ||--|| Report : report
+>>>>>>> chore: make prettier happy
 ReportOperation }|--|{ ReportingActivity : activities
 Report }|--|| Operation : operation
 Report }|--|| ReportingYear : reporting_year
@@ -131,16 +135,3 @@ ActivitySourceTypeJsonSchema }|--|| ReportingActivity : reporting_activity
 ActivitySourceTypeJsonSchema }|--|| SourceType : source_type
 ActivitySourceTypeJsonSchema }|--|| Configuration : valid_from
 ActivitySourceTypeJsonSchema }|--|| Configuration : valid_to
-ActivitySourceTypeUnitJsonSchema }|--|| ReportingActivity : reporting_activity
-ActivitySourceTypeUnitJsonSchema }|--|| SourceType : source_type
-ActivitySourceTypeUnitJsonSchema }|--|| Configuration : valid_from
-ActivitySourceTypeUnitJsonSchema }|--|| Configuration : valid_to
-ActivitySourceTypeFuelJsonSchema }|--|| ReportingActivity : reporting_activity
-ActivitySourceTypeFuelJsonSchema }|--|| SourceType : source_type
-ActivitySourceTypeFuelJsonSchema }|--|| Configuration : valid_from
-ActivitySourceTypeFuelJsonSchema }|--|| Configuration : valid_to
-ActivitySourceTypeGasTypeJsonSchema }|--|| ReportingActivity : reporting_activity
-ActivitySourceTypeGasTypeJsonSchema }|--|| SourceType : source_type
-ActivitySourceTypeGasTypeJsonSchema }|--|| GasType : gas_type
-ActivitySourceTypeGasTypeJsonSchema }|--|| Configuration : valid_from
-ActivitySourceTypeGasTypeJsonSchema }|--|| Configuration : valid_to
