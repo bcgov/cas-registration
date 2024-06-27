@@ -16,7 +16,7 @@ class ReportOperation(BaseModel):
         max_length=1000, db_comment="The legal name of the operator operating this operation"
     )
     operator_trade_name = models.CharField(
-        max_length=1000, db_comment="The trade name of the operator operating this operation"
+        max_length=1000, db_comment="The trade name of the operator operating this operation", blank=True, null=True
     )
     operation_name = models.CharField(max_length=1000, db_comment="The name of the operation, for which this report is")
     operation_type = models.CharField(

@@ -51,6 +51,7 @@ class ReportService:
                 facility_name=f.name,
                 facility_type=f.type,
                 facility_bcghgid=f.bcghg_id,
+                report=report,
             )
             report_facility.activities.add(*list(operation.reporting_activities.all()))
             report_facility.products.add(*list(operation.regulated_products.all()))

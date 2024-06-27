@@ -1,15 +1,15 @@
 from django.test import TestCase
 from model_bakery import baker
+from registration.tests.utils.bakers import operation_baker
 from reporting.models.report import Report
 from reporting.models.reporting_year import ReportingYear
-from service.tests.utils.bakers import operation_baker
 
 
 class TestDataAccessReportService(TestCase):
     def test_report_exists(self):
         from service.data_access_service.report_service import ReportDataAccessService
 
-        operation = operation_baker.make()
+        operation = operation_baker()
         reporting_year = baker.make(ReportingYear, reporting_year=1998)
 
         self.assertIsNone(
