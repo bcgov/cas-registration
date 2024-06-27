@@ -27,6 +27,7 @@ const useRouter = vi.fn();
 const useParams = vi.fn();
 const usePathname = vi.fn();
 const useSearchParams = vi.fn();
+const notFound = vi.fn();
 const useSession = vi.fn();
 const auth = vi.fn();
 const fetchOperationsPageData = vi.fn();
@@ -41,4 +42,5 @@ export {
   useSearchParams,
   useSession,
   fetchOperationsPageData,
+  notFound,
 };

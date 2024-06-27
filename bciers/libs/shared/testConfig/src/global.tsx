@@ -10,6 +10,7 @@ import {
   useRouter,
   useSearchParams,
   useSession,
+  notFound,
 } from "./mocks";
 import createFetchMock from "vitest-fetch-mock";
 
@@ -27,6 +28,7 @@ vi.mock("next/navigation", () => ({
   useParams,
   usePathname,
   useSearchParams,
+  notFound,
 }));
 
 vi.mock("next-auth/react", async () => ({
