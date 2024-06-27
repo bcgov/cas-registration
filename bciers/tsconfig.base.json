@@ -19,8 +19,9 @@
       "@/*": ["apps/registration1/*"],
       "@/coam/*": ["apps/coam/*"],
       "@/dashboard/*": ["apps/dashboard/*"],
-      "@/registration/*": ["apps/registration/*"],
       "@bciers/actions": ["libs/shared/actions/src/index.ts"],
+      "@/registration/*": ["apps/registration/*"],
+      "@bciers/actions/server": ["libs/shared/actions/src/server.ts"],
       "@reporting/*": ["apps/reporting/*"],
       "@bciers/components": ["libs/shared/components/src/index.ts"],
       "@bciers/components/*": ["libs/shared/components/src/lib/*"],
@@ -31,7 +32,8 @@
       "@bciers/styles/*": ["libs/shared/styles/src/lib/*"],
       "@bciers/testConfig/*": ["libs/shared/testConfig/src/*"],
       "@bciers/utils/*": ["libs/shared/utils/*"],
-      "@bciers/types/*": ["libs/shared/types/src/*"]
+      "@bciers/types/*": ["libs/shared/types/src/*"],
+      "@bciers/data/*": ["libs/shared/data/*"]
     }
   },
   "include": ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx", "**/*.json"],
