@@ -1,5 +1,5 @@
 import { NextURL } from "next/dist/server/web/next-url";
-import { NextRequest, NextResponse } from "next/server";
+import { NextFetchEvent, NextRequest, NextResponse } from "next/server";
 import { instance, mock, reset, when } from "ts-mockito";
 import middleware from "../middleware";
 import { getToken } from "@bciers/testConfig/mocks";
@@ -44,6 +44,8 @@ const dashboardUrl = new URL("/dashboard", domain);
 vi.spyOn(NextResponse, "redirect");
 vi.spyOn(NextResponse, "rewrite");
 
+const mockNextFetchEvent: NextFetchEvent = mock(NextFetchEvent);
+
 describe("withAuthorizationDashboard middleware", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -59,7 +61,10 @@ describe("withAuthorizationDashboard middleware", () => {
     when(mockedRequest.nextUrl).thenReturn(nextUrl);
     when(mockedRequest.url).thenReturn(domain);
 
-    const result = await middleware(instance(mockedRequest));
+    const result = await middleware(
+      instance(mockedRequest),
+      mockNextFetchEvent,
+    );
 
     expect(NextResponse.redirect).toHaveBeenCalledOnce();
     expect(NextResponse.redirect).toHaveBeenCalledWith(
@@ -77,7 +82,10 @@ describe("withAuthorizationDashboard middleware", () => {
 
     when(mockedRequest.nextUrl).thenReturn(nextUrl);
 
-    const result = await middleware(instance(mockedRequest));
+    const result = await middleware(
+      instance(mockedRequest),
+      mockNextFetchEvent,
+    );
     expect(result?.status).toBe(200);
   });
 
@@ -87,7 +95,10 @@ describe("withAuthorizationDashboard middleware", () => {
 
     when(mockedRequest.nextUrl).thenReturn(nextUrl);
 
-    const result = await middleware(instance(mockedRequest));
+    const result = await middleware(
+      instance(mockedRequest),
+      mockNextFetchEvent,
+    );
     nextUrl.pathname = "/registration";
     expect(NextResponse.rewrite).toHaveBeenCalledOnce();
     expect(NextResponse.rewrite).toHaveBeenCalledWith(nextUrl);
@@ -102,7 +113,10 @@ describe("withAuthorizationDashboard middleware", () => {
     when(mockedRequest.nextUrl).thenReturn(nextUrl);
     when(mockedRequest.url).thenReturn(domain);
 
-    const result = await middleware(instance(mockedRequest));
+    const result = await middleware(
+      instance(mockedRequest),
+      mockNextFetchEvent,
+    );
     expect(NextResponse.redirect).toHaveBeenCalledOnce();
     expect(NextResponse.redirect).toHaveBeenCalledWith(dashboardUrl);
     expect(result?.status).toBe(307);
@@ -115,7 +129,10 @@ describe("withAuthorizationDashboard middleware", () => {
     when(mockedRequest.nextUrl).thenReturn(nextUrl);
     when(mockedRequest.url).thenReturn(domain);
 
-    const result = await middleware(instance(mockedRequest));
+    const result = await middleware(
+      instance(mockedRequest),
+      mockNextFetchEvent,
+    );
     expect(NextResponse.redirect).toHaveBeenCalledOnce();
     expect(NextResponse.redirect).toHaveBeenCalledWith(dashboardUrl);
     expect(result?.status).toBe(307);
@@ -128,7 +145,10 @@ describe("withAuthorizationDashboard middleware", () => {
     when(mockedRequest.nextUrl).thenReturn(nextUrl);
     when(mockedRequest.url).thenReturn(domain);
 
-    const result = await middleware(instance(mockedRequest));
+    const result = await middleware(
+      instance(mockedRequest),
+      mockNextFetchEvent,
+    );
     expect(NextResponse.redirect).toHaveBeenCalledOnce();
     expect(NextResponse.redirect).toHaveBeenCalledWith(dashboardUrl);
     expect(result?.status).toBe(307);
@@ -141,7 +161,10 @@ describe("withAuthorizationDashboard middleware", () => {
     when(mockedRequest.nextUrl).thenReturn(nextUrl);
     when(mockedRequest.url).thenReturn(domain);
 
-    const result = await middleware(instance(mockedRequest));
+    const result = await middleware(
+      instance(mockedRequest),
+      mockNextFetchEvent,
+    );
     expect(NextResponse.redirect).toHaveBeenCalledOnce();
     expect(NextResponse.redirect).toHaveBeenCalledWith(dashboardUrl);
     expect(result?.status).toBe(307);
