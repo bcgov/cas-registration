@@ -1,3 +1,4 @@
+from itertools import cycle
 from model_bakery import baker
 from model_bakery.recipe import seq
 from registration.models import (
@@ -80,6 +81,9 @@ def operator_baker(custom_properties=None) -> Operator:
 
 
 def operation_baker(operator_id: uuid.UUID = None, **properties) -> Operation:
+    if "type" not in properties:
+        properties["type"] = cycle(["sfo", "lfo"])
+
     if operator_id:
         return baker.make(
             Operation,
