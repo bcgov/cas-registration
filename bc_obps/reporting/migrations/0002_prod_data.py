@@ -343,6 +343,31 @@ def reverse_init_methodology_data(apps, schema_monitor):
     ).delete()
 
 
+def init_reporting_years_data(apps, schema_monitor):
+    '''
+    Add initial data to the reporting years table
+    '''
+    ReportingYear = apps.get_model('reporting', 'ReportingYear')
+    ReportingYear.objects.bulk_create(
+        [
+            ReportingYear(
+                reporting_year=2024,
+                reporting_window_start="2025-01-01T00:00:00Z",
+                reporting_window_end="2025-12-31T23:59:59Z",
+                description="2024 reporting year",
+            )
+        ]
+    )
+
+
+def reverse_init_reporting_years_data(apps, schema_monitor):
+    '''
+    Remove initial data to the reporting years table
+    '''
+    ReportingYear = apps.get_model('reporting', 'ReportingYear')
+    ReportingYear.objects.filter(reporting_year__in=[2024]).delete()
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -353,4 +378,5 @@ class Migration(migrations.Migration):
         migrations.RunPython(init_source_type_data, reverse_init_source_type_data),
         migrations.RunPython(init_gas_type_data, reverse_init_gas_type_data),
         migrations.RunPython(init_methodology_data, reverse_init_methodology_data),
+        migrations.RunPython(init_reporting_years_data, reverse_init_reporting_years_data),
     ]

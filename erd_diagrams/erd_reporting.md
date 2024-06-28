@@ -2,19 +2,8 @@
 Django ER Diagram
 ---
 erDiagram
-Report {
-    BigAutoField id
-    CharField title
-    TextField description
-    DateTimeField created_at
-}
-SourceType {
-    BigAutoField id
-    CharField name
-}
 ReportOperation {
     BigAutoField id
-    OneToOneField report
     CharField operator_legal_name
     CharField operator_trade_name
     CharField operation_name
@@ -23,6 +12,22 @@ ReportOperation {
     CharField bc_obps_regulated_operation_id
     CharField operation_representative_name
     ManyToManyField activities
+}
+ReportingYear {
+    IntegerField reporting_year
+    DateTimeField reporting_window_start
+    DateTimeField reporting_window_end
+    CharField description
+}
+Report {
+    BigAutoField id
+    ForeignKey operation
+    ForeignKey reporting_year
+    OneToOneField report_operation
+}
+SourceType {
+    BigAutoField id
+    CharField name
 }
 ReportFacility {
     BigAutoField id
@@ -76,8 +81,10 @@ ActivitySourceTypeBaseSchema {
     ForeignKey valid_from
     ForeignKey valid_to
 }
-ReportOperation ||--|| Report : report
 ReportOperation }|--|{ ReportingActivity : activities
+Report }|--|| Operation : operation
+Report }|--|| ReportingYear : reporting_year
+Report ||--|| ReportOperation : report_operation
 ReportFacility }|--|| Report : report
 ReportFacility }|--|{ ReportingActivity : activities
 ReportFacility }|--|{ RegulatedProduct : products

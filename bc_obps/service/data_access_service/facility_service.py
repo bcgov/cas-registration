@@ -1,3 +1,4 @@
+from registration.models.operation import Operation
 from service.user_operator_service import UserOperatorService
 from registration.models import Facility, User
 from django.db.models import QuerySet
@@ -14,3 +15,7 @@ class FacilityDataAccessService:
             # Industry users can only see operations associated with their own operator
             user_operator = UserOperatorService.get_current_user_approved_user_operator_or_raise(user)
             return queryset.filter(ownerships__operation__operator_id=user_operator.operator_id).distinct()
+
+    @classmethod
+    def get_currently_owned(cls, operation: Operation) -> QuerySet[Facility]:
+        return Facility.objects.filter(ownerships__end_date__isnull=True, ownerships__operation=operation).all()

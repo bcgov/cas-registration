@@ -1,7 +1,9 @@
+from registration.tests.utils.bakers import operation_baker
 from reporting.models import configuration_element
 from reporting.models.base_schema import BaseSchema
 from reporting.models.gas_type import GasType
 from registration.models import ReportingActivity
+from reporting.models.reporting_year import ReportingYear
 from reporting.models.source_type import SourceType
 from model_bakery import baker
 from reporting.models.report import Report
@@ -10,8 +12,10 @@ from reporting.models.configuration import Configuration
 from reporting.models.methodology import Methodology
 
 
-def report_baker() -> Report:
-    return baker.make(Report)
+def report_baker(**props) -> Report:
+    if "operation" not in props and "operation_id" not in props:
+        props["operation"] = operation_baker()
+    return baker.make(Report, **props)
 
 
 def reporting_activity_baker(custom_properties=None) -> ReportingActivity:
@@ -49,3 +53,7 @@ def configuration_baker(custom_properties=None) -> configuration_element:
     if custom_properties:
         properties.update(custom_properties)
     return baker.make(Configuration, **properties)
+
+
+def reporting_year_baker(**props) -> ReportingYear:
+    return baker.make(ReportingYear, **props)
