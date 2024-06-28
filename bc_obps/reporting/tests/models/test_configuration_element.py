@@ -42,7 +42,7 @@ class ConfigurationElementTest(BaseTestCase):
 
         with pytest.raises(Exception) as exc:
             invalid_record.save()
-        assert exc.match(r"^This record will result in duplicate configurations")
+        assert exc.match(r"^This record will result in duplicate configuration elements")
 
     def testValidInsert(self):
         config = configuration_baker({'slug': '5026', 'valid_from': '5026-01-01', 'valid_to': '5026-12-31'})

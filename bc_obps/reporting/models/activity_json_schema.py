@@ -3,7 +3,6 @@ from django.db import models
 from registration.models import ReportingActivity
 from reporting.models import Configuration
 import typing
-from reporting.utils import validate_overlapping_records
 
 
 class ActivityJsonSchema(BaseModel):
@@ -29,5 +28,6 @@ class ActivityJsonSchema(BaseModel):
         Override the save method to validate if there are overlapping records.
         """
         exception_message = f'This record will result in duplicate json schemas being returned for the date range {self.valid_from.valid_from} - {self.valid_to.valid_to} as it overlaps with a current record or records'
+        from reporting.utils import validate_overlapping_records
         validate_overlapping_records(ActivityJsonSchema, self, exception_message)
         super().save(*args, **kwargs)

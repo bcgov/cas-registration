@@ -1,4 +1,10 @@
-def validate_overlapping_records(object_class, save_self, exception_message) -> None:
+from typing import  Union
+
+from reporting.models.activity_json_schema import ActivityJsonSchema
+from reporting.models.activity_source_type_json_schema import ActivitySourceTypeJsonSchema
+from reporting.models.configuration_element import ConfigurationElement
+
+def validate_overlapping_records(object_class: Union[ActivityJsonSchema, ActivitySourceTypeJsonSchema, ConfigurationElement], save_self: Union[ActivityJsonSchema, ActivitySourceTypeJsonSchema, ConfigurationElement], exception_message: str) -> None:
     all_ranges = object_class.objects.select_related('valid_from', 'valid_to').filter(
         reporting_activity=save_self.reporting_activity, source_type=save_self.source_type
     )
