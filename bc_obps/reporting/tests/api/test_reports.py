@@ -10,11 +10,13 @@ from reporting.tests.utils.bakers import report_baker, reporting_year_baker
 
 @pytest.mark.django_db
 class TestReportsEndpoint:
-    endpointUnderTest = "/api/reporting/reports"
+    endpoint_under_test = "/api/reporting/reports"
     client = Client()
 
     def send_post_request(self, request_data: dict[str, Any]) -> HttpResponse:
-        return self.client.post(self.endpointUnderTest, data=json.dumps(request_data), content_type="application/json")
+        return self.client.post(
+            self.endpoint_under_test, data=json.dumps(request_data), content_type="application/json"
+        )
 
     def test_error_if_no_operation_exists(self):
         reporting_year = reporting_year_baker()

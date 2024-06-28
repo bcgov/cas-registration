@@ -25,7 +25,9 @@ class Report(BaseModel):
 
     # A report can only be for one single operation
     report_operation = models.OneToOneField(
-        ReportOperation, on_delete=models.CASCADE, db_comment="The report this operation information relates to"
+        ReportOperation,
+        on_delete=models.CASCADE,
+        db_comment="The report this operation information relates to",
     )
 
     class Meta:

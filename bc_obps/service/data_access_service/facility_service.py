@@ -17,5 +17,5 @@ class FacilityDataAccessService:
             return queryset.filter(ownerships__operation__operator_id=user_operator.operator_id).distinct()
 
     @classmethod
-    def get_currently_owned(cls, operation: Operation) -> QuerySet[Facility]:
+    def get_current_facilities_by_operation(cls, operation: Operation) -> QuerySet[Facility]:
         return Facility.objects.filter(ownerships__end_date__isnull=True, ownerships__operation=operation).all()

@@ -371,7 +371,7 @@ def reverse_init_reporting_years_data(apps, schema_monitor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('reporting', '0001_initial'),
+        ('reporting', '0006_reinit'),
     ]
 
     operations = [
