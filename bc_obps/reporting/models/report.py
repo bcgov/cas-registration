@@ -18,8 +18,8 @@ class Report(BaseModel):
     reporting_year = models.ForeignKey(
         ReportingYear,
         on_delete=models.DO_NOTHING,
-        blank=True,
-        null=True,
+        blank=False,
+        null=False,
         db_comment="The reporting year, for which this report is filled",
     )
 
@@ -28,8 +28,6 @@ class Report(BaseModel):
         ReportOperation,
         on_delete=models.CASCADE,
         db_comment="The report this operation information relates to",
-        null=True,
-        blank=True,
     )
 
     class Meta:
