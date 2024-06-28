@@ -1,5 +1,6 @@
 from typing import Literal, Tuple
 from django.http import HttpRequest
+from registration.constants import FACILITY_TAGS
 from registration.models.facility import Facility
 from registration.schema.v1.facility import FacilityOut, FacilityIn
 from service.facility_service import FacilityService
@@ -21,6 +22,7 @@ from registration.schema.generic import Message
 @router.post(
     "/facilities",
     response={201: FacilityOut, custom_codes_4xx: Message},
+    tags=FACILITY_TAGS,
     description="""Creates a new facility for the current user.""",
 )
 @authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
