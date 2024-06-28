@@ -21,19 +21,19 @@ class TestReportService(TestCase):
     def test_throws_if_operation_doesnt_exist(self):
         baker.make(ReportingYear, reporting_year=2000)
 
-        with self.assertRaises(ObjectDoesNotExist) as exceptionContext:
+        with self.assertRaises(ObjectDoesNotExist) as exception_context:
             ReportService.create_report(operation_id="00000000-00000000-00000000-00000000", reporting_year=2000)
 
-        self.assertEqual(str(exceptionContext.exception), "Operation matching query does not exist.")
+        self.assertEqual(str(exception_context.exception), "Operation matching query does not exist.")
 
     def test_throws_if_year_doesnt_exist(self):
         operator = operator_baker({"trade_name": "test_trade_name"})
         operation = operation_baker(operator_id=operator.id, type="sfo")
 
-        with self.assertRaises(ObjectDoesNotExist) as exceptionContext:
+        with self.assertRaises(ObjectDoesNotExist) as exception_context:
             ReportService.create_report(operation.id, reporting_year=2000)
 
-        self.assertEqual(str(exceptionContext.exception), "ReportingYear matching query does not exist.")
+        self.assertEqual(str(exception_context.exception), "ReportingYear matching query does not exist.")
 
     def test_throws_if_report_already_exists(self):
 
@@ -41,11 +41,11 @@ class TestReportService(TestCase):
         reporting_year = reporting_year_baker(reporting_year=2002)
         _ = report_baker(operation=operation, reporting_year=reporting_year)
 
-        with self.assertRaises(Exception) as exceptionContext:
+        with self.assertRaises(Exception) as exception_context:
             ReportService.create_report(operation.id, 2002)
 
         self.assertEqual(
-            str(exceptionContext.exception),
+            str(exception_context.exception),
             "A report already exists for this operation and year, unable to create a new one.",
         )
 
@@ -56,8 +56,8 @@ class TestReportService(TestCase):
                 "service.data_access_service.report_service.ReportDataAccessService.report_exists"
             ) as mock_report_data_access_service_report_exists,
             mock.patch(
-                "service.data_access_service.facility_service.FacilityDataAccessService.get_currently_owned"
-            ) as mock_facility_data_access_service_get_currently_owned,
+                "service.data_access_service.facility_service.FacilityDataAccessService.get_current_facilities_by_operation"
+            ) as mock_facility_data_access_service_get_current_facilities_by_operation,
         ):
             mock_facilities = [
                 facility_baker(),
@@ -66,7 +66,7 @@ class TestReportService(TestCase):
             ]
 
             mock_report_data_access_service_report_exists.return_value = False
-            mock_facility_data_access_service_get_currently_owned.return_value = mock_facilities
+            mock_facility_data_access_service_get_current_facilities_by_operation.return_value = mock_facilities
 
             operation = operation_baker(type="lfo", bc_obps_regulated_operation=bc_obps_regulated_operation_baker())
             operation.reporting_activities.add(

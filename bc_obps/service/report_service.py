@@ -24,7 +24,7 @@ class ReportService:
         )
 
         operator = operation.operator
-        facilities = FacilityDataAccessService.get_currently_owned(operation)
+        facilities = FacilityDataAccessService.get_current_facilities_by_operation(operation)
 
         report_operation = ReportOperation.objects.create(
             operator_legal_name=operator.legal_name,
