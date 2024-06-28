@@ -1,10 +1,8 @@
 from ninja import FilterSchema, ModelSchema, Field
 from registration.models import Facility
-from decimal import Decimal
 from uuid import UUID
 from ninja import Schema
-from pydantic import model_validator
-from typing import Optional, Union, Any, Dict
+from typing import List, Optional
 
 
 class FacilityListOut(ModelSchema):
@@ -29,32 +27,20 @@ class FacilitySection1(ModelSchema):
 
 
 class FacilitySection2(ModelSchema):
-    street_address: Optional[str] = None
-    municipality: Optional[str] = None
-    province: Optional[str] = None
-    postal_code: Optional[str] = None
-
-    @model_validator(mode='after')
-    def handle_address_data(cls, values: Any) -> Any:
-        data = values.dict(include={"latitude_of_largest_emissions", "longitude_of_largest_emissions"})
-        if values.street_address:
-            data.update(
-                {
-                    "street_address": values.street_address,
-                    "municipality": values.municipality,
-                    "province": values.province,
-                    "postal_code": values.postal_code,
-                }
-            )
-        return data
+    street_address: Optional[str] = Field(None, alias="address.street_address")
+    municipality: Optional[str] = Field(None, alias="address.municipality")
+    province: Optional[str] = Field(None, alias="address.province")
+    postal_code: Optional[str] = Field(None, alias="address.postal_code")
+    latitude_of_largest_emissions: float = Field(..., alias="latitude_of_largest_emissions")
+    longitude_of_largest_emissions: float = Field(..., alias="longitude_of_largest_emissions")
 
     class Config:
         model = Facility
         model_fields = [
-            "address",
             "latitude_of_largest_emissions",
             "longitude_of_largest_emissions",
         ]
+        populate_by_name = True
 
 
 class FacilityIn(ModelSchema):
@@ -63,32 +49,7 @@ class FacilityIn(ModelSchema):
     province: Optional[str] = None
     postal_code: Optional[str] = None
     operation_id: UUID
-    well_authorization_numbers: Optional[list] = None
-
-    @model_validator(mode='after')  # type: ignore
-    def create_address_data(cls, values):
-        payload = {}
-        if hasattr(values, 'street_address') and values.street_address:
-            address_data = values.dict(include={'street_address', 'municipality', 'province', 'postal_code'})
-            payload['address_data'] = address_data
-
-        if hasattr(values, 'well_authorization_numbers') and values.well_authorization_numbers:
-            payload['well_data'] = values.dict(include={'well_authorization_numbers'})['well_authorization_numbers']
-
-        payload['facility_data'] = values.dict(
-            exclude={
-                'street_address',
-                'municipality',
-                'province',
-                'postal_code',
-                'operation_id',
-                'well_authorization_numbers',
-            }
-        )
-
-        payload['operation_id'] = values.dict(include={'operation_id'})['operation_id']
-
-        return payload
+    well_authorization_numbers: List[int] = []
 
     class Config:
         model = Facility
@@ -97,7 +58,6 @@ class FacilityIn(ModelSchema):
             "type",
             "latitude_of_largest_emissions",
             "longitude_of_largest_emissions",
-            "well_authorization_numbers",
         ]
         populate_by_name = True
 
@@ -108,22 +68,9 @@ class FacilityOut(Schema):
     id: UUID
 
     @staticmethod
-    def resolve_section1(obj: Facility) -> Dict[str, Any]:
-        return {"name": obj.name, "type": obj.type, 'well_authorization_numbers': obj.well_authorization_numbers}
+    def resolve_section1(obj: Facility) -> FacilitySection1:
+        return FacilitySection1.from_orm(obj)
 
     @staticmethod
-    def resolve_section2(obj: Facility) -> Dict[str, Union[Decimal, str, None]]:
-        data: Dict[str, Union[Decimal, str, None]] = {
-            "latitude_of_largest_emissions": obj.latitude_of_largest_emissions,
-            "longitude_of_largest_emissions": obj.longitude_of_largest_emissions,
-        }
-        if obj.address:
-            data.update(
-                {
-                    "street_address": obj.address.street_address,
-                    "municipality": obj.address.municipality,
-                    "province": obj.address.province,
-                    "postal_code": obj.address.postal_code,
-                }
-            )
-        return data
+    def resolve_section2(obj: Facility) -> FacilitySection2:
+        return FacilitySection2.from_orm(obj)
