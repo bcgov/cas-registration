@@ -4,7 +4,6 @@ from registration.models import ReportingActivity
 from reporting.models import SourceType, GasType, Methodology, Configuration, ReportingField
 import typing
 
-
 class ConfigurationElement(BaseModel):
     """Configuration element for reporting"""
 
@@ -32,20 +31,7 @@ class ConfigurationElement(BaseModel):
         """
         Override the save method to validate if there are overlapping records.
         """
-        all_ranges = ConfigurationElement.objects.select_related('valid_from', 'valid_to').filter(
-            reporting_activity=self.reporting_activity,
-            source_type=self.source_type,
-            gas_type=self.gas_type,
-            methodology=self.methodology,
-        )
-        for y in all_ranges:
-            if (
-                (self.valid_from.valid_from >= y.valid_from.valid_from)
-                and (self.valid_from.valid_from <= y.valid_to.valid_to)
-                or (self.valid_to.valid_to <= y.valid_to.valid_to)
-                and (self.valid_to.valid_to >= y.valid_from.valid_from)
-            ):
-                raise Exception(
-                    f'This record will result in duplicate configurations being returned for the date range {self.valid_from.valid_from} - {self.valid_to.valid_to} as it overlaps with a current record or records'
-                )
+        exception_message = f'This record will result in duplicate configuration elements being returned for the date range {self.valid_from.valid_from} - {self.valid_to.valid_to} as it overlaps with a current record or records'
+        from reporting.utils import validate_overlapping_records
+        validate_overlapping_records(ConfigurationElement, self, exception_message)
         super().save(*args, **kwargs)
