@@ -1,5 +1,5 @@
 # This file is used for tests that use the backend container
-# For tests that don't require containers to be built first, see test.yaml
+# For tests that don't require containers to be built first, see test-code.yaml
 
 name: Test BCIERS backend container
 
