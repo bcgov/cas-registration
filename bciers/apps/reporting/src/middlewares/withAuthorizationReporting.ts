@@ -35,7 +35,7 @@ export const withAuthorizationReporting: MiddlewareFactory = (
       return NextResponse.rewrite(request.nextUrl);
     } else {
       // Handle unauthenticated requests
-      return NextResponse.redirect(new URL(`/dashboard`, request.url));
+      return NextResponse.redirect(new URL(`/onboarding`, request.url));
     }
   };
 };

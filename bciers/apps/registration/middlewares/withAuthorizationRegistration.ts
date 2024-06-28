@@ -90,7 +90,7 @@ export const withAuthorizationRegistration: MiddlewareFactory = (
       return NextResponse.rewrite(request.nextUrl);
     } else {
       // Handle unauthenticated requests
-      return NextResponse.redirect(new URL(`/`, request.url));
+      return NextResponse.redirect(new URL(`/onboarding`, request.url));
     }
   };
 };
