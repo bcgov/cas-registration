@@ -9,14 +9,9 @@ import userEvent from "@testing-library/user-event";
 import {
   actionHandler,
   useSession,
-  useSearchParams,
-  notFound,
   useParams,
   useRouter,
 } from "@bciers/testConfig/mocks";
-import Operations from "apps/registration/app/components/operations/Operations";
-import { FrontEndRoles } from "@bciers/utils/enums";
-import Facility from "apps/registration/app/components/facilities/Facility";
 import FacilitiesForm from "apps/registration/app/components/facilities/FacilitiesForm";
 import {
   facilitiesSchemaSfo,
@@ -26,7 +21,7 @@ import { facilitiesSchemaLfo } from "apps/registration/app/utils/jsonSchema/faci
 
 const operationId = "8be4c7aa-6ab3-4aad-9206-0ef914fea063";
 const facilityId = "025328a0-f9e8-4e1a-888d-aa192cb053db";
-("025328a0-f9e8-4e1a-888d-aa192cb053db");
+
 useParams.mockReturnValue({
   operationId: operationId,
 });
@@ -128,7 +123,7 @@ describe("FacilitiesForm component", () => {
     expect(screen.getByLabelText(/Facility Name+/i)).toHaveValue("");
     expect(screen.getByLabelText(/Facility Type+/i)).toHaveValue("");
 
-    expect(screen.getByText(/Authorization+/i)).toBeVisible(); // text seems to be broken up
+    expect(screen.getByText(/Authorization+/i)).toBeVisible();
     expect(screen.getByRole("button", { name: "Add" })).toBeVisible();
     expect(
       screen.getByRole("heading", { name: /Facility Address/i }),
@@ -185,7 +180,7 @@ describe("FacilitiesForm component", () => {
     const submitButton = screen.getByRole("button", { name: /submit/i });
     expect(submitButton).toBeDisabled();
   });
-  it.only("loads existing readonly LFO form data", async () => {
+  it("loads existing readonly LFO form data", async () => {
     const { container } = render(
       <FacilitiesForm
         schema={facilitiesSchemaLfo}
@@ -241,8 +236,8 @@ describe("FacilitiesForm component", () => {
     });
     expect(screen.getAllByText(/Required field/i)).toHaveLength(4);
   });
-  it.only("does not allow LFO submission if there are validation errors (bad form data)", async () => {
-    const { container } = render(
+  it("does not allow LFO submission if there are validation errors (bad form data)", async () => {
+    render(
       <FacilitiesForm
         isCreating
         schema={facilitiesSchemaLfo}
@@ -267,7 +262,7 @@ describe("FacilitiesForm component", () => {
     expect(screen.getAllByText(/must be <= 180/i)).toHaveLength(1);
   });
 
-  it.only("fills form, creates new SFO facility, and redirects on success", async () => {
+  it("fills the mandatory form fields, creates new SFO facility, and redirects on success", async () => {
     render(
       <FacilitiesForm
         isCreating
@@ -293,6 +288,7 @@ describe("FacilitiesForm component", () => {
     await userEvent.click(openComboboxButton);
     const typeOption = screen.getByText("Single Facility Operation");
     await userEvent.click(typeOption);
+
     // fill lat and long (userEvent.type doesn't work because the value goes in as a string and lat/long require a number)
     fireEvent.change(
       screen.getByLabelText(/Latitude of Largest Point of Emissions+/i),
@@ -315,7 +311,7 @@ describe("FacilitiesForm component", () => {
     });
   });
 
-  it("when creating a new LFO facility, posts the form on submit and redirects", async () => {
+  it("fills all form fields, creates new LFO facility, and redirects on success", async () => {
     render(
       <FacilitiesForm
         isCreating
@@ -326,48 +322,76 @@ describe("FacilitiesForm component", () => {
     );
 
     const submitButton = screen.getByRole("button", { name: /submit/i });
-    act(async () => {
-      fireEvent.change(screen.getByLabelText(/Facility Name+/i), {
-        target: { value: "test" },
-      });
-      const dropdown = screen.getByLabelText(/Facility Type+/i);
-      // fireEvent.change(screen.getByLabelText(/Facility Name+/i), {
-      //   target: { value: "Large Facility" },
-      // });
-      fireEvent.click(dropdown);
-
-      const dropdownItem = await screen.getByRole("option", {
-        name: /large facility/i,
-      });
-      fireEvent.click(dropdownItem);
-      fireEvent.click(screen.getByText("Large Facility"));
-      expect(dropdown).toHaveValue("Large Facility");
-
-      // Find the option and select it
-      const option = screen.getByRole("option", {
-        name: "Large Facility",
-      });
-      fireEvent.click(option);
-
-      fireEvent.change(
-        screen.getByLabelText(/Latitude of Largest Point of Emissions+/i),
-        { target: { value: 3 } },
-      );
-      fireEvent.change(
-        screen.getByLabelText(/Longitude of Largest Point of Emissions+/i),
-        { target: { value: 6 } },
-      );
-      fireEvent.click(submitButton);
-      // submitButton.click();
-      actionHandler.mockReturnValueOnce({
-        id: facilityId,
-        error: null,
-      });
+    actionHandler.mockReturnValueOnce({
+      id: facilityId,
+      error: null,
     });
+    // FILL FIELDS
+    // fill name
+    await userEvent.type(screen.getByLabelText(/Facility Name+/i), "test");
+    // fill type
+    const comboBoxInput = screen.getAllByRole("combobox");
+    const openFacilityTypeDropdownButton = comboBoxInput[0]?.parentElement
+      ?.children[1]?.children[0] as HTMLInputElement;
+    await userEvent.click(openFacilityTypeDropdownButton);
+    const typeOption = screen.getByText("Large Facility");
+    await userEvent.click(typeOption);
+    // fill well authorization numbers
+    await userEvent.click(screen.getByText("Add"));
+    const firstWellAuthInput = screen.getAllByRole("spinbutton")[0];
+    // have to use fireEvent for number fields
+    fireEvent.change(firstWellAuthInput, { target: { value: 355 } });
+
+    await userEvent.type(screen.getByLabelText(/Street address+/i), "address");
+    await userEvent.type(screen.getByLabelText(/Municipality+/i), "city");
+
+    // province
+    const openProvinceDropdownButton = comboBoxInput[1]?.parentElement
+      ?.children[1]?.children[0] as HTMLInputElement;
+    await userEvent.click(openProvinceDropdownButton);
+    const provinceOption = screen.getByText(/alberta/i);
+    await userEvent.click(provinceOption);
+
+    await userEvent.type(screen.getByLabelText(/Postal Code+/i), "H0H0H0");
+
+    fireEvent.change(
+      screen.getByLabelText(/Latitude of Largest Point of Emissions+/i),
+      { target: { value: 48.407326 } },
+    );
+    fireEvent.change(
+      screen.getByLabelText(/Longitude of Largest Point of Emissions+/i),
+      { target: { value: -123.329773 } },
+    );
+
+    // CHECK FIELDS ARE FILLED
+    expect(screen.getByLabelText(/Facility Name+/i)).toHaveValue("test");
+    expect(screen.getByLabelText(/Facility Type+/i)).toHaveValue(
+      "Large Facility",
+    );
+
+    expect(firstWellAuthInput).toHaveValue(355);
+    expect(screen.getByLabelText(/Street address+/i)).toHaveValue("address");
+    expect(screen.getByLabelText(/Municipality+/i)).toHaveValue("city");
+    expect(screen.getByLabelText(/Province+/i)).toHaveValue("Alberta");
+    expect(screen.getByLabelText(/Postal Code+/i)).toHaveValue("H0H 0H0");
+    expect(
+      screen.getByLabelText(/Latitude of Largest Point of Emissions+/i),
+    ).toHaveValue(48.407326);
+    expect(
+      screen.getByLabelText(/Longitude of Largest Point of Emissions+/i),
+    ).toHaveValue(-123.329773);
+
+    // SUBMIT
     userEvent.click(submitButton);
-    // expect(consoleSpy).toHaveBeenCalledOnce();
+
     await waitFor(() => {
-      // expect(screen.getByText("success")).toBeVisible();
+      expect(screen.getByText("success")).toBeVisible();
+      expect(mockReplace).toHaveBeenCalledWith(
+        `/operations/${operationId}/facilities/${facilityId}`,
+        {
+          shallow: true,
+        },
+      );
     });
   });
 });
