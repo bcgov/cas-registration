@@ -1,3 +1,5 @@
+from typing import Type
+from django.http import HttpResponse, HttpRequest
 from ninja import NinjaAPI, Swagger
 from common.api import router as common_router
 from registration.api import router as registration_router
@@ -11,8 +13,8 @@ api = NinjaAPI(
 )
 
 
-@api.exception_handler(ValidationError)  # type: ignore
-def custom_validation_errors(request, exc):
+@api.exception_handler(ValidationError)
+def custom_validation_errors(request: HttpRequest, exc: Type[ValidationError]) -> HttpResponse:
     print(exc.errors)  # <--------------------- !!!!
     return api.create_response(request, {"detail": exc.errors}, status=422)
 
