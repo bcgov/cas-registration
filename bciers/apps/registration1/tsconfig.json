@@ -24,7 +24,9 @@
     "./.next/types/**/*.ts",
     ".next/types/**/*.ts",
     "../../libs/shared/components/src/lib/modal",
-    "../../dist/registration1/.next/types/**/*.ts"
+    "../../dist/registration1/.next/types/**/*.ts",
+    "../../libs/shared/components/src/lib/form/components/SubmitButton.test.tsx",
+    "../../libs/shared/components/src/lib/form/components/SubmitButton.tsx"
   ],
   "exclude": [".next", "node_modules"]
 }

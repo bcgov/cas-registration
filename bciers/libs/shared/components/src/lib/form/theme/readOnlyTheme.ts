@@ -4,6 +4,12 @@ import ReadOnlyBooleanWidget from "@bciers/components/form/widgets/readOnly/Read
 import ReadOnlyComboBoxWidget from "@bciers/components/form/widgets/readOnly/ReadOnlyComboBoxWidget";
 import ReadOnlyFileWidget from "@bciers/components/form/widgets/readOnly/ReadOnlyFileWidget";
 import ReadOnlyMultiSelectWidget from "@bciers/components/form/widgets/readOnly/ReadOnlyMultiSelectWidget";
+import { getDefaultRegistry } from "@rjsf/core";
+import { InlineFieldTemplate } from "../fields";
+import TitleFieldTemplate from "@bciers/components/form/fields/TitleFieldTemplate";
+import ReadOnlyArrayFieldTemplate from "../fields/readonly/ReadOnlyArrayFieldTemplate";
+
+const { templates: defaultTemplates } = getDefaultRegistry();
 
 const readOnlyTheme = {
   ...defaultTheme,
@@ -19,6 +25,12 @@ const readOnlyTheme = {
     SelectWidget: ReadOnlyWidget,
     TextWidget: ReadOnlyWidget,
     URLWidget: ReadOnlyWidget,
+  },
+  templates: {
+    ...defaultTemplates,
+    FieldTemplate: InlineFieldTemplate,
+    TitleFieldTemplate,
+    ArrayFieldTemplate: ReadOnlyArrayFieldTemplate,
   },
 };
 

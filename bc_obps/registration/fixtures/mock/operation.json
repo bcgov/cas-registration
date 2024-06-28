@@ -24,7 +24,7 @@
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
       "documents": [],
       "name": "Operation 2",
-      "type": "Single Facility Operation",
+      "type": "Linear Facility Operation",
       "naics_code": 20,
       "opt_in": false,
       "bcghg_id": "23219990004",

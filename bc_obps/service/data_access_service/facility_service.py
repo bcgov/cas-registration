@@ -1,6 +1,8 @@
 from service.user_operator_service import UserOperatorService
 from registration.models import Facility, User
 from django.db.models import QuerySet
+from uuid import UUID
+from ninja.types import DictStrAny
 
 
 class FacilityDataAccessService:
@@ -14,3 +16,19 @@ class FacilityDataAccessService:
             # Industry users can only see operations associated with their own operator
             user_operator = UserOperatorService.get_current_user_approved_user_operator_or_raise(user)
             return queryset.filter(ownerships__operation__operator_id=user_operator.operator_id).distinct()
+
+    @classmethod
+    def get_by_id(cls, facility_id: UUID) -> Facility:
+        return Facility.objects.get(id=facility_id)
+
+    @classmethod
+    def create_facility(
+        cls,
+        user_guid: UUID,
+        facility_data: DictStrAny,
+    ) -> Facility:
+        facility = Facility.objects.create(
+            **facility_data,
+            created_by_id=user_guid,
+        )
+        return facility

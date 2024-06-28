@@ -1,6 +1,5 @@
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
 import { RJSFSchema } from "@rjsf/utils";
-/* import provinceOptions from "@/app/data/provinces.json"; */
 import TitleOnlyFieldTemplate from "@bciers/components/form/fields/TitleOnlyFieldTemplate";
 import {
   PointOfContactTitle,
