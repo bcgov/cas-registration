@@ -1,0 +1,80 @@
+{
+  "type": "object",
+  "title": "General stationary combustion of fuel or waste with production of useful energy",
+  "properties": {
+    "units": {
+      "type": "array",
+      "title": "Units",
+      "items": {
+        "type": "object",
+        "properties": {
+          "gscUnitName": {
+            "title": "GSC Unit Name",
+            "maxLength": 200,
+            "type": "string"
+          },
+          "gscUnitType": {
+            "title": "GSC Unit Type",
+            "maxLength": 200,
+            "type": "string"
+          },
+          "description": {
+            "title": "Description",
+            "default": "",
+            "type": "string"
+          },
+          "fuels": {
+            "title": "Fuel Data",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "fuelName": {
+                  "title": "Fuel Name",
+                  "maxLength": 200,
+                  "type": "string"
+                },
+                "fuelUnit": {
+                  "title": "Fuel Unit",
+                  "maxLength": 200,
+                  "type": "string"
+                },
+                "annualFuelAmount": {
+                  "title": "Annual Fuel Amount",
+                  "type": "number"
+                },
+                "emissions": {
+                  "title": "Emission Data",
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "gasType": {
+                        "title": "Gas Type",
+                        "type": "string",
+                        "enum": []
+                      },
+                      "emission": {
+                        "title": "Emission",
+                        "type": "number"
+                      },
+                      "equivalentEmission": {
+                        "title": "Equivalent Emission",
+                        "type": "number"
+                      },
+                      "methodology": {
+                        "title": "Methodology",
+                        "type": "string",
+                        "enum": []
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
