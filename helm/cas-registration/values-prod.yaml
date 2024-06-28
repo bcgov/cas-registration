@@ -18,7 +18,7 @@ backend:
       cpu: 300m
       memory: 300Mi
 
-frontend:
+registration1Frontend:
   replicaCount: 2
 
   image:

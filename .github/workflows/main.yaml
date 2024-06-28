@@ -1,0 +1,54 @@
+# This is the main workflow which will orchestrate the other workflows:
+
+name: main
+
+on:
+  push:
+    branches: [develop, main]
+  pull_request:
+    branches: [develop, main]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PGUSER: postgres
+
+jobs:
+  install-dev-tools:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: dev env setup
+        uses: ./.github/actions/dev-env-setup
+      - run: yarn install --immutable
+        working-directory: ./bciers
+  build-backend:
+    uses: ./.github/workflows/build-backend.yaml
+  build-registration:
+    uses: ./.github/workflows/build-registration.yaml
+  build-registration1:
+    uses: ./.github/workflows/build-registration1.yaml
+  build-reporting:
+    uses: ./.github/workflows/build-reporting.yaml
+  test-code:
+    needs: [install-dev-tools]
+    uses: ./.github/workflows/test-code.yaml
+  test-backend:
+    needs: [build-backend, install-dev-tools]
+    uses: ./.github/workflows/test-backend.yaml
+    secrets: inherit
+  test-e2e:
+    needs: [build-registration1, install-dev-tools]
+    uses: ./.github/workflows/test-e2e.yaml
+    secrets: inherit
+  zap-owasp:
+    # We will need to set up registration part 2 and reporting to get zap scanned
+    needs: [build-backend, build-registration1, install-dev-tools]
+    uses: ./.github/workflows/zap-owasp.yaml
+  trivy:
+    uses: ./.github/workflows/trivy.yaml
+  codeql:
+    uses: ./.github/workflows/codeql.yaml

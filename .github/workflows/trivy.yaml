@@ -1,21 +1,10 @@
 name: Trivy Scan Code
 
 on:
-  push:
-    branches: [main, develop]
-    tags:
-      - frontend
-      - backend
-  pull_request:
-    # The branches below must be a subset of the branches above
-    branches: [main, develop]
-
-concurrency:
-  group: callee-trivy-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  workflow_call:
 
 jobs:
-  trivy-scan-code:
+  analyze:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:

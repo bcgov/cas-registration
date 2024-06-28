@@ -16,7 +16,9 @@
       "outputs": ["{options.outputPath}"],
       "defaultConfiguration": "dev",
       "options": {
-        "outputPath": "dist/registration"
+        "outputPath": "dist/registration",
+        "experimentalAppOnly": true,
+        "generateLockfile": true
       }
     },
     "start": {

@@ -1,0 +1,76 @@
+# This workflow is to run all tests that don't require containers to be built
+
+name: Test BCIERS code
+
+on:
+  workflow_call:
+
+env:
+  PGUSER: postgres
+  DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+  KEYCLOAK_CLIENT_ID: ${{ secrets.KEYCLOAK_CLIENT_ID }}
+  KEYCLOAK_CLIENT_SECRET: ${{ secrets.KEYCLOAK_CLIENT_SECRET }}
+  NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
+
+jobs:
+  nx-tests:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./bciers
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: dev env setup
+        uses: ./.github/actions/dev-env-setup
+      - name: Run Nx Affected Tests with Remote Caching
+        id: nx-tests
+        run: |
+          yarn nx affected --base=origin/develop --target=test --parallel
+        shell: bash
+
+  yarn-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: dev env setup
+        uses: ./.github/actions/dev-env-setup
+      - run: yarn npm audit
+        working-directory: ./bciers
+
+  pre-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: dev env setup
+        uses: ./.github/actions/dev-env-setup
+      - name: set pre-commit cache directory
+        run: |
+          echo "PRE_COMMIT_HOME=$GITHUB_WORKSPACE/.pre-commit-cache" >> $GITHUB_ENV
+      - name: set PY
+        run: echo "PY=$(python -VV | sha256sum | cut -d' ' -f1)" >> $GITHUB_ENV
+      - name: create commitlint COMMIT_EDITMSG if not exists
+        run: |
+          if test -f ".git/COMMIT_EDITMSG"; then
+              echo "COMMIT_EDITMSG EXISTS, skipping"
+          else
+              touch .git/COMMIT_EDITMSG
+          fi
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ./.pre-commit-cache
+          key: pre-commit-${{ env.PY }}-${{ hashFiles('.pre-commit-config.yaml') }}-v4
+      - run: pip install -r requirements.txt
+      - uses: pre-commit/action@v3.0.1
+
+  check-migrations:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: dev env setup
+        uses: ./.github/actions/dev-env-setup
+      - run: poetry run python manage.py makemigrations --check --dry-run
+        working-directory: ./bc_obps
