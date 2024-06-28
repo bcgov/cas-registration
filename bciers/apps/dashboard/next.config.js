@@ -3,7 +3,7 @@
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { composePlugins, withNx } = require("@nx/next");
 
-const { HOST_REGISTRATION, HOST_REPORTING } = process.env;
+const { HOST_REGISTRATION, HOST_REPORTING, HOST_COAM } = process.env;
 /**
  * @type {import('@nx/next/plugins/with-nx').WithNxOptions}
  **/
@@ -29,6 +29,10 @@ const nextConfig = {
       {
         source: "/reporting/:path*",
         destination: `${HOST_REPORTING}/reporting/:path*`,
+      },
+      {
+        source: "/coam",
+        destination: `${HOST_COAM}/coam`,
       },
     ];
   },
