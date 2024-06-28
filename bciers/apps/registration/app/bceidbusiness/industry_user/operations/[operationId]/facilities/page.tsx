@@ -10,5 +10,7 @@ export default async function Page({
   params: { operationId: UUID };
   searchParams: FacilitiesSearchParams;
 }>) {
-  return <FacilitiesPage operationId={operationId} searchParams={searchParams} />;
+  return (
+    <FacilitiesPage operationId={operationId} searchParams={searchParams} />
+  );
 }
