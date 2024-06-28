@@ -52,25 +52,38 @@ class FacilityService:
     @classmethod
     @transaction.atomic()
     def create_facility_with_ownership(cls, user_guid: UUID, payload: FacilityIn) -> Facility:
-        complete_facility_data = payload.get('facility_data')
-        address_data = payload.get('address_data')
+        operation = OperationDataAccessService.get_by_id(payload.operation_id)
+        # Just to be extra safe, we should check if the user has access to the operation
+        user: User = UserDataAccessService.get_by_guid(user_guid)
+        if not operation.user_has_access(user.user_guid):
+            raise Exception(UNAUTHORIZED_MESSAGE)
+
+        # if any of address data generate one address and keep it to pass to the facility
+        facility_data = payload.dict(
+            include={
+                'name',
+                'type',
+                'latitude_of_largest_emissions',
+                'longitude_of_largest_emissions',
+            }
+        )
+        address_data = payload.dict(
+            include={'street_address', 'municipality', 'province', 'postal_code'}, exclude_none=True
+        )
         if address_data:
-            address = AddressDataAccessService.create_address(payload['address_data'])
-            complete_facility_data['address'] = address
-        facility = FacilityDataAccessService.create_facility(user_guid, complete_facility_data)
+            address = AddressDataAccessService.create_address(address_data)
+            facility_data['address'] = address
+        facility = FacilityDataAccessService.create_facility(user_guid, facility_data)
 
-        operation = OperationDataAccessService.get_by_id(payload['operation_id'])
+        FacilityOwnershipTimelineDataAccessService.create_facility_ownership_timeline(
+            {'facility': facility, 'operation': operation, 'start_date': timezone.now()}
+        )
 
-        facility_ownership_timeline_data = {'facility': facility, 'operation': operation, 'start_date': timezone.now()}
-
-        FacilityOwnershipTimelineDataAccessService.create_facility_ownership_timeline(facility_ownership_timeline_data)
-
-        well_data = payload.get('well_data')
-        if well_data:
-            well_authorization_numbers = []
-            for number in well_data:
-                well_authorization_numbers.append(
-                    WellAuthorizationNumberDataAccessService.create_well_authorization_number(number)
-                )
+        well_authorization_numbers = []
+        for number in payload.well_authorization_numbers:
+            well_authorization_numbers.append(
+                WellAuthorizationNumberDataAccessService.create_well_authorization_number(number)
+            )
+        if well_authorization_numbers:
             facility.well_authorization_numbers.set(well_authorization_numbers)
         return facility
