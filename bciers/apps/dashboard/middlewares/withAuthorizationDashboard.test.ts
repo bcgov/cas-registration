@@ -27,7 +27,37 @@ describe("withAuthorizationDashboard middleware", () => {
     reset(mockedRequest);
   });
 
-  test("redirects to the registration profile page if the user has no app role", async () => {
+  it("redirects to the onboarding page if the user is not authenticated", async () => {
+    // The user tries to access the operations page
+    const nextUrl = new NextURL(`${domain}/registration/operations`);
+
+    when(mockedRequest.nextUrl).thenReturn(nextUrl);
+    when(mockedRequest.url).thenReturn(domain);
+
+    const result = await middleware(
+      instance(mockedRequest),
+      mockNextFetchEvent,
+    );
+    expect(NextResponse.redirect).toHaveBeenCalledOnce();
+    expect(NextResponse.redirect).toHaveBeenCalledWith(
+      new URL("/onboarding", domain),
+    );
+    expect(result?.status).toBe(307);
+  });
+
+  it("calls NextMiddleware if the user is not authenticated and the route is /onboarding", async () => {
+    const nextUrl = new NextURL(`${domain}/onboarding`);
+
+    when(mockedRequest.nextUrl).thenReturn(nextUrl);
+
+    const result = await middleware(
+      instance(mockedRequest),
+      mockNextFetchEvent,
+    );
+    expect(result?.status).toBe(200);
+  });
+
+  it("redirects to the registration profile page if the user has no app role", async () => {
     getToken.mockResolvedValue(mockBaseToken);
     const nextUrl = new NextURL(`${domain}/dashboard`);
 
