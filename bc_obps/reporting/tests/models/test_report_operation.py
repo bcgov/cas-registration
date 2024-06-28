@@ -1,14 +1,12 @@
 from common.tests.utils.helpers import BaseTestCase
 from registration.models import ReportingActivity
 from reporting.models import ReportOperation
-from reporting.tests.utils.bakers import report_baker
 
 
 class ReportOperationModelTest(BaseTestCase):
     @classmethod
     def setUpTestData(cls):
         cls.test_object = ReportOperation.objects.create(
-            report=report_baker(),
             operator_legal_name="Legal Name",
             operator_trade_name="Trade Name",
             operation_name="Operation Name",
@@ -27,6 +25,6 @@ class ReportOperationModelTest(BaseTestCase):
             ("operation_type", "operation type", 1000, None),
             ("operation_bcghgid", "operation bcghgid", 1000, None),
             ("bc_obps_regulated_operation_id", "bc obps regulated operation id", 255, None),
-            ("operation_representative_name", "operation representative name", 1000, None),
+            ("operation_representative_name", "operation representative name", 10000, None),
             ("activities", "activities", None, 1),
         ]

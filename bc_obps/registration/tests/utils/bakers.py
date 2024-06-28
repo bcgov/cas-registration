@@ -1,4 +1,6 @@
+from itertools import cycle
 from model_bakery import baker
+from model_bakery.recipe import seq
 from registration.models import (
     Address,
     BusinessStructure,
@@ -17,6 +19,8 @@ from registration.models import (
 import uuid
 import random
 import string
+
+from registration.models.bc_obps_regulated_operation import BcObpsRegulatedOperation
 
 
 def generate_random_bc_corporate_registry_number():
@@ -56,6 +60,10 @@ def contact_baker() -> Contact:
     return baker.make(Contact)
 
 
+def bc_obps_regulated_operation_baker() -> BcObpsRegulatedOperation:
+    return baker.make(BcObpsRegulatedOperation, id=seq("99-", start=1001))
+
+
 def operator_baker(custom_properties=None) -> Operator:
     properties = {
         'bc_corporate_registry_number': generate_random_bc_corporate_registry_number(),
@@ -72,7 +80,10 @@ def operator_baker(custom_properties=None) -> Operator:
     return baker.make(Operator, **properties)
 
 
-def operation_baker(operator_id: uuid.UUID = None, *args, **kwargs) -> Operation:
+def operation_baker(operator_id: uuid.UUID = None, **properties) -> Operation:
+    if "type" not in properties:
+        properties["type"] = cycle(["sfo", "lfo"])
+
     if operator_id:
         return baker.make(
             Operation,
@@ -80,8 +91,7 @@ def operation_baker(operator_id: uuid.UUID = None, *args, **kwargs) -> Operation
             naics_code=NaicsCode.objects.first(),
             bcghg_id=uuid.uuid4(),
             operator_id=operator_id,
-            *args,
-            **kwargs,
+            **properties,
         )
 
     return baker.make(
@@ -90,8 +100,7 @@ def operation_baker(operator_id: uuid.UUID = None, *args, **kwargs) -> Operation
         naics_code=NaicsCode.objects.first(),
         bcghg_id=uuid.uuid4(),
         operator=operator_baker(),
-        *args,
-        **kwargs,
+        **properties,
     )
 
 
