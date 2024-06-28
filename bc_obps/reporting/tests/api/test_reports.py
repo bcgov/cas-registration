@@ -64,5 +64,6 @@ class TestReportsEndpoint:
         }
         response = self.send_post_request(request_data)
 
-        assert response.status_code == 201
         assert Report.objects.count() == 1
+        assert response.status_code == 201
+        assert response.json() == Report.objects.first().id
