@@ -18,14 +18,18 @@ class Report(BaseModel):
     reporting_year = models.ForeignKey(
         ReportingYear,
         on_delete=models.DO_NOTHING,
-        blank=False,
-        null=False,
+        blank=True,
+        null=True,
         db_comment="The reporting year, for which this report is filled",
     )
 
     # A report can only be for one single operation
     report_operation = models.OneToOneField(
-        ReportOperation, on_delete=models.CASCADE, db_comment="The report this operation information relates to"
+        ReportOperation,
+        on_delete=models.CASCADE,
+        db_comment="The report this operation information relates to",
+        null=True,
+        blank=True,
     )
 
     class Meta:
