@@ -1,8 +1,6 @@
 import os
 
-from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.core.management import call_command
 from django.core.management.base import BaseCommand
 
 
@@ -15,6 +13,8 @@ class Command(BaseCommand):
         superuser_password = os.environ.get('DJANGO_SUPERUSER_PASSWORD')
         if superuser_username and superuser_password:
             User.objects.create_superuser(username=superuser_username, password=superuser_password)
-        else:
-            if settings.DEBUG:  # we don't want to call this in production
-                call_command('createsuperuser')
+            self.stdout.write(self.style.SUCCESS('Superuser created successfully'))
+            return None
+
+        self.stdout.write(self.style.ERROR('Superuser not created.'))
+        raise Exception('Superuser not created.')
