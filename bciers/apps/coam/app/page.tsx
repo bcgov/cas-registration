@@ -6,7 +6,7 @@ export default async function Page() {
   // 🚀 API fetch dashboard tiles
   // 🚩 Source: bc_obps/common/fixtures/dashboard/coam/[IdProviderType]/role?
   const data = (await fetchDashboardData(
-    "common/dashboard-data?dashboard=reporting",
+    "common/dashboard-data?dashboard=coam",
   )) as ContentItem[];
 
   return (

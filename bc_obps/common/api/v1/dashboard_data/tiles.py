@@ -28,7 +28,7 @@ from service.data_access_service.dashboard_service import DashboardDataService
 @handle_http_errors()
 def list_dashboard_data(
     request: HttpRequest,
-    dashboard: Literal['all', 'bciers', 'registration-operation-detail', 'registration', 'reporting'],
+    dashboard: Literal['all', 'bciers', 'registration-operation-detail', 'registration', 'reporting', 'coam'],
 ) -> Tuple[Literal[200], QuerySet[DashboardData]]:
     role = ""
     if dashboard != "all":  # if dashboard is not equal to "all" then get role from AppRole
