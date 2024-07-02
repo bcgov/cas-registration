@@ -171,7 +171,7 @@ class Migration(migrations.Migration):
             name='report_operation',
             field=models.OneToOneField(
                 db_comment='The report this operation information relates to',
-                default={},
+                default=1,
                 on_delete=django.db.models.deletion.CASCADE,
                 to='reporting.reportoperation',
             ),
@@ -376,7 +376,7 @@ class Migration(migrations.Migration):
             name='reporting_year',
             field=models.ForeignKey(
                 db_comment='The reporting year, for which this report is filled',
-                default={},
+                default=1900,
                 on_delete=django.db.models.deletion.DO_NOTHING,
                 to='reporting.reportingyear',
             ),
