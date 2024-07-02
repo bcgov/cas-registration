@@ -1,6 +1,6 @@
 {
   "name": "@bciers/source",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "license": "MIT",
   "scripts": {
     "affected:test": "nx affected --base=remotes/origin/main --target-test",

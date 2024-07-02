@@ -151,6 +151,9 @@ helm/**/charts
 !.yarn/sdks
 !.yarn/versions
 
-
 # JetBrains
 .idea/
+
+# Vite(st) temporary config files
+vite.config.**s.timestamp-*
+vitest.config.**s.timestamp-*

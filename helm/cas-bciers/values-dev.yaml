@@ -1,0 +1,87 @@
+# Development environment values for cas-bciers.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+backend:
+  replicaCount: 2
+
+  image:
+    tag: "latest"
+
+  route:
+    host: cas-bciers-backend-dev.apps.silver.devops.gov.bc.ca
+
+  environment: develop
+
+  deployRoute: true
+
+  resources:
+    limits:
+      cpu: 200m
+      memory: 512Mi
+    requests:
+      cpu: 60m
+      memory: 256Mi
+
+registrationFrontend:
+  replicaCount: 2
+
+  image:
+    tag: "latest"
+
+  route:
+    host: cas-bciers-frontend-dev.apps.silver.devops.gov.bc.ca
+    path: "/registration"
+
+  environment: develop
+
+  resources:
+    limits:
+      cpu: 200m
+      memory: 512Mi
+    requests:
+      cpu: 60m
+      memory: 256Mi
+
+reportingFrontend:
+  enabled: true
+
+  image:
+    tag: "latest"
+
+  route:
+    host: cas-bciers-frontend-dev.apps.silver.devops.gov.bc.ca
+    path: "/reporting"
+
+  resources:
+    limits:
+      cpu: 200m
+      memory: 512Mi
+    requests:
+      cpu: 60m
+      memory: 256Mi
+
+dashboardFrontend:
+  enabled: true
+
+  image:
+    tag: "latest"
+
+  route:
+    host: cas-bciers-frontend-dev.apps.silver.devops.gov.bc.ca
+    path: "/"
+
+  resources:
+    limits:
+      cpu: 200m
+      memory: 512Mi
+    requests:
+      cpu: 60m
+      memory: 256Mi
+
+  auth:
+    keycloakAuthUrl: https://dev.loginproxy.gov.bc.ca/auth
+    siteminderAuthUrl: https://logontest7.gov.bc.ca
+
+growthbook:
+  clientKey: sdk-YMBcx9KglRDGzGTE

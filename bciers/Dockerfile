@@ -1,8 +1,7 @@
 # Install dependencies only when needed
-FROM docker.io/node:20.11 as deps
+FROM docker.io/node:20.15 AS deps
 WORKDIR /usr/src/app
-COPY ./package*.json ./
-RUN corepack enable
+COPY ./package.json .
 RUN corepack enable
 RUN yarn set version 4.2.0
 # Force Yarn to use standard node-modules folder
@@ -10,7 +9,7 @@ RUN echo 'nodeLinker: "node-modules"' >> ./.yarnrc.yml
 RUN yarn install
 
 # Production image, copy all the files and run next
-FROM docker.io/node:20.11 as runner
+FROM docker.io/node:20.15 AS runner
 
 ADD https://github.com/Yelp/dumb-init/releases/download/v1.2.5/dumb-init_1.2.5_x86_64 /usr/local/bin/dumb-init
 RUN chmod +x /usr/local/bin/dumb-init
@@ -19,10 +18,11 @@ ENTRYPOINT ["dumb-init", "--"]
 ENV NODE_ENV production
 ENV PORT 3000
 WORKDIR /usr/src/app
-COPY --from=deps --chown=node:node /usr/src/app/node_modules node_modules
-COPY --from=deps --chown=node:node /usr/src/app/package.json package.json
-COPY --chown=node:node ./public ./public
+COPY --from=deps /usr/src/app/node_modules node_modules
+COPY --from=deps /usr/src/app/package.json package.json
+COPY ./public ./public
 COPY --chown=node:node ./.next ./.next
+
 USER node
 EXPOSE 3000
 # COPY --chown=node:node ./tools/scripts/entrypoints/api.sh /usr/local/bin/docker-entrypoint.sh
