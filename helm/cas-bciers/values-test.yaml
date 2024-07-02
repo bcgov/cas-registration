@@ -1,0 +1,86 @@
+
+backend:
+  replicaCount: 2
+
+  image:
+    tag: "latest"
+
+  route:
+    host: cas-bciers-backend-test.apps.silver.devops.gov.bc.ca
+
+  environment: test
+
+  resources:
+    limits:
+      cpu: 200m
+      memory: 512Mi
+    requests:
+      cpu: 60m
+      memory: 256Mi
+
+registrationFrontend:
+  replicaCount: 2
+
+  image:
+    tag: "latest"
+
+  route:
+    host: cas-bciers-frontend-test.apps.silver.devops.gov.bc.ca
+    path: "/registration"
+
+  environment: test
+
+  resources:
+    limits:
+      cpu: 200m
+      memory: 512Mi
+    requests:
+      cpu: 60m
+      memory: 256Mi
+
+reportingFrontend:
+  replicaCount: 2
+
+  image:
+    tag: "latest"
+
+  route:
+    host: cas-bciers-frontend-test.apps.silver.devops.gov.bc.ca
+    path: "/reporting"
+
+  environment: test
+
+  resources:
+    limits:
+      cpu: 200m
+      memory: 512Mi
+    requests:
+      cpu: 60m
+      memory: 256Mi
+
+dashboardFrontend:
+  replicaCount: 2
+
+  image:
+    tag: "latest"
+
+  route:
+    host: cas-bciers-frontend-test.apps.silver.devops.gov.bc.ca
+    path: "/"
+
+  environment: test
+
+  auth:
+    keycloakAuthUrl: https://test.loginproxy.gov.bc.ca/auth
+    siteminderAuthUrl: https://logontest7.gov.bc.ca
+
+  resources:
+    limits:
+      cpu: 200m
+      memory: 512Mi
+    requests:
+      cpu: 60m
+      memory: 256Mi
+
+growthbook:
+  clientKey: sdk-9Vyna67jpIYdjMa

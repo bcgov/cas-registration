@@ -7,7 +7,7 @@ spec:
   podSelector:
     matchLabels:
       app.kubernetes.io/name: {{ include "cas-registration.fullname" . }}
-      component: frontend
+      component: registration1-frontend
   ingress:
     - from:
         - namespaceSelector:

@@ -1,5 +1,5 @@
 // Use this file to export React client components (e.g. those with 'use client' directive) or other non-server utilities
 
-export * from "./setup/types";
-export * from "./setup/mocks";
-export * from "./setup/global";
+export * from "./types";
+export * from "./mocks";
+export * from "./global";

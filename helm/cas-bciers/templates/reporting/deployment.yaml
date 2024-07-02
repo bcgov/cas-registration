@@ -1,32 +1,34 @@
-{{- if (.Values.reportingFrontend.enabled) }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "cas-registration.fullname" . }}-reporting-frontend
+  name: {{ include "cas-bciers.fullname" . }}-reporting-frontend
   labels:
     component: reporting-frontend
-{{- include "cas-registration.labels" . | nindent 4 }}
+    layer: frontend
+{{- include "cas-bciers.labels" . | nindent 4 }}
 spec:
 {{- if not .Values.reportingFrontend.autoscaling.enabled }}
   replicas: {{ .Values.reportingFrontend.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
-      {{- include "cas-registration.selectorLabels" . | nindent 6 }}
+      {{- include "cas-bciers.selectorLabels" . | nindent 6 }}
       component: reporting-frontend
   strategy:
     type: RollingUpdate
   template:
     metadata:
       labels:
-{{- include "cas-registration.selectorLabels" . | nindent 8 }}
+{{- include "cas-bciers.selectorLabels" . | nindent 8 }}
         component: reporting-frontend
+        layer: frontend
     spec:
+      automountServiceAccountToken: false
       containers:
-        - name: {{ template "cas-registration.fullname" . }}-reporting-frontend
-          env:
-            - name: API_URL
-              value: http://{{ include "cas-registration.fullname" . }}-backend.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.backend.service.port }}/api/
+        - name: {{ template "cas-bciers.fullname" . }}-reporting-frontend
+          envFrom:
+            - configMapRef:
+                name: {{ template "cas-bciers.fullname" . }}-frontend-env-configmap
           image: "{{ .Values.reportingFrontend.image.repository }}:{{ .Values.defaultImageTag | default .Values.reportingFrontend.image.tag }}"
           imagePullPolicy: {{ .Values.reportingFrontend.image.pullPolicy }}
           ports:
@@ -35,4 +37,3 @@ spec:
           resources:
             {{- toYaml .Values.reportingFrontend.resources | nindent 12 }}
       restartPolicy: Always
-{{- end }}

@@ -2,9 +2,6 @@
   "extends": ["plugin:@nx/react", "../../../.eslintrc.json"],
   "globals": { "vi": true },
   "parserOptions": {
-    "project": ["./tsconfig(.*)?.json"]
-  },
-  "parserOptions": {
     "project": ["libs/shared/testConfig/tsconfig(.*)?.json"],
     "tsConfigRootDir": "./"
   },
