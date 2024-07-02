@@ -2,3 +2,7 @@
 /dist
 /coverage
 /.nx/cache
+
+# Vite(st) temporary config files
+vite.config.**s.timestamp-*
+vitest.config.**s.timestamp-*

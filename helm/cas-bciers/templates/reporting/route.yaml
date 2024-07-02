@@ -1,10 +1,9 @@
-{{- if (.Values.reportingFrontend.enabled) }}
 apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
-  name: {{ template "cas-registration.fullname" . }}-reporting-frontend
+  name: {{ template "cas-bciers.fullname" . }}-reporting-frontend
   labels:
-{{ include "cas-registration.labels" . | indent 4 }}
+{{ include "cas-bciers.labels" . | indent 4 }}
   annotations:
     haproxy.router.openshift.io/balance: roundrobin
     haproxy.router.openshift.io/rewrite-target: /
@@ -13,12 +12,11 @@ spec:
   host: {{ .Values.reportingFrontend.route.host }}
   path: {{ .Values.reportingFrontend.route.path }}
   port:
-    targetPort: {{ template "cas-registration.fullname" . }}-reporting-frontend
+    targetPort: {{ template "cas-bciers.fullname" . }}-reporting-frontend
   tls:
     insecureEdgeTerminationPolicy: Redirect
     termination: edge
   to:
     kind: Service
-    name:  {{ template "cas-registration.fullname" . }}-reporting-frontend
+    name: {{ template "cas-bciers.fullname" . }}-reporting-frontend
     weight: 100
-{{- end }}

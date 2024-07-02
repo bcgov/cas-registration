@@ -1,6 +1,6 @@
 apiVersion: v2
 name: cas-registration
-description: A Helm chart for Kubernetes
+description: The feature-complete deployment chart for CAS-Registration part 1, aka reg1.
 
 # A chart can be either an 'application' or a 'library' chart.
 #

@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "cas-bciers.fullname" . }}-dashboard-frontend
+  labels:
+    component: dashboard-frontend
+    layer: frontend
+{{- include "cas-bciers.labels" . | nindent 4 }}
+spec:
+{{- if not .Values.dashboardFrontend.autoscaling.enabled }}
+  replicas: {{ .Values.dashboardFrontend.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "cas-bciers.selectorLabels" . | nindent 6 }}
+      component: dashboard-frontend
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+{{- include "cas-bciers.selectorLabels" . | nindent 8 }}
+        component: dashboard-frontend
+        layer: frontend
+    spec:
+      containers:
+        - name: {{ template "cas-bciers.fullname" . }}-dashboard-frontend
+          envFrom:
+            - configMapRef:
+                name: {{ template "cas-bciers.fullname" . }}-frontend-env-configmap
+          env:
+            - name: KEYCLOAK_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-gold-client-secret
+                  key: kcClientSecret
+            - name: NEXTAUTH_SECRET
+              valueFrom:
+                  secretKeyRef:
+                    name: cas-bciers-nextauth
+                    key: nextauth-secret
+          image: "{{ .Values.dashboardFrontend.image.repository }}:{{ .Values.defaultImageTag | default .Values.dashboardFrontend.image.tag }}"
+          imagePullPolicy: {{ .Values.dashboardFrontend.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.dashboardFrontend.service.port }}
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.dashboardFrontend.resources | nindent 12 }}
+      restartPolicy: Always
