@@ -363,7 +363,7 @@ def reverse_init_methodology_data(apps, schema_monitor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('reporting', '0001_initial'),
+        ('reporting', '0006_reinit'),
     ]
 
     operations = [
