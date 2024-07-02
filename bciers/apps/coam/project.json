@@ -3,8 +3,13 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/coam",
   "projectType": "application",
-  "tags": [],
+  "tags": ["layer:frontend"],
   "targets": {
+    "dev": {
+      "options": {
+        "port": 7000
+      }
+    },
     "lint": {
       "executor": "@nx/eslint:lint",
       "options": {}
