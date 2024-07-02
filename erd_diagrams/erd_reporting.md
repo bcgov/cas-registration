@@ -85,35 +85,6 @@ ActivitySourceTypeJsonSchema {
     ForeignKey valid_from
     ForeignKey valid_to
 }
-<<<<<<< HEAD
-ActivitySourceTypeUnitJsonSchema {
-    BigAutoField id
-    ForeignKey reporting_activity
-    ForeignKey source_type
-    JSONField json_schema
-    ForeignKey valid_from
-    ForeignKey valid_to
-}
-ActivitySourceTypeFuelJsonSchema {
-    BigAutoField id
-    ForeignKey reporting_activity
-    ForeignKey source_type
-    JSONField json_schema
-    ForeignKey valid_from
-    ForeignKey valid_to
-}
-ActivitySourceTypeGasTypeJsonSchema {
-    BigAutoField id
-    ForeignKey reporting_activity
-    ForeignKey source_type
-    ForeignKey gas_type
-    JSONField json_schema
-    ForeignKey valid_from
-    ForeignKey valid_to
-}
-=======
-ReportOperation ||--|| Report : report
->>>>>>> chore: make prettier happy
 ReportOperation }|--|{ ReportingActivity : activities
 Report }|--|| Operation : operation
 Report }|--|| ReportingYear : reporting_year

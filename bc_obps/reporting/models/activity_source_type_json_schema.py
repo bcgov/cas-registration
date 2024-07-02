@@ -5,7 +5,6 @@ from reporting.models import SourceType, Configuration
 import typing
 
 
-
 class ActivitySourceTypeJsonSchema(BaseModel):
     """Intersection table for Activity-SourceType-JsonSchema"""
 
@@ -37,5 +36,6 @@ class ActivitySourceTypeJsonSchema(BaseModel):
         """
         exception_message = f'This record will result in duplicate json schemas being returned for the date range {self.valid_from.valid_from} - {self.valid_to.valid_to} as it overlaps with a current record or records'
         from reporting.utils import validate_overlapping_records
+
         validate_overlapping_records(ActivitySourceTypeJsonSchema, self, exception_message)
         super().save(*args, **kwargs)

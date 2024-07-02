@@ -4,6 +4,7 @@ from registration.models import ReportingActivity
 from reporting.models import SourceType, GasType, Methodology, Configuration, ReportingField
 import typing
 
+
 class ConfigurationElement(BaseModel):
     """Configuration element for reporting"""
 
@@ -33,5 +34,6 @@ class ConfigurationElement(BaseModel):
         """
         exception_message = f'This record will result in duplicate configuration elements being returned for the date range {self.valid_from.valid_from} - {self.valid_to.valid_to} as it overlaps with a current record or records'
         from reporting.utils import validate_overlapping_records
+
         validate_overlapping_records(ConfigurationElement, self, exception_message)
         super().save(*args, **kwargs)
