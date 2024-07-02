@@ -23,6 +23,7 @@ spec:
         component: reporting-frontend
         layer: frontend
     spec:
+      automountServiceAccountToken: false
       containers:
         - name: {{ template "cas-bciers.fullname" . }}-reporting-frontend
           envFrom:
