@@ -4,7 +4,7 @@ metadata:
   name: {{ include "cas-bciers.fullname" . }}-registration-frontend
   labels:
     component: registration-frontend
-    role: frontend
+    layer: frontend
 {{- include "cas-bciers.labels" . | nindent 4 }}
 spec:
 {{- if not .Values.registrationFrontend.autoscaling.enabled }}
@@ -21,7 +21,7 @@ spec:
       labels:
 {{- include "cas-bciers.selectorLabels" . | nindent 8 }}
         component: registration-frontend
-        role: frontend
+        layer: frontend
     spec:
       containers:
         - name: {{ template "cas-bciers.fullname" . }}-registration-frontend

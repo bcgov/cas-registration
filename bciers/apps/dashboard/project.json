@@ -3,7 +3,7 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/dashboard",
   "projectType": "application",
-  "tags": [],
+  "tags": ["layer:frontend"],
   "targets": {
     "dev": {
       "options": {
