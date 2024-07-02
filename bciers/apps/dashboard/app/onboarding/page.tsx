@@ -3,9 +3,9 @@
 // 🏷 import {named} can be significantly slower than import default
 import Button from "@mui/material/Button";
 import Grid from "@mui/material/Grid/Grid";
-import events from "@/app/data/home/events.json";
+import events from "@/dashboard/app/data/home/events.json";
 import { signIn } from "next-auth/react";
-import { getEnvValue } from "@bciers/utils/actions";
+import { getEnvValue } from "@bciers/actions";
 import {
   bcObpsLink,
   bcObpsGuidanceLink,

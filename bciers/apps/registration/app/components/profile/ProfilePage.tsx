@@ -2,10 +2,10 @@ import { actionHandler } from "@bciers/actions";
 import {
   UserProfileFormData,
   UserProfilePartialFormData,
-} from "@/app/components/form/formDataTypes";
+} from "@bciers/types/form/formData";
 import { auth } from "@/dashboard/auth";
 import getUserFullName from "@bciers/utils/getUserFullName";
-import UserForm from "@/app/components/users/UserForm";
+import UserForm from "@/registration/app/components/profile/ProfileForm";
 
 // 🚀 API call: GET user's data
 async function getUserFormData(): Promise<
@@ -16,7 +16,7 @@ async function getUserFormData(): Promise<
 
 // 🏗️ Async server component: dashboard\profile
 // Gets session user's data from API then rendered to client side form
-export default async function User() {
+export default async function UserPage() {
   // determines POST or PUT based on formData.error.includes("404")
   let isCreate = false;
   // get user's data

@@ -1,16 +1,57 @@
 "use client";
 import { useState } from "react";
-import FormBase from "@bciers/components/form/FormBase";
 import { Alert } from "@mui/material";
-import SubmitButton from "@/app/components/form/SubmitButton";
 import { actionHandler } from "@bciers/actions";
-import {
-  UserProfileFormData,
-  UserProfilePartialFormData,
-} from "@/app/components/form/formDataTypes";
-import { userSchema, userUiSchema } from "@/app/utils/jsonSchema/user";
+import FormBase from "@bciers/components/form/FormBase";
+import { Button } from "@mui/material";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { RJSFSchema } from "@rjsf/utils";
+import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
+
+export interface UserProfileFormData {
+  first_name: string;
+  last_name: string;
+  position_title: string;
+  email: string;
+  phone_number: string;
+  app_role?: { role_name: string };
+}
+
+export interface UserProfilePartialFormData {
+  first_name?: string;
+  last_name?: string;
+  position_title?: string;
+  email?: string;
+  phone_number?: string;
+  app_role?: { role_name: string };
+}
+export const userSchema: RJSFSchema = {
+  type: "object",
+  required: ["first_name", "last_name", "phone_number", "position_title"],
+  properties: {
+    first_name: { type: "string", title: "First Name" },
+    last_name: { type: "string", title: "Last Name" },
+    phone_number: {
+      type: "string",
+      title: "Phone Number",
+      format: "phone",
+    },
+    email: {
+      type: "string",
+      title: "Email Address",
+      readOnly: true,
+    },
+    position_title: { type: "string", title: "Position Title" },
+  },
+};
+
+export const userUiSchema = {
+  "ui:FieldTemplate": FieldTemplate,
+  phone_number: {
+    "ui:widget": "PhoneWidget",
+  },
+};
 
 // 📐 Interface: expected properties and their types for UserForm component
 
@@ -18,10 +59,11 @@ interface Props {
   formData?: UserProfilePartialFormData;
   isCreate: boolean;
 }
-// 🏗️ Client side component: dashboard\profile
-export default function UserForm({ formData, isCreate }: Props) {
+
+export default function ProfileForm({ formData, isCreate }: Props) {
   // 🐜 To display errors
   const [errorList, setErrorList] = useState([] as any[]);
+
   // 🌀 Loading state for the Submit button
   const [isLoading, setIsLoading] = useState(false);
   // ✅ Success state for for the Submit button
@@ -44,7 +86,7 @@ export default function UserForm({ formData, isCreate }: Props) {
     }, 3000);
     if (isCreate) {
       // 🛸 Routing: after the update is complete, navigate to the dashboard
-      router.push("/dashboard");
+      router.push("/");
     }
   };
 
@@ -58,7 +100,7 @@ export default function UserForm({ formData, isCreate }: Props) {
     const response = await actionHandler(
       isCreate ? `registration/users` : `registration/user/user-profile`,
       isCreate ? "POST" : "PUT",
-      "/dashboard/profile",
+      "/profile",
       {
         body: JSON.stringify({
           ...data.formData,
@@ -96,10 +138,14 @@ export default function UserForm({ formData, isCreate }: Props) {
         ))}
       <div className="flex justify-end gap-3">
         {/* Disable the button when loading or when success state is true */}
-        <SubmitButton
-          label={isSuccess ? "✅ Success" : "Submit"}
+        <Button
+          variant="contained"
+          type="submit"
+          aria-disabled={isLoading}
           disabled={isLoading}
-        />
+        >
+          {isSuccess ? "✅ Success" : "Submit"}
+        </Button>
       </div>
     </FormBase>
   );

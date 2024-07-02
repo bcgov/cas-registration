@@ -5,6 +5,7 @@ import { expect, vi } from "vitest";
 import {
   actionHandler,
   auth,
+  getToken,
   useParams,
   usePathname,
   useRouter,
@@ -43,8 +44,9 @@ vi.mock("@/dashboard/auth", () => ({
   auth,
 }));
 
-vi.mock("@bciers/utils/actions", () => ({
+vi.mock("@bciers/actions", () => ({
   actionHandler,
+  getToken,
 }));
 
 // mock fetch

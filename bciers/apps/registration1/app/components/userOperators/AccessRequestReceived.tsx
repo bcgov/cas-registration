@@ -1,5 +1,5 @@
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
-import { actionHandler } from "@bciers/utils/actions";
+import { actionHandler } from "@bciers/actions";
 import { Operator } from "./types";
 import { getOperator } from "./ConfirmSelectedOperator";
 

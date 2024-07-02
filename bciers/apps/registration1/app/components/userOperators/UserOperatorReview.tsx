@@ -1,6 +1,6 @@
 "use client";
 
-import { actionHandler } from "@bciers/utils/actions";
+import { actionHandler } from "@bciers/actions";
 import Review from "@/app/components/button/Review";
 import {
   OperatorStatus,
