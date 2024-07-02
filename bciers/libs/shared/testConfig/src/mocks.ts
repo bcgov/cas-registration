@@ -1,3 +1,5 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { vi } from "vitest";
 import { fetchMocker } from "./global";
 
 // To reduce code duplication and simplify mocking you can import these common mocks from this file
