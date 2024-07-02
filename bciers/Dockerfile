@@ -1,5 +1,5 @@
 # Install dependencies only when needed
-FROM docker.io/node:20.11 AS deps
+FROM docker.io/node:20.15 AS deps
 WORKDIR /usr/src/app
 COPY ./package.json .
 RUN corepack enable
@@ -9,7 +9,7 @@ RUN echo 'nodeLinker: "node-modules"' >> ./.yarnrc.yml
 RUN yarn install
 
 # Production image, copy all the files and run next
-FROM docker.io/node:20.11 AS runner
+FROM docker.io/node:20.15 AS runner
 
 ADD https://github.com/Yelp/dumb-init/releases/download/v1.2.5/dumb-init_1.2.5_x86_64 /usr/local/bin/dumb-init
 RUN chmod +x /usr/local/bin/dumb-init
