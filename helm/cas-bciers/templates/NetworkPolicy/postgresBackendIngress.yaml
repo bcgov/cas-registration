@@ -12,7 +12,7 @@ spec:
   - from:
     - podSelector:
         matchLabels:
-          release: cas-obps-postgres
+          release: {{ .Values.backend.database.releaseName }}
     - podSelector:
         matchLabels:
-          app.kubernetes.io/name: cas-obps-postgres
+          app.kubernetes.io/name: {{ .Values.backend.database.appName }}
