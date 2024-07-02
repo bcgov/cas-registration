@@ -37,6 +37,10 @@ backend:
     targetCPUUtilizationPercentage: 80
     # targetMemoryUtilizationPercentage: 80
 
+  database:
+    releaseName: cas-obps-postgres
+    appName: cas-obps-postgres
+
 registrationFrontend:
   replicaCount: 1
 
