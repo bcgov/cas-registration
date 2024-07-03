@@ -19,6 +19,8 @@ spec:
         - name: {{ template "cas-registration.fullname" . }}-add-django-admin
           image: curlimages/curl
           env:
+            - name: BACKEND_HOST
+              value: {{ .Values.backend.route.host }}
             - name: DJANGO_SUPERUSER_USERNAME
               valueFrom:
                 secretKeyRef:
@@ -32,6 +34,6 @@ spec:
           command:
             - /bin/sh
             - -ec
-            - "curl https://cas-reg-backend-dev.apps.silver.devops.gov.bc.ca/api/common/create-superuser"
+            - "curl https://$(BACKEND_HOST)/api/common/create-superuser"
       restartPolicy: Never
 {{ end }}
