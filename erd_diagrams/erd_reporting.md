@@ -46,7 +46,7 @@ GasType {
 FuelType {
     BigAutoField id
     CharField name
-    CharField unit_type
+    CharField unit
 }
 Methodology {
     BigAutoField id

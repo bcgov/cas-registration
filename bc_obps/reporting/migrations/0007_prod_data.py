@@ -517,7 +517,6 @@ def reverse_init_fuel_type_data(apps, schema_monitor):
             "Vegetable Oil",
             "Waste Plastics",
             "Wood Waste",
-            "CO2",
         ]
     ).delete()
 
