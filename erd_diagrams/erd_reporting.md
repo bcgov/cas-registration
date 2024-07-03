@@ -43,6 +43,11 @@ GasType {
     CharField name
     CharField chemical_formula
 }
+FuelType {
+    BigAutoField id
+    CharField name
+    CharField unit_type
+}
 Methodology {
     BigAutoField id
     CharField name
