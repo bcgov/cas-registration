@@ -4,7 +4,7 @@ import { Button } from "@mui/material";
 import { Suspense } from "react";
 import Loading from "@bciers/components/loading/SkeletonGrid";
 import { OperationsSearchParams } from "@/app/components/operations/types";
-import Note from "@bciers/components/datagrid/Note";
+import Note from "@bciers/components/layout/Note";
 import Operations from "./Operations";
 
 import { auth } from "@/dashboard/auth";
@@ -27,7 +27,9 @@ export default async function OperationsPage({
 
   return (
     <>
-      <Note classNames="mb-4 mt-6" message={message} />
+      <Note>
+        <b>Note:</b> {message}
+      </Note>
       <h1>Operations</h1>
       {/* Conditionally render the button based on user's role */}
       {role?.includes("industry_user") && (
