@@ -1,19 +1,8 @@
 import { render, screen } from "@testing-library/react";
-import {
-  useSession,
-  notFound,
-  useRouter,
-  getFacility,
-  getOperation,
-} from "@bciers/testConfig/mocks";
+import { useSession, notFound, useRouter } from "@bciers/testConfig/mocks";
 import Facility from "apps/registration/app/components/facilities/Facility";
-
-vi.mock("apps/registration/app/components/facilities/getFacility", () => ({
-  default: getFacility,
-}));
-vi.mock("apps/registration/app/components/operations/getOperation", () => ({
-  default: getOperation,
-}));
+import { getOperation } from "../operations/mocks";
+import { getFacility } from "./mocks";
 
 useSession.mockReturnValue({
   get: vi.fn(),
@@ -76,19 +65,15 @@ describe("Facilities component", () => {
   });
   it("renders the LFO readonly form with form data", async () => {
     getFacility.mockReturnValueOnce({
-      section1: {
-        name: "Test Facility Name",
-        type: "Large Facility",
-        well_authorization_numbers: [3442, 42643],
-      },
-      section2: {
-        latitude_of_largest_emissions: "3.000000",
-        longitude_of_largest_emissions: "4.000000",
-        street_address: "adf",
-        municipality: "ad",
-        province: "BC",
-        postal_code: "h0h0h0",
-      },
+      name: "Test Facility Name",
+      type: "Large Facility",
+      well_authorization_numbers: [3442, 42643],
+      latitude_of_largest_emissions: "3.000000",
+      longitude_of_largest_emissions: "4.000000",
+      street_address: "adf",
+      municipality: "ad",
+      province: "BC",
+      postal_code: "h0h0h0",
       id: "4abd8367-efd1-4654-a7ea-fa1a015d3cae",
     });
     getOperation.mockReturnValueOnce({

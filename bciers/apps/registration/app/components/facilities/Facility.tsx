@@ -1,8 +1,8 @@
 import {
   facilitiesSchemaSfo,
   facilitiesUiSchema,
-} from "../../utils/jsonSchema/facilitiesSfo";
-import { facilitiesSchemaLfo } from "../../utils/jsonSchema/facilitiesLfo";
+} from "../../data/jsonSchema/facilitiesSfo";
+import { facilitiesSchemaLfo } from "../../data/jsonSchema/facilitiesLfo";
 import FacilitiesForm from "./FacilitiesForm";
 import { UUID } from "crypto";
 import { notFound } from "next/navigation";
@@ -22,30 +22,24 @@ export default async function Facility({
   if (facilityId) {
     facilityFormData = await getFacility(facilityId);
     if (facilityFormData?.error) {
-      // brianna did we have some global error handling for this is part 1?
       return notFound();
     }
   }
   const operation = await getOperation(operationId);
-  console.log("getoperation", getOperation);
-  console.log("operation", operation);
   if (operation.error) {
-    // brianna did we have some global error handling for this is part 1?
     return notFound();
   }
-  const isCreating = Object.keys(facilityFormData).length > 0 ? false : true;
+  const isCreating = Object.keys(facilityFormData).length === 0;
   return (
-    <>
-      <FacilitiesForm
-        schema={
-          operation.type === "Single Facility Operation"
-            ? facilitiesSchemaSfo
-            : facilitiesSchemaLfo
-        }
-        uiSchema={facilitiesUiSchema}
-        formData={facilityFormData}
-        isCreating={isCreating}
-      />
-    </>
+    <FacilitiesForm
+      schema={
+        operation.type === "Single Facility Operation"
+          ? facilitiesSchemaSfo
+          : facilitiesSchemaLfo
+      }
+      uiSchema={facilitiesUiSchema}
+      formData={facilityFormData}
+      isCreating={isCreating}
+    />
   );
 }

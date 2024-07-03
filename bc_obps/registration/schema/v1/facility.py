@@ -1,7 +1,6 @@
 from ninja import FilterSchema, ModelSchema, Field
 from registration.models import Facility
 from uuid import UUID
-from ninja import Schema
 from typing import List, Optional
 
 
@@ -62,15 +61,36 @@ class FacilityIn(ModelSchema):
         populate_by_name = True
 
 
-class FacilityOut(Schema):
-    section1: FacilitySection1
-    section2: FacilitySection2
-    id: UUID
+class FacilityOut(ModelSchema):
+    street_address: Optional[str] = Field(None, alias="address.street_address")
+    municipality: Optional[str] = Field(None, alias="address.municipality")
+    province: Optional[str] = Field(None, alias="address.province")
+    postal_code: Optional[str] = Field(None, alias="address.postal_code")
+    latitude_of_largest_emissions: float = Field(..., alias="latitude_of_largest_emissions")
+    longitude_of_largest_emissions: float = Field(..., alias="longitude_of_largest_emissions")
 
-    @staticmethod
-    def resolve_section1(obj: Facility) -> FacilitySection1:
-        return FacilitySection1.from_orm(obj)
+    class Config:
+        model = Facility
+        model_fields = [
+            "id",
+            "name",
+            "type",
+            'well_authorization_numbers',
+            "latitude_of_largest_emissions",
+            "longitude_of_largest_emissions",
+        ]
+        populate_by_name = True
 
-    @staticmethod
-    def resolve_section2(obj: Facility) -> FacilitySection2:
-        return FacilitySection2.from_orm(obj)
+
+# class FacilityOut(Schema):
+#     section1: FacilitySection1
+#     section2: FacilitySection2
+#     id: UUID
+
+#     @staticmethod
+#     def resolve_section1(obj: Facility) -> FacilitySection1:
+#         return FacilitySection1.from_orm(obj)
+
+#     @staticmethod
+#     def resolve_section2(obj: Facility) -> FacilitySection2:
+#         return FacilitySection2.from_orm(obj)

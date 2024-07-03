@@ -2,6 +2,7 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import SingleStepTaskListForm from "./SingleStepTaskListForm";
 import SectionFieldTemplate from "@bciers/components/form/fields/SectionFieldTemplate";
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
+import { userEvent } from "@testing-library/user-event";
 
 const section1: RJSFSchema = {
   type: "object",
@@ -51,6 +52,13 @@ const section3: RJSFSchema = {
       title: "City",
     },
   },
+  well_authorization_numbers: {
+    type: "array",
+    items: {
+      type: "number",
+    },
+    title: "Well Authorization Number(s)",
+  },
 };
 
 export const schema: RJSFSchema = {
@@ -85,19 +93,13 @@ export const uiSchema: UiSchema = {
   },
 };
 
-const mockformData = {
-  section1: {
-    first_name: "Test",
-    last_name: "User",
-  },
-  section2: {
-    phone: "+1234567890",
-    email: "test@testing.ca",
-  },
-  section3: {
-    address: "123 Test St",
-    city: "Victoria",
-  },
+const mockFormData = {
+  first_name: "Test",
+  last_name: "User",
+  phone: "+1234567890",
+  email: "test@testing.ca",
+  address: "123 Test St",
+  city: "Victoria",
 };
 
 const consoleSpy = vi.spyOn(console, "log");
@@ -107,7 +109,7 @@ describe("the SingleStepTaskListForm component", () => {
     vi.resetAllMocks();
   });
 
-  it("should render successfully", () => {
+  it("should render successfully with no formData", () => {
     render(
       <SingleStepTaskListForm
         schema={schema}
@@ -139,12 +141,12 @@ describe("the SingleStepTaskListForm component", () => {
     expect(screen.getByRole("button", { name: "Cancel" })).toBeVisible();
   });
 
-  it("should render the formData when provided", () => {
+  it("should transform and render the formData when provided", () => {
     render(
       <SingleStepTaskListForm
         schema={schema}
         uiSchema={uiSchema}
-        formData={mockformData}
+        formData={mockFormData}
         onCancel={() => console.log("cancel")}
         onSubmit={async (e) => console.log("submit", e)}
       />,
@@ -158,42 +160,49 @@ describe("the SingleStepTaskListForm component", () => {
     expect(screen.getByLabelText("City*")).toHaveValue("Victoria");
   });
 
-  it("should render the task list checks when completed formData is provided", () => {
+  it("should render the task list checkmarks as sections are filled", async () => {
     render(
       <SingleStepTaskListForm
         schema={schema}
         uiSchema={uiSchema}
-        formData={mockformData}
+        formData={{}}
         onCancel={() => console.log("cancel")}
         onSubmit={async (e) => console.log("submit", e)}
       />,
     );
+    expect(screen.getByTestId("section1-tasklist-check")).not.toContainHTML(
+      "svg",
+    );
+    await userEvent.type(screen.getByLabelText(/First name+/i), "test");
+    await userEvent.type(screen.getByLabelText(/Last name+/i), "test");
 
     expect(screen.getByTestId("section1-tasklist-check")).toContainHTML("svg");
-    expect(screen.getByTestId("section2-tasklist-check")).toContainHTML("svg");
-    expect(screen.getByTestId("section3-tasklist-check")).toContainHTML("svg");
+    expect(screen.getByTestId("section2-tasklist-check")).not.toContainHTML(
+      "svg",
+    );
+    expect(screen.getByTestId("section3-tasklist-check")).not.toContainHTML(
+      "svg",
+    );
   });
 
-  it("should render the correct task list checks when partial formData is provided", () => {
+  it("should render the correct task list checks when formData is provided", () => {
     render(
       <SingleStepTaskListForm
         schema={schema}
         uiSchema={uiSchema}
         formData={{
-          section1: {
-            first_name: "Test",
-            last_name: "User",
-          },
-          section2: {
-            phone: "+1234567890",
-            email: "test@testing.ca",
-          },
+          first_name: "Test",
+          last_name: "User",
+          phone: "+1234567890",
+          email: "test@testing.ca",
         }}
         onCancel={() => console.log("cancel")}
         onSubmit={async (e) => console.log("submit", e)}
+        disabled={false}
       />,
     );
 
+    expect(screen.getByRole("button", { name: "Submit" })).toBeEnabled();
     expect(screen.getByTestId("section1-tasklist-check")).toContainHTML("svg");
     expect(screen.getByTestId("section2-tasklist-check")).toContainHTML("svg");
     expect(screen.queryByTestId("section3-tasklist-check")).not.toContainHTML(
@@ -201,12 +210,12 @@ describe("the SingleStepTaskListForm component", () => {
     );
   });
 
-  it("should call the onSubmit function when the form is submitted", async () => {
+  it("should call the onSubmit function and transform the form data when the form is submitted", async () => {
     render(
       <SingleStepTaskListForm
         schema={schema}
         uiSchema={uiSchema}
-        formData={mockformData}
+        formData={mockFormData}
         onCancel={() => console.log("cancel")}
         onSubmit={async (e) => console.log("submit", e)}
       />,
@@ -215,7 +224,15 @@ describe("the SingleStepTaskListForm component", () => {
     const submitButton = screen.getByRole("button", { name: "Submit" });
     fireEvent.click(submitButton);
 
-    expect(consoleSpy).toHaveBeenCalledOnce();
+    // check that the component correctly unnested the formData
+    expect(consoleSpy.mock.calls[0][1].formData).toEqual({
+      address: "123 Test St",
+      city: "Victoria",
+      email: "test@testing.ca",
+      first_name: "Test",
+      last_name: "User",
+      phone: "+1234567890",
+    });
   });
 
   it("should call the onCancel function when the form is cancelled", async () => {
@@ -223,7 +240,7 @@ describe("the SingleStepTaskListForm component", () => {
       <SingleStepTaskListForm
         schema={schema}
         uiSchema={uiSchema}
-        formData={mockformData}
+        formData={mockFormData}
         onCancel={() => console.log("cancel")}
         onSubmit={async (e) => console.log("submit", e)}
       />,
@@ -364,5 +381,21 @@ describe("the SingleStepTaskListForm component", () => {
     expect(
       screen.getByTestId("section2-tasklist-check"),
     ).not.toBeEmptyDOMElement();
+  });
+  it("should render an api error if an error is passed", () => {
+    render(
+      <SingleStepTaskListForm
+        schema={schema}
+        uiSchema={uiSchema}
+        formData={{}}
+        onCancel={() => console.log("cancel")}
+        onSubmit={async (e) => console.log("submit", e)}
+        error={"Name: Facility with this Name already exists"}
+      />,
+    );
+    expect(screen.getByTestId("ErrorOutlineIcon")).toBeVisible();
+    expect(
+      screen.getByText("Name: Facility with this Name already exists"),
+    ).toBeVisible();
   });
 });

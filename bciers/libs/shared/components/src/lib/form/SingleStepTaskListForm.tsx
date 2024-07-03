@@ -9,26 +9,59 @@ import TaskList from "@bciers/components/form/components/TaskList";
 
 interface SingleStepTaskListFormProps {
   disabled?: boolean;
-  formData: any;
+  formData: { [key: string]: any };
   onCancel: () => void;
   onSubmit: (e: IChangeEvent) => Promise<any>;
   schema: RJSFSchema;
   uiSchema: UiSchema;
-  error?: any;
+  error?: string;
 }
+
+// this generic function transforms flat form data into sections based on the json schema (this component needs form data to be nested into sections to work)
+const createNestedFormData = (
+  formData: { [key: string]: any },
+  schema: { [key: string]: any },
+) => {
+  const nestedSchema: { [key: string]: any } = {};
+
+  Object.keys(schema.properties).forEach((section) => {
+    nestedSchema[section] = {};
+    Object.keys(schema.properties[section].properties).forEach((field) => {
+      if (formData.hasOwnProperty(field)) {
+        nestedSchema[section][field] = formData[field];
+      }
+    });
+  });
+
+  return nestedSchema;
+};
+
+// this generic function flattens sectioned form data (our backend needs flat objects)
+const createUnnestedFormData = (
+  formData: { [key: string]: any },
+  formSectionList: string[],
+) => {
+  return formSectionList.reduce((acc, section) => {
+    acc = { ...acc, ...formData[section] };
+    return acc;
+  }, {});
+};
 
 const SingleStepTaskListForm = ({
   disabled,
-  formData,
+  formData: rawFormData,
   onCancel,
   onSubmit,
   schema,
   uiSchema,
   error,
 }: SingleStepTaskListFormProps) => {
+  const formData =
+    Object.keys(rawFormData).length > 0
+      ? createNestedFormData(rawFormData, schema)
+      : {};
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLiveValidate, setIsLiveValidate] = useState(false);
-
   // Form section status to track if each section is validated
   const [formSectionStatus, setFormSectionStatus] = useState<{
     [key: string]: boolean;
@@ -74,6 +107,7 @@ const SingleStepTaskListForm = ({
   // Set isSubmitting to true to disable submit buttons and prevent multiple form submissions
   const submitHandler = async (e: IChangeEvent) => {
     setIsSubmitting(true);
+    e.formData = createUnnestedFormData(e.formData, formSectionList);
     const response = await onSubmit(e); // Pass the event to the parent component
 
     // If there is an error, set isSubmitting to false to re-enable submit buttons
@@ -134,7 +168,9 @@ const SingleStepTaskListForm = ({
           onSubmit={submitHandler}
           liveValidate={isLiveValidate}
         >
-          {error && <Alert severity="error">{error}</Alert>}
+          <div className="min-h-6">
+            {error && <Alert severity="error">{error}</Alert>}
+          </div>
           <div className="w-full flex justify-end mt-8">
             <Button variant="contained" type="submit" disabled={isFormDisabled}>
               Submit

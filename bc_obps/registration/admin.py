@@ -47,6 +47,8 @@ class FacilityAdmin(admin.ModelAdmin):
     list_display = (
         'id',
         'name',
+        'swrs_facility_id',
+        'bcghg_id',
         'type',
         'latitude_of_largest_emissions',
         'longitude_of_largest_emissions',

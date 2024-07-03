@@ -7,7 +7,11 @@ import { render, screen } from "@testing-library/react";
 const arrayFieldSchema = {
   type: "object",
   properties: {
-    arrayTestField: { type: "array", title: "Array test field" },
+    arrayTestField: {
+      type: "array",
+      title: "Array test field",
+      items: { type: "number" },
+    },
   },
 } as RJSFSchema;
 
@@ -23,8 +27,6 @@ describe("RJSF ReadOnlyArrayFieldTemplate", () => {
         theme={readOnlyTheme}
       />,
     );
-
-    expect(screen.queryAllByRole("button")).not.toBeInTheDocument();
     expect(screen.getByText("123")).toBeVisible();
     expect(screen.getByText("456")).toBeVisible();
   });

@@ -21,6 +21,8 @@ class FacilityDataAccessService:
     @classmethod
     def get_current_facilities_by_operation(cls, operation: Operation) -> QuerySet[Facility]:
         return Facility.objects.filter(ownerships__end_date__isnull=True, ownerships__operation=operation).all()
+
+    @classmethod
     def get_by_id(cls, facility_id: UUID) -> Facility:
         return Facility.objects.get(id=facility_id)
 
@@ -34,4 +36,5 @@ class FacilityDataAccessService:
             **facility_data,
             created_by_id=user_guid,
         )
+        facility.set_create_or_update(user_guid)
         return facility
