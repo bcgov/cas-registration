@@ -5,6 +5,7 @@ from .report_facility import ReportFacility
 from .reporting_year import ReportingYear
 
 from .gas_type import GasType
+from .fuel_type import FuelType
 from .methodology import Methodology
 from .reporting_field import ReportingField
 from .configuration import Configuration
@@ -20,6 +21,7 @@ __all__ = [
     "ReportFacility",
     "ReportingYear",
     "GasType",
+    "FuelType",
     "Methodology",
     "ReportingField",
     "Configuration",
