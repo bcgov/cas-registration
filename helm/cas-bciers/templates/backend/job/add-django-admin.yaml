@@ -3,20 +3,20 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  labels: {{- include "cas-registration.labels" . | nindent 4 }}
+  labels: {{- include "cas-bciers.labels" . | nindent 4 }}
     component: backend
-  name: {{ template "cas-registration.fullname" . }}-add-django-admin
+  name: {{ template "cas-bciers.fullname" . }}-add-django-admin
   namespace: {{ .Release.Namespace }}
   annotations:
     "helm.sh/hook": post-upgrade, post-install
 spec:
   template:
     metadata:
-      name: {{ template "cas-registration.fullname" . }}-add-django-admin
+      name: {{ template "cas-bciers.fullname" . }}-add-django-admin
     spec:
       activeDeadlineSeconds: 300
       containers:
-        - name: {{ template "cas-registration.fullname" . }}-add-django-admin
+        - name: {{ template "cas-bciers.fullname" . }}-add-django-admin
           image: curlimages/curl
           env:
             - name: BACKEND_HOST
