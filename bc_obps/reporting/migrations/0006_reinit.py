@@ -157,7 +157,7 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 (
-                    "unit_type",
+                    "unit",
                     models.CharField(
                         db_comment="The unit of measurement for this fuel type (example: kilolitres)",
                         max_length=1000,

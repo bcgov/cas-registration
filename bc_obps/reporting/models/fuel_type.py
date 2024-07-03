@@ -6,7 +6,7 @@ class FuelType(BaseModel):
     """Reporting fuel type model"""
 
     name = models.CharField(max_length=1000, db_comment="The name of a fuel type (example: Crude Oil)")
-    unit_type = models.CharField(
+    unit = models.CharField(
         max_length=1000,
         db_comment="The unit of measurement for this fuel type (example: kilolitres)",
     )
