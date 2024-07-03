@@ -1,7 +1,7 @@
 "use client";
 
 import Button from "@mui/material/Button";
-import { actionHandler } from "@bciers/utils/actions";
+import { actionHandler } from "@bciers/actions";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Alert } from "@mui/material";

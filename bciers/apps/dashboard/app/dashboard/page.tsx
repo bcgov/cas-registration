@@ -1,6 +1,6 @@
 import Tiles from "@bciers/components/navigation/Tiles";
 import Note from "@bciers/components/layout/Note";
-import { fetchDashboardData } from "@bciers/actions/server";
+import { fetchDashboardData } from "@bciers/actions";
 import { ContentItem } from "@bciers/types/tiles";
 import { auth } from "@/dashboard/auth";
 

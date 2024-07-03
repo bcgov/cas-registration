@@ -1,6 +1,6 @@
 import { GridRowsProp } from "@mui/x-data-grid";
 
-import { actionHandler } from "@bciers/utils/actions";
+import { actionHandler } from "@bciers/actions";
 import { auth } from "@/dashboard/auth";
 import {
   OperationRow,
