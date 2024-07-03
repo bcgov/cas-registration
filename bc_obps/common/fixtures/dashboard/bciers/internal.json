@@ -49,7 +49,7 @@
           },
           {
             "title": "Reporting",
-            "href": "/reporting/dashboard",
+            "href": "/reporting",
             "icon": "File",
             "content": "View Annual Reports for any operation here.",
             "links": [
