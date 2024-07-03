@@ -138,6 +138,38 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.CreateModel(
+            name="FuelType",
+            fields=[
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "name",
+                    models.CharField(
+                        db_comment="The name of a fuel type (example: Crude Oil)",
+                        max_length=1000,
+                    ),
+                ),
+                (
+                    "unit_type",
+                    models.CharField(
+                        db_comment="The unit of measurement for this fuel type (example: kilolitres)",
+                        max_length=1000,
+                    ),
+                ),
+            ],
+            options={
+                "db_table": 'erc"."fuel_type',
+                "db_table_comment": "This table contains the list of fuel types that can be reported.",
+            },
+        ),
+        migrations.CreateModel(
             name="Methodology",
             fields=[
                 (
@@ -481,37 +513,5 @@ class Migration(migrations.Migration):
                 related_name="activity_source_type_base_schemas",
                 to="reporting.sourcetype",
             ),
-        ),
-        migrations.CreateModel(
-            name="FuelType",
-            fields=[
-                (
-                    "id",
-                    models.BigAutoField(
-                        auto_created=True,
-                        primary_key=True,
-                        serialize=False,
-                        verbose_name="ID",
-                    ),
-                ),
-                (
-                    "name",
-                    models.CharField(
-                        db_comment="The name of a fuel type (example: Crude Oil)",
-                        max_length=1000,
-                    ),
-                ),
-                (
-                    "unit_type",
-                    models.CharField(
-                        db_comment="The unit of measurement for this fuel type (example: kilolitres)",
-                        max_length=1000,
-                    ),
-                ),
-            ],
-            options={
-                "db_table": 'erc"."fuel_type',
-                "db_table_comment": "This table contains the list of fuel types that can be reported.",
-            },
         ),
     ]
