@@ -24,7 +24,7 @@ const mockResponse = {
     {
       id: 2,
       name: "Facility 2",
-      type: "Large LFO",
+      type: "Large Facility",
       bcghg_id: "1-211113-0002",
     },
   ],
@@ -62,7 +62,7 @@ describe("OperationsDataGrid component", () => {
     expect(screen.getAllByText(/Single Facility/i)).toHaveLength(1);
     expect(screen.getByText(/Facility 2/i)).toBeVisible();
     expect(screen.getByText(/1-211113-0002/i)).toBeVisible();
-    expect(screen.getAllByText(/Large LFO/i)).toHaveLength(1);
+    expect(screen.getAllByText(/Large Facility/i)).toHaveLength(1);
     // Check the number of view details links
     expect(screen.getAllByRole("link", { name: /View Details/i })).toHaveLength(
       2,

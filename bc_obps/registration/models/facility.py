@@ -9,9 +9,9 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 class Facility(TimeStampedModel):
     class Types(models.TextChoices):
         SINGLE_FACILITY = "Single Facility"
-        LARGE_LFO = "Large Facility"
-        MEDIUM_LFO = "Medium Facility"
-        SMALL_AGGREGATE_LFO = "Small Aggregate"
+        LARGE_FACILITY = "Large Facility"
+        MEDIUM_FACILITY = "Medium Facility"
+        SMALL_AGGREGATE = "Small Aggregate"
 
     id = models.UUIDField(
         primary_key=True, default=uuid.uuid4, db_comment="Primary key to identify the facility", verbose_name="ID"

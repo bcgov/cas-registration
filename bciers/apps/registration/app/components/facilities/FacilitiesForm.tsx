@@ -22,13 +22,11 @@ export default function FacilitiesForm({
   uiSchema,
   isCreating,
 }: Readonly<Props>) {
-  console.log("formdata", formData);
   // @ ts-ignore
   const [error, setError] = useState(undefined);
   const [confirmation, setConfirmation] = useState(false);
   const router = useRouter();
   const params = useParams();
-
   return (
     <>
       {confirmation && <div>success</div>}
@@ -42,12 +40,8 @@ export default function FacilitiesForm({
           const method = isCreating ? "POST" : "PUT";
           const endpoint = isCreating ? "registration/facilities" : `tbd`;
           const pathToRevalidate = isCreating ? "dashboard/facilities" : `tbd`;
-          // brianna bug potential this is going to overwrite with nesting, going to have to do some processing here
           const body = {
-            ...formData?.section1,
-            ...formData?.section2,
-            ...data.formData.section1,
-            ...data.formData.section2,
+            ...data.formData,
             operation_id: params.operationId,
           };
           const response = await actionHandler(
@@ -66,7 +60,7 @@ export default function FacilitiesForm({
           setConfirmation(true);
           if (isCreating) {
             router.replace(
-              `/operations/${params.operationId}/facilities/${response.id}`,
+              `/operations/${params.operationId}/facilities/${response.id}?title=${response.name}`,
               // @ts-ignore
               { shallow: true },
             );

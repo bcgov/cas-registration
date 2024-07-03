@@ -43,10 +43,8 @@ class FacilityService:
         facility: Facility = FacilityDataAccessService.get_by_id(facility_id)
         owner: Operation = facility.current_owner
         user: User = UserDataAccessService.get_by_guid(user_guid)
-        if user.is_industry_user():
-            if not owner.user_has_access(user.user_guid):
-                raise Exception(UNAUTHORIZED_MESSAGE)
-            return facility
+        if user.is_industry_user() and not owner.user_has_access(user.user_guid):
+            raise Exception(UNAUTHORIZED_MESSAGE)
         return facility
 
     @classmethod
@@ -57,9 +55,8 @@ class FacilityService:
         user: User = UserDataAccessService.get_by_guid(user_guid)
         if not operation.user_has_access(user.user_guid):
             raise Exception(UNAUTHORIZED_MESSAGE)
-
         # if any of address data generate one address and keep it to pass to the facility
-        facility_data = payload.dict(
+        facility_data: dict = payload.dict(
             include={
                 'name',
                 'type',
@@ -74,15 +71,14 @@ class FacilityService:
             address = AddressDataAccessService.create_address(address_data)
             facility_data['address'] = address
         facility = FacilityDataAccessService.create_facility(user_guid, facility_data)
-
         FacilityOwnershipTimelineDataAccessService.create_facility_ownership_timeline(
-            {'facility': facility, 'operation': operation, 'start_date': timezone.now()}
+            user_guid, {'facility': facility, 'operation': operation, 'start_date': timezone.now()}
         )
 
         well_authorization_numbers = []
         for number in payload.well_authorization_numbers:
             well_authorization_numbers.append(
-                WellAuthorizationNumberDataAccessService.create_well_authorization_number(number)
+                WellAuthorizationNumberDataAccessService.create_well_authorization_number(user_guid, number)
             )
         if well_authorization_numbers:
             facility.well_authorization_numbers.set(well_authorization_numbers)

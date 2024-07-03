@@ -6,7 +6,7 @@ const defaultProps = {
   label: "i am a nice label",
 };
 
-describe("The MultiStepHeader component", () => {
+describe("The SubmitButton component", () => {
   beforeEach(() => {
     vi.resetAllMocks();
   });

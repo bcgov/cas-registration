@@ -16,11 +16,12 @@ import FacilitiesForm from "apps/registration/app/components/facilities/Faciliti
 import {
   facilitiesSchemaSfo,
   facilitiesUiSchema,
-} from "apps/registration/app/utils/jsonSchema/facilitiesSfo";
-import { facilitiesSchemaLfo } from "apps/registration/app/utils/jsonSchema/facilitiesLfo";
+} from "../../../app/data/jsonSchema/facilitiesSfo";
+import { facilitiesSchemaLfo } from "../../../app/data/jsonSchema/facilitiesLfo";
 
 const operationId = "8be4c7aa-6ab3-4aad-9206-0ef914fea063";
 const facilityId = "025328a0-f9e8-4e1a-888d-aa192cb053db";
+const facilityName = "bloop";
 
 useParams.mockReturnValue({
   operationId: operationId,
@@ -37,35 +38,27 @@ useRouter.mockReturnValue({
 });
 
 const sfoFormData = {
-  section1: {
-    name: "Monkeyfuzz",
-    type: "Single Facility Operation",
-  },
-  section2: {
-    latitude_of_largest_emissions: "3.000000",
-    longitude_of_largest_emissions: "4.000000",
-    street_address: "adf",
-    municipality: "ad",
-    province: "BC",
-    postal_code: "h0h0h0",
-  },
+  name: "Monkeyfuzz",
+  type: "Single Facility Operation",
+  latitude_of_largest_emissions: "3.000000",
+  longitude_of_largest_emissions: "4.000000",
+  street_address: "adf",
+  municipality: "ad",
+  province: "BC",
+  postal_code: "h0h0h0",
   id: "4abd8367-efd1-4654-a7ea-fa1a015d3cae",
 };
 
 const lfoFormData = {
-  section1: {
-    name: "Monkeyfuzz",
-    type: "Single Facility Operation",
-    well_authorization_numbers: [24546, 54321],
-  },
-  section2: {
-    latitude_of_largest_emissions: "3.000000",
-    longitude_of_largest_emissions: "4.000000",
-    street_address: "adf",
-    municipality: "ad",
-    province: "BC",
-    postal_code: "h0h0h0",
-  },
+  name: "Monkeyfuzz",
+  type: "Single Facility Operation",
+  well_authorization_numbers: [24546, 54321],
+  latitude_of_largest_emissions: "3.000000",
+  longitude_of_largest_emissions: "4.000000",
+  street_address: "adf",
+  municipality: "ad",
+  province: "BC",
+  postal_code: "h0h0h0",
   id: "4abd8367-efd1-4654-a7ea-fa1a015d3cae",
 };
 
@@ -243,11 +236,9 @@ describe("FacilitiesForm component", () => {
         schema={facilitiesSchemaLfo}
         uiSchema={facilitiesUiSchema}
         formData={{
-          section2: {
-            latitude_of_largest_emissions: -600,
-            longitude_of_largest_emissions: 1800,
-            postal_code: "garbage",
-          },
+          latitude_of_largest_emissions: -600,
+          longitude_of_largest_emissions: 1800,
+          postal_code: "garbage",
         }}
       />,
     );
@@ -275,6 +266,7 @@ describe("FacilitiesForm component", () => {
     const submitButton = screen.getByRole("button", { name: /submit/i });
     actionHandler.mockReturnValueOnce({
       id: facilityId,
+      name: facilityName,
       error: null,
     });
     // fill name
@@ -303,7 +295,7 @@ describe("FacilitiesForm component", () => {
     await waitFor(() => {
       expect(screen.getByText("success")).toBeVisible();
       expect(mockReplace).toHaveBeenCalledWith(
-        `/operations/${operationId}/facilities/${facilityId}`,
+        `/operations/${operationId}/facilities/${facilityId}?title=${facilityName}`,
         {
           shallow: true,
         },
@@ -324,6 +316,7 @@ describe("FacilitiesForm component", () => {
     const submitButton = screen.getByRole("button", { name: /submit/i });
     actionHandler.mockReturnValueOnce({
       id: facilityId,
+      name: facilityName,
       error: null,
     });
     // FILL FIELDS
@@ -387,7 +380,7 @@ describe("FacilitiesForm component", () => {
     await waitFor(() => {
       expect(screen.getByText("success")).toBeVisible();
       expect(mockReplace).toHaveBeenCalledWith(
-        `/operations/${operationId}/facilities/${facilityId}`,
+        `/operations/${operationId}/facilities/${facilityId}?title=${facilityName}`,
         {
           shallow: true,
         },

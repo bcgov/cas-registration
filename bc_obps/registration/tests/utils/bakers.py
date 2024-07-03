@@ -1,5 +1,4 @@
 from itertools import cycle
-from registration.models.facility import Facility
 from model_bakery import baker
 from model_bakery.recipe import seq
 from registration.models import (
