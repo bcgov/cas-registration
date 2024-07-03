@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Union, Any
 
 from reporting.models.activity_json_schema import ActivityJsonSchema
 from reporting.models.activity_source_type_json_schema import ActivitySourceTypeJsonSchema
@@ -7,7 +7,7 @@ from reporting.models.configuration_element import ConfigurationElement
 
 def validate_overlapping_records(
     object_class: Union[ActivityJsonSchema, ActivitySourceTypeJsonSchema, ConfigurationElement],
-    save_self: Union[ActivityJsonSchema, ActivitySourceTypeJsonSchema, ConfigurationElement],
+    save_self: Any,
     exception_message: str,
 ) -> None:
     if hasattr(object_class, "source_type"):
