@@ -47,7 +47,7 @@ const tiles = [
   },
 ];
 
-vi.mock("@bciers/actions/server", () => ({
+vi.mock("@bciers/actions", () => ({
   fetchDashboardData: vi.fn(() => tiles),
 }));
 

@@ -2,7 +2,7 @@ import Tiles from "@bciers/components/navigation/Tiles";
 import { FrontEndRoles } from "@bciers/utils/enums";
 import Card from "@mui/material/Card";
 import Typography from "@mui/material/Typography";
-import { fetchDashboardData } from "@bciers/actions/server";
+import { fetchDashboardData } from "@bciers/actions";
 import { ContentItem } from "@bciers/types/tiles";
 import { auth } from "@/dashboard/auth";
 

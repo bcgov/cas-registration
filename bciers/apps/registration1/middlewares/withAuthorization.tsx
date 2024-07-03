@@ -8,7 +8,7 @@ import {
 import { MiddlewareFactory } from "./types";
 import { IDP } from "@bciers/utils/enums";
 
-import { getToken } from "@bciers/actions/server";
+import { getToken } from "@bciers/actions";
 /*
 Access control logic is managed using Next.js middleware and NextAuth.js authentication JWT token.
 The middleware intercepts requests, and for restricted areas...

@@ -1,6 +1,5 @@
 import { Status, UserOperatorStatus } from "@bciers/utils/enums";
-import { actionHandler } from "@bciers/utils/actions";
-import { getToken } from "@bciers/actions/server";
+import { actionHandler, getToken } from "@bciers/actions";
 import { OperatorStatus, UserOperatorRoles } from "@bciers/utils/enums";
 
 export interface ExternalDashboardUsersTile {

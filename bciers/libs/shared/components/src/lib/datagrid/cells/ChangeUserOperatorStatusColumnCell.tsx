@@ -1,7 +1,7 @@
 "use client";
 
 import Button, { ButtonOwnProps } from "@mui/material/Button";
-import { actionHandler } from "@bciers/utils/actions";
+import { actionHandler } from "@bciers/actions";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import DoNotDisturbIcon from "@mui/icons-material/DoNotDisturb";
 import { ReactNode } from "react";
