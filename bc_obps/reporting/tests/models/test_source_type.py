@@ -133,5 +133,4 @@ class SourceTypeModelTest(BaseTestCase):
             ("id", "ID", None, None),
             ("name", "name", 1000, None),
             ("configuration_elements", "configuration element", None, None),
-            ("activity_source_type_base_schemas", "activity source type base schema", None, None),
         ]

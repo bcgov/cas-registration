@@ -1,16 +1,16 @@
-from common.tests.utils.helpers import BaseTestCase
 from reporting.models import Configuration
 from django.core.exceptions import ValidationError
+from django.test import TestCase
 
 
-class ConfigurationTest(BaseTestCase):
+class ConfigurationTest(TestCase):
     @classmethod
     def setUpTestData(cls):
 
         cls.test_object = Configuration.objects.create(
             slug="testConfig",
-            valid_from="2024-01-01",
-            valid_to="2024-03-31",
+            valid_from="5025-01-01",
+            valid_to="5025-03-31",
         )
         cls.field_data = [
             ("id", "ID", None, None),
@@ -21,10 +21,10 @@ class ConfigurationTest(BaseTestCase):
 
     # Throws when a record being inserted has an overlapping date range
     def testExclusionConstraintOverlaps(self):
-        invalid_record = Configuration(slug='invalidRecord', valid_from='2024-02-01', valid_to='2024-12-31')
-        with self.assertRaises(ValidationError, msg="ActivitySourceTypeBaseSchema already exists."):
+        invalid_record = Configuration(slug='invalidRecord', valid_from='5025-02-01', valid_to='5025-12-31')
+        with self.assertRaises(ValidationError, msg="Configuration record already exists."):
             invalid_record.save()
 
     def testValidRecordInsert(self):
-        valid_record = Configuration(slug='validRecord', valid_from='2025-01-01', valid_to='2025-12-31')
+        valid_record = Configuration(slug='validRecord', valid_from='5026-01-01', valid_to='5026-12-31')
         valid_record.save()
