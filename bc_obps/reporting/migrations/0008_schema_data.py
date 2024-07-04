@@ -48,7 +48,7 @@ def init_activity_source_type_schema_data(apps, schema_monitor):
     cwd = os.getcwd()
     with open(f'{cwd}/reporting/json_schemas/2024/general_stationary_combustion/with_useful_energy.json') as gsc_st1:
         schema1 = json.load(gsc_st1)
-    with open(f'{cwd}/reporting/json_schemas/2024/general_stationary_combustion/with_useful_energy.json') as gsc_st2:
+    with open(f'{cwd}/reporting/json_schemas/2024/general_stationary_combustion/without_useful_energy.json') as gsc_st2:
         schema2 = json.load(gsc_st2)
 
     ActivitySourceTypeSchema = apps.get_model('reporting', 'ActivitySourceTypeJsonSchema')
