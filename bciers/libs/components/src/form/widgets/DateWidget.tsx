@@ -1,6 +1,8 @@
 import dayjs from "dayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV3";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { WidgetProps } from "@rjsf/utils/lib/types";
 
@@ -15,7 +17,7 @@ const DateWidget: React.FC<WidgetProps> = ({
     console.log(date);
   };
   return (
-    <LocalizationProvider dateAdapter={AdapterDayjs}>
+    <LocalizationProvider dateAdapter={AdapterDateFns}>
       <DatePicker
         value={value ? dayjs(value) : null}
         onChange={handleChange}

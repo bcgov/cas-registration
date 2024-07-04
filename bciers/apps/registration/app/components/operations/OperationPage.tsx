@@ -1,6 +1,6 @@
 import OperationForm from "./OperationForm";
 import Note from "@bciers/components/layout/Note";
-import { actionHandler } from "@bciers/utils/actions";
+import { actionHandler } from "@bciers/actions";
 import { RJSFSchema } from "@rjsf/utils";
 import { operationSchema } from "./operation";
 

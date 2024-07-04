@@ -1,4 +1,4 @@
-import provinceOptions from "@/app/data/provinces.json";
+import provinceOptions from "@bciers/data/provinces.json";
 import SectionFieldTemplate from "@bciers/components/form/fields/SectionFieldTemplate";
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import ArrayFieldTemplate from "@bciers/components/form/fields/ArrayFieldTemplate";
