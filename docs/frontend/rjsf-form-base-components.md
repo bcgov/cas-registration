@@ -2,7 +2,7 @@
 
 ### SingleStepTaskListForm
 
-A form component that accepts a 'multi-section' form schema like we previously used in the `MultiStepFormBase` for multi page forms. The key difference is that the form data will be split into sections unlike a multi page form which splits the form data into a flat object for each page. It will have to be returned from the database in these sections.
+A form component that accepts a 'multi-section' form schema like we previously used in the `MultiStepFormBase` for multi page forms. The key difference is that the form data will be split into sections unlike a multi page form which splits the form data into a flat object for each page. Note: while the schema contains section, the formData itself should be a flat object. The single step form contains logic to transform flat data into sectioned data.
 
 Example schema:
 
@@ -32,14 +32,10 @@ The formData will be returned as:
 
 ```
 {
-  section1: {
     field1: "value",
     field2: "value",
-  },
-  section2: {
     field3: "value",
     field4: "value",
-  },
 }
 ```
 
@@ -79,7 +75,7 @@ const uiSchema: RJSFUISchema = {
 #### Props
 
 disabled: accepts a boolean to disable the form<br/>
-formData: accepts an object with the form data which must be shaped as in the example above<br/>
+formData: accepts a flat object<br/>
 schema: accepts an RJSFSchema object<br/>
 uiSchema: accepts a UiSchema object<br/>
 onCancel: accepts a function that will be called when the cancel button is clicked<br/>

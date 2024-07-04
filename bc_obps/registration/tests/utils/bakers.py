@@ -76,7 +76,6 @@ def operator_baker(custom_properties=None) -> Operator:
     # Update properties with custom_properties if provided
     if custom_properties:
         properties.update(custom_properties)
-
     return baker.make(Operator, **properties)
 
 
@@ -154,4 +153,7 @@ def facility_ownership_timeline_baker(operation_id: uuid.UUID = None, *args, **k
 
 
 def facility_baker(*args, **kwargs):
-    return baker.make(Facility, *args, **kwargs)
+
+    return baker.make(
+        Facility, latitude_of_largest_emissions=48.407326, longitude_of_largest_emissions=-123.329773, *args, **kwargs
+    )

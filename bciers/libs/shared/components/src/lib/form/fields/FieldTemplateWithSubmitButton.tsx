@@ -1,7 +1,7 @@
 "use client";
 
 import { FieldTemplateProps } from "@rjsf/utils";
-import SubmitButton from "@/app/components/form/SubmitButton";
+import SubmitButton from "@bciers/components/form/components/SubmitButton";
 import AlertIcon from "@bciers/components/icons/AlertIcon";
 
 function FieldTemplateWithSubmitButton(props: Readonly<FieldTemplateProps>) {
