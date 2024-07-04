@@ -10,7 +10,7 @@ import Box from "@mui/material/Box";
 import { styled } from "@mui/material/styles";
 import Profile from "@/app/components/navigation/Profile";
 // eslint-disable-next-line import/extensions
-import Logo from "@bciers/img/src/lib/BCID_CleanBC_rev_tagline_colour.svg";
+import Logo from "@bciers/img/src/BCID_CleanBC_rev_tagline_colour.svg";
 
 export default function Header() {
   const { data: session } = useSession();
