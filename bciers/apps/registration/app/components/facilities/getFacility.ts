@@ -1,4 +1,4 @@
-import { actionHandler } from "@bciers/utils/actions";
+import { actionHandler } from "@bciers/actions";
 import { UUID } from "crypto";
 
 // 🛠️ Function to fetch a facility by uuid
