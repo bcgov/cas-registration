@@ -23,7 +23,7 @@ const mockResponse = {
     {
       id: 2,
       name: "Facility 2",
-      type: "Large LFO",
+      type: "Large Facility",
       bcghg_id: "1-211113-0002",
     },
   ],

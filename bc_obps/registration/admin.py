@@ -44,7 +44,19 @@ class OperationAdmin(admin.ModelAdmin):
 
 @admin.register(Facility)
 class FacilityAdmin(admin.ModelAdmin):
-    list_display = ('id', 'address', 'swrs_facility_id', 'bcghg_id', 'created_at', 'updated_at', 'archived_at')
+    list_display = (
+        'id',
+        'name',
+        'swrs_facility_id',
+        'bcghg_id',
+        'type',
+        'latitude_of_largest_emissions',
+        'longitude_of_largest_emissions',
+        'address',
+        'created_at',
+        'updated_at',
+        'archived_at',
+    )
 
 
 @admin.register(FacilityOwnershipTimeline)
