@@ -42,7 +42,7 @@ Refer to the [Nx docs about @nx/next generators](https://nx.dev/nx-api/next/gene
 
 ### Importing shared components
 
-When importing shared components, use the `@bciers/components` alias which is an alias for our shared components folder located in: `@bciers/libs/shared/components/src/lib/*`.
+When importing shared components, use the `@bciers/components` alias which is an alias for our shared components folder located in: `@bciers/libs/components/src/*`.
 
 Example:
 
