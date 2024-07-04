@@ -2,7 +2,7 @@
   "extends": ["plugin:@nx/react", "../../.eslintrc.json"],
   "ignorePatterns": ["!**/*"],
   "parserOptions": {
-    "project": ["libs//types/tsconfig(.*)?.json"],
+    "project": ["libs/types/tsconfig(.*)?.json"],
     "tsConfigRootDir": "./"
   },
   "overrides": [
