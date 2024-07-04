@@ -1,4 +1,4 @@
-from typing import Union, Any
+from typing import Any
 
 def validate_overlapping_records(
     object_class: Any,
