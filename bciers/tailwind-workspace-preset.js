@@ -15,7 +15,7 @@ import {
   LIGHT_GREY_COLOR_300,
   BC_GOV_SEMANTICS_RED,
   BC_GOV_SEMANTICS_GREEN,
-} from "./libs/shared/styles/src/index.ts";
+} from "./libs/styles/src/index.ts";
 
 module.exports = {
   corePlugins: {
