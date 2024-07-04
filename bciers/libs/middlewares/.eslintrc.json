@@ -3,7 +3,7 @@
   "ignorePatterns": ["!**/*"],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
-    "project": ["libs//middlewares/tsconfig(.*)?.json"],
+    "project": ["libs/middlewares/tsconfig(.*)?.json"],
     "tsConfigRootDir": "./"
   },
   "overrides": [

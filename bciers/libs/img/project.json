@@ -1,7 +1,7 @@
 {
   "name": "img",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "libs//img/src",
+  "sourceRoot": "libs/img/src",
   "projectType": "library",
   "tags": ["lib:artefacts"],
   "// targets": "to see all targets run: nx show project img --web",
