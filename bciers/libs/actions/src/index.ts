@@ -1,2 +1,2 @@
 // Use this file to export React server components
-export * from "./lib/actions";
+export * from "./actions";
