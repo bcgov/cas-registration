@@ -24,9 +24,7 @@ Conditional statements
 */
 
 export const config = {
-  matcher: [
-    "/((?!static|.*\\..*|api|_next|sw.js|favicon.ico|bciers/libs/shared/).*)",
-  ],
+  matcher: ["/((?!static|.*\\..*|api|_next|sw.js|favicon.ico|bciers/libs/).*)"],
 };
 
 // ⛓️ Chaining middleware for maintainability, and scalability by apply a series of task specific functions to a request

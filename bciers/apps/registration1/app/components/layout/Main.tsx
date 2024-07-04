@@ -1,4 +1,4 @@
-// TODO(Nx Migration): Component added to Monorepo at `@bciers/components/src/lib/layout/Main.tsx`
+// TODO(Nx Migration): Component added to Monorepo at `@bciers/components/src/layout/Main.tsx`
 
 import Box from "@mui/material/Box";
 

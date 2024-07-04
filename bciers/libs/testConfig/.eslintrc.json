@@ -1,0 +1,23 @@
+{
+  "extends": ["plugin:@nx/react", "../../.eslintrc.json"],
+  "globals": { "vi": true },
+  "parserOptions": {
+    "project": ["libs/testConfig/tsconfig(.*)?.json"],
+    "tsConfigRootDir": "./"
+  },
+  "ignorePatterns": ["!**/*"],
+  "overrides": [
+    {
+      "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
+      "rules": {}
+    },
+    {
+      "files": ["*.ts", "*.tsx"],
+      "rules": {}
+    },
+    {
+      "files": ["*.js", "*.jsx"],
+      "rules": {}
+    }
+  ]
+}
