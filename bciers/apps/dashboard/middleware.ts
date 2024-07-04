@@ -25,7 +25,7 @@ Conditional statements
 
 export const config = {
   matcher: [
-    "/((?!static|.*\\..*|api|_next|sw.js|favicon.ico|bciers/libs/shared/).*)",
+    "/((?!static|.*\\..*|api|_next|sw.js|favicon.ico|bciers/libs//).*)",
   ],
 };
 

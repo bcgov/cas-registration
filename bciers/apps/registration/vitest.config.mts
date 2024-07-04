@@ -24,7 +24,7 @@ export default defineConfig({
       provider: "v8",
     },
     setupFiles: [
-      "../../libs/shared/testConfig/src/global.tsx",
+      "../../libs//testConfig/src/global.tsx",
       "./tests/components/facilities/mocks.ts",
       "./tests/components/operations/mocks.ts",
     ],
