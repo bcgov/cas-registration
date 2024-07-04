@@ -1,3 +1,12 @@
-import OperationPage from "@/registration/app/components/operations/OperationPage";
+import OperationPage, {
+  ExternalUserLayout,
+} from "@/registration/app/components/operations/OperationPage";
 
-export default OperationPage;
+const Page = () => (
+  <>
+    <ExternalUserLayout />
+    <OperationPage />
+  </>
+);
+
+export default Page;
