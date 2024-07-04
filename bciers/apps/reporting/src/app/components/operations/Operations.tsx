@@ -5,7 +5,8 @@ import { OperationRow } from "./types";
 // 🛠️ Function to fetch operations
 export const fetchOperationsPageData = async () => {
   // fetch data from server
-  const pageData = await actionHandler(`registration/operations`, "GET", "");
+  const pageData = await actionHandler(`reporting/operations`, "GET", "");
+  console.log(pageData);
   return {
     rows: pageData.data,
     row_count: pageData.row_count,
