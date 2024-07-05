@@ -2,8 +2,31 @@
 Django ER Diagram
 ---
 erDiagram
+ReportingYear {
+    IntegerField reporting_year
+    DateTimeField reporting_window_start
+    DateTimeField reporting_window_end
+    CharField description
+}
+Report {
+    BigAutoField id
+    ForeignKey operator
+    ForeignKey operation
+    ForeignKey reporting_year
+}
+ReportVersion {
+    BigAutoField id
+    ForeignKey report
+    BooleanField is_latest_submitted
+    CharField status
+}
+SourceType {
+    BigAutoField id
+    CharField name
+}
 ReportOperation {
     BigAutoField id
+    OneToOneField report_version
     CharField operator_legal_name
     CharField operator_trade_name
     CharField operation_name
@@ -13,25 +36,9 @@ ReportOperation {
     CharField operation_representative_name
     ManyToManyField activities
 }
-ReportingYear {
-    IntegerField reporting_year
-    DateTimeField reporting_window_start
-    DateTimeField reporting_window_end
-    CharField description
-}
-Report {
-    BigAutoField id
-    ForeignKey operation
-    ForeignKey reporting_year
-    OneToOneField report_operation
-}
-SourceType {
-    BigAutoField id
-    CharField name
-}
 ReportFacility {
     BigAutoField id
-    ForeignKey report
+    ForeignKey report_version
     CharField facility_name
     CharField facility_type
     CharField facility_bcghgid
@@ -90,11 +97,13 @@ ActivitySourceTypeJsonSchema {
     ForeignKey valid_from
     ForeignKey valid_to
 }
-ReportOperation }|--|{ ReportingActivity : activities
+Report }|--|| Operator : operator
 Report }|--|| Operation : operation
 Report }|--|| ReportingYear : reporting_year
-Report ||--|| ReportOperation : report_operation
-ReportFacility }|--|| Report : report
+ReportVersion }|--|| Report : report
+ReportOperation ||--|| ReportVersion : report_version
+ReportOperation }|--|{ ReportingActivity : activities
+ReportFacility }|--|| ReportVersion : report_version
 ReportFacility }|--|{ ReportingActivity : activities
 ReportFacility }|--|{ RegulatedProduct : products
 ConfigurationElement }|--|| ReportingActivity : reporting_activity

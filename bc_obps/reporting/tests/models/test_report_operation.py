@@ -1,11 +1,13 @@
 from common.tests.utils.helpers import BaseTestCase
 from registration.models import ReportingActivity
 from reporting.models import ReportOperation
+from reporting.tests.utils.bakers import report_version_baker
 
 
 class ReportOperationModelTest(BaseTestCase):
     @classmethod
     def setUpTestData(cls):
+
         cls.test_object = ReportOperation.objects.create(
             operator_legal_name="Legal Name",
             operator_trade_name="Trade Name",
@@ -14,11 +16,12 @@ class ReportOperationModelTest(BaseTestCase):
             operation_bcghgid="A fake BC GHG ID",
             bc_obps_regulated_operation_id="123456789",
             operation_representative_name="Kar Bonn",
+            report_version=report_version_baker(report_operation=None),
         )
         cls.test_object.activities.add(ReportingActivity.objects.first())
         cls.field_data = [
             ("id", "ID", None, None),
-            ("report", "report", None, None),
+            ("report_version", "report version", None, None),
             ("operator_legal_name", "operator legal name", 1000, None),
             ("operator_trade_name", "operator trade name", 1000, None),
             ("operation_name", "operation name", 1000, None),

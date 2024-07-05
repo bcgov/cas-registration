@@ -84,19 +84,28 @@ class TestReportService(TestCase):
 
             # Testing the report data
             self.assertEqual(report.operation.id, operation.id)
+            self.assertEqual(report.operator.id, operation.operator.id)
             self.assertEqual(report.reporting_year, reporting_year)
+
+            self.assertEqual(report.report_versions.count(), 1)
+
+            # Testing the report version
+            report_version = report.report_versions.first()
+            self.assertEqual(report_version.report, report)
+            self.assertFalse(report_version.is_latest_submitted)
+            self.assertEqual(report_version.status, 'draft')
 
             # Testing the report_operation data
             self.assertSequenceEqual(
                 (
-                    report.report_operation.operator_legal_name,
-                    report.report_operation.operator_trade_name,
-                    report.report_operation.operation_name,
-                    report.report_operation.operation_type,
-                    report.report_operation.operation_bcghgid,
-                    report.report_operation.bc_obps_regulated_operation_id,
-                    report.report_operation.operation_representative_name,
-                    report.report_operation.activities.count(),
+                    report_version.report_operation.operator_legal_name,
+                    report_version.report_operation.operator_trade_name,
+                    report_version.report_operation.operation_name,
+                    report_version.report_operation.operation_type,
+                    report_version.report_operation.operation_bcghgid,
+                    report_version.report_operation.bc_obps_regulated_operation_id,
+                    report_version.report_operation.operation_representative_name,
+                    report_version.report_operation.activities.count(),
                 ),
                 (
                     operation.operator.legal_name,
@@ -111,9 +120,11 @@ class TestReportService(TestCase):
             )
 
             # Testing the report_facility data
-            self.assertEqual(report.report_facilities.count(), 3)
+            report_facilities = report_version.report_facilities
+
+            self.assertEqual(report_facilities.count(), 3)
             for index, facility in enumerate(mock_facilities):
-                report_facility = report.report_facilities.all()[index]
+                report_facility = report_facilities.all()[index]
                 self.assertSequenceEqual(
                     (
                         report_facility.facility_name,

@@ -1,7 +1,7 @@
 from common.tests.utils.helpers import BaseTestCase
 from registration.models import ReportingActivity, RegulatedProduct
 from reporting.models import ReportFacility
-from reporting.tests.utils.bakers import report_baker
+from reporting.tests.utils.bakers import report_version_baker
 
 
 class ReportFacilityModelTest(BaseTestCase):
@@ -11,13 +11,13 @@ class ReportFacilityModelTest(BaseTestCase):
             facility_name="Test Facility 1",
             facility_type="SFO",
             facility_bcghgid="this is a non-conforming bcghgid",
-            report=report_baker(),
+            report_version=report_version_baker(),
         )
         cls.test_object.activities.add(ReportingActivity.objects.first())
         cls.test_object.products.add(RegulatedProduct.objects.first())
         cls.field_data = [
             ("id", "ID", None, None),
-            ("report", "report", None, None),
+            ("report_version", "report version", None, None),
             ("facility_name", "facility name", 1000, None),
             ("facility_type", "facility type", 1000, None),
             ("facility_bcghgid", "facility bcghgid", 1000, None),
