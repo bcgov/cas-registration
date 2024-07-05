@@ -154,6 +154,8 @@ const SingleStepTaskListForm = ({
   return (
     <div className="w-full flex flex-row mt-8">
       <TaskList
+        // Hide the task list on mobile
+        className="hidden sm:block"
         taskListItems={taskListItems}
         taskListItemStatus={formSectionStatus}
       />
