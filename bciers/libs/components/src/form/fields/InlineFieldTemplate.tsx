@@ -29,14 +29,14 @@ function InlineFieldTemplate({
       className={`mb-4 md:mb-2 flex flex-col md:flex-row items-start md:items-center ${classNames}`}
     >
       {isLabel && (
-        <div className="w-full md:w-3/12">
+        <div className="w-full lg:w-3/12">
           <label htmlFor={id} className="font-bold">
             {label}
             {required && "*"}
           </label>
         </div>
       )}
-      <div className="relative flex items-center w-full md:w-4/12">
+      <div className="relative flex items-center w-full lg:w-4/12">
         {children}
       </div>
       {isErrors && (
