@@ -1,5 +1,4 @@
 import OperationForm from "./OperationForm";
-import Note from "@bciers/components/layout/Note";
 import { actionHandler } from "@bciers/actions";
 import { RJSFSchema } from "@rjsf/utils";
 import { operationSchema } from "./operation";
@@ -13,7 +12,8 @@ export const createOperationSchema = (
     name: string;
   }[],
   reportingActivities: {
-    id: number;
+    // Do we need to display all of these or just some based on type?
+    applicable_to: string;
     name: string;
   }[],
 ) => {
@@ -25,14 +25,7 @@ export const createOperationSchema = (
     const: code?.id,
     title: `${code?.naics_code} - ${code?.naics_description}`,
   }));
-  const regulatedProductsFormatted = regulatedProducts.map((product) => ({
-    const: product?.id,
-    title: product?.name,
-  }));
-  // const reportingActivitiesFormatted = reportingActivities.map((activity) => ({
-  //   const: activity?.id,
-  //   title: activity?.name,
-  // }));
+
   // naics codes
   if (Array.isArray(naicsCodes)) {
     section1.primary_naics_code_id.anyOf = naicsCodesFormatted;
@@ -41,12 +34,23 @@ export const createOperationSchema = (
   }
   // regulated products
   if (Array.isArray(regulatedProducts)) {
-    section3.regulated_products.anyOf = regulatedProductsFormatted;
+    section3.regulated_products.items.enum = regulatedProducts.map(
+      (product) => product.id,
+    );
+    section3.regulated_products.items.enumNames = regulatedProducts.map(
+      (product) => product.name,
+    );
   }
   // reporting activities
-  // if (Array.isArray(reportingActivities)) {
-  //   section1.reporting_activities.anyOf = reportingActivitiesFormatted;
-  // }
+  if (Array.isArray(reportingActivities)) {
+    // Enum/enumNames are the same due to the available data
+    section1.reporting_activities.items.enum = reportingActivities.map(
+      (activity) => activity.name,
+    );
+    section1.reporting_activities.items.enumNames = reportingActivities.map(
+      (activity) => activity.name,
+    );
+  }
 
   return localSchema;
 };

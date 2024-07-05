@@ -118,6 +118,7 @@ const SingleStepTaskListForm = ({
   };
 
   const handleFormChange = (e: IChangeEvent) => {
+    console.log("handleFormChange", e.formData);
     // ⚠️ Warning ⚠️ - be mindful of performance issues using this with complex forms
 
     // Use schemaUtils validator to validate form data but not trigger validation
