@@ -88,6 +88,7 @@ export default async function UserOperator({
   const formData = {
     ...userOperatorData,
   };
+  console.log(formData);
 
   // Render the review form if the user is CAS internal
   if (isCasInternal) {
