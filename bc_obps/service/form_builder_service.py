@@ -86,9 +86,13 @@ def build_schema(activity: int, source_types: List[int], gas_type: int, methodol
             gas_type_enum.append(t.gas_type.chemical_formula)
             gas_type_map[t.gas_type.id] = t.gas_type.chemical_formula
         st_schema = source_type_schema.json_schema
-        # Append valid gas types to schema as an enum on the gasType property
-        # NEXT: Use the has_unit / has_fuel booleans to determine where to append the gas_type enum
-        st_schema['properties']['units']['items']['properties']['fuels']['items']['properties']['emissions']['items']['properties']['gasType']['enum'] = gas_type_enum
+        # Append valid gas types to schema as an enum on the gasType property. Uses the has_unit / has_fuel booleans to determine the depth of the emissions array.
+        if source_type_schema.has_unit and source_type_schema.has_fuel:
+            st_schema['properties']['units']['items']['properties']['fuels']['items']['properties']['emissions']['items']['properties']['gasType']['enum'] = gas_type_enum
+        elif not source_type_schema.has_unit and source_type_schema.has_fuel:
+            st_schema['properties']['fuels']['items']['properties']['emissions']['items']['properties']['gasType']['enum'] = gas_type_enum
+        else:
+            st_schema['properties']['emissions']['items']['properties']['gasType']['enum'] = gas_type_enum
         print('ST SCHEMA: ', st_schema)
         # Add the source_type schema to the schema being returned by this function
         rjsf_schema['properties']['sourceTypes']['properties'][str_to_camel_case(source_type_schema.source_type.name)] = st_schema
