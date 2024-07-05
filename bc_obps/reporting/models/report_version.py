@@ -8,9 +8,12 @@ class ReportVersion(BaseModel):
     report = models.ForeignKey(
         Report,
         on_delete=models.CASCADE,
+        db_comment="The report to which this version applied.",
+        related_name="report_versions",
     )
     is_latest_submitted = models.BooleanField(
         db_comment="True if this version is the latest submitted one",
+        default=False,
     )
 
     class ReportVersionStatus(models.TextChoices):

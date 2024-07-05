@@ -1,7 +1,9 @@
-from registration.tests.utils.bakers import operation_baker
+from registration.tests.utils.bakers import operation_baker, operator_baker
 from reporting.models import configuration_element
 from reporting.models.gas_type import GasType
 from registration.models import ReportingActivity
+from reporting.models.report_operation import ReportOperation
+from reporting.models.report_version import ReportVersion
 from reporting.models.reporting_year import ReportingYear
 from reporting.models.source_type import SourceType
 from model_bakery import baker
@@ -12,9 +14,23 @@ from reporting.models.methodology import Methodology
 
 
 def report_baker(**props) -> Report:
+    if "operator" not in props and "operator_id" not in props:
+        props["operator"] = operator_baker()
     if "operation" not in props and "operation_id" not in props:
-        props["operation"] = operation_baker()
+        props["operation"] = operation_baker(operator_id=props["operator"].id)
     return baker.make(Report, **props)
+
+
+def report_version_baker(**props) -> ReportVersion:
+    if "report" not in props and "report_id" not in props:
+        props["report"] = report_baker()
+
+    version = baker.make(ReportVersion, **props)
+
+    if "report_operation" not in props:
+        baker.make(ReportOperation, report_version=version)
+
+    return version
 
 
 def reporting_activity_baker(custom_properties=None) -> ReportingActivity:
