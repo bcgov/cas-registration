@@ -1,10 +1,11 @@
 from typing import List, Literal, Tuple
 from django.http import HttpRequest
+from ninja import Query
 from registration.decorators import handle_http_errors
 from registration.models.operation import Operation
 from reporting.schema.generic import Message
 from reporting.constants import DASHBOARD_TAGS
-from reporting.schema.operation import ReportingDashboardOperationOut
+from reporting.schema.operation import ReportingDashboardOperationFilterSchema, ReportingDashboardOperationOut
 from .router import router
 from ninja.responses import codes_4xx
 
@@ -17,5 +18,7 @@ from ninja.responses import codes_4xx
     the main reporting dashboard page.""",
 )
 @handle_http_errors()
-def get_dashboard_operations_list(request: HttpRequest) -> Tuple[Literal[200], List[ReportingDashboardOperationOut]]:
+def get_dashboard_operations_list(
+    request: HttpRequest, filters: ReportingDashboardOperationFilterSchema = Query(...)
+) -> Tuple[Literal[200], List[ReportingDashboardOperationOut]]:
     return 200, Operation.objects.all()
