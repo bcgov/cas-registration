@@ -1,12 +1,20 @@
 from common.models import BaseModel
 from django.db import models
 from registration.models import ReportingActivity
+from reporting.models.report_version import ReportVersion
 
 
 class ReportOperation(BaseModel):
     """
     Report model to store operation information
     """
+
+    # A report version can only have one single record of operation information
+    report_version = models.OneToOneField(
+        ReportVersion,
+        on_delete=models.CASCADE,
+        db_comment="The report this operation information relates to",
+    )
 
     class OperationType(models.TextChoices):
         SFO = "sfo"
@@ -18,9 +26,14 @@ class ReportOperation(BaseModel):
     operator_trade_name = models.CharField(
         max_length=1000, db_comment="The trade name of the operator operating this operation", blank=True, null=True
     )
-    operation_name = models.CharField(max_length=1000, db_comment="The name of the operation, for which this report is")
+    operation_name = models.CharField(
+        max_length=1000,
+        db_comment="The name of the operation, for which this report is",
+    )
     operation_type = models.CharField(
-        max_length=1000, choices=OperationType.choices, db_comment="The type of the operation, LFO or SFO"
+        max_length=1000,
+        choices=OperationType.choices,
+        db_comment="The type of the operation, LFO or SFO",
     )
     operation_bcghgid = models.CharField(
         max_length=1000, db_comment="The BCGHGH ID of the operation", blank=True, null=True

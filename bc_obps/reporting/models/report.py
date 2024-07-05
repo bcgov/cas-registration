@@ -1,7 +1,7 @@
 from django.db import models
 from common.models.base_model import BaseModel
 from registration.models.operation import Operation
-from reporting.models.report_operation import ReportOperation
+from registration.models.operator import Operator
 from reporting.models.reporting_year import ReportingYear
 
 
@@ -10,9 +10,14 @@ class Report(BaseModel):
     Report model for storing OBPS reports
     """
 
-    # This will need to be updated
+    # This is needed in case the operation changes hands and doesn't belong to the operator.
+    # The report still belongs to the operator which filed it.
+    operator = models.ForeignKey(
+        Operator, on_delete=models.DO_NOTHING, db_comment="The operator to which this report belongs"
+    )
+
     operation = models.ForeignKey(
-        Operation, on_delete=models.DO_NOTHING, db_comment="The operation to which this report belongs", null=True
+        Operation, on_delete=models.DO_NOTHING, db_comment="The operation for which this report was filed"
     )
 
     reporting_year = models.ForeignKey(
@@ -23,14 +28,7 @@ class Report(BaseModel):
         db_comment="The reporting year, for which this report is filled",
     )
 
-    # A report can only be for one single operation
-    report_operation = models.OneToOneField(
-        ReportOperation,
-        on_delete=models.CASCADE,
-        db_comment="The report this operation information relates to",
-    )
-
     class Meta:
-        db_table_comment = "A table to store reports"
+        db_table_comment = "A table to store report instances. Each operation has at most one report per year."
         db_table = 'erc"."report'
         app_label = 'reporting'

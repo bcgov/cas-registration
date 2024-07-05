@@ -1,13 +1,13 @@
 from common.models import BaseModel
 from django.db import models
 from registration.models import ReportingActivity, RegulatedProduct
-from reporting.models import Report
+from reporting.models import ReportVersion
 
 
 class ReportFacility(BaseModel):
 
-    report = models.ForeignKey(
-        Report,
+    report_version = models.ForeignKey(
+        ReportVersion,
         on_delete=models.CASCADE,
         db_comment="The report this facility information is related to",
         related_name="report_facilities",
