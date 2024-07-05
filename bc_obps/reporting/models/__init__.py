@@ -1,8 +1,10 @@
 from .report import Report
+from .report_version import ReportVersion
 from .source_type import SourceType
 from .report_operation import ReportOperation
 from .report_facility import ReportFacility
 from .reporting_year import ReportingYear
+
 
 from .gas_type import GasType
 from .fuel_type import FuelType
@@ -16,6 +18,7 @@ from .activity_source_type_json_schema import ActivitySourceTypeJsonSchema
 
 __all__ = [
     "Report",
+    "ReportVersion",
     "SourceType",
     "ReportOperation",
     "ReportFacility",
