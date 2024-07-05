@@ -1,7 +1,6 @@
 import "@testing-library/jest-dom";
 import { render, screen } from "@testing-library/react";
 import { useRouter, useSearchParams } from "@bciers/testConfig/mocks";
-import React from "react";
 import FacilityDataGrid from "apps/registration/app/components/facilities/FacilityDataGrid";
 
 useRouter.mockReturnValue({
