@@ -28,7 +28,7 @@ export const createOperationSchema = (
 
   // naics codes
   if (Array.isArray(naicsCodes)) {
-    section1.primary_naics_code_id.anyOf = naicsCodesFormatted;
+    section1.naics_code_id.anyOf = naicsCodesFormatted;
     section1.secondary_naics_code_id.anyOf = naicsCodesFormatted;
     section1.tertiary_naics_code_id.anyOf = naicsCodesFormatted;
   }

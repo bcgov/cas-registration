@@ -6,15 +6,15 @@ import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
 const section1Schema: RJSFSchema = {
   title: "Operation Information",
   type: "object",
-  required: ["operation_name", "operation_type", "primary_naics_code_id"],
+  required: ["name", "type", "naics_code_id"],
   properties: {
-    operation_name: { type: "string", title: "Operation Name" },
-    operation_type: {
+    name: { type: "string", title: "Operation Name" },
+    type: {
       type: "string",
       title: "Operation Type",
       enum: ["Single Facility Operation", "Linear Facilities Operation"],
     },
-    primary_naics_code_id: {
+    naics_code_id: {
       type: "number",
       title: "Primary NAICS Code",
     },
@@ -215,15 +215,15 @@ export const operationUiSchema: UiSchema = {
   },
   section1: {
     "ui:FieldTemplate": SectionFieldTemplate,
-    primary_naics_code_id: {
+    naics_code: {
       "ui:widget": "ComboBox",
       "ui:placeholder": "Select Primary NAICS code",
     },
-    secondary_naics_code_id: {
+    secondary_naics_code: {
       "ui:widget": "ComboBox",
       "ui:placeholder": "Select Secondary NAICS code",
     },
-    tertiary_naics_code_id: {
+    tertiary_naics_code: {
       "ui:widget": "ComboBox",
       "ui:placeholder": "Select Tertiary NAICS code",
     },
