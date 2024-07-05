@@ -80,22 +80,49 @@ def build_schema(activity: int, source_types: List[int], gas_type: int, methodol
         gas_type_enum = []
         # Maps of the gas_type & methodology objects will be passed in the return object so we have the IDs on the frontend.
         gas_type_map = {}
+        gas_type_one_of = {
+          "gasType": {
+            "oneOf":[]
+          }
+        }
         methodology_map = {}
         # For each gas type, add to the enum object to be added to the schema to complete the list of valid gas_types a user can select
         for t in gas_types:
             gas_type_enum.append(t.gas_type.chemical_formula)
             gas_type_map[t.gas_type.id] = t.gas_type.chemical_formula
+            methodologies = ConfigurationElement.objects.select_related('methodology').filter(
+                reporting_activity_id=activity,
+                source_type_id=source_type,
+                gas_type_id=t.gas_type.id,
+                valid_from__valid_from__lte=report_date,
+                valid_to__valid_to__gte=report_date,
+            )
+            if not methodologies.exists():
+                raise Exception(
+                    f'No configuration found for activity_id {activity} & source_type_id {source_type} & gas_type_id {gas_type} & report_date {report_date}'
+                )
+            methodology_enum = []
+            for t in methodologies:
+                methodology_enum.append(t.methodology.name)
+                methodology_map[t.methodology.id] = t.methodology.name
+            print(t.gas_type.chemical_formula)
+            gas_type_one_of['gasType']['oneOf'].append({"properties": {"gasType": {"enum": [t.gas_type.chemical_formula]}, "methodology": {"title": "Methodology", "type": "string", "enum": methodology_enum}}})
+
         st_schema = source_type_schema.json_schema
         # Append valid gas types to schema as an enum on the gasType property. Uses the has_unit / has_fuel booleans to determine the depth of the emissions array.
         if source_type_schema.has_unit and source_type_schema.has_fuel:
             st_schema['properties']['units']['items']['properties']['fuels']['items']['properties']['emissions']['items']['properties']['gasType']['enum'] = gas_type_enum
+            st_schema['properties']['units']['items']['properties']['fuels']['items']['properties']['emissions']['items']['dependencies'] = gas_type_one_of
         elif not source_type_schema.has_unit and source_type_schema.has_fuel:
             st_schema['properties']['fuels']['items']['properties']['emissions']['items']['properties']['gasType']['enum'] = gas_type_enum
         else:
             st_schema['properties']['emissions']['items']['properties']['gasType']['enum'] = gas_type_enum
         print('ST SCHEMA: ', st_schema)
-        # Add the source_type schema to the schema being returned by this function
+        # Add the source_type schema to the schema object being returned by this function
         rjsf_schema['properties']['sourceTypes']['properties'][str_to_camel_case(source_type_schema.source_type.name)] = st_schema
+
+        # Populate methodology enum with valid methodologies if gas_type is selected
+
 
     # Return completed schema
     return json.dumps(rjsf_schema)
