@@ -17,7 +17,7 @@ def report_baker(**props) -> Report:
     if "operator" not in props and "operator_id" not in props:
         props["operator"] = operator_baker()
     if "operation" not in props and "operation_id" not in props:
-        props["operation"] = operation_baker(operator_id=props["operator"].id)
+        props["operation"] = operation_baker(operator=props.get("operator"))
     return baker.make(Report, **props)
 
 
