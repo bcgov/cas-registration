@@ -2,12 +2,19 @@
 
 import { useMemo, useState } from "react";
 import DataGrid from "@bciers/components/datagrid/DataGrid";
-import FacilitiesActionCell from "../datagrid/cells/FacilitiesActionCell";
 import facilityColumns from "../datagrid/models/facilities/facilityColumns";
 import facilityGroupColumns from "../datagrid/models/facilities/facilityGroupColumns";
 import { FacilityRow } from "./types";
 import createFetchFacilitiesPageData from "./createFetchFacilitiesPageData";
 import HeaderSearchCell from "@bciers/components/datagrid/cells/HeaderSearchCell";
+import ActionCellFactory from "../datagrid/ActionCellFactory";
+
+const FacilitiesActionCell = ActionCellFactory({
+  href: "#",
+  replace: true,
+  className: "no-underline text-bc-link-blue whitespace-normal",
+  cellText: "View Details",
+});
 
 const FacilityDataGrid = ({
   operationId,
