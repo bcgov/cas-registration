@@ -8,8 +8,8 @@ export const fetchOperationsPageData = async () => {
   const pageData = await actionHandler(`reporting/operations`, "GET", "");
   console.log(pageData);
   return {
-    rows: pageData.data,
-    row_count: pageData.row_count,
+    rows: pageData.items,
+    row_count: pageData.count,
   };
 };
 
