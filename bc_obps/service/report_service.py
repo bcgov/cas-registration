@@ -33,6 +33,7 @@ class ReportService:
 
         report = Report.objects.create(
             operation=operation,
+            operator=operator,
             reporting_year=ReportingYearDataAccessService.get_by_year(reporting_year),
         )
 
