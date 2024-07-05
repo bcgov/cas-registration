@@ -41,7 +41,7 @@
             "title": "Contacts",
             "icon": "Users",
             "content": "View all contacts here.",
-            "href": "/registration/tbd"
+            "href": "/registration/contacts"
           },
           {
             "title": "Reported Events",
