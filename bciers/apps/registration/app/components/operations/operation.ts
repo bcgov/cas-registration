@@ -73,10 +73,6 @@ const section2Schema: RJSFSchema = {
                   "mo_postal_code",
                 ],
                 properties: {
-                  mo_legal_name: {
-                    type: "string",
-                    title: "Legal Name",
-                  },
                   mo_is_extraprovincial_company: {
                     type: "boolean",
                     title:
@@ -97,12 +93,17 @@ const section2Schema: RJSFSchema = {
                         },
                         then: {
                           required: [
+                            "mo_legal_name",
                             "mo_attorney_street_address",
                             "mo_municipality",
                             "mo_province",
                             "mo_postal_code",
                           ],
                           properties: {
+                            mo_legal_name: {
+                              type: "string",
+                              title: "Legal Name",
+                            },
                             mo_attorney_street_address: {
                               type: "string",
                               title: "Attorney Street Address",
@@ -240,7 +241,7 @@ export const operationUiSchema: UiSchema = {
       "ui:FieldTemplate": FieldTemplate,
       "ui:options": {
         label: false,
-        arrayAddLabel: "Add another operator",
+        arrayAddLabel: "Add operator",
         title: "Operator ",
       },
       items: {
