@@ -13,6 +13,7 @@ class ReportOperation(BaseModel):
     report_version = models.OneToOneField(
         ReportVersion,
         on_delete=models.CASCADE,
+        related_name="report_operation",
         db_comment="The report this operation information relates to",
     )
 

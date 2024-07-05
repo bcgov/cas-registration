@@ -21,6 +21,7 @@ class ReportVersion(BaseModel):
         max_length=1000,
         choices=ReportVersionStatus.choices,
         db_comment="The status for this report version: draft or submitted.",
+        default=ReportVersionStatus.Draft,
     )
 
     class Meta:
