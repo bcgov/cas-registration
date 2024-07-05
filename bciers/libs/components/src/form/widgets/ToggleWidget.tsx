@@ -55,7 +55,7 @@ const StyledSwitch = styled((props: SwitchProps) => (
     "&::before, &::after": {
       content: '""',
       position: "absolute",
-      top: "45%",
+      top: "12px",
       transform: "translateY(-60%)",
       width: 24,
       height: 16,

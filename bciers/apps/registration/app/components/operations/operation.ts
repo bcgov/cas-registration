@@ -1,7 +1,6 @@
 import provinceOptions from "@bciers/data/provinces.json";
 import SectionFieldTemplate from "@bciers/components/form/fields/SectionFieldTemplate";
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
-import ArrayFieldTemplate from "@bciers/components/form/fields/ArrayFieldTemplate";
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
 
 const section1Schema: RJSFSchema = {
@@ -44,68 +43,96 @@ const section2Schema: RJSFSchema = {
     operation_has_multiple_operators: {
       type: "boolean",
       title: "Does the operation have multiple operators?",
-      default: true,
+      default: false,
     },
   },
-
-  allOf: [
-    {
-      if: {
-        properties: {
-          operation_has_multiple_operators: {
-            const: true,
+  dependencies: {
+    operation_has_multiple_operators: {
+      oneOf: [
+        {
+          properties: {
+            operation_has_multiple_operators: {
+              enum: [false],
+            },
           },
         },
-      },
-      then: {
-        properties: {
-          multiple_operators_array: {
-            type: "array",
-            default: [{}],
-            items: {
-              type: "object",
-              required: [
-                "mo_is_extraprovincial_company",
-                "mo_attorney_street_address",
-                "mo_municipality",
-                "mo_province",
-                "mo_postal_code",
-              ],
-              properties: {
-                mo_is_extraprovincial_company: {
-                  type: "boolean",
-                  title:
-                    "Is the additional operator an extraprovincial company?",
-                  default: false,
+        {
+          properties: {
+            operation_has_multiple_operators: {
+              enum: [true],
+            },
+            multiple_operators_array: {
+              type: "array",
+              default: [{}],
+              items: {
+                type: "object",
+                required: [
+                  "mo_attorney_street_address",
+                  "mo_municipality",
+                  "mo_province",
+                  "mo_postal_code",
+                ],
+                properties: {
+                  mo_legal_name: {
+                    type: "string",
+                    title: "Legal Name",
+                  },
+                  mo_is_extraprovincial_company: {
+                    type: "boolean",
+                    title:
+                      "Is the additional operator an extraprovincial company?",
+                    default: false,
+                  },
                 },
-                mo_legal_name: {
-                  type: "string",
-                  title: "Legal Name",
-                },
-                mo_attorney_street_address: {
-                  type: "string",
-                  title: "Attorney Street Address",
-                },
-                mo_municipality: {
-                  type: "string",
-                  title: "Municipality",
-                },
-                mo_province: {
-                  type: "string",
-                  title: "Province",
-                  enum: provinceOptions,
-                },
-                mo_postal_code: {
-                  type: "string",
-                  title: "Postal Code",
+                dependencies: {
+                  mo_is_extraprovincial_company: {
+                    allOf: [
+                      {
+                        if: {
+                          properties: {
+                            mo_is_extraprovincial_company: {
+                              const: true,
+                            },
+                          },
+                        },
+                        then: {
+                          required: [
+                            "mo_attorney_street_address",
+                            "mo_municipality",
+                            "mo_province",
+                            "mo_postal_code",
+                          ],
+                          properties: {
+                            mo_attorney_street_address: {
+                              type: "string",
+                              title: "Attorney Street Address",
+                            },
+                            mo_municipality: {
+                              type: "string",
+                              title: "Municipality",
+                            },
+                            mo_province: {
+                              type: "string",
+                              title: "Province",
+                              enum: provinceOptions,
+                            },
+                            mo_postal_code: {
+                              type: "string",
+                              title: "Postal Code",
+                            },
+                          },
+                        },
+                      },
+                    ],
+                  },
                 },
               },
             },
           },
         },
-      },
+      ],
     },
-  ],
+  },
 };
 
 const section3Schema: RJSFSchema = {
@@ -115,11 +142,7 @@ const section3Schema: RJSFSchema = {
     registration_category: {
       type: "string",
       title: "Registration Category",
-    },
-    // Display only if registration_category is "Regulated"
-    regulated_operation: {
-      type: "string",
-      title: "Regulated Operation",
+      enum: ["Regulated", "Non-Regulated", "New Entrant Operation"],
     },
     regulated_products: {
       type: "array",
@@ -128,14 +151,49 @@ const section3Schema: RJSFSchema = {
       },
       title: "Regulated Product Names",
     },
-    // Display only if regulated_product_names is "New Entrant Operation"
-    new_entrant_operation: {
-      type: "string",
-      title: "New Entrant Operation",
-    },
     forcasted_emissions: {
       type: "number",
       title: "Forcasted Emissions",
+    },
+  },
+  dependencies: {
+    registration_category: {
+      allOf: [
+        {
+          if: {
+            properties: {
+              registration_category: {
+                const: "Regulated",
+              },
+            },
+          },
+          then: {
+            properties: {
+              regulated_operation: {
+                type: "string",
+                title: "Regulated Operation",
+              },
+            },
+          },
+        },
+        {
+          if: {
+            properties: {
+              registration_category: {
+                const: "New Entrant Operation",
+              },
+            },
+          },
+          then: {
+            properties: {
+              new_entrant_operation: {
+                type: "string",
+                title: "New Entrant Operation",
+              },
+            },
+          },
+        },
+      ],
     },
   },
 };
@@ -199,6 +257,13 @@ export const operationUiSchema: UiSchema = {
     },
   },
   section3: {
+    "ui:order": [
+      "registration_category",
+      "regulated_operation",
+      "regulated_products",
+      "new_entrant_operation",
+      "forcasted_emissions",
+    ],
     "ui:FieldTemplate": SectionFieldTemplate,
     regulated_products: {
       "ui:widget": "MultiSelectWidget",
