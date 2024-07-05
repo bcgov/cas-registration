@@ -34,4 +34,4 @@ class ContactDataAccessService:
         else:
             # At this point, we can only get Contacts for a user based on the user's operator and associated operations to the operator
             user_operator = UserOperatorService.get_current_user_approved_user_operator_or_raise(user)
-            return queryset.filter(operations__operator=user_operator.operator)
+            return queryset.filter(operations__operator=user_operator.operator).distinct()
