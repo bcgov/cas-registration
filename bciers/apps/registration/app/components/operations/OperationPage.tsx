@@ -1,7 +1,7 @@
 import OperationForm from "./OperationForm";
 import { actionHandler } from "@bciers/actions";
 import { RJSFSchema } from "@rjsf/utils";
-import { operationSchema } from "./operation";
+import { operationSchema } from "../../data/jsonSchema/operation";
 
 // 🛠️ Function to create an operation schema with updated enum values
 export const createOperationSchema = (

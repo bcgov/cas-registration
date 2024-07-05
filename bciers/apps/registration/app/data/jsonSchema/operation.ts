@@ -6,7 +6,7 @@ import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
 const section1Schema: RJSFSchema = {
   title: "Operation Information",
   type: "object",
-  required: ["operation_name", "operation_type"],
+  required: ["operation_name", "operation_type", "primary_naics_code_id"],
   properties: {
     operation_name: { type: "string", title: "Operation Name" },
     operation_type: {
@@ -261,8 +261,8 @@ export const operationUiSchema: UiSchema = {
     "ui:order": [
       "registration_category",
       "regulated_operation",
-      "regulated_products",
       "new_entrant_operation",
+      "regulated_products",
       "forcasted_emissions",
     ],
     "ui:FieldTemplate": SectionFieldTemplate,
