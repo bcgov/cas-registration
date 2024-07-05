@@ -10,7 +10,7 @@ class ReportingDashboardOperationOut(ModelSchema):
 
     class Meta:
         model = Operation
-        fields = ["name", "bcghg_id"]
+        fields = ["id", "name", "bcghg_id"]
 
     @staticmethod
     def resolve_report_id(obj: Operation) -> int:
@@ -29,6 +29,5 @@ class ReportingDashboardOperationFilterSchema(FilterSchema):
     bcghg_id: Optional[str] = None
     name: Optional[str] = None
     report_status: Optional[str] = None
-    page: Union[int, float, str] = 1
     sort_field: Optional[str] = "created_at"
     sort_order: Optional[str] = "desc"
