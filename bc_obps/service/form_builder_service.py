@@ -39,7 +39,7 @@ def build_schema(activity: int, source_types: List[int], gas_type: int, methodol
     elif valild_source_types.count == 1:
         print ('ADD SINGLE SOURCE TYPE SCHEMA')
 
-    # If there are multiple source_types for an activity, the user may choose which ones apply. The IDs of the selected are passed as a list in the parameters & we add those schemas to the activity schema.
+    # If there are multiple source_types for an activity, the user may choose which ones apply. The IDs of the selected source_types are passed as a list in the parameters & we add those schemas to the activity schema.
     else:
         for s in valild_source_types:
             print(s.source_type.name)
