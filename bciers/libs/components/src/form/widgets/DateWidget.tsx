@@ -19,7 +19,7 @@ const DateWidget: React.FC<WidgetProps> = ({
   value,
 }) => {
   const handleChange = (d: Dayjs | null) => {
-    if (!d) {
+    if (!d || !d.isValid()) {
       return onChange(null);
     }
 
