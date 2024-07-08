@@ -2,7 +2,7 @@
 
 from django.db import migrations
 from registration.models import ReportingActivity
-from reporting.models import Configuration, SourceType, GasType, Methodology
+from reporting.models import Configuration, ConfigurationElement, ReportingField, SourceType, GasType, Methodology
 
 def init_configuration_data(apps, schema_monitor):
     '''
@@ -1152,6 +1152,504 @@ def reverse_init_reporting_field_data(apps, schema_monitor):
         ]
     ).delete()
 
+def init_configuration_element_reporting_fields_data(apps, schema_monitor):
+    '''
+    Add initial data to erc.activity_source_type_base_schema
+    '''
+    # CO2 - Default HHV/Default EF - Fuel Default High Heating Value
+    ConfigurationElement.objects.get(
+        reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id,
+        source_type_id=SourceType.objects.get(
+            name='General stationary combustion of fuel or waste with production of useful energy'
+        ).id,
+        gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
+        methodology_id=Methodology.objects.get(name='Default HHV/Default EF').id,
+        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
+    ).reporting_fields.add(
+        ReportingField.objects.get(field_name='Fuel Default High Heating Value', field_units__isnull=True)
+    )
+    # CO2 - Default HHV/Default EF - Unit-Fuel-CO2 Default Emission Factor
+    ConfigurationElement.objects.get(
+        reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id,
+        source_type_id=SourceType.objects.get(
+            name='General stationary combustion of fuel or waste with production of useful energy'
+        ).id,
+        gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
+        methodology_id=Methodology.objects.get(name='Default HHV/Default EF').id,
+        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
+    ).reporting_fields.add(
+        ReportingField.objects.get(field_name='Unit-Fuel-CO2 Default Emission Factor', field_units='kg/GJ')
+    )
+    # CO2 - Default EF - Unit-Fuel-CO2 Default Emission Factor
+    ConfigurationElement.objects.get(
+        reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id,
+        source_type_id=SourceType.objects.get(
+            name='General stationary combustion of fuel or waste with production of useful energy'
+        ).id,
+        gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
+        methodology_id=Methodology.objects.get(name='Default EF').id,
+        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
+    ).reporting_fields.add(
+        ReportingField.objects.get(field_name='Unit-Fuel-CO2 Default Emission Factor', field_units='kg/fuel units')
+    )
+    # CO2 - Measured HHV/Default EF - Fuel Annual Weighted Average High Heating Value
+    ConfigurationElement.objects.get(
+        reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id,
+        source_type_id=SourceType.objects.get(
+            name='General stationary combustion of fuel or waste with production of useful energy'
+        ).id,
+        gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
+        methodology_id=Methodology.objects.get(name='Measured HHV/Default EF').id,
+        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
+    ).reporting_fields.add(
+        ReportingField.objects.get(
+            field_name='Fuel Annual Weighted Average High Heating Value', field_units__isnull=True
+        )
+    )
+    # CO2 - Measured HHV/Default EF - Unit-Fuel-CO2 Default Emission Factor
+    ConfigurationElement.objects.get(
+        reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id,
+        source_type_id=SourceType.objects.get(
+            name='General stationary combustion of fuel or waste with production of useful energy'
+        ).id,
+        gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
+        methodology_id=Methodology.objects.get(name='Measured HHV/Default EF').id,
+        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
+    ).reporting_fields.add(
+        ReportingField.objects.get(field_name='Unit-Fuel-CO2 Default Emission Factor', field_units='kg/GJ')
+    )
+    # CO2 - Measured Steam/Default EF - Unit-Fuel Annual Steam Generated
+    ConfigurationElement.objects.get(
+        reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id,
+        source_type_id=SourceType.objects.get(
+            name='General stationary combustion of fuel or waste with production of useful energy'
+        ).id,
+        gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
+        methodology_id=Methodology.objects.get(name='Measured Steam/Default EF').id,
+        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
+    ).reporting_fields.add(
+        ReportingField.objects.get(field_name='Unit-Fuel Annual Steam Generated', field_units__isnull=True)
+    )
+    # CO2 - Measured Steam/Default EF - Boiler Ratio
+    ConfigurationElement.objects.get(
+        reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id,
+        source_type_id=SourceType.objects.get(
+            name='General stationary combustion of fuel or waste with production of useful energy'
+        ).id,
+        gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
+        methodology_id=Methodology.objects.get(name='Measured Steam/Default EF').id,
+        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
+    ).reporting_fields.add(ReportingField.objects.get(field_name='Boiler Ratio', field_units__isnull=True))
+    # CO2 - Measured Steam/Default EF - Unit-Fuel-CO2 Emission Factor
+    ConfigurationElement.objects.get(
+        reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id,
+        source_type_id=SourceType.objects.get(
+            name='General stationary combustion of fuel or waste with production of useful energy'
+        ).id,
+        gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
+        methodology_id=Methodology.objects.get(name='Measured Steam/Default EF').id,
+        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
+    ).reporting_fields.add(ReportingField.objects.get(field_name='Unit-Fuel-CO2 Emission Factor', field_units='kg/GJ'))
+    # CO2 - Measured CC - Fuel Annual Weighted Average Carbon Content (weight fraction)
+    ConfigurationElement.objects.get(
+        reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id,
+        source_type_id=SourceType.objects.get(
+            name='General stationary combustion of fuel or waste with production of useful energy'
+        ).id,
+        gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
+        methodology_id=Methodology.objects.get(name='Measured CC').id,
+        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
+    ).reporting_fields.add(
+        ReportingField.objects.get(
+            field_name='Fuel Annual Weighted Average Carbon Content (weight fraction)', field_units__isnull=True
+        )
+    )
+    # CO2 - Measured Steam/Measured EF - Unit-Fuel Annual Steam Generated
+    ConfigurationElement.objects.get(
+        reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id,
+        source_type_id=SourceType.objects.get(
+            name='General stationary combustion of fuel or waste with production of useful energy'
+        ).id,
+        gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
+        methodology_id=Methodology.objects.get(name='Measured Steam/Measured EF').id,
+        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
+    ).reporting_fields.add(
+        ReportingField.objects.get(field_name='Unit-Fuel Annual Steam Generated', field_units__isnull=True)
+    )
+    # CO2 - Measured Steam/Measured EF - Unit-Fuel-CO2 Measured Emission Factor
+    ConfigurationElement.objects.get(
+        reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id,
+        source_type_id=SourceType.objects.get(
+            name='General stationary combustion of fuel or waste with production of useful energy'
+        ).id,
+        gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
+        methodology_id=Methodology.objects.get(name='Measured Steam/Measured EF').id,
+        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
+    ).reporting_fields.add(
+        ReportingField.objects.get(field_name='Unit-Fuel-CO2 Measured Emission Factor', field_units__isnull=True)
+    )
+    # CO2 - Alternative Parameter Measurement - Description
+    ConfigurationElement.objects.get(
+        reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id,
+        source_type_id=SourceType.objects.get(
+            name='General stationary combustion of fuel or waste with production of useful energy'
+        ).id,
+        gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
+        methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement').id,
+        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
+    ).reporting_fields.add(ReportingField.objects.get(field_name='Description', field_units__isnull=True))
+    # CO2 - Replacement Methodology - Description
+    ConfigurationElement.objects.get(
+        reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id,
+        source_type_id=SourceType.objects.get(
+            name='General stationary combustion of fuel or waste with production of useful energy'
+        ).id,
+        gas_type_id=GasType.objects.get(chemical_formula='CO2').id,
+        methodology_id=Methodology.objects.get(name='Replacement Methodology').id,
+        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
+    ).reporting_fields.add(ReportingField.objects.get(field_name='Description', field_units__isnull=True))
+
+    # #CH4 - Default HHV/Default EF - Fuel Default High Heating Value
+    ConfigurationElement.objects.get(
+        reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id,
+        source_type_id=SourceType.objects.get(
+            name='General stationary combustion of fuel or waste with production of useful energy'
+        ).id,
+        gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
+        methodology_id=Methodology.objects.get(name='Default HHV/Default EF').id,
+        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
+    ).reporting_fields.add(
+        ReportingField.objects.get(field_name='Fuel Default High Heating Value', field_units__isnull=True)
+    )
+    # CH4 - Default HHV/Default EF - Unit-Fuel-CH4 Default Emission Factor
+    ConfigurationElement.objects.get(
+        reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id,
+        source_type_id=SourceType.objects.get(
+            name='General stationary combustion of fuel or waste with production of useful energy'
+        ).id,
+        gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
+        methodology_id=Methodology.objects.get(name='Default HHV/Default EF').id,
+        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
+    ).reporting_fields.add(
+        ReportingField.objects.get(field_name='Unit-Fuel-CH4 Default Emission Factor', field_units='kg/GJ')
+    )
+    # CH4 - Default EF - Unit-Fuel-CH4 Default Emission Factor
+    ConfigurationElement.objects.get(
+        reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id,
+        source_type_id=SourceType.objects.get(
+            name='General stationary combustion of fuel or waste with production of useful energy'
+        ).id,
+        gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
+        methodology_id=Methodology.objects.get(name='Default EF').id,
+        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
+    ).reporting_fields.add(
+        ReportingField.objects.get(field_name='Unit-Fuel-CH4 Default Emission Factor', field_units='kg/fuel units')
+    )
+    # CH4 - Measured HHV/Default EF - Fuel Annual Weighted Average High Heating Value
+    ConfigurationElement.objects.get(
+        reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id,
+        source_type_id=SourceType.objects.get(
+            name='General stationary combustion of fuel or waste with production of useful energy'
+        ).id,
+        gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
+        methodology_id=Methodology.objects.get(name='Measured HHV/Default EF').id,
+        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
+    ).reporting_fields.add(
+        ReportingField.objects.get(
+            field_name='Fuel Annual Weighted Average High Heating Value', field_units__isnull=True
+        )
+    )
+    # CH4 - Measured HHV/Default EF - Unit-Fuel-CH4 Default Emission Factor
+    ConfigurationElement.objects.get(
+        reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id,
+        source_type_id=SourceType.objects.get(
+            name='General stationary combustion of fuel or waste with production of useful energy'
+        ).id,
+        gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
+        methodology_id=Methodology.objects.get(name='Measured HHV/Default EF').id,
+        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
+    ).reporting_fields.add(
+        ReportingField.objects.get(field_name='Unit-Fuel-CH4 Default Emission Factor', field_units='kg/GJ')
+    )
+    # CH4 - Measured EF - Unit-Fuel-CH4 Measured Emission Factor
+    ConfigurationElement.objects.get(
+        reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id,
+        source_type_id=SourceType.objects.get(
+            name='General stationary combustion of fuel or waste with production of useful energy'
+        ).id,
+        gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
+        methodology_id=Methodology.objects.get(name='Measured EF').id,
+        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
+    ).reporting_fields.add(
+        ReportingField.objects.get(field_name='Unit-Fuel-CH4 Measured Emission Factor', field_units='kg/fuel units')
+    )
+    # CH4 - Measured Steam/Default EF - Unit-Fuel Annual Steam Generated
+    ConfigurationElement.objects.get(
+        reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id,
+        source_type_id=SourceType.objects.get(
+            name='General stationary combustion of fuel or waste with production of useful energy'
+        ).id,
+        gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
+        methodology_id=Methodology.objects.get(name='Measured Steam/Default EF').id,
+        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
+    ).reporting_fields.add(
+        ReportingField.objects.get(field_name='Unit-Fuel Annual Steam Generated', field_units__isnull=True)
+    )
+    # CH4 - Measured Steam/Default EF - Boiler Ratio
+    ConfigurationElement.objects.get(
+        reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id,
+        source_type_id=SourceType.objects.get(
+            name='General stationary combustion of fuel or waste with production of useful energy'
+        ).id,
+        gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
+        methodology_id=Methodology.objects.get(name='Measured Steam/Default EF').id,
+        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
+    ).reporting_fields.add(ReportingField.objects.get(field_name='Boiler Ratio', field_units__isnull=True))
+    # CH4 - Measured Steam/Default EF - Unit-Fuel-CH4 Default Emission Factor
+    ConfigurationElement.objects.get(
+        reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id,
+        source_type_id=SourceType.objects.get(
+            name='General stationary combustion of fuel or waste with production of useful energy'
+        ).id,
+        gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
+        methodology_id=Methodology.objects.get(name='Measured Steam/Default EF').id,
+        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
+    ).reporting_fields.add(
+        ReportingField.objects.get(field_name='Unit-Fuel-CH4 Default Emission Factor', field_units='kg/GJ')
+    )
+    # CH4 - Heat Input/Default EF - Unit-Fuel Heat Input
+    ConfigurationElement.objects.get(
+        reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id,
+        source_type_id=SourceType.objects.get(
+            name='General stationary combustion of fuel or waste with production of useful energy'
+        ).id,
+        gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
+        methodology_id=Methodology.objects.get(name='Heat Input/Default EF').id,
+        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
+    ).reporting_fields.add(ReportingField.objects.get(field_name='Unit-Fuel Heat Input', field_units__isnull=True))
+    # CH4 - Heat Input/Default EF - Unit-Fuel-CH4 Default Emission Factor
+    ConfigurationElement.objects.get(
+        reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id,
+        source_type_id=SourceType.objects.get(
+            name='General stationary combustion of fuel or waste with production of useful energy'
+        ).id,
+        gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
+        methodology_id=Methodology.objects.get(name='Heat Input/Default EF').id,
+        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
+    ).reporting_fields.add(
+        ReportingField.objects.get(field_name='Unit-Fuel-CH4 Default Emission Factor', field_units='kg/GJ')
+    )
+    # CH4 - Alternative Parameter Measurement - Description
+    ConfigurationElement.objects.get(
+        reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id,
+        source_type_id=SourceType.objects.get(
+            name='General stationary combustion of fuel or waste with production of useful energy'
+        ).id,
+        gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
+        methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement').id,
+        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
+    ).reporting_fields.add(ReportingField.objects.get(field_name='Description', field_units__isnull=True))
+    # CH4 - Replacement Methodology - Description
+    ConfigurationElement.objects.get(
+        reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id,
+        source_type_id=SourceType.objects.get(
+            name='General stationary combustion of fuel or waste with production of useful energy'
+        ).id,
+        gas_type_id=GasType.objects.get(chemical_formula='CH4').id,
+        methodology_id=Methodology.objects.get(name='Replacement Methodology').id,
+        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
+    ).reporting_fields.add(ReportingField.objects.get(field_name='Description', field_units__isnull=True))
+
+    # N2O - Default HHV/Default EF - Fuel Default High Heating Value
+    ConfigurationElement.objects.get(
+        reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id,
+        source_type_id=SourceType.objects.get(
+            name='General stationary combustion of fuel or waste with production of useful energy'
+        ).id,
+        gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
+        methodology_id=Methodology.objects.get(name='Default HHV/Default EF').id,
+        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
+    ).reporting_fields.add(
+        ReportingField.objects.get(field_name='Fuel Default High Heating Value', field_units__isnull=True)
+    )
+    # N2O - Default HHV/Default EF - Unit-Fuel-N2O Default Emission Factor
+    ConfigurationElement.objects.get(
+        reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id,
+        source_type_id=SourceType.objects.get(
+            name='General stationary combustion of fuel or waste with production of useful energy'
+        ).id,
+        gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
+        methodology_id=Methodology.objects.get(name='Default HHV/Default EF').id,
+        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
+    ).reporting_fields.add(
+        ReportingField.objects.get(field_name='Unit-Fuel-N2O Default Emission Factor', field_units='kg/GJ')
+    )
+    # N2O - Default EF - Unit-Fuel-N2O Default Emission Factor
+    ConfigurationElement.objects.get(
+        reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id,
+        source_type_id=SourceType.objects.get(
+            name='General stationary combustion of fuel or waste with production of useful energy'
+        ).id,
+        gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
+        methodology_id=Methodology.objects.get(name='Default EF').id,
+        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
+    ).reporting_fields.add(
+        ReportingField.objects.get(field_name='Unit-Fuel-N2O Default Emission Factor', field_units='kg/fuel units')
+    )
+    # N2O - Measured HHV/Default EF - Fuel Annual Weighted Average High Heating Value
+    ConfigurationElement.objects.get(
+        reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id,
+        source_type_id=SourceType.objects.get(
+            name='General stationary combustion of fuel or waste with production of useful energy'
+        ).id,
+        gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
+        methodology_id=Methodology.objects.get(name='Measured HHV/Default EF').id,
+        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
+    ).reporting_fields.add(
+        ReportingField.objects.get(
+            field_name='Fuel Annual Weighted Average High Heating Value', field_units__isnull=True
+        )
+    )
+    # N2O - Measured HHV/Default EF - Unit-Fuel-N2O Default Emission Factor
+    ConfigurationElement.objects.get(
+        reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id,
+        source_type_id=SourceType.objects.get(
+            name='General stationary combustion of fuel or waste with production of useful energy'
+        ).id,
+        gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
+        methodology_id=Methodology.objects.get(name='Measured HHV/Default EF').id,
+        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
+    ).reporting_fields.add(
+        ReportingField.objects.get(field_name='Unit-Fuel-N2O Default Emission Factor', field_units='kg/GJ')
+    )
+    # N2O - Measured EF - Unit-Fuel-N2O Measured Emission Factor
+    ConfigurationElement.objects.get(
+        reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id,
+        source_type_id=SourceType.objects.get(
+            name='General stationary combustion of fuel or waste with production of useful energy'
+        ).id,
+        gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
+        methodology_id=Methodology.objects.get(name='Measured EF').id,
+        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
+    ).reporting_fields.add(
+        ReportingField.objects.get(field_name='Unit-Fuel-N2O Measured Emission Factor', field_units='kg/fuel units')
+    )
+    # N2O - Measured Steam/Default EF - Unit-Fuel Annual Steam Generated
+    ConfigurationElement.objects.get(
+        reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id,
+        source_type_id=SourceType.objects.get(
+            name='General stationary combustion of fuel or waste with production of useful energy'
+        ).id,
+        gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
+        methodology_id=Methodology.objects.get(name='Measured Steam/Default EF').id,
+        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
+    ).reporting_fields.add(
+        ReportingField.objects.get(field_name='Unit-Fuel Annual Steam Generated', field_units__isnull=True)
+    )
+    # N2O - Measured Steam/Default EF - Boiler Ratio
+    ConfigurationElement.objects.get(
+        reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id,
+        source_type_id=SourceType.objects.get(
+            name='General stationary combustion of fuel or waste with production of useful energy'
+        ).id,
+        gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
+        methodology_id=Methodology.objects.get(name='Measured Steam/Default EF').id,
+        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
+    ).reporting_fields.add(ReportingField.objects.get(field_name='Boiler Ratio', field_units__isnull=True))
+    # N2O - Measured Steam/Default EF - Unit-Fuel-N2O Default Emission Factor
+    ConfigurationElement.objects.get(
+        reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id,
+        source_type_id=SourceType.objects.get(
+            name='General stationary combustion of fuel or waste with production of useful energy'
+        ).id,
+        gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
+        methodology_id=Methodology.objects.get(name='Measured Steam/Default EF').id,
+        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
+    ).reporting_fields.add(
+        ReportingField.objects.get(field_name='Unit-Fuel-N2O Default Emission Factor', field_units='kg/GJ')
+    )
+    # N2O - Heat Input/Default EF - Unit-Fuel Heat Input
+    ConfigurationElement.objects.get(
+        reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id,
+        source_type_id=SourceType.objects.get(
+            name='General stationary combustion of fuel or waste with production of useful energy'
+        ).id,
+        gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
+        methodology_id=Methodology.objects.get(name='Heat Input/Default EF').id,
+        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
+    ).reporting_fields.add(ReportingField.objects.get(field_name='Unit-Fuel Heat Input', field_units__isnull=True))
+    # N2O - Heat Input/Default EF - Unit-Fuel-N2O Default Emission Factor
+    ConfigurationElement.objects.get(
+        reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id,
+        source_type_id=SourceType.objects.get(
+            name='General stationary combustion of fuel or waste with production of useful energy'
+        ).id,
+        gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
+        methodology_id=Methodology.objects.get(name='Heat Input/Default EF').id,
+        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
+    ).reporting_fields.add(
+        ReportingField.objects.get(field_name='Unit-Fuel-N2O Default Emission Factor', field_units='kg/GJ')
+    )
+    # N2O - Alternative Parameter Measurement - Description
+    ConfigurationElement.objects.get(
+        reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id,
+        source_type_id=SourceType.objects.get(
+            name='General stationary combustion of fuel or waste with production of useful energy'
+        ).id,
+        gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
+        methodology_id=Methodology.objects.get(name='Alternative Parameter Measurement').id,
+        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
+    ).reporting_fields.add(ReportingField.objects.get(field_name='Description', field_units__isnull=True))
+    # N2O - Replacement Methodology - Description
+    ConfigurationElement.objects.get(
+        reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id,
+        source_type_id=SourceType.objects.get(
+            name='General stationary combustion of fuel or waste with production of useful energy'
+        ).id,
+        gas_type_id=GasType.objects.get(chemical_formula='N2O').id,
+        methodology_id=Methodology.objects.get(name='Replacement Methodology').id,
+        valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
+        valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
+    ).reporting_fields.add(ReportingField.objects.get(field_name='Description', field_units__isnull=True))
+
 
 class Migration(migrations.Migration):
 
@@ -1167,4 +1665,5 @@ class Migration(migrations.Migration):
         migrations.RunPython(init_configuration_data, reverse_init_configuration_data),
         migrations.RunPython(init_configuration_element_data, reverse_init_configuration_element_data),
         migrations.RunPython(init_reporting_field_data, reverse_init_reporting_field_data),
+        migrations.RunPython(init_configuration_element_reporting_fields_data),
     ]
