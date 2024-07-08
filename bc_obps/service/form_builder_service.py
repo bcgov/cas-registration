@@ -11,8 +11,8 @@ def str_to_camel_case(st):
 # build_schema will dynamically create a form depending on the parameters passed
 # activity: Returns a form with just the activity schema + the set of related source_types
 # activity + source_type(s): Returns the activity schema, plus the schema(s) for each source type id passed in the List, plus fills the gas_type enum with the valid gas types based on the activity & source type
-# activity + source_type(s) + gas_type: Returns all of the above, plus fills out the methodology enum with the valid methodology options based on the activity, source_type & gas_type selected
-# activity + source_type(s) + gas_type + methodology: Returns all of the above, plus the additional reporting fields associated to the methodology selection
+# activity + source_type(s) + gas_type selection is made: Returns all of the above, plus fills out the methodology enum with the valid methodology options based on the activity, source_type & gas_type selected
+# activity + source_type(s) + gas_type selection + methodology selection is made: Returns all of the above, plus the additional reporting fields associated to the methodology selection
 # report_date is mandatory & determines the valid schemas & WCI configuration for the point in time that the report was created
 
 def build_schema(activity: int, source_types: List[int], report_date: str):
@@ -84,6 +84,7 @@ def build_schema(activity: int, source_types: List[int], report_date: str):
             "oneOf":[]
           }
         }
+        methodology_map = {}
         # For each gas type, add to the enum object to be added to the schema to complete the list of valid gas_types a user can select
         for index, t in enumerate(gas_types):
             gas_type_enum.append(t.gas_type.chemical_formula)
@@ -103,7 +104,6 @@ def build_schema(activity: int, source_types: List[int], report_date: str):
             gas_type_one_of['gasType']['oneOf'].append({"properties": {"gasType": {"enum": [t.gas_type.chemical_formula]}, "methodology": {"title": "Methodology", "type": "string", "enum": []}}})
 
             methodology_enum = []
-            methodology_map = {}
             methodology_one_of = {
                   "methodology": {
                     "oneOf":[]
@@ -112,7 +112,7 @@ def build_schema(activity: int, source_types: List[int], report_date: str):
             # For each allowed methodology for the activity-sourceType-gasType relationship, populate the enum with valid methodologies & create the oneOf branch for each methodology selection
             for u in methodologies:
                 methodology_enum.append(u.methodology.name)
-                methodology_map[u.methodology.id] = t.methodology.name
+                methodology_map[u.methodology.id] = u.methodology.name
                 try:
                   methodology_fields = (
                       ConfigurationElement.objects.prefetch_related('reporting_fields')
@@ -157,12 +157,12 @@ def build_schema(activity: int, source_types: List[int], report_date: str):
         rjsf_schema['properties']['sourceTypes']['properties'][str_to_camel_case(source_type_schema.source_type.name)] = st_schema
 
     # Return completed schema
-    return json.dumps(rjsf_schema)
-    # return_object = {}
-    # return_object["schema"] = rjsf_schema
-    # return_object["gasTypeMap"] = gas_type_map
-    # return_object['methodologyMap'] = methodology_map
-    # return json.dumps(return_object)
+    # return json.dumps(rjsf_schema)
+    return_object = {}
+    return_object["schema"] = rjsf_schema
+    return_object["gasTypeMap"] = gas_type_map
+    return_object['methodologyMap'] = methodology_map
+    return json.dumps(return_object)
 
 
 class FormBuilderService:
