@@ -4,7 +4,6 @@ from registration.decorators import handle_http_errors
 
 from registration.schema.generic import Message
 from ninja.responses import codes_4xx, codes_5xx
-from typing import List
 
 ##### GET #####
 
