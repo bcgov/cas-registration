@@ -15,10 +15,7 @@ from typing import List
 @handle_http_errors()
 def build_form_schema(
     request,
-    source_types: List[int] = [],
     activity: int = None,
-    gas_type: int = None,
-    methodology: int = None,
-    report_date: str = '2024-04-01',
+    report_date: str = None,
 ):
-    return 200, FormBuilderService.build_form_schema(activity, request.GET.getlist('source_types[]'), gas_type, methodology, report_date)
+    return 200, FormBuilderService.build_form_schema(activity, request.GET.getlist('source_types[]'), report_date)

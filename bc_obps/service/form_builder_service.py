@@ -15,7 +15,7 @@ def str_to_camel_case(st):
 # activity + source_type(s) + gas_type + methodology: Returns all of the above, plus the additional reporting fields associated to the methodology selection
 # report_date is mandatory & determines the valid schemas & WCI configuration for the point in time that the report was created
 
-def build_schema(activity: int, source_types: List[int], gas_type: int, methodology: int, report_date: str):
+def build_schema(activity: int, source_types: List[int], report_date: str):
     # Get activity schema
     rjsf_schema = ActivityJsonSchema.objects.filter(
             reporting_activity_id=activity,
@@ -42,10 +42,9 @@ def build_schema(activity: int, source_types: List[int], gas_type: int, methodol
     # If there are multiple source_types for an activity, the user may choose which ones apply. The IDs of the selected source_types are passed as a list in the parameters & we add those schemas to the activity schema.
     else:
         for s in valild_source_types:
-            print(s.source_type.name)
             rjsf_schema['properties'][str_to_camel_case(s.source_type.name)] = {"type": "boolean", "title": s.source_type.name}
 
-    # If not source_types are passed, only return the activity schema
+    # If no source_types are passed, only return the activity schema
     if len(source_types) == 0:
         return json.dumps(rjsf_schema)
 
@@ -98,8 +97,9 @@ def build_schema(activity: int, source_types: List[int], gas_type: int, methodol
             )
             if not methodologies.exists():
                 raise Exception(
-                    f'No configuration found for activity_id {activity} & source_type_id {source_type} & gas_type_id {gas_type} & report_date {report_date}'
+                    f'No configuration found for activity_id {activity} & source_type_id {source_type} & gas_type_id {t.gas_type.id} & report_date {report_date}'
                 )
+            # Create the oneOf branch for each gasType selection
             gas_type_one_of['gasType']['oneOf'].append({"properties": {"gasType": {"enum": [t.gas_type.chemical_formula]}, "methodology": {"title": "Methodology", "type": "string", "enum": []}}})
 
             methodology_enum = []
@@ -109,6 +109,7 @@ def build_schema(activity: int, source_types: List[int], gas_type: int, methodol
                     "oneOf":[]
                   }
                 }
+            # For each allowed methodology for the activity-sourceType-gasType relationship, populate the enum with valid methodologies & create the oneOf branch for each methodology selection
             for u in methodologies:
                 methodology_enum.append(u.methodology.name)
                 methodology_map[u.methodology.id] = t.methodology.name
@@ -127,15 +128,15 @@ def build_schema(activity: int, source_types: List[int], gas_type: int, methodol
                   )
                 except:
                     raise Exception(
-                        f'No configuration found for activity_id {activity} & source_type_id {source_type} & gas_type_id {gas_type} & methodology_id {methodology} & report_date {report_date}'
+                        f'No configuration found for activity_id {activity} & source_type_id {source_type} & gas_type_id {t.gas_type.id} & methodology_id {u.methodology.id} & report_date {report_date}'
                     )
                 methodology_object = {"properties": {"methodology": {"enum": [u.methodology.name]}}}
+                # For each field related to a methodology, add that field to the methodology object & append to the oneOf branch
                 for f in methodology_fields:
                     property_field = str_to_camel_case(f.field_name)
-                    print(property_field)
                     methodology_object['properties'][property_field] = {"type": f.field_type, "title": f.field_name}
                     if f.field_units:
-                        methodology_object['properties'][f"{property_field}FieldUnits"] = {"type": "string", "default": f.field_units}
+                        methodology_object['properties'][f"{property_field}FieldUnits"] = {"type": "string", "default": f.field_units, "title": f"{f.field_name} Units"}
                 methodology_one_of['methodology']['oneOf'].append(methodology_object)
             gas_type_one_of['gasType']['oneOf'][index]['properties']['methodology']['enum'] = methodology_enum
             gas_type_one_of['gasType']['oneOf'][index]['dependencies'] = methodology_one_of
@@ -148,63 +149,15 @@ def build_schema(activity: int, source_types: List[int], gas_type: int, methodol
             st_schema['properties']['units']['items']['properties']['fuels']['items']['properties']['emissions']['items']['dependencies'] = gas_type_one_of
         elif not source_type_schema.has_unit and source_type_schema.has_fuel:
             st_schema['properties']['fuels']['items']['properties']['emissions']['items']['properties']['gasType']['enum'] = gas_type_enum
+            st_schema['properties']['fuels']['items']['properties']['emissions']['items']['dependencies'] = gas_type_one_of
         else:
             st_schema['properties']['emissions']['items']['properties']['gasType']['enum'] = gas_type_enum
-        print('ST SCHEMA: ', st_schema)
+            st_schema['properties']['emissions']['items']['dependencies'] = gas_type_one_of
         # Add the source_type schema to the schema object being returned by this function
         rjsf_schema['properties']['sourceTypes']['properties'][str_to_camel_case(source_type_schema.source_type.name)] = st_schema
 
-        # Populate methodology enum with valid methodologies if gas_type is selected
-
-
     # Return completed schema
     return json.dumps(rjsf_schema)
-    # if gas_type:
-    #     rjsf_schema['properties']['emissions'] = {"type": "number", "title": "Emissions"}
-    #     rjsf_schema['properties']['equivalentEmissions'] = {"type": "number", "title": "Equivalent Emissions"}
-    #     ## Fetch valid methodology values for activity-sourceType pair + gasType selection
-    #     methodologies = ConfigurationElement.objects.select_related('methodology').filter(
-    #         reporting_activity_id=activity,
-    #         source_type_id=source_type,
-    #         gas_type_id=gas_type,
-    #         valid_from__valid_from__lte=report_date,
-    #         valid_to__valid_to__gte=report_date,
-    #     )
-    #     if not methodologies.exists():
-    #         raise Exception(
-    #             f'No configuration found for activity_id {activity} & source_type_id {source_type} & gas_type_id {gas_type} & report_date {report_date}'
-    #         )
-    #     methodology_enum = []
-    #     for t in methodologies:
-    #         methodology_enum.append(t.methodology.name)
-    #         methodology_map[t.methodology.id] = t.methodology.name
-    #     ## Append methodology field to schema with valid methodologies as an enum
-    #     rjsf_schema['properties']['methodology'] = {"type": "string", "title": "Methodology", "enum": methodology_enum}
-
-    # if methodology:
-    #     try:
-    #         methodology_fields = (
-    #             ConfigurationElement.objects.prefetch_related('reporting_fields')
-    #             .get(
-    #                 reporting_activity_id=activity,
-    #                 source_type_id=source_type,
-    #                 gas_type_id=gas_type,
-    #                 methodology_id=methodology,
-    #                 valid_from__valid_from__lte=report_date,
-    #                 valid_to__valid_to__gte=report_date,
-    #             )
-    #             .reporting_fields.all()
-    #         )
-    #     except:
-    #         raise Exception(
-    #             f'No configuration found for activity_id {activity} & source_type_id {source_type} & gas_type_id {gas_type} & methodology_id {methodology} & report_date {report_date}'
-    #         )
-    #     for f in methodology_fields:
-    #         property_field = str_to_camel_case(f.field_name)
-    #         rjsf_schema['properties'][property_field] = {"type": f.field_type, "title": f.field_name}
-    #         if f.field_units:
-    #             rjsf_schema['properties'][f"{property_field}FieldUnits"] = {"type": "string", "default": f.field_units}
-    # # Create a return object that includes the rjsf schema & an id-name mapping for gas_types & methodologies
     # return_object = {}
     # return_object["schema"] = rjsf_schema
     # return_object["gasTypeMap"] = gas_type_map
@@ -215,11 +168,11 @@ def build_schema(activity: int, source_types: List[int], gas_type: int, methodol
 class FormBuilderService:
     @classmethod
     def build_form_schema(
-        request, activity=None, source_types=[], gas_type=None, methodology=None, report_date='2024-04-01'
+        request, activity=None, source_types=[], report_date='2024-04-01'
     ):
         if report_date is None:
             raise Exception('Cannot build a schema without a valid report date')
         if activity is None:
             raise Exception('ERROR: Cannot build a schema without Activity data')
-        schema = build_schema(activity, source_types, gas_type, methodology, report_date)
+        schema = build_schema(activity, source_types, report_date)
         return schema
