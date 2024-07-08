@@ -61,11 +61,6 @@
                       "equivalentEmission": {
                         "title": "Equivalent Emission",
                         "type": "number"
-                      },
-                      "methodology": {
-                        "title": "Methodology",
-                        "type": "string",
-                        "enum": []
                       }
                     }
                   }
