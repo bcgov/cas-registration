@@ -11,6 +11,10 @@ export default async function Page({
   searchParams: FacilitiesSearchParams;
 }>) {
   return (
-    <FacilitiesPage operationId={operationId} searchParams={searchParams} />
+    <FacilitiesPage
+      operationId={operationId}
+      searchParams={searchParams}
+      isExternalUser={true}
+    />
   );
 }
