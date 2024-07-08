@@ -4,6 +4,7 @@ from django.db import migrations
 from registration.models import ReportingActivity
 from reporting.models import Configuration, ConfigurationElement, ReportingField, SourceType, GasType, Methodology
 
+
 def init_configuration_data(apps, schema_monitor):
     '''
     Add initial data to erc.configuration
@@ -562,6 +563,7 @@ def reverse_init_methodology_data(apps, schema_monitor):
         ]
     ).delete()
 
+
 def init_configuration_element_data(apps, schema_monitor):
     '''
     Add initial data to erc.configuration_element
@@ -1066,7 +1068,6 @@ def init_configuration_element_data(apps, schema_monitor):
     )
 
 
-
 def reverse_init_configuration_element_data(apps, schema_monitor):
     '''
     Remove initial data from erc.configuration_element
@@ -1076,6 +1077,7 @@ def reverse_init_configuration_element_data(apps, schema_monitor):
         valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).delete()
+
 
 def init_reporting_field_data(apps, schema_monitor):
     '''
@@ -1151,6 +1153,7 @@ def reverse_init_reporting_field_data(apps, schema_monitor):
             'Fuel Annual Weighted Average Carbon Content (weight fraction)'
         ]
     ).delete()
+
 
 def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     '''
