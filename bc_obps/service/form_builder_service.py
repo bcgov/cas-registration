@@ -85,9 +85,8 @@ def build_schema(activity: int, source_types: List[int], gas_type: int, methodol
             "oneOf":[]
           }
         }
-        methodology_map = {}
         # For each gas type, add to the enum object to be added to the schema to complete the list of valid gas_types a user can select
-        for t in gas_types:
+        for index, t in enumerate(gas_types):
             gas_type_enum.append(t.gas_type.chemical_formula)
             gas_type_map[t.gas_type.id] = t.gas_type.chemical_formula
             methodologies = ConfigurationElement.objects.select_related('methodology').filter(
@@ -101,12 +100,46 @@ def build_schema(activity: int, source_types: List[int], gas_type: int, methodol
                 raise Exception(
                     f'No configuration found for activity_id {activity} & source_type_id {source_type} & gas_type_id {gas_type} & report_date {report_date}'
                 )
+            gas_type_one_of['gasType']['oneOf'].append({"properties": {"gasType": {"enum": [t.gas_type.chemical_formula]}, "methodology": {"title": "Methodology", "type": "string", "enum": []}}})
+
             methodology_enum = []
-            for t in methodologies:
-                methodology_enum.append(t.methodology.name)
-                methodology_map[t.methodology.id] = t.methodology.name
-            print(t.gas_type.chemical_formula)
-            gas_type_one_of['gasType']['oneOf'].append({"properties": {"gasType": {"enum": [t.gas_type.chemical_formula]}, "methodology": {"title": "Methodology", "type": "string", "enum": methodology_enum}}})
+            methodology_map = {}
+            methodology_one_of = {
+                  "methodology": {
+                    "oneOf":[]
+                  }
+                }
+            for u in methodologies:
+                methodology_enum.append(u.methodology.name)
+                methodology_map[u.methodology.id] = t.methodology.name
+                try:
+                  methodology_fields = (
+                      ConfigurationElement.objects.prefetch_related('reporting_fields')
+                      .get(
+                          reporting_activity_id=activity,
+                          source_type_id=source_type,
+                          gas_type_id=t.gas_type.id,
+                          methodology_id=u.methodology.id,
+                          valid_from__valid_from__lte=report_date,
+                          valid_to__valid_to__gte=report_date,
+                      )
+                      .reporting_fields.all()
+                  )
+                except:
+                    raise Exception(
+                        f'No configuration found for activity_id {activity} & source_type_id {source_type} & gas_type_id {gas_type} & methodology_id {methodology} & report_date {report_date}'
+                    )
+                methodology_object = {"properties": {"methodology": {"enum": [u.methodology.name]}}}
+                for f in methodology_fields:
+                    property_field = str_to_camel_case(f.field_name)
+                    print(property_field)
+                    methodology_object['properties'][property_field] = {"type": f.field_type, "title": f.field_name}
+                    if f.field_units:
+                        methodology_object['properties'][f"{property_field}FieldUnits"] = {"type": "string", "default": f.field_units}
+                methodology_one_of['methodology']['oneOf'].append(methodology_object)
+            gas_type_one_of['gasType']['oneOf'][index]['properties']['methodology']['enum'] = methodology_enum
+            gas_type_one_of['gasType']['oneOf'][index]['dependencies'] = methodology_one_of
+
 
         st_schema = source_type_schema.json_schema
         # Append valid gas types to schema as an enum on the gasType property. Uses the has_unit / has_fuel booleans to determine the depth of the emissions array.
