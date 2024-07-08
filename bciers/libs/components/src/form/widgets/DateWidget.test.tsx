@@ -133,8 +133,8 @@ describe("RJSF DateWidget", () => {
       screen.getByTestId("CalendarIcon");
     });
 
-    const dateWidgetClickElement =
-      screen.getByTestId("CalendarIcon").parentElement;
+    const dateWidgetClickElement = screen.getByTestId("CalendarIcon")
+      .parentElement as HTMLElement;
 
     await act(async () => {
       fireEvent.click(dateWidgetClickElement);
@@ -158,5 +158,48 @@ describe("RJSF DateWidget", () => {
     // So that the test will work regardless of when it is run.
     expect(dateWidgetInput.value).toBe(dayjs().format("YYYY-MM-DD"));
     expect(dayjs(dateWidgetInput.value).isValid()).toBe(true);
+  });
+
+  it("always saves the date as 9am UTC", async () => {
+    const mockSubmit = vi.fn();
+    render(
+      <FormBase
+        schema={dateWidgetFieldSchema}
+        uiSchema={dateWidgetFieldUiSchema}
+        onSubmit={mockSubmit}
+      />,
+    );
+
+    const dateWidgetInput = screen.getByRole("textbox") as HTMLInputElement;
+    await act(async () => {
+      fireEvent.change(dateWidgetInput, {
+        target: { value: "2024-07-05" },
+      });
+    });
+
+    expect(dateWidgetInput.value).toBe("2024-07-05");
+
+    const submitButton = screen.getByRole("button", { name: "Submit" });
+
+    await act(async () => {
+      fireEvent.click(submitButton);
+    });
+
+    expect(mockSubmit).toHaveBeenCalledOnce();
+    const formData = mockSubmit.mock.calls[0][0].formData;
+
+    const submittedDate = formData.dateWidgetTestField;
+    const submittedDateConverted = dayjs(formData.dateWidgetTestField);
+
+    // Check the date string time is 9am
+    expect(submittedDate).toMatch(/9:00:00.000/);
+
+    // Check that the date string is in UTC (ends with Z)
+    expect(submittedDate.slice(-1)).toBe("Z");
+
+    // Check time converted to dayjs is the same as the date submitted
+    expect(submittedDateConverted.utc().hour()).toBe(9);
+    expect(submittedDateConverted.utc().minute()).toBe(0);
+    expect(submittedDateConverted.utc().second()).toBe(0);
   });
 });
