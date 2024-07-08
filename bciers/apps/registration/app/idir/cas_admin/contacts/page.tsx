@@ -7,5 +7,5 @@ export default async function Page({
 }: Readonly<{
   searchParams: ContactsSearchParams;
 }>) {
-  return <ContactsPage searchParams={searchParams} />;
+  return <ContactsPage searchParams={searchParams} isExternalUser={false} />;
 }
