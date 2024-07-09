@@ -80,17 +80,3 @@ class FacilityOut(ModelSchema):
             "longitude_of_largest_emissions",
         ]
         populate_by_name = True
-
-
-# class FacilityOut(Schema):
-#     section1: FacilitySection1
-#     section2: FacilitySection2
-#     id: UUID
-
-#     @staticmethod
-#     def resolve_section1(obj: Facility) -> FacilitySection1:
-#         return FacilitySection1.from_orm(obj)
-
-#     @staticmethod
-#     def resolve_section2(obj: Facility) -> FacilitySection2:
-#         return FacilitySection2.from_orm(obj)

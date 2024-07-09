@@ -1,6 +1,9 @@
 from typing import Dict, Optional
 from uuid import UUID
 from registration.models import BusinessRole, Contact
+from django.db.models import QuerySet
+from registration.models.user import User
+from service.user_operator_service import UserOperatorService
 
 
 class ContactDataAccessService:
@@ -21,3 +24,14 @@ class ContactDataAccessService:
         )
         contact.set_create_or_update(user_guid)
         return contact
+
+    @classmethod
+    def get_all_contacts_for_user(cls, user: User) -> QuerySet[Contact]:
+        queryset = Contact.objects.all()
+
+        if user.is_irc_user():
+            return queryset
+        else:
+            # At this point, we can only get Contacts for a user based on the user's operator and associated operations to the operator
+            user_operator = UserOperatorService.get_current_user_approved_user_operator_or_raise(user)
+            return queryset.filter(operations__operator=user_operator.operator).distinct()

@@ -1,4 +1,5 @@
 from itertools import cycle
+from typing import List, Union
 from model_bakery import baker
 from model_bakery.recipe import seq
 from registration.models import (
@@ -56,8 +57,8 @@ def document_baker() -> Document:
     return baker.make(Document, file='test.pdf')
 
 
-def contact_baker() -> Contact:
-    return baker.make(Contact)
+def contact_baker(*args, **kwargs) -> Union[Contact, List[Contact]]:
+    return baker.make(Contact, *args, **kwargs)
 
 
 def bc_obps_regulated_operation_baker() -> BcObpsRegulatedOperation:
@@ -79,14 +80,20 @@ def operator_baker(custom_properties=None) -> Operator:
     return baker.make(Operator, **properties)
 
 
-def operation_baker(operator_id: uuid.UUID = None, **properties) -> Operation:
+def operation_baker(operator_id: uuid.UUID = None, **properties) -> Union[Operation, List[Operation]]:
     if "type" not in properties:
         properties["type"] = cycle(["sfo", "lfo"])
+
+    point_of_contact = properties.get("point_of_contact")
+    if point_of_contact:
+        properties.pop("point_of_contact")
+    else:
+        point_of_contact = contact_baker()
 
     if operator_id:
         return baker.make(
             Operation,
-            point_of_contact=contact_baker(),
+            point_of_contact=point_of_contact,
             naics_code=NaicsCode.objects.first(),
             bcghg_id=uuid.uuid4(),
             operator_id=operator_id,
@@ -95,7 +102,7 @@ def operation_baker(operator_id: uuid.UUID = None, **properties) -> Operation:
 
     return baker.make(
         Operation,
-        point_of_contact=contact_baker(),
+        point_of_contact=point_of_contact,
         naics_code=NaicsCode.objects.first(),
         bcghg_id=uuid.uuid4(),
         operator=operator_baker(),

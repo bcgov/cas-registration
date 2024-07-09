@@ -1,7 +1,5 @@
 import { GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 
-export const FACILITY_COLUMN_INDEX = 1;
-
 const facilityColumns = (
   ActionCell: (params: GridRenderCellParams) => JSX.Element,
 ) => {
