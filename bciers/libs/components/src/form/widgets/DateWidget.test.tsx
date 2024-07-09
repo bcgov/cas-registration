@@ -9,6 +9,11 @@ import {
 import { RJSFSchema } from "@rjsf/utils";
 import FormBase from "@bciers/components/form/FormBase";
 import dayjs from "dayjs";
+import {
+  checkTextWidgetValidationStyles,
+  checkNoValidationErrorIsTriggered,
+} from "@/tests/helpers/form";
+
 const dateWidgetFieldLabel = "DateWidget test field";
 const dateWidgetLabelRequired = `${dateWidgetFieldLabel}*`;
 
@@ -29,7 +34,30 @@ export const dateWidgetFieldUiSchema = {
   },
 };
 
+const checkTypingDate = async (inputString: string, expectedValue: string) => {
+  render(
+    <FormBase
+      schema={dateWidgetFieldSchema}
+      uiSchema={dateWidgetFieldUiSchema}
+    />,
+  );
+
+  const dateWidgetInput = screen.getByLabelText(
+    dateWidgetLabelRequired,
+  ) as HTMLInputElement;
+
+  await act(async () => {
+    await userEvent.type(dateWidgetInput, inputString);
+  });
+
+  expect(dateWidgetInput.value).toBe(expectedValue);
+};
+
 describe("RJSF DateWidget", () => {
+  beforeEach(() => {
+    vi.resetAllMocks();
+  });
+
   it("should render a date widget field", async () => {
     render(
       <FormBase
@@ -70,55 +98,15 @@ describe("RJSF DateWidget", () => {
   });
 
   it("should allow typing a date", async () => {
-    render(
-      <FormBase
-        schema={dateWidgetFieldSchema}
-        uiSchema={dateWidgetFieldUiSchema}
-      />,
-    );
-
-    const dateWidgetInput = screen.getByRole("textbox") as HTMLInputElement;
-    await act(async () => {
-      await userEvent.type(dateWidgetInput, "020240705");
-    });
-
-    expect(dateWidgetInput.value).toBe("2024-07-05");
+    await checkTypingDate("020240705", "2024-07-05");
   });
 
   it("should allow typing a date with a separator", async () => {
-    render(
-      <FormBase
-        schema={dateWidgetFieldSchema}
-        uiSchema={dateWidgetFieldUiSchema}
-      />,
-    );
-
-    const dateWidgetInput = screen.getByRole("textbox") as HTMLInputElement;
-
-    await act(async () => {
-      await userEvent.type(dateWidgetInput, "02024-07-05");
-    });
-
-    expect(dateWidgetInput.value).toBe("2024-07-05");
+    await checkTypingDate("02024-07-05", "2024-07-05");
   });
 
   it("should not allow typing an invalid date", async () => {
-    render(
-      <FormBase
-        schema={dateWidgetFieldSchema}
-        uiSchema={dateWidgetFieldUiSchema}
-      />,
-    );
-
-    const dateWidgetInput = screen.getByLabelText(
-      dateWidgetLabelRequired,
-    ) as HTMLInputElement;
-
-    await act(async () => {
-      userEvent.type(dateWidgetInput, "not a date");
-    });
-
-    expect(dateWidgetInput.value).toBe("");
+    await checkTypingDate("not a date", "");
   });
 
   it("should allow the user to select a date", async () => {
@@ -201,5 +189,41 @@ describe("RJSF DateWidget", () => {
     expect(submittedDateConverted.utc().hour()).toBe(9);
     expect(submittedDateConverted.utc().minute()).toBe(0);
     expect(submittedDateConverted.utc().second()).toBe(0);
+  });
+
+  it("should not trigger an error when data is valid", async () => {
+    render(
+      <FormBase
+        schema={dateWidgetFieldSchema}
+        formData={{ dateWidgetTestField: "2024-07-05T09:00:00.000Z" }}
+        uiSchema={dateWidgetFieldUiSchema}
+      />,
+    );
+
+    await checkNoValidationErrorIsTriggered();
+  });
+
+  it("should trigger validation error for required field", async () => {
+    render(
+      <FormBase
+        schema={dateWidgetFieldSchema}
+        uiSchema={dateWidgetFieldUiSchema}
+      />,
+    );
+    const submitButton = screen.getByRole("button", { name: "Submit" });
+
+    await userEvent.click(submitButton);
+
+    expect(screen.getByText("Required field")).toBeVisible();
+  });
+
+  it("should have the correct styles when the validation error is shown", async () => {
+    checkTextWidgetValidationStyles(
+      <FormBase
+        schema={dateWidgetFieldSchema}
+        uiSchema={dateWidgetFieldUiSchema}
+      />,
+      dateWidgetLabelRequired,
+    );
   });
 });
