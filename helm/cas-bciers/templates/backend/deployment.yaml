@@ -78,6 +78,8 @@ spec:
                   name: cas-obps-postgres-pguser-registration
             - name: ALLOWED_HOSTS
               value: '*'
+            - name: BACKEND_HOST
+              value: {{ .Values.backend.route.host }}
             - name: GS_BUCKET_NAME
               valueFrom:
                 secretKeyRef:
