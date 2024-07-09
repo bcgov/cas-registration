@@ -170,7 +170,7 @@ def build_schema(activity: int, source_types: List[int], report_date: str):
     if len(source_types) == 0 and valid_source_types.count() > 1:
         return json.dumps(rjsf_schema)
 
-    if len(source_types) > 1:
+    if valid_source_types.count() > 1:
         # Create the Source Types object (within which all the selected source_type schemas will be defined)
         rjsf_schema['properties']['sourceTypes'] = {"type": "object", "title": "Source Types", "properties": {}}
         # For each selected source_type, add the related schema
