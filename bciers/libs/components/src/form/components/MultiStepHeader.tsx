@@ -9,28 +9,30 @@ const MultiStepHeader = ({ step, steps }: MultiStepHeaderProps) => {
   const titleWidth = steps.length > 2 ? "lg:w-36" : "";
   return (
     <div className="block md:flex flex-row mt-10 mb-6 justify-between w-full">
-      {steps.map((s, i) => {
-        const isLastStep = i === steps.length - 1;
-        const bgColor = i === step ? "bg-bc-yellow" : "bg-bc-primary-blue";
+      {steps.map((title, index) => {
+        const isLastStep = index === steps.length - 1;
+        const isActiveStep = index === step;
+        const bgColor = isActiveStep ? "bg-bc-yellow" : "bg-bc-bg-blue";
+        const fontColor = isActiveStep ? "bg-bc-bg-blue" : "white";
 
         return (
           <div
             className={`mb-4 flex flex-row items-center ${
               isLastStep ? "grow-0" : "grow"
             }`}
-            key={steps[i]}
+            key={steps[index]}
           >
             <div
-              key={s}
-              className={`leading-12 text-center rounded-full min-w-[3rem] min-h-[3rem] w-12 h-12 text-white font-bold ${bgColor}`}
+              key={title}
+              className={`leading-12 text-center rounded-full min-w-[3rem] min-h-[3rem] w-12 h-12 text-${fontColor} font-bold ${bgColor}`}
             >
-              {i + 1}
+              {index + 1}
             </div>
             <div
               className={`ml-4 h-min ${titleWidth}`}
               data-testid="multistep-header-title"
             >
-              {steps[i]}
+              {steps[index]}
             </div>
 
             {!isLastStep && (

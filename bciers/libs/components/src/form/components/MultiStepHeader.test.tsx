@@ -38,9 +38,11 @@ describe("The MultiStepHeader component", () => {
 
   it("colour-codes the steps correctly", () => {
     render(<MultiStepHeader {...defaultProps} />);
-    expect(screen.getByText(/1/i)).toHaveClass("bg-bc-yellow");
-    expect(screen.getByText(/2/i)).toHaveClass("bg-bc-primary-blue");
-    expect(screen.getByText(/3/i)).toHaveClass("bg-bc-primary-blue");
+    expect(screen.getByText(/2/i)).toHaveClass("bg-bc-bg-blue");
+    expect(screen.getByText(/3/i)).toHaveClass("bg-bc-bg-blue");
+    expect(screen.getByText(/1/i)).toHaveClass("text-bg-bc-bg-blue");
+    expect(screen.getByText(/2/i)).toHaveClass("text-white");
+    expect(screen.getByText(/3/i)).toHaveClass("text-white");
   });
 
   it("shows the line between steps", () => {
