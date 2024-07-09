@@ -58,4 +58,28 @@ describe("Contacts component", () => {
       screen.queryByText(/No operations data in database./i),
     ).not.toBeInTheDocument();
   });
+
+  it("renders the correct note message and displays `Add Contact` button for external users", async () => {
+    fetchContactsPageData.mockResolvedValueOnce(mockResponse);
+    render(await Contacts({ searchParams: {}, isExternalUser: true }));
+    const note = screen.getByTestId("note");
+    expect(note).toBeVisible();
+    expect(note).toHaveTextContent(
+      "View the contacts of your operator, i.e. people who can represent the operator for GGIRCA purposes. Please keep the information up to date here.",
+    );
+    expect(screen.getByRole("button", { name: "Add Contact" })).toBeVisible();
+  });
+
+  it("renders the correct note message for internal users", async () => {
+    fetchContactsPageData.mockResolvedValueOnce(mockResponse);
+    render(await Contacts({ searchParams: {}, isExternalUser: false }));
+    const note = screen.getByTestId("note");
+    expect(note).toBeVisible();
+    expect(note).toHaveTextContent(
+      "View all the contacts, which can be sorted or filtered by operator here.",
+    );
+    expect(
+      screen.queryByRole("button", { name: "Add Contact" }),
+    ).not.toBeInTheDocument();
+  });
 });
