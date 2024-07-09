@@ -6,8 +6,7 @@ metadata:
 {{ include "cas-bciers.labels" . | indent 4 }}
   annotations:
     haproxy.router.openshift.io/balance: roundrobin
-    haproxy.router.openshift.io/rewrite-target: /
-
+    haproxy.router.openshift.io/rewrite-target: {{ .Values.reportingFrontend.route.path }}
 spec:
   host: {{ .Values.reportingFrontend.route.host }}
   path: {{ .Values.reportingFrontend.route.path }}
