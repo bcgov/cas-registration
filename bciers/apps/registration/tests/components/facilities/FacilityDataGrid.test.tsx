@@ -105,7 +105,7 @@ describe("OperationsDataGrid component", () => {
     expect(extractParams(mockReplace.mock.calls[4], "sort_field")).toBe("type");
     expect(extractParams(mockReplace.mock.calls[4], "sort_order")).toBe("desc");
   });
-  it.only("makes API call with correct params when filtering", async () => {
+  it("makes API call with correct params when filtering", async () => {
     render(
       <FacilityDataGrid
         operationId="randomOperationUUID"
