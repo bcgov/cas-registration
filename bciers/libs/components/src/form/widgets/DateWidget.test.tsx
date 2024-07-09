@@ -42,9 +42,7 @@ const checkTypingDate = async (inputString: string, expectedValue: string) => {
     />,
   );
 
-  const dateWidgetInput = screen.getByLabelText(
-    dateWidgetLabelRequired,
-  ) as HTMLInputElement;
+  const dateWidgetInput = screen.getByRole("textbox") as HTMLInputElement;
 
   await act(async () => {
     await userEvent.type(dateWidgetInput, inputString);
@@ -106,7 +104,14 @@ describe("RJSF DateWidget", () => {
   });
 
   it("should not allow typing an invalid date", async () => {
-    await checkTypingDate("not a date", "");
+    await checkTypingDate("not a date", "YYYY-MM-DD");
+
+    const submitButton = screen.getByRole("button", { name: "Submit" });
+
+    await act(async () => {
+      fireEvent.click(submitButton);
+    });
+    expect(screen.getByText("Required field")).toBeVisible();
   });
 
   it("should allow the user to select a date", async () => {

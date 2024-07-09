@@ -1,4 +1,3 @@
-import { useState } from "react";
 import dayjs, { Dayjs } from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -20,7 +19,6 @@ const DateWidget: React.FC<WidgetProps> = ({
   readonly,
   value,
 }) => {
-  const [open, setOpen] = useState(false);
   const handleChange = (d: Dayjs | null) => {
     if (!d || !d.isValid()) {
       return onChange(null);
@@ -53,20 +51,14 @@ const DateWidget: React.FC<WidgetProps> = ({
         onChange={handleChange}
         disabled={disabled || readonly}
         format="YYYY-MM-DD"
-        open={open}
         slotProps={{
           actionBar: {
             actions: ["clear", "cancel"],
           },
-          inputAdornment: {
-            onClick: () => setOpen(true),
-          },
           textField: {
-            onFocus: () => setOpen(true),
             id,
           },
         }}
-        onClose={() => setOpen(false)}
         sx={styles}
       />
     </LocalizationProvider>
