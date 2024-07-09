@@ -22,6 +22,8 @@ COPY --from=deps /usr/src/app/node_modules node_modules
 COPY --from=deps /usr/src/app/package.json package.json
 COPY ./public ./public
 COPY --chown=node:node ./.next ./.next
+COPY ./next.config.js ./next.config.js
+COPY ./.nx-helpers ./.nx-helpers
 
 USER node
 EXPOSE 3000
