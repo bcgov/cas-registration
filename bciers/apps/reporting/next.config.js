@@ -12,7 +12,8 @@ const nextConfig = {
   ...nextConfigBase,
   // To deploy a Next.js application under a sub-path of a domain you can use the basePath config option
   basePath: "/reporting",
-  assetPrefix: "/reporting/",
+  assetPrefix:
+    "https://cas-bciers-frontend-dev.apps.silver.devops.gov.bc.ca/reporting/",
   output: "standalone",
   nx: {
     // Set this to true if you would like to use SVGR
