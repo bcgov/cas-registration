@@ -20,10 +20,9 @@ ENV PORT 3000
 WORKDIR /usr/src/app
 COPY --from=deps /usr/src/app/node_modules node_modules
 COPY --from=deps /usr/src/app/package.json package.json
+COPY ./.next/standalone .
 COPY ./public ./public
-COPY --chown=node:node ./.next ./.next
-COPY ./next.config.js ./next.config.js
-COPY ./.nx-helpers ./.nx-helpers
+COPY ./.next/static ./dist/registration/.next/static
 
 USER node
 EXPOSE 3000
@@ -33,4 +32,4 @@ EXPOSE 3000
 # Learn more here: https://nextjs.org/telemetry
 # Uncomment the following line in case you want to disable telemetry.
 ENV NEXT_TELEMETRY_DISABLED 1
-CMD ["node_modules/.bin/next", "start"]
+CMD ["node", "apps/registration/server.js"]

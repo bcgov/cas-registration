@@ -5,8 +5,8 @@ const nextConfigBase = require("../../next.config.base");
 
 const nextConfig = {
   ...nextConfigBase,
-  basePath: "/thispathisbasepath",
-  assetPrefix: "/somepathisassetprefix/",
+  basePath: "/registration",
+  assetPrefix: "/registration/",
   reactStrictMode: true,
   swcMinify: true,
   //use modularizeImports properties to optimize the imports in the application
