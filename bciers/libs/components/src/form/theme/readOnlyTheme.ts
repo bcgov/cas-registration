@@ -2,6 +2,7 @@ import defaultTheme from "@bciers/components/form/theme/defaultTheme";
 import ReadOnlyWidget from "@bciers/components/form/widgets/readOnly/ReadOnlyWidget";
 import ReadOnlyBooleanWidget from "@bciers/components/form/widgets/readOnly/ReadOnlyBooleanWidget";
 import ReadOnlyComboBoxWidget from "@bciers/components/form/widgets/readOnly/ReadOnlyComboBoxWidget";
+import ReadOnlyDateWidget from "@bciers/components/form/widgets/readOnly/ReadOnlyDateWidget";
 import ReadOnlyFileWidget from "@bciers/components/form/widgets/readOnly/ReadOnlyFileWidget";
 import ReadOnlyMultiSelectWidget from "@bciers/components/form/widgets/readOnly/ReadOnlyMultiSelectWidget";
 import { getDefaultRegistry } from "@rjsf/core";
@@ -16,6 +17,7 @@ const readOnlyTheme = {
   widgets: {
     CheckboxWidget: ReadOnlyBooleanWidget,
     ComboBox: ReadOnlyComboBoxWidget,
+    DateWidget: ReadOnlyDateWidget,
     EmailWidget: ReadOnlyWidget,
     FileWidget: ReadOnlyFileWidget,
     MultiSelectWidget: ReadOnlyMultiSelectWidget,
