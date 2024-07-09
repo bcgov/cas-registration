@@ -89,7 +89,7 @@ export const facilitiesUiSchema = {
       "ui:widget": "ComboBox",
     },
     postal_code: {
-      "ui:widget": "DateWidget",
+      "ui:widget": "PostalCodeWidget",
     },
   },
 };

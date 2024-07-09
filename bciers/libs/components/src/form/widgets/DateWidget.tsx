@@ -62,8 +62,7 @@ const DateWidget: React.FC<WidgetProps> = ({
             onClick: () => setOpen(true),
           },
           textField: {
-            // Open the date picker when the input is clicked
-            onClick: () => setOpen(true),
+            onFocus: () => setOpen(true),
             id,
           },
         }}
