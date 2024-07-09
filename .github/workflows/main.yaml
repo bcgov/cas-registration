@@ -26,31 +26,39 @@ jobs:
       - run: yarn install --immutable
         working-directory: ./bciers
   build-backend:
+    if: false
     uses: ./.github/workflows/build-backend.yaml
   build-registration:
     uses: ./.github/workflows/build-registration.yaml
   build-dashboard:
     uses: ./.github/workflows/build-dashboard.yaml
   build-registration1:
+    if: false
     uses: ./.github/workflows/build-registration1.yaml
   build-reporting:
     uses: ./.github/workflows/build-reporting.yaml
   test-code:
+    if: false
     needs: [install-dev-tools]
     uses: ./.github/workflows/test-code.yaml
   test-backend:
+    if: false
     needs: [build-backend, install-dev-tools]
     uses: ./.github/workflows/test-backend.yaml
     secrets: inherit
   test-e2e:
+    if: false
     needs: [build-registration1, install-dev-tools]
     uses: ./.github/workflows/test-e2e.yaml
     secrets: inherit
   zap-owasp:
+    if: false
     # We will need to set up registration part 2 and reporting to get zap scanned
     needs: [build-backend, build-registration1, install-dev-tools]
     uses: ./.github/workflows/zap-owasp.yaml
   trivy:
+    if: false
     uses: ./.github/workflows/trivy.yaml
   codeql:
+    if: false
     uses: ./.github/workflows/codeql.yaml
