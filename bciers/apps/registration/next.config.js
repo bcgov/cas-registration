@@ -5,10 +5,8 @@ const nextConfigBase = require("../../next.config.base");
 
 const nextConfig = {
   ...nextConfigBase,
-  basePath:
-    "https://cas-bciers-frontend-dev.apps.silver.devops.gov.bc.ca/registration",
-  assetPrefix:
-    "https://cas-bciers-frontend-dev.apps.silver.devops.gov.bc.ca/registration/",
+  basePath: "/thispathisbasepath",
+  assetPrefix: "/somepathisassetprefix/",
   reactStrictMode: true,
   swcMinify: true,
   //use modularizeImports properties to optimize the imports in the application
