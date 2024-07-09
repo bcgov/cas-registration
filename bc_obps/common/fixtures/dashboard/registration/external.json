@@ -23,7 +23,7 @@
             "title": "Contacts",
             "icon": "Users",
             "content": "View the contacts of your operator, or to add new contact for your operator here.",
-            "href": "/registration/tbd"
+            "href": "/registration/contacts"
           },
           {
             "title": "Users and Access Requests",

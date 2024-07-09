@@ -12,6 +12,7 @@ from . import (
     user_operators,
     users,
     facilities,
+    contacts,
 )
 from ._operations import operation_id
 from ._operations._operation_id import update_status, facilities
