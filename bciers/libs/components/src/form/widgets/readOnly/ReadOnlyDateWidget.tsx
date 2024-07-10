@@ -2,7 +2,7 @@ import { WidgetProps } from "@rjsf/utils/lib/types";
 import dayjs from "dayjs";
 
 const formatDate = (value: string) => {
-  if (typeof value === "string" && value.includes("T")) {
+  if (typeof value === "string" && dayjs(value).isValid()) {
     return dayjs(value).format("YYYY-MM-DD");
   }
   return null;

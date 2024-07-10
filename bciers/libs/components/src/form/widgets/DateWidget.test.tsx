@@ -6,7 +6,7 @@ import {
   screen,
   waitFor,
 } from "@testing-library/react";
-import { RJSFSchema } from "@rjsf/utils";
+import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import FormBase from "@bciers/components/form/FormBase";
 import dayjs from "dayjs";
 import {
@@ -17,7 +17,7 @@ import {
 const dateWidgetFieldLabel = "DateWidget test field";
 const dateWidgetLabelRequired = `${dateWidgetFieldLabel}*`;
 
-export const dateWidgetFieldSchema = {
+export const dateWidgetFieldSchema: RJSFSchema = {
   type: "object",
   required: ["dateWidgetTestField"],
   properties: {
@@ -26,9 +26,9 @@ export const dateWidgetFieldSchema = {
       title: dateWidgetFieldLabel,
     },
   },
-} as RJSFSchema;
+};
 
-export const dateWidgetFieldUiSchema = {
+export const dateWidgetFieldUiSchema: UiSchema = {
   dateWidgetTestField: {
     "ui:widget": "DateWidget",
   },
