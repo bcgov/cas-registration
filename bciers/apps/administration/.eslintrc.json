@@ -6,6 +6,10 @@
     "../../.eslintrc.json"
   ],
   "ignorePatterns": ["!**/*", ".next/**/*"],
+  "parserOptions": {
+    "project": ["apps/administration/tsconfig(.*)?.json"],
+    "tsConfigRootDir": "./"
+  },
   "overrides": [
     {
       "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
