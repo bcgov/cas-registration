@@ -39,7 +39,7 @@ export default function FacilitiesForm({
         onSubmit={async (data: { formData?: any }) => {
           const method = isCreating ? "POST" : "PUT";
           const endpoint = isCreating ? "registration/facilities" : `tbd`;
-          const pathToRevalidate = isCreating ? "dashboard/facilities" : `tbd`;
+          const pathToRevalidate = endpoint; // for now the endpoint is the same as the path to revalidate
           const body = {
             ...data.formData,
             operation_id: params.operationId,
