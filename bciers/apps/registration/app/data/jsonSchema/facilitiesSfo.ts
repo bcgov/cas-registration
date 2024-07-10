@@ -83,7 +83,6 @@ export const facilitiesUiSchema = {
       "ui:widget": "ComboBox",
     },
   },
-
   section2: {
     "ui:FieldTemplate": SectionFieldTemplate,
     province: {
