@@ -6,7 +6,6 @@ pytestmark = pytest.mark.django_db
 client = Client()
 pytest.endpoint = "/api/reporting/build-form-schema"
 
-
 class TestBuildFormSchema:
     def test_invalid_without_report_date(self):
         response = client.get(f'{pytest.endpoint}?activity=1')
@@ -36,7 +35,6 @@ class TestBuildFormSchema:
     def test_returns_activity_schema(self):
         response = client.get(f'{pytest.endpoint}?activity=1&report_date=2024-05-01')
         assert response.status_code == 200
-        print (json.loads(response.json()))
         assert json.loads(response.json())['schema']['title'] == 'General stationary combustion'
         # No source types passed (and no mandatory single source type). Return only the activity schema
         assert 'sourceTypes' not in json.loads(response.json())['schema']['properties']
@@ -46,8 +44,10 @@ class TestBuildFormSchema:
     def test_returns_source_type_schema(self):
         response = client.get(f'{pytest.endpoint}?activity=1&source_types[]=1&report_date=2024-05-01')
         assert response.status_code == 200
-        # One source type passed, one schema returned
-        assert len(json.loads(response.json())['schema']['properties'].keys()) == 3
+        # Source Types object has been created
+        assert 'sourceTypes' in json.loads(response.json())['schema']['properties']
+        # One source type passed as parameter, one source type schema returned
+        assert len(json.loads(response.json())['schema']['properties']['sourceTypes']['properties'].keys()) == 1
         source_type_key = list(json.loads(response.json())['schema']['properties'].keys())[0]
         # Created an array object for units
         assert 'units' in json.loads(response.json())['schema']['properties']['sourceTypes']['properties'][source_type_key]['properties']
@@ -57,3 +57,9 @@ class TestBuildFormSchema:
         assert 'emissions' in json.loads(response.json())['schema']['properties']['sourceTypes']['properties'][source_type_key]['properties']['units']['items']['properties']['fuels']['items']['properties']
         # emissions enum has correct gas types
         assert json.loads(response.json())['schema']['properties']['sourceTypes']['properties'][source_type_key]['properties']['units']['items']['properties']['fuels']['items']['properties']['emissions']['items']['properties']['gasType']['enum'] == ['CO2', 'CH4', 'N2O']
+
+    def test_returns_multiple_source_type_schemas(self):
+        response = client.get(f'{pytest.endpoint}?activity=1&source_types[]=1&source_types[]=2&report_date=2024-05-01')
+        assert response.status_code == 200
+        # 2 schemas in the sourceTypes object
+        assert len(json.loads(response.json())['schema']['properties']['sourceTypes']['properties'].keys()) == 2
