@@ -10,7 +10,7 @@ import RootLayout from "@bciers/components/layout/RootLayout";
 
 const defaultLinks = [
   { label: "Dashboard", href: "/" },
-  { label: "Administration", href: "/administration" },
+  { label: "Registration", href: "/registration" },
 ];
 
 export default function RegistrationLayout({

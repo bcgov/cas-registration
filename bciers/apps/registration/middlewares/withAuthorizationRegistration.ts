@@ -3,10 +3,10 @@ import {
   NextMiddleware,
   NextRequest,
   NextResponse,
-} from 'next/server';
+} from "next/server";
 
-import { MiddlewareFactory } from '@bciers/middlewares';
-import { getToken } from '@bciers/actions';
+import { MiddlewareFactory } from "@bciers/middlewares";
+import { getToken } from "@bciers/actions";
 
 /*
 Access control logic is managed using Next.js middleware and NextAuth.js authentication JWT token.
@@ -32,7 +32,7 @@ export const withAuthorizationRegistration: MiddlewareFactory = (
       // build rewrite to physcial folder path which enforces authorization by IdP and role
       request.nextUrl.pathname = `${token.identity_provider}/${
         token.app_role
-      }${pathname.replace('registration/', '')}`;
+      }${pathname.replace("registration/", "")}`;
       return NextResponse.rewrite(request.nextUrl);
     } else {
       // Handle unauthenticated requests

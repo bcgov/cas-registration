@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import Image from 'next/image';
-import { useSession } from 'next-auth/react';
-import Profile from '@bciers/components/navigation/Profile';
+import Link from "next/link";
+import Image from "next/image";
+import { useSession } from "next-auth/react";
+import Profile from "@bciers/components/navigation/Profile";
 // eslint-disable-next-line import/extensions
-import Logo from '@bciers/img/src/BCID_CleanBC_rev_tagline_colour.svg';
+import Logo from "@bciers/img/src/BCID_CleanBC_rev_tagline_colour.svg";
 
 export default function Header() {
   const { data: session } = useSession();

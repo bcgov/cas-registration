@@ -1,5 +1,5 @@
 import { UUID } from "crypto";
-import Facility from "apps/administration/app/components/facilities/Facility";
+import Facility from "@/registration/app/components/facilities/Facility";
 
 export default function Page({
   params,
