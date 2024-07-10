@@ -11,6 +11,9 @@
   a {
     @apply text-bc-link-blue underline;
   }
+  h1 {
+    @apply text-2xl font-bold text-bc-primary-blue;
+  }
   .max-w-page {
     @apply max-w-[1440px];
   }
