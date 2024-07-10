@@ -4,7 +4,7 @@
 const { composePlugins, withNx } = require("@nx/next");
 
 // The hosts are only available at build time. Routing locally is handled by Next.js while routing on OpenShift is handled by ingress rules.
-const { HOST_REGISTRATION, HOST_REPORTING } = process.env;
+const { HOST_REGISTRATION, HOST_REPORTING, HOST_COAM } = process.env;
 // Next.js doesn't use TS's paths, so we need to use the relative path
 const nextConfigBase = require("../../next.config.base");
 
@@ -15,7 +15,7 @@ const nextConfig = {
   ...nextConfigBase,
   async rewrites() {
     const localRoutes =
-      HOST_REGISTRATION && HOST_REPORTING
+      HOST_REGISTRATION && HOST_REPORTING && HOST_COAM
         ? [
             {
               source: "/registration",
@@ -32,6 +32,14 @@ const nextConfig = {
             {
               source: "/reporting/:path*",
               destination: `${HOST_REPORTING}/reporting/:path*`,
+            },
+            {
+              source: "/coam",
+              destination: `${HOST_COAM}/coam`,
+            },
+            {
+              source: "/coam/:path*",
+              destination: `${HOST_COAM}/coam/:path*`,
             },
           ]
         : [];
