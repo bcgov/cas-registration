@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { memo, useMemo, useState } from "react";
 import DataGrid from "@bciers/components/datagrid/DataGrid";
 import facilityColumns from "../datagrid/models/facilities/facilityColumns";
 import facilityGroupColumns from "../datagrid/models/facilities/facilityGroupColumns";
@@ -53,4 +53,4 @@ const FacilityDataGrid = ({
   );
 };
 
-export default FacilityDataGrid;
+export default memo(FacilityDataGrid);

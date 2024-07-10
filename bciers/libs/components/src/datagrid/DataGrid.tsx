@@ -6,6 +6,7 @@ import {
   DataGrid as MuiGrid,
   GridColDef,
   GridColumnGroupingModel,
+  GridRowParams,
   GridSortDirection,
   GridSortItem,
 } from "@mui/x-data-grid";
@@ -21,6 +22,7 @@ interface Props {
     rows: { [key: string]: any }[];
     row_count?: number;
   };
+  onRowClick?: (row: GridRowParams) => void;
   paginationMode?: "client" | "server";
 }
 
@@ -38,8 +40,9 @@ const DataGrid: React.FC<Props> = ({
   columns,
   columnGroupModel,
   fetchPageData,
-  paginationMode = "client",
   initialData,
+  onRowClick,
+  paginationMode = "client",
 }) => {
   const [rows, setRows] = useState(initialData.rows ?? []);
   const [rowCount, setRowCount] = useState(initialData.row_count ?? undefined);
@@ -136,16 +139,17 @@ const DataGrid: React.FC<Props> = ({
             ],
           },
         }}
+        onRowClick={onRowClick}
+        onPaginationModelChange={handlePaginationModelChange}
+        onSortModelChange={handleSortModelChange}
         pagination
         pageSizeOptions={[PAGE_SIZE]}
         sortingMode={paginationMode}
         paginationMode={paginationMode}
-        onPaginationModelChange={handlePaginationModelChange}
         paginationModel={{
           pageSize: PAGE_SIZE,
           page: Number(searchParams.get("page") ?? 1) - 1,
         }}
-        onSortModelChange={handleSortModelChange}
         // Set the row height to "auto" so that the row height will adjust to the content
         getRowHeight={() => "auto"}
         slots={{

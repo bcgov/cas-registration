@@ -1,4 +1,4 @@
-import OperationDataGrid from "./OperationDataGrid";
+import OperationsWithFacilitiesDataGrid from "./OperationsWithFacilitiesDataGrid";
 import { OperationRow, OperationsSearchParams } from "./types";
 import fetchOperationsPageData from "./fetchOperationsPageData";
 import { Suspense } from "react";
@@ -54,7 +54,7 @@ export default async function Operations({
   return (
     <Suspense fallback={<Loading />}>
       <div className="mt-5">
-        <OperationDataGrid
+        <OperationsWithFacilitiesDataGrid
           initialData={operations}
           isInternalUser={isInternalUser}
         />
