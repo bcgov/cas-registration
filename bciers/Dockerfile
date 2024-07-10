@@ -39,4 +39,4 @@ ENV NEXT_TELEMETRY_DISABLED 1
 # Add an env to save ARG
 ENV app_server=apps/${application_path}/server.js
 
-CMD ["node", ${app_server}]
+CMD node ${app_server}
