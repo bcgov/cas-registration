@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "cas-bciers.fullname" . }}-administration-frontend
+  labels:
+    component: administration-frontend
+    layer: frontend
+{{- include "cas-bciers.labels" . | nindent 4 }}
+spec:
+{{- if not .Values.administrationFrontend.autoscaling.enabled }}
+  replicas: {{ .Values.administrationFrontend.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "cas-bciers.selectorLabels" . | nindent 6 }}
+      component: administration-frontend
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+{{- include "cas-bciers.selectorLabels" . | nindent 8 }}
+        component: administration-frontend
+        layer: frontend
+    spec:
+      automountServiceAccountToken: false
+      containers:
+        - name: {{ template "cas-bciers.fullname" . }}-administration-frontend
+          envFrom:
+            - configMapRef:
+                name: {{ template "cas-bciers.fullname" . }}-frontend-env-configmap
+          image: "{{ .Values.administrationFrontend.image.repository }}:{{ .Values.defaultImageTag | default .Values.administrationFrontend.image.tag }}"
+          imagePullPolicy: {{ .Values.administrationFrontend.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.administrationFrontend.service.port }}
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.administrationFrontend.resources | nindent 12 }}
+      restartPolicy: Always
