@@ -4,8 +4,6 @@ metadata:
   name: {{ template "cas-bciers.fullname" . }}-frontend-env-configmap
 data:
   API_URL: http://{{ include "cas-bciers.fullname" . }}-backend.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.backend.service.port }}/api/
-  HOST_REGISTRATION: http://{{ include "cas-bciers.fullname" . }}-frontend.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.registrationFrontend.service.port }}
-  HOST_REPORTING: http://{{ include "cas-bciers.fullname" . }}-frontend.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.reportingFrontend.service.port }}
   KEYCLOAK_AUTH_URL: {{ .Values.dashboardFrontend.auth.keycloakAuthUrl }}
   KEYCLOAK_REALMS: {{ .Values.dashboardFrontend.auth.keycloakRealms }}
   KEYCLOAK_OIDC: {{ .Values.dashboardFrontend.auth.keycloakOidc }}

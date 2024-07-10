@@ -7,6 +7,7 @@ const nextConfig = {
   ...nextConfigBase,
   // To deploy a Next.js application under a sub-path of a domain you can use the basePath config option
   basePath: "/registration",
+  assetPrefix: "/registration/",
   reactStrictMode: true,
   swcMinify: true,
   //use modularizeImports properties to optimize the imports in the application

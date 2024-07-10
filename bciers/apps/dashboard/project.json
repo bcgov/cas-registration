@@ -27,6 +27,7 @@
         "engine": "docker",
         "context": "dist/dashboard",
         "file": "Dockerfile",
+        "build-args": ["application_path=dashboard"],
         "tags": ["cas-dashboard:latest"]
       }
     },
