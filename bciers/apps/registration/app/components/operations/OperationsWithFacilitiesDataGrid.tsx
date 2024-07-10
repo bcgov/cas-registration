@@ -37,10 +37,11 @@ const OperationsWithFacilitiesDataGrid = ({
   useEffect(() => {
     const anchorTarget = document.getElementById("view-operation-facilities");
 
-    // debounce the scrollIntoView function to prevent excessive calls
+    // Needed to add a very small 50ms debounce to scrollIntoView
+    // as it was not being called sometimes without
     const debouncedScrollIntoView = debounce(() => {
       anchorTarget?.scrollIntoView({ behavior: "smooth", block: "start" });
-    }, 200);
+    }, 50);
 
     if (isFacilitiesGridVisible) debouncedScrollIntoView();
   }, [facilitiesGridData]);
