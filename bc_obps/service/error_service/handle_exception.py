@@ -2,6 +2,7 @@
 Module: handle_exception.py
 Description: This module handles http exceptions.
 """
+
 from typing import Dict, Literal, Optional, Tuple
 from django.http import Http404
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
@@ -13,6 +14,10 @@ def handle_exception(error: Exception) -> Tuple[Literal[400, 401, 403, 404, 422]
     """
     This function handles exceptions for BCEIRS. Returns a 4xx status.
     """
+    print("~~~~~~~~~ERROR!~~~~~~~~~")
+    print(error)
+    print(error.args)
+    print("~~~~~~~~~~~~~~~~~~~~~~~~")
     if error.args and error.args[0] == UNAUTHORIZED_MESSAGE:
         return 401, {"message": UNAUTHORIZED_MESSAGE}
     if isinstance(error, (Http404, ObjectDoesNotExist)):
