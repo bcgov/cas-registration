@@ -11,6 +11,9 @@ RUN yarn install
 # Production image, copy all the files and run next
 FROM docker.io/node:20.15 AS runner
 
+# nx/nextjs builds some files into subfolders based on project name. For a unified container, we supply the project name as a path.
+ARG application_path
+
 ADD https://github.com/Yelp/dumb-init/releases/download/v1.2.5/dumb-init_1.2.5_x86_64 /usr/local/bin/dumb-init
 RUN chmod +x /usr/local/bin/dumb-init
 ENTRYPOINT ["dumb-init", "--"]
@@ -20,8 +23,9 @@ ENV PORT 3000
 WORKDIR /usr/src/app
 COPY --from=deps /usr/src/app/node_modules node_modules
 COPY --from=deps /usr/src/app/package.json package.json
+COPY ./.next/standalone .
 COPY ./public ./public
-COPY --chown=node:node ./.next ./.next
+COPY ./.next/static ./dist/${application_path}/.next/static
 
 USER node
 EXPOSE 3000
@@ -31,4 +35,8 @@ EXPOSE 3000
 # Learn more here: https://nextjs.org/telemetry
 # Uncomment the following line in case you want to disable telemetry.
 ENV NEXT_TELEMETRY_DISABLED 1
-CMD ["node_modules/.bin/next", "start"]
+
+# Add an ENV to preserve the build ARG
+ENV app_server=apps/${application_path}/server.js
+
+CMD node ${app_server}
