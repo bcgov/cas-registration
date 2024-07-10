@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import FacilitiesPage from "@/administration/app/components/routes/facilities/Page";
 
 // mocking the child component until this issue is fixed: https://github.com/testing-library/react-testing-library/issues/1209#issuecomment-1673372612
-vi.mock("apps/registration/app/components/facilities/Facilities", () => {
+vi.mock("@/administration/app/components/facilities/Facilities", () => {
   return {
     default: () => <div>mocked child component</div>,
   };
