@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import Image from "next/image";
-import { useSession } from "next-auth/react";
-import Profile from "@bciers/components/navigation/Profile";
+import Link from 'next/link';
+import Image from 'next/image';
+import { useSession } from 'next-auth/react';
+import Profile from '@bciers/components/navigation/Profile';
 // eslint-disable-next-line import/extensions
-import Logo from "@bciers/img/src/BCID_CleanBC_rev_tagline_colour.svg";
+import Logo from '@bciers/img/src/BCID_CleanBC_rev_tagline_colour.svg';
 
 export default function Header() {
   const { data: session } = useSession();
@@ -26,7 +26,7 @@ export default function Header() {
               />
             </Link>
             <h1 className="text-white font-bold cursor-default ml-6 flex-grow text-xs p-1 sm:text-xl md:text-[28px] md:p-0">
-              B.C. Industrial Emissions Reporting System (BCIERS)
+              B.C. Industrial Emissions Reporting System
             </h1>
             {/* 👇️ Authentication content for laptop & desktop */}
             {session && (
