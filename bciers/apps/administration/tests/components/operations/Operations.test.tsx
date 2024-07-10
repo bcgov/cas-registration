@@ -4,7 +4,7 @@ import {
   useRouter,
   useSearchParams,
 } from "@bciers/testConfig/mocks";
-import Operations from "apps/administration/app/components/operations/Operations";
+import Operations from "apps/registration/app/components/operations/Operations";
 import { FrontEndRoles } from "@bciers/utils/enums";
 
 useRouter.mockReturnValue({

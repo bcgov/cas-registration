@@ -1,13 +1,13 @@
 //@ts-check
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const { composePlugins, withNx } = require('@nx/next');
+const { composePlugins, withNx } = require("@nx/next");
 
 // The hosts are only available at build time. Routing locally is handled by Next.js while routing on OpenShift is handled by ingress rules.
 const { HOST_ADMINISTRATION, HOST_REGISTRATION, HOST_REPORTING, HOST_COAM } =
   process.env;
 // Next.js doesn't use TS's paths, so we need to use the relative path
-const nextConfigBase = require('../../next.config.base');
+const nextConfigBase = require("../../next.config.base");
 
 /**
  * @type {import('@nx/next/plugins/with-nx').WithNxOptions}
@@ -19,35 +19,35 @@ const nextConfig = {
       HOST_ADMINISTRATION && HOST_REGISTRATION && HOST_REPORTING && HOST_COAM
         ? [
             {
-              source: '/administration',
+              source: "/administration",
               destination: `${HOST_ADMINISTRATION}/administration`,
             },
             {
-              source: '/administration/:path*',
+              source: "/administration/:path*",
               destination: `${HOST_ADMINISTRATION}/administration/:path*`,
             },
             {
-              source: '/registration',
+              source: "/registration",
               destination: `${HOST_REGISTRATION}/registration`,
             },
             {
-              source: '/registration/:path*',
+              source: "/registration/:path*",
               destination: `${HOST_REGISTRATION}/registration/:path*`,
             },
             {
-              source: '/reporting',
+              source: "/reporting",
               destination: `${HOST_REPORTING}/reporting`,
             },
             {
-              source: '/reporting/:path*',
+              source: "/reporting/:path*",
               destination: `${HOST_REPORTING}/reporting/:path*`,
             },
             {
-              source: '/coam',
+              source: "/coam",
               destination: `${HOST_COAM}/coam`,
             },
             {
-              source: '/coam/:path*',
+              source: "/coam/:path*",
               destination: `${HOST_COAM}/coam/:path*`,
             },
           ]
@@ -55,7 +55,7 @@ const nextConfig = {
 
     return [
       {
-        source: '/:path*',
+        source: "/:path*",
         destination: `/:path*`,
       },
       ...localRoutes,

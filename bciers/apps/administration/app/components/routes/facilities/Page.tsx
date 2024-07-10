@@ -1,4 +1,3 @@
-import { auth } from "@/dashboard/auth";
 import Link from "next/link";
 import { Button } from "@mui/material";
 import { Suspense } from "react";
@@ -10,12 +9,12 @@ import Note from "@bciers/components/layout/Note";
 export default async function FacilitiesPage({
   operationId,
   searchParams,
-}: Readonly<{ operationId: string; searchParams: FacilitiesSearchParams }>) {
-  // 👤 Use NextAuth.js hook to get information about the user's session
-  /* When calling from the server-side i.e., in Route Handlers, React Server Components, API routes,
-   */
-  const session = await auth();
-  const role = session?.user?.app_role;
+  isExternalUser,
+}: Readonly<{
+  operationId: string;
+  searchParams: FacilitiesSearchParams;
+  isExternalUser: boolean;
+}>) {
   return (
     <>
       <Note>
@@ -23,7 +22,7 @@ export default async function FacilitiesPage({
       </Note>
       <h2 className="text-bc-primary-blue">Facilities</h2>
       {/* Conditionally render the button based on user's role */}
-      {role?.includes("industry_user") && (
+      {isExternalUser && (
         <div className="text-right">
           <Link href="#">
             <Button variant="contained">Add Facility</Button>

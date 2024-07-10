@@ -1,19 +1,19 @@
-import { NextURL } from 'next/dist/server/web/next-url';
-import { NextFetchEvent, NextRequest, NextResponse } from 'next/server';
-import { instance, mock, reset, when } from 'ts-mockito';
-import middleware from '../middleware';
-import { getToken } from '@bciers/testConfig/mocks';
-import { mockCasUserToken } from '@bciers/testConfig/data/tokens';
+import { NextURL } from "next/dist/server/web/next-url";
+import { NextFetchEvent, NextRequest, NextResponse } from "next/server";
+import { instance, mock, reset, when } from "ts-mockito";
+import middleware from "../middleware";
+import { getToken } from "@bciers/testConfig/mocks";
+import { mockCasUserToken } from "@bciers/testConfig/data/tokens";
 
-const domain = 'https://localhost:3000';
+const domain = "https://localhost:3000";
 const mockedRequest: NextRequest = mock(NextRequest);
 
-vi.spyOn(NextResponse, 'redirect');
-vi.spyOn(NextResponse, 'rewrite');
+vi.spyOn(NextResponse, "redirect");
+vi.spyOn(NextResponse, "rewrite");
 
 const mockNextFetchEvent: NextFetchEvent = mock(NextFetchEvent);
 
-describe('withAuthorizationAdministration middleware', () => {
+describe("withAuthorizationAdministration middleware", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -21,7 +21,7 @@ describe('withAuthorizationAdministration middleware', () => {
     reset(mockedRequest);
   });
 
-  it('redirects to the onboarding page if the user is not authenticated', async () => {
+  it("redirects to the onboarding page if the user is not authenticated", async () => {
     const nextUrl = new NextURL(`${domain}/administration`);
 
     when(mockedRequest.nextUrl).thenReturn(nextUrl);
@@ -33,12 +33,12 @@ describe('withAuthorizationAdministration middleware', () => {
     );
     expect(NextResponse.redirect).toHaveBeenCalledOnce();
     expect(NextResponse.redirect).toHaveBeenCalledWith(
-      new URL('/onboarding', domain),
+      new URL("/onboarding", domain),
     );
     expect(result?.status).toBe(307);
   });
 
-  it('builds the correct URL for authenticated users', async () => {
+  it("builds the correct URL for authenticated users", async () => {
     getToken.mockResolvedValue(mockCasUserToken);
     const nextUrl = new NextURL(`${domain}/administration`);
 
