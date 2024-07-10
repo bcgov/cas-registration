@@ -1,6 +1,8 @@
 // 🚩 flagging that for shared routes between roles, "Page" code is a component for code maintainability
 import { FacilitiesSearchParams } from "apps/registration/app/components/facilities/types";
-import FacilitiesPage from "apps/registration/app/components/routes/facilities/Page";
+import FacilitiesPage, {
+  ExternalUserLayout,
+} from "apps/registration/app/components/facilities/Facilities";
 import { UUID } from "crypto";
 
 export default async function Page({
@@ -11,10 +13,9 @@ export default async function Page({
   searchParams: FacilitiesSearchParams;
 }>) {
   return (
-    <FacilitiesPage
-      operationId={operationId}
-      searchParams={searchParams}
-      isExternalUser={true}
-    />
+    <>
+      <ExternalUserLayout />
+      <FacilitiesPage operationId={operationId} searchParams={searchParams} />
+    </>
   );
 }
