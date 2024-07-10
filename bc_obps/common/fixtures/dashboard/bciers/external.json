@@ -8,34 +8,42 @@
         "access_roles": ["industry_user", "industry_user_admin"],
         "tiles": [
           {
-            "title": "Registration",
-            "href": "/registration",
+            "title": "Administration",
+            "href": "/administration",
             "icon": "Layers",
-            "content": "View or update information of your operator, operations, facilities, contacts, and to register operations or report events here.",
+            "content": "View or update information of your operator, operations, facilities, contacts.",
             "links": [
               {
                 "title": "My Operator",
-                "href": "/registration/select-operator"
+                "href": "/administration/select-operator"
               },
               {
                 "title": "Operations",
-                "href": "/registration/operations"
+                "href": "/administration/operations"
               },
               {
                 "title": "Contacts",
-                "href": "/registration/contacts"
+                "href": "/administration/tbd"
               },
               {
                 "title": "Users and Access Requests",
-                "href": "/registration/tbd"
-              },
+                "href": "/administration/tbd"
+              }
+            ]
+          },
+          {
+            "title": "Registration",
+            "href": "/registration",
+            "icon": "Layers",
+            "content": "Submit BORO ID applications",
+            "links": [
               {
                 "title": "Register an Operation",
-                "href": "/registration/tbd"
+                "href": "/registration/operation"
               },
               {
                 "title": "Report an Event",
-                "href": "/registration/tbd"
+                "href": "/registration/event"
               }
             ]
           },

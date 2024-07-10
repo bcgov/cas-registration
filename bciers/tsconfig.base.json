@@ -20,20 +20,20 @@
       "@/coam/*": ["apps/coam/*"],
       "@/dashboard/*": ["apps/dashboard/*"],
       "@/registration/*": ["apps/registration/*"],
-      "@reporting/*": ["apps/reporting/*"],
       "@bciers/actions": ["libs/actions/src/index.ts"],
       "@bciers/actions/server": ["libs/actions/src/server.ts"],
       "@bciers/components": ["libs/components/src/index.ts"],
       "@bciers/components/*": ["libs/components/src/*"],
       "@bciers/components/server": ["libs/components/src/server.ts"],
+      "@bciers/data/*": ["libs/data/*"],
       "@bciers/img/*": ["libs/img/*"],
       "@bciers/middlewares": ["libs/middlewares/src/index.ts"],
       "@bciers/styles": ["libs/styles/src/index.ts"],
       "@bciers/styles/*": ["libs/styles/src/*"],
       "@bciers/testConfig/*": ["libs/testConfig/src/*"],
-      "@bciers/utils/*": ["libs/utils/*"],
       "@bciers/types/*": ["libs/types/src/*"],
-      "@bciers/data/*": ["libs/data/*"]
+      "@bciers/utils/*": ["libs/utils/*"],
+      "@reporting/*": ["apps/reporting/*"]
     }
   },
   "include": ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx", "**/*.json"],

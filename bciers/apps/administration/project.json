@@ -1,0 +1,39 @@
+{
+  "name": "administration",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/administration",
+  "projectType": "application",
+  "tags": ["layer:frontend"],
+  "targets": {
+    "dev": {
+      "options": {
+        "port": 4001
+      }
+    },
+    "build": {
+      "executor": "@nx/next:build",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "dev",
+      "options": {
+        "outputPath": "dist/administration",
+        "generateLockfile": true
+      }
+    },
+    "container": {
+      "executor": "@nx-tools/nx-container:build",
+      "dependsOn": ["build"],
+      "defaultConfiguration": "dev",
+      "options": {
+        "engine": "docker",
+        "context": "dist/administration",
+        "file": "Dockerfile",
+        "build-args": ["application_path=administration"],
+        "tags": ["cas-administration:latest"]
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "options": {}
+    }
+  }
+}

@@ -35,6 +35,8 @@ jobs:
     uses: ./.github/workflows/build-registration1.yaml
   build-reporting:
     uses: ./.github/workflows/build-reporting.yaml
+  build-administration:
+    uses: ./.github/workflows/build-administration.yaml
   test-code:
     needs: [install-dev-tools]
     uses: ./.github/workflows/test-code.yaml

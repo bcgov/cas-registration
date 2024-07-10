@@ -40,7 +40,6 @@
         "engine": "docker",
         "context": "dist/registration",
         "file": "Dockerfile",
-        "build-args": ["application_path=registration"],
         "tags": ["cas-registration:latest"]
       }
     },
@@ -68,7 +67,7 @@
     "e2e:sequential": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "playwright test --workers=1 bciers/apps/registration1/e2e/*"
+        "command": "playwright test --workers=1 bciers/apps/registration/e2e/*"
       }
     }
   }

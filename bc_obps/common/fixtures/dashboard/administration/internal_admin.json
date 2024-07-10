@@ -1,0 +1,56 @@
+[
+  {
+    "model": "common.dashboarddata",
+    "fields": {
+      "name": "Internal Admin Administration Dashboard",
+      "data": {
+        "dashboard": "administration",
+        "access_roles": ["cas_admin"],
+        "tiles": [
+          {
+            "title": "Operators",
+            "icon": "Inbox",
+            "content": "View all operators here.",
+            "href": "/dashboard/operators"
+          },
+          {
+            "title": "Operations",
+            "icon": "Layers",
+            "content": "View all operations here.",
+            "href": "/administration/dashboard/operations"
+          },
+          {
+            "title": "Facilities",
+            "icon": "Inbox",
+            "content": "View all facilities here.",
+            "href": "/administration/tbd"
+          },
+          {
+            "title": "Operator Administrators and Access Requests",
+            "icon": "Inbox",
+            "content": "View all operator administrators and administrator access requests here.",
+            "href": "/administration/tbd"
+          },
+          {
+            "title": "Operation Administrations",
+            "icon": "File",
+            "content": "View the administration of operations here.",
+            "href": "/administration/tbd"
+          },
+          {
+            "title": "Contacts",
+            "icon": "Users",
+            "content": "View all contacts here.",
+            "href": "/administration/tbd"
+          },
+          {
+            "title": "Cas Users",
+            "icon": "Users",
+            "content": "View tbd.",
+            "href": "/administration/tbd"
+          }
+        ]
+      }
+    }
+  }
+]
