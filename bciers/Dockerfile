@@ -1,5 +1,6 @@
 # Install dependencies only when needed
 FROM docker.io/node:20.15 AS deps
+
 ARG application_path
 WORKDIR /usr/src/app
 COPY ./package.json .
@@ -11,6 +12,8 @@ RUN yarn install
 
 # Production image, copy all the files and run next
 FROM docker.io/node:20.15 AS runner
+
+ARG application_path
 
 ADD https://github.com/Yelp/dumb-init/releases/download/v1.2.5/dumb-init_1.2.5_x86_64 /usr/local/bin/dumb-init
 RUN chmod +x /usr/local/bin/dumb-init
@@ -33,4 +36,7 @@ EXPOSE 3000
 # Learn more here: https://nextjs.org/telemetry
 # Uncomment the following line in case you want to disable telemetry.
 ENV NEXT_TELEMETRY_DISABLED 1
-CMD ["node", "apps/${application_path}/server.js"]
+# Add an env to save ARG
+ENV app_server=apps/${application_path}/server.js
+
+CMD ["node", ${app_server}]
