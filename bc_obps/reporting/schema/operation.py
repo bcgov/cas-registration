@@ -1,28 +1,16 @@
-from typing import Optional, Union
+from typing import Optional
 from ninja import FilterSchema, ModelSchema
 from registration.models.operation import Operation
 
 
 class ReportingDashboardOperationOut(ModelSchema):
-    report_id: int
-    report_version_id: int
-    report_status: str
+    report_id: int | None
+    report_version_id: int | None
+    report_status: str | None
 
     class Meta:
         model = Operation
         fields = ["id", "name", "bcghg_id"]
-
-    @staticmethod
-    def resolve_report_id(obj: Operation) -> int:
-        return 0
-
-    @staticmethod
-    def resolve_report_version_id(obj: Operation) -> int:
-        return 0
-
-    @staticmethod
-    def resolve_report_status(obj: Operation) -> int:
-        return "test"
 
 
 class ReportingDashboardOperationFilterSchema(FilterSchema):
