@@ -5,7 +5,7 @@ import {
 } from "@bciers/types/form/formData";
 import { auth } from "@/dashboard/auth";
 import getUserFullName from "@bciers/utils/getUserFullName";
-import UserForm from "@/registration/app/components/profile/ProfileForm";
+import UserForm from "@/administration/app/components/profile/ProfileForm";
 
 // 🚀 API call: GET user's data
 async function getUserFormData(): Promise<

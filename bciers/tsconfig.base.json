@@ -19,6 +19,7 @@
       "@/*": ["apps/registration1/*"],
       "@/coam/*": ["apps/coam/*"],
       "@/dashboard/*": ["apps/dashboard/*"],
+      "@/administration/*": ["apps/administration/*"],
       "@/registration/*": ["apps/registration/*"],
       "@bciers/actions": ["libs/actions/src/index.ts"],
       "@bciers/actions/server": ["libs/actions/src/server.ts"],
