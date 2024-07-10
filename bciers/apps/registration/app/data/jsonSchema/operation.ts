@@ -215,15 +215,15 @@ export const operationUiSchema: UiSchema = {
   },
   section1: {
     "ui:FieldTemplate": SectionFieldTemplate,
-    naics_code: {
+    naics_code_id: {
       "ui:widget": "ComboBox",
       "ui:placeholder": "Select Primary NAICS code",
     },
-    secondary_naics_code: {
+    secondary_naics_code_id: {
       "ui:widget": "ComboBox",
       "ui:placeholder": "Select Secondary NAICS code",
     },
-    tertiary_naics_code: {
+    tertiary_naics_code_id: {
       "ui:widget": "ComboBox",
       "ui:placeholder": "Select Tertiary NAICS code",
     },
