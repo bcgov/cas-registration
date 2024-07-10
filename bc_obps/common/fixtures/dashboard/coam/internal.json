@@ -1,0 +1,26 @@
+[
+  {
+    "model": "common.dashboarddata",
+    "fields": {
+      "name": "Compliance Obligation Administration Module Dashboard",
+      "data": {
+        "dashboard": "coam",
+        "access_roles": ["cas_admin", "cas_analyst"],
+        "tiles": [
+          {
+            "title": "Registry",
+            "icon": "File",
+            "content": "TBD here.",
+            "href": "/coam/tbd"
+          },
+          {
+            "title": "Compensation Obligation",
+            "icon": "File",
+            "content": "TBD here.",
+            "href": "/coam/tbd"
+          }
+        ]
+      }
+    }
+  }
+]
