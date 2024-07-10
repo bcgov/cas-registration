@@ -2,10 +2,8 @@ from typing import List
 import pytest
 from registration.models.app_role import AppRole
 from registration.models.contact import Contact
-from registration.models.operation import Operation
 from registration.tests.utils.bakers import (
     contact_baker,
-    operation_baker,
     operator_baker,
     user_baker,
     user_operator_baker,
@@ -29,9 +27,7 @@ class TestDataAccessContactService:
         # Generating 10 operations for the industry user and assigning contacts to them
         users_operator = operator_baker()
         users_contacts: List[Contact] = contact_baker(_quantity=10)
-        users_operations: List[Operation] = []
-        for user_contact in users_contacts:
-            users_operations.append(operation_baker(operator_id=users_operator.id, point_of_contact=user_contact))
+        users_operator.contacts.set(users_contacts)
         # Approved user operator for industry user
         user_operator_baker(
             {"user": industry_user, "operator": users_operator, "status": UserOperator.Statuses.APPROVED}
@@ -39,9 +35,8 @@ class TestDataAccessContactService:
 
         # Generating 10 operations for a random user and assigning contacts to them
         random_contacts: List[Contact] = contact_baker(_quantity=10)
-        random_operations: List[Operation] = []
-        for random_contact in random_contacts:
-            random_operations.append(operation_baker(point_of_contact=random_contact))
+        random_operator = operator_baker()
+        random_operator.contacts.set(random_contacts)
 
         industry_user_contacts = ContactDataAccessService.get_all_contacts_for_user(industry_user)
         assert Contact.objects.count() == 20

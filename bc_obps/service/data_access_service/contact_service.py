@@ -27,11 +27,9 @@ class ContactDataAccessService:
 
     @classmethod
     def get_all_contacts_for_user(cls, user: User) -> QuerySet[Contact]:
-        queryset = Contact.objects.all()
-
         if user.is_irc_user():
-            return queryset
+            return Contact.objects.all()
         else:
-            # At this point, we can only get Contacts for a user based on the user's operator and associated operations to the operator
+            # fetching all contacts associated with the user's operator
             user_operator = UserOperatorService.get_current_user_approved_user_operator_or_raise(user)
-            return queryset.filter(operations__operator=user_operator.operator).distinct()
+            return user_operator.operator.contacts.all()
