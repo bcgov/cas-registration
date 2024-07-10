@@ -1,7 +1,7 @@
 import "@testing-library/jest-dom";
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import { useRouter, useSearchParams } from "@bciers/testConfig/mocks";
-import ContactDataGrid from "@/administration/app/components/contacts/ContactDataGrid";
+import ContactDataGrid from "apps/administration/app/components/contacts/ContactDataGrid";
 import { QueryParams } from "@bciers/testConfig/types";
 import extractParams from "../helpers/extractParams";
 

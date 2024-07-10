@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { useSession, notFound, useRouter } from "@bciers/testConfig/mocks";
-import Facility from "@/administration/app/components/facilities/Facility";
+import Facility from "apps/administration/app/components/facilities/Facility";
 import { getOperation } from "../operations/mocks";
 import { getFacility } from "./mocks";
 
