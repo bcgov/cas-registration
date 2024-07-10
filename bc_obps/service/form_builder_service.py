@@ -176,7 +176,7 @@ def build_schema(config: int, activity: int, source_types: List[int], report_dat
 
     # If no source_types are passed & there are more than 1 valid source type, only return the activity schema
     if len(source_types) == 0 and valid_source_types.count() > 1:
-        return json.dumps(rjsf_schema)
+        return json.dumps({"schema": rjsf_schema})
 
     if valid_source_types.count() > 1:
         # Create the Source Types object (within which all the selected source_type schemas will be defined)
