@@ -14,7 +14,6 @@ const nextConfig = {
   basePath: "/reporting",
   assetPrefix:
     "https://cas-bciers-frontend-dev.apps.silver.devops.gov.bc.ca/reporting/",
-  output: "standalone",
   nx: {
     // Set this to true if you would like to use SVGR
     // See: https://github.com/gregberge/svgr

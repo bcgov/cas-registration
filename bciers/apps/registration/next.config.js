@@ -23,7 +23,6 @@ const nextConfig = {
       bodySizeLimit: "20mb",
     },
   },
-  output: "standalone",
   nx: {
     // Set this to true if you would like to use SVGR
     // See: https://github.com/gregberge/svgr

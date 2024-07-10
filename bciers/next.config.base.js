@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 module.exports = {
   reactStrictMode: true,
+  output: "standalone",
   swcMinify: true,
   //use modularizeImports properties to optimize the imports in the application
   modularizeImports: {
