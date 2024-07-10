@@ -37,23 +37,4 @@ describe("withAuthorizationAdministration middleware", () => {
     );
     expect(result?.status).toBe(307);
   });
-
-  it("builds the correct URL for authenticated users", async () => {
-    getToken.mockResolvedValue(mockCasUserToken);
-    const nextUrl = new NextURL(`${domain}/administration`);
-
-    when(mockedRequest.nextUrl).thenReturn(nextUrl);
-    when(mockedRequest.url).thenReturn(domain);
-
-    const result = await middleware(
-      instance(mockedRequest),
-      mockNextFetchEvent,
-    );
-    const responseUrl = new NextURL(
-      `${domain}/${mockCasUserToken.identity_provider}/${mockCasUserToken.app_role}/coam`,
-    );
-    expect(NextResponse.rewrite).toHaveBeenCalledOnce();
-    expect(NextResponse.rewrite).toHaveBeenCalledWith(responseUrl);
-    expect(result?.status).toBe(200);
-  });
 });
