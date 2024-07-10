@@ -2,13 +2,13 @@ const fetchFacilitiesPageData = vi.fn();
 const getFacility = vi.fn();
 
 vi.mock(
-  "apps/registration/app/components/facilities/fetchFacilitiesPageData",
+  "@/administration/app/components/facilities/fetchFacilitiesPageData",
   () => ({
     default: fetchFacilitiesPageData,
   }),
 );
 
-vi.mock("apps/registration/app/components/facilities/getFacility", () => ({
+vi.mock("@/administration/app/components/facilities/getFacility", () => ({
   default: getFacility,
 }));
 

@@ -1,7 +1,7 @@
 const fetchContactsPageData = vi.fn();
 
 vi.mock(
-  "apps/registration/app/components/contacts/fetchContactsPageData",
+  "@/administration/app/components/contacts/fetchContactsPageData",
   () => ({
     default: fetchContactsPageData,
   }),

@@ -17,7 +17,7 @@ useSearchParams.mockReturnValue({
 });
 
 vi.mock(
-  "apps/registration/app/components/operations/fetchOperationsPageData",
+  "@/administration/app/components/operations/fetchOperationsPageData",
   () => ({
     default: fetchOperationsPageData,
   }),
