@@ -1,5 +1,6 @@
 # Install dependencies only when needed
 FROM docker.io/node:20.15 AS deps
+ARG application_path
 WORKDIR /usr/src/app
 COPY ./package.json .
 RUN corepack enable
@@ -22,7 +23,7 @@ COPY --from=deps /usr/src/app/node_modules node_modules
 COPY --from=deps /usr/src/app/package.json package.json
 COPY ./.next/standalone .
 COPY ./public ./public
-COPY ./.next/static ./dist/registration/.next/static
+COPY ./.next/static ./dist/${application_path}/.next/static
 
 USER node
 EXPOSE 3000
@@ -32,4 +33,4 @@ EXPOSE 3000
 # Learn more here: https://nextjs.org/telemetry
 # Uncomment the following line in case you want to disable telemetry.
 ENV NEXT_TELEMETRY_DISABLED 1
-CMD ["node", "apps/registration/server.js"]
+CMD ["node", "apps/${application_path}/server.js"]
