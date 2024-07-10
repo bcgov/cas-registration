@@ -27,6 +27,7 @@
         "engine": "docker",
         "context": "dist/reporting",
         "file": "Dockerfile",
+        "build-args": ["application_path=reporting"],
         "tags": ["cas-reporting:latest"]
       }
     },
