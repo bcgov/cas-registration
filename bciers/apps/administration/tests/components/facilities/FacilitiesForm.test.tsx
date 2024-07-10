@@ -12,7 +12,7 @@ import {
   useParams,
   useRouter,
 } from "@bciers/testConfig/mocks";
-import FacilitiesForm from "@/administration/app/components/facilities/FacilitiesForm";
+import FacilitiesForm from "apps/administration/app/components/facilities/FacilitiesForm";
 import {
   facilitiesSchemaSfo,
   facilitiesUiSchema,

@@ -4,7 +4,7 @@ import {
   useRouter,
   useSearchParams,
 } from "@bciers/testConfig/mocks";
-import Operations from "@/administration/app/components/operations/Operations";
+import Operations from "apps/administration/app/components/operations/Operations";
 import { FrontEndRoles } from "@bciers/utils/enums";
 
 useRouter.mockReturnValue({
@@ -17,7 +17,7 @@ useSearchParams.mockReturnValue({
 });
 
 vi.mock(
-  "@/administration/app/components/operations/fetchOperationsPageData",
+  "apps/administration/app/components/operations/fetchOperationsPageData",
   () => ({
     default: fetchOperationsPageData,
   }),

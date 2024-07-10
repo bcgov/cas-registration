@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { useRouter, useSearchParams } from "@bciers/testConfig/mocks";
 import { fetchContactsPageData } from "./mocks";
-import Contacts from "@/administration/app/components/contacts/Contacts";
+import Contacts from "apps/administration/app/components/contacts/Contacts";
 
 useRouter.mockReturnValue({
   query: {},
