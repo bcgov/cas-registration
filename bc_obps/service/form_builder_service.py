@@ -1,5 +1,5 @@
 import json
-from reporting.models import ConfigurationElement, ActivityJsonSchema, ActivitySourceTypeJsonSchema
+from reporting.models import Configuration, ConfigurationElement, ActivityJsonSchema, ActivitySourceTypeJsonSchema
 from typing import List
 
 # Helper function to dynamically set the RJSF property value of a field from a Title cased name
@@ -9,24 +9,28 @@ def str_to_camel_case(st):
 
 
 # Called by build_schema. Builds the source type schema including gas_type & methodology dependencies
-def build_source_type_schema(activity, source_type, report_date, rjsf_schema, gas_type_map, methodology_map):
-    source_type_schema = ActivitySourceTypeJsonSchema.objects.get(
-        reporting_activity_id=activity,
-        source_type_id=source_type,
-        valid_from__valid_from__lte=report_date,
-        valid_to__valid_to__gte=report_date,
-    )
-    if source_type_schema is None:
+def build_source_type_schema(config, activity, source_type, report_date, rjsf_schema, gas_type_map, methodology_map):
+    print (config)
+    try:
+        source_type_schema = ActivitySourceTypeJsonSchema.objects.get(
+            reporting_activity_id=activity,
+            source_type_id=source_type,
+            valid_from__lte=config,
+            valid_to__gte=config,
+        )
+    except:
         raise Exception(
             f'No schema found for activity_id {activity} & source_type_id {source_type} & report_date {report_date}'
         )
+
     # Fetch valid gas_type values for activity-sourceType pair
     gas_types = (
         ConfigurationElement.objects.select_related('gas_type')
         .filter(
             reporting_activity_id=activity,
             source_type_id=source_type,
-            valid_from__valid_from__lte=report_date,
+            valid_from__lte=config,
+            valid_to__gte=config
         )
         .distinct('gas_type__name')
     )
@@ -41,8 +45,8 @@ def build_source_type_schema(activity, source_type, report_date, rjsf_schema, ga
             reporting_activity_id=activity,
             source_type_id=source_type,
             gas_type_id=t.gas_type.id,
-            valid_from__valid_from__lte=report_date,
-            valid_to__valid_to__gte=report_date,
+            valid_from__lte=config,
+            valid_to__gte=config,
         )
         if not methodologies.exists():
             raise Exception(
@@ -72,8 +76,8 @@ def build_source_type_schema(activity, source_type, report_date, rjsf_schema, ga
                         source_type_id=source_type,
                         gas_type_id=t.gas_type.id,
                         methodology_id=u.methodology.id,
-                        valid_from__valid_from__lte=report_date,
-                        valid_to__valid_to__gte=report_date,
+                        valid_from__lte=config,
+                        valid_to__gte=config,
                     )
                     .reporting_fields.all()
                 )
@@ -127,15 +131,19 @@ def build_source_type_schema(activity, source_type, report_date, rjsf_schema, ga
 # report_date is mandatory & determines the valid schemas & WCI configuration for the point in time that the report was created
 
 
-def build_schema(activity: int, source_types: List[int], report_date: str):
+def build_schema(config: int, activity: int, source_types: List[int], report_date: str):
     # Get activity schema
-    rjsf_schema = (
-        ActivityJsonSchema.objects.filter(
-            reporting_activity_id=activity, valid_from__valid_from__lte=report_date, valid_to__valid_to__gte=report_date
+    try:
+        activity_schema = (
+            ActivityJsonSchema.objects.get(
+                reporting_activity_id=activity, valid_from__lte=config, valid_to__gte=config
+            )
         )
-        .first()
-        .json_schema
-    )
+    except:
+        raise Exception(
+            f'No schema found for activity_id {activity} & report_date {report_date}'
+        )
+    rjsf_schema = activity_schema.json_schema
     gas_type_map = {}
     methodology_map = {}
 
@@ -143,7 +151,7 @@ def build_schema(activity: int, source_types: List[int], report_date: str):
     valid_source_types = (
         ConfigurationElement.objects.select_related('source_type')
         .filter(
-            reporting_activity_id=activity, valid_from__valid_from__lte=report_date, valid_to__valid_to__gte=report_date
+            reporting_activity_id=activity, valid_from__lte=config, valid_to__gte=config
         )
         .distinct('source_type__id')
     )
@@ -155,7 +163,7 @@ def build_schema(activity: int, source_types: List[int], report_date: str):
     elif valid_source_types.count() == 1:
         rjsf_schema['properties']['sourceTypes'] = {"type": "object", "title": "Source Types", "properties": {}}
         build_source_type_schema(
-            activity, valid_source_types[0].source_type_id, report_date, rjsf_schema, gas_type_map, methodology_map
+            config, activity, valid_source_types[0].source_type_id, report_date, rjsf_schema, gas_type_map, methodology_map
         )
 
     # If there are multiple source_types for an activity, the user may choose which ones apply. The IDs of the selected source_types are passed as a list in the parameters & we add those schemas to the activity schema.
@@ -175,7 +183,7 @@ def build_schema(activity: int, source_types: List[int], report_date: str):
         rjsf_schema['properties']['sourceTypes'] = {"type": "object", "title": "Source Types", "properties": {}}
         # For each selected source_type, add the related schema
         for source_type in source_types:
-            build_source_type_schema(activity, source_type, report_date, rjsf_schema, gas_type_map, methodology_map)
+            build_source_type_schema(config, activity, source_type, report_date, rjsf_schema, gas_type_map, methodology_map)
 
     # Return completed schema
     return_object = {}
@@ -191,6 +199,13 @@ class FormBuilderService:
         if report_date is None:
             raise Exception('Cannot build a schema without a valid report date')
         if activity is None:
-            raise Exception('ERROR: Cannot build a schema without Activity data')
-        schema = build_schema(activity, source_types, report_date)
+            raise Exception('Cannot build a schema without Activity data')
+        # Get config objects
+        try:
+            config = Configuration.objects.get(valid_from__lte=report_date, valid_to__gte=report_date)
+        except:
+            raise Exception(
+                f'No Configuration found for report_date {report_date}'
+            )
+        schema = build_schema(config.id, activity, source_types, report_date)
         return schema
