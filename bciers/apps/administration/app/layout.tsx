@@ -19,7 +19,7 @@ export default function AdministrationLayout({
   children: React.ReactNode;
 }) {
   return (
-    <RootLayout defaultLinks={defaultLinks} zone="registration">
+    <RootLayout defaultLinks={defaultLinks} zone="administration">
       {children}
     </RootLayout>
   );

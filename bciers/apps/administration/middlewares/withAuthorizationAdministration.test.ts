@@ -17,7 +17,7 @@ vi.spyOn(NextResponse, "rewrite");
 
 const mockNextFetchEvent: NextFetchEvent = mock(NextFetchEvent);
 
-describe("withAuthorizationRegistration middleware", () => {
+describe("withAuthorizationAdministration middleware", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });

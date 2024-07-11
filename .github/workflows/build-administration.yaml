@@ -15,5 +15,5 @@ jobs:
         uses: ./.github/actions/nx-app-build
         with:
           project: administration
-          image_url: ghcr.io/bcgov/cas-rep-frontend
+          image_url: ghcr.io/bcgov/cas-admin-frontend
           github_token: ${{ secrets.GITHUB_TOKEN }}
