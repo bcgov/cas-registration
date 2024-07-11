@@ -109,6 +109,40 @@ reportingFrontend:
     targetCPUUtilizationPercentage: 80
     # targetMemoryUtilizationPercentage: 80
 
+administrationFrontend:
+  replicaCount: 1
+
+  image:
+    repository: ghcr.io/bcgov/cas-admin-frontend
+    pullPolicy: Always
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "latest"
+
+  environment: ~
+
+  service:
+    type: ClusterIP
+    port: 3000
+
+  route:
+    host: ~
+    path: ~
+
+  resources:
+    limits:
+      cpu: 100m
+      memory: 256Mi
+    requests:
+      cpu: 60m
+      memory: 192Mi
+
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+    # targetMemoryUtilizationPercentage: 80
+
 dashboardFrontend:
   replicaCount: 1
 
