@@ -2,8 +2,6 @@ import { NextURL } from "next/dist/server/web/next-url";
 import { NextFetchEvent, NextRequest, NextResponse } from "next/server";
 import { instance, mock, reset, when } from "ts-mockito";
 import middleware from "../middleware";
-import { getToken } from "@bciers/testConfig/mocks";
-import { mockCasUserToken } from "@bciers/testConfig/data/tokens";
 
 const domain = "https://localhost:3000";
 const mockedRequest: NextRequest = mock(NextRequest);
