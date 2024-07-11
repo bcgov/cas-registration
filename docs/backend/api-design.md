@@ -39,6 +39,9 @@ The /api file structure is designed to self-document URLs. This means:
 
 Services are not app-specific and can be used by any BCIERS app. We have the following categories of services:
 
+MAKE SOMETHING HAPPEN HERE!! Write out about common services vs app-specific services
+And ongoing move form common to specific when needed
+
 ## Database access services
 
 The only things these services do are:
