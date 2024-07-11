@@ -5,7 +5,7 @@ import Note from "@bciers/components/layout/Note";
 import Link from "next/link";
 import { Button } from "@mui/material";
 
-export const ExternalContactsLayout = ({
+export const ExternalUserContactsLayout = ({
   children,
 }: {
   children: React.ReactNode;
@@ -26,7 +26,7 @@ export const ExternalContactsLayout = ({
   </>
 );
 
-export const InternalContactsLayout = ({
+export const InternalUserContactsLayout = ({
   children,
 }: {
   children: React.ReactNode;

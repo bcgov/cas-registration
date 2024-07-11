@@ -1,7 +1,7 @@
 // 🚩 flagging that for shared routes between roles, "Page" code is a component for code maintainability
 import { ContactsSearchParams } from "@/administration/app/components/contacts/types";
 import ContactsPage, {
-  InternalContactsLayout,
+  InternalUserContactsLayout,
 } from "@/administration/app/components/contacts/Contacts";
 
 export default async function Page({
@@ -10,8 +10,8 @@ export default async function Page({
   searchParams: ContactsSearchParams;
 }>) {
   return (
-    <InternalContactsLayout>
+    <InternalUserContactsLayout>
       <ContactsPage searchParams={searchParams} isExternalUser={false} />
-    </InternalContactsLayout>
+    </InternalUserContactsLayout>
   );
 }
