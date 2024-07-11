@@ -14,3 +14,11 @@ export interface ContactsSearchParams {
   sort_field?: string;
   sort_order?: string;
 }
+
+export interface ContactFormData {
+  first_name?: string;
+  last_name?: string;
+  position_title?: string;
+  email?: string;
+  phone_number?: string;
+}
