@@ -7,7 +7,7 @@ import Note from "@bciers/components/layout/Note";
 import Link from "next/link";
 import { Button } from "@mui/material";
 
-export const InternalOperationsLayout = ({
+export const InternalUserOperationsLayout = ({
   children,
 }: {
   children: React.ReactNode;
@@ -22,7 +22,7 @@ export const InternalOperationsLayout = ({
   </>
 );
 
-export const ExternalOperationsLayout = ({
+export const ExternalUserOperationsLayout = ({
   children,
 }: {
   children: React.ReactNode;

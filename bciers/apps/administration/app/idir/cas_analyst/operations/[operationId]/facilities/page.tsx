@@ -2,7 +2,7 @@
 import { FacilitiesSearchParams } from "@/administration/app/components/facilities/types";
 import FacilitiesPage, {
   InternalUserFacilitiesLayout,
-} from "@/administration/app/components/routes/facilities/Page";
+} from "@/administration/app/components/facilities/Facilities";
 import { UUID } from "crypto";
 
 export default async function Page({

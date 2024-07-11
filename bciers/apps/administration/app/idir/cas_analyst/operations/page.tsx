@@ -1,7 +1,7 @@
 // 🚩 flagging that for shared routes between roles, "Page" code is a component for code maintainability
 import { OperationsSearchParams } from "@/app/components/operations/types";
 import OperationsPage, {
-  InternalOperationsLayout,
+  InternalUserOperationsLayout,
 } from "@/administration/app/components/operations/Operations";
 
 export default async function Page({
@@ -10,8 +10,8 @@ export default async function Page({
   searchParams: OperationsSearchParams;
 }) {
   return (
-    <InternalOperationsLayout>
+    <InternalUserOperationsLayout>
       <OperationsPage searchParams={searchParams} isInternalUser={true} />
-    </InternalOperationsLayout>
+    </InternalUserOperationsLayout>
   );
 }
