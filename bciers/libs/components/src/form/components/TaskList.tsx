@@ -2,6 +2,7 @@ import { useState } from "react";
 import CheckCircle from "@bciers/components/icons/CheckCircle";
 
 export interface TaskListProps {
+  className?: string;
   taskListItems: {
     section: string;
     title: string;
@@ -11,7 +12,11 @@ export interface TaskListProps {
   };
 }
 
-const TaskList = ({ taskListItems, taskListItemStatus }: TaskListProps) => {
+const TaskList: React.FC<TaskListProps> = ({
+  className,
+  taskListItems,
+  taskListItemStatus,
+}) => {
   const [activeTask, setActiveTask] = useState(taskListItems[0].section);
 
   const handleTaskClick = (e: React.MouseEvent, section: string) => {
@@ -24,7 +29,9 @@ const TaskList = ({ taskListItems, taskListItemStatus }: TaskListProps) => {
   };
 
   return (
-    <nav className="w-[256px] mr-4 h-fit border-solid border-0 border-r-2 border-bc-light-grey-300">
+    <nav
+      className={`w-fit mr-4 h-fit border-solid border-0 border-r-2 border-bc-light-grey-300 ${className}`}
+    >
       {taskListItems.map((task) => {
         const { section, title } = task;
         const taskStatus = taskListItemStatus?.[section];
@@ -32,7 +39,7 @@ const TaskList = ({ taskListItems, taskListItemStatus }: TaskListProps) => {
         return (
           <button
             key={title ?? section}
-            className={`w-full text-lg flex items-center px-2.5 py-2 mb-2 transition-all ease-in duration-200 border-solid border-0 border-r-2 ${
+            className={`w-full text-lg flex items-center px-2.5 py-2 mr-4 mb-2 transition-all ease-in duration-200 border-solid border-0 border-r-2 ${
               isActive
                 ? `bg-[#1a5a960c] border-bc-link-blue`
                 : "bg-transparent border-transparent"
@@ -46,7 +53,7 @@ const TaskList = ({ taskListItems, taskListItemStatus }: TaskListProps) => {
               {taskStatus && <CheckCircle />}
             </div>
             <span
-              className={`no-underline ${
+              className={`no-underline whitespace-nowrap ${
                 isActive ? "text-bc-link-blue" : "text-bc-text"
               }`}
             >

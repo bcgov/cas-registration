@@ -11,7 +11,7 @@ interface SingleStepTaskListFormProps {
   disabled?: boolean;
   formData: { [key: string]: any };
   onCancel: () => void;
-  onSubmit: (e: IChangeEvent) => Promise<any>;
+  onSubmit: (e: IChangeEvent) => any;
   schema: RJSFSchema;
   uiSchema: UiSchema;
   error?: string;
@@ -153,6 +153,8 @@ const SingleStepTaskListForm = ({
   return (
     <div className="w-full flex flex-row mt-8">
       <TaskList
+        // Hide the task list on mobile
+        className="hidden sm:block"
         taskListItems={taskListItems}
         taskListItemStatus={formSectionStatus}
       />
