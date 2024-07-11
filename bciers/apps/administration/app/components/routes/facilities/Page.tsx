@@ -24,7 +24,7 @@ export default async function FacilitiesPage({
       {/* Conditionally render the button based on user's role */}
       {isExternalUser && (
         <div className="text-right">
-          <Link href="#">
+          <Link href={`/operations/${operationId}/facilities/new`}>
             <Button variant="contained">Add Facility</Button>
           </Link>
         </div>
