@@ -19,12 +19,12 @@ class ReportingDashboardService:
         user = UserDataAccessService.get_by_guid(user_guid)
 
         report_subquery = Report.objects.filter(
-            operation=OuterRef('pk'),
+            operation_id=OuterRef('id'),
             reporting_year=reporting_year,
         ).annotate(latest_version_id=Max('report_versions__id'))
 
         return OperationDataAccessService.get_all_operations_for_user(user).annotate(
-            report_id=report_subquery.values('pk'),
+            report_id=report_subquery.values('id'),
             report_version_id=report_subquery.values('latest_version_id'),
             report_status=report_subquery.values('report_versions__status'),
         )
