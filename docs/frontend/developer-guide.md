@@ -29,7 +29,7 @@ Next.js 14 foundation is the App Router which boasts a range of features, includ
   - **Stay up-to-date.** Keep your Next.js version and dependencies updated to benefit from the latest security fixes.
 
 [Routing](https://nextjs.org/docs/app/building-your-application/routing)
-Creating routes involves creating folders within the app directory and nesting a page.tsx file within the appropriate folder to define your route. Note: our `withAuthorization` middleware removes the first three folders (e.g. authenticated/bceidbudiness/industry_user) from the route, so all the URLs within the app will start with `dashboard` instead of `authenticated/.../dashboard`.
+Creating routes involves creating folders within the app directory and nesting a page.tsx file within the appropriate folder to define your route.
 
 [Server Components](https://nextjs.org/docs/app/building-your-application/rendering/server-components)
 By default, all app router components are react server components and if you want to write a client component you need to mark them explicitly using the "use client"; directive.
@@ -120,7 +120,26 @@ Our apps use chained middlewares to improves code readability, and maintainabili
 
 The Registration1 and Registration code is organized into sub-folders based on a identity provider, an application role, and dashboard folder, or just dashboard folder for routes available for authenticated users without an authorization role. As mentioned, the middleware dynamically rewrites the request URL based on the Auth.js JWT properties of identity_provider and user role so to match our sub-folder structure. So route URL segments such as registration1 `http://localhost:3000/dashboard/operations` would get mapped to nested folder `bciers/apps/registration1/app/(authenticated)/bceidbusiness/industry_user/dashboard/operations' for an authenticated industry user.
 
-For our multi-zone apps, the dashboard app manages the main domain and rewites request to the appropriate zone as required. The dashboard links are configured in `bc_obps/common/fixtures/dashboard/{identity-provider}` and use the `{project/}` pre-fix. So route URL to registration operations would be `http://localhost:3000/registration/dashboard/operations`
+For our multi-zone apps, the dashboard app manages the main domain and rewites request to the appropriate zone as required. The dashboard links are configured in `bc_obps/common/fixtures/dashboard/{identity-provider}` and use the `{project/}` pre-fix.
+As example, a route from the dashboard app to the registration app might have the following structure and reflect `http://localhost:3000/registration/operation`
+
+```
+       {
+            "title": "Registration",
+            "href": "/registration",
+            "icon": "Entrance",
+            "content": "Submit BORO ID applications",
+            "links": [
+              {
+                "title": "Register an Operation",
+                "href": "/registration/operation"
+              },
+            ]
+          },
+
+```
+
+For dynamic dashboard link href properties, use function `updateDashboardDataHref` from `bciers/libs/utils/updateDashboardDataHref.ts` to replace dashboard links href static stub text with the required dynamic href.
 
 ## Styling
 
