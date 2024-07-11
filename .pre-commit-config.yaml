@@ -5,6 +5,7 @@ repos:
       - id: prettier
         name: Prettier
         stages: [commit]
+
   - repo: local
     hooks:
       - id: eslint
@@ -15,12 +16,13 @@ repos:
       - id: django-diagram
         name: Django Diagram # Generate a diagram of the Django models
         language: system
+        types: [python]
         entry: ./.bin/pre-commit-django-diagram.sh
       - id: mypy
         name: Mypy
         language: system
+        types: [python]
         entry: ./.bin/pre-commit-mypy.sh
-        require_serial: true # to prevent printing the same error multiple times
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v2.3.0
@@ -36,17 +38,18 @@ repos:
         exclude: (^erd_diagrams/)
       - id: trailing-whitespace
       - id: debug-statements
+
   - repo: https://github.com/psf/black
     rev: 22.10.0
     hooks:
       - id: black
+        types: [python]
+
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    # Ruff version.
     rev: v0.4.2
     hooks:
-      # Run the linter.
       - id: ruff
-        args: ["bc_obps/", --fix]
+        args: ["bc_obps/", "--fix"]
 
   - repo: https://github.com/python-poetry/poetry
     rev: 1.6.1
