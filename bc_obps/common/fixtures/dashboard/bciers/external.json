@@ -8,34 +8,42 @@
         "access_roles": ["industry_user", "industry_user_admin"],
         "tiles": [
           {
-            "title": "Registration",
-            "href": "/registration",
+            "title": "Administration",
+            "href": "/administration",
             "icon": "Layers",
-            "content": "View or update information of your operator, operations, facilities, contacts, and to register operations or report events here.",
+            "content": "View or update information of your operator, operations, facilities.",
             "links": [
               {
                 "title": "My Operator",
-                "href": "/registration/select-operator"
+                "href": "/administration/select-operator"
               },
               {
                 "title": "Operations",
-                "href": "/registration/operations"
+                "href": "/administration/operations"
               },
               {
                 "title": "Contacts",
-                "href": "/registration/contacts"
+                "href": "/administration/tbd"
               },
               {
                 "title": "Users and Access Requests",
-                "href": "/registration/tbd"
-              },
+                "href": "/administration/tbd"
+              }
+            ]
+          },
+          {
+            "title": "Registration",
+            "href": "/registration",
+            "icon": "Entrance",
+            "content": "Submit BORO ID applications",
+            "links": [
               {
                 "title": "Register an Operation",
-                "href": "/registration/tbd"
+                "href": "/registration/operation"
               },
               {
                 "title": "Report an Event",
-                "href": "/registration/tbd"
+                "href": "/registration/event"
               }
             ]
           },
@@ -43,7 +51,7 @@
             "title": "Reporting",
             "href": "/reporting",
             "icon": "File",
-            "content": "Submit Annual Report for an operation, and to view or update previous years' reports here.",
+            "content": "Submit, view and edit your annual reports or previous years’ reports.",
             "links": [
               {
                 "title": "Submit Annual Reports",
@@ -59,7 +67,7 @@
             "title": "COAM",
             "href": "/coam/",
             "icon": "Pulse",
-            "content": "View and pay compliance obligations here.",
+            "content": "View and pay compliance obligations.",
             "links": [
               {
                 "title": "TBD",
@@ -79,7 +87,7 @@
             "title": "Report a Problem",
             "href": "mailto:GHGRegulator@gov.bc.ca",
             "icon": "Wrench",
-            "content": "Report a problem or contact us here.",
+            "content": "Something wrong?",
             "links": [
               {
                 "title": "Report problems to GHGRegulator@gov.bc.ca",

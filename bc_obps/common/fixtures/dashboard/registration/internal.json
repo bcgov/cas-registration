@@ -8,46 +8,16 @@
         "access_roles": ["cas_analyst"],
         "tiles": [
           {
-            "title": "Operators",
-            "icon": "Inbox",
-            "content": "View all operators here.",
-            "href": "/registration/operators"
-          },
-          {
-            "title": "Operations",
-            "icon": "Layers",
-            "content": "View all operations here.",
-            "href": "/registration/operations"
-          },
-          {
-            "title": "Facilities",
+            "title": "Register an Operation",
             "icon": "File",
-            "content": "View all facilities here.",
-            "href": "/registration/tbd"
+            "content": "TBD here.",
+            "href": "/registration/operation"
           },
           {
-            "title": "Operator Administrators and Access Requests",
-            "icon": "Inbox",
-            "content": "View all operator administrators and administrator access requests here.",
-            "href": "/registration/tbd"
-          },
-          {
-            "title": "Operation Registrations",
-            "icon": "Layers",
-            "content": "View the registration of operations here.",
-            "href": "/registration/tbd"
-          },
-          {
-            "title": "Contacts",
-            "icon": "Users",
-            "content": "View all contacts here.",
-            "href": "/registration/contacts"
-          },
-          {
-            "title": "Reported Events",
+            "title": "Report an Event",
             "icon": "File",
-            "content": "View all reported events here.",
-            "href": "/registration/tbd"
+            "content": "TBD here.",
+            "href": "/registration/event"
           }
         ]
       }

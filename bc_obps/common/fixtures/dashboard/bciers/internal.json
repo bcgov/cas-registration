@@ -8,10 +8,10 @@
         "access_roles": ["cas_admin", "cas_analyst"],
         "tiles": [
           {
-            "title": "Registration",
-            "href": "/registration",
+            "title": "Administration",
+            "href": "/administration",
             "icon": "Layers",
-            "content": "View information of any operator, operation, facility, contact, event, or to approve or decline operation registrations here.",
+            "content": "View information of any operator, operation, facility, contact.",
             "links": [
               {
                 "title": "Operators",
@@ -34,16 +34,24 @@
                 "href": "/registration/tbd"
               },
               {
-                "title": "Operation Registrations",
-                "href": "/registration/tbd"
-              },
-              {
                 "title": "Contacts",
-                "href": "/registration/contacts"
+                "href": "/registration/tbd"
+              }
+            ]
+          },
+          {
+            "title": "Registration",
+            "href": "/registration",
+            "icon": "Layers",
+            "content": "View information of any event or to approve or decline operation registration.",
+            "links": [
+              {
+                "title": "Register an Operation",
+                "href": "/registration/operation"
               },
               {
-                "title": "Events",
-                "href": "/registration/tbd"
+                "title": "Report an Event",
+                "href": "/registration/event"
               }
             ]
           },

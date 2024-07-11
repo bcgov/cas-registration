@@ -29,20 +29,21 @@ When running commands, Nx has two patterns you can use
 
 #### Current projects
 
-| Project         | Location                          | Type        |
-| --------------- | --------------------------------- | ----------- |
-| `dashboard`     | `/bciers/apps/dashboard`          | application |
-| `registration`  | `/bciers/apps/registration`       | application |
-| `reporting`     | `/bciers/apps/reporting`          | application |
-| `registration1` | `/bciers/apps/registration1`      | application |
-| `coam`          | `/bciers/apps/coam`               | application |
-| `actions`       | `/bciers/libs/shared/actions`     | library     |
-| `components`    | `/bciers/libs/shared/components`  | library     |
-| `img`           | `/bciers/libs/shared/img`         | library     |
-| `middlewares`   | `/bciers/libs/shared/middlewares` | library     |
-| `styles`        | `/bciers/libs/shared/styles`      | library     |
-| `testConfig`    | `/bciers/libs/shared/testConfig`  | library     |
-| `types`         | `/bciers/libs/shared/types`       | library     |
+| Project          | Location                          | Type        |
+| ---------------- | --------------------------------- | ----------- |
+| `dashboard`      | `/bciers/apps/dashboard`          | application |
+| `registration`   | `/bciers/apps/registration`       | application |
+| `reporting`      | `/bciers/apps/reporting`          | application |
+| `registration1`  | `/bciers/apps/registration1`      | application |
+| `administration` | `/bciers/apps/administration`     | application |
+| `coam`           | `/bciers/apps/coam`               | application |
+| `actions`        | `/bciers/libs/shared/actions`     | library     |
+| `components`     | `/bciers/libs/shared/components`  | library     |
+| `img`            | `/bciers/libs/shared/img`         | library     |
+| `middlewares`    | `/bciers/libs/shared/middlewares` | library     |
+| `styles`         | `/bciers/libs/shared/styles`      | library     |
+| `testConfig`     | `/bciers/libs/shared/testConfig`  | library     |
+| `types`          | `/bciers/libs/shared/types`       | library     |
 
 ### General tips
 

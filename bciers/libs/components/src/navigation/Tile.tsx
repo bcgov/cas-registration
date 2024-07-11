@@ -2,6 +2,7 @@ import { ContentItem, IconMap } from "@bciers/types/tiles";
 import {
   File,
   Inbox,
+  Entrance,
   Layers,
   Pulse,
   Users,
@@ -11,6 +12,7 @@ import {
 const iconMap: IconMap = {
   File,
   Inbox,
+  Entrance,
   Layers,
   Pulse,
   Wrench,

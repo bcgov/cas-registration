@@ -9,6 +9,7 @@ export type ContentItem = {
 export type IconMap = {
   File: JSX.Element;
   Inbox: JSX.Element;
+  Entrance: JSX.Element;
   Layers: JSX.Element;
   Pulse: JSX.Element;
   Wrench: JSX.Element;
