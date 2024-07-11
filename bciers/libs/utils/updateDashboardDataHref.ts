@@ -4,7 +4,7 @@ e.g.
 
   //🔗 replace the static href with dynamic href...
   const data = (await fetchDashboardData(...) as ContentItem[];
-  const newData = replaceParams(
+  const newData = updateDashboardDataHref(
     data,
     "static-href-in-dashboard-data",
     `dynamic-href-from-workflow-data`,
