@@ -6,6 +6,9 @@ name: Test BCIERS backend container
 on:
   workflow_call:
 
+env:
+  PGUSER: postgres
+
 jobs:
   pythontests:
     runs-on: ubuntu-latest
