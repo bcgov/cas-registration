@@ -21,6 +21,8 @@ class TestInitialData(TestCase):
                 'C2F6 anode effects',
                 'Inventory',
                 'Input/output',
+                'Heat Input/Default EF',
+                'Measured EF'
             ]
         )
         existing_methodologies = sorted(list(Methodology.objects.values_list('name', flat=True)))
