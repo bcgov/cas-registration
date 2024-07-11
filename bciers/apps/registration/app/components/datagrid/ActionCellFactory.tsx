@@ -1,29 +1,25 @@
 import Link from "next/link";
+import { GridRenderCellParams } from "@mui/x-data-grid";
 
 const ActionCellFactory = ({
-  href,
+  generateHref,
   replace,
   className,
   cellText,
 }: {
-  href: string;
+  generateHref: (params: GridRenderCellParams) => string;
   replace: boolean;
   className: string;
   cellText: string;
 }) => {
-  return () => {
-    const renderCell = () => {
-      return (
-        <div>
-          <Link className={className} href={href} replace={replace}>
-            {cellText}
-          </Link>
-        </div>
-      );
-    };
-
-    return renderCell;
+  const renderCell = (params: GridRenderCellParams) => {
+    return (
+      <Link className={className} href={generateHref(params)} replace={replace}>
+        {cellText}
+      </Link>
+    );
   };
+  return renderCell;
 };
 
 export default ActionCellFactory;

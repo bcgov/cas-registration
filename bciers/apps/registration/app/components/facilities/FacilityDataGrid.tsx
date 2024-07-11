@@ -8,9 +8,12 @@ import { FacilityRow } from "./types";
 import createFetchFacilitiesPageData from "./createFetchFacilitiesPageData";
 import HeaderSearchCell from "@bciers/components/datagrid/cells/HeaderSearchCell";
 import ActionCellFactory from "../datagrid/ActionCellFactory";
+import { GridRenderCellParams } from "@mui/x-data-grid";
 
 const FacilitiesActionCell = ActionCellFactory({
-  href: "#",
+  generateHref: (params: GridRenderCellParams) => {
+    return `facilities/${params.row.id}`;
+  },
   replace: true,
   className: "no-underline text-bc-link-blue whitespace-normal",
   cellText: "View Details",
@@ -33,7 +36,7 @@ const FacilityDataGrid = ({
     [lastFocusedField, setLastFocusedField],
   );
 
-  const ActionCell = useMemo(() => FacilitiesActionCell(), []);
+  const ActionCell = useMemo(() => FacilitiesActionCell, []);
 
   const columns = useMemo(() => facilityColumns(ActionCell), [ActionCell]);
 

@@ -8,9 +8,12 @@ import ActionCellFactory from "../datagrid/ActionCellFactory";
 import fetchContactsPageData from "./fetchContactsPageData";
 import contactColumns from "../datagrid/models/contacts/contactColumns";
 import contactGroupColumns from "../datagrid/models/contacts/contactGroupColumns";
+import { GridRenderCellParams } from "@mui/x-data-grid";
 
 const ContactsActionCell = ActionCellFactory({
-  href: "#",
+  generateHref: (params: GridRenderCellParams) => {
+    return `contacts/${params.row.id}`;
+  },
   replace: true,
   className: "no-underline text-bc-link-blue whitespace-normal",
   cellText: "View Details",
@@ -33,7 +36,7 @@ const ContactDataGrid = ({
     [lastFocusedField, setLastFocusedField],
   );
 
-  const ActionCell = useMemo(() => ContactsActionCell(), []);
+  const ActionCell = useMemo(() => ContactsActionCell, []);
 
   const columns = useMemo(
     () => contactColumns(isExternalUser, ActionCell),
