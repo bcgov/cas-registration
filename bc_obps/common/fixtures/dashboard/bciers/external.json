@@ -11,7 +11,7 @@
             "title": "Administration",
             "href": "/administration",
             "icon": "Layers",
-            "content": "View or update information of your operator, operations, facilities, contacts.",
+            "content": "View or update information of your operator, operations, facilities.",
             "links": [
               {
                 "title": "My Operator",
@@ -34,7 +34,7 @@
           {
             "title": "Registration",
             "href": "/registration",
-            "icon": "Layers",
+            "icon": "Entrance",
             "content": "Submit BORO ID applications",
             "links": [
               {
@@ -51,7 +51,7 @@
             "title": "Reporting",
             "href": "/reporting",
             "icon": "File",
-            "content": "Submit Annual Report for an operation, and to view or update previous years' reports here.",
+            "content": "Submit, view and edit your annual reports or previous years’ reports.",
             "links": [
               {
                 "title": "Submit Annual Reports",
@@ -67,7 +67,7 @@
             "title": "COAM",
             "href": "/coam/",
             "icon": "Pulse",
-            "content": "View and pay compliance obligations here.",
+            "content": "View and pay compliance obligations.",
             "links": [
               {
                 "title": "TBD",
@@ -87,7 +87,7 @@
             "title": "Report a Problem",
             "href": "mailto:GHGRegulator@gov.bc.ca",
             "icon": "Wrench",
-            "content": "Report a problem or contact us here.",
+            "content": "Something wrong?",
             "links": [
               {
                 "title": "Report problems to GHGRegulator@gov.bc.ca",
