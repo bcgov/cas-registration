@@ -1,0 +1,38 @@
+[
+  {
+    "model": "common.dashboarddata",
+    "fields": {
+      "name": "External Administration Dashboard",
+      "data": {
+        "dashboard": "administration",
+        "access_roles": ["industry_user", "industry_user_admin"],
+        "tiles": [
+          {
+            "title": "My Operator",
+            "icon": "Inbox",
+            "content": "View or update information of your operator here.",
+            "href": "/administration/select-operator"
+          },
+          {
+            "title": "Operations",
+            "icon": "Layers",
+            "content": "View the operations owned by your operator, or to add and register new operation to your operator here.",
+            "href": "/administration/operations"
+          },
+          {
+            "title": "Contacts",
+            "icon": "Users",
+            "content": "View the contacts of your operator, or to add new contact for your operator here.",
+            "href": "/administration/tbd"
+          },
+          {
+            "title": "Users and Access Requests",
+            "icon": "Users",
+            "content": "View, approve or decline Business BCeID user access requests to your operator, or to assign access type to users here.",
+            "href": "/administration/tbd"
+          }
+        ]
+      }
+    }
+  }
+]

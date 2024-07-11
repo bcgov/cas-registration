@@ -1,29 +1,17 @@
-/** @type {import('next').NextConfig} */
-const { composePlugins, withNx } = require("@nx/next");
+//@ts-check
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const { composePlugins, withNx } = require("@nx/next");
+// Next.js doesn't use TS's paths, so we need to use the relative path
 const nextConfigBase = require("../../next.config.base");
 
+/**
+ * @type {import('@nx/next/plugins/with-nx').WithNxOptions}
+ **/
 const nextConfig = {
   ...nextConfigBase,
   // To deploy a Next.js application under a sub-path of a domain you can use the basePath config option
   basePath: "/registration",
-  assetPrefix: "/registration/",
-  reactStrictMode: true,
-  swcMinify: true,
-  //use modularizeImports properties to optimize the imports in the application
-  modularizeImports: {
-    "@mui/icons-material": {
-      transform: "@mui/icons-material/{{member}}",
-    },
-    "@mui/material": {
-      transform: "@mui/material/{{member}}",
-    },
-  },
-  experimental: {
-    serverActions: {
-      bodySizeLimit: "20mb",
-    },
-  },
   nx: {
     // Set this to true if you would like to use SVGR
     // See: https://github.com/gregberge/svgr

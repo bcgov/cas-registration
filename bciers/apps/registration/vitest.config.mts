@@ -23,10 +23,6 @@ export default defineConfig({
       reportsDirectory: "../../coverage/apps/registration",
       provider: "v8",
     },
-    setupFiles: [
-      "../../libs/testConfig/src/global.tsx",
-      "./tests/components/facilities/mocks.ts",
-      "./tests/components/operations/mocks.ts",
-    ],
+    setupFiles: ["../../libs/testConfig/src/global.tsx"],
   },
 });
