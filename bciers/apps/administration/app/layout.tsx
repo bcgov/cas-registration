@@ -10,10 +10,10 @@ import RootLayout from "@bciers/components/layout/RootLayout";
 
 const defaultLinks = [
   { label: "Dashboard", href: "/" },
-  { label: "Registration", href: "/registration" },
+  { label: "Administration", href: "/administration" },
 ];
 
-export default function RegistrationLayout({
+export default function AdministrationLayout({
   children,
 }: {
   children: React.ReactNode;

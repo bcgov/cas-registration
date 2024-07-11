@@ -11,9 +11,9 @@ export default async function Page() {
   const role = session?.user?.app_role || "";
 
   // 🚀 API fetch dashboard tiles
-  // 🚩 Source: bc_obps/common/fixtures/dashboard/registration/[IdProviderType]/role?
+  // 🚩 Source: bc_obps/common/fixtures/dashboard/administration/[IdProviderType]/role?
   const data = (await fetchDashboardData(
-    "common/dashboard-data?dashboard=registration",
+    "common/dashboard-data?dashboard=administration",
   )) as ContentItem[];
 
   return (
