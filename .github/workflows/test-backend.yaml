@@ -6,10 +6,6 @@ name: Test BCIERS backend container
 on:
   workflow_call:
 
-env:
-  PGUSER: postgres
-  DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
-
 jobs:
   pythontests:
     runs-on: ubuntu-latest
