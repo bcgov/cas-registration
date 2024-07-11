@@ -26,6 +26,7 @@ const readOnlyTheme = {
     RadioWidget: ReadOnlyBooleanWidget,
     SelectWidget: ReadOnlyWidget,
     TextWidget: ReadOnlyWidget,
+    ToggleWidget: ReadOnlyBooleanWidget,
     URLWidget: ReadOnlyWidget,
   },
   templates: {
