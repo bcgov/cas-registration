@@ -9,7 +9,7 @@ const Note = ({ children, variant = "info" }: NoteProps) => {
   const bgColour = variant === "info" ? "bc-bg-grey" : "bc-yellow";
 
   return (
-    <div className="relative w-full" data-testid="note">
+    <div className="relative w-full">
       <div
         // relative positioning combined with left: 50% and transform: translateX(-50%)
         // to extend background colour to full width of the screen
