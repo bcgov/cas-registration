@@ -132,7 +132,7 @@ const section2Schema: RJSFSchema = {
                   mo_province: {
                     type: "string",
                     title: "Province",
-                    enum: provinceOptions,
+                    anyOf: provinceOptions,
                   },
                   mo_postal_code: {
                     type: "string",
@@ -227,6 +227,10 @@ export const operationUiSchema: UiSchema = {
   },
   section1: {
     "ui:FieldTemplate": SectionFieldTemplate,
+    type: {
+      "ui:widget": "SelectWidget",
+      "ui:placeholder": "Select Operation Type",
+    },
     naics_code_id: {
       "ui:widget": "ComboBox",
       "ui:placeholder": "Select Primary NAICS code",
@@ -274,7 +278,8 @@ export const operationUiSchema: UiSchema = {
           "ui:placeholder": "Select a business structure",
         },
         mo_province: {
-          "ui:widget": "SelectWidget",
+          "ui:widget": "ComboBox",
+          "ui:placeholder": "Select a province",
         },
         mo_postal_code: {
           "ui:widget": "PostalCodeWidget",

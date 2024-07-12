@@ -1,7 +1,8 @@
-import OperationForm from "./OperationForm";
+import OperationInformationForm from "./OperationInformation";
 import { actionHandler } from "@bciers/actions";
 import { RJSFSchema } from "@rjsf/utils";
 import { operationSchema } from "../../data/jsonSchema/operation";
+import { validate as isValidUUID } from "uuid";
 
 // 🛠️ Function to create an operation schema with updated enum values
 export const createOperationSchema = (
@@ -35,8 +36,6 @@ export const createOperationSchema = (
     title: `${code?.naics_code} - ${code?.naics_description}`,
   }));
 
-  console.log("schema", localSchema);
-
   // business structures
   if (Array.isArray(businessStructures)) {
     const multipleOperatorsArray =
@@ -44,7 +43,6 @@ export const createOperationSchema = (
         .multiple_operators_array.items;
     multipleOperatorsArray.properties.mo_business_structure.anyOf =
       businessStructureOptions;
-    console.log("multipleOperatorsArray", multipleOperatorsArray);
   }
 
   // naics codes
@@ -108,15 +106,33 @@ export async function getReportingActivities() {
   }
 }
 
+async function getOperation(id: string) {
+  try {
+    return await actionHandler(`registration/operations/${id}`, "GET", "");
+  } catch (error) {
+    throw error;
+  }
+}
+
 export const ExternalUserLayout = () => {
   return <h2 className="text-bc-link-blue">Add Operation</h2>;
 };
 
-const OperationPage = async () => {
+const OperationInformationPage = async ({
+  operationId,
+}: {
+  operationId: string;
+}) => {
   const businessStructures = await getBusinessStructures();
   const naicsCodes = await getNaicsCodes();
   const regulatedProducts = await getRegulatedProducts();
   const reportingActivities = await getReportingActivities();
+
+  let operation;
+
+  if (operationId && isValidUUID(operationId)) {
+    operation = await getOperation(operationId);
+  }
 
   const schema = createOperationSchema(
     operationSchema,
@@ -126,7 +142,9 @@ const OperationPage = async () => {
     reportingActivities,
   );
 
-  return <OperationForm schema={schema} />;
+  console.log("operation", operation);
+
+  return <OperationInformationForm formData={operation} schema={schema} />;
 };
 
-export default OperationPage;
+export default OperationInformationPage;

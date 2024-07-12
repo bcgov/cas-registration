@@ -8,20 +8,24 @@ import { operationUiSchema } from "../../data/jsonSchema/operation";
 import { OperationFormData } from "./types";
 import { actionHandler } from "@bciers/actions";
 
-const OperationForm = ({ schema }: { schema: RJSFSchema }) => {
+const OperationForm = ({
+  formData,
+  schema,
+}: {
+  formData: OperationFormData;
+  schema: RJSFSchema;
+}) => {
   const [error, setError] = useState(undefined);
 
   const router = useRouter();
 
   const handleSubmit = async (data: { formData?: OperationFormData }) => {
-    const formData = data.formData;
-
     const response = await actionHandler(
       "registration/v2/operations",
       "POST",
       "",
       {
-        body: JSON.stringify(formData),
+        body: JSON.stringify(data.formData),
       },
     );
 
@@ -33,12 +37,13 @@ const OperationForm = ({ schema }: { schema: RJSFSchema }) => {
 
   return (
     <SingleStepTaskListForm
+      disabled
       error={error}
       schema={schema}
       uiSchema={operationUiSchema}
-      formData={{}}
+      formData={formData ?? {}}
       onSubmit={handleSubmit}
-      onCancel={() => router.push("/registration/operations")}
+      onCancel={() => router.push("/operations")}
     />
   );
 };

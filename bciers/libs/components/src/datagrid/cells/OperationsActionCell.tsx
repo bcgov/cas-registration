@@ -2,7 +2,7 @@ import Link from "next/link";
 import { GridRenderCellParams } from "@mui/x-data-grid";
 import { OperationStatus } from "@bciers/utils/enums";
 
-const OperationsActionCell = (isIndustryUser: boolean) => {
+const OperationsActionCell = () => {
   const renderCell = (params: GridRenderCellParams) => {
     let actionText;
     switch (params.row.status) {
@@ -22,9 +22,7 @@ const OperationsActionCell = (isIndustryUser: boolean) => {
         <Link
           className="no-underline text-bc-link-blue whitespace-normal"
           href={{
-            pathname: `operations/${params.row.id}${
-              isIndustryUser ? "/1" : ""
-            }`,
+            pathname: `operations/${params.row.id}`,
             query: {
               title: `${params.row.name}`,
             },
