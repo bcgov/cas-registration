@@ -48,6 +48,10 @@ const MoreCell: React.FC = () => {
   );
 };
 
+const ActionCell: React.FC = () => {
+  return <div>I am an action cell.</div>;
+};
+
 const operationColumns = (): GridColDef[] => {
   const columns: GridColDef[] = [
     { field: "bcghg_id", headerName: "BC GHG ID", width: 160 },
@@ -55,6 +59,13 @@ const operationColumns = (): GridColDef[] => {
       field: "name",
       headerName: "Operation",
       width: 560,
+    },
+    {
+      field: "actions",
+      headerName: "Actions",
+      renderCell: () => <ActionCell />,
+      sortable: false,
+      width: 120,
     },
     {
       field: "more",
