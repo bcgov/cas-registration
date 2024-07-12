@@ -6,6 +6,7 @@ import { operationSchema } from "../../data/jsonSchema/operation";
 // 🛠️ Function to create an operation schema with updated enum values
 export const createOperationSchema = (
   schema: RJSFSchema,
+  businessStructures: { name: string }[],
   naicsCodes: { id: number; naics_code: string; naics_description: string }[],
   regulatedProducts: {
     id: number;
@@ -19,12 +20,32 @@ export const createOperationSchema = (
 ) => {
   const localSchema = JSON.parse(JSON.stringify(schema));
   const section1 = localSchema.properties.section1.properties;
+  const section2Dependencies = localSchema.properties.section2.dependencies;
   const section3 = localSchema.properties.section3.properties;
+
+  const businessStructureOptions = businessStructures.map(
+    (businessStructure) => ({
+      const: businessStructure.name,
+      title: businessStructure.name,
+    }),
+  );
 
   const naicsCodesFormatted = naicsCodes.map((code) => ({
     const: code?.id,
     title: `${code?.naics_code} - ${code?.naics_description}`,
   }));
+
+  console.log("schema", localSchema);
+
+  // business structures
+  if (Array.isArray(businessStructures)) {
+    const multipleOperatorsArray =
+      section2Dependencies.operation_has_multiple_operators.oneOf[1].properties
+        .multiple_operators_array.items;
+    multipleOperatorsArray.properties.mo_business_structure.anyOf =
+      businessStructureOptions;
+    console.log("multipleOperatorsArray", multipleOperatorsArray);
+  }
 
   // naics codes
   if (Array.isArray(naicsCodes)) {
@@ -55,41 +76,34 @@ export const createOperationSchema = (
   return localSchema;
 };
 
+async function getBusinessStructures() {
+  try {
+    return await actionHandler("registration/business_structures", "GET", "");
+  } catch (error) {
+    throw error;
+  }
+}
+
 async function getNaicsCodes() {
   try {
-    return await actionHandler(
-      "registration/naics_codes",
-      "GET",
-      "/dashboard/operations",
-    );
+    return await actionHandler("registration/naics_codes", "GET", "");
   } catch (error) {
-    // Handle the error here or rethrow it to handle it at a higher level
     throw error;
   }
 }
 
 export async function getRegulatedProducts() {
   try {
-    return await actionHandler(
-      "registration/regulated_products",
-      "GET",
-      "/operations",
-    );
+    return await actionHandler("registration/regulated_products", "GET", "");
   } catch (error) {
-    // Handle the error here or rethrow it to handle it at a higher level
     throw error;
   }
 }
 
 export async function getReportingActivities() {
   try {
-    return await actionHandler(
-      "registration/reporting_activities",
-      "GET",
-      "/operations",
-    );
+    return await actionHandler("registration/reporting_activities", "GET", "");
   } catch (error) {
-    // Handle the error here or rethrow it to handle it at a higher level
     throw error;
   }
 }
@@ -99,12 +113,14 @@ export const ExternalUserLayout = () => {
 };
 
 const OperationPage = async () => {
+  const businessStructures = await getBusinessStructures();
   const naicsCodes = await getNaicsCodes();
   const regulatedProducts = await getRegulatedProducts();
   const reportingActivities = await getReportingActivities();
 
   const schema = createOperationSchema(
     operationSchema,
+    businessStructures,
     naicsCodes,
     regulatedProducts,
     reportingActivities,
