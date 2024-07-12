@@ -20,3 +20,9 @@ class ReportingField(BaseModel):
     class Meta:
         db_table_comment = "A field name/type combination that relates to a configuration element record through the config_element_reporting_field intersection table. Used to dynamically create a form schema from the configuration"
         db_table = 'erc"."reporting_field'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['field_name', 'field_type', 'field_units'],
+                name='unique_reporting_field',
+            )
+        ]
