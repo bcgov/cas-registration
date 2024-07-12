@@ -14,7 +14,6 @@ export const fetchOperationsPageData = async (
     "GET",
     "",
   );
-  console.log(pageData);
   return {
     rows: pageData.items,
     row_count: pageData.count,
