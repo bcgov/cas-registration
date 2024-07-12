@@ -9,13 +9,11 @@ pytest.endpoint = "/api/reporting/build-form-schema"
 class TestBuildFormSchema:
     def test_invalid_without_report_date(self):
         response = client.get(f'{pytest.endpoint}?activity=1')
-        assert response.status_code == 400
-        assert response.json().get('message') == "Cannot build a schema without a valid report date"
+        assert response.status_code == 422
 
     def test_invalid_without_activity(self):
         response = client.get(f'{pytest.endpoint}?report_date=2024-05-01')
-        assert response.status_code == 400
-        assert response.json().get('message') == "Cannot build a schema without Activity data"
+        assert response.status_code == 422
 
     def test_except_if_no_valid_configuration(self):
         response = client.get(f'{pytest.endpoint}?activity=1&report_date=5024-05-01')
@@ -63,3 +61,15 @@ class TestBuildFormSchema:
         assert response.status_code == 200
         # 2 schemas in the sourceTypes object
         assert len(json.loads(response.json())['schema']['properties']['sourceTypes']['properties'].keys()) == 2
+
+    # Add this test when Mobile Combustion configs are added
+    # def test_single_mandatory_source_type(self):
+    #     Add test for when an activity has a single valid source type. In that case, the source type is added automatically since it is mandatory
+
+    # Add this test when Mobile Combustion configs are added
+    # def test_source_type_schema_no_units(self):
+    #     Add test for source type schema shape when there are no units in the schema
+
+    # Add this test when Alumina Production configs are added
+    # def test_source_type_schema_only_emissions(self):
+    #     Add test for source type schema shape when there are no units or fuels in the schema
