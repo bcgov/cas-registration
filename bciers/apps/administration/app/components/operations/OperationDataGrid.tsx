@@ -7,7 +7,17 @@ import HeaderSearchCell from "@bciers/components/datagrid/cells/HeaderSearchCell
 import operationColumns from "../datagrid/models/operationColumns";
 import operationGroupColumns from "../datagrid/models/operationGroupColumns";
 import { OperationRow } from "./types";
+import ActionCellFactory from "../datagrid/ActionCellFactory";
 import fetchOperationsPageData from "./fetchOperationsPageData";
+import { GridRenderCellParams } from "@mui/x-data-grid";
+
+const FacilitiesActionCell = ActionCellFactory({
+  generateHref: (params: GridRenderCellParams) => {
+    return `operations/${params.row.id}/facilities`;
+  },
+  replace: true,
+  cellText: "View Facilities",
+});
 
 const OperationDataGrid = ({
   initialData,
@@ -27,7 +37,12 @@ const OperationDataGrid = ({
   );
 
   const columns = useMemo(
-    () => operationColumns(isInternalUser, OperationsActionCell()),
+    () =>
+      operationColumns(
+        isInternalUser,
+        OperationsActionCell(),
+        FacilitiesActionCell,
+      ),
     [OperationsActionCell, isInternalUser],
   );
 
