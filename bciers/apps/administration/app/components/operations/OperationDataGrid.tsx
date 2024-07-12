@@ -26,14 +26,9 @@ const OperationDataGrid = ({
     [lastFocusedField, setLastFocusedField],
   );
 
-  const ActionCell = useMemo(
-    () => OperationsActionCell(!isInternalUser),
-    [!isInternalUser],
-  );
-
   const columns = useMemo(
-    () => operationColumns(isInternalUser, ActionCell),
-    [ActionCell, isInternalUser],
+    () => operationColumns(isInternalUser, OperationsActionCell()),
+    [OperationsActionCell, isInternalUser],
   );
 
   const columnGroup = useMemo(
