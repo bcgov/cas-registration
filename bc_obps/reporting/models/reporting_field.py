@@ -1,5 +1,6 @@
 from common.models import BaseModel
 from django.db import models
+from typing import Tuple
 
 
 class ReportingField(BaseModel):
@@ -14,7 +15,7 @@ class ReportingField(BaseModel):
         max_length=1000, blank=True, null=True, db_comment="Units of measurement relating to the field."
     )
 
-    def serialize(self) -> "dict[str,str]":
+    def serialize(self) -> "dict[str,str| None]":
         return {"fieldName": self.field_name, "fieldType": self.field_type, "fieldUnits": self.field_units}
 
     class Meta:
