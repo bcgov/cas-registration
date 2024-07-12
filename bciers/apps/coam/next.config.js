@@ -12,6 +12,7 @@ const nextConfig = {
   ...nextConfigBase,
   // To deploy a Next.js application under a sub-path of a domain you can use the basePath config option
   basePath: "/coam",
+  assetPrefix: "/coam/",
   nx: {
     // Set this to true if you would like to use SVGR
     // See: https://github.com/gregberge/svgr
