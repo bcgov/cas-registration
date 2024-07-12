@@ -60,6 +60,9 @@ export const theme = createTheme({
         text: {
           backgroundColor: "transparent",
         },
+        outlined: {
+          backgroundColor: "transparent",
+        },
       },
     },
     MuiTypography: {
