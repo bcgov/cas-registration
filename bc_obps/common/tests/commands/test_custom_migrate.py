@@ -4,10 +4,18 @@ from common.management.commands.custom_migrate import Command
 
 
 class MigratePredefinedAppsTest(TestCase):
-
     def setUp(self):
         self.migration_dir = 'path/to/migrations'
-        self.fake_files = ['__init__.py', '0001_initial.py', '0002_add_field.py', '0003_remove_field.py', '0004_V1_2_3.py', '0005_add_field.py', '0006_V1_4_5.py', '0007_add_field.py']
+        self.fake_files = [
+            '__init__.py',
+            '0001_initial.py',
+            '0002_add_field.py',
+            '0003_remove_field.py',
+            '0004_V1_2_3.py',
+            '0005_add_field.py',
+            '0006_V1_4_5.py',
+            '0007_add_field.py',
+        ]
         self.cmd = Command()
 
     @patch('os.listdir')
