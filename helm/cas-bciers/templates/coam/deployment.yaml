@@ -23,6 +23,7 @@ spec:
         component: coam-frontend
         layer: frontend
     spec:
+    automountServiceAccountToken: false
       containers:
         - name: {{ template "cas-bciers.fullname" . }}-coam-frontend
           envFrom:
