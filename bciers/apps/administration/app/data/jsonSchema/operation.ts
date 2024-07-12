@@ -12,7 +12,7 @@ const section1Schema: RJSFSchema = {
     type: {
       type: "string",
       title: "Operation Type",
-      enum: ["Single Facility Operation", "Linear Facilities Operation"],
+      enum: ["Single Facility Operation", "Linear Facility Operation"],
     },
     naics_code_id: {
       type: "number",

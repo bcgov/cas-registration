@@ -38,7 +38,7 @@
     @apply w-full px-[14px] py-4 flex items-center min-h-[56px] box-border;
   }
   .link-button-blue {
-    @apply w-fit no-underline text-lg text-white py-[6px] px-[16px] rounded flex items-center bg-bc-primary-blue;
+    @apply w-fit no-underline text-lg text-white py-[6px] px-[16px] rounded flex items-center bg-bc-bg-blue;
   }
 }
 
