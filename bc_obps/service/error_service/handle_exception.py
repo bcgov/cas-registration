@@ -14,10 +14,6 @@ def handle_exception(error: Exception) -> Tuple[Literal[400, 401, 403, 404, 422]
     """
     This function handles exceptions for BCEIRS. Returns a 4xx status.
     """
-    print("~~~~~~~~~ERROR!~~~~~~~~~")
-    print(error)
-    print(error.args)
-    print("~~~~~~~~~~~~~~~~~~~~~~~~")
     if error.args and error.args[0] == UNAUTHORIZED_MESSAGE:
         return 401, {"message": UNAUTHORIZED_MESSAGE}
     if isinstance(error, (Http404, ObjectDoesNotExist)):
