@@ -33,6 +33,22 @@ const section1Schema: RJSFSchema = {
       },
       title: "Reporting Activities",
     },
+    process_flow_diagram: {
+      type: "string",
+      title: "Process Flow Diagram",
+    },
+    boundary_map: {
+      type: "string",
+      title: "Boundary Map",
+    },
+    equipment_list: {
+      type: "string",
+      title: "Equipment List",
+    },
+    operation_representative: {
+      type: "string",
+      title: "Operation Representative",
+    },
   },
 };
 
@@ -67,6 +83,11 @@ const section2Schema: RJSFSchema = {
               items: {
                 type: "object",
                 required: [
+                  "mo_legal_name",
+                  "mo_trade_name",
+                  "mo_business_structure",
+                  "mo_cra_business_number",
+                  "mo_bc_corporate_registry_number",
                   "mo_attorney_street_address",
                   "mo_municipality",
                   "mo_province",
@@ -79,52 +100,43 @@ const section2Schema: RJSFSchema = {
                       "Is the additional operator an extraprovincial company?",
                     default: false,
                   },
-                },
-                dependencies: {
-                  mo_is_extraprovincial_company: {
-                    allOf: [
-                      {
-                        if: {
-                          properties: {
-                            mo_is_extraprovincial_company: {
-                              const: true,
-                            },
-                          },
-                        },
-                        then: {
-                          required: [
-                            "mo_legal_name",
-                            "mo_attorney_street_address",
-                            "mo_municipality",
-                            "mo_province",
-                            "mo_postal_code",
-                          ],
-                          properties: {
-                            mo_legal_name: {
-                              type: "string",
-                              title: "Legal Name",
-                            },
-                            mo_attorney_street_address: {
-                              type: "string",
-                              title: "Attorney Street Address",
-                            },
-                            mo_municipality: {
-                              type: "string",
-                              title: "Municipality",
-                            },
-                            mo_province: {
-                              type: "string",
-                              title: "Province",
-                              enum: provinceOptions,
-                            },
-                            mo_postal_code: {
-                              type: "string",
-                              title: "Postal Code",
-                            },
-                          },
-                        },
-                      },
-                    ],
+                  mo_legal_name: {
+                    type: "string",
+                    title: "Legal Name",
+                  },
+                  mo_trade_name: {
+                    type: "string",
+                    title: "Trade Name",
+                  },
+                  mo_business_structure: {
+                    type: "string",
+                    title: "Business Structure",
+                  },
+                  mo_cra_business_number: {
+                    type: "string",
+                    title: "CRA Business Number",
+                  },
+                  mo_bc_corporate_registry_number: {
+                    type: "string",
+                    title: "BC Corporate Registry Number",
+                    format: "bc_corporate_registry_number",
+                  },
+                  mo_attorney_street_address: {
+                    type: "string",
+                    title: "Attorney Street Address",
+                  },
+                  mo_municipality: {
+                    type: "string",
+                    title: "Municipality",
+                  },
+                  mo_province: {
+                    type: "string",
+                    title: "Province",
+                    enum: provinceOptions,
+                  },
+                  mo_postal_code: {
+                    type: "string",
+                    title: "Postal Code",
                   },
                 },
               },
@@ -231,6 +243,15 @@ export const operationUiSchema: UiSchema = {
       "ui:widget": "MultiSelectWidget",
       "ui:placeholder": "Select Reporting Activity",
     },
+    process_flow_diagram: {
+      "ui:widget": "FileWidget",
+    },
+    boundary_map: {
+      "ui:widget": "FileWidget",
+    },
+    equipment_list: {
+      "ui:widget": "FileWidget",
+    },
   },
   section2: {
     "ui:FieldTemplate": SectionFieldTemplate,
@@ -247,6 +268,10 @@ export const operationUiSchema: UiSchema = {
       items: {
         mo_is_extraprovincial_company: {
           "ui:widget": "ToggleWidget",
+        },
+        mo_business_structure: {
+          "ui:widget": "ComboBox",
+          "ui:placeholder": "Select a business structure",
         },
         mo_province: {
           "ui:widget": "SelectWidget",
