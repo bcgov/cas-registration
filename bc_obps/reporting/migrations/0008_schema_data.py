@@ -17,7 +17,7 @@ def init_activity_schema_data(apps, schema_monitor):
 
     ActivitySchema = apps.get_model('reporting', 'ActivityJsonSchema')
     ReportingActivity = apps.get_model('registration', 'ReportingActivity')
-    Configuration = apps.get_model('registration', 'Configuration')
+    Configuration = apps.get_model('reporting', 'Configuration')
     ActivitySchema.objects.create(
         reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id,
         json_schema=schema,
@@ -53,8 +53,8 @@ def init_activity_source_type_schema_data(apps, schema_monitor):
 
     ActivitySourceTypeSchema = apps.get_model('reporting', 'ActivitySourceTypeJsonSchema')
     ReportingActivity = apps.get_model('registration', 'ReportingActivity')
-    SourceType = apps.get_model('registration', 'SourceType')
-    Configuration = apps.get_model('registration', 'Configuration')
+    SourceType = apps.get_model('reporting', 'SourceType')
+    Configuration = apps.get_model('reporting', 'Configuration')
     ActivitySourceTypeSchema.objects.bulk_create(
         [
             ActivitySourceTypeSchema(
