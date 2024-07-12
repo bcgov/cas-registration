@@ -17,6 +17,12 @@ const operationColumns = (
     { field: "bcghg_id", headerName: "BC GHG ID", width: 200 },
     { field: "type", headerName: "Operation Type", width: 200 },
     {
+      field: "facilities",
+      headerName: "Facilities",
+      renderCell: ActionCell,
+      width: 120,
+    },
+    {
       field: "action",
       headerName: "Action",
       renderCell: ActionCell,
