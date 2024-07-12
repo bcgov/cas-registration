@@ -10,6 +10,6 @@ class ReportingFieldTest(BaseTestCase):
             ("id", "ID", None, None),
             ("field_name", "field name", 1000, None),
             ("field_type", "field type", 1000, None),
-            ("field_units", "field type", 1000, None),
+            ("field_units", "field units", 1000, None),
             ("configuration_elements", "configuration element", None, None),
         ]
