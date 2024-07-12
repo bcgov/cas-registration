@@ -25,8 +25,8 @@ class TestInitialData(TestCase):
                 'Acid gas scrubbers and acid gas reagents',
                 'Cooling units',
                 'Geothermal geyser steam or fluids',
-                'Installation, maintenance, operation and decommission-ing of electrical equipment',
-                'Electronics manufacturing, including the cleaning of chemical vapour deposition chambers and plasma',
+                'Installation, maintenance, operation and decommissioning of electrical equipment',
+                'Electronics manufacturing, including the cleaning of chemical vapour deposition chambers and plasma/dry etching processes',
                 'Removal of impurities using carbonate flux reagents, the use of reducing agents, the use of material (e.g. coke) for slag cleaning, and the consumption of graphite or carbon electrodes during ferroalloy production',
                 'Calcination of carbonate materials',
                 'Steam reformation of hydrocarbons, partial oxidation of hydrocarbons or other transformation of hydrocarbon feedstock',
@@ -84,10 +84,7 @@ class TestInitialData(TestCase):
                 'Enhanced oil recovery produced hydrocarbon liquids dissolved carbon dioxide',
                 'Other venting sources',
                 'Other fugitive sources',
-                'Third-party line hits with release of gas',
-                'Natural gas pneumatic high bleed device venting',
-                'Natural gas pneumatic pump venting',
-                'Dehydrator venting',
+                'Third party line hits with release of gas',
                 'Well venting for liquids unloading',
                 'Gas well venting during well completions and workovers with or without hydraulic fracturing',
                 'Drilling flaring',
@@ -95,30 +92,14 @@ class TestInitialData(TestCase):
                 'Hydraulic fracturing flaring',
                 'Well testing venting',
                 'Well testing flaring',
-                'Associated gas venting',
-                'Associated gas flaring',
-                'Centrifugal compressor venting',
-                'Reciprocating compressor venting',
-                'Equipment leaks detected using leak detection and leaker emission factor methods',
-                'Population count sources',
-                'Enhanced oil recovery injection pump blowdowns',
-                'Produced water dissolved carbon dioxide and methane',
-                'Enhanced oil recovery hydrocarbon liquids dissolved carbon dioxide',
-                'Other venting sources',
-                'Other fugitive sources',
-                'Third-party line hits with release of gas',
-                'Installation, maintenance, operation and decommissioning of electrical equipment',
                 'Flare stacks',
-                'Natural gas pneumatic low bleed device venting',
-                'Natural gas pneumatic intermittent bleed device venting',
-                'Blowdown venting',
-                'Transmission storage tanks',
-                'Natural gas pneumatic intermittent bleed device',
-                'Third party line hits with release of gas',
             ]
         )
-        existing_source_types = sorted(list(SourceType.objects.values_list('name', flat=True)))
 
+        existing_source_types = sorted(list(SourceType.objects.values_list('name', flat=True)))
+        for element in existing_source_types:
+            if element not in expected_source_types:
+                print(element)
         self.assertEqual(len(existing_source_types), len(expected_source_types))
         self.assertEqual(existing_source_types, expected_source_types)
 
@@ -126,11 +107,10 @@ class TestInitialData(TestCase):
 class SourceTypeModelTest(BaseTestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.test_object = SourceType.objects.create(
-            name="testSourceType",
-        )
+        cls.test_object = SourceType.objects.create(name="testSourceType", json_key='jsonKey')
         cls.field_data = [
             ("id", "ID", None, None),
             ("name", "name", 1000, None),
+            ("json_key", "json key", 100, None),
             ("configuration_elements", "configuration element", None, None),
         ]

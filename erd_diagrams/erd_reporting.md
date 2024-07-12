@@ -23,6 +23,7 @@ ReportVersion {
 SourceType {
     BigAutoField id
     CharField name
+    CharField json_key
 }
 ReportOperation {
     BigAutoField id

@@ -29,56 +29,94 @@ def init_source_type_data(apps, schema_monitor):
     SourceType = apps.get_model('reporting', 'SourceType')
     SourceType.objects.bulk_create(
         [
-            SourceType(name='General stationary combustion of fuel or waste with production of useful energy', json_key='gcsWithProductionOfUsefulEnergy'),
-            SourceType(name='General stationary combustion of waste without production of useful energy', json_key='gcsWithoutProductionOfUsefulEnergy'),
-            SourceType(name='Fuel combustion by mobile equipment that is part of the facility', json_key='mobileFuelCombustionPartOfFacility'),
+            SourceType(
+                name='General stationary combustion of fuel or waste with production of useful energy',
+                json_key='gcsWithProductionOfUsefulEnergy',
+            ),
+            SourceType(
+                name='General stationary combustion of waste without production of useful energy',
+                json_key='gcsWithoutProductionOfUsefulEnergy',
+            ),
+            SourceType(
+                name='Fuel combustion by mobile equipment that is part of the facility',
+                json_key='mobileFuelCombustionPartOfFacility',
+            ),
             SourceType(
                 name='Anode consumption in electrolysis cells, anode and cathode baking or green coke calcination',
-                json_key='anodeCathodeBackingGreenCokeCalcination'
+                json_key='anodeCathodeBackingGreenCokeCalcination',
             ),
             SourceType(name='Anode effects', json_key='anodeEffects'),
             SourceType(name='Cover gas from electrolysis cells', json_key='coverGasFromElectrolysisCells'),
-            SourceType(name='Steam reformation or gasification of a hydrocarbon during ammonia production', json_key='steamReformationOrGasificiation'),
+            SourceType(
+                name='Steam reformation or gasification of a hydrocarbon during ammonia production',
+                json_key='steamReformationOrGasificiation',
+            ),
             SourceType(
                 name='Calcination of limestone, shale, sand, slag or other raw materials used to produce clinker, as well as the oxidization of organic carbon in the raw material',
-                json_key='calcinationUsedToProductClinker'
+                json_key='calcinationUsedToProductClinker',
             ),
-            SourceType(name='Coal when broken or exposed to the atmosphere during mining', json_key='coalExposedDuringMining'),
+            SourceType(
+                name='Coal when broken or exposed to the atmosphere during mining', json_key='coalExposedDuringMining'
+            ),
             SourceType(name='Stored coal piles', json_key='storedCoalPiles'),
-            SourceType(name='Removal of impurities using carbonate flux reagents', json_key='removalOfImpuritiesUsingCarbonateFluxReagents'),
+            SourceType(
+                name='Removal of impurities using carbonate flux reagents',
+                json_key='removalOfImpuritiesUsingCarbonateFluxReagents',
+            ),
             SourceType(name='Use of reducing agents', json_key='useOfReducingAgents'),
             SourceType(
                 name='Use of material (e.g., coke) for slag cleaning and the consumption of graphite or carbon electrodes',
-                json_key='slagCleaningandConsumptionOfGraphite'
+                json_key='slagCleaningandConsumptionOfGraphite',
             ),
-            SourceType(name='The solvent extraction and electrowinning process, also known as SX-EW', json_key='solventExtractionElectrowinningProcess'),
-            SourceType(name='Fuel combustion for electricity generation', json_key='fuelCombustionForElectricityGeneration'),
+            SourceType(
+                name='The solvent extraction and electrowinning process, also known as SX-EW',
+                json_key='solventExtractionElectrowinningProcess',
+            ),
+            SourceType(
+                name='Fuel combustion for electricity generation', json_key='fuelCombustionForElectricityGeneration'
+            ),
             SourceType(name='Acid gas scrubbers and acid gas reagents', json_key='acidgasScrubbersAndReagents'),
             SourceType(name='Cooling units', json_key='coolingUnits'),
             SourceType(name='Geothermal geyser steam or fluids', json_key='geothermalGeyserSteamOrFluids'),
-            SourceType(name='Installation, maintenance, operation and decommissioning of electrical equipment', json_key='installationMaintOperationOfElectricalEquipment'),
             SourceType(
-                name='Electronics manufacturing, including the cleaning of chemical vapour deposition chambers and plasma',
-                json_key='electronicsManufacturingChemicalVapourDeposition'
+                name='Installation, maintenance, operation and decommissioning of electrical equipment',
+                json_key='installationMaintOperationOfElectricalEquipment',
+            ),
+            SourceType(
+                name='Electronics manufacturing, including the cleaning of chemical vapour deposition chambers and plasma/dry etching processes',
+                json_key='electronicsManufacturingChemicalVapourDeposition',
             ),
             SourceType(
                 name='Removal of impurities using carbonate flux reagents, the use of reducing agents, the use of material (e.g. coke) for slag cleaning, and the consumption of graphite or carbon electrodes during ferroalloy production',
-                json_key='removalOfImpuritiesDuringFerroalloyProduction'
+                json_key='removalOfImpuritiesDuringFerroalloyProduction',
             ),
             SourceType(name='Calcination of carbonate materials', json_key='calcinationOfCarbonateMaterials'),
             SourceType(
                 name='Steam reformation of hydrocarbons, partial oxidation of hydrocarbons or other transformation of hydrocarbon feedstock',
-                json_key='otherTransformationOfHydrocarbonFeedstock'
+                json_key='otherTransformationOfHydrocarbonFeedstock',
             ),
-            SourceType(name='Industrial wastewater process using anaerobic digestion', json_key='industrialWastewaterProcessAnaerobicDigestion'),
+            SourceType(
+                name='Industrial wastewater process using anaerobic digestion',
+                json_key='industrialWastewaterProcessAnaerobicDigestion',
+            ),
             SourceType(name='Oil-water separators', json_key='oilWaterSeparators'),
-            SourceType(name='Use of reducing agents during lead production', json_key='useOfReducingAgentsDuringLeadProduction'),
-            SourceType(name='Calcination of carbonate materials in lime manufacturing', json_key='calcinationOfCarbonateMaterialsLimeProduction'),
-            SourceType(name='Use of reducing agents in magnesium production', json_key='reducingAgentsMagnesiumProduction'),
-            SourceType(name='Cover gases or carrier gases in magnesium production', json_key='coverCarrierGasesMagnesiumProduction'),
+            SourceType(
+                name='Use of reducing agents during lead production', json_key='useOfReducingAgentsDuringLeadProduction'
+            ),
+            SourceType(
+                name='Calcination of carbonate materials in lime manufacturing',
+                json_key='calcinationOfCarbonateMaterialsLimeProduction',
+            ),
+            SourceType(
+                name='Use of reducing agents in magnesium production', json_key='reducingAgentsMagnesiumProduction'
+            ),
+            SourceType(
+                name='Cover gases or carrier gases in magnesium production',
+                json_key='coverCarrierGasesMagnesiumProduction',
+            ),
             SourceType(
                 name='Catalytic oxidation, condensation and absorption processes during nitric acid manufacturing',
-                json_key='oxidationCondensationAbsorptionNitricAcidManufacturing'
+                json_key='oxidationCondensationAbsorptionNitricAcidManufacturing',
             ),
             SourceType(name='Flares and oxidizers', json_key='flaresAndOxidizers'),
             SourceType(name='Process vents', json_key='processVents'),
@@ -90,64 +128,110 @@ def init_source_type_data(apps, schema_monitor):
             SourceType(name='Sulphur recovery', json_key='sulphurRecovery'),
             SourceType(
                 name='Flares, the flare pilot, the combustion of purge gas and the destruction of low Btu gases',
-                json_key='flaresCombustionOfPurgeGas'
+                json_key='flaresCombustionOfPurgeGas',
             ),
             SourceType(name='Above-ground storage tanks at refineries', json_key='aboveGroundStorageTanksAtRefineries'),
             SourceType(name='Oil-water separators at refineries', json_key='oilWaterSeparatorsAtRefineries'),
             SourceType(name='Equipment leaks at refineries', json_key='equipmentLeaksAtRefineries'),
-            SourceType(name='Wastewater processing using anaerobic digestion at refineries', json_key='wastewaterProcessingAnaerobicDigestionAtRefineries'),
-            SourceType(name='Uncontrolled blowdown systems used at refineries', json_key='uncontrolledBlowdownSystemsAtRefineries'),
-            SourceType(name='Loading operations at refineries and terminals', json_key='loadingOperationsatRefineriesAndTerminals'),
+            SourceType(
+                name='Wastewater processing using anaerobic digestion at refineries',
+                json_key='wastewaterProcessingAnaerobicDigestionAtRefineries',
+            ),
+            SourceType(
+                name='Uncontrolled blowdown systems used at refineries',
+                json_key='uncontrolledBlowdownSystemsAtRefineries',
+            ),
+            SourceType(
+                name='Loading operations at refineries and terminals',
+                json_key='loadingOperationsatRefineriesAndTerminals',
+            ),
             SourceType(name='Delayed coking units at refineries', json_key='delayedCokingAtRefineries'),
             SourceType(name='Coke calcining at refineries', json_key='cokeCalciningAtRefineries'),
-            SourceType(name='Reaction of calcium carbonate with sulphuric acid', json_key='reactionCalciumCarbonateWithSulphuricAcid'),
+            SourceType(
+                name='Reaction of calcium carbonate with sulphuric acid',
+                json_key='reactionCalciumCarbonateWithSulphuricAcid',
+            ),
             SourceType(name='Pulping and chemical recovery', json_key='pulpingAndChemicalRecovery'),
-            SourceType(name='Combustion of refinery fuel gas, still gas, flexigas or associated gas', json_key='combustionRefineryFuelGasStillGasFlexigas'),
-            SourceType(name='Use of reducing agents during zinc production', json_key='reducingAgentsDuringZincProduction'),
+            SourceType(
+                name='Combustion of refinery fuel gas, still gas, flexigas or associated gas',
+                json_key='combustionRefineryFuelGasStillGasFlexigas',
+            ),
+            SourceType(
+                name='Use of reducing agents during zinc production', json_key='reducingAgentsDuringZincProduction'
+            ),
             SourceType(name='Above-ground storage tanks', json_key='aboveGroundStorageTanks'),
-            SourceType(name='Carbonates used but not consumed in other activities set out in column 2', json_key='carbonatesNotConsumedInActivitesColumnTwo'),
+            SourceType(
+                name='Carbonates used but not consumed in other activities set out in column 2',
+                json_key='carbonatesNotConsumedInActivitesColumnTwo',
+            ),
             SourceType(
                 name='General stationary combustion of fuel or waste at a linear facilities operation resulting in the production of useful energy',
-                json_key='gscFuelOrWasteLinearFacilitiesUsefulEnergy'
+                json_key='gscFuelOrWasteLinearFacilitiesUsefulEnergy',
             ),
             SourceType(
                 name='General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy',
-                json_key='gscFuelOrWasteLinearFacilitiesWithoutUsefulEnergy'
+                json_key='gscFuelOrWasteLinearFacilitiesWithoutUsefulEnergy',
             ),
-            SourceType(name='Field gas or process vent gas combustion at a linear facilities operation', json_key='fieldProcessVentGasLinearFacilities'),
-            SourceType(name='Natural gas pneumatic high bleed device venting', json_key='naturalGasPneumatciHighBleedDeviceVenting'),
+            SourceType(
+                name='Field gas or process vent gas combustion at a linear facilities operation',
+                json_key='fieldProcessVentGasLinearFacilities',
+            ),
+            SourceType(
+                name='Natural gas pneumatic high bleed device venting',
+                json_key='naturalGasPneumatciHighBleedDeviceVenting',
+            ),
             SourceType(name='Natural gas pneumatic pump venting', json_key='naturalGasPneumaticPumpVenting'),
-            SourceType(name='Natural gas pneumatic low bleed device venting', json_key='naturalGasPneumaticLowBleedDeviceVenting'),
-            SourceType(name='Natural gas pneumatic intermittent bleed device venting', json_key='naturalGasPneumaticIntermittentBleedDeviceVenting'),
+            SourceType(
+                name='Natural gas pneumatic low bleed device venting',
+                json_key='naturalGasPneumaticLowBleedDeviceVenting',
+            ),
+            SourceType(
+                name='Natural gas pneumatic intermittent bleed device venting',
+                json_key='naturalGasPneumaticIntermittentBleedDeviceVenting',
+            ),
             SourceType(name='Acid gas removal venting or incineration', json_key='acidGasRemovalVentingOrIncineration'),
             SourceType(name='Dehydrator venting', json_key='dehydratorVenting'),
             SourceType(name='Blowdown venting', json_key='blowdownVenting'),
-            SourceType(name='Releases from tanks used for storage, production or processing', json_key='releasesFromTanksUsedForStorageProductionProcessing'),
+            SourceType(
+                name='Releases from tanks used for storage, production or processing',
+                json_key='releasesFromTanksUsedForStorageProductionProcessing',
+            ),
             SourceType(name='Associated gas venting', json_key='associatedGasVenting'),
             SourceType(name='Associated gas flaring', json_key='associatedGasFlaring'),
             SourceType(name='Flaring stacks', json_key='flaringStacks'),
             SourceType(name='Centrifugal compressor venting', json_key='centrifugalCompressorVenting'),
             SourceType(name='Reciprocating compressor venting', json_key='reciprocatingCompressorVenting'),
-            SourceType(name='Equipment leaks detected using leak detection and leaker emission factor methods', json_key='equipmentLeaksDetectedLearkerEmissionFactorMethods'),
+            SourceType(
+                name='Equipment leaks detected using leak detection and leaker emission factor methods',
+                json_key='equipmentLeaksDetectedLearkerEmissionFactorMethods',
+            ),
             SourceType(name='Population count sources', json_key='populationCountSources'),
             SourceType(name='Transmission storage tanks', json_key='transmissionStorageTanks'),
-            SourceType(name='Enhanced oil recovery injection pump blowdowns', json_key='enhancedOilrecoveryInjectionPumpBlowdowns'),
-            SourceType(name='Produced water dissolved carbon dioxide and methane', json_key='producedWaterDissolvedCarbonDioxideMethane'),
-            SourceType(name='Enhanced oil recovery produced hydrocarbon liquids dissolved carbon dioxide', json_key='enhancedOilRecoveryHydrocarbonLiquids'),
+            SourceType(
+                name='Enhanced oil recovery injection pump blowdowns',
+                json_key='enhancedOilrecoveryInjectionPumpBlowdowns',
+            ),
+            SourceType(
+                name='Produced water dissolved carbon dioxide and methane',
+                json_key='producedWaterDissolvedCarbonDioxideMethane',
+            ),
+            SourceType(
+                name='Enhanced oil recovery produced hydrocarbon liquids dissolved carbon dioxide',
+                json_key='enhancedOilRecoveryHydrocarbonLiquids',
+            ),
             SourceType(name='Other venting sources', json_key='otherVentingSources'),
             SourceType(name='Other fugitive sources', json_key='otherFugitiveSources'),
             SourceType(name='Third party line hits with release of gas', json_key='thirdPartyLineHitsWithReleaseOfGas'),
             SourceType(name='Well venting for liquids unloading', json_key='wellVentingForLiquidsUnloading'),
             SourceType(
                 name='Gas well venting during well completions and workovers with or without hydraulic fracturing',
-                json_key='wellVentingDuringWellCompletionsHydraulicFracturing'
+                json_key='wellVentingDuringWellCompletionsHydraulicFracturing',
             ),
             SourceType(name='Drilling flaring', json_key='drillingFlaring'),
             SourceType(name='Drilling venting', json_key='drillingVenting'),
             SourceType(name='Hydraulic fracturing flaring', json_key='hydraulicFracturingFlaring'),
             SourceType(name='Well testing venting', json_key='wellTestingVenting'),
             SourceType(name='Well testing flaring', json_key='wellTestingFlaring'),
-            SourceType(name='Enhanced oil recovery hydrocarbon liquids dissolved carbon dioxide', json_key='enhancedOilRecoveryHydrocarbonLiquidsCarbonDioxide'),
             SourceType(name='Flare stacks', json_key='flareStacks'),
         ]
     )
@@ -238,7 +322,6 @@ def reverse_init_source_type_data(apps, schema_monitor):
             'Other venting sources',
             'Other fugitive sources',
             'Third party line hits with release of gas',
-            'Dehydrator venting',
             'Well venting for liquids unloading',
             'Gas well venting during well completions and workovers with or without hydraulic fracturing',
             'Drilling flaring',
@@ -246,8 +329,7 @@ def reverse_init_source_type_data(apps, schema_monitor):
             'Hydraulic fracturing flaring',
             'Well testing venting',
             'Well testing flaring',
-            'Enhanced oil recovery hydrocarbon liquids dissolved carbon dioxide',
-            'Flare stacks'
+            'Flare stacks',
         ]
     ).delete()
 
@@ -1635,5 +1717,5 @@ class Migration(migrations.Migration):
         migrations.RunPython(init_gas_type_data, reverse_init_gas_type_data),
         migrations.RunPython(init_fuel_type_data, reverse_init_fuel_type_data),
         migrations.RunPython(init_methodology_data, reverse_init_methodology_data),
-        migrations.RunPython(init_configuration_data, reverse_init_configuration_data)
+        migrations.RunPython(init_configuration_data, reverse_init_configuration_data),
     ]
