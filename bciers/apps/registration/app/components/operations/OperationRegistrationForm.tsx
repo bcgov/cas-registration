@@ -17,26 +17,26 @@ const OperationRegistrationForm = ({ formData, schema }: Readonly<Props>) => {
   const params = useParams();
   const formSection = parseInt(params?.formSection as string);
   const operationId = params?.operation;
+  const formSectionList = schema.properties && Object.keys(schema.properties);
+  const isNotFinalStep = formSection !== formSectionList?.length;
 
   const handleSubmit = async () => {
     // This will have to be pulled from the response after the first page
     const NEW_OPERATION_ID = "8be4c7aa-6ab3-4aad-9206-0ef914fea063";
-    router.replace(
-      `/operation/${NEW_OPERATION_ID}/${
-        formSection + 1
-      }?title=Operation name placeholder`,
-    );
-    router.push(
-      `/operation/${NEW_OPERATION_ID}/${
-        formSection + 1
-      }?title=Operation name placeholder`,
-    );
+
+    if (isNotFinalStep) {
+      router.push(
+        `/operation/${NEW_OPERATION_ID}/${
+          formSection + 1
+        }?title=Operation name placeholder`,
+      );
+    }
   };
 
   return (
     <MultiStepFormBase
-      baseUrl={`registration/operations/${operationId}`}
-      cancelUrl="registration/operations"
+      baseUrl={`operation/${operationId}`}
+      cancelUrl="/"
       schema={schema}
       uiSchema={operationRegistrationUiSchema}
       formData={formData}
