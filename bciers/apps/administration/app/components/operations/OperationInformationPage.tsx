@@ -1,7 +1,7 @@
-import OperationInformationForm from "./OperationInformation";
+import OperationInformationForm from "./OperationInformationForm";
 import { actionHandler } from "@bciers/actions";
 import { RJSFSchema } from "@rjsf/utils";
-import { operationSchema } from "../../data/jsonSchema/operation";
+import { operationInformationSchema } from "../../data/jsonSchema/operationInformation";
 import { validate as isValidUUID } from "uuid";
 
 // 🛠️ Function to create an operation schema with updated enum values
@@ -135,14 +135,12 @@ const OperationInformationPage = async ({
   }
 
   const schema = createOperationSchema(
-    operationSchema,
+    operationInformationSchema,
     businessStructures,
     naicsCodes,
     regulatedProducts,
     reportingActivities,
   );
-
-  console.log("operation", operation);
 
   return <OperationInformationForm formData={operation} schema={schema} />;
 };
