@@ -9,7 +9,7 @@ def str_to_camel_case(st: str) -> str:
 
 
 # Called by build_schema. Builds the source type schema including gas_type & methodology dependencies
-def build_source_type_schema(config: int, activity: int, source_type: int, report_date: str, rjsf_schema: Any, gas_type_map: dict[int, str], methodology_map: dict[int, str]) -> None:
+def build_source_type_schema(config: int, activity: int, source_type: int, report_date: str, gas_type_map: dict[int, str], methodology_map: dict[int, str]) -> Any:
     try:
         source_type_schema = ActivitySourceTypeJsonSchema.objects.get(
             reporting_activity_id=activity,
@@ -117,9 +117,10 @@ def build_source_type_schema(config: int, activity: int, source_type: int, repor
         st_schema['properties']['emissions']['items']['properties']['gasType']['enum'] = gas_type_enum
         st_schema['properties']['emissions']['items']['dependencies'] = gas_type_one_of
     # Add the source_type schema to the schema object being returned by this function
-    rjsf_schema['properties']['sourceTypes']['properties'][
-        str_to_camel_case(source_type_schema.source_type.name)
-    ] = st_schema
+    # rjsf_schema['properties']['sourceTypes']['properties'][
+    #     source_type_schema.source_type.json_key
+    # ] = st_schema
+    return st_schema
 
 
 # build_schema will dynamically create a form depending on the parameters passed
@@ -152,7 +153,7 @@ def build_schema(config: int, activity: int, source_types: List[str] | List[int]
         .filter(
             reporting_activity_id=activity, valid_from__lte=config, valid_to__gte=config
         )
-        .distinct('source_type__id')
+        .order_by('source_type__id').distinct('source_type__id')
     )
 
     # Except if no valid source_types are found
@@ -161,14 +162,14 @@ def build_schema(config: int, activity: int, source_types: List[str] | List[int]
     # If an activity only has one source_type, the source type is mandatory and should be added to the schema
     elif valid_source_types.count() == 1:
         rjsf_schema['properties']['sourceTypes'] = {"type": "object", "title": "Source Types", "properties": {}}
-        build_source_type_schema(
-            config, activity, int(valid_source_types[0].source_type_id), report_date, rjsf_schema, gas_type_map, methodology_map
+        rjsf_schema['properties']['sourceTypes']['properties'][valid_source_types.first().json_key] = build_source_type_schema(
+            config, activity, int(valid_source_types[0].source_type_id), report_date, gas_type_map, methodology_map
         )
 
     # If there are multiple source_types for an activity, the user may choose which ones apply. The IDs of the selected source_types are passed as a list in the parameters & we add those schemas to the activity schema.
     else:
         for s in valid_source_types:
-            rjsf_schema['properties'][str_to_camel_case(s.source_type.name)] = {
+            rjsf_schema['properties'][s.source_type.json_key] = {
                 "type": "boolean",
                 "title": s.source_type.name,
             }
@@ -182,7 +183,8 @@ def build_schema(config: int, activity: int, source_types: List[str] | List[int]
         rjsf_schema['properties']['sourceTypes'] = {"type": "object", "title": "Source Types", "properties": {}}
         # For each selected source_type, add the related schema
         for source_type in source_types:
-            build_source_type_schema(config, activity, int(source_type), report_date, rjsf_schema, gas_type_map, methodology_map)
+            st = valid_source_types.get(source_type__id = source_type)
+            rjsf_schema['properties']['sourceTypes']['properties'][st.source_type.json_key] = build_source_type_schema(config, activity, int(st.source_type.id), report_date, gas_type_map, methodology_map)
 
     # Return completed schema
     return_object = {}
