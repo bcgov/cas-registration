@@ -6,6 +6,7 @@ pytestmark = pytest.mark.django_db
 client = Client()
 pytest.endpoint = "/api/reporting/build-form-schema"
 
+
 class TestBuildFormSchema:
     def test_invalid_without_report_date(self):
         response = client.get(f'{pytest.endpoint}?activity=1')
@@ -28,7 +29,10 @@ class TestBuildFormSchema:
     def test_except_if_no_valid_source_type_schema(self):
         response = client.get(f'{pytest.endpoint}?activity=1&source_types[]=0&report_date=2024-05-01')
         assert response.status_code == 400
-        assert response.json().get('message') == "No schema found for activity_id 1 & source_type_id 0 & report_date 2024-05-01"
+        assert (
+            response.json().get('message')
+            == "No schema found for activity_id 1 & source_type_id 0 & report_date 2024-05-01"
+        )
 
     def test_returns_activity_schema(self):
         response = client.get(f'{pytest.endpoint}?activity=1&report_date=2024-05-01')
@@ -50,13 +54,34 @@ class TestBuildFormSchema:
         assert len(response_object['schema']['properties']['sourceTypes']['properties'].keys()) == 1
         source_type_key = list(response_object['schema']['properties'].keys())[0]
         # Created an array object for units
-        assert 'units' in response_object['schema']['properties']['sourceTypes']['properties'][source_type_key]['properties']
+        assert (
+            'units'
+            in response_object['schema']['properties']['sourceTypes']['properties'][source_type_key]['properties']
+        )
         # Created an array object for fuels
-        assert 'fuels' in response_object['schema']['properties']['sourceTypes']['properties'][source_type_key]['properties']['units']['items']['properties']
+        assert (
+            'fuels'
+            in response_object['schema']['properties']['sourceTypes']['properties'][source_type_key]['properties'][
+                'units'
+            ]['items']['properties']
+        )
         # Created an array object for emissions
-        assert 'emissions' in response_object['schema']['properties']['sourceTypes']['properties'][source_type_key]['properties']['units']['items']['properties']['fuels']['items']['properties']
+        assert (
+            'emissions'
+            in response_object['schema']['properties']['sourceTypes']['properties'][source_type_key]['properties'][
+                'units'
+            ]['items']['properties']['fuels']['items']['properties']
+        )
         # emissions enum has correct gas types
-        assert response_object['schema']['properties']['sourceTypes']['properties'][source_type_key]['properties']['units']['items']['properties']['fuels']['items']['properties']['emissions']['items']['properties']['gasType']['enum'] == ['CO2', 'CH4', 'N2O']
+        assert response_object['schema']['properties']['sourceTypes']['properties'][source_type_key]['properties'][
+            'units'
+        ]['items']['properties']['fuels']['items']['properties']['emissions']['items']['properties']['gasType'][
+            'enum'
+        ] == [
+            'CO2',
+            'CH4',
+            'N2O',
+        ]
 
     def test_returns_multiple_source_type_schemas(self):
         response = client.get(f'{pytest.endpoint}?activity=1&source_types[]=1&source_types[]=2&report_date=2024-05-01')

@@ -1,5 +1,5 @@
 import json
-from reporting.models import Configuration, ConfigurationElement, ActivityJsonSchema, ActivitySourceTypeJsonSchema, GasType
+from reporting.models import Configuration, ConfigurationElement, ActivityJsonSchema, ActivitySourceTypeJsonSchema
 from typing import List, Any
 
 # Helper function to dynamically set the RJSF property value of a field from a Title cased name
