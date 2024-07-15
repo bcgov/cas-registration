@@ -184,10 +184,15 @@ def build_schema(config: int, activity: int, source_types: List[str] | List[int]
         rjsf_schema['properties']['sourceTypes'] = {"type": "object", "title": "Source Types", "properties": {}}
         # For each selected source_type, add the related schema
         for source_type in source_types:
-            st = valid_source_types.get(source_type__id=source_type)
-            rjsf_schema['properties']['sourceTypes']['properties'][st.source_type.json_key] = build_source_type_schema(
-                config, activity, int(st.source_type.id), report_date, gas_type_map, methodology_map
-            )
+            try:
+                st = valid_source_types.get(source_type__id=source_type)
+                rjsf_schema['properties']['sourceTypes']['properties'][st.source_type.json_key] = build_source_type_schema(
+                    config, activity, int(st.source_type.id), report_date, gas_type_map, methodology_map
+                )
+            except:
+                raise Exception(
+                    f'No schema found for activity_id {activity} & source_type_id {source_type} & report_date {report_date}'
+                )
 
     # Return completed schema
     return_object = {}
