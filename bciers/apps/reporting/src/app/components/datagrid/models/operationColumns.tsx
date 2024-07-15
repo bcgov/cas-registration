@@ -1,4 +1,4 @@
-import { GridColDef } from "@mui/x-data-grid";
+import { GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import Button from "@mui/material/Button";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
@@ -48,8 +48,15 @@ const MoreCell: React.FC = () => {
   );
 };
 
-const ActionCell: React.FC = () => {
-  return <div>I am an action cell.</div>;
+const ActionCell = (params: GridRenderCellParams) => {
+  const reportId = params.value;
+
+  console.log(reportId);
+  if (reportId) {
+    return <a href={`/reporting/report/${reportId}`}>Continue</a>;
+  }
+
+  return <a href="/reporting/report">Start</a>;
 };
 
 const operationColumns = (): GridColDef[] => {
