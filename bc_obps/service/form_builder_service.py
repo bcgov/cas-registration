@@ -162,7 +162,7 @@ def build_schema(config: int, activity: int, source_types: List[str] | List[int]
     # If an activity only has one source_type, the source type is mandatory and should be added to the schema
     elif valid_source_types.count() == 1:
         rjsf_schema['properties']['sourceTypes'] = {"type": "object", "title": "Source Types", "properties": {}}
-        rjsf_schema['properties']['sourceTypes']['properties'][valid_source_types.first().json_key] = build_source_type_schema(
+        rjsf_schema['properties']['sourceTypes']['properties'][valid_source_types[0].source_type.json_key] = build_source_type_schema(
             config, activity, int(valid_source_types[0].source_type_id), report_date, gas_type_map, methodology_map
         )
 
