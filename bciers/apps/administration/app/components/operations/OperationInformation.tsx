@@ -20,9 +20,10 @@ const OperationForm = ({
   const router = useRouter();
 
   const handleSubmit = async (data: { formData?: OperationFormData }) => {
+    // This is not currently working, just a placeholder for Edit Operation Information PR
     const response = await actionHandler(
       "registration/v2/operations",
-      "POST",
+      "PUT",
       "",
       {
         body: JSON.stringify(data.formData),
@@ -37,6 +38,7 @@ const OperationForm = ({
 
   return (
     <SingleStepTaskListForm
+      disabled
       error={error}
       schema={schema}
       uiSchema={operationUiSchema}
