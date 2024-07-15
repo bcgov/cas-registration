@@ -44,7 +44,7 @@ We follow a service-oriented architecture, where every layer:
 
 Two types of services can be developed:
 
-- Services taht are not app-specific and can be used by any BCIERS app are deployed in the `service` django-app.
+- Services that are not app-specific and can be used by any BCIERS app are deployed in the `service` django-app.
 - App-specific services (for example, data-providers for app-specific API endpoints) should live in `<appname>/service`.
 
 ## Database access services
