@@ -23,6 +23,7 @@ ReportVersion {
 SourceType {
     BigAutoField id
     CharField name
+    CharField json_key
 }
 ReportOperation {
     BigAutoField id
@@ -63,6 +64,7 @@ ReportingField {
     BigAutoField id
     CharField field_name
     CharField field_type
+    CharField field_units
 }
 Configuration {
     BigAutoField id
