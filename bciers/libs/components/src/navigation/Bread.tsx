@@ -92,8 +92,6 @@ export default function Bread({
   function translateNumericPart(segment: string): string {
     // Check if the segment is UUID, and if so, use crumbTitle
     if (!isNaN(Number(segment)) || isValidUUID(segment)) {
-      if (paths.includes(`/operations/${segment}/facilities`))
-        return "Operation Details"; // Special case for operation details
       return crumbTitle;
     }
     return segment;

@@ -5,6 +5,7 @@ import {
 import { facilitiesSchemaLfo } from "../../data/jsonSchema/facilitiesLfo";
 import FacilitiesForm from "./FacilitiesForm";
 import { UUID } from "crypto";
+import { validate as isValidUUID } from "uuid";
 import { notFound } from "next/navigation";
 import getFacility from "./getFacility";
 import getOperation from "../operations/getOperation";
@@ -18,16 +19,17 @@ export default async function Facility({
   operationId: UUID;
 }) {
   let facilityFormData: { [key: string]: any } | { error: string } = {};
-
   if (facilityId) {
-    facilityFormData = await getFacility(facilityId);
-    if (facilityFormData?.error) {
-      return notFound();
+    if (isValidUUID(facilityId)) {
+      facilityFormData = await getFacility(facilityId);
+      if (facilityFormData?.error) {
+        // return notFound();
+      }
     }
   }
   const operation = await getOperation(operationId);
   if (operation.error) {
-    return notFound();
+    // return notFound();
   }
   const isCreating = Object.keys(facilityFormData).length === 0;
   return (
