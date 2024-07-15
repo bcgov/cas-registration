@@ -9,7 +9,14 @@ def str_to_camel_case(st: str) -> str:
 
 
 # Called by build_schema. Builds the source type schema including gas_type & methodology dependencies
-def build_source_type_schema(config: int, activity: int, source_type: int, report_date: str, gas_type_map: dict[int, str], methodology_map: dict[int, str]) -> Any:
+def build_source_type_schema(
+    config: int,
+    activity: int,
+    source_type: int,
+    report_date: str,
+    gas_type_map: dict[int, str],
+    methodology_map: dict[int, str],
+) -> Any:
     try:
         source_type_schema = ActivitySourceTypeJsonSchema.objects.get(
             reporting_activity_id=activity,
@@ -26,10 +33,7 @@ def build_source_type_schema(config: int, activity: int, source_type: int, repor
     gas_types = (
         ConfigurationElement.objects.select_related('gas_type')
         .filter(
-            reporting_activity_id=activity,
-            source_type_id=source_type,
-            valid_from__lte=config,
-            valid_to__gte=config
+            reporting_activity_id=activity, source_type_id=source_type, valid_from__lte=config, valid_to__gte=config
         )
         .distinct('gas_type__name')
     )
@@ -84,7 +88,7 @@ def build_source_type_schema(config: int, activity: int, source_type: int, repor
                 raise Exception(
                     f'No configuration found for activity_id {activity} & source_type_id {source_type} & gas_type_id {t.gas_type.id} & methodology_id {u.methodology.id} & report_date {report_date}'
                 )
-            methodology_object:Any = {"properties": {"methodology": {"enum": [u.methodology.name]}}}
+            methodology_object: Any = {"properties": {"methodology": {"enum": [u.methodology.name]}}}
             # For each field related to a methodology, add that field to the methodology object & append to the oneOf branch
             for f in methodology_fields:
                 property_field = str_to_camel_case(f.field_name)
@@ -99,7 +103,7 @@ def build_source_type_schema(config: int, activity: int, source_type: int, repor
         gas_type_one_of['gasType']['oneOf'][index]['properties']['methodology']['enum'] = methodology_enum
         gas_type_one_of['gasType']['oneOf'][index]['dependencies'] = methodology_one_of
 
-    st_schema:Any = source_type_schema.json_schema
+    st_schema: Any = source_type_schema.json_schema
     # Append valid gas types to schema as an enum on the gasType property. Uses the has_unit / has_fuel booleans to determine the depth of the emissions array.
     if source_type_schema.has_unit and source_type_schema.has_fuel:
         st_schema['properties']['units']['items']['properties']['fuels']['items']['properties']['emissions']['items'][
@@ -134,15 +138,11 @@ def build_source_type_schema(config: int, activity: int, source_type: int, repor
 def build_schema(config: int, activity: int, source_types: List[str] | List[int], report_date: str) -> str:
     # Get activity schema
     try:
-        activity_schema = (
-            ActivityJsonSchema.objects.get(
-                reporting_activity_id=activity, valid_from__lte=config, valid_to__gte=config
-            )
+        activity_schema = ActivityJsonSchema.objects.get(
+            reporting_activity_id=activity, valid_from__lte=config, valid_to__gte=config
         )
     except:
-        raise Exception(
-            f'No schema found for activity_id {activity} & report_date {report_date}'
-        )
+        raise Exception(f'No schema found for activity_id {activity} & report_date {report_date}')
     rjsf_schema = activity_schema.json_schema
     gas_type_map: dict[int, str] = {}
     methodology_map: dict[int, str] = {}
@@ -150,10 +150,9 @@ def build_schema(config: int, activity: int, source_types: List[str] | List[int]
     # Fetch valid source_type(s) for the activity
     valid_source_types = (
         ConfigurationElement.objects.select_related('source_type')
-        .filter(
-            reporting_activity_id=activity, valid_from__lte=config, valid_to__gte=config
-        )
-        .order_by('source_type__id').distinct('source_type__id')
+        .filter(reporting_activity_id=activity, valid_from__lte=config, valid_to__gte=config)
+        .order_by('source_type__id')
+        .distinct('source_type__id')
     )
 
     # Except if no valid source_types are found
@@ -162,7 +161,9 @@ def build_schema(config: int, activity: int, source_types: List[str] | List[int]
     # If an activity only has one source_type, the source type is mandatory and should be added to the schema
     elif valid_source_types.count() == 1:
         rjsf_schema['properties']['sourceTypes'] = {"type": "object", "title": "Source Types", "properties": {}}
-        rjsf_schema['properties']['sourceTypes']['properties'][valid_source_types[0].source_type.json_key] = build_source_type_schema(
+        rjsf_schema['properties']['sourceTypes']['properties'][
+            valid_source_types[0].source_type.json_key
+        ] = build_source_type_schema(
             config, activity, int(valid_source_types[0].source_type_id), report_date, gas_type_map, methodology_map
         )
 
@@ -183,8 +184,10 @@ def build_schema(config: int, activity: int, source_types: List[str] | List[int]
         rjsf_schema['properties']['sourceTypes'] = {"type": "object", "title": "Source Types", "properties": {}}
         # For each selected source_type, add the related schema
         for source_type in source_types:
-            st = valid_source_types.get(source_type__id = source_type)
-            rjsf_schema['properties']['sourceTypes']['properties'][st.source_type.json_key] = build_source_type_schema(config, activity, int(st.source_type.id), report_date, gas_type_map, methodology_map)
+            st = valid_source_types.get(source_type__id=source_type)
+            rjsf_schema['properties']['sourceTypes']['properties'][st.source_type.json_key] = build_source_type_schema(
+                config, activity, int(st.source_type.id), report_date, gas_type_map, methodology_map
+            )
 
     # Return completed schema
     return_object = {}
@@ -205,8 +208,6 @@ class FormBuilderService:
         try:
             config = Configuration.objects.get(valid_from__lte=report_date, valid_to__gte=report_date)
         except:
-            raise Exception(
-                f'No Configuration found for report_date {report_date}'
-            )
+            raise Exception(f'No Configuration found for report_date {report_date}')
         schema = build_schema(config.id, activity, source_types, report_date)
         return schema
