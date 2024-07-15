@@ -7,6 +7,7 @@ from reporting.models import Configuration, ConfigurationElement, ReportingField
 
 #### CONFIG DATA ####
 
+
 def init_configuration_element_data(apps, schema_monitor):
     '''
     Add initial data to erc.configuration_element
@@ -1096,6 +1097,7 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).reporting_fields.add(ReportingField.objects.get(field_name='Description', field_units__isnull=True))
 
+
 #### SCHEMA DATA ####
 def init_activity_schema_data(apps, schema_monitor):
     '''
@@ -1183,9 +1185,9 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-      migrations.RunPython(init_configuration_element_data, reverse_init_configuration_element_data),
-      migrations.RunPython(init_reporting_field_data, reverse_init_reporting_field_data),
-      migrations.RunPython(init_configuration_element_reporting_fields_data),
-      migrations.RunPython(init_activity_schema_data, reverse_init_activity_schema_data),
-      migrations.RunPython(init_activity_source_type_schema_data, reverse_init_activity_source_type_schema_data)
+        migrations.RunPython(init_configuration_element_data, reverse_init_configuration_element_data),
+        migrations.RunPython(init_reporting_field_data, reverse_init_reporting_field_data),
+        migrations.RunPython(init_configuration_element_reporting_fields_data),
+        migrations.RunPython(init_activity_schema_data, reverse_init_activity_schema_data),
+        migrations.RunPython(init_activity_source_type_schema_data, reverse_init_activity_source_type_schema_data),
     ]

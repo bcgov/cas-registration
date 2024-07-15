@@ -1,6 +1,5 @@
 from common.models import BaseModel
 from django.db import models
-from typing import Tuple
 
 
 class ReportingField(BaseModel):

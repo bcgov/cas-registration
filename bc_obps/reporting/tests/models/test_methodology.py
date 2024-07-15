@@ -22,7 +22,7 @@ class TestInitialData(TestCase):
                 'Inventory',
                 'Input/output',
                 'Heat Input/Default EF',
-                'Measured EF'
+                'Measured EF',
             ]
         )
         existing_methodologies = sorted(list(Methodology.objects.values_list('name', flat=True)))
