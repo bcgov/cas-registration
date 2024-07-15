@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import DataGrid from "@bciers/components/datagrid/DataGrid";
 import { ContactRow } from "./types";
 import HeaderSearchCell from "@bciers/components/datagrid/cells/HeaderSearchCell";
-import ActionCellFactory from "../datagrid/ActionCellFactory";
+import ActionCellFactory from "@bciers/components/datagrid/cells/ActionCellFactory";
 import fetchContactsPageData from "./fetchContactsPageData";
 import contactColumns from "../datagrid/models/contacts/contactColumns";
 import contactGroupColumns from "../datagrid/models/contacts/contactGroupColumns";

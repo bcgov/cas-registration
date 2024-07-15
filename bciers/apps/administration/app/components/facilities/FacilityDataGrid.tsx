@@ -7,7 +7,7 @@ import facilityGroupColumns from "../datagrid/models/facilities/facilityGroupCol
 import { FacilityRow } from "./types";
 import createFetchFacilitiesPageData from "./createFetchFacilitiesPageData";
 import HeaderSearchCell from "@bciers/components/datagrid/cells/HeaderSearchCell";
-import ActionCellFactory from "../datagrid/ActionCellFactory";
+import ActionCellFactory from "@bciers/components/datagrid/cells/ActionCellFactory";
 import { GridRenderCellParams } from "@mui/x-data-grid";
 
 const FacilitiesActionCell = ActionCellFactory({

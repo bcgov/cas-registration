@@ -7,7 +7,7 @@ import HeaderSearchCell from "@bciers/components/datagrid/cells/HeaderSearchCell
 import operationColumns from "../datagrid/models/operationColumns";
 import operationGroupColumns from "../datagrid/models/operationGroupColumns";
 import { OperationRow } from "./types";
-import ActionCellFactory from "../datagrid/ActionCellFactory";
+import ActionCellFactory from "@bciers/components/datagrid/cells/ActionCellFactory";
 import fetchOperationsPageData from "./fetchOperationsPageData";
 import { GridRenderCellParams } from "@mui/x-data-grid";
 
