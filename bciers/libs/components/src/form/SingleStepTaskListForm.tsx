@@ -168,7 +168,7 @@ const SingleStepTaskListForm = ({
           onChange={handleFormChange}
           onError={handleError}
           onSubmit={submitHandler}
-          liveValidate={isLiveValidate}
+          liveValidate={isLiveValidate && !isFormDisabled}
         >
           <div className="min-h-6">
             {error && <Alert severity="error">{error}</Alert>}
