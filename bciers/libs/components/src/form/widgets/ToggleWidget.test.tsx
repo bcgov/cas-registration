@@ -4,7 +4,7 @@ import FormBase from "@bciers/components/form/FormBase";
 
 const toggleFieldLabel = "Toggle test field";
 
-const toggleFieldSchema = {
+const toggleFieldSchema: RJSFSchema = {
   type: "object",
   required: ["toggleTestField"],
   properties: {
@@ -13,7 +13,7 @@ const toggleFieldSchema = {
       title: toggleFieldLabel,
     },
   },
-} as RJSFSchema;
+};
 
 const toggleFieldUiSchema = {
   checkboxTestField: {
