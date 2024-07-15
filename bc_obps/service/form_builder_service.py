@@ -24,7 +24,7 @@ def build_source_type_schema(
             valid_from__lte=config,
             valid_to__gte=config,
         )
-    except:
+    except Exception:
         raise Exception(
             f'No schema found for activity_id {activity} & source_type_id {source_type} & report_date {report_date}'
         )
@@ -84,7 +84,7 @@ def build_source_type_schema(
                     )
                     .reporting_fields.all()
                 )
-            except:
+            except Exception:
                 raise Exception(
                     f'No configuration found for activity_id {activity} & source_type_id {source_type} & gas_type_id {t.gas_type.id} & methodology_id {u.methodology.id} & report_date {report_date}'
                 )
@@ -141,7 +141,7 @@ def build_schema(config: int, activity: int, source_types: List[str] | List[int]
         activity_schema = ActivityJsonSchema.objects.get(
             reporting_activity_id=activity, valid_from__lte=config, valid_to__gte=config
         )
-    except:
+    except Exception:
         raise Exception(f'No schema found for activity_id {activity} & report_date {report_date}')
     rjsf_schema = activity_schema.json_schema
     gas_type_map: dict[int, str] = {}
@@ -191,7 +191,7 @@ def build_schema(config: int, activity: int, source_types: List[str] | List[int]
                 ] = build_source_type_schema(
                     config, activity, int(st.source_type.id), report_date, gas_type_map, methodology_map
                 )
-            except:
+            except Exception:
                 raise Exception(
                     f'No schema found for activity_id {activity} & source_type_id {source_type} & report_date {report_date}'
                 )
@@ -214,7 +214,7 @@ class FormBuilderService:
         # Get config objects
         try:
             config = Configuration.objects.get(valid_from__lte=report_date, valid_to__gte=report_date)
-        except:
+        except Exception:
             raise Exception(f'No Configuration found for report_date {report_date}')
         schema = build_schema(config.id, activity, source_types, report_date)
         return schema
