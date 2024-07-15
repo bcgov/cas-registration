@@ -4,22 +4,27 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import SingleStepTaskListForm from "@bciers/components/form/SingleStepTaskListForm";
 import { RJSFSchema } from "@rjsf/utils";
-import { operationUiSchema } from "../../data/jsonSchema/operation";
-import { OperationFormData } from "./types";
+import { operationUiSchema } from "../../data/jsonSchema/operationInformation";
+import {
+  OperationInformationFormData,
+  OperationInformationPartialFormData,
+} from "./types";
 import { actionHandler } from "@bciers/actions";
 
-const OperationForm = ({
+const OperationInformationForm = ({
   formData,
   schema,
 }: {
-  formData: OperationFormData;
+  formData: OperationInformationPartialFormData;
   schema: RJSFSchema;
 }) => {
   const [error, setError] = useState(undefined);
 
   const router = useRouter();
 
-  const handleSubmit = async (data: { formData?: OperationFormData }) => {
+  const handleSubmit = async (data: {
+    formData?: OperationInformationFormData;
+  }) => {
     // This is not currently working, just a placeholder for Edit Operation Information PR
     const response = await actionHandler(
       "registration/v2/operations",
@@ -49,4 +54,4 @@ const OperationForm = ({
   );
 };
 
-export default OperationForm;
+export default OperationInformationForm;

@@ -211,7 +211,7 @@ const section3Schema: RJSFSchema = {
   },
 };
 
-export const operationSchema: RJSFSchema = {
+export const operationInformationSchema: RJSFSchema = {
   type: "object",
   properties: {
     section1: section1Schema,
