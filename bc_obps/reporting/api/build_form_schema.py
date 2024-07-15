@@ -1,7 +1,7 @@
 from service.form_builder_service import FormBuilderService
 from .router import router
 from registration.decorators import handle_http_errors
-from django.http import HttpResponse, HttpRequest
+from django.http import HttpRequest
 from typing import Tuple
 
 from registration.schema.generic import Message
