@@ -37,7 +37,6 @@ const OperationForm = ({
 
   return (
     <SingleStepTaskListForm
-      disabled
       error={error}
       schema={schema}
       uiSchema={operationUiSchema}
