@@ -186,7 +186,9 @@ def build_schema(config: int, activity: int, source_types: List[str] | List[int]
         for source_type in source_types:
             try:
                 st = valid_source_types.get(source_type__id=source_type)
-                rjsf_schema['properties']['sourceTypes']['properties'][st.source_type.json_key] = build_source_type_schema(
+                rjsf_schema['properties']['sourceTypes']['properties'][
+                    st.source_type.json_key
+                ] = build_source_type_schema(
                     config, activity, int(st.source_type.id), report_date, gas_type_map, methodology_map
                 )
             except:
