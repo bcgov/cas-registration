@@ -6,14 +6,31 @@ from django.apps import apps
 
 
 class Command(BaseCommand):
-    help = 'Run migrations up to the latest migration file for predefined apps dynamically'
+    help = 'Run default migrations for all apps except reporting, then run custom migrations for reporting app'
 
     def handle(self, *args, **options):
-        # List of predefined apps
-        apps_to_migrate = ['common', 'registration', 'reporting']
+        # Run the default migrate command for all apps except the reporting app
+        self.stdout.write('Running default migrations for all apps except reporting...')
 
-        for app_label in apps_to_migrate:
-            self.migrate_app_to_latest(app_label)
+        # Get all installed apps
+        all_apps = [app.label for app in apps.get_app_configs()]
+        apps_to_run_default_migrate = [app for app in all_apps if app != 'reporting']
+
+        # Run migrate for each app except reporting
+        for app_label in apps_to_run_default_migrate:
+            self.stdout.write(f'Running migrations for {app_label}...')
+            # Wrap in try/except block to handle errors for apps with no migrations and continue with other apps
+            try:
+                call_command('migrate', app_label)
+                self.stdout.write(self.style.SUCCESS(f'Successfully migrated {app_label}.'))
+            except Exception as e:
+                self.stdout.write(self.style.ERROR(f'Error migrating {app_label}: {e}'))
+                continue
+
+        self.stdout.write(self.style.SUCCESS('Default migrations completed.'))
+
+        # Run custom migrations for the reporting app
+        self.migrate_app_to_latest('reporting')
 
     def migrate_app_to_latest(self, app_label):
         """
@@ -35,7 +52,7 @@ class Command(BaseCommand):
         latest_migration = self.get_latest_migration_file(migration_files)
         latest_migration_name = os.path.splitext(latest_migration)[0]
 
-        self.stdout.write(f'Running migrations for {app_label} up to {latest_migration_name}')
+        self.stdout.write(f'Running custom migrations for {app_label} up to {latest_migration_name}')
         call_command('migrate', app_label, latest_migration_name)
         self.stdout.write(self.style.SUCCESS(f'Successfully migrated {app_label} to {latest_migration_name}'))
 
