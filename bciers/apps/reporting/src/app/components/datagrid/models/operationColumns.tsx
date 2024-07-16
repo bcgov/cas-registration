@@ -72,12 +72,19 @@ const ActionCell = (params: GridRenderCellParams) => {
   const reportingYear = 2024;
 
   if (reportId) {
-    return <a href={`/reporting/report/${reportId}`}>Continue</a>;
+    return (
+      <Button color="primary" href={`/reporting/report/${reportId}`}>
+        Continue
+      </Button>
+    );
   }
 
   const OperationId = params.row.id;
   return (
-    <Button onClick={() => handleStartReport(OperationId, reportingYear)}>
+    <Button
+      color="primary"
+      onClick={() => handleStartReport(OperationId, reportingYear)}
+    >
       Start
     </Button>
   );
