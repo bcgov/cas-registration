@@ -2,8 +2,6 @@
 
 from django.db import migrations
 import json
-from registration.models import ReportingActivity
-from reporting.models import Configuration, ConfigurationElement, ReportingField, SourceType, GasType, Methodology
 
 #### CONFIG DATA ####
 
@@ -14,6 +12,11 @@ def init_configuration_element_data(apps, schema_monitor):
     '''
 
     ConfigurationElement = apps.get_model('reporting', 'ConfigurationElement')
+    ReportingActivity = apps.get_model('registration', 'ReportingActivity')
+    SourceType = apps.get_model('reporting', 'SourceType')
+    GasType = apps.get_model('reporting', 'GasType')
+    Methodology = apps.get_model('reporting', 'Methodology')
+    Configuration = apps.get_model('reporting', 'Configuration')
     # General stationary combustion of fuel or waste with production of useful energy
     ConfigurationElement.objects.bulk_create(
         [
@@ -516,8 +519,9 @@ def reverse_init_configuration_element_data(apps, schema_monitor):
     '''
     Remove initial data from erc.configuration_element
     '''
-    ASTBS = apps.get_model('reporting', 'ActivitySourceTypeBaseSchema')
-    ASTBS.objects.filter(
+    Configuration = apps.get_model('reporting', 'Configuration')
+    ConfigurationElement = apps.get_model('reporting', 'ConfigurationElement')
+    ConfigurationElement.objects.filter(
         valid_from_id=Configuration.objects.get(valid_from='2024-01-01').id,
         valid_to_id=Configuration.objects.get(valid_to='2099-12-31').id,
     ).delete()
@@ -603,6 +607,13 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     '''
     Add initial data to erc.activity_source_type_base_schema
     '''
+    ConfigurationElement = apps.get_model('reporting', 'ConfigurationElement')
+    ReportingActivity = apps.get_model('registration', 'ReportingActivity')
+    SourceType = apps.get_model('reporting', 'SourceType')
+    GasType = apps.get_model('reporting', 'GasType')
+    Methodology = apps.get_model('reporting', 'Methodology')
+    Configuration = apps.get_model('reporting', 'Configuration')
+    ReportingField = apps.get_model('reporting', 'ReportingField')
     # CO2 - Default HHV/Default EF - Fuel Default High Heating Value
     ConfigurationElement.objects.get(
         reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id,
@@ -1098,6 +1109,434 @@ def init_configuration_element_reporting_fields_data(apps, schema_monitor):
     ).reporting_fields.add(ReportingField.objects.get(field_name='Description', field_units__isnull=True))
 
 
+def reverse_init_configuration_element_reporting_fields_data(apps, schema_monitor):
+    '''
+    Remove data from erc.activity_source_type_base_schema
+    '''
+    ConfigurationElement = apps.get_model('reporting', 'ConfigurationElement')
+    ReportingActivity = apps.get_model('registration', 'ReportingActivity')
+    SourceType = apps.get_model('reporting', 'SourceType')
+    GasType = apps.get_model('reporting', 'GasType')
+    Methodology = apps.get_model('reporting', 'Methodology')
+    Configuration = apps.get_model('reporting', 'Configuration')
+    ReportingField = apps.get_model('reporting', 'ReportingField')
+
+    # Define the combinations to be removed
+    combinations = [
+        (
+            'General stationary combustion',
+            'General stationary combustion of fuel or waste with production of useful energy',
+            'CO2',
+            'Default HHV/Default EF',
+            '2024-01-01',
+            '2099-12-31',
+            'Fuel Default High Heating Value',
+            None,
+        ),
+        (
+            'General stationary combustion',
+            'General stationary combustion of fuel or waste with production of useful energy',
+            'CO2',
+            'Default HHV/Default EF',
+            '2024-01-01',
+            '2099-12-31',
+            'Unit-Fuel-CO2 Default Emission Factor',
+            'kg/GJ',
+        ),
+        (
+            'General stationary combustion',
+            'General stationary combustion of fuel or waste with production of useful energy',
+            'CO2',
+            'Default EF',
+            '2024-01-01',
+            '2099-12-31',
+            'Unit-Fuel-CO2 Default Emission Factor',
+            'kg/fuel units',
+        ),
+        (
+            'General stationary combustion',
+            'General stationary combustion of fuel or waste with production of useful energy',
+            'CO2',
+            'Measured HHV/Default EF',
+            '2024-01-01',
+            '2099-12-31',
+            'Fuel Annual Weighted Average High Heating Value',
+            None,
+        ),
+        (
+            'General stationary combustion',
+            'General stationary combustion of fuel or waste with production of useful energy',
+            'CO2',
+            'Measured HHV/Default EF',
+            '2024-01-01',
+            '2099-12-31',
+            'Unit-Fuel-CO2 Default Emission Factor',
+            'kg/GJ',
+        ),
+        (
+            'General stationary combustion',
+            'General stationary combustion of fuel or waste with production of useful energy',
+            'CO2',
+            'Measured Steam/Default EF',
+            '2024-01-01',
+            '2099-12-31',
+            'Unit-Fuel Annual Steam Generated',
+            None,
+        ),
+        (
+            'General stationary combustion',
+            'General stationary combustion of fuel or waste with production of useful energy',
+            'CO2',
+            'Measured Steam/Default EF',
+            '2024-01-01',
+            '2099-12-31',
+            'Boiler Ratio',
+            None,
+        ),
+        (
+            'General stationary combustion',
+            'General stationary combustion of fuel or waste with production of useful energy',
+            'CO2',
+            'Measured Steam/Default EF',
+            '2024-01-01',
+            '2099-12-31',
+            'Unit-Fuel-CO2 Emission Factor',
+            'kg/GJ',
+        ),
+        (
+            'General stationary combustion',
+            'General stationary combustion of fuel or waste with production of useful energy',
+            'CO2',
+            'Measured CC',
+            '2024-01-01',
+            '2099-12-31',
+            'Fuel Annual Weighted Average Carbon Content (weight fraction)',
+            None,
+        ),
+        (
+            'General stationary combustion',
+            'General stationary combustion of fuel or waste with production of useful energy',
+            'CO2',
+            'Measured Steam/Measured EF',
+            '2024-01-01',
+            '2099-12-31',
+            'Unit-Fuel Annual Steam Generated',
+            None,
+        ),
+        (
+            'General stationary combustion',
+            'General stationary combustion of fuel or waste with production of useful energy',
+            'CO2',
+            'Measured Steam/Measured EF',
+            '2024-01-01',
+            '2099-12-31',
+            'Unit-Fuel-CO2 Measured Emission Factor',
+            None,
+        ),
+        (
+            'General stationary combustion',
+            'General stationary combustion of fuel or waste with production of useful energy',
+            'CO2',
+            'Alternative Parameter Measurement',
+            '2024-01-01',
+            '2099-12-31',
+            'Description',
+            None,
+        ),
+        (
+            'General stationary combustion',
+            'General stationary combustion of fuel or waste with production of useful energy',
+            'CO2',
+            'Replacement Methodology',
+            '2024-01-01',
+            '2099-12-31',
+            'Description',
+            None,
+        ),
+        (
+            'General stationary combustion',
+            'General stationary combustion of fuel or waste with production of useful energy',
+            'CH4',
+            'Default HHV/Default EF',
+            '2024-01-01',
+            '2099-12-31',
+            'Fuel Default High Heating Value',
+            None,
+        ),
+        (
+            'General stationary combustion',
+            'General stationary combustion of fuel or waste with production of useful energy',
+            'CH4',
+            'Default HHV/Default EF',
+            '2024-01-01',
+            '2099-12-31',
+            'Unit-Fuel-CH4 Default Emission Factor',
+            'kg/GJ',
+        ),
+        (
+            'General stationary combustion',
+            'General stationary combustion of fuel or waste with production of useful energy',
+            'CH4',
+            'Default EF',
+            '2024-01-01',
+            '2099-12-31',
+            'Unit-Fuel-CH4 Default Emission Factor',
+            'kg/fuel units',
+        ),
+        (
+            'General stationary combustion',
+            'General stationary combustion of fuel or waste with production of useful energy',
+            'CH4',
+            'Measured HHV/Default EF',
+            '2024-01-01',
+            '2099-12-31',
+            'Fuel Annual Weighted Average High Heating Value',
+            None,
+        ),
+        (
+            'General stationary combustion',
+            'General stationary combustion of fuel or waste with production of useful energy',
+            'CH4',
+            'Measured HHV/Default EF',
+            '2024-01-01',
+            '2099-12-31',
+            'Unit-Fuel-CH4 Default Emission Factor',
+            'kg/GJ',
+        ),
+        (
+            'General stationary combustion',
+            'General stationary combustion of fuel or waste with production of useful energy',
+            'CH4',
+            'Measured EF',
+            '2024-01-01',
+            '2099-12-31',
+            'Unit-Fuel-CH4 Measured Emission Factor',
+            'kg/fuel units',
+        ),
+        (
+            'General stationary combustion',
+            'General stationary combustion of fuel or waste with production of useful energy',
+            'CH4',
+            'Measured Steam/Default EF',
+            '2024-01-01',
+            '2099-12-31',
+            'Unit-Fuel Annual Steam Generated',
+            None,
+        ),
+        (
+            'General stationary combustion',
+            'General stationary combustion of fuel or waste with production of useful energy',
+            'CH4',
+            'Measured Steam/Default EF',
+            '2024-01-01',
+            '2099-12-31',
+            'Boiler Ratio',
+            None,
+        ),
+        (
+            'General stationary combustion',
+            'General stationary combustion of fuel or waste with production of useful energy',
+            'CH4',
+            'Measured Steam/Default EF',
+            '2024-01-01',
+            '2099-12-31',
+            'Unit-Fuel-CH4 Default Emission Factor',
+            'kg/GJ',
+        ),
+        (
+            'General stationary combustion',
+            'General stationary combustion of fuel or waste with production of useful energy',
+            'CH4',
+            'Heat Input/Default EF',
+            '2024-01-01',
+            '2099-12-31',
+            'Unit-Fuel Heat Input',
+            None,
+        ),
+        (
+            'General stationary combustion',
+            'General stationary combustion of fuel or waste with production of useful energy',
+            'CH4',
+            'Heat Input/Default EF',
+            '2024-01-01',
+            '2099-12-31',
+            'Unit-Fuel-CH4 Default Emission Factor',
+            'kg/GJ',
+        ),
+        (
+            'General stationary combustion',
+            'General stationary combustion of fuel or waste with production of useful energy',
+            'CH4',
+            'Alternative Parameter Measurement',
+            '2024-01-01',
+            '2099-12-31',
+            'Description',
+            None,
+        ),
+        (
+            'General stationary combustion',
+            'General stationary combustion of fuel or waste with production of useful energy',
+            'CH4',
+            'Replacement Methodology',
+            '2024-01-01',
+            '2099-12-31',
+            'Description',
+            None,
+        ),
+        (
+            'General stationary combustion',
+            'General stationary combustion of fuel or waste with production of useful energy',
+            'N2O',
+            'Default HHV/Default EF',
+            '2024-01-01',
+            '2099-12-31',
+            'Fuel Default High Heating Value',
+            None,
+        ),
+        (
+            'General stationary combustion',
+            'General stationary combustion of fuel or waste with production of useful energy',
+            'N2O',
+            'Default HHV/Default EF',
+            '2024-01-01',
+            '2099-12-31',
+            'Unit-Fuel-N2O Default Emission Factor',
+            'kg/GJ',
+        ),
+        (
+            'General stationary combustion',
+            'General stationary combustion of fuel or waste with production of useful energy',
+            'N2O',
+            'Default EF',
+            '2024-01-01',
+            '2099-12-31',
+            'Unit-Fuel-N2O Default Emission Factor',
+            'kg/fuel units',
+        ),
+        (
+            'General stationary combustion',
+            'General stationary combustion of fuel or waste with production of useful energy',
+            'N2O',
+            'Measured HHV/Default EF',
+            '2024-01-01',
+            '2099-12-31',
+            'Fuel Annual Weighted Average High Heating Value',
+            None,
+        ),
+        (
+            'General stationary combustion',
+            'General stationary combustion of fuel or waste with production of useful energy',
+            'N2O',
+            'Measured HHV/Default EF',
+            '2024-01-01',
+            '2099-12-31',
+            'Unit-Fuel-N2O Default Emission Factor',
+            'kg/GJ',
+        ),
+        (
+            'General stationary combustion',
+            'General stationary combustion of fuel or waste with production of useful energy',
+            'N2O',
+            'Measured EF',
+            '2024-01-01',
+            '2099-12-31',
+            'Unit-Fuel-N2O Measured Emission Factor',
+            'kg/fuel units',
+        ),
+        (
+            'General stationary combustion',
+            'General stationary combustion of fuel or waste with production of useful energy',
+            'N2O',
+            'Measured Steam/Default EF',
+            '2024-01-01',
+            '2099-12-31',
+            'Unit-Fuel Annual Steam Generated',
+            None,
+        ),
+        (
+            'General stationary combustion',
+            'General stationary combustion of fuel or waste with production of useful energy',
+            'N2O',
+            'Measured Steam/Default EF',
+            '2024-01-01',
+            '2099-12-31',
+            'Boiler Ratio',
+            None,
+        ),
+        (
+            'General stationary combustion',
+            'General stationary combustion of fuel or waste with production of useful energy',
+            'N2O',
+            'Measured Steam/Default EF',
+            '2024-01-01',
+            '2099-12-31',
+            'Unit-Fuel-N2O Default Emission Factor',
+            'kg/GJ',
+        ),
+        (
+            'General stationary combustion',
+            'General stationary combustion of fuel or waste with production of useful energy',
+            'N2O',
+            'Heat Input/Default EF',
+            '2024-01-01',
+            '2099-12-31',
+            'Unit-Fuel Heat Input',
+            None,
+        ),
+        (
+            'General stationary combustion',
+            'General stationary combustion of fuel or waste with production of useful energy',
+            'N2O',
+            'Heat Input/Default EF',
+            '2024-01-01',
+            '2099-12-31',
+            'Unit-Fuel-N2O Default Emission Factor',
+            'kg/GJ',
+        ),
+        (
+            'General stationary combustion',
+            'General stationary combustion of fuel or waste with production of useful energy',
+            'N2O',
+            'Alternative Parameter Measurement',
+            '2024-01-01',
+            '2099-12-31',
+            'Description',
+            None,
+        ),
+        (
+            'General stationary combustion',
+            'General stationary combustion of fuel or waste with production of useful energy',
+            'N2O',
+            'Replacement Methodology',
+            '2024-01-01',
+            '2099-12-31',
+            'Description',
+            None,
+        ),
+    ]
+
+    for comb in combinations:
+        (
+            reporting_activity_name,
+            source_type_name,
+            gas_type_formula,
+            methodology_name,
+            valid_from,
+            valid_to,
+            field_name,
+            field_units,
+        ) = comb
+
+        ConfigurationElement.objects.get(
+            reporting_activity_id=ReportingActivity.objects.get(name=reporting_activity_name).id,
+            source_type_id=SourceType.objects.get(name=source_type_name).id,
+            gas_type_id=GasType.objects.get(chemical_formula=gas_type_formula).id,
+            methodology_id=Methodology.objects.get(name=methodology_name).id,
+            valid_from_id=Configuration.objects.get(valid_from=valid_from).id,
+            valid_to_id=Configuration.objects.get(valid_to=valid_to).id,
+        ).reporting_fields.remove(ReportingField.objects.get(field_name=field_name, field_units=field_units))
+
+
 #### SCHEMA DATA ####
 def init_activity_schema_data(apps, schema_monitor):
     '''
@@ -1111,6 +1550,8 @@ def init_activity_schema_data(apps, schema_monitor):
         schema = json.load(gsc_st1)
 
     ActivitySchema = apps.get_model('reporting', 'ActivityJsonSchema')
+    ReportingActivity = apps.get_model('registration', 'ReportingActivity')
+    Configuration = apps.get_model('reporting', 'Configuration')
     ActivitySchema.objects.create(
         reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id,
         json_schema=schema,
@@ -1124,6 +1565,7 @@ def reverse_init_activity_schema_data(apps, schema_monitor):
     Remove initial data from erc.base_schema
     '''
     ActivitySchema = apps.get_model('reporting', 'ActivityJsonSchema')
+    ReportingActivity = apps.get_model('registration', 'ReportingActivity')
     ActivitySchema.objects.filter(
         reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id
     ).delete()
@@ -1144,6 +1586,9 @@ def init_activity_source_type_schema_data(apps, schema_monitor):
         schema2 = json.load(gsc_st2)
 
     ActivitySourceTypeSchema = apps.get_model('reporting', 'ActivitySourceTypeJsonSchema')
+    ReportingActivity = apps.get_model('registration', 'ReportingActivity')
+    SourceType = apps.get_model('reporting', 'SourceType')
+    Configuration = apps.get_model('reporting', 'Configuration')
     ActivitySourceTypeSchema.objects.bulk_create(
         [
             ActivitySourceTypeSchema(
@@ -1173,8 +1618,9 @@ def reverse_init_activity_source_type_schema_data(apps, schema_monitor):
     Remove initial data from erc.base_schema
     '''
     ActivitySourceTypeJsonSchema = apps.get_model('reporting', 'ActivitySourceTypeJsonSchema')
+    ReportingActivity = apps.get_model('registration', 'ReportingActivity')
     ActivitySourceTypeJsonSchema.objects.filter(
-        reporting_activity_id=ActivitySourceTypeJsonSchema.objects.get(name='General stationary combustion').id
+        reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id
     ).delete()
 
 
@@ -1187,7 +1633,9 @@ class Migration(migrations.Migration):
     operations = [
         migrations.RunPython(init_configuration_element_data, reverse_init_configuration_element_data),
         migrations.RunPython(init_reporting_field_data, reverse_init_reporting_field_data),
-        migrations.RunPython(init_configuration_element_reporting_fields_data),
+        migrations.RunPython(
+            init_configuration_element_reporting_fields_data, reverse_init_configuration_element_reporting_fields_data
+        ),
         migrations.RunPython(init_activity_schema_data, reverse_init_activity_schema_data),
         migrations.RunPython(init_activity_source_type_schema_data, reverse_init_activity_source_type_schema_data),
     ]
