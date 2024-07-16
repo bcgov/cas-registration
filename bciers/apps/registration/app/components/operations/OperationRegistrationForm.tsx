@@ -50,6 +50,8 @@ const OperationRegistrationForm = ({
       baseUrl={`/operation/${operation}`}
       cancelUrl="/"
       schema={schema}
+      // Use showSubmissionStep prop or use actual form page?
+      showSubmissionStep
       uiSchema={operationRegistrationUiSchema}
       formData={formData}
       error={error}
