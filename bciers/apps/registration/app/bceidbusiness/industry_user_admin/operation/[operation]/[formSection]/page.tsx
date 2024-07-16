@@ -4,9 +4,17 @@ import { UUID } from "crypto";
 
 export default function Page({
   params,
+  searchParams,
 }: {
   params: Readonly<{ operation: UUID | "create"; formSection: string }>;
+  searchParams: any;
 }) {
-  const operationId = params.operation;
-  return <OperationRegistration operationId={operationId} />;
+  const { operation, formSection } = params;
+  return (
+    <OperationRegistration
+      formSection={parseInt(formSection)}
+      operation={operation}
+      searchParams={searchParams}
+    />
+  );
 }

@@ -5,6 +5,11 @@ export interface FacilityRow {
   type: string;
 }
 
+export interface FacilityInitialData {
+  rows: FacilityRow[];
+  row_count: number;
+}
+
 export interface FacilitiesSearchParams {
   [key: string]: string | number | undefined;
   bcghg_id?: string;
