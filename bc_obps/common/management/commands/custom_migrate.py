@@ -9,6 +9,12 @@ class Command(BaseCommand):
     help = 'Run default migrations for all apps except reporting, then run custom migrations for reporting app'
 
     def handle(self, *args, **options):
+        # Only running the custom command in the test and production environments
+        # Otherwise, run the default migrate command for all apps
+        if os.environ.get('ENVIRONMENT') not in ['test', 'prod']:
+            self.stdout.write('Running default migrate command for all apps...')
+            call_command('migrate')
+            return
         # Run the default migrate command for all apps except the reporting app
         self.stdout.write('Running default migrations for all apps except reporting...')
 
