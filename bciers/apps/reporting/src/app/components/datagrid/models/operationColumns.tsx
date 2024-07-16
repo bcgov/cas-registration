@@ -4,6 +4,7 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import * as React from "react";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+import { actionHandler } from "@bciers/actions";
 
 export const OPERATOR_COLUMN_INDEX = 1;
 
@@ -48,15 +49,38 @@ const MoreCell: React.FC = () => {
   );
 };
 
+const handleStartReport = async (
+  operationId: string,
+  reportingYear: number,
+) => {
+  try {
+    const reportId = await actionHandler("reporting/reports", "POST", "", {
+      body: JSON.stringify({
+        operation_id: operationId,
+        reporting_year: reportingYear,
+      }),
+    });
+
+    return reportId;
+  } catch (error) {
+    throw error;
+  }
+};
+
 const ActionCell = (params: GridRenderCellParams) => {
   const reportId = params.value;
+  const reportingYear = 2024;
 
-  console.log(reportId);
   if (reportId) {
     return <a href={`/reporting/report/${reportId}`}>Continue</a>;
   }
 
-  return <a href="/reporting/report">Start</a>;
+  const OperationId = params.row.id;
+  return (
+    <Button onClick={() => handleStartReport(OperationId, reportingYear)}>
+      Start
+    </Button>
+  );
 };
 
 const operationColumns = (): GridColDef[] => {
@@ -68,9 +92,9 @@ const operationColumns = (): GridColDef[] => {
       width: 560,
     },
     {
-      field: "actions",
+      field: "report_id",
       headerName: "Actions",
-      renderCell: () => <ActionCell />,
+      renderCell: ActionCell,
       sortable: false,
       width: 120,
     },
