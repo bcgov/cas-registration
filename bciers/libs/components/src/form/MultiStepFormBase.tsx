@@ -121,7 +121,9 @@ const MultiStepFormBase = ({
         formData={formData}
         setErrorReset={setErrorReset}
       >
-        {error && <Alert severity="error">{error}</Alert>}
+        <div className="min-h-[48px] box-border">
+          {error && <Alert severity="error">{error}</Alert>}
+        </div>
         <MultiStepButtons
           disabled={isDisabled}
           isSubmitting={isSubmitting}

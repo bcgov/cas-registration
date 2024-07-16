@@ -38,6 +38,8 @@ const OperationRegistrationForm = ({ formData, schema }: Readonly<Props>) => {
       baseUrl={`operation/${operationId}`}
       cancelUrl="/"
       schema={schema}
+      // Use showSubmissionStep prop or use actual form page?
+      showSubmissionStep
       uiSchema={operationRegistrationUiSchema}
       formData={formData}
       error={error}
