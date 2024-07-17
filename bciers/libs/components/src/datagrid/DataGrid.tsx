@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useEffect, useState } from "react";
-import { usePathname, useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import debounce from "lodash.debounce";
 import {
   DataGrid as MuiGrid,
@@ -64,8 +64,6 @@ const DataGrid: React.FC<Props> = ({
   const [loading, setLoading] = useState(false);
   const [isComponentMounted, setIsComponentMounted] = useState(false);
   const searchParams = useSearchParams();
-  const pathname = usePathname();
-  // const { replace } = useRouter();
   const isRowsEmpty = rows.length === 0;
 
   useEffect(() => {
@@ -97,52 +95,48 @@ const DataGrid: React.FC<Props> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
 
-  const handleSortModelChange = useMemo(
-    () => (newSortModel: GridSortItem[]) => {
-      if (!isComponentMounted) return;
-      const params = new URLSearchParams(searchParams);
+  const handleSortModelChange = (newSortModel: GridSortItem[]) => {
+    if (!isComponentMounted) return;
+    // window.location.pathname includes `/registration` unlike usePathname
+    const pathName = window.location.pathname;
+    const params = new URLSearchParams(searchParams);
 
-      const sortField = newSortModel[0]?.field;
+    const sortField = newSortModel[0]?.field;
 
-      if (sortField) {
-        // Set the sort field and order in the URL
-        params.set("sort_field", sortField);
-        params.set(
-          "sort_order",
-          newSortModel[0].sort === "asc" ? "asc" : "desc",
-        );
-      } else {
-        // Remove the sort field and order from the URL
-        params.delete("sort_field");
-        params.delete("sort_order");
-      }
+    if (sortField) {
+      // Set the sort field and order in the URL
+      params.set("sort_field", sortField);
+      params.set("sort_order", newSortModel[0].sort === "asc" ? "asc" : "desc");
+    } else {
+      // Remove the sort field and order from the URL
+      params.delete("sort_field");
+      params.delete("sort_order");
+    }
 
-      // Update the URL with the new sort field and order
-      // replace(`${pathname}?${params.toString()}`);
-      // Shallow routing is not avilalble in nextjs app router so using window.history.replaceState
-      // However, this doesn't include the /registration path
-      window.history.replaceState({}, "", `${pathname}?${params.toString()}`);
-    },
-    [searchParams, isComponentMounted],
-  );
+    // Update the URL with the new sort field and order
+    // replace(`${pathname}?${params.toString()}`);
+    // Shallow routing is not avilalble in nextjs app router so using window.history.replaceState
+    window.history.replaceState({}, "", `${pathName}?${params.toString()}`);
+  };
 
-  const handlePaginationModelChange = useMemo(
-    () => (newPaginationModel: { page: number; pageSize: number }) => {
-      if (!isComponentMounted) return;
-      const params = new URLSearchParams(searchParams);
-      const newPageNumber = newPaginationModel.page + 1;
+  const handlePaginationModelChange = (newPaginationModel: {
+    page: number;
+    pageSize: number;
+  }) => {
+    if (!isComponentMounted) return;
+    // window.location.pathname includes `/registration` unlike usePathname
+    const pathName = window.location.pathname;
+    const params = new URLSearchParams(searchParams);
+    const newPageNumber = newPaginationModel.page + 1;
 
-      // Set the page and page size in the URL
-      params.set("page", newPageNumber.toString());
+    // Set the page and page size in the URL
+    params.set("page", newPageNumber.toString());
 
-      // Update the URL with the new page number
-      // replace(`${pathname}?${params.toString()}`);
-      // Shallow routing is not avilalble in nextjs app router so using window.history.replaceState
-      // However, this doesn't include the /registration path
-      window.history.replaceState({}, "", `${pathname}?${params.toString()}`);
-    },
-    [searchParams, isComponentMounted],
-  );
+    // Update the URL with the new page number
+    // replace(`${pathname}?${params.toString()}`);
+    // Shallow routing is not avilalble in nextjs app router so using window.history.replaceState
+    window.history.replaceState({}, "", `${pathName}?${params.toString()}`);
+  };
 
   // Memoize initialState
   const initialState = useMemo(() => {

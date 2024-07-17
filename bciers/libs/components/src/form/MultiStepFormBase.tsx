@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useParams } from "next/navigation";
 import { Button } from "@mui/material";
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
@@ -22,7 +22,7 @@ interface MultiStepFormProps {
   formData?: any;
   onChange?: any;
   onSubmit: any;
-  schema: RJSFSchema;
+  schema: any;
   setErrorReset?: (error: undefined) => void;
   showSubmissionStep?: boolean;
   submitButtonText?: string;
