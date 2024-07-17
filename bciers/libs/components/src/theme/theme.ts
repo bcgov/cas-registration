@@ -131,5 +131,25 @@ export const theme = createTheme({
         },
       },
     },
+    MuiListItem: {
+      styleOverrides: {
+        root: {
+          padding: 0,
+        },
+      },
+    },
+    MuiListItemButton: {
+      styleOverrides: {
+        root: {
+          "&.Mui-selected": {
+            color: BC_GOV_LINKS_COLOR,
+            borderRight: `2px solid ${BC_GOV_LINKS_COLOR}`,
+            "& .MuiListItemText-primary": {
+              color: BC_GOV_LINKS_COLOR,
+            },
+          },
+        },
+      },
+    },
   },
 });
