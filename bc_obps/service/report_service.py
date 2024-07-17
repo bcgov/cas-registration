@@ -8,6 +8,8 @@ from service.data_access_service.facility_service import FacilityDataAccessServi
 from django.db import transaction
 from service.data_access_service.report_service import ReportDataAccessService
 from service.data_access_service.reporting_year import ReportingYearDataAccessService
+from django.shortcuts import get_object_or_404
+from reporting.schema.report_operation import ReportOperationOut, ReportOperationIn
 
 
 class ReportService:
@@ -70,3 +72,44 @@ class ReportService:
             report_facility.products.add(*list(operation.regulated_products.all()))
 
         return report
+
+    @classmethod
+    def get_report_operation_by_version_id(cls, report_version_id: int) -> ReportOperationOut:
+        report_version = get_object_or_404(ReportVersion, id=report_version_id)
+        report_operation = get_object_or_404(ReportOperation, report_version=report_version)
+        return ReportOperationOut(
+            operator_legal_name=report_operation.operator_legal_name,
+            operator_trade_name=report_operation.operator_trade_name,
+            operation_name=report_operation.operation_name,
+            operation_type=report_operation.operation_type,
+            operation_bcghgid=report_operation.operation_bcghgid,
+            bc_obps_regulated_operation_id=report_operation.bc_obps_regulated_operation_id,
+            operation_representative_name=report_operation.operation_representative_name,
+        )
+
+    @classmethod
+    def save_report_operation(cls, report_version_id: int, data: ReportOperationIn) -> ReportOperationOut:
+        report_version = get_object_or_404(ReportVersion, id=report_version_id)
+        report_operation = get_object_or_404(ReportOperation, report_version=report_version)
+
+        # Updating fields from data
+        report_operation.operator_legal_name = data.operator_legal_name
+        report_operation.operator_trade_name = data.operator_trade_name
+        report_operation.operation_name = data.operation_name
+        report_operation.operation_type = data.operation_type
+        report_operation.operation_bcghgid = data.operation_bcghgid
+        report_operation.bc_obps_regulated_operation_id = data.bc_obps_regulated_operation_id
+        report_operation.operation_representative_name = data.operation_representative_name
+
+        # Saving the updated report operation
+        report_operation.save()
+
+        return ReportOperationOut(
+            operator_legal_name=report_operation.operator_legal_name,
+            operator_trade_name=report_operation.operator_trade_name,
+            operation_name=report_operation.operation_name,
+            operation_type=report_operation.operation_type,
+            operation_bcghgid=report_operation.operation_bcghgid,
+            bc_obps_regulated_operation_id=report_operation.bc_obps_regulated_operation_id,
+            operation_representative_name=report_operation.operation_representative_name,
+        )
