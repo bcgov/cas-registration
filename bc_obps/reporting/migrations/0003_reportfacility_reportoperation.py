@@ -61,7 +61,6 @@ class Migration(migrations.Migration):
                 (
                     'operation_type',
                     models.CharField(
-                        choices=[('sfo', 'Sfo'), ('lfo', 'Lfo')],
                         db_comment='The type of the operation, LFO or SFO',
                         max_length=1000,
                     ),

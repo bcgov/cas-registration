@@ -17,10 +17,6 @@ class ReportOperation(BaseModel):
         db_comment="The report this operation information relates to",
     )
 
-    class OperationType(models.TextChoices):
-        SFO = "sfo"
-        LFO = "lfo"
-
     operator_legal_name = models.CharField(
         max_length=1000, db_comment="The legal name of the operator operating this operation"
     )
@@ -33,7 +29,6 @@ class ReportOperation(BaseModel):
     )
     operation_type = models.CharField(
         max_length=1000,
-        choices=OperationType.choices,
         db_comment="The type of the operation, LFO or SFO",
     )
     operation_bcghgid = models.CharField(
