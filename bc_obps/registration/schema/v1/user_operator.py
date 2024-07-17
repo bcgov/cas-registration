@@ -183,3 +183,12 @@ class UserOperatorListOut(Schema):
 class UserOperatorPaginatedOut(Schema):
     data: List[UserOperatorListOut]
     row_count: int
+
+
+class UserOperatorUsersOut(Schema):
+    id: UUID = Field(..., alias="user.pk")
+    full_name: str
+
+    @staticmethod
+    def resolve_full_name(obj: UserOperator) -> str:
+        return f"{obj.user.first_name} {obj.user.last_name}"

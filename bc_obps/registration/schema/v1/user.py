@@ -54,3 +54,18 @@ class UserExternalDashboardUsersTileData(ModelSchema):
     class Config:
         model = User
         model_fields = ["first_name", "last_name", "email", "user_guid"]
+
+
+class UserContactPageOut(ModelSchema):
+    street_address: Optional[str] = Field(None, alias="address.street_address")
+    municipality: Optional[str] = Field(None, alias="address.municipality")
+    province: Optional[str] = Field(None, alias="address.province")
+    postal_code: Optional[str] = Field(None, alias="address.postal_code")
+
+    @staticmethod
+    def resolve_phone_number(obj: User) -> str:
+        return str(obj.phone_number)
+
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'email', 'phone_number', 'position_title']

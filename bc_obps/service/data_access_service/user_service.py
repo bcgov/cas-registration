@@ -1,5 +1,6 @@
 from typing import Dict
 from uuid import UUID
+from registration.constants import UNAUTHORIZED_MESSAGE
 from registration.schema.v1.user import UserIn, UserOut, UserUpdateIn
 from registration.models import AppRole, Operator, UserOperator, User
 
@@ -78,3 +79,11 @@ class UserDataAccessService:
             setattr(user, attr, value)
         user.save()
         return user
+
+    @classmethod
+    def get_if_authorized(cls, admin_user_guid: UUID, target_user_guid: UUID) -> User:
+        admin_user: User = UserDataAccessService.get_by_guid(admin_user_guid)
+        target_user: User = UserDataAccessService.get_by_guid(target_user_guid)
+        if admin_user.is_industry_user() and admin_user.business_guid != target_user.business_guid:
+            raise Exception(UNAUTHORIZED_MESSAGE)
+        return target_user

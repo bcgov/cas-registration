@@ -8,6 +8,10 @@ from service.user_operator_service import UserOperatorService
 
 class ContactDataAccessService:
     @classmethod
+    def get_by_id(cls, contact_id: int) -> Contact:
+        return Contact.objects.get(id=contact_id)
+
+    @classmethod
     def update_or_create(
         cls, point_of_contact_id: Optional[int], updated_data: Dict[str, Optional[str]], user_guid: UUID
     ) -> Contact:
