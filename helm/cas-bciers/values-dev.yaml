@@ -81,6 +81,26 @@ reportingFrontend:
       cpu: 60m
       memory: 256Mi
 
+coamFrontend:
+  replicaCount: 2
+
+  image:
+    tag: "latest"
+
+  route:
+    host: cas-bciers-frontend-dev.apps.silver.devops.gov.bc.ca
+    path: "/coam"
+
+  environment: develop
+
+  resources:
+    limits:
+      cpu: 200m
+      memory: 512Mi
+    requests:
+      cpu: 60m
+      memory: 256Mi
+
 dashboardFrontend:
   enabled: true
 
