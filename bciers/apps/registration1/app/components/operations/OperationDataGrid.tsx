@@ -29,7 +29,10 @@ const OperationDataGrid = ({
     [lastFocusedField, setLastFocusedField],
   );
 
-  const ActionCell = useMemo(() => OperationsActionCell(), [isIndustryUser]);
+  const ActionCell = useMemo(
+    () => OperationsActionCell(isIndustryUser),
+    [isIndustryUser],
+  );
 
   const columns = useMemo(
     () => operationColumns(isOperatorColumn, ActionCell),
