@@ -1,3 +1,4 @@
+import BasicFieldTemplate from "@bciers/components/form/fields/BasicFieldTemplate";
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
 import SectionFieldTemplate from "@bciers/components/form/fields/SectionFieldTemplate";
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
@@ -114,21 +115,15 @@ export const operationRegistrationUiSchema: UiSchema = {
     },
   },
   acknowledgement_of_review: {
+    "ui:FieldTemplate": BasicFieldTemplate,
     "ui:widget": "checkbox",
-    "ui:options": {
-      label: false,
-    },
   },
   acknowledgement_of_records: {
+    "ui:FieldTemplate": BasicFieldTemplate,
     "ui:widget": "checkbox",
-    "ui:options": {
-      label: false,
-    },
   },
   acknowledgement_of_information: {
+    "ui:FieldTemplate": BasicFieldTemplate,
     "ui:widget": "checkbox",
-    "ui:options": {
-      label: false,
-    },
   },
 };
