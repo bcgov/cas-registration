@@ -1,6 +1,6 @@
 from common.models import BaseModel
 from django.db import models
-from registration.models import ReportingActivity
+from registration.models import ReportingActivity, RegulatedProduct
 from reporting.models.report_version import ReportVersion
 
 
@@ -45,7 +45,8 @@ class ReportOperation(BaseModel):
     )
 
     # We don't create a backwards relation since this is a registration model
-    activities = models.ManyToManyField(ReportingActivity, related_name="+")
+    reporting_activities = models.ManyToManyField(ReportingActivity, related_name="+")
+    regulated_products = models.ManyToManyField(RegulatedProduct, related_name="+")
 
     class Meta:
         db_table_comment = "A table to store operation information as part of a report"

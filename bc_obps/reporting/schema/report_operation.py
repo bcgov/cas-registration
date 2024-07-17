@@ -1,4 +1,5 @@
 from ninja import Schema
+from typing import List
 
 
 class ReportOperationOut(Schema):
@@ -12,6 +13,8 @@ class ReportOperationOut(Schema):
     operation_type: str
     operation_bcghgid: str
     bc_obps_regulated_operation_id: str
+    reporting_activities: List[str]
+    regulated_products: List[str]
     operation_representative_name: str
 
 
@@ -26,4 +29,6 @@ class ReportOperationIn(Schema):
     operation_type: str
     operation_bcghgid: str
     bc_obps_regulated_operation_id: str
+    reporting_activities: List[str]
+    regulated_products: List[str]
     operation_representative_name: str

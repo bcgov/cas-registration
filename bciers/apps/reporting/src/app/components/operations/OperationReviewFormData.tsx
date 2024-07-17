@@ -23,8 +23,8 @@ export default async function OperationReviewFormData({
     operationType: reportOperation.operation_type,
     BCGHGID: reportOperation.operation_bcghgid,
     BOROID: reportOperation.bc_obps_regulated_operation_id,
-    reportingActivities: reportOperation.activities,
-    regulatedProducts: [],
+    reportingActivities: reportOperation.reporting_activities,
+    regulatedProducts: reportOperation.regulated_products,
     operationRepresentative: reportOperation.operation_representative_name,
   };
 

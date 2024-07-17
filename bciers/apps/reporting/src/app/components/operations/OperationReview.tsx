@@ -116,6 +116,8 @@ export default function OperationReview({
                 operation_representative_name:
                   formDataObject.operationRepresentative ||
                   "default_value_if_missing",
+                reporting_activities: formDataObject.reportingActivities || [],
+                regulated_products: formDataObject.regulatedProducts || [],
               };
               await actionHandler(endpoint, method, pathToRevalidate, {
                 body: JSON.stringify(body),

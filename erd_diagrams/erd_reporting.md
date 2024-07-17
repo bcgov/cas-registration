@@ -35,7 +35,8 @@ ReportOperation {
     CharField operation_bcghgid
     CharField bc_obps_regulated_operation_id
     CharField operation_representative_name
-    ManyToManyField activities
+    ManyToManyField reporting_activities
+    ManyToManyField regulated_products
 }
 ReportFacility {
     BigAutoField id
@@ -104,7 +105,8 @@ Report }|--|| Operation : operation
 Report }|--|| ReportingYear : reporting_year
 ReportVersion }|--|| Report : report
 ReportOperation ||--|| ReportVersion : report_version
-ReportOperation }|--|{ ReportingActivity : activities
+ReportOperation }|--|{ ReportingActivity : reporting_activities
+ReportOperation }|--|{ RegulatedProduct : regulated_products
 ReportFacility }|--|| ReportVersion : report_version
 ReportFacility }|--|{ ReportingActivity : activities
 ReportFacility }|--|{ RegulatedProduct : products

@@ -81,7 +81,8 @@ class Migration(migrations.Migration):
                     'operation_representative_name',
                     models.CharField(db_comment='The full name of the operation representative', max_length=1000),
                 ),
-                ('activities', models.ManyToManyField(related_name='+', to='registration.reportingactivity')),
+                ('reporting_activities', models.ManyToManyField(related_name='+', to='registration.reportingactivity')),
+                ('regulated_products', models.ManyToManyField(related_name='+', to='registration.regulatedproduct')),
                 (
                     'report',
                     models.OneToOneField(
