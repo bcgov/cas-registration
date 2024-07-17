@@ -1,6 +1,6 @@
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
 import SectionFieldTemplate from "@bciers/components/form/fields/SectionFieldTemplate";
-import { RJSFSchema } from "@rjsf/utils";
+import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import { facilitiesSchemaSfo } from "apps/administration/app/data/jsonSchema/facilitiesSfo";
 
 const registrationPurpose: RJSFSchema = {
@@ -93,7 +93,7 @@ export const operationRegistrationSchema: RJSFSchema = {
   },
 };
 
-export const operationRegistrationUiSchema = {
+export const operationRegistrationUiSchema: UiSchema = {
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
 
