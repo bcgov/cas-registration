@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useMemo, useEffect, useState } from "react";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import debounce from "lodash.debounce";
 import {
@@ -33,6 +33,23 @@ const DescendingIcon = () => {
   return <SortIcon topFill="white" bottomFill="grey" />;
 };
 
+const slots = {
+  columnSortedAscendingIcon: AscendingIcon,
+  columnSortedDescendingIcon: DescendingIcon,
+  columnUnsortedIcon: SortIcon,
+  pagination: Pagination,
+  noRowsOverlay: () => (
+    <div className="flex items-center w-full h-full justify-center text-2xl">
+      No records found
+    </div>
+  ),
+};
+
+const experimentalFeatures = {
+  columnGrouping: true,
+  ariaV7: true,
+};
+
 const PAGE_SIZE = 20;
 
 const DataGrid: React.FC<Props> = ({
@@ -48,7 +65,7 @@ const DataGrid: React.FC<Props> = ({
   const [isComponentMounted, setIsComponentMounted] = useState(false);
   const searchParams = useSearchParams();
   const pathname = usePathname();
-  const { replace } = useRouter();
+  // const { replace } = useRouter();
   const isRowsEmpty = rows.length === 0;
 
   useEffect(() => {
@@ -60,7 +77,7 @@ const DataGrid: React.FC<Props> = ({
   useEffect(() => {
     // Don't fetch data if the component is not mounted
     // Since we will grab the first page using the server side props
-    if (!isComponentMounted || !fetchPageData) return;
+    if (!isComponentMounted || !fetchPageData || loading) return;
 
     setLoading(true);
     const debouncedFetchData = debounce(async () => {
@@ -80,38 +97,86 @@ const DataGrid: React.FC<Props> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
 
-  const handleSortModelChange = (newSortModel: GridSortItem[]) => {
-    const params = new URLSearchParams(searchParams);
+  const handleSortModelChange = useMemo(
+    () => (newSortModel: GridSortItem[]) => {
+      const params = new URLSearchParams(searchParams);
 
-    const sortField = newSortModel[0]?.field;
+      const sortField = newSortModel[0]?.field;
 
-    if (sortField) {
-      // Set the sort field and order in the URL
-      params.set("sort_field", sortField);
-      params.set("sort_order", newSortModel[0].sort === "asc" ? "asc" : "desc");
-    } else {
-      // Remove the sort field and order from the URL
-      params.delete("sort_field");
-      params.delete("sort_order");
-    }
+      if (sortField) {
+        // Set the sort field and order in the URL
+        params.set("sort_field", sortField);
+        params.set(
+          "sort_order",
+          newSortModel[0].sort === "asc" ? "asc" : "desc",
+        );
+      } else {
+        // Remove the sort field and order from the URL
+        params.delete("sort_field");
+        params.delete("sort_order");
+      }
 
-    // Update the URL with the new sort field and order
-    replace(`${pathname}?${params.toString()}`);
-  };
+      // Update the URL with the new sort field and order
+      // replace(`${pathname}?${params.toString()}`);
+      // Shallow routing is not avilalble in nextjs app router so using window.history.replaceState
+      // However, this doesn't include the /registration path
+      window.history.replaceState({}, "", `${pathname}?${params.toString()}`);
+    },
+    [searchParams],
+  );
 
-  const handlePaginationModelChange = (newPaginationModel: {
-    page: number;
-    pageSize: number;
-  }) => {
-    const params = new URLSearchParams(searchParams);
-    const newPageNumber = newPaginationModel.page + 1;
+  const handlePaginationModelChange = useMemo(
+    () => (newPaginationModel: { page: number; pageSize: number }) => {
+      const params = new URLSearchParams(searchParams);
+      const newPageNumber = newPaginationModel.page + 1;
 
-    // Set the page and page size in the URL
-    params.set("page", newPageNumber.toString());
+      // Set the page and page size in the URL
+      params.set("page", newPageNumber.toString());
 
-    // Update the URL with the new page number
-    replace(`${pathname}?${params.toString()}`);
-  };
+      // Update the URL with the new page number
+      // replace(`${pathname}?${params.toString()}`);
+      // Shallow routing is not avilalble in nextjs app router so using window.history.replaceState
+      // However, this doesn't include the /registration path
+      window.history.replaceState({}, "", `${pathname}?${params.toString()}`);
+    },
+    [searchParams],
+  );
+
+  // Memoize initialState
+  const initialState = useMemo(() => {
+    return {
+      pagination: { paginationModel: { pageSize: PAGE_SIZE } },
+      sorting: {
+        sortModel: [
+          {
+            field: searchParams.get("sort_field") ?? "created_at",
+            sort:
+              (searchParams.get("sort_order") as GridSortDirection) ?? "desc",
+          },
+        ],
+      },
+    };
+  }, [searchParams]);
+
+  // Memoize sx
+  const sx = useMemo(() => {
+    return {
+      ...styles,
+      // Add dynamic styles here
+      "& .MuiDataGrid-overlayWrapper": {
+        height: isRowsEmpty && !loading ? "40vh" : "0",
+        display: isRowsEmpty && !loading ? "block" : "none",
+      },
+    };
+  }, [isRowsEmpty, loading]);
+
+  // Memoize paginationModel
+  const paginationModel = useMemo(() => {
+    return {
+      pageSize: PAGE_SIZE,
+      page: Number(searchParams.get("page") ?? 1) - 1,
+    };
+  }, [searchParams]);
 
   return (
     <div style={{ height: "auto", width: "100%" }}>
@@ -122,52 +187,20 @@ const DataGrid: React.FC<Props> = ({
         loading={loading}
         rowCount={rowCount}
         showCellVerticalBorder
-        experimentalFeatures={{ columnGrouping: true, ariaV7: true }}
+        experimentalFeatures={experimentalFeatures}
         disableColumnMenu
-        initialState={{
-          pagination: { paginationModel: { pageSize: PAGE_SIZE } },
-          sorting: {
-            sortModel: [
-              {
-                field: searchParams.get("sort_field") ?? "created_at",
-                sort:
-                  (searchParams.get("sort_order") as GridSortDirection) ??
-                  "desc",
-              },
-            ],
-          },
-        }}
+        initialState={initialState}
         pagination
         pageSizeOptions={[PAGE_SIZE]}
         sortingMode={paginationMode}
         paginationMode={paginationMode}
         onPaginationModelChange={handlePaginationModelChange}
-        paginationModel={{
-          pageSize: PAGE_SIZE,
-          page: Number(searchParams.get("page") ?? 1) - 1,
-        }}
+        paginationModel={paginationModel}
         onSortModelChange={handleSortModelChange}
         // Set the row height to "auto" so that the row height will adjust to the content
         getRowHeight={() => "auto"}
-        slots={{
-          columnSortedAscendingIcon: AscendingIcon,
-          columnSortedDescendingIcon: DescendingIcon,
-          columnUnsortedIcon: SortIcon,
-          pagination: Pagination,
-          noRowsOverlay: () => (
-            <div className="flex items-center w-full h-full justify-center text-2xl">
-              No records found
-            </div>
-          ),
-        }}
-        sx={{
-          ...styles,
-          // Add dynamic styles here
-          "& .MuiDataGrid-overlayWrapper": {
-            height: isRowsEmpty && !loading ? "40vh" : "0",
-            display: isRowsEmpty && !loading ? "block" : "none",
-          },
-        }}
+        slots={slots}
+        sx={sx}
         disableVirtualization
       />
     </div>

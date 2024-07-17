@@ -19,7 +19,8 @@ const SearchCell = ({
 }) => {
   const searchParams = useSearchParams();
   const pathname = usePathname();
-  const { replace } = useRouter();
+  console.log("pathname", pathname);
+  // const { replace } = useRouter();
   const [searchState, setSearchState] = useState(searchParams.get(field) || "");
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -39,8 +40,12 @@ const SearchCell = ({
     setLastFocusedField(field);
 
     // Update the URL with the new search term
-    replace(`${pathname}?${params.toString()}`);
+    //  replace(`${pathname}?${params.toString()}`);
     setSearchState(searchTerm);
+
+    // Need shallow routing to prevent page reload
+    // However, this doesn't include the /registration path
+    window.history.replaceState({}, "", `${pathname}?${params.toString()}`);
   };
 
   const handleResetFocus = () => {
