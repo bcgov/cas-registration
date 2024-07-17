@@ -22,7 +22,7 @@ const OperationsActionCell = () => {
         <Link
           className="no-underline text-bc-link-blue whitespace-normal"
           href={{
-            pathname: `operations/${params.row.id}`,
+            pathname: `operations/${params.row.id}/1`,
             query: {
               title: `${params.row.name}`,
             },
