@@ -2,7 +2,7 @@ import Link from "next/link";
 import { GridRenderCellParams } from "@mui/x-data-grid";
 import { OperationStatus } from "@bciers/utils/enums";
 
-const OperationsActionCell = () => {
+const OperationsActionCell = (isIndustryUser: boolean) => {
   const renderCell = (params: GridRenderCellParams) => {
     let actionText;
     switch (params.row.status) {
@@ -13,7 +13,7 @@ const OperationsActionCell = () => {
         actionText = "Continue";
         break;
       default:
-        actionText = "View Operation Information";
+        actionText = "View Details";
     }
 
     return (
@@ -22,7 +22,9 @@ const OperationsActionCell = () => {
         <Link
           className="no-underline text-bc-link-blue whitespace-normal"
           href={{
-            pathname: `operations/${params.row.id}`,
+            pathname: `operations/${params.row.id}${
+              isIndustryUser ? "/1" : ""
+            }`,
             query: {
               title: `${params.row.name}`,
             },

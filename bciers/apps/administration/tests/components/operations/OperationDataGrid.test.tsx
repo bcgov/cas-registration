@@ -55,6 +55,9 @@ describe("OperationsDataGrid component", () => {
     expect(
       screen.getByRole("columnheader", { name: "BC GHG ID" }),
     ).toBeVisible();
+    expect(
+      screen.getByRole("columnheader", { name: "Facilities" }),
+    ).toBeVisible();
     expect(screen.getByRole("columnheader", { name: "Action" })).toBeVisible();
     expect(screen.queryAllByPlaceholderText(/Search/i)).toHaveLength(3);
 
@@ -63,9 +66,12 @@ describe("OperationsDataGrid component", () => {
     expect(screen.queryAllByText(/FakeOperator/i)).toHaveLength(0);
     expect(screen.getByText(/1-211113-0001/i)).toBeVisible();
     expect(screen.getAllByText(/Single Facility Operation/i)).toHaveLength(1);
-    expect(screen.getAllByRole("link", { name: /View Details/i })).toHaveLength(
-      2,
-    );
+    expect(
+      screen.getAllByRole("link", { name: /View Facilities/i }),
+    ).toHaveLength(2);
+    expect(
+      screen.getAllByRole("link", { name: /View Operation Information/i }),
+    ).toHaveLength(2);
   });
 
   it("renders the OperationsDataGrid grid for external users", async () => {
@@ -86,6 +92,9 @@ describe("OperationsDataGrid component", () => {
     expect(
       screen.getByRole("columnheader", { name: "BC GHG ID" }),
     ).toBeVisible();
+    expect(
+      screen.getByRole("columnheader", { name: "Facilities" }),
+    ).toBeVisible();
     expect(screen.getByRole("columnheader", { name: "Action" })).toBeVisible();
     expect(screen.queryAllByPlaceholderText(/Search/i)).toHaveLength(4);
 
@@ -94,8 +103,50 @@ describe("OperationsDataGrid component", () => {
     expect(screen.queryAllByText(/FakeOperator/i)).toHaveLength(2);
     expect(screen.getByText(/1-211113-0001/i)).toBeVisible();
     expect(screen.getAllByText(/Single Facility Operation/i)).toHaveLength(1);
-    expect(screen.getAllByRole("link", { name: /View Details/i })).toHaveLength(
-      2,
+    expect(
+      screen.getAllByRole("link", { name: /View Facilities/i }),
+    ).toHaveLength(2);
+
+    expect(
+      screen.getAllByRole("link", { name: /View Operation Information/i }),
+    ).toHaveLength(2);
+  });
+
+  it("renders the correct url for the facilities link", async () => {
+    render(
+      <OperationDataGrid isInternalUser={true} initialData={mockResponse} />,
+    );
+
+    const facilitiesLinks = screen.getAllByRole("link", {
+      name: /View Facilities/i,
+    });
+
+    expect(facilitiesLinks[0]).toHaveAttribute(
+      "href",
+      "operations/1/facilities",
+    );
+    expect(facilitiesLinks[1]).toHaveAttribute(
+      "href",
+      "operations/2/facilities",
+    );
+  });
+
+  it("renders the correct url for the operation information link", async () => {
+    render(
+      <OperationDataGrid isInternalUser={true} initialData={mockResponse} />,
+    );
+
+    const operationInfoLinks = screen.getAllByRole("link", {
+      name: /View Operation Information/i,
+    });
+
+    expect(operationInfoLinks[0]).toHaveAttribute(
+      "href",
+      "operations/1?title=Operation+1",
+    );
+    expect(operationInfoLinks[1]).toHaveAttribute(
+      "href",
+      "operations/2?title=Operation+2",
     );
   });
 });

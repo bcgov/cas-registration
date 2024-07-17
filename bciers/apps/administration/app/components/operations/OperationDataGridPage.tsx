@@ -1,15 +1,19 @@
 import OperationDataGrid from "./OperationDataGrid";
 import { OperationRow, OperationsSearchParams } from "./types";
 import fetchOperationsPageData from "./fetchOperationsPageData";
+import { Suspense } from "react";
+import Loading from "@bciers/components/loading/SkeletonGrid";
+import { auth } from "@/dashboard/auth";
 
 // 🧩 Main component
 export default async function Operations({
   searchParams,
-  role,
 }: {
   searchParams: OperationsSearchParams;
-  role: string | undefined;
 }) {
+  const session = await auth();
+
+  const role = session?.user?.app_role;
   // Fetch operations data
   const operations: {
     rows: OperationRow[];
@@ -24,11 +28,13 @@ export default async function Operations({
 
   // Render the DataGrid component
   return (
-    <div className="mt-5">
-      <OperationDataGrid
-        initialData={operations}
-        isInternalUser={isAuthorizedAdminUser}
-      />
-    </div>
+    <Suspense fallback={<Loading />}>
+      <div className="mt-5">
+        <OperationDataGrid
+          initialData={operations}
+          isInternalUser={isAuthorizedAdminUser}
+        />
+      </div>
+    </Suspense>
   );
 }

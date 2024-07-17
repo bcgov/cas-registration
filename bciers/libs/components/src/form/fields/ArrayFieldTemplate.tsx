@@ -37,7 +37,7 @@ const ArrayFieldTemplate = ({
       {items?.map((item, i: number) => {
         return (
           <div key={item.key} className="min-w-full">
-            <div className="form-heading flex justify-between m-w-full my-10">
+            <div className="text-bc-bg-blue text-lg flex align-center my-10">
               {customTitleName && (
                 <span>
                   {customTitleName} {i + 1}
@@ -46,7 +46,8 @@ const ArrayFieldTemplate = ({
               {i !== 0 && (
                 <button
                   onClick={item.onDropIndexClick(item.index)}
-                  className="border-none bg-transparent p-0"
+                  className="border-none bg-transparent p-0 ml-6"
+                  title="Remove item"
                   aria-label="Remove item"
                 >
                   <MinusSVG />
@@ -72,7 +73,7 @@ const ArrayFieldTemplate = ({
       {canAdd && !disabled && (
         <Button
           disabled={disabled}
-          variant="contained"
+          variant="outlined"
           className="w-fit my-8 normal-case"
           onClick={onAddClick}
         >

@@ -55,6 +55,13 @@ export const theme = createTheme({
         root: {
           fontSize: "1rem",
           textTransform: "capitalize",
+          backgroundColor: BC_GOV_BACKGROUND_COLOR_BLUE,
+        },
+        text: {
+          backgroundColor: "transparent",
+        },
+        outlined: {
+          backgroundColor: "transparent",
         },
       },
     },
