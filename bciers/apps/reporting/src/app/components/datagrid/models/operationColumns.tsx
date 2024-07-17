@@ -1,3 +1,4 @@
+"use client";
 import { GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import Button from "@mui/material/Button";
 import Menu from "@mui/material/Menu";
@@ -5,6 +6,7 @@ import MenuItem from "@mui/material/MenuItem";
 import * as React from "react";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { actionHandler } from "@bciers/actions";
+import { useRouter } from "next/navigation";
 
 export const OPERATOR_COLUMN_INDEX = 1;
 
@@ -70,10 +72,14 @@ const handleStartReport = async (
 const ActionCell = (params: GridRenderCellParams) => {
   const reportId = params.value;
   const reportingYear = 2024;
+  const router = useRouter();
 
   if (reportId) {
     return (
-      <Button color="primary" href={`/reporting/report/${reportId}`}>
+      <Button
+        color="primary"
+        href={`operations/${reportId}/review-operator-data`}
+      >
         Continue
       </Button>
     );
@@ -83,7 +89,10 @@ const ActionCell = (params: GridRenderCellParams) => {
   return (
     <Button
       color="primary"
-      onClick={() => handleStartReport(OperationId, reportingYear)}
+      onClick={async () => {
+        const newReportId = await handleStartReport(OperationId, reportingYear);
+        router.push(`operations/${newReportId}/review-operator-data`);
+      }}
     >
       Start
     </Button>
