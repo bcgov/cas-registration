@@ -19,7 +19,7 @@ const onboarding = "onboarding";
 const dashboard = "dashboard";
 // Function to check if the path is in the unauthenticated allow list
 const isUnauthenticatedAllowListedPath = (pathname: string): boolean => {
-  const authList = ["auth", "unauth"];
+  const authList = ["auth", "unauth", "demo"];
   return authList.some((path) => pathname.includes(path));
 };
 
