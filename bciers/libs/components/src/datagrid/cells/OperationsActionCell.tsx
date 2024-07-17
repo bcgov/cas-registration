@@ -24,7 +24,7 @@ const OperationsActionCell = () => {
           href={{
             pathname: `operations/${params.row.id}`,
             query: {
-              title: `${params.row.name}`,
+              operationsTitle: `${params.row.name}`,
             },
           }}
           replace={true}
