@@ -2,6 +2,7 @@
 Module: handle_exception.py
 Description: This module handles http exceptions.
 """
+
 from typing import Dict, Literal, Optional, Tuple
 from django.http import Http404
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
