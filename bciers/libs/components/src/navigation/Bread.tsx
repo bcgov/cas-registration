@@ -32,7 +32,8 @@ function isValidLink(segment: string): boolean {
     "add-operator",
     "request-access",
   ];
-  // Convert the segment to lowercase for case-insensitive comparison
+
+  // 🛠️ Function to convert the segment to lowercase for case-insensitive comparison
   const lowerSegment = segment.toLowerCase();
   // Check if the segment contains any of the invalid words
   for (const word of invalidWords) {
@@ -43,6 +44,11 @@ function isValidLink(segment: string): boolean {
   return true; // Valid segment
 }
 
+// 🛠️ Function to serialize search params
+const serializeSearchParams = (params: URLSearchParams) => {
+  const queryString = params.toString();
+  return queryString ? `?${queryString}` : "";
+};
 const liStyle = "inline text-white text-lg";
 const aStyle = "text-white text-lg";
 
@@ -77,7 +83,7 @@ export default function Bread({
       ) {
         return crumbTitles[`${precedingSegment.toLowerCase()}Title`];
       }
-      return crumbTitles[`title`] || segment;
+      return crumbTitles[`title`];
     }
     return segment;
   }
@@ -117,7 +123,11 @@ export default function Bread({
                 if (!isLastItem) {
                   // 🔗 create a link
                   const path = `/${pathNames.slice(0, index + 1).join("/")}`;
-                  const href = zone ? `/${zone}${path}` : path;
+                  const queryString = serializeSearchParams(searchParams);
+                  const href = zone
+                    ? `/${zone}${path}${queryString}`
+                    : `${path}${queryString}`;
+
                   return (
                     <li key={link} className={liStyle}>
                       <Link href={href} className={aStyle}>
