@@ -38,4 +38,22 @@ export const operationReviewUiSchema = {
   reportingActivities: { "ui:widget": "select" },
   regulatedProducts: { "ui:widget": "select" },
   operationRepresentative: { "ui:widget": "select" },
+  "ui:submitButtonOptions": {
+    props: {
+      className:
+        "MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary",
+      style: {
+        backgroundColor: "#38598A", // Adjust this to match your exact blue color
+        color: "white",
+        padding: "6px 16px",
+        fontSize: "0.875rem",
+        textTransform: "uppercase",
+        boxShadow:
+          "0px 3px 1px -2px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.14), 0px 1px 5px 0px rgba(0,0,0,0.12)",
+        borderRadius: "4px",
+      },
+    },
+    norender: false,
+    submitText: "Save",
+  },
 };
