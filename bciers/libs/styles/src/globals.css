@@ -21,6 +21,10 @@
     /* Style a button as a link */
     @apply p-0 decoration-solid border-0 text-lg bg-transparent cursor-pointer underline text-bc-link-blue;
   }
+  .link-button-blue {
+    /* Style a link as a button */
+    @apply w-fit no-underline text-lg text-white py-[6px] px-[16px] rounded flex items-center bg-bc-bg-blue;
+  }
   .form-heading {
     @apply text-2xl py-2 w-full font-bold border-solid text-bc-bg-blue border-bc-bg-blue border-l-0 border-r-0 mb-4;
   }
@@ -36,9 +40,6 @@
   }
   .read-only-widget {
     @apply w-full px-[14px] py-4 flex items-center min-h-[56px] box-border;
-  }
-  .link-button-blue {
-    @apply w-fit no-underline text-lg text-white py-[6px] px-[16px] rounded flex items-center bg-bc-primary-blue;
   }
 }
 
