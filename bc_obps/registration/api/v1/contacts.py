@@ -20,8 +20,8 @@ from registration.schema.generic import Message
     "/contacts",
     response={200: List[ContactListOut], custom_codes_4xx: Message},
     tags=CONTACT_TAGS,
-    description="""Retrieves a paginated list of facilities based on the provided filters.
-    The endpoint allows authorized users to view and sort facilities associated to an operation filtered by various criteria such as facility name, type, and bcghg_id.""",
+    description="""Retrieves a paginated list of contacts based on the provided filters.
+    The endpoint allows authorized users to view and sort contacts associated to an operator filtered by various criteria such as first name, last name and email.""",
 )
 @authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles())
 @handle_http_errors()
