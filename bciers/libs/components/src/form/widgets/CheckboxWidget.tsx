@@ -10,19 +10,21 @@ const CheckboxWidget: React.FC<WidgetProps> = ({
   required,
 }) => {
   return (
-    <div className="flex items-center">
-      <label className="font-bold mr-4">{label}</label>
-      <Checkbox
-        id={id}
-        checked={typeof value === "undefined" ? false : value}
-        value={value}
-        required={required}
-        aria-label={label}
-        disabled={disabled}
-        onChange={(event: { target: { checked: any } }) =>
-          onChange(event.target.checked)
-        }
-      />
+    <div className="flex">
+      <div className="flex flex-col justify-start [&>span]:pt-0">
+        <Checkbox
+          id={id}
+          checked={typeof value === "undefined" ? false : value}
+          value={value}
+          required={required}
+          aria-label={label}
+          disabled={disabled}
+          onChange={(event: { target: { checked: any } }) =>
+            onChange(event.target.checked)
+          }
+        />
+      </div>
+      <label>{label}</label>
     </div>
   );
 };
