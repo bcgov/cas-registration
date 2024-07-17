@@ -37,7 +37,15 @@ The /api file structure is designed to self-document URLs. This means:
 
 ## Services
 
-Services are not app-specific and can be used by any BCIERS app. We have the following categories of services:
+We follow a service-oriented architecture, where every layer:
+
+- Controls its data input and outputs
+- Has one single responsibility
+
+Two types of services can be developed:
+
+- Services that are not app-specific and can be used by any BCIERS app are deployed in the `service` django-app.
+- App-specific services (for example, data-providers for app-specific API endpoints) should live in `<appname>/service`.
 
 ## Database access services
 

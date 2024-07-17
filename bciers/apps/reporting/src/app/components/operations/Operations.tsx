@@ -1,24 +1,36 @@
 import { actionHandler } from "@bciers/actions";
 import ReportingOperationDataGrid from "./ReportingOperationDataGrid";
-import { OperationRow } from "./types";
+import { OperationRow, OperationsSearchParams } from "./types";
+import buildQueryParams from "@bciers/utils/buildQueryParams";
 
 // 🛠️ Function to fetch operations
-export const fetchOperationsPageData = async () => {
+export const fetchOperationsPageData = async (
+  searchParams: OperationsSearchParams,
+) => {
+  const queryParams = buildQueryParams(searchParams);
   // fetch data from server
-  const pageData = await actionHandler(`registration/operations`, "GET", "");
+  const pageData = await actionHandler(
+    `reporting/operations${queryParams}`,
+    "GET",
+    "",
+  );
   return {
-    rows: pageData.data,
-    row_count: pageData.row_count,
+    rows: pageData.items,
+    row_count: pageData.count,
   };
 };
 
 // 🧩 Main component
-export default async function Operations() {
+export default async function Operations({
+  searchParams,
+}: {
+  searchParams: OperationsSearchParams;
+}) {
   // Fetch operations data
   const operations: {
     rows: OperationRow[];
     row_count: number;
-  } = await fetchOperationsPageData();
+  } = await fetchOperationsPageData(searchParams);
   if (!operations) {
     return <div>No operations data in database.</div>;
   }
