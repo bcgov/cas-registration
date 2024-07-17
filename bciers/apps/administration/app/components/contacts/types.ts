@@ -1,3 +1,5 @@
+import { UUID } from "crypto";
+
 export interface ContactRow {
   id: number;
   first_name: string;
@@ -21,4 +23,9 @@ export interface ContactFormData {
   position_title?: string;
   email?: string;
   phone_number?: string;
+}
+
+export interface UserOperatorUser {
+  id: UUID;
+  full_name: string;
 }

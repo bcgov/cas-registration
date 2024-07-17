@@ -15,7 +15,7 @@ const ExternalContactsLayout = () => {
       </Note>
       <h2 className="text-bc-primary-blue">Contacts</h2>
       <div className="text-right">
-        <Link href={`/contacts/new`}>
+        <Link href={`/contacts/add-contact`}>
           <Button variant="contained">Add Contact</Button>
         </Link>
       </div>
