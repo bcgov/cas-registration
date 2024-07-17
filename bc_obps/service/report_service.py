@@ -1,6 +1,7 @@
 from uuid import UUID
 from registration.models.operation import Operation
 from reporting.models.report import Report
+from registration.models import ReportingActivity, RegulatedProduct
 from reporting.models.report_facility import ReportFacility
 from reporting.models.report_operation import ReportOperation
 from reporting.models.report_version import ReportVersion
@@ -59,7 +60,8 @@ class ReportService:
             ),
             report_version=report_version,
         )
-        report_operation.activities.add(*list(operation.reporting_activities.all()))
+        report_operation.reporting_activities.add(*list(operation.reporting_activities.all()))
+        report_operation.regulated_products.add(*list(operation.regulated_products.all()))
 
         for f in facilities:
             report_facility = ReportFacility.objects.create(
@@ -85,6 +87,8 @@ class ReportService:
             operation_bcghgid=report_operation.operation_bcghgid,
             bc_obps_regulated_operation_id=report_operation.bc_obps_regulated_operation_id,
             operation_representative_name=report_operation.operation_representative_name,
+            reporting_activities=[activity.name for activity in report_operation.reporting_activities.all()],
+            regulated_products=[product.name for product in report_operation.regulated_products.all()],
         )
 
     @classmethod
@@ -101,6 +105,12 @@ class ReportService:
         report_operation.bc_obps_regulated_operation_id = data.bc_obps_regulated_operation_id
         report_operation.operation_representative_name = data.operation_representative_name
 
+        # Fetch and set ManyToMany fields
+        reporting_activities = ReportingActivity.objects.filter(name__in=data.reporting_activities)
+        regulated_products = RegulatedProduct.objects.filter(name__in=data.regulated_products)
+        report_operation.reporting_activities.set(reporting_activities)
+        report_operation.regulated_products.set(regulated_products)
+
         # Saving the updated report operation
         report_operation.save()
 
@@ -112,4 +122,6 @@ class ReportService:
             operation_bcghgid=report_operation.operation_bcghgid,
             bc_obps_regulated_operation_id=report_operation.bc_obps_regulated_operation_id,
             operation_representative_name=report_operation.operation_representative_name,
+            reporting_activities=list(reporting_activities.values_list('name', flat=True)),
+            regulated_products=list(regulated_products.values_list('name', flat=True)),
         )
