@@ -18,6 +18,7 @@ interface SingleStepTaskListFormProps {
   schema: RJSFSchema;
   uiSchema: UiSchema;
   error?: string;
+  customChangeHandler?: (e: IChangeEvent) => void;
 }
 
 // this generic function spreads the whole of the formData into every section. On submission, we remove extraneous formData from each section using the omitExtraData prop.
@@ -53,6 +54,7 @@ const SingleStepTaskListForm = ({
   schema,
   uiSchema,
   error,
+  customChangeHandler,
 }: SingleStepTaskListFormProps) => {
   const hasFormData = Object.keys(rawFormData).length > 0;
   const formData = hasFormData ? createNestedFormData(rawFormData, schema) : {};
