@@ -59,7 +59,7 @@ const OperationRegistrationForm = ({
         {isFacilityDataGrid && (
           <FacilityDataGrid
             operationId="002d5a9e-32a6-4191-938c-2c02bfec592d"
-            initialData={{ rows: [], row_count: 0 }}
+            initialData={facilityInitialData ?? { rows: [], row_count: 0 }}
           />
         )}
       </>

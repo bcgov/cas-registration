@@ -99,6 +99,7 @@ const DataGrid: React.FC<Props> = ({
 
   const handleSortModelChange = useMemo(
     () => (newSortModel: GridSortItem[]) => {
+      if (!isComponentMounted) return;
       const params = new URLSearchParams(searchParams);
 
       const sortField = newSortModel[0]?.field;
@@ -122,11 +123,12 @@ const DataGrid: React.FC<Props> = ({
       // However, this doesn't include the /registration path
       window.history.replaceState({}, "", `${pathname}?${params.toString()}`);
     },
-    [searchParams],
+    [searchParams, isComponentMounted],
   );
 
   const handlePaginationModelChange = useMemo(
     () => (newPaginationModel: { page: number; pageSize: number }) => {
+      if (!isComponentMounted) return;
       const params = new URLSearchParams(searchParams);
       const newPageNumber = newPaginationModel.page + 1;
 
@@ -139,7 +141,7 @@ const DataGrid: React.FC<Props> = ({
       // However, this doesn't include the /registration path
       window.history.replaceState({}, "", `${pathname}?${params.toString()}`);
     },
-    [searchParams],
+    [searchParams, isComponentMounted],
   );
 
   // Memoize initialState
