@@ -23,7 +23,7 @@ interface MultiStepFormProps {
   formData?: any;
   onChange?: (e: IChangeEvent) => void;
   onSubmit: any;
-  schema: RJSFSchema;
+  schema: any;
   setErrorReset?: (error: undefined) => void;
   showSubmissionStep?: boolean;
   submitButtonText?: string;
