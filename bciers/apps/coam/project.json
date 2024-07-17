@@ -4,10 +4,32 @@
   "sourceRoot": "apps/coam",
   "projectType": "application",
   "tags": ["layer:frontend"],
+  "build-args": ["application_path=coam"],
   "targets": {
     "dev": {
       "options": {
         "port": 7000
+      }
+    },
+    "build": {
+      "executor": "@nx/next:build",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "dev",
+      "options": {
+        "outputPath": "dist/coam",
+        "generateLockfile": true
+      }
+    },
+    "container": {
+      "executor": "@nx-tools/nx-container:build",
+      "dependsOn": ["build"],
+      "defaultConfiguration": "dev",
+      "options": {
+        "engine": "docker",
+        "context": "dist/coam",
+        "file": "Dockerfile",
+        "build-args": ["application_path=coam"],
+        "tags": ["cas-coam:latest"]
       }
     },
     "lint": {
