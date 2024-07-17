@@ -1,4 +1,5 @@
 import { RJSFSchema } from "@rjsf/utils";
+import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
 
 export const operationReviewSchema: RJSFSchema = {
   type: "object",
@@ -34,16 +35,40 @@ export const operationReviewSchema: RJSFSchema = {
 };
 
 export const operationReviewUiSchema = {
-  operationType: { "ui:widget": "select" },
-  reportingActivities: { "ui:widget": "select" },
-  regulatedProducts: { "ui:widget": "select" },
-  operationRepresentative: { "ui:widget": "select" },
+  "ui:FieldTemplate": FieldTemplate,
+  operatorLegalName: {
+    "ui:options": { style: { width: "100%", textAlign: "left" } },
+  },
+  operatorTradeName: {
+    "ui:options": { style: { width: "100%", textAlign: "left" } },
+  },
+  operationName: {
+    "ui:options": { style: { width: "100%", textAlign: "left" } },
+  },
+  operationType: {
+    "ui:widget": "select",
+    "ui:options": { style: { width: "100%", textAlign: "left" } },
+  },
+  BCGHGID: { "ui:options": { style: { width: "100%", textAlign: "left" } } },
+  BOROID: { "ui:options": { style: { width: "100%", textAlign: "left" } } },
+  reportingActivities: {
+    "ui:widget": "select",
+    "ui:options": { style: { width: "100%", textAlign: "left" } },
+  },
+  regulatedProducts: {
+    "ui:widget": "select",
+    "ui:options": { style: { width: "100%", textAlign: "left" } },
+  },
+  operationRepresentative: {
+    "ui:widget": "select",
+    "ui:options": { style: { width: "100%", textAlign: "left" } },
+  },
   "ui:submitButtonOptions": {
     props: {
       className:
         "MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary",
       style: {
-        backgroundColor: "#38598A", // Adjust this to match your exact blue color
+        backgroundColor: "#38598A",
         color: "white",
         padding: "6px 16px",
         fontSize: "0.875rem",
