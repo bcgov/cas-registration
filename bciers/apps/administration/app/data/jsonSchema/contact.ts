@@ -9,7 +9,7 @@ const section1: RJSFSchema = {
   properties: {
     existing_bciers_user: {
       type: "boolean",
-      default: false,
+      default: true,
       title: "Is this contact a user in BCIERS?",
     },
     first_name: {
@@ -123,6 +123,10 @@ export const contactsUiSchema = {
     ],
     existing_bciers_user: {
       "ui:widget": "ToggleWidget",
+    },
+    selected_user: {
+      "ui:widget": "ComboBox",
+      "ui:placeholder": "Select the user",
     },
   },
   section2: {
