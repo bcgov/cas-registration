@@ -148,7 +148,7 @@ export default function OperationReview({
               alignItems="flex-start"
             >
               <Button variant="contained" color="primary">
-                Save and continue
+                Continue
               </Button>
             </Grid>
           </Grid>
