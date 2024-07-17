@@ -5,9 +5,9 @@ from typing import List, Optional
 
 
 class FacilityListOut(ModelSchema):
-    class Config:
+    class Meta:
         model = Facility
-        model_fields = ['id', 'name', 'type', 'bcghg_id']
+        fields = ['id', 'name', 'type', 'bcghg_id']
 
 
 class FacilityFilterSchema(FilterSchema):
@@ -19,29 +19,6 @@ class FacilityFilterSchema(FilterSchema):
     type: Optional[str] = Field(None, json_schema_extra={'q': 'type__icontains'})
 
 
-class FacilitySection1(ModelSchema):
-    class Config:
-        model = Facility
-        model_fields = ["name", "type", 'well_authorization_numbers']
-
-
-class FacilitySection2(ModelSchema):
-    street_address: Optional[str] = Field(None, alias="address.street_address")
-    municipality: Optional[str] = Field(None, alias="address.municipality")
-    province: Optional[str] = Field(None, alias="address.province")
-    postal_code: Optional[str] = Field(None, alias="address.postal_code")
-    latitude_of_largest_emissions: float = Field(..., alias="latitude_of_largest_emissions")
-    longitude_of_largest_emissions: float = Field(..., alias="longitude_of_largest_emissions")
-
-    class Config:
-        model = Facility
-        model_fields = [
-            "latitude_of_largest_emissions",
-            "longitude_of_largest_emissions",
-        ]
-        populate_by_name = True
-
-
 class FacilityIn(ModelSchema):
     street_address: Optional[str] = None
     municipality: Optional[str] = None
@@ -50,9 +27,9 @@ class FacilityIn(ModelSchema):
     operation_id: UUID
     well_authorization_numbers: List[int] = []
 
-    class Config:
+    class Meta:
         model = Facility
-        model_fields = [
+        fields = [
             "name",
             "type",
             "latitude_of_largest_emissions",
@@ -69,9 +46,9 @@ class FacilityOut(ModelSchema):
     latitude_of_largest_emissions: float = Field(..., alias="latitude_of_largest_emissions")
     longitude_of_largest_emissions: float = Field(..., alias="longitude_of_largest_emissions")
 
-    class Config:
+    class Meta:
         model = Facility
-        model_fields = [
+        fields = [
             "id",
             "name",
             "type",
