@@ -33,4 +33,6 @@ class ParentOperatorModelTest(BaseTestCase):
             ("website", "website", 200, None),
             ("physical_address", "physical address", None, None),
             ("mailing_address", "mailing address", None, None),
+            ("foreign_tax_id_number", "foreign tax id number", 1000, None),
+            ("foreign_address", "foreign address", 2000, None),
         ]
