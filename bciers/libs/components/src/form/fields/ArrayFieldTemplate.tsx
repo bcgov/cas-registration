@@ -42,7 +42,7 @@ const ArrayFieldTemplate = ({
                 <span>
                   {customTitleName} {i + 1}
                 </span>
-              )}
+              )} */}
               {i !== 0 && (
                 <button
                   onClick={item.onDropIndexClick(item.index)}
@@ -53,7 +53,7 @@ const ArrayFieldTemplate = ({
                   <MinusSVG />
                 </button>
               )}
-            </div>
+            {/* </div> */}
             {{
               ...item.children,
               props: {
