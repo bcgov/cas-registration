@@ -1,6 +1,6 @@
 # Data Models
 
-This document outlines the data models used in the backend of the OBPS application. The data models are implemented using Django's Object-Relational Mapping (ORM) system, which allows us to define the data models as Python classes. The data models are stored in the `models.py` file within each Django app.
+This document outlines the data models used in the backend of the OBPS application. The data models are implemented using Django's Object-Relational Mapping (ORM) system, which allows us to define the data models as Python classes. The data models are stored in the `models` file within each Django app.
 
 Common data models used in the OBPS application are located in the `bc_obps/common/models.py` file.
 
