@@ -8,14 +8,8 @@ import OperationRegistrationForm from "apps/registration/app/components/operatio
 import { createOperationRegistrationSchema } from "apps/registration/app/components/operations/OperationRegistrationPage";
 
 const regulatedProducts = [
-  {
-    id: 1,
-    name: "Product 1",
-  },
-  {
-    id: 2,
-    name: "Product 2",
-  },
+  { id: 1, name: "BC-specific refinery complexity throughput" },
+  { id: 2, name: "Cement equivalent" },
 ];
 
 const mockSchema = createOperationRegistrationSchema(

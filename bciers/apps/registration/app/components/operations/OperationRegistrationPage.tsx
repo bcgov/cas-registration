@@ -55,7 +55,8 @@ const OperationRegistrationPage = async ({
 
   // This will need to be pulled from the database after page 1 is implemented
   const isNewEntrantOperation = true;
-  const formSchema = isNewEntrantOperation
+  // New entrant operations have an additional page
+  const registrationSchema = isNewEntrantOperation
     ? operationRegistrationNewEntrantSchema
     : operationRegistrationSchema;
 
@@ -77,13 +78,14 @@ const OperationRegistrationPage = async ({
       searchParams,
     );
   }
+
+  const formSchema = isRegistrationPurposePage
+    ? createOperationRegistrationSchema(registrationSchema, regulatedProducts)
+    : registrationSchema;
+
   return (
     <OperationRegistrationForm
-      schema={
-        isRegistrationPurposePage
-          ? createOperationRegistrationSchema(formSchema, regulatedProducts)
-          : formSchema
-      }
+      schema={formSchema}
       formData={{}}
       facilityInitialData={facilityInitialData}
     />
