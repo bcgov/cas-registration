@@ -9,7 +9,6 @@ def load_dashboard_fixtures(apps, schema_editor):
     fixture_files = [
         'common/fixtures/dashboard/bciers/external.json',
         'common/fixtures/dashboard/bciers/internal.json',
-        'common/fixtures/dashboard/administration/operation/external.json',
         'common/fixtures/dashboard/administration/external.json',
         'common/fixtures/dashboard/administration/internal.json',
         'common/fixtures/dashboard/registration/external.json',

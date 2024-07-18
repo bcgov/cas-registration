@@ -59,7 +59,6 @@ export default function Bread({
   zone = "", // Default to empty string if not provided
 }: TBreadCrumbProps) {
   const paths = usePathname();
-  const params = useParams();
   const pathNames = paths.split("/").filter((path) => path);
   const searchParams = useSearchParams();
   const [crumbTitles, setCrumbTitles] = useState<{ [key: string]: string }>({});
