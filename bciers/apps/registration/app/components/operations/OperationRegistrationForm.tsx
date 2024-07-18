@@ -32,6 +32,7 @@ const OperationRegistrationForm = ({
   const handleSubmit = async () => {
     // This will have to be pulled from the response after the first page
     const OPERATION_ID = "002d5a9e-32a6-4191-938c-2c02bfec592d";
+    // This will have to be pulled from the response after the second page
     const OPERATION_NAME = "Operation name placeholder";
 
     const nextStepUrl = `/operation/${OPERATION_ID}/${
@@ -39,20 +40,12 @@ const OperationRegistrationForm = ({
     }?title=${OPERATION_NAME}`;
 
     if (isNotFinalStep) {
-      // Simulate next/link click
-      // Had to use this to move past the facility grid page as I believe router change causes a rerender
-      // and makes the useEffect in DataGrid fire again
-      // const link = document.createElement("a");
-      // link.href = nextStepUrl;
-      // link.click();
       router.push(nextStepUrl);
-      // window.history.replaceState({ ...window.history.state }, "", nextStepUrl);
     }
   };
 
   const isFacilityDataGrid = formSection === 3;
 
-  // Momoize the FacilityDataGrid component
   const FacilityDataGridMemo = useMemo(
     () => (
       <>

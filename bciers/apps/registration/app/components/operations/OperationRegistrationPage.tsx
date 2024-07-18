@@ -41,7 +41,7 @@ export const createOperationRegistrationSchema = (
   return localSchema;
 };
 
-const OperationRegistration = async ({
+const OperationRegistrationPage = async ({
   formSection,
   operation,
   searchParams,
@@ -90,4 +90,4 @@ const OperationRegistration = async ({
   );
 };
 
-export default OperationRegistration;
+export default OperationRegistrationPage;
