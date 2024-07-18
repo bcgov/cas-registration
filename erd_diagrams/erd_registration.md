@@ -260,6 +260,88 @@ Operator {
     ManyToManyField documents
     ManyToManyField contacts
 }
+HistoricalParentOperator {
+    BigIntegerField id
+    DateTimeField created_at
+    DateTimeField updated_at
+    DateTimeField archived_at
+    IntegerField operator_index
+    CharField legal_name
+    CharField trade_name
+    IntegerField cra_business_number
+    CharField foreign_tax_id_number
+    CharField bc_corporate_registry_number
+    CharField website
+    CharField foreign_address
+    UUIDField history_user_id
+    ForeignKey created_by
+    ForeignKey updated_by
+    ForeignKey archived_by
+    ForeignKey child_operator
+    ForeignKey business_structure
+    ForeignKey physical_address
+    ForeignKey mailing_address
+    AutoField history_id
+    DateTimeField history_date
+    CharField history_change_reason
+    CharField history_type
+}
+ParentOperator {
+    BigAutoField id
+    ForeignKey created_by
+    DateTimeField created_at
+    ForeignKey updated_by
+    DateTimeField updated_at
+    ForeignKey archived_by
+    DateTimeField archived_at
+    ForeignKey child_operator
+    IntegerField operator_index
+    CharField legal_name
+    CharField trade_name
+    IntegerField cra_business_number
+    CharField foreign_tax_id_number
+    CharField bc_corporate_registry_number
+    ForeignKey business_structure
+    CharField website
+    ForeignKey physical_address
+    ForeignKey mailing_address
+    CharField foreign_address
+}
+HistoricalPartnerOperator {
+    BigIntegerField id
+    DateTimeField created_at
+    DateTimeField updated_at
+    DateTimeField archived_at
+    CharField legal_name
+    CharField trade_name
+    IntegerField cra_business_number
+    CharField bc_corporate_registry_number
+    UUIDField history_user_id
+    ForeignKey created_by
+    ForeignKey updated_by
+    ForeignKey archived_by
+    ForeignKey bc_obps_operator
+    ForeignKey business_structure
+    AutoField history_id
+    DateTimeField history_date
+    CharField history_change_reason
+    CharField history_type
+}
+PartnerOperator {
+    BigAutoField id
+    ForeignKey created_by
+    DateTimeField created_at
+    ForeignKey updated_by
+    DateTimeField updated_at
+    ForeignKey archived_by
+    DateTimeField archived_at
+    ForeignKey bc_obps_operator
+    CharField legal_name
+    CharField trade_name
+    IntegerField cra_business_number
+    CharField bc_corporate_registry_number
+    ForeignKey business_structure
+}
 HistoricalUserOperator {
     DateTimeField created_at
     DateTimeField updated_at
@@ -618,49 +700,6 @@ OperationOwnershipTimeline {
     DateTimeField start_date
     DateTimeField end_date
 }
-HistoricalParentOperator {
-    BigIntegerField id
-    DateTimeField created_at
-    DateTimeField updated_at
-    DateTimeField archived_at
-    IntegerField operator_index
-    CharField legal_name
-    CharField trade_name
-    IntegerField cra_business_number
-    CharField bc_corporate_registry_number
-    CharField website
-    UUIDField history_user_id
-    ForeignKey created_by
-    ForeignKey updated_by
-    ForeignKey archived_by
-    ForeignKey child_operator
-    ForeignKey business_structure
-    ForeignKey physical_address
-    ForeignKey mailing_address
-    AutoField history_id
-    DateTimeField history_date
-    CharField history_change_reason
-    CharField history_type
-}
-ParentOperator {
-    BigAutoField id
-    ForeignKey created_by
-    DateTimeField created_at
-    ForeignKey updated_by
-    DateTimeField updated_at
-    ForeignKey archived_by
-    DateTimeField archived_at
-    ForeignKey child_operator
-    IntegerField operator_index
-    CharField legal_name
-    CharField trade_name
-    IntegerField cra_business_number
-    CharField bc_corporate_registry_number
-    ForeignKey business_structure
-    CharField website
-    ForeignKey physical_address
-    ForeignKey mailing_address
-}
 HistoricalDocument }|--|| User : created_by
 HistoricalDocument }|--|| User : updated_by
 HistoricalDocument }|--|| User : archived_by
@@ -711,6 +750,30 @@ Operator }|--|| Address : mailing_address
 Operator }|--|| User : verified_by
 Operator }|--|{ Document : documents
 Operator }|--|{ Contact : contacts
+HistoricalParentOperator }|--|| User : created_by
+HistoricalParentOperator }|--|| User : updated_by
+HistoricalParentOperator }|--|| User : archived_by
+HistoricalParentOperator }|--|| Operator : child_operator
+HistoricalParentOperator }|--|| BusinessStructure : business_structure
+HistoricalParentOperator }|--|| Address : physical_address
+HistoricalParentOperator }|--|| Address : mailing_address
+ParentOperator }|--|| User : created_by
+ParentOperator }|--|| User : updated_by
+ParentOperator }|--|| User : archived_by
+ParentOperator }|--|| Operator : child_operator
+ParentOperator }|--|| BusinessStructure : business_structure
+ParentOperator }|--|| Address : physical_address
+ParentOperator }|--|| Address : mailing_address
+HistoricalPartnerOperator }|--|| User : created_by
+HistoricalPartnerOperator }|--|| User : updated_by
+HistoricalPartnerOperator }|--|| User : archived_by
+HistoricalPartnerOperator }|--|| Operator : bc_obps_operator
+HistoricalPartnerOperator }|--|| BusinessStructure : business_structure
+PartnerOperator }|--|| User : created_by
+PartnerOperator }|--|| User : updated_by
+PartnerOperator }|--|| User : archived_by
+PartnerOperator }|--|| Operator : bc_obps_operator
+PartnerOperator }|--|| BusinessStructure : business_structure
 HistoricalUserOperator }|--|| User : created_by
 HistoricalUserOperator }|--|| User : updated_by
 HistoricalUserOperator }|--|| User : archived_by
@@ -810,17 +873,3 @@ OperationOwnershipTimeline }|--|| User : updated_by
 OperationOwnershipTimeline }|--|| User : archived_by
 OperationOwnershipTimeline }|--|| Operation : operation
 OperationOwnershipTimeline }|--|| Operator : operator
-HistoricalParentOperator }|--|| User : created_by
-HistoricalParentOperator }|--|| User : updated_by
-HistoricalParentOperator }|--|| User : archived_by
-HistoricalParentOperator }|--|| Operator : child_operator
-HistoricalParentOperator }|--|| BusinessStructure : business_structure
-HistoricalParentOperator }|--|| Address : physical_address
-HistoricalParentOperator }|--|| Address : mailing_address
-ParentOperator }|--|| User : created_by
-ParentOperator }|--|| User : updated_by
-ParentOperator }|--|| User : archived_by
-ParentOperator }|--|| Operator : child_operator
-ParentOperator }|--|| BusinessStructure : business_structure
-ParentOperator }|--|| Address : physical_address
-ParentOperator }|--|| Address : mailing_address

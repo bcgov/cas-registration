@@ -22,7 +22,7 @@ class Operator(TimeStampedModel):
         primary_key=True, default=uuid.uuid4, db_comment="Primary key to identify the operator", verbose_name="ID"
     )
     legal_name = models.CharField(max_length=1000, db_comment="The legal name of an operator", unique=True)
-    trade_name = models.CharField(max_length=1000, blank=True, db_comment="The trade name of an operator")
+    trade_name = models.CharField(max_length=1000, blank=True, null=True, db_comment="The trade name of an operator")
     cra_business_number = models.IntegerField(
         validators=[
             MaxValueValidator(999999999, message=CRA_BUSINESS_NUMBER_MESSAGE),
@@ -53,6 +53,7 @@ class Operator(TimeStampedModel):
         Address,
         on_delete=models.DO_NOTHING,
         null=True,
+        blank=True,
         db_comment="The physical address of an operator (where the operator is physically located)",
         related_name="operators_physical",
     )
