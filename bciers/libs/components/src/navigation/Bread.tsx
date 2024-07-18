@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams, usePathname, useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import Link from "@mui/material/Link";
 import { validate as isValidUUID } from "uuid";
 
@@ -82,7 +82,7 @@ export default function Bread({
       ) {
         return crumbTitles[`${precedingSegment.toLowerCase()}Title`];
       }
-      return crumbTitles[`title`];
+      return crumbTitles.title;
     }
     return segment;
   }
