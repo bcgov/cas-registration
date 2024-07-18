@@ -1,7 +1,10 @@
 import { UUID } from "crypto";
 import { validate as isValidUUID } from "uuid";
 import OperationRegistrationForm from "./OperationRegistrationForm";
-import { operationRegistrationSchema } from "apps/registration/app/data/jsonSchema/operationRegistration";
+import {
+  operationRegistrationSchema,
+  operationRegistrationNewEntrantSchema,
+} from "apps/registration/app/data/jsonSchema/operationRegistration";
 import fetchFacilitiesPageData from "@/administration/app/components/facilities/fetchFacilitiesPageData";
 import {
   FacilityInitialData,
@@ -19,10 +22,11 @@ export const createOperationRegistrationSchema = (
   }[],
 ) => {
   const localSchema = JSON.parse(JSON.stringify(schema));
-  const section1Dependencies = localSchema.properties.section1.dependencies;
+  const registrationPurposeDependencies =
+    localSchema.properties.registrationPurpose.dependencies;
   const regulatedProductsSchema =
-    section1Dependencies.registration_purpose.allOf[0].then.properties
-      .regulated_products;
+    registrationPurposeDependencies.registration_purpose.allOf[0].then
+      .properties.regulated_products;
 
   // regulated products
   if (Array.isArray(regulatedProducts)) {
@@ -48,6 +52,13 @@ const OperationRegistration = async ({
 }) => {
   const isFacilityPage = formSection === 3 && operation;
   const isRegistrationPurposePage = formSection === 1;
+
+  // This will need to be pulled from the database after page 1 is implemented
+  const isNewEntrantOperation = true;
+  const formSchema = isNewEntrantOperation
+    ? operationRegistrationNewEntrantSchema
+    : operationRegistrationSchema;
+
   let facilityInitialData: FacilityInitialData | undefined;
   let regulatedProducts: { id: number; name: string }[] = [];
   if (operation && isValidUUID(operation)) {
@@ -70,11 +81,8 @@ const OperationRegistration = async ({
     <OperationRegistrationForm
       schema={
         isRegistrationPurposePage
-          ? createOperationRegistrationSchema(
-              operationRegistrationSchema,
-              regulatedProducts,
-            )
-          : operationRegistrationSchema
+          ? createOperationRegistrationSchema(formSchema, regulatedProducts)
+          : formSchema
       }
       formData={{}}
       facilityInitialData={facilityInitialData}

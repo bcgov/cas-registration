@@ -60,6 +60,17 @@ const operationInformation: RJSFSchema = {
   },
 };
 
+const newEntrantOperation: RJSFSchema = {
+  title: "New Entrant Operation",
+  type: "object",
+  properties: {
+    new_entrant_operation: {
+      type: "string",
+      title: "New Entrant Operation",
+    },
+  },
+};
+
 const facilityInformation: RJSFSchema = {
   title: "Facility Information",
   type: "object",
@@ -120,10 +131,23 @@ export const operationRegistrationSchema: RJSFSchema = {
   title: "Operation Registration",
   type: "object",
   properties: {
-    section1: registrationPurpose,
-    section2: operationInformation,
-    section3: facilityInformation,
-    section4: operationRepresentative,
+    registrationPurpose,
+    operationInformation,
+    facilityInformation,
+    operationRepresentative,
+    submission,
+  },
+};
+
+export const operationRegistrationNewEntrantSchema: RJSFSchema = {
+  title: "Operation Registration",
+  type: "object",
+  properties: {
+    registrationPurpose,
+    operationInformation,
+    newEntrantOperation,
+    facilityInformation,
+    operationRepresentative,
     submission,
   },
 };
