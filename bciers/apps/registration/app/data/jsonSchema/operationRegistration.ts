@@ -8,9 +8,43 @@ const registrationPurpose: RJSFSchema = {
   title: "Registration Purpose",
   type: "object",
   properties: {
-    name: {
+    registration_purpose: {
       type: "string",
-      title: "Name",
+      title: "The purpose of this registration is to register as a:",
+      enum: [
+        "Reporting Operation",
+        "OBPS Regulated Operation",
+        "Opted-in Operation",
+        "New Entrant Operation",
+        "Electricity Import Operation",
+        "Potential Reporting Operation",
+      ],
+    },
+  },
+  dependencies: {
+    registration_purpose: {
+      allOf: [
+        {
+          if: {
+            properties: {
+              registration_purpose: {
+                const: "OBPS Regulated Operation",
+              },
+            },
+          },
+          then: {
+            properties: {
+              regulated_products: {
+                type: "array",
+                items: {
+                  type: "number",
+                },
+                title: "Reporting Operation",
+              },
+            },
+          },
+        },
+      ],
     },
   },
 };
@@ -97,7 +131,16 @@ export const operationRegistrationSchema: RJSFSchema = {
 export const operationRegistrationUiSchema: UiSchema = {
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
-
+  registration_purpose: {
+    "ui:placeholder": "Select Registration Purpose",
+  },
+  registration_type: {
+    "ui:widget": "ReadOnlyWidget",
+  },
+  regulated_products: {
+    "ui:widget": "MultiSelectWidget",
+    "ui:placeholder": "Select Regulated Product",
+  },
   facility_information_array: {
     "ui:FieldTemplate": FieldTemplate,
     "ui:options": {
@@ -115,7 +158,6 @@ export const operationRegistrationUiSchema: UiSchema = {
     },
   },
   acknowledgement_of_review: {
-    "ui:FieldTemplate": BasicFieldTemplate,
     "ui:widget": "checkbox",
   },
   acknowledgement_of_records: {

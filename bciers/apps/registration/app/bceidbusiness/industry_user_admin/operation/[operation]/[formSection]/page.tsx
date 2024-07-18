@@ -1,4 +1,4 @@
-import OperationRegistration from "apps/registration/app/components/operations/OperationRegistration";
+import OperationRegistrationPage from "apps/registration/app/components/operations/OperationRegistrationPage";
 
 import { UUID } from "crypto";
 
@@ -11,7 +11,7 @@ export default function Page({
 }) {
   const { operation, formSection } = params;
   return (
-    <OperationRegistration
+    <OperationRegistrationPage
       formSection={parseInt(formSection)}
       operation={operation}
       searchParams={searchParams}

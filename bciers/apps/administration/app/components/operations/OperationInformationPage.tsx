@@ -1,5 +1,11 @@
 import OperationInformationForm from "./OperationInformationForm";
 import { actionHandler } from "@bciers/actions";
+import {
+  getBusinessStructures,
+  getNaicsCodes,
+  getRegulatedProducts,
+  getReportingActivities,
+} from "@bciers/actions/api";
 import { RJSFSchema } from "@rjsf/utils";
 import { operationInformationSchema } from "../../data/jsonSchema/operationInformation";
 import { validate as isValidUUID } from "uuid";
@@ -73,38 +79,6 @@ export const createOperationSchema = (
 
   return localSchema;
 };
-
-async function getBusinessStructures() {
-  try {
-    return await actionHandler("registration/business_structures", "GET", "");
-  } catch (error) {
-    throw error;
-  }
-}
-
-async function getNaicsCodes() {
-  try {
-    return await actionHandler("registration/naics_codes", "GET", "");
-  } catch (error) {
-    throw error;
-  }
-}
-
-export async function getRegulatedProducts() {
-  try {
-    return await actionHandler("registration/regulated_products", "GET", "");
-  } catch (error) {
-    throw error;
-  }
-}
-
-export async function getReportingActivities() {
-  try {
-    return await actionHandler("registration/reporting_activities", "GET", "");
-  } catch (error) {
-    throw error;
-  }
-}
 
 async function getOperation(id: string) {
   try {

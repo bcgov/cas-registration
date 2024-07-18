@@ -118,6 +118,7 @@ const MultiStepFormBase = ({
         schema={
           schemaProperties[formSectionList[formSectionIndex]] as RJSFSchema
         }
+        className="flex flex-col flex-grow"
         uiSchema={uiSchema}
         disabled={isDisabled}
         readonly={isDisabled}
@@ -126,7 +127,7 @@ const MultiStepFormBase = ({
         formData={formData}
         setErrorReset={setErrorReset}
       >
-        <div className="min-h-[40vh] flex flex-col justify-end">
+        <div className="flex flex-col flex-grow justify-end">
           {children}
           <div className="min-h-[48px] box-border">
             {error && <Alert severity="error">{error}</Alert>}
