@@ -14,11 +14,11 @@ interface SingleStepTaskListFormProps {
   disabled?: boolean;
   formData: { [key: string]: any };
   onCancel: () => void;
+  onChange: (e: IChangeEvent) => void;
   onSubmit: (e: IChangeEvent) => any;
   schema: RJSFSchema;
   uiSchema: UiSchema;
   error?: string;
-  customChangeHandler?: (e: IChangeEvent) => void;
 }
 
 // this generic function spreads the whole of the formData into every section. On submission, we remove extraneous formData from each section using the omitExtraData prop.
@@ -49,12 +49,12 @@ const createUnnestedFormData = (
 const SingleStepTaskListForm = ({
   disabled, // pass this as true only if you want the form permanently disabled, e.g., it's being viewed by an internal user
   formData: rawFormData,
+  onChange,
   onCancel,
   onSubmit,
   schema,
   uiSchema,
   error,
-  customChangeHandler,
 }: SingleStepTaskListFormProps) => {
   const hasFormData = Object.keys(rawFormData).length > 0;
   const formData = hasFormData ? createNestedFormData(rawFormData, schema) : {};

@@ -54,10 +54,12 @@ const FormBase: React.FC<FormPropsWithTheme<any>> = (props) => {
   const formTheme = disabled || readonly ? readOnlyTheme : defaultTheme;
   const Form = useMemo(() => withTheme(theme ?? formTheme), [theme, formTheme]);
   const [formState, setFormState] = useState(formData ?? {});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Handling form state externally as RJSF was resetting the form data on submission and
   // creating buggy behaviour if there was an API error and the user attempted to resubmit
   const handleSubmit = (e: IChangeEvent) => {
+    setIsSubmitting(true);
     setFormState(e.formData);
     if (setErrorReset) setErrorReset(undefined); // Reset error state on form submission
 
@@ -65,12 +67,12 @@ const FormBase: React.FC<FormPropsWithTheme<any>> = (props) => {
   };
 
   const handleChange = (e: IChangeEvent) => {
+    setIsSubmitting(false);
     // If onChange is provided control the form state externally to stop form data loss
     // on re-render when setting state in the parent component
     // ⚠️ Warning ⚠️ - be mindful of the performance implications of both controlled state as well as
     // running expensive computations in the OnChange callback, especially with complex forms
     if (onChange) {
-      setFormState(e.formData);
       onChange(e); // Pass the event back to the parent component
     }
   };
@@ -79,7 +81,7 @@ const FormBase: React.FC<FormPropsWithTheme<any>> = (props) => {
     <Form
       {...props}
       ref={formRef}
-      formData={formState}
+      formData={isSubmitting ? formState : formData}
       onChange={handleChange}
       noHtml5Validate
       omitExtraData={omitExtraData ?? true}
