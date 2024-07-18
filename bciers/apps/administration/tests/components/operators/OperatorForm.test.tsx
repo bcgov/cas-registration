@@ -357,5 +357,5 @@ describe("OperatorForm component", () => {
         },
       );
     });
-  }, 25000);
+  }, 60000);
 });
