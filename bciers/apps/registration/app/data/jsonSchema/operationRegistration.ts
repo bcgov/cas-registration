@@ -179,7 +179,6 @@ export const operationRegistrationUiSchema: UiSchema = {
     },
   },
   acknowledgement_of_review: {
-    "ui:FieldTemplate": BasicFieldTemplate,
     "ui:widget": "checkbox",
   },
   acknowledgement_of_records: {
