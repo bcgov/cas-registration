@@ -4,7 +4,7 @@ import PageTaskListItem from "./PageTaskListItem";
 import SectionTaskListItem from "./SectionTaskListItem";
 
 const taskListItemFactory = (elt: TaskListElement) => {
-  if (elt.type === "Section" || elt.type === "SubSection")
+  if (elt.type === "Section" || elt.type === "Subsection")
     return SectionTaskListItem;
   if (elt.type === "Page") return PageTaskListItem;
   return NullTaskListItem;

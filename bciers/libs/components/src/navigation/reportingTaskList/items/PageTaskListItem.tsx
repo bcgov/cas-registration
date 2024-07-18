@@ -1,12 +1,12 @@
 import { useRouter } from "next/navigation";
-import { TaskListItemProps } from "./types";
+import { TaskListItemProps } from "../types";
 import {
   ListItem,
   ListItemButton,
   ListItemIcon,
   ListItemText,
 } from "@mui/material";
-import { CheckCircle } from "@mui/icons-material";
+import { CheckCircle } from "@bciers/components/icons";
 
 const PageTaskListItem: React.FC<TaskListItemProps> = ({ item }) => {
   const router = useRouter();

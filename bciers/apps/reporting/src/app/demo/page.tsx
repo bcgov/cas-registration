@@ -1,5 +1,5 @@
-import ReportingTaskList from "@bciers/components/navigation/ReportingTaskList";
-import { TaskListElement } from "@bciers/components/navigation/ReportingTaskListItem";
+import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
+import ReportingTaskList from "@bciers/components/navigation/reportingTaskList/ReportingTaskList";
 
 const data: TaskListElement[] = [
   {
@@ -12,7 +12,7 @@ const data: TaskListElement[] = [
     elements: [
       { type: "Page", title: "Review information", isChecked: true },
       {
-        type: "SubSection",
+        type: "Subsection",
         title: "Activities information",
         isExpanded: true,
         elements: [
