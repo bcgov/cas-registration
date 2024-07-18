@@ -14,7 +14,6 @@ import {
   DARK_GREY_BG_COLOR,
 } from "@bciers/styles";
 import "@bcgov/bc-sans/css/BCSans.css";
-
 export const theme = createTheme({
   typography: {
     fontFamily: "BCSans, sans-serif",
@@ -135,12 +134,18 @@ export const theme = createTheme({
       styleOverrides: {
         root: {
           padding: 0,
+          minHeight: "40px",
         },
       },
     },
     MuiListItemButton: {
       styleOverrides: {
         root: {
+          paddingTop: "4px",
+          paddingBottom: "4px",
+          "& .MuiListItemText-primary": {
+            fontSize: "0.8rem",
+          },
           "&.Mui-selected": {
             color: BC_GOV_LINKS_COLOR,
             borderRight: `2px solid ${BC_GOV_LINKS_COLOR}`,
