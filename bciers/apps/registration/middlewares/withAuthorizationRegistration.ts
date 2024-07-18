@@ -29,6 +29,7 @@ export const withAuthorizationRegistration: MiddlewareFactory = (
     const token = await getToken();
 
     if (token) {
+      console.log("token", token);
       // build rewrite to physcial folder path which enforces authorization by IdP and role
       request.nextUrl.pathname = `${token.identity_provider}/${
         token.app_role
