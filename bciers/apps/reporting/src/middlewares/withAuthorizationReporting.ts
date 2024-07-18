@@ -31,6 +31,9 @@ export const withAuthorizationReporting: MiddlewareFactory = (
     // Check if the user is authenticated via the jwt encoded in server side cookie
     const token = await getToken();
 
+    if (pathname.includes('activities'))
+      return next(request, _next);
+
     if (token) {
       // build rewrite to physcial folder path which enforces authorization by IdP and role
       request.nextUrl.pathname = `${token.identity_provider}/${
