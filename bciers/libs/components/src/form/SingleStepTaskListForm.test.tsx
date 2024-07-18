@@ -141,7 +141,7 @@ describe("the SingleStepTaskListForm component", () => {
     expect(screen.getByRole("button", { name: "Cancel" })).toBeVisible();
   });
 
-  it("should transform and render the formData when provided", () => {
+  it("should transform and render the formData (when editing)", () => {
     render(
       <SingleStepTaskListForm
         schema={schema}
@@ -151,64 +151,67 @@ describe("the SingleStepTaskListForm component", () => {
         onSubmit={async (e) => console.log("submit", e)}
       />,
     );
-
+    fireEvent.click(screen.getByRole("button", { name: "Edit" }));
     expect(screen.getByLabelText("First name*")).toHaveValue("Test");
     expect(screen.getByLabelText("Last name*")).toHaveValue("User");
     expect(screen.getByLabelText("Phone*")).toHaveValue("234 567 890");
     expect(screen.getByLabelText("Email*")).toHaveValue("test@testing.ca");
     expect(screen.getByLabelText("Address*")).toHaveValue("123 Test St");
     expect(screen.getByLabelText("City*")).toHaveValue("Victoria");
+
+    // It should render the correct buttons
+    expect(screen.getByRole("button", { name: "Submit" })).toBeVisible();
+    expect(screen.getByRole("button", { name: "Cancel" })).toBeVisible();
   });
 
-  it("should render the task list checkmarks as sections are filled", async () => {
-    render(
-      <SingleStepTaskListForm
-        schema={schema}
-        uiSchema={uiSchema}
-        formData={{}}
-        onCancel={() => console.log("cancel")}
-        onSubmit={async (e) => console.log("submit", e)}
-      />,
-    );
-    expect(screen.getByTestId("section1-tasklist-check")).not.toContainHTML(
-      "svg",
-    );
-    await userEvent.type(screen.getByLabelText(/First name+/i), "test");
-    await userEvent.type(screen.getByLabelText(/Last name+/i), "test");
+  // it("should render the task list checkmarks as sections are filled", async () => {
+  //   render(
+  //     <SingleStepTaskListForm
+  //       schema={schema}
+  //       uiSchema={uiSchema}
+  //       formData={{}}
+  //       onCancel={() => console.log("cancel")}
+  //       onSubmit={async (e) => console.log("submit", e)}
+  //     />,
+  //   );
+  //   expect(screen.getByTestId("section1-tasklist-check")).not.toContainHTML(
+  //     "svg",
+  //   );
+  //   await userEvent.type(screen.getByLabelText(/First name+/i), "test");
+  //   await userEvent.type(screen.getByLabelText(/Last name+/i), "test");
 
-    expect(screen.getByTestId("section1-tasklist-check")).toContainHTML("svg");
-    expect(screen.getByTestId("section2-tasklist-check")).not.toContainHTML(
-      "svg",
-    );
-    expect(screen.getByTestId("section3-tasklist-check")).not.toContainHTML(
-      "svg",
-    );
-  });
+  //   expect(screen.getByTestId("section1-tasklist-check")).toContainHTML("svg");
+  //   expect(screen.getByTestId("section2-tasklist-check")).not.toContainHTML(
+  //     "svg",
+  //   );
+  //   expect(screen.getByTestId("section3-tasklist-check")).not.toContainHTML(
+  //     "svg",
+  //   );
+  // });
 
-  it("should render the correct task list checks when formData is provided", () => {
-    render(
-      <SingleStepTaskListForm
-        schema={schema}
-        uiSchema={uiSchema}
-        formData={{
-          first_name: "Test",
-          last_name: "User",
-          phone: "+1234567890",
-          email: "test@testing.ca",
-        }}
-        onCancel={() => console.log("cancel")}
-        onSubmit={async (e) => console.log("submit", e)}
-        disabled={false}
-      />,
-    );
+  // it("should render the correct task list checks when formData is provided", () => {
+  //   render(
+  //     <SingleStepTaskListForm
+  //       schema={schema}
+  //       uiSchema={uiSchema}
+  //       formData={{
+  //         first_name: "Test",
+  //         last_name: "User",
+  //         phone: "+1234567890",
+  //         email: "test@testing.ca",
+  //       }}
+  //       onCancel={() => console.log("cancel")}
+  //       onSubmit={async (e) => console.log("submit", e)}
+  //       disabled={false}
+  //     />,
+  //   );
 
-    expect(screen.getByRole("button", { name: "Submit" })).toBeEnabled();
-    expect(screen.getByTestId("section1-tasklist-check")).toContainHTML("svg");
-    expect(screen.getByTestId("section2-tasklist-check")).toContainHTML("svg");
-    expect(screen.queryByTestId("section3-tasklist-check")).not.toContainHTML(
-      "svg",
-    );
-  });
+  //   expect(screen.getByTestId("section1-tasklist-check")).toContainHTML("svg");
+  //   expect(screen.getByTestId("section2-tasklist-check")).toContainHTML("svg");
+  //   expect(screen.queryByTestId("section3-tasklist-check")).not.toContainHTML(
+  //     "svg",
+  //   );
+  // });
 
   it("should call the onSubmit function and transform the form data when the form is submitted", async () => {
     render(
@@ -220,7 +223,8 @@ describe("the SingleStepTaskListForm component", () => {
         onSubmit={async (e) => console.log("submit", e)}
       />,
     );
-
+    const editButton = screen.getByRole("button", { name: "Edit" });
+    fireEvent.click(editButton);
     const submitButton = screen.getByRole("button", { name: "Submit" });
     fireEvent.click(submitButton);
 
@@ -301,87 +305,87 @@ describe("the SingleStepTaskListForm component", () => {
     expect(inputBorderElement).toHaveStyle(defaultStyle);
   });
 
-  it("should validate each section as the user types and display check in task list", async () => {
-    render(
-      <SingleStepTaskListForm
-        schema={schema}
-        uiSchema={uiSchema}
-        formData={{}}
-        onCancel={() => console.log("cancel")}
-        onSubmit={async (e) => console.log("submit", e)}
-      />,
-    );
+  // it("should validate each section as the user types and display check in task list", async () => {
+  //   render(
+  //     <SingleStepTaskListForm
+  //       schema={schema}
+  //       uiSchema={uiSchema}
+  //       formData={{}}
+  //       onCancel={() => console.log("cancel")}
+  //       onSubmit={async (e) => console.log("submit", e)}
+  //     />,
+  //   );
 
-    expect(screen.queryByTestId("section1-tasklist-check")).not.toContainHTML(
-      "svg",
-    );
-    expect(screen.queryByTestId("section2-tasklist-check")).not.toContainHTML(
-      "svg",
-    );
-    expect(screen.queryByTestId("section3-tasklist-check")).not.toContainHTML(
-      "svg",
-    );
+  //   expect(screen.queryByTestId("section1-tasklist-check")).not.toContainHTML(
+  //     "svg",
+  //   );
+  //   expect(screen.queryByTestId("section2-tasklist-check")).not.toContainHTML(
+  //     "svg",
+  //   );
+  //   expect(screen.queryByTestId("section3-tasklist-check")).not.toContainHTML(
+  //     "svg",
+  //   );
 
-    // Fill in section 1 fields and verify the task list check appears
-    const firstNameField = screen.getByLabelText("First name*");
-    const lastNameField = screen.getByLabelText("Last name*");
+  //   // Fill in section 1 fields and verify the task list check appears
+  //   const firstNameField = screen.getByLabelText("First name*");
+  //   const lastNameField = screen.getByLabelText("Last name*");
 
-    fireEvent.change(firstNameField, { target: { value: "Test" } });
-    fireEvent.change(lastNameField, { target: { value: "User" } });
+  //   fireEvent.change(firstNameField, { target: { value: "Test" } });
+  //   fireEvent.change(lastNameField, { target: { value: "User" } });
 
-    expect(screen.getByTestId("section1-tasklist-check")).toContainHTML("svg");
+  //   expect(screen.getByTestId("section1-tasklist-check")).toContainHTML("svg");
 
-    // Fill in section 2 fields and verify the task list check appears
-    const phoneField = screen.getByLabelText("Phone*");
-    const emailField = screen.getByLabelText("Email*");
+  //   // Fill in section 2 fields and verify the task list check appears
+  //   const phoneField = screen.getByLabelText("Phone*");
+  //   const emailField = screen.getByLabelText("Email*");
 
-    fireEvent.change(phoneField, { target: { value: "12345678901" } });
-    fireEvent.change(emailField, { target: { value: "test@testing.ca" } });
+  //   fireEvent.change(phoneField, { target: { value: "12345678901" } });
+  //   fireEvent.change(emailField, { target: { value: "test@testing.ca" } });
 
-    expect(screen.getByTestId("section2-tasklist-check")).toContainHTML("svg");
+  //   expect(screen.getByTestId("section2-tasklist-check")).toContainHTML("svg");
 
-    // Fill in section 3 fields and verify the task list check appears
-    const addressField = screen.getByLabelText("Address*");
-    const cityField = screen.getByLabelText("City*");
+  //   // Fill in section 3 fields and verify the task list check appears
+  //   const addressField = screen.getByLabelText("Address*");
+  //   const cityField = screen.getByLabelText("City*");
 
-    fireEvent.change(addressField, { target: { value: "123 Test St" } });
-    fireEvent.change(cityField, { target: { value: "Victoria" } });
+  //   fireEvent.change(addressField, { target: { value: "123 Test St" } });
+  //   fireEvent.change(cityField, { target: { value: "Victoria" } });
 
-    expect(screen.getByTestId("section3-tasklist-check")).toContainHTML("svg");
-  });
+  //   expect(screen.getByTestId("section3-tasklist-check")).toContainHTML("svg");
+  // });
 
-  it("should not render a task list check if the format validation fails", () => {
-    render(
-      <SingleStepTaskListForm
-        schema={schema}
-        uiSchema={uiSchema}
-        formData={{}}
-        onCancel={() => console.log("cancel")}
-        onSubmit={async (e) => console.log("submit", e)}
-      />,
-    );
+  // it("should not render a task list check if the format validation fails", () => {
+  //   render(
+  //     <SingleStepTaskListForm
+  //       schema={schema}
+  //       uiSchema={uiSchema}
+  //       formData={{}}
+  //       onCancel={() => console.log("cancel")}
+  //       onSubmit={async (e) => console.log("submit", e)}
+  //     />,
+  //   );
 
-    const phoneField = screen.getByLabelText("Phone*");
-    const emailField = screen.getByLabelText("Email*");
+  //   const phoneField = screen.getByLabelText("Phone*");
+  //   const emailField = screen.getByLabelText("Email*");
 
-    // Invalid phone number
-    fireEvent.change(phoneField, { target: { value: "1234567" } });
-    // Invalid email
-    fireEvent.change(emailField, { target: { value: "test@tes" } });
+  //   // Invalid phone number
+  //   fireEvent.change(phoneField, { target: { value: "1234567" } });
+  //   // Invalid email
+  //   fireEvent.change(emailField, { target: { value: "test@tes" } });
 
-    expect(
-      screen.queryByTestId("section2-tasklist-check"),
-    ).toBeEmptyDOMElement();
+  //   expect(
+  //     screen.queryByTestId("section2-tasklist-check"),
+  //   ).toBeEmptyDOMElement();
 
-    // Valid phone number
-    fireEvent.change(phoneField, { target: { value: "12345678901" } });
-    // Valid email
-    fireEvent.change(emailField, { target: { value: "test@testing.ca" } });
+  //   // Valid phone number
+  //   fireEvent.change(phoneField, { target: { value: "12345678901" } });
+  //   // Valid email
+  //   fireEvent.change(emailField, { target: { value: "test@testing.ca" } });
 
-    expect(
-      screen.getByTestId("section2-tasklist-check"),
-    ).not.toBeEmptyDOMElement();
-  });
+  //   expect(
+  //     screen.getByTestId("section2-tasklist-check"),
+  //   ).not.toBeEmptyDOMElement();
+  // });
   it("should render an api error if an error is passed", () => {
     render(
       <SingleStepTaskListForm

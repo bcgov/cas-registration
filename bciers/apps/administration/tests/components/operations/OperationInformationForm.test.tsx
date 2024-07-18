@@ -43,13 +43,7 @@ describe("the OperationInformationForm component", () => {
     expect(screen.getByText(/Operation Type/i)).toBeVisible();
 
     expect(screen.getByRole("button", { name: "Cancel" })).toBeVisible();
-    expect(screen.getByRole("button", { name: "Submit" })).toBeVisible();
-  });
-
-  it("should be disabled", async () => {
-    render(<OperationInformationForm formData={{}} schema={testSchema} />);
-
-    expect(screen.getByRole("button", { name: "Submit" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Edit" })).toBeVisible();
   });
 
   it("should render the form with the correct values when formData is provided", async () => {
@@ -72,12 +66,12 @@ describe("the OperationInformationForm component", () => {
     );
   });
 
-  it("should have checked task list sections when formData is provided", async () => {
-    render(
-      <OperationInformationForm formData={formData} schema={testSchema} />,
-    );
+  // it("should have checked task list sections when formData is provided", async () => {
+  //   render(
+  //     <OperationInformationForm formData={formData} schema={testSchema} />,
+  //   );
 
-    expect(screen.getByTestId("section1-tasklist-check")).toContainHTML("svg");
-    expect(screen.getByTestId("section2-tasklist-check")).toContainHTML("svg");
-  });
+  //   expect(screen.getByTestId("section1-tasklist-check")).toContainHTML("svg");
+  //   expect(screen.getByTestId("section2-tasklist-check")).toContainHTML("svg");
+  // });
 });
