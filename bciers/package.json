@@ -36,6 +36,7 @@
     "coam:test": "nx run coam:test",
     "rep:test": "nx run reporting:test",
     "components:test": "nx run components:test"
+    "dev-reporting": "nx run-many -t dev -p dashboard,reporting --maxParallel=5"
   },
   "private": true,
   "module": "commonjs",
