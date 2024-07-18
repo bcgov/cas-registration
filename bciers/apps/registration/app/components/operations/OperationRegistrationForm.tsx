@@ -50,7 +50,6 @@ const OperationRegistrationForm = ({
 
   const isFacilityDataGrid = formSection === 3;
 
-  // Momoize the FacilityDataGrid component
   const FacilityDataGridMemo = useMemo(
     () => (
       <>
