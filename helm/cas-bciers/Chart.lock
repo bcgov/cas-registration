@@ -1,6 +1,6 @@
 dependencies:
 - name: terraform-bucket-provision
   repository: https://bcgov.github.io/cas-pipeline/
-  version: 0.1.3
-digest: sha256:a364b7f2d3c760ee659c5997064deff4503630e2ead84aca5ecae3c78e1489cf
-generated: "2024-06-20T16:20:26.020903145-06:00"
+  version: 0.1.4
+digest: sha256:f063f79b166b43429e05c8433d8818e133e49923104a05644addca302df8774f
+generated: "2024-07-18T12:11:40.370439-07:00"
