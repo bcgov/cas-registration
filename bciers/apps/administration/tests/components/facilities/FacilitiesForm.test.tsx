@@ -168,10 +168,6 @@ describe("FacilitiesForm component", () => {
     expect(
       container.querySelector("#root_section2_longitude_of_largest_emissions"),
     ).toHaveTextContent(".000000");
-
-    // submit button
-    const submitButton = screen.getByRole("button", { name: /submit/i });
-    expect(submitButton).toBeDisabled();
   });
   it("loads existing readonly LFO form data", async () => {
     const { container } = render(
@@ -209,10 +205,6 @@ describe("FacilitiesForm component", () => {
     expect(
       container.querySelector("#root_section2_longitude_of_largest_emissions"),
     ).toHaveTextContent(".000000");
-
-    // submit button
-    const submitButton = screen.getByRole("button", { name: /submit/i });
-    expect(submitButton).toBeDisabled();
   });
   it("does not allow SFO submission if there are validation errors (empty form data)", async () => {
     render(
@@ -243,10 +235,10 @@ describe("FacilitiesForm component", () => {
       />,
     );
 
-    act(() => {
-      const submitButton = screen.getByRole("button", { name: /submit/i });
-      submitButton.click();
-    });
+    const editButton = screen.getByRole("button", { name: "Edit" });
+    fireEvent.click(editButton);
+    const submitButton = screen.getByRole("button", { name: "Submit" });
+    fireEvent.click(submitButton);
     expect(screen.getAllByText(/Required field/i)).toHaveLength(2); // name and type
     expect(screen.getAllByText(/Format should be A1A 1A1/i)).toHaveLength(1);
     expect(screen.getAllByText(/must be >= -90/i)).toHaveLength(1);
