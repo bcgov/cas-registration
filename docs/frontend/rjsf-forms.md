@@ -174,7 +174,6 @@ checkbox_field {
 "ui:options": {
 label: false,
 }
-}
 
 ```
 

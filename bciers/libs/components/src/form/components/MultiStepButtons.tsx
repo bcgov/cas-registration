@@ -42,7 +42,7 @@ const SubmitButton: React.FunctionComponent<SubmitButtonProps> = ({
       <div>
         {allowBackNavigation &&
           (step !== 0 ? (
-            <Link href={`/${baseUrl}/${step}`}>
+            <Link href={`${baseUrl}/${step}`}>
               <Button
                 variant="contained"
                 type="button"
