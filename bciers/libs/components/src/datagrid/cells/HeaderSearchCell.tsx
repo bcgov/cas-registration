@@ -38,7 +38,6 @@ const SearchCell = ({
     setLastFocusedField(field);
 
     // Update the URL with the new search term
-    //  replace(`${pathname}?${params.toString()}`);
     setSearchState(searchTerm);
 
     // Need shallow routing to prevent page reload
