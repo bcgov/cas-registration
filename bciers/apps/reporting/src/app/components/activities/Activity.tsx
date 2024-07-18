@@ -1,5 +1,6 @@
 import { actionHandler } from "@bciers/actions";
 import Gsc from './gsc'
+import { Suspense } from "react";
 
 // 🛠️ Function to fetch operations
 export const fetchSchemaData = async () => {
@@ -18,6 +19,8 @@ export default async function Activity() {
   }
   // Render the DataGrid component
   return (
-    <Gsc schema={schema}/>
+    <Suspense fallback="Loading Schema">
+      <Gsc schema={schema}/>
+    </Suspense>
   );
 }
