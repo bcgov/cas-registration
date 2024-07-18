@@ -15,27 +15,19 @@
             "links": [
               {
                 "title": "Operators",
-                "href": "/registration/select-operator"
+                "href": "/administration/tbd"
               },
               {
                 "title": "Operations",
-                "href": "/registration/operations"
-              },
-              {
-                "title": "Operations",
-                "href": "/registration/operations"
-              },
-              {
-                "title": "Facilities",
-                "href": "/registration/tbd"
+                "href": "/administration/operations"
               },
               {
                 "title": "Operator Admins and Access Requests",
-                "href": "/registration/tbd"
+                "href": "/administration/tbd"
               },
               {
                 "title": "Contacts",
-                "href": "/registration/tbd"
+                "href": "/administration/contacts"
               }
             ]
           },
