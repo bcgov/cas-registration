@@ -1,5 +1,5 @@
 export interface TaskListElement {
-  type: "Section" | "SubSection" | "Page";
+  type: "Section" | "Subsection" | "Page";
   title: string;
   link?: string;
   elements?: TaskListElement[];
