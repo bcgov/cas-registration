@@ -1,10 +1,4 @@
-import {
-  act,
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-} from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import SectionTaskListItem from "./SectionTaskListItem";
 import { TaskListElement } from "../types";
 
