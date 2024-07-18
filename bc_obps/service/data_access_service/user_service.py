@@ -20,6 +20,7 @@ class UserDataAccessService:
 
     @classmethod
     def get_user_operator_by_user(cls, user_guid: UUID) -> UserOperator:
+
         user_operator = (
             UserOperator.objects.only("id", "status", "operator__id", "operator__is_new", "operator__status")
             .exclude(
