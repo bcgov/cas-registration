@@ -14,7 +14,6 @@ const ContactsActionCell = ActionCellFactory({
   generateHref: (params: GridRenderCellParams) => {
     return `contacts/${params.row.id}`;
   },
-  replace: true,
   cellText: "View Details",
 });
 
