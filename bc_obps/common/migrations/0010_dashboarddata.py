@@ -11,6 +11,7 @@ def load_dashboard_fixtures(apps, schema_editor):
         'common/fixtures/dashboard/bciers/internal.json',
         'common/fixtures/dashboard/administration/external.json',
         'common/fixtures/dashboard/administration/internal.json',
+        'common/fixtures/dashboard/administration/internal_admin.json',
         'common/fixtures/dashboard/registration/external.json',
         'common/fixtures/dashboard/registration/internal.json',
         'common/fixtures/dashboard/reporting/external.json',
