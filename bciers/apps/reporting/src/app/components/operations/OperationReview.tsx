@@ -15,7 +15,6 @@ import SyncIcon from "@mui/icons-material/Sync";
 import CheckCircleOutline from "@mui/icons-material/CheckCircleOutline";
 import MultiStepHeader from "@bciers/components/form/components/MultiStepHeader";
 import { actionHandler } from "@bciers/actions";
-import { UUID } from "crypto";
 import FormBase from "@bciers/components/form/FormBase";
 import {
   operationReviewSchema,
@@ -36,10 +35,10 @@ export interface OperationReviewFormDataType {
 
 interface Props {
   formData: any;
-  version_id: UUID;
+  version_id: number;
 }
 
-const submitHandler = async (data: { formData?: any }, version_id: UUID) => {
+const submitHandler = async (data: { formData?: any }, version_id: number) => {
   const method = "POST";
   const endpoint = `reporting/report-version/${version_id}/report-operation`;
   const pathToRevalidate = `reporting/report-version/${version_id}/report-operation`;
