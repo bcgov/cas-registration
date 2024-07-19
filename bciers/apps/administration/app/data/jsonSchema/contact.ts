@@ -74,7 +74,6 @@ const section3: RJSFSchema = {
 const section4: RJSFSchema = {
   type: "object",
   title: "Address Information",
-  required: ["latitude_of_largest_emissions", "longitude_of_largest_emissions"],
   properties: {
     street_address: {
       type: "string",
@@ -134,6 +133,12 @@ export const contactsUiSchema = {
   },
   section3: {
     "ui:FieldTemplate": SectionFieldTemplate,
+    email: {
+      "ui:widget": "EmailWidget",
+    },
+    phone_number: {
+      "ui:widget": "PhoneWidget",
+    },
   },
   section4: {
     "ui:FieldTemplate": SectionFieldTemplate,
