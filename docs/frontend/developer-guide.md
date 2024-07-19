@@ -120,7 +120,21 @@ Our apps use chained middlewares to improves code readability, and maintainabili
 
 The Registration1 and Registration code is organized into sub-folders based on a identity provider, an application role, and dashboard folder, or just dashboard folder for routes available for authenticated users without an authorization role. As mentioned, the middleware dynamically rewrites the request URL based on the Auth.js JWT properties of identity_provider and user role so to match our sub-folder structure. So route URL segments such as registration1 `http://localhost:3000/dashboard/operations` would get mapped to nested folder `bciers/apps/registration1/app/(authenticated)/bceidbusiness/industry_user/dashboard/operations' for an authenticated industry user.
 
-For our multi-zone apps, the dashboard app manages the main domain and rewites request to the appropriate zone as defined in `bciers/apps/dashboard/next.config.js` and `bciers/apps/dashboard/middlewares/withAuthorizationDashboard.ts`. The dashboard links are configured in `bc_obps/common/fixtures/dashboard/{identity-provider}` and use the `{project/}` pre-fix. So route URL to registration operations would be `http://localhost:3000/administration/operations`
+For our multi-zone apps, the dashboard app manages the main domain and rewites request to the appropriate zone as defined in `bciers/apps/dashboard/next.config.js` and `bciers/apps/dashboard/middlewares/withAuthorizationDashboard.ts`.
+
+### Folder Structure & Dashboard Tiles
+
+The base directory where all the dashboard-related JSON files are stored is `bc_obps/common/fixtures/dashboard/`. The folder structure for the .json files in the project follows a specific pattern, which includes an optional part. Here's the complete structure:
+
+`bc_obps/common/fixtures/dashboard/{project}/{identity-provider-type}{optional_userole}.json`
+
+`{project}/`: This represents the specific project folder. Replace {project} with the name of the project.
+
+`{identity-provider-type}`: This folder indicates the type of identity provider. Replace `{identity-provider-type}` with the relevant type (e.g., external, internal).
+
+`{optional_userole}`: This part of the file name is optional and can include an underscore followed by a user role. If not needed, this part can be omitted entirely.
+
+The .json file then sets the dashboard tile links' href property as per the project's folder structure.
 
 ### Folder Structure & Dynamic Breadcrumbs
 
