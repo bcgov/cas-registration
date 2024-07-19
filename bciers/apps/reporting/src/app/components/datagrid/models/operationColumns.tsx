@@ -7,6 +7,8 @@ import * as React from "react";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { actionHandler } from "@bciers/actions";
 import { useRouter } from "next/navigation";
+import CurrentReportingYearContext from '../../context/CurrentReportingYearContext';
+import { useContext } from 'react';
 
 export const OPERATOR_COLUMN_INDEX = 1;
 
@@ -54,7 +56,7 @@ const MoreCell: React.FC = () => {
 const handleStartReport = async (
   operationId: string,
   reportingYear: number,
-) => {
+): Promise<string> => {
   try {
     const reportId = await actionHandler("reporting/reports", "POST", "", {
       body: JSON.stringify({
@@ -71,8 +73,9 @@ const handleStartReport = async (
 
 const ActionCell = (params: GridRenderCellParams) => {
   const reportId = params.value;
-  const reportingYear = 2024;
+  const reportingYear = useContext(CurrentReportingYearContext);
   const router = useRouter();
+  const OperationId = params.row.id;
 
   if (reportId) {
     return (
@@ -85,7 +88,6 @@ const ActionCell = (params: GridRenderCellParams) => {
     );
   }
 
-  const OperationId = params.row.id;
   return (
     <Button
       color="primary"
