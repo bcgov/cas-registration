@@ -10,12 +10,12 @@ from registration.api.utils.current_user_utils import get_current_user_guid
 from registration.decorators import authorize, handle_http_errors
 from registration.api.router import router
 from registration.schema.generic import Message
-from ninja.responses import codes_4xx
+from service.error_service.custom_codes_4xx import custom_codes_4xx
 
 
 @router.get(
     "/contacts/{contact_id}",
-    response={200: ContactOut, codes_4xx: Message},
+    response={200: ContactOut, custom_codes_4xx: Message},
     tags=CONTACT_TAGS,
     description="""Retrieves the details of a specific contact by its ID. The endpoint checks if the current user is authorized to access the contact.
     Industry users can only access contacts that are associated with their own operator. If an unauthorized user attempts to access the contact, an error is raised.""",
