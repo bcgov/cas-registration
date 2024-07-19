@@ -6,9 +6,9 @@ import OperationReview, {
 
 export async function getReportOperation(version_id: string) {
   return actionHandler(
-    `reporting/report-operation/${version_id}`,
+    `reporting/report-version/${version_id}/report-operation`,
     "GET",
-    `reporting/report-operation/${version_id}`,
+    `reporting/report-version/${version_id}/report-operation`,
   );
 }
 
