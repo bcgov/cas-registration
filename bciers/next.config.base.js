@@ -1,8 +1,13 @@
 /** @type {import('next').NextConfig} */
-module.exports = {
+const logAndReturnConfig = (config) => {
+  console.log("Next.js base config is being loaded");
+  return config;
+};
+module.exports = logAndReturnConfig({
   reactStrictMode: true,
   swcMinify: true,
   output: "standalone",
+
   //use modularizeImports properties to optimize the imports in the application
   modularizeImports: {
     "@mui/icons-material": {
@@ -12,9 +17,4 @@ module.exports = {
       transform: "@mui/material/{{member}}",
     },
   },
-  experimental: {
-    serverActions: {
-      bodySizeLimit: "20mb",
-    },
-  },
-};
+});
