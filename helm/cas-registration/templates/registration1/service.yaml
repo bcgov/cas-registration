@@ -13,4 +13,4 @@ spec:
       name: {{ include "cas-registration.fullname" . }}-registration1-frontend
   selector:
     {{- include "cas-registration.selectorLabels" . | nindent 4 }}
-    component: frontend
+    component: registration1-frontend
