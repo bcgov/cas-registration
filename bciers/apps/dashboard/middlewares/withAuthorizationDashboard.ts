@@ -65,7 +65,7 @@ export const withAuthorizationDashboard: MiddlewareFactory = (
           return next(request, _next);
         } else {
           return NextResponse.redirect(
-            new URL(`/registration/profile`, request.url),
+            new URL(`/administration/profile`, request.url),
           );
         }
       }
