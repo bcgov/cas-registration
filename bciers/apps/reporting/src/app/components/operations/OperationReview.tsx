@@ -22,13 +22,27 @@ import {
   operationReviewUiSchema,
 } from "@reporting/src/app/utils/jsonSchema/operations";
 
+export interface OperationReviewFormDataType {
+  operatorLegalName: string;
+  operatorTradeName: string;
+  operationName: string;
+  operationType: string;
+  BCGHGID: string;
+  BOROID: string;
+  operationRepresentative: string;
+  reportingActivities: string[];
+  regulatedProducts: string[];
+}
+
+interface Props {
+  formData: any;
+  version_id: UUID;
+}
+
 export default function OperationReview({
   formData,
   version_id,
-}: {
-  formData: any;
-  version_id: UUID;
-}) {
+}: Readonly<Props>) {
   const customStepNames = [
     "Operation Information",
     "Facilities Information",

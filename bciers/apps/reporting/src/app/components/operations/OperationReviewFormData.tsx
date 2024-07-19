@@ -1,6 +1,8 @@
 import { actionHandler } from "@bciers/actions";
 import { UUID } from "crypto";
-import OperationReview from "./OperationReview";
+import OperationReview, {
+  OperationReviewFormDataType,
+} from "./OperationReview";
 
 export async function getReportOperation(version_id: string) {
   return actionHandler(
@@ -16,7 +18,7 @@ export default async function OperationReviewFormData({
   version_id: UUID;
 }) {
   const reportOperation = await getReportOperation(version_id);
-  const formData = {
+  const formData: OperationReviewFormDataType = {
     operatorLegalName: reportOperation.operator_legal_name,
     operatorTradeName: reportOperation.operator_trade_name,
     operationName: reportOperation.operation_name,
