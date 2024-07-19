@@ -39,6 +39,35 @@ interface Props {
   version_id: UUID;
 }
 
+const submitHandler = async (data: { formData?: any }, version_id: UUID) => {
+  const method = "POST";
+  const endpoint = `reporting/report-version/${version_id}/report-operation`;
+  const pathToRevalidate = `reporting/report-version/${version_id}/report-operation`;
+  const formDataObject = JSON.parse(JSON.stringify(data.formData));
+  const body = {
+    operator_legal_name:
+      formDataObject.operatorLegalName || "default_value_if_missing",
+    operator_trade_name:
+      formDataObject.operatorTradeName || "default_value_if_missing",
+    operation_name: formDataObject.operationName || "default_value_if_missing",
+    operation_type: formDataObject.operationType || "default_value_if_missing",
+    operation_bcghgid: formDataObject.BCGHGID || "default_value_if_missing",
+    bc_obps_regulated_operation_id:
+      formDataObject.BOROID || "default_value_if_missing",
+    operation_representative_name:
+      formDataObject.operationRepresentative || "default_value_if_missing",
+    reporting_activities: formDataObject.reportingActivities || [],
+    regulated_products: formDataObject.regulatedProducts || [],
+  };
+  await actionHandler(endpoint, method, pathToRevalidate, {
+    body: JSON.stringify(body),
+    headers: {
+      "Content-Type": "application/json",
+      accept: "application/json",
+    },
+  });
+};
+
 export default function OperationReview({
   formData,
   version_id,
@@ -107,40 +136,7 @@ export default function OperationReview({
             schema={operationReviewSchema}
             uiSchema={operationReviewUiSchema}
             formData={formData}
-            onSubmit={async (data: { formData?: any }) => {
-              const method = "POST";
-              const endpoint = `reporting/report-version/${version_id}/report-operation`;
-              const pathToRevalidate = `reporting/report-version/${version_id}/report-operation`;
-              const formDataObject = JSON.parse(JSON.stringify(data.formData));
-              const body = {
-                operator_legal_name:
-                  formDataObject.operatorLegalName ||
-                  "default_value_if_missing",
-                operator_trade_name:
-                  formDataObject.operatorTradeName ||
-                  "default_value_if_missing",
-                operation_name:
-                  formDataObject.operationName || "default_value_if_missing",
-                operation_type:
-                  formDataObject.operationType || "default_value_if_missing",
-                operation_bcghgid:
-                  formDataObject.BCGHGID || "default_value_if_missing",
-                bc_obps_regulated_operation_id:
-                  formDataObject.BOROID || "default_value_if_missing",
-                operation_representative_name:
-                  formDataObject.operationRepresentative ||
-                  "default_value_if_missing",
-                reporting_activities: formDataObject.reportingActivities || [],
-                regulated_products: formDataObject.regulatedProducts || [],
-              };
-              await actionHandler(endpoint, method, pathToRevalidate, {
-                body: JSON.stringify(body),
-                headers: {
-                  "Content-Type": "application/json",
-                  accept: "application/json",
-                },
-              });
-            }}
+            onSubmit={(data) => submitHandler(data, version_id)}
           />
 
           <Grid container spacing={2} sx={{ mt: 3 }}>
