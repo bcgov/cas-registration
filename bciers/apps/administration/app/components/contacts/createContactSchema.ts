@@ -2,18 +2,28 @@ import { contactsSchema } from "./../../data/jsonSchema/contact";
 import { UserOperatorUser } from "./types";
 
 // 🛠️ Function to create a contact schema with updated enum values
-export const createContactSchema = (userOperatorUsers: UserOperatorUser[]) => {
+export const createContactSchema = (
+  userOperatorUsers: UserOperatorUser[],
+  isCreating?: boolean,
+) => {
   const localSchema = JSON.parse(JSON.stringify(contactsSchema)); // deep copy
-  const userOperatorUserOptions = userOperatorUsers?.map((user) => ({
-    type: "string",
-    title: user.full_name,
-    enum: [user.id],
-    value: user.id,
-  }));
 
-  if (Array.isArray(userOperatorUserOptions)) {
-    localSchema.properties.section1.allOf[0].then.properties.selected_user.anyOf =
-      userOperatorUserOptions;
+  // For now, we show the `existing_bciers_user` toggle and `selected_user` combobox only when creating a new contact
+  if (isCreating) {
+    const userOperatorUserOptions = userOperatorUsers?.map((user) => ({
+      type: "string",
+      title: user.full_name,
+      enum: [user.id],
+      value: user.id,
+    }));
+
+    if (Array.isArray(userOperatorUserOptions)) {
+      localSchema.properties.section1.allOf[0].then.properties.selected_user.anyOf =
+        userOperatorUserOptions;
+    }
+  } else {
+    delete localSchema.properties.section1.properties.existing_bciers_user;
+    delete localSchema.properties.section1.allOf;
   }
 
   return localSchema;
