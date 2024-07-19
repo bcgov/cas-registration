@@ -1,4 +1,5 @@
 from typing import Optional
+from uuid import UUID
 from ninja import Field, ModelSchema
 from registration.models import AppRole, User
 
@@ -57,10 +58,7 @@ class UserExternalDashboardUsersTileData(ModelSchema):
 
 
 class UserContactPageOut(ModelSchema):
-    street_address: Optional[str] = Field(None, alias="address.street_address")
-    municipality: Optional[str] = Field(None, alias="address.municipality")
-    province: Optional[str] = Field(None, alias="address.province")
-    postal_code: Optional[str] = Field(None, alias="address.postal_code")
+    selected_user: UUID = Field(..., alias="user_guid")
 
     @staticmethod
     def resolve_phone_number(obj: User) -> str:
