@@ -1,13 +1,14 @@
 import { render, screen } from "@testing-library/react";
 import PageTaskListItem from "./PageTaskListItem";
 import { TaskListElement } from "../types";
+import { useRouter } from "@bciers/testConfig/mocks";
 
 const mockRouter = {
   push: vi.fn(),
 };
-vi.mock("next/navigation", () => ({
-  useRouter: () => mockRouter,
-}));
+useRouter.mockReturnValue({
+  push: vi.fn(),
+});
 
 describe("The Page task list item", () => {
   beforeEach(async () => {
