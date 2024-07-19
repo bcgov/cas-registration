@@ -15,7 +15,6 @@ const FacilitiesActionCell = ActionCellFactory({
   generateHref: (params: GridRenderCellParams) => {
     return `operations/${params.row.id}/facilities?operationsTitle=${params.row.name}`;
   },
-  replace: true,
   cellText: "View Facilities",
 });
 
