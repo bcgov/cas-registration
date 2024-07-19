@@ -45,10 +45,12 @@ class TestReportingOperationsEndpoint:
 
         assert response_json['count'] == 5
         assert len(response_json['items']) == 5
-        for index, item in enumerate(response_json['items']):
-            assert item['id'] == str(operations[index].id)
-            assert item['bcghg_id'] == operations[index].bcghg_id
-            assert item['name'] == operations[index].name
+        for _, item in enumerate(response_json['items']):
+            operation = next(op for op in operations if str(op.id) == item['id'])
+
+            assert item['id'] == str(operation.id)
+            assert item['bcghg_id'] == operation.bcghg_id
+            assert item['name'] == operation.name
             # The non none test cases were handled in the service test
             assert item['report_id'] is None
             assert item['report_version_id'] is None
