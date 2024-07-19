@@ -28,7 +28,6 @@ const FacilityDataGrid = ({
       generateHref: (params: GridRenderCellParams) => {
         return `/operations/${operationId}/facilities/${params.row.id}?operationsTitle=${operationsTitle}&facilitiesTitle=${params.row.name}`;
       },
-      replace: true,
       cellText: "View Details",
     });
   const ActionCell = useMemo(() => createFacilitiesActionCell(), []);

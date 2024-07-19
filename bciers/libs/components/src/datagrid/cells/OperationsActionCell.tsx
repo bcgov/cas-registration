@@ -27,7 +27,6 @@ const OperationsActionCell = () => {
               operationsTitle: `${params.row.name}`,
             },
           }}
-          replace={true}
         >
           {actionText}
         </Link>
