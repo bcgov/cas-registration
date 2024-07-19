@@ -172,7 +172,8 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 CORS_ALLOWED_ORIGINS = ["http://localhost:3000"]
 
-DATA_UPLOAD_MAX_MEMORY_SIZE = 20000000
+DATA_UPLOAD_MAX_MEMORY_SIZE = 25000000
+FILE_UPLOAD_MAX_MEMORY_SIZE = 20000000
 
 
 # Only enable sentry in production

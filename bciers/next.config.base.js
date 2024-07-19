@@ -12,9 +12,4 @@ module.exports = {
       transform: "@mui/material/{{member}}",
     },
   },
-  experimental: {
-    serverActions: {
-      bodySizeLimit: "20mb",
-    },
-  },
 };
