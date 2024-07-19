@@ -32,3 +32,14 @@ class ContactFilterSchema(FilterSchema):
     first_name: Optional[str] = Field(None, json_schema_extra={'q': 'first_name__icontains'})
     last_name: Optional[str] = Field(None, json_schema_extra={'q': 'last_name__icontains'})
     email: Optional[str] = Field(None, json_schema_extra={'q': 'email__icontains'})
+
+
+class ContactIn(ModelSchema):
+    street_address: Optional[str] = None
+    municipality: Optional[str] = None
+    province: Optional[str] = None
+    postal_code: Optional[str] = None
+
+    class Meta:
+        model = Contact
+        fields = ['first_name', 'last_name', 'email', 'phone_number', 'position_title']
