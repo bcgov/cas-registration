@@ -56,6 +56,7 @@ class FacilityAdmin(admin.ModelAdmin):
         'created_at',
         'updated_at',
         'archived_at',
+        'starting_date',
     )
 
 
