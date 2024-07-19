@@ -24,6 +24,10 @@ export const withAuthorizationReporting: MiddlewareFactory = (
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   return async (request: NextRequest, _next: NextFetchEvent) => {
     const { pathname } = request.nextUrl;
+
+    if (request.nextUrl.pathname.startsWith("/demo"))
+      return next(request, _next);
+
     // Check if the user is authenticated via the jwt encoded in server side cookie
     const token = await getToken();
 
