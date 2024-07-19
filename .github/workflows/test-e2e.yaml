@@ -46,6 +46,8 @@ jobs:
           keycloak_client_id: ${{ env.KEYCLOAK_CLIENT_ID }}
           keycloak_client_secret: ${{ env.KEYCLOAK_CLIENT_SECRET }}
           nextauth_secret: ${{ env.NEXTAUTH_SECRET }}
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
       - name: ⚡️ cache Playwright binaries
         uses: actions/cache@v4
         id: playwright-cache
