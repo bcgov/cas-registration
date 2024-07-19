@@ -58,7 +58,7 @@ spec:
             - name: NEXTAUTH_SECRET
               valueFrom:
                 secretKeyRef:
-                  name: {{ template "cas-registration.fullname" . }}-nextauth
+                  name: cas-registration-nextauth
                   key: nextauth-secret
             - name: NEXT_PUBLIC_GROWTHBOOK_CLIENT_KEY
               value: {{ .Values.growthbook.clientKey }}
