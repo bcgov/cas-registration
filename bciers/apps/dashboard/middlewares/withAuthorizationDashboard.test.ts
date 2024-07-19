@@ -71,7 +71,7 @@ describe("withAuthorizationDashboard middleware", () => {
 
     expect(NextResponse.redirect).toHaveBeenCalledOnce();
     expect(NextResponse.redirect).toHaveBeenCalledWith(
-      new URL("/registration/profile", domain),
+      new URL("/administration/profile", domain),
     );
     expect(result).toBeInstanceOf(NextResponse);
 
