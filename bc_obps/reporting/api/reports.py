@@ -33,13 +33,13 @@ def start_report(request: HttpRequest, payload: StartReportIn) -> Tuple[Literal[
 @handle_http_errors()
 def get_report_operation_by_version_id(
     request: HttpRequest, version_id: int
-) -> Tuple[Literal[201], ReportOperationOut]:
+) -> Tuple[Literal[200], ReportOperationOut]:
     report_operation = ReportService.get_report_operation_by_version_id(version_id)
-    return 201, report_operation
+    return 200, report_operation
 
 
 @router.post(
-    "/save-report/{version_id}",
+    "/report-version/{version_id}/report-operation",
     response={201: ReportOperationOut, custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="""Updates given report operation with fields: Operator Legal Name, Operator Trade Name, Operation Name, Operation Type,
