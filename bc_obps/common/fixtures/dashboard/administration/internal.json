@@ -11,7 +11,7 @@
             "title": "Operators",
             "icon": "Inbox",
             "content": "View all operators here.",
-            "href": "/administration/operators"
+            "href": "/administration/tbd"
           },
           {
             "title": "Operations",
@@ -23,7 +23,7 @@
             "title": "Facilities",
             "icon": "File",
             "content": "View all facilities here.",
-            "href": "/administration/tbd"
+            "href": "/administration/facilities"
           },
           {
             "title": "Operator Administrators and Access Requests",
@@ -41,7 +41,7 @@
             "title": "Contacts",
             "icon": "Users",
             "content": "View all contacts here.",
-            "href": "/administration/tbd"
+            "href": "/administration/contacts"
           }
         ]
       }

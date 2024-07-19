@@ -111,7 +111,7 @@ Once the Auth options object is configured, calls to `signIn("keycloak")` will d
 By implementing Next.js [multi-zone feature](https://nextjs.org/docs/pages/building-your-application/deploying/multi-zones), where you have multiple Next.js apps running under the same domain but on different subdomains or paths, so the Auth.js authentication token and session objects can be shared across our mono-repo apps.
 Our dashboard app's `next.config.js` manages the rewrites mapping an incoming request path to a different destination path, and all other multi-zone app's have configured `next.config.js\basePath` as the project folder.
 
-### middleware
+### Middleware
 
 Next.js [Middleware ](https://nextjs.org/docs/advanced-features/middleware) allows control over requests before they are completed. Responses can be modified based on conditions such as authentication session.
 Our apps use chained middlewares to improves code readability, and maintainability. A project's `/middlewares/withAuthorization{ProjectName}` middleware secures the app routes using Auth.js authentication JWT obtained from the IDIR keycloak provider. Based on the Auth.js JWT properties of identity_provider and user role, the middleware dynamically rewrites the request URL to the appropriate folder structure thereby enforcing both authentication and authorization.
@@ -120,7 +120,29 @@ Our apps use chained middlewares to improves code readability, and maintainabili
 
 The Registration1 and Registration code is organized into sub-folders based on a identity provider, an application role, and dashboard folder, or just dashboard folder for routes available for authenticated users without an authorization role. As mentioned, the middleware dynamically rewrites the request URL based on the Auth.js JWT properties of identity_provider and user role so to match our sub-folder structure. So route URL segments such as registration1 `http://localhost:3000/dashboard/operations` would get mapped to nested folder `bciers/apps/registration1/app/(authenticated)/bceidbusiness/industry_user/dashboard/operations' for an authenticated industry user.
 
-For our multi-zone apps, the dashboard app manages the main domain and rewites request to the appropriate zone as required. The dashboard links are configured in `bc_obps/common/fixtures/dashboard/{identity-provider}` and use the `{project/}` pre-fix. So route URL to registration operations would be `http://localhost:3000/registration/dashboard/operations`
+For our multi-zone apps, the dashboard app manages the main domain and rewites request to the appropriate zone as defined in `bciers/apps/dashboard/next.config.js` and `bciers/apps/dashboard/middlewares/withAuthorizationDashboard.ts`.
+
+### Folder Structure & Dashboard Tiles
+
+The base directory where all the dashboard-related JSON files are stored is `bc_obps/common/fixtures/dashboard/`. The folder structure for the .json files in the project follows a specific pattern, which includes an optional part. Here's the complete structure:
+
+`bc_obps/common/fixtures/dashboard/{project}/{identity-provider-type}{optional_userole}.json`
+
+`{project}/`: This represents the specific project folder. Replace {project} with the name of the project.
+
+`{identity-provider-type}`: This folder indicates the type of identity provider. Replace `{identity-provider-type}` with the relevant type (e.g., external, internal).
+
+`{optional_userole}`: This part of the file name is optional and can include an underscore followed by a user role. If not needed, this part can be omitted entirely.
+
+The .json file then sets the dashboard tile links' href property as per the project's folder structure.
+
+### Folder Structure & Dynamic Breadcrumbs
+
+The Bread.tsx component in the `bciers/libs/components/src/navigation` directory dynamically builds breadcrumbs based on the folder structure. To exclude certain folders from appearing in the breadcrumbs, you can use Route groups (i.e., a folder named in parenthesis, such as (authentication)), which are not included in the route's URL path, or you can apply conditional logic within the component.
+
+For instance, when dealing with UUID breadcrumbs from dynamic folders, the component passes the name associated with the UUID record via the query string. The Bread component utilizes the translateNumericPart function to handle UUID segments, identifying the correct query string parameter and rendering the name instead of the UUID number.
+
+The pattern for the query string parameter should follow the format `{name-of-preceding-folder}Title`. For example, the OperationDataGridPage is displayed from the route `bciers/apps/administration/app/bceidbusiness/industry_user_admin/operations`, and the View Details link includes the parameter `?operationsTitle` for the route `bciers/apps/administration/app/bceidbusiness/industry_user_admin/operations/[operatorId]`.
 
 ## Styling
 
