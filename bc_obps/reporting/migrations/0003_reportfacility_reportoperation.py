@@ -61,6 +61,7 @@ class Migration(migrations.Migration):
                 (
                     'operation_type',
                     models.CharField(
+                        choices=[('sfo', 'Sfo'), ('lfo', 'Lfo')],
                         db_comment='The type of the operation, LFO or SFO',
                         max_length=1000,
                     ),
@@ -81,8 +82,7 @@ class Migration(migrations.Migration):
                     'operation_representative_name',
                     models.CharField(db_comment='The full name of the operation representative', max_length=1000),
                 ),
-                ('reporting_activities', models.ManyToManyField(related_name='+', to='registration.reportingactivity')),
-                ('regulated_products', models.ManyToManyField(related_name='+', to='registration.regulatedproduct')),
+                ('activities', models.ManyToManyField(related_name='+', to='registration.reportingactivity')),
                 (
                     'report',
                     models.OneToOneField(
