@@ -109,8 +109,8 @@ export default function OperationReview({
             formData={formData}
             onSubmit={async (data: { formData?: any }) => {
               const method = "POST";
-              const endpoint = `reporting/save-report/${version_id}`;
-              const pathToRevalidate = `reporting/save-report/${version_id}`;
+              const endpoint = `reporting/report-version/${version_id}/report-operation`;
+              const pathToRevalidate = `reporting/report-version/${version_id}/report-operation`;
               const formDataObject = JSON.parse(JSON.stringify(data.formData));
               const body = {
                 operator_legal_name:
