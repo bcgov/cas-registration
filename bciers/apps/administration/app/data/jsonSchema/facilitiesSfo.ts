@@ -2,10 +2,12 @@ import SectionFieldTemplate from "@bciers/components/form/fields/SectionFieldTem
 import { RJSFSchema } from "@rjsf/utils";
 import provinceOptions from "@bciers/data/provinces.json";
 
+const currentYear = new Date().getFullYear();
+
 const section1: RJSFSchema = {
   type: "object",
   title: "Facility Information",
-  required: ["name", "type"],
+  required: ["name", "type", "year"],
   properties: {
     name: {
       type: "string",
@@ -21,7 +23,32 @@ const section1: RJSFSchema = {
         },
       ],
     },
+    year: {
+      type: "boolean",
+      title: `Did this facility begin operations in ${currentYear - 1} or ${currentYear}?`,
+      default: false,
+    },
   },
+  allOf: [
+    {
+      if: {
+        properties: {
+          year: {
+            const: true,
+          },
+        },
+      },
+      then: {
+        properties: {
+          starting_date: {
+            type: "string",
+            title: "Date of facility starting operations:",
+          },
+        },
+        required: ["starting_date"],
+      },
+    },
+  ],
 };
 
 const section2: RJSFSchema = {
@@ -81,6 +108,12 @@ export const facilitiesUiSchema = {
     "ui:FieldTemplate": SectionFieldTemplate,
     type: {
       "ui:widget": "ComboBox",
+    },
+    year: {
+      "ui:widget": "ToggleWidget",
+    },
+    starting_date: {
+      "ui:widget": "DateWidget",
     },
   },
   section2: {

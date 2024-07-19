@@ -60,6 +60,7 @@ class FacilityService:
             include={
                 'name',
                 'type',
+                'starting_date',
                 'latitude_of_largest_emissions',
                 'longitude_of_largest_emissions',
             }
