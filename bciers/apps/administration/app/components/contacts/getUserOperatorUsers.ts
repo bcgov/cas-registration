@@ -4,7 +4,7 @@ import { actionHandler } from "@bciers/actions";
 export default async function getUserOperatorUsers(pathToRevalidate: string) {
   try {
     return await actionHandler(
-      "registration/user-operators/current/users",
+      "registration/user-operators/current/operator-users",
       "GET",
       pathToRevalidate,
     );

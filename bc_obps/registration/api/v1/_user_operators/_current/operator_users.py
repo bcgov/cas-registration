@@ -14,7 +14,7 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 
 # "current" refers to the current user-operator (we look up the current user-operator via the current user)
 @router.get(
-    "/user-operators/current/users",
+    "/user-operators/current/operator-users",
     response={200: List[UserOperatorUsersOut], custom_codes_4xx: Message},
     tags=USER_OPERATOR_TAGS,
     description="""Retrieves the list of users associated with the operator of the current user. The current user is an industry user admin.
@@ -23,7 +23,7 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 )
 @authorize(["industry_user"], ["admin"])
 @handle_http_errors()
-def get_current_user_operator_users(request: HttpRequest) -> Tuple[Literal[200], QuerySet[UserOperator]]:
+def get_operator_users(request: HttpRequest) -> Tuple[Literal[200], QuerySet[UserOperator]]:
     return 200, UserOperatorDataAccessService.get_an_operators_user_operators_by_user_guid(
         get_current_user_guid(request)
     )
