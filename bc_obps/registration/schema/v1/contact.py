@@ -15,7 +15,7 @@ class ContactOut(ModelSchema):
 
     class Meta:
         model = Contact
-        fields = ['first_name', 'last_name', 'email', 'phone_number', 'position_title', 'business_role']
+        fields = ['id', 'first_name', 'last_name', 'email', 'phone_number', 'position_title', 'business_role']
         populate_by_name = True
 
 
