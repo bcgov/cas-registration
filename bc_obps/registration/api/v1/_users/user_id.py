@@ -6,11 +6,11 @@ from registration.constants import USER_TAGS
 from registration.decorators import authorize
 from registration.models.user import User
 from registration.schema.v1.user import UserContactPageOut
-from service.data_access_service.user_service import UserDataAccessService
 from registration.decorators import handle_http_errors
 from registration.api.router import router
 from registration.schema.generic import Message
 from ninja.responses import codes_4xx
+from service.user_service import UserService
 
 
 @router.get(
@@ -23,4 +23,4 @@ from ninja.responses import codes_4xx
 @authorize(["industry_user"], ["admin"])
 @handle_http_errors()
 def get_user(request: HttpRequest, user_id: UUID) -> Tuple[Literal[200], User]:
-    return 200, UserDataAccessService.get_if_authorized(get_current_user_guid(request), user_id)
+    return 200, UserService.get_if_authorized(get_current_user_guid(request), user_id)
