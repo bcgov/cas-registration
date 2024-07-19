@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import Link from "@mui/material/Link";
 import { validate as isValidUUID } from "uuid";
@@ -61,15 +60,7 @@ export default function Bread({
   const paths = usePathname();
   const pathNames = paths.split("/").filter((path) => path);
   const searchParams = useSearchParams();
-  const [crumbTitles, setCrumbTitles] = useState<{ [key: string]: string }>({});
-
-  useEffect(() => {
-    const titles: { [key: string]: string } = {};
-    searchParams.forEach((value, key) => {
-      titles[key] = value;
-    });
-    setCrumbTitles(titles);
-  }, [searchParams]);
+  const crumbTitles = Object.fromEntries(searchParams.entries());
 
   function translateNumericPart(segment: string, index: number): string {
     if (isValidUUID(segment)) {
