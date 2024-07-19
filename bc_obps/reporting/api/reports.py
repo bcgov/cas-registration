@@ -25,7 +25,7 @@ def start_report(request: HttpRequest, payload: StartReportIn) -> Tuple[Literal[
 
 
 @router.get(
-    "/report-operation/{version_id}",
+    "/report-version/{version_id}/report-operation",
     response={201: ReportOperationOut, custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="""Takes version_id (primary key of Report_Version model) and returns its report_operation object.""",
