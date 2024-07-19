@@ -14,11 +14,12 @@ interface SingleStepTaskListFormProps {
   disabled?: boolean;
   formData: { [key: string]: any };
   onCancel: () => void;
-  onChange: (e: IChangeEvent) => void;
+  onChange?: (e: IChangeEvent) => void;
   onSubmit: (e: IChangeEvent) => any;
   schema: RJSFSchema;
   uiSchema: UiSchema;
   error?: string;
+  inlineMessage?: React.ReactNode;
 }
 
 // this generic function spreads the whole of the formData into every section. On submission, we remove extraneous formData from each section using the omitExtraData prop.
@@ -55,6 +56,7 @@ const SingleStepTaskListForm = ({
   schema,
   uiSchema,
   error,
+  inlineMessage,
 }: SingleStepTaskListFormProps) => {
   const hasFormData = Object.keys(rawFormData).length > 0;
   const formData = hasFormData ? createNestedFormData(rawFormData, schema) : {};
@@ -187,6 +189,7 @@ const SingleStepTaskListForm = ({
           liveValidate={isLiveValidate && !isFormDisabled}
           omitExtraData={true}
         >
+          {inlineMessage && <div className="mt-10 mb-5">{inlineMessage}</div>}
           <div className="min-h-6">
             {error && <Alert severity="error">{error}</Alert>}
           </div>
