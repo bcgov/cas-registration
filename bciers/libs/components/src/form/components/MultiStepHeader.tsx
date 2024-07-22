@@ -6,7 +6,7 @@ interface MultiStepHeaderProps {
 const MultiStepHeader = ({ step, steps }: MultiStepHeaderProps) => {
   // Reduce the width of the title if there are more than 2 steps
   // so it will break onto a new line
-  const titleWidth = steps.length > 2 ? "lg:w-36" : "";
+  const titleWidth = steps.length > 2 ? "lg:w-24" : "";
   return (
     <div className="block md:flex flex-row mt-10 mb-6 justify-between w-full">
       {steps.map((title, index) => {
@@ -29,7 +29,9 @@ const MultiStepHeader = ({ step, steps }: MultiStepHeaderProps) => {
               {index + 1}
             </div>
             <div
-              className={`ml-4 h-min ${titleWidth}`}
+              className={`ml-4 h-min ${titleWidth} ${
+                isActiveStep && "font-bold"
+              }`}
               data-testid="multistep-header-title"
             >
               {steps[index]}
