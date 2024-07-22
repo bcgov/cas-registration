@@ -22,9 +22,7 @@ class Facility(TimeStampedModel):
         unique=True,
     )
     starting_date = models.DateTimeField(
-      blank=True,
-      null=True,
-      db_comment="The date of the facility starting operations"
+        blank=True, null=True, db_comment="The date of the facility starting operations"
     )
     type = models.CharField(max_length=100, choices=Types.choices, db_comment="The type of the facility")
     address = models.ForeignKey(

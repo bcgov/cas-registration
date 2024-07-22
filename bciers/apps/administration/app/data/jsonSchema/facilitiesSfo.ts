@@ -25,7 +25,9 @@ const section1: RJSFSchema = {
     },
     year: {
       type: "boolean",
-      title: `Did this facility begin operations in ${currentYear - 1} or ${currentYear}?`,
+      title: `Did this facility begin operations in ${
+        currentYear - 1
+      } or ${currentYear}?`,
       default: false,
     },
   },

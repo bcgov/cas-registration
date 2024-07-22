@@ -56,6 +56,6 @@ class FacilityOut(ModelSchema):
             'well_authorization_numbers',
             "latitude_of_largest_emissions",
             "longitude_of_largest_emissions",
-            "starting_date"
+            "starting_date",
         ]
         populate_by_name = True
