@@ -18,7 +18,11 @@ const ReportingTaskList: React.FC<Props> = ({ elements }) => {
         {elements.map((elt) => {
           const TaskListItem = taskListItemFactory(elt);
           return (
-            <TaskListItem item={elt} elementFactory={taskListItemFactory} />
+            <TaskListItem
+              key={elt.key ?? elt.title}
+              item={elt}
+              elementFactory={taskListItemFactory}
+            />
           );
         })}
       </List>
