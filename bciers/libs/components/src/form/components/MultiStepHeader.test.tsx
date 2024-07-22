@@ -15,14 +15,14 @@ describe("The MultiStepHeader component", () => {
   it("reduces the width of the title if there are more than 2 steps", () => {
     render(<MultiStepHeader {...defaultProps} />);
     expect(screen.getAllByTestId("multistep-header-title")[0]).toHaveClass(
-      "lg:w-36",
+      "lg:w-24",
     );
   });
 
   it("does not reduce the width of the title if there are fewer than 2 steps", () => {
     render(<MultiStepHeader {...defaultProps} steps={["just me"]} />);
     expect(screen.getAllByTestId("multistep-header-title")[0]).not.toHaveClass(
-      "lg:w-36",
+      "lg:w-24",
     );
   });
 
