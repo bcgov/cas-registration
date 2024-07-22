@@ -27,6 +27,7 @@ const isAuthorizedIdirUser = (token: {
   identity_provider?: string;
   app_role?: string;
 }): boolean => {
+  console.log("token!!!!!!!!!!!", token);
   if (!token) {
     return false;
   }
@@ -69,6 +70,8 @@ export const withAuthorizationAdministration: MiddlewareFactory = (
               `${process.env.API_URL}registration/user-operators/current`,
               options,
             );
+            debugger;
+            console.log("response.json", response.json());
             const operator = await response.json();
             if (
               operator.status !== "Pending" &&
