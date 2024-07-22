@@ -40,7 +40,6 @@ const NestedArrayFieldTemplate = ({
       {items?.map((item, i: number) => {
         return (
           <div key={item.key} className="min-w-full">
-            {/* <div className="form-heading flex justify-between m-w-full my-10"> */}
               {customTitleName && (
                 <span className='emission-array-header'>
                   {customTitleName} {i + 1}
@@ -53,7 +52,6 @@ const NestedArrayFieldTemplate = ({
               >
                 <MinusSVG />
               </button>
-            {/* </div> */}
             <div style={{marginLeft: '20px'}}>
             {{
               ...item.children,
