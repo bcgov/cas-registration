@@ -321,6 +321,9 @@ describe("OperatorForm component", () => {
     userEvent.click(submitButton);
 
     await waitFor(() => {
+      expect(
+        screen.getByText("Your edits were saved successfully"),
+      ).toBeVisible();
       expect(actionHandler).toHaveBeenCalledWith(
         "registration/v2/user-operators/current/operator",
         "PUT",
