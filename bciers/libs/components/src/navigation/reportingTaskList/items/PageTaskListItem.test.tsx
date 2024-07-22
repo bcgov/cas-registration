@@ -6,9 +6,7 @@ import { useRouter } from "@bciers/testConfig/mocks";
 const mockRouter = {
   push: vi.fn(),
 };
-useRouter.mockReturnValue({
-  push: vi.fn(),
-});
+useRouter.mockReturnValue(mockRouter);
 
 describe("The Page task list item", () => {
   beforeEach(async () => {
