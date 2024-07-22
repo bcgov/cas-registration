@@ -47,6 +47,7 @@ const sfoFormData = {
   province: "BC",
   postal_code: "h0h0h0",
   id: "4abd8367-efd1-4654-a7ea-fa1a015d3cae",
+  starting_date: "2024-07-11 02:00:00.000 -0700",
 };
 
 const lfoFormData = {
@@ -82,6 +83,14 @@ describe("FacilitiesForm component", () => {
     ).toBeVisible();
     expect(screen.getByLabelText(/Facility Name+/i)).toHaveValue("");
     expect(screen.getByLabelText(/Facility Type+/i)).toHaveValue("");
+    expect(
+      screen.getByLabelText(
+        /Did this facility begin operations in 2023 or 2024+/i,
+      ),
+    ).not.toBeChecked();
+    expect(
+      screen.queryByLabelText(/Date of facility starting operations+/i),
+    ).toBeNull();
     expect(
       screen.getByRole("heading", { name: /Facility Address/i }),
     ).toBeVisible();
@@ -220,6 +229,15 @@ describe("FacilitiesForm component", () => {
       submitButton.click();
     });
     expect(screen.getAllByText(/Required field/i)).toHaveLength(4);
+
+    //check starting date required when year is clicked
+    const year = screen.getByLabelText(
+      /Did this facility begin operations in 2023 or 2024+/i,
+    );
+    act(() => {
+      year.click();
+    });
+    expect(screen.getAllByText(/Required field/i)).toHaveLength(5);
   });
   it("does not allow LFO submission if there are validation errors (bad form data)", async () => {
     render(
@@ -271,6 +289,15 @@ describe("FacilitiesForm component", () => {
     await userEvent.click(openComboboxButton);
     const typeOption = screen.getByText("Single Facility Operation");
     await userEvent.click(typeOption);
+    // fill year and starting date
+    const year = screen.getByLabelText(
+      /Did this facility begin operations in 2023 or 2024+/i,
+    );
+    await userEvent.click(year);
+    await userEvent.type(
+      screen.getByLabelText(/Date of facility starting operations+/i),
+      "20250101",
+    );
 
     // fill lat and long (userEvent.type doesn't work because the value goes in as a string and lat/long require a number)
     fireEvent.change(
