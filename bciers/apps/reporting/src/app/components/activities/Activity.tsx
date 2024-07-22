@@ -6,7 +6,6 @@ import { Suspense } from "react";
 export const fetchSchemaData = async () => {
   // fetch data from server
   const schemaData = await actionHandler(`reporting/build-form-schema?activity=1&source_types[]=1&source_types[]=2&report_date=2024-04-01`, "GET", "");
-  console.log(schemaData)
   return JSON.parse(schemaData);
 };
 
