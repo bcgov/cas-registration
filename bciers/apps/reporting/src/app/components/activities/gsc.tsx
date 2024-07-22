@@ -15,14 +15,14 @@ interface Props {
 const uiSchema = {
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
-  gcsWithProductionOfUsefulEnergy :{
+  gscWithProductionOfUsefulEnergy :{
     "ui:FieldTemplate": FieldTemplate,
     "ui:widget": CheckboxWidgetLeft,
     "ui:options": {
       label: false,
     },
   },
-  gcsWithoutProductionOfUsefulEnergy :{
+  gscWithoutProductionOfUsefulEnergy :{
     "ui:FieldTemplate": FieldTemplate,
     "ui:widget": CheckboxWidgetLeft,
     "ui:options": {
@@ -34,7 +34,7 @@ const uiSchema = {
     "ui:options": {
       label:false
     },
-    gcsWithProductionOfUsefulEnergy: {
+    gscWithProductionOfUsefulEnergy: {
       "ui:FieldTemplate": SourceTypeBoxTemplate,
       units: {
         "ui:ArrayFieldTemplate": NestedArrayFieldTemplate,
@@ -94,7 +94,7 @@ const uiSchema = {
         },
       },
     },
-    gcsWithoutProductionOfUsefulEnergy: {
+    gscWithoutProductionOfUsefulEnergy: {
       "ui:FieldTemplate": SourceTypeBoxTemplate,
       units: {
         "ui:ArrayFieldTemplate": NestedArrayFieldTemplate,
