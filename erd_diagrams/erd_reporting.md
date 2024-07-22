@@ -100,6 +100,49 @@ ActivitySourceTypeJsonSchema {
     ForeignKey valid_from
     ForeignKey valid_to
 }
+ReportActivity {
+    BigAutoField id
+    JSONField json_data
+    ForeignKey report_version_id
+    ForeignKey activity_base_schema
+    ForeignKey activity
+}
+ReportSourceType {
+    BigAutoField id
+    JSONField json_data
+    ForeignKey report_version_id
+    ForeignKey activity_source_type_base_schema
+    ForeignKey report_activity
+    ForeignKey source_type
+}
+ReportUnit {
+    BigAutoField id
+    JSONField json_data
+    ForeignKey report_version_id
+    ForeignKey report_source_type
+}
+ReportFuel {
+    BigAutoField id
+    JSONField json_data
+    ForeignKey report_version_id
+    ForeignKey report_source_type
+    ForeignKey report_unit
+    ForeignKey fuel_type
+}
+ReportEmission {
+    BigAutoField id
+    JSONField json_data
+    ForeignKey report_version_id
+    ForeignKey gas_type
+    ForeignKey report_source_type
+    ForeignKey fuel_form_data
+}
+ReportMethodology {
+    BigAutoField id
+    JSONField json_data
+    ForeignKey report_version_id
+    OneToOneField report_emission
+}
 Report }|--|| Operator : operator
 Report }|--|| Operation : operation
 Report }|--|| ReportingYear : reporting_year
@@ -124,3 +167,22 @@ ActivitySourceTypeJsonSchema }|--|| ReportingActivity : reporting_activity
 ActivitySourceTypeJsonSchema }|--|| SourceType : source_type
 ActivitySourceTypeJsonSchema }|--|| Configuration : valid_from
 ActivitySourceTypeJsonSchema }|--|| Configuration : valid_to
+ReportActivity }|--|| ReportVersion : report_version_id
+ReportActivity }|--|| ActivityJsonSchema : activity_base_schema
+ReportActivity }|--|| ReportingActivity : activity
+ReportSourceType }|--|| ReportVersion : report_version_id
+ReportSourceType }|--|| ActivitySourceTypeJsonSchema : activity_source_type_base_schema
+ReportSourceType }|--|| ReportActivity : report_activity
+ReportSourceType }|--|| SourceType : source_type
+ReportUnit }|--|| ReportVersion : report_version_id
+ReportUnit }|--|| ReportSourceType : report_source_type
+ReportFuel }|--|| ReportVersion : report_version_id
+ReportFuel }|--|| ReportSourceType : report_source_type
+ReportFuel }|--|| ReportUnit : report_unit
+ReportFuel }|--|| FuelType : fuel_type
+ReportEmission }|--|| ReportVersion : report_version_id
+ReportEmission }|--|| GasType : gas_type
+ReportEmission }|--|| ReportSourceType : report_source_type
+ReportEmission }|--|| ReportFuel : fuel_form_data
+ReportMethodology }|--|| ReportVersion : report_version_id
+ReportMethodology ||--|| ReportEmission : report_emission
