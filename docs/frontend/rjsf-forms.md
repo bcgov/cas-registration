@@ -163,18 +163,14 @@ If the design requires the text to extend past our default `InlineFieldTemplate`
 and set the `ui:FieldTemplate` to `BasicFieldTemplate` in the fields `uiSchema`. If you use the `BasicFieldTemplate`
 there is no need to set `label: false` in `ui:options` as shown below.
 
-```
-
 To ensure the label doesn't display twice using the default `InlineFieldTemplate` set `label: false` in `ui:options`.
 
 ```
 
 checkbox_field {
-"ui:widget": "CheckboxWidget",
-"ui:options": {
-label: false,
+  "ui:widget": "CheckboxWidget",
+  "ui:options": {
+    label: false,
 }
-
-```
 
 ```
