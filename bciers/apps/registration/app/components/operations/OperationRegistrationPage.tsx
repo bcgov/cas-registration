@@ -50,6 +50,8 @@ const OperationRegistrationPage = async ({
   operation: UUID | "create";
   searchParams: FacilitiesSearchParams;
 }) => {
+  // Need to be careful using formSection as it is not a reliable way to determine the page
+  // due to the conditional new entrant page on this form
   const isFacilityPage = formSection === 3 && operation;
   const isRegistrationPurposePage = formSection === 1;
 
