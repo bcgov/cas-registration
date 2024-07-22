@@ -24,12 +24,12 @@ export default function OperatorForm({
 }: Readonly<Props>) {
   // @ ts-ignore
   const [error, setError] = useState(undefined);
-  const [confirmation, setConfirmation] = useState(false);
+  // const [confirmation, setConfirmation] = useState(false);
   const router = useRouter();
   const params = useParams();
   return (
     <>
-      {confirmation && <div>success</div>}
+      {/* {confirmation && <div>success</div>} */}
       <SingleStepTaskListForm
         error={error}
         schema={schema}
@@ -54,7 +54,7 @@ export default function OperatorForm({
             // return error so SingleStepTaskList can re-enable the submit button and user can attempt to submit again
             return { error: response.error };
           }
-          setConfirmation(true);
+          // setConfirmation(true);
           if (isCreating) {
             router.replace(
               `/operations/${params.operationId}/facilities/${response.id}?title=${response.name}`,
