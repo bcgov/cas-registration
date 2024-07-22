@@ -41,4 +41,5 @@ class FacilityModelTest(BaseTestCase):
             ("bcghg_id", "bcghg id", None, None),
             ("ownerships", "facility ownership timeline", None, None),
             ("events", "event", None, None),
+            ("starting_date", "Starting Date", None, None),
         ]
