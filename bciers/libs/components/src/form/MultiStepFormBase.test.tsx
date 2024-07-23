@@ -6,7 +6,6 @@ import {
   waitFor,
 } from "@testing-library/react";
 import { describe, expect } from "vitest";
-import React from "react";
 import MultiStepFormBase from "@bciers/components/form/MultiStepFormBase";
 import { useSession, useParams } from "@bciers/testConfig/mocks";
 import { QueryParams, Session } from "@bciers/testConfig/types";
@@ -300,5 +299,39 @@ describe("The MultiStepFormBase component", () => {
     fireEvent.click(saveAndContinueButton);
     expect(screen.getByRole("alert")).toBeVisible();
     expect(mockOnSubmit).not.toHaveBeenCalled(); // submit function is not called because we hit validation errors first
+  });
+
+  it("calls the onChange prop when the form changes", () => {
+    useParams.mockReturnValue({
+      formSection: "1",
+      operation: "create",
+    } as QueryParams);
+
+    const changeHandler = vi.fn();
+    render(
+      <MultiStepFormBase
+        {...defaultProps}
+        disabled={false}
+        onChange={changeHandler}
+      />,
+    );
+    const input = screen.getByLabelText(/field1*/i);
+    fireEvent.change(input, { target: { value: "new value" } });
+
+    expect(changeHandler).toHaveBeenCalled();
+  });
+
+  it("renders children", () => {
+    useParams.mockReturnValue({
+      formSection: "1",
+      operation: "create",
+    } as QueryParams);
+
+    render(
+      <MultiStepFormBase {...defaultProps}>
+        <div data-testid="test-child">Test child</div>
+      </MultiStepFormBase>,
+    );
+    expect(screen.getByTestId("test-child")).toBeVisible();
   });
 });
