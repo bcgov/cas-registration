@@ -8,6 +8,10 @@ import {
 } from "@/app/components/operations/types";
 import buildQueryParams from "@bciers/utils/buildQueryParams";
 import OperationDataGrid from "./OperationDataGrid";
+import getConfig from "next/config";
+
+const brianna = getConfig();
+console.log("brianna", brianna);
 
 const formatTimestamp = (timestamp: string) => {
   if (!timestamp) return undefined;
