@@ -200,7 +200,6 @@ class TestFacilitiesEndpoint(CommonTestSetup):
             custom_reverse_lazy("create_facility"),
         )
         assert post_response.status_code == 201
-        print('response', post_response.json())
         assert post_response.json().get('name') == "zip"
         assert post_response.json().get('id') is not None
 
