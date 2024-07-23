@@ -1,31 +1,34 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
+import { UUID } from "crypto";
 import MultiStepFormBase from "@bciers/components/form/MultiStepFormBase";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { RJSFSchema } from "@rjsf/utils";
 import { operationRegistrationUiSchema } from "apps/registration/app/data/jsonSchema/operationRegistration";
 import FacilityDataGrid from "apps/administration/app/components/facilities/FacilityDataGrid";
 import { FacilityInitialData } from "apps/administration/app/components/facilities/types";
 import { IChangeEvent } from "@rjsf/core";
+import { OperationRegistrationFormData } from "apps/registration/app/components/operations/types";
 
 interface Props {
   schema: RJSFSchema;
-  formData?: any;
+  formData?: OperationRegistrationFormData;
+  formSection: number;
   facilityInitialData?: FacilityInitialData;
+  operation: UUID | "create";
 }
 
 const OperationRegistrationForm = ({
   facilityInitialData,
   formData,
+  formSection,
+  operation,
   schema,
 }: Readonly<Props>) => {
   const [error, setError] = useState(undefined);
   const [formState, setFormState] = useState(formData ?? {});
   const router = useRouter();
-  const params = useParams();
-  const formSection = parseInt(params?.formSection.toString());
-  const operationId = params?.operation.toString();
   const formSectionList = schema.properties && Object.keys(schema.properties);
   const isNotFinalStep = formSection !== formSectionList?.length;
 
@@ -35,8 +38,9 @@ const OperationRegistrationForm = ({
     // This will have to be pulled from the response after the second page
     const OPERATION_NAME = "Operation name placeholder";
 
-    const nextStepUrl = `/operation/${OPERATION_ID}/${formSection + 1
-      }?title=${OPERATION_NAME}`;
+    const nextStepUrl = `/operation/${OPERATION_ID}/${
+      formSection + 1
+    }?title=${OPERATION_NAME}`;
 
     if (isNotFinalStep) {
       router.push(nextStepUrl);
@@ -56,7 +60,7 @@ const OperationRegistrationForm = ({
         )}
       </>
     ),
-    [facilityInitialData, operationId, isFacilityDataGrid],
+    [facilityInitialData, operation, isFacilityDataGrid],
   );
 
   const handleFormChange = useCallback(
@@ -68,7 +72,7 @@ const OperationRegistrationForm = ({
 
   return (
     <MultiStepFormBase
-      baseUrl={`/operation/${operationId}`}
+      baseUrl={`/operation/${operation}`}
       cancelUrl="/"
       schema={schema}
       uiSchema={operationRegistrationUiSchema}

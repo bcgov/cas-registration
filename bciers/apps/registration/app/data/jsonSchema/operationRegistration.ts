@@ -158,9 +158,6 @@ export const operationRegistrationUiSchema: UiSchema = {
   registration_purpose: {
     "ui:placeholder": "Select Registration Purpose",
   },
-  registration_type: {
-    "ui:widget": "ReadOnlyWidget",
-  },
   regulated_products: {
     "ui:widget": "MultiSelectWidget",
     "ui:placeholder": "Select Regulated Product",

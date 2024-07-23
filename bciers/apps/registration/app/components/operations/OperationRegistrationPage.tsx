@@ -64,6 +64,7 @@ const OperationRegistrationPage = async ({
 
   let facilityInitialData: FacilityInitialData | undefined;
   let regulatedProducts: { id: number; name: string }[] = [];
+  // Don't fetch operation if UUID is invalid or operation === "create"
   if (operation && isValidUUID(operation)) {
     // Fetch operation data here
   }
@@ -89,7 +90,9 @@ const OperationRegistrationPage = async ({
     <OperationRegistrationForm
       schema={formSchema}
       formData={{}}
+      formSection={formSection}
       facilityInitialData={facilityInitialData}
+      operation={operation}
     />
   );
 };
