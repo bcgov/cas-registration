@@ -1,11 +1,15 @@
 import "@testing-library/jest-dom";
 import { act, fireEvent, render, screen } from "@testing-library/react";
-import { useSearchParams } from "@bciers/testConfig/mocks";
+import { useRouter, useSearchParams } from "@bciers/testConfig/mocks";
 import FacilityDataGrid from "apps/administration/app/components/facilities/FacilityDataGrid";
 import { QueryParams } from "@bciers/testConfig/types";
 import extractParams from "../helpers/extractParams";
 
-const mockReplace = vi.spyOn(global.history, "replaceState");
+const mockReplace = vi.fn();
+useRouter.mockReturnValue({
+  query: {},
+  replace: mockReplace,
+});
 
 useSearchParams.mockReturnValue({
   get: vi.fn(),
@@ -78,56 +82,28 @@ describe("OperationsDataGrid component", () => {
     const facilityNameHeader = screen.getByRole("columnheader", {
       name: "Facility Name",
     });
+    facilityNameHeader.click();
 
-    act(() => {
-      facilityNameHeader.click();
-    });
-
-    expect(
-      extractParams(String(mockReplace.mock.calls[0][2]), "sort_field"),
-    ).toBe("name");
-    expect(
-      extractParams(String(mockReplace.mock.calls[0][2]), "sort_order"),
-    ).toBe("asc");
+    expect(extractParams(mockReplace.mock.calls[1], "sort_field")).toBe("name");
+    expect(extractParams(mockReplace.mock.calls[1], "sort_order")).toBe("asc");
 
     // click on the same column header again
-    act(() => {
-      facilityNameHeader.click();
-    });
-    expect(
-      extractParams(String(mockReplace.mock.calls[1][2]), "sort_field"),
-    ).toBe("name");
-    expect(
-      extractParams(String(mockReplace.mock.calls[1][2]), "sort_order"),
-    ).toBe("desc");
+    facilityNameHeader.click();
+    expect(extractParams(mockReplace.mock.calls[2], "sort_field")).toBe("name");
+    expect(extractParams(mockReplace.mock.calls[2], "sort_order")).toBe("desc");
 
     // click on the second column header
     const facilityTypeHeader = screen.getByRole("columnheader", {
       name: "Facility Type",
     });
-
-    act(() => {
-      facilityTypeHeader.click();
-    });
-
-    expect(
-      extractParams(String(mockReplace.mock.calls[2][2]), "sort_field"),
-    ).toBe("type");
-    expect(
-      extractParams(String(mockReplace.mock.calls[2][2]), "sort_order"),
-    ).toBe("asc");
+    facilityTypeHeader.click();
+    expect(extractParams(mockReplace.mock.calls[3], "sort_field")).toBe("type");
+    expect(extractParams(mockReplace.mock.calls[3], "sort_order")).toBe("asc");
 
     // click on the same column header again
-    act(() => {
-      facilityTypeHeader.click();
-    });
-
-    expect(
-      extractParams(String(mockReplace.mock.calls[3][2]), "sort_field"),
-    ).toBe("type");
-    expect(
-      extractParams(String(mockReplace.mock.calls[3][2]), "sort_order"),
-    ).toBe("desc");
+    facilityTypeHeader.click();
+    expect(extractParams(mockReplace.mock.calls[4], "sort_field")).toBe("type");
+    expect(extractParams(mockReplace.mock.calls[4], "sort_order")).toBe("desc");
   });
   it("makes API call with correct params when filtering", async () => {
     render(
@@ -146,8 +122,6 @@ describe("OperationsDataGrid component", () => {
     expect(searchInput).toHaveValue("facility 1");
 
     // check that the API call was made with the correct params
-    expect(extractParams(String(mockReplace.mock.calls[0][2]), "name")).toBe(
-      "facility 1",
-    );
+    expect(extractParams(mockReplace.mock.calls[1], "name")).toBe("facility 1");
   });
 });
