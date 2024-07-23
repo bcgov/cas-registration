@@ -3,28 +3,31 @@
 import { useState } from "react";
 import { useParams } from "next/navigation";
 import { Button } from "@mui/material";
-import { RJSFSchema } from "@rjsf/utils";
+import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import { Alert } from "@mui/material";
 import FormBase from "./FormBase";
 import MultiStepHeader from "./components/MultiStepHeader";
 import MultiStepButtons from "./components/MultiStepButtons";
+import { IChangeEvent } from "@rjsf/core";
 
 interface MultiStepFormProps {
   allowBackNavigation?: boolean;
   allowEdit?: boolean;
   baseUrl: string;
   cancelUrl: string;
+  children?: React.ReactNode;
   // Optional array to override the default header titles
   customStepNames?: string[];
   error?: any;
   disabled?: boolean;
   formData?: any;
+  onChange?: (e: IChangeEvent) => void;
   onSubmit: any;
   schema: any;
   setErrorReset?: (error: undefined) => void;
   showSubmissionStep?: boolean;
   submitButtonText?: string;
-  uiSchema: any;
+  uiSchema: UiSchema;
 }
 
 const MultiStepFormBase = ({
@@ -32,9 +35,11 @@ const MultiStepFormBase = ({
   allowEdit = false,
   baseUrl,
   cancelUrl,
+  children,
   customStepNames,
   disabled,
   error,
+  onChange,
   formData,
   onSubmit,
   schema,
@@ -50,9 +55,10 @@ const MultiStepFormBase = ({
   const formSection = parseInt(params?.formSection as string);
   const formSectionIndex = formSection - 1;
 
+  const schemaProperties = schema?.properties ? schema.properties : {};
   const formSectionList = Object.keys(schema.properties as any);
   const mapSectionTitles = formSectionList.map(
-    (section) => schema.properties[section].title,
+    (section) => schemaProperties[section].title,
   );
 
   // Submission step is a bubble on the stepper that says "Submit"
@@ -110,30 +116,36 @@ const MultiStepFormBase = ({
         />
       )}
       <FormBase
-        className="[&>div>fieldset]:min-h-[40vh]"
         schema={
-          schema.properties[formSectionList[formSectionIndex]] as RJSFSchema
+          schemaProperties[formSectionList[formSectionIndex]] as RJSFSchema
         }
+        className="flex flex-col flex-grow"
         uiSchema={uiSchema}
         disabled={isDisabled}
         readonly={isDisabled}
+        onChange={onChange}
         onSubmit={submitHandler}
         formData={formData}
         setErrorReset={setErrorReset}
       >
-        {error && <Alert severity="error">{error}</Alert>}
-        <MultiStepButtons
-          disabled={isDisabled}
-          isSubmitting={isSubmitting}
-          step={formSectionIndex}
-          steps={formSectionList}
-          baseUrl={baseUrl}
-          cancelUrl={cancelUrl}
-          allowBackNavigation={
-            allowBackNavigation && formSectionList.length > 1
-          }
-          submitButtonText={submitButtonText}
-        />
+        <div className="flex flex-col flex-grow justify-end">
+          {children}
+          <div className="min-h-[48px] box-border">
+            {error && <Alert severity="error">{error}</Alert>}
+          </div>
+          <MultiStepButtons
+            disabled={isDisabled}
+            isSubmitting={isSubmitting}
+            step={formSectionIndex}
+            steps={formSectionList}
+            baseUrl={baseUrl}
+            cancelUrl={cancelUrl}
+            allowBackNavigation={
+              allowBackNavigation && formSectionList.length > 1
+            }
+            submitButtonText={submitButtonText}
+          />
+        </div>
       </FormBase>
     </>
   );
