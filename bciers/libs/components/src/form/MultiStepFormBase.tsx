@@ -8,6 +8,7 @@ import { Alert } from "@mui/material";
 import FormBase from "./FormBase";
 import MultiStepHeader from "./components/MultiStepHeader";
 import MultiStepButtons from "./components/MultiStepButtons";
+import { IChangeEvent } from "@rjsf/core";
 
 interface MultiStepFormProps {
   allowBackNavigation?: boolean;
@@ -20,7 +21,7 @@ interface MultiStepFormProps {
   error?: any;
   disabled?: boolean;
   formData?: any;
-  onChange?: any;
+  onChange?: (e: IChangeEvent) => void;
   onSubmit: any;
   schema: any;
   setErrorReset?: (error: undefined) => void;
