@@ -1,8 +1,20 @@
 import { describe } from "vitest";
 import operationColumns from "@reporting/src/app/components/datagrid/models/operationColumns";
 import { GridColDef } from "@mui/x-data-grid";
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { useRouter } from "@bciers/testConfig/mocks";
+
+const mockPush = vi.fn();
+useRouter.mockReturnValue({
+  push: mockPush,
+});
 
 describe("operationColumns function", () => {
+  beforeEach(async () => {
+    vi.clearAllMocks();
+  });
+
   it("returns an array of column definitions", () => {
     const columns: GridColDef[] = operationColumns();
 
@@ -49,8 +61,8 @@ describe("operationColumns function", () => {
     const columns: GridColDef[] = operationColumns();
 
     const row = {
-      id: "1",
-      bcghg_id: "1",
+      id: "2",
+      bcghg_id: "2",
       name: "Operation without report",
       report_id: null,
       report_version_id: null,
@@ -59,11 +71,36 @@ describe("operationColumns function", () => {
 
     const params = {
       row,
-      value: null,
+      value: row.report_id,
     };
 
-    const cell = columns[2].renderCell(params);
-    expect(cell.props.children).toBe("Start");
+    render(columns[2].renderCell(params));
+    expect(screen.getByText("Start")).toBeInTheDocument();
+  });
+
+  it("navigates to the new report when clicking the 'Start' button", async () => {
+    const user = userEvent.setup();
+
+    const columns = operationColumns();
+
+    const row = {
+      id: "1",
+      bcghg_id: "1",
+      name: "Operation with report",
+      report_id: null,
+      report_version_id: null,
+      report_status: null,
+    };
+
+    const params = {
+      row,
+      value: row.report_id,
+    };
+
+    render(columns[2].renderCell(params));
+    await user.click(screen.getByText("Start"));
+
+    expect(useRouter().push).toHaveBeenCalled();
   });
 
   it("has a 'continue' button in the 'Actions' column when report_id exists", () => {
@@ -72,7 +109,7 @@ describe("operationColumns function", () => {
     const row = {
       id: "1",
       bcghg_id: "1",
-      name: "Operation with report",
+      name: "Operation without report",
       report_id: 1,
       report_version_id: 1,
       report_status: "draft",
@@ -80,11 +117,37 @@ describe("operationColumns function", () => {
 
     const params = {
       row,
-      value: 1,
+      value: row.report_id,
     };
 
-    const cell = columns[2].renderCell(params);
-    expect(cell.props.children).toBe("Continue");
+    render(columns[2].renderCell(params));
+    expect(screen.getByText("Continue")).toBeInTheDocument();
   });
 
+  it("navigates to the matching report page when clicking the 'Continue' button", async () => {
+    const user = userEvent.setup();
+
+    const columns = operationColumns();
+
+    const row = {
+      id: "1",
+      bcghg_id: "1",
+      name: "Operation with report",
+      report_id: 15,
+      report_version_id: 15,
+      report_status: "draft",
+    };
+
+    const params = {
+      row,
+      value: row.report_id,
+    };
+
+    render(columns[2].renderCell(params));
+    await user.click(screen.getByText("Continue"));
+
+    expect(useRouter().push).toHaveBeenCalledWith(
+      `operations/${row.report_id}/review-operator-data`,
+    );
+  });
 });
