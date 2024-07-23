@@ -1,6 +1,13 @@
 /** @type {import('next').NextConfig} */
+const BODY_SIZE = "25mb";
+
 const logAndReturnConfig = (config) => {
   console.log("Next.js base config is being loaded");
+  console.log("BODY_SIZE", BODY_SIZE);
+  console.log(
+    "size limit in bodySizeLimit:",
+    config.experimental.serverActions.bodySizeLimit,
+  );
   return config;
 };
 module.exports = logAndReturnConfig({
@@ -16,5 +23,16 @@ module.exports = logAndReturnConfig({
     "@mui/material": {
       transform: "@mui/material/{{member}}",
     },
+  },
+  experimental: {
+    serverActions: {
+      bodySizeLimit: BODY_SIZE,
+    },
+  },
+  publicRuntimeConfig: {
+    publicRuntimeSize: BODY_SIZE,
+  },
+  serverRuntimeConfig: {
+    serverRuntimeSize: BODY_SIZE,
   },
 });

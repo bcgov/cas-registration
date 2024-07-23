@@ -8,6 +8,10 @@ import { actionHandler } from "@bciers/actions";
 import { useSession } from "next-auth/react";
 import { Status } from "@bciers/utils/enums";
 import { operationUiSchema } from "@/app/utils/jsonSchema/operations";
+import getConfig from "next/config";
+
+const { publicRuntimeConfig } = getConfig();
+const { serverRuntimeConfig } = getConfig();
 
 export interface OperationsFormData {
   [key: string]: any;
@@ -19,6 +23,8 @@ interface Props {
 }
 
 export default function OperationsForm({ formData, schema }: Readonly<Props>) {
+  console.log("publicRuntimeConfig", publicRuntimeConfig);
+  console.log("serverRuntimeConfig", serverRuntimeConfig);
   const { data: session } = useSession();
 
   const [operationName, setOperationName] = useState("");
@@ -77,7 +83,7 @@ export default function OperationsForm({ formData, schema }: Readonly<Props>) {
       </Link>
     </section>
   );
-
+  console.log("");
   return (
     <>
       {operationName ? (

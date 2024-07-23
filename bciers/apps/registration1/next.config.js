@@ -17,11 +17,6 @@ const nextConfig = {
       transform: "@mui/material/{{member}}",
     },
   },
-  experimental: {
-    serverActions: {
-      bodySizeLimit: "25mb",
-    },
-  },
   nx: {
     // Set this to true if you would like to use SVGR
     // See: https://github.com/gregberge/svgr
