@@ -1,10 +1,13 @@
 import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
 
-const cookieName =
-  process.env.NODE_ENV === "production"
-    ? "__Secure-authjs.session-token"
-    : "authjs.session-token";
+const isLocalDevelopment = process.env?.NEXTAUTH_URL?.includes(
+  "http://localhost:3000",
+);
+
+const cookieName = isLocalDevelopment
+  ? "authjs.session-token"
+  : "__Secure-authjs.session-token";
 
 export async function GET(request: NextRequest) {
   const token = await getToken({
