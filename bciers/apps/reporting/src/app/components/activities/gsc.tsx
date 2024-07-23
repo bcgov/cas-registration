@@ -10,6 +10,54 @@ import InlineFieldTemplate from "@bciers/components/form/fields/InlineFieldTempl
 import { useEffect, useState } from "react";
 import { actionHandler } from "@bciers/actions";
 import { Alert, Button } from "@mui/material";
+import ReportingTaskList from "@bciers/components/navigation/reportingTaskList/ReportingTaskList";
+
+const data: TaskListElement[] = [
+  {
+    type: "Page",
+    title: "main page element",
+  },
+  {
+    type: "Section",
+    title: "Facility 1 info",
+    elements: [
+      { type: "Page", title: "Review information", isChecked: true },
+      {
+        type: "Subsection",
+        title: "Activities information",
+        isExpanded: true,
+        elements: [
+          {
+            type: "Page",
+            title: "General stationary combustion",
+          },
+          { type: "Page", title: "Mobile combustion", isActive: true },
+          { type: "Page", title: "...", isChecked: true },
+        ],
+      },
+      { type: "Page", title: "Non-attributable emissions" },
+    ],
+  },
+  {
+    type: "Section",
+    title: "Facility 2 info",
+    elements: [
+      { type: "Page", title: "Review ..." },
+      { type: "Page", title: "..." },
+    ],
+  },
+  {
+    type: "Section",
+    title: "Facility 3 info",
+    isChecked: true,
+    elements: [
+      { type: "Page", title: "Review ..." },
+      { type: "Page", title: "..." },
+    ],
+  },
+  { type: "Page", title: "New entrant information", isChecked: true },
+  { type: "Page", title: "Operation emission summary with a long title" },
+];
 
 const uiSchema = {
   "ui:FieldTemplate": FieldTemplate,
@@ -217,7 +265,9 @@ export default function Gsc() {
 
   // Render the DataGrid component
   return (
-    <>
+    <div className="w-full flex flex-row">
+      <ReportingTaskList elements={data} />
+      <div className="w-full">
       <FormBase
         schema={jsonSchema}
         formData={formState}
@@ -246,6 +296,7 @@ export default function Gsc() {
         </Button>
       </div>
       </FormBase>
-    </>
+      </div>
+    </div>
   );
 }
