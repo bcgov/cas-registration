@@ -166,11 +166,10 @@ there is no need to set `label: false` in `ui:options` as shown below.
 To ensure the label doesn't display twice using the default `InlineFieldTemplate` set `label: false` in `ui:options`.
 
 ```
-
 checkbox_field {
   "ui:widget": "CheckboxWidget",
   "ui:options": {
     label: false,
+  }
 }
-
 ```
