@@ -2,8 +2,8 @@ import Link from "next/link";
 import { Button } from "@mui/material";
 import { Suspense } from "react";
 import Loading from "@bciers/components/loading/SkeletonGrid";
-import { FacilitiesSearchParams } from "../../facilities/types";
-import Facilities from "../../facilities/Facilities";
+import { FacilitiesSearchParams } from "./types";
+import Facilities from "./Facilities";
 import Note from "@bciers/components/layout/Note";
 
 export default async function FacilitiesPage({
