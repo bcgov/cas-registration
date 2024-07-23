@@ -1,10 +1,10 @@
-from common.models import BaseModel
 from django.db import models
 from registration.models import ReportingActivity, RegulatedProduct
+from registration.models.time_stamped_model import TimeStampedModel
 from reporting.models.report_version import ReportVersion
 
 
-class ReportOperation(BaseModel):
+class ReportOperation(TimeStampedModel):
     """
     Report model to store operation information
     """
