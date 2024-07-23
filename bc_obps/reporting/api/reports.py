@@ -5,6 +5,7 @@ from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.schema.generic import Message
 from reporting.schema.report import StartReportIn
 from service.report_service import ReportService
+from service.reporting_year_service import ReportingYearService
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from reporting.schema.report_operation import ReportOperationOut, ReportOperationIn
 from .router import router
@@ -51,3 +52,14 @@ def save_report(
 ) -> Tuple[Literal[201], ReportOperationOut]:
     report_operation = ReportService.save_report_operation(version_id, payload)
     return 201, report_operation  # type: ignore
+
+
+@router.get(
+    "/reporting-year",
+    response={200: int, custom_codes_4xx: Message},
+    tags=EMISSIONS_REPORT_TAGS,
+    description="""Returns the current reporting year.""",
+)
+@handle_http_errors()
+def get_reporting_year(request: HttpRequest) -> Tuple[Literal[200], int]:
+    return 200, ReportingYearService.get_current_reporting_year().reporting_year
