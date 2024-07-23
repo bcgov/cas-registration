@@ -8,7 +8,7 @@ import { actionHandler } from "@bciers/actions";
 import { useSession } from "next-auth/react";
 import { Status } from "@bciers/utils/enums";
 import { operationUiSchema } from "@/app/utils/jsonSchema/operations";
-
+import getConfig from "next/config";
 export interface OperationsFormData {
   [key: string]: any;
 }
@@ -17,6 +17,8 @@ interface Props {
   schema: any;
   formData?: OperationsFormData;
 }
+const brianna = getConfig();
+console.log("brianna", brianna);
 
 export default function OperationsForm({ formData, schema }: Readonly<Props>) {
   const { data: session } = useSession();
@@ -77,76 +79,78 @@ export default function OperationsForm({ formData, schema }: Readonly<Props>) {
       </Link>
     </section>
   );
-  console.log("");
   return (
     <>
       {operationName ? (
         confirmationMessage
       ) : (
-        <MultiStepFormBase
-          baseUrl={`/dashboard/operations/${operationId}`}
-          cancelUrl="/dashboard/operations"
-          // Add custom titles since "Statutory Declaration" is different than the
-          // title in the schema "Statutory Declaration and Disclaimer"
-          customStepNames={[
-            "Operation Information",
-            "Point of Contact",
-            "Statutory Declaration",
-          ]}
-          formData={formData}
-          setErrorReset={setError}
-          disabled={isCasInternal || isFormStatusPending}
-          error={error}
-          schema={schema}
-          allowBackNavigation
-          onSubmit={async (data: { formData?: any }) => {
-            const method = isCreate ? "POST" : "PUT";
-            const endpoint = isCreate
-              ? "registration/operations"
-              : `registration/operations/${formData?.id}?title=${paramTitle}&submit=${isFinalStep}&form_section=${formSection}`;
-            const pathToRevalidate = isCreate
-              ? "dashboard/operations"
-              : `dashboard/operations/${formData?.id}`;
-            const body = {
-              ...formData,
-              ...data.formData,
-            };
-            const response = await actionHandler(
-              endpoint,
-              method,
-              pathToRevalidate,
-              {
-                body: JSON.stringify(body),
-              },
-            );
-
-            const operation = response?.id || operationId;
-
-            if (response.error) {
-              setError(response.error);
-              // return error so MultiStepFormBase can re-enable the submit button
-              // and user can attempt to submit again
-              return { error: response.error };
-            }
-
-            if (response.name) {
-              paramTitle = response.name;
-            }
-            router.replace(
-              `/dashboard/operations/${operation}/${formSection}?title=${paramTitle}`,
-            );
-            if (isNotFinalStep) {
-              router.push(
-                `/dashboard/operations/${operation}/${
-                  formSection + 1
-                }?title=${paramTitle}`,
+        <>
+          {/* brianna: {JSON.stringify(brianna)} */}
+          <MultiStepFormBase
+            baseUrl={`/dashboard/operations/${operationId}`}
+            cancelUrl="/dashboard/operations"
+            // Add custom titles since "Statutory Declaration" is different than the
+            // title in the schema "Statutory Declaration and Disclaimer"
+            customStepNames={[
+              "Operation Information",
+              "Point of Contact",
+              "Statutory Declaration",
+            ]}
+            formData={formData}
+            setErrorReset={setError}
+            disabled={isCasInternal || isFormStatusPending}
+            error={error}
+            schema={schema}
+            allowBackNavigation
+            onSubmit={async (data: { formData?: any }) => {
+              const method = isCreate ? "POST" : "PUT";
+              const endpoint = isCreate
+                ? "registration/operations"
+                : `registration/operations/${formData?.id}?title=${paramTitle}&submit=${isFinalStep}&form_section=${formSection}`;
+              const pathToRevalidate = isCreate
+                ? "dashboard/operations"
+                : `dashboard/operations/${formData?.id}`;
+              const body = {
+                ...formData,
+                ...data.formData,
+              };
+              const response = await actionHandler(
+                endpoint,
+                method,
+                pathToRevalidate,
+                {
+                  body: JSON.stringify(body),
+                },
               );
-              return;
-            }
-            setOperationName(response.name);
-          }}
-          uiSchema={operationUiSchema}
-        />
+
+              const operation = response?.id || operationId;
+
+              if (response.error) {
+                setError(response.error);
+                // return error so MultiStepFormBase can re-enable the submit button
+                // and user can attempt to submit again
+                return { error: response.error };
+              }
+
+              if (response.name) {
+                paramTitle = response.name;
+              }
+              router.replace(
+                `/dashboard/operations/${operation}/${formSection}?title=${paramTitle}`,
+              );
+              if (isNotFinalStep) {
+                router.push(
+                  `/dashboard/operations/${operation}/${
+                    formSection + 1
+                  }?title=${paramTitle}`,
+                );
+                return;
+              }
+              setOperationName(response.name);
+            }}
+            uiSchema={operationUiSchema}
+          />
+        </>
       )}
     </>
   );

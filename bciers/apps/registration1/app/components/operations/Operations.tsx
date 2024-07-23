@@ -106,6 +106,7 @@ export default async function Operations({
   // Render the DataGrid component
   return (
     <div className="mt-5">
+      brianna: {JSON.stringify(brianna)}
       <OperationDataGrid
         initialData={operations}
         isOperatorColumn={isOperatorColumn}
