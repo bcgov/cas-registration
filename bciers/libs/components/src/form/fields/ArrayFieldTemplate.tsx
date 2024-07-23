@@ -53,7 +53,7 @@ const ArrayFieldTemplate = ({
                   <MinusSVG />
                 </button>
               )}
-            {/* </div> */}
+            </div>
             {{
               ...item.children,
               props: {
