@@ -20,7 +20,7 @@ class ReportFuel(ReportDataBaseModel):
     )
     fuel_type = models.ForeignKey(
         FuelType,
-        on_delete=models.DO_NOTHING,
+        on_delete=models.PROTECT,
         db_comment="The fuel type this data applies to",
     )
 

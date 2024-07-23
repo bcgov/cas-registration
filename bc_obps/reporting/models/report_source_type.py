@@ -8,16 +8,16 @@ class ReportSourceType(ReportDataBaseModel):
 
     activity_source_type_base_schema = models.ForeignKey(
         ActivitySourceTypeJsonSchema,
-        on_delete=models.DO_NOTHING,
+        on_delete=models.PROTECT,
         db_comment="The activity-source-type base schema used to render the form that collected this data",
+    )
+    source_type = models.ForeignKey(
+        SourceType, on_delete=models.PROTECT, db_comment="The source type this data applies to"
     )
     report_activity = models.ForeignKey(
         ReportActivity,
         on_delete=models.CASCADE,
         db_comment="The activity data record this source type data belongs to",
-    )
-    source_type = models.ForeignKey(
-        SourceType, on_delete=models.DO_NOTHING, db_comment="The source type this data applies to"
     )
 
     class Meta:

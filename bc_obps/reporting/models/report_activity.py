@@ -8,12 +8,12 @@ class ReportActivity(ReportDataBaseModel):
 
     activity_base_schema = models.ForeignKey(
         ActivityJsonSchema,
-        on_delete=models.DO_NOTHING,
+        on_delete=models.PROTECT,
         db_comment="The activity base schema used to render the form that collected this data",
     )
     activity = models.ForeignKey(
         ReportingActivity,
-        on_delete=models.DO_NOTHING,
+        on_delete=models.PROTECT,
         db_comment="The reporting activity this data applies to",
     )
 

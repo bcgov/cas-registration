@@ -9,12 +9,12 @@ class ReportEmission(ReportDataBaseModel):
 
     gas_type = models.ForeignKey(
         GasType,
-        on_delete=models.DO_NOTHING,
+        on_delete=models.PROTECT,
         db_comment="The gas type this emission data applies to",
     )
     report_source_type = models.ForeignKey(
         ReportSourceType,
-        on_delete=models.DO_NOTHING,
+        on_delete=models.PROTECT,
         db_comment="The source type data this emission data belongs to",
     )
     fuel_form_data = models.ForeignKey(
