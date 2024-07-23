@@ -7,7 +7,7 @@ const currentYear = new Date().getFullYear();
 const section1: RJSFSchema = {
   type: "object",
   title: "Facility Information",
-  required: ["name", "type", "year"],
+  required: ["name", "type"],
   properties: {
     name: {
       type: "string",
@@ -23,7 +23,7 @@ const section1: RJSFSchema = {
         },
       ],
     },
-    year: {
+    is_current_year: {
       type: "boolean",
       title: `Did this facility begin operations in ${
         currentYear - 1
@@ -35,7 +35,7 @@ const section1: RJSFSchema = {
     {
       if: {
         properties: {
-          year: {
+          is_current_year: {
             const: true,
           },
         },
@@ -111,7 +111,7 @@ export const facilitiesUiSchema = {
     type: {
       "ui:widget": "ComboBox",
     },
-    year: {
+    is_current_year: {
       "ui:widget": "ToggleWidget",
     },
     starting_date: {
