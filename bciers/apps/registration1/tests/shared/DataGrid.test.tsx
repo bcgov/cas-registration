@@ -1,6 +1,6 @@
 import { act, render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, vi } from "vitest";
-import { useSearchParams } from "@bciers/testConfig/mocks";
+import { useRouter, useSearchParams } from "@bciers/testConfig/mocks";
 import { QueryParams } from "@bciers/testConfig/types";
 import DataGrid from "@bciers/components/datagrid/DataGrid";
 import { GridColDef } from "@mui/x-data-grid";
@@ -10,6 +10,12 @@ const extractParams = (mockCall: string, paramToExtract: string) => {
   const params = new URLSearchParams(decodedQueryParams);
   return params.get(paramToExtract);
 };
+
+const mockReplace = vi.fn();
+useRouter.mockReturnValue({
+  query: {},
+  replace: mockReplace,
+});
 
 useSearchParams.mockReturnValue({
   get: vi.fn(),
@@ -51,8 +57,6 @@ const paginationTestData = {
 const paginationTestColumns = Array.from({ length: 25 }, (_, index) => ({
   field: `col${index + 1}`,
 })) as GridColDef[];
-
-const mockReplace = vi.spyOn(global.history, "replaceState");
 
 describe("The DataGrid component", () => {
   beforeEach(async () => {
@@ -99,14 +103,10 @@ describe("The DataGrid component", () => {
     act(() => {
       screen.getAllByLabelText("Sort")[0].click();
     });
-    expect(mockReplace).toHaveBeenCalledTimes(1);
+    expect(mockReplace).toHaveBeenCalledTimes(2); // two times because we set params twice, once for sort_field, once for sort_order?
 
-    expect(
-      extractParams(String(mockReplace.mock.calls[0][2]), "sort_field"),
-    ).toBe("col1");
-    expect(
-      extractParams(String(mockReplace.mock.calls[0][2]), "sort_order"),
-    ).toBe("asc");
+    expect(extractParams(mockReplace.mock.calls[1], "sort_field")).toBe("col1");
+    expect(extractParams(mockReplace.mock.calls[1], "sort_order")).toBe("asc");
 
     await waitFor(() => {
       expect(screen.getAllByRole("gridcell")[0]).toHaveTextContent("unicorn");
@@ -117,29 +117,19 @@ describe("The DataGrid component", () => {
     act(() => {
       screen.getAllByLabelText("Sort")[0].click();
     });
-    expect(mockReplace).toHaveBeenCalledTimes(2);
+    expect(mockReplace).toHaveBeenCalledTimes(3);
 
-    expect(
-      extractParams(String(mockReplace.mock.calls[1][2]), "sort_field"),
-    ).toBe("col1");
-    expect(
-      extractParams(String(mockReplace.mock.calls[1][2]), "sort_order"),
-    ).toBe("desc");
+    expect(extractParams(mockReplace.mock.calls[2], "sort_field")).toBe("col1");
+    expect(extractParams(mockReplace.mock.calls[2], "sort_order")).toBe("desc");
 
     // unsort
     act(() => {
       screen.getAllByLabelText("Sort")[0].click();
     });
-    expect(mockReplace).toHaveBeenCalledTimes(3);
+    expect(mockReplace).toHaveBeenCalledTimes(4);
 
-    await waitFor(() => {
-      expect(
-        extractParams(String(mockReplace.mock.calls[2][2]), "sort_field"),
-      ).toBe(null);
-      expect(
-        extractParams(String(mockReplace.mock.calls[2][2]), "sort_order"),
-      ).toBe(null);
-    });
+    expect(extractParams(mockReplace.mock.calls[3], "sort_field")).toBe(null);
+    expect(extractParams(mockReplace.mock.calls[3], "sort_order")).toBe(null);
   });
 
   it("adds the page to the URL to support server-side pagination", async () => {
@@ -155,9 +145,7 @@ describe("The DataGrid component", () => {
       screen.getByLabelText("Go to next page").click();
     });
 
-    expect(mockReplace).toHaveBeenCalledTimes(1);
-    expect(extractParams(String(mockReplace.mock.calls[0][2]), "page")).toBe(
-      "2",
-    );
+    expect(mockReplace).toHaveBeenCalledTimes(2);
+    expect(extractParams(mockReplace.mock.calls[1], "page")).toBe("2");
   });
 });
