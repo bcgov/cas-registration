@@ -7,8 +7,7 @@ import * as React from "react";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { actionHandler } from "@bciers/actions";
 import { useRouter } from "next/navigation";
-import CurrentReportingYearContext from '../../context/CurrentReportingYearContext';
-import { useContext } from 'react';
+import { getReportingYear } from "@reporting/src/app/utils/getReportingYear";
 
 export const OPERATOR_COLUMN_INDEX = 1;
 
@@ -73,7 +72,6 @@ const handleStartReport = async (
 
 const ActionCell = (params: GridRenderCellParams) => {
   const reportId = params.value;
-  const reportingYear = useContext(CurrentReportingYearContext);
   const router = useRouter();
   const OperationId = params.row.id;
 
@@ -81,7 +79,9 @@ const ActionCell = (params: GridRenderCellParams) => {
     return (
       <Button
         color="primary"
-        href={`operations/${reportId}/review-operator-data`}
+        onClick={() =>
+          router.push(`operations/${reportId}/review-operator-data`)
+        }
       >
         Continue
       </Button>
@@ -92,6 +92,7 @@ const ActionCell = (params: GridRenderCellParams) => {
     <Button
       color="primary"
       onClick={async () => {
+        const reportingYear = await getReportingYear();
         const newReportId = await handleStartReport(OperationId, reportingYear);
         router.push(`operations/${newReportId}/review-operator-data`);
       }}
