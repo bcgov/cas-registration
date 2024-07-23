@@ -1,14 +1,12 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useState } from "react";
 import { UUID } from "crypto";
 import MultiStepFormBase from "@bciers/components/form/MultiStepFormBase";
 import { useRouter } from "next/navigation";
 import { RJSFSchema } from "@rjsf/utils";
 import { operationRegistrationUiSchema } from "apps/registration/app/data/jsonSchema/operationRegistration";
-import FacilityDataGrid from "apps/administration/app/components/facilities/FacilityDataGrid";
 import { FacilityInitialData } from "apps/administration/app/components/facilities/types";
-import { IChangeEvent } from "@rjsf/core";
 import { OperationRegistrationFormData } from "apps/registration/app/components/operations/types";
 
 interface Props {
@@ -20,6 +18,7 @@ interface Props {
 }
 
 const OperationRegistrationForm = ({
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   facilityInitialData,
   formData,
   formSection,
@@ -27,7 +26,6 @@ const OperationRegistrationForm = ({
   schema,
 }: Readonly<Props>) => {
   const [error, setError] = useState(undefined);
-  const [formState, setFormState] = useState(formData ?? {});
   const router = useRouter();
   const formSectionList = schema.properties && Object.keys(schema.properties);
   const isNotFinalStep = formSection !== formSectionList?.length;
@@ -47,46 +45,18 @@ const OperationRegistrationForm = ({
     }
   };
 
-  const isFacilityDataGrid = formSection === 3;
-
-  const FacilityDataGridMemo = useMemo(
-    () => (
-      <>
-        {isFacilityDataGrid && (
-          <FacilityDataGrid
-            operationId="002d5a9e-32a6-4191-938c-2c02bfec592d"
-            initialData={facilityInitialData ?? { rows: [], row_count: 0 }}
-          />
-        )}
-      </>
-    ),
-    [facilityInitialData, operation, isFacilityDataGrid],
-  );
-
-  const handleFormChange = useCallback(
-    (e: IChangeEvent) => {
-      setFormState(e.formData);
-    },
-    [setFormState],
-  );
-
   return (
     <MultiStepFormBase
       baseUrl={`/operation/${operation}`}
       cancelUrl="/"
       schema={schema}
       uiSchema={operationRegistrationUiSchema}
-      formData={formState}
+      formData={formData}
       error={error}
-      // Only use controlled state for the FacilityDataGrid page
-      // since it can cause laggy form updates
-      onChange={isFacilityDataGrid ? handleFormChange : undefined}
       setErrorReset={setError}
       allowBackNavigation
       onSubmit={handleSubmit}
-    >
-      {FacilityDataGridMemo}
-    </MultiStepFormBase>
+    />
   );
 };
 
