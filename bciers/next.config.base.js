@@ -4,10 +4,8 @@ const BODY_SIZE = "25mb";
 const logAndReturnConfig = (config) => {
   console.log("Next.js base config is being loaded");
   console.log("BODY_SIZE", BODY_SIZE);
-  console.log(
-    "size limit in bodySizeLimit:",
-    config.experimental.serverActions.bodySizeLimit,
-  );
+  console.log("config", config);
+
   return config;
 };
 module.exports = logAndReturnConfig({
