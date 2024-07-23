@@ -24,6 +24,7 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 @authorize(["industry_user"], ["admin"])
 @handle_http_errors()
 def get_operator_users(request: HttpRequest) -> Tuple[Literal[200], QuerySet[UserOperator]]:
-    return 200, UserOperatorDataAccessService.get_an_operators_user_operators_by_user_guid(
-        get_current_user_guid(request)
-    )
+    current_user_guid = get_current_user_guid(request)
+    return 200, UserOperatorDataAccessService.get_an_operators_user_operators_by_user_guid(current_user_guid).exclude(
+        user_id=current_user_guid
+    )  # Exclude the current user from the list of users
