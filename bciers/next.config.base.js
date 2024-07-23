@@ -5,7 +5,6 @@ const logAndReturnConfig = (config) => {
   console.log("Next.js base config is being loaded");
   console.log("BODY_SIZE", BODY_SIZE);
   console.log("config", config);
-
   return config;
 };
 module.exports = logAndReturnConfig({
@@ -27,6 +26,9 @@ module.exports = logAndReturnConfig({
       bodySizeLimit: BODY_SIZE,
     },
   },
+  // serverActions: {
+  //   bodySizeLimit: BODY_SIZE,
+  // },
   publicRuntimeConfig: {
     publicRuntimeSize: BODY_SIZE,
   },
