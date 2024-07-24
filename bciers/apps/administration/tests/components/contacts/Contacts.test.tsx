@@ -68,6 +68,10 @@ describe("Contacts component", () => {
       "View the contacts of your operator, i.e. people who can represent the operator for GGIRCA purposes. Please keep the information up to date here.",
     );
     expect(screen.getByRole("button", { name: "Add Contact" })).toBeVisible();
+    expect(screen.getByRole("link", { name: "Add Contact" })).toHaveAttribute(
+      "href",
+      "/contacts/add-contact",
+    );
   });
 
   it("renders the correct note message for internal users", async () => {

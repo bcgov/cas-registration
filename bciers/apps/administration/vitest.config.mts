@@ -28,6 +28,7 @@ export default defineConfig({
       "./tests/components/facilities/mocks.ts",
       "./tests/components/operations/mocks.ts",
       "./tests/components/operators/mocks.ts",
+      "./tests/components/contacts/mocks.ts",
     ],
   },
 });
