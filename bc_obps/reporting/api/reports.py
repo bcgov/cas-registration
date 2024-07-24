@@ -35,7 +35,7 @@ def get_report_operation_by_version_id(
     request: HttpRequest, version_id: int
 ) -> Tuple[Literal[200], ReportOperationOut]:
     report_operation = ReportService.get_report_operation_by_version_id(version_id)
-    return 200, report_operation
+    return 200, report_operation  # type: ignore
 
 
 @router.post(
@@ -50,4 +50,4 @@ def save_report(
     request: HttpRequest, version_id: int, payload: ReportOperationIn
 ) -> Tuple[Literal[201], ReportOperationOut]:
     report_operation = ReportService.save_report_operation(version_id, payload)
-    return 201, report_operation
+    return 201, report_operation  # type: ignore

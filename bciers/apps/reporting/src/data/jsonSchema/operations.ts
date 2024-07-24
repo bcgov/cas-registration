@@ -4,29 +4,29 @@ import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
 export const operationReviewSchema: RJSFSchema = {
   type: "object",
   properties: {
-    operatorLegalName: { type: "string", title: "Operator legal name" },
-    operatorTradeName: { type: "string", title: "Operator trade name" },
-    operationName: { type: "string", title: "Operation name" },
-    operationType: {
+    operator_legal_name: { type: "string", title: "Operator legal name" },
+    operator_trade_name: { type: "string", title: "Operator trade name" },
+    operation_name: { type: "string", title: "Operation name" },
+    operation_type: {
       type: "string",
       title: "Operation type",
       enum: ["Linear facility operation"],
     },
-    BCGHGID: { type: "string", title: "BCGHG ID" },
-    BOROID: { type: "string", title: "BORO ID" },
-    reportingActivities: {
+    operation_bcghgid: { type: "string", title: "BCGHG ID" },
+    bc_obps_regulated_operation_id: { type: "string", title: "BORO ID" },
+    reporting_activities: {
       type: "array",
       title: "Reporting activities",
       items: { type: "string" },
       uniqueItems: true,
     },
-    regulatedProducts: {
+    regulated_products: {
       type: "array",
       title: "Regulated products",
       items: { type: "string" },
       uniqueItems: true,
     },
-    operationRepresentative: {
+    operation_representative_name: {
       type: "string",
       title: "Operation representative",
       enum: ["sam smith", "belinda g"],
@@ -36,30 +36,34 @@ export const operationReviewSchema: RJSFSchema = {
 
 export const operationReviewUiSchema = {
   "ui:FieldTemplate": FieldTemplate,
-  operatorLegalName: {
+  operator_legal_name: {
     "ui:options": { style: { width: "100%", textAlign: "left" } },
   },
-  operatorTradeName: {
+  operator_trade_name: {
     "ui:options": { style: { width: "100%", textAlign: "left" } },
   },
-  operationName: {
+  operation_name: {
     "ui:options": { style: { width: "100%", textAlign: "left" } },
   },
-  operationType: {
+  operation_type: {
     "ui:widget": "select",
     "ui:options": { style: { width: "100%", textAlign: "left" } },
   },
-  BCGHGID: { "ui:options": { style: { width: "100%", textAlign: "left" } } },
-  BOROID: { "ui:options": { style: { width: "100%", textAlign: "left" } } },
-  reportingActivities: {
+  operation_bcghgid: {
+    "ui:options": { style: { width: "100%", textAlign: "left" } },
+  },
+  bc_obps_regulated_operation_id: {
+    "ui:options": { style: { width: "100%", textAlign: "left" } },
+  },
+  reporting_activities: {
     "ui:widget": "select",
     "ui:options": { style: { width: "100%", textAlign: "left" } },
   },
-  regulatedProducts: {
+  regulated_products: {
     "ui:widget": "select",
     "ui:options": { style: { width: "100%", textAlign: "left" } },
   },
-  operationRepresentative: {
+  operation_representative_name: {
     "ui:widget": "select",
     "ui:options": { style: { width: "100%", textAlign: "left" } },
   },
