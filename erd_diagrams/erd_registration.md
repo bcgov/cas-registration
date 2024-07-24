@@ -526,6 +526,7 @@ HistoricalFacility {
     DateTimeField archived_at
     UUIDField id
     CharField name
+    BooleanField is_current_year
     DateTimeField starting_date
     CharField type
     IntegerField swrs_facility_id
@@ -551,6 +552,7 @@ Facility {
     DateTimeField archived_at
     UUIDField id
     CharField name
+    BooleanField is_current_year
     DateTimeField starting_date
     CharField type
     ForeignKey address
