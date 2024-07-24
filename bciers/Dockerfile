@@ -26,6 +26,7 @@ COPY --from=deps /usr/src/app/package.json package.json
 COPY ./.next/standalone .
 COPY ./public ./public
 COPY ./.next/static ./dist/${application_path}/.next/static
+chmod -R g+rwX ./dist
 
 USER node
 EXPOSE 3000
