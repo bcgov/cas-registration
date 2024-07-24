@@ -4,7 +4,7 @@ const BODY_SIZE = "25mb";
 const logAndReturnConfig = (config) => {
   console.log("Next.js base config is being loaded");
   console.log("BODY_SIZE", BODY_SIZE);
-  console.log("config", config);
+  console.log("base config", config);
   return config;
 };
 module.exports = logAndReturnConfig({

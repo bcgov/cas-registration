@@ -4,7 +4,13 @@ const { composePlugins, withNx } = require("@nx/next");
 
 const nextConfigBase = require("../../next.config.base");
 
-const nextConfig = {
+const logAndReturnConfig = (config) => {
+  console.log("Next.js reg1 config is being loaded");
+  console.log("reg1 config", config);
+  return config;
+};
+
+const nextConfig = logAndReturnConfig({
   ...nextConfigBase,
   reactStrictMode: true,
   swcMinify: true,
@@ -22,7 +28,12 @@ const nextConfig = {
     // See: https://github.com/gregberge/svgr
     svgr: false,
   },
-};
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "5mb",
+    },
+  },
+});
 
 const sentryWebpackOptions = {
   org: "government-of-british-columbia",
