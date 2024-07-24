@@ -80,7 +80,7 @@ export default function ContactsForm({
         }
         if (isCreating) {
           router.replace(
-            `/contacts/${response.id}?title=${response.first_name} ${response.last_name}`,
+            `/contacts/${response.id}?contactsTitle=${response.first_name} ${response.last_name}`,
           );
         }
       }}
