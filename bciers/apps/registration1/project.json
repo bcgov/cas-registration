@@ -30,6 +30,7 @@
         "engine": "docker",
         "context": "dist/registration1",
         "file": "Dockerfile",
+        "build-args": ["application_path=registration1"],
         "tags": ["cas-registration1:latest"]
       }
     },
