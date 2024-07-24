@@ -1,5 +1,5 @@
 from common.tests.utils.helpers import BaseTestCase
-from registration.models import ReportingActivity
+from registration.models import ReportingActivity, RegulatedProduct
 from reporting.models import ReportOperation
 from reporting.tests.utils.bakers import report_version_baker
 
@@ -18,7 +18,8 @@ class ReportOperationModelTest(BaseTestCase):
             operation_representative_name="Kar Bonn",
             report_version=report_version_baker(report_operation=None),
         )
-        cls.test_object.activities.add(ReportingActivity.objects.first())
+        cls.test_object.reporting_activities.add(ReportingActivity.objects.first())
+        cls.test_object.regulated_products.add(RegulatedProduct.objects.first())
         cls.field_data = [
             ("id", "ID", None, None),
             ("report_version", "report version", None, None),
@@ -29,5 +30,6 @@ class ReportOperationModelTest(BaseTestCase):
             ("operation_bcghgid", "operation bcghgid", 1000, None),
             ("bc_obps_regulated_operation_id", "bc obps regulated operation id", 255, None),
             ("operation_representative_name", "operation representative name", 10000, None),
-            ("activities", "activities", None, 1),
+            ("reporting_activities", "reporting activities", None, 1),
+            ("regulated_products", "regulated products", None, 1),
         ]
