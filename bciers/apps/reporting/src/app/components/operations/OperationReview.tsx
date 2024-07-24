@@ -19,19 +19,7 @@ import FormBase from "@bciers/components/form/FormBase";
 import {
   operationReviewSchema,
   operationReviewUiSchema,
-} from "@reporting/src/app/utils/jsonSchema/operations";
-
-export interface OperationReviewFormDataType {
-  operatorLegalName: string;
-  operatorTradeName: string;
-  operationName: string;
-  operationType: string;
-  BCGHGID: string;
-  BOROID: string;
-  operationRepresentative: string;
-  reportingActivities: string[];
-  regulatedProducts: string[];
-}
+} from "@reporting/src/data/jsonSchema/operations";
 
 interface Props {
   formData: any;
@@ -43,23 +31,8 @@ const submitHandler = async (data: { formData?: any }, version_id: number) => {
   const endpoint = `reporting/report-version/${version_id}/report-operation`;
   const pathToRevalidate = `reporting/report-version/${version_id}/report-operation`;
   const formDataObject = JSON.parse(JSON.stringify(data.formData));
-  const body = {
-    operator_legal_name:
-      formDataObject.operatorLegalName || "default_value_if_missing",
-    operator_trade_name:
-      formDataObject.operatorTradeName || "default_value_if_missing",
-    operation_name: formDataObject.operationName || "default_value_if_missing",
-    operation_type: formDataObject.operationType || "default_value_if_missing",
-    operation_bcghgid: formDataObject.BCGHGID || "default_value_if_missing",
-    bc_obps_regulated_operation_id:
-      formDataObject.BOROID || "default_value_if_missing",
-    operation_representative_name:
-      formDataObject.operationRepresentative || "default_value_if_missing",
-    reporting_activities: formDataObject.reportingActivities || [],
-    regulated_products: formDataObject.regulatedProducts || [],
-  };
   await actionHandler(endpoint, method, pathToRevalidate, {
-    body: JSON.stringify(body),
+    body: JSON.stringify(formDataObject),
     headers: {
       "Content-Type": "application/json",
       accept: "application/json",

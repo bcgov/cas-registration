@@ -9,8 +9,7 @@ from service.data_access_service.facility_service import FacilityDataAccessServi
 from django.db import transaction
 from service.data_access_service.report_service import ReportDataAccessService
 from service.data_access_service.reporting_year import ReportingYearDataAccessService
-from django.shortcuts import get_object_or_404
-from reporting.schema.report_operation import ReportOperationOut, ReportOperationIn
+from reporting.schema.report_operation import ReportOperationIn
 
 
 class ReportService:
@@ -76,25 +75,12 @@ class ReportService:
         return report
 
     @classmethod
-    def get_report_operation_by_version_id(cls, report_version_id: int) -> ReportOperationOut:
-        report_version = get_object_or_404(ReportVersion, id=report_version_id)
-        report_operation = get_object_or_404(ReportOperation, report_version=report_version)
-        return ReportOperationOut(
-            operator_legal_name=report_operation.operator_legal_name,
-            operator_trade_name=report_operation.operator_trade_name,
-            operation_name=report_operation.operation_name,
-            operation_type=report_operation.operation_type,
-            operation_bcghgid=report_operation.operation_bcghgid,
-            bc_obps_regulated_operation_id=report_operation.bc_obps_regulated_operation_id,
-            operation_representative_name=report_operation.operation_representative_name,
-            reporting_activities=[activity.name for activity in report_operation.reporting_activities.all()],
-            regulated_products=[product.name for product in report_operation.regulated_products.all()],
-        )
+    def get_report_operation_by_version_id(cls, report_version_id: int) -> ReportOperation:
+        return ReportOperation.objects.get(report_version__id=report_version_id)
 
     @classmethod
-    def save_report_operation(cls, report_version_id: int, data: ReportOperationIn) -> ReportOperationOut:
-        report_version = get_object_or_404(ReportVersion, id=report_version_id)
-        report_operation = get_object_or_404(ReportOperation, report_version=report_version)
+    def save_report_operation(cls, report_version_id: int, data: ReportOperationIn) -> ReportOperation:
+        report_operation = ReportOperation.objects.get(report_version__id=report_version_id)
 
         # Updating fields from data
         report_operation.operator_legal_name = data.operator_legal_name
@@ -108,20 +94,12 @@ class ReportService:
         # Fetch and set ManyToMany fields
         reporting_activities = ReportingActivity.objects.filter(name__in=data.reporting_activities)
         regulated_products = RegulatedProduct.objects.filter(name__in=data.regulated_products)
+
+        # Set ManyToMany relationships
         report_operation.reporting_activities.set(reporting_activities)
         report_operation.regulated_products.set(regulated_products)
 
-        # Saving the updated report operation
+        # Save the updated report operation
         report_operation.save()
 
-        return ReportOperationOut(
-            operator_legal_name=report_operation.operator_legal_name,
-            operator_trade_name=report_operation.operator_trade_name,
-            operation_name=report_operation.operation_name,
-            operation_type=report_operation.operation_type,
-            operation_bcghgid=report_operation.operation_bcghgid,
-            bc_obps_regulated_operation_id=report_operation.bc_obps_regulated_operation_id,
-            operation_representative_name=report_operation.operation_representative_name,
-            reporting_activities=list(reporting_activities.values_list('name', flat=True)),
-            regulated_products=list(regulated_products.values_list('name', flat=True)),
-        )
+        return report_operation
