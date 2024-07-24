@@ -47,6 +47,7 @@ const sfoFormData = {
   province: "BC",
   postal_code: "h0h0h0",
   id: "4abd8367-efd1-4654-a7ea-fa1a015d3cae",
+  is_current_year: true,
   starting_date: "2024-07-11 02:00:00.000 -0700",
 };
 
@@ -85,7 +86,7 @@ describe("FacilitiesForm component", () => {
     expect(screen.getByLabelText(/Facility Type+/i)).toHaveValue("");
     expect(
       screen.getByLabelText(
-        /Did this facility begin operations in 2023 or 2024+/i,
+        /Did this facility begin operations in+/i,
       ),
     ).not.toBeChecked();
     expect(
@@ -159,6 +160,13 @@ describe("FacilitiesForm component", () => {
     expect(container.querySelector("#root_section1_type")).toHaveTextContent(
       "Single Facility Operation",
     );
+    expect(container.querySelector("#root_section1_is_current_year")).toHaveTextContent(
+      "Yes",
+    );
+    waitFor(() => expect(container.querySelector("#root_section1_starting_date")).toBeInTheDocument());
+    expect(container.querySelector("#root_section1_starting_date")).toHaveTextContent(
+      "2024-07-11",
+    )
     expect(
       container.querySelector("#root_section2_street_address"),
     ).toHaveTextContent("adf");
@@ -232,7 +240,7 @@ describe("FacilitiesForm component", () => {
 
     //check starting date required when year is clicked
     const year = screen.getByLabelText(
-      /Did this facility begin operations in 2023 or 2024+/i,
+      /Did this facility begin operations in+/i,
     );
     act(() => {
       year.click();
@@ -291,7 +299,7 @@ describe("FacilitiesForm component", () => {
     await userEvent.click(typeOption);
     // fill year and starting date
     const year = screen.getByLabelText(
-      /Did this facility begin operations in 2023 or 2024+/i,
+      /Did this facility begin operations+/i,
     );
     await userEvent.click(year);
     await userEvent.type(
