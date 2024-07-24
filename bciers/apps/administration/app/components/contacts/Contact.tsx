@@ -1,4 +1,3 @@
-import { notFound } from "next/navigation";
 import getContact from "./getContact";
 import ContactsForm from "./ContactsForm";
 import { contactsUiSchema } from "../../data/jsonSchema/contact";
@@ -17,14 +16,26 @@ export default async function Contact({
   if (contactId) {
     contactFormData = await getContact(contactId);
     if ("error" in contactFormData) {
-      return notFound();
+      return (
+        <div>
+          <h3>Contact Information Not Found</h3>
+          <p>
+            Sorry, we couldn&apos;t find the contact information you were
+            looking for.
+          </p>
+        </div>
+      );
     }
   }
   // Retrieves the list of users associated with the operator of the current user
   const userOperatorUsers: UserOperatorUser[] | { error: string } =
     await getUserOperatorUsers("/contacts/add-contact");
   if ("error" in userOperatorUsers) {
-    return notFound();
+    return (
+      <div>
+        <h3>Failed to Retrieve User Information</h3>
+      </div>
+    );
   }
 
   const noteMsg = isCreating
