@@ -1,4 +1,5 @@
 from django.db.models import QuerySet
+from registration.utils import update_model_instance
 from registration.models import Operator, User, UserOperator
 from uuid import UUID
 from ninja.types import DictStrAny
@@ -48,9 +49,12 @@ class OperatorDataAccessService:
         operator_id: UUID,
         operator_data: DictStrAny,
     ) -> Operator:
-        Operator.objects.filter(pk=operator_id).update(
-            **operator_data,
-        )
         operator = Operator.objects.get(pk=operator_id)
+        update_model_instance(
+            operator,
+            operator_data.keys(),
+            operator_data,
+        )
+        operator.save()
         operator.set_create_or_update(user_guid)
         return operator

@@ -1,8 +1,7 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import SingleStepTaskListForm from "./SingleStepTaskListForm";
 import SectionFieldTemplate from "@bciers/components/form/fields/SectionFieldTemplate";
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
-import { userEvent } from "@testing-library/user-event";
 
 const section1: RJSFSchema = {
   type: "object",
@@ -213,7 +212,7 @@ describe("the SingleStepTaskListForm component", () => {
   //   );
   // });
 
-  it("should call the onSubmit function and transform the form data when the form is submitted", async () => {
+  it("should call the onSubmit function, transform the form data, and show the edit snackbar when the form is submitted", async () => {
     render(
       <SingleStepTaskListForm
         schema={schema}
@@ -227,6 +226,11 @@ describe("the SingleStepTaskListForm component", () => {
     fireEvent.click(editButton);
     const submitButton = screen.getByRole("button", { name: "Submit" });
     fireEvent.click(submitButton);
+    await waitFor(() => {
+      expect(
+        screen.getByText("Your edits were saved successfully"),
+      ).toBeVisible();
+    });
 
     // check that the component correctly unnested the formData
     expect(consoleSpy.mock.calls[0][1].formData).toEqual({

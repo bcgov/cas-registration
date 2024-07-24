@@ -314,7 +314,7 @@ describe("OperatorForm component", () => {
       expect(actionHandler).toHaveBeenCalledWith(
         "registration/v2/user-operators/current",
         "PUT",
-        "tbd",
+        "administration/operators",
         {
           body: JSON.stringify({
             legal_name: "Existing Operator 2 Legal Nameedit",

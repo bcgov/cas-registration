@@ -285,7 +285,6 @@ describe("FacilitiesForm component", () => {
     userEvent.click(submitButton);
 
     await waitFor(() => {
-      expect(screen.getByText("success")).toBeVisible();
       expect(mockReplace).toHaveBeenCalledWith(
         `/operations/${operationId}/facilities/${facilityId}?title=${facilityName}`,
         {
@@ -370,7 +369,6 @@ describe("FacilitiesForm component", () => {
     userEvent.click(submitButton);
 
     await waitFor(() => {
-      expect(screen.getByText("success")).toBeVisible();
       expect(mockReplace).toHaveBeenCalledWith(
         `/operations/${operationId}/facilities/${facilityId}?title=${facilityName}`,
         {

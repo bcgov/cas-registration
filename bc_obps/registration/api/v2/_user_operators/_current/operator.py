@@ -1,3 +1,4 @@
+from registration.constants import V2
 from registration.models.operator import Operator
 from service.operator_service_v2 import OperatorServiceV2
 from registration.schema.v2.operator import OperatorIn, OperatorOut
@@ -21,15 +22,15 @@ from registration.api.router import router
 @router.get(
     "/v2/user-operators/current",
     response={200: OperatorOut, custom_codes_4xx: Message},
-    tags=["V2"],
+    tags=V2,
     description="""Retrieves data about the current user-operator and their associated operator.
     Declined user-operators are excluded from the results.""",
 )
 @authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
 @handle_http_errors()
 def get_current_operator_and_user_operator_v2(request: HttpRequest) -> Tuple[Literal[200], Operator]:
-    user_operator = UserDataAccessService.get_operator_by_user(get_current_user_guid(request))
-    return 200, user_operator
+    operator = UserDataAccessService.get_operator_by_user(get_current_user_guid(request))
+    return 200, operator
 
 
 ## PUT

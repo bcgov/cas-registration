@@ -68,10 +68,6 @@ class UserOperator(TimeStampedModel):
     class Meta:
         db_table_comment = "Through table to connect Users and Operators and track access requests"
         db_table = 'erc"."user_operator'
-        indexes = [
-            models.Index(fields=["user"], name="user_operator_user_idx"),
-            models.Index(fields=["operator"], name="user_operator_operator_idx"),
-        ]
         constraints = [
             models.UniqueConstraint(
                 fields=["user", "operator"],

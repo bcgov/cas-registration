@@ -33,6 +33,3 @@ class Contact(UserAndContactCommonInfo, TimeStampedModel):
     class Meta:
         db_table_comment = "Table containing information about contacts. Contacts are people that IRC may need to get in touch with to confirm information about industry. Contacts can be BCIERs app users (in which case they will also have a record in the Users table), but they don't have to be."
         db_table = 'erc"."contact'
-        indexes = [
-            models.Index(fields=["business_role"], name="contact_role_idx"),
-        ]
