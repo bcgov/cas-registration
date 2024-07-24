@@ -57,7 +57,7 @@ export default function FacilitiesForm({
           }
           if (isCreating) {
             router.replace(
-              `/operations/${params.operationId}/facilities/${response.id}?title=${response.name}`,
+              `/operations/${params.operationId}/facilities/${response.id}?facilitiesTitle=${response.name}`,
               // @ts-ignore
               { shallow: true },
             );
