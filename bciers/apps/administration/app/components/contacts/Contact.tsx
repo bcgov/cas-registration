@@ -12,6 +12,7 @@ export default async function Contact({
 }: Readonly<{ contactId?: string }>) {
   let contactFormData: ContactFormData | { error: string } = {};
   const isCreating: boolean = !contactId;
+  let userOperatorUsers: UserOperatorUser[] | { error: string } = [];
 
   if (contactId) {
     contactFormData = await getContact(contactId);
@@ -26,16 +27,16 @@ export default async function Contact({
         </div>
       );
     }
-  }
-  // Retrieves the list of users associated with the operator of the current user
-  const userOperatorUsers: UserOperatorUser[] | { error: string } =
-    await getUserOperatorUsers("/contacts/add-contact");
-  if ("error" in userOperatorUsers) {
-    return (
-      <div>
-        <h3>Failed to Retrieve User Information</h3>
-      </div>
-    );
+  } else {
+    // Retrieves the list of users associated with the operator of the current user
+    userOperatorUsers = await getUserOperatorUsers("/contacts/add-contact");
+    if ("error" in userOperatorUsers) {
+      return (
+        <div>
+          <h3>Failed to Retrieve User Information</h3>
+        </div>
+      );
+    }
   }
 
   const noteMsg = isCreating
