@@ -148,6 +148,7 @@ describe("the SingleStepTaskListForm component", () => {
         formData={mockFormData}
         onCancel={() => console.log("cancel")}
         onSubmit={async (e) => console.log("submit", e)}
+        inlineMessage={"Testing inline message"}
       />,
     );
     fireEvent.click(screen.getByRole("button", { name: "Edit" }));
@@ -161,6 +162,7 @@ describe("the SingleStepTaskListForm component", () => {
     // It should render the correct buttons
     expect(screen.getByRole("button", { name: "Submit" })).toBeVisible();
     expect(screen.getByRole("button", { name: "Cancel" })).toBeVisible();
+    expect(screen.getByText("Testing inline message")).toBeVisible();
   });
 
   // it("should render the task list checkmarks as sections are filled", async () => {

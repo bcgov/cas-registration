@@ -24,6 +24,10 @@ describe("Facilities page", () => {
     const note = screen.getByTestId("note");
     expect(note).toBeVisible();
     expect(screen.getByRole("button", { name: "Add Facility" })).toBeVisible();
+    expect(screen.getByRole("link", { name: "Add Facility" })).toHaveAttribute(
+      "href",
+      "/operations/random UUID/facilities/new",
+    );
   });
   it("Not displaying `Add Facility` button for internal users", async () => {
     render(
