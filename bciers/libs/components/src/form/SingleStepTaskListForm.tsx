@@ -7,6 +7,8 @@ import { IChangeEvent } from "@rjsf/core";
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import FormBase from "@bciers/components/form/FormBase";
 import TaskList from "@bciers/components/form/components/TaskList";
+import Snackbar from "@mui/material/Snackbar";
+import { GREEN_SNACKBAR_COLOR } from "@bciers/styles";
 
 interface SingleStepTaskListFormProps {
   disabled?: boolean;
@@ -56,6 +58,7 @@ const SingleStepTaskListForm = ({
   const formData = hasFormData ? createNestedFormData(rawFormData, schema) : {};
   const [isDisabled, setIsDisabled] = useState(disabled || hasFormData);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isLiveValidate, setIsLiveValidate] = useState(false);
   // Form section status to track if each section is validated
@@ -106,10 +109,12 @@ const SingleStepTaskListForm = ({
     e.formData = createUnnestedFormData(e.formData, formSectionList);
     const response = await onSubmit(e); // Pass the event to the parent component
     setIsSubmitting(false);
-    setIsDisabled(true);
-
     if (response?.error) {
       setIsDisabled(false);
+    } else {
+      setIsDisabled(true);
+      // we only show the snackbar confirmation when editing
+      if (hasFormData) setIsSnackbarOpen(true);
     }
   };
 
@@ -147,8 +152,20 @@ const SingleStepTaskListForm = ({
 
   // };
   const isFormDisabled = disabled || isDisabled || isSubmitting;
+
   return (
     <div className="w-full flex flex-row mt-8">
+      <Snackbar
+        open={isSnackbarOpen}
+        message="Your edits were saved successfully"
+        autoHideDuration={5000}
+        onClose={() => setIsSnackbarOpen(false)}
+        sx={{
+          "& .MuiSnackbarContent-root": {
+            backgroundColor: GREEN_SNACKBAR_COLOR,
+          },
+        }}
+      />
       <TaskList
         // Hide the task list on mobile
         className="hidden sm:block"
@@ -173,7 +190,13 @@ const SingleStepTaskListForm = ({
           </div>
           <div className="w-full flex justify-end mt-8">
             {isDisabled ? (
-              <Button variant="contained" onClick={() => setIsDisabled(false)}>
+              <Button
+                variant="contained"
+                onClick={() => {
+                  setIsDisabled(false);
+                  setIsSnackbarOpen(false);
+                }}
+              >
                 Edit
               </Button>
             ) : (

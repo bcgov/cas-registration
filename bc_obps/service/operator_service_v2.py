@@ -1,9 +1,10 @@
+from registration.models.parent_operator import ParentOperator
+from registration.models.partner_operator import PartnerOperator
 from registration.schema.v2.partner_operator import PartnerOperatorIn
 from service.data_access_service.partner_operator_service import PartnerOperatorService
 from service.data_access_service.address_service import AddressDataAccessService
 from service.data_access_service.parent_operator_service import ParentOperatorService
 from service.data_access_service.user_service import UserDataAccessService
-from service.email.email_service import EmailService
 from registration.models import Operator
 from service.data_access_service.operator_service import OperatorDataAccessService
 from uuid import UUID
@@ -13,8 +14,7 @@ from registration.models import (
 )
 from registration.schema.v2.operator import OperatorIn
 from registration.schema.v2.parent_operator import ParentOperatorIn
-
-email_service = EmailService()
+from django.db.models import QuerySet
 
 
 class OperatorServiceV2:
@@ -23,66 +23,61 @@ class OperatorServiceV2:
     def upsert_partner_operators(
         cls, operator: Operator, partner_operator_data: list[PartnerOperatorIn] | None, user_guid: UUID
     ) -> None:
-        # this function is for reg2
+        old_partner_operators: QuerySet[PartnerOperator] = operator.partner_operators.all()
 
-        # if all partner operators have been removed, archive them
+        # If all partner operators have been removed, archive them
         if not partner_operator_data:
-            for old_partner in operator.partner_operators.all():
-                old_partner.set_archive(user_guid)
-
-        if partner_operator_data:
-            old_partner_operators = list(operator.partner_operators.all())
-
-            new_partner_operators = []
-            for partner in partner_operator_data:
-                new_partner_operators.append(
-                    PartnerOperatorService.create_or_update(partner.id, operator, user_guid, partner.dict())
-                )
-
             for old_partner in old_partner_operators:
-                if old_partner not in new_partner_operators:
-                    old_partner.set_archive(user_guid)
+                old_partner.set_archive(user_guid)
+            return
+
+        # Otherwise, create or update the partner operators
+        new_partner_operators = [
+            PartnerOperatorService.create_or_update(partner.id, operator, user_guid, partner.dict())  # type: ignore[attr-defined]
+            for partner in partner_operator_data
+        ]
+
+        for old_partner in old_partner_operators:
+            if old_partner not in new_partner_operators:
+                old_partner.set_archive(user_guid)
 
     @classmethod
     @transaction.atomic()
     def upsert_parent_operators(
-        cls, operator: Operator, parent_operator_data: list[ParentOperatorIn] | None, user_guid: UUID
+        cls, operator: Operator, parent_operators_data: list[ParentOperatorIn] | None, user_guid: UUID
     ) -> None:
-        # this function is for reg2
+        old_parent_operators: QuerySet[ParentOperator] = operator.parent_operators.all()
         # if all parent operators have been removed, archive them
-        if not parent_operator_data:
-            for old_parent in operator.parent_operators.all():
-                old_parent.set_archive(user_guid)
-
-        if parent_operator_data:
-            old_parent_operators = list(operator.parent_operators.all())
-            new_parent_operators = []
-            for po in parent_operator_data:
-                po_operator_data: dict = po.dict(
-                    include={'legal_name', 'cra_business_number', 'foreign_address', 'foreign_tax_id_number'}
-                )
-                old_address_id = po.mailing_address
-                new_address = po.dict(
-                    include={'street_address', 'municipality', 'province', 'postal_code'}, exclude_none=True
-                )
-                if old_address_id and not new_address:
-                    old_address = Address.objects.all().get(id=old_address_id)
-                    po_operator_data['mailing_address'] = None
-                    old_address.delete()
-
-                if new_address:
-                    updated_mailing_address = AddressDataAccessService.upsert_address_from_data(
-                        new_address, old_address_id
-                    )
-                    po_operator_data['mailing_address'] = updated_mailing_address
-
-                new_parent_operators.append(
-                    ParentOperatorService.create_or_update(po.id, operator, user_guid, po_operator_data)
-                )
-
+        if not parent_operators_data:
             for old_parent in old_parent_operators:
-                if old_parent not in new_parent_operators:
-                    old_parent.set_archive(user_guid)
+                old_parent.set_archive(user_guid)
+            return
+
+        new_parent_operators = []
+        for po_data in parent_operators_data:
+            po_operator_data: dict = po_data.dict(
+                include={'legal_name', 'cra_business_number', 'foreign_address', 'foreign_tax_id_number'}
+            )
+            old_address_id = po_data.mailing_address
+            new_address = po_data.dict(
+                include={'street_address', 'municipality', 'province', 'postal_code'}, exclude_none=True
+            )
+            if old_address_id and not new_address:
+                old_address = Address.objects.get(id=old_address_id)
+                po_operator_data['mailing_address'] = None
+                old_address.delete()
+
+            if new_address:
+                updated_mailing_address = AddressDataAccessService.upsert_address_from_data(new_address, old_address_id)
+                po_operator_data['mailing_address'] = updated_mailing_address
+
+            new_parent_operators.append(
+                ParentOperatorService.create_or_update(po_data.id, operator, user_guid, po_operator_data)
+            )
+
+        for old_parent in old_parent_operators:
+            if old_parent not in new_parent_operators:
+                old_parent.set_archive(user_guid)
 
     @classmethod
     @transaction.atomic()

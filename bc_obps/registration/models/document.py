@@ -24,9 +24,6 @@ class Document(TimeStampedModel):
             "Table that contains information about documents such as file metadata, type, and description."
         )
         db_table = 'erc"."document'
-        indexes = [
-            models.Index(fields=["type"], name="document_type_idx"),
-        ]
 
     @typing.no_type_check
     def delete(self, *args, **kwargs):

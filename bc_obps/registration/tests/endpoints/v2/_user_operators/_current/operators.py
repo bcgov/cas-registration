@@ -54,7 +54,15 @@ class TestCurrentUserOperatorV2Endpoint(CommonTestSetup):
         assert response.status_code == 200
 
         # Additional Assertions
-        assert "id" in response_json
+        assert response_json['id'] == str(operator.id)
+        assert "trade_name" in response_json
+        assert "street_address" in response_json
+        assert "municipality" in response_json
+        assert "province" in response_json
+        assert "postal_code" in response_json
+        assert "operator_has_parent_operators" in response_json
+        assert "parent_operators_array" in response_json
+        assert "partner_operators_array" in response_json
 
     # GET USER OPERATOR OPERATOR ID 401
     def test_get_current_operator_and_user_operator_with_invalid_user(self):
@@ -67,93 +75,28 @@ class TestCurrentUserOperatorV2Endpoint(CommonTestSetup):
 
     # PUT
     def test_current_endpoint_unauthorized_roles_cannot_put(self):
-        # cas users can't put
-        response = TestUtils.mock_put_with_auth_role(
-            self,
-            "cas_pending",
-            self.content_type,
-            {
-                "street_address": "123 Main St",
-                "municipality": "City",
-                "province": "ON",
-                "postal_code": "A1B 2C3",
-                "id": "4242ea9d-b917-4129-93c2-db00b7451051",
-                "legal_name": "khg",
-                "trade_name": "Existing Operator 2 Trade Name",
-                "cra_business_number": 987654321,
-                "bc_corporate_registry_number": "def1234567",
-                "business_structure": "BC Corporation",
-            },
-            custom_reverse_lazy("update_operator_and_user_operator"),
-        )
-        assert response.status_code == 401
-        response = TestUtils.mock_put_with_auth_role(
-            self,
-            "cas_analyst",
-            self.content_type,
-            {
-                "street_address": "123 Main St",
-                "municipality": "City",
-                "province": "ON",
-                "postal_code": "A1B 2C3",
-                "id": "4242ea9d-b917-4129-93c2-db00b7451051",
-                "legal_name": "khg",
-                "trade_name": "Existing Operator 2 Trade Name",
-                "cra_business_number": 987654321,
-                "bc_corporate_registry_number": "def1234567",
-                "business_structure": "BC Corporation",
-            },
-            custom_reverse_lazy("update_operator_and_user_operator"),
-        )
-        assert response.status_code == 401
-        response = TestUtils.mock_put_with_auth_role(
-            self,
-            "cas_admin",
-            self.content_type,
-            {
-                "street_address": "123 Main St",
-                "municipality": "City",
-                "province": "ON",
-                "postal_code": "A1B 2C3",
-                "id": "4242ea9d-b917-4129-93c2-db00b7451051",
-                "legal_name": "khg",
-                "trade_name": "Existing Operator 2 Trade Name",
-                "cra_business_number": 987654321,
-                "bc_corporate_registry_number": "def1234567",
-                "business_structure": "BC Corporation",
-            },
-            custom_reverse_lazy("update_operator_and_user_operator"),
-        )
-        assert response.status_code == 401
 
-        # unapproved industry users can't put
-        user_operator_instance = user_operator_baker(
-            {
-                'status': UserOperator.Statuses.PENDING,
-            }
-        )
-        user_operator_instance.user_id = self.user.user_guid
-        user_operator_instance.save()
-
-        response = TestUtils.mock_put_with_auth_role(
-            self,
-            "industry_user",
-            self.content_type,
-            {
-                "street_address": "123 Main St",
-                "municipality": "City",
-                "province": "ON",
-                "postal_code": "A1B 2C3",
-                "id": "4242ea9d-b917-4129-93c2-db00b7451051",
-                "legal_name": "khg",
-                "trade_name": "Existing Operator 2 Trade Name",
-                "cra_business_number": 987654321,
-                "bc_corporate_registry_number": "def1234567",
-                "business_structure": "BC Corporation",
-            },
-            custom_reverse_lazy('update_operator_and_user_operator'),
-        )
-        assert response.status_code == 401
+        for role in ["cas_pending", "cas_analyst", "cas_admin", "industry_user"]:
+            # cas users and unapproved industry_user can't put
+            response = TestUtils.mock_put_with_auth_role(
+                self,
+                role,
+                self.content_type,
+                {
+                    "street_address": "123 Main St",
+                    "municipality": "City",
+                    "province": "ON",
+                    "postal_code": "A1B 2C3",
+                    "id": "4242ea9d-b917-4129-93c2-db00b7451051",
+                    "legal_name": "khg",
+                    "trade_name": "Existing Operator 2 Trade Name",
+                    "cra_business_number": 987654321,
+                    "bc_corporate_registry_number": "def1234567",
+                    "business_structure": "BC Corporation",
+                },
+                custom_reverse_lazy("update_operator_and_user_operator"),
+            )
+            assert response.status_code == 401
 
     def test_put_current_user_operator(self):
         # Act
@@ -184,4 +127,12 @@ class TestCurrentUserOperatorV2Endpoint(CommonTestSetup):
         assert response.status_code == 200
 
         # Additional Assertions
-        assert "id" in response_json
+        assert response_json['id'] == str(operator.id)
+        assert "trade_name" in response_json
+        assert "street_address" in response_json
+        assert "municipality" in response_json
+        assert "province" in response_json
+        assert "postal_code" in response_json
+        assert "operator_has_parent_operators" in response_json
+        assert "parent_operators_array" in response_json
+        assert "partner_operators_array" in response_json

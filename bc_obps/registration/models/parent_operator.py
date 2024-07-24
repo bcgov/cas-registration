@@ -22,7 +22,9 @@ class ParentOperator(TimeStampedModel):
         null=True,
     )
     legal_name = models.CharField(max_length=1000, db_comment="The legal name of a parent operator")
-    trade_name = models.CharField(max_length=1000, blank=True, db_comment="The trade name of a parent operator")
+    trade_name = models.CharField(
+        max_length=1000, blank=True, null=True, db_comment="The trade name of a parent operator"
+    )
     cra_business_number = models.IntegerField(
         db_comment="The CRA business number of a parent operator", blank=True, null=True
     )
@@ -82,9 +84,3 @@ class ParentOperator(TimeStampedModel):
     class Meta:
         db_table_comment = "Table containing data about operators' parent operators. Parent operators may have a record in the Operator table. If so, that record is controlled by someone who works for that parent operator. The information in this table is controlled by child operators who should not have access to other operator's records."
         db_table = 'erc"."parent_operator'
-        indexes = [
-            models.Index(fields=["child_operator"], name="po_child_operator_idx"),
-            models.Index(fields=["business_structure"], name="po_business_structure_idx"),
-            models.Index(fields=["physical_address"], name="po_physical_address_idx"),
-            models.Index(fields=["mailing_address"], name="po_mailing_address_idx"),
-        ]

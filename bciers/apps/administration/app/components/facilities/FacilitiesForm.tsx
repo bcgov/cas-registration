@@ -24,12 +24,10 @@ export default function FacilitiesForm({
 }: Readonly<Props>) {
   // @ ts-ignore
   const [error, setError] = useState(undefined);
-  // const [confirmation, setConfirmation] = useState(false);
   const router = useRouter();
   const params = useParams();
   return (
     <>
-      {/* {confirmation && <div>success</div>} */}
       <SingleStepTaskListForm
         error={error}
         disabled={!isCreating}
@@ -57,7 +55,6 @@ export default function FacilitiesForm({
             // return error so SingleStepTaskList can re-enable the submit button and user can attempt to submit again
             return { error: response.error };
           }
-          // setConfirmation(true);
           if (isCreating) {
             router.replace(
               `/operations/${params.operationId}/facilities/${response.id}?title=${response.name}`,
