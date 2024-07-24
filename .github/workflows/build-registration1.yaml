@@ -4,16 +4,53 @@ on:
   workflow_call:
 
 jobs:
-  docker-build:
+  frontend-docker-build:
     runs-on: ubuntu-latest
+    needs: backend-docker-build # Necessary to ensure backend image is built first
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v3
         with:
-          fetch-depth: 0
-      - name: Build registration1 container
-        uses: ./.github/actions/nx-app-build
+          install: true
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v5
         with:
-          project: registration1
-          image_url: ghcr.io/bcgov/cas-reg1-frontend
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          images: ghcr.io/bcgov/cas-reg1-frontend
+          tags: |
+            type=sha,format=long,prefix=
+            latest
+            type=ref,event=pr
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Cache Docker layers
+        uses: actions/cache@v4
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-client-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-client
+      - name: Build image
+        uses: docker/build-push-action@v5
+        with:
+          context: client
+          builder: ${{ steps.buildx.outputs.name }}
+          push: true
+          file: client/Dockerfile
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache-new
+        # Temp fix
+        # https://github.com/docker/build-push-action/issues/252
+        # https://github.com/moby/buildkit/issues/1896
+      - name: Move cache
+        run: |
+          rm -rf /tmp/.buildx-cache
+          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
