@@ -1,9 +1,13 @@
-import { GridColDef } from "@mui/x-data-grid";
+"use client";
+import { GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import Button from "@mui/material/Button";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import * as React from "react";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+import { actionHandler } from "@bciers/actions";
+import { useRouter } from "next/navigation";
+import { getReportingYear } from "@reporting/src/app/utils/getReportingYear";
 
 export const OPERATOR_COLUMN_INDEX = 1;
 
@@ -48,6 +52,56 @@ const MoreCell: React.FC = () => {
   );
 };
 
+const handleStartReport = async (
+  operationId: string,
+  reportingYear: number,
+): Promise<string> => {
+  try {
+    const reportId = await actionHandler("reporting/reports", "POST", "", {
+      body: JSON.stringify({
+        operation_id: operationId,
+        reporting_year: reportingYear,
+      }),
+    });
+
+    return reportId;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const ActionCell = (params: GridRenderCellParams) => {
+  const reportId = params.value;
+  const router = useRouter();
+  const OperationId = params.row.id;
+
+  if (reportId) {
+    return (
+      <Button
+        color="primary"
+        onClick={() =>
+          router.push(`operations/${reportId}/review-operator-data`)
+        }
+      >
+        Continue
+      </Button>
+    );
+  }
+
+  return (
+    <Button
+      color="primary"
+      onClick={async () => {
+        const reportingYear = await getReportingYear();
+        const newReportId = await handleStartReport(OperationId, reportingYear);
+        router.push(`operations/${newReportId}/review-operator-data`);
+      }}
+    >
+      Start
+    </Button>
+  );
+};
+
 const operationColumns = (): GridColDef[] => {
   const columns: GridColDef[] = [
     { field: "bcghg_id", headerName: "BC GHG ID", width: 160 },
@@ -55,6 +109,13 @@ const operationColumns = (): GridColDef[] => {
       field: "name",
       headerName: "Operation",
       width: 560,
+    },
+    {
+      field: "report_id",
+      headerName: "Actions",
+      renderCell: ActionCell,
+      sortable: false,
+      width: 120,
     },
     {
       field: "more",
