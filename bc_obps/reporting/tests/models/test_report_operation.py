@@ -18,7 +18,7 @@ class ReportOperationModelTest(BaseTestCase):
             operation_representative_name="Kar Bonn",
             report_version=report_version_baker(report_operation=None),
         )
-        cls.test_object.activities.add(ReportingActivity.objects.first())
+        cls.test_object.reporting_activities.add(ReportingActivity.objects.first())
         cls.field_data = [
             ("id", "ID", None, None),
             ("report_version", "report version", None, None),
