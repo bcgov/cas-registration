@@ -17,10 +17,8 @@ class ReportOperationOut(ModelSchema):
     Schema for the get report operation endpoint request output
     """
 
-    class Config:
-        alias_generator = to_snake
-
     class Meta:
+        alias_generator = to_snake
         model = ReportOperation
         fields = [
             'operator_legal_name',
@@ -50,10 +48,8 @@ class ReportOperationIn(ModelSchema):
     regulated_products: List[str]
     operation_representative_name: str
 
-    class Config:
-        alias_generator = to_snake
-
     class Meta:
+        alias_generator = to_snake
         model = ReportOperation
         fields = [
             'operator_legal_name',
