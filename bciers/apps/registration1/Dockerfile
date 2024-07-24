@@ -18,12 +18,12 @@ ENTRYPOINT ["dumb-init", "--"]
 ENV NODE_ENV production
 ENV PORT 3000
 WORKDIR /usr/src/app
+USER node
 COPY --from=deps /usr/src/app/node_modules node_modules
 COPY --from=deps /usr/src/app/package.json package.json
 COPY ./public ./public
 COPY --chown=node:node ./.next ./.next
 
-USER node
 EXPOSE 3000
 # COPY --chown=node:node ./tools/scripts/entrypoints/api.sh /usr/local/bin/docker-entrypoint.sh
 # ENTRYPOINT [ "docker-entrypoint.sh" ]
