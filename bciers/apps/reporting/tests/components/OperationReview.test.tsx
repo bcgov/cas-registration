@@ -2,23 +2,21 @@ import { render, screen } from "@testing-library/react";
 import { describe, expect, vi, it, beforeEach } from "vitest";
 import React from "react";
 import OperationReview from "@reporting/src/app/components/operations/OperationReview";
-import { UUID } from "crypto";
 
 // Mock data
 const mockFormData = {
-  operatorLegalName: "Test Operator Legal Name",
-  operatorTradeName: "Test Operator Trade Name",
-  operationName: "Test Operation Name",
-  operationType: "Test Operation Type",
-  BCGHGID: "12345",
-  BOROID: "54321",
-  operationRepresentative: "Test Representative",
-  reportingActivities: ["Activity 1", "Activity 2"],
-  regulatedProducts: ["Product 1", "Product 2"],
+  operator_legal_name: "Test Operator Legal Name",
+  operator_trade_name: "Test Operator Trade Name",
+  operation_name: "Test Operation Name",
+  operation_type: "Test Operation Type",
+  operation_bcghgid: "12345",
+  bc_obps_regulated_operation_id: "54321",
+  operation_representative_name: "Test Representative",
+  reporting_activities: ["Activity 1", "Activity 2"],
+  regulated_products: ["Product 1", "Product 2"],
 };
 
-// Mock UUID
-const mockVersionId = "123e4567-e89b-12d3-a456-426614174000" as UUID;
+const mockVersionId = 1;
 
 describe("OperationReview component", () => {
   beforeEach(() => {
