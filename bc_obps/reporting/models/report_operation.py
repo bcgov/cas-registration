@@ -1,6 +1,6 @@
 from common.models import BaseModel
 from django.db import models
-from registration.models import ReportingActivity
+from registration.models import ReportingActivity, RegulatedProduct
 from reporting.models.report_version import ReportVersion
 
 
@@ -17,10 +17,6 @@ class ReportOperation(BaseModel):
         db_comment="The report this operation information relates to",
     )
 
-    class OperationType(models.TextChoices):
-        SFO = "sfo"
-        LFO = "lfo"
-
     operator_legal_name = models.CharField(
         max_length=1000, db_comment="The legal name of the operator operating this operation"
     )
@@ -33,7 +29,6 @@ class ReportOperation(BaseModel):
     )
     operation_type = models.CharField(
         max_length=1000,
-        choices=OperationType.choices,
         db_comment="The type of the operation, LFO or SFO",
     )
     operation_bcghgid = models.CharField(
@@ -50,7 +45,8 @@ class ReportOperation(BaseModel):
     )
 
     # We don't create a backwards relation since this is a registration model
-    activities = models.ManyToManyField(ReportingActivity, related_name="+")
+    reporting_activities = models.ManyToManyField(ReportingActivity, related_name="+")
+    regulated_products = models.ManyToManyField(RegulatedProduct, related_name="+")
 
     class Meta:
         db_table_comment = "A table to store operation information as part of a report"

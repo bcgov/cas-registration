@@ -1,6 +1,7 @@
 from uuid import UUID
 from registration.models.operation import Operation
 from reporting.models.report import Report
+from registration.models import ReportingActivity, RegulatedProduct
 from reporting.models.report_facility import ReportFacility
 from reporting.models.report_operation import ReportOperation
 from reporting.models.report_version import ReportVersion
@@ -8,6 +9,7 @@ from service.data_access_service.facility_service import FacilityDataAccessServi
 from django.db import transaction
 from service.data_access_service.report_service import ReportDataAccessService
 from service.data_access_service.reporting_year import ReportingYearDataAccessService
+from reporting.schema.report_operation import ReportOperationIn
 
 
 class ReportService:
@@ -57,7 +59,8 @@ class ReportService:
             ),
             report_version=report_version,
         )
-        report_operation.activities.add(*list(operation.reporting_activities.all()))
+        report_operation.reporting_activities.add(*list(operation.reporting_activities.all()))
+        report_operation.regulated_products.add(*list(operation.regulated_products.all()))
 
         for f in facilities:
             report_facility = ReportFacility.objects.create(
@@ -70,3 +73,33 @@ class ReportService:
             report_facility.products.add(*list(operation.regulated_products.all()))
 
         return report
+
+    @classmethod
+    def get_report_operation_by_version_id(cls, report_version_id: int) -> ReportOperation:
+        return ReportOperation.objects.get(report_version__id=report_version_id)
+
+    @classmethod
+    def save_report_operation(cls, report_version_id: int, data: ReportOperationIn) -> ReportOperation:
+        report_operation = ReportOperation.objects.get(report_version__id=report_version_id)
+
+        # Updating fields from data
+        report_operation.operator_legal_name = data.operator_legal_name
+        report_operation.operator_trade_name = data.operator_trade_name
+        report_operation.operation_name = data.operation_name
+        report_operation.operation_type = data.operation_type
+        report_operation.operation_bcghgid = data.operation_bcghgid
+        report_operation.bc_obps_regulated_operation_id = data.bc_obps_regulated_operation_id
+        report_operation.operation_representative_name = data.operation_representative_name
+
+        # Fetch and set ManyToMany fields
+        reporting_activities = ReportingActivity.objects.filter(name__in=data.reporting_activities)
+        regulated_products = RegulatedProduct.objects.filter(name__in=data.regulated_products)
+
+        # Set ManyToMany relationships
+        report_operation.reporting_activities.set(reporting_activities)
+        report_operation.regulated_products.set(regulated_products)
+
+        # Save the updated report operation
+        report_operation.save()
+
+        return report_operation
