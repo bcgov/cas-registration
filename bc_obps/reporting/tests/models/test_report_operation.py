@@ -30,6 +30,6 @@ class ReportOperationModelTest(BaseTestCase):
             ("operation_bcghgid", "operation bcghgid", 1000, None),
             ("bc_obps_regulated_operation_id", "bc obps regulated operation id", 255, None),
             ("operation_representative_name", "operation representative name", 10000, None),
-            ("reporting_activities", "activities", None, 1),
-            ("regulated_products", "products", None, 1),
+            ("reporting_activities", "reporting activities", None, 1),
+            ("regulated_products", "regulated products", None, 1),
         ]
