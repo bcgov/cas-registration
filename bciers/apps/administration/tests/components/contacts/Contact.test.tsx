@@ -49,13 +49,12 @@ describe("Contact component", () => {
   });
 
   it("renders the appropriate error component when getUserOperatorUsers fails", async () => {
-    getContact.mockReturnValueOnce(contactFormData);
     getUserOperatorUsers.mockReturnValueOnce({
       error: "No users found",
     });
     render(
       await Contact({
-        contactId,
+        contactId: undefined,
       }),
     );
     expect(
