@@ -23,7 +23,7 @@ backend:
       memory: 256Mi
 
 registration1Frontend:
-  replicaCount: 2
+  replicaCount: 1
 
   image:
     tag: "latest"
