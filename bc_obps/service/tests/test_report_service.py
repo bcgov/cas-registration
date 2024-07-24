@@ -105,7 +105,7 @@ class TestReportService(TestCase):
                     report_version.report_operation.operation_bcghgid,
                     report_version.report_operation.bc_obps_regulated_operation_id,
                     report_version.report_operation.operation_representative_name,
-                    report_version.report_operation.activities.count(),
+                    report_version.report_operation.reporting_activities.count(),
                 ),
                 (
                     operation.operator.legal_name,
