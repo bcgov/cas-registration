@@ -17,4 +17,9 @@ module.exports = logAndReturnConfig({
       transform: "@mui/material/{{member}}",
     },
   },
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "25mb",
+    },
+  },
 });
