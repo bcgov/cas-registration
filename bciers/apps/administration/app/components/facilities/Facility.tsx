@@ -22,12 +22,16 @@ export default async function Facility({
   if (facilityId) {
     facilityFormData = await getFacility(facilityId);
     if (facilityFormData?.error) {
-      return notFound();
+      throw new Error(
+        "We couldn't find your facility information. Please ensure you have been approved for access to this facility.",
+      );
     }
   }
   const operation = await getOperation(operationId);
   if (operation.error) {
-    return notFound();
+    throw new Error(
+      "We couldn't find your operation information. Please ensure you have been approved for access to this operation.",
+    );
   }
   const isCreating = Object.keys(facilityFormData).length === 0;
   return (

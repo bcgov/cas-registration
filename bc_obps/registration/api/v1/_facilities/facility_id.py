@@ -38,10 +38,26 @@ def get_facility(request: HttpRequest, facility_id: UUID) -> Tuple[Literal[200],
 
 @router.put(
     "/facilities/{facility_id}",
-    response={200: FacilityOut, codes_4xx: Message},
+    response={200: FacilityOut, custom_codes_4xx: Message},
     tags=FACILITY_TAGS,
-    description="""Updates the details of a specific facility by its ID. The endpoint ensures that only authorized industry users can edit an operation facility to which the user has access.
-    Unauthorized access attempts raise an error.""",
+    description="""
+    Updates the details of an existing facility.
+
+    **Requires:**
+    - Authorized industry user with access to the specified facility.
+
+    **Parameters:**
+    - **facility_id** (UUID): The unique identifier of the facility to be updated.
+    - **payload** (FacilityIn): A JSON object containing the new facility data, FacilityIn schema.
+
+    **Returns:**
+    - **200:** The updated facility data (FacilityOut) if successful.
+    - **4xx:** Custom error codes and messages indicating the failure reason.
+
+    **Raises:**
+    - Unauthorized error if the user is not an authorized industry user or lacks access to the facility.
+
+    """
 )
 @authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
 @handle_http_errors()
@@ -49,5 +65,5 @@ def update_facility(
     request: HttpRequest, facility_id: UUID, payload: FacilityIn
 ) -> Tuple[Literal[200], Facility]:
     return 200, FacilityService.update_facility(
-        get_current_user_guid(request),facility_id, payload
+        get_current_user_guid(request), facility_id, payload
     )
