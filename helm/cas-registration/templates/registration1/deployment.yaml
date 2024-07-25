@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "cas-registration.fullname" . }}-registration1-frontend
+  name: {{ include "cas-registration.fullname" . }}-frontend
   labels:
     component: registration1-frontend
 {{- include "cas-registration.labels" . | nindent 4 }}
@@ -22,7 +22,7 @@ spec:
         component: registration1-frontend
     spec:
       containers:
-        - name: {{ template "cas-registration.fullname" . }}-registration1-frontend
+        - name: {{ template "cas-registration.fullname" . }}-frontend
           env:
             - name: API_URL
               value: http://{{ include "cas-registration.fullname" . }}-backend.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.backend.service.port }}/api/
