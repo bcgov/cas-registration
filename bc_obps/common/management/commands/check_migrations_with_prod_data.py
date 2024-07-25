@@ -1,3 +1,4 @@
+import os
 import subprocess
 from django.core.management.base import BaseCommand
 
@@ -13,6 +14,8 @@ class Command(BaseCommand):
         if not pod_name:
             self.stdout.write(self.style.ERROR('Pod name is required'))
             return
+
+        dump_file_path = 'db.sql'
         try:
             # Switch to PROD environment here
             self.stdout.write('Switching to PROD environment...')
@@ -21,7 +24,7 @@ class Command(BaseCommand):
             # Dump the database
             self.stdout.write(f'Streaming the PostgreSQL dump from pod: {pod_name}...')
             dump_command = f"oc exec {pod_name} -- pg_dump --format=c -d obps"
-            with open('db.dump', 'wb') as f:
+            with open(dump_file_path, 'wb') as f:
                 subprocess.check_call(dump_command, shell=True, stdout=f)
 
             # Switch to DEV environment here
@@ -32,7 +35,7 @@ class Command(BaseCommand):
             subprocess.check_call(['createdb', 'obps'])
 
             self.stdout.write('Restoring the database...')
-            subprocess.check_call(['pg_restore', '-d', 'obps', 'db.dump'])
+            subprocess.check_call(['pg_restore', '-d', 'obps', dump_file_path])
 
             self.stdout.write('Running migrations...')
             subprocess.check_call(['poetry', 'run', 'python', 'manage.py', 'custom_migrate'])
@@ -47,6 +50,12 @@ class Command(BaseCommand):
             self.stdout.write('Dropping the local database...')
             subprocess.check_call(['dropdb', 'obps'])
             self.stdout.write(self.style.ERROR(f'Command failed: {e}'))
+
+        finally:
+            # Ensure the dump file is deleted
+            if os.path.exists(dump_file_path):
+                os.remove(dump_file_path)
+                self.stdout.write('Dump file deleted.')
 
 
 """
