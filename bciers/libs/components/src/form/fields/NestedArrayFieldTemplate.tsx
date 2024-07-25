@@ -33,8 +33,6 @@ const NestedArrayFieldTemplate = ({
 
   const customTitleName = uiSchema?.["ui:options"]?.title as string;
 
-  console.log(idSchema)
-
   return (
     <div className="flex min-w-full flex-col">
       {items?.map((item, i: number) => {
