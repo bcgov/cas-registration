@@ -9,6 +9,7 @@ import TaskList from "@bciers/components/form/components/TaskList";
 import Snackbar from "@mui/material/Snackbar";
 import { GREEN_SNACKBAR_COLOR } from "@bciers/styles";
 import { createNestedFormData, createUnnestedFormData } from "./formDataUtils";
+import { FormMode } from "@bciers/utils/enums";
 
 interface SingleStepTaskListFormProps {
   disabled?: boolean;
@@ -20,6 +21,7 @@ interface SingleStepTaskListFormProps {
   uiSchema: UiSchema;
   error?: string;
   inlineMessage?: React.ReactNode;
+  mode?: FormMode;
 }
 
 const SingleStepTaskListForm = ({
@@ -32,10 +34,13 @@ const SingleStepTaskListForm = ({
   uiSchema,
   error,
   inlineMessage,
+  mode = FormMode.CREATE,
 }: SingleStepTaskListFormProps) => {
   const hasFormData = Object.keys(rawFormData).length > 0;
   const formData = hasFormData ? createNestedFormData(rawFormData, schema) : {};
-  const [isDisabled, setIsDisabled] = useState(disabled || hasFormData);
+  const [isDisabled, setIsDisabled] = useState(
+    disabled || mode === FormMode.READ_ONLY,
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

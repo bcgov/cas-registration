@@ -8,6 +8,7 @@ import { actionHandler } from "@bciers/actions";
 import { ContactFormData } from "./types";
 import getUserData from "./getUserData";
 import { IChangeEvent } from "@rjsf/core";
+import { FormMode } from "@bciers/utils/enums";
 
 interface Props {
   schema: any;
@@ -50,6 +51,7 @@ export default function ContactsForm({
       schema={schema}
       uiSchema={uiSchema}
       formData={formState}
+      mode={isCreating ? FormMode.CREATE : FormMode.READ_ONLY}
       inlineMessage={
         isCreating && (
           <>
