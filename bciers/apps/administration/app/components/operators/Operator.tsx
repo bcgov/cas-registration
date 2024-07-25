@@ -32,6 +32,13 @@ export const createOperatorSchema = (
     default: [{}],
     items: {
       type: "object",
+      required: [
+        "partner_legal_name",
+        "partner_trade_name",
+        "partner_business_structure",
+        "partner_cra_business_number",
+        "partner_bc_corporate_registry_number",
+      ],
       properties: {
         partner_legal_name: { type: "string", title: "Legal Name" },
         partner_trade_name: { type: "string", title: "Trade Name" },
