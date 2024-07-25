@@ -23,6 +23,13 @@ class TestUserService:
         assert result == target_user
 
     @staticmethod
+    def test_get_user_if_authorized_cas_user_pending_fail():
+        admin_user = baker.make(User, app_role=AppRole.objects.get(role_name="cas_pending"))
+        target_user = user_baker()
+        with pytest.raises(Exception, match=UNAUTHORIZED_MESSAGE):
+            UserService.get_if_authorized(admin_user.pk, target_user.pk)
+
+    @staticmethod
     def test_get_user_if_authorized_industry_user_success():
         admin_user = baker.make(User, app_role=AppRole.objects.get(role_name="industry_user"))
         target_user = user_baker(

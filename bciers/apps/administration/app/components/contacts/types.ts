@@ -24,6 +24,10 @@ export interface ContactFormData {
   position_title?: string;
   email?: string;
   phone_number?: string;
+  street_address?: string;
+  municipality?: string;
+  province?: string;
+  postal_code?: string;
 }
 
 export interface UserOperatorUser {
