@@ -54,8 +54,8 @@
             "content": "Submit, view and edit your annual reports or previous years’ reports.",
             "links": [
               {
-                "title": "Submit Annual Reports",
-                "href": "/reporting/tbd"
+                "title": "Submit Annual Report(s)",
+                "href": "/reporting/operations"
               },
               {
                 "title": "View Past Submissions",
