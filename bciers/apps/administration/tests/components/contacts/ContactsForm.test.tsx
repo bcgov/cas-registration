@@ -134,9 +134,7 @@ describe("ContactsForm component", () => {
       container.querySelector("#root_section4_postal_code"),
     ).toHaveTextContent("A1B 2C3");
 
-    // submit button
-    const submitButton = screen.getByRole("button", { name: /submit/i });
-    expect(submitButton).toBeDisabled();
+    expect(screen.getByRole("button", { name: /edit/i })).toBeEnabled();
   });
   it("does not allow new contact form submission if there are validation errors (empty form data)", async () => {
     render(
