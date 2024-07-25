@@ -6,13 +6,17 @@ import { FormProps, IChangeEvent, withTheme, ThemeProps } from "@rjsf/core";
 import customTransformErrors from "@bciers/utils/customTransformErrors";
 import { RJSFValidationError } from "@rjsf/utils";
 
+// Best I can do for manual text validation for the DateWidget
+const currentYear = new Date().getFullYear();
+const yearRegEx = new RegExp(`.*(?:${currentYear - 1}|${currentYear}).*`);
+
 const customFormats = {
   phone: /\(?\d{3}\)?[\s-]?\d{3}[\s-]?\d{4}$/,
   "postal-code":
     /^[ABCEGHJ-NPRSTVXY]\d[ABCEGHJ-NPRSTV-Z][ -]?\d[ABCEGHJ-NPRSTV-Z]\d$/i,
   bc_corporate_registry_number: "^[A-Za-z]{1,3}\\d{7}$",
+  starting_date: yearRegEx,
 };
-
 export const customFormatsErrorMessages = {
   bc_corporate_registry_number:
     "BC Corporate Registry number should be 1-3 letters followed by 7 digits",
@@ -22,6 +26,9 @@ export const customFormatsErrorMessages = {
   phone: "Format should be ### ### ####",
   email: "Please enter a valid email address, e.g. mail@example.com",
   uri: "Please enter a valid website link, e.g. http://www.website.com, https://www.website.com",
+  starting_date: `Starting Date must be between ${
+    currentYear - 1
+  } and ${currentYear}`,
 };
 
 const transformErrors = (errors: RJSFValidationError[]) => {
