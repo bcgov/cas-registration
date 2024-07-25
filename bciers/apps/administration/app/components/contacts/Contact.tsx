@@ -29,7 +29,7 @@ export default async function Contact({
     }
   } else {
     // Retrieves the list of users associated with the operator of the current user
-    userOperatorUsers = await getUserOperatorUsers("/contacts/add-contact");
+    userOperatorUsers = await getUserOperatorUsers("/contacts/new");
     if ("error" in userOperatorUsers) {
       return (
         <div>
