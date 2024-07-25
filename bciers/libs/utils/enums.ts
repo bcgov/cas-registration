@@ -54,3 +54,9 @@ export enum Status {
   CHANGES_REQUESTED = "Changes Requested",
   NOT_STARTED = "Not Started",
 }
+
+export enum FormMode {
+  CREATE = "create",
+  EDIT = "edit",
+  READ_ONLY = "read-only",
+}
