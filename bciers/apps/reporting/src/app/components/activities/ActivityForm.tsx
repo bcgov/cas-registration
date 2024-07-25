@@ -1,6 +1,5 @@
 "use client";
 import FormBase from "@bciers/components/form/FormBase";
-import { RJSFSchema } from "@rjsf/utils";
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
 import NestedArrayFieldTemplate from "@bciers/components/form/fields/NestedArrayFieldTemplate";
 import SourceTypeBoxTemplate from "@bciers/components/form/fields/SourceTypeBoxTemplate";
@@ -204,31 +203,46 @@ const uiSchema = {
   },
 };
 
+interface Props {
+  activityData: {activityId: number, sourceTypeMap:{[key: number]: string}},
+  reportDate: string
+}
+
 // 🧩 Main component
-export default function Gsc() {
+export default function ActivityForm({activityData, reportDate}:Readonly<Props>) {
   // 🐜 To display errors
   const [errorList, setErrorList] = useState([] as any[]);
   // 🌀 Loading state for the Submit button
   const [isLoading, setIsLoading] = useState(false);
   // ✅ Success state for for the Submit button
   const [isSuccess, setIsSuccess] = useState(false);
-  const [formState, setFormState] = useState({})
+  const [formState, setFormState] = useState({} as any)
   const [jsonSchema, setJsonSchema] = useState({})
 
+  const {activityId, sourceTypeMap} = activityData;
 
-  // let jsonSchema = {}
+  const dependencyArray: string[] = [];
+  const checkBooleans = () => {
+    for (const [key, value] of Object.entries(sourceTypeMap)) {
+      console.log(`SOURCE TYPE: ${key}: ${value}`);
+      dependencyArray.push(formState?.[`${value}`] ? formState?.[`${value}`] : null)
+    }
+  }
+  checkBooleans();
 
   useEffect(() => {
-    const fetchSchemaData = async (queryString: string) => {
+    let x;
+    const fetchSchemaData = async (selectedSourceTypes: string) => {
       // fetch data from server
-      const schemaData = await actionHandler(`reporting/build-form-schema?activity=1&report_date=2024-04-01${queryString}`, "GET", "");
+      const schemaData = await actionHandler(`reporting/build-form-schema?activity=${activityId}&report_date=${reportDate}${selectedSourceTypes}`, "GET", "");
       setJsonSchema(JSON.parse(schemaData).schema);
     };
-    let qs = '';
-    if (formState?.gscWithProductionOfUsefulEnergy) qs = qs + '&source_types[]=1';
-    if (formState?.gscWithoutProductionOfUsefulEnergy) qs = qs + '&source_types[]=2';
-    fetchSchemaData(qs);
-  }, [formState?.gscWithProductionOfUsefulEnergy, formState?.gscWithoutProductionOfUsefulEnergy])
+    let selectedSourceTypes = '';
+    for (const [key, value] of Object.entries(sourceTypeMap)) {
+      if (formState?.[`${value}`]) selectedSourceTypes = selectedSourceTypes + `&source_types[]=${key}`;
+    }
+    fetchSchemaData(selectedSourceTypes);
+  }, dependencyArray)
 
   const customFormats = {
     phone: /\(?\d{3}\)?[\s-]?\d{3}[\s-]?\d{4}$/,
