@@ -9,6 +9,8 @@ class UserService:
     def get_if_authorized(cls, admin_user_guid: UUID, target_user_guid: UUID) -> User:
         admin_user: User = UserDataAccessService.get_by_guid(admin_user_guid)
         target_user: User = UserDataAccessService.get_by_guid(target_user_guid)
-        if admin_user.is_industry_user() and admin_user.business_guid != target_user.business_guid:
-            raise Exception(UNAUTHORIZED_MESSAGE)
-        return target_user
+        if (
+            admin_user.is_industry_user() and admin_user.business_guid == target_user.business_guid
+        ) or admin_user.is_irc_user():
+            return target_user
+        raise Exception(UNAUTHORIZED_MESSAGE)
