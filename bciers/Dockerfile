@@ -27,6 +27,8 @@ COPY ./.next/standalone .
 COPY ./public ./public
 COPY ./.next/static ./dist/${application_path}/.next/static
 
+RUN chmod -R g+rwX ./dist
+
 USER node
 EXPOSE 3000
 # COPY --chown=node:node ./tools/scripts/entrypoints/api.sh /usr/local/bin/docker-entrypoint.sh

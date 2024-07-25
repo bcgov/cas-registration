@@ -37,11 +37,11 @@ registration1Frontend:
 
   resources:
     limits:
-      cpu: 200m
-      memory: 512Mi
+      cpu: 150m
+      memory: 256Mi
     requests:
       cpu: 60m
-      memory: 256Mi
+      memory: 128Mi
 
 growthbook:
   clientKey: sdk-9Vyna67jpIYdjMa

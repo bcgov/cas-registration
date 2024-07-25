@@ -32,11 +32,11 @@ registrationFrontend:
 
   resources:
     limits:
-      cpu: 200m
-      memory: 512Mi
+      cpu: 150m
+      memory: 256Mi
     requests:
       cpu: 60m
-      memory: 256Mi
+      memory: 128Mi
 
 reportingFrontend:
   replicaCount: 2
@@ -52,11 +52,11 @@ reportingFrontend:
 
   resources:
     limits:
-      cpu: 200m
-      memory: 512Mi
+      cpu: 150m
+      memory: 256Mi
     requests:
       cpu: 60m
-      memory: 256Mi
+      memory: 128Mi
 
 dashboardFrontend:
   replicaCount: 2
@@ -76,11 +76,11 @@ dashboardFrontend:
 
   resources:
     limits:
-      cpu: 200m
-      memory: 512Mi
+      cpu: 150m
+      memory: 256Mi
     requests:
       cpu: 60m
-      memory: 256Mi
+      memory: 128Mi
 
 growthbook:
   clientKey: sdk-9Vyna67jpIYdjMa
