@@ -27,7 +27,7 @@ logger = logging.getLogger(__name__)
 
 TModel = TypeVar('TModel', bound=models.Model)
 
-# brianna does fields_to_update work
+
 def update_model_instance(
     instance: TModel,
     fields_to_update: Union[Iterable[str], Dict[str, str]],

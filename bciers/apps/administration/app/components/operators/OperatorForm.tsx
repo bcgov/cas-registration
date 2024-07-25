@@ -34,7 +34,7 @@ export default function OperatorForm({
           const method = isCreating ? "POST" : "PUT";
           const endpoint = isCreating
             ? "tbd"
-            : `registration/v2/user-operators/current`;
+            : `registration/v2/user-operators/current/operator`;
           const pathToRevalidate = "administration/operators";
           const response = await actionHandler(
             endpoint,
