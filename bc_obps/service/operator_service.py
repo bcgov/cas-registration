@@ -90,7 +90,7 @@ class OperatorService:
                     cls.archive_parent_operators(existing_parent_operators, updated_parent_operators, user_guid)
                 # assign an operator_index to new parent operators
                 if not po_operator.operator_index:
-                    po_operator.operator_index = cls.assign_index(existing_parent_operator_indices)
+                    po_operator.operator_index = cls.assign_index(existing_parent_operator_indices)  # type: ignore[arg-type]
                     existing_parent_operator_indices.append(po_operator.operator_index)
 
                 # handle addresses

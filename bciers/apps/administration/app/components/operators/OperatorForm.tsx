@@ -1,53 +1,47 @@
 "use client";
 
 import { useState } from "react";
-import { useParams, useRouter } from "next/navigation";
 import SingleStepTaskListForm from "@bciers/components/form/SingleStepTaskListForm";
+import { RJSFSchema } from "@rjsf/utils";
 import { actionHandler } from "@bciers/actions";
+import { operatorUiSchema } from "../../data/jsonSchema/operator";
 
-export interface FacilityFormData {
+export interface OperatorFormData {
   [key: string]: any;
 }
 
 interface Props {
-  schema: any;
-  uiSchema: any;
-  formData: FacilityFormData;
+  schema: RJSFSchema;
+  formData: OperatorFormData;
   isCreating?: boolean;
 }
 
-export default function FacilitiesForm({
+export default function OperatorForm({
   formData,
   schema,
-  uiSchema,
   isCreating,
 }: Readonly<Props>) {
   // @ ts-ignore
   const [error, setError] = useState(undefined);
-  const router = useRouter();
-  const params = useParams();
   return (
     <>
       <SingleStepTaskListForm
         error={error}
-        disabled={!isCreating}
         schema={schema}
-        uiSchema={uiSchema}
+        uiSchema={operatorUiSchema}
         formData={formData}
         onSubmit={async (data: { formData?: any }) => {
           const method = isCreating ? "POST" : "PUT";
-          const endpoint = isCreating ? "registration/facilities" : `tbd`;
-          const pathToRevalidate = isCreating ? "dashboard/facilities" : `tbd`;
-          const body = {
-            ...data.formData,
-            operation_id: params.operationId,
-          };
+          const endpoint = isCreating
+            ? "tbd"
+            : `registration/v2/user-operators/current/operator`;
+          const pathToRevalidate = "administration/operators";
           const response = await actionHandler(
             endpoint,
             method,
             pathToRevalidate,
             {
-              body: JSON.stringify(body),
+              body: JSON.stringify(data.formData),
             },
           );
           if (response.error) {
@@ -56,11 +50,7 @@ export default function FacilitiesForm({
             return { error: response.error };
           }
           if (isCreating) {
-            router.replace(
-              `/operations/${params.operationId}/facilities/${response.id}?title=${response.name}`,
-              // @ts-ignore
-              { shallow: true },
-            );
+            // tbd
           }
         }}
         onCancel={() => console.log("cancelled")}

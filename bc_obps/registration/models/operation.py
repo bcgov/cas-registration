@@ -142,10 +142,6 @@ class Operation(TimeStampedModel):
             )
         ]
         indexes = [
-            models.Index(fields=["operator"], name="operator_idx"),
-            models.Index(fields=["naics_code"], name="naics_code_idx"),
-            models.Index(fields=["verified_by"], name="operation_verified_by_idx"),
-            models.Index(fields=["created_at"], name="operation_created_at_idx"),
             models.Index(fields=["status"], name="operation_status_idx"),
         ]
 
