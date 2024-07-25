@@ -13,7 +13,7 @@
 apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
-  name: {{ template "cas-registration.fullname" . }}-registration1-frontend
+  name: {{ template "cas-registration.fullname" . }}-frontend
   labels:
 {{ include "cas-registration.labels" . | indent 4 }}
   annotations:
@@ -22,7 +22,7 @@ metadata:
 spec:
   host: {{ .Values.registration1Frontend.route.host }}
   port:
-    targetPort: {{ template "cas-registration.fullname" . }}-registration1-frontend
+    targetPort: {{ template "cas-registration.fullname" . }}-frontend
   tls:
     insecureEdgeTerminationPolicy: Redirect
     termination: edge
@@ -33,5 +33,5 @@ spec:
 {{- end }}
   to:
     kind: Service
-    name:  {{ template "cas-registration.fullname" . }}-registration1-frontend
+    name:  {{ template "cas-registration.fullname" . }}-frontend
     weight: 100

@@ -57,11 +57,11 @@ registrationFrontend:
 
   resources:
     limits:
-      cpu: 200m
-      memory: 512Mi
+      cpu: 150m
+      memory: 256Mi
     requests:
       cpu: 60m
-      memory: 256Mi
+      memory: 128Mi
 
 reportingFrontend:
   enabled: true
@@ -75,11 +75,11 @@ reportingFrontend:
 
   resources:
     limits:
-      cpu: 200m
-      memory: 512Mi
+      cpu: 150m
+      memory: 256Mi
     requests:
       cpu: 60m
-      memory: 256Mi
+      memory: 128Mi
 
 coamFrontend:
   replicaCount: 2
@@ -95,11 +95,11 @@ coamFrontend:
 
   resources:
     limits:
-      cpu: 200m
-      memory: 512Mi
+      cpu: 150m
+      memory: 256Mi
     requests:
       cpu: 60m
-      memory: 256Mi
+      memory: 128Mi
 
 dashboardFrontend:
   enabled: true
@@ -113,11 +113,11 @@ dashboardFrontend:
 
   resources:
     limits:
-      cpu: 200m
-      memory: 512Mi
+      cpu: 150m
+      memory: 256Mi
     requests:
       cpu: 60m
-      memory: 256Mi
+      memory: 128Mi
 
   auth:
     keycloakAuthUrl: https://dev.loginproxy.gov.bc.ca/auth

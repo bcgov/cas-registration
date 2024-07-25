@@ -64,12 +64,12 @@ spec:
               psql -c "create schema if not exists preserve;";
               psql -c "create table preserve.user (first_name text, last_name text, position_title text, email text, phone_number text, user_guid uuid, business_guid uuid, bceid_business_name text, app_role_id text);";
               psql -c "insert into preserve.user (select * from erc.user);";
-              psql -c "drop schema public cascade;";
+              psql -c "drop schema if exists public cascade;";
               psql -c "create schema public;";
               psql -c "grant all on schema public to $(APP_USER);";
-              psql -c "drop schema erc cascade;";
-              psql -c "drop schema erc_history cascade;";
-              psql -c "drop schema common cascade;";
+              psql -c "drop schema if exists erc cascade;";
+              psql -c "drop schema if exists erc_history cascade;";
+              psql -c "drop schema if exists common cascade;";
 {{ end }}
 {{- if (hasSuffix "-dev" .Release.Namespace)}}
           command:
@@ -77,12 +77,12 @@ spec:
             - bash
             - -c
             - |
-              psql -c "drop schema public cascade;";
+              psql -c "drop schema if exists public cascade;";
               psql -c "create schema public;";
               psql -c "grant all on schema public to $(APP_USER);";
-              psql -c "drop schema erc cascade;";
-              psql -c "drop schema erc_history cascade;";
-              psql -c "drop schema common cascade;";
+              psql -c "drop schema if exists erc cascade;";
+              psql -c "drop schema if exists erc_history cascade;";
+              psql -c "drop schema if exists common cascade;";
 {{ end }}
       restartPolicy: Never
 {{ end }}
