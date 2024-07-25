@@ -224,7 +224,6 @@ export default function ActivityForm({activityData, reportDate}:Readonly<Props>)
   const dependencyArray: string[] = [];
   const checkBooleans = () => {
     for (const [key, value] of Object.entries(sourceTypeMap)) {
-      console.log(`SOURCE TYPE: ${key}: ${value}`);
       dependencyArray.push(formState?.[`${value}`] ? formState?.[`${value}`] : null)
     }
   }
@@ -277,6 +276,7 @@ export default function ActivityForm({activityData, reportDate}:Readonly<Props>)
     console.log('SUBMITTED: ', data.formData)
   };
 
+  if (Object.keys(jsonSchema).length === 0 && jsonSchema.constructor === Object) return <>Loading...</>
   // Render the DataGrid component
   return (
     <div className="w-full flex flex-row">
