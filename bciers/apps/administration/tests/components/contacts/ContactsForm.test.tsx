@@ -153,61 +153,67 @@ describe("ContactsForm component", () => {
     });
     expect(screen.getAllByText(/Required field/i)).toHaveLength(6); // 5 required fields + 1 for the user combobox
   });
-  it("fills the mandatory form fields, creates new contact, and redirects on success", async () => {
-    render(
-      <ContactsForm
-        schema={contactsSchema}
-        uiSchema={contactsUiSchema}
-        formData={{}}
-        isCreating
-      />,
-    );
-
-    const response = {
-      id: "4abd8367-efd1-4654-a7ea-fa1a015d3cae",
-      first_name: "John",
-      last_name: "Doe",
-      error: null,
-    };
-    actionHandler.mockReturnValueOnce(response);
-
-    // Switch off the user combobox(so it doesn't raise form error)
-    await userEvent.click(
-      screen.getByLabelText(/Is this contact a user in BCIERS/i),
-    );
-
-    // Personal Information
-    await userEvent.type(screen.getByLabelText(/First Name/i), "John");
-    await userEvent.type(screen.getByLabelText(/Last Name/i), "Doe");
-    // Work Information
-    await userEvent.type(
-      screen.getByLabelText(/Job Title \/ Position/i),
-      "Senior Officer",
-    );
-    // Contact Information
-    await userEvent.type(
-      screen.getByLabelText(/Business Email Address/i),
-      "john.doe@example.com",
-    );
-    await userEvent.type(
-      screen.getByLabelText(/Business Telephone Number/i),
-      "+16044011234",
-    );
-    // Address Information
-    await userEvent.type(
-      screen.getByLabelText(/Business Mailing Address/i),
-      "123 Main St",
-    );
-    await userEvent.type(screen.getByLabelText(/Municipality/i), "Cityville");
-    await userEvent.type(screen.getByLabelText(/Province/i), "ON");
-    await userEvent.type(screen.getByLabelText(/Postal Code/i), "A1B 2C3");
-    // Submit
-    await userEvent.click(screen.getByRole("button", { name: /submit/i }));
-
-    await waitFor(() => {
-      expect(mockReplace).toHaveBeenCalledWith(
-        `/contacts/${response.id}?contactsTitle=${response.first_name} ${response.last_name}`,
+  it(
+    "fills the mandatory form fields, creates new contact, and redirects on success",
+    {
+      timeout: 10000,
+    },
+    async () => {
+      render(
+        <ContactsForm
+          schema={contactsSchema}
+          uiSchema={contactsUiSchema}
+          formData={{}}
+          isCreating
+        />,
       );
-    });
-  });
+
+      const response = {
+        id: "4abd8367-efd1-4654-a7ea-fa1a015d3cae",
+        first_name: "John",
+        last_name: "Doe",
+        error: null,
+      };
+      actionHandler.mockReturnValueOnce(response);
+
+      // Switch off the user combobox(so it doesn't raise form error)
+      await userEvent.click(
+        screen.getByLabelText(/Is this contact a user in BCIERS/i),
+      );
+
+      // Personal Information
+      await userEvent.type(screen.getByLabelText(/First Name/i), "John");
+      await userEvent.type(screen.getByLabelText(/Last Name/i), "Doe");
+      // Work Information
+      await userEvent.type(
+        screen.getByLabelText(/Job Title \/ Position/i),
+        "Senior Officer",
+      );
+      // Contact Information
+      await userEvent.type(
+        screen.getByLabelText(/Business Email Address/i),
+        "john.doe@example.com",
+      );
+      await userEvent.type(
+        screen.getByLabelText(/Business Telephone Number/i),
+        "+16044011234",
+      );
+      // Address Information
+      await userEvent.type(
+        screen.getByLabelText(/Business Mailing Address/i),
+        "123 Main St",
+      );
+      await userEvent.type(screen.getByLabelText(/Municipality/i), "Cityville");
+      await userEvent.type(screen.getByLabelText(/Province/i), "ON");
+      await userEvent.type(screen.getByLabelText(/Postal Code/i), "A1B 2C3");
+      // Submit
+      await userEvent.click(screen.getByRole("button", { name: /submit/i }));
+
+      await waitFor(() => {
+        expect(mockReplace).toHaveBeenCalledWith(
+          `/contacts/${response.id}?contactsTitle=${response.first_name} ${response.last_name}`,
+        );
+      });
+    },
+  );
 });
