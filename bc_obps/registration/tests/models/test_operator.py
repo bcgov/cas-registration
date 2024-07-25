@@ -79,9 +79,10 @@ class OperatorModelTest(BaseTestCase):
             ("is_new", "is new", None, None),
             ("operations", "operation", None, None),
             ("user_operators", "user operator", None, 2),
-            ("parent_operators", "parent operator", None, None),
             ("operation_ownerships", "operation ownership timeline", None, None),
             ("report", "report", None, None),
+            ("parent_operators", "parent operator", None, None),
+            ("partner_operators", "partner operator", None, None),
         ]
 
     def test_check_cra_business_number_format(self):

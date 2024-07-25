@@ -10,6 +10,8 @@ from .document_type import DocumentType
 from .document import Document
 from .contact import Contact
 from .user import User
+from .parent_operator import ParentOperator
+from .partner_operator import PartnerOperator
 from .operator import Operator
 from .user_operator import UserOperator
 from .regulated_product import RegulatedProduct
@@ -21,7 +23,6 @@ from .event import Event
 from .facility_ownership_timeline import FacilityOwnershipTimeline
 from .multiple_operator import MultipleOperator
 from .operation_ownership_timeline import OperationOwnershipTimeline
-from .parent_operator import ParentOperator
 from .well_authorization_number import WellAuthorizationNumber
 
 __all__ = [
@@ -42,6 +43,7 @@ __all__ = [
     "Operation",
     "Operator",
     "ParentOperator",
+    "PartnerOperator",
     "RegulatedProduct",
     "ReportingActivity",
     "TimeStampedModel",
