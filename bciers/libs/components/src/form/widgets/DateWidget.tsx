@@ -18,6 +18,7 @@ const DateWidget: React.FC<WidgetProps> = ({
   rawErrors,
   readonly,
   value,
+  options,
 }) => {
   const handleChange = (d: Dayjs | null) => {
     if (!d || !d.isValid()) {
@@ -51,6 +52,8 @@ const DateWidget: React.FC<WidgetProps> = ({
         onChange={handleChange}
         disabled={disabled || readonly}
         format="YYYY-MM-DD"
+        maxDate={dayjs((options?.maxDate as Date) || null)}
+        minDate={dayjs((options?.minDate as Date) || null)}
         slotProps={{
           actionBar: {
             actions: ["clear", "cancel"],

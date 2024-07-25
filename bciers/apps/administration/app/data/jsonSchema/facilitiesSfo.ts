@@ -45,6 +45,7 @@ const section1: RJSFSchema = {
           starting_date: {
             type: "string",
             title: "Date of facility starting operations:",
+            format: "starting_date",
           },
         },
         required: ["starting_date"],
@@ -116,6 +117,10 @@ export const facilitiesUiSchema = {
     },
     starting_date: {
       "ui:widget": "DateWidget",
+      "ui:options": {
+        maxDate: new Date(),
+        minDate: new Date(currentYear - 1, 0, 1),
+      },
     },
   },
   section2: {
