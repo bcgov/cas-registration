@@ -125,14 +125,17 @@ class TestCurrentUserOperatorV2Endpoint(CommonTestSetup):
 
         # Assert
         assert response.status_code == 200
+        operator.refresh_from_db()  # Refresh the operator object to get the updated values
 
         # Additional Assertions
         assert response_json['id'] == str(operator.id)
+        assert response_json["legal_name"] == operator.legal_name
         assert response_json["trade_name"] == operator.trade_name
-        assert response_json["street_address"] == operator.street_address
-        assert response_json["municipality"] == operator.municipality
-        assert response_json["province"] == operator.province
-        assert response_json["postal_code"] == operator.postal_code
-        assert response_json["operator_has_parent_operators"] == operator.operator_has_parent_operators
-        assert response_json["parent_operators_array"] == operator.parent_operators
-        assert response_json["partner_operators_array"] == operator.partner_operators
+
+        assert response_json["cra_business_number"] == operator.cra_business_number
+        assert response_json["bc_corporate_registry_number"] == operator.bc_corporate_registry_number
+        assert response_json["business_structure"] == operator.business_structure.name
+        assert response_json["street_address"] == operator.mailing_address.street_address
+        assert response_json["municipality"] == operator.mailing_address.municipality
+        assert response_json["province"] == operator.mailing_address.province
+        assert response_json["postal_code"] == operator.mailing_address.postal_code
