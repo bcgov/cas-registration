@@ -128,11 +128,11 @@ class TestCurrentUserOperatorV2Endpoint(CommonTestSetup):
 
         # Additional Assertions
         assert response_json['id'] == str(operator.id)
-        assert "trade_name" in response_json
-        assert "street_address" in response_json
-        assert "municipality" in response_json
-        assert "province" in response_json
-        assert "postal_code" in response_json
-        assert "operator_has_parent_operators" in response_json
-        assert "parent_operators_array" in response_json
-        assert "partner_operators_array" in response_json
+        assert response_json["trade_name"] == operator.trade_name
+        assert response_json["street_address"] == operator.street_address
+        assert response_json["municipality"] == operator.municipality
+        assert response_json["province"] == operator.province
+        assert response_json["postal_code"] == operator.postal_code
+        assert response_json["operator_has_parent_operators"] == operator.operator_has_parent_operators
+        assert response_json["parent_operators_array"] == operator.parent_operators
+        assert response_json["partner_operators_array"] == operator.partner_operators

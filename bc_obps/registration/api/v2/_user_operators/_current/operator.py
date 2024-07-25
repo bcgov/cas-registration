@@ -20,7 +20,7 @@ from registration.api.router import router
 
 ## GET
 @router.get(
-    "/v2/user-operators/current",
+    "/v2/user-operators/current/operator",
     response={200: OperatorOut, custom_codes_4xx: Message},
     tags=V2,
     description="""Retrieves data about the current user-operator and their associated operator.
@@ -35,7 +35,7 @@ def get_current_operator_and_user_operator_v2(request: HttpRequest) -> Tuple[Lit
 
 ## PUT
 @router.put(
-    "/v2/user-operators/current",
+    "/v2/user-operators/current/operator",
     response={200: OperatorOut, custom_codes_4xx: Message},
     tags=["V2"],
     description="""Updates the current user's operator.

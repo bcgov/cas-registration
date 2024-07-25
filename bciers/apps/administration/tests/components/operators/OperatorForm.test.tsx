@@ -312,7 +312,7 @@ describe("OperatorForm component", () => {
 
     await waitFor(() => {
       expect(actionHandler).toHaveBeenCalledWith(
-        "registration/v2/user-operators/current",
+        "registration/v2/user-operators/current/operator",
         "PUT",
         "administration/operators",
         {
