@@ -9,10 +9,10 @@
         "access_roles": ["industry_user", "industry_user_admin"],
         "tiles": [
           {
-            "title": "Submit Annual Report",
+            "title": "Submit Annual Report(s)",
             "icon": "File",
             "content": "TBD here.",
-            "href": "/reporting/tbd"
+            "href": "/reporting/operations"
           },
           {
             "title": "View Past Submissions",
