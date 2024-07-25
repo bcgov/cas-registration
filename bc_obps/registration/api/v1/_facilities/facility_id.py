@@ -57,13 +57,9 @@ def get_facility(request: HttpRequest, facility_id: UUID) -> Tuple[Literal[200],
     **Raises:**
     - Unauthorized error if the user is not an authorized industry user or lacks access to the facility.
 
-    """
+    """,
 )
 @authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
 @handle_http_errors()
-def update_facility(
-    request: HttpRequest, facility_id: UUID, payload: FacilityIn
-) -> Tuple[Literal[200], Facility]:
-    return 200, FacilityService.update_facility(
-        get_current_user_guid(request), facility_id, payload
-    )
+def update_facility(request: HttpRequest, facility_id: UUID, payload: FacilityIn) -> Tuple[Literal[200], Facility]:
+    return 200, FacilityService.update_facility(get_current_user_guid(request), facility_id, payload)

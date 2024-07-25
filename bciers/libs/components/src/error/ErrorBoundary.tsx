@@ -1,12 +1,10 @@
 import { useEffect } from "react";
-import { Button } from "@mui/material";
 import { Alert, AlertTitle } from "@mui/material";
 
 interface Props {
   error: Error & { digest?: string };
-  reset: () => void;
 }
-export default function ErrorBoundary({ error, reset }: Props) {
+export default function ErrorBoundary({ error }: Props) {
   useEffect(() => {
     // eslint-disable-next-line no-console
     console.error(error);

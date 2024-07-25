@@ -5,7 +5,6 @@ import {
 import { facilitiesSchemaLfo } from "../../data/jsonSchema/facilitiesLfo";
 import FacilitiesForm from "./FacilitiesForm";
 import { UUID } from "crypto";
-import { notFound } from "next/navigation";
 import getFacility from "./getFacility";
 import getOperation from "../operations/getOperation";
 

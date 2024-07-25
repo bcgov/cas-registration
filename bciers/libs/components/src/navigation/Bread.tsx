@@ -3,6 +3,7 @@
 import { usePathname, useSearchParams } from "next/navigation";
 import Link from "@mui/material/Link";
 import { validate as isValidUUID } from "uuid";
+import serializeSearchParams from "@bciers/utils/serializeSearchParams";
 
 // 📐 type for breadcrumb props
 type TBreadCrumbProps = {
@@ -43,11 +44,6 @@ function isValidLink(segment: string): boolean {
   return true; // Valid segment
 }
 
-// 🛠️ Function to serialize search params
-const serializeSearchParams = (params: URLSearchParams) => {
-  const queryString = params.toString();
-  return queryString ? `?${queryString}` : "";
-};
 const liStyle = "inline text-white text-lg";
 const aStyle = "text-white text-lg";
 

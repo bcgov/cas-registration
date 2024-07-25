@@ -1,5 +1,4 @@
 from registration.models.facility_ownership_timeline import FacilityOwnershipTimeline
-from registration.models.operation import Operation
 from model_bakery import baker
 from registration.models import UserOperator
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
@@ -9,7 +8,7 @@ from registration.utils import custom_reverse_lazy
 
 class TestFacilityIdEndpoint(CommonTestSetup):
     # Helper
-    
+
     # Define a mock payload for updating the facility
     mock_payload = {
         "name": "Updated Facility Name",
@@ -20,7 +19,7 @@ class TestFacilityIdEndpoint(CommonTestSetup):
         "province": "ON",
         "postal_code": "A1A1A1",
         "latitude_of_largest_emissions": 43.57,
-        "longitude_of_largest_emissions": -123.58
+        "longitude_of_largest_emissions": -123.58,
     }
 
     def create_and_authorize_operator(self):
@@ -39,13 +38,13 @@ class TestFacilityIdEndpoint(CommonTestSetup):
         """
         # Create an operator instance using the operator_baker function
         operator = operator_baker()
-        
+
         # Authorize the current user as the created operator user
         TestUtils.authorize_current_user_as_operator_user(self, operator)
-        
+
         # Create an operation instance associated with the operator
         owning_operation = operation_baker(operator.id)
-        
+
         # Return the created operator and operation instances
         return operator, owning_operation
 
@@ -65,13 +64,13 @@ class TestFacilityIdEndpoint(CommonTestSetup):
         """
         # Create a facility instance using the facility_baker function
         facility = facility_baker()
-        
+
         # Create an ownership timeline linking the facility with the provided operation
         baker.make(FacilityOwnershipTimeline, operation=owning_operation, facility=facility)
-        
+
         # Return the created facility instance
         return facility
-    
+
     # GET
     def test_facilities_endpoint_unauthorized_roles_cannot_get(self):
         facility = facility_baker()
@@ -119,12 +118,11 @@ class TestFacilityIdEndpoint(CommonTestSetup):
         assert response.status_code == 401
         assert response.json()['detail'] == 'Unauthorized.'
 
-
     def test_industry_users_can_get_their_own_facilities(self):
         # Arrange
         # Create an operator and authorize the current user as an operator user
         operator, owning_operation = self.create_and_authorize_operator()
-        
+
         # Create a facility and link it to the owning operation
         facility = self.create_facility_and_ownership(owning_operation)
 
@@ -139,10 +137,9 @@ class TestFacilityIdEndpoint(CommonTestSetup):
         # Assert
         # Check that the response status code is 200 (OK)
         assert response.status_code == 200
-        
+
         # Check that the facility name is present in the response JSON
         assert response.json().get('name') is not None
-
 
     def test_facilities_endpoint_unauthorized_roles_cannot_get(self):
         facility = facility_baker()
@@ -173,7 +170,7 @@ class TestFacilityIdEndpoint(CommonTestSetup):
         # Arrange
         # Create an operator and authorize the current user as an operator user
         operator, owning_operation = self.create_and_authorize_operator()
-        
+
         # Create a facility and link it to the owning operation
         facility = self.create_facility_and_ownership(owning_operation)
 
@@ -187,17 +184,17 @@ class TestFacilityIdEndpoint(CommonTestSetup):
             'industry_user',
             self.content_type,
             self.mock_payload | {"operation_id": str(owning_operation.id)},  # Add operation_id to payload
-            url
+            url,
         )
 
         # Assert
         # Check that the response status code is 200 (OK)
         assert response.status_code == 200
-        
+
         # Check that the facility name in the response JSON matches the updated name
-        
+
         response_data = response.json()
-        
+
         # Assert each field to ensure they match the updated values
         assert response_data.get('name') == "Updated Facility Name"
         assert response_data.get('type') == "Medium Facility"
@@ -209,12 +206,11 @@ class TestFacilityIdEndpoint(CommonTestSetup):
         assert float(response_data.get('latitude_of_largest_emissions')) == 43.57
         assert float(response_data.get('longitude_of_largest_emissions')) == -123.58
 
-
     def test_facility_endpoint_unauthorized_roles_cannot_update(self):
         # Arrange
         # Create an operator and authorize the current user as an operator user
         operator, owning_operation = self.create_and_authorize_operator()
-        
+
         # Create a facility and link it to the owning operation
         facility = self.create_facility_and_ownership(owning_operation)
 
@@ -232,7 +228,7 @@ class TestFacilityIdEndpoint(CommonTestSetup):
                 role,
                 self.content_type,
                 self.mock_payload | {"operation_id": str(owning_operation.id)},  # Add operation_id to payload
-                url
+                url,
             )
 
         # Assert
@@ -246,7 +242,7 @@ class TestFacilityIdEndpoint(CommonTestSetup):
         facility = facility_baker()
 
         # create a new instance of the Operation model
-        operation=operation_baker()
+        operation = operation_baker()
 
         # link the  created facility with an operation
         baker.make(FacilityOwnershipTimeline, operation=operation, facility=facility)
@@ -262,11 +258,8 @@ class TestFacilityIdEndpoint(CommonTestSetup):
             "industry_user",
             self.content_type,
             self.mock_payload | {"operation_id": str(operation.id)},  # Add operation_id to payload
-            url
+            url,
         )
 
         assert response.status_code == 401
         assert response.json().get('detail') == 'Unauthorized.'
-
-
-       

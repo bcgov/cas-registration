@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import { useSession, notFound, useRouter } from "@bciers/testConfig/mocks";
+import { useSession, useRouter } from "@bciers/testConfig/mocks";
 import Facility from "apps/administration/app/components/facilities/Facility";
 import { getOperation } from "../operations/mocks";
 import { getFacility } from "./mocks";
@@ -18,7 +18,7 @@ describe("Facilities component", () => {
     vi.resetAllMocks();
   });
 
-  it("renders the not found page when given a bad facility id", async () => {
+  it("throws an error when given a bad facility id", async () => {
     getOperation.mockReturnValueOnce({
       id: "8be4c7aa-6ab3-4aad-9206-0ef914fea063",
       type: "Single Facility Operation",
@@ -26,26 +26,38 @@ describe("Facilities component", () => {
     getFacility.mockReturnValueOnce({
       error: "yikes",
     });
-    render(
-      await Facility({
-        operationId: "025328a0-f9e8-4e1a-888d-aa192cb053db",
-        facilityId: "garbage-bugs-dump-truck-fire",
-      }),
+
+    await expect(async () => {
+      await render(
+        await Facility({
+          operationId: "025328a0-f9e8-4e1a-888d-aa192cb053db",
+          facilityId: "garbage-bugs-dump-truck-fire",
+        }),
+      );
+    }).rejects.toThrow(
+      new Error(
+        "We couldn't find your facility information. Please ensure you have been approved for access to this facility.",
+      ),
     );
-    expect(notFound).toHaveBeenCalled();
   });
 
-  it("renders the not found page when given a bad operation id", async () => {
+  it("throws an error when given a bad operation id", async () => {
     getOperation.mockReturnValueOnce({
       error: "yikes",
     });
-    render(
-      await Facility({
-        operationId: "garbage-bugs-dump-truck-fire",
-        facilityId: "025328a0-f9e8-4e1a-888d-aa192cb053db",
-      }),
+
+    await expect(async () => {
+      await render(
+        await Facility({
+          operationId: "garbage-bugs-dump-truck-fire",
+          facilityId: "025328a0-f9e8-4e1a-888d-aa192cb053db",
+        }),
+      );
+    }).rejects.toThrow(
+      new Error(
+        "We couldn't find your operation information. Please ensure you have been approved for access to this operation.",
+      ),
     );
-    expect(notFound).toHaveBeenCalled();
   });
 
   it("renders the SFO create facility form with no form data", async () => {

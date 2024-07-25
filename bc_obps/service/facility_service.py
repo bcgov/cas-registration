@@ -38,7 +38,7 @@ class FacilityService:
         """
         # Retrieve the user instance based on the provided user_guid
         user: User = UserDataAccessService.get_by_guid(user_guid)
-        
+
         # Check if the user has access to the specified operation
         if not operation.user_has_access(user.user_guid):
             # Raise an exception if access is denied
@@ -69,7 +69,6 @@ class FacilityService:
             }
         )
 
-
     @classmethod
     def create_or_update_address(cls, payload: FacilityIn):
         """Helper function to create or update an address from payload data."""
@@ -94,9 +93,6 @@ class FacilityService:
 
         if well_authorization_numbers:
             facility.well_authorization_numbers.add(*well_authorization_numbers)
-
-
-
 
     @classmethod
     def list_facilities(
@@ -134,19 +130,19 @@ class FacilityService:
         """Create a facility with ownership details."""
         operation = OperationDataAccessService.get_by_id(payload.operation_id)
         cls.check_user_access(user_guid, operation)
-        
+
         facility_data = cls.prepare_facility_data(payload)
         address = cls.create_or_update_address(payload)
         if address:
             facility_data['address'] = address
-        
+
         facility = FacilityDataAccessService.create_facility(user_guid, facility_data)
         FacilityOwnershipTimelineDataAccessService.create_facility_ownership_timeline(
             user_guid, {'facility': facility, 'operation': operation, 'start_date': timezone.now()}
         )
-        
+
         cls.process_well_authorization_numbers(user_guid, payload, facility)
-        
+
         return facility
 
     @classmethod
@@ -154,7 +150,7 @@ class FacilityService:
     def update_facility(cls, user_guid: UUID, facility_id: UUID, payload: FacilityIn) -> Facility:
         """
         Update an existing facility with new data.
-        
+
         Parameters:
         - user_guid (UUID): The GUID of the user making the update request.
         - facility_id (UUID): The ID of the facility to be updated.
@@ -163,29 +159,29 @@ class FacilityService:
         Returns:
         - Facility: The updated facility instance.
         """
-   
+
         # Retrieve the facility object using the provided facility ID
         facility: Facility = FacilityDataAccessService.get_by_id(facility_id)
-        
+
         # Retrieve the operation object using the operation ID from the payload
         operation = OperationDataAccessService.get_by_id(payload.operation_id)
-        
+
         # Check if the user has access to update the given operation
         cls.check_user_access(user_guid, operation)
-        
+
         # Prepare the facility data for updating, based on the provided payload
         facility_data = cls.prepare_facility_data(payload)
-        
+
         # Create or update the address associated with the facility, if provided
         address = cls.create_or_update_address(payload)
         if address:
             facility_data['address'] = address
-        
+
         # Update the facility in the data access layer with the new data
         facility = FacilityDataAccessService.update_facility(facility_id, user_guid, facility_data)
-        
+
         # Process well authorization numbers and link them to the facility
         cls.process_well_authorization_numbers(user_guid, payload, facility)
-        
+
         # Return the updated facility instance
         return facility
