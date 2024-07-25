@@ -11,13 +11,12 @@ from ninja.responses import codes_4xx, codes_5xx
 
 
 @router.get(
-    "/get_activity_data", response={200: str, codes_4xx: Message, codes_5xx: Message}, url_name="get_activity_data"
+    "/get_initial_activity_data", response={200: str, codes_4xx: Message, codes_5xx: Message}, url_name="get_initial_activity_data"
 )
 @handle_http_errors()
-def get_activity_data(
+def get_initial_activity_data(
     request: HttpRequest,
     activity_name: str,
     report_date: str,
 ) -> Tuple[int, str]:
-    print(activity_name)
-    return 200, ActivityService.get_activity_data(activity_name, report_date)
+    return 200, ActivityService.get_initial_activity_data(activity_name, report_date)
