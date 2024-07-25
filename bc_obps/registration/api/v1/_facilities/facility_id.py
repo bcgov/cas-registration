@@ -4,6 +4,7 @@ from django.http import HttpRequest
 from registration.constants import FACILITY_TAGS
 from registration.models.app_role import AppRole
 from registration.models.user_operator import UserOperator
+from registration.schema.v1.facility import FacilityIn
 from registration.schema.v1.facility import FacilityOut
 
 from service.facility_service import FacilityService
@@ -33,3 +34,20 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 @handle_http_errors()
 def get_facility(request: HttpRequest, facility_id: UUID) -> Tuple[Literal[200], Facility]:
     return 200, FacilityService.get_if_authorized(get_current_user_guid(request), facility_id)
+
+
+@router.put(
+    "/facilities/{facility_id}",
+    response={200: FacilityOut, codes_4xx: Message},
+    tags=FACILITY_TAGS,
+    description="""Updates the details of a specific facility by its ID. The endpoint ensures that only authorized industry users can edit an operation facility to which the user has access.
+    Unauthorized access attempts raise an error.""",
+)
+@authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
+@handle_http_errors()
+def update_facility(
+    request: HttpRequest, facility_id: UUID, payload: FacilityIn
+) -> Tuple[Literal[200], Facility]:
+    return 200, FacilityService.update_facility(
+        get_current_user_guid(request),facility_id, payload
+    )

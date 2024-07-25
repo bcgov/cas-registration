@@ -83,3 +83,9 @@ class FacilityService:
         if well_authorization_numbers:
             facility.well_authorization_numbers.set(well_authorization_numbers)
         return facility
+
+    @classmethod
+    @transaction.atomic()
+    def update_facility(cls, user_guid: UUID, facility_id: UUID, payload: FacilityIn) -> Facility:
+        facility: Facility = FacilityDataAccessService.get_by_id(facility_id)
+        return facility
