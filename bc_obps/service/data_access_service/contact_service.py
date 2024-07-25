@@ -24,7 +24,7 @@ class ContactDataAccessService:
                 "email": updated_data["email"],
                 "phone_number": updated_data["phone_number"],
                 "business_role": updated_data.get(
-                    "business_role", BusinessRole.objects.get(role_name="Operation Registration Lead")
+                    "business_role", BusinessRole.objects.get(role_name="Operation Representative")
                 ),
             },
         )
