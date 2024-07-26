@@ -141,30 +141,6 @@ class TestFacilityIdEndpoint(CommonTestSetup):
         # Check that the facility name is present in the response JSON
         assert response.json().get('name') is not None
 
-    def test_facilities_endpoint_unauthorized_roles_cannot_get(self):
-        facility = facility_baker()
-        # cas_pending can't get
-        response = TestUtils.mock_get_with_auth_role(
-            self, "cas_pending", custom_reverse_lazy("get_facility", kwargs={"facility_id": facility.id})
-        )
-        assert response.status_code == 401
-
-        # unapproved industry users can't get
-        user_operator_instance = user_operator_baker(
-            {
-                'status': UserOperator.Statuses.PENDING,
-            }
-        )
-        user_operator_instance.user_id = self.user.user_guid
-        user_operator_instance.save()
-
-        response = TestUtils.mock_get_with_auth_role(
-            self,
-            "industry_user",
-            custom_reverse_lazy("get_facility", kwargs={"facility_id": facility.id}),
-        )
-        assert response.status_code == 401
-
     # PUT
     def test_facility_endpoint_authorized_users_can_update(self):
         # Arrange

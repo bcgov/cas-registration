@@ -16,11 +16,12 @@ from registration.models.operation import Operation
 from registration.models import User
 from django.db import transaction
 from django.utils import timezone
+from registration.models import Address
 
 
 class FacilityService:
     @classmethod
-    def check_user_access(cls, user_guid: UUID, operation: Operation):
+    def check_user_access(cls, user_guid: UUID, operation: Operation) -> None:
         """
         Assesses whether a user has access to a given operation.
 
@@ -70,7 +71,7 @@ class FacilityService:
         )
 
     @classmethod
-    def create_or_update_address(cls, payload: FacilityIn):
+    def create_or_update_address(cls, payload: FacilityIn) -> Optional[Address]:
         """Helper function to create or update an address from payload data."""
         address_data = payload.dict(
             include={'street_address', 'municipality', 'province', 'postal_code'}, exclude_none=True
@@ -80,7 +81,7 @@ class FacilityService:
         return None
 
     @classmethod
-    def process_well_authorization_numbers(cls, user_guid: UUID, payload: FacilityIn, facility: Facility):
+    def process_well_authorization_numbers(cls, user_guid: UUID, payload: FacilityIn, facility: Facility) -> None:
         """Helper function to process and set well authorization numbers."""
         existing_numbers = set(facility.well_authorization_numbers.values_list('well_authorization_number', flat=True))
         well_authorization_numbers = []
