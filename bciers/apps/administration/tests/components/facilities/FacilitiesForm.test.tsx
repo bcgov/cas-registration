@@ -224,7 +224,6 @@ describe("FacilitiesForm component", () => {
   it("does not allow LFO submission if there are validation errors (bad form data)", async () => {
     render(
       <FacilitiesForm
-        isCreating
         schema={facilitiesSchemaLfo}
         uiSchema={facilitiesUiSchema}
         formData={{
@@ -286,7 +285,7 @@ describe("FacilitiesForm component", () => {
 
     await waitFor(() => {
       expect(mockReplace).toHaveBeenCalledWith(
-        `/operations/${operationId}/facilities/${facilityId}?title=${facilityName}`,
+        `/operations/${operationId}/facilities/${facilityId}?facilitiesTitle=${facilityName}`,
         {
           shallow: true,
         },
@@ -370,7 +369,7 @@ describe("FacilitiesForm component", () => {
 
     await waitFor(() => {
       expect(mockReplace).toHaveBeenCalledWith(
-        `/operations/${operationId}/facilities/${facilityId}?title=${facilityName}`,
+        `/operations/${operationId}/facilities/${facilityId}?facilitiesTitle=${facilityName}`,
         {
           shallow: true,
         },

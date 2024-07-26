@@ -2,6 +2,7 @@ import { render, screen } from "@testing-library/react";
 import { useRouter, useSearchParams } from "@bciers/testConfig/mocks";
 import { fetchContactsPageData } from "./mocks";
 import Contacts from "apps/administration/app/components/contacts/Contacts";
+import { auth } from "@bciers/testConfig/mocks";
 
 useRouter.mockReturnValue({
   query: {},
@@ -59,7 +60,20 @@ describe("Contacts component", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("renders the correct note message and displays `Add Contact` button for external users", async () => {
+  it("renders the correct note message for external users", async () => {
+    fetchContactsPageData.mockResolvedValueOnce(mockResponse);
+    render(await Contacts({ searchParams: {}, isExternalUser: true }));
+    const note = screen.getByTestId("note");
+    expect(note).toBeVisible();
+    expect(note).toHaveTextContent(
+      "View the contacts of your operator, i.e. people who can represent the operator for GGIRCA purposes. Please keep the information up to date here.",
+    );
+  });
+
+  it("displays `Add Contact` button for external admin users", async () => {
+    auth.mockReturnValueOnce({
+      user: { app_role: "industry_user_admin" },
+    });
     fetchContactsPageData.mockResolvedValueOnce(mockResponse);
     render(await Contacts({ searchParams: {}, isExternalUser: true }));
     const note = screen.getByTestId("note");
@@ -68,6 +82,10 @@ describe("Contacts component", () => {
       "View the contacts of your operator, i.e. people who can represent the operator for GGIRCA purposes. Please keep the information up to date here.",
     );
     expect(screen.getByRole("button", { name: "Add Contact" })).toBeVisible();
+    expect(screen.getByRole("link", { name: "Add Contact" })).toHaveAttribute(
+      "href",
+      "/contacts/add-contact",
+    );
   });
 
   it("renders the correct note message for internal users", async () => {

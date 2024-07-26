@@ -55,10 +55,10 @@
     "model": "registration.contact",
     "pk": 5,
     "fields": {
-      "business_role": "Operation Registration Lead",
+      "business_role": "Operation Representative",
       "first_name": "Carol",
       "last_name": "Davis",
-      "position_title": "Operation Registration Lead",
+      "position_title": "Operation Representative",
       "address": 2,
       "email": "carol.davis@example.com",
       "phone_number": "+16044011237"
@@ -94,10 +94,10 @@
     "model": "registration.contact",
     "pk": 8,
     "fields": {
-      "business_role": "Operation Registration Lead",
+      "business_role": "Operation Representative",
       "first_name": "Frank",
       "last_name": "Garcia",
-      "position_title": "Operation Registration Lead",
+      "position_title": "Operation Representative",
       "address": 2,
       "email": "frank.garcia@example.com",
       "phone_number": "+16044011240"
@@ -146,10 +146,10 @@
     "model": "registration.contact",
     "pk": 12,
     "fields": {
-      "business_role": "Operation Registration Lead",
+      "business_role": "Operation Representative",
       "first_name": "Jack",
       "last_name": "King",
-      "position_title": "Operation Registration Lead",
+      "position_title": "Operation Representative",
       "address": 2,
       "email": "jack.king@example.com",
       "phone_number": "+16044011244"
@@ -198,10 +198,10 @@
     "model": "registration.contact",
     "pk": 16,
     "fields": {
-      "business_role": "Operation Registration Lead",
+      "business_role": "Operation Representative",
       "first_name": "Nina",
       "last_name": "Owens",
-      "position_title": "Operation Registration Lead",
+      "position_title": "Operation Representative",
       "address": 2,
       "email": "nina.owens@example.com",
       "phone_number": "+16044011248"
@@ -250,10 +250,10 @@
     "model": "registration.contact",
     "pk": 20,
     "fields": {
-      "business_role": "Operation Registration Lead",
+      "business_role": "Operation Representative",
       "first_name": "Rachel",
       "last_name": "Stewart",
-      "position_title": "Operation Registration Lead",
+      "position_title": "Operation Representative",
       "address": 2,
       "email": "rachel.stewart@example.com",
       "phone_number": "+16044011252"

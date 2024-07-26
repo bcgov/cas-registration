@@ -1,4 +1,4 @@
-from typing import List, Literal, Optional
+from typing import List, Literal, Optional, Tuple
 from django.http import HttpRequest
 from registration.constants import CONTACT_TAGS
 from registration.models.app_role import AppRole
@@ -6,7 +6,7 @@ from ninja.pagination import paginate, PageNumberPagination
 from registration.api.utils.current_user_utils import get_current_user_guid
 from registration.decorators import authorize, handle_http_errors
 from registration.models.contact import Contact
-from registration.schema.v1.contact import ContactFilterSchema, ContactListOut
+from registration.schema.v1.contact import ContactFilterSchema, ContactIn, ContactListOut, ContactOut
 from service.contact_service import ContactService
 from ..router import router
 from service.error_service.custom_codes_4xx import custom_codes_4xx
@@ -20,8 +20,8 @@ from registration.schema.generic import Message
     "/contacts",
     response={200: List[ContactListOut], custom_codes_4xx: Message},
     tags=CONTACT_TAGS,
-    description="""Retrieves a paginated list of facilities based on the provided filters.
-    The endpoint allows authorized users to view and sort facilities associated to an operation filtered by various criteria such as facility name, type, and bcghg_id.""",
+    description="""Retrieves a paginated list of contacts based on the provided filters.
+    The endpoint allows authorized users to view and sort contacts associated to an operator filtered by various criteria such as first name, last name and email.""",
 )
 @authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles())
 @handle_http_errors()
@@ -34,3 +34,16 @@ def list_contacts(
 ) -> QuerySet[Contact]:
     # NOTE: PageNumberPagination raises an error if we pass the response as a tuple (like 200, ...)
     return ContactService.list_contacts(get_current_user_guid(request), sort_field, sort_order, filters)
+
+
+#### POST #####
+@router.post(
+    "/contacts",
+    response={201: ContactOut, custom_codes_4xx: Message},
+    tags=CONTACT_TAGS,
+    description="""Creates a new contact for the current user and associate it to the operator the user is associated with.""",
+)
+@authorize(["industry_user"], ["admin"])
+@handle_http_errors()
+def create_contact(request: HttpRequest, payload: ContactIn) -> Tuple[Literal[201], Contact]:
+    return 201, ContactService.create_contact(get_current_user_guid(request), payload)

@@ -34,7 +34,8 @@
     "coam": "nx dev coam -p 7000",
     "coam:build": "nx build coam",
     "coam:test": "nx run coam:test",
-    "rep:test": "nx run reporting:test"
+    "rep:test": "nx run reporting:test",
+    "components:test": "nx run components:test"
   },
   "private": true,
   "module": "commonjs",
