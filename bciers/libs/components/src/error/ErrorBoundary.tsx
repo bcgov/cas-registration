@@ -1,4 +1,6 @@
 import { useEffect } from "react";
+import * as Sentry from "@sentry/nextjs";
+
 import { Alert, AlertTitle } from "@mui/material";
 
 interface Props {
@@ -6,8 +8,18 @@ interface Props {
 }
 export default function ErrorBoundary({ error }: Props) {
   useEffect(() => {
-    // eslint-disable-next-line no-console
     console.error(error);
+    if (error) {
+      try {
+        // Attempt to log the error to Sentry
+        Sentry.captureException(error);
+      } catch (sentryError) {
+        // If there's an error logging to Sentry, log it to the console
+        console.error("Error logging to Sentry:", sentryError);
+      }
+      // Log the original error to the console
+      console.error(error);
+    }
   }, [error]);
 
   return (

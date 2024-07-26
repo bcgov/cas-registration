@@ -18,14 +18,16 @@ export default function Page() {
     EmailSignin: "Check your email address.",
     CredentialsSignin:
       "Sign in failed. Check the details you provided are correct.",
+    Configuration:
+      "Sign in failed. Check your `bciers\\.env.local` Keycloak configurations.",
     default: "Unable to sign in.",
   };
   const errorMessage =
     error && (errors[error as keyof typeof errors] ?? errors.default);
   return (
     <div>
-      <h1>Oops! Something went wrong:</h1>
-      <h2>{errorMessage}</h2>
+      <h3>Oops! Something went wrong:</h3>
+      <h4>{errorMessage}</h4>
     </div>
   );
 }

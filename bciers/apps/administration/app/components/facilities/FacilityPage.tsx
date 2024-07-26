@@ -3,7 +3,7 @@ import {
   facilitiesUiSchema,
 } from "../../data/jsonSchema/facilitiesSfo";
 import { facilitiesSchemaLfo } from "../../data/jsonSchema/facilitiesLfo";
-import FacilitiesForm from "./FacilitiesForm";
+import FacilityForm from "./FacilityForm";
 import { UUID } from "crypto";
 import getFacility from "./getFacility";
 import getOperation from "../operations/getOperation";
@@ -34,7 +34,7 @@ export default async function Facility({
   }
   const isCreating = Object.keys(facilityFormData).length === 0;
   return (
-    <FacilitiesForm
+    <FacilityForm
       schema={
         operation.type === "Single Facility Operation"
           ? facilitiesSchemaSfo

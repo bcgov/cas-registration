@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { useSession, useRouter } from "@bciers/testConfig/mocks";
-import Facility from "apps/administration/app/components/facilities/Facility";
+import FacilityPage from "apps/administration/app/components/facilities/FacilityPage";
 import { getOperation } from "../operations/mocks";
 import { getFacility } from "./mocks";
 
@@ -29,7 +29,7 @@ describe("Facilities component", () => {
 
     await expect(async () => {
       await render(
-        await Facility({
+        await FacilityPage({
           operationId: "025328a0-f9e8-4e1a-888d-aa192cb053db",
           facilityId: "garbage-bugs-dump-truck-fire",
         }),
@@ -48,7 +48,7 @@ describe("Facilities component", () => {
 
     await expect(async () => {
       await render(
-        await Facility({
+        await FacilityPage({
           operationId: "garbage-bugs-dump-truck-fire",
           facilityId: "025328a0-f9e8-4e1a-888d-aa192cb053db",
         }),
@@ -67,7 +67,7 @@ describe("Facilities component", () => {
     });
     getFacility.mockReturnValueOnce(undefined);
     render(
-      await Facility({
+      await FacilityPage({
         operationId: "8be4c7aa-6ab3-4aad-9206-0ef914fea063",
         facilityId: undefined,
       }),
@@ -93,7 +93,7 @@ describe("Facilities component", () => {
       type: "Linear Facility Operation",
     });
     render(
-      await Facility({
+      await FacilityPage({
         operationId: "8be4c7aa-6ab3-4aad-9206-0ef914fea063",
         facilityId: "4abd8367-efd1-4654-a7ea-fa1a015d3cae",
       }),
