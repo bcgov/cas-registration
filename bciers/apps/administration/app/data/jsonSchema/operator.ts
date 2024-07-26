@@ -80,6 +80,7 @@ const section3: RJSFSchema = {
     operator_has_parent_operators: {
       oneOf: [
         {
+          required: ["operator_has_parent_operators"],
           properties: {
             operator_has_parent_operators: {
               type: "boolean",
@@ -88,14 +89,15 @@ const section3: RJSFSchema = {
           },
         },
         {
+          required: ["operator_has_parent_operators", "parent_operators_array"],
           properties: {
             operator_has_parent_operators: {
               type: "boolean",
               const: true,
             },
             parent_operators_array: {
+              default: [{ operator_registered_in_canada: true }],
               type: "array",
-              default: [{}],
               items: {
                 type: "object",
                 required: [

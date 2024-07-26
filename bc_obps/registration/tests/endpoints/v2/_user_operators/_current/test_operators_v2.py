@@ -55,14 +55,11 @@ class TestCurrentUserOperatorV2Endpoint(CommonTestSetup):
 
         # Additional Assertions
         assert response_json['id'] == str(operator.id)
-        assert "trade_name" in response_json
         assert "street_address" in response_json
         assert "municipality" in response_json
         assert "province" in response_json
         assert "postal_code" in response_json
         assert "operator_has_parent_operators" in response_json
-        assert "parent_operators_array" in response_json
-        assert "partner_operators_array" in response_json
 
     # GET USER OPERATOR OPERATOR ID 401
     def test_get_current_operator_and_user_operator_with_invalid_user(self):

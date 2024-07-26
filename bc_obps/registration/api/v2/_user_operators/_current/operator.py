@@ -25,6 +25,7 @@ from registration.api.router import router
     tags=V2,
     description="""Retrieves data about the current user-operator and their associated operator.
     Declined user-operators are excluded from the results.""",
+    exclude_none=True,  # To exclude None values from the response (used for parent and partner arrays)
 )
 @authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
 @handle_http_errors()
