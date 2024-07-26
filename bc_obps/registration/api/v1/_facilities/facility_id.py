@@ -18,12 +18,12 @@ from registration.models import (
 )
 
 from registration.schema.generic import Message
-from ninja.responses import codes_4xx
+from service.error_service.custom_codes_4xx import custom_codes_4xx
 
 
 @router.get(
     "/facilities/{facility_id}",
-    response={200: FacilityOut, codes_4xx: Message},
+    response={200: FacilityOut, custom_codes_4xx: Message},
     tags=FACILITY_TAGS,
     description="""Retrieves the details of a specific facility by its ID. The endpoint checks if the current user is authorized to access the facility.
     Industry users can only access facilities that are associated with their own operations. If an unauthorized user attempts to access the facility, an error is raised.""",

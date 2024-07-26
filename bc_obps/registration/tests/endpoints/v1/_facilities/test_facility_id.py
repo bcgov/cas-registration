@@ -1,21 +1,13 @@
 from registration.models.facility_ownership_timeline import FacilityOwnershipTimeline
 from registration.models.operation import Operation
 from model_bakery import baker
-from localflavor.ca.models import CAPostalCodeField
-from registration.models import (
-    UserOperator,
-)
+from registration.models import UserOperator
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
-
 from registration.tests.utils.bakers import facility_baker, operation_baker, operator_baker, user_operator_baker
 from registration.utils import custom_reverse_lazy
 
-baker.generators.add(CAPostalCodeField, TestUtils.mock_postal_code)
-
 
 class TestFacilityIdEndpoint(CommonTestSetup):
-    endpoint = CommonTestSetup.base_endpoint + "facilities"
-
     def test_facilities_endpoint_unauthorized_roles_cannot_get(self):
         facility = facility_baker()
         # cas_pending can't get

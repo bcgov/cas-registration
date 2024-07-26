@@ -20,6 +20,7 @@ const operationColumns = (
       field: "facilities",
       headerName: "Facilities",
       renderCell: FacilitiesActionCell,
+      sortable: false,
       width: 140,
     },
     {

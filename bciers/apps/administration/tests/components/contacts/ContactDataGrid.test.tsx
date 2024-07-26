@@ -104,6 +104,9 @@ describe("ContactDataGrid component", () => {
     expect(screen.getAllByRole("link", { name: /View Details/i })).toHaveLength(
       2,
     );
+    expect(
+      screen.getAllByRole("link", { name: /View Details/i })[0],
+    ).toHaveAttribute("href", "contacts/1");
   });
   it("makes API call with correct params when sorting", async () => {
     render(

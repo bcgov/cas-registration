@@ -1,41 +1,28 @@
 from typing import Optional
-from registration.schema.v1.address import AddressSchema
 from ninja import ModelSchema, Field, FilterSchema
 from registration.models import Contact
-from common.constants import AUDIT_FIELDS
 
 
-class ContactSchema(ModelSchema):
-    """
-    Schema for the Contact model
-    """
-
-    address: Optional[AddressSchema]
+class ContactOut(ModelSchema):
+    street_address: Optional[str] = Field(None, alias="address.street_address")
+    municipality: Optional[str] = Field(None, alias="address.municipality")
+    province: Optional[str] = Field(None, alias="address.province")
+    postal_code: Optional[str] = Field(None, alias="address.postal_code")
 
     @staticmethod
-    def resolve_phone_number(obj: Contact) -> Optional[str]:
-        # PhoneNumberField returns a PhoneNumber object and we need a string
-        if not obj.phone_number:
-            return None
+    def resolve_phone_number(obj: Contact) -> str:
         return str(obj.phone_number)
 
-    class Config:
+    class Meta:
         model = Contact
-        contact_id: int = Field(..., alias="id")
-        address_id: Optional[int] = Field(None, alias="address.id")
-
-        model_exclude = [
-            # exclude fields that are included as aliases above
-            *AUDIT_FIELDS,
-            "id",
-            "address",
-        ]
+        fields = ['id', 'first_name', 'last_name', 'email', 'phone_number', 'position_title', 'business_role']
+        populate_by_name = True
 
 
 class ContactListOut(ModelSchema):
-    class Config:
+    class Meta:
         model = Contact
-        model_fields = ['id', 'first_name', 'last_name', 'email']
+        fields = ['id', 'first_name', 'last_name', 'email']
 
 
 class ContactFilterSchema(FilterSchema):
@@ -45,3 +32,14 @@ class ContactFilterSchema(FilterSchema):
     first_name: Optional[str] = Field(None, json_schema_extra={'q': 'first_name__icontains'})
     last_name: Optional[str] = Field(None, json_schema_extra={'q': 'last_name__icontains'})
     email: Optional[str] = Field(None, json_schema_extra={'q': 'email__icontains'})
+
+
+class ContactIn(ModelSchema):
+    street_address: Optional[str] = None
+    municipality: Optional[str] = None
+    province: Optional[str] = None
+    postal_code: Optional[str] = None
+
+    class Meta:
+        model = Contact
+        fields = ['first_name', 'last_name', 'email', 'phone_number', 'position_title']
