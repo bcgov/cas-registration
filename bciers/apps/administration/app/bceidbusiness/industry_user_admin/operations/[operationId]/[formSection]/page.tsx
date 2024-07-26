@@ -9,7 +9,9 @@ export default async function Page(params: any) {
       TBD
       <div>
         Temporary button to add a facility:{" "}
-        <Link href={`/operations/${params.params.operationId}/facilities/new`}>
+        <Link
+          href={`/operations/${params.operationId}/facilities/add-facility`}
+        >
           <Button variant="contained">Add Facility</Button>
         </Link>
       </div>

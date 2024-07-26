@@ -84,7 +84,7 @@ describe("Contacts component", () => {
     expect(screen.getByRole("button", { name: "Add Contact" })).toBeVisible();
     expect(screen.getByRole("link", { name: "Add Contact" })).toHaveAttribute(
       "href",
-      "/contacts/new",
+      "/contacts/add-contact",
     );
   });
 
