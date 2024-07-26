@@ -81,9 +81,7 @@ export default function ContactsForm({
           return { error: response.error };
         }
         if (isCreating) {
-          router.replace(
-            `/contacts/${response.id}?contactsTitle=${response.first_name} ${response.last_name}`,
-          );
+          router.replace(`/contacts/${response.id}`);
         }
       }}
       onChange={(e: IChangeEvent) => {

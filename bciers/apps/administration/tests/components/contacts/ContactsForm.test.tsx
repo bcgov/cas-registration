@@ -208,9 +208,7 @@ describe("ContactsForm component", () => {
       await userEvent.click(screen.getByRole("button", { name: /submit/i }));
 
       await waitFor(() => {
-        expect(mockReplace).toHaveBeenCalledWith(
-          `/contacts/${response.id}?contactsTitle=${response.first_name} ${response.last_name}`,
-        );
+        expect(mockReplace).toHaveBeenCalledWith(`/contacts/${response.id}`);
       });
     },
   );

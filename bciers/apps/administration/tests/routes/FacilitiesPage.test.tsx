@@ -17,7 +17,9 @@ describe("Facilities page", () => {
     render(
       await FacilitiesPage({
         operationId: "random UUID",
-        searchParams: {},
+        searchParams: {
+          operationsTitle: "Operation Title",
+        },
         isExternalUser: true,
       }),
     );
@@ -26,7 +28,7 @@ describe("Facilities page", () => {
     expect(screen.getByRole("button", { name: "Add Facility" })).toBeVisible();
     expect(screen.getByRole("link", { name: "Add Facility" })).toHaveAttribute(
       "href",
-      "/operations/random UUID/facilities/new",
+      "/operations/random UUID/facilities/add-facility?operationsTitle=Operation Title",
     );
   });
   it("Not displaying `Add Facility` button for internal users", async () => {
