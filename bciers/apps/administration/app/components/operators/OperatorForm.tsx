@@ -6,6 +6,7 @@ import { RJSFSchema } from "@rjsf/utils";
 import { actionHandler } from "@bciers/actions";
 import { operatorUiSchema } from "../../data/jsonSchema/operator";
 import { FormMode } from "@bciers/utils/enums";
+import { useRouter } from "next/navigation";
 
 export interface OperatorFormData {
   [key: string]: any;
@@ -24,6 +25,7 @@ export default function OperatorForm({
 }: Readonly<Props>) {
   // @ ts-ignore
   const [error, setError] = useState(undefined);
+  const router = useRouter();
   return (
     <SingleStepTaskListForm
       error={error}
@@ -54,7 +56,7 @@ export default function OperatorForm({
           // tbd
         }
       }}
-      onCancel={() => console.log("cancelled")}
+      onCancel={() => router.push("/")}
     />
   );
 }
