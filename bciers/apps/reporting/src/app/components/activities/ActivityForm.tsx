@@ -87,7 +87,10 @@ const uiSchema = {
         "ui:FieldTemplate": FieldTemplate,
         "ui:title": "Unit Data",
         "ui:options": {
-          arrayAddLabel: 'Add Unit'
+          arrayAddLabel: 'Add Unit',
+          label: false,
+          title: 'Unit',
+          padding: 'p-2'
         },
         items:{
           "ui:order": [
@@ -110,7 +113,9 @@ const uiSchema = {
             "ui:ArrayFieldTemplate": NestedArrayFieldTemplate,
             "ui:FieldTemplate": FieldTemplate,
             "ui:options": {
-              arrayAddLabel: 'Add Fuel'
+              arrayAddLabel: 'Add Fuel',
+              label: false,
+              title: 'Fuel'
             },
             items:{
               "ui:order": [
@@ -132,8 +137,18 @@ const uiSchema = {
                 "ui:ArrayFieldTemplate": NestedArrayFieldTemplate,
                 "ui:FieldTemplate": FieldTemplate,
                 "ui:options": {
-                  arrayAddLabel: 'Add Emission'
+                  arrayAddLabel: 'Add Emission',
+                  title: 'Emission',
+                  label: false
                 },
+                items: {
+                  "ui:order": [
+                    "gasType",
+                    "emission",
+                    "equivalentEmission",
+                    "methodology"
+                  ],
+                }
               }
             },
           }
@@ -147,7 +162,8 @@ const uiSchema = {
         "ui:FieldTemplate": FieldTemplate,
         "ui:title": "Unit Data",
         "ui:options": {
-          arrayAddLabel: 'Add Unit'
+          arrayAddLabel: 'Add Unit',
+          title: 'Unit'
         },
         items:{
           "ui:order": [
@@ -156,6 +172,9 @@ const uiSchema = {
             "description",
             "fuels"
           ],
+          "ui:options": {
+            title: 'Unit'
+          },
           gscUnitName: {
             "ui:FieldTemplate": InlineFieldTemplate
           },
@@ -194,6 +213,14 @@ const uiSchema = {
                 "ui:options": {
                   arrayAddLabel: 'Add Emission'
                 },
+                items: {
+                  "ui:order": [
+                    "gasType",
+                    "emission",
+                    "equivalentEmission",
+                    "methodology"
+                  ],
+                }
               }
             },
           }
@@ -235,6 +262,7 @@ export default function ActivityForm({activityData, reportDate}:Readonly<Props>)
       // fetch data from server
       const schemaData = await actionHandler(`reporting/build-form-schema?activity=${activityId}&report_date=${reportDate}${selectedSourceTypes}`, "GET", "");
       setJsonSchema(JSON.parse(schemaData).schema);
+      setFormState({...formState, sourceTypes: {gscWithProductionOfUsefulEnergy: {units: [{fuels: [{emissions:[{}]}]}]}}})
     };
     let selectedSourceTypes = '';
     for (const [key, value] of Object.entries(sourceTypeMap)) {

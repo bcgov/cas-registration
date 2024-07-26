@@ -8,7 +8,6 @@ import {
   Collapse,
   IconButton,
   Typography,
-  makeStyles,
   Paper
 } from "@mui/material";
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
@@ -45,12 +44,12 @@ function SourceTypeBoxTemplate({
             </Grid>
           </Grid>
           <Collapse in={expand} sx={{marginLeft: '30px', marginRight: "30px", marginTop: "10px", marginBottom: "10px"}}>
-            <Typography sx={{ bgcolor: '#dfe5f0', paddingLeft: '30px', paddingRight: "30px", paddingTop: "10px"}}>
+            {/* <Typography sx={{ paddingLeft: '30px', paddingRight: "30px", paddingTop: "10px"}}> */}
               {description}
               {children}
               {errors}
               {help}
-            </Typography>
+            {/* </Typography> */}
           </Collapse>
         </Card>
       </Paper>
