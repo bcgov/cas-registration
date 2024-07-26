@@ -63,10 +63,12 @@ const section3: RJSFSchema = {
     email: {
       type: "string",
       title: "Business Email Address",
+      format: "email",
     },
     phone_number: {
       type: "string",
       title: "Business Telephone Number",
+      format: "phone",
     },
   },
 };
