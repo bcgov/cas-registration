@@ -14,16 +14,18 @@ function FieldTemplate({
   uiSchema,
 }: FieldTemplateProps) {
   const isLabel = uiSchema?.["ui:options"]?.label !== false;
+  const labelOverride = uiSchema?.["ui:options"]?.labelOverride
+  const labelOverrideStyle = uiSchema?.["ui:options"]?.labelOverrideStyle
 
   return (
-    <div style={style} className={`w-full ${classNames} `}>
+    <div style={style} className={`w-full ${classNames}`}>
       {isLabel && label && (
         <label
           htmlFor={id}
-          className="inline-block"
+          className={`inline-block ${labelOverrideStyle}`}
           data-testid="field-template-label"
         >
-          {label}
+          {labelOverride ? labelOverride : label}
           {required ? "*" : null}
         </label>
       )}

@@ -13,5 +13,6 @@ export const DARK_GREY_BG_COLOR: string = "#E5E5E5";
 export const LIGHT_GREY_BG_COLOR: string = "#fafafc";
 export const LIGHT_GREY_COLOR_200: string = "#f5f5f5";
 export const LIGHT_GREY_COLOR_300: string = "#f0f0f0";
+export const WHITE: string = "#ffffff";
 // snackbar colors
 export const GREEN_SNACKBAR_COLOR: string = "#2E8540";

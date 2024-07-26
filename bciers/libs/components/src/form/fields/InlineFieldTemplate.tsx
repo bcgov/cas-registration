@@ -36,7 +36,7 @@ function InlineFieldTemplate({
           </label>
         </div>
       )}
-      <div className="relative flex items-center w-full md:w-8/12 bg-white">
+      <div className={`relative flex items-center w-full md:w-8/12`}>
         {children}
       </div>
       {isErrors && (
