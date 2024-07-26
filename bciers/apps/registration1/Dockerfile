@@ -18,10 +18,16 @@ ENTRYPOINT ["dumb-init", "--"]
 ENV NODE_ENV production
 ENV PORT 3000
 WORKDIR /usr/src/app
+
 COPY --from=deps /usr/src/app/node_modules node_modules
 COPY --from=deps /usr/src/app/package.json package.json
-COPY ./public ./public
-COPY --chown=node:node ./.next ./.next
+COPY ./public public
+COPY ./.next .next
+COPY ./next.config.js next.config.js
+COPY ./.nx-helpers .nx-helpers
+COPY ./yarn.lock yarn.lock
+
+RUN chown -R node:node .
 
 USER node
 EXPOSE 3000
