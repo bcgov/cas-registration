@@ -34,7 +34,6 @@ export const createOperatorSchema = (
       type: "object",
       required: [
         "partner_legal_name",
-        "partner_trade_name",
         "partner_business_structure",
         "partner_cra_business_number",
         "partner_bc_corporate_registry_number",
