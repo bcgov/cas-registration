@@ -7,7 +7,5 @@ export default async function Page({
 }: {
   searchParams: OperationsSearchParams;
 }) {
-  return (
-    <OperationsPage searchParams={searchParams} />
-  );
+  return <OperationsPage searchParams={searchParams} />;
 }
