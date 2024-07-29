@@ -1,6 +1,7 @@
 import Button from "@mui/material/Button";
 import { ArrayFieldTemplateProps, FieldTemplateProps } from "@rjsf/utils";
 import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined';
+import AddIcon from '@mui/icons-material/Add';
 
 function BasicFieldTemplate({ children }: FieldTemplateProps) {
   return <>{children}</>;
@@ -62,11 +63,12 @@ const NestedArrayFieldTemplate = ({
       {canAdd && !disabled && (
         <Button
           disabled={disabled}
-          variant="contained"
+          variant="outlined"
           className="w-fit my-8 normal-case"
           onClick={onAddClick}
+          sx={{p: 1, pt: 0, pb: 0}}
         >
-          {arrayAddLabel}
+          <AddIcon/>&nbsp;{arrayAddLabel}
         </Button>
       )}
     </div>
