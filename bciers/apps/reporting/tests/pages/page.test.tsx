@@ -1,18 +1,46 @@
+import Page from "@reporting/src/app/page";
 import { render, screen } from "@testing-library/react";
-import Page from "../../src/app/page";
-import { vi } from "vitest";
+const tiles = [
+  {
+    title: "Submit Annual Report(s)",
+    icon: "fa-file-pdf",
+    href: "/reporting/operations",
+  },
+  {
+    title: "View Past Submissions",
+    icon: "fa-file-pdf",
+    href: "/reporting/tbd",
+  },
+];
 
-describe("The landing page", () => {
-  // Hoist the mock setup to ensure proper initialization
-  const mockSignIn = vi.hoisted(() => vi.fn());
+vi.mock("@bciers/actions", () => ({
+  fetchDashboardData: vi.fn(() => tiles),
+}));
 
-  vi.mock("next-auth/react", () => ({
-    signIn: mockSignIn,
-  }));
+describe("Page", () => {
+  it("renders the reporting page dashboard tiles", async () => {
+    render(await Page());
 
-  it("renders a login button", () => {
-    render(<Page />);
-    screen.getByText(/Log in with IDIR/).click();
-    expect(mockSignIn).toHaveBeenCalled();
+    expect(
+      screen.getByRole("heading", { name: /submit annual report/i }),
+    ).toBeVisible();
+    expect(
+      screen.getByRole("heading", { name: /view past submissions/i }),
+    ).toBeVisible();
+  });
+
+  it("renders the correct links for each tile", async () => {
+    render(await Page());
+
+    const submitTitleLink = screen.getByRole("link", {
+      name: /Submit Annual Report/i,
+    });
+    expect(submitTitleLink).toBeVisible();
+    expect(submitTitleLink).toHaveAttribute("href", "/reporting/operations");
+    const pastTitleLink = screen.getByRole("link", {
+      name: /View Past Submissions/i,
+    });
+    expect(pastTitleLink).toBeVisible();
+    expect(pastTitleLink).toHaveAttribute("href", "/reporting/tbd");
   });
 });
