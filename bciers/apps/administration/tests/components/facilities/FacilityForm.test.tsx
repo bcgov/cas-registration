@@ -49,6 +49,7 @@ let editPayload: FacilityPayload = {
   operation_id: operationId,
 };
 
+// ⛏️ helper to get facility schema type
 function getFacilityTypeOption(schema: RJSFSchema) {
   return schema === facilitiesSchemaSfo
     ? "Single Facility Operation"
@@ -169,7 +170,12 @@ useRouter.mockReturnValue({
   query: {},
   replace: mockReplace,
 });
-
+const mockPush = vi.fn();
+useRouter.mockReturnValue({
+  query: {},
+  replace: mockReplace,
+  push: mockPush,
+});
 const sfoFormData = {
   name: "Monkeyfuzz",
   type: "Single Facility Operation",
@@ -198,6 +204,30 @@ const lfoFormData = {
 describe("FacilityForm component", () => {
   beforeEach(async () => {
     vi.clearAllMocks();
+  });
+  it("redirects to the facilities grid on cancel", async () => {
+    const schema = {}; // Provide a mock schema if needed
+    const uiSchema = {}; // Provide a mock uiSchema if needed
+    const formData = {}; // Provide mock formData if needed
+
+    render(
+      <FacilityForm
+        schema={facilitiesSchemaSfo}
+        uiSchema={facilitiesUiSchema}
+        formData={{}}
+        isCreating
+      />,
+    );
+
+    const cancelButton = screen.getByRole("button", { name: /cancel/i });
+
+    // Simulate the user clicking the cancel button
+    fireEvent.click(cancelButton);
+
+    // Assert that router.push was called with the correct URL
+    expect(mockPush).toHaveBeenCalledWith(
+      "/operations/8be4c7aa-6ab3-4aad-9206-0ef914fea063/facilities",
+    );
   });
 
   it("renders the empty SFO facility form when creating a new facility", async () => {
