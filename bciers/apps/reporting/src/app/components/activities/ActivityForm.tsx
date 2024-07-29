@@ -83,7 +83,7 @@ export default function ActivityForm({
 
   const dependencyArray: string[] = [];
   const checkBooleans = () => {
-    for (const [value] of Object.entries(sourceTypeMap)) {
+    for (const value of Object.values(sourceTypeMap)) {
       dependencyArray.push(
         formState?.[`${value}`] ? formState?.[`${value}`] : null,
       );
