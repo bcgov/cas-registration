@@ -174,7 +174,10 @@ export default function GeneralStationaryCombustion({activityData, reportDate}:R
     },
   };
 
+  // Shape of an empty sourceType to create a set of fields on select
+  const defaultEmptySourceTypeState = {units: [{fuels: [{emissions:[{}]}]}]};
+
   return (
-    <ActivityForm activityData={activityData} reportDate={reportDate} uiSchema={uiSchema}/>
+    <ActivityForm activityData={activityData} reportDate={reportDate} uiSchema={uiSchema} defaultEmptySourceTypeState={defaultEmptySourceTypeState}/>
   );
 }
