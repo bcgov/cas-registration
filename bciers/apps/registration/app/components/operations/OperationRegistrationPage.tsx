@@ -5,6 +5,7 @@ import {
   operationRegistrationSchema,
   operationRegistrationNewEntrantSchema,
 } from "apps/registration/app/data/jsonSchema/operationRegistration";
+import { facilitiesSchemaLfo } from "apps/administration/app/data/jsonSchema/facilitiesLfo";
 import fetchFacilitiesPageData from "@/administration/app/components/facilities/fetchFacilitiesPageData";
 import {
   FacilityInitialData,
@@ -20,6 +21,7 @@ export const createOperationRegistrationSchema = (
     id: number;
     name: string;
   }[],
+  isOperationLfo: boolean,
 ) => {
   const localSchema = JSON.parse(JSON.stringify(schema));
   const registrationPurposeDependencies =
@@ -36,6 +38,13 @@ export const createOperationRegistrationSchema = (
     regulatedProductsSchema.items.enumNames = regulatedProducts.map(
       (product) => product.name,
     );
+  }
+
+  // facility type
+  if (isOperationLfo) {
+    console.log("localSchema", localSchema);
+    localSchema.properties.facilityInformation.properties.facility_information_array.items.properties =
+      facilitiesSchemaLfo.properties;
   }
 
   return localSchema;
@@ -82,8 +91,15 @@ const OperationRegistrationPage = async ({
     );
   }
 
+  // Will need to pull this from the formData;
+  const isOperationLfo = true;
+
   const formSchema = isRegistrationPurposePage
-    ? createOperationRegistrationSchema(registrationSchema, regulatedProducts)
+    ? createOperationRegistrationSchema(
+        registrationSchema,
+        regulatedProducts,
+        isOperationLfo,
+      )
     : registrationSchema;
 
   return (

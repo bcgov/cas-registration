@@ -1,8 +1,10 @@
 import BasicFieldTemplate from "@bciers/components/form/fields/BasicFieldTemplate";
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
-import SectionFieldTemplate from "@bciers/components/form/fields/SectionFieldTemplate";
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
-import { facilitiesSchemaSfo } from "apps/administration/app/data/jsonSchema/facilitiesSfo";
+import {
+  facilitiesSchemaSfo,
+  facilitiesUiSchema,
+} from "apps/administration/app/data/jsonSchema/facilitiesSfo";
 
 const registrationPurpose: RJSFSchema = {
   title: "Registration Purpose",
@@ -170,12 +172,7 @@ export const operationRegistrationUiSchema: UiSchema = {
       title: "Facility",
     },
     items: {
-      section1: {
-        "ui:FieldTemplate": SectionFieldTemplate,
-      },
-      section2: {
-        "ui:FieldTemplate": SectionFieldTemplate,
-      },
+      ...facilitiesUiSchema,
     },
   },
   acknowledgement_of_review: {

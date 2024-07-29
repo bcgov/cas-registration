@@ -20,7 +20,6 @@ interface Props {
 }
 
 const OperationRegistrationForm = ({
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   facilityInitialData,
   formData,
   formSection,
