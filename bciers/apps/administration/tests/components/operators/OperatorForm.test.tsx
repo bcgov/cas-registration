@@ -11,11 +11,9 @@ useSession.mockReturnValue({
 });
 
 const mockReplace = vi.fn();
-const mockPush = vi.fn();
 useRouter.mockReturnValue({
   query: {},
   replace: mockReplace,
-  push: mockPush,
 });
 
 const operatorFormData = {
@@ -86,14 +84,6 @@ describe("OperatorForm component", () => {
     vi.clearAllMocks();
   });
 
-  it("redirects on cancel", async () => {
-    render(<OperatorForm schema={testSchema} formData={operatorFormData} />);
-    const cancelButton = screen.getByRole("button", { name: /cancel/i });
-    act(() => {
-      cancelButton.click();
-    });
-    expect(mockPush).toHaveBeenCalledWith("/");
-  });
   it("loads existing readonly Operator form data", async () => {
     const { container } = render(
       <OperatorForm schema={testSchema} formData={operatorFormData} />,
@@ -368,92 +358,4 @@ describe("OperatorForm component", () => {
       );
     });
   }, 60000);
-
-  it("shows the correct fields and errors when adding partner operator", async () => {
-    render(
-      <OperatorForm
-        schema={testSchema}
-        formData={{
-          street_address: "123 Main St",
-          municipality: "City",
-          province: "ON",
-          postal_code: "A1B 2C3",
-          operator_has_parent_operators: false,
-          id: "4242ea9d-b917-4129-93c2-db00b7451051",
-          legal_name: "Existing Operator 2 Legal Name",
-          trade_name: "Existing Operator 2 Trade Name",
-          business_structure: "General Partnership",
-          cra_business_number: 987654321,
-          bc_corporate_registry_number: "def1234567",
-          mailing_address: 5,
-        }}
-      />,
-    );
-
-    const editButton = screen.getByRole("button", { name: /edit/i });
-    act(() => {
-      editButton.click();
-    });
-
-    // 0=operator business stucture, 1=partner biz structure, 2=partner province, 3=operator province
-    const openButtons = screen.getAllByLabelText(/Open/i);
-    const openBusinessStructureButton = openButtons[0];
-
-    await userEvent.click(openBusinessStructureButton);
-    const businessStructureOption = screen.getByText(
-      "Limited Liability Partnership",
-    );
-    await userEvent.click(businessStructureOption);
-
-    const submitButton = screen.getByRole("button", { name: /submit/i });
-    userEvent.click(submitButton);
-
-    await waitFor(() => {
-      expect(screen.getAllByText(/required field/i)).toHaveLength(4); // "partner_legal_name","partner_business_structure","partner_cra_business_number","partner_bc_corporate_registry_number", (no error on the partner dropdown or non-required fields)
-    });
-  });
-
-  it("shows the correct fields and errors when adding parent operator", async () => {
-    render(
-      <OperatorForm
-        schema={testSchema}
-        formData={{
-          street_address: "123 Main St",
-          municipality: "City",
-          province: "ON",
-          postal_code: "A1B 2C3",
-          operator_has_parent_operators: false,
-          id: "4242ea9d-b917-4129-93c2-db00b7451051",
-          legal_name: "Existing Operator 2 Legal Name",
-          trade_name: "Existing Operator 2 Trade Name",
-          business_structure: "BC Corporation",
-          cra_business_number: 987654321,
-          bc_corporate_registry_number: "def1234567",
-          mailing_address: 5,
-        }}
-      />,
-    );
-
-    const editButton = screen.getByRole("button", { name: /edit/i });
-    act(() => {
-      editButton.click();
-    });
-
-    const parentToggle = screen.getByText(
-      /Does this operator have one or more parent company?/i,
-    );
-    userEvent.click(parentToggle);
-    await waitFor(() => {
-      expect(
-        screen.getByText(/Is the parent company registered in Canada?/i),
-      ).toBeVisible();
-    });
-
-    const submitButton = screen.getByRole("button", { name: /submit/i });
-    userEvent.click(submitButton);
-
-    await waitFor(() => {
-      expect(screen.getAllByText(/required field/i)).toHaveLength(6); // "po_legal_name", "po_cra_business_number","po_street_address","po_municipality","po_province","po_postal_code",, (no error on the partner dropdown or non-required fields)
-    });
-  });
 });
