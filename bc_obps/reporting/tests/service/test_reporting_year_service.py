@@ -9,7 +9,6 @@ pytestmark = pytest.mark.django_db
 
 @patch('service.reporting_year_service.datetime')
 class TestReportingYearService:
-
     def setup_method(self):
         self.reporting_year = ReportingYear.objects.create(
             reporting_year=2000,
