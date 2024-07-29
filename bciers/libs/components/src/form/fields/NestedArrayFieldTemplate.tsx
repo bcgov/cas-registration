@@ -18,14 +18,15 @@ const NestedArrayFieldTemplate = ({
 
   const customTitleName = uiSchema?.["ui:options"]?.title as string;
   const padding = uiSchema?.["ui:options"]?.padding;
+  const verticalBorder = uiSchema?.["ui:options"]?.verticalBorder ? {borderLeft: "6px solid #003366", marginLeft: "1rem", paddingLeft: "1rem", height: "50%"} : {};
 
   return (
     <div className="flex min-w-full flex-col">
       {items?.map((item, i: number) => {
         return (
           <>
-          <div style={{display: "block", marginTop: "1rem", marginBottom: "1rem", marginLeft: "1rem", marginRight: "1rem"}} />
-          <div key={item.key} className={`min-w-full bg-[#f2f2f2] rounded-md ${padding}`}>
+            <div style={{display: "block", marginTop: "1rem", marginBottom: "1rem", marginLeft: "1rem", marginRight: "1rem"}} />
+            <div key={item.key} style={verticalBorder} className={`min-w-full bg-[#f2f2f2] rounded-md ${padding}`}>
               {customTitleName && (
                 <span className='emission-array-header'>
                   {customTitleName} {i + 1}
@@ -40,20 +41,20 @@ const NestedArrayFieldTemplate = ({
                   <DeleteForeverOutlinedIcon/>
                 </button>
               )}
-            {{
-              ...item.children,
-              props: {
-                ...item.children.props,
-                uiSchema: {
-                  ...item.children.props.uiSchema,
-                  "ui:FieldTemplate": BasicFieldTemplate,
-                  "ui:options": {
-                    label: false
+              {{
+                ...item.children,
+                props: {
+                  ...item.children.props,
+                  uiSchema: {
+                    ...item.children.props.uiSchema,
+                    "ui:FieldTemplate": BasicFieldTemplate,
+                    "ui:options": {
+                      label: false
+                    },
                   },
                 },
-              },
-            }}
-          </div>
+              }}
+            </div>
           </>
 
         );

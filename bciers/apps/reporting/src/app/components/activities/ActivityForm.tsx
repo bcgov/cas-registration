@@ -139,7 +139,8 @@ const uiSchema = {
                 "ui:options": {
                   arrayAddLabel: 'Add Emission',
                   title: 'Emission',
-                  label: false
+                  label: false,
+                  verticalBorder: true
                 },
                 items: {
                   "ui:order": [
