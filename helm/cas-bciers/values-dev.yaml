@@ -24,7 +24,7 @@ backend:
       memory: 256Mi
 
 administrationFrontend:
-  replicaCount: 2
+  replicaCount: 1
 
   image:
     tag: "latest"
@@ -44,7 +44,7 @@ administrationFrontend:
       memory: 256Mi
 
 registrationFrontend:
-  replicaCount: 2
+  replicaCount: 1
 
   image:
     tag: "latest"
@@ -57,11 +57,11 @@ registrationFrontend:
 
   resources:
     limits:
-      cpu: 150m
-      memory: 256Mi
+      cpu: 200m
+      memory: 512Mi
     requests:
       cpu: 60m
-      memory: 128Mi
+      memory: 256Mi
 
 reportingFrontend:
   enabled: true
@@ -75,14 +75,14 @@ reportingFrontend:
 
   resources:
     limits:
-      cpu: 150m
-      memory: 256Mi
+      cpu: 200m
+      memory: 512Mi
     requests:
       cpu: 60m
-      memory: 128Mi
+      memory: 256Mi
 
 coamFrontend:
-  replicaCount: 2
+  replicaCount: 1
 
   image:
     tag: "latest"
@@ -95,11 +95,11 @@ coamFrontend:
 
   resources:
     limits:
-      cpu: 150m
-      memory: 256Mi
+      cpu: 200m
+      memory: 512Mi
     requests:
       cpu: 60m
-      memory: 128Mi
+      memory: 256Mi
 
 dashboardFrontend:
   enabled: true
@@ -113,11 +113,11 @@ dashboardFrontend:
 
   resources:
     limits:
-      cpu: 150m
-      memory: 256Mi
+      cpu: 200m
+      memory: 512Mi
     requests:
       cpu: 60m
-      memory: 128Mi
+      memory: 256Mi
 
   auth:
     keycloakAuthUrl: https://dev.loginproxy.gov.bc.ca/auth
