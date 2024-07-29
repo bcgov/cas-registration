@@ -466,7 +466,7 @@ describe("FacilityForm component", () => {
       expect(actionHandler).toHaveBeenCalledWith(
         `registration/facilities/${sfoFormData.id}`,
         "PUT",
-        `registration/facilities/${sfoFormData.id}`,
+        `/operations/${operationId}/facilities/${sfoFormData.id}`,
         {
           body: JSON.stringify(editPayload),
         },
@@ -501,7 +501,7 @@ describe("FacilityForm component", () => {
       expect(actionHandler).toHaveBeenCalledWith(
         `registration/facilities/${sfoFormData.id}`,
         "PUT",
-        `registration/facilities/${sfoFormData.id}`,
+        `/operations/${operationId}/facilities/${sfoFormData.id}`,
         {
           body: JSON.stringify(editPayload),
         },

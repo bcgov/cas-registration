@@ -27,7 +27,7 @@ describe("Facilities page", () => {
     expect(screen.getByRole("button", { name: "Add Facility" })).toBeVisible();
     expect(screen.getByRole("link", { name: "Add Facility" })).toHaveAttribute(
       "href",
-      `/operations/random UUID/facilities/new?operationsTitle=${searchParams.operationsTitle}`,
+      `/operations/random UUID/facilities/add-facility?operationsTitle=${searchParams.operationsTitle}`,
     );
   });
   it("Not displaying `Add Facility` button for internal users", async () => {

@@ -75,6 +75,7 @@ describe("Facilities component", () => {
     expect(screen.getByLabelText(/facility name/i)).toHaveValue("");
     expect(screen.queryByText(/well/i)).not.toBeInTheDocument(); // well authorization number is only for LFOs
   });
+
   it("renders the LFO readonly form with form data", async () => {
     getFacility.mockReturnValueOnce({
       name: "Test Facility Name",

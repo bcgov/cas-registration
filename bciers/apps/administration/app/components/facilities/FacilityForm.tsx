@@ -76,7 +76,9 @@ export default function FacilityForm({
           );
         }
       }}
-      onCancel={() => console.log("cancelled")}
+      onCancel={() =>
+        router.push(`/operations/${params.operationId}/facilities`)
+      }
     />
   );
 }
