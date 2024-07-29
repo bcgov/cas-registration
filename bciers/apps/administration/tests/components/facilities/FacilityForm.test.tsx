@@ -206,10 +206,6 @@ describe("FacilityForm component", () => {
     vi.clearAllMocks();
   });
   it("redirects to the facilities grid on cancel", async () => {
-    const schema = {}; // Provide a mock schema if needed
-    const uiSchema = {}; // Provide a mock uiSchema if needed
-    const formData = {}; // Provide mock formData if needed
-
     render(
       <FacilityForm
         schema={facilitiesSchemaSfo}

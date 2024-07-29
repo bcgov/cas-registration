@@ -80,14 +80,13 @@ class FacilityService:
             return AddressDataAccessService.create_address(address_data)
         return None
 
-
     @classmethod
     def handle_well_authorization_numbers(cls, user_guid: UUID, payload: FacilityIn, facility: Facility) -> None:
         """
         Helper function to process and set well authorization numbers for a facility.
 
-        This method handles the addition and removal of well authorization numbers for a given facility based on 
-        the provided payload. It ensures that there are no duplicate well authorization numbers in the new set 
+        This method handles the addition and removal of well authorization numbers for a given facility based on
+        the provided payload. It ensures that there are no duplicate well authorization numbers in the new set
         and updates the facility's well authorization numbers accordingly.
 
         Args:
@@ -109,8 +108,10 @@ class FacilityService:
 
         # Check for duplicates within the new_numbers
         if len(new_numbers) != len(set(new_numbers)):
-            raise Exception("Well Authorization Number: Well authorization number with this Well authorization number already exists.")
-    
+            raise Exception(
+                "Well Authorization Number: Well authorization number with this Well authorization number already exists."
+            )
+
         # Numbers to add
         numbers_to_add = set(new_numbers) - existing_numbers
 
@@ -128,9 +129,6 @@ class FacilityService:
         if numbers_to_remove:
             for number in numbers_to_remove:
                 facility.well_authorization_numbers.filter(well_authorization_number=number).delete()
-
-
-
 
     @classmethod
     def list_facilities(
