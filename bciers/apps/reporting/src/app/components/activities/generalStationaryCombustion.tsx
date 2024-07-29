@@ -7,23 +7,29 @@ import CheckboxWidgetLeft from "@bciers/components/form/widgets/CheckboxWidgetLe
 import InlineFieldTemplate from "@bciers/components/form/fields/InlineFieldTemplate";
 
 interface Props {
-  activityData: {activityId: number, sourceTypeMap:{[key: number]: string}},
-  reportDate: string,
+  activityData: {
+    activityId: number;
+    sourceTypeMap: { [key: number]: string };
+  };
+  reportDate: string;
 }
 
 // 🧩 Main component
-export default function GeneralStationaryCombustion({activityData, reportDate}:Readonly<Props>) {
+export default function GeneralStationaryCombustion({
+  activityData,
+  reportDate,
+}: Readonly<Props>) {
   const uiSchema = {
     "ui:FieldTemplate": FieldTemplate,
     "ui:classNames": "form-heading-label",
-    gscWithProductionOfUsefulEnergy :{
+    gscWithProductionOfUsefulEnergy: {
       "ui:FieldTemplate": FieldTemplate,
       "ui:widget": CheckboxWidgetLeft,
       "ui:options": {
         label: false,
       },
     },
-    gscWithoutProductionOfUsefulEnergy :{
+    gscWithoutProductionOfUsefulEnergy: {
       "ui:FieldTemplate": FieldTemplate,
       "ui:widget": CheckboxWidgetLeft,
       "ui:options": {
@@ -33,7 +39,7 @@ export default function GeneralStationaryCombustion({activityData, reportDate}:R
     sourceTypes: {
       "ui:FieldTemplate": FieldTemplate,
       "ui:options": {
-        label:false
+        label: false,
       },
       gscWithProductionOfUsefulEnergy: {
         "ui:FieldTemplate": SourceTypeBoxTemplate,
@@ -42,64 +48,59 @@ export default function GeneralStationaryCombustion({activityData, reportDate}:R
           "ui:FieldTemplate": FieldTemplate,
           "ui:title": "Unit Data",
           "ui:options": {
-            arrayAddLabel: 'Add Unit',
+            arrayAddLabel: "Add Unit",
             label: false,
-            title: 'Unit',
-            padding: 'p-2'
+            title: "Unit",
+            padding: "p-2",
           },
-          items:{
-            "ui:order": [
-              "gscUnitName",
-              "gscUnitType",
-              "description",
-              "fuels"
-            ],
+          items: {
+            "ui:order": ["gscUnitName", "gscUnitType", "description", "fuels"],
             gscUnitName: {
-              "ui:FieldTemplate": InlineFieldTemplate
+              "ui:FieldTemplate": InlineFieldTemplate,
             },
             gscUnitType: {
-              "ui:FieldTemplate": InlineFieldTemplate
+              "ui:FieldTemplate": InlineFieldTemplate,
             },
             description: {
-              "ui:FieldTemplate": InlineFieldTemplate
+              "ui:FieldTemplate": InlineFieldTemplate,
             },
             fuels: {
               "ui:title": "Fuel Data",
               "ui:ArrayFieldTemplate": NestedArrayFieldTemplate,
               "ui:FieldTemplate": FieldTemplate,
               "ui:options": {
-                arrayAddLabel: 'Add Fuel',
+                arrayAddLabel: "Add Fuel",
                 label: false,
-                title: 'Fuel'
+                title: "Fuel",
               },
-              items:{
+              items: {
                 "ui:order": [
                   "fuelName",
                   "fuelUnit",
                   "annualFuelAmount",
-                  "emissions"
+                  "emissions",
                 ],
                 fuelName: {
-                  "ui:FieldTemplate": InlineFieldTemplate
+                  "ui:FieldTemplate": InlineFieldTemplate,
                 },
                 fuelType: {
-                  "ui:FieldTemplate": InlineFieldTemplate
+                  "ui:FieldTemplate": InlineFieldTemplate,
                 },
                 annualFuelAmount: {
-                  "ui:FieldTemplate": InlineFieldTemplate
+                  "ui:FieldTemplate": InlineFieldTemplate,
                 },
                 emissions: {
                   "ui:ArrayFieldTemplate": NestedArrayFieldTemplate,
                   "ui:FieldTemplate": FieldTemplate,
                   "ui:options": {
-                    arrayAddLabel: 'Add Emission',
-                    title: 'Emission',
+                    arrayAddLabel: "Add Emission",
+                    title: "Emission",
                     label: false,
-                    verticalBorder: true
+                    verticalBorder: true,
                   },
-                }
+                },
               },
-            }
+            },
           },
         },
       },
@@ -110,74 +111,76 @@ export default function GeneralStationaryCombustion({activityData, reportDate}:R
           "ui:FieldTemplate": FieldTemplate,
           "ui:title": "Unit Data",
           "ui:options": {
-            arrayAddLabel: 'Add Unit',
+            arrayAddLabel: "Add Unit",
             label: false,
-            title: 'Unit',
-            padding: 'p-2'
+            title: "Unit",
+            padding: "p-2",
           },
-          items:{
-            "ui:order": [
-              "gscUnitName",
-              "gscUnitType",
-              "description",
-              "fuels"
-            ],
+          items: {
+            "ui:order": ["gscUnitName", "gscUnitType", "description", "fuels"],
             gscUnitName: {
-              "ui:FieldTemplate": InlineFieldTemplate
+              "ui:FieldTemplate": InlineFieldTemplate,
             },
             gscUnitType: {
-              "ui:FieldTemplate": InlineFieldTemplate
+              "ui:FieldTemplate": InlineFieldTemplate,
             },
             description: {
-              "ui:FieldTemplate": InlineFieldTemplate
+              "ui:FieldTemplate": InlineFieldTemplate,
             },
             fuels: {
               "ui:title": "Fuel Data",
               "ui:ArrayFieldTemplate": NestedArrayFieldTemplate,
               "ui:FieldTemplate": FieldTemplate,
               "ui:options": {
-                arrayAddLabel: 'Add Fuel',
+                arrayAddLabel: "Add Fuel",
                 label: false,
-                title: 'Fuel'
+                title: "Fuel",
               },
-              items:{
+              items: {
                 "ui:order": [
                   "fuelName",
                   "fuelUnit",
                   "annualFuelAmount",
-                  "emissions"
+                  "emissions",
                 ],
                 fuelName: {
-                  "ui:FieldTemplate": InlineFieldTemplate
+                  "ui:FieldTemplate": InlineFieldTemplate,
                 },
                 fuelType: {
-                  "ui:FieldTemplate": InlineFieldTemplate
+                  "ui:FieldTemplate": InlineFieldTemplate,
                 },
                 annualFuelAmount: {
-                  "ui:FieldTemplate": InlineFieldTemplate
+                  "ui:FieldTemplate": InlineFieldTemplate,
                 },
                 emissions: {
                   "ui:ArrayFieldTemplate": NestedArrayFieldTemplate,
                   "ui:FieldTemplate": FieldTemplate,
                   "ui:options": {
-                    arrayAddLabel: 'Add Emission',
-                    title: 'Emission',
+                    arrayAddLabel: "Add Emission",
+                    title: "Emission",
                     label: false,
-                    verticalBorder: true
+                    verticalBorder: true,
                   },
-                }
+                },
               },
-            }
+            },
           },
         },
-      }
+      },
     },
   };
 
   // Shape of an empty sourceType to create a set of fields on select
-  const defaultEmptySourceTypeState = {units: [{fuels: [{emissions:[{}]}]}]};
+  const defaultEmptySourceTypeState = {
+    units: [{ fuels: [{ emissions: [{}] }] }],
+  };
 
   return (
-    <ActivityForm activityData={activityData} reportDate={reportDate} uiSchema={uiSchema} defaultEmptySourceTypeState={defaultEmptySourceTypeState}/>
+    <ActivityForm
+      activityData={activityData}
+      reportDate={reportDate}
+      uiSchema={uiSchema}
+      defaultEmptySourceTypeState={defaultEmptySourceTypeState}
+    />
   );
 }

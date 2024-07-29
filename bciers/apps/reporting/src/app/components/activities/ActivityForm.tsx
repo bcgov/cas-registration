@@ -6,7 +6,7 @@ import { actionHandler } from "@bciers/actions";
 import { Alert, Button } from "@mui/material";
 import ReportingTaskList from "@bciers/components/navigation/reportingTaskList/ReportingTaskList";
 
-const data: TaskListElement[] = [
+const tasklistData: TaskListElement[] = [
   {
     type: "Page",
     title: "main page element",
@@ -54,56 +54,75 @@ const data: TaskListElement[] = [
 ];
 
 interface Props {
-  activityData: {activityId: number, sourceTypeMap:{[key: number]: string}},
-  reportDate: string,
-  uiSchema: any,
-  defaultEmptySourceTypeState: any
+  activityData: {
+    activityId: number;
+    sourceTypeMap: { [key: number]: string };
+  };
+  reportDate: string;
+  uiSchema: any;
+  defaultEmptySourceTypeState: any;
 }
 
 // 🧩 Main component
-export default function ActivityForm({activityData, reportDate, uiSchema, defaultEmptySourceTypeState}:Readonly<Props>) {
+export default function ActivityForm({
+  activityData,
+  reportDate,
+  uiSchema,
+  defaultEmptySourceTypeState,
+}: Readonly<Props>) {
   // 🐜 To display errors
   const [errorList, setErrorList] = useState([] as any[]);
   // 🌀 Loading state for the Submit button
   const [isLoading, setIsLoading] = useState(false);
   // ✅ Success state for for the Submit button
   const [isSuccess, setIsSuccess] = useState(false);
-  const [formState, setFormState] = useState({} as any)
-  const [jsonSchema, setJsonSchema] = useState({})
+  const [formState, setFormState] = useState({} as any);
+  const [jsonSchema, setJsonSchema] = useState({});
 
-  const {activityId, sourceTypeMap} = activityData;
+  const { activityId, sourceTypeMap } = activityData;
 
   const dependencyArray: string[] = [];
   const checkBooleans = () => {
-    for (const [key, value] of Object.entries(sourceTypeMap)) {
-      dependencyArray.push(formState?.[`${value}`] ? formState?.[`${value}`] : null)
+    for (const [value] of Object.entries(sourceTypeMap)) {
+      dependencyArray.push(
+        formState?.[`${value}`] ? formState?.[`${value}`] : null,
+      );
     }
-  }
+  };
   checkBooleans();
 
   useEffect(() => {
-    let x;
-    const fetchSchemaData = async (selectedSourceTypes: string, selectedKeys: number[]) => {
+    const fetchSchemaData = async (
+      selectedSourceTypes: string,
+      selectedKeys: number[],
+    ) => {
       // fetch data from server
-      const schemaData = await actionHandler(`reporting/build-form-schema?activity=${activityId}&report_date=${reportDate}${selectedSourceTypes}`, "GET", "");
+      const schemaData = await actionHandler(
+        `reporting/build-form-schema?activity=${activityId}&report_date=${reportDate}${selectedSourceTypes}`,
+        "GET",
+        "",
+      );
       setJsonSchema(JSON.parse(schemaData).schema);
-      const initialSourceTypeFormData = {} as any
+      const sourceTypeFormData = (formState?.sourceTypes as any) || {};
       // Add an empty sourceType for each selected Source Type (show first item by default)
       selectedKeys.forEach((k: number) => {
-        initialSourceTypeFormData[`${sourceTypeMap[k]}`] = defaultEmptySourceTypeState;
+        if (!formState?.sourceTypes[`${sourceTypeMap[k]}`])
+          sourceTypeFormData[`${sourceTypeMap[k]}`] =
+            defaultEmptySourceTypeState;
       });
-      setFormState({...formState, sourceTypes: initialSourceTypeFormData})
+      // This will need amending once we have
+      setFormState({ ...formState, sourceTypes: sourceTypeFormData });
     };
-    let selectedSourceTypes = '';
+    let selectedSourceTypes = "";
     const selectedKeys = [];
     for (const [key, value] of Object.entries(sourceTypeMap)) {
       if (formState?.[`${value}`]) {
         selectedSourceTypes = selectedSourceTypes + `&source_types[]=${key}`;
-        selectedKeys.push(Number(key))
+        selectedKeys.push(Number(key));
       }
     }
     fetchSchemaData(selectedSourceTypes, selectedKeys);
-  }, dependencyArray)
+  }, dependencyArray);
 
   const customFormats = {
     // Add any needed custom formats here like the example below
@@ -113,9 +132,9 @@ export default function ActivityForm({activityData, reportDate, uiSchema, defaul
   const validator = customizeValidator({ customFormats });
 
   const handleFormChange = (c: any) => {
-    console.log("IN CHANGE: ", c.formData)
+    console.log("IN CHANGE: ", c.formData);
     setFormState(c.formData);
-  }
+  };
 
   // 🛠️ Function to submit user form data to API
   const submitHandler = async (data: { formData?: any }) => {
@@ -123,7 +142,7 @@ export default function ActivityForm({activityData, reportDate, uiSchema, defaul
     setErrorList([]);
     setIsLoading(true);
     setIsSuccess(false);
-    const response = {status: 200, error: false}
+    const response = { status: 200, error: false };
     // 🛑 Set loading to false after the API call is completed
     setIsLoading(false);
 
@@ -133,43 +152,43 @@ export default function ActivityForm({activityData, reportDate, uiSchema, defaul
     }
 
     // Apply new data to NextAuth JWT
-    console.log('SUBMITTED: ', data.formData)
+    console.log("SUBMITTED: ", data.formData);
   };
 
-  if (Object.keys(jsonSchema).length === 0 && jsonSchema.constructor === Object) return <>Loading...</>
+  if (Object.keys(jsonSchema).length === 0 && jsonSchema.constructor === Object)
+    return <>Loading...</>;
   // Render the DataGrid component
   return (
     <div className="w-full flex flex-row">
-      <ReportingTaskList elements={data} />
+      <ReportingTaskList elements={tasklistData} />
       <div className="w-full">
-      <FormBase
-        schema={jsonSchema}
-        formData={formState}
-        uiSchema={uiSchema}
-        validator={validator}
-        onChange={handleFormChange}
-        onError={(e: any) => console.log('ERROR: ', e)}
-        onSubmit={submitHandler}
-      >
-
-      {errorList.length > 0 &&
-        errorList.map((e: any) => (
-          <Alert key={e.message} severity="error">
-            {e?.stack ?? e.message}
-          </Alert>
-        ))}
-      <div className="flex justify-end gap-3">
-        {/* Disable the button when loading or when success state is true */}
-        <Button
-          variant="contained"
-          type="submit"
-          aria-disabled={isLoading}
-          disabled={isLoading}
+        <FormBase
+          schema={jsonSchema}
+          formData={formState}
+          uiSchema={uiSchema}
+          validator={validator}
+          onChange={handleFormChange}
+          onError={(e: any) => console.log("ERROR: ", e)}
+          onSubmit={submitHandler}
         >
-          {isSuccess ? "✅ Success" : "Submit"}
-        </Button>
-      </div>
-      </FormBase>
+          {errorList.length > 0 &&
+            errorList.map((e: any) => (
+              <Alert key={e.message} severity="error">
+                {e?.stack ?? e.message}
+              </Alert>
+            ))}
+          <div className="flex justify-end gap-3">
+            {/* Disable the button when loading or when success state is true */}
+            <Button
+              variant="contained"
+              type="submit"
+              aria-disabled={isLoading}
+              disabled={isLoading}
+            >
+              {isSuccess ? "✅ Success" : "Submit"}
+            </Button>
+          </div>
+        </FormBase>
       </div>
     </div>
   );
