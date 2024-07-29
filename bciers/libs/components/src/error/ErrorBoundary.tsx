@@ -8,7 +8,6 @@ interface Props {
 }
 export default function ErrorBoundary({ error }: Props) {
   useEffect(() => {
-    console.error(error);
     if (error) {
       try {
         // Attempt to log the error to Sentry
