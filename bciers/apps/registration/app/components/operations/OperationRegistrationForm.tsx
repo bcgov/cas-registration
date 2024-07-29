@@ -1,6 +1,6 @@
 "use client";
 
-import {useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { UUID } from "crypto";
 import MultiStepFormBase from "@bciers/components/form/MultiStepFormBase";
 import { useRouter } from "next/navigation";
@@ -61,7 +61,7 @@ const OperationRegistrationForm = ({
         )}
       </>
     ),
-    [facilityInitialData, operationId, isFacilityDataGrid],
+    [facilityInitialData, isFacilityDataGrid],
   );
 
   const handleFormChange = useCallback(

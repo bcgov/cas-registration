@@ -15,9 +15,9 @@ import SortIcon from "@bciers/components/icons/SortIcon";
 import styles from "@bciers/components/datagrid/styles";
 
 interface Props {
-  fetchPageData?: (params: { [key: string]: any }) => Promise<any>;
   columns: GridColDef[];
   columnGroupModel?: GridColumnGroupingModel;
+  fetchPageData?: (params: { [key: string]: any }) => Promise<any>;
   initialData: {
     rows: { [key: string]: any }[];
     row_count?: number;
@@ -61,11 +61,10 @@ const DataGrid: React.FC<Props> = ({
 }) => {
   const [rows, setRows] = useState(initialData.rows ?? []);
   const [rowCount, setRowCount] = useState(initialData.row_count ?? undefined);
-  const [sortModel, setSortModel] = useState<GridSortItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [isComponentMounted, setIsComponentMounted] = useState(false);
-  const searchParams = useSearchParams();
   const isRowsEmpty = rows.length === 0;
+  const searchParams = useSearchParams();
 
   useEffect(() => {
     setIsComponentMounted(true);
@@ -76,7 +75,7 @@ const DataGrid: React.FC<Props> = ({
   useEffect(() => {
     // Don't fetch data if the component is not mounted
     // Since we will grab the first page using the server side props
-    if (!isComponentMounted || !fetchPageData || loading) return;
+    if (!isComponentMounted || !fetchPageData) return;
     setLoading(true);
     const debouncedFetchData = debounce(async () => {
       const fetchData = async () => {
@@ -100,6 +99,12 @@ const DataGrid: React.FC<Props> = ({
       // window.location.pathname includes `/registration` unlike usePathname
       const pathName = window.location.pathname;
       const params = new URLSearchParams(searchParams);
+      const isParamsEmpty =
+        Object.keys(Object.fromEntries(params)).length === 0;
+      const isSortFieldEmpty = !newSortModel[0]?.field;
+
+      // Prevent updating the URL if the sort field is empty and the URL is already empty
+      if (isParamsEmpty && isSortFieldEmpty) return;
 
       const sortField = newSortModel[0]?.field;
 
@@ -116,8 +121,6 @@ const DataGrid: React.FC<Props> = ({
         params.delete("sort_order");
       }
 
-      // Save sort model in state to prevent datagrid running this again on route change
-      setSortModel(newSortModel);
       // Update the URL with the new sort field and order
       // replace(`${pathname}?${params.toString()}`);
       // Shallow routing is not avilalble in nextjs app router so using window.history.replaceState
@@ -198,7 +201,6 @@ const DataGrid: React.FC<Props> = ({
         paginationMode={paginationMode}
         onPaginationModelChange={handlePaginationModelChange}
         paginationModel={paginationModel}
-        sortModel={sortModel}
         onSortModelChange={handleSortModelChange}
         // Set the row height to "auto" so that the row height will adjust to the content
         getRowHeight={() => "auto"}
