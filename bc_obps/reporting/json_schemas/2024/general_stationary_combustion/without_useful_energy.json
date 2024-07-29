@@ -1,6 +1,6 @@
 {
   "type": "object",
-  "title": "General stationary combustion of fuel or waste without production of useful energy",
+  "title": "General stationary combustion of waste without production of useful energy",
   "properties": {
     "units": {
       "type": "array",
@@ -60,7 +60,8 @@
                       },
                       "equivalentEmission": {
                         "title": "Equivalent Emission",
-                        "type": "number"
+                        "type": "number",
+                        "readOnly": true
                       }
                     }
                   }

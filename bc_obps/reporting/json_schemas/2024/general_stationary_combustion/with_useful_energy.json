@@ -60,7 +60,8 @@
                       },
                       "equivalentEmission": {
                         "title": "Equivalent Emission",
-                        "type": "number"
+                        "type": "number",
+                        "readOnly": true
                       }
                     }
                   }
