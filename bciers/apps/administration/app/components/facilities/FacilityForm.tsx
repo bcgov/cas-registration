@@ -38,11 +38,15 @@ export default function FacilityForm({
       formData={formData}
       mode={isCreating ? FormMode.CREATE : FormMode.READ_ONLY}
       onSubmit={async (data: { formData?: any }) => {
+        // Reset error state on form submission
+        setError(undefined);
         const method = isCreating ? "POST" : "PUT";
         const endpoint = isCreating
           ? "registration/facilities"
           : `registration/facilities/${formData?.id}`;
-        const pathToRevalidate = endpoint; // for now the endpoint is the same as the path to revalidate
+        const pathToRevalidate = isCreating
+          ? `/operations/${params.operationId}/facilities`
+          : `/operations/${params.operationId}/facilities/${formData?.id}`;
         const body = {
           ...data.formData,
           operation_id: params.operationId,

@@ -80,20 +80,57 @@ class FacilityService:
             return AddressDataAccessService.create_address(address_data)
         return None
 
-    @classmethod
-    def process_well_authorization_numbers(cls, user_guid: UUID, payload: FacilityIn, facility: Facility) -> None:
-        """Helper function to process and set well authorization numbers."""
-        existing_numbers = set(facility.well_authorization_numbers.values_list('well_authorization_number', flat=True))
-        well_authorization_numbers = []
 
-        for number in payload.well_authorization_numbers:
-            if number not in existing_numbers:
-                well_authorization_numbers.append(
+    @classmethod
+    def handle_well_authorization_numbers(cls, user_guid: UUID, payload: FacilityIn, facility: Facility) -> None:
+        """
+        Helper function to process and set well authorization numbers for a facility.
+
+        This method handles the addition and removal of well authorization numbers for a given facility based on 
+        the provided payload. It ensures that there are no duplicate well authorization numbers in the new set 
+        and updates the facility's well authorization numbers accordingly.
+
+        Args:
+            user_guid (UUID): The GUID of the user making the changes.
+            payload (FacilityIn): The payload containing the new well authorization numbers.
+            facility (Facility): The facility object to be updated.
+
+        Raises:
+            Exception: If there are duplicate well authorization numbers in the new set.
+
+        Steps:
+            1. Extract existing well authorization numbers from the facility.
+            2. Compare new well authorization numbers from the payload with the existing ones.
+            3. Identify and add new well authorization numbers that are not in the existing set.
+            4. Identify and remove old well authorization numbers that are not in the new set.
+        """
+        existing_numbers = set(facility.well_authorization_numbers.values_list('well_authorization_number', flat=True))
+        new_numbers = payload.well_authorization_numbers
+
+        # Check for duplicates within the new_numbers
+        if len(new_numbers) != len(set(new_numbers)):
+            raise Exception("Well Authorization Number: Well authorization number with this Well authorization number already exists.")
+    
+        # Numbers to add
+        numbers_to_add = set(new_numbers) - existing_numbers
+
+        # Add new numbers
+        if numbers_to_add:
+            for number in numbers_to_add:
+                facility.well_authorization_numbers.add(
                     WellAuthorizationNumberDataAccessService.create_well_authorization_number(user_guid, number)
                 )
 
-        if well_authorization_numbers:
-            facility.well_authorization_numbers.add(*well_authorization_numbers)
+        # Numbers to remove
+        numbers_to_remove = existing_numbers - set(new_numbers)
+
+        # Remove old numbers
+        if numbers_to_remove:
+            for number in numbers_to_remove:
+                facility.well_authorization_numbers.filter(well_authorization_number=number).delete()
+
+
+
 
     @classmethod
     def list_facilities(
@@ -142,7 +179,7 @@ class FacilityService:
             user_guid, {'facility': facility, 'operation': operation, 'start_date': timezone.now()}
         )
 
-        cls.process_well_authorization_numbers(user_guid, payload, facility)
+        cls.handle_well_authorization_numbers(user_guid, payload, facility)
 
         return facility
 
@@ -182,7 +219,7 @@ class FacilityService:
         facility = FacilityDataAccessService.update_facility(facility_id, user_guid, facility_data)
 
         # Process well authorization numbers and link them to the facility
-        cls.process_well_authorization_numbers(user_guid, payload, facility)
+        cls.handle_well_authorization_numbers(user_guid, payload, facility)
 
         # Return the updated facility instance
         return facility
