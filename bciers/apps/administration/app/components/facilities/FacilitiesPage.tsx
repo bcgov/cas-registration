@@ -25,11 +25,7 @@ export default async function FacilitiesPage({
       {isExternalUser && (
         <div className="text-right">
           <Link
-<<<<<<< HEAD
             href={`/operations/${operationId}/facilities/add-facility?operationsTitle=${searchParams.operationsTitle}`}
-=======
-            href={`/operations/${operationId}/facilities/new?operationsTitle=${searchParams.operationsTitle}`}
->>>>>>> aa0d5fd4 (chore: vitest FacilityForm)
           >
             <Button variant="contained">Add Facility</Button>
           </Link>
