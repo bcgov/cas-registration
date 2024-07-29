@@ -56,11 +56,12 @@ const data: TaskListElement[] = [
 interface Props {
   activityData: {activityId: number, sourceTypeMap:{[key: number]: string}},
   reportDate: string,
-  uiSchema: any
+  uiSchema: any,
+  defaultEmptySourceTypeState: any
 }
 
 // 🧩 Main component
-export default function ActivityForm({activityData, reportDate, uiSchema}:Readonly<Props>) {
+export default function ActivityForm({activityData, reportDate, uiSchema, defaultEmptySourceTypeState}:Readonly<Props>) {
   // 🐜 To display errors
   const [errorList, setErrorList] = useState([] as any[]);
   // 🌀 Loading state for the Submit button
@@ -82,17 +83,26 @@ export default function ActivityForm({activityData, reportDate, uiSchema}:Readon
 
   useEffect(() => {
     let x;
-    const fetchSchemaData = async (selectedSourceTypes: string) => {
+    const fetchSchemaData = async (selectedSourceTypes: string, selectedKeys: number[]) => {
       // fetch data from server
       const schemaData = await actionHandler(`reporting/build-form-schema?activity=${activityId}&report_date=${reportDate}${selectedSourceTypes}`, "GET", "");
       setJsonSchema(JSON.parse(schemaData).schema);
-      setFormState({...formState, sourceTypes: {gscWithProductionOfUsefulEnergy: {units: [{fuels: [{emissions:[{}]}]}]}, gscWithoutProductionOfUsefulEnergy: {units: [{fuels: [{emissions:[{}]}]}]}}})
+      const initialSourceTypeFormData = {} as any
+      // Add an empty sourceType for each selected Source Type (show first item by default)
+      selectedKeys.forEach((k: number) => {
+        initialSourceTypeFormData[`${sourceTypeMap[k]}`] = defaultEmptySourceTypeState;
+      });
+      setFormState({...formState, sourceTypes: initialSourceTypeFormData})
     };
     let selectedSourceTypes = '';
+    const selectedKeys = [];
     for (const [key, value] of Object.entries(sourceTypeMap)) {
-      if (formState?.[`${value}`]) selectedSourceTypes = selectedSourceTypes + `&source_types[]=${key}`;
+      if (formState?.[`${value}`]) {
+        selectedSourceTypes = selectedSourceTypes + `&source_types[]=${key}`;
+        selectedKeys.push(Number(key))
+      }
     }
-    fetchSchemaData(selectedSourceTypes);
+    fetchSchemaData(selectedSourceTypes, selectedKeys);
   }, dependencyArray)
 
   const customFormats = {

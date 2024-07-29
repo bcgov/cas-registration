@@ -26,7 +26,7 @@ const NestedArrayFieldTemplate = ({
         return (
           <>
             <div style={{display: "block", marginTop: "1rem", marginBottom: "1rem", marginLeft: "1rem", marginRight: "1rem"}} />
-            <div key={item.key} style={verticalBorder} className={`min-w-full bg-[#f2f2f2] rounded-md ${padding}`}>
+            <div key={item.key + i} style={verticalBorder} className={`min-w-full bg-[#f2f2f2] rounded-md ${padding}`}>
               {customTitleName && (
                 <span className='emission-array-header'>
                   {customTitleName} {i + 1}
