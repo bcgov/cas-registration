@@ -212,7 +212,10 @@ const uiSchema = {
                 "ui:ArrayFieldTemplate": NestedArrayFieldTemplate,
                 "ui:FieldTemplate": FieldTemplate,
                 "ui:options": {
-                  arrayAddLabel: 'Add Emission'
+                  arrayAddLabel: 'Add Emission',
+                  title: 'Emission',
+                  label: false,
+                  verticalBorder: true
                 },
                 items: {
                   "ui:order": [
