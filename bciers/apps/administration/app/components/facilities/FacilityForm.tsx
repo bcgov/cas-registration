@@ -29,6 +29,8 @@ export default function FacilityForm({
   const router = useRouter();
   const params = useParams();
   const searchParams = useSearchParams();
+  // 🛸 build the route url with breadcrumbs pattern
+  const queryString = serializeSearchParams(searchParams);
 
   return (
     <SingleStepTaskListForm
@@ -65,19 +67,17 @@ export default function FacilityForm({
           return { error: response.error };
         }
         if (isCreating) {
-          // 🛸 build the route url with breadcrumbs pattern
-          const queryString =
-            serializeSearchParams(searchParams) +
-            `&facilitiesTitle=${response.name}`;
           router.replace(
-            `/operations/${params.operationId}/facilities/${response.id}${queryString}`,
+            `/operations/${params.operationId}/facilities/${response.id}${queryString}&facilitiesTitle=${response.name}`,
             // @ts-ignore
             { shallow: true },
           );
         }
       }}
       onCancel={() =>
-        router.push(`/operations/${params.operationId}/facilities`)
+        router.push(
+          `/operations/${params.operationId}/facilities${queryString}`,
+        )
       }
     />
   );
