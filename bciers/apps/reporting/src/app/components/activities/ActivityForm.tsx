@@ -26,7 +26,7 @@ const tasklistData: TaskListElement[] = [
             title: "General stationary combustion",
           },
           { type: "Page", title: "Mobile combustion", isActive: true },
-          { type: "Page", title: "...", isChecked: true },
+          { type: "Page", title: "Other 1..", isChecked: true },
         ],
       },
       { type: "Page", title: "Non-attributable emissions" },
@@ -36,8 +36,8 @@ const tasklistData: TaskListElement[] = [
     type: "Section",
     title: "Facility 2 info",
     elements: [
-      { type: "Page", title: "Review ..." },
-      { type: "Page", title: "..." },
+      { type: "Page", title: "Review2 ..." },
+      { type: "Page", title: "Other 2.." },
     ],
   },
   {
@@ -45,8 +45,8 @@ const tasklistData: TaskListElement[] = [
     title: "Facility 3 info",
     isChecked: true,
     elements: [
-      { type: "Page", title: "Review ..." },
-      { type: "Page", title: "..." },
+      { type: "Page", title: "Review3 ..." },
+      { type: "Page", title: "Other 3.." },
     ],
   },
   { type: "Page", title: "New entrant information", isChecked: true },
@@ -81,17 +81,16 @@ export default function ActivityForm({
 
   const { activityId, sourceTypeMap } = activityData;
 
+  // Set useEffect dependency set from checked sourceTypes
   const dependencyArray: string[] = [];
-  const checkBooleans = () => {
-    for (const value of Object.values(sourceTypeMap)) {
-      dependencyArray.push(
-        formState?.[`${value}`] ? formState?.[`${value}`] : null,
-      );
-    }
-  };
-  checkBooleans();
+  for (const value of Object.values(sourceTypeMap)) {
+    dependencyArray.push(
+      formState?.[`${value}`] ? formState?.[`${value}`] : null,
+    );
+  }
 
   useEffect(() => {
+    let isFetching = true
     const fetchSchemaData = async (
       selectedSourceTypes: string,
       selectedKeys: number[],
@@ -110,8 +109,9 @@ export default function ActivityForm({
           sourceTypeFormData[`${sourceTypeMap[k]}`] =
             defaultEmptySourceTypeState;
       });
-      // This will need amending once we have
-      setFormState({ ...formState, sourceTypes: sourceTypeFormData });
+
+      if (isFetching)
+        setFormState({ ...formState, sourceTypes: sourceTypeFormData });
     };
     let selectedSourceTypes = "";
     const selectedKeys = [];
@@ -121,7 +121,9 @@ export default function ActivityForm({
         selectedKeys.push(Number(key));
       }
     }
+
     fetchSchemaData(selectedSourceTypes, selectedKeys);
+    return () => {isFetching = false};
   }, dependencyArray);
 
   const customFormats = {
@@ -152,7 +154,7 @@ export default function ActivityForm({
     }
 
     // Apply new data to NextAuth JWT
-    console.log("SUBMITTED: ", data.formData);
+    console.log("SUBMITTED: ", JSON.stringify(data.formData));
   };
 
   if (Object.keys(jsonSchema).length === 0 && jsonSchema.constructor === Object)

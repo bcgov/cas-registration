@@ -25,9 +25,9 @@ const NestedArrayFieldTemplate = ({
     <div className="flex min-w-full flex-col">
       {items?.map((item, i: number) => {
         return (
-          <>
+          <div key={item.key}>
             <div style={{display: "block", marginTop: "1rem", marginBottom: "1rem", marginLeft: "1rem", marginRight: "1rem"}} />
-            <div key={item.key + i} style={verticalBorder} className={`min-w-full bg-[#f2f2f2] rounded-md ${padding}`}>
+            <div style={verticalBorder} className={`min-w-full bg-[#f2f2f2] rounded-md ${padding}`}>
               {customTitleName && (
                 <span className='emission-array-header'>
                   {customTitleName} {i + 1}
@@ -56,7 +56,7 @@ const NestedArrayFieldTemplate = ({
                 },
               }}
             </div>
-          </>
+          </div>
 
         );
       })}
