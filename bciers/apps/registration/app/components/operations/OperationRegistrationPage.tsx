@@ -1,45 +1,18 @@
 import { UUID } from "crypto";
-import { validate as isValidUUID } from "uuid";
-import OperationRegistrationForm from "./OperationRegistrationForm";
 import {
-  operationRegistrationSchema,
-  operationRegistrationNewEntrantSchema,
-} from "apps/registration/app/data/jsonSchema/operationRegistration";
-import fetchFacilitiesPageData from "@/administration/app/components/facilities/fetchFacilitiesPageData";
+  FacilityInformationPage,
+  NewEntrantOperationPage,
+  OperationInformationPage,
+  OperationRepresentativePage,
+  RegistrationPurposePage,
+  RegistrationSubmissionPage,
+} from "@/registration/app/components/operations/registration";
 import {
-  FacilityInitialData,
-  FacilitiesSearchParams,
-} from "@/administration/app/components/facilities/types";
-import { getRegulatedProducts } from "@bciers/actions/api";
-import { RJSFSchema } from "@rjsf/utils";
+  OperationRegistrationSteps,
+  OperationRegistrationNewEntrantSteps,
+} from "@/registration/app/components/operations/registration/enums";
 
-// 🛠️ Function to create an operation schema with updated enum values
-export const createOperationRegistrationSchema = (
-  schema: RJSFSchema,
-  regulatedProducts: {
-    id: number;
-    name: string;
-  }[],
-) => {
-  const localSchema = JSON.parse(JSON.stringify(schema));
-  const registrationPurposeDependencies =
-    localSchema.properties.registrationPurpose.dependencies;
-  const regulatedProductsSchema =
-    registrationPurposeDependencies.registration_purpose.allOf[0].then
-      .properties.regulated_products;
-
-  // regulated products
-  if (Array.isArray(regulatedProducts)) {
-    regulatedProductsSchema.items.enum = regulatedProducts.map(
-      (product) => product.id,
-    );
-    regulatedProductsSchema.items.enumNames = regulatedProducts.map(
-      (product) => product.name,
-    );
-  }
-
-  return localSchema;
-};
+import { FacilitiesSearchParams } from "@/administration/app/components/facilities/types";
 
 const OperationRegistrationPage = async ({
   formSection,
@@ -50,51 +23,66 @@ const OperationRegistrationPage = async ({
   operation: UUID | "create";
   searchParams: FacilitiesSearchParams;
 }) => {
-  // Need to be careful using formSection as it is not a reliable way to determine the page
-  // due to the conditional new entrant page on this form
-  const isFacilityPage = formSection === 3 && operation;
-  const isRegistrationPurposePage = formSection === 1;
-
-  // This will need to be pulled from the database after page 1 is implemented
+  // const isNewEntrantOperation = operationFormData?.is_new_entrant_operation;
   const isNewEntrantOperation = true;
+
   // New entrant operations have an additional page
-  const registrationSchema = isNewEntrantOperation
-    ? operationRegistrationNewEntrantSchema
-    : operationRegistrationSchema;
+  const steps = isNewEntrantOperation
+    ? OperationRegistrationNewEntrantSteps
+    : OperationRegistrationSteps;
+  const formSectionName = steps[formSection - 1];
 
-  let facilityInitialData: FacilityInitialData | undefined;
-  let regulatedProducts: { id: number; name: string }[] = [];
-  // Don't fetch operation if UUID is invalid or operation === "create"
-  if (operation && isValidUUID(operation)) {
-    // Fetch operation data here
+  switch (formSectionName) {
+    case "Registration Purpose":
+      return (
+        <RegistrationPurposePage
+          operation={operation}
+          step={formSection}
+          steps={steps}
+        />
+      );
+    case "Operation Information":
+      return (
+        <OperationInformationPage
+          operation={operation}
+          step={formSection}
+          steps={steps}
+        />
+      );
+    case "Facility Information":
+      return (
+        <FacilityInformationPage
+          operation={operation}
+          searchParams={searchParams}
+          step={formSection}
+          steps={steps}
+        />
+      );
+    case "New Entrant Operation":
+      return (
+        <NewEntrantOperationPage
+          operation={operation}
+          step={formSection}
+          steps={steps}
+        />
+      );
+    case "Operation Representative":
+      return (
+        <OperationRepresentativePage
+          operation={operation}
+          step={formSection}
+          steps={steps}
+        />
+      );
+    case "Submission":
+      return (
+        <RegistrationSubmissionPage
+          operation={operation}
+          step={formSection}
+          steps={steps}
+        />
+      );
   }
-
-  // Hardcoded for development purposes
-  const OPERATION_ID = "002d5a9e-32a6-4191-938c-2c02bfec592d";
-  if (isRegistrationPurposePage) {
-    regulatedProducts = await getRegulatedProducts();
-  }
-  if (isFacilityPage) {
-    // Fetch facility data here
-    facilityInitialData = await fetchFacilitiesPageData(
-      OPERATION_ID,
-      searchParams,
-    );
-  }
-
-  const formSchema = isRegistrationPurposePage
-    ? createOperationRegistrationSchema(registrationSchema, regulatedProducts)
-    : registrationSchema;
-
-  return (
-    <OperationRegistrationForm
-      schema={formSchema}
-      formData={{}}
-      formSection={formSection}
-      facilityInitialData={facilityInitialData}
-      operation={operation}
-    />
-  );
 };
 
 export default OperationRegistrationPage;
