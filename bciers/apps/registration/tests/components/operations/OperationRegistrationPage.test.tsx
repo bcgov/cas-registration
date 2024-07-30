@@ -1,8 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import OperationRegistrationPage from "apps/registration/app/components/operations/OperationRegistrationPage";
-import { auth } from "@bciers/testConfig/mocks";
-import { useSession, useParams, useRouter } from "@bciers/testConfig/mocks";
-import { QueryParams, Router } from "@bciers/testConfig/types";
+import { useSession } from "@bciers/testConfig/mocks";
 import { actionHandler } from "@bciers/testConfig/mocks";
 
 const fetchFormEnums = () => {
@@ -25,21 +23,7 @@ describe("the OperationRegistrationPage component", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
-  it("should render the OperationRegistrationPage component", async () => {
-    auth.mockReturnValueOnce({
-      user: { app_role: "industry_user_admin" },
-    });
-    useRouter.mockReturnValue({
-      query: {
-        formSection: "1",
-        operation: "create",
-      },
-    } as Router);
-
-    useParams.mockReturnValue({
-      formSection: "1",
-      operation: "create",
-    } as QueryParams);
+  it("should render the Registration Purpose Form", async () => {
     fetchFormEnums();
     render(
       await OperationRegistrationPage({
@@ -51,6 +35,76 @@ describe("the OperationRegistrationPage component", () => {
 
     expect(screen.getByTestId("field-template-label")).toHaveTextContent(
       "Registration Purpose",
+    );
+  });
+
+  it("should render the Operation Information Form", async () => {
+    render(
+      await OperationRegistrationPage({
+        operation: "create",
+        formSection: 2,
+        searchParams: {},
+      }),
+    );
+
+    expect(screen.getByTestId("field-template-label")).toHaveTextContent(
+      "Operation Information",
+    );
+  });
+
+  it("should render the Facility Information Form", async () => {
+    render(
+      await OperationRegistrationPage({
+        operation: "create",
+        formSection: 3,
+        searchParams: {},
+      }),
+    );
+
+    expect(screen.getByTestId("field-template-label")).toHaveTextContent(
+      "Facility Information",
+    );
+  });
+
+  it("should render the New Entrant Form", async () => {
+    render(
+      await OperationRegistrationPage({
+        operation: "create",
+        formSection: 4,
+        searchParams: {},
+      }),
+    );
+
+    expect(screen.getByTestId("field-template-label")).toHaveTextContent(
+      "New Entrant Operation",
+    );
+  });
+
+  it("should render the Operation Representative Form", async () => {
+    render(
+      await OperationRegistrationPage({
+        operation: "create",
+        formSection: 5,
+        searchParams: {},
+      }),
+    );
+
+    expect(screen.getByTestId("field-template-label")).toHaveTextContent(
+      "Operation Representative",
+    );
+  });
+
+  it("should render the Submission Form", async () => {
+    render(
+      await OperationRegistrationPage({
+        operation: "create",
+        formSection: 6,
+        searchParams: {},
+      }),
+    );
+
+    expect(screen.getByTestId("field-template-label")).toHaveTextContent(
+      "Submission",
     );
   });
 });

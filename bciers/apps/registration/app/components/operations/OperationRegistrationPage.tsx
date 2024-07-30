@@ -34,54 +34,42 @@ const OperationRegistrationPage = async ({
 
   switch (formSectionName) {
     case "Registration Purpose":
-      return (
-        <RegistrationPurposePage
-          operation={operation}
-          step={formSection}
-          steps={steps}
-        />
-      );
+      return RegistrationPurposePage({
+        operation: operation,
+        step: formSection,
+        steps: steps,
+      });
     case "Operation Information":
-      return (
-        <OperationInformationPage
-          operation={operation}
-          step={formSection}
-          steps={steps}
-        />
-      );
+      return OperationInformationPage({
+        operation: operation,
+        step: formSection,
+        steps: steps,
+      });
     case "Facility Information":
-      return (
-        <FacilityInformationPage
-          operation={operation}
-          searchParams={searchParams}
-          step={formSection}
-          steps={steps}
-        />
-      );
+      return FacilityInformationPage({
+        operation: operation,
+        searchParams: searchParams,
+        step: formSection,
+        steps: steps,
+      });
     case "New Entrant Operation":
-      return (
-        <NewEntrantOperationPage
-          operation={operation}
-          step={formSection}
-          steps={steps}
-        />
-      );
+      return NewEntrantOperationPage({
+        operation: operation,
+        step: formSection,
+        steps: steps,
+      });
     case "Operation Representative":
-      return (
-        <OperationRepresentativePage
-          operation={operation}
-          step={formSection}
-          steps={steps}
-        />
-      );
+      return OperationRepresentativePage({
+        operation: operation,
+        step: formSection,
+        steps: steps,
+      });
     case "Submission":
-      return (
-        <RegistrationSubmissionPage
-          operation={operation}
-          step={formSection}
-          steps={steps}
-        />
-      );
+      return RegistrationSubmissionPage({
+        operation: operation,
+        step: formSection,
+        steps: steps,
+      });
   }
 };
 
