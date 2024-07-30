@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@mui/material";
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import { Alert } from "@mui/material";
@@ -13,6 +14,7 @@ interface MultiStepFormProps {
   allowBackNavigation?: boolean;
   allowEdit?: boolean;
   baseUrl: string;
+  baseUrlParams?: string;
   cancelUrl: string;
   children?: React.ReactNode;
   error?: any;
@@ -33,6 +35,7 @@ const MultiStepBase = ({
   allowBackNavigation,
   allowEdit = false,
   baseUrl,
+  baseUrlParams,
   cancelUrl,
   children,
   disabled,
@@ -49,6 +52,8 @@ const MultiStepBase = ({
 }: MultiStepFormProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
+  const router = useRouter();
+  const isNotFinalStep = step !== steps?.length;
 
   const stepIndex = step - 1;
 
@@ -61,6 +66,11 @@ const MultiStepBase = ({
     // and allow user to attempt to re-submit the form
     if (response?.error) {
       setIsSubmitting(false);
+    } else if (isNotFinalStep) {
+      const nextStepUrl = `${baseUrl}/${step + 1}${
+        baseUrlParams ? `?${baseUrlParams}` : ""
+      }`;
+      router.push(nextStepUrl);
     }
   };
 
@@ -69,6 +79,7 @@ const MultiStepBase = ({
   const handleEditClick = () => {
     setIsEditMode(true);
   };
+
   return (
     <>
       {allowEdit && (
