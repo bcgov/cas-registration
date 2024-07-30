@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { useRouter, useSearchParams } from "@bciers/testConfig/mocks";
 import { fetchContactsPageData } from "./mocks";
-import Contacts from "apps/administration/app/components/contacts/Contacts";
+import ContactsPage from "apps/administration/app/components/contacts/ContactsPage";
 import { auth } from "@bciers/testConfig/mocks";
 
 useRouter.mockReturnValue({
@@ -39,7 +39,7 @@ describe("Contacts component", () => {
   it("renders a message when there are no contacts in the database", async () => {
     fetchContactsPageData.mockResolvedValueOnce(undefined);
     render(
-      await Contacts({
+      await ContactsPage({
         searchParams: {},
       }),
     );
@@ -47,10 +47,10 @@ describe("Contacts component", () => {
     expect(screen.getByText(/No contacts data in database./i)).toBeVisible();
   });
 
-  it("renders the ContactDataGrid component when there are contacts in the database", async () => {
+  it("renders the ContactsDataGrid component when there are contacts in the database", async () => {
     fetchContactsPageData.mockResolvedValueOnce(mockResponse);
     render(
-      await Contacts({
+      await ContactsPage({
         searchParams: {},
       }),
     );
@@ -62,7 +62,7 @@ describe("Contacts component", () => {
 
   it("renders the correct note message for external users", async () => {
     fetchContactsPageData.mockResolvedValueOnce(mockResponse);
-    render(await Contacts({ searchParams: {}, isExternalUser: true }));
+    render(await ContactsPage({ searchParams: {}, isExternalUser: true }));
     const note = screen.getByTestId("note");
     expect(note).toBeVisible();
     expect(note).toHaveTextContent(
@@ -75,7 +75,7 @@ describe("Contacts component", () => {
       user: { app_role: "industry_user_admin" },
     });
     fetchContactsPageData.mockResolvedValueOnce(mockResponse);
-    render(await Contacts({ searchParams: {}, isExternalUser: true }));
+    render(await ContactsPage({ searchParams: {}, isExternalUser: true }));
     const note = screen.getByTestId("note");
     expect(note).toBeVisible();
     expect(note).toHaveTextContent(
@@ -90,7 +90,7 @@ describe("Contacts component", () => {
 
   it("renders the correct note message for internal users", async () => {
     fetchContactsPageData.mockResolvedValueOnce(mockResponse);
-    render(await Contacts({ searchParams: {}, isExternalUser: false }));
+    render(await ContactsPage({ searchParams: {}, isExternalUser: false }));
     const note = screen.getByTestId("note");
     expect(note).toBeVisible();
     expect(note).toHaveTextContent(

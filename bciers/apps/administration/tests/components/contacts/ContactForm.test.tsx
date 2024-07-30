@@ -5,7 +5,7 @@ import {
   contactsSchema,
   contactsUiSchema,
 } from "../../../app/data/jsonSchema/contact";
-import ContactsForm from "apps/administration/app/components/contacts/ContactsForm";
+import ContactForm from "apps/administration/app/components/contacts/ContactForm";
 import { createContactSchema } from "apps/administration/app/components/contacts/createContactSchema";
 
 const mockReplace = vi.fn();
@@ -27,14 +27,14 @@ const contactFormData = {
   postal_code: "A1B 2C3",
 };
 
-describe("ContactsForm component", () => {
+describe("ContactForm component", () => {
   beforeEach(async () => {
     vi.clearAllMocks();
   });
 
   it("renders the empty contact form when creating a new contact", async () => {
     render(
-      <ContactsForm
+      <ContactForm
         schema={contactsSchema}
         uiSchema={contactsUiSchema}
         formData={{}}
@@ -85,7 +85,7 @@ describe("ContactsForm component", () => {
   it("loads existing readonly contact form data", async () => {
     const readOnlyContactSchema = createContactSchema([], false);
     const { container } = render(
-      <ContactsForm
+      <ContactForm
         schema={readOnlyContactSchema}
         uiSchema={contactsUiSchema}
         formData={contactFormData}
@@ -138,7 +138,7 @@ describe("ContactsForm component", () => {
   });
   it("does not allow new contact form submission if there are validation errors (empty form data)", async () => {
     render(
-      <ContactsForm
+      <ContactForm
         schema={contactsSchema}
         uiSchema={contactsUiSchema}
         formData={{}}
@@ -158,7 +158,7 @@ describe("ContactsForm component", () => {
     },
     async () => {
       render(
-        <ContactsForm
+        <ContactForm
           schema={contactsSchema}
           uiSchema={contactsUiSchema}
           formData={{}}
