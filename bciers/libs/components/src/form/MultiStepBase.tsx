@@ -31,6 +31,9 @@ interface MultiStepFormProps {
   uiSchema: UiSchema;
 }
 
+// Modified MultiStepFormBase meant to facilitate more modularized Multi-step forms
+// The main difference will be passing in a regular, non-nested schema as well as
+// a number for the current step and a list of steps
 const MultiStepBase = ({
   allowBackNavigation,
   allowEdit = false,
