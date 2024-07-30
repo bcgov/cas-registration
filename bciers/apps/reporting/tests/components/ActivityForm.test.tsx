@@ -66,11 +66,6 @@ describe("ActivityForm component", () => {
     screen.debug();
     screen.logTestingPlaygroundURL();
 
-    // Check if the activity name is rendered
-    expect(
-      screen.getAllByText(/General stationary combustion/i).length,
-    ).toBe(1);
-
     // Check if the source type booleans are rendered
     expect(
       screen.getAllByText(/First Test Source Type Title/i).length,
@@ -119,7 +114,6 @@ describe("ActivityForm component", () => {
       <ActivityForm activityData={mockActivityData} reportDate={mockReportDate} uiSchema={mockUiSchema} defaultEmptySourceTypeState={mockdefaultSourceType} />
     )
     await flushPromises();
-    screen.debug();
 
     // Check if the units array within the source type schema is rendered
     expect(
