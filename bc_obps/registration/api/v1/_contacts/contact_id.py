@@ -19,6 +19,7 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
     tags=CONTACT_TAGS,
     description="""Retrieves the details of a specific contact by its ID. The endpoint checks if the current user is authorized to access the contact.
     Industry users can only access contacts that are associated with their own operator. If an unauthorized user attempts to access the contact, an error is raised.""",
+    exclude_none=True,  # To exclude None values from the response(used for address fields)
 )
 @authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles())
 @handle_http_errors()
