@@ -20,6 +20,7 @@ const OperationInformationForm = ({
 }: OperationInformationFormProps) => {
   return (
     <MultiStepBase
+      allowBackNavigation
       baseUrl={`/operation/${operation}`}
       baseUrlParams="title=Placeholder+Title"
       cancelUrl="/"

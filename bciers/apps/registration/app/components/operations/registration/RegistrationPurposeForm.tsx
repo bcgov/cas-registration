@@ -20,6 +20,8 @@ const RegistrationPurposeForm = ({
 }: RegistrationPurposeFormProps) => {
   return (
     <MultiStepBase
+      // Uncomment this if this page changes to page 2 - no need for disabled back button on page 1 of form
+      // allowBackNavigation
       baseUrl={`/operation/${operation}`}
       baseUrlParams="title=Placeholder+Title"
       cancelUrl="/"

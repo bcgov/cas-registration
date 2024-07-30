@@ -20,6 +20,7 @@ const NewEntrantOperationForm = ({
 }: NewEntrantOperationFormProps) => {
   return (
     <MultiStepBase
+      allowBackNavigation
       baseUrl={`/operation/${operation}`}
       baseUrlParams="title=Placeholder+Title"
       cancelUrl="/"
