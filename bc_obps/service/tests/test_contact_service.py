@@ -216,3 +216,41 @@ class TestContactService:
         assert contact.phone_number == contact_payload.phone_number
         assert contact.position_title == contact_payload.position_title
         assert contact.address is None
+
+    @staticmethod
+    def test_update_contact_update_address():  # Update address fields only
+        address = address_baker()
+        contact = contact_baker(address=address)  # Contact with address
+        operator = operator_baker()
+        operator.contacts.set([contact])
+        user = baker.make(User, app_role=AppRole.objects.get(role_name="industry_user"))
+        user_operator_baker(
+            {
+                "user": user,
+                "operator": operator,
+                "status": UserOperator.Statuses.APPROVED,
+                "role": UserOperator.Roles.ADMIN,
+            }
+        )
+        contact_payload = ContactIn(
+            first_name="John",
+            last_name="Doe",
+            email="john.doe@example.com",
+            phone_number="+16044011234",
+            position_title="Mr.Tester",
+            street_address=None,  # Remove street address
+            municipality=address.municipality,
+            province=address.province,
+            postal_code=address.postal_code,
+        )
+        ContactService.update_contact(user.user_guid, contact.id, contact_payload)
+        contact.refresh_from_db()
+        assert contact.first_name == contact_payload.first_name
+        assert contact.last_name == contact_payload.last_name
+        assert contact.email == contact_payload.email
+        assert contact.phone_number == contact_payload.phone_number
+        assert contact.position_title == contact_payload.position_title
+        assert contact.address.street_address is None
+        assert contact.address.municipality == contact_payload.municipality
+        assert contact.address.province == contact_payload.province
+        assert contact.address.postal_code == contact_payload.postal_code
