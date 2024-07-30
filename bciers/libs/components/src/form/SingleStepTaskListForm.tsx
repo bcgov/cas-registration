@@ -22,6 +22,7 @@ interface SingleStepTaskListFormProps {
   error?: string;
   inlineMessage?: React.ReactNode;
   mode?: FormMode;
+  allowEdit?: boolean;
 }
 
 const SingleStepTaskListForm = ({
@@ -35,6 +36,7 @@ const SingleStepTaskListForm = ({
   error,
   inlineMessage,
   mode = FormMode.CREATE,
+  allowEdit = true,
 }: SingleStepTaskListFormProps) => {
   const hasFormData = Object.keys(rawFormData).length > 0;
   const formData = hasFormData ? createNestedFormData(rawFormData, schema) : {};
@@ -174,20 +176,28 @@ const SingleStepTaskListForm = ({
             {error && <Alert severity="error">{error}</Alert>}
           </div>
           <div className="w-full flex justify-end mt-8">
-            {isDisabled ? (
-              <Button
-                variant="contained"
-                onClick={() => {
-                  setIsDisabled(false);
-                  setIsSnackbarOpen(false);
-                }}
-              >
-                Edit
-              </Button>
-            ) : (
-              <Button variant="contained" type="submit" disabled={isSubmitting}>
-                Submit
-              </Button>
+            {allowEdit && (
+              <div>
+                {isDisabled ? (
+                  <Button
+                    variant="contained"
+                    onClick={() => {
+                      setIsDisabled(false);
+                      setIsSnackbarOpen(false);
+                    }}
+                  >
+                    Edit
+                  </Button>
+                ) : (
+                  <Button
+                    variant="contained"
+                    type="submit"
+                    disabled={isSubmitting}
+                  >
+                    Submit
+                  </Button>
+                )}
+              </div>
             )}
             <Button
               className="ml-4"

@@ -411,4 +411,18 @@ describe("the SingleStepTaskListForm component", () => {
       screen.getByText("Name: Facility with this Name already exists"),
     ).toBeVisible();
   });
+  it("should not render Edit/Submit button when allowEdit is false", () => {
+    render(
+      <SingleStepTaskListForm
+        schema={schema}
+        uiSchema={uiSchema}
+        formData={{}}
+        onCancel={() => console.log("cancel")}
+        onSubmit={async (e) => console.log("submit", e)}
+        allowEdit={false}
+      />,
+    );
+    expect(screen.queryByRole("button", { name: "Edit" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "Submit" })).toBeNull();
+  });
 });
