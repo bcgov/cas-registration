@@ -7,7 +7,7 @@ from typing import List, Optional
 class FacilityListOut(ModelSchema):
     class Meta:
         model = Facility
-        model_fields = ['id', 'name', 'is_current_year', 'starting_date', 'type', 'bcghg_id']
+        fields = ['id', 'name', 'is_current_year', 'starting_date', 'type', 'bcghg_id']
 
 
 class FacilityFilterSchema(FilterSchema):

@@ -50,6 +50,7 @@ const section1: RJSFSchema = {
           starting_date: {
             type: "string",
             title: "Date of facility starting operations:",
+            format: "starting_date",
           },
         },
         required: ["starting_date"],
