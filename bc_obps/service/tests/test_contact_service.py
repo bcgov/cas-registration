@@ -3,6 +3,7 @@ from registration.schema.v1.contact import ContactIn
 import pytest
 from registration.models.app_role import AppRole
 from registration.tests.utils.bakers import (
+    address_baker,
     contact_baker,
     user_operator_baker,
 )
@@ -95,3 +96,123 @@ class TestContactService:
         assert (
             created_contact.address.street_address == contact_payload.street_address
         )  # address is created and associated with the contact
+
+    @staticmethod
+    def test_update_contact_unauthorized_industry_admin_user():
+        contact = contact_baker()
+        operator = operator_baker()
+        user = baker.make(User, app_role=AppRole.objects.get(role_name="industry_user"))
+        user_operator_baker(
+            {
+                "user": user,
+                "operator": operator,
+                "status": UserOperator.Statuses.APPROVED,
+                "role": UserOperator.Roles.ADMIN,
+            }
+        )
+        contact_payload = ContactIn(
+            first_name="John",
+            last_name="Doe",
+            email="john.doe@example.com",
+            phone_number="+16044011234",
+            position_title="Mr.Tester",
+        )
+        with pytest.raises(Exception, match=UNAUTHORIZED_MESSAGE):
+            ContactService.update_contact(user.user_guid, contact.id, contact_payload)
+
+    @staticmethod
+    def test_update_contact_without_address():
+        contact = contact_baker()  # Contact with no address
+        operator = operator_baker()
+        operator.contacts.set([contact])
+        user = baker.make(User, app_role=AppRole.objects.get(role_name="industry_user"))
+        user_operator_baker(
+            {
+                "user": user,
+                "operator": operator,
+                "status": UserOperator.Statuses.APPROVED,
+                "role": UserOperator.Roles.ADMIN,
+            }
+        )
+        contact_payload = ContactIn(
+            first_name="John",
+            last_name="Doe",
+            email="john.doe@example.com",
+            phone_number="+16044011234",
+            position_title="Mr.Tester",
+        )
+        ContactService.update_contact(user.user_guid, contact.id, contact_payload)
+        contact.refresh_from_db()
+        assert contact.first_name == contact_payload.first_name
+        assert contact.last_name == contact_payload.last_name
+        assert contact.email == contact_payload.email
+        assert contact.phone_number == contact_payload.phone_number
+        assert contact.position_title == contact_payload.position_title
+        assert contact.address is None
+
+    @staticmethod
+    def test_update_contact_with_address():
+        contact = contact_baker()  # Contact with no address
+        operator = operator_baker()
+        operator.contacts.set([contact])
+        user = baker.make(User, app_role=AppRole.objects.get(role_name="industry_user"))
+        user_operator_baker(
+            {
+                "user": user,
+                "operator": operator,
+                "status": UserOperator.Statuses.APPROVED,
+                "role": UserOperator.Roles.ADMIN,
+            }
+        )
+        contact_payload = ContactIn(
+            first_name="John",
+            last_name="Doe",
+            email="john.doe@example.com",
+            phone_number="+16044011234",
+            position_title="Mr.Tester",
+            street_address="1234 Test St",
+            municipality="Test City",
+            province="ON",
+            postal_code="T3S T1N",
+        )
+        ContactService.update_contact(user.user_guid, contact.id, contact_payload)
+        contact.refresh_from_db()
+        assert contact.first_name == contact_payload.first_name
+        assert contact.last_name == contact_payload.last_name
+        assert contact.email == contact_payload.email
+        assert contact.phone_number == contact_payload.phone_number
+        assert contact.position_title == contact_payload.position_title
+        assert contact.address.street_address == contact_payload.street_address
+        assert contact.address.municipality == contact_payload.municipality
+        assert contact.address.province == contact_payload.province
+        assert contact.address.postal_code == contact_payload.postal_code
+
+    @staticmethod
+    def test_update_contact_remove_address():
+        contact = contact_baker(address=address_baker())  # Contact with address
+        operator = operator_baker()
+        operator.contacts.set([contact])
+        user = baker.make(User, app_role=AppRole.objects.get(role_name="industry_user"))
+        user_operator_baker(
+            {
+                "user": user,
+                "operator": operator,
+                "status": UserOperator.Statuses.APPROVED,
+                "role": UserOperator.Roles.ADMIN,
+            }
+        )
+        contact_payload = ContactIn(
+            first_name="John",
+            last_name="Doe",
+            email="john.doe@example.com",
+            phone_number="+16044011234",
+            position_title="Mr.Tester",
+        )
+        ContactService.update_contact(user.user_guid, contact.id, contact_payload)
+        contact.refresh_from_db()
+        assert contact.first_name == contact_payload.first_name
+        assert contact.last_name == contact_payload.last_name
+        assert contact.email == contact_payload.email
+        assert contact.phone_number == contact_payload.phone_number
+        assert contact.position_title == contact_payload.position_title
+        assert contact.address is None
