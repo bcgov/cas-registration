@@ -21,6 +21,7 @@ const OperationRepresentativeForm = ({
 }: OperationRepresentativeFormProps) => {
   return (
     <MultiStepBase
+      allowBackNavigation
       baseUrl={`/operation/${operation}`}
       baseUrlParams="title=Placeholder+Title"
       cancelUrl="/"

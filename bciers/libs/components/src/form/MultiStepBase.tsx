@@ -10,7 +10,7 @@ import MultiStepHeader from "./components/MultiStepHeader";
 import MultiStepButtons from "./components/MultiStepButtons";
 import { IChangeEvent } from "@rjsf/core";
 
-interface MultiStepFormProps {
+interface MultiStepBaseProps {
   allowBackNavigation?: boolean;
   allowEdit?: boolean;
   baseUrl: string;
@@ -52,7 +52,7 @@ const MultiStepBase = ({
   steps,
   submitButtonText,
   uiSchema,
-}: MultiStepFormProps) => {
+}: MultiStepBaseProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const router = useRouter();
@@ -73,6 +73,7 @@ const MultiStepBase = ({
       const nextStepUrl = `${baseUrl}/${step + 1}${
         baseUrlParams ? `?${baseUrlParams}` : ""
       }`;
+
       router.push(nextStepUrl);
     }
   };
