@@ -18,6 +18,7 @@ export interface ContactsSearchParams {
 }
 
 export interface ContactFormData {
+  id?: number;
   selected_user?: UUID;
   first_name?: string;
   last_name?: string;

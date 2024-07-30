@@ -5,9 +5,11 @@ import { ContactFormData, UserOperatorUser } from "./types";
 import getUserOperatorUsers from "./getUserOperatorUsers";
 import { createContactSchema } from "./createContactSchema";
 import Note from "@bciers/components/layout/Note";
+import { auth } from "@/dashboard/auth";
+import { FrontEndRoles } from "@bciers/utils/enums";
 
 // 🧩 Main component
-export default async function Contact({
+export default async function ContactPage({
   contactId,
 }: Readonly<{ contactId?: string }>) {
   let contactFormData: ContactFormData | { error: string } = {};
@@ -43,6 +45,10 @@ export default async function Contact({
     ? "Once added, this new contact can be selected wherever needed or applicable."
     : "View or update information of this contact here.";
 
+  // To get the user's role from the session
+  const session = await auth();
+  const role = session?.user?.app_role ?? "";
+
   return (
     <>
       <Note>
@@ -57,6 +63,7 @@ export default async function Contact({
         uiSchema={contactsUiSchema}
         formData={contactFormData}
         isCreating={isCreating}
+        allowEdit={role === FrontEndRoles.INDUSTRY_USER_ADMIN}
       />
     </>
   );

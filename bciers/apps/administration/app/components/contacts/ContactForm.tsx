@@ -15,6 +15,7 @@ interface Props {
   uiSchema: any;
   formData: ContactFormData;
   isCreating?: boolean;
+  allowEdit?: boolean;
 }
 
 export default function ContactForm({
@@ -22,6 +23,7 @@ export default function ContactForm({
   schema,
   uiSchema,
   isCreating,
+  allowEdit,
 }: Readonly<Props>) {
   const router = useRouter();
   const [error, setError] = useState(undefined);
@@ -47,11 +49,11 @@ export default function ContactForm({
     <SingleStepTaskListForm
       key={key}
       error={error}
-      disabled={!isCreating}
       schema={schema}
       uiSchema={uiSchema}
       formData={formState}
       mode={isCreating ? FormMode.CREATE : FormMode.READ_ONLY}
+      allowEdit={allowEdit}
       inlineMessage={
         isCreating && (
           <>
@@ -62,8 +64,12 @@ export default function ContactForm({
       }
       onSubmit={async (data: { formData?: any }) => {
         const method = isCreating ? "POST" : "PUT";
-        const endpoint = isCreating ? "registration/contacts" : `tbd`;
-        const pathToRevalidate = endpoint; // for now the endpoint is the same as the path to revalidate
+        const endpoint = isCreating
+          ? "registration/contacts"
+          : `registration/contacts/${formData.id}`;
+        const pathToRevalidate = isCreating
+          ? "/contacts"
+          : `/contacts/${formData.id}`;
         const body = {
           ...data.formData,
         };
@@ -79,9 +85,6 @@ export default function ContactForm({
           setError(response.error);
           // return error so SingleStepTaskList can re-enable the submit button and user can attempt to submit again
           return { error: response.error };
-        }
-        if (isCreating) {
-          router.replace(`/contacts/${response.id}`);
         }
       }}
       onChange={(e: IChangeEvent) => {
