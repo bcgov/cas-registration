@@ -2,8 +2,6 @@ export const endpointAllowList = [
   "registration/user/user-app-role",
   "registration/user-operators/current/is-current-user-approved-admin",
   "registration/user/user-profile",
-  "reporting/build-form-schema",
-  "reporting/get-initial-activity-data"
 ];
 
 // 🛠️ Function to get the last non-empty segment as a UUID from an endpoint URL

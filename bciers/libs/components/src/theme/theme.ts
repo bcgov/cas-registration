@@ -12,7 +12,7 @@ import {
   BC_GOV_SEMANTICS_RED,
   BC_GOV_SEMANTICS_GREEN,
   DARK_GREY_BG_COLOR,
-  WHITE
+  WHITE,
 } from "@bciers/styles";
 import "@bcgov/bc-sans/css/BCSans.css";
 export const theme = createTheme({
