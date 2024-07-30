@@ -11,6 +11,7 @@ class ReportingActivityModelTest(BaseTestCase):
             ("applicable_to", "applicable to", None, None),
             ("operations", "operation", None, None),
             ("configuration_elements", "configuration element", None, None),
+            ("reportactivity_records", "report activity", None, 0),
         ]
         cls.test_object = ReportingActivity.objects.create(
             name="test activity",

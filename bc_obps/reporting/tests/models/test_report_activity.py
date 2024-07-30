@@ -1,26 +1,24 @@
 from common.tests.utils.helpers import BaseTestCase
-from registration.models import ReportingActivity, RegulatedProduct
+from registration.tests.constants import TIMESTAMP_COMMON_FIELDS
+from reporting.models.activity_json_schema import ActivityJsonSchema
 from reporting.models.report_activity import ReportActivity
 from reporting.tests.utils.bakers import report_version_baker
+from reporting.tests.utils.constants import REPORT_DATA_MODELS_COMMON_FIELDS
 
 
 class ReportActivityModelTest(BaseTestCase):
     @classmethod
     def setUpTestData(cls):
         cls.test_object = ReportActivity.objects.create(
-            facility_name="Test Facility 1",
-            facility_type="SFO",
-            facility_bcghgid="this is a non-conforming bcghgid",
             report_version=report_version_baker(),
+            json_data="{'test': 1}",
+            activity_base_schema=ActivityJsonSchema.objects.first(),
+            activity=ActivityJsonSchema.objects.first().reporting_activity,
         )
-        cls.test_object.activities.add(ReportingActivity.objects.first())
-        cls.test_object.products.add(RegulatedProduct.objects.first())
         cls.field_data = [
-            ("id", "ID", None, None),
-            ("report_version", "report version", None, None),
-            ("facility_name", "facility name", 1000, None),
-            ("facility_type", "facility type", 1000, None),
-            ("facility_bcghgid", "facility bcghgid", 1000, None),
-            ("activities", "activities", None, 1),
-            ("products", "products", None, 1),
+            *TIMESTAMP_COMMON_FIELDS,
+            *REPORT_DATA_MODELS_COMMON_FIELDS,
+            ("activity_base_schema", "activity base schema", None, None),
+            ("activity", "activity", None, None),
+            ("reportsourcetype_records", "report source type", None, 0),
         ]
