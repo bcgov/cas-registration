@@ -11,7 +11,7 @@ import ActionCellFactory from "@bciers/components/datagrid/cells/ActionCellFacto
 import { GridRenderCellParams } from "@mui/x-data-grid";
 
 import { useSearchParams } from "next/navigation";
-const FacilityDataGrid = ({
+const FacilitiesDataGrid = ({
   operationId,
   initialData,
 }: {
@@ -55,4 +55,4 @@ const FacilityDataGrid = ({
   );
 };
 
-export default FacilityDataGrid;
+export default FacilitiesDataGrid;
