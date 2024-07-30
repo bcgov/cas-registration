@@ -265,6 +265,7 @@ describe("FacilitiesForm component", () => {
     );
     act(() => {
       year.click();
+      submitButton.click();
     });
     expect(screen.getAllByText(/Required field/i)).toHaveLength(5);
   });
@@ -289,15 +290,57 @@ describe("FacilitiesForm component", () => {
     expect(screen.getAllByText(/Format should be A1A 1A1/i)).toHaveLength(1);
     expect(screen.getAllByText(/must be >= -90/i)).toHaveLength(1);
     expect(screen.getAllByText(/must be <= 180/i)).toHaveLength(1);
+  });
 
-    //check starting date required when year is clicked
-    const year = screen.getByLabelText(
-      /Did this facility begin operations in+/i,
+  // created this starting datetest to get around form without edit fields in the last test
+  it("does not allow LFO submission if there is a starting date validation error", async () => {
+    render(
+      <FacilitiesForm
+        schema={facilitiesSchemaLfo}
+        uiSchema={facilitiesUiSchema}
+        formData={{}}
+        isCreating
+      />,
     );
-    act(() => {
-      year.click();
-    });
-    expect(screen.getAllByText(/Required field/i)).toHaveLength(3);
+
+    // fill name
+    await userEvent.type(screen.getByLabelText(/Facility Name+/i), "test");
+
+    // fill type
+    const comboBoxInput = screen.getAllByRole(
+      "combobox",
+    )[0] as HTMLInputElement;
+    const openComboboxButton = comboBoxInput?.parentElement?.children[1]
+      ?.children[0] as HTMLInputElement;
+    await userEvent.click(openComboboxButton);
+    const typeOption = screen.getByText("Large Facility");
+    await userEvent.click(typeOption);
+
+    // fill year and starting date with wrong info
+    const year = screen.getByLabelText(/Did this facility begin operations+/i);
+    await userEvent.click(year);
+    await userEvent.type(
+      screen.getByLabelText(/Date of facility starting operations+/i),
+      "20200101",
+    );
+
+    // fill lat and long
+    fireEvent.change(
+      screen.getByLabelText(/Latitude of Largest Point of Emissions+/i),
+      { target: { value: 3 } },
+    );
+    fireEvent.change(
+      screen.getByLabelText(/Longitude of Largest Point of Emissions+/i),
+      { target: { value: 6 } },
+    );
+
+    const submitButton = screen.getByRole("button", { name: "Submit" });
+    fireEvent.click(submitButton);
+
+    // expect to see validation error for starting date
+    expect(screen.getAllByText(/Starting Date must be between/i)).toHaveLength(
+      1,
+    );
   });
 
   it("fills the mandatory form fields, creates new SFO facility, and redirects on success", async () => {
@@ -332,7 +375,7 @@ describe("FacilitiesForm component", () => {
     await userEvent.click(year);
     await userEvent.type(
       screen.getByLabelText(/Date of facility starting operations+/i),
-      "20250101",
+      "20240101",
     );
 
     // fill lat and long (userEvent.type doesn't work because the value goes in as a string and lat/long require a number)
@@ -355,7 +398,6 @@ describe("FacilitiesForm component", () => {
       );
     });
   });
-
   it("fills all form fields, creates new LFO facility, and redirects on success", async () => {
     render(
       <FacilitiesForm
@@ -392,7 +434,7 @@ describe("FacilitiesForm component", () => {
     await userEvent.click(year);
     await userEvent.type(
       screen.getByLabelText(/Date of facility starting operations+/i),
-      "20250101",
+      "20240101",
     );
 
     await userEvent.type(screen.getByLabelText(/Street address+/i), "address");
@@ -428,7 +470,7 @@ describe("FacilitiesForm component", () => {
     ).toBeChecked();
     expect(
       screen.getByLabelText(/Date of facility starting operations+/i),
-    ).toHaveValue("2025-01-01");
+    ).toHaveValue("2024-01-01");
     expect(screen.getByLabelText(/Street address+/i)).toHaveValue("address");
     expect(screen.getByLabelText(/Municipality+/i)).toHaveValue("city");
     expect(screen.getByLabelText(/Province+/i)).toHaveValue("Alberta");
