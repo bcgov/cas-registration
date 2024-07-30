@@ -23,7 +23,7 @@ const OperationRegistrationPage = async ({
   operation: UUID | "create";
   searchParams: FacilitiesSearchParams;
 }) => {
-  // const isNewEntrantOperation = operationFormData?.is_new_entrant_operation;
+  // const isNewEntrantOperation = operationFormData?.type === "New Entrant Operation";
   const isNewEntrantOperation = true;
 
   // New entrant operations have an additional page
