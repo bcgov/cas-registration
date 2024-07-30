@@ -17,7 +17,7 @@ interface Props {
   isCreating?: boolean;
 }
 
-export default function ContactsForm({
+export default function ContactForm({
   formData,
   schema,
   uiSchema,
