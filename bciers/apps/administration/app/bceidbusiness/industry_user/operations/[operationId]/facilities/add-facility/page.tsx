@@ -1,10 +1,10 @@
 import { UUID } from "crypto";
-import Facility from "@/administration/app/components/facilities/Facility";
+import FacilityPage from "@/administration/app/components/facilities/FacilityPage";
 
 export default function Page({
   params,
 }: {
   params: Readonly<{ operationId: UUID }>;
 }) {
-  return <Facility operationId={params.operationId} />;
+  return <FacilityPage operationId={params.operationId} />;
 }

@@ -1,5 +1,5 @@
 import { FacilityRow, FacilitiesSearchParams } from "./types";
-import FacilityDataGrid from "./FacilityDataGrid";
+import FacilityDataGrid from "./FacilitiesDataGrid";
 import fetchFacilitiesPageData from "./fetchFacilitiesPageData";
 
 // 🧩 Main component
