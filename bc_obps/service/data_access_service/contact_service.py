@@ -3,6 +3,7 @@ from uuid import UUID
 from registration.models import BusinessRole, Contact
 from django.db.models import QuerySet
 from registration.models.user import User
+from service.data_access_service.user_service import UserDataAccessService
 from service.user_operator_service import UserOperatorService
 
 
@@ -39,3 +40,9 @@ class ContactDataAccessService:
             # fetching all contacts associated with the user's operator
             user_operator = UserOperatorService.get_current_user_approved_user_operator_or_raise(user)
             return user_operator.operator.contacts.all()
+
+    @classmethod
+    def user_has_access(cls, user_guid: UUID, contact_id: int) -> bool:
+        user = UserDataAccessService.get_by_guid(user_guid)
+        user_operator = UserOperatorService.get_current_user_approved_user_operator_or_raise(user)
+        return user_operator.operator.contacts.filter(id=contact_id).exists()
