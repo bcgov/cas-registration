@@ -4,6 +4,7 @@ import FacilityInformationForm from "apps/registration/app/components/operations
 import { facilityInformationSchema } from "apps/registration/app/data/jsonSchema/operationRegistration/facilityInformation";
 import { facilitiesSchemaLfo } from "apps/administration/app/data/jsonSchema/facilitiesLfo";
 import { RJSFSchema } from "@rjsf/utils";
+import { FacilitiesSearchParams } from "apps/administration/app/components/facilities/types";
 
 // 🛠️ Function to create a facility information schema with updated enum values
 export const createFacilityInformationSchema = (
@@ -24,6 +25,7 @@ const FacilityInformationPage = ({
   steps,
 }: {
   operation: UUID | "create";
+  searchParams: FacilitiesSearchParams;
   step: number;
   steps: string[];
 }) => {

@@ -14,7 +14,6 @@ export const createRegistrationPurposeSchema = (
   }[],
 ) => {
   const localSchema = JSON.parse(JSON.stringify(schema));
-  console.log(localSchema);
 
   const regulatedProductsSchema =
     localSchema.dependencies.registration_purpose.allOf[0].then.properties

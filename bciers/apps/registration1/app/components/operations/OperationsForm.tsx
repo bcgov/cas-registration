@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import MultiStepFormBase from "@bciers/components/form/MultiStepFormBase";
+import MultiStepFormBase from "apps/registration1/app/components/operations/MultiStepFormBase";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { actionHandler } from "@bciers/actions";
