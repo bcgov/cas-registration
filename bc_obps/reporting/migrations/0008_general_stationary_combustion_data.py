@@ -1613,8 +1613,10 @@ def reverse_init_configuration_element_reporting_fields_data(apps, schema_monito
     ReportingActivity = apps.get_model('registration', 'ReportingActivity')
 
     ConfigurationElement.reporting_fields.through.objects.filter(
-      configurationelement_id__in=ConfigurationElement.objects.filter(
-        reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id).values_list('id', flat=True)).delete()
+        configurationelement_id__in=ConfigurationElement.objects.filter(
+            reporting_activity_id=ReportingActivity.objects.get(name='General stationary combustion').id
+        ).values_list('id', flat=True)
+    ).delete()
 
 
 #### SCHEMA DATA ####

@@ -1,4 +1,4 @@
-import { render, screen, act, waitFor} from "@testing-library/react";
+import { render, screen, act, waitFor } from "@testing-library/react";
 import { describe, expect, vi, it, beforeEach } from "vitest";
 import ActivityForm from "@reporting/src/app/components/activities/ActivityForm";
 import { actionHandler } from "@bciers/testConfig/mocks";
@@ -7,30 +7,30 @@ import { actionHandler } from "@bciers/testConfig/mocks";
 const mockActivityData = {
   activityId: 1,
   sourceTypeMap: {
-    1: 'firstTestSourceType',
-    2: 'secondTestSourceType'
-  }
+    1: "firstTestSourceType",
+    2: "secondTestSourceType",
+  },
 };
 
-const mockReportDate = '2024-01-01';
+const mockReportDate = "2024-01-01";
 
 const mockUiSchema = {
   "ui:classNames": "form-heading-label",
   firstTestSourceType: {
     "ui:widget": "CheckboxWidget",
     "ui:options": {
-      label: false
-    }
+      label: false,
+    },
   },
   secondTestSourceType: {
     "ui:widget": "CheckboxWidget",
     "ui:options": {
-      label: false
-    }
-  }
+      label: false,
+    },
+  },
 };
 
-const mockdefaultSourceType = {units: [{ fuels: [{ emissions: [{}] }] }]};
+const mockdefaultSourceType = { units: [{ fuels: [{ emissions: [{}] }] }] };
 
 const response = {
   schema: {
@@ -39,18 +39,17 @@ const response = {
     properties: {
       firstTestSourceType: {
         type: "boolean",
-        title: "First Test Source Type Title"
+        title: "First Test Source Type Title",
       },
       secondTestSourceType: {
         type: "boolean",
-        title: "Second Title"
+        title: "Second Title",
       },
-    }
-  }
-}
+    },
+  },
+};
 
-
-const flushPromises = () => new Promise(resolve => setTimeout(resolve, 0));
+const flushPromises = () => new Promise((resolve) => setTimeout(resolve, 0));
 
 describe("ActivityForm component", () => {
   beforeEach(() => {
@@ -60,19 +59,20 @@ describe("ActivityForm component", () => {
   it("renders the activity schema", async () => {
     actionHandler.mockReturnValueOnce(JSON.stringify(response));
     render(
-      <ActivityForm activityData={mockActivityData} reportDate={mockReportDate} uiSchema={mockUiSchema} defaultEmptySourceTypeState={mockdefaultSourceType} />
-    )
+      <ActivityForm
+        activityData={mockActivityData}
+        reportDate={mockReportDate}
+        uiSchema={mockUiSchema}
+        defaultEmptySourceTypeState={mockdefaultSourceType}
+      />,
+    );
     await flushPromises();
     screen.debug();
     screen.logTestingPlaygroundURL();
 
     // Check if the source type booleans are rendered
-    expect(
-      screen.getAllByText(/First Test Source Type Title/i).length,
-    ).toBe(1);
-    expect(
-      screen.getAllByText(/Second Title/i).length,
-    ).toBe(1);
+    expect(screen.getAllByText(/First Test Source Type Title/i).length).toBe(1);
+    expect(screen.getAllByText(/Second Title/i).length).toBe(1);
   });
   it("renders the sourceType schema", async () => {
     const response = {
@@ -82,11 +82,11 @@ describe("ActivityForm component", () => {
         properties: {
           firstTestSourceType: {
             type: "boolean",
-            title: "First Test Source Type Title"
+            title: "First Test Source Type Title",
           },
           secondTestSourceType: {
             type: "boolean",
-            title: "Second Title"
+            title: "Second Title",
           },
           sourceTypes: {
             type: "object",
@@ -99,26 +99,29 @@ describe("ActivityForm component", () => {
                   properties: {
                     test: {
                       type: "string",
-                      title: "test field"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
+                      title: "test field",
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    };
     actionHandler.mockReturnValueOnce(JSON.stringify(response));
     render(
-      <ActivityForm activityData={mockActivityData} reportDate={mockReportDate} uiSchema={mockUiSchema} defaultEmptySourceTypeState={mockdefaultSourceType} />
-    )
+      <ActivityForm
+        activityData={mockActivityData}
+        reportDate={mockReportDate}
+        uiSchema={mockUiSchema}
+        defaultEmptySourceTypeState={mockdefaultSourceType}
+      />,
+    );
     await flushPromises();
 
     // Check if the units array within the source type schema is rendered
-    expect(
-      screen.getAllByText(/Unit/i).length,
-    ).toBe(1);
+    expect(screen.getAllByText(/Unit/i).length).toBe(1);
   });
 
   // Will need additional tests once we're passing formData into this component & saving formData out of it

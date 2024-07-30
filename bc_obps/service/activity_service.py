@@ -1,7 +1,7 @@
 import json
 from reporting.models import Configuration, ConfigurationElement
 from registration.models import ReportingActivity
-from typing import List, Any
+
 
 class ActivityService:
     @classmethod

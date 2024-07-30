@@ -8,7 +8,7 @@ import { FieldTemplateProps } from "@rjsf/utils";
 function BasicFieldTemplate({
   classNames,
   style,
-  children
+  children,
 }: FieldTemplateProps) {
   return (
     <div style={style} className={`w-full mb-4 md:mb-2 ${classNames}`}>

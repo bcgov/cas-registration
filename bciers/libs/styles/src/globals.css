@@ -44,7 +44,7 @@
   .link-button-blue {
     @apply w-fit no-underline text-lg text-white py-[6px] px-[16px] rounded flex items-center bg-bc-primary-blue;
   }
-  .emission-array-header{
+  .emission-array-header {
     @apply text-base py-2 w-full font-bold text-bc-bg-blue;
   }
 }

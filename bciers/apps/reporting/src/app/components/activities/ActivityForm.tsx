@@ -91,7 +91,7 @@ export default function ActivityForm({
   }
 
   useEffect(() => {
-    let isFetching = true
+    let isFetching = true;
     const fetchSchemaData = async (
       selectedSourceTypes: string,
       selectedKeys: number[],
@@ -124,7 +124,9 @@ export default function ActivityForm({
     }
 
     fetchSchemaData(selectedSourceTypes, selectedKeys);
-    return () => {isFetching = false};
+    return () => {
+      isFetching = false;
+    };
   }, dependencyArray);
 
   const customFormats = {
