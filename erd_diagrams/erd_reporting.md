@@ -189,7 +189,7 @@ ReportEmission {
     ForeignKey report_version
     ForeignKey gas_type
     ForeignKey report_source_type
-    ForeignKey fuel_form_data
+    ForeignKey report_fuel
 }
 ReportMethodology {
     BigAutoField id
@@ -271,7 +271,7 @@ ReportEmission }|--|| User : archived_by
 ReportEmission }|--|| ReportVersion : report_version
 ReportEmission }|--|| GasType : gas_type
 ReportEmission }|--|| ReportSourceType : report_source_type
-ReportEmission }|--|| ReportFuel : fuel_form_data
+ReportEmission }|--|| ReportFuel : report_fuel
 ReportMethodology }|--|| User : created_by
 ReportMethodology }|--|| User : updated_by
 ReportMethodology }|--|| User : archived_by

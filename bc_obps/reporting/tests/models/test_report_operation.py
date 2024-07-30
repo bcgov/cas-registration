@@ -1,5 +1,6 @@
 from common.tests.utils.helpers import BaseTestCase
 from registration.models import ReportingActivity, RegulatedProduct
+from registration.tests.constants import TIMESTAMP_COMMON_FIELDS
 from reporting.models import ReportOperation
 from reporting.tests.utils.bakers import report_version_baker
 
@@ -21,6 +22,7 @@ class ReportOperationModelTest(BaseTestCase):
         cls.test_object.reporting_activities.add(ReportingActivity.objects.first())
         cls.test_object.regulated_products.add(RegulatedProduct.objects.first())
         cls.field_data = [
+            *TIMESTAMP_COMMON_FIELDS,
             ("id", "ID", None, None),
             ("report_version", "report version", None, None),
             ("operator_legal_name", "operator legal name", 1000, None),
