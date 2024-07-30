@@ -14,7 +14,7 @@ function FieldTemplate({
   uiSchema,
 }: FieldTemplateProps) {
   const isLabel = uiSchema?.["ui:options"]?.label !== false;
-  const labelOverride = uiSchema?.["ui:options"]?.labelOverride
+  const labelOverride = uiSchema?.["ui:options"]?.labelOverride as string
   const labelOverrideStyle = uiSchema?.["ui:options"]?.labelOverrideStyle
 
   return (

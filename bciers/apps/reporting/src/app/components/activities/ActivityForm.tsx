@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { actionHandler } from "@bciers/actions";
 import { Alert, Button } from "@mui/material";
 import ReportingTaskList from "@bciers/components/navigation/reportingTaskList/ReportingTaskList";
+import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 
 const tasklistData: TaskListElement[] = [
   {
