@@ -10,6 +10,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         fixture_base_dir = 'registration/fixtures/mock'
+        reporting_fixture_base_dir = 'reporting/fixtures/mock'
 
         workflow_fixtures = {
             "cas_admin": [
@@ -44,6 +45,7 @@ class Command(BaseCommand):
                 f'{fixture_base_dir}/event.json',
                 f'{fixture_base_dir}/parent_operator.json',
                 f'{fixture_base_dir}/partner_operator.json',
+                f'{reporting_fixture_base_dir}/reporting_year.json',
             ]
 
         for fixture in fixtures:
