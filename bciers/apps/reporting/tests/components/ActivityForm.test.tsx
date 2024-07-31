@@ -67,8 +67,6 @@ describe("ActivityForm component", () => {
       />,
     );
     await flushPromises();
-    screen.debug();
-    screen.logTestingPlaygroundURL();
 
     // Check if the source type booleans are rendered
     expect(screen.getAllByText(/First Test Source Type Title/i).length).toBe(1);

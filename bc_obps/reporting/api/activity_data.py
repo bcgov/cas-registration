@@ -11,7 +11,7 @@ from ninja.responses import codes_4xx, codes_5xx
 
 
 @router.get(
-    "/get-initial-activity-data",
+    "/initial-activity-data",
     response={200: str, codes_4xx: Message, codes_5xx: Message},
     url_name="get_initial_activity_data",
 )

@@ -83,12 +83,7 @@ export default function ActivityForm({
   const { activityId, sourceTypeMap } = activityData;
 
   // Set useEffect dependency set from checked sourceTypes
-  const dependencyArray: string[] = [];
-  for (const value of Object.values(sourceTypeMap)) {
-    dependencyArray.push(
-      formState?.[`${value}`] ? formState?.[`${value}`] : null,
-    );
-  }
+  const dependencyArray = Object.values(sourceTypeMap).map((v) => formState?.[`${v}`] ?? null)
 
   useEffect(() => {
     let isFetching = true;
@@ -137,7 +132,6 @@ export default function ActivityForm({
   const validator = customizeValidator({ customFormats });
 
   const handleFormChange = (c: any) => {
-    console.log("IN CHANGE: ", c.formData);
     setFormState(c.formData);
   };
 
@@ -162,7 +156,7 @@ export default function ActivityForm({
 
   if (Object.keys(jsonSchema).length === 0 && jsonSchema.constructor === Object)
     return <>Loading...</>;
-  // Render the DataGrid component
+  // Render the Activity form and tasklist
   return (
     <div className="w-full flex flex-row">
       <ReportingTaskList elements={tasklistData} />
