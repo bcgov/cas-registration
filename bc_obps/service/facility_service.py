@@ -66,8 +66,8 @@ class FacilityService:
         return payload.dict(
             include={
                 'name',
-                'type',  
-                'is_current_year',
+                'type',
+                'is_current_year', 
                 'starting_date',
                 'latitude_of_largest_emissions',
                 'longitude_of_largest_emissions',
