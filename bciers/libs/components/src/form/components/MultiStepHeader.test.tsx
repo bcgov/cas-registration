@@ -4,7 +4,7 @@ import React from "react";
 import MultiStepHeader from "@bciers/components/form/components/MultiStepHeader";
 
 const defaultProps = {
-  step: 0, // steps are 0-indexed in the props but 1-indexed in the app
+  stepIndex: 0, // steps are 0-indexed in the props but 1-indexed in the app
   steps: ["step one", "step two", "step three"],
 };
 

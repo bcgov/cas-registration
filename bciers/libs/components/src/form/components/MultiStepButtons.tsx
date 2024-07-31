@@ -10,7 +10,7 @@ interface SubmitButtonProps {
   classNames?: string;
   disabled?: boolean;
   isSubmitting: boolean;
-  step: number;
+  stepIndex: number;
   steps: string[];
   allowBackNavigation?: boolean;
   submitButtonText?: string;
@@ -23,11 +23,11 @@ const SubmitButton: React.FunctionComponent<SubmitButtonProps> = ({
   classNames,
   disabled,
   isSubmitting,
-  step,
+  stepIndex,
   steps,
   submitButtonText,
 }) => {
-  const isFinalStep = step === steps.length - 1;
+  const isFinalStep = stepIndex === steps.length - 1;
   const isDisabled = disabled || isSubmitting;
   const { data: session } = useSession();
 
@@ -41,12 +41,12 @@ const SubmitButton: React.FunctionComponent<SubmitButtonProps> = ({
       )}
       <div>
         {allowBackNavigation &&
-          (step !== 0 ? (
-            <Link href={`${baseUrl}/${step}`}>
+          (stepIndex !== 0 ? (
+            <Link href={`${baseUrl}/${stepIndex}`}>
               <Button
                 variant="contained"
                 type="button"
-                disabled={step === 0}
+                disabled={stepIndex === 0}
                 className="mr-4"
               >
                 Back
@@ -60,7 +60,7 @@ const SubmitButton: React.FunctionComponent<SubmitButtonProps> = ({
         {/* When the form is editable, the form should be submitted when navigating between steps */}
         {/* When the form is not editable (e.g., IRC staff is reviewing an operation), the form should not be submitted when navigating between steps */}
         {!isFinalStep && disabled ? (
-          <Link href={`${baseUrl}/${step + 2}`}>
+          <Link href={`${baseUrl}/${stepIndex + 2}`}>
             <Button
               variant="contained"
               type="button"

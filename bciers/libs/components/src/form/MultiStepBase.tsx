@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Button } from "@mui/material";
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import { Alert } from "@mui/material";
@@ -10,33 +10,36 @@ import MultiStepHeader from "./components/MultiStepHeader";
 import MultiStepButtons from "./components/MultiStepButtons";
 import { IChangeEvent } from "@rjsf/core";
 
-interface MultiStepFormProps {
+interface MultiStepBaseProps {
   allowBackNavigation?: boolean;
   allowEdit?: boolean;
   baseUrl: string;
+  baseUrlParams?: string;
   cancelUrl: string;
   children?: React.ReactNode;
-  // Optional array to override the default header titles
-  customStepNames?: string[];
   error?: any;
   disabled?: boolean;
   formData?: any;
   onChange?: (e: IChangeEvent) => void;
-  onSubmit: any;
-  schema: any;
+  onSubmit: (e: IChangeEvent) => any;
+  schema: RJSFSchema;
+  step: number;
+  steps: string[];
   setErrorReset?: (error: undefined) => void;
-  showSubmissionStep?: boolean;
   submitButtonText?: string;
   uiSchema: UiSchema;
 }
 
-const MultiStepFormBase = ({
+// Modified MultiStepFormBase meant to facilitate more modularized Multi-step forms
+// The main difference will be passing in a regular, non-nested schema as well as
+// a number for the current step and a list of steps
+const MultiStepBase = ({
   allowBackNavigation,
   allowEdit = false,
   baseUrl,
+  baseUrlParams,
   cancelUrl,
   children,
-  customStepNames,
   disabled,
   error,
   onChange,
@@ -44,27 +47,17 @@ const MultiStepFormBase = ({
   onSubmit,
   schema,
   setErrorReset,
-  showSubmissionStep,
+  step,
+  steps,
   submitButtonText,
   uiSchema,
-}: MultiStepFormProps) => {
+}: MultiStepBaseProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
+  const router = useRouter();
+  const isNotFinalStep = step !== steps?.length;
 
-  const params = useParams();
-  const formSection = parseInt(params?.formSection as string);
-  const formSectionIndex = formSection - 1;
-
-  const schemaProperties = schema?.properties ? schema.properties : {};
-  const formSectionList = Object.keys(schema.properties as any);
-  const mapSectionTitles = formSectionList.map(
-    (section) => schemaProperties[section].title,
-  );
-
-  // Submission step is a bubble on the stepper that says "Submit"
-  const formSectionTitles = showSubmissionStep
-    ? [...mapSectionTitles, "Submission"]
-    : mapSectionTitles;
+  const stepIndex = step - 1;
 
   // Set isSubmitting to true to disable submit buttons and prevent multiple form submissions
   const submitHandler = async (data: any) => {
@@ -75,6 +68,12 @@ const MultiStepFormBase = ({
     // and allow user to attempt to re-submit the form
     if (response?.error) {
       setIsSubmitting(false);
+    } else if (isNotFinalStep) {
+      const nextStepUrl = `${baseUrl}/${step + 1}${
+        baseUrlParams ? `?${baseUrlParams}` : ""
+      }`;
+
+      router.push(nextStepUrl);
     }
   };
 
@@ -83,17 +82,6 @@ const MultiStepFormBase = ({
   const handleEditClick = () => {
     setIsEditMode(true);
   };
-
-  const isCustomStepNames = customStepNames && customStepNames.length > 0;
-
-  if (
-    isCustomStepNames &&
-    formSectionTitles.length !== customStepNames.length
-  ) {
-    throw new Error(
-      "The number of custom header titles must match the number of form sections",
-    );
-  }
 
   return (
     <>
@@ -109,16 +97,9 @@ const MultiStepFormBase = ({
           </Button>
         </div>
       )}
-      {formSectionList.length > 1 && (
-        <MultiStepHeader
-          step={formSectionIndex}
-          steps={isCustomStepNames ? customStepNames : formSectionTitles}
-        />
-      )}
+      <MultiStepHeader stepIndex={stepIndex} steps={steps} />
       <FormBase
-        schema={
-          schemaProperties[formSectionList[formSectionIndex]] as RJSFSchema
-        }
+        schema={schema}
         className="flex flex-col flex-grow"
         uiSchema={uiSchema}
         disabled={isDisabled}
@@ -136,13 +117,11 @@ const MultiStepFormBase = ({
           <MultiStepButtons
             disabled={isDisabled}
             isSubmitting={isSubmitting}
-            step={formSectionIndex}
-            steps={formSectionList}
+            stepIndex={stepIndex}
+            steps={steps}
             baseUrl={baseUrl}
             cancelUrl={cancelUrl}
-            allowBackNavigation={
-              allowBackNavigation && formSectionList.length > 1
-            }
+            allowBackNavigation={allowBackNavigation && steps.length > 1}
             submitButtonText={submitButtonText}
           />
         </div>
@@ -151,4 +130,4 @@ const MultiStepFormBase = ({
   );
 };
 
-export default MultiStepFormBase;
+export default MultiStepBase;

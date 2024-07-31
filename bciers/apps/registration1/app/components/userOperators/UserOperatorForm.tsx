@@ -10,7 +10,7 @@ import {
 } from "next/navigation";
 import { actionHandler } from "@bciers/actions";
 import { useSession } from "next-auth/react";
-import MultiStepFormBase from "@bciers/components/form/MultiStepFormBase";
+import MultiStepFormBase from "apps/registration1/app/components/form/MultiStepFormBase";
 import { UserOperatorFormData } from "@/app/components/form/formDataTypes";
 import Note from "@bciers/components/datagrid/Note";
 import { Status } from "@bciers/utils/enums";

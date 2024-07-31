@@ -54,7 +54,7 @@ export default function OperationReview({
   return (
     <Box sx={{ p: 3 }}>
       <div className="container mx-auto p-4">
-        <MultiStepHeader step={0} steps={customStepNames} />
+        <MultiStepHeader stepIndex={0} steps={customStepNames} />
       </div>
       <Grid container spacing={3}>
         <Grid item xs={12} md={3}>
