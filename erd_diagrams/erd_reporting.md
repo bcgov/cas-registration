@@ -6,6 +6,7 @@ ReportingYear {
     IntegerField reporting_year
     DateTimeField reporting_window_start
     DateTimeField reporting_window_end
+    DateTimeField report_due_date
     CharField description
 }
 Report {
