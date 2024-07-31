@@ -153,7 +153,6 @@ def facility_ownership_timeline_baker(operation_id: uuid.UUID = None, *args, **k
     return baker.make(
         FacilityOwnershipTimeline,
         operation_id=operation_id,
-        end_date='2024-01-09 14:13:08.888903-0800',  # using a hardcoded date to not face the unique constraint error of the model
         *args,
         **kwargs,
     )
