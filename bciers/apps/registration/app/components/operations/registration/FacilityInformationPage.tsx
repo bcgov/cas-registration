@@ -21,6 +21,8 @@ export const createFacilityInformationSchema = (
 
 const FacilityInformationPage = ({
   operation,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  searchParams,
   step,
   steps,
 }: {

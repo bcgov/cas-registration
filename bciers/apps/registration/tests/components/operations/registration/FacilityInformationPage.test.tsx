@@ -18,7 +18,7 @@ describe("the FacilityInformationPage component", () => {
   it("should render the FacilityInformationPage component", async () => {
     render(
       await FacilityInformationPage({
-        operation: "create",
+        operation: "002d5a9e-32a6-4191-938c-2c02bfec592d",
         searchParams: {},
         step: 2,
         steps: OperationRegistrationSteps,

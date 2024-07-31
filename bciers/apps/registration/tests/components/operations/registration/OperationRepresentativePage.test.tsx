@@ -18,7 +18,7 @@ describe("the OperationRepresentativePage component", () => {
   it("should render the OperationRepresentativePage component", async () => {
     render(
       await OperationRepresentativePage({
-        operation: "create",
+        operation: "002d5a9e-32a6-4191-938c-2c02bfec592d",
         step: 4,
         steps: OperationRegistrationSteps,
       }),
