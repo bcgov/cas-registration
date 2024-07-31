@@ -1,4 +1,4 @@
-import { render, screen, act, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { describe, expect, vi, it, beforeEach } from "vitest";
 import ActivityForm from "@reporting/src/app/components/activities/ActivityForm";
 import { actionHandler } from "@bciers/testConfig/mocks";
@@ -75,7 +75,7 @@ describe("ActivityForm component", () => {
     expect(screen.getAllByText(/Second Title/i).length).toBe(1);
   });
   it("renders the sourceType schema", async () => {
-    const response = {
+    const response2 = {
       schema: {
         type: "object",
         title: "General stationary combustion",
@@ -109,7 +109,7 @@ describe("ActivityForm component", () => {
         },
       },
     };
-    actionHandler.mockReturnValueOnce(JSON.stringify(response));
+    actionHandler.mockReturnValueOnce(JSON.stringify(response2));
     render(
       <ActivityForm
         activityData={mockActivityData}
