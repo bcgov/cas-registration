@@ -63,6 +63,7 @@ export default function ContactForm({
       allowEdit={allowEdit}
       inlineMessage={isCreating && <NewOperationMessage />}
       onSubmit={async (data: { formData?: any }) => {
+        setFormState(data.formData);
         const method = isCreating ? "POST" : "PUT";
         const endpoint = isCreating
           ? "registration/contacts"
@@ -85,6 +86,15 @@ export default function ContactForm({
           setError(response.error);
           // return error so SingleStepTaskList can re-enable the submit button and user can attempt to submit again
           return { error: response.error };
+        }
+        if (isCreating) {
+          window.history.replaceState(
+            null,
+            "",
+            `/administration/contacts/${response.id}`,
+          );
+        } else {
+          setKey(Math.random());
         }
       }}
       onChange={(e: IChangeEvent) => {
