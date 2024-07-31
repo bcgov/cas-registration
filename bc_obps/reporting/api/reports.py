@@ -63,3 +63,16 @@ def save_report(
 @handle_http_errors()
 def get_reporting_year(request: HttpRequest) -> Tuple[Literal[200], int]:
     return 200, ReportingYearService.get_current_reporting_year().reporting_year
+
+
+@router.get(
+    "/reporting-due-date",
+    response={200: str, custom_codes_4xx: Message},
+    tags=EMISSIONS_REPORT_TAGS,
+    description="""Returns the due date for the current reporting year as `[Month] [Day], [Year]`.""",
+)
+@handle_http_errors()
+def get_reporting_due_date(request: HttpRequest) -> Tuple[Literal[200], str]:
+    due_date = ReportingYearService.get_current_reporting_year().report_due_date
+    formatted_due_date = due_date.strftime("%B %d, %Y")
+    return 200, str(formatted_due_date)

@@ -14,6 +14,9 @@ class ReportingYear(BaseModel):
     reporting_window_end = models.DateTimeField(
         blank=False, null=False, db_comment="End of the reporting period for that reporting year, UTC-based"
     )
+    report_due_date = models.DateTimeField(
+        blank=False, null=False, db_comment="Due date for the annual report this year's reporting cycle, UTC-based"
+    )
 
     description = models.CharField(max_length=10000, db_comment="Description for the reporting year")
 
