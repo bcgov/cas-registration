@@ -26,7 +26,6 @@ interface MultiStepBaseProps {
   step: number;
   steps: string[];
   setErrorReset?: (error: undefined) => void;
-  showSubmissionStep?: boolean;
   submitButtonText?: string;
   uiSchema: UiSchema;
 }
@@ -98,7 +97,7 @@ const MultiStepBase = ({
           </Button>
         </div>
       )}
-      <MultiStepHeader step={stepIndex} steps={steps} />
+      <MultiStepHeader stepIndex={stepIndex} steps={steps} />
       <FormBase
         schema={schema}
         className="flex flex-col flex-grow"
@@ -118,7 +117,7 @@ const MultiStepBase = ({
           <MultiStepButtons
             disabled={isDisabled}
             isSubmitting={isSubmitting}
-            step={stepIndex}
+            stepIndex={stepIndex}
             steps={steps}
             baseUrl={baseUrl}
             cancelUrl={cancelUrl}
