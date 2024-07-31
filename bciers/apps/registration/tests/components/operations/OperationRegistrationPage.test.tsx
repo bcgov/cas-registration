@@ -28,7 +28,7 @@ describe("the OperationRegistrationPage component", () => {
     render(
       await OperationRegistrationPage({
         operation: "create",
-        formSection: 1,
+        step: 1,
         searchParams: {},
       }),
     );
@@ -42,7 +42,7 @@ describe("the OperationRegistrationPage component", () => {
     render(
       await OperationRegistrationPage({
         operation: "create",
-        formSection: 2,
+        step: 2,
         searchParams: {},
       }),
     );
@@ -55,8 +55,8 @@ describe("the OperationRegistrationPage component", () => {
   it("should render the Facility Information Form", async () => {
     render(
       await OperationRegistrationPage({
-        operation: "create",
-        formSection: 3,
+        operation: "002d5a9e-32a6-4191-938c-2c02bfec592d",
+        step: 3,
         searchParams: {},
       }),
     );
@@ -69,8 +69,8 @@ describe("the OperationRegistrationPage component", () => {
   it("should render the New Entrant Form", async () => {
     render(
       await OperationRegistrationPage({
-        operation: "create",
-        formSection: 4,
+        operation: "002d5a9e-32a6-4191-938c-2c02bfec592d",
+        step: 4,
         searchParams: {},
       }),
     );
@@ -83,8 +83,8 @@ describe("the OperationRegistrationPage component", () => {
   it("should render the Operation Representative Form", async () => {
     render(
       await OperationRegistrationPage({
-        operation: "create",
-        formSection: 5,
+        operation: "002d5a9e-32a6-4191-938c-2c02bfec592d",
+        step: 5,
         searchParams: {},
       }),
     );
@@ -97,8 +97,8 @@ describe("the OperationRegistrationPage component", () => {
   it("should render the Submission Form", async () => {
     render(
       await OperationRegistrationPage({
-        operation: "create",
-        formSection: 6,
+        operation: "002d5a9e-32a6-4191-938c-2c02bfec592d",
+        step: 6,
         searchParams: {},
       }),
     );

@@ -5,9 +5,9 @@ import { useParams } from "next/navigation";
 import { Button } from "@mui/material";
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import { Alert } from "@mui/material";
-import FormBase from "./FormBase";
-import MultiStepHeader from "./components/MultiStepHeader";
-import MultiStepButtons from "./components/MultiStepButtons";
+import FormBase from "@bciers/components/form/FormBase";
+import MultiStepHeader from "@bciers/components/form/components/MultiStepHeader";
+import MultiStepButtons from "@bciers/components/form/components/MultiStepButtons";
 import { IChangeEvent } from "@rjsf/core";
 
 interface MultiStepFormProps {
@@ -111,7 +111,7 @@ const MultiStepFormBase = ({
       )}
       {formSectionList.length > 1 && (
         <MultiStepHeader
-          step={formSectionIndex}
+          stepIndex={formSectionIndex}
           steps={isCustomStepNames ? customStepNames : formSectionTitles}
         />
       )}
@@ -136,7 +136,7 @@ const MultiStepFormBase = ({
           <MultiStepButtons
             disabled={isDisabled}
             isSubmitting={isSubmitting}
-            step={formSectionIndex}
+            stepIndex={formSectionIndex}
             steps={formSectionList}
             baseUrl={baseUrl}
             cancelUrl={cancelUrl}

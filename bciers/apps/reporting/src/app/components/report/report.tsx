@@ -11,7 +11,7 @@ const Report = () => {
 
   return (
     <div className="container mx-auto p-4">
-      <MultiStepHeader step={1} steps={customStepNames} />
+      <MultiStepHeader stepIndex={1} steps={customStepNames} />
     </div>
   );
 };
