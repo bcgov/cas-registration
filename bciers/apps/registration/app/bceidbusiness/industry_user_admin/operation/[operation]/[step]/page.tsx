@@ -6,13 +6,13 @@ export default function Page({
   params,
   searchParams,
 }: {
-  params: Readonly<{ operation: UUID | "create"; formSection: string }>;
+  params: Readonly<{ operation: UUID | "create"; step: string }>;
   searchParams: any;
 }) {
-  const { operation, formSection } = params;
+  const { operation, step } = params;
   return (
     <OperationRegistrationPage
-      formSection={parseInt(formSection)}
+      step={parseInt(step)}
       operation={operation}
       searchParams={searchParams}
     />
