@@ -17,10 +17,9 @@ class TestActivityData:
         assert response.status_code == 422
 
     def test_returns_activity_data(self):
-        response = client.get(f'{pytest.endpoint}?activity_name=General stationary combustion&report_date=2024-05-01')
+        response = client.get(f'/api/reporting/get-initial-activity-data?activity_name=General stationary combustion&report_date=2024-05-01')
         assert response.status_code == 200
         response_object = json.loads(response.json())
-        print(response_object)
         assert response_object['activityId'] == 1
         # There are 2 source types in the map
         assert len(response_object['sourceTypeMap'].keys()) == 2
