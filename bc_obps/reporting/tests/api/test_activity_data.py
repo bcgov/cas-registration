@@ -4,7 +4,7 @@ import pytest
 
 pytestmark = pytest.mark.django_db
 client = Client()
-pytest.endpoint = "/api/reporting/get-initial-activity-data"
+pytest.endpoint = "/api/reporting/initial-activity-data"
 
 
 class TestActivityData:
@@ -17,7 +17,7 @@ class TestActivityData:
         assert response.status_code == 422
 
     def test_returns_activity_data(self):
-        response = client.get(f'/api/reporting/get-initial-activity-data?activity_name=General stationary combustion&report_date=2024-05-01')
+        response = client.get(f'/api/reporting/initial-activity-data?activity_name=General stationary combustion&report_date=2024-05-01')
         assert response.status_code == 200
         response_object = json.loads(response.json())
         assert response_object['activityId'] == 1

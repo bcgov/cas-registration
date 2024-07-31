@@ -51,12 +51,10 @@ function SourceTypeBoxTemplate({
               marginBottom: "10px",
             }}
           >
-            {/* <Typography sx={{ paddingLeft: '30px', paddingRight: "30px", paddingTop: "10px"}}> */}
             {description}
             {children}
             {errors}
             {help}
-            {/* </Typography> */}
           </Collapse>
         </Card>
       </Paper>
