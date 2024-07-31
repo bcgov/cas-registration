@@ -107,7 +107,7 @@ class TestContactIdEndpoint(CommonTestSetup):
         assert response.status_code == 401
         assert response.json().get('message') == 'Unauthorized.'
 
-    def test_industry_user_admin_cannot_update_contact_with_malformed_date(self):
+    def test_industry_user_admin_cannot_update_contact_with_malformed_data(self):
         contact = contact_baker()
         operator = operator_baker()
         operator.contacts.add(contact)

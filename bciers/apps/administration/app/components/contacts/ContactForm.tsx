@@ -18,6 +18,13 @@ interface Props {
   allowEdit?: boolean;
 }
 
+const NewOperationMessage = () => (
+  <>
+    <b>Note: </b>To assign this representative to an operation, go to the
+    operation information form
+  </>
+);
+
 export default function ContactForm({
   formData,
   schema,
@@ -54,14 +61,7 @@ export default function ContactForm({
       formData={formState}
       mode={isCreating ? FormMode.CREATE : FormMode.READ_ONLY}
       allowEdit={allowEdit}
-      inlineMessage={
-        isCreating && (
-          <>
-            <b>Note: </b>To assign this representative to an operation, go to
-            the operation information form
-          </>
-        )
-      }
+      inlineMessage={isCreating && <NewOperationMessage />}
       onSubmit={async (data: { formData?: any }) => {
         const method = isCreating ? "POST" : "PUT";
         const endpoint = isCreating
