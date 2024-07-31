@@ -23,7 +23,7 @@ describe("the OperationRepresentativeForm component", () => {
     render(
       <OperationRepresentativeForm
         formData={{}}
-        operation="create"
+        operation="002d5a9e-32a6-4191-938c-2c02bfec592d"
         schema={operationRepresentativeSchema}
         step={3}
         steps={OperationRegistrationSteps}

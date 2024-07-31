@@ -18,7 +18,7 @@ describe("the RegistrationSubmissionPage component", () => {
   it("should render the RegistrationSubmissionPage component", async () => {
     render(
       await RegistrationSubmissionPage({
-        operation: "create",
+        operation: "002d5a9e-32a6-4191-938c-2c02bfec592d",
         step: 5,
         steps: OperationRegistrationSteps,
       }),

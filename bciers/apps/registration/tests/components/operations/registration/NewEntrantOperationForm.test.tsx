@@ -23,7 +23,7 @@ describe("the NewEntrantOperationForm component", () => {
     render(
       <NewEntrantOperationForm
         formData={{}}
-        operation="create"
+        operation="002d5a9e-32a6-4191-938c-2c02bfec592d"
         schema={newEntrantOperationSchema}
         step={4}
         steps={OperationRegistrationNewEntrantSteps}
