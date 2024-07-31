@@ -219,7 +219,6 @@ ReportOperation }|--|| User : archived_by
 ReportOperation ||--|| ReportVersion : report_version
 ReportOperation }|--|{ ReportingActivity : reporting_activities
 ReportOperation }|--|{ RegulatedProduct : regulated_products
-ReportOperation }|--|{ ReportingActivity : activities
 ReportFacility }|--|| User : created_by
 ReportFacility }|--|| User : updated_by
 ReportFacility }|--|| User : archived_by
