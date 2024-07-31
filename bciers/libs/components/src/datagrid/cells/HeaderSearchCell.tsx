@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { usePathname, useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { TextField } from "@mui/material";
 import OutsideClickHandler from "react-outside-click-handler";
 import { GridColumnGroupHeaderParams } from "@mui/x-data-grid";
@@ -18,11 +18,10 @@ const SearchCell = ({
   setLastFocusedField: (field: string | null) => void;
 }) => {
   const searchParams = useSearchParams();
-  const pathname = usePathname();
-  const { replace } = useRouter();
   const [searchState, setSearchState] = useState(searchParams.get(field) || "");
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const pathname = window.location.pathname;
     const params = new URLSearchParams(searchParams);
     const searchTerm = event.target.value;
 
@@ -39,8 +38,10 @@ const SearchCell = ({
     setLastFocusedField(field);
 
     // Update the URL with the new search term
-    replace(`${pathname}?${params.toString()}`);
     setSearchState(searchTerm);
+
+    // Need shallow routing to prevent page reload
+    window.history.replaceState({}, "", `${pathname}?${params.toString()}`);
   };
 
   const handleResetFocus = () => {
