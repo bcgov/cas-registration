@@ -15,11 +15,11 @@ import {
 import { FacilitiesSearchParams } from "@/administration/app/components/facilities/types";
 
 const OperationRegistrationPage = async ({
-  formSection,
+  step,
   operation,
   searchParams,
 }: {
-  formSection: number;
+  step: number;
   operation: UUID | "create";
   searchParams: FacilitiesSearchParams;
 }) => {
@@ -30,46 +30,31 @@ const OperationRegistrationPage = async ({
   const steps = isNewEntrantOperation
     ? OperationRegistrationNewEntrantSteps
     : OperationRegistrationSteps;
-  const formSectionName = steps[formSection - 1];
+  const stepIndex = step - 1;
+  const formSectionName = steps[stepIndex];
+
+  const defaultProps = {
+    operation,
+    step,
+    steps,
+  };
 
   switch (formSectionName) {
     case "Registration Purpose":
-      return RegistrationPurposePage({
-        operation: operation,
-        step: formSection,
-        steps: steps,
-      });
+      return RegistrationPurposePage(defaultProps);
     case "Operation Information":
-      return OperationInformationPage({
-        operation: operation,
-        step: formSection,
-        steps: steps,
-      });
+      return OperationInformationPage(defaultProps);
     case "Facility Information":
       return FacilityInformationPage({
-        operation: operation,
+        ...defaultProps,
         searchParams: searchParams,
-        step: formSection,
-        steps: steps,
       });
     case "New Entrant Operation":
-      return NewEntrantOperationPage({
-        operation: operation,
-        step: formSection,
-        steps: steps,
-      });
+      return NewEntrantOperationPage(defaultProps);
     case "Operation Representative":
-      return OperationRepresentativePage({
-        operation: operation,
-        step: formSection,
-        steps: steps,
-      });
+      return OperationRepresentativePage(defaultProps);
     case "Submission":
-      return RegistrationSubmissionPage({
-        operation: operation,
-        step: formSection,
-        steps: steps,
-      });
+      return RegistrationSubmissionPage(defaultProps);
   }
 };
 
