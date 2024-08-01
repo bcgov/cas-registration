@@ -12,10 +12,12 @@ const section1: RJSFSchema = {
     name: {
       type: "string",
       title: "Facility Name",
+      readOnly: true,
     },
     type: {
       type: "string",
       title: "Facility Type",
+      readOnly: true,
       anyOf: [
         {
           const: "Single Facility",
@@ -102,7 +104,7 @@ export const facilitiesSchemaSfo: RJSFSchema = {
   },
 };
 
-export const facilitiesUiSchema = {
+export const facilitiesLfoUiSchema = {
   "ui:FieldTemplate": SectionFieldTemplate,
   "ui: options": {
     label: false,
@@ -130,6 +132,19 @@ export const facilitiesUiSchema = {
     },
     postal_code: {
       "ui:widget": "PostalCodeWidget",
+    },
+  },
+};
+
+export const facilitiesSfoUiSchema = {
+  ...facilitiesLfoUiSchema,
+  section1: {
+    ...facilitiesLfoUiSchema.section1,
+    name: {
+      "ui:widget": "ReadOnlyWidget",
+    },
+    type: {
+      "ui:widget": "ReadOnlyWidget",
     },
   },
 };
