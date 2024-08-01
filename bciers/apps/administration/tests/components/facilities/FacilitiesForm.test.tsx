@@ -341,6 +341,22 @@ describe("FacilitiesForm component", () => {
     expect(screen.getAllByText(/Starting Date must be between/i)).toHaveLength(
       1,
     );
+
+    // refill year and starting date to check for proper format
+    await userEvent.clear(
+      screen.getByLabelText(/Date of facility starting operations+/i),
+    );
+    await userEvent.type(
+      screen.getByLabelText(/Date of facility starting operations+/i),
+      "202",
+    );
+    fireEvent.click(submitButton);
+    console.log("test");
+
+    // expect to see format error for starting date
+    expect(
+      screen.getAllByText(/Starting Date format should be YYYY-MM-DD/i),
+    ).toHaveLength(1);
   });
 
   it("fills the mandatory form fields, creates new SFO facility, and redirects on success", async () => {
