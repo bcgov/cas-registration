@@ -62,8 +62,8 @@ registrationFrontend:
 
   resources:
     limits:
-      cpu: 100m
-      memory: 256Mi
+      cpu: 200m
+      memory: 512Mi
     requests:
       cpu: 60m
       memory: 128Mi
@@ -96,8 +96,8 @@ reportingFrontend:
 
   resources:
     limits:
-      cpu: 100m
-      memory: 256Mi
+      cpu: 200m
+      memory: 512Mi
     requests:
       cpu: 60m
       memory: 128Mi
@@ -130,11 +130,11 @@ administrationFrontend:
 
   resources:
     limits:
-      cpu: 100m
-      memory: 256Mi
+      cpu: 200m
+      memory: 512Mi
     requests:
       cpu: 60m
-      memory: 128Mi
+      memory: 256Mi
 
   autoscaling:
     enabled: false
@@ -164,11 +164,11 @@ coamFrontend:
 
   resources:
     limits:
-      cpu: 100m
-      memory: 256Mi
+      cpu: 200m
+      memory: 512Mi
     requests:
       cpu: 60m
-      memory: 128Mi
+      memory: 256Mi
 
   autoscaling:
     enabled: false
@@ -197,11 +197,11 @@ dashboardFrontend:
 
   resources:
     limits:
-      cpu: 100m
-      memory: 256Mi
+      cpu: 200m
+      memory: 512Mi
     requests:
       cpu: 60m
-      memory: 128Mi
+      memory: 256Mi
 
   autoscaling:
     enabled: false

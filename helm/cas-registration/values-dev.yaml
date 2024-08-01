@@ -2,7 +2,7 @@
 fullnameOverride: cas-reg1
 
 backend:
-  replicaCount: 2
+  replicaCount: 1
 
   image:
     tag: "latest"
@@ -16,14 +16,14 @@ backend:
 
   resources:
     limits:
-      cpu: 150m
-      memory: 256Mi
+      cpu: 200m
+      memory: 512Mi
     requests:
       cpu: 60m
-      memory: 128Mi
+      memory: 256Mi
 
 registration1Frontend:
-  replicaCount: 2
+  replicaCount: 1
 
   image:
     tag: "latest"
@@ -39,11 +39,11 @@ registration1Frontend:
 
   resources:
     limits:
-      cpu: 150m
-      memory: 256Mi
+      cpu: 200m
+      memory: 512Mi
     requests:
       cpu: 60m
-      memory: 128Mi
+      memory: 256Mi
 
 growthbook:
   clientKey: sdk-YMBcx9KglRDGzGTE
