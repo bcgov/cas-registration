@@ -1,13 +1,15 @@
 import {
   facilitiesSchemaSfo,
-  facilitiesUiSchema,
+  facilitiesLfoUiSchema,
+  facilitiesSfoUiSchema,
 } from "../../data/jsonSchema/facilitiesSfo";
 import { facilitiesSchemaLfo } from "../../data/jsonSchema/facilitiesLfo";
 import FacilitiesForm from "./FacilitiesForm";
 import { UUID } from "crypto";
 import { notFound } from "next/navigation";
 import getFacility from "./getFacility";
-import getOperation from "../operations/getOperation";
+import { FacilityTypes, OperationTypes } from "@bciers/utils/enums";
+import { getOperation } from "@bciers/actions/api";
 
 // 🧩 Main component
 export default async function Facility({
@@ -17,27 +19,34 @@ export default async function Facility({
   facilityId?: UUID;
   operationId: UUID;
 }) {
-  let facilityFormData: { [key: string]: any } | { error: string } = {};
-
-  if (facilityId) {
-    facilityFormData = await getFacility(facilityId);
-    if (facilityFormData?.error) {
-      return notFound();
-    }
-  }
   const operation = await getOperation(operationId);
   if (operation.error) {
     return notFound();
   }
-  const isCreating = Object.keys(facilityFormData).length === 0;
+
+  const isSfo = operation.type === OperationTypes.SFO;
+
+  let facilityFormData: { [key: string]: any } | { error: string } = {};
+  let isCreating = true;
+
+  if (facilityId) {
+    facilityFormData = await getFacility(facilityId);
+    isCreating = Object.keys(facilityFormData).length > 0;
+    if (facilityFormData?.error) {
+      return notFound();
+    }
+  } else if (isSfo) {
+    // Pre-populate facility name and type for SFO Operations
+    facilityFormData = {
+      name: operation.name,
+      type: FacilityTypes.SFO,
+    };
+  }
+
   return (
     <FacilitiesForm
-      schema={
-        operation.type === "Single Facility Operation"
-          ? facilitiesSchemaSfo
-          : facilitiesSchemaLfo
-      }
-      uiSchema={facilitiesUiSchema}
+      schema={isSfo ? facilitiesSchemaSfo : facilitiesSchemaLfo}
+      uiSchema={isSfo ? facilitiesSfoUiSchema : facilitiesLfoUiSchema}
       formData={facilityFormData}
       isCreating={isCreating}
     />

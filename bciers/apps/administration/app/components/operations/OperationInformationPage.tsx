@@ -1,8 +1,8 @@
 import OperationInformationForm from "./OperationInformationForm";
-import { actionHandler } from "@bciers/actions";
 import {
   getBusinessStructures,
   getNaicsCodes,
+  getOperation,
   getRegulatedProducts,
   getReportingActivities,
 } from "@bciers/actions/api";
@@ -79,14 +79,6 @@ export const createOperationSchema = (
 
   return localSchema;
 };
-
-async function getOperation(id: string) {
-  try {
-    return await actionHandler(`registration/operations/${id}`, "GET", "");
-  } catch (error) {
-    throw error;
-  }
-}
 
 export const ExternalUserLayout = () => {
   return <h2 className="text-bc-link-blue">Add Operation</h2>;

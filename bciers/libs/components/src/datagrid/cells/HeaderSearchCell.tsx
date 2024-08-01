@@ -59,7 +59,6 @@ const SearchCell = ({
           value={searchState}
           type="text"
           aria-label={`${fieldLabel} search field`}
-          id={field}
           inputRef={(input) => {
             if (isFocused) {
               input?.focus();
