@@ -1,12 +1,15 @@
 import {
   facilitiesSchemaSfo,
-  facilitiesUiSchema,
+  facilitiesLfoUiSchema,
+  facilitiesSfoUiSchema,
 } from "../../data/jsonSchema/facilitiesSfo";
+import { notFound } from "next/navigation";
 import { facilitiesSchemaLfo } from "../../data/jsonSchema/facilitiesLfo";
 import FacilityForm from "./FacilityForm";
 import { UUID } from "crypto";
 import getFacility from "./getFacility";
-import getOperation from "../operations/getOperation";
+import { FacilityTypes, OperationTypes } from "@bciers/utils/enums";
+import { getOperation } from "@bciers/actions/api";
 
 // 🧩 Main component
 export default async function Facility({
@@ -32,15 +35,29 @@ export default async function Facility({
       "We couldn't find your operation information. Please ensure you have been approved for access to this operation.",
     );
   }
-  const isCreating = Object.keys(facilityFormData).length === 0;
+
+  const isSfo = operation.type === OperationTypes.SFO;
+
+  let isCreating = true;
+
+  if (facilityId) {
+    facilityFormData = await getFacility(facilityId);
+    isCreating = Object.keys(facilityFormData).length > 0;
+    if (facilityFormData?.error) {
+      return notFound();
+    }
+  } else if (isSfo) {
+    // Pre-populate facility name and type for SFO Operations
+    facilityFormData = {
+      name: operation.name,
+      type: FacilityTypes.SFO,
+    };
+  }
+
   return (
     <FacilityForm
-      schema={
-        operation.type === "Single Facility Operation"
-          ? facilitiesSchemaSfo
-          : facilitiesSchemaLfo
-      }
-      uiSchema={facilitiesUiSchema}
+      schema={isSfo ? facilitiesSchemaSfo : facilitiesSchemaLfo}
+      uiSchema={isSfo ? facilitiesSfoUiSchema : facilitiesLfoUiSchema}
       formData={facilityFormData}
       isCreating={isCreating}
     />

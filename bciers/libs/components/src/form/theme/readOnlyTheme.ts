@@ -1,4 +1,5 @@
 import defaultTheme from "@bciers/components/form/theme/defaultTheme";
+import * as readonlyWidgets from "@bciers/components/form/widgets/readOnly";
 import ReadOnlyWidget from "@bciers/components/form/widgets/readOnly/ReadOnlyWidget";
 import ReadOnlyBooleanWidget from "@bciers/components/form/widgets/readOnly/ReadOnlyBooleanWidget";
 import ReadOnlyComboBoxWidget from "@bciers/components/form/widgets/readOnly/ReadOnlyComboBoxWidget";
@@ -15,6 +16,7 @@ const { templates: defaultTemplates } = getDefaultRegistry();
 const readOnlyTheme = {
   ...defaultTheme,
   widgets: {
+    ...readonlyWidgets,
     CheckboxWidget: ReadOnlyBooleanWidget,
     ComboBox: ReadOnlyComboBoxWidget,
     DateWidget: ReadOnlyDateWidget,
