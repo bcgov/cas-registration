@@ -614,6 +614,18 @@ def reverse_init_methodology_data(apps, schema_monitor):
     ).delete()
 
 
+def load_reporting_fixtures(apps, schema_editor):
+    from django.core.management import call_command
+
+    fixture_files = [
+        'reporting/fixtures/mock/reporting_year.json',
+    ]
+
+    # Load the fixtures
+    for fixture in fixture_files:
+        call_command('loaddata', fixture)
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -626,4 +638,5 @@ class Migration(migrations.Migration):
         migrations.RunPython(init_fuel_type_data, reverse_init_fuel_type_data),
         migrations.RunPython(init_methodology_data, reverse_init_methodology_data),
         migrations.RunPython(init_configuration_data, reverse_init_configuration_data),
+        migrations.RunPython(load_reporting_fixtures),
     ]
