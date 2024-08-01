@@ -42,5 +42,5 @@ class FacilityModelTest(BaseTestCase):
             ("ownerships", "facility ownership timeline", None, None),
             ("events", "event", None, None),
             ("is_current_year", "is current year", None, None),
-            ("starting_date", "Starting Date", None, None),
+            ("starting_date", "starting date", None, None),
         ]
