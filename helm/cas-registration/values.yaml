@@ -64,11 +64,11 @@ registration1Frontend:
 
   resources:
     limits:
-      cpu: 100m
-      memory: 256Mi
+      cpu: 200m
+      memory: 512Mi
     requests:
       cpu: 60m
-      memory: 192Mi
+      memory: 256Mi
 
   autoscaling:
     enabled: false

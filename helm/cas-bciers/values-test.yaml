@@ -19,7 +19,7 @@ backend:
       memory: 256Mi
 
 registrationFrontend:
-  replicaCount: 2
+  replicaCount: 1
 
   image:
     tag: "latest"
@@ -32,14 +32,14 @@ registrationFrontend:
 
   resources:
     limits:
-      cpu: 150m
-      memory: 256Mi
+      cpu: 200m
+      memory: 512Mi
     requests:
       cpu: 60m
-      memory: 128Mi
+      memory: 256Mi
 
 reportingFrontend:
-  replicaCount: 2
+  replicaCount: 1
 
   image:
     tag: "latest"
@@ -52,14 +52,14 @@ reportingFrontend:
 
   resources:
     limits:
-      cpu: 150m
-      memory: 256Mi
+      cpu: 200m
+      memory: 512Mi
     requests:
       cpu: 60m
-      memory: 128Mi
+      memory: 256Mi
 
 dashboardFrontend:
-  replicaCount: 2
+  replicaCount: 1
 
   image:
     tag: "latest"
@@ -76,11 +76,11 @@ dashboardFrontend:
 
   resources:
     limits:
-      cpu: 150m
-      memory: 256Mi
+      cpu: 200m
+      memory: 512Mi
     requests:
       cpu: 60m
-      memory: 128Mi
+      memory: 256Mi
 
 growthbook:
   clientKey: sdk-9Vyna67jpIYdjMa
