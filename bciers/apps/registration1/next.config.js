@@ -2,10 +2,7 @@
 const { withSentryConfig } = require("@sentry/nextjs");
 const { composePlugins, withNx } = require("@nx/next");
 
-const nextConfigBase = require("../../next.config.base");
-
 const nextConfig = {
-  ...nextConfigBase,
   reactStrictMode: true,
   swcMinify: true,
   //use modularizeImports properties to optimize the imports in the application
