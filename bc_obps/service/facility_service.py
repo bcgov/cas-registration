@@ -138,6 +138,14 @@ class FacilityService:
             for n in numbers_to_archive:
                 n.set_archive(user_guid)
 
+
+        if numbers_to_remove:
+            numbers_to_archive: QuerySet[Number] = existing_numbers.filter(
+                id__in=numbers_to_remove
+            )
+            for number in numbers_to_archive:
+                number.set_archive(user_guid)
+
     @classmethod
     def list_facilities(
         cls,

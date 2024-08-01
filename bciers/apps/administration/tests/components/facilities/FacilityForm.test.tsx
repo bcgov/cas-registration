@@ -150,6 +150,7 @@ export const editFormFields = async (schema: RJSFSchema) => {
   );
 };
 
+<<<<<<< HEAD
 // ⛏️ Helper function to fill form mandatory fields
 const fillMandatoryFields = async (schema: RJSFSchema) => {
   await userEvent.type(
@@ -218,6 +219,29 @@ useRouter.mockReturnValue({
   push: mockPush,
 });
 
+=======
+// ⛏️ Helper function to check field values
+const checkFormValues = ({
+  streetAddress = "address",
+  municipality = "city",
+  province = "Alberta",
+  postalCode = "H0H 0H0",
+  latitude = 48.3,
+  longitude = 123.32,
+} = {}) => {
+  expect(screen.getByLabelText(/Street address+/i)).toHaveValue(streetAddress);
+  expect(screen.getByLabelText(/Municipality+/i)).toHaveValue(municipality);
+  expect(screen.getByLabelText(/Province+/i)).toHaveValue(province);
+  expect(screen.getByLabelText(/Postal Code+/i)).toHaveValue(postalCode);
+  expect(
+    screen.getByLabelText(/Latitude of Largest Point of Emissions+/i),
+  ).toHaveValue(latitude);
+  expect(
+    screen.getByLabelText(/Longitude of Largest Point of Emissions+/i),
+  ).toHaveValue(longitude);
+};
+
+>>>>>>> 886a9363 (test: add vitest fn to check field values)
 describe("FacilityForm component", () => {
   beforeEach(async () => {
     vi.clearAllMocks();
@@ -418,7 +442,7 @@ describe("FacilityForm component", () => {
   // created this starting datetest to get around form without edit fields in the last test
   it("does not allow LFO submission if there is a starting date validation error", async () => {
     render(
-      <FacilitiesForm
+      <FacilityForm
         schema={facilitiesSchemaLfo}
         uiSchema={facilitiesUiSchema}
         formData={{}}
