@@ -81,9 +81,6 @@ class UserModelTest(BaseTestCase):
             ("reportemission_created", "report emission", None, None),
             ("reportemission_updated", "report emission", None, None),
             ("reportemission_archived", "report emission", None, None),
-            ("reportfacility_created", "report facility", None, None),
-            ("reportfacility_updated", "report facility", None, None),
-            ("reportfacility_archived", "report facility", None, None),
             ("reportfuel_created", "report fuel", None, None),
             ("reportfuel_updated", "report fuel", None, None),
             ("reportfuel_archived", "report fuel", None, None),
@@ -105,6 +102,9 @@ class UserModelTest(BaseTestCase):
             ("report_created", "report", None, None),
             ("report_updated", "report", None, None),
             ("report_archived", "report", None, None),
+            ("facilityreport_created", "facility report", None, None),
+            ("facilityreport_updated", "facility report", None, None),
+            ("facilityreport_archived", "facility report", None, None),
         ]
 
     def test_unique_user_guid_and_business_guid_constraint(self):
