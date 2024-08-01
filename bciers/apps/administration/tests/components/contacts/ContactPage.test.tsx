@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { useSession, useRouter } from "@bciers/testConfig/mocks";
 import { getContact, getUserOperatorUsers } from "./mocks";
-import Contact from "apps/administration/app/components/contacts/Contact";
+import ContactPage from "apps/administration/app/components/contacts/ContactPage";
 
 useSession.mockReturnValue({
   get: vi.fn(),
@@ -36,7 +36,7 @@ describe("Contact component", () => {
       error: "Do not attempt to contact this contact",
     });
     render(
-      await Contact({
+      await ContactPage({
         contactId,
       }),
     );
@@ -53,7 +53,7 @@ describe("Contact component", () => {
       error: "No users found",
     });
     render(
-      await Contact({
+      await ContactPage({
         contactId: undefined,
       }),
     );
@@ -64,7 +64,7 @@ describe("Contact component", () => {
   it("renders the Contact component in create mode", async () => {
     getUserOperatorUsers.mockReturnValueOnce([]);
     render(
-      await Contact({
+      await ContactPage({
         contactId: undefined,
       }),
     );
@@ -80,7 +80,7 @@ describe("Contact component", () => {
     getContact.mockReturnValueOnce(contactFormData);
     getUserOperatorUsers.mockReturnValueOnce([]);
     render(
-      await Contact({
+      await ContactPage({
         contactId,
       }),
     );

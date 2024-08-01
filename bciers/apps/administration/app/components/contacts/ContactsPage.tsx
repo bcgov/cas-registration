@@ -1,6 +1,6 @@
 import { ContactRow, ContactsSearchParams } from "./types";
 import fetchContactsPageData from "./fetchContactsPageData";
-import ContactDataGrid from "./ContactDataGrid";
+import ContactsDataGrid from "./ContactsDataGrid";
 import Note from "@bciers/components/layout/Note";
 import Link from "next/link";
 import { Button } from "@mui/material";
@@ -42,7 +42,7 @@ const InternalContactsLayout = () => {
 };
 
 // 🧩 Main component
-export default async function Contacts({
+export default async function ContactsPage({
   searchParams,
   isExternalUser = true,
 }: Readonly<{
@@ -74,7 +74,7 @@ export default async function Contacts({
       )}
       <Suspense fallback={<Loading />}>
         <div className="mt-5">
-          <ContactDataGrid
+          <ContactsDataGrid
             initialData={contacts}
             isExternalUser={isExternalUser}
           />

@@ -17,7 +17,7 @@ const ContactsActionCell = ActionCellFactory({
   cellText: "View Details",
 });
 
-const ContactDataGrid = ({
+const ContactsDataGrid = ({
   initialData,
   isExternalUser,
 }: {
@@ -57,4 +57,4 @@ const ContactDataGrid = ({
   );
 };
 
-export default ContactDataGrid;
+export default ContactsDataGrid;

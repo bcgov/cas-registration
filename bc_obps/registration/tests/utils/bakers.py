@@ -50,7 +50,9 @@ def generate_random_cra_business_number():
 
 
 def address_baker() -> Address:
-    return baker.make(Address)
+    return baker.make(
+        Address, street_address='123 Fake St', municipality='Victoria', province='BC', postal_code='H0H0H0'
+    )
 
 
 def document_baker() -> Document:

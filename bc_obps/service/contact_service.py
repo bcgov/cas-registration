@@ -59,3 +59,29 @@ class ContactService:
         operator.contacts.add(contact)
         operator.set_create_or_update(user_guid)
         return contact
+
+    @classmethod
+    @transaction.atomic()
+    def update_contact(cls, user_guid: UUID, contact_id: int, payload: ContactIn) -> Contact:
+        # Make sure user has access to the contact
+        if not ContactDataAccessService.user_has_access(user_guid, contact_id):
+            raise Exception(UNAUTHORIZED_MESSAGE)
+
+        # UPDATE CONTACT
+        contact_data: dict = payload.dict(include={*ContactIn.Meta.fields})
+        contact = ContactDataAccessService.update_or_create(contact_id, contact_data, user_guid)
+        # UPDATE ADDRESS
+        address_data = payload.dict(include={'street_address', 'municipality', 'province', 'postal_code'})
+        if any(address_data.values()):  # if any address data is provided
+            address = AddressDataAccessService.upsert_address_from_data(address_data, contact.address_id)
+            contact.address = address
+            contact.save(update_fields=['address_id'])
+        else:
+            existing_contact_address = contact.address
+            if existing_contact_address:
+                contact.address = None
+                contact.save(update_fields=['address'])
+                # contact has an address and the payload has no address data, remove the address
+                existing_contact_address.delete()
+        contact.set_create_or_update(user_guid)
+        return contact
