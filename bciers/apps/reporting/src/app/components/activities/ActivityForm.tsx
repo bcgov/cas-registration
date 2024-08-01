@@ -83,7 +83,9 @@ export default function ActivityForm({
   const { activityId, sourceTypeMap } = activityData;
 
   // Set useEffect dependency set from checked sourceTypes
-  const dependencyArray = Object.values(sourceTypeMap).map((v) => formState?.[`${v}`] ?? null)
+  const dependencyArray = Object.values(sourceTypeMap).map(
+    (v) => formState?.[`${v}`] ?? null,
+  );
 
   useEffect(() => {
     let isFetching = true;
