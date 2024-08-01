@@ -1,3 +1,37 @@
+# [1.7.0](https://github.com/bcgov/cas-registration/compare/v1.6.0...v1.7.0) (2024-08-01)
+
+### Bug Fixes
+
+- build fails due to global vi ([34ae4bc](https://github.com/bcgov/cas-registration/commit/34ae4bcb070907efb27c2f97d034e2d6bd176eba))
+- not showing facilities with end date ([5d80380](https://github.com/bcgov/cas-registration/commit/5d80380ff905958fd9a923fc8f58fc24a7d571f3))
+- registration1 upload limit bug ([e09d658](https://github.com/bcgov/cas-registration/commit/e09d6586414428d98c737ac96c2aca92af499410))
+- remove failing job ([66843fa](https://github.com/bcgov/cas-registration/commit/66843fa8a9cbe986764fb58acaad0417fa844bf6))
+- replace hard-coded value in job with variable ([7d9948a](https://github.com/bcgov/cas-registration/commit/7d9948a44ce66e23ab94b8899e01455707a95651))
+- use correct value in route ([e3c33d7](https://github.com/bcgov/cas-registration/commit/e3c33d792b67acee44009f41cf7edffcec2d0e49))
+
+### Features
+
+- [rebase 2] Configure COAM app for auth sharing + fix css and package json for coam ([f847da8](https://github.com/bcgov/cas-registration/commit/f847da8183d178b1518612957439a76a50caa5bf))
+- add Actions column to Reporting Operations dashboard ([f363b00](https://github.com/bcgov/cas-registration/commit/f363b008d22e9a61ab82dd52e1eb22ec8af12402))
+- add contact form ([94234bc](https://github.com/bcgov/cas-registration/commit/94234bcf713a46eb63f0eb8ba857b973fdb8eef9))
+- add contact list endpoint and schema ([fc94d36](https://github.com/bcgov/cas-registration/commit/fc94d363f19f18b54e9a80ca63868b9c323af595))
+- add current reporting year to operations page ([940bf10](https://github.com/bcgov/cas-registration/commit/940bf10788ff9d7602c54d6c66306d36cd3e42c4))
+- add custom migrate command ([ba74a3c](https://github.com/bcgov/cas-registration/commit/ba74a3c4c7f6a92520d7ed1f344a6beb860b03a0))
+- add date widget ([d9446fc](https://github.com/bcgov/cas-registration/commit/d9446fce91c6d34c399812800c176a22cc4f1d33))
+- add facility form ([3e25578](https://github.com/bcgov/cas-registration/commit/3e255781d4414409624d9e5097ef27512bdc88da))
+- add facility list endpoint and schema ([c35ef3c](https://github.com/bcgov/cas-registration/commit/c35ef3cfc6cb7ade552713b190234e7e21c6e224))
+- add form builder API endpoint & service ([67764f8](https://github.com/bcgov/cas-registration/commit/67764f839cb94d3b77e8128459501d4037bf9af8))
+- add helm chart for new bciers applications ([fa8623d](https://github.com/bcgov/cas-registration/commit/fa8623de372b4ae459a5fce1c5fc86e9d17b04f6))
+- add notes component ([38f4df3](https://github.com/bcgov/cas-registration/commit/38f4df39028d7e8c8ee859e658911ac0452a249b))
+- adding api route to start a report ([badf154](https://github.com/bcgov/cas-registration/commit/badf1547ddaa96419a53d15c55a1852753facd9e))
+- api endpoint to serve reporting dashboard operation data ([087fc9b](https://github.com/bcgov/cas-registration/commit/087fc9b01643fe0f383e4d8922de31e250c093e0))
+- Generate coam app with NX according to [#1755](https://github.com/bcgov/cas-registration/issues/1755) ([43a9585](https://github.com/bcgov/cas-registration/commit/43a9585215cb47412531d6e38b6b21da398ccb63))
+- Nx app Administration ([cc186ec](https://github.com/bcgov/cas-registration/commit/cc186ec4e2b6249bd79cafa0ed83305911816581))
+- nx apps auth sharing ([cb20139](https://github.com/bcgov/cas-registration/commit/cb201390e6125f936b55527f3e22c0b48fc647fe))
+- report version model ([b994303](https://github.com/bcgov/cas-registration/commit/b99430329f594def81d4f76980d7a783ef20f3ff))
+- update contact - backend work ([07d7e77](https://github.com/bcgov/cas-registration/commit/07d7e776a43d31d44787ce8cc46df0117e027bd9))
+- update operator form ([bd50834](https://github.com/bcgov/cas-registration/commit/bd50834f3649e447f79dd51d4dd811539c2729cc))
+
 # [1.6.0](https://github.com/bcgov/cas-registration/compare/v1.5.2...v1.6.0) (2024-06-10)
 
 ### Bug Fixes
