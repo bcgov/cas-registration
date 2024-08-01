@@ -1,5 +1,7 @@
 import { UUID } from "crypto";
 import FacilityPage from "@/administration/app/components/facilities/FacilityPage";
+import { Suspense } from "react";
+import Loading from "@bciers/components/loading/SkeletonForm";
 
 export default function Page({
   params,
@@ -7,9 +9,11 @@ export default function Page({
   params: Readonly<{ operationId: UUID; facilityId: UUID }>;
 }) {
   return (
-    <FacilityPage
-      facilityId={params.facilityId}
-      operationId={params.operationId}
-    />
+    <Suspense fallback={<Loading />}>
+      <FacilityPage
+        facilityId={params.facilityId}
+        operationId={params.operationId}
+      />
+    </Suspense>
   );
 }
