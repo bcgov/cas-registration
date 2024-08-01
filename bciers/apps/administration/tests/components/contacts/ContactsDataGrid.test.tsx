@@ -1,7 +1,7 @@
 import "@testing-library/jest-dom";
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import { useRouter, useSearchParams } from "@bciers/testConfig/mocks";
-import ContactDataGrid from "apps/administration/app/components/contacts/ContactDataGrid";
+import ContactsDataGrid from "apps/administration/app/components/contacts/ContactsDataGrid";
 import { QueryParams } from "@bciers/testConfig/types";
 import extractParams from "../helpers/extractParams";
 
@@ -33,13 +33,13 @@ const mockResponse = {
   row_count: 2,
 };
 
-describe("ContactDataGrid component", () => {
+describe("ContactsDataGrid component", () => {
   beforeEach(async () => {
     vi.clearAllMocks();
   });
-  it("renders the ContactDataGrid grid for external users", async () => {
+  it("renders the ContactsDataGrid grid for external users", async () => {
     render(
-      <ContactDataGrid isExternalUser={true} initialData={mockResponse} />,
+      <ContactsDataGrid isExternalUser={true} initialData={mockResponse} />,
     );
 
     // correct headers
@@ -72,9 +72,9 @@ describe("ContactDataGrid component", () => {
     );
   });
 
-  it("renders the ContactDataGrid grid for internal users", async () => {
+  it("renders the ContactsDataGrid grid for internal users", async () => {
     render(
-      <ContactDataGrid isExternalUser={false} initialData={mockResponse} />,
+      <ContactsDataGrid isExternalUser={false} initialData={mockResponse} />,
     );
 
     // correct headers
@@ -110,7 +110,7 @@ describe("ContactDataGrid component", () => {
   });
   it("makes API call with correct params when sorting", async () => {
     render(
-      <ContactDataGrid isExternalUser={true} initialData={mockResponse} />,
+      <ContactsDataGrid isExternalUser={true} initialData={mockResponse} />,
     );
 
     // click on the first column header
@@ -150,7 +150,7 @@ describe("ContactDataGrid component", () => {
   });
   it("makes API call with correct params when filtering", async () => {
     render(
-      <ContactDataGrid isExternalUser={true} initialData={mockResponse} />,
+      <ContactsDataGrid isExternalUser={true} initialData={mockResponse} />,
     );
 
     const searchInput = screen.getAllByPlaceholderText(/Search/i)[0]; // first name search input

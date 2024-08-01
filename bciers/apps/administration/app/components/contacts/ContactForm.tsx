@@ -15,13 +15,22 @@ interface Props {
   uiSchema: any;
   formData: ContactFormData;
   isCreating?: boolean;
+  allowEdit?: boolean;
 }
 
-export default function ContactsForm({
+const NewOperationMessage = () => (
+  <>
+    <b>Note: </b>To assign this representative to an operation, go to the
+    operation information form
+  </>
+);
+
+export default function ContactForm({
   formData,
   schema,
   uiSchema,
   isCreating,
+  allowEdit,
 }: Readonly<Props>) {
   const router = useRouter();
   const [error, setError] = useState(undefined);
@@ -47,23 +56,21 @@ export default function ContactsForm({
     <SingleStepTaskListForm
       key={key}
       error={error}
-      disabled={!isCreating}
       schema={schema}
       uiSchema={uiSchema}
       formData={formState}
       mode={isCreating ? FormMode.CREATE : FormMode.READ_ONLY}
-      inlineMessage={
-        isCreating && (
-          <>
-            <b>Note: </b>To assign this representative to an operation, go to
-            the operation information form
-          </>
-        )
-      }
+      allowEdit={allowEdit}
+      inlineMessage={isCreating && <NewOperationMessage />}
       onSubmit={async (data: { formData?: any }) => {
+        setFormState(data.formData);
         const method = isCreating ? "POST" : "PUT";
-        const endpoint = isCreating ? "registration/contacts" : `tbd`;
-        const pathToRevalidate = endpoint; // for now the endpoint is the same as the path to revalidate
+        const endpoint = isCreating
+          ? "registration/contacts"
+          : `registration/contacts/${formData.id}`;
+        const pathToRevalidate = isCreating
+          ? "/contacts"
+          : `/contacts/${formData.id}`;
         const body = {
           ...data.formData,
         };
@@ -81,7 +88,13 @@ export default function ContactsForm({
           return { error: response.error };
         }
         if (isCreating) {
-          router.replace(`/contacts/${response.id}`);
+          window.history.replaceState(
+            null,
+            "",
+            `/administration/contacts/${response.id}`,
+          );
+        } else {
+          setKey(Math.random());
         }
       }}
       onChange={(e: IChangeEvent) => {

@@ -43,3 +43,12 @@ class TestDataAccessContactService:
         assert industry_user_contacts.count() == 10
         # make sure user's contacts are only from their operations
         assert all(contact in users_contacts for contact in industry_user_contacts)
+
+    @staticmethod
+    def test_user_has_access():
+        user = user_baker()
+        contact = contact_baker()
+        operator = operator_baker()
+        operator.contacts.set([contact])
+        user_operator_baker({"user": user, "operator": operator, "status": UserOperator.Statuses.APPROVED})
+        assert ContactDataAccessService.user_has_access(user.user_guid, contact.id)

@@ -1,11 +1,11 @@
-import { render, screen, act, waitFor } from "@testing-library/react";
+import { render, screen, act } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { actionHandler, useRouter } from "@bciers/testConfig/mocks";
 import {
   contactsSchema,
   contactsUiSchema,
 } from "../../../app/data/jsonSchema/contact";
-import ContactsForm from "apps/administration/app/components/contacts/ContactsForm";
+import ContactForm from "apps/administration/app/components/contacts/ContactForm";
 import { createContactSchema } from "apps/administration/app/components/contacts/createContactSchema";
 
 const mockReplace = vi.fn();
@@ -15,7 +15,7 @@ useRouter.mockReturnValue({
 });
 
 const contactFormData = {
-  id: "4abd8367-efd1-4654-a7ea-fa1a015d3cae",
+  id: 123,
   first_name: "John",
   last_name: "Doe",
   email: "john.doe@example.com",
@@ -27,14 +27,14 @@ const contactFormData = {
   postal_code: "A1B 2C3",
 };
 
-describe("ContactsForm component", () => {
+describe("ContactForm component", () => {
   beforeEach(async () => {
     vi.clearAllMocks();
   });
 
   it("renders the empty contact form when creating a new contact", async () => {
     render(
-      <ContactsForm
+      <ContactForm
         schema={contactsSchema}
         uiSchema={contactsUiSchema}
         formData={{}}
@@ -85,7 +85,7 @@ describe("ContactsForm component", () => {
   it("loads existing readonly contact form data", async () => {
     const readOnlyContactSchema = createContactSchema([], false);
     const { container } = render(
-      <ContactsForm
+      <ContactForm
         schema={readOnlyContactSchema}
         uiSchema={contactsUiSchema}
         formData={contactFormData}
@@ -138,7 +138,7 @@ describe("ContactsForm component", () => {
   });
   it("does not allow new contact form submission if there are validation errors (empty form data)", async () => {
     render(
-      <ContactsForm
+      <ContactForm
         schema={contactsSchema}
         uiSchema={contactsUiSchema}
         formData={{}}
@@ -158,7 +158,7 @@ describe("ContactsForm component", () => {
     },
     async () => {
       render(
-        <ContactsForm
+        <ContactForm
           schema={contactsSchema}
           uiSchema={contactsUiSchema}
           formData={{}}
@@ -167,7 +167,7 @@ describe("ContactsForm component", () => {
       );
 
       const response = {
-        id: "4abd8367-efd1-4654-a7ea-fa1a015d3cae",
+        id: 123,
         first_name: "John",
         last_name: "Doe",
         error: null,
@@ -202,14 +202,90 @@ describe("ContactsForm component", () => {
         "123 Main St",
       );
       await userEvent.type(screen.getByLabelText(/Municipality/i), "Cityville");
-      await userEvent.type(screen.getByLabelText(/Province/i), "ON");
+      // province
+      const provinceComboBoxInput = screen.getByRole("combobox", {
+        name: /province/i,
+      });
+      const openProvinceDropdownButton = provinceComboBoxInput.parentElement
+        ?.children[1]?.children[0] as HTMLInputElement;
+      await userEvent.click(openProvinceDropdownButton);
+      await userEvent.click(screen.getByText(/alberta/i));
       await userEvent.type(screen.getByLabelText(/Postal Code/i), "A1B 2C3");
       // Submit
       await userEvent.click(screen.getByRole("button", { name: /submit/i }));
 
-      await waitFor(() => {
-        expect(mockReplace).toHaveBeenCalledWith(`/contacts/${response.id}`);
-      });
+      expect(actionHandler).toHaveBeenNthCalledWith(
+        1,
+        "registration/contacts",
+        "POST",
+        "/contacts",
+        {
+          body: JSON.stringify({
+            existing_bciers_user: false,
+            first_name: "John",
+            last_name: "Doe",
+            position_title: "Senior Officer",
+            email: "john.doe@example.com",
+            phone_number: "+1 1 604 401 1234",
+            street_address: "123 Main St",
+            municipality: "Cityville",
+            province: "AB",
+            postal_code: "A1B2C3",
+          }),
+        },
+      );
     },
   );
+  it("updates existing contact form data and hits the correct endpoint", async () => {
+    const readOnlyContactSchema = createContactSchema([], false);
+    render(
+      <ContactForm
+        schema={readOnlyContactSchema}
+        uiSchema={contactsUiSchema}
+        formData={contactFormData}
+        allowEdit
+      />,
+    );
+    // switch to edit mode
+    await userEvent.click(screen.getByRole("button", { name: /edit/i }));
+
+    // update Personal Information
+    const firstNameField = screen.getByLabelText(/First Name/i);
+    await userEvent.clear(firstNameField);
+    await userEvent.type(firstNameField, "John updated");
+    const lastNameField = screen.getByLabelText(/Last Name/i);
+    await userEvent.clear(lastNameField);
+    await userEvent.type(lastNameField, "Doe updated");
+
+    const response = {
+      id: 123,
+      first_name: "John updated",
+      last_name: "Doe updated",
+      error: null,
+    };
+    actionHandler.mockReturnValueOnce(response);
+
+    // Submit
+    await userEvent.click(screen.getByRole("button", { name: /submit/i }));
+
+    expect(actionHandler).toHaveBeenNthCalledWith(
+      1,
+      "registration/contacts/123",
+      "PUT",
+      "/contacts/123",
+      {
+        body: JSON.stringify({
+          first_name: "John updated",
+          last_name: "Doe updated",
+          position_title: "Senior Officer",
+          email: "john.doe@example.com",
+          phone_number: "+16044011234",
+          street_address: "123 Main St",
+          municipality: "Cityville",
+          province: "ON",
+          postal_code: "A1B 2C3",
+        }),
+      },
+    );
+  });
 });

@@ -1,7 +1,7 @@
-import Contact from "@/administration/app/components/contacts/Contact";
+import ContactPage from "apps/administration/app/components/contacts/ContactPage";
 
 export default function Page({
   params: { contactId },
 }: Readonly<{ params: { contactId: string } }>) {
-  return <Contact contactId={contactId} />;
+  return <ContactPage contactId={contactId} />;
 }

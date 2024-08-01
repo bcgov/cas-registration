@@ -1,5 +1,5 @@
-import Contact from "@/administration/app/components/contacts/Contact";
+import ContactPage from "@/administration/app/components/contacts/ContactPage";
 
 export default function Page() {
-  return <Contact />;
+  return <ContactPage />;
 }
