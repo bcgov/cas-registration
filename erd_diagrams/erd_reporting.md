@@ -57,7 +57,7 @@ ReportOperation {
     ManyToManyField reporting_activities
     ManyToManyField regulated_products
 }
-ReportFacility {
+FacilityReport {
     BigAutoField id
     ForeignKey created_by
     DateTimeField created_at
@@ -65,6 +65,7 @@ ReportFacility {
     DateTimeField updated_at
     ForeignKey archived_by
     DateTimeField archived_at
+    ForeignKey facility
     ForeignKey report_version
     CharField facility_name
     CharField facility_type
@@ -135,6 +136,7 @@ ReportActivity {
     DateTimeField archived_at
     JSONField json_data
     ForeignKey report_version
+    ForeignKey facility_report
     ForeignKey activity_base_schema
     ForeignKey activity
 }
@@ -220,12 +222,13 @@ ReportOperation }|--|| User : archived_by
 ReportOperation ||--|| ReportVersion : report_version
 ReportOperation }|--|{ ReportingActivity : reporting_activities
 ReportOperation }|--|{ RegulatedProduct : regulated_products
-ReportFacility }|--|| User : created_by
-ReportFacility }|--|| User : updated_by
-ReportFacility }|--|| User : archived_by
-ReportFacility }|--|| ReportVersion : report_version
-ReportFacility }|--|{ ReportingActivity : activities
-ReportFacility }|--|{ RegulatedProduct : products
+FacilityReport }|--|| User : created_by
+FacilityReport }|--|| User : updated_by
+FacilityReport }|--|| User : archived_by
+FacilityReport }|--|| Facility : facility
+FacilityReport }|--|| ReportVersion : report_version
+FacilityReport }|--|{ ReportingActivity : activities
+FacilityReport }|--|{ RegulatedProduct : products
 ConfigurationElement }|--|| ReportingActivity : reporting_activity
 ConfigurationElement }|--|| SourceType : source_type
 ConfigurationElement }|--|| GasType : gas_type
@@ -244,6 +247,7 @@ ReportActivity }|--|| User : created_by
 ReportActivity }|--|| User : updated_by
 ReportActivity }|--|| User : archived_by
 ReportActivity }|--|| ReportVersion : report_version
+ReportActivity }|--|| FacilityReport : facility_report
 ReportActivity }|--|| ActivityJsonSchema : activity_base_schema
 ReportActivity }|--|| ReportingActivity : activity
 ReportSourceType }|--|| User : created_by
