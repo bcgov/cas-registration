@@ -119,21 +119,23 @@ class TestReportService(TestCase):
                 ),
             )
 
-            # Testing the report_facility data
-            report_facilities = report_version.report_facilities
+            # Testing the facilityreport data
+            facility_reports = report_version.facility_reports
 
-            self.assertEqual(report_facilities.count(), 3)
+            self.assertEqual(facility_reports.count(), 3)
             for index, facility in enumerate(mock_facilities):
-                report_facility = report_facilities.all()[index]
+                facility_report = facility_reports.all()[index]
                 self.assertSequenceEqual(
                     (
-                        report_facility.facility_name,
-                        report_facility.facility_type,
-                        report_facility.facility_bcghgid,
-                        report_facility.activities.count(),
-                        report_facility.products.count(),
+                        facility_report.facility,
+                        facility_report.facility_name,
+                        facility_report.facility_type,
+                        facility_report.facility_bcghgid,
+                        facility_report.activities.count(),
+                        facility_report.products.count(),
                     ),
                     (
+                        facility,
                         facility.name,
                         facility.type,
                         facility.bcghg_id,
