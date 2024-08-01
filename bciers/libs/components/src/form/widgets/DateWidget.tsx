@@ -22,7 +22,7 @@ const DateWidget: React.FC<WidgetProps> = ({
 }) => {
   const handleChange = (d: Dayjs | null) => {
     if (!d || !d.isValid()) {
-      return onChange(null);
+      return onChange("invalid date");
     }
 
     // Set the time to 9am UTC to avoid timezone issues since PST is UTC -8 hours

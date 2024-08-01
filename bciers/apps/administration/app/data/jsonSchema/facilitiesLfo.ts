@@ -50,7 +50,10 @@ const section1: RJSFSchema = {
           starting_date: {
             type: "string",
             title: "Date of facility starting operations:",
-            format: "starting_date",
+            allOf: [
+              { format: "starting_date_format" },
+              { format: "starting_date_year" },
+            ],
           },
         },
         required: ["starting_date"],
