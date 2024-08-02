@@ -21,6 +21,11 @@ function unslugifyAndCapitalize(segment: string): string {
     .join(" ");
 }
 
+// 🛠️ Function to check if a given value is numeric
+function isNumeric(value: string): boolean {
+  return !isNaN(Number(value));
+}
+
 // 🛠️ Function to determine valid crumb link
 function isValidLink(segment: string): boolean {
   // Define invalid links
@@ -63,7 +68,7 @@ export default function Bread({
   const crumbTitles = Object.fromEntries(searchParams.entries());
 
   function translateNumericPart(segment: string, index: number): string {
-    if (isValidUUID(segment)) {
+    if (isValidUUID(segment) || isNumeric(segment)) {
       const precedingSegment = pathNames[index - 1]
         ? unslugifyAndCapitalize(pathNames[index - 1])
         : "";
