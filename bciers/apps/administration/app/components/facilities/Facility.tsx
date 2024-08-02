@@ -1,9 +1,11 @@
 import {
   facilitiesSchemaSfo,
-  facilitiesLfoUiSchema,
   facilitiesSfoUiSchema,
 } from "../../data/jsonSchema/facilitiesSfo";
-import { facilitiesSchemaLfo } from "../../data/jsonSchema/facilitiesLfo";
+import {
+  facilitiesSchemaLfo,
+  facilitiesLfoUiSchema,
+} from "../../data/jsonSchema/facilitiesLfo";
 import FacilitiesForm from "./FacilitiesForm";
 import { UUID } from "crypto";
 import { notFound } from "next/navigation";
