@@ -614,7 +614,10 @@ def reverse_init_methodology_data(apps, schema_monitor):
     ).delete()
 
 
-def load_reporting_fixtures(apps, schema_editor):
+def init_reporting_years(apps, schema_editor):
+    '''
+    Add initial year data to erc.reporting_year
+    '''
     from django.core.management import call_command
 
     fixture_files = [
@@ -624,6 +627,14 @@ def load_reporting_fixtures(apps, schema_editor):
     # Load the fixtures
     for fixture in fixture_files:
         call_command('loaddata', fixture)
+
+
+def reverse_init_reporting_years(apps, schema_editor):
+    '''
+    Remove initial year data from erc.reporting_year
+    '''
+    ReportingYears = apps.get_model('reporting', 'ReportingYear')
+    ReportingYears.objects.filter(reporting_year__in=[2023, 2024]).delete()
 
 
 class Migration(migrations.Migration):
@@ -638,5 +649,5 @@ class Migration(migrations.Migration):
         migrations.RunPython(init_fuel_type_data, reverse_init_fuel_type_data),
         migrations.RunPython(init_methodology_data, reverse_init_methodology_data),
         migrations.RunPython(init_configuration_data, reverse_init_configuration_data),
-        migrations.RunPython(load_reporting_fixtures),
+        migrations.RunPython(init_reporting_years, reverse_init_reporting_years),
     ]
