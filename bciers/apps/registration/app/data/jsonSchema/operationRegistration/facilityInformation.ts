@@ -2,10 +2,9 @@ import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import {
   facilitiesSchemaSfo,
-  facilitiesLfoUiSchema,
   facilitiesSfoUiSchema,
 } from "apps/administration/app/data/jsonSchema/facilitiesSfo";
-import SectionFieldTemplate from "@bciers/components/form/fields/SectionFieldTemplate";
+import { facilitiesLfoUiSchema } from "apps/administration/app/data/jsonSchema/facilitiesLfo";
 import { facilitiesSchemaLfo } from "apps/administration/app/data/jsonSchema/facilitiesLfo";
 
 export const facilityInformationSchemaLfo: RJSFSchema = {
@@ -42,9 +41,6 @@ export const facilityInfoLfoUiSchema: UiSchema = {
     },
     items: {
       ...facilitiesLfoUiSchema,
-      section1: {
-        "ui:FieldTemplate": SectionFieldTemplate,
-      },
     },
   },
 };

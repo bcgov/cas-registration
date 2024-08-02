@@ -1,12 +1,14 @@
 import {
   facilitiesSchemaSfo,
-  facilitiesLfoUiSchema,
   facilitiesSfoUiSchema,
 } from "../../data/jsonSchema/facilitiesSfo";
-import { notFound } from "next/navigation";
-import { facilitiesSchemaLfo } from "../../data/jsonSchema/facilitiesLfo";
-import FacilityForm from "./FacilityForm";
+import {
+  facilitiesSchemaLfo,
+  facilitiesLfoUiSchema,
+} from "../../data/jsonSchema/facilitiesLfo";
 import { UUID } from "crypto";
+import { notFound } from "next/navigation";
+import FacilityForm from "./FacilityForm";
 import getFacility from "./getFacility";
 import { FacilityTypes, OperationTypes } from "@bciers/utils/enums";
 import { getOperation } from "@bciers/actions/api";
