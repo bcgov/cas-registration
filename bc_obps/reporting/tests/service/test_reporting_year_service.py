@@ -14,6 +14,7 @@ class TestReportingYearService:
             reporting_year=2000,
             reporting_window_start='2001-01-01T00:00:00.000Z',
             reporting_window_end='2001-12-31T23:59:59.999Z',
+            report_due_date='2001-05-31T23:59:59.999Z',
             description='Test reporting year',
         )
 
