@@ -1,4 +1,5 @@
 import { RJSFSchema } from "@rjsf/utils";
+import SectionFieldTemplate from "@bciers/components/form/fields/SectionFieldTemplate";
 import provinceOptions from "@bciers/data/provinces.json";
 
 const currentYear = new Date().getFullYear();
@@ -107,5 +108,37 @@ export const facilitiesSchemaLfo: RJSFSchema = {
   properties: {
     section1,
     section2,
+  },
+};
+
+export const facilitiesLfoUiSchema = {
+  "ui:FieldTemplate": SectionFieldTemplate,
+  "ui: options": {
+    label: false,
+  },
+  section1: {
+    "ui:FieldTemplate": SectionFieldTemplate,
+    type: {
+      "ui:widget": "ComboBox",
+    },
+    is_current_year: {
+      "ui:widget": "ToggleWidget",
+    },
+    starting_date: {
+      "ui:widget": "DateWidget",
+      "ui:options": {
+        maxDate: new Date(),
+        minDate: new Date(currentYear - 1, 0, 1),
+      },
+    },
+  },
+  section2: {
+    "ui:FieldTemplate": SectionFieldTemplate,
+    province: {
+      "ui:widget": "ComboBox",
+    },
+    postal_code: {
+      "ui:widget": "PostalCodeWidget",
+    },
   },
 };
