@@ -18,6 +18,26 @@ backend:
       cpu: 60m
       memory: 256Mi
 
+administrationFrontend:
+  replicaCount: 1
+
+  image:
+    tag: "latest"
+
+  route:
+    host: cas-bciers-frontend-test.apps.silver.devops.gov.bc.ca
+    path: "/administration"
+
+  environment: test
+
+  resources:
+    limits:
+      cpu: 200m
+      memory: 512Mi
+    requests:
+      cpu: 60m
+      memory: 256Mi
+
 registrationFrontend:
   replicaCount: 1
 
@@ -47,6 +67,26 @@ reportingFrontend:
   route:
     host: cas-bciers-frontend-test.apps.silver.devops.gov.bc.ca
     path: "/reporting"
+
+  environment: test
+
+  resources:
+    limits:
+      cpu: 200m
+      memory: 512Mi
+    requests:
+      cpu: 60m
+      memory: 256Mi
+
+coamFrontend:
+  replicaCount: 1
+
+  image:
+    tag: "latest"
+
+  route:
+    host: cas-bciers-frontend-test.apps.silver.devops.gov.bc.ca
+    path: "/coam"
 
   environment: test
 
