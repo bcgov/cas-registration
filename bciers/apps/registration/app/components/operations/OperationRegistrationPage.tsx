@@ -15,7 +15,6 @@ import {
 } from "@/registration/app/components/operations/registration/enums";
 
 import { FacilitiesSearchParams } from "@/administration/app/components/facilities/types";
-import { OperationData } from "./types";
 
 const OperationRegistrationPage = async ({
   step,
@@ -26,7 +25,7 @@ const OperationRegistrationPage = async ({
   operation: UUID | "create";
   searchParams: FacilitiesSearchParams;
 }) => {
-  let operationData: OperationData | undefined;
+  let operationData;
 
   if (operation && isValidUUID(operation)) {
     operationData = await getOperation(operation);
@@ -56,7 +55,8 @@ const OperationRegistrationPage = async ({
       return FacilityInformationPage({
         ...defaultProps,
         searchParams,
-        operationData,
+        operationName: operationData.name,
+        operationType: operationData.type,
       });
     case "New Entrant Operation":
       return NewEntrantOperationPage(defaultProps);
