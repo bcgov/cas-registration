@@ -30,7 +30,7 @@
   }
   .form-heading-label {
     /* Selecting label child element so we can pass it in using ui:classNames in the form schema */
-    @apply [&>label]:text-2xl [&>label]:py-2 [&>label]:w-full [&>label]:font-bold [&>label]:border-solid [&>label]:text-bc-bg-blue [&>label]:border-bc-bg-blue [&>label]:border-l-0 [&>label]:border-r-0 [&>label]:mb-4;
+    @apply [&>label]:text-2xl [&>label]:py-2 [&>label]:w-full [&>label]:font-bold [&>label]:border-solid [&>label]:text-bc-bg-blue [&>label]:border-bc-bg-blue [&>label]:border-l-0 [&>label]:border-r-0 [&>label]:mb-4 [&>label]:border-2;
   }
   .dashboard-tile-container {
     @apply flex flex-col justify-between border border-bc-component-grey border-solid rounded-md min-w-full min-h-full sm:min-w-[400px] sm:max-w-[400px] p-6 hover:box-shadow-tile hover:transition-shadow;
@@ -40,6 +40,12 @@
   }
   .read-only-widget {
     @apply w-full px-[14px] py-4 flex items-center min-h-[56px] box-border;
+  }
+  .link-button-blue {
+    @apply w-fit no-underline text-lg text-white py-[6px] px-[16px] rounded flex items-center bg-bc-primary-blue;
+  }
+  .emission-array-header {
+    @apply text-base py-2 w-full font-bold text-bc-bg-blue;
   }
 }
 

@@ -12,6 +12,7 @@ import {
   BC_GOV_SEMANTICS_RED,
   BC_GOV_SEMANTICS_GREEN,
   DARK_GREY_BG_COLOR,
+  WHITE,
 } from "@bciers/styles";
 import "@bcgov/bc-sans/css/BCSans.css";
 export const theme = createTheme({
@@ -77,6 +78,7 @@ export const theme = createTheme({
     MuiTextField: {
       styleOverrides: {
         root: {
+          backgroundColor: WHITE,
           "& .MuiOutlinedInput-root": {
             "&:hover fieldset": {
               borderColor: BC_GOV_LINKS_COLOR,
@@ -91,6 +93,7 @@ export const theme = createTheme({
     MuiSelect: {
       styleOverrides: {
         root: {
+          backgroundColor: WHITE,
           "&:hover .MuiOutlinedInput-notchedOutline": {
             borderColor: BC_GOV_LINKS_COLOR,
             borderWidth: "1px",

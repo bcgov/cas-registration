@@ -45,7 +45,11 @@ const SectionTaskListItem: React.FC<TaskListItemProps> = ({
             item.elements.map((elt) => {
               const TaskListChildItem = elementFactory(elt);
               return (
-                <TaskListChildItem item={elt} elementFactory={elementFactory} />
+                <TaskListChildItem
+                  key={elt.key ?? elt.title}
+                  item={elt}
+                  elementFactory={elementFactory}
+                />
               );
             })}
         </List>

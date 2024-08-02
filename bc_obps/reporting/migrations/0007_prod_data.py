@@ -29,11 +29,11 @@ def init_source_type_data(apps, schema_monitor):
         [
             SourceType(
                 name='General stationary combustion of fuel or waste with production of useful energy',
-                json_key='gcsWithProductionOfUsefulEnergy',
+                json_key='gscWithProductionOfUsefulEnergy',
             ),
             SourceType(
                 name='General stationary combustion of waste without production of useful energy',
-                json_key='gcsWithoutProductionOfUsefulEnergy',
+                json_key='gscWithoutProductionOfUsefulEnergy',
             ),
             SourceType(
                 name='Fuel combustion by mobile equipment that is part of the facility',
