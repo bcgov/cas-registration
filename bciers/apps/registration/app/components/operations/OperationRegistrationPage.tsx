@@ -11,7 +11,6 @@ import { allOperationRegistrationSteps } from "@/registration/app/components/ope
 import { getOperation } from "@bciers/actions/api";
 
 import { FacilitiesSearchParams } from "@/administration/app/components/facilities/types";
-import { OperationData } from "./types";
 
 const OperationRegistrationPage = async ({
   step,
@@ -34,7 +33,7 @@ const OperationRegistrationPage = async ({
   // @ts-ignore
   if (purpose !== "Opted-in Operation")
     steps = steps.filter((e) => e !== "Opt-in Application");
-  let operationData: OperationData | undefined;
+  let operationData;
 
   if (operation && isValidUUID(operation)) {
     operationData = await getOperation(operation);
@@ -56,7 +55,8 @@ const OperationRegistrationPage = async ({
       return FacilityInformationPage({
         ...defaultProps,
         searchParams,
-        operationData,
+        operationName: operationData.name,
+        operationType: operationData.type,
       });
     case "New Entrant Operation":
       return NewEntrantOperationPage(defaultProps);

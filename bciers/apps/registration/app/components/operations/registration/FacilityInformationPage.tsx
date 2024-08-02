@@ -6,42 +6,28 @@ import {
 } from "apps/registration/app/data/jsonSchema/operationRegistration/facilityInformation";
 import fetchFacilitiesPageData from "@/administration/app/components/facilities/fetchFacilitiesPageData";
 import { FacilitiesSearchParams } from "apps/administration/app/components/facilities/types";
-import { OperationData } from "apps/registration/app/components/operations/types";
-import { FacilityTypes } from "@bciers/utils/enums";
+import { FacilityTypes, OperationTypes } from "@bciers/utils/enums";
 
 const FacilityInformationPage = async ({
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   operation,
-  // Should we just pass the name and type or all of the operation data?
-  operationData,
+  operationName,
+  operationType,
   searchParams,
   step,
   steps,
 }: {
-<<<<<<< HEAD
   operation: UUID;
-=======
-  operation: UUID | "create";
-  operationData: OperationData;
->>>>>>> 4574e0866 (chore: pre-populate facility name and type for sfo operations)
+  operationName: string;
+  operationType: OperationTypes;
   searchParams: FacilitiesSearchParams;
   step: number;
   steps: string[];
 }) => {
-<<<<<<< HEAD
-  // Will need to pull this from the formData;
-  const isOperationLfo = true;
-=======
-  // Hardcoding for development purposes
-  const OPERATION_ID = "002d5a9e-32a6-4191-938c-2c02bfec592d";
 
-  // const isOperationSfo = operationData?.type === OperationTypes.SFO;
-  const isOperationSfo = false;
->>>>>>> 4574e0866 (chore: pre-populate facility name and type for sfo operations)
+  const isOperationSfo = operationType === OperationTypes.SFO;
 
   const initialGridData = await fetchFacilitiesPageData(
-    // Remember to replace this with the actual operation ID
-    OPERATION_ID,
+    operation,
     searchParams,
   );
 
@@ -51,14 +37,14 @@ const FacilityInformationPage = async ({
 
   // Single facility operations get read-only name and type fields pre-populated
   const formData = isOperationSfo
-    ? { section1: { name: operationData?.name, type: FacilityTypes.SFO } }
+    ? { section1: { name: operationName, type: FacilityTypes.SFO } }
     : {};
 
   return (
     <FacilityInformationForm
       initialGridData={initialGridData}
       formData={formData}
-      operation={OPERATION_ID}
+      operation={operation}
       isSfo={isOperationSfo}
       schema={formSchema}
       step={step}
