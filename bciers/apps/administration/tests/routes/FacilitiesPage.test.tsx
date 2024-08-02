@@ -18,7 +18,7 @@ describe("Facilities page", () => {
       await FacilitiesPage({
         operationId: "random UUID",
         searchParams: {
-          operationsTitle: "Operation Title",
+          operations_title: "Operation Title",
         },
         isExternalUser: true,
       }),
