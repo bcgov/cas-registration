@@ -26,7 +26,7 @@ const FacilityDataGrid = ({
   const createFacilitiesActionCell = () =>
     ActionCellFactory({
       generateHref: (params: GridRenderCellParams) => {
-        return `/operations/${operationId}/facilities/${params.row.id}?operations_title=${operations_title}&facilities_title=${params.row.name}`;
+        return `/operations/${operationId}/facilities/${params.row.id}?operations_title=${operationsTitle}&facilities_title=${params.row.name}`;
       },
       cellText: "View Details",
     });
