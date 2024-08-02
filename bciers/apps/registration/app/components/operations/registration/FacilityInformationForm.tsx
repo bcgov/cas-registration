@@ -28,11 +28,15 @@ interface FacilityInformationFormProps extends OperationRegistrationFormProps {
 const createUnnestedArrayFormData = (
   formDataArray: any,
   formSectionList: string[],
+  operationId: string,
 ) => {
   const unnestedFormData: { [key: string]: any }[] = [];
   formDataArray.forEach((formData: { [key: string]: any }) => {
     const unnestedData = createUnnestedFormData(formData, formSectionList);
-    unnestedFormData.push(unnestedData);
+    unnestedFormData.push({
+      ...unnestedData,
+      operation_id: operationId,
+    });
   });
   return unnestedFormData;
 };
@@ -72,18 +76,21 @@ const FacilityInformationForm = ({
   const handleSubmit = useCallback(
     async (e: IChangeEvent) => {
       const method = "POST";
-      const endpoint = isSfo ? "registration/facilities" : "tbd";
+      const endpoint = isSfo
+        ? "registration/facility"
+        : "registration/facilities";
 
-      const formDataUnnested = isSfo
-        ? createUnnestedFormData(e.formData, formSectionListLFo)
+      const body = isSfo
+        ? {
+            ...createUnnestedFormData(e.formData, formSectionListLFo),
+            operation_id: operation,
+          }
         : createUnnestedArrayFormData(
             e.formData.facility_information_array,
             formSectionListLFo,
+            "002d5a9e-32a6-4191-938c-2c02bfec592d",
           );
-      const body = {
-        ...formDataUnnested,
-        operation_id: operation,
-      };
+      console.log("body", body);
       const response = await actionHandler(endpoint, method, "", {
         body: JSON.stringify(body),
       });
