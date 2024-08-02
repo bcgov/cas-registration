@@ -40,6 +40,7 @@ const FacilityInformationPage = async ({
     ? facilityInformationSchemaSfo
     : facilityInformationSchemaLfo;
 
+  // Single facility operations get read-only name and type fields pre-populated
   const formData = isOperationSfo
     ? { section1: { name: operationData?.name, type: FacilityTypes.SFO } }
     : {};
