@@ -32,9 +32,9 @@ const createUnnestedArrayFormData = (
 ) => {
   const unnestedFormData: { [key: string]: any }[] = [];
   formDataArray.forEach((formData: { [key: string]: any }) => {
-    const unnestedData = createUnnestedFormData(formData, formSectionList);
+    // Unnest each formData object and add operation_id
     unnestedFormData.push({
-      ...unnestedData,
+      ...createUnnestedFormData(formData, formSectionList),
       operation_id: operationId,
     });
   });
@@ -88,9 +88,8 @@ const FacilityInformationForm = ({
         : createUnnestedArrayFormData(
             e.formData.facility_information_array,
             formSectionListLFo,
-            "002d5a9e-32a6-4191-938c-2c02bfec592d",
+            operation,
           );
-      console.log("body", body);
       const response = await actionHandler(endpoint, method, "", {
         body: JSON.stringify(body),
       });
