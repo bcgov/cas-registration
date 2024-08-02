@@ -12,7 +12,7 @@ import { GridRenderCellParams } from "@mui/x-data-grid";
 
 const ContactsActionCell = ActionCellFactory({
   generateHref: (params: GridRenderCellParams) => {
-    return `contacts/${params.row.id}?contactsTitle=${params.row.first_name} ${params.row.last_name}`;
+    return `contacts/${params.row.id}?contacts_title=${params.row.first_name} ${params.row.last_name}`;
   },
   cellText: "View Details",
 });
