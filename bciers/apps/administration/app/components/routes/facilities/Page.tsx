@@ -25,7 +25,7 @@ export default async function FacilitiesPage({
       {isExternalUser && (
         <div className="text-right">
           <Link
-            href={`/operations/${operationId}/facilities/add-facility?operationsTitle=${searchParams.operationsTitle}`}
+            href={`/operations/${operationId}/facilities/add-facility?operations_title=${searchParams.operationsTitle}`}
           >
             <Button variant="contained">Add Facility</Button>
           </Link>

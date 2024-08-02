@@ -74,9 +74,9 @@ export default function Bread({
         : "";
       if (
         precedingSegment &&
-        crumbTitles[`${precedingSegment.toLowerCase()}Title`]
+        crumbTitles[`${precedingSegment.toLowerCase()}_title`]
       ) {
-        return crumbTitles[`${precedingSegment.toLowerCase()}Title`];
+        return crumbTitles[`${precedingSegment.toLowerCase()}_title`];
       }
       return crumbTitles.title;
     }

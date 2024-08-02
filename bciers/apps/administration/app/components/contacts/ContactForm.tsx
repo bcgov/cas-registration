@@ -91,7 +91,7 @@ export default function ContactForm({
           window.history.replaceState(
             null,
             "",
-            `/administration/contacts/${response.id}?contactsTitle=${response.first_name} ${response.last_name}`,
+            `/administration/contacts/${response.id}?contacts_title=${response.first_name} ${response.last_name}`,
           );
         } else {
           setKey(Math.random());
