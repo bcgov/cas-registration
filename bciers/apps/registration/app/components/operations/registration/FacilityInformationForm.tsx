@@ -7,6 +7,7 @@ import { actionHandler } from "@bciers/actions";
 import FacilityDataGrid from "apps/administration/app/components/facilities/FacilityDataGrid";
 import { FacilityInitialData } from "apps/administration/app/components/facilities/types";
 import MultiStepBase from "@bciers/components/form/MultiStepBase";
+import { facilitiesSchemaLfo } from "@/administration/app/data/jsonSchema/facilitiesLfo";
 import {
   facilityInfoLfoUiSchema,
   facilityInfoSfoUiSchema,
@@ -23,16 +24,18 @@ interface FacilityInformationFormProps extends OperationRegistrationFormProps {
   isSfo: boolean;
 }
 
-// const createUnnestedArrayFormData = (
-//   formData: any,
-//   formSectionList: string[],
-// ) => {
-//   const unnestedFormData: any = {};
-//   formSectionList.forEach((section) => {
-//     unnestedFormData[section] = formData[section];
-//   });
-//   return unnestedFormData;
-// };
+// Unnest the formData objects inside facility_information_array which is split into sections
+const createUnnestedArrayFormData = (
+  formDataArray: any,
+  formSectionList: string[],
+) => {
+  const unnestedFormData: { [key: string]: any }[] = [];
+  formDataArray.forEach((formData: { [key: string]: any }) => {
+    const unnestedData = createUnnestedFormData(formData, formSectionList);
+    unnestedFormData.push(unnestedData);
+  });
+  return unnestedFormData;
+};
 
 const FacilityInformationForm = ({
   formData,
@@ -45,8 +48,9 @@ const FacilityInformationForm = ({
 }: FacilityInformationFormProps) => {
   const [error, setError] = useState(undefined);
   const [formState, setFormState] = useState(formData ?? {});
-  const formSections = schema.properties as RJSFSchema;
-  const formSectionList = Object.keys(formSections);
+  const formSectionListLFo = Object.keys(
+    facilitiesSchemaLfo.properties as RJSFSchema,
+  );
 
   const FacilityDataGridMemo = useMemo(
     () => (
@@ -71,9 +75,11 @@ const FacilityInformationForm = ({
       const endpoint = isSfo ? "registration/facilities" : "tbd";
 
       const formDataUnnested = isSfo
-        ? createUnnestedFormData(e.formData, formSectionList)
-        : {};
-
+        ? createUnnestedFormData(e.formData, formSectionListLFo)
+        : createUnnestedArrayFormData(
+            e.formData.facility_information_array,
+            formSectionListLFo,
+          );
       const body = {
         ...formDataUnnested,
         operation_id: operation,
