@@ -92,8 +92,11 @@ const ActionCell = (params: GridRenderCellParams) => {
     <Button
       color="primary"
       onClick={async () => {
-        const reportingYear = await getReportingYear();
-        const newReportId = await handleStartReport(OperationId, reportingYear);
+        const reportingYearObj = await getReportingYear();
+        const newReportId = await handleStartReport(
+          OperationId,
+          reportingYearObj.reporting_year,
+        );
         router.push(`operations/${newReportId}/review-operator-data`);
       }}
     >
