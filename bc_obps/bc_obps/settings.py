@@ -196,5 +196,5 @@ if SENTRY_ENVIRONMENT == 'prod':
 NINJA_PAGINATION_PER_PAGE = 20
 
 # Bypass CSRF protection in development(for admin login page only)
-if not DEBUG and ENVIRONMENT == "develop":
+if not DEBUG and ENVIRONMENT == "dev":
     CSRF_TRUSTED_ORIGINS = [f"https://{os.environ.get('BACKEND_HOST')}/login/?next=/admin/"]
