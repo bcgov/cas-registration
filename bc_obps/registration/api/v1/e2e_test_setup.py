@@ -15,7 +15,7 @@ from django.core.cache import cache
     This endpoint is only available in the development environment.""",
 )
 def setup(request: HttpRequest, workflow: Optional[str] = None, truncate_only: bool = False) -> HttpResponse:
-    if settings.ENVIRONMENT == "develop":
+    if settings.ENVIRONMENT == "dev":
         cache.clear()  # clear cache to avoid stale data (specifically for the current_user_middleware.py middleware)
         try:
             if truncate_only:  # only truncate the tables
