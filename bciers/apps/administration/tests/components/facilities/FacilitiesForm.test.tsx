@@ -47,6 +47,8 @@ const sfoFormData = {
   province: "BC",
   postal_code: "h0h0h0",
   id: "4abd8367-efd1-4654-a7ea-fa1a015d3cae",
+  is_current_year: true,
+  starting_date: "2024-07-11 02:00:00.000 -0700",
 };
 
 const lfoFormData = {
@@ -60,6 +62,8 @@ const lfoFormData = {
   province: "BC",
   postal_code: "h0h0h0",
   id: "4abd8367-efd1-4654-a7ea-fa1a015d3cae",
+  is_current_year: true,
+  starting_date: "2024-07-11 02:00:00.000 -0700",
 };
 
 describe("FacilitiesForm component", () => {
@@ -82,6 +86,12 @@ describe("FacilitiesForm component", () => {
     ).toBeVisible();
     expect(screen.getByLabelText(/Facility Name+/i)).toHaveValue("");
     expect(screen.getByLabelText(/Facility Type+/i)).toHaveValue("");
+    expect(
+      screen.getByLabelText(/Did this facility begin operations in+/i),
+    ).not.toBeChecked();
+    expect(
+      screen.queryByLabelText(/Date of facility starting operations+/i),
+    ).toBeNull();
     expect(
       screen.getByRole("heading", { name: /Facility Address/i }),
     ).toBeVisible();
@@ -119,6 +129,12 @@ describe("FacilitiesForm component", () => {
     expect(screen.getByText(/Authorization+/i)).toBeVisible();
     expect(screen.getByRole("button", { name: "Add" })).toBeVisible();
     expect(
+      screen.getByLabelText(/Did this facility begin operations in+/i),
+    ).not.toBeChecked();
+    expect(
+      screen.queryByLabelText(/Date of facility starting operations+/i),
+    ).toBeNull();
+    expect(
       screen.getByRole("heading", { name: /Facility Address/i }),
     ).toBeVisible();
     expect(screen.getByLabelText(/Street address+/i)).toHaveValue("");
@@ -150,6 +166,17 @@ describe("FacilitiesForm component", () => {
     expect(container.querySelector("#root_section1_type")).toHaveTextContent(
       "Single Facility Operation",
     );
+    expect(
+      container.querySelector("#root_section1_is_current_year"),
+    ).toHaveTextContent("Yes");
+    waitFor(() =>
+      expect(
+        container.querySelector("#root_section1_starting_date"),
+      ).toBeInTheDocument(),
+    );
+    expect(
+      container.querySelector("#root_section1_starting_date"),
+    ).toHaveTextContent("2024-07-11");
     expect(
       container.querySelector("#root_section2_street_address"),
     ).toHaveTextContent("adf");
@@ -188,6 +215,17 @@ describe("FacilitiesForm component", () => {
     expect(screen.getByText(24546)).toBeVisible();
     expect(screen.getByText(54321)).toBeVisible();
     expect(
+      container.querySelector("#root_section1_is_current_year"),
+    ).toHaveTextContent("Yes");
+    waitFor(() =>
+      expect(
+        container.querySelector("#root_section1_starting_date"),
+      ).toBeInTheDocument(),
+    );
+    expect(
+      container.querySelector("#root_section1_starting_date"),
+    ).toHaveTextContent("2024-07-11");
+    expect(
       container.querySelector("#root_section2_street_address"),
     ).toHaveTextContent("adf");
     expect(
@@ -220,6 +258,16 @@ describe("FacilitiesForm component", () => {
       submitButton.click();
     });
     expect(screen.getAllByText(/Required field/i)).toHaveLength(4);
+
+    //check starting date required when year is clicked
+    const year = screen.getByLabelText(
+      /Did this facility begin operations in+/i,
+    );
+    act(() => {
+      year.click();
+      submitButton.click();
+    });
+    expect(screen.getAllByText(/Required field/i)).toHaveLength(5);
   });
   it("does not allow LFO submission if there are validation errors (bad form data)", async () => {
     render(
@@ -242,6 +290,73 @@ describe("FacilitiesForm component", () => {
     expect(screen.getAllByText(/Format should be A1A 1A1/i)).toHaveLength(1);
     expect(screen.getAllByText(/must be >= -90/i)).toHaveLength(1);
     expect(screen.getAllByText(/must be <= 180/i)).toHaveLength(1);
+  });
+
+  // created this starting datetest to get around form without edit fields in the last test
+  it("does not allow LFO submission if there is a starting date validation error", async () => {
+    render(
+      <FacilitiesForm
+        schema={facilitiesSchemaLfo}
+        uiSchema={facilitiesUiSchema}
+        formData={{}}
+        isCreating
+      />,
+    );
+
+    // fill name
+    await userEvent.type(screen.getByLabelText(/Facility Name+/i), "test");
+
+    // fill type
+    const comboBoxInput = screen.getAllByRole(
+      "combobox",
+    )[0] as HTMLInputElement;
+    const openComboboxButton = comboBoxInput?.parentElement?.children[1]
+      ?.children[0] as HTMLInputElement;
+    await userEvent.click(openComboboxButton);
+    const typeOption = screen.getByText("Large Facility");
+    await userEvent.click(typeOption);
+
+    // fill year and starting date with wrong info
+    const year = screen.getByLabelText(/Did this facility begin operations+/i);
+    await userEvent.click(year);
+    await userEvent.type(
+      screen.getByLabelText(/Date of facility starting operations+/i),
+      "20200101",
+    );
+
+    // fill lat and long
+    fireEvent.change(
+      screen.getByLabelText(/Latitude of Largest Point of Emissions+/i),
+      { target: { value: 3 } },
+    );
+    fireEvent.change(
+      screen.getByLabelText(/Longitude of Largest Point of Emissions+/i),
+      { target: { value: 6 } },
+    );
+
+    const submitButton = screen.getByRole("button", { name: "Submit" });
+    fireEvent.click(submitButton);
+
+    // expect to see validation error for starting date
+    expect(screen.getAllByText(/Starting Date must be between/i)).toHaveLength(
+      1,
+    );
+
+    // refill year and starting date to check for proper format
+    await userEvent.clear(
+      screen.getByLabelText(/Date of facility starting operations+/i),
+    );
+    await userEvent.type(
+      screen.getByLabelText(/Date of facility starting operations+/i),
+      "202",
+    );
+    fireEvent.click(submitButton);
+    console.log("test");
+
+    // expect to see format error for starting date
+    expect(
+      screen.getAllByText(/Starting Date format should be YYYY-MM-DD/i),
+    ).toHaveLength(1);
   });
 
   it("fills the mandatory form fields, creates new SFO facility, and redirects on success", async () => {
@@ -271,6 +386,13 @@ describe("FacilitiesForm component", () => {
     await userEvent.click(openComboboxButton);
     const typeOption = screen.getByText("Single Facility Operation");
     await userEvent.click(typeOption);
+    // fill year and starting date
+    const year = screen.getByLabelText(/Did this facility begin operations+/i);
+    await userEvent.click(year);
+    await userEvent.type(
+      screen.getByLabelText(/Date of facility starting operations+/i),
+      "20240101",
+    );
 
     // fill lat and long (userEvent.type doesn't work because the value goes in as a string and lat/long require a number)
     fireEvent.change(
@@ -292,7 +414,6 @@ describe("FacilitiesForm component", () => {
       );
     });
   });
-
   it("fills all form fields, creates new LFO facility, and redirects on success", async () => {
     render(
       <FacilitiesForm
@@ -324,6 +445,13 @@ describe("FacilitiesForm component", () => {
     const firstWellAuthInput = screen.getAllByRole("spinbutton")[0];
     // have to use fireEvent for number fields
     fireEvent.change(firstWellAuthInput, { target: { value: 355 } });
+    // fill year and starting date
+    const year = screen.getByLabelText(/Did this facility begin operations+/i);
+    await userEvent.click(year);
+    await userEvent.type(
+      screen.getByLabelText(/Date of facility starting operations+/i),
+      "20240101",
+    );
 
     await userEvent.type(screen.getByLabelText(/Street address+/i), "address");
     await userEvent.type(screen.getByLabelText(/Municipality+/i), "city");
@@ -353,6 +481,12 @@ describe("FacilitiesForm component", () => {
     );
 
     expect(firstWellAuthInput).toHaveValue(355);
+    expect(
+      screen.getByLabelText(/Did this facility begin operations+/i),
+    ).toBeChecked();
+    expect(
+      screen.getByLabelText(/Date of facility starting operations+/i),
+    ).toHaveValue("2024-01-01");
     expect(screen.getByLabelText(/Street address+/i)).toHaveValue("address");
     expect(screen.getByLabelText(/Municipality+/i)).toHaveValue("city");
     expect(screen.getByLabelText(/Province+/i)).toHaveValue("Alberta");
