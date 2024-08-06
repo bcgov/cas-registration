@@ -15,7 +15,7 @@ const customFormats = {
   "postal-code":
     /^[ABCEGHJ-NPRSTVXY]\d[ABCEGHJ-NPRSTV-Z][ -]?\d[ABCEGHJ-NPRSTV-Z]\d$/i,
   bc_corporate_registry_number: "^[A-Za-z]{1,3}\\d{7}$",
-  starting_date_format: /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01]).*/,
+  date_format: /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01]).*/,
   starting_date_year: yearRegEx,
 };
 export const customFormatsErrorMessages = {
@@ -27,7 +27,7 @@ export const customFormatsErrorMessages = {
   phone: "Format should be ### ### ####",
   email: "Please enter a valid email address, e.g. mail@example.com",
   uri: "Please enter a valid website link, e.g. http://www.website.com, https://www.website.com",
-  starting_date_format: "Starting Date format should be YYYY-MM-DD",
+  date_format: "Starting Date format should be YYYY-MM-DD",
   starting_date_year: `Starting Date must be between ${
     currentYear - 1
   } and ${currentYear}`,
