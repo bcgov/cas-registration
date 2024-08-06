@@ -55,8 +55,8 @@ const OperationRegistrationPage = async ({
       return FacilityInformationPage({
         ...defaultProps,
         searchParams,
-        operationName: operationData.name,
-        operationType: operationData.type,
+        operationName: operationData?.name,
+        operationType: operationData?.type,
       });
     case "New Entrant Operation":
       return NewEntrantOperationPage(defaultProps);

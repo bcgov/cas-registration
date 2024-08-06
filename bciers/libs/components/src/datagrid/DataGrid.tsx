@@ -23,6 +23,7 @@ interface Props {
     row_count?: number;
   };
   paginationMode?: "client" | "server";
+  sx?: { [key: string]: any };
 }
 
 const AscendingIcon = () => {
@@ -58,6 +59,7 @@ const DataGrid: React.FC<Props> = ({
   fetchPageData,
   paginationMode = "client",
   initialData,
+  sx,
 }) => {
   const [rows, setRows] = useState(initialData.rows ?? []);
   const [rowCount, setRowCount] = useState(initialData.row_count ?? undefined);
@@ -164,7 +166,7 @@ const DataGrid: React.FC<Props> = ({
   }, [searchParams]);
 
   // Memoize sx
-  const sx = useMemo(() => {
+  const gridStyles = useMemo(() => {
     return {
       ...styles,
       // Add dynamic styles here
@@ -172,6 +174,8 @@ const DataGrid: React.FC<Props> = ({
         height: isRowsEmpty && !loading ? "40vh" : "0",
         display: isRowsEmpty && !loading ? "block" : "none",
       },
+      // Allow overriding styles with sx prop
+      ...sx,
     };
   }, [isRowsEmpty, loading]);
 
@@ -205,7 +209,7 @@ const DataGrid: React.FC<Props> = ({
         // Set the row height to "auto" so that the row height will adjust to the content
         getRowHeight={() => "auto"}
         slots={slots}
-        sx={sx}
+        sx={gridStyles}
         disableVirtualization
       />
     </div>

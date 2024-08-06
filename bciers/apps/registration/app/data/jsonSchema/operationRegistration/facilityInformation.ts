@@ -1,13 +1,13 @@
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import {
-  facilitiesSchemaSfo,
+  facilitiesSfoSchema,
   facilitiesSfoUiSchema,
 } from "apps/administration/app/data/jsonSchema/facilitiesSfo";
 import { facilitiesLfoUiSchema } from "apps/administration/app/data/jsonSchema/facilitiesLfo";
-import { facilitiesSchemaLfo } from "apps/administration/app/data/jsonSchema/facilitiesLfo";
+import { facilitiesLfoSchema } from "apps/administration/app/data/jsonSchema/facilitiesLfo";
 
-export const facilityInformationSchemaLfo: RJSFSchema = {
+export const facilityInformationLfoSchema: RJSFSchema = {
   title: "Facility Information",
   type: "object",
   properties: {
@@ -17,19 +17,19 @@ export const facilityInformationSchemaLfo: RJSFSchema = {
       items: {
         type: "object",
         properties: {
-          ...facilitiesSchemaLfo.properties,
+          ...facilitiesLfoSchema.properties,
         },
       },
     },
   },
 };
 
-export const facilityInformationSchemaSfo: RJSFSchema = {
-  ...facilitiesSchemaSfo,
+export const facilityInformationSfoSchema: RJSFSchema = {
+  ...facilitiesSfoSchema,
   title: "Facility Information",
 };
 
-export const facilityInfoLfoUiSchema: UiSchema = {
+export const facilityInformationLfoUiSchema: UiSchema = {
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
   facility_information_array: {
@@ -45,7 +45,7 @@ export const facilityInfoLfoUiSchema: UiSchema = {
   },
 };
 
-export const facilityInfoSfoUiSchema: UiSchema = {
+export const facilityInformationSfoUiSchema: UiSchema = {
   ...facilitiesSfoUiSchema,
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
