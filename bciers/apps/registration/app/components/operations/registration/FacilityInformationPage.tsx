@@ -1,9 +1,5 @@
 import { UUID } from "crypto";
 import FacilityInformationForm from "apps/registration/app/components/operations/registration/FacilityInformationForm";
-import {
-  facilityInformationSchemaLfo,
-  facilityInformationSchemaSfo,
-} from "apps/registration/app/data/jsonSchema/operationRegistration/facilityInformation";
 import fetchFacilitiesPageData from "@/administration/app/components/facilities/fetchFacilitiesPageData";
 import { FacilitiesSearchParams } from "apps/administration/app/components/facilities/types";
 import { FacilityTypes, OperationTypes } from "@bciers/utils/enums";
@@ -18,7 +14,7 @@ const FacilityInformationPage = async ({
 }: {
   operation: UUID | "create";
   operationName: string;
-  operationType: OperationTypes;
+  operationType: string;
   searchParams: FacilitiesSearchParams;
   step: number;
   steps: string[];
@@ -30,10 +26,6 @@ const FacilityInformationPage = async ({
     searchParams,
   );
 
-  const formSchema = isOperationSfo
-    ? facilityInformationSchemaSfo
-    : facilityInformationSchemaLfo;
-
   // Single facility operations get read-only name and type fields pre-populated
   const formData = isOperationSfo
     ? { section1: { name: operationName, type: FacilityTypes.SFO } }
@@ -44,8 +36,7 @@ const FacilityInformationPage = async ({
       initialGridData={initialGridData}
       formData={formData}
       operation={operation}
-      isSfo={isOperationSfo}
-      schema={formSchema}
+      isOperationSfo={isOperationSfo}
       step={step}
       steps={steps}
     />

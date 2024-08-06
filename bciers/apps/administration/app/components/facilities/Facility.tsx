@@ -1,9 +1,9 @@
 import {
-  facilitiesSchemaSfo,
+  facilitiesSfoSchema,
   facilitiesSfoUiSchema,
 } from "../../data/jsonSchema/facilitiesSfo";
 import {
-  facilitiesSchemaLfo,
+  facilitiesLfoSchema,
   facilitiesLfoUiSchema,
 } from "../../data/jsonSchema/facilitiesLfo";
 import FacilitiesForm from "./FacilitiesForm";
@@ -33,7 +33,7 @@ export default async function Facility({
 
   if (facilityId) {
     facilityFormData = await getFacility(facilityId);
-    isCreating = Object.keys(facilityFormData).length > 0;
+    isCreating = Object.keys(facilityFormData).length === 0;
     if (facilityFormData?.error) {
       return notFound();
     }
@@ -47,7 +47,7 @@ export default async function Facility({
 
   return (
     <FacilitiesForm
-      schema={isSfo ? facilitiesSchemaSfo : facilitiesSchemaLfo}
+      schema={isSfo ? facilitiesSfoSchema : facilitiesLfoSchema}
       uiSchema={isSfo ? facilitiesSfoUiSchema : facilitiesLfoUiSchema}
       formData={facilityFormData}
       isCreating={isCreating}

@@ -102,7 +102,7 @@ const section2: RJSFSchema = {
   },
 };
 
-export const facilitiesSchemaLfo: RJSFSchema = {
+export const facilitiesLfoSchema: RJSFSchema = {
   type: "object",
   required: ["section1", "section2"],
   properties: {
