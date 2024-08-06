@@ -1,6 +1,8 @@
 import { RJSFSchema } from "@rjsf/utils";
 import provinceOptions from "@bciers/data/provinces.json";
 
+const currentYear = new Date().getFullYear();
+
 const section1: RJSFSchema = {
   type: "object",
   title: "Facility Information",
@@ -26,7 +28,38 @@ const section1: RJSFSchema = {
       },
       title: "Well Authorization Number(s)",
     },
+    is_current_year: {
+      type: "boolean",
+      title: `Did this facility begin operations in ${
+        currentYear - 1
+      } or ${currentYear}?`,
+      default: false,
+    },
   },
+  allOf: [
+    {
+      if: {
+        properties: {
+          is_current_year: {
+            const: true,
+          },
+        },
+      },
+      then: {
+        properties: {
+          starting_date: {
+            type: "string",
+            title: "Date of facility starting operations:",
+            allOf: [
+              { format: "date_format" },
+              { format: "starting_date_year" },
+            ],
+          },
+        },
+        required: ["starting_date"],
+      },
+    },
+  ],
 };
 
 const section2: RJSFSchema = {

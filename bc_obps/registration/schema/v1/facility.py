@@ -7,7 +7,7 @@ from typing import List, Optional
 class FacilityListOut(ModelSchema):
     class Meta:
         model = Facility
-        fields = ['id', 'name', 'type', 'bcghg_id']
+        fields = ['id', 'name', 'is_current_year', 'starting_date', 'type', 'bcghg_id']
 
 
 class FacilityFilterSchema(FilterSchema):
@@ -34,6 +34,8 @@ class FacilityIn(ModelSchema):
             "type",
             "latitude_of_largest_emissions",
             "longitude_of_largest_emissions",
+            "is_current_year",
+            "starting_date",
         ]
         populate_by_name = True
 
@@ -55,5 +57,7 @@ class FacilityOut(ModelSchema):
             'well_authorization_numbers',
             "latitude_of_largest_emissions",
             "longitude_of_largest_emissions",
+            "is_current_year",
+            "starting_date",
         ]
         populate_by_name = True
