@@ -95,7 +95,7 @@ const section2: RJSFSchema = {
   },
 };
 
-export const facilitiesSchemaSfo: RJSFSchema = {
+export const facilitiesSfoSchema: RJSFSchema = {
   type: "object",
   required: ["section1", "section2"],
   properties: {

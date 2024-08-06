@@ -1,28 +1,37 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
+import { UUID } from "crypto";
 import { IChangeEvent } from "@rjsf/core";
 import { RJSFSchema } from "@rjsf/utils";
 import { actionHandler } from "@bciers/actions";
 import FacilityDataGrid from "apps/administration/app/components/facilities/FacilityDataGrid";
 import { FacilityInitialData } from "apps/administration/app/components/facilities/types";
 import MultiStepBase from "@bciers/components/form/MultiStepBase";
-import { facilitiesSchemaLfo } from "@/administration/app/data/jsonSchema/facilitiesLfo";
+import { facilitiesLfoSchema } from "apps/administration/app/data/jsonSchema/facilitiesLfo";
 import {
-  facilityInfoLfoUiSchema,
-  facilityInfoSfoUiSchema,
+  facilityInformationLfoSchema,
+  facilityInformationSfoSchema,
+  facilityInformationLfoUiSchema,
+  facilityInformationSfoUiSchema,
 } from "apps/registration/app/data/jsonSchema/operationRegistration/facilityInformation";
-import {
-  FacilityInformationFormData,
-  OperationRegistrationFormProps,
-} from "apps/registration/app/components/operations/registration/types";
+import { FacilityInformationFormData } from "apps/registration/app/components/operations/registration/types";
 import { createUnnestedFormData } from "@bciers/components/form/formDataUtils";
 
-interface FacilityInformationFormProps extends OperationRegistrationFormProps {
+interface FacilityInformationFormProps {
   formData: FacilityInformationFormData;
   initialGridData: FacilityInitialData;
-  isSfo: boolean;
+  isOperationSfo: boolean;
+  operation: UUID | "create";
+  step: number;
+  steps: string[];
 }
+
+const FacilityGridSx = {
+  "& .MuiDataGrid-virtualScroller": {
+    minHeight: "60px",
+  },
+};
 
 // Unnest the formData objects inside facility_information_array which is split into sections
 const createUnnestedArrayFormData = (
@@ -44,23 +53,30 @@ const createUnnestedArrayFormData = (
 const FacilityInformationForm = ({
   formData,
   initialGridData,
-  isSfo,
+  isOperationSfo,
   operation,
-  schema,
   step,
   steps,
 }: FacilityInformationFormProps) => {
   const [error, setError] = useState(undefined);
   const [formState, setFormState] = useState(formData ?? {});
   const formSectionListLFo = Object.keys(
-    facilitiesSchemaLfo.properties as RJSFSchema,
+    facilitiesLfoSchema.properties as RJSFSchema,
   );
+
+  const schema = isOperationSfo
+    ? facilityInformationSfoSchema
+    : facilityInformationLfoSchema;
+  const uiSchema = isOperationSfo
+    ? facilityInformationSfoUiSchema
+    : facilityInformationLfoUiSchema;
 
   const FacilityDataGridMemo = useMemo(
     () => (
       <FacilityDataGrid
-        operationId="002d5a9e-32a6-4191-938c-2c02bfec592d"
         initialData={initialGridData ?? { rows: [], row_count: 0 }}
+        operationId={operation}
+        sx={FacilityGridSx}
       />
     ),
     [initialGridData],
@@ -76,11 +92,11 @@ const FacilityInformationForm = ({
   const handleSubmit = useCallback(
     async (e: IChangeEvent) => {
       const method = "POST";
-      const endpoint = isSfo
+      const endpoint = isOperationSfo
         ? "registration/facility"
         : "registration/facilities";
 
-      const body = isSfo
+      const body = isOperationSfo
         ? {
             ...createUnnestedFormData(e.formData, formSectionListLFo),
             operation_id: operation,
@@ -114,9 +130,9 @@ const FacilityInformationForm = ({
       schema={schema}
       step={step}
       steps={steps}
-      uiSchema={isSfo ? facilityInfoSfoUiSchema : facilityInfoLfoUiSchema}
+      uiSchema={uiSchema}
     >
-      {FacilityDataGridMemo}
+      <section className="mt-4">{FacilityDataGridMemo}</section>
     </MultiStepBase>
   );
 };
