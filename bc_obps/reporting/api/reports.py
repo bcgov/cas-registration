@@ -8,6 +8,7 @@ from service.report_service import ReportService
 from service.reporting_year_service import ReportingYearService
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from reporting.schema.report_operation import ReportOperationOut, ReportOperationIn
+from reporting.schema.reporting_year import ReportingYearOut
 from .router import router
 
 
@@ -56,10 +57,10 @@ def save_report(
 
 @router.get(
     "/reporting-year",
-    response={200: int, custom_codes_4xx: Message},
+    response={200: ReportingYearOut, custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
-    description="""Returns the current reporting year.""",
+    description="""Returns json object with current reporting year and due date.""",
 )
 @handle_http_errors()
-def get_reporting_year(request: HttpRequest) -> Tuple[Literal[200], int]:
-    return 200, ReportingYearService.get_current_reporting_year().reporting_year
+def get_reporting_year(request: HttpRequest) -> Tuple[Literal[200], ReportingYearOut]:
+    return 200, ReportingYearService.get_current_reporting_year()  # type: ignore
