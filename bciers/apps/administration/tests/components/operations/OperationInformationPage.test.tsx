@@ -60,7 +60,7 @@ const formData = {
       mo_postal_code: "V1V1V1",
     },
   ],
-  registration_category: "Non-Regulated",
+  registration_purpose: "Non-Regulated",
   regulated_products: [6],
 };
 
