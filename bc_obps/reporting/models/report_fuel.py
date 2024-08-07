@@ -28,6 +28,6 @@ class ReportFuel(ReportDataBaseModel):
     )
 
     class Meta:
-        db_table_comment = "A table to store the reported activity-specific data, in a JSON format"
+        db_table_comment = "A table to store the reported fuel-specific data, in a JSON format"
         db_table = 'erc"."report_fuel'
         app_label = 'reporting'

@@ -26,6 +26,6 @@ class ReportSourceType(ReportDataBaseModel):
     )
 
     class Meta:
-        db_table_comment = "A table to store the reported activity-specific data, in a JSON format"
+        db_table_comment = "A table to store the reported source type-specific data, in a JSON format"
         db_table = 'erc"."report_source_type'
         app_label = 'reporting'
