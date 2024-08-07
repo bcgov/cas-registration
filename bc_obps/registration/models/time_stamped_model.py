@@ -12,11 +12,29 @@ class TimeStampedModelManager(models.Manager):
 
 
 class TimeStampedModel(BaseModel):
-    created_by = models.ForeignKey('User', null=True, blank=True, on_delete=models.PROTECT, related_name='%(class)s_created')  # type: ignore[misc]
+    created_by = models.ForeignKey(
+        'registration.User',
+        null=True,
+        blank=True,
+        on_delete=models.PROTECT,
+        related_name='%(class)s_created',
+    )
     created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
-    updated_by = models.ForeignKey('User', on_delete=models.PROTECT, null=True, blank=True, related_name='%(class)s_updated')  # type: ignore[misc]
+    updated_by = models.ForeignKey(
+        'registration.User',
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        related_name='%(class)s_updated',
+    )
     updated_at = models.DateTimeField(null=True, blank=True)
-    archived_by = models.ForeignKey('User', on_delete=models.PROTECT, null=True, blank=True, related_name='%(class)s_archived')  # type: ignore[misc]
+    archived_by = models.ForeignKey(
+        'registration.User',
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        related_name='%(class)s_archived',
+    )
     archived_at = models.DateTimeField(null=True, blank=True)
     objects = TimeStampedModelManager()
 

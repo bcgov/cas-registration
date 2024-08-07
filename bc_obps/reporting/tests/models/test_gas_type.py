@@ -21,4 +21,5 @@ class GasTypeModelTest(BaseTestCase):
             ("name", "name", 1000, None),
             ("chemical_formula", "chemical formula", 100, None),
             ("configuration_elements", "configuration element", None, None),
+            ("reportemission_records", "report emission", None, 0),
         ]

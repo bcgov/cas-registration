@@ -1,10 +1,10 @@
-from common.models import BaseModel
 from django.db import models
 from registration.models import ReportingActivity, RegulatedProduct
+from registration.models.time_stamped_model import TimeStampedModel
 from reporting.models import ReportVersion
 
 
-class ReportFacility(BaseModel):
+class ReportFacility(TimeStampedModel):
 
     report_version = models.ForeignKey(
         ReportVersion,
