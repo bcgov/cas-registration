@@ -111,4 +111,5 @@ class FuelTypeModelTest(BaseTestCase):
             ("id", "ID", None, None),
             ("name", "name", 1000, None),
             ("unit", "unit", 1000, None),
+            ("reportfuel_records", "report fuel", None, 0),
         ]
