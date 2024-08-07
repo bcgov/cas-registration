@@ -3,6 +3,7 @@ import base64
 from model_bakery import baker
 from registration.models import User, UserOperator, AppRole
 from registration.utils import (
+    check_industry_user_operation_access,
     file_to_data_url,
     data_url_to_file,
     files_have_same_hash,
@@ -320,3 +321,34 @@ class TestFileHashComparison(TestCase):
         with self.assertRaises(ValueError) as context:
             files_have_same_hash(file1, None)
         self.assertEqual(str(context.exception), "Both files must be provided to compare hashes.")
+
+
+class TestCheckIndustryUserOperationAccess(TestCase):
+    def test_no_error_raised_when_user_has_all_permissions(self):
+        user = baker.make_recipe(
+            'utils.industry_operator_user',
+        )
+        user_operator = baker.make_recipe('utils.approved_user_operator', user=user)
+        operation = baker.make_recipe('utils.operation', operator=user_operator.operator)
+        check_industry_user_operation_access(user.user_guid, operation.id)
+
+    def test_error_raised_when_operation_does_not_belong_to_user(self):
+        user = baker.make_recipe(
+            'utils.industry_operator_user',
+        )
+        baker.make_recipe('utils.approved_user_operator', user=user)
+
+        random_operator = baker.make_recipe(
+            'utils.operator', cra_business_number=123456789, bc_corporate_registry_number='abc1234567'
+        )
+        operation = baker.make_recipe('utils.operation', operator=random_operator)
+        with pytest.raises(Exception):
+            check_industry_user_operation_access(user.user_guid, operation.id)
+
+    def test_error_raised_when_user_operator_not_approved(self):
+        user = baker.make_recipe(
+            'utils.industry_operator_user',
+        )
+        operation = baker.make_recipe('utils.operation')
+        with pytest.raises(Exception):
+            check_industry_user_operation_access(user.user_guid, operation.id)
