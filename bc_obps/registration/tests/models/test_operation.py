@@ -87,6 +87,7 @@ class OperationModelTest(BaseTestCase):
             ("ownerships", "operation ownership timeline", None, None),
             ("events", "event", None, None),
             ("report", "report", None, None),
+            ("registration_purposes", "registration purpose", None, None),
         ]
 
     def test_unique_boro_id_per_operation(self):
