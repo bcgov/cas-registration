@@ -36,6 +36,7 @@
   },
   {
     "model": "registration.operation",
+    "pk": "3b5b95ea-2a1a-450d-8e2e-2e15feed96c9",
     "fields": {
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
       "documents": [],

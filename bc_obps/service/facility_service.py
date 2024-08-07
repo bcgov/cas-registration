@@ -67,7 +67,7 @@ class FacilityService:
             include={
                 'name',
                 'type',
-                'is_current_year', 
+                'is_current_year',
                 'starting_date',
                 'latitude_of_largest_emissions',
                 'longitude_of_largest_emissions',
@@ -81,7 +81,7 @@ class FacilityService:
             include={'street_address', 'municipality', 'province', 'postal_code'}, exclude_none=exclude_none
         )
         return address_data
-    
+
     @classmethod
     def create_address(cls, address_data: dict, exclude_none: bool = True) -> Optional[Address]:
         """Helper function to create an address model from payload data."""
@@ -103,22 +103,24 @@ class FacilityService:
 
         Raises:
             Exception: If there are duplicate well authorization numbers in the new set.
-
-        Steps:
-            1. Extract existing well authorization numbers from the facility.
-            2. Compare new well authorization numbers from the payload with the existing ones.
-            3. Identify and add new well authorization numbers that are not in the existing set.
-            4. Identify and remove old well authorization numbers that are not in the new set.
         """
-        existing_numbers = set(facility.well_authorization_numbers.values_list('well_authorization_number', flat=True))
+        # Extract existing well authorization numbers from the facility
+        existing_numbers_set = set(
+            facility.well_authorization_numbers.values_list('well_authorization_number', flat=True)
+        )
         new_numbers = payload.well_authorization_numbers
 
         # Check for duplicates within the new_numbers
         if len(new_numbers) != len(set(new_numbers)):
             raise Exception("Well Authorization Number: Duplicates are not allowed.")
 
+        # Convert existing numbers to a queryset for filtering
+        existing_numbers_queryset = WellAuthorizationNumber.objects.filter(
+            well_authorization_number__in=existing_numbers_set
+        )
+
         # Numbers to add
-        numbers_to_add = set(new_numbers) - existing_numbers
+        numbers_to_add = set(new_numbers) - existing_numbers_set
 
         # Add new numbers
         if numbers_to_add:
@@ -128,23 +130,15 @@ class FacilityService:
                 )
 
         # Numbers to remove
-        numbers_to_remove = existing_numbers - set(new_numbers)
+        numbers_to_remove = existing_numbers_set - set(new_numbers)
 
         # Archive old numbers
         if numbers_to_remove:
-            numbers_to_archive: QuerySet[WellAuthorizationNumber] = facility.well_authorization_numbers.filter(
+            numbers_to_archive: QuerySet[WellAuthorizationNumber] = existing_numbers_queryset.filter(
                 well_authorization_number__in=numbers_to_remove
             )
             for n in numbers_to_archive:
                 n.set_archive(user_guid)
-
-
-        if numbers_to_remove:
-            numbers_to_archive: QuerySet[Number] = existing_numbers.filter(
-                id__in=numbers_to_remove
-            )
-            for number in numbers_to_archive:
-                number.set_archive(user_guid)
 
     @classmethod
     def list_facilities(
@@ -187,7 +181,7 @@ class FacilityService:
         address_data = cls.build_address(payload)
         if address_data:
             facility_data['address'] = cls.create_address(address_data)
-        
+
         facility = FacilityDataAccessService.create_facility(user_guid, facility_data)
         FacilityOwnershipTimelineDataAccessService.create_facility_ownership_timeline(
             user_guid, {'facility': facility, 'operation': operation, 'start_date': timezone.now()}
@@ -224,7 +218,7 @@ class FacilityService:
         facility_data = cls.prepare_facility_data(payload)
 
         # Update the address associated with the facility, if provided
-        address_data = cls.build_address(payload)
+        address_data = cls.build_address(payload, False)
         if any(address_data.values()):  # if any address data is provided
             address = AddressDataAccessService.upsert_address_from_data(address_data, facility.address_id)
             facility.address = address
