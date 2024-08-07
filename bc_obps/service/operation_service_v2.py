@@ -1,6 +1,8 @@
 from typing import Dict, Union
 from uuid import UUID
-from registration.schema.v2.operation import OperationFilterSchema
+from registration.models.registration_purpose import RegistrationPurpose
+from service.data_access_service.registration_purpose_service import registrationpurposeDataAccessService
+from registration.schema.v2.operation import OperationFilterSchema, RegistrationPurposeIn
 from service.data_access_service.user_service import UserDataAccessService
 from service.data_access_service.operation_service import OperationDataAccessService
 from django.db.models import Q
@@ -10,6 +12,9 @@ from registration.models import (
     Operation,
 )
 from registration.constants import PAGE_SIZE
+from django.db import transaction
+from registration.utils import check_industry_user_operation_access
+from django.db.models import QuerySet
 
 
 class OperationService:
@@ -45,3 +50,45 @@ class OperationService:
             "data": [(operation) for operation in paginator.page(page).object_list],
             "row_count": paginator.count,
         }
+
+    @classmethod
+    def list_current_users_operations(
+        cls,
+        user_guid: UUID,
+    ) -> QuerySet[Operation]:
+        user = UserDataAccessService.get_by_guid(user_guid)
+        return OperationDataAccessService.get_all_operations_for_user(user)
+
+    @classmethod
+    @transaction.atomic()
+    def register_operation_information(
+        cls, user_guid: UUID, operation_id: UUID, payload: RegistrationPurposeIn
+    ) -> Operation:
+        check_industry_user_operation_access(user_guid, operation_id)
+        operation: Operation = OperationDataAccessService.get_by_id(operation_id)
+
+        # add the payload's purpose as long as it's not reporting or regulated (will add these later)
+        if (
+            payload.registration_purpose != RegistrationPurpose.Purposes.OBPS_REGULATED_OPERATION
+            and payload.registration_purpose != RegistrationPurpose.Purposes.REPORTING_OPERATION
+        ):
+            registrationpurposeDataAccessService.create_registration_purpose(
+                user_guid, operation_id, payload.dict(include={'registration_purpose'})
+            )
+
+        if (
+            payload.registration_purpose != RegistrationPurpose.Purposes.ELECTRICITY_IMPORT_OPERATION
+            and payload.registration_purpose != RegistrationPurpose.Purposes.POTENTIAL_REPORTING_OPERATION
+        ):
+            for purpose in [
+                RegistrationPurpose.Purposes.OBPS_REGULATED_OPERATION,
+                RegistrationPurpose.Purposes.REPORTING_OPERATION,
+            ]:
+                registrationpurposeDataAccessService.create_registration_purpose(
+                    user_guid, operation_id, {'registration_purpose': purpose}
+                )
+            if payload.regulated_products:
+                operation.regulated_products.set(payload.regulated_products)
+
+        operation.set_create_or_update(user_guid)
+        return operation
