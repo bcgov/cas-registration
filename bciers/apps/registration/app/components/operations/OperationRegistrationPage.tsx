@@ -20,13 +20,15 @@ const OperationRegistrationPage = async ({
   searchParams: FacilitiesSearchParams;
 }) => {
   // const purpose = operationFormData?.registration_purpose;
-  // hardcoding a value for development
+  // hardcoding a value for development; remove value and ts-ignores when feature is implemented
   const purpose = "Reporting Operation";
 
   // Remove steps that aren't applicable to the registration based on purpose
   let steps = allOperationRegistrationSteps;
+  // @ts-ignore
   if (purpose !== "New Entrant Operation")
     steps = steps.filter((e) => e !== "New Entrant Application");
+  // @ts-ignore
   if (purpose !== "Opted-in Operation")
     steps = steps.filter((e) => e !== "Opt-in Application");
 
