@@ -67,15 +67,15 @@ export default function FacilityForm({
           return { error: response.error };
         }
         if (isCreating) {
-          router.replace(
+          window.history.replaceState(
+            null,
+            "",
             `/operations/${params.operationId}/facilities/${response.id}?facilities_title=${response.name}`,
-            // @ts-ignore
-            { shallow: true },
           );
         }
       }}
       onCancel={() =>
-        router.push(
+        router.replace(
           `/operations/${params.operationId}/facilities${queryString}`,
         )
       }
