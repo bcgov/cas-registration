@@ -13,7 +13,7 @@ import { GridRenderCellParams } from "@mui/x-data-grid";
 
 const FacilitiesActionCell = ActionCellFactory({
   generateHref: (params: GridRenderCellParams) => {
-    return `operations/${params.row.id}/facilities?operationsTitle=${params.row.name}`;
+    return `operations/${params.row.id}/facilities?operations_title=${params.row.name}`;
   },
   cellText: "View Facilities",
 });

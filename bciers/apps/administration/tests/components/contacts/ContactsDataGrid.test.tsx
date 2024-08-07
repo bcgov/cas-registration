@@ -106,7 +106,7 @@ describe("ContactsDataGrid component", () => {
     );
     expect(
       screen.getAllByRole("link", { name: /View Details/i })[0],
-    ).toHaveAttribute("href", "contacts/1");
+    ).toHaveAttribute("href", "contacts/1?contacts_title=John Doe");
   });
   it("makes API call with correct params when sorting", async () => {
     render(
