@@ -1,6 +1,6 @@
 const getOperation = vi.fn();
 
-vi.mock("apps/administration/app/components/operations/getOperation", () => ({
+vi.mock("libs/actions/src/api/getOperation", () => ({
   default: getOperation,
 }));
 

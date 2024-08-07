@@ -44,4 +44,34 @@ describe("the FacilityInformationForm component", () => {
       "Facility Information",
     );
   });
+
+  it("should render the FacilityInformationForm with SFO pre-filled fields", () => {
+    const { container } = render(
+      <FacilityInformationForm {...defaultProps} isOperationSfo />,
+    );
+
+    expect(screen.getByTestId("field-template-label")).toHaveTextContent(
+      "Facility Information",
+    );
+
+    const facilityName = container.querySelector("#root_section1_name");
+    expect(facilityName).toHaveTextContent("Test Operation");
+
+    const facilityType = container.querySelector("#root_section1_type");
+    expect(facilityType).toHaveTextContent("Single Facility");
+  });
+
+  it("should render the FacilityInformationForm with LFO schema without pre-filled fields", () => {
+    const { container } = render(<FacilityInformationForm {...defaultProps} />);
+
+    expect(screen.getByTestId("field-template-label")).toHaveTextContent(
+      "Facility Information",
+    );
+
+    const facilityName = container.querySelector("#root_section1_name");
+    expect(facilityName).toHaveTextContent("Test Operation");
+
+    const facilityType = container.querySelector("#root_section1_type");
+    expect(facilityType).toHaveTextContent("Linear Facility");
+  });
 });
