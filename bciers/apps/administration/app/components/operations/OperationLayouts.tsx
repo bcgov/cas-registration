@@ -1,4 +1,3 @@
-import Link from "next/link";
 import Note from "@bciers/components/layout/Note";
 
 const Layout = ({ children }: { children: React.ReactNode }) => (
@@ -21,9 +20,12 @@ export const ExternalUserOperationDataGridLayout = ({
 }) => (
   <Layout>
     <div className="w-full flex justify-end">
-      <Link className="link-button-blue" href={"operations/create/1"}>
+      <a
+        className="link-button-blue"
+        href="../registration/register-an-operation"
+      >
         Add and Register an Operation
-      </Link>
+      </a>
     </div>
     {children}
   </Layout>
