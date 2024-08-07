@@ -708,6 +708,33 @@ OperationOwnershipTimeline {
     DateTimeField start_date
     DateTimeField end_date
 }
+HistoricalRegistrationPurpose {
+    BigIntegerField id
+    DateTimeField created_at
+    DateTimeField updated_at
+    DateTimeField archived_at
+    CharField registration_purpose
+    UUIDField history_user_id
+    ForeignKey created_by
+    ForeignKey updated_by
+    ForeignKey archived_by
+    ForeignKey operation
+    AutoField history_id
+    DateTimeField history_date
+    CharField history_change_reason
+    CharField history_type
+}
+RegistrationPurpose {
+    BigAutoField id
+    ForeignKey created_by
+    DateTimeField created_at
+    ForeignKey updated_by
+    DateTimeField updated_at
+    ForeignKey archived_by
+    DateTimeField archived_at
+    CharField registration_purpose
+    ForeignKey operation
+}
 HistoricalDocument }|--|| User : created_by
 HistoricalDocument }|--|| User : updated_by
 HistoricalDocument }|--|| User : archived_by
@@ -881,3 +908,11 @@ OperationOwnershipTimeline }|--|| User : updated_by
 OperationOwnershipTimeline }|--|| User : archived_by
 OperationOwnershipTimeline }|--|| Operation : operation
 OperationOwnershipTimeline }|--|| Operator : operator
+HistoricalRegistrationPurpose }|--|| User : created_by
+HistoricalRegistrationPurpose }|--|| User : updated_by
+HistoricalRegistrationPurpose }|--|| User : archived_by
+HistoricalRegistrationPurpose }|--|| Operation : operation
+RegistrationPurpose }|--|| User : created_by
+RegistrationPurpose }|--|| User : updated_by
+RegistrationPurpose }|--|| User : archived_by
+RegistrationPurpose }|--|| Operation : operation
