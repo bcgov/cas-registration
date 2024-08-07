@@ -67,10 +67,31 @@ const DataGrid: React.FC<Props> = ({
   const [isComponentMounted, setIsComponentMounted] = useState(false);
   const isRowsEmpty = rows.length === 0;
   const searchParams = useSearchParams();
+  const [sortModel, setSortModel] = useState<GridSortItem[]>([]);
+
+  const debouncedFetchData = debounce(async () => {
+    const fetchData = async () => {
+      const newParams = new URLSearchParams(searchParams);
+      const params = Object.fromEntries(newParams.entries());
+
+      // fetch data from server
+      const pageData = fetchPageData && (await fetchPageData(params));
+      if (pageData) {
+        setRows(pageData.rows ?? []);
+        setRowCount(pageData.row_count ?? 0);
+      }
+    };
+
+    fetchData().then(() => setLoading(false));
+  }, 600);
 
   useEffect(() => {
     setIsComponentMounted(true);
 
+    return () => {
+      // Cancel debout on unmount
+      debouncedFetchData.cancel();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -79,19 +100,6 @@ const DataGrid: React.FC<Props> = ({
     // Since we will grab the first page using the server side props
     if (!isComponentMounted || !fetchPageData) return;
     setLoading(true);
-    const debouncedFetchData = debounce(async () => {
-      const fetchData = async () => {
-        const newParams = new URLSearchParams(searchParams);
-        const params = Object.fromEntries(newParams.entries());
-
-        // fetch data from server
-        const pageData = await fetchPageData(params);
-        setRows(pageData.rows);
-        setRowCount(pageData.row_count);
-      };
-
-      fetchData().then(() => setLoading(false));
-    }, 200);
     debouncedFetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
@@ -105,8 +113,10 @@ const DataGrid: React.FC<Props> = ({
         Object.keys(Object.fromEntries(params)).length === 0;
       const isSortFieldEmpty = !newSortModel[0]?.field;
 
-      // Prevent updating the URL if the sort field is empty and the URL is already empty
-      if (isParamsEmpty && isSortFieldEmpty) return;
+      if (isParamsEmpty && isSortFieldEmpty) {
+        // Do not update the URL if the sort field is empty and the URL is already empty
+        return;
+      }
 
       const sortField = newSortModel[0]?.field;
 
@@ -118,10 +128,11 @@ const DataGrid: React.FC<Props> = ({
           newSortModel[0].sort === "asc" ? "asc" : "desc",
         );
       } else {
-        // Remove the sort field and order from the URL
         params.delete("sort_field");
         params.delete("sort_order");
       }
+
+      setSortModel(newSortModel);
 
       // Update the URL with the new sort field and order
       // replace(`${pathname}?${params.toString()}`);
@@ -142,7 +153,6 @@ const DataGrid: React.FC<Props> = ({
       params.set("page", newPageNumber.toString());
 
       // Update the URL with the new page number
-      // replace(`${pathname}?${params.toString()}`);
       // Shallow routing is not avilalble in nextjs app router so using window.history.replaceState
       window.history.replaceState({}, "", `${pathName}?${params.toString()}`);
     },
@@ -206,6 +216,7 @@ const DataGrid: React.FC<Props> = ({
         onPaginationModelChange={handlePaginationModelChange}
         paginationModel={paginationModel}
         onSortModelChange={handleSortModelChange}
+        sortModel={sortModel}
         // Set the row height to "auto" so that the row height will adjust to the content
         getRowHeight={() => "auto"}
         slots={slots}
