@@ -1,12 +1,13 @@
 import json
 from typing import Literal, Tuple
+from common.permissions import authorize
 from django.http import HttpRequest
 from registration.api.utils.current_user_utils import get_current_user_guid
 from registration.constants import USER_TAGS
 from service.data_access_service.user_service import UserDataAccessService
-from registration.decorators import authorize, handle_http_errors
-from registration.models import AppRole, User
-from registration.schema.v1 import UserOut, UserOperator, UserUpdateIn
+from registration.decorators import handle_http_errors
+from registration.models import User
+from registration.schema.v1 import UserOut, UserUpdateIn
 from registration.schema.generic import Message
 from registration.api.router import router
 from ninja.responses import codes_4xx
@@ -35,8 +36,8 @@ def get_user_profile(request: HttpRequest) -> Tuple[Literal[200], User]:
     tags=USER_TAGS,
     description="""Updates the profile data of the current user.
     The user's data is retrieved and updated with the new values from the payload.""",
+    auth=authorize("everyone"),
 )
-@authorize(AppRole.get_all_app_roles(), UserOperator.get_all_industry_user_operator_roles(), False)
 @handle_http_errors()
 def update_user_profile(request: HttpRequest, payload: UserUpdateIn) -> Tuple[Literal[200], User]:
     return 200, UserDataAccessService.update_user(get_current_user_guid(request), payload)

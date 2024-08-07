@@ -1,19 +1,15 @@
 from typing import Literal, Tuple, Dict
 from uuid import UUID
+from common.permissions import authorize
 from django.http import HttpRequest
 from registration.api.utils.current_user_utils import get_current_user_guid
 from registration.schema.v1.user_operator import RequestAccessOut, UserOperatorOperatorIn
 from registration.constants import USER_OPERATOR_TAGS
 from service.user_operator_service import UserOperatorService
-from registration.decorators import authorize, handle_http_errors
+from registration.decorators import handle_http_errors
 from registration.schema.v1 import UserOperatorPaginatedOut
 from registration.schema.generic import Message
 from registration.api.router import router
-
-from registration.models import (
-    AppRole,
-    UserOperator,
-)
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 
 
@@ -26,8 +22,8 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
     It excludes:
     - pending user operators for operators with approved admins
     - approved user operators verified by industry users.""",
+    auth=authorize("authorized_irc_user_only"),
 )
-@authorize(AppRole.get_authorized_irc_roles())
 @handle_http_errors()
 def list_user_operators(
     request: HttpRequest, page: int = 1, sort_field: str = "created_at", sort_order: str = "desc"
@@ -44,8 +40,8 @@ def list_user_operators(
     The endpoint ensures that only authorized industry users can create a new operator and user-operator.
     It checks for the uniqueness of the CRA Business Number and sets the operator's status to 'Pending'.
     An email notification is sent to confirm the creation and access request.""",
+    auth=authorize("industry_user_only"),
 )
-@authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles(), False)
 @handle_http_errors()
 def create_operator_and_user_operator(
     request: HttpRequest, payload: UserOperatorOperatorIn
