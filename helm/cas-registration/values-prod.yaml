@@ -5,7 +5,7 @@ backend:
   image:
     tag: "latest"
 
-  environment: production
+  environment: prod
 
   sentry:
     traceSampleRate: 0.1
@@ -27,7 +27,7 @@ registration1Frontend:
   route:
     host: registration.industrialemissions.gov.bc.ca
 
-  environment: production
+  environment: prod
 
   auth:
     keycloakAuthUrl: https://loginproxy.gov.bc.ca/auth

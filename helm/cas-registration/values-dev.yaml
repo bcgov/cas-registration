@@ -10,7 +10,7 @@ backend:
   route:
     host: cas-reg-backend-dev.apps.silver.devops.gov.bc.ca
 
-  environment: develop
+  environment: dev
 
   deployRoute: true
 
@@ -31,7 +31,7 @@ registration1Frontend:
   route:
     host: cas-reg-frontend-dev.apps.silver.devops.gov.bc.ca
 
-  environment: develop
+  environment: dev
 
   auth:
     keycloakAuthUrl: https://dev.loginproxy.gov.bc.ca/auth
