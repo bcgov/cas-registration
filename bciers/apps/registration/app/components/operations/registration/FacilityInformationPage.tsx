@@ -1,5 +1,4 @@
 import { UUID } from "crypto";
-import { validate as isValidUUID } from "uuid";
 import FacilityInformationForm from "apps/registration/app/components/operations/registration/FacilityInformationForm";
 import { facilityInformationSchema } from "apps/registration/app/data/jsonSchema/operationRegistration/facilityInformation";
 import { facilitiesSchemaLfo } from "apps/administration/app/data/jsonSchema/facilitiesLfo";
@@ -27,16 +26,11 @@ const FacilityInformationPage = ({
   step,
   steps,
 }: {
-  operation: UUID | "create";
+  operation: UUID;
   searchParams: FacilitiesSearchParams;
   step: number;
   steps: string[];
 }) => {
-  // Don't fetch operation if UUID is invalid or operation === "create"
-  if (operation && isValidUUID(operation)) {
-    // Fetch formData data here
-  }
-
   // Will need to pull this from the formData;
   const isOperationLfo = true;
 

@@ -5,15 +5,15 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 
 interface SubmitButtonProps {
-  baseUrl: string;
   cancelUrl: string;
   classNames?: string;
   disabled?: boolean;
   isSubmitting: boolean;
   stepIndex: number;
   steps: string[];
-  allowBackNavigation?: boolean;
   submitButtonText?: string;
+  allowBackNavigation?: boolean;
+  baseUrl?: string;
 }
 
 const SubmitButton: React.FunctionComponent<SubmitButtonProps> = ({

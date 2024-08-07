@@ -152,7 +152,7 @@ const section3Schema: RJSFSchema = {
   title: "Registration Information",
   type: "object",
   properties: {
-    registration_category: {
+    registration_purpose: {
       type: "string",
       title: "Registration Category",
       enum: ["Regulated", "Non-Regulated", "New Entrant Operation"],
@@ -170,12 +170,12 @@ const section3Schema: RJSFSchema = {
     },
   },
   dependencies: {
-    registration_category: {
+    registration_purpose: {
       allOf: [
         {
           if: {
             properties: {
-              registration_category: {
+              registration_purpose: {
                 const: "Regulated",
               },
             },
@@ -192,7 +192,7 @@ const section3Schema: RJSFSchema = {
         {
           if: {
             properties: {
-              registration_category: {
+              registration_purpose: {
                 const: "New Entrant Operation",
               },
             },
@@ -289,7 +289,7 @@ export const operationUiSchema: UiSchema = {
   },
   section3: {
     "ui:order": [
-      "registration_category",
+      "registration_purpose",
       "regulated_operation",
       "new_entrant_operation",
       "regulated_products",
