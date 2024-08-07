@@ -15,6 +15,10 @@ describe("operationColumns function", () => {
     vi.clearAllMocks();
   });
 
+  vi.mock("@reporting/src/app/utils/getReportingYear", () => ({
+    getReportingYear: vi.fn().mockResolvedValue({ reporting_year: 2023 }),
+  }));
+
   it("returns an array of column definitions", () => {
     const columns: GridColDef[] = operationColumns();
 

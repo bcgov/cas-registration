@@ -145,6 +145,12 @@ class Migration(migrations.Migration):
                     'reporting_window_end',
                     models.DateTimeField(db_comment='End of the reporting period for that reporting year, UTC-based'),
                 ),
+                (
+                    'report_due_date',
+                    models.DateTimeField(
+                        db_comment='Due date for the annual report for that reporting year, UTC-based'
+                    ),
+                ),
                 ('description', models.CharField(db_comment='Description for the reporting year', max_length=10000)),
             ],
             options={
