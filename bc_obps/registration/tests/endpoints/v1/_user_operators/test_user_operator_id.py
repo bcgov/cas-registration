@@ -305,7 +305,7 @@ class TestUserOperatorIdEndpoint(CommonTestSetup):
             created_by=self.user,
         )
         # Test REPORTER 401
-        put_response = TestUtils.mock_put_with_auth_role(
+        TestUtils.mock_put_with_auth_role(
             self,
             "industry_user",
             self.content_type,
@@ -333,6 +333,7 @@ class TestUserOperatorIdEndpoint(CommonTestSetup):
 
     def test_put_user_operator_operator_malformed_data(self):
         operator = operator_baker()
+        TestUtils.authorize_current_user_as_operator_user(self, operator)
         put_response = TestUtils.mock_put_with_auth_role(
             self,
             "industry_user",
