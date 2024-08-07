@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import OperationInformationPage from "apps/administration/app/components/operations/OperationInformationPage";
-
+import { getOperation } from "./mocks";
 import { actionHandler } from "@bciers/testConfig/mocks";
 
 const fetchFormEnums = () => {
@@ -102,7 +102,7 @@ describe("the OperationInformationPage component", () => {
 
   it("should render the form with the correct values when formData is provided", async () => {
     fetchFormEnums();
-    actionHandler.mockResolvedValueOnce(formData);
+    getOperation.mockResolvedValueOnce(formData);
 
     render(await OperationInformationPage({ operationId }));
 
