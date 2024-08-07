@@ -397,6 +397,7 @@ class TestOperationsEndpoint(CommonTestSetup):
     #     assert 'multiple_operators_array' in get_response and len(get_response['multiple_operators_array']) == 2
 
     def test_post_new_malformed_operation(self):
+        TestUtils.authorize_current_user_as_operator_user(self, operator_baker())
         response = TestUtils.mock_post_with_auth_role(
             self, "industry_user", self.content_type, {"garbage": "i am bad data"}
         )

@@ -306,6 +306,7 @@ class TestOperationIdEndpoint(CommonTestSetup):
 
     def test_industry_user_update_operation_with_malformed_date(self):
         operation = operation_baker()
+        TestUtils.authorize_current_user_as_operator_user(self, operation.operator)
         response = TestUtils.mock_put_with_auth_role(
             self,
             'industry_user',

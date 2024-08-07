@@ -19,7 +19,7 @@ For example:
     response={201: RequestAccessOut, custom_codes_4xx: Message},
     url_name="request_access",
 )
-@authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles(), False)
+@authorize("industry_user_only")
 @handle_http_errors()
 def request_access(request, payload: SelectOperatorIn):
 

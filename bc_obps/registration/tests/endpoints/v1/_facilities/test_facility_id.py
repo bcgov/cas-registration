@@ -68,4 +68,4 @@ class TestFacilityIdEndpoint(CommonTestSetup):
             role_name="industry_user",
         )
         assert response.status_code == 401
-        assert response.json()['detail'] == 'Unauthorized.'
+        assert response.json()['detail'] == 'Unauthorized'
