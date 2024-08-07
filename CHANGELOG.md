@@ -1,3 +1,9 @@
+# [1.9.0](https://github.com/bcgov/cas-registration/compare/v1.8.0...v1.9.0) (2024-08-07)
+
+### Features
+
+- add due date to reporting dashboard ([ee5765a](https://github.com/bcgov/cas-registration/commit/ee5765ab6b6691ea568bea7bee8f3add8c3e8eba))
+
 # [1.8.0](https://github.com/bcgov/cas-registration/compare/v1.7.0...v1.8.0) (2024-08-07)
 
 ### Bug Fixes
