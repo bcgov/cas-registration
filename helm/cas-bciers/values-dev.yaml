@@ -11,7 +11,7 @@ backend:
   route:
     host: cas-bciers-backend-dev.apps.silver.devops.gov.bc.ca
 
-  environment: develop
+  environment: dev
 
   deployRoute: true
 
@@ -33,7 +33,7 @@ administrationFrontend:
     host: cas-bciers-frontend-dev.apps.silver.devops.gov.bc.ca
     path: "/administration"
 
-  environment: develop
+  environment: dev
 
   resources:
     limits:
@@ -53,7 +53,7 @@ registrationFrontend:
     host: cas-bciers-frontend-dev.apps.silver.devops.gov.bc.ca
     path: "/registration"
 
-  environment: develop
+  environment: dev
 
   resources:
     limits:
@@ -91,7 +91,7 @@ coamFrontend:
     host: cas-bciers-frontend-dev.apps.silver.devops.gov.bc.ca
     path: "/coam"
 
-  environment: develop
+  environment: dev
 
   resources:
     limits:

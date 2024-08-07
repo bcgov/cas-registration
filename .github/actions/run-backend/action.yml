@@ -11,4 +11,4 @@ runs:
   steps:
     - name: start backend
       shell: bash
-      run: docker run -d --network=host -e "DB_USER=postgres" -e "DB_NAME=registration" -e "DB_PORT=5432" -e "DB_HOST=localhost" -e "DJANGO_SECRET_KEY=${{ inputs.django_secret_key }}" -e "ALLOWED_HOSTS=localhost,0.0.0.0,127.0.0.1" -e "ENVIRONMENT=develop" -e "CI=true" ghcr.io/bcgov/cas-reg-backend:${{ github.sha }}
+      run: docker run -d --network=host -e "DB_USER=postgres" -e "DB_NAME=registration" -e "DB_PORT=5432" -e "DB_HOST=localhost" -e "DJANGO_SECRET_KEY=${{ inputs.django_secret_key }}" -e "ALLOWED_HOSTS=localhost,0.0.0.0,127.0.0.1" -e "ENVIRONMENT=dev" -e "CI=true" ghcr.io/bcgov/cas-reg-backend:${{ github.sha }}
