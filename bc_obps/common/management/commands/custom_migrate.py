@@ -8,14 +8,6 @@ from django.apps import apps
 class Command(BaseCommand):
     help = 'Run default migrations for all apps except reporting, then run custom migrations for reporting app'
 
-    def add_arguments(self, parser):
-        parser.add_argument(
-            '--database',
-            type=str,
-            default='default',
-            help='Nominates a database to synchronize. Defaults to the "default" database.',
-        )
-
     def handle(self, *args, **options):
         # Only running the custom command in the test and production environments
         # Otherwise, run the default migrate command for all apps
@@ -35,7 +27,7 @@ class Command(BaseCommand):
             self.stdout.write(f'Running migrations for {app_label}...')
             # Wrap in try/except block to handle errors for apps with no migrations and continue with other apps
             try:
-                call_command('migrate', app_label=app_label, database=options['database'])
+                call_command('migrate', app_label=app_label)
                 self.stdout.write(self.style.SUCCESS(f'Successfully migrated {app_label}.'))
             except Exception as e:
                 self.stdout.write(self.style.ERROR(f'Error migrating {app_label}: {e}'))
