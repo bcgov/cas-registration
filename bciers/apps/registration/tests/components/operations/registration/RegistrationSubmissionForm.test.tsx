@@ -4,7 +4,7 @@ import React from "react";
 import { useSession } from "@bciers/testConfig/mocks";
 import { submissionSchema } from "@/registration/app/data/jsonSchema/operationRegistration/submission";
 import RegistrationSubmissionForm from "apps/registration/app/components/operations/registration/RegistrationSubmissionForm";
-import { OperationRegistrationSteps } from "@/registration/app/components/operations/registration/enums";
+import { allOperationRegistrationSteps } from "@/registration/app/components/operations/registration/enums";
 
 useSession.mockReturnValue({
   data: {
@@ -26,7 +26,7 @@ describe("the RegistrationSubmissionForm component", () => {
         operation="002d5a9e-32a6-4191-938c-2c02bfec592d"
         schema={submissionSchema}
         step={2}
-        steps={OperationRegistrationSteps}
+        steps={allOperationRegistrationSteps}
       />,
     );
 

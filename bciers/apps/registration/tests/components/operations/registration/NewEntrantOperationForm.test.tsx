@@ -4,7 +4,7 @@ import React from "react";
 import { useSession } from "@bciers/testConfig/mocks";
 import { newEntrantOperationSchema } from "@/registration/app/data/jsonSchema/operationRegistration/newEntrantOperation";
 import NewEntrantOperationForm from "apps/registration/app/components/operations/registration/NewEntrantOperationForm";
-import { OperationRegistrationNewEntrantSteps } from "@/registration/app/components/operations/registration/enums";
+import { allOperationRegistrationSteps } from "@/registration/app/components/operations/registration/enums";
 
 useSession.mockReturnValue({
   data: {
@@ -26,7 +26,7 @@ describe("the NewEntrantOperationForm component", () => {
         operation="002d5a9e-32a6-4191-938c-2c02bfec592d"
         schema={newEntrantOperationSchema}
         step={4}
-        steps={OperationRegistrationNewEntrantSteps}
+        steps={allOperationRegistrationSteps}
       />,
     );
 
