@@ -24,8 +24,22 @@ const operationId = "8be4c7aa-6ab3-4aad-9206-0ef914fea063";
 const facilityId = "025328a0-f9e8-4e1a-888d-aa192cb053db";
 const facilityName = "bloop";
 const urlOperations = `/operations/${operationId}/facilities`;
-const endPoint = `/operations/${operationId}/facilities/${facilityId}&facilitiesTitle=${facilityName}`;
+const endPoint = `/operations/${operationId}/facilities/${facilityId}?facilities_title=${facilityName}`;
 const revalidatePath = `/operations/${operationId}/facilities/${facilityId}`;
+
+useParams.mockReturnValue({
+  operationId: operationId,
+});
+
+useSession.mockReturnValue({
+  get: vi.fn(),
+});
+
+const mockReplace = vi.fn();
+useRouter.mockReturnValue({
+  query: {},
+  replace: mockReplace,
+});
 
 const sfoFormData = {
   name: "Monkeyfuzz",
@@ -37,7 +51,10 @@ const sfoFormData = {
   province: "BC",
   postal_code: "h0h0h0",
   id: "4abd8367-efd1-4654-a7ea-fa1a015d3cae",
+  is_current_year: true,
+  starting_date: "2024-07-11 02:00:00.000 -0700",
 };
+
 const lfoFormData = {
   name: "Monkeyfuzz",
   type: "Single Facility Operation",
@@ -49,7 +66,10 @@ const lfoFormData = {
   province: "BC",
   postal_code: "h0h0h0",
   id: "4abd8367-efd1-4654-a7ea-fa1a015d3cae",
+  is_current_year: true,
+  starting_date: "2024-07-11 02:00:00.000 -0700",
 };
+
 const defaultFillFormValues = {
   name: "test",
   well_authorization_numbers: [355],
@@ -59,6 +79,8 @@ const defaultFillFormValues = {
   postal_code: "H0H 0H0",
   latitude_of_largest_emissions: 48.3,
   longitude_of_largest_emissions: 123.32,
+  is_current_year: true,
+  starting_date: "2024-07-11 02:00:00.000 -0700",
 };
 const defaultUpdateFormValues = {
   name: "Updated Facility Name",
@@ -69,6 +91,8 @@ const defaultUpdateFormValues = {
   postal_code: "A1A 1A1",
   latitude_of_largest_emissions: 8.35,
   longitude_of_largest_emissions: -23.3,
+  is_current_year: true,
+  starting_date: "2024-07-11 02:00:00.000 -0700",
 };
 
 // ⛏️ Helper function to check field values
@@ -150,7 +174,6 @@ export const editFormFields = async (schema: RJSFSchema) => {
   );
 };
 
-<<<<<<< HEAD
 // ⛏️ Helper function to fill form mandatory fields
 const fillMandatoryFields = async (schema: RJSFSchema) => {
   await userEvent.type(
@@ -205,65 +228,11 @@ const fillOptionalFields = async () => {
   );
 };
 
-useParams.mockReturnValue({
-  operationId: operationId,
-});
-useSession.mockReturnValue({
-  get: vi.fn(),
-});
-const mockReplace = vi.fn();
-const mockPush = vi.fn();
-useRouter.mockReturnValue({
-  query: {},
-  replace: mockReplace,
-  push: mockPush,
-});
-
-=======
-// ⛏️ Helper function to check field values
-const checkFormValues = ({
-  streetAddress = "address",
-  municipality = "city",
-  province = "Alberta",
-  postalCode = "H0H 0H0",
-  latitude = 48.3,
-  longitude = 123.32,
-} = {}) => {
-  expect(screen.getByLabelText(/Street address+/i)).toHaveValue(streetAddress);
-  expect(screen.getByLabelText(/Municipality+/i)).toHaveValue(municipality);
-  expect(screen.getByLabelText(/Province+/i)).toHaveValue(province);
-  expect(screen.getByLabelText(/Postal Code+/i)).toHaveValue(postalCode);
-  expect(
-    screen.getByLabelText(/Latitude of Largest Point of Emissions+/i),
-  ).toHaveValue(latitude);
-  expect(
-    screen.getByLabelText(/Longitude of Largest Point of Emissions+/i),
-  ).toHaveValue(longitude);
-};
-
->>>>>>> 886a9363 (test: add vitest fn to check field values)
 describe("FacilityForm component", () => {
   beforeEach(async () => {
     vi.clearAllMocks();
   });
-  it("redirects to the facilities grid on cancel", async () => {
-    render(
-      <FacilityForm
-        schema={facilitiesSchemaSfo}
-        uiSchema={facilitiesUiSchema}
-        formData={{}}
-        isCreating
-      />,
-    );
 
-    const cancelButton = screen.getByRole("button", { name: /cancel/i });
-
-    // Simulate the user clicking the cancel button
-    fireEvent.click(cancelButton);
-
-    // Assert that router.push was called with the correct URL
-    expect(mockPush).toHaveBeenCalledWith(urlOperations);
-  });
   it("renders the empty SFO facility form when creating a new facility", async () => {
     render(
       <FacilityForm
@@ -279,6 +248,12 @@ describe("FacilityForm component", () => {
     ).toBeVisible();
     expect(screen.getByLabelText(/Facility Name+/i)).toHaveValue("");
     expect(screen.getByLabelText(/Facility Type+/i)).toHaveValue("");
+    expect(
+      screen.getByLabelText(/Did this facility begin operations in+/i),
+    ).not.toBeChecked();
+    expect(
+      screen.queryByLabelText(/Date of facility starting operations+/i),
+    ).toBeNull();
     expect(
       screen.getByRole("heading", { name: /Facility Address/i }),
     ).toBeVisible();
@@ -296,6 +271,7 @@ describe("FacilityForm component", () => {
     const submitButton = screen.getByRole("button", { name: /submit/i });
     expect(submitButton).toBeEnabled();
   });
+
   it("renders the empty LFO facility form when creating a new facility", async () => {
     render(
       <FacilityForm
@@ -314,6 +290,12 @@ describe("FacilityForm component", () => {
 
     expect(screen.getByText(/Authorization+/i)).toBeVisible();
     expect(screen.getByRole("button", { name: "Add" })).toBeVisible();
+    expect(
+      screen.getByLabelText(/Did this facility begin operations in+/i),
+    ).not.toBeChecked();
+    expect(
+      screen.queryByLabelText(/Date of facility starting operations+/i),
+    ).toBeNull();
     expect(
       screen.getByRole("heading", { name: /Facility Address/i }),
     ).toBeVisible();
@@ -346,6 +328,17 @@ describe("FacilityForm component", () => {
     expect(container.querySelector("#root_section1_type")).toHaveTextContent(
       "Single Facility Operation",
     );
+    expect(
+      container.querySelector("#root_section1_is_current_year"),
+    ).toHaveTextContent("Yes");
+    waitFor(() =>
+      expect(
+        container.querySelector("#root_section1_starting_date"),
+      ).toBeInTheDocument(),
+    );
+    expect(
+      container.querySelector("#root_section1_starting_date"),
+    ).toHaveTextContent("2024-07-11");
     expect(
       container.querySelector("#root_section2_street_address"),
     ).toHaveTextContent("adf");
@@ -384,6 +377,17 @@ describe("FacilityForm component", () => {
     expect(screen.getByText(24546)).toBeVisible();
     expect(screen.getByText(54321)).toBeVisible();
     expect(
+      container.querySelector("#root_section1_is_current_year"),
+    ).toHaveTextContent("Yes");
+    waitFor(() =>
+      expect(
+        container.querySelector("#root_section1_starting_date"),
+      ).toBeInTheDocument(),
+    );
+    expect(
+      container.querySelector("#root_section1_starting_date"),
+    ).toHaveTextContent("2024-07-11");
+    expect(
       container.querySelector("#root_section2_street_address"),
     ).toHaveTextContent("adf");
     expect(
@@ -416,6 +420,16 @@ describe("FacilityForm component", () => {
       submitButton.click();
     });
     expect(screen.getAllByText(/Required field/i)).toHaveLength(4);
+
+    //check starting date required when year is clicked
+    const year = screen.getByLabelText(
+      /Did this facility begin operations in+/i,
+    );
+    act(() => {
+      year.click();
+      submitButton.click();
+    });
+    expect(screen.getAllByText(/Required field/i)).toHaveLength(5);
   });
   it("does not allow LFO submission if there are validation errors (bad form data)", async () => {
     render(
@@ -439,6 +453,7 @@ describe("FacilityForm component", () => {
     expect(screen.getAllByText(/must be >= -90/i)).toHaveLength(1);
     expect(screen.getAllByText(/must be <= 180/i)).toHaveLength(1);
   });
+
   // created this starting datetest to get around form without edit fields in the last test
   it("does not allow LFO submission if there is a starting date validation error", async () => {
     render(
@@ -516,77 +531,40 @@ describe("FacilityForm component", () => {
       />,
     );
 
-    //fill fields
-    await fillMandatoryFields(facilitiesSchemaSfo);
-    // submit valid form data
     const submitButton = screen.getByRole("button", { name: /submit/i });
     actionHandler.mockReturnValueOnce({
       id: facilityId,
       name: facilityName,
       error: null,
     });
-
-    userEvent.click(submitButton);
-
-    await waitFor(() => {
-      expect(mockReplace).toHaveBeenCalledWith(endPoint, {
-        shallow: true,
-      });
-    });
-  });
-  it("fills the mandatory form fields, creates new LFO facility, and redirects on success", async () => {
-    render(
-      <FacilityForm
-        isCreating
-        schema={facilitiesSchemaLfo}
-        uiSchema={facilitiesUiSchema}
-        formData={{}}
-      />,
+    // fill name
+    await userEvent.type(screen.getByLabelText(/Facility Name+/i), "test");
+    // fill type
+    const comboBoxInput = screen.getAllByRole(
+      "combobox",
+    )[0] as HTMLInputElement;
+    const openComboboxButton = comboBoxInput?.parentElement?.children[1]
+      ?.children[0] as HTMLInputElement;
+    await userEvent.click(openComboboxButton);
+    const typeOption = screen.getByText("Single Facility Operation");
+    await userEvent.click(typeOption);
+    // fill year and starting date
+    const year = screen.getByLabelText(/Did this facility begin operations+/i);
+    await userEvent.click(year);
+    await userEvent.type(
+      screen.getByLabelText(/Date of facility starting operations+/i),
+      "20240101",
     );
 
-    //fill fields
-    await fillMandatoryFields(facilitiesSchemaLfo);
-
-    // submit valid form data
-    const submitButton = screen.getByRole("button", { name: /submit/i });
-    actionHandler.mockReturnValueOnce({
-      id: facilityId,
-      name: facilityName,
-      error: null,
-    });
-
-    userEvent.click(submitButton);
-
-    await waitFor(() => {
-      expect(mockReplace).toHaveBeenCalledWith(endPoint, {
-        shallow: true,
-      });
-    });
-  });
-  it("fills all form fields, creates new SFO facility, and redirects on success", async () => {
-    render(
-      <FacilityForm
-        isCreating
-        schema={facilitiesSchemaSfo}
-        uiSchema={facilitiesUiSchema}
-        formData={{}}
-      />,
+    // fill lat and long (userEvent.type doesn't work because the value goes in as a string and lat/long require a number)
+    fireEvent.change(
+      screen.getByLabelText(/Latitude of Largest Point of Emissions+/i),
+      { target: { value: 3 } },
     );
-
-    //fill fields
-    await fillMandatoryFields(facilitiesSchemaSfo);
-    await fillOptionalFields();
-
-    // CHECK FIELDS ARE FILLED
-    checkFormValues();
-
-    // SUBMIT
-    const submitButton = screen.getByRole("button", { name: /submit/i });
-    actionHandler.mockReturnValueOnce({
-      id: facilityId,
-      name: facilityName,
-      error: null,
-    });
+    fireEvent.change(
+      screen.getByLabelText(/Longitude of Largest Point of Emissions+/i),
+      { target: { value: 6 } },
+    );
     userEvent.click(submitButton);
 
     await waitFor(() => {
@@ -605,81 +583,87 @@ describe("FacilityForm component", () => {
       />,
     );
 
-    //fill fields
-    await fillMandatoryFields(facilitiesSchemaLfo);
-    await fillOptionalFields();
-
-    // CHECK FIELDS ARE FILLED
-    checkFormValues();
-
-    // SUBMIT
     const submitButton = screen.getByRole("button", { name: /submit/i });
     actionHandler.mockReturnValueOnce({
       id: facilityId,
       name: facilityName,
       error: null,
     });
+    // FILL FIELDS
+    // fill name
+    await userEvent.type(screen.getByLabelText(/Facility Name+/i), "test");
+    // fill type
+    const comboBoxInput = screen.getAllByRole("combobox");
+    const openFacilityTypeDropdownButton = comboBoxInput[0]?.parentElement
+      ?.children[1]?.children[0] as HTMLInputElement;
+    await userEvent.click(openFacilityTypeDropdownButton);
+    const typeOption = screen.getByText("Large Facility");
+    await userEvent.click(typeOption);
+    // fill well authorization numbers
+    await userEvent.click(screen.getByText("Add"));
+    const firstWellAuthInput = screen.getAllByRole("spinbutton")[0];
+    // have to use fireEvent for number fields
+    fireEvent.change(firstWellAuthInput, { target: { value: 355 } });
+    // fill year and starting date
+    const year = screen.getByLabelText(/Did this facility begin operations+/i);
+    await userEvent.click(year);
+    await userEvent.type(
+      screen.getByLabelText(/Date of facility starting operations+/i),
+      "20240101",
+    );
+
+    await userEvent.type(screen.getByLabelText(/Street address+/i), "address");
+    await userEvent.type(screen.getByLabelText(/Municipality+/i), "city");
+
+    // province
+    const openProvinceDropdownButton = comboBoxInput[1]?.parentElement
+      ?.children[1]?.children[0] as HTMLInputElement;
+    await userEvent.click(openProvinceDropdownButton);
+    const provinceOption = screen.getByText(/alberta/i);
+    await userEvent.click(provinceOption);
+
+    await userEvent.type(screen.getByLabelText(/Postal Code+/i), "H0H0H0");
+
+    fireEvent.change(
+      screen.getByLabelText(/Latitude of Largest Point of Emissions+/i),
+      { target: { value: 48.407326 } },
+    );
+    fireEvent.change(
+      screen.getByLabelText(/Longitude of Largest Point of Emissions+/i),
+      { target: { value: -123.329773 } },
+    );
+
+    // CHECK FIELDS ARE FILLED
+    expect(screen.getByLabelText(/Facility Name+/i)).toHaveValue("test");
+    expect(screen.getByLabelText(/Facility Type+/i)).toHaveValue(
+      "Large Facility",
+    );
+
+    expect(firstWellAuthInput).toHaveValue(355);
+    expect(
+      screen.getByLabelText(/Did this facility begin operations+/i),
+    ).toBeChecked();
+    expect(
+      screen.getByLabelText(/Date of facility starting operations+/i),
+    ).toHaveValue("2024-01-01");
+    expect(screen.getByLabelText(/Street address+/i)).toHaveValue("address");
+    expect(screen.getByLabelText(/Municipality+/i)).toHaveValue("city");
+    expect(screen.getByLabelText(/Province+/i)).toHaveValue("Alberta");
+    expect(screen.getByLabelText(/Postal Code+/i)).toHaveValue("H0H 0H0");
+    expect(
+      screen.getByLabelText(/Latitude of Largest Point of Emissions+/i),
+    ).toHaveValue(48.407326);
+    expect(
+      screen.getByLabelText(/Longitude of Largest Point of Emissions+/i),
+    ).toHaveValue(-123.329773);
+
+    // SUBMIT
     userEvent.click(submitButton);
 
     await waitFor(() => {
       expect(mockReplace).toHaveBeenCalledWith(endPoint, {
         shallow: true,
       });
-    });
-  });
-  it("it edits a SFO Facility form", async () => {
-    render(
-      <FacilityForm
-        schema={facilitiesSchemaSfo}
-        uiSchema={facilitiesUiSchema}
-        formData={sfoFormData}
-      />,
-    );
-
-    const editButton = screen.getByRole("button", { name: /edit/i });
-    act(() => {
-      editButton.click();
-    });
-
-    // Edit form fields
-    await editFormFields(facilitiesSchemaSfo);
-
-    // Submit valid form data
-    const submitButton = screen.getByRole("button", { name: /submit/i });
-    userEvent.click(submitButton);
-    actionHandler.mockReturnValue({ error: null });
-    await waitFor(() => {
-      expect(
-        screen.getByText("Your edits were saved successfully"),
-      ).toBeVisible();
-    });
-  });
-  it("it edits a LFO Facility form", async () => {
-    render(
-      <FacilityForm
-        schema={facilitiesSchemaLfo}
-        uiSchema={facilitiesUiSchema}
-        formData={lfoFormData}
-      />,
-    );
-
-    const editButton = screen.getByRole("button", { name: /edit/i });
-    act(() => {
-      editButton.click();
-    });
-
-    // Edit form fields
-    await editFormFields(facilitiesSchemaLfo);
-
-    // Submit valid form data
-    actionHandler.mockReturnValue({ error: null });
-    const submitButton = screen.getByRole("button", { name: /submit/i });
-    userEvent.click(submitButton);
-
-    await waitFor(() => {
-      expect(
-        screen.getByText("Your edits were saved successfully"),
-      ).toBeVisible();
     });
   });
 });

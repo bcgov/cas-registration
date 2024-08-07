@@ -284,3 +284,4 @@ class TestUpdateFacility:
         assert facility.latitude_of_largest_emissions == facility_payload.latitude_of_largest_emissions
         assert facility.longitude_of_largest_emissions == facility_payload.longitude_of_largest_emissions
         assert facility.address is None
+
