@@ -22,7 +22,7 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
     It excludes:
     - pending user operators for operators with approved admins
     - approved user operators verified by industry users.""",
-    auth=authorize("authorized_irc_user_only"),
+    auth=authorize("authorized_irc_user"),
 )
 @handle_http_errors()
 def list_user_operators(
@@ -40,7 +40,7 @@ def list_user_operators(
     The endpoint ensures that only authorized industry users can create a new operator and user-operator.
     It checks for the uniqueness of the CRA Business Number and sets the operator's status to 'Pending'.
     An email notification is sent to confirm the creation and access request.""",
-    auth=authorize("industry_user_only"),
+    auth=authorize("industry_user"),
 )
 @handle_http_errors()
 def create_operator_and_user_operator(

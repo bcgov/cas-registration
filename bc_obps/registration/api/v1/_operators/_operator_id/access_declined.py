@@ -18,7 +18,7 @@ from registration.api.utils.current_user_utils import get_current_user_guid
     description="""Checks if the current user's access to a specific operator has been declined.
     The endpoint verifies whether the user has a 'DECLINED' status for the given operator ID.
     If the user’s access is declined, it returns 'True'; otherwise, it returns 'False'.""",
-    auth=authorize("industry_user_only"),
+    auth=authorize("industry_user"),
 )
 @handle_http_errors()
 def get_user_operator_access_declined(request: HttpRequest, operator_id: UUID) -> Tuple[Literal[200], bool]:

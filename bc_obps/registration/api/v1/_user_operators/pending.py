@@ -13,6 +13,7 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 
 # We don't need a user_operator_id parameter (using "pending" instead) because we can look up the user_operator via the user data we receive in the middleware
 
+
 # This endpoint retrieves data about both the user-operator and the operator.
 @router.get(
     "/user-operators/pending",
@@ -20,7 +21,7 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
     tags=USER_OPERATOR_TAGS,
     description="""Retrieves data about the pending user-operator and their associated operator.
     Declined user-operators are excluded from the results.""",
-    auth=authorize("industry_user_only"),
+    auth=authorize("industry_user"),
 )
 @handle_http_errors()
 def get_pending_operator_and_user_operator(request: HttpRequest) -> Tuple[Literal[200], UserOperator]:

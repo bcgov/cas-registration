@@ -19,7 +19,7 @@ from service.application_access_service import ApplicationAccessService
     description="""Allows an industry user to request access to a specific operator.
     The endpoint checks if the user is eligible to request access, and if so, creates a draft UserOperator instance if one does not already exist.
     An email notification is sent to the operator if a new request is created.""",
-    auth=authorize("industry_user_only"),
+    auth=authorize("industry_user"),
 )
 @handle_http_errors()
 def request_access(request: HttpRequest, operator_id: UUID) -> Tuple[Literal[201], Dict[str, UUID]]:
