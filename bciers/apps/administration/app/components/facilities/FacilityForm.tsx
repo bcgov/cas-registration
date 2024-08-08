@@ -49,10 +49,13 @@ export default function FacilityForm({
         const pathToRevalidate = isCreating
           ? `/operations/${params.operationId}/facilities`
           : `/operations/${params.operationId}/facilities/${formData?.id}`;
-        const body = {
-          ...data.formData,
-          operation_id: params.operationId,
-        };
+
+        const body = [
+          {
+            ...data.formData,
+            operation_id: params.operationId,
+          },
+        ];
         const response = await actionHandler(
           endpoint,
           method,

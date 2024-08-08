@@ -201,22 +201,24 @@ describe("the FacilityInformationForm component", () => {
     });
 
     expect(actionHandler).toHaveBeenCalledWith(
-      "registration/facility",
+      "registration/facilities",
       "POST",
       "",
       {
-        body: JSON.stringify({
-          name: "Test Operation",
-          type: "Single Facility",
-          is_current_year: true,
-          starting_date: "2024-01-01T09:00:00.000Z",
-          street_address: "123 Test St",
-          municipality: "Test City",
-          postal_code: "V8X3K1",
-          latitude_of_largest_emissions: 0.1,
-          longitude_of_largest_emissions: 0.1,
-          operation_id: "002d5a9e-32a6-4191-938c-2c02bfec592d",
-        }),
+        body: JSON.stringify([
+          {
+            name: "Test Operation",
+            type: "Single Facility",
+            is_current_year: true,
+            starting_date: "2024-01-01T09:00:00.000Z",
+            street_address: "123 Test St",
+            municipality: "Test City",
+            postal_code: "V8X3K1",
+            latitude_of_largest_emissions: 0.1,
+            longitude_of_largest_emissions: 0.1,
+            operation_id: "002d5a9e-32a6-4191-938c-2c02bfec592d",
+          },
+        ]),
       },
     );
   });
