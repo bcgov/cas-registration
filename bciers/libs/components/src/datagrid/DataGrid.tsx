@@ -83,15 +83,14 @@ const DataGrid: React.FC<Props> = ({
     };
 
     fetchData().then(() => setLoading(false));
-  }, 600);
+    return () => debouncedFetchData.cancel();
+  }, 100);
 
   useEffect(() => {
     setIsComponentMounted(true);
 
-    return () => {
-      // Cancel debout on unmount
-      debouncedFetchData.cancel();
-    };
+    // Cancel debounce on unmount
+    return () => debouncedFetchData.cancel();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
