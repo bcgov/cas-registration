@@ -38,12 +38,15 @@ export default function FacilitiesForm({
       mode={isCreating ? FormMode.CREATE : FormMode.READ_ONLY}
       onSubmit={async (data: { formData?: any }) => {
         const method = isCreating ? "POST" : "PUT";
-        const endpoint = isCreating ? "registration/facility" : `tbd`;
+        const endpoint = isCreating ? "registration/facilities" : `tbd`;
         const pathToRevalidate = endpoint; // for now the endpoint is the same as the path to revalidate
-        const body = {
-          ...data.formData,
-          operation_id: params.operationId,
-        };
+        // facilities endpoint requires an array of facilities. In this case we are just creating one.
+        const body = [
+          {
+            ...data.formData,
+            operation_id: params.operationId,
+          },
+        ];
         const response = await actionHandler(
           endpoint,
           method,
