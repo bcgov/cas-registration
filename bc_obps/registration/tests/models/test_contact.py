@@ -38,4 +38,5 @@ class ContactModelTest(BaseTestCase):
             ("operators", "operator", None, None),
             ("operations", "operation", None, None),
             ("transfer_events", "transfer event", None, None),
+            ("operations_contacts", "operation", None, None),
         ]
