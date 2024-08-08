@@ -21,15 +21,15 @@ To access Django Silk's profiling reports, follow these steps:
 
 5. Refresh the Silk dashboard to view the profiling report for the triggered endpoint and you can see overall duration, duration of SQL queries, and total number of SQL queries executed for the endpoint.
 
-   ![Django Silk Requests Dashboard](./images/silk_requests_dashboard.png)
+   ![Django Silk Requests Dashboard](../images/silk_requests_dashboard.png)
 
 6. By selecting a specific request, you can view detailed information about the request and response, including time metrics, SQL queries, Request and Response details, and etc.
 
-   ![Django Silk Request Detail](./images/silk_request_detail.png)
+   ![Django Silk Request Detail](../images/silk_request_detail.png)
 
 7. By selecting the SQL tab on top left, you can view the SQL queries executed for the selected request and their execution times.
 
-   ![Django Silk SQL Queries](./images/silk_sql_queries.png)
+   ![Django Silk SQL Queries](../images/silk_sql_queries.png)
 
 ### NOTE
 
