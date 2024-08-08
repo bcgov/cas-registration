@@ -36,7 +36,7 @@ def get_user_profile(request: HttpRequest) -> Tuple[Literal[200], User]:
     tags=USER_TAGS,
     description="""Updates the profile data of the current user.
     The user's data is retrieved and updated with the new values from the payload.""",
-    auth=authorize("everyone"),
+    auth=authorize("all_roles"),
 )
 @handle_http_errors()
 def update_user_profile(request: HttpRequest, payload: UserUpdateIn) -> Tuple[Literal[200], User]:

@@ -3,11 +3,15 @@ from django.http import HttpRequest
 from registration.utils import raise_401_if_user_not_authorized
 from registration.models import AppRole, UserOperator
 
+"""
+NOTE: `industry_user_must_be_approved` is an optional parameter that defaults to True in `raise_401_if_user_not_authorized`
+and this is the reason why it is not included in some of the permission configurations.
+"""
+
 all_authorized_app_roles = AppRole.get_all_authorized_app_roles()
 all_industry_user_operator_roles = UserOperator.get_all_industry_user_operator_roles()
-
 permission_configs: Dict[str, Dict] = {
-    "everyone": {
+    "all_roles": {
         'authorized_app_roles': AppRole.get_all_app_roles(),
         'authorized_user_operator_roles': all_industry_user_operator_roles,
         'industry_user_must_be_approved': False,
@@ -17,22 +21,6 @@ permission_configs: Dict[str, Dict] = {
         'authorized_user_operator_roles': all_industry_user_operator_roles,
         'industry_user_must_be_approved': False,
     },
-    "approved_industry_user": {
-        'authorized_app_roles': ["industry_user"],
-        'authorized_user_operator_roles': all_industry_user_operator_roles,
-    },
-    "industry_user_only": {
-        'authorized_app_roles': ["industry_user"],
-        'authorized_user_operator_roles': all_industry_user_operator_roles,
-        'industry_user_must_be_approved': False,
-    },
-    "approved_industry_admin_user": {
-        'authorized_app_roles': ["industry_user"],
-        'authorized_user_operator_roles': ["admin"],
-    },
-    "authorized_irc_user_only": {
-        'authorized_app_roles': AppRole.get_authorized_irc_roles(),
-    },
     "approved_authorized_roles": {
         'authorized_app_roles': all_authorized_app_roles,
         'authorized_user_operator_roles': all_industry_user_operator_roles,
@@ -41,17 +29,33 @@ permission_configs: Dict[str, Dict] = {
         'authorized_app_roles': all_authorized_app_roles,
         'authorized_user_operator_roles': ["admin"],
     },
+    "industry_user": {
+        'authorized_app_roles': ["industry_user"],
+        'authorized_user_operator_roles': all_industry_user_operator_roles,
+        'industry_user_must_be_approved': False,
+    },
+    "approved_industry_user": {
+        'authorized_app_roles': ["industry_user"],
+        'authorized_user_operator_roles': all_industry_user_operator_roles,
+    },
+    "approved_industry_admin_user": {
+        'authorized_app_roles': ["industry_user"],
+        'authorized_user_operator_roles': ["admin"],
+    },
+    "authorized_irc_user": {
+        'authorized_app_roles': AppRole.get_authorized_irc_roles(),
+    },
 }
 
 
 def authorize(
     permission: Literal[
-        "everyone",
+        "all_roles",
         "authorized_roles",
         "approved_industry_user",
-        "industry_user_only",
+        "industry_user",
         "approved_industry_admin_user",
-        "authorized_irc_user_only",
+        "authorized_irc_user",
         "approved_authorized_roles",
         "authorized_irc_user_and_industry_admin_user",
     ]

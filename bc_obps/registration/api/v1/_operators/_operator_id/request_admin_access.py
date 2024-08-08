@@ -19,7 +19,7 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
     description="""Allows an industry user to request admin access to a specific operator.
     The endpoint checks if the user is eligible to request admin access, and if so, creates a draft UserOperator instance if one does not already exist.
     An email notification is sent to the operator if a new request is created.""",
-    auth=authorize("industry_user_only"),
+    auth=authorize("industry_user"),
 )
 @handle_http_errors()
 def request_admin_access(request: HttpRequest, operator_id: UUID) -> Tuple[Literal[201], Dict[str, UUID]]:
