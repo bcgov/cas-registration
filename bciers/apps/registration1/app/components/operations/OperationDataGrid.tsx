@@ -1,12 +1,12 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import DataGrid from "@bciers/components/datagrid/DataGrid";
+import DataGrid from "apps/registration1/app/components/datagrid/DataGrid";
 import { useSession } from "next-auth/react";
-import OperationsActionCell from "@/app/components/datagrid/cells/OperationsActionCell";
-import HeaderSearchCell from "@bciers/components/datagrid/cells/HeaderSearchCell";
-import operationColumns from "@/app/components/datagrid/models/operationColumns";
-import operationGroupColumns from "@/app/components/datagrid/models/operationGroupColumns";
+import OperationsActionCell from "apps/registration1/app/components/datagrid/cells/OperationsActionCell";
+import HeaderSearchCell from "apps/registration1/app/components/datagrid/cells/HeaderSearchCell";
+import operationColumns from "apps/registration1/app/components/datagrid/models/operationColumns";
+import operationGroupColumns from "apps/registration1/app/components/datagrid/models/operationGroupColumns";
 import { OperationRow } from "./types";
 import { fetchOperationsPageData } from "./Operations";
 
