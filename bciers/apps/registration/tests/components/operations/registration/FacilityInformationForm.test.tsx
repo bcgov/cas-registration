@@ -1,4 +1,10 @@
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, vi } from "vitest";
 import React from "react";
@@ -11,6 +17,9 @@ import {
 import { UUID } from "crypto";
 import FacilityInformationForm from "apps/registration/app/components/operations/registration/FacilityInformationForm";
 import { allOperationRegistrationSteps } from "@/registration/app/components/operations/registration/enums";
+import extractParams from "apps/administration/tests/components/helpers/extractParams";
+
+const mockReplace = vi.spyOn(global.history, "replaceState");
 
 useSession.mockReturnValue({
   data: {
@@ -371,7 +380,7 @@ describe("the FacilityInformationForm component", () => {
     );
   });
 
-  it("should keep form data when filtering the Facility datagrid", async () => {
+  it("should keep form data when sorting and filtering the Facility datagrid", async () => {
     render(
       <FacilityInformationForm
         {...defaultProps}
@@ -382,6 +391,38 @@ describe("the FacilityInformationForm component", () => {
 
     fillAddressFields(0);
 
-    expect(screen.getByLabelText(/Street Address/i)).toHaveValue("123 Test St");
+    const streetAddress = screen.getByLabelText(/Street Address/i);
+
+    expect(streetAddress).toHaveValue("123 Test St");
+
+    // click on the first column header
+    const facilityNameHeader = screen.getByRole("columnheader", {
+      name: "Facility Name",
+    });
+
+    act(() => {
+      facilityNameHeader.click();
+    });
+
+    const searchInput = screen.getAllByPlaceholderText(/Search/i)[0]; // facility name search input
+    expect(searchInput).toBeVisible();
+    searchInput.focus();
+    act(() => {
+      fireEvent.change(searchInput, { target: { value: "facility 1" } });
+    });
+    expect(searchInput).toHaveValue("facility 1");
+
+    await waitFor(() => {
+      expect(mockReplace).toHaveBeenCalled();
+    });
+
+    await waitFor(() => {
+      // check that the API call was made with the correct params
+      expect(extractParams(String(mockReplace.mock.calls), "name")).toBe(
+        "facility 1",
+      );
+    });
+
+    expect(streetAddress).toHaveValue("123 Test St");
   });
 });
