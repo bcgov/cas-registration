@@ -1,5 +1,11 @@
 import "@testing-library/jest-dom";
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { useSearchParams } from "@bciers/testConfig/mocks";
 import FacilityDataGrid from "apps/administration/app/components/facilities/FacilitiesDataGrid";
 import { QueryParams } from "@bciers/testConfig/types";
@@ -145,9 +151,15 @@ describe("OperationsDataGrid component", () => {
     });
     expect(searchInput).toHaveValue("facility 1");
 
-    // check that the API call was made with the correct params
-    expect(extractParams(String(mockReplace.mock.calls[0][2]), "name")).toBe(
-      "facility 1",
-    );
+    await waitFor(() => {
+      expect(mockReplace).toHaveBeenCalled();
+    });
+
+    await waitFor(() => {
+      // check that the API call was made with the correct params
+      expect(extractParams(String(mockReplace.mock.calls), "name")).toBe(
+        "facility 1",
+      );
+    });
   });
 });
