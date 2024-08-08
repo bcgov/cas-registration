@@ -70,7 +70,7 @@ const FacilityInformationForm = ({
   const uiSchema = isOperationSfo
     ? facilityInformationSfoUiSchema
     : facilityInformationLfoUiSchema;
-
+  console.log(initialGridData);
   const FacilityDataGridMemo = useMemo(
     () => (
       <FacilityDataGrid
