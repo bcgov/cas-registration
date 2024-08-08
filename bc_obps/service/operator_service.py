@@ -1,3 +1,5 @@
+from registration.constants import UNAUTHORIZED_MESSAGE
+from service.data_access_service.user_service import UserDataAccessService
 from registration.emails import send_operator_access_request_email
 from registration.enums.enums import AccessRequestStates, AccessRequestTypes
 from registration.schema.v1.parent_operator import ParentOperatorIn
@@ -25,6 +27,13 @@ email_service = EmailService()
 
 
 class OperatorService:
+    @classmethod
+    def get_operator_by_user_if_authorized_or_raise(cls, user_guid: UUID) -> Operator:
+        user_operator = UserDataAccessService.get_user_operator_by_user(user_guid)
+        if user_operator.status != UserOperator.Statuses.APPROVED:
+            raise Exception(UNAUTHORIZED_MESSAGE)
+        return UserDataAccessService.get_operator_by_user(user_guid)
+
     @classmethod
     def get_operators_by_cra_number_or_legal_name(
         cls, cra_business_number: Optional[int] = None, legal_name: Optional[str] = ""

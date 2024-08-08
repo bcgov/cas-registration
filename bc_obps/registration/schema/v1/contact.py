@@ -43,3 +43,9 @@ class ContactIn(ModelSchema):
     class Meta:
         model = Contact
         fields = ['first_name', 'last_name', 'email', 'phone_number', 'position_title']
+
+
+class OperatorContactListOut(ModelSchema):
+    class Meta:
+        model = Contact
+        fields = ['first_name', 'last_name']

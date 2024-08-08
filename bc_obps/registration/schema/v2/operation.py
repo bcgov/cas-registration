@@ -1,5 +1,6 @@
 from uuid import UUID
 from typing import List, Optional, Union
+from registration.schema.v1.contact import ContactIn
 from ninja import Field, FilterSchema, ModelSchema, Schema
 from registration.models import Operation
 from service.data_access_service.facility_service import FacilityDataAccessService
@@ -11,13 +12,29 @@ from django.core.files.base import ContentFile
 from registration.utils import data_url_to_file
 from registration.utils import file_to_data_url
 
-
 #### Operation schemas
 
 
 class RegistrationPurposeIn(ModelSchema):
     registration_purpose: RegistrationPurpose.Purposes
-    regulated_products: Optional[list] = None
+class OperationRepresentativeIn(Schema):
+    operation_representatives: Optional[List[int]] = []
+    new_operation_representatives: Optional[List[ContactIn]] = []
+
+    # @model_validator(mode='after')
+    # @classmethod
+    # def check_representatives_included(cls, data: 'OperationRepresentativeIn') -> 'OperationRepresentativeIn':
+    #     breakpoint()
+    #     # Check that representatives are given (they're both optional above because either one or the other is fine)
+    #     if (
+    #         hasattr(data, 'operation_representatives')
+    #         and len(data.operation_representatives) < 1
+    #         and hasattr(data, 'new_operation_representatives')
+    #         and len(data.new_operation_representatives) < 1
+    #     ):
+    #         raise Exception(ValidationError, "Operation representatives must be given")
+    #     return data
+
 
     class Meta:
         model = RegistrationPurpose

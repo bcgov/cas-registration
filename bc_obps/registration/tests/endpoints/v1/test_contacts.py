@@ -19,6 +19,14 @@ class TestContactsEndpoint(CommonTestSetup):
             assert response.json().get('detail') == "Unauthorized"
 
     # GET
+    def test_contacts_endpoint_unpaginated(self):
+        contact_baker(_quantity=45)
+        contacts_url = custom_reverse_lazy('list_contacts')
+        response = TestUtils.mock_get_with_auth_role(self, "cas_admin", contacts_url + "?paginate_result=False")
+        assert response.status_code == 200
+        assert len(response.json().get('items')) == 45
+        assert response.json().get('count') == 45
+
     def test_contacts_endpoint_list_contacts_paginated(self):
         contact_baker(_quantity=45)
         contacts_url = custom_reverse_lazy('list_contacts')
