@@ -60,6 +60,7 @@ const FacilityInformationForm = ({
 }: FacilityInformationFormProps) => {
   const [error, setError] = useState(undefined);
   const [formState, setFormState] = useState(formData ?? {});
+  // Get the list of sections in the LFO schema - used to unnest the formData
   const formSectionListLFo = Object.keys(
     facilitiesLfoSchema.properties as RJSFSchema,
   );
@@ -70,7 +71,7 @@ const FacilityInformationForm = ({
   const uiSchema = isOperationSfo
     ? facilityInformationSfoUiSchema
     : facilityInformationLfoUiSchema;
-  console.log(initialGridData);
+
   const FacilityDataGridMemo = useMemo(
     () => (
       <FacilityDataGrid
@@ -79,7 +80,7 @@ const FacilityInformationForm = ({
         sx={FacilityGridSx}
       />
     ),
-    [initialGridData],
+    [initialGridData, operation],
   );
 
   const handleFormChange = useCallback(
@@ -92,15 +93,15 @@ const FacilityInformationForm = ({
   const handleSubmit = useCallback(
     async (e: IChangeEvent) => {
       const method = "POST";
-      const endpoint = isOperationSfo
-        ? "registration/facility"
-        : "registration/facilities";
+      const endpoint = "registration/facilities";
 
       const body = isOperationSfo
-        ? {
-            ...createUnnestedFormData(e.formData, formSectionListLFo),
-            operation_id: operation,
-          }
+        ? [
+            {
+              ...createUnnestedFormData(e.formData, formSectionListLFo),
+              operation_id: operation,
+            },
+          ]
         : createUnnestedArrayFormData(
             e.formData.facility_information_array,
             formSectionListLFo,
@@ -114,7 +115,7 @@ const FacilityInformationForm = ({
         return { error: response.error };
       }
     },
-    [operation],
+    [operation, isOperationSfo, formSectionListLFo],
   );
 
   return (

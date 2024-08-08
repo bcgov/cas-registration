@@ -16,24 +16,12 @@ from registration.schema.generic import Message
 
 
 @router.post(
-    "/facility",
-    response={201: FacilityOut, custom_codes_4xx: Message},
-    tags=FACILITY_TAGS,
-    description="""Creates a new facility for the current user.""",
-    auth=authorize("approved_industry_user"),
-)
-@handle_http_errors()
-def create_facility(request: HttpRequest, payload: FacilityIn) -> Tuple[Literal[201], Facility]:
-    return 201, FacilityService.create_facility_with_ownership(get_current_user_guid(request), payload)
-
-
-@router.post(
     "/facilities",
     response={201: List[FacilityOut], custom_codes_4xx: Message},
     tags=FACILITY_TAGS,
-    description="""Creates new facilities from an array for the current user.""",
+    description="""Creates 1 or more new facilities from an array for the current user.""",
+    auth=authorize("approved_industry_user"),
 )
-@authorize(["industry_user"], UserOperator.get_all_industry_user_operator_roles())
 @handle_http_errors()
 def create_facilities(request: HttpRequest, payload: List[FacilityIn]) -> Tuple[Literal[201], List[Facility]]:
     return 201, FacilityService.create_facilities_with_ownership(get_current_user_guid(request), payload)
