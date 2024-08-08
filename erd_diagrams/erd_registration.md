@@ -539,6 +539,7 @@ Operation {
     OneToOneField bc_obps_regulated_operation
     OneToOneField opted_in_operation
     ManyToManyField documents
+    ManyToManyField contacts
     ManyToManyField regulated_products
     ManyToManyField activities
 }
@@ -995,6 +996,7 @@ Operation }|--|| Contact : point_of_contact
 Operation ||--|| BcObpsRegulatedOperation : bc_obps_regulated_operation
 Operation ||--|| OptedInOperationDetail : opted_in_operation
 Operation }|--|{ Document : documents
+Operation }|--|{ Contact : contacts
 Operation }|--|{ RegulatedProduct : regulated_products
 Operation }|--|{ Activity : activities
 HistoricalWellAuthorizationNumber }|--|| User : created_by
