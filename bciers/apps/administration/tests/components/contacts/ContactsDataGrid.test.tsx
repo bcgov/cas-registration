@@ -1,5 +1,11 @@
 import "@testing-library/jest-dom";
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import ContactsDataGrid from "apps/administration/app/components/contacts/ContactsDataGrid";
 import { useSearchParams } from "@bciers/testConfig/mocks";
 import { QueryParams } from "@bciers/testConfig/types";
@@ -175,9 +181,15 @@ describe("ContactsDataGrid component", () => {
     });
     expect(searchInput).toHaveValue("john");
 
-    // check that the API call was made with the correct params
-    expect(
-      extractParams(String(mockReplace.mock.calls[0][2]), "first_name"),
-    ).toBe("john");
+    await waitFor(() => {
+      expect(mockReplace).toHaveBeenCalled();
+    });
+
+    await waitFor(() => {
+      // check that the API call was made with the correct params
+      expect(extractParams(String(mockReplace.mock.calls), "first_name")).toBe(
+        "john",
+      );
+    });
   });
 });
