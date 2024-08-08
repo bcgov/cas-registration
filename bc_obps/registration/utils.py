@@ -1,4 +1,5 @@
 import logging
+from django.db.models import QuerySet
 from typing import Any, List, TypeVar, Union, Iterable, Dict, Optional
 from uuid import UUID
 from django.core.exceptions import ValidationError
@@ -22,6 +23,7 @@ from django.urls import reverse_lazy
 from datetime import datetime
 from zoneinfo import ZoneInfo
 from ninja.types import DictStrAny
+from ninja.pagination import PageNumberPagination
 
 
 logger = logging.getLogger(__name__)
@@ -202,3 +204,19 @@ def files_have_same_hash(file1: Optional[ContentFile], file2: Optional[ContentFi
         return hash1.hexdigest() == hash2.hexdigest()
     except Exception as e:
         raise ValueError(f"Error comparing files: {e}")
+
+
+class CustomPagination(PageNumberPagination):
+    def paginate_queryset(
+        self,
+        queryset: QuerySet,
+        pagination: PageNumberPagination.Input,
+        **params: Any,
+    ) -> Any:
+        paginate_result = params.get('paginate_result')
+        page_size = queryset.count() if not paginate_result else self.page_size
+        offset = (pagination.page - 1) * page_size
+        return {
+            "items": queryset[offset : offset + page_size],
+            "count": self._items_count(queryset),
+        }  # noqa: E203

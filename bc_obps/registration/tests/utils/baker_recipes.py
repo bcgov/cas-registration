@@ -4,6 +4,8 @@ from registration.models.user import User
 from registration.models.user_operator import UserOperator
 from registration.models.naics_code import NaicsCode
 from registration.models.operation import Operation
+from registration.models.business_role import BusinessRole
+from registration.models.contact import Contact
 from registration.models.partner_operator import PartnerOperator
 from registration.models.parent_operator import ParentOperator
 from registration.models.address import Address
@@ -16,9 +18,7 @@ from registration.models.operator import Operator
 from model_bakery.recipe import Recipe, foreign_key
 import uuid
 
-
 naics_code = Recipe(NaicsCode)
-
 address = Recipe(Address, street_address='Dreary Lane', municipality='Candyland', province='BC', postal_code='HOHOHO')
 
 operator = Recipe(
@@ -75,7 +75,10 @@ operator_for_approved_user_operator = Recipe(
 )
 
 approved_user_operator = Recipe(
-    UserOperator, status=UserOperator.Statuses.APPROVED, operator=foreign_key(operator_for_approved_user_operator)
+    UserOperator,
+    status=UserOperator.Statuses.APPROVED,
+    operator=foreign_key(operator_for_approved_user_operator),
+    user=foreign_key(industry_operator_user),
 )
 
 opted_in_operation_detail = Recipe(
@@ -89,3 +92,4 @@ opted_in_operation_detail = Recipe(
     meets_reporting_and_regulated_obligations=False,
     meets_notification_to_director_on_criteria_change=False,
 )
+contact = Recipe(Contact, business_role=BusinessRole.objects.first())

@@ -1,8 +1,9 @@
 from typing import List, Literal, Optional, Tuple
 from common.permissions import authorize
 from django.http import HttpRequest
+from registration.utils import CustomPagination
 from registration.constants import CONTACT_TAGS
-from ninja.pagination import paginate, PageNumberPagination
+from ninja.pagination import paginate
 from registration.api.utils.current_user_utils import get_current_user_guid
 from registration.decorators import handle_http_errors
 from registration.models.contact import Contact
@@ -24,12 +25,13 @@ from registration.schema.generic import Message
     auth=authorize("approved_authorized_roles"),
 )
 @handle_http_errors()
-@paginate(PageNumberPagination)
+@paginate(CustomPagination)
 def list_contacts(
     request: HttpRequest,
     filters: ContactFilterSchema = Query(...),
     sort_field: Optional[str] = "created_at",
     sort_order: Optional[Literal["desc", "asc"]] = "desc",
+    paginate_result: bool = Query(True, description="Whether to paginate the results"),
 ) -> QuerySet[Contact]:
     # NOTE: PageNumberPagination raises an error if we pass the response as a tuple (like 200, ...)
     return ContactService.list_contacts(get_current_user_guid(request), sort_field, sort_order, filters)
