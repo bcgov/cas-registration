@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { TextField } from "@mui/material";
 import OutsideClickHandler from "react-outside-click-handler";
 import { GridColumnGroupHeaderParams } from "@mui/x-data-grid";
+import debounce from "lodash.debounce";
 
 const SearchCell = ({
   field,
@@ -20,8 +21,33 @@ const SearchCell = ({
   const searchParams = useSearchParams();
   const [searchState, setSearchState] = useState(searchParams.get(field) || "");
 
+  useEffect(() => {
+    const debounced = debounce(() => {
+      const params = new URLSearchParams(searchParams);
+
+      if (searchState) {
+        // Set the search term in the URL
+        params.set(field, searchState);
+      } else {
+        // Remove the search term from the URL
+        params.delete(field);
+      }
+
+      window.history.replaceState(
+        {},
+        "",
+        `${window.location.pathname}?${params.toString()}`,
+      );
+    }, 400);
+
+    debounced();
+
+    return () => {
+      debounced.cancel();
+    };
+  }, [searchState]);
+
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const pathname = window.location.pathname;
     const params = new URLSearchParams(searchParams);
     const searchTerm = event.target.value;
 
@@ -41,7 +67,7 @@ const SearchCell = ({
     setSearchState(searchTerm);
 
     // Need shallow routing to prevent page reload
-    window.history.replaceState({}, "", `${pathname}?${params.toString()}`);
+    // window.history.replaceState({}, "", `${pathname}?${params.toString()}`);
   };
 
   const handleResetFocus = () => {
