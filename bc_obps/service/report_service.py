@@ -10,6 +10,7 @@ from django.db import transaction
 from service.data_access_service.report_service import ReportDataAccessService
 from service.data_access_service.reporting_year import ReportingYearDataAccessService
 from reporting.schema.report_operation import ReportOperationIn
+from reporting.schema.report_facility import ReportFacilityIn
 
 
 class ReportService:
@@ -104,3 +105,29 @@ class ReportService:
         report_operation.save()
 
         return report_operation
+
+  @classmethod
+    def get_report_facility_by_version_id(cls, report_version_id: int) -> ReportFacility:
+        return ReportFacility.objects.get(report_version__id=report_version_id)
+
+    @classmethod
+    def save_report_facility(cls, report_version_id: int, data: ReportFacilityIn) -> ReportFacility:
+        report_facility = ReportFacility.objects.get(report_version__id=report_version_id)
+
+        # Updating fields from data
+        report_facility.facility_name = data.facility_name
+        report_facility.facility_type = data.facility_type
+        report_facility.facility_bcghgid = data.facility_bcghgid
+
+        # Fetch and set ManyToMany fields
+        activities = ReportingActivity.objects.filter(name__in=data.activities)
+        products = RegulatedProduct.objects.filter(name__in=data.products)
+
+        # Set ManyToMany relationships
+        report_facility.reporting_activities.set(reporting_activities)
+        report_facility.regulated_products.set(regulated_products)
+
+        # Save the updated report operation
+        report_facility.save()
+
+        return report_facility
