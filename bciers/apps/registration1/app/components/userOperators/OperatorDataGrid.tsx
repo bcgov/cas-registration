@@ -1,10 +1,10 @@
 "use client";
 
-import DataGrid from "@bciers/components/datagrid/DataGrid";
+import DataGrid from "apps/registration1/app/components/datagrid/DataGrid";
 import Link from "next/link";
 import { GridRenderCellParams } from "@mui/x-data-grid";
 import { UserOperator } from "./types";
-import { fetchUserOperatorPageData } from "@/app/components/routes/operators/Page";
+import { fetchUserOperatorPageData } from "apps/registration1/app/components/routes/operators/Page";
 
 const OperatorDataGrid = ({
   initialData,

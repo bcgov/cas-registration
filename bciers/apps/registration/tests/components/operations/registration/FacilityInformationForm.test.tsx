@@ -29,6 +29,28 @@ useSearchParams.mockReturnValue({
   get: vi.fn(),
 });
 
+const facilityInitialData = {
+  rows: [
+    {
+      id: "f486f2fb-62ed-438d-bb3e-0819b51e3aeb",
+      name: "Facility 1",
+      is_current_year: null,
+      starting_date: null,
+      type: "Large Facility",
+      bcghg_id: null,
+    },
+    {
+      id: "f486f2fb-62ed-438d-bb3e-0819b51e3aec",
+      name: "Facility 3",
+      is_current_year: null,
+      starting_date: null,
+      type: "Medium LFO",
+      bcghg_id: "23219990007",
+    },
+  ],
+  row_count: 20,
+};
+
 const mockPush = vi.fn();
 
 useRouter.mockReturnValue({
@@ -314,4 +336,52 @@ describe("the FacilityInformationForm component", () => {
       );
     },
   );
+
+  it("should display the Facility DataGrid", () => {
+    render(<FacilityInformationForm {...defaultProps} />);
+    expect(
+      screen.getByRole("columnheader", { name: "Facility Name" }),
+    ).toBeVisible();
+    expect(
+      screen.getByRole("columnheader", { name: "Facility Type" }),
+    ).toBeVisible();
+    expect(
+      screen.getByRole("columnheader", { name: "BC GHG ID" }),
+    ).toBeVisible();
+    expect(screen.getByRole("columnheader", { name: "Actions" })).toBeVisible();
+  });
+
+  it("should render the Facility DataGrid with no data", () => {
+    render(<FacilityInformationForm {...defaultProps} />);
+
+    expect(screen.getByText(/No records found/i)).toBeVisible();
+  });
+
+  it("should render the Facility DataGrid with the initial data", () => {
+    render(
+      <FacilityInformationForm
+        {...defaultProps}
+        initialGridData={facilityInitialData as any}
+      />,
+    );
+
+    expect(screen.getAllByRole("gridcell")[0]).toHaveTextContent("Facility 1");
+    expect(screen.getAllByRole("gridcell")[1]).toHaveTextContent(
+      "Large Facility",
+    );
+  });
+
+  it("should keep form data when filtering the Facility datagrid", async () => {
+    render(
+      <FacilityInformationForm
+        {...defaultProps}
+        isOperationSfo
+        initialGridData={facilityInitialData as any}
+      />,
+    );
+
+    fillAddressFields(0);
+
+    expect(screen.getByLabelText(/Street Address/i)).toHaveValue("123 Test St");
+  });
 });
