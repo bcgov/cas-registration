@@ -72,6 +72,77 @@ class TestGetIfAuthorized:
         with pytest.raises(Exception, match=UNAUTHORIZED_MESSAGE):
             FacilityService.get_if_authorized(user.user_guid, facility.id)
 
+    @staticmethod
+    def test_create_facilities_with_ownership_create_single_facility():
+        user = baker.make(User, app_role=AppRole.objects.get(role_name="industry_user"))
+        operator = operator_baker()
+        baker.make(
+            UserOperator,
+            user_id=user.user_guid,
+            status=UserOperator.Statuses.APPROVED,
+            operator=operator,
+            role=UserOperator.Roles.ADMIN,
+        )
+        owning_operation: Operation = operation_baker(operator.id)
+        payload = [
+            FacilityIn(
+                name='Test Facility 1',
+                type='Single Facility',
+                latitude_of_largest_emissions=5,
+                longitude_of_largest_emissions=5,
+                operation_id=owning_operation.id,
+            )
+        ]
+
+        FacilityService.create_facilities_with_ownership(user.user_guid, payload)
+
+        assert len(Facility.objects.all()) == 1
+
+    @staticmethod
+    def test_create_facilities_with_ownership_create_multiple_facilities():
+        user = baker.make(User, app_role=AppRole.objects.get(role_name="industry_user"))
+        operator = operator_baker()
+        baker.make(
+            UserOperator,
+            user_id=user.user_guid,
+            status=UserOperator.Statuses.APPROVED,
+            operator=operator,
+            role=UserOperator.Roles.ADMIN,
+        )
+        owning_operation: Operation = operation_baker(operator.id)
+        payload = [
+            FacilityIn(
+                name='Test Facility 1',
+                type='Single Facility',
+                latitude_of_largest_emissions=5,
+                longitude_of_largest_emissions=5,
+                operation_id=owning_operation.id,
+            ),
+            FacilityIn(
+                street_address='123 street',
+                municipality='city',
+                province='AB',
+                postal_code='H0H0H0',
+                name='Test Facility 2',
+                type='Large Facility',
+                latitude_of_largest_emissions=5,
+                longitude_of_largest_emissions=5,
+                operation_id=owning_operation.id,
+                well_authorization_numbers=[12345, 654321],
+            ),
+            FacilityIn(
+                name='Test Facility 3',
+                type='Single Facility',
+                latitude_of_largest_emissions=5,
+                longitude_of_largest_emissions=5,
+                operation_id=owning_operation.id,
+            ),
+        ]
+
+        FacilityService.create_facilities_with_ownership(user.user_guid, payload)
+
+        assert len(Facility.objects.all()) == 3
+
 
 class TestCreateFacilityWithOwnership:
     @staticmethod
