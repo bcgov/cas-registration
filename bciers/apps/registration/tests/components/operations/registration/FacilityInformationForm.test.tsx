@@ -129,6 +129,7 @@ const defaultProps = {
   step: 3,
   steps: allOperationRegistrationSteps,
   initialGridData: { rows: [], row_count: 0 },
+  isCreating: true,
   isOperationSfo: false,
 };
 
@@ -386,10 +387,17 @@ describe("the FacilityInformationForm component", () => {
     render(
       <FacilityInformationForm
         {...defaultProps}
-        isOperationSfo
         initialGridData={facilityInitialData as any}
       />,
     );
+
+    const addButton = screen.getByRole("button", {
+      name: "Add facility",
+    });
+
+    act(() => {
+      fireEvent.click(addButton);
+    });
 
     fillAddressFields(0);
 
