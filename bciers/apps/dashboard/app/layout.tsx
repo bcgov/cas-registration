@@ -7,6 +7,11 @@ You should not manually add <head> tags such as <title> and <meta> to root layou
 
 // eslint-disable-next-line import/extensions
 import "@bciers/styles/globals.css";
-import RootLayout from "@bciers/components/layout/RootLayout";
+import RootLayout, { rootMetadata } from "@bciers/components/layout/RootLayout";
+
+export const metadata = {
+  ...rootMetadata,
+  title: "CAS OBPS | Dashboard",
+};
 
 export default RootLayout;

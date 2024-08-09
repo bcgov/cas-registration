@@ -5,11 +5,18 @@ The app directory must include a root app/layout.js.
 
 // eslint-disable-next-line import/extensions
 import "@bciers/styles/globals.css";
-import { RootLayout } from "@bciers/components/server";
+import RootLayout, { rootMetadata } from "@bciers/components/layout/RootLayout";
+
 const defaultLinks = [
   { label: "Dashboard", href: "/" },
   { label: "Reporting", href: "/reporting" },
 ];
+
+export const metadata = {
+  ...rootMetadata,
+  title: "CAS OBPS | Reporting",
+};
+
 export default function ReportingLayout({
   children,
 }: {
