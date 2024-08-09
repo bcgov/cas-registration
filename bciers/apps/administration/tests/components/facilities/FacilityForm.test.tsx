@@ -657,8 +657,44 @@ describe("FacilityForm component", () => {
 
     // submit valid form data, assert response
     await assertFormPost(sfoResponsePost);
+    const submitButton = screen.getByRole("button", { name: /submit/i });
+    actionHandler.mockReturnValueOnce([
+      {
+        id: facilityId,
+        name: facilityName,
+        error: null,
+      },
+    ]);
+    // fill year and starting date
+    const year = screen.getByLabelText(/Did this facility begin operations+/i);
+    await userEvent.click(year);
+    await userEvent.type(
+      screen.getByLabelText(/Date of facility starting operations+/i),
+      "20240101",
+    );
+
+    // fill lat and long (userEvent.type doesn't work because the value goes in as a string and lat/long require a number)
+    fireEvent.change(
+      screen.getByLabelText(/Latitude of Largest Point of Emissions+/i),
+      { target: { value: 0.1 } },
+    );
+    fireEvent.change(
+      screen.getByLabelText(/Longitude of Largest Point of Emissions+/i),
+      { target: { value: 0.1 } },
+    );
+
+    userEvent.click(submitButton);
+
+    await waitFor(() => {
+      expect(mockReplace).toHaveBeenCalledWith(
+        `/operations/${operationId}/facilities/${facilityId}?facilities_title=${facilityName}`,
+        {
+          shallow: true,
+        },
+      );
+    });
   });
-  it.skip("fills all form fields, creates new LFO facility, and redirects on success", async () => {
+  it("fills all form fields, creates new LFO facility, and redirects on success", async () => {
     render(
       <FacilityForm
         isCreating
