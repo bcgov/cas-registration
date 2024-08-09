@@ -58,6 +58,6 @@ describe("The Reporting task list component", () => {
     expect(screen.getByText("Facility 2 info")).toBeInTheDocument();
     expect(screen.getByText("Facility 3 info")).toBeInTheDocument();
     expect(screen.getByText("Review facility 2")).not.toBeVisible(); // collapsed
-    expect(screen.getByText("General stationary combustion")).toBeVisible(); // expanded
+    expect(screen.getByText("General stationary combustion excluding line tracing")).toBeVisible(); // expanded
   });
 });
