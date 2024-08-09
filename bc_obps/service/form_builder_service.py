@@ -63,7 +63,7 @@ def build_source_type_schema(
             valid_to__gte=config,
         )
         .all()
-        .iterator(chunk_size=100)
+        .iterator(chunk_size=200)
     )
 
     # For each gas type, add to the enum object to be added to the schema to complete the list of valid gas_types a user can select
