@@ -64,7 +64,7 @@ export default function FacilityForm({
             body: JSON.stringify(body),
           },
         );
-        if (response.error) {
+        if (response?.error) {
           setError(response.error);
           // return error so SingleStepTaskList can re-enable the submit button and user can attempt to submit again
           return { error: response.error };
