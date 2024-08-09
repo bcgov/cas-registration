@@ -7,14 +7,16 @@ The app directory must include a root app/layout.js.
 import "@bciers/styles/globals.css";
 import RootLayout, { rootMetadata } from "@bciers/components/layout/RootLayout";
 
+const title = "Registration";
+
 const defaultLinks = [
   { label: "Dashboard", href: "/" },
-  { label: "Registration", href: "/registration" },
+  { label: title, href: "/registration" },
 ];
 
 export const metadata = {
   ...rootMetadata,
-  title: `${rootMetadata.title} | Registration`,
+  title: `${rootMetadata.title} | ${title}`,
 };
 
 export default function ReportingLayout({
@@ -23,7 +25,7 @@ export default function ReportingLayout({
   children: React.ReactNode;
 }) {
   return (
-    <RootLayout defaultLinks={defaultLinks} zone="registration">
+    <RootLayout defaultLinks={defaultLinks} zone={title.toLowerCase()}>
       {children}
     </RootLayout>
   );
