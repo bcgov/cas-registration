@@ -9,6 +9,7 @@ import {
 import { RJSFSchema } from "@rjsf/utils";
 import { operationInformationSchema } from "../../data/jsonSchema/operationInformation";
 import { validate as isValidUUID } from "uuid";
+import safeJsonParse from 'libs/utils/safeJsonParse'
 
 // 🛠️ Function to create an operation schema with updated enum values
 export const createOperationSchema = (
@@ -25,7 +26,7 @@ export const createOperationSchema = (
     name: string;
   }[],
 ) => {
-  const localSchema = JSON.parse(JSON.stringify(schema));
+  const localSchema = safeJsonParse(JSON.stringify(schema));
   const section1 = localSchema.properties.section1.properties;
   const section2Dependencies = localSchema.properties.section2.dependencies;
   const section3 = localSchema.properties.section3.properties;

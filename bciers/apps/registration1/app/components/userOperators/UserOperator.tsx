@@ -11,6 +11,7 @@ import { validate as isValidUUID } from "uuid";
 import { BusinessStructure } from "./types";
 import UserOperatorReviewForm from "./UserOperatorReviewForm";
 import UserOperatorForm from "./UserOperatorForm";
+import safeJsonParse from 'libs/utils/safeJsonParse'
 
 async function getBusinessStructures() {
   return actionHandler(
@@ -34,7 +35,7 @@ const createUserOperatorSchema = (
   schema: RJSFSchema,
   businessStructureList: { id: string; label: string }[],
 ): RJSFSchema => {
-  const localSchema = JSON.parse(JSON.stringify(schema));
+  const localSchema = safeJsonParse(JSON.stringify(schema));
 
   const businessStructureOptions = businessStructureList?.map(
     (businessStructure) => ({
