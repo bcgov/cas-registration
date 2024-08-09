@@ -55,14 +55,14 @@ export default function FacilitiesForm({
             body: JSON.stringify(body),
           },
         );
-        if (response.error) {
+        if (response?.error) {
           setError(response.error);
           // return error so SingleStepTaskList can re-enable the submit button and user can attempt to submit again
           return { error: response.error };
         }
         if (isCreating) {
           router.replace(
-            `/operations/${params.operationId}/facilities/${response.id}?facilities_title=${response.name}`,
+            `/operations/${params.operationId}/facilities/${response[0].id}?facilities_title=${response[0].name}`,
             // @ts-ignore
             { shallow: true },
           );
