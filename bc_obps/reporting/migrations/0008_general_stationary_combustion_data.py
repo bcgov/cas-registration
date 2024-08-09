@@ -1709,7 +1709,7 @@ def reverse_init_activity_source_type_schema_data(apps, schema_monitor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('reporting', '0007_prod_data'),
+        ('reporting', '0007_prod_data')
     ]
 
     operations = [
