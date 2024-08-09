@@ -73,7 +73,7 @@ def build_source_type_schema(
 
         # We might be able to do something more efficient by using the iterator itself instead of walking it to build a list
         methodologies = list(
-            filter(lambda config_elt: config_elt.gas_type.id == t.gas_type.id, fetched_configuration_elements)
+            filter(lambda config_elt, t=t: config_elt.gas_type.id == t.gas_type.id, fetched_configuration_elements)
         )
 
         if len(methodologies) == 0:
@@ -101,7 +101,7 @@ def build_source_type_schema(
                 # There is (in theory) only one config element for a given gas type and methodology within an activity/source type/configuration
                 methodology_fields = next(
                     filter(
-                        lambda config_elt: config_elt.gas_type.id == t.gas_type.id
+                        lambda config_elt, t=t, u=u: config_elt.gas_type.id == t.gas_type.id
                         and config_elt.methodology.id == u.methodology.id,
                         fetched_configuration_elements,
                     )
