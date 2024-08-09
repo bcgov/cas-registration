@@ -38,7 +38,7 @@ class TestBuildFormSchema:
         response = client.get(f'{pytest.endpoint}?activity=1&report_date=2024-05-01')
         assert response.status_code == 200
         response_object = json.loads(response.json())
-        assert response_object['schema']['title'] == 'General stationary combustion'
+        assert response_object['schema']['title'] == 'General stationary combustion excluding line tracing'
         # No source types passed (and no mandatory single source type). Return only the activity schema
         assert 'sourceTypes' not in response_object['schema']['properties']
         # There are 2 source type options in the general stationary combustion activity schema

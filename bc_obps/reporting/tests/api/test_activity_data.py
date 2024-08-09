@@ -9,7 +9,7 @@ pytest.endpoint = "/api/reporting/initial-activity-data"
 
 class TestActivityData:
     def test_invalid_without_report_date(self):
-        response = client.get(f'{pytest.endpoint}?activity_name=General stationary combustion')
+        response = client.get(f'{pytest.endpoint}?activity_name=General stationary combustion excluding line tracing')
         assert response.status_code == 422
 
     def test_invalid_without_activity(self):
@@ -18,7 +18,7 @@ class TestActivityData:
 
     def test_returns_activity_data(self):
         response = client.get(
-            '/api/reporting/initial-activity-data?activity_name=General stationary combustion&report_date=2024-05-01'
+            '/api/reporting/initial-activity-data?activity_name=General stationary combustion excluding line tracing&report_date=2024-05-01'
         )
         assert response.status_code == 200
         response_object = json.loads(response.json())
