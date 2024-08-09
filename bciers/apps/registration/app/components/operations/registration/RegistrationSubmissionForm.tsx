@@ -1,15 +1,16 @@
 "use client";
 
 import { actionHandler } from "@bciers/actions";
+import { useState } from "react";
 import MultiStepBase from "@bciers/components/form/MultiStepBase";
 import { submissionUiSchema } from "apps/registration/app/data/jsonSchema/operationRegistration/submission";
 import {
   RegistrationSubmissionFormData,
   OperationRegistrationFormProps,
 } from "apps/registration/app/components/operations/registration/types";
-import { useState } from "react";
 import { IChangeEvent } from "@rjsf/core";
 import SnackBar from "@bciers/components/form/components/SnackBar";
+import Submission from "apps/registration/app/components/operations/registration/Submission";
 
 // Check if all checkboxes are checked
 const allChecked = (formData: RegistrationSubmissionFormData) => {
@@ -23,6 +24,7 @@ const RegistrationSubmissionForm = ({
   steps,
 }: OperationRegistrationFormProps) => {
   const [formState, setFormState] = useState({});
+  const [isSubmitted, setIsSubmitted] = useState(false);
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(true);
   const [error, setError] = useState("");
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
@@ -51,30 +53,37 @@ const RegistrationSubmissionForm = ({
     }
     // Temporary snackbar message - will be replaced with a redirect
     setIsSnackbarOpen(true);
+    setIsSubmitted(true);
   };
 
   return (
     <>
-      <MultiStepBase
-        allowBackNavigation
-        baseUrl={`/register-an-operation/${operation}`}
-        baseUrlParams="title=Placeholder+Title"
-        cancelUrl="/"
-        formData={formState}
-        onSubmit={handleSubmit}
-        error={error}
-        schema={schema}
-        step={step}
-        steps={steps}
-        uiSchema={submissionUiSchema}
-        onChange={handleChange}
-        submitButtonDisabled={submitButtonDisabled}
-      />
-      <SnackBar
-        isSnackbarOpen={isSnackbarOpen}
-        message="Operation Registration Submitted"
-        setIsSnackbarOpen={setIsSnackbarOpen}
-      />
+      {isSubmitted ? (
+        <Submission operation={operation} />
+      ) : (
+        <>
+          <MultiStepBase
+            allowBackNavigation
+            baseUrl={`/register-an-operation/${operation}`}
+            baseUrlParams="title=Placeholder+Title"
+            cancelUrl="/"
+            formData={formState}
+            onSubmit={handleSubmit}
+            error={error}
+            schema={schema}
+            step={step}
+            steps={steps}
+            uiSchema={submissionUiSchema}
+            onChange={handleChange}
+            submitButtonDisabled={submitButtonDisabled}
+          />
+          <SnackBar
+            isSnackbarOpen={isSnackbarOpen}
+            message="Operation Registration Submitted"
+            setIsSnackbarOpen={setIsSnackbarOpen}
+          />
+        </>
+      )}
     </>
   );
 };

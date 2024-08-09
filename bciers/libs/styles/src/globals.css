@@ -41,11 +41,18 @@
   .read-only-widget {
     @apply w-full px-[14px] py-4 flex items-center min-h-[56px] box-border;
   }
-  .link-button-blue {
-    @apply w-fit no-underline text-lg text-white py-[6px] px-[16px] rounded flex items-center bg-bc-primary-blue;
-  }
   .emission-array-header {
     @apply text-base py-2 w-full font-bold text-bc-bg-blue;
+  }
+  /* Use the following classes to style links as buttons */
+  .link-button-base {
+    @apply w-fit no-underline text-lg py-[5px] px-[15px] rounded flex items-center text-base leading-7;
+  }
+  .link-button-blue {
+    @apply link-button-base text-white bg-bc-bg-blue hover:bg-bc-primary-blue;
+  }
+  .link-button-outlined {
+    @apply link-button-base text-bc-primary-blue border border-solid border-bc-bg-blue hover:bg-bc-bg-blue hover:bg-gray-100;
   }
 }
 
