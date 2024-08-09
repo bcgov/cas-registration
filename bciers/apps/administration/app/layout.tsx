@@ -8,14 +8,16 @@ import "@bciers/styles/globals.css";
 
 import RootLayout, { rootMetadata } from "@bciers/components/layout/RootLayout";
 
+const title = "Administration";
+
 const defaultLinks = [
   { label: "Dashboard", href: "/" },
-  { label: "Administration", href: "/administration" },
+  { label: title, href: "/administration" },
 ];
 
 export const metadata = {
   ...rootMetadata,
-  title: `${rootMetadata.title} | Administration`,
+  title: `${rootMetadata.title} | ${title}`,
 };
 
 export default function AdministrationLayout({
@@ -24,7 +26,7 @@ export default function AdministrationLayout({
   children: React.ReactNode;
 }) {
   return (
-    <RootLayout defaultLinks={defaultLinks} zone="administration">
+    <RootLayout defaultLinks={defaultLinks} zone={title.toLowerCase()}>
       {children}
     </RootLayout>
   );
