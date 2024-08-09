@@ -4,7 +4,7 @@ import { operatorSchema } from "../../data/jsonSchema/operator";
 import { RJSFSchema } from "@rjsf/utils";
 import getCurrentOperator from "./getCurrentOperator";
 import getBusinessStructures from "./getBusinessStructures";
-import safeJsonParse from 'libs/utils/safeJsonParse'
+import safeJsonParse from "libs/utils/safeJsonParse"
 
 export const createOperatorSchema = (
   schema: RJSFSchema,
