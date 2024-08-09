@@ -3,6 +3,7 @@
 import { usePathname, useSearchParams } from "next/navigation";
 import Link from "@mui/material/Link";
 import { validate as isValidUUID } from "uuid";
+import serializeSearchParams from "@bciers/utils/serializeSearchParams";
 
 // 📐 type for breadcrumb props
 type TBreadCrumbProps = {
@@ -26,33 +27,6 @@ function isNumeric(value: string): boolean {
   return !isNaN(Number(value));
 }
 
-// 🛠️ Function to determine valid crumb link
-function isValidLink(segment: string): boolean {
-  // Define invalid links
-  const invalidWords: string[] = [
-    "confirm",
-    "received",
-    "user-operator",
-    "add-operator",
-    "request-access",
-  ];
-
-  // 🛠️ Function to convert the segment to lowercase for case-insensitive comparison
-  const lowerSegment = segment.toLowerCase();
-  // Check if the segment contains any of the invalid words
-  for (const word of invalidWords) {
-    if (lowerSegment.includes(word)) {
-      return false; // Invalid segment
-    }
-  }
-  return true; // Valid segment
-}
-
-// 🛠️ Function to serialize search params
-const serializeSearchParams = (params: URLSearchParams) => {
-  const queryString = params.toString();
-  return queryString ? `?${queryString}` : "";
-};
 const liStyle = "inline text-white text-lg";
 const aStyle = "text-white text-lg";
 
@@ -67,6 +41,20 @@ export default function Bread({
   const searchParams = useSearchParams();
   const crumbTitles = Object.fromEntries(searchParams.entries());
 
+  // 🛠️ Function to check if a link is the last link
+  const isLastBreadcrumbItem = (link: string, index: number) => {
+    const lastLinkValues = ["register-an-operation"];
+    return lastLinkValues.includes(link) || index === pathNames.length - 1;
+  };
+
+  // 🛠️ Find the index of the last breadcrumb item
+  const lastLinkIndex = pathNames.findIndex((link, index) =>
+    isLastBreadcrumbItem(link, index),
+  );
+  const slicedPathNames =
+    lastLinkIndex !== -1 ? pathNames.slice(0, lastLinkIndex + 1) : pathNames;
+
+  // 🛠️ Function to translate a uuid or number segment using querystring value
   function translateNumericPart(segment: string, index: number): string {
     if (isValidUUID(segment) || isNumeric(segment)) {
       const precedingSegment = pathNames[index - 1]
@@ -109,43 +97,42 @@ export default function Bread({
                 </li>
               );
             })}
-            {pathNames.map((link, index) => {
-              const isLastItem = index === pathNames.length - 1;
+            {slicedPathNames.map((link, index) => {
+              const isLastItem = index === slicedPathNames.length - 1;
               const content = capitalizeLinks
                 ? translateNumericPart(unslugifyAndCapitalize(link), index)
                 : translateNumericPart(link, index);
-              if (isValidLink(link)) {
-                if (!isLastItem) {
-                  // 🔗 create a link
-                  const path = `/${pathNames.slice(0, index + 1).join("/")}`;
-                  const queryString = serializeSearchParams(searchParams);
-                  const href = zone
-                    ? `/${zone}${path}${queryString}`
-                    : `${path}${queryString}`;
 
-                  return (
-                    <li key={link} className={liStyle}>
-                      <Link href={href} className={aStyle}>
-                        {content}
-                      </Link>
-                      {separator}
-                    </li>
-                  );
-                } else {
-                  // Last item, no link, bold styling
-                  return (
-                    <li
-                      key={link}
-                      data-testid="breadcrumb-last-item"
-                      className={liStyle}
-                      style={{
-                        fontWeight: isLastItem ? "bold" : "normal",
-                      }}
-                    >
+              if (!isLastItem) {
+                // 🔗 create a link
+                const path = `/${slicedPathNames.slice(0, index + 1).join("/")}`;
+                const queryString = serializeSearchParams(searchParams);
+                const href = zone
+                  ? `/${zone}${path}${queryString}`
+                  : `${path}${queryString}`;
+
+                return (
+                  <li key={link} className={liStyle}>
+                    <Link href={href} className={aStyle}>
                       {content}
-                    </li>
-                  );
-                }
+                    </Link>
+                    {separator}
+                  </li>
+                );
+              } else {
+                // Last item, no link, bold styling
+                return (
+                  <li
+                    key={link}
+                    data-testid="breadcrumb-last-item"
+                    className={liStyle}
+                    style={{
+                      fontWeight: "bold",
+                    }}
+                  >
+                    {content}
+                  </li>
+                );
               }
             })}
           </ol>
