@@ -21,6 +21,7 @@ import { createUnnestedFormData } from "@bciers/components/form/formDataUtils";
 interface FacilityInformationFormProps {
   formData: FacilityInformationFormData;
   initialGridData?: FacilityInitialData;
+  isCreating: boolean;
   isOperationSfo: boolean;
   operation: UUID | "create";
   step: number;
@@ -56,6 +57,7 @@ const createUnnestedArrayFormData = (
 const FacilityInformationForm = ({
   formData,
   initialGridData,
+  isCreating,
   isOperationSfo,
   operation,
   step,
@@ -98,8 +100,8 @@ const FacilityInformationForm = ({
   const handleSubmit = useCallback(
     async (e: IChangeEvent) => {
       setIsSubmitting(true);
-      const method = "POST";
-      const endpoint = "registration/facilities";
+      const method = isCreating ? "POST" : "PUT";
+      const endpoint = isCreating ? "registration/facilities" : `tbd`;
 
       const body = isOperationSfo
         ? [
