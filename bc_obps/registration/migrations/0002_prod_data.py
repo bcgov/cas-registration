@@ -348,7 +348,7 @@ def init_reporting_activity_data(apps, schema_monitor):
     ReportingActivity = apps.get_model('registration', 'ReportingActivity')
     ReportingActivity.objects.bulk_create(
         [
-            ReportingActivity(name='General stationary combustion', applicable_to='all'),
+            ReportingActivity(name='General stationary combustion excluding line tracing', applicable_to='all'),
             ReportingActivity(name='Fuel combustion by mobile equipment', applicable_to='sfo'),
             ReportingActivity(name='Aluminum or alumina production', applicable_to='sfo'),
             ReportingActivity(name='Ammonia production', applicable_to='sfo'),
