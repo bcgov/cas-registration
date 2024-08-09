@@ -43,4 +43,5 @@ class FacilityModelTest(BaseTestCase):
             ("events", "event", None, None),
             ("is_current_year", "is current year", None, None),
             ("starting_date", "starting date", None, None),
+            ("facility_reports", "facility report", None, 0),
         ]
