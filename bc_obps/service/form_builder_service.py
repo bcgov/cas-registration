@@ -143,10 +143,7 @@ def build_source_type_schema(
     else:
         st_schema['properties']['emissions']['items']['properties']['gasType']['enum'] = gas_type_enum
         st_schema['properties']['emissions']['items']['dependencies'] = gas_type_one_of
-    # Add the source_type schema to the schema object being returned by this function
-    # rjsf_schema['properties']['sourceTypes']['properties'][
-    #     source_type_schema.source_type.json_key
-    # ] = st_schema
+
     return st_schema
 
 
