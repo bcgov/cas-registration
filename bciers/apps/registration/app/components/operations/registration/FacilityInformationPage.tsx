@@ -21,11 +21,12 @@ const FacilityInformationPage = async ({
 }) => {
 
   const isOperationSfo = operationType === OperationTypes.SFO;
+  const isOperationLfo = operationType === OperationTypes.LFO;
 
-  const initialGridData = await fetchFacilitiesPageData(
-    operation,
-    searchParams,
-  );
+  // Fetch grid data for LFO operations
+  const initialGridData = isOperationLfo
+    ? await fetchFacilitiesPageData(operation, searchParams)
+    : undefined;
 
   // Single facility operations get read-only name and type fields pre-populated
   const formData = isOperationSfo
