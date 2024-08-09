@@ -1,16 +1,15 @@
 from uuid import UUID
+from common.permissions import authorize
 from registration.api.router import router
 from typing import List, Literal, Optional
 from django.db.models import QuerySet
 from django.http import HttpRequest
 from registration.api.utils.current_user_utils import get_current_user_guid
 from registration.constants import FACILITY_TAGS
-from registration.models.app_role import AppRole
 from registration.models.facility import Facility
-from registration.models.user_operator import UserOperator
 from registration.schema.v1.facility import FacilityFilterSchema, FacilityListOut
 from service.facility_service import FacilityService
-from registration.decorators import authorize, handle_http_errors
+from registration.decorators import handle_http_errors
 from ninja.pagination import paginate, PageNumberPagination
 from registration.schema.generic import Message
 from service.error_service.custom_codes_4xx import custom_codes_4xx
@@ -23,8 +22,8 @@ from ninja import Query
     tags=FACILITY_TAGS,
     description="""Retrieves a paginated list of facilities based on the provided filters.
     The endpoint allows authorized users to view and sort facilities associated to an operation filtered by various criteria such as facility name, type, and bcghg_id.""",
+    auth=authorize("approved_authorized_roles"),
 )
-@authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles())
 @handle_http_errors()
 @paginate(PageNumberPagination)
 def list_facilities(

@@ -39,7 +39,7 @@ class UserOperatorService:
         user_operator: UserOperator = UserOperatorDataAccessService.get_user_operator_by_id(user_operator_id)
         if user.is_industry_user() and user_operator.user.user_guid != user_guid:
             raise PermissionError("Your user is not associated with this operator.")
-        # internal users are always allowed to access user operators. (Though the @authorize decorator prevents them from accessing certain external-only endpoints)
+        # internal users are always allowed to access user operators. (Though the authorize function prevents them from accessing certain external-only endpoints)
         return None
 
     # Function to create/update an operator when creating/updating a user_operator

@@ -1,13 +1,14 @@
 from typing import List, Literal, Optional, Tuple, Union
 from uuid import UUID
+from common.permissions import authorize
 from django.http import HttpRequest
 from registration.api.utils.current_user_utils import get_current_user_guid
 from registration.constants import OPERATOR_TAGS
 from service.operator_service import OperatorService
 from service.data_access_service.operator_service import OperatorDataAccessService
-from registration.decorators import authorize, handle_http_errors
+from registration.decorators import handle_http_errors
 from ..router import router
-from registration.models import AppRole, Operator, UserOperator
+from registration.models import Operator
 from ninja.responses import codes_4xx, codes_5xx
 from registration.schema.v1 import OperatorOut, OperatorIn, OperatorSearchOut, ConfirmSelectedOperatorOut
 from registration.schema.generic import Message
@@ -23,8 +24,8 @@ from django.db.models import QuerySet
     description="""Retrieves operator(s) based on the provided CRA business number or legal name.
     This endpoint is accessible to both approved and unapproved users, allowing them to view operator information when selected.
     If no matching operator is found, an exception is raised.""",
+    auth=authorize("authorized_roles"),
 )
-@authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles(), False)
 @handle_http_errors()
 def get_operators_by_cra_number_or_legal_name(
     request: HttpRequest, cra_business_number: Optional[int] = None, legal_name: Optional[str] = ""
@@ -39,8 +40,8 @@ def get_operators_by_cra_number_or_legal_name(
     tags=OPERATOR_TAGS,
     description="""Retrieves information about a specific operator by its ID.
     This endpoint is accessible to both approved and unapproved users, allowing them to view operator information when selected.""",
+    auth=authorize("authorized_roles"),
 )
-@authorize(AppRole.get_all_authorized_app_roles(), UserOperator.get_all_industry_user_operator_roles(), False)
 @handle_http_errors()
 def get_operator(request: HttpRequest, operator_id: UUID) -> Tuple[Literal[200], Operator]:
     return 200, OperatorDataAccessService.get_operator_by_id(operator_id)
@@ -56,8 +57,8 @@ def get_operator(request: HttpRequest, operator_id: UUID) -> Tuple[Literal[200],
     description="""Updates the status of a specific operator by its ID.
     The endpoint allows authorized users to update the operator's status and perform additional actions based on the new status.
     If the operator is new and declined, all associated user operators are also declined, and notifications are sent accordingly.""",
+    auth=authorize("authorized_irc_user"),
 )
-@authorize(AppRole.get_authorized_irc_roles())
 @handle_http_errors()
 def update_operator_status(
     request: HttpRequest, operator_id: UUID, payload: OperatorIn
