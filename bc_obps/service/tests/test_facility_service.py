@@ -139,7 +139,7 @@ class TestCreateFacilityWithOwnership:
 
 class TestUpdateFacility:
     @staticmethod
-    def _setup_facility(user_role="industry_user", with_address=False, with_well_auth=False):
+    def _setup_facility(user_role="industry_user", with_address=False, facility_well_authorization_numbers=None):
         """
         Helper function to set up a test environment with a User, Operator, Operation, and Facility.
 
@@ -150,17 +150,20 @@ class TestUpdateFacility:
             user_role (str): The role assigned to the User. Defaults to "industry_user".
                             If set to "unauthorized_user", the user will not be authorized for the operator.
             with_address (bool): If True, a Facility with an associated address will be created. Defaults to False.
-            with_well_auth (bool): If True, the Facility will be created with well authorization numbers. Defaults to False.
+            facility_well_authorization_numbers (list, optional): A list of well authorization numbers to associate with the Facility.
+                                                                If None, no well authorization numbers will be created. Defaults to None.
 
         Returns:
             tuple: A tuple containing the User instance, Owning Operation instance, and Facility instance.
                 (user, owning_operation, facility)
         """
-        # create a new instance of User model
+        # Create a new instance of User model
         user = baker.make(User, app_role=AppRole.objects.get(role_name=user_role))
-        # create a new instance of the Operator model
+
+        # Create a new instance of the Operator model
         operator = operator_baker()
-        # authorize the Operator User if required
+
+        # Authorize the Operator User if required
         if user_role == "industry_user":
             baker.make(
                 UserOperator,
@@ -169,93 +172,58 @@ class TestUpdateFacility:
                 operator=operator,
                 role=UserOperator.Roles.ADMIN,
             )
-        # create an Owning Operation
+
+        # Create an Owning Operation
         owning_operation = operation_baker(operator.id)
-        # create a new instance of the Facility model
+
+        # Create Well Authorization Numbers if provided
+        well_auth_objs = []
+        if facility_well_authorization_numbers:
+            well_auth_objs = [
+                WellAuthorizationNumber.objects.create(well_authorization_number=num)
+                for num in facility_well_authorization_numbers
+            ]
+
+        # Create a new instance of the Facility model
         address = address_baker() if with_address else None
-        well_auth_numbers = (
-            [WellAuthorizationNumber.objects.create(well_authorization_number=num) for num in [123456789, 987654321]]
-            if with_well_auth
-            else []
-        )
-        facility = facility_baker(address=address, well_authorization_numbers=well_auth_numbers)
-        # link the created facility with an operation
+        facility = facility_baker(address=address)
+
+        # Set Well Authorization Numbers if they were created
+        if well_auth_objs:
+            facility.well_authorization_numbers.set(well_auth_objs)
+
+        # Link the created facility with an operation
         baker.make(FacilityOwnershipTimeline, operation=owning_operation, facility=facility)
+
         return user, owning_operation, facility
 
     @staticmethod
-    def _assert_well_authorization_numbers(facility, expected_count=2):
+    def _assert_updated_manditory_fields(facility, payload):
         """
-        Helper function to assert the well authorization numbers of a facility.
-
-        This function checks whether the facility has well authorization numbers,
-        and asserts that the count of these numbers matches the expected value both
-        for the facility and in the database.
+        Asserts that the fields in the response data match the expected values from the payload.
 
         Args:
-            facility (Facility): The facility instance to check.
-            expected_count (int): The expected number of well authorization numbers.
+            response_data (dict): The data returned from the response, typically a JSON object.
+            payload (dict): The expected data values to compare against.
+
+        Asserts:
+            - The 'name' field in response_data matches the 'name' field in payload.
+            - The 'type' field in response_data matches the 'type' field in payload.
+            - The 'latitude_of_largest_emissions' field in response_data is close to the corresponding value in payload.
+            - The 'longitude_of_largest_emissions' field in response_data is close to the corresponding value in payload.
 
         Raises:
-            AssertionError: If the facility does not have well authorization numbers
-                            or the counts do not match the expected value.
+            AssertionError: If any of the assertions fail.
         """
-        # Assert the facility has well authorization numbers
-        assert (
-            facility.well_authorization_numbers is not None
-        ), "The facility should have associated well authorization numbers."
-
-        # Get well authorization numbers from the facility
-        facility_well_auth_numbers = list(
-            facility.well_authorization_numbers.values_list('well_authorization_number', flat=True)
-        )
-
-        # Assert the length matches the expected count
-        actual_count = len(facility_well_auth_numbers)
-        assert (
-            actual_count == expected_count
-        ), f"Expected {expected_count} well authorization numbers in the facility, but found {actual_count}."
-
-        # Assert the total count of WellAuthorizationNumber in the database matches the expected count
-        actual_db_count = WellAuthorizationNumber.objects.count()
-        assert (
-            actual_db_count == expected_count
-        ), f"Expected {expected_count} well authorization numbers in the database, but found {actual_db_count}."
-
-    @staticmethod
-    def _assert_facility_address(facility, expected_count, address_expected=True):
-        """
-        Helper function to assert the presence or absence of an address for a facility and validate the address count in the database.
-
-        This function checks whether the given facility has an associated address (if `address_expected` is True) and asserts
-        the count of address records in the database.
-
-        Args:
-            facility (Facility): The Facility instance to check.
-            expected_count (int): The expected number of address records in the database.
-            address_expected (bool): Whether an address is expected for the facility. Defaults to True.
-
-        Raises:
-            AssertionError: If the facility address presence or absence does not match the expected value or if the address count
-                            does not match the expected value.
-        """
-        if address_expected:
-            # Assert that the facility has an address
-            assert facility.address is not None, "The facility should have an associated address."
-        else:
-            # Assert that the facility does not have an address
-            assert facility.address is None, "The facility should not have an associated address."
-
-        # Assert that the address count in the database matches the expected value
-        actual_address_count = Address.objects.count()
-        assert (
-            actual_address_count == expected_count
-        ), f"Expected {expected_count} address records, found {actual_address_count}."
+        assert facility.name == payload.name
+        assert facility.type == payload.type
+        assert facility.latitude_of_largest_emissions == payload.latitude_of_largest_emissions
+        assert facility.longitude_of_largest_emissions == payload.longitude_of_largest_emissions
 
     @staticmethod
     def test_update_facility_unauthorized():
         user, owning_operation, facility = TestUpdateFacility._setup_facility(user_role="cas_pending")
-        facility_payload = FacilityIn(
+        payload = FacilityIn(
             name='zip',
             type='Single Facility',
             latitude_of_largest_emissions=5,
@@ -263,44 +231,45 @@ class TestUpdateFacility:
             operation_id=owning_operation.id,
         )
         with pytest.raises(Exception, match=UNAUTHORIZED_MESSAGE):
-            FacilityService.update_facility(user.user_guid, facility.id, facility_payload)
+            FacilityService.update_facility(user.user_guid, facility.id, payload)
 
     @staticmethod
     def test_update_facility_with_mandatory_data():
         user, owning_operation, facility = TestUpdateFacility._setup_facility()
-        
+
         # Assert Initial State
         TestUtils.assert_facility_db_state(facility)
 
-        facility_payload = FacilityIn(
+        payload = FacilityIn(
             name='zip',
             type='Single Facility',
             latitude_of_largest_emissions=5,
             longitude_of_largest_emissions=5,
             operation_id=owning_operation.id,
         )
-        FacilityService.update_facility(user.user_guid, facility.id, facility_payload)
+        FacilityService.update_facility(user.user_guid, facility.id, payload)
         facility.refresh_from_db()
-        assert facility.name == facility_payload.name
-        assert facility.type == facility_payload.type
-        assert facility.latitude_of_largest_emissions == facility_payload.latitude_of_largest_emissions
-        assert facility.longitude_of_largest_emissions == facility_payload.longitude_of_largest_emissions
+
+        # Assert Updated Manditory Fields
+        TestUpdateFacility._assert_updated_manditory_fields(facility, payload)
+
+        # Assert Non-Updated Optional Fields
         assert facility.is_current_year is None
         assert facility.starting_date is None
+        assert facility.well_authorization_numbers.count() == 0
         assert facility.address is None
-        assert len(facility.well_authorization_numbers.all()) == 0
-        
-         # Assert Updated State
-        TestUtils.assert_facility_db_state(facility)  
+
+        # Assert Updated State
+        TestUtils.assert_facility_db_state(facility)
 
     @staticmethod
     def test_update_facility_with_all_data():
         user, owning_operation, facility = TestUpdateFacility._setup_facility()
-        
+
         # Assert Initial State
         TestUtils.assert_facility_db_state(facility)
 
-        facility_payload = FacilityIn(
+        payload = FacilityIn(
             name='zip',
             type='Large Facility',
             well_authorization_numbers=[1, 2, 3],
@@ -314,31 +283,38 @@ class TestUpdateFacility:
             longitude_of_largest_emissions=5,
             operation_id=owning_operation.id,
         )
-        FacilityService.update_facility(user.user_guid, facility.id, facility_payload)
+        FacilityService.update_facility(user.user_guid, facility.id, payload)
         facility.refresh_from_db()
-        assert facility.name == facility_payload.name
-        assert facility.type == facility_payload.type
-        assert facility.latitude_of_largest_emissions == facility_payload.latitude_of_largest_emissions
-        assert facility.longitude_of_largest_emissions == facility_payload.longitude_of_largest_emissions
-        assert facility.is_current_year == facility_payload.is_current_year
-        assert facility.starting_date == facility_payload.starting_date
-        assert facility.address.street_address == facility_payload.street_address
-        assert facility.address.municipality == facility_payload.municipality
-        assert facility.address.province == facility_payload.province
-        assert facility.address.postal_code == facility_payload.postal_code
+
+        # Assert Updated Manditory Fields
+        TestUpdateFacility._assert_updated_manditory_fields(facility, payload)
+
+        # Assert Updated Optional Fields
+        assert facility.is_current_year == payload.is_current_year
+        assert facility.starting_date == payload.starting_date
+        assert sorted(
+            list(facility.well_authorization_numbers.values_list('well_authorization_number', flat=True))
+        ) == sorted(payload.well_authorization_numbers)
+        assert facility.address.street_address == payload.street_address
+        assert facility.address.municipality == payload.municipality
+        assert facility.address.province == payload.province
+        assert facility.address.postal_code == payload.postal_code
 
         # Assert Updated State
-        TestUtils.assert_facility_db_state(facility, expect_address=facility.address, expect_well_authorization_numbers=len(facility_payload.well_authorization_numbers))  
-      
+        TestUtils.assert_facility_db_state(
+            facility,
+            expect_address=facility.address,
+            expect_well_authorization_numbers=len(payload.well_authorization_numbers),
+        )
 
     @staticmethod
     def test_update_facility_update_address():
         user, owning_operation, facility = TestUpdateFacility._setup_facility(with_address=True)
-        # Before update assertions
-        TestUpdateFacility._assert_facility_address(
-            facility, expected_count=2, address_expected=True
-        )  # assert 1 for the operator; 1 for the facility
-        facility_payload = FacilityIn(
+
+        # Assert Initial State
+        TestUtils.assert_facility_db_state(facility, expect_address=facility.address)
+
+        payload = FacilityIn(
             name='zip',
             type='Single Facility',
             latitude_of_largest_emissions=5,
@@ -346,53 +322,55 @@ class TestUpdateFacility:
             operation_id=owning_operation.id,
             street_address="1234 Test St",
         )
-        FacilityService.update_facility(user.user_guid, facility.id, facility_payload)
+        FacilityService.update_facility(user.user_guid, facility.id, payload)
         facility.refresh_from_db()
-        assert facility.name == facility_payload.name
-        assert facility.type == facility_payload.type
-        assert facility.latitude_of_largest_emissions == facility_payload.latitude_of_largest_emissions
-        assert facility.longitude_of_largest_emissions == facility_payload.longitude_of_largest_emissions
-        assert facility.address.street_address == facility_payload.street_address
+
+        # Assert Updated Manditory Fields
+        TestUpdateFacility._assert_updated_manditory_fields(facility, payload)
+
+        # Assert Updated Optional Fields
+        assert facility.address.street_address == payload.street_address
         assert facility.address.municipality is None
         assert facility.address.province is None
         assert facility.address.postal_code is None
-        # After update assertions
-        TestUpdateFacility._assert_facility_address(
-            facility, expected_count=2, address_expected=True
-        )  # assert 1 for the operator; 1 for the facility
+
+        # Assert Updated State
+        TestUtils.assert_facility_db_state(facility, expect_address=facility.address)
 
     @staticmethod
     def test_update_facility_remove_address():
         user, owning_operation, facility = TestUpdateFacility._setup_facility(with_address=True)
-        # Before update assertions
-        TestUpdateFacility._assert_facility_address(
-            facility, expected_count=2, address_expected=True
-        )  # assert 1 for the operator; 1 for the facility
-        facility_payload = FacilityIn(
+
+        # Assert Initial State
+        TestUtils.assert_facility_db_state(facility, expect_address=facility.address)
+
+        payload = FacilityIn(
             name='zip',
             type='Single Facility',
             latitude_of_largest_emissions=5,
             longitude_of_largest_emissions=5,
             operation_id=owning_operation.id,
         )
-        FacilityService.update_facility(user.user_guid, facility.id, facility_payload)
+        FacilityService.update_facility(user.user_guid, facility.id, payload)
         facility.refresh_from_db()
-        assert facility.name == facility_payload.name
-        assert facility.type == facility_payload.type
-        assert facility.latitude_of_largest_emissions == facility_payload.latitude_of_largest_emissions
-        assert facility.longitude_of_largest_emissions == facility_payload.longitude_of_largest_emissions
-        assert facility.address is None
-        # After update assertions
-        TestUpdateFacility._assert_facility_address(
-            facility, expected_count=1, address_expected=False
-        )  # assert 1 for the operator; 0 for the facility
+
+        # Assert Updated Manditory Fields
+        TestUpdateFacility._assert_updated_manditory_fields(facility, payload)
+
+        # Assert Updated State
+        TestUtils.assert_facility_db_state(facility, expect_address=None)
 
     @staticmethod
     def test_update_facility_update_well_authorization_numbers():
-        user, owning_operation, facility = TestUpdateFacility._setup_facility(with_well_auth=True)
-        # Before update assertions
-        TestUpdateFacility._assert_well_authorization_numbers(facility, expected_count=2)
-        facility_payload = FacilityIn(
+        well_auth_numbers = [123, 9876]
+        user, owning_operation, facility = TestUpdateFacility._setup_facility(
+            facility_well_authorization_numbers=well_auth_numbers
+        )
+
+        # Assert Initial State
+        TestUtils.assert_facility_db_state(facility, expect_well_authorization_numbers=len(well_auth_numbers))
+
+        payload = FacilityIn(
             name='zip',
             type='Single Facility',
             latitude_of_largest_emissions=5,
@@ -400,38 +378,45 @@ class TestUpdateFacility:
             operation_id=owning_operation.id,
             well_authorization_numbers=[1, 2, 3],
         )
-        FacilityService.update_facility(user.user_guid, facility.id, facility_payload)
+        FacilityService.update_facility(user.user_guid, facility.id, payload)
         facility.refresh_from_db()
-        assert facility.name == facility_payload.name
-        assert facility.type == facility_payload.type
-        assert facility.latitude_of_largest_emissions == facility_payload.latitude_of_largest_emissions
-        assert facility.longitude_of_largest_emissions == facility_payload.longitude_of_largest_emissions
-        assert len(facility.well_authorization_numbers.values_list('well_authorization_number', flat=True)) == len(
-            facility_payload.well_authorization_numbers
-        )
-        # After update assertions
-        TestUpdateFacility._assert_well_authorization_numbers(
-            facility, expected_count=len(facility_payload.well_authorization_numbers)
+
+        # Assert Updated Manditory Fields
+        TestUpdateFacility._assert_updated_manditory_fields(facility, payload)
+
+        # Assert Updated Optional Fields
+        assert len(facility.well_authorization_numbers.all()) == len(payload.well_authorization_numbers)
+
+        # Assert Updated State
+        TestUtils.assert_facility_db_state(
+            facility, expect_well_authorization_numbers=len(payload.well_authorization_numbers)
         )
 
     @staticmethod
     def test_update_facility_remove_well_authorization_numbers():
-        user, owning_operation, facility = TestUpdateFacility._setup_facility(with_well_auth=True)
-        # Before update assertions
-        TestUpdateFacility._assert_well_authorization_numbers(facility, expected_count=2)
-        facility_payload = FacilityIn(
+        well_auth_numbers = [123, 9876]
+        user, owning_operation, facility = TestUpdateFacility._setup_facility(
+            facility_well_authorization_numbers=well_auth_numbers
+        )
+
+        # Assert Initial State
+        TestUtils.assert_facility_db_state(facility, expect_well_authorization_numbers=len(well_auth_numbers))
+
+        payload = FacilityIn(
             name='zip',
             type='Single Facility',
             latitude_of_largest_emissions=5,
             longitude_of_largest_emissions=5,
             operation_id=owning_operation.id,
         )
-        FacilityService.update_facility(user.user_guid, facility.id, facility_payload)
+        FacilityService.update_facility(user.user_guid, facility.id, payload)
         facility.refresh_from_db()
-        assert facility.name == facility_payload.name
-        assert facility.type == facility_payload.type
-        assert facility.latitude_of_largest_emissions == facility_payload.latitude_of_largest_emissions
-        assert facility.longitude_of_largest_emissions == facility_payload.longitude_of_largest_emissions
+
+        # Assert Updated Manditory Fields
+        TestUpdateFacility._assert_updated_manditory_fields(facility, payload)
+
+        # Assert Updated Optional Fields
         assert len(facility.well_authorization_numbers.all()) == 0
-        # After update assertions
-        TestUpdateFacility._assert_well_authorization_numbers(facility, expected_count=0)
+
+        # Assert Updated State
+        TestUtils.assert_facility_db_state(facility, expect_well_authorization_numbers=0)

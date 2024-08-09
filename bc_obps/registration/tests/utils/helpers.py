@@ -1,6 +1,5 @@
 import pytest
 import json
-import math
 from registration.models import (
     Address,
     AppRole,
@@ -85,12 +84,9 @@ class TestUtils:
 
         # Return the created operator and operation instances
         return operator, owning_operation
- 
+
     def create_operator_operation_and_facility(
-        test_instance,
-        authorize_user=False,
-        with_address=False,
-        facility_well_authorization_numbers=None
+        test_instance, authorize_user=False, with_address=False, facility_well_authorization_numbers=None
     ):
         """
         Sets up an operator, an associated facility, and optionally an address and well authorization numbers
@@ -112,7 +108,7 @@ class TestUtils:
 
         Raises:
             Exception: If there is an issue creating or setting up the objects.
-    """
+        """
         # Create an operator and associated operation
         operator, owning_operation = TestUtils.create_operator_and_operation()
 
@@ -120,12 +116,12 @@ class TestUtils:
         if authorize_user:
             TestUtils.authorize_current_user_as_operator_user(test_instance, operator)
 
-         # Create a facility, optionally with an address
+        # Create a facility, optionally with an address
         facility = facility_baker(address=address_baker() if with_address else None)
-        
+
         # Link the created facility with the operation
         baker.make(FacilityOwnershipTimeline, operation=owning_operation, facility=facility)
-        
+
         # Optionally set facility well authorization numbers
         if facility_well_authorization_numbers:
             well_auth_objs = [
@@ -135,7 +131,7 @@ class TestUtils:
             facility.well_authorization_numbers.set(well_auth_objs)
 
         return operator, owning_operation, facility
-    
+
     def create_facility_and_ownership(self, owning_operation):
         """
         Creates a facility and associates it with a given operation through FacilityOwnershipTimeline.
@@ -170,15 +166,19 @@ class TestUtils:
             expect_well_authorization_numbers (int, optional): The expected count of WellAuthorizationNumber
                                                             instances associated with the facility.
                                                             If None, it asserts that the count is 0.
-        
+
         Raises:
-            AssertionError: If any of the assertions fail.    
+            AssertionError: If any of the assertions fail.
         """
         assert facility.address == expect_address
-        assert facility.well_authorization_numbers.count() == (expect_well_authorization_numbers if expect_well_authorization_numbers is not None else 0)
+        assert facility.well_authorization_numbers.count() == (
+            expect_well_authorization_numbers if expect_well_authorization_numbers is not None else 0
+        )
         assert Facility.objects.count() == 1
         assert Address.objects.count() == (2 if expect_address else 1)  # 1 for the operator; 0-1 for the facility
-        assert WellAuthorizationNumber.objects.count() == (expect_well_authorization_numbers if expect_well_authorization_numbers is not None else 0)
+        assert WellAuthorizationNumber.objects.count() == (
+            expect_well_authorization_numbers if expect_well_authorization_numbers is not None else 0
+        )
 
     @staticmethod
     def mock_postal_code():
