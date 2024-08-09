@@ -2,11 +2,13 @@
 
 from django.db import migrations
 
+
 def update_activity_name(apps, schema_monitor):
     ReportingActivity = apps.get_model('registration', 'ReportingActivity')
     r = ReportingActivity.objects.get(name='General stationary combustion')
     r.name = 'General stationary combustion excluding line tracing'
     r.save()
+
 
 def reverse_update_activity_name(apps, schema_monitor):
     ReportingActivity = apps.get_model('registration', 'ReportingActivity')
@@ -14,10 +16,13 @@ def reverse_update_activity_name(apps, schema_monitor):
     r.name = 'General stationary combustion'
     r.save()
 
+
 class Migration(migrations.Migration):
 
     dependencies = [
         ('registration', '0028_V1_9_0'),
     ]
 
-    operations = [migrations.RunPython(update_activity_name, reverse_update_activity_name),]
+    operations = [
+        migrations.RunPython(update_activity_name, reverse_update_activity_name),
+    ]
