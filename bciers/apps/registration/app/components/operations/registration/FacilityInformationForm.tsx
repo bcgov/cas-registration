@@ -31,6 +31,9 @@ const FacilityGridSx = {
   "& .MuiDataGrid-virtualScroller": {
     minHeight: "60px",
   },
+  "& .MuiDataGrid-overlayWrapper": {
+    minHeight: "60px",
+  },
 };
 
 // Unnest the formData objects inside facility_information_array which is split into sections
