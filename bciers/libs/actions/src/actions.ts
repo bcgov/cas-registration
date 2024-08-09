@@ -12,7 +12,7 @@ import { ContentItem } from "@bciers/types/tiles";
 import getUUIDFromEndpoint from "@bciers/utils/getUUIDFromEndpoint";
 import { revalidatePath } from "next/cache";
 import * as Sentry from "@sentry/nextjs";
-import safeJsonParse from "libs/utils/safeJsonParse"
+import safeJsonParse from "libs/utils/safeJsonParse";
 
 // 🛠️ Function to get the encrypted JWT from NextAuth getToken route function
 export async function getToken() {
