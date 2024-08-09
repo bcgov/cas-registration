@@ -4,6 +4,7 @@ import RegistrationPurposeForm from "apps/registration/app/components/operations
 import { registrationPurposeSchema } from "apps/registration/app/data/jsonSchema/operationRegistration/registrationPurpose";
 import { getRegulatedProducts } from "@bciers/actions/api";
 import { RJSFSchema } from "@rjsf/utils";
+import safeJsonParse from 'libs/utils/safeJsonParse'
 
 // 🛠️ Function to create an operation schema with updated enum values
 export const createRegistrationPurposeSchema = (
@@ -13,7 +14,7 @@ export const createRegistrationPurposeSchema = (
     name: string;
   }[],
 ) => {
-  const localSchema = JSON.parse(JSON.stringify(schema));
+  const localSchema = safeJsonParse(JSON.stringify(schema));
 
   const regulatedProductsSchema =
     localSchema.dependencies.registration_purpose.allOf[0].then.properties

@@ -5,13 +5,14 @@ import { facilityInformationSchema } from "apps/registration/app/data/jsonSchema
 import { facilitiesSchemaLfo } from "apps/administration/app/data/jsonSchema/facilitiesLfo";
 import { RJSFSchema } from "@rjsf/utils";
 import { FacilitiesSearchParams } from "apps/administration/app/components/facilities/types";
+import safeJsonParse from 'libs/utils/safeJsonParse'
 
 // 🛠️ Function to create a facility information schema with updated enum values
 export const createFacilityInformationSchema = (
   schema: RJSFSchema,
   lfoSchema: RJSFSchema,
 ) => {
-  const localSchema = JSON.parse(JSON.stringify(schema));
+  const localSchema = safeJsonParse(JSON.stringify(schema));
 
   localSchema.properties.facility_information_array.items.properties =
     lfoSchema.properties;

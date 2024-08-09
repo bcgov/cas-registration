@@ -19,6 +19,7 @@ import {
   operationInternalUserSchema,
   operationSchema,
 } from "@/app/utils/jsonSchema/operations";
+import safeJsonParse from 'libs/utils/safeJsonParse'
 
 // 🚀 API call: GET user's data
 async function getUserFormData(): Promise<
@@ -105,7 +106,7 @@ export const createOperationSchema = (
   // }[],
   businessStructureList: { id: string; label: string }[],
 ) => {
-  const localSchema = JSON.parse(JSON.stringify(schema));
+  const localSchema = safeJsonParse(JSON.stringify(schema));
   // naics codes
   if (Array.isArray(naicsCodes)) {
     // add to nested operation page1 schema
