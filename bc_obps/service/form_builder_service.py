@@ -1,6 +1,9 @@
 import json
+from django.db.models import Prefetch
 from reporting.models import Configuration, ConfigurationElement, ActivityJsonSchema, ActivitySourceTypeJsonSchema
+
 from typing import List, Any
+
 
 # Helper function to dynamically set the RJSF property value of a field from a Title cased name
 def str_to_camel_case(st: str) -> str:
@@ -40,18 +43,40 @@ def build_source_type_schema(
     gas_type_enum = []
     # Maps of the gas_type & methodology objects will be passed in the return object so we have the IDs on the frontend.
     gas_type_one_of: Any = {"gasType": {"oneOf": []}}
+
+    gas_type_ids = list(map(lambda config_elt: config_elt.gas_type.id, gas_types))
+    fetched_configuration_elements = list(
+        ConfigurationElement.objects.select_related(
+            'reporting_activity',
+            'source_type',
+            'gas_type',
+            'methodology',
+            'valid_from',
+            'valid_to',
+        )
+        .prefetch_related(Prefetch("reporting_fields", to_attr="prefetched_reporting_fields"))
+        .filter(
+            reporting_activity=activity,
+            source_type=source_type,
+            gas_type__id__in=gas_type_ids,
+            valid_from__lte=config,
+            valid_to__gte=config,
+        )
+        .all()
+        .iterator(chunk_size=100)
+    )
+
     # For each gas type, add to the enum object to be added to the schema to complete the list of valid gas_types a user can select
     for index, t in enumerate(gas_types):
         gas_type_enum.append(t.gas_type.chemical_formula)
         gas_type_map[t.gas_type.id] = t.gas_type.chemical_formula
-        methodologies = ConfigurationElement.objects.select_related('methodology').filter(
-            reporting_activity_id=activity,
-            source_type_id=source_type,
-            gas_type_id=t.gas_type.id,
-            valid_from__lte=config,
-            valid_to__gte=config,
+
+        # We might be able to do something more efficient by using the iterator itself instead of walking it to build a list
+        methodologies = list(
+            filter(lambda config_elt: config_elt.gas_type.id == t.gas_type.id, fetched_configuration_elements)
         )
-        if not methodologies.exists():
+
+        if len(methodologies) == 0:
             raise Exception(
                 f'No configuration found for activity_id {activity} & source_type_id {source_type} & gas_type_id {t.gas_type.id} & report_date {report_date}'
             )
@@ -72,18 +97,16 @@ def build_source_type_schema(
             methodology_enum.append(u.methodology.name)
             methodology_map[u.methodology.id] = u.methodology.name
             try:
-                methodology_fields = (
-                    ConfigurationElement.objects.prefetch_related('reporting_fields')
-                    .get(
-                        reporting_activity_id=activity,
-                        source_type_id=source_type,
-                        gas_type_id=t.gas_type.id,
-                        methodology_id=u.methodology.id,
-                        valid_from__lte=config,
-                        valid_to__gte=config,
+
+                # There is (in theory) only one config element for a given gas type and methodology within an activity/source type/configuration
+                methodology_fields = next(
+                    filter(
+                        lambda config_elt: config_elt.gas_type.id == t.gas_type.id
+                        and config_elt.methodology.id == u.methodology.id,
+                        fetched_configuration_elements,
                     )
-                    .reporting_fields.all()
-                )
+                ).prefetched_reporting_fields  # type: ignore[attr-defined]
+
             except Exception:
                 raise Exception(
                     f'No configuration found for activity_id {activity} & source_type_id {source_type} & gas_type_id {t.gas_type.id} & methodology_id {u.methodology.id} & report_date {report_date}'
