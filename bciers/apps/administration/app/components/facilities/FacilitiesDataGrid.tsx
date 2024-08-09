@@ -12,10 +12,12 @@ import { GridRenderCellParams } from "@mui/x-data-grid";
 
 import { useSearchParams } from "next/navigation";
 const FacilitiesDataGrid = ({
+  disabled,
   operationId,
   initialData,
   sx,
 }: {
+  disabled?: boolean;
   operationId: string;
   initialData: {
     rows: FacilityRow[];
@@ -51,6 +53,7 @@ const FacilitiesDataGrid = ({
     <DataGrid
       columns={columns}
       columnGroupModel={columnGroup}
+      disabled={disabled}
       fetchPageData={createFetchFacilitiesPageData(operationId)}
       paginationMode="server"
       initialData={initialData}
