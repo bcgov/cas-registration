@@ -49,4 +49,10 @@ export const facilityInformationSfoUiSchema: UiSchema = {
   ...facilitiesSfoUiSchema,
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
+  section1: {
+    ...facilitiesSfoUiSchema.section1,
+    "ui:options": {
+      label: false,
+    },
+  },
 };
