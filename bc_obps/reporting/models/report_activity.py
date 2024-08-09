@@ -1,10 +1,18 @@
 from django.db import models
 from registration.models.reporting_activity import ReportingActivity
 from reporting.models.activity_json_schema import ActivityJsonSchema
+from reporting.models.facility_report import FacilityReport
 from reporting.models.report_data_base_model import ReportDataBaseModel
 
 
 class ReportActivity(ReportDataBaseModel):
+
+    facility_report = models.ForeignKey(
+        FacilityReport,
+        on_delete=models.CASCADE,
+        related_name="%(class)s_records",
+        db_comment="The facility report this activity data belongs to",
+    )
 
     activity_base_schema = models.ForeignKey(
         ActivityJsonSchema,

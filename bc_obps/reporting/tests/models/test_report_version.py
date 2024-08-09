@@ -13,7 +13,7 @@ class ReportVersionTest(BaseTestCase):
             ("report", "report", None, None),
             ("is_latest_submitted", "is latest submitted", None, None),
             ("status", "status", 1000, None),
-            ("report_facilities", "report facility", None, 0),
+            ("facility_reports", "facility report", None, 0),
             ("report_operation", "report operation", None, None),
             ("reportactivity_records", "report activity", None, 0),
             ("reportemission_records", "report emission", None, 0),

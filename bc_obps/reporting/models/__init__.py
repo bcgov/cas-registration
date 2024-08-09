@@ -4,7 +4,7 @@ from .report import Report
 from .report_version import ReportVersion
 from .source_type import SourceType
 from .report_operation import ReportOperation
-from .report_facility import ReportFacility
+from .facility_report import FacilityReport
 from .reporting_year import ReportingYear
 
 from .gas_type import GasType
@@ -26,10 +26,10 @@ from .report_methodology import ReportMethodology
 __all__ = [
     "ReportDataBaseModel",
     "Report",
+    "FacilityReport",
     "ReportVersion",
     "SourceType",
     "ReportOperation",
-    "ReportFacility",
     "ReportingYear",
     "GasType",
     "FuelType",
