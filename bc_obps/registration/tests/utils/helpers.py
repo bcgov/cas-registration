@@ -63,7 +63,7 @@ class TestUtils:
             role=UserOperator.Roles.ADMIN,
         )
 
-    def create_operator_and_operation():
+    def create_operator_and_operation(self):
         """
         Creates operator and operation instance for testing purposes.
 
@@ -86,14 +86,14 @@ class TestUtils:
         return operator, owning_operation
 
     def create_operator_operation_and_facility(
-        test_instance, authorize_user=False, with_address=False, facility_well_authorization_numbers=None
+        self, authorize_user=False, with_address=False, facility_well_authorization_numbers=None
     ):
         """
         Sets up an operator, an associated facility, and optionally an address and well authorization numbers
         for testing purposes.
 
         Args:
-            test_instance (TestCase): The test instance that is using this helper. This is typically the test class
+            self (TestCase): The test instance that is using this helper. This is typically the test class
                                     instance which might be used for setting up authorization or other configurations.
             authorize_user (bool, optional): If True, authorizes the current user as the created operator. Defaults to False.
             with_address (bool, optional): If True, creates and associates an address with the facility. Defaults to False.
@@ -110,11 +110,11 @@ class TestUtils:
             Exception: If there is an issue creating or setting up the objects.
         """
         # Create an operator and associated operation
-        operator, owning_operation = TestUtils.create_operator_and_operation()
+        operator, owning_operation = TestUtils.create_operator_and_operation(self)
 
         # Optionally authorize the current user as the operator user
         if authorize_user:
-            TestUtils.authorize_current_user_as_operator_user(test_instance, operator)
+            TestUtils.authorize_current_user_as_operator_user(self, operator)
 
         # Create a facility, optionally with an address
         facility = facility_baker(address=address_baker() if with_address else None)

@@ -125,7 +125,7 @@ class TestFacilityIdEndpoint(CommonTestSetup):
             role_name="industry_user",
         )
         assert response.status_code == 401
-        assert response.json()['detail'] == 'Unauthorized.'
+        assert response.json()['detail'] == 'Unauthorized'
 
     # PUT
     def test_unauthorized_users_cannot_update(self):
@@ -146,7 +146,7 @@ class TestFacilityIdEndpoint(CommonTestSetup):
 
         # Assert
         assert response.status_code == 401
-        assert response.json().get('detail') == 'Unauthorized.'
+        assert response.json().get('detail') == 'Unauthorized'
 
     def test_unauthorized_roles_cannot_update(self):
         # Arrange
@@ -171,7 +171,7 @@ class TestFacilityIdEndpoint(CommonTestSetup):
 
         # Assert
         assert response.status_code == 401
-        assert response.json().get('detail') == 'Unauthorized.'
+        assert response.json().get('detail') == 'Unauthorized'
 
     def test_authorized_users_can_update_manditory_data(self):
         # Arrange
