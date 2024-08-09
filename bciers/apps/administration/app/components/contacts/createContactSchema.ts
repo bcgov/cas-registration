@@ -1,6 +1,6 @@
 import { contactsSchema } from "./../../data/jsonSchema/contact";
 import { UserOperatorUser } from "./types";
-import safeJsonParse from "libs/utils/safeJsonParse"
+import safeJsonParse from "libs/utils/safeJsonParse";
 
 // 🛠️ Function to create a contact schema with updated enum values
 export const createContactSchema = (

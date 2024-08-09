@@ -19,7 +19,7 @@ import {
   operationInternalUserSchema,
   operationSchema,
 } from "@/app/utils/jsonSchema/operations";
-import safeJsonParse from "libs/utils/safeJsonParse"
+import safeJsonParse from "libs/utils/safeJsonParse";
 
 // 🚀 API call: GET user's data
 async function getUserFormData(): Promise<
