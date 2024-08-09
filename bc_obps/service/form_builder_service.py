@@ -1,6 +1,6 @@
 import json
 from reporting.models import Configuration, ConfigurationElement, ActivityJsonSchema, ActivitySourceTypeJsonSchema
-from typing import Dict, List, Any
+from typing import Dict, List, Optional
 from django.db.models import QuerySet
 from django.db.models import Prefetch
 
@@ -12,23 +12,20 @@ def str_to_camel_case(st: str) -> str:
 
 
 def handle_methodologies(
-    config_element_for_gas_type: ConfigurationElement,
+    gas_type_id: int,
     activity_id: int,
     source_type_id: int,
     fetched_configuration_elements: List[ConfigurationElement],
-    config_element_for_methodologies: QuerySet[ConfigurationElement],
+    config_element_for_methodologies: List[ConfigurationElement],
     gas_type_one_of: Dict,
     index: int,
 ) -> None:
-    methodology_enum = []
+    methodology_enum: List = []
     methodology_map: Dict[int, str] = {}
-    methodology_one_of: dict[str, dict[str, list]] = {"methodology": {"oneOf": []}}
-
-    # Precompute gas_type_id for faster lookup
-    gas_type_id = config_element_for_gas_type.gas_type.id
+    methodology_one_of: Dict[str, Dict[str, List]] = {"methodology": {"oneOf": []}}
 
     # Create a mapping for quick lookup
-    fetched_config_map = {(elem.gas_type.id, elem.methodology_id): elem.prefetched_reporting_fields for elem in fetched_configuration_elements}
+    fetched_config_map = {(elem.gas_type.id, elem.methodology_id): elem.prefetched_reporting_fields for elem in fetched_configuration_elements}  # type: ignore[attr-defined]
 
     # Iterate through methodologies
     for config_element_for_methodology in config_element_for_methodologies:
@@ -40,17 +37,23 @@ def handle_methodologies(
         # Use the precomputed map for quick access
         key = (gas_type_id, methodology_id)
         if key not in fetched_config_map:
-            raise Exception(f"No configuration found for activity_id {activity_id} & source_type_id {source_type_id} " f"& gas_type_id {gas_type_id} & methodology_id {methodology_id}")
+            raise Exception(
+                f"No configuration found for activity_id {activity_id} & source_type_id {source_type_id} "
+                f"& gas_type_id {gas_type_id} & methodology_id {methodology_id}"
+            )
 
         reporting_fields = fetched_config_map[key]
 
         # Create methodology object
-        methodology_object: Any = {"properties": {"methodology": {"enum": [methodology_name]}}}
+        methodology_object: Dict = {"properties": {"methodology": {"enum": [methodology_name]}}}
 
         # Add fields to methodology object
         for reporting_field in reporting_fields:
             property_field = str_to_camel_case(reporting_field.field_name)
-            methodology_object['properties'][property_field] = {"type": reporting_field.field_type, "title": reporting_field.field_name}
+            methodology_object['properties'][property_field] = {
+                "type": reporting_field.field_type,
+                "title": reporting_field.field_name,
+            }
             if reporting_field.field_units:
                 methodology_object['properties'][f"{property_field}FieldUnits"] = {
                     "type": "string",
@@ -66,7 +69,13 @@ def handle_methodologies(
 
 
 def handle_gas_types(
-    gas_type_enum: List, gas_type_one_of: Dict, config_element_for_gas_types: QuerySet[ConfigurationElement], activity_id: int, source_type_id: int, config_id: int, report_date: str
+    gas_type_enum: List,
+    gas_type_one_of: Dict,
+    config_element_for_gas_types: QuerySet[ConfigurationElement],
+    activity_id: int,
+    source_type_id: int,
+    config_id: int,
+    report_date: str,
 ) -> None:
     # Convert QuerySet to a list for efficient iteration without extra database hits
     config_elements_list = list(config_element_for_gas_types)
@@ -110,7 +119,10 @@ def handle_gas_types(
         config_element_for_methodologies = fetched_config_map.get(gas_type_id, [])
 
         if not config_element_for_methodologies:
-            raise Exception(f'No configuration found for activity_id {activity_id} & source_type_id {source_type_id} ' f'& gas_type_id {gas_type_id} & report_date {report_date}')
+            raise Exception(
+                f'No configuration found for activity_id {activity_id} & source_type_id {source_type_id} '
+                f'& gas_type_id {gas_type_id} & report_date {report_date}'
+            )
 
         # Append to oneOf branch for each gasType selection
         gas_type_one_of['gasType']['oneOf'].append(
@@ -123,17 +135,33 @@ def handle_gas_types(
         )
 
         # Handle methodologies for the current gas type
-        handle_methodologies(config_element_for_gas_type, activity_id, source_type_id, fetched_configuration_elements, config_element_for_methodologies, gas_type_one_of, index)
+        handle_methodologies(
+            gas_type_id,
+            activity_id,
+            source_type_id,
+            fetched_configuration_elements,
+            config_element_for_methodologies,
+            gas_type_one_of,
+            index,
+        )
 
 
-def handle_source_type_schema(source_type_schema: ActivitySourceTypeJsonSchema, gas_type_enum: List, gas_type_one_of: Dict) -> Dict:
+def handle_source_type_schema(
+    source_type_schema: ActivitySourceTypeJsonSchema, gas_type_enum: List, gas_type_one_of: Dict
+) -> Dict:
     st_schema: Dict = source_type_schema.json_schema
     # Append valid gas types to schema as an enum on the gasType property. Uses the has_unit / has_fuel booleans to determine the depth of the emissions array.
     if source_type_schema.has_unit and source_type_schema.has_fuel:
-        st_schema['properties']['units']['items']['properties']['fuels']['items']['properties']['emissions']['items']['properties']['gasType']['enum'] = gas_type_enum
-        st_schema['properties']['units']['items']['properties']['fuels']['items']['properties']['emissions']['items']['dependencies'] = gas_type_one_of
+        st_schema['properties']['units']['items']['properties']['fuels']['items']['properties']['emissions']['items'][
+            'properties'
+        ]['gasType']['enum'] = gas_type_enum
+        st_schema['properties']['units']['items']['properties']['fuels']['items']['properties']['emissions']['items'][
+            'dependencies'
+        ] = gas_type_one_of
     elif not source_type_schema.has_unit and source_type_schema.has_fuel:
-        st_schema['properties']['fuels']['items']['properties']['emissions']['items']['properties']['gasType']['enum'] = gas_type_enum
+        st_schema['properties']['fuels']['items']['properties']['emissions']['items']['properties']['gasType'][
+            'enum'
+        ] = gas_type_enum
         st_schema['properties']['fuels']['items']['properties']['emissions']['items']['dependencies'] = gas_type_one_of
     else:
         st_schema['properties']['emissions']['items']['properties']['gasType']['enum'] = gas_type_enum
@@ -147,7 +175,7 @@ def build_source_type_schema(
     activity_id: int,
     source_type_id: int,
     report_date: str,
-) -> Any:
+) -> Dict:
     try:
         source_type_schema = ActivitySourceTypeJsonSchema.objects.get(
             reporting_activity_id=activity_id,
@@ -156,18 +184,33 @@ def build_source_type_schema(
             valid_to__gte=config_id,
         )
     except Exception:
-        raise Exception(f'No schema found for activity_id {activity_id} & source_type_id {source_type_id} & report_date {report_date}')
+        raise Exception(
+            f'No schema found for activity_id {activity_id} & source_type_id {source_type_id} & report_date {report_date}'
+        )
 
     # Fetch valid gas_type values for activity-sourceType pair
     config_element_for_gas_types = (
         ConfigurationElement.objects.select_related('gas_type')
-        .filter(reporting_activity_id=activity_id, source_type_id=source_type_id, valid_from__lte=config_id, valid_to__gte=config_id)
+        .filter(
+            reporting_activity_id=activity_id,
+            source_type_id=source_type_id,
+            valid_from__lte=config_id,
+            valid_to__gte=config_id,
+        )
         .distinct('gas_type__name')
     )
-    gas_type_enum = []
+    gas_type_enum: List = []
     # Maps of the gas_type & methodology objects will be passed in the return object so we have the IDs on the frontend.
     gas_type_one_of: Dict = {"gasType": {"oneOf": []}}
-    handle_gas_types(gas_type_enum, gas_type_one_of, config_element_for_gas_types, activity_id, source_type_id, config_id, report_date)
+    handle_gas_types(
+        gas_type_enum,
+        gas_type_one_of,
+        config_element_for_gas_types,
+        activity_id,
+        source_type_id,
+        config_id,
+        report_date,
+    )
     return handle_source_type_schema(source_type_schema, gas_type_enum, gas_type_one_of)
 
 
@@ -183,7 +226,9 @@ def build_schema(config_id: int, activity: int, source_types: List[str] | List[i
 
     # Get activity schema
     try:
-        activity_schema = ActivityJsonSchema.objects.only('json_schema').get(reporting_activity_id=activity, valid_from__lte=config_id, valid_to__gte=config_id)
+        activity_schema = ActivityJsonSchema.objects.only('json_schema').get(
+            reporting_activity_id=activity, valid_from__lte=config_id, valid_to__gte=config_id
+        )
     except Exception:
         raise Exception(f'No schema found for activity_id {activity} & report_date {report_date}')
     rjsf_schema: Dict = activity_schema.json_schema
@@ -201,10 +246,12 @@ def build_schema(config_id: int, activity: int, source_types: List[str] | List[i
         raise Exception(f'No valid source_types found for activity_id {activity} & report_date {report_date}')
     # If only one config element is found, the source type is mandatory & should be added to the schema
     elif valid_config_elements.count() == 1:
-        rjsf_schema['properties']['sourceTypes'] = {"type": "object", "title": "Source Types", "properties": {}}
-        rjsf_schema['properties']['sourceTypes']['properties'][valid_config_elements.first().source_type.json_key] = build_source_type_schema(
-            config_id, activity, valid_config_elements.first().source_type_id, report_date
-        )
+        first_valid_config_elements: Optional[ConfigurationElement] = valid_config_elements.first()
+        if first_valid_config_elements:
+            rjsf_schema['properties']['sourceTypes'] = {"type": "object", "title": "Source Types", "properties": {}}
+            rjsf_schema['properties']['sourceTypes']['properties'][
+                first_valid_config_elements.source_type.json_key
+            ] = build_source_type_schema(config_id, activity, first_valid_config_elements.source_type_id, report_date)
 
     # If there are multiple config elements for an activity, the user may choose which ones apply. The IDs of the selected source_types are passed as a list in the parameters & we add those schemas to the activity schema.
     else:
@@ -225,11 +272,13 @@ def build_schema(config_id: int, activity: int, source_types: List[str] | List[i
         for source_type in source_types:
             try:
                 valid_config_element = valid_config_elements.get(source_type__id=source_type)
-                rjsf_schema['properties']['sourceTypes']['properties'][valid_config_element.source_type.json_key] = build_source_type_schema(
-                    config_id, activity, valid_config_element.source_type_id, report_date
-                )
+                rjsf_schema['properties']['sourceTypes']['properties'][
+                    valid_config_element.source_type.json_key
+                ] = build_source_type_schema(config_id, activity, valid_config_element.source_type_id, report_date)
             except Exception:
-                raise Exception(f'No schema found for activity_id {activity} & source_type_id {source_type} & report_date {report_date}')
+                raise Exception(
+                    f'No schema found for activity_id {activity} & source_type_id {source_type} & report_date {report_date}'
+                )
 
     return json.dumps({"schema": rjsf_schema})
 
